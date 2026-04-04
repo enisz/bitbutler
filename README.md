@@ -8,9 +8,10 @@
 
 _The digital butler for your torrents._
 
-![Latest Release](https://img.shields.io/github/v/release/enisz/bitbutler?color=blue&label=version)
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-![Build Status](https://img.shields.io/github/actions/workflow/status/enisz/bitbutler/bitbutler-pr.yml?label=CI)
+[![Version](https://img.shields.io/github/v/release/enisz/bitbutler?style=flat-square&color=blue&label=version&logo=github)](https://github.com/enisz/bitbutler/releases/latest)
+[![CI Status](https://img.shields.io/github/actions/workflow/status/enisz/bitbutler/bitbutler-pr.yml?branch=main&style=flat-square&label=CI&logo=github-actions&logoColor=white)](https://github.com/enisz/bitbutler/actions)
+[![Downloads](https://img.shields.io/github/downloads/enisz/bitbutler/total?style=flat-square&color=orange&logo=instacart&logoColor=white)](https://github.com/enisz/bitbutler/releases)
+[![License](https://img.shields.io/github/license/enisz/bitbutler?style=flat-square&color=green)](https://github.com/enisz/bitbutler/blob/main/LICENSE)
 
 ### A clean, simple, and modern way to manage your qBittorrent-nox servers.
 
@@ -64,13 +65,13 @@ I built BitButler to fill that gap: to give qBittorrent-nox users a fast, native
 
 ## Tech Stack
 
-| Tool           | Purpose            | Badge                                                                                                                     |
-| :------------- | :----------------- | :------------------------------------------------------------------------------------------------------------------------ |
-| **Angular**    | Frontend Framework | ![Angular](https://img.shields.io/badge/angular-v20.3.0-%23DD0031?style=flat-square&logo=angular&logoColor=white)         |
-| **Electron**   | Desktop Shell      | ![Electron](https://img.shields.io/badge/electron-v39.2.5-47848F?style=flat-square&logo=electron&logoColor=white)         |
-| **SQLite**     | Local Database     | ![SQLite](https://img.shields.io/badge/sqlite-v12.5.0-003B57?style=flat-square&logo=sqlite&logoColor=white)               |
-| **ag-Grid**    | Data Management    | ![ag-Grid](https://img.shields.io/badge/ag--grid-v35.0.0-2185d0?style=flat-square)                                        |
-| **TypeScript** | Logic & Types      | ![TypeScript](https://img.shields.io/badge/typescript-v5.9.2-%233178C6?style=flat-square&logo=typescript&logoColor=white) |
+| Tool           | Purpose            | Badge                                                                                                                  |
+| :------------- | :----------------- | :--------------------------------------------------------------------------------------------------------------------- |
+| **Angular**    | Frontend Framework | ![Angular](https://img.shields.io/badge/Angular-v20.3.0-DD0031?style=flat-square&logo=angular&logoColor=white)         |
+| **Electron**   | Desktop Shell      | ![Electron](https://img.shields.io/badge/Electron-v39.2.5-47848F?style=flat-square&logo=electron&logoColor=white)      |
+| **SQLite**     | Local Database     | ![SQLite](https://img.shields.io/badge/SQLite-v12.5.0-003B57?style=flat-square&logo=sqlite&logoColor=white)            |
+| **ag-Grid**    | Data Management    | ![ag-Grid](https://img.shields.io/badge/ag--Grid-v35.0.0-2185d0?style=flat-square&logo=google-sheets&logoColor=white)  |
+| **TypeScript** | Logic & Types      | ![TypeScript](https://img.shields.io/badge/TypeScript-v5.9.2-3178C6?style=flat-square&logo=typescript&logoColor=white) |
 
 ## Localization
 
@@ -93,7 +94,7 @@ Check our [Contributing Guide](.github/CONTRIBUTING.md) for more details on how 
 2.  **Connect:** Enter your qBittorrent-nox server's IP address and credentials.
 3.  **Manage:** Start organizing your torrents immediately.
 
-> Note: On Windows, you may face a SmartScreen security warning when trying to execute the app due to it being self-published without code signing keys.
+Note: On Windows, you may see a "Windows protected your PC" warning. This is because the app is not signed with an expensive developer certificate. You can click "More info" and then "Run anyway" to start the Butler.
 
 ## For the Developers
 
