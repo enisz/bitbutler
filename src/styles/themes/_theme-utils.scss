@@ -1,0 +1,215 @@
+@use 'sass:string';
+
+@mixin emit-css-vars($vars) {
+  @each $k, $v in $vars {
+    #{$k}: #{$v};
+  }
+}
+
+@function bb-bs-var($name) {
+  @return string.unquote('var(--bs-#{$name})');
+}
+
+@function bb-bs-rgb-var($name) {
+  @return string.unquote('var(--bs-#{$name}-rgb)');
+}
+
+@mixin bb-solid-button($variant) {
+  $c: bb-bs-var($variant);
+
+  .btn-#{$variant} {
+    --bs-btn-color: var(--bb-#{$variant}-ink);
+    --bs-btn-bg: #{$c};
+    --bs-btn-border-color: #{$c};
+
+    --bs-btn-hover-color: var(--bs-btn-color);
+    --bs-btn-hover-bg: color-mix(in srgb, #{$c} 88%, var(--bb-black) 12%);
+    --bs-btn-hover-border-color: color-mix(in srgb, #{$c} 82%, var(--bb-black) 18%);
+
+    --bs-btn-active-color: var(--bs-btn-color);
+    --bs-btn-active-bg: color-mix(in srgb, #{$c} 78%, var(--bb-black) 22%);
+    --bs-btn-active-border-color: color-mix(in srgb, #{$c} 70%, var(--bb-black) 30%);
+
+    --bs-btn-disabled-bg: color-mix(in srgb, #{$c} 55%, transparent);
+    --bs-btn-disabled-border-color: color-mix(in srgb, #{$c} 55%, transparent);
+    --bs-btn-disabled-color: color-mix(in srgb, var(--bs-body-color) 45%, transparent);
+  }
+}
+
+@mixin bb-outline-button($variant) {
+  $c: bb-bs-var($variant);
+
+  .btn-outline-#{$variant} {
+    --bs-btn-color: #{$c};
+    --bs-btn-border-color: #{$c};
+
+    --bs-btn-hover-color: var(--bb-#{$variant}-ink);
+    --bs-btn-hover-bg: #{$c};
+    --bs-btn-hover-border-color: #{$c};
+
+    --bs-btn-active-color: var(--bs-btn-hover-color);
+    --bs-btn-active-bg: color-mix(in srgb, #{$c} 78%, var(--bb-black) 22%);
+    --bs-btn-active-border-color: color-mix(in srgb, #{$c} 70%, var(--bb-black) 30%);
+
+    --bs-btn-disabled-color: color-mix(in srgb, #{$c} 55%, transparent);
+    --bs-btn-disabled-border-color: color-mix(in srgb, #{$c} 55%, transparent);
+  }
+}
+
+@mixin bb-install-button-variants($variants...) {
+  :root[data-bs-theme] {
+    @each $v in $variants {
+      @include bb-solid-button($v);
+      @include bb-outline-button($v);
+    }
+  }
+}
+
+@mixin bb-install-toast-variants($variants...) {
+  .bb-toast {
+    background-color: var(--bs-card-bg) !important;
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bb-control-radius);
+    color: var(--bs-body-color);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    margin-bottom: 1rem;
+    overflow: hidden;
+
+    .bb-toast-header {
+      padding: 0.6rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      border-bottom: 1px solid color-mix(in srgb, var(--bs-border-color) 30%, transparent);
+    }
+
+    .bb-toast-title {
+      font-weight: 700;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .bb-toast-body {
+      padding: 1rem 1rem 0.85rem 1rem;
+      font-size: 0.85rem;
+      color: color-mix(in srgb, var(--bs-body-color) 80%, transparent);
+      overflow-wrap: anywhere;
+    }
+  }
+
+  @each $v in $variants {
+    $c: bb-bs-var($v);
+
+    .bb-toast-#{$v} {
+      border-top: 4px solid #{$c} !important;
+      .bb-toast-type-icon,
+      .bb-toast-title {
+        color: #{$c} !important;
+      }
+      box-shadow:
+        0 10px 25px rgba(0, 0, 0, 0.3),
+        0 0 15px color-mix(in srgb, #{$c} 12%, transparent);
+    }
+  }
+}
+
+@mixin bb-range-variant($variant) {
+  $c: bb-bs-var($variant);
+  $rgb: bb-bs-rgb-var($variant);
+
+  .form-range-#{$variant} {
+    &::-webkit-slider-thumb {
+      background-color: #{$c} !important;
+      &:active {
+        background-color: color-mix(in srgb, #{$c} 80%, var(--bb-black)) !important;
+      }
+    }
+    &::-moz-range-thumb {
+      background-color: #{$c} !important;
+      &:active {
+        background-color: color-mix(in srgb, #{$c} 80%, var(--bb-black)) !important;
+      }
+    }
+    &:focus {
+      &::-webkit-slider-thumb {
+        box-shadow:
+          0 0 0 1px var(--bs-body-bg),
+          0 0 0 0.25rem RGBA(#{$rgb}, 0.25) !important;
+      }
+      &::-moz-range-thumb {
+        box-shadow:
+          0 0 0 1px var(--bs-body-bg),
+          0 0 0 0.25rem RGBA(#{$rgb}, 0.25) !important;
+      }
+    }
+  }
+}
+
+@mixin bb-install-range-variants($variants...) {
+  .form-range {
+    &::-webkit-slider-runnable-track {
+      background-color: var(--bb-control-bg);
+      border: 1px solid var(--bb-control-border);
+      border-radius: 1rem;
+      height: 0.5rem;
+    }
+    &::-moz-range-track {
+      background-color: var(--bb-control-bg);
+      border: 1px solid var(--bb-control-border);
+      border-radius: 1rem;
+      height: 0.5rem;
+    }
+
+    &::-webkit-slider-thumb {
+      background-color: var(--bb-accent);
+      margin-top: -0.25rem;
+      transition:
+        background-color 0.15s ease,
+        transform 0.1s ease;
+      &:active {
+        background-color: color-mix(in srgb, var(--bb-accent) 85%, var(--bb-black));
+        transform: scale(1.15);
+      }
+    }
+    &::-moz-range-thumb {
+      background-color: var(--bb-accent);
+      border: none;
+      transition:
+        background-color 0.15s ease,
+        transform 0.1s ease;
+      &:active {
+        background-color: color-mix(in srgb, var(--bb-accent) 85%, var(--bb-black));
+        transform: scale(1.15);
+      }
+    }
+
+    &:focus {
+      &::-webkit-slider-thumb {
+        box-shadow:
+          0 0 0 1px var(--bs-body-bg),
+          var(--bb-control-focus-ring);
+      }
+      &::-moz-range-thumb {
+        box-shadow:
+          0 0 0 1px var(--bs-body-bg),
+          var(--bb-control-focus-ring);
+      }
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      &::-webkit-slider-thumb {
+        background-color: var(--bb-control-placeholder);
+      }
+      &::-moz-range-thumb {
+        background-color: var(--bb-control-placeholder);
+      }
+    }
+  }
+
+  @each $v in $variants {
+    @include bb-range-variant($v);
+  }
+}

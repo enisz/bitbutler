@@ -1,0 +1,809 @@
+@if (!torrent()) {
+  <div class="w-100 text-center">
+    <app-bb-spinner></app-bb-spinner>
+    <small class="d-block mt-2">{{
+      'components.modals.torrent-details.general.loading' | translate
+    }}</small>
+  </div>
+} @else {
+  <div class="container-fluid">
+    <fieldset class="bb-fieldset">
+      <legend>{{ 'components.modals.torrent-details.general.labels.title' | translate }}</legend>
+      <div class="row gy-2">
+        <div class="col-12 bb-section">
+          <span class="section-header">{{
+            'components.modals.torrent-details.general.name' | translate
+          }}</span>
+          <span class="section-value">{{ torrent()!.data.name }}</span>
+
+          <div class="button-container">
+            <button
+              class="btn btn-sm btn-link"
+              placement="top"
+              [ngbTooltip]="
+                'components.modals.torrent-details.general.copy-to-clipboard' | translate
+              "
+              (click)="toClipboard('name', torrent()!.data.name)"
+            >
+              <fa-icon [icon]="icons['faClipboard']" />
+            </button>
+
+            <button
+              class="btn btn-sm btn-link"
+              placement="top"
+              [ngbTooltip]="'components.modals.torrent-details.general.rename' | translate"
+              (click)="rename()"
+            >
+              <fa-icon [icon]="icons['faPenToSquare']" />
+            </button>
+
+            <button
+              class="btn btn-sm btn-link text-danger"
+              placement="top"
+              container="body"
+              [ngbTooltip]="'components.modals.torrent-details.general.delete' | translate"
+              tooltipClass="danger"
+              (click)="deleteTorrent()"
+            >
+              <fa-icon [icon]="icons['faTrashCan']" />
+            </button>
+          </div>
+        </div>
+        <div class="col-12 bb-section">
+          <span class="section-header">{{
+            'components.modals.torrent-details.general.save-path' | translate
+          }}</span>
+          <span class="section-value">{{ torrent()!.data.save_path }}</span>
+          <div class="button-container">
+            <button
+              class="btn btn-sm btn-link"
+              placement="top"
+              [ngbTooltip]="
+                'components.modals.torrent-details.general.copy-to-clipboard' | translate
+              "
+              (click)="toClipboard('save path', torrent()!.data.save_path)"
+            >
+              <fa-icon [icon]="icons['faClipboard']" />
+            </button>
+
+            <button
+              class="btn btn-sm btn-link"
+              placement="top"
+              [ngbTooltip]="'components.modals.torrent-details.general.relocate' | translate"
+              (click)="setLocation()"
+            >
+              <fa-icon [icon]="icons['faPenToSquare']" />
+            </button>
+          </div>
+        </div>
+        <div class="col-12 bb-section">
+          <span class="section-header">{{
+            'components.modals.torrent-details.general.remote-path' | translate
+          }}</span>
+          <span class="section-value">{{ torrent()!.data.content_path }}</span>
+          <div class="button-container">
+            <button
+              class="btn btn-sm btn-link"
+              placement="top"
+              [ngbTooltip]="
+                'components.modals.torrent-details.general.copy-to-clipboard' | translate
+              "
+              (click)="toClipboard('remote path', torrent()!.data.save_path)"
+            >
+              <fa-icon [icon]="icons['faClipboard']" />
+            </button>
+          </div>
+        </div>
+        @if (localPath()) {
+          <div class="col-12 bb-section">
+            <span class="section-header">{{
+              'components.modals.torrent-details.general.local-path' | translate
+            }}</span>
+            <span class="section-value">{{ localPath() }}</span>
+            <div class="button-container">
+              <button
+                class="btn btn-sm btn-link"
+                placement="top"
+                [ngbTooltip]="
+                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
+                "
+                (click)="toClipboard('local path', torrent()!.data.save_path)"
+              >
+                <fa-icon [icon]="icons['faClipboard']" />
+              </button>
+
+              <button
+                class="btn btn-sm btn-link"
+                placement="top"
+                [ngbTooltip]="
+                  (singleFile()
+                    ? 'components.modals.torrent-details.general.show-file'
+                    : 'components.modals.torrent-details.general.open-destination'
+                  ) | translate
+                "
+                (click)="openPath()"
+                [disabled]="!localPath()"
+              >
+                <fa-icon [icon]="icons['faFolderOpen']" />
+              </button>
+            </div>
+          </div>
+        }
+        <div class="col-12 bb-section">
+          <span class="section-header">{{
+            'components.modals.torrent-details.general.progress' | translate
+          }}</span>
+          <app-bb-progress
+            [progress]="torrent()?.data?.progress"
+            [torrentState]="torrent()?.data?.state"
+          ></app-bb-progress>
+        </div>
+        <div class="col-12 bb-section">
+          <span class="section-header">{{
+            'components.modals.torrent-details.general.state' | translate
+          }}</span>
+          <span class="section-value">{{ torrentStateText(torrent()!.data.state) }} </span>
+          <div class="button-container">
+            <button
+              class="btn btn-sm btn-link"
+              placement="top"
+              [ngbTooltip]="'components.modals.torrent-details.general.resume' | translate"
+              (click)="resume()"
+            >
+              <fa-icon [icon]="icons['faPlay']" />
+            </button>
+
+            <button
+              class="btn btn-sm btn-link"
+              placement="top"
+              [ngbTooltip]="'components.modals.torrent-details.general.pause' | translate"
+              (click)="pause()"
+            >
+              <fa-icon [icon]="icons['faPause']" />
+            </button>
+
+            <button
+              class="btn btn-sm btn-link"
+              placement="top"
+              [ngbTooltip]="'components.modals.torrent-details.general.force-resume' | translate"
+              (click)="forceResume()"
+            >
+              <fa-icon [icon]="icons['faForwardFast']" />
+            </button>
+          </div>
+        </div>
+        <div class="col-12 bb-section">
+          <span class="section-header">{{
+            'components.modals.torrent-details.general.category' | translate
+          }}</span>
+          <span class="section-value">{{ torrent()!.data.category || '-' }}</span>
+          <div class="button-container">
+            <button
+              class="btn btn-sm btn-link"
+              placement="top"
+              [ngbTooltip]="'components.modals.torrent-details.general.change-category' | translate"
+              (click)="changeCategory()"
+            >
+              <fa-icon [icon]="icons['faPenToSquare']" />
+            </button>
+
+            <button
+              class="btn btn-sm btn-link"
+              placement="top"
+              [ngbTooltip]="'components.modals.torrent-details.general.remove-category' | translate"
+              (click)="removeCategory()"
+              [disabled]="!torrent()!.data.category"
+            >
+              <fa-icon [icon]="icons['faX']" />
+            </button>
+          </div>
+        </div>
+        <div class="col-12 bb-section">
+          <span class="section-header">{{
+            'components.modals.torrent-details.general.tags' | translate
+          }}</span>
+          <span class="section-value">{{ torrent()!.data.tags || '-' }}</span>
+          <div class="button-container">
+            <button
+              class="btn btn-sm btn-link"
+              placement="top"
+              [ngbTooltip]="'components.modals.torrent-details.general.change-tags' | translate"
+              (click)="changeTags()"
+            >
+              <fa-icon [icon]="icons['faPenToSquare']" />
+            </button>
+
+            <button
+              class="btn btn-sm btn-link"
+              placement-="top"
+              [ngbTooltip]="'components.modals.torrent-details.general.remove-all-tags' | translate"
+              (click)="removeAllTags()"
+              [disabled]="!torrent()!.data.tags"
+            >
+              <fa-icon [icon]="icons['faX']" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="bb-fieldset" style="position: relative">
+      <legend>{{ 'components.modals.torrent-details.general.labels.transfer' | translate }}</legend>
+
+      <div class="row gy-2">
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.time-active' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.time-active.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.time-active.description'
+                  | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value">{{ torrent()!.data.time_active | humanizeDuration }}</span>
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.eta' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="'components.modals.torrent-details.general.popover.eta.title' | translate"
+              [description]="
+                'components.modals.torrent-details.general.popover.eta.description' | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value">
+            {{ (torrent()!.data.eta | humanizeDuration) || '-' }}
+          </span>
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.connections' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.connections.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.connections.description'
+                  | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value"
+            >{{ torrent()!.properties.nb_connections }} ({{
+              torrent()!.properties.nb_connections_limit
+            }}
+            {{ 'components.modals.torrent-details.general.max' | translate }})</span
+          >
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.downloaded' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.downloaded.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.downloaded.description'
+                  | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value">{{ torrent()!.data.downloaded | fileSize }}</span>
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.uploaded' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.uploaded.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.uploaded.description' | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value">{{ torrent()!.data.uploaded | fileSize }}</span>
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.seeds' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.seeds.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.seeds.description' | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value"
+            >{{ torrent()!.data.num_seeds }} ({{ torrent()!.properties.seeds_total }}
+            {{ 'components.modals.torrent-details.general.total' | translate }})</span
+          >
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.download-speed' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.download-speed.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.download-speed.description'
+                  | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value">{{ torrent()!.data.dlspeed | fileSize }}/s</span>
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.upload-speed' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.upload-speed.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.upload-speed.description'
+                  | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value">{{ torrent()!.data.upspeed | fileSize }}/s</span>
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.peers' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.peers.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.peers.description' | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value"
+            >{{ torrent()!.data.num_leechs }} ({{ torrent()!.properties.peers_total }}
+            {{ 'components.modals.torrent-details.general.total' | translate }})</span
+          >
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.download-limit' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.download-limit.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.download-limit.description'
+                  | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value">{{ torrent()!.data.dl_limit | speedLimit }}</span>
+          <div class="button-container">
+            <button
+              class="btn btn-sm btn-link"
+              placement="top"
+              [ngbTooltip]="
+                'components.modals.torrent-details.general.change-download-limit' | translate
+              "
+              (click)="changeDownloadLimit()"
+            >
+              <fa-icon [icon]="icons['faPenToSquare']" />
+            </button>
+
+            <button
+              class="btn btn-sm btn-link"
+              placement="top"
+              [ngbTooltip]="
+                'components.modals.torrent-details.general.clear-download-limit' | translate
+              "
+              (click)="clearDownloadLimit()"
+              [disabled]="torrent()!.data.dl_limit === 0"
+            >
+              <fa-icon [icon]="icons['faX']" />
+            </button>
+          </div>
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.upload-limit' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.upload-limit.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.upload-limit.description'
+                  | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value">{{ torrent()!.data.up_limit | speedLimit }}</span>
+          <div class="button-container">
+            <button
+              class="btn btn-sm btn-link"
+              placement="top"
+              [ngbTooltip]="
+                'components.modals.torrent-details.general.change-upload-limit' | translate
+              "
+              (click)="changeUploadLimit()"
+            >
+              <fa-icon [icon]="icons['faPenToSquare']" />
+            </button>
+
+            <button
+              class="btn btn-sm btn-link"
+              placement="top"
+              [ngbTooltip]="
+                'components.modals.torrent-details.general.clear-upload-limit' | translate
+              "
+              (click)="clearUploadLimit()"
+              [disabled]="torrent()!.data.up_limit === 0"
+            >
+              <fa-icon [icon]="icons['faX']" />
+            </button>
+          </div>
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.wasted' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.wasted.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.wasted.description' | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value">{{ torrent()!.properties.total_wasted | fileSize }}</span>
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.share-ratio' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.share-ratio.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.share-ratio.description'
+                  | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value">
+            {{ torrent()!.data.ratio | ratio }}
+
+            @if (torrent()!.data.ratio_limit > 0) {
+              <small>
+                {{ 'components.modals.torrent-details.general.limit' | translate }}:
+                {{ torrent()!.data.ratio_limit | ratioLimit }}</small
+              >
+            }
+          </span>
+          <div class="button-container">
+            <button
+              class="btn btn-sm btn-link"
+              placement="top"
+              [ngbTooltip]="
+                'components.modals.torrent-details.general.change-share-ratio-limit' | translate
+              "
+              (click)="changeShareRatioLimit()"
+            >
+              <fa-icon [icon]="icons['faPenToSquare']" />
+            </button>
+
+            <button
+              class="btn btn-sm btn-link"
+              placement="top"
+              [ngbTooltip]="
+                'components.modals.torrent-details.general.clear-share-ratio-limit' | translate
+              "
+              (click)="clearShareRatioLimit()"
+            >
+              <fa-icon [icon]="icons['faX']" />
+            </button>
+          </div>
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.reannounce-in' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.reannounce-in.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.reannounce-in.description'
+                  | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value">{{
+            humanizeDuration(torrent()!.properties.reannounce)
+          }}</span>
+          <div class="button-container">
+            <button
+              class="btn btn-sm btn-link"
+              placement="top"
+              [ngbTooltip]="
+                'components.modals.torrent-details.general.force-reannounce' | translate
+              "
+              (click)="forceReannounce()"
+            >
+              <fa-icon [icon]="icons['faBullhorn']" />
+            </button>
+          </div>
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.last-seen-complete' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.last-seen-complete.title'
+                  | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.last-seen-complete.description'
+                  | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value">{{ formatDate(torrent()!.data.last_activity) }}</span>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="bb-fieldset">
+      <legend>
+        {{ 'components.modals.torrent-details.general.labels.information' | translate }}
+      </legend>
+      <div class="row gy-2">
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.total-size' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.total-size.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.total-size.description'
+                  | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value">{{ torrent()!.data.total_size | fileSize }}</span>
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.pieces' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.pieces.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.pieces.description' | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value"
+            >{{ torrent()!.properties.pieces_num }}
+            {{ 'components.modals.torrent-details.general.pieces-value' | translate }} ({{
+              'components.modals.torrent-details.general.pieces-have' | translate
+            }}
+            {{ torrent()!.properties.pieces_have }})</span
+          >
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.created-by' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.created-by.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.created-by.description'
+                  | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value">{{ torrent()!.properties.created_by }}</span>
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.added-on' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.added-on.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.added-on.description' | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value">{{ formatDate(torrent()!.data.added_on) }}</span>
+          <span class="section-value"
+            ><small>{{ formatAgo(torrent()!.data.added_on) }}</small></span
+          >
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.completed-on' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.completed-on.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.completed-on.description'
+                  | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value">
+            @if (torrent()!.data.completion_on > 0) {
+              {{ formatDate(torrent()!.data.completion_on) }}
+              <small>{{ formatAgo(torrent()!.data.completion_on) }}</small>
+            } @else {
+              -
+            }
+          </span>
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.created-on' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.created-on.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.created-on.description'
+                  | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value">{{ formatDate(torrent()!.properties.creation_date) }}</span>
+          <span class="section-value"
+            ><small>{{ formatAgo(torrent()!.properties.creation_date) }}</small></span
+          >
+        </div>
+        <div class="col-12 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.info-hash-v1' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.info-hash-v1.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.info-hash-v1.description'
+                  | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value">
+            @if (torrent()!.data.infohash_v1) {
+              <code>{{ torrent()!.data.infohash_v1 }}</code>
+            } @else {
+              -
+            }
+          </span>
+
+          <div class="button-container">
+            @if (torrent()!.data.infohash_v1) {
+              <button
+                class="btn btn-sm btn-link"
+                placement="top"
+                [ngbTooltip]="
+                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
+                "
+                (click)="toClipboard('info hash v1', torrent()!.data.infohash_v1)"
+              >
+                <fa-icon [icon]="icons['faClipboard']" />
+              </button>
+            }
+          </div>
+        </div>
+        <div class="col-12 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.info-hash-v2' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.info-hash-v2.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.info-hash-v2.description'
+                  | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value">
+            @if (torrent()!.data.infohash_v2) {
+              <code>{{ torrent()!.data.infohash_v2 }}</code>
+            } @else {
+              -
+            }
+          </span>
+
+          <div class="button-container">
+            @if (torrent()!.data.infohash_v2) {
+              <button
+                class="btn btn-sm btn-link"
+                placement="top"
+                [ngbTooltip]="
+                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
+                "
+                (click)="toClipboard('info hash v2', torrent()!.data.infohash_v2)"
+              >
+                <fa-icon [icon]="icons['faClipboard']" />
+              </button>
+            }
+          </div>
+        </div>
+        <div class="col-12 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.comment' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.comment.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.comment.description' | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value">
+            @if (torrent()!.properties.comment) {
+              {{ torrent()!.properties.comment }}
+            } @else {
+              -
+            }
+          </span>
+
+          <div class="button-container">
+            @if (torrent()!.properties.comment) {
+              <button
+                class="btn btn-sm btn-link"
+                placement="top"
+                [ngbTooltip]="
+                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
+                "
+                (click)="toClipboard('comment', torrent()!.properties.comment)"
+              >
+                <fa-icon [icon]="icons['faClipboard']" />
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+    </fieldset>
+  </div>
+}

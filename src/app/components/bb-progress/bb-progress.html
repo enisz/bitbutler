@@ -1,0 +1,10 @@
+<div class="progress position-relative bb-progress" [style.--p]="progressPercent() + '%'">
+  <div
+    class="progress-bar"
+    [class]="'bg-' + displayVariant()"
+    [style.width.%]="progressPercent()"
+    role="progressbar"
+  ></div>
+
+  <small class="bb-progress-label"> {{ progressPercent() | number: '1.0-1' }}% </small>
+</div>

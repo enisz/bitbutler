@@ -1,0 +1,865 @@
+{
+  "app": {
+    "success": {
+      "finished-downloading": "Download Finished!"
+    }
+  },
+  "components": {
+    "about": {
+      "tagline": "The digital butler for your torrents",
+      "description": "BitButler is a modern cross-platform desktop client for managing qBittorrent servers remotely. Built with Angular and Electron.",
+      "released": "Released",
+      "platform": "Platform"
+    },
+    "add-torrent": {
+      "title": "Adding a Torrent",
+      "add-form": {
+        "file-browser": "Torrent File",
+        "save-path": "Save Path",
+        "rename": "Rename",
+        "skip-hash-checking": "Skip hash checking",
+        "paused": "Add torrents in the paused state",
+        "root-folder": "Root Folder",
+        "auto-tmm": "Use Auto TMM",
+        "sequential-download": "Enable sequential download",
+        "first-last-piece-prio": "Prioritize download first last piece",
+        "up-limit": "Upload Limit",
+        "down-limit": "Download Limit",
+        "ratio-limit": "Ratio Limit",
+        "seeding-time-limit": "Seeding Time Limit",
+        "seeding-time-limit-unit": "minute"
+      },
+      "label": {
+        "settings": "Settings",
+        "limits": "Limits"
+      },
+      "popover": {
+        "skip-hash-checking": {
+          "title": "Skip hash checking",
+          "description": {
+            "line1": "Normally, qBittorrent verifies existing data on your disk to ensure it matches the torrent perfectly. Enabling this skips that scan.",
+            "line2": "Use this only if you are 100% sure the files in your \"Save Path\" are already complete and uncorrupted; otherwise, you risk uploading \"garbage\" data to others."
+          }
+        },
+        "paused-state": {
+          "title": "Paused State",
+          "description": {
+            "line1": "The torrent will appear in your list but won't start downloading or uploading until you manually hit \"Resume\".",
+            "line2": "This is great if you want to add a bunch of files now but wait for off-peak hours to start the actual traffic."
+          }
+        },
+        "auto-tmm": {
+          "title": "Automatic Torrent Management",
+          "description": {
+            "line1": "When enabled, qBittorrent handles the file location based on the Category you assign.",
+            "line2": "For example, if you change a torrent's category from \"Movies\" to \"TV\", the software will automatically move the files to the corresponding folder on your hard drive."
+          }
+        },
+        "sequential-download": {
+          "title": "Sequential Download",
+          "description": {
+            "line1": "Torrents usually download pieces in a random order based on what is available. This option forces it to download from the beginning of the file to the end.",
+            "line2": "It's useful if you want to preview/stream a video file while it is still downloading, though it can sometimes slow down the overall download speed."
+          }
+        },
+        "first-last-piece-prio": {
+          "title": "Prioritize first/last piece",
+          "description": {
+            "line1": "This tells the client to grab the very first and very last chunks of the file immediately.",
+            "line2": "This is helpful for verifying that a file is valid or for certain media players to read the file headers and metadata (like duration and resolution) before the rest of the file arrives."
+          }
+        }
+      }
+    },
+    "app-loader": {
+      "default-title": "Loading..."
+    },
+    "bb-file-tree": {},
+    "bb-popover": {},
+    "bb-progress": {},
+    "bb-spinner": {},
+    "category-select": {
+      "label": "Category"
+    },
+    "datepicker-filter": {},
+    "datepicker-range-filter": {
+      "label": {
+        "from": "From",
+        "to": "To",
+        "date": "Date"
+      }
+    },
+    "modals": {
+      "confirm": {
+        "title": "Confirmation",
+        "message": "Are you sure you want to delete host: {{ name }}?"
+      },
+      "delete-torrent": {
+        "title": "Delete Torrent",
+        "message": "Are you sure you want to remove the selected torrent(s) from the list?",
+        "delete-form": {
+          "confirmation": "Remove the files as well"
+        }
+      },
+      "limit-transfer-rate": {
+        "title-upload": "Limit upload Speed",
+        "title-download": "Limit download Speed",
+        "global": "Global Transfer Limit",
+        "limit-upload": "Upload Limit",
+        "limit-download": "Download Limit",
+        "clear-limit": "Clear Limit"
+      },
+      "rename-torrent": {
+        "title": "Rename Torrent",
+        "rename-torrent-form": {
+          "name": "Name"
+        },
+        "error": {
+          "failed-to-rename": "Failed to rename torrent"
+        }
+      },
+      "server-editor": {
+        "title-new": "New Connection",
+        "title-edit": "Edit Connection",
+        "editor-form": {
+          "connection-name": "Connection Name",
+          "protocol": "Protocol",
+          "host": "Host",
+          "port": "Port",
+          "username": "Username",
+          "password": "Password",
+          "set-default": "Set this connection as default"
+        },
+        "popover": {
+          "default-host": {
+            "title": "Default Host",
+            "description": "When the host is set to default, the app will select it automatically on startup and tries to connect to it."
+          }
+        }
+      },
+      "set-torrent-category": {
+        "title": "Set Torrent Category"
+      },
+      "set-torrent-location": {
+        "title": "Set Torrent Location",
+        "set-location-form": {
+          "path": "Path"
+        },
+        "error": {
+          "failed-to-relocate": "Failed to relocate torrent!"
+        }
+      },
+      "set-torrent-tags": {
+        "title": "Set Torrent Tags"
+      },
+      "torrent-details": {
+        "content": {},
+        "general": {
+          "loading": "Loading General Properties",
+          "name": "Name",
+          "copy-to-clipboard": "Copy to clipboard",
+          "rename": "Rename Torrent",
+          "delete": "Delete Torrent",
+          "save-path": "Save Path",
+          "relocate": "Relocate Torrent",
+          "remote-path": "Remote Path",
+          "local-path": "Local Path",
+          "show-file": "Show File",
+          "open-destination": "Open Destination",
+          "progress": "Progress",
+          "state": "State",
+          "resume": "Resume Download",
+          "pause": "Pause Download",
+          "force-resume": "Force Resume Download",
+          "category": "Category",
+          "change-category": "Change Category",
+          "remove-category": "Remove Category",
+          "tags": "Tags",
+          "change-tags": "Change Tags",
+          "remove-all-tags": "Remove All Tags",
+          "time-active": "Time Active",
+          "eta": "ETA",
+          "connections": "Connections",
+          "max": "max",
+          "downloaded": "Downloaded",
+          "uploaded": "Uploaded",
+          "seeds": "Seeds",
+          "total": "total",
+          "download-speed": "Download Speed",
+          "upload-speed": "Upload Speed",
+          "peers": "Peers",
+          "download-limit": "Download Limit",
+          "change-download-limit": "Change Download Limit",
+          "clear-download-limit": "Clear Download Limit",
+          "upload-limit": "Upload Limit",
+          "change-upload-limit": "Change Upload Limit",
+          "clear-upload-limit": "Clear Upload Limit",
+          "wasted": "Wasted",
+          "share-ratio": "Share Ratio",
+          "limit": "Limit",
+          "change-share-ratio-limit": "Change Share Ratio Limit",
+          "clear-share-ratio-limit": "Clear Share Ratio Limit",
+          "reannounce-in": "Reannounce In",
+          "force-reannounce": "Force Reannounce",
+          "last-seen-complete": "Last Seen Complete",
+          "total-size": "Total Size",
+          "pieces": "Pieces",
+          "pieces-value": "pieces",
+          "pieces-have": "have",
+          "created-by": "Created By",
+          "added-on": "Added On",
+          "completed-on": "Completed On",
+          "created-on": "Created On",
+          "info-hash-v1": "Info Hash v1",
+          "info-hash-v2": "Info Hash v2",
+          "comment": "Comment",
+          "labels": {
+            "title": "Torrent",
+            "transfer": "Transfer",
+            "information": "Information"
+          },
+          "popover": {
+            "time-active": {
+              "title": "Time Active",
+              "description": "Total duration this torrent has been running in the client."
+            },
+            "eta": {
+              "title": "ETA",
+              "description": "Estimated time remaining until the download is complete based on current speed."
+            },
+            "connections": {
+              "title": "Connections",
+              "description": "Number of active connections to peers out of the total limit for this torrent."
+            },
+            "downloaded": {
+              "title": "Downloaded",
+              "description": "Total amount of data successfully downloaded for this torrent."
+            },
+            "uploaded": {
+              "title": "Uploaded",
+              "description": "Total amount of data you have shared with other peers."
+            },
+            "seeds": {
+              "title": "Seeds",
+              "description": "The number of users currently connected who have 100% of the file."
+            },
+            "download-speed": {
+              "title": "Download Speed",
+              "description": "The current rate at which you are receiving data."
+            },
+            "upload-speed": {
+              "title": "Upload Speed",
+              "description": "The current rate at which you are sending data to others."
+            },
+            "peers": {
+              "title": "Peers",
+              "description": "Users who are currently downloading the file (leechers) and have only parts of it."
+            },
+            "download-limit": {
+              "title": "Download Limit",
+              "description": "The maximum allowed speed for downloading this torrent."
+            },
+            "upload-limit": {
+              "title": "Upload Limit",
+              "description": "The maximum allowed speed for uploading this torrent."
+            },
+            "wasted": {
+              "title": "Wasted",
+              "description": "Data that was discarded due to corruption or hash failures."
+            },
+            "share-ratio": {
+              "title": "Share Ratio",
+              "description": "The ratio of uploaded data to downloaded data (Uploaded / Downloaded)."
+            },
+            "reannounce-in": {
+              "title": "Reannounce In",
+              "description": "Time remaining until the client requests an updated peer list from the tracker."
+            },
+            "last-seen-complete": {
+              "title": "Last Seen Complete",
+              "description": "The last time this client was connected to a peer with 100% of the file."
+            },
+            "total-size": {
+              "title": "Total Size",
+              "description": "The full size of all files included in this torrent."
+            },
+            "pieces": {
+              "title": "Pieces",
+              "description": "The total number of data chunks the file is divided into and how many you currently possess."
+            },
+            "created-by": {
+              "title": "Created By",
+              "description": "The application or user agent that originally created the .torrent file."
+            },
+            "added-on": {
+              "title": "Added On",
+              "description": "The date and time this torrent was added to your client."
+            },
+            "completed-on": {
+              "title": "Completed On",
+              "description": "The date and time when the download reached 100%."
+            },
+            "created-on": {
+              "title": "Created On",
+              "description": "The date and time the .torrent file was originally generated."
+            },
+            "info-hash-v1": {
+              "title": "Info Hash v1",
+              "description": "The unique SHA-1 identifier for this torrent."
+            },
+            "info-hash-v2": {
+              "title": "Info Hash v2",
+              "description": "The unique SHA-256 identifier for BitTorrent v2 compatible torrents."
+            },
+            "comment": {
+              "title": "Comment",
+              "description": "Optional text added by the torrent creator, often containing source info or credits."
+            }
+          },
+          "info": {},
+          "error": {}
+        },
+        "peers": {
+          "grid-options": {
+            "loading": {
+              "title": "Loading...",
+              "message": "Connecting to qBittorrent and syncing torrent peers"
+            },
+            "no-rows": {
+              "message": "No peers"
+            }
+          },
+          "col-def": {
+            "country": "Country",
+            "ip": "IP",
+            "port": "Port",
+            "connection": "Connection",
+            "flags": "Flags",
+            "client": "Client",
+            "progress": "Progress",
+            "dl_speed": "Down Speed",
+            "up_speed": "Up Speed",
+            "downloaded": "Downloaded",
+            "uploaded": "Uploaded",
+            "relevance": "Relevance",
+            "files": "Files"
+          }
+        },
+        "trackers": {
+          "grid-options": {
+            "loading": {
+              "title": "Loading...",
+              "message": "Connecting to qBittorrent and syncing torrent trackers"
+            },
+            "no-rows": {
+              "message": "No trackers loaded"
+            },
+            "no-matching-rows": {
+              "message": "No trackers match the current filters"
+            }
+          },
+          "col-def": {
+            "tier": "Tier",
+            "url": "URL",
+            "status": "Status",
+            "num_peers": "Peers",
+            "num_seeds": "Seeds",
+            "num_leeches": "Leeches",
+            "num_downloaded": "Times Downloaded",
+            "msg": "Message"
+          }
+        },
+        "hash": "Hash"
+      },
+      "torrent-exists": {
+        "title": "Torrent Exists",
+        "already-in-list": "Torrent is already in the list!"
+      },
+      "update-available": {
+        "title": "Update Available",
+        "new-version-ready": "New version <strong>{{ release.tag_name }}</strong> is ready",
+        "whats-new": "What's New",
+        "available-downloads": "Available Downloads",
+        "button": {
+          "view-on-github": "View on GitHub"
+        }
+      }
+    },
+    "tag-select": {
+      "label": "Tags"
+    },
+    "toast-overlay": {}
+  },
+  "pages": {
+    "login": {
+      "tagline": "qBittorrent-nox Remote Client",
+      "connecting": "Connecting...",
+      "server-form": {
+        "host": "Host"
+      },
+      "action": {
+        "remove-default": "Remove Default",
+        "make-default": "Make Default",
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "error": {
+        "connection-failed": "Connection failed.",
+        "update-server-failed": "Failed to update the host {{name}}!"
+      },
+      "delete-confirm": {
+        "title": "Delete Host",
+        "message": "Are you sure you want to delete {{name}}?"
+      }
+    },
+    "main": {
+      "button-bar": {
+        "button": {
+          "add-link": "Add Link",
+          "add-file": "Add File",
+          "delete": "Delete",
+          "start": "Start",
+          "stop": "Stop",
+          "start-all": "Start All",
+          "stop-all": "Stop All",
+          "top": "Top",
+          "up": "Up",
+          "down": "Down",
+          "bottom": "Bottom",
+          "settings": "Settings"
+        },
+        "search-form": {
+          "search": "Search..."
+        }
+      },
+      "grid": {
+        "context-menu": {
+          "header": {
+            "cell": "Cell",
+            "torrent": "Torrent",
+            "control": "Control",
+            "files": "Files",
+            "speed": "Speed",
+            "maintenance": "Maintenance",
+            "queue": "Queue",
+            "fields": "Fields",
+            "visibility": "Visibility"
+          },
+          "item": {
+            "copy-cell-value": "Copy cell value",
+            "copy-info-hash": "Copy info hash",
+            "copy-magnet-link": "Copy magnet link",
+            "copy-as-json": "Copy as JSON",
+            "torrent-details": "Torrent details",
+            "start": "Start",
+            "stop": "Stop",
+            "force-resume": "Force Resume",
+            "set-location": "Set location",
+            "show-in-folder": "Show in Folder",
+            "open-destination": "Open Destination",
+            "rename-torrent": "Rename Torrent",
+            "rename-files": "Rename files",
+            "set-category": "Set Category",
+            "set-tags": "Set Tags",
+            "remove": "Remove",
+            "limit-upload-rate": "Limit upload rate",
+            "limit-download-rate": "Limit download rate",
+            "enable-super-seeding": "Enable Super Seeding",
+            "disable-super-seeding": "Disable Super Seeding",
+            "force-recheck": "Force recheck",
+            "force-reannounce": "Force reannounce",
+            "enable-auto-tmm": "Enable Auto TMM",
+            "disable-auto-tmm": "Disable Auto TMM",
+            "move-to-top": "Move to top",
+            "move-up": "Move up",
+            "move-down": "Move down",
+            "move-to-bottom": "Move to bottom",
+            "hide-column": "Hide Column",
+            "clear-filter": "Clear Filter",
+            "show-all": "Show All",
+            "hide-all": "Hide All"
+          }
+        },
+        "overlays": {
+          "loading-overlay": {},
+          "no-row-overlay": {
+            "title": "No results"
+          }
+        },
+        "renderers": {
+          "code-cell-renderer": {},
+          "progress-cell-renderer": {}
+        },
+        "grid-lib": {
+          "col-def": {
+            "name": "Name",
+            "hash": "Hash",
+            "progress": "Progress",
+            "dlspeed": "DL Speed",
+            "upspeed": "UL Speed",
+            "added_on": "Added On",
+            "state": "State",
+            "category": "Category",
+            "tags": "Tags",
+            "tracker": "Tracker",
+            "trackers_count": "Trackers",
+            "eta": "ETA",
+            "size": "Size",
+            "total_size": "Total Size",
+            "completed": "Completed",
+            "amount_left": "Left",
+            "downloaded": "Downloaded",
+            "downloaded_session": "DL (Session)",
+            "uploaded": "Uploaded",
+            "uploaded_session": "UL (Session)",
+            "dl_limit": "DL Limit",
+            "up_limit": "UL Limit",
+            "ratio": "Ratio",
+            "max_ratio": "Max Ratio",
+            "ratio_limit": "Ratio Limit",
+            "seeding_time": "Seeding Time",
+            "seeding_time_limit": "Seed Time Limit",
+            "time_active": "Time Active",
+            "last_activity": "Last Activity",
+            "seen_complete": "Seen Complete",
+            "completion_on": "Completion On",
+            "num_seeds": "Seeds",
+            "num_leechs": "Leechers",
+            "num_complete": "Complete",
+            "num_incomplete": "Incomplete",
+            "priority": "Priority",
+            "auto_tmm": "Auto TMM",
+            "seq_dl": "Seq DL",
+            "force_start": "Force Start",
+            "super_seeding": "Super Seeding",
+            "f_l_piece_prio": "First/Last Prio",
+            "availability": "Availability",
+            "max_seeding_time": "Max Seeding Time",
+            "max_inactive_seeding_time": "Max Inactive Seed",
+            "inactive_seeding_time_limit": "Inactive Seed Limit",
+            "content_path": "Content Path",
+            "save_path": "Save Path",
+            "download_path": "Download Path",
+            "magnet_uri": "Magnet URI",
+            "infohash_v1": "Infohash v1",
+            "infohash_v2": "Infohash v2"
+          },
+          "grid-options": {
+            "overlay": {
+              "loading": {
+                "title": "Loading...",
+                "message": "Connecting to qBittorrent and syncing torrents"
+              },
+              "no-rows": {
+                "message": "No torrents loaded"
+              },
+              "no-matching-rows": {
+                "message": "No torrents match the current filters"
+              }
+            }
+          }
+        }
+      },
+      "server-state": {
+        "alt-speed-on": "Alternative limits ON",
+        "alt-speed-off": "Alternative limits OFF",
+        "dht-nodes": "DHT Nodes",
+        "free-space": "Free Space on Disk",
+        "current-selection": "Current selection",
+        "selected": "selected",
+        "server-polling": "Server Polling ({{interval}}s)",
+        "network-status": "Network Status",
+        "global-ratio": "Global Ratio",
+        "all-time": "All-time: {{value}}",
+        "total-downloaded": "Total Downloaded",
+        "total-uploaded": "Total Uploaded",
+        "download-speed": "Download Speed",
+        "upload-speed": "Upload Speed",
+        "limit": "Limit: {{value}}/s"
+      },
+      "status": {
+        "downloading": "Downloading",
+        "seeding": "Seeding",
+        "completed": "Completed",
+        "resumed": "Resumed",
+        "paused": "Paused",
+        "active": "Active",
+        "inactive": "Inactive",
+        "stalled": "Stalled",
+        "stalledUP": "Stalled Uploading",
+        "stalledDL": "Stalled Downloading",
+        "checking": "Checking",
+        "errored": "Errored",
+        "filter-group": {
+          "all": "All"
+        },
+        "label": {
+          "status": "Status",
+          "trackers": "Trackers",
+          "categories": "Categories",
+          "tags": "Tags",
+          "save-paths": "Save Paths"
+        }
+      }
+    },
+    "settings": {
+      "title": "Settings",
+      "tab": {
+        "general": {
+          "title": "General",
+          "description": "General, application level settings.",
+          "general-settings-form": {
+            "behavior": {
+              "delete-torrent-after-added": "Delete torrent files after adding them to the list.",
+              "automatic-update": "Check for updates automatically on every application start.",
+              "check-for-update": "Check for Updates now",
+              "notification-position": "In-application notification position"
+            },
+            "language": {
+              "language": "Language of the UI"
+            },
+            "appearance": {
+              "family": "Theme Family",
+              "mode": "Theme Mode"
+            }
+          },
+          "label": {
+            "behavior": "Behavior",
+            "language": "Language",
+            "appearance": "Appearance"
+          },
+          "position": {
+            "top-left": "Top Left",
+            "top-right": "Top Right",
+            "bottom-right": "Bottom Right",
+            "bottom-left": "Bottom Left"
+          },
+          "mode": {
+            "light": "Light",
+            "dark": "Dark",
+            "system": "System"
+          },
+          "success": {
+            "saved": "General Settings Saved"
+          },
+          "popover": {
+            "deleting-torrent-file": {
+              "title": "Deleting Torrent File",
+              "description": "Allowing the client to delete the .torrent file from your disk if it got added to the download list succesfully."
+            }
+          }
+        },
+        "server": {
+          "title": "Server",
+          "description": "Server level, server related settings. These settings are handled different for each added server.",
+          "server-settings-form": {
+            "polling": {
+              "title": "The frequency of polling data from the qBittorrent API",
+              "foreground": "Foreground polling interval",
+              "background": "Background polling interval",
+              "unit": "Seconds"
+            },
+            "path-mapping": {
+              "title": "Remote to local path mappings",
+              "remote-path": "Remote Path",
+              "local-path": "Local Path",
+              "button": {
+                "test-mapping": "Test mapping",
+                "clear-mapping": "Clear mapping",
+                "remove-mapping": "Remove mapping",
+                "add-mapping": "Add mapping"
+              }
+            }
+          },
+          "popover": {
+            "api-polling": {
+              "title": "API Polling",
+              "description": "BitButler is using API polling to get the current state of the torrents in your list. Here you can configure how frequent this polling should occur."
+            },
+            "foreground-polling": {
+              "title": "Foreground Polling",
+              "description": "The polling frequency when the application is open."
+            },
+            "background-polling": {
+              "title": "Background Polling",
+              "description": {
+                "line1": "The polling frequency when the application is minimized to the system tray.",
+                "line2": "When the application is in the background, you may want less network traffic."
+              }
+            },
+            "path-mapping": {
+              "title": "Path Mappings",
+              "description": {
+                "line1": "If you have your torrent folders mounted locally, you can map these folders to their remote counterpart",
+                "line2": "This way you can open local paths in the operating systems native file browser from the Torrent Details view, or if configured, from the torrent list view."
+              }
+            }
+          },
+          "label": {
+            "polling": "Polling",
+            "path-mappings": "Path Mappings"
+          },
+          "warning": {
+            "too-low-polling-frequency": "Setting this value too low may cause problems."
+          }
+        },
+        "status-bar": {
+          "title": "Status Bar",
+          "description": "Configure the visibility and order of available widgets in the status bar at the bottom. Drag and drop widgets to enable, disable, or reorder them.",
+          "label": {
+            "widget-pool": "Widget Pool",
+            "widgets": "Widgets",
+            "left": "Left",
+            "right": "Right"
+          },
+          "widget": {
+            "connection-status": "Connection Status",
+            "nodes": "DHT Nodes",
+            "ratio": "Share Ratio",
+            "global-down": "Global Downloaded",
+            "global-up": "Global Uploaded",
+            "download-speed": "Download Speed",
+            "upload-speed": "Upload Speed",
+            "free-space": "Disk Space",
+            "session-stats": "Session Stats",
+            "selection": "Selection Info",
+            "polling-indicator": "Polling Indicator"
+          },
+          "success": {
+            "save": "Status Bar Settings Saved!"
+          }
+        },
+        "torrent-list-grid": {
+          "title": "Torrent List Grid",
+          "torrent-list-grid-form": {
+            "animate-rows": "Animate Rows",
+            "pagination": "Pagination",
+            "row-double-click": {
+              "title": "Row double click behavior",
+              "value": {
+                "show": "Show in Folder / Open Destination",
+                "details": "Open Torrent Details",
+                "nothing": "Do nothing"
+              }
+            }
+          },
+          "label": {
+            "grid-options": "Grid Options",
+            "columns": "Columns",
+            "order": "Order",
+            "column-pool": "Column Pool"
+          },
+          "popover": {
+            "animate-rows": {
+              "title": "Torrent List Animations",
+              "description": "There is an animation on the torrent list whenever a row is changing. If you face any performance issues, you may want to turn this off."
+            },
+            "pagination": {
+              "title": "Torrent List Pagination",
+              "description": "The torrent list can be set to use pagination. Having too many torrents in your list may impact performance. If you have issues, you may try enabling pagination."
+            },
+            "double-click-behavior": {
+              "title": "Double Click Behavior",
+              "description": "The rows in the torrent list can be double clicked. The action taken by BitButler can be:",
+              "list-item-1": "<strong>Show in Folder / Open Destination</strong>: For single-file torrents: Opens the destination folder and selects the file. For multi-file torrents: Opens the destination folder. <div class=\"text-warning\"><fa-icon [icon]=\"faTriangleExclamation\" class=\"me-1\"></fa-icon>This feature requires Path Mappings to be configured in your server settings.</div>",
+              "list-item-2": "<strong>Open Torrent Details</strong>: opening the torrent details view",
+              "list-item-3": "<strong>Do nothing</strong>: well, do nothing"
+            },
+            "column-order": {
+              "title": "Ordering Columns",
+              "description": "Here you can configure the order of the enabled columns in the torrent list."
+            },
+            "column-pool": {
+              "title": "Column Pool",
+              "description": "Here you can enable / disable the columns visible in your torrent list."
+            }
+          },
+          "other": {
+            "no-columns-selected": "No columns selected.",
+            "search-columns": "Search and select columns..."
+          }
+        }
+      }
+    }
+  },
+  "pipes": {
+    "ratio-limit-pipe": {
+      "global": "Global",
+      "no-limit": "No Limit"
+    }
+  },
+  "services": {},
+  "utils": {},
+  "general": {
+    "button": {
+      "close": "Close",
+      "browse": "Browse",
+      "add": "Add",
+      "cancel": "Cancel",
+      "clear": "Clear",
+      "today": "Today",
+      "connect": "Connect",
+      "add-server": "Add Server",
+      "delete": "Delete",
+      "ok": "OK",
+      "set": "Set",
+      "save": "Save",
+      "update": "Update",
+      "show": "Show"
+    },
+    "form": {
+      "feedback": {
+        "required": "This field is required.",
+        "no-slash": "The name must not contain slashes."
+      }
+    },
+    "label": {
+      "torrent-selected": "{{count}} torrent(s) selected"
+    },
+    "calendar": {
+      "months": {
+        "full": {
+          "1": "January",
+          "2": "February",
+          "3": "March",
+          "4": "April",
+          "5": "May",
+          "6": "June",
+          "7": "July",
+          "8": "August",
+          "9": "September",
+          "10": "October",
+          "11": "November",
+          "12": "December"
+        },
+        "short": {
+          "1": "Jan",
+          "2": "Feb",
+          "3": "Mar",
+          "4": "Apr",
+          "5": "May",
+          "6": "Jun",
+          "7": "Jul",
+          "8": "Aug",
+          "9": "Sep",
+          "10": "Oct",
+          "11": "Nov",
+          "12": "Dec"
+        }
+      },
+      "weekdays": {
+        "1": "Mo",
+        "2": "Tu",
+        "3": "We",
+        "4": "Th",
+        "5": "Fr",
+        "6": "Sa",
+        "7": "Su"
+      }
+    }
+  },
+  "language": {
+    "us": "English",
+    "hu": "Hungarian"
+  }
+}

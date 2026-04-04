@@ -1,0 +1,13 @@
+<div class="form-floating">
+  <ng-select
+    [items]="categories()"
+    [searchable]="true"
+    [clearable]="true"
+    [formControl]="selectControl"
+    [keyDownFn]="keyDownFn"
+    [openOnEnter]="false"
+    #ngselect
+  >
+  </ng-select>
+  <label>{{ 'components.category-select.label' | translate }}</label>
+</div>

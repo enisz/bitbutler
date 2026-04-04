@@ -1,0 +1,23 @@
+export type BbProgressVariant = 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger';
+
+export type BbProgressState =
+  | 'error'
+  | 'missingFiles'
+  | 'pausedDL'
+  | 'pausedUP'
+  | 'downloading'
+  | 'forcedDL'
+  | 'uploading'
+  | 'forcedUP'
+  | 'stalledDL'
+  | 'stalledUP'
+  | 'queuedDL'
+  | 'queuedUP'
+  | 'metaDL'
+  | 'allocating'
+  | 'checkingDL'
+  | 'checkingUP'
+  | 'checkingResumeData'
+  | 'moving'
+  | 'unknown'
+  | (string & {});

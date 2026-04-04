@@ -1,0 +1,153 @@
+name: BitButler PR Verification
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  enforce-rules:
+    name: '[1/5] PR Format & Issue Sync'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: read
+    steps:
+      - name: Sync Issue Details
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const body = pr.body || "";
+
+            // Looks for "Fixes #123" or just "#123"
+            const issueRegex = /(?:Fixes\s+)?#([0-9]+)/i;
+            const match = body.match(issueRegex);
+
+            if (!match) {
+              core.setFailed("❌ ERROR: Every PR must link to an Issue (e.g., 'Fixes #123') in the description.");
+              return;
+            }
+
+            const issueNumber = parseInt(match[1]);
+            const { owner, repo } = context.repo;
+
+            try {
+              const { data: issue } = await github.rest.issues.get({
+                owner, repo, issue_number: issueNumber
+              });
+
+              // 1. Sync Labels from Issue to PR
+              const labels = issue.labels.map(l => l.name);
+              if (labels.length > 0) {
+                await github.rest.issues.addLabels({
+                  owner, repo,
+                  issue_number: pr.number,
+                  labels: labels
+                });
+                console.log(`✅ Synced labels: ${labels.join(', ')}`);
+              }
+
+              // 2. Enrich the description with the Issue Title
+              // This converts "Fixes #123" into "Fixes [#123 Issue Title](url)"
+              const linkedString = `#${issueNumber}: ${issue.title}`;
+
+              if (!body.includes(issue.title)) {
+                const newBody = body.replace(`#${issueNumber}`, linkedString);
+                await github.rest.pulls.update({
+                  owner, repo,
+                  pull_number: pr.number,
+                  body: newBody
+                });
+                console.log("✅ Updated PR description with linked Issue title.");
+              }
+
+            } catch (error) {
+              core.setFailed(`❌ Error processing Issue #${issueNumber}: ${error.message}`);
+            }
+
+  lint:
+    name: '[2/5] Code Quality (Lint)'
+    runs-on: ubuntu-latest
+    needs: [enforce-rules]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run lint
+
+  unit-tests:
+    name: '[3/5] Angular Unit Tests'
+    runs-on: ubuntu-latest
+    needs: [lint]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm test
+
+  angular-build:
+    name: '[4/5] Angular Production Build'
+    needs: [unit-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build:ui
+      - name: Upload Angular Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: angular-dist
+          path: dist/
+          retention-days: 1
+
+  electron-pack:
+    name: '[5/5] ${{ matrix.job_name }}'
+    needs: [angular-build]
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            target: --linux
+            job_name: 'Electron Packaging (Linux)'
+          - os: windows-latest
+            target: --win
+            job_name: 'Electron Packaging (Windows)'
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+
+      - name: Install Linux Build Dependencies (RPM)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rpm
+
+      - name: Download Angular Build
+        uses: actions/download-artifact@v4
+        with:
+          name: angular-dist
+          path: dist/
+
+      - name: Build Electron App
+        run: npx electron-builder ${{ matrix.target }}

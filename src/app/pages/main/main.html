@@ -1,0 +1,38 @@
+<div class="d-flex flex-column vw-100 vh-100">
+  <header class="flex-shrink-0 d-flex flex-row align-items-center">
+    <div
+      class="bb-brand bb-sidebar-width d-flex flex-row align-items-center justify-content-center pointer-events-none user-select-none gap-3 py-2"
+    >
+      <img [ngSrc]="logoUrl()" alt="Bitbutler Logo" width="60" height="60" priority />
+
+      <div class="d-flex flex-column text-center min-w-0">
+        <div class="brand-title">BitButler</div>
+        @if (currentServer()) {
+          <small>{{ currentServer()?.name }}</small>
+        }
+      </div>
+    </div>
+
+    <div class="d-flex flex-row flex-grow-1 min-w-0">
+      <app-button-bar class="flex-grow-1 min-w-0"></app-button-bar>
+    </div>
+  </header>
+
+  <div class="d-flex flex-row flex-grow-1 min-h-0">
+    <aside class="bb-sidebar-width flex-shrink-0 d-flex flex-column min-h-0">
+      <div class="flex-grow-1 min-h-0 overflow-auto">
+        <app-status></app-status>
+      </div>
+    </aside>
+
+    <main class="d-flex flex-column flex-grow-1 min-w-0 min-h-0">
+      <div class="flex-grow-1 min-h-0 overflow-hidden">
+        <app-grid class="h-100 w-100" [delta]="lastDelta()"></app-grid>
+      </div>
+
+      <footer class="flex-shrink-0 border-start">
+        <app-server-state [state]="serverState()"></app-server-state>
+      </footer>
+    </main>
+  </div>
+</div>

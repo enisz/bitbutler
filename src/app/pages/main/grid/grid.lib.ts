@@ -1,0 +1,697 @@
+import { TranslateService } from '@ngx-translate/core';
+import {
+  CellContextMenuEvent,
+  ColDef,
+  Column,
+  ColumnHeaderContextMenuEvent,
+  GetRowIdParams,
+  GridApi,
+  GridOptions,
+  GridReadyEvent,
+  IOverlayParams,
+  ITooltipParams,
+  RowClassParams,
+  RowDoubleClickedEvent,
+  SelectionChangedEvent,
+} from 'ag-grid-community';
+import { GRID_SHARED_OPTIONS } from '../../../app.const';
+import { DatepickerRangeFilter } from '../../../components/datepicker-range-filter/datepicker-range-filter';
+import { Torrent } from '../../../models/torrent.model';
+import { ContextMenuService } from '../../../services/context-menu.service';
+import { FilterService, GRID_FILTER_INITIAL } from '../../../services/filter.service';
+import { GridStateService } from '../../../services/grid-state.service';
+import { SelectionStoreService } from '../../../services/selection-store.service';
+import { UiFormatService } from '../../../services/ui-format.service';
+import { torrentStateText } from '../../../utils/torrent-state-text';
+import { GridContextMenuService } from './context-menu/grid-context-menu.service';
+import { LoadingOverlay } from './overlays/loading-overlay/loading-overlay';
+import { NoRowOverlay } from './overlays/no-row-overlay/no-row-overlay';
+import { CodeCellRenderer } from './renderers/code-cell-renderer/code-cell-renderer';
+import { ProgressCellRenderer } from './renderers/progress-cell-renderer/progress-cell-renderer';
+
+export function getGridColDefs(
+  uiFormatService: UiFormatService,
+  translateService: TranslateService,
+): ColDef<Torrent>[] {
+  return [
+    {
+      colId: 'name',
+      field: 'name',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.name'),
+      minWidth: 50,
+      width: 870,
+      tooltipField: 'name',
+    },
+    {
+      colId: 'hash',
+      field: 'hash',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.hash'),
+      minWidth: 50,
+      width: 340,
+      cellRenderer: CodeCellRenderer,
+    },
+    {
+      colId: 'progress',
+      field: 'progress',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.progress'),
+      width: 135,
+      cellRenderer: ProgressCellRenderer,
+    },
+    {
+      colId: 'dlspeed',
+      field: 'dlspeed',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.dlspeed'),
+      minWidth: 50,
+      width: 115,
+      valueFormatter: uiFormatService.fileSizePerSecond,
+      cellClass: 'tabular-nums',
+    },
+    {
+      colId: 'upspeed',
+      field: 'upspeed',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.upspeed'),
+      minWidth: 50,
+      width: 115,
+      valueFormatter: uiFormatService.fileSizePerSecond,
+      cellClass: 'tabular-nums',
+    },
+    {
+      colId: 'added_on',
+      field: 'added_on',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.added_on'),
+      minWidth: 50,
+      width: 165,
+      valueFormatter: uiFormatService.localTimestamp,
+      filter: DatepickerRangeFilter,
+      floatingFilter: false,
+      sort: 'desc',
+      cellClass: 'tabular-nums',
+    },
+    {
+      colId: 'state',
+      field: 'state',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.state'),
+      minWidth: 50,
+      width: 120,
+      tooltipValueGetter: (params: ITooltipParams<Torrent, string, any>) =>
+        torrentStateText(params.value ?? 'unkwnown'),
+    },
+    {
+      colId: 'category',
+      field: 'category',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.category'),
+      minWidth: 50,
+      width: 105,
+    },
+    {
+      colId: 'tags',
+      field: 'tags',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.tags'),
+      minWidth: 50,
+      width: 75,
+    },
+    {
+      colId: 'tracker',
+      field: 'tracker',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.tracker'),
+      minWidth: 50,
+      width: 590,
+    },
+    {
+      colId: 'trackers_count',
+      field: 'trackers_count',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.trackers_count'),
+      minWidth: 50,
+      width: 100,
+      cellClass: 'tabular-nums',
+    },
+    {
+      colId: 'eta',
+      field: 'eta',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.eta'),
+      minWidth: 50,
+      width: 200,
+      valueFormatter: uiFormatService.duration,
+    },
+    {
+      colId: 'size',
+      field: 'size',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.size'),
+      minWidth: 50,
+      width: 130,
+      valueFormatter: uiFormatService.fileSize,
+      cellClass: 'tabular-nums',
+    },
+    {
+      colId: 'total_size',
+      field: 'total_size',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.total_size'),
+      minWidth: 50,
+      width: 130,
+      valueFormatter: uiFormatService.fileSize,
+      cellClass: 'tabular-nums',
+    },
+    {
+      colId: 'completed',
+      field: 'completed',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.completed'),
+      minWidth: 50,
+      width: 130,
+      valueFormatter: uiFormatService.fileSize,
+      cellClass: 'tabular-nums',
+    },
+    {
+      colId: 'amount_left',
+      field: 'amount_left',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.amount_left'),
+      minWidth: 50,
+      width: 130,
+      valueFormatter: uiFormatService.fileSize,
+      cellClass: 'tabular-nums',
+    },
+    {
+      colId: 'downloaded',
+      field: 'downloaded',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.downloaded'),
+      minWidth: 50,
+      width: 130,
+      valueFormatter: uiFormatService.fileSize,
+      cellClass: 'tabular-nums',
+    },
+    {
+      colId: 'downloaded_session',
+      field: 'downloaded_session',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.downloaded_session'),
+      minWidth: 50,
+      width: 130,
+      valueFormatter: uiFormatService.fileSize,
+      cellClass: 'tabular-nums',
+    },
+    {
+      colId: 'uploaded',
+      field: 'uploaded',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.uploaded'),
+      minWidth: 50,
+      width: 130,
+      valueFormatter: uiFormatService.fileSize,
+      cellClass: 'tabular-nums',
+    },
+    {
+      colId: 'uploaded_session',
+      field: 'uploaded_session',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.uploaded_session'),
+      minWidth: 50,
+      width: 130,
+      valueFormatter: uiFormatService.fileSize,
+      cellClass: 'tabular-nums',
+    },
+    {
+      colId: 'dl_limit',
+      field: 'dl_limit',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.dl_limit'),
+      minWidth: 50,
+      width: 130,
+      valueFormatter: uiFormatService.fileSizePerSecond,
+      cellClass: 'tabular-nums',
+    },
+    {
+      colId: 'up_limit',
+      field: 'up_limit',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.up_limit'),
+      minWidth: 50,
+      width: 130,
+      valueFormatter: uiFormatService.fileSizePerSecond,
+      cellClass: 'tabular-nums',
+    },
+    {
+      colId: 'ratio',
+      field: 'ratio',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.ratio'),
+      minWidth: 50,
+      width: 120,
+      valueFormatter: uiFormatService.ratio,
+      cellClass: 'tabular-nums',
+    },
+    {
+      colId: 'max_ratio',
+      field: 'max_ratio',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.max_ratio'),
+      minWidth: 50,
+      width: 120,
+      cellClass: 'tabular-nums',
+      valueFormatter: uiFormatService.ratioLimit,
+    },
+    {
+      colId: 'ratio_limit',
+      field: 'ratio_limit',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.ratio_limit'),
+      minWidth: 50,
+      width: 120,
+      cellClass: 'tabular-nums',
+      valueFormatter: uiFormatService.ratioLimit,
+    },
+    {
+      colId: 'seeding_time',
+      field: 'seeding_time',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.seeding_time'),
+      minWidth: 50,
+      width: 200,
+      valueFormatter: uiFormatService.duration,
+    },
+    {
+      colId: 'seeding_time_limit',
+      field: 'seeding_time_limit',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.seeding_time_limit'),
+      minWidth: 50,
+      width: 155,
+      cellClass: 'tabular-nums',
+    },
+    {
+      colId: 'time_active',
+      field: 'time_active',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.time_active'),
+      minWidth: 50,
+      width: 200,
+      valueFormatter: uiFormatService.duration,
+    },
+    {
+      colId: 'last_activity',
+      field: 'last_activity',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.last_activity'),
+      minWidth: 50,
+      width: 165,
+      valueFormatter: uiFormatService.localTimestamp,
+      filter: DatepickerRangeFilter,
+      floatingFilter: false,
+      cellClass: 'tabular-nums',
+    },
+    {
+      colId: 'seen_complete',
+      field: 'seen_complete',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.seen_complete'),
+      minWidth: 50,
+      width: 165,
+      valueFormatter: uiFormatService.localTimestamp,
+      filter: DatepickerRangeFilter,
+      floatingFilter: false,
+      cellClass: 'tabular-nums',
+    },
+    {
+      colId: 'completion_on',
+      field: 'completion_on',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.completion_on'),
+      minWidth: 50,
+      width: 165,
+      valueFormatter: uiFormatService.localTimestamp,
+      filter: DatepickerRangeFilter,
+      floatingFilter: false,
+      cellClass: 'tabular-nums',
+    },
+    {
+      colId: 'num_seeds',
+      field: 'num_seeds',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.num_seeds'),
+      minWidth: 50,
+      width: 85,
+      cellClass: 'tabular-nums',
+    },
+    {
+      colId: 'num_leechs',
+      field: 'num_leechs',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.num_leechs'),
+      minWidth: 50,
+      width: 105,
+      cellClass: 'tabular-nums',
+    },
+    {
+      colId: 'num_complete',
+      field: 'num_complete',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.num_complete'),
+      minWidth: 50,
+      width: 110,
+      cellClass: 'tabular-nums',
+    },
+    {
+      colId: 'num_incomplete',
+      field: 'num_incomplete',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.num_incomplete'),
+      minWidth: 50,
+      width: 120,
+      cellClass: 'tabular-nums',
+    },
+    {
+      colId: 'priority',
+      field: 'priority',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.priority'),
+      minWidth: 50,
+      width: 90,
+      cellClass: 'tabular-nums',
+    },
+    {
+      colId: 'auto_tmm',
+      field: 'auto_tmm',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.auto_tmm'),
+      minWidth: 50,
+      width: 110,
+    },
+    {
+      colId: 'seq_dl',
+      field: 'seq_dl',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.seq_dl'),
+      minWidth: 50,
+      width: 90,
+    },
+    {
+      colId: 'force_start',
+      field: 'force_start',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.force_start'),
+      minWidth: 50,
+      width: 120,
+    },
+    {
+      colId: 'super_seeding',
+      field: 'super_seeding',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.super_seeding'),
+      minWidth: 50,
+      width: 140,
+    },
+    {
+      colId: 'f_l_piece_prio',
+      field: 'f_l_piece_prio',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.f_l_piece_prio'),
+      minWidth: 50,
+      width: 140,
+    },
+    {
+      colId: 'availability',
+      field: 'availability',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.availability'),
+      width: 175,
+      filter: false,
+    },
+    {
+      colId: 'max_seeding_time',
+      field: 'max_seeding_time',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.max_seeding_time'),
+      minWidth: 50,
+      width: 165,
+      cellClass: 'tabular-nums',
+    },
+    {
+      colId: 'max_inactive_seeding_time',
+      field: 'max_inactive_seeding_time',
+      headerName: translateService.instant(
+        'pages.main.grid.grid-lib.col-def.max_inactive_seeding_time',
+      ),
+      minWidth: 50,
+      width: 165,
+      cellClass: 'tabular-nums',
+    },
+    {
+      colId: 'inactive_seeding_time_limit',
+      field: 'inactive_seeding_time_limit',
+      headerName: translateService.instant(
+        'pages.main.grid.grid-lib.col-def.inactive_seeding_time_limit',
+      ),
+      minWidth: 50,
+      width: 170,
+      cellClass: 'tabular-nums',
+    },
+    {
+      colId: 'content_path',
+      field: 'content_path',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.content_path'),
+      minWidth: 50,
+      width: 1070,
+    },
+    {
+      colId: 'save_path',
+      field: 'save_path',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.save_path'),
+      minWidth: 50,
+      width: 300,
+    },
+    {
+      colId: 'download_path',
+      field: 'download_path',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.download_path'),
+      minWidth: 50,
+      width: 240,
+    },
+    {
+      colId: 'magnet_uri',
+      field: 'magnet_uri',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.magnet_uri'),
+      minWidth: 50,
+      width: 1010,
+    },
+    {
+      colId: 'infohash_v1',
+      field: 'infohash_v1',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.infohash_v1'),
+      minWidth: 50,
+      width: 340,
+      cellRenderer: CodeCellRenderer,
+    },
+    {
+      colId: 'infohash_v2',
+      field: 'infohash_v2',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.infohash_v2'),
+      minWidth: 50,
+      width: 340,
+      cellRenderer: CodeCellRenderer,
+    },
+  ];
+}
+
+export function getGridOptions(
+  contextMenuService: ContextMenuService,
+  selectionStore: SelectionStoreService,
+  filterService: FilterService,
+  gridStateService: GridStateService,
+  gridContextMenuService: GridContextMenuService,
+  uiFormatService: UiFormatService,
+  translateService: TranslateService,
+  opts: {
+    getHasLoadedInitialState: () => boolean;
+    getIsRestoringGridState: () => boolean;
+    setIsRestoringGridState: (v: boolean) => void;
+    setHasLoadedInitialState: (v: boolean) => void;
+    queueSave: () => void;
+    updateInViewCount: () => void;
+    getSelectionAnchorIndex: () => number | null;
+    getSelectionLeadIndex: () => number | null;
+    setSelectionAnchorIndex: (v: number | null) => void;
+    setSelectionLeadIndex: (v: number | null) => void;
+    getLatestFilters: () => typeof GRID_FILTER_INITIAL.external;
+    getIsApplyingFilterFromService: () => boolean;
+    setIsApplyingFilterFromService: (v: boolean) => void;
+    normalizeTracker: (raw?: string | null) => string;
+    getTrackers: (t: Torrent) => string[];
+    handleCellRightClick: (e: CellContextMenuEvent<Torrent>) => void;
+    handleRowDoubleClick: (e: RowDoubleClickedEvent<Torrent, any>) => void;
+    onApiReady: (api: GridApi<Torrent>) => void;
+    getIsProgrammaticSelection: () => boolean;
+    applyDbSettings: () => Promise<void>;
+  },
+): GridOptions<Torrent> {
+  return {
+    ...GRID_SHARED_OPTIONS,
+    pagination: true,
+    animateRows: true,
+    paginationPageSizeSelector: [50, 100, 500, 1000],
+    paginationPageSize: 50,
+    gridId: 'torrent-list',
+    columnDefs: getGridColDefs(uiFormatService, translateService),
+    getRowId: (params: GetRowIdParams<Torrent, any>) => params.data.hash,
+    rowClassRules: {
+      'bb-row-paused': (params: RowClassParams<Torrent, any>): boolean =>
+        params.data?.state === 'pausedDL' || params.data?.state === 'pausedUP',
+    },
+    rowSelection: {
+      mode: 'multiRow',
+      checkboxes: false,
+      headerCheckbox: false,
+      enableClickSelection: true,
+    },
+    overlayComponentSelector: (params: IOverlayParams<Torrent>) => {
+      switch (params.overlayType) {
+        case 'loading':
+          return {
+            component: LoadingOverlay,
+            params: {
+              title: translateService.instant(
+                'pages.main.grid.grid-lib.grid-options.overlay.loading.title',
+              ),
+              message: translateService.instant(
+                'pages.main.grid.grid-lib.grid-options.overlay.loading.message',
+              ),
+            },
+          };
+
+        case 'noRows':
+          return {
+            component: NoRowOverlay,
+            params: {
+              message: translateService.instant(
+                'pages.main.grid.grid-lib.grid-options.overlay.no-rows.message',
+              ),
+            },
+          };
+
+        case 'noMatchingRows':
+          return {
+            component: NoRowOverlay,
+            params: {
+              message: translateService.instant(
+                'pages.main.grid.grid-lib.grid-options.overlay.no-matching-rows.message',
+              ),
+            },
+          };
+
+        default:
+          return undefined;
+      }
+    },
+
+    onGridReady: (e: GridReadyEvent<Torrent>) => {
+      opts.onApiReady(e.api);
+
+      void (async () => {
+        opts.setIsRestoringGridState(true);
+        try {
+          await gridStateService.restore(e.api);
+          await opts.applyDbSettings();
+
+          filterService.setColumnModel(e.api.getFilterModel());
+          e.api.onFilterChanged();
+
+          opts.updateInViewCount();
+        } finally {
+          setTimeout(() => {
+            opts.setIsRestoringGridState(false);
+            opts.setHasLoadedInitialState(true);
+          }, 0);
+        }
+      })();
+    },
+
+    onRowClicked: (e) => {
+      const ev = e.event as MouseEvent | KeyboardEvent | undefined;
+      const shift = !!ev?.shiftKey;
+      const ctrl = !!(ev as MouseEvent)?.ctrlKey;
+      const meta = !!(ev as MouseEvent)?.metaKey;
+
+      if (shift) return;
+
+      if (!ctrl && !meta) {
+        opts.setSelectionAnchorIndex(e.rowIndex ?? null);
+        opts.setSelectionLeadIndex(e.rowIndex ?? null);
+      } else {
+        opts.setSelectionLeadIndex(e.rowIndex ?? opts.getSelectionLeadIndex());
+      }
+    },
+
+    onFilterChanged: () => {
+      const isRestoring = opts.getIsRestoringGridState();
+      const isApplying = opts.getIsApplyingFilterFromService();
+
+      if (!isRestoring && !isApplying) {
+        opts.queueSave();
+      }
+
+      opts.updateInViewCount();
+    },
+
+    onColumnResized: (e) => {
+      if (e.finished) opts.queueSave();
+    },
+    onColumnMoved: opts.queueSave,
+    onColumnPinned: opts.queueSave,
+    onColumnVisible: opts.queueSave,
+    onSortChanged: opts.queueSave,
+    onRowDataUpdated: opts.updateInViewCount,
+    onFirstDataRendered: opts.updateInViewCount,
+
+    isExternalFilterPresent: () => {
+      const f: any = opts.getLatestFilters();
+      return (
+        f.states?.size > 0 ||
+        !!(f.search ?? '').trim() ||
+        f.trackers?.size > 0 ||
+        f.savePaths?.size > 0 ||
+        f.categories?.size > 0 ||
+        f.tags?.size > 0
+      );
+    },
+
+    doesExternalFilterPass: (node) => {
+      const f = opts.getLatestFilters();
+      const row = node.data;
+      if (!row) return true;
+
+      if (f.states.size > 0) {
+        if (!row.state) return false;
+        if (!f.states.has(row.state)) return false;
+      }
+
+      if (f.trackers.size > 0) {
+        const trackers = opts.getTrackers(row);
+        if (trackers.length === 0) {
+          if (!f.trackers.has(opts.normalizeTracker(null))) return false;
+        } else {
+          const found = trackers.some((tracker) => f.trackers.has(opts.normalizeTracker(tracker)));
+          if (!found) return false;
+        }
+      }
+
+      if (f.savePaths.size > 0) {
+        const p = (row.save_path ?? '').trim() || '(none)';
+        if (!f.savePaths.has(p)) return false;
+      }
+
+      if (f.categories.size > 0) {
+        const cat = (row.category ?? '').trim();
+        if (!f.categories.has(cat)) return false;
+      }
+
+      if (f.tags.size > 0) {
+        const tags = (row.tags ?? '').split(',').map((t) => t.trim());
+        if (!tags.some((t) => f.tags.has(t))) return false;
+      }
+
+      const q = (f.search ?? '').trim().toLowerCase();
+      if (q) {
+        const hay = `${row.name ?? ''} ${row.save_path ?? ''} ${row.tracker ?? ''}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+
+      return true;
+    },
+
+    preventDefaultOnContextMenu: true,
+    suppressContextMenu: true,
+
+    onCellContextMenu: (e: CellContextMenuEvent<Torrent>) => opts.handleCellRightClick(e),
+    onRowDoubleClicked: (e: RowDoubleClickedEvent<Torrent, any>) => opts.handleRowDoubleClick(e),
+    onSelectionChanged: (ev: SelectionChangedEvent<Torrent>) => {
+      if (opts.getIsProgrammaticSelection()) {
+        return;
+      }
+      selectionStore.set(ev.api.getSelectedRows() ?? []);
+    },
+
+    onColumnHeaderContextMenu: (e: ColumnHeaderContextMenuEvent<Torrent, any>) => {
+      if (!e.column) {
+        return;
+      }
+      contextMenuService.open({
+        items: gridContextMenuService.buildHeaderMenu(e),
+        payload: {
+          colId: e.column?.getId(),
+          displayName: e.api.getDisplayNameForColumn(e.column as Column, 'header'),
+        },
+      });
+    },
+  };
+}

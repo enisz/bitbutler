@@ -1,0 +1,154 @@
+@use 'sass:string';
+
+$deep-sea-dark-primary: #7ab2b2;
+$deep-sea-dark-secondary: #088395;
+
+$deep-sea-dark-success: #7ab2b2;
+$deep-sea-dark-danger: #e06c67;
+$deep-sea-dark-warning: #f4c46b;
+$deep-sea-dark-info: #088395;
+
+$deep-sea-dark-body-bg: #04161d; // Deepened Deep Blue
+$deep-sea-dark-body-color: #ebf4f6;
+$deep-sea-dark-border: #09637e;
+$deep-sea-dark-surface: #06242e; // Slightly lighter surface
+
+@mixin install() {
+  :root[data-bb-theme='deep-sea'][data-bs-theme='dark'] {
+    --bb-black: #000;
+    --bs-primary: #{$deep-sea-dark-primary};
+    --bs-primary-rgb: #{string.unquote('122, 178, 178')};
+
+    --bs-secondary: #{$deep-sea-dark-secondary};
+    --bs-secondary-rgb: #{string.unquote('8, 131, 149')};
+
+    --bs-success: #{$deep-sea-dark-success};
+    --bs-success-rgb: #{string.unquote('122, 178, 178')};
+
+    --bs-danger: #{$deep-sea-dark-danger};
+    --bs-danger-rgb: #{string.unquote('224, 108, 103')};
+
+    --bb-primary-ink: #04161d;
+    --bb-secondary-ink: #04161d;
+    --bb-success-ink: #04161d;
+    --bb-danger-ink: #fff;
+    --bb-warning-ink: #000;
+    --bb-info-ink: #000;
+    --bb-light-ink: #000;
+    --bb-dark-ink: #fff;
+
+    --bs-warning: #{$deep-sea-dark-warning};
+    --bs-warning-rgb: #{string.unquote('244, 196, 107')};
+
+    --bs-info: #{$deep-sea-dark-info};
+    --bs-info-rgb: #{string.unquote('8, 131, 149')};
+
+    --bs-body-bg: #{$deep-sea-dark-body-bg};
+    --bs-body-color: #{$deep-sea-dark-body-color};
+    --bs-border-color: #{$deep-sea-dark-border};
+
+    --bs-card-bg: #{$deep-sea-dark-surface};
+    --bs-card-color: var(--bs-body-color);
+    --bs-card-border-color: #{$deep-sea-dark-border};
+    --bs-card-cap-bg: #07313f;
+    --bs-card-cap-color: #{$deep-sea-dark-primary};
+
+    --bs-tooltip-bg: var(--bs-card-cap-bg);
+    --bs-tooltip-color: var(--bs-body-color);
+    --bs-tooltip-opacity: 0.95;
+
+    --bs-link-color: #{$deep-sea-dark-primary};
+    --bs-link-hover-color: #ffffff;
+
+    --bs-navbar-color: #{$deep-sea-dark-body-color};
+    --bs-navbar-brand-color: #{$deep-sea-dark-primary};
+
+    --bs-dropdown-link-color: #{$deep-sea-dark-body-color};
+    --bs-dropdown-bg: #{$deep-sea-dark-surface};
+
+    --bb-accent: var(--bs-secondary);
+    --bb-accent-rgb: var(--bs-secondary-rgb);
+
+    --bb-active-list-item-bg: color-mix(in srgb, var(--bb-accent) 18%, transparent);
+    --bb-hover-list-item-bg: color-mix(in srgb, var(--bb-accent) 10%, transparent);
+
+    --bb-grid-header-border: var(--bs-border-color);
+    --bb-grid-row-hover-bg: color-mix(in srgb, var(--bb-accent) 16%, transparent);
+    --bb-grid-focus-outline: var(--bb-accent);
+    --bb-grid-selected-accent: var(--bb-accent);
+
+    --bb-ng-surface: var(--bs-card-bg);
+    --bb-ng-panel: var(--bs-dropdown-bg);
+    --bb-ng-text: var(--bs-body-color);
+    --bb-ng-border: var(--bs-border-color);
+    --bb-ng-hover-bg: color-mix(in srgb, var(--bs-primary) 10%, transparent);
+    --bb-ng-active-bg: color-mix(in srgb, var(--bs-secondary) 26%, transparent);
+    --bb-ng-accent: var(--bs-secondary);
+    --bb-ng-focus-ring: rgba(var(--bs-secondary-rgb), 0.2);
+
+    --bb-control-bg: color-mix(in srgb, var(--bs-card-bg) 72%, #000 28%);
+    --bb-control-border: color-mix(in srgb, var(--bs-border-color) 85%, #fff 15%);
+    --bb-control-text: var(--bs-body-color);
+    --bb-control-placeholder: color-mix(in srgb, var(--bs-body-color) 60%, transparent);
+
+    --bb-control-hover-bg: color-mix(in srgb, var(--bb-control-bg) 86%, #fff 14%);
+    --bb-control-hover-border: color-mix(
+      in srgb,
+      var(--bb-control-border) 70%,
+      var(--bs-secondary) 30%
+    );
+
+    --bb-control-focus-border: var(--bs-secondary);
+    --bb-control-focus-ring: rgba(var(--bs-secondary-rgb), 0.22);
+
+    --bb-control-radius: 12px;
+
+    --bb-dp-bg: var(--bs-dropdown-bg);
+    --bb-dp-border: var(--bs-border-color);
+    --bb-dp-text: var(--bs-body-color);
+    --bb-dp-muted: color-mix(in srgb, var(--bs-body-color) 65%, transparent);
+
+    --bb-dp-hover: color-mix(in srgb, var(--bb-control-bg) 86%, #fff 14%);
+    --bb-dp-focus-ring: var(--bb-control-focus-ring);
+
+    --bb-dp-accent: var(--bs-secondary);
+    --bb-dp-accent-ink: #04161d;
+    --bb-dp-range: color-mix(in srgb, var(--bb-dp-accent) 28%, transparent);
+
+    --bb-toast-bg: color-mix(in srgb, var(--bs-card-bg) 80%, #000);
+    --bb-toast-border-opacity: 0.4;
+    --bb-toast-glow-opacity: 0.15;
+
+    --bs-popover-bg: #{$deep-sea-dark-surface};
+    --bs-popover-border-color: #{$deep-sea-dark-border};
+    --bs-popover-header-bg: #07313f;
+    --bs-popover-header-color: #{$deep-sea-dark-primary};
+    --bs-popover-body-color: #{$deep-sea-dark-body-color};
+  }
+}
+
+[data-bb-theme='deep-sea'][data-bs-theme='dark'] {
+  .form-switch .form-check-input {
+    background-color: color-mix(in srgb, var(--bb-control-bg) 85%, #000 15%);
+    border-color: var(--bb-control-border);
+    border-radius: 999px;
+
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba(235,244,246,0.45)'/%3e%3c/svg%3e");
+
+    &:focus {
+      border-color: var(--bb-control-focus-border);
+      box-shadow: 0 0 0 0.2rem var(--bb-control-focus-ring);
+    }
+  }
+
+  .form-switch .form-check-input:checked {
+    background-color: var(--bb-accent);
+    border-color: var(--bb-accent);
+
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%2304161d'/%3e%3c/svg%3e");
+  }
+
+  .form-switch .form-check-input:disabled {
+    opacity: 0.45;
+  }
+}

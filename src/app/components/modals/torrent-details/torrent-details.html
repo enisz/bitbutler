@@ -1,0 +1,54 @@
+<div class="modal-header bb-modal-header">
+  <div class="bb-modal-header__text">
+    <h5
+      #titleElement
+      class="modal-title bb-title-clamp"
+      [ngbTooltip]="titleElement.offsetWidth < titleElement.scrollWidth ? torrent()?.name : null"
+      placement="bottom"
+      tooltipClass="single-line-tooltip"
+    >
+      {{ torrent()?.name }}
+    </h5>
+
+    <div class="small text-body-secondary mt-1 bb-hash-clamp">
+      {{ 'components.modals.torrent-details.hash' | translate }}: <code>{{ torrent()?.hash }}</code>
+    </div>
+
+    <ul class="nav nav-tabs bb-modal-tabs">
+      @for (tab of tabs; track tab.id) {
+        <li class="nav-item">
+          <button
+            class="nav-link"
+            [class.active]="activeTabId() === tab.id"
+            (click)="selectTab(tab.id)"
+          >
+            {{ tab.label }}
+          </button>
+        </li>
+      }
+    </ul>
+  </div>
+
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="activeModal.dismiss()"
+  ></button>
+</div>
+
+<div class="modal-body">
+  @if (loadedComponent()) {
+    <ng-container
+      *ngComponentOutlet="loadedComponent(); inputs: { hash: torrent()?.hash }"
+    ></ng-container>
+  } @else {
+    <app-bb-spinner></app-bb-spinner>
+  }
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-link" (click)="activeModal.close()" autofocus>
+    {{ 'general.button.close' | translate }}
+  </button>
+</div>

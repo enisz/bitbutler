@@ -1,0 +1,19 @@
+@use './bitbutler' as bitbutler;
+@use './aurora' as aurora;
+@use './mint-green' as mint-green;
+@use './purple-haze' as purple-haze;
+@use './ocean-breeze' as ocean-breeze;
+@use './pumpkin-spice' as pumpkin-spice;
+@use './deep-sea' as deep-sea;
+@use './crimson-ember' as crimson-ember;
+
+@mixin install-themes() {
+  @include bitbutler.install();
+  @include aurora.install();
+  @include mint-green.install();
+  @include purple-haze.install();
+  @include ocean-breeze.install();
+  @include pumpkin-spice.install();
+  @include deep-sea.install();
+  @include crimson-ember.install();
+}

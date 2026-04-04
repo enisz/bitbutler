@@ -1,0 +1,152 @@
+<div class="modal-header">
+  <h4 class="modal-title">
+    {{
+      (editMode()
+        ? 'components.modals.server-editor.title-edit'
+        : 'components.modals.server-editor.title-new'
+      ) | translate
+    }}
+  </h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
+</div>
+<div class="modal-body">
+  <form [formGroup]="editorForm" (submit)="handleSave()">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+          <div class="form-floating mb-3">
+            <input
+              autofocus
+              type="text"
+              class="form-control"
+              id="name"
+              [placeholder]="
+                'components.modals.server-editor.editor-form.connection-name' | translate
+              "
+              formControlName="name"
+            />
+            <label for="name">{{
+              'components.modals.server-editor.editor-form.connection-name' | translate
+            }}</label>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12 col-md-3 mb-3">
+          <div class="form-floating">
+            <ng-select
+              id="protocol"
+              formControlName="protocol"
+              [items]="protocols"
+              bindLabel="label"
+              bindValue="value"
+              [clearable]="false"
+              [searchable]="false"
+            >
+            </ng-select>
+            <label for="protocol">{{
+              'components.modals.server-editor.editor-form.protocol' | translate
+            }}</label>
+          </div>
+        </div>
+        <div class="col-12 col-md-6 mb-3">
+          <div class="form-floating">
+            <input
+              type="text"
+              class="form-control"
+              id="host"
+              [placeholder]="'components.modals.server-editor.editor-form.host' | translate"
+              formControlName="host"
+            />
+            <label for="host">{{
+              'components.modals.server-editor.editor-form.host' | translate
+            }}</label>
+          </div>
+        </div>
+        <div class="col-12 col-md-3 mb-3">
+          <div class="form-floating">
+            <input
+              type="number"
+              class="form-control"
+              id="port"
+              [placeholder]="'components.modals.server-editor.editor-form.port' | translate"
+              formControlName="port"
+              min="1"
+              max="65535"
+            />
+            <label for="port">{{
+              'components.modals.server-editor.editor-form.port' | translate
+            }}</label>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12 col-md-6 mb-3">
+          <div class="form-floating">
+            <input
+              type="text"
+              class="form-control"
+              id="username"
+              [placeholder]="'components.modals.server-editor.editor-form.username' | translate"
+              formControlName="username"
+            />
+            <label for="username">{{
+              'components.modals.server-editor.editor-form.username' | translate
+            }}</label>
+          </div>
+        </div>
+        <div class="col-12 col-md-6 mb-3">
+          <div class="form-floating">
+            <input
+              type="password"
+              class="form-control"
+              id="password"
+              [placeholder]="'components.modals.server-editor.editor-form.password' | translate"
+              formControlName="password"
+            />
+            <label for="password">{{
+              'components.modals.server-editor.editor-form.password' | translate
+            }}</label>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12">
+          <div class="form-check form-switch">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="autoLogin"
+              formControlName="autoLogin"
+            />
+            <label class="form-check-label" for="autoLogin">{{
+              'components.modals.server-editor.editor-form.set-default' | translate
+            }}</label>
+            <bb-popover
+              [subject]="'components.modals.server-editor.popover.default-host.title' | translate"
+              [description]="
+                'components.modals.server-editor.popover.default-host.description' | translate
+              "
+              placement="top"
+            ></bb-popover>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button type="submit" hidden [disabled]="!canSave() || processing()"></button>
+  </form>
+</div>
+<div class="modal-footer">
+  <button
+    type="button"
+    class="btn btn-primary"
+    (click)="handleSave()"
+    [disabled]="!canSave() || processing()"
+  >
+    {{ (editMode() ? 'general.button.update' : 'general.button.save') | translate }}
+  </button>
+  <button type="button" class="btn btn-link" (click)="close()">
+    {{ 'general.button.cancel' | translate }}
+  </button>
+</div>

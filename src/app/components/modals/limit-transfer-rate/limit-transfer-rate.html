@@ -1,0 +1,81 @@
+<div class="modal-header bb-modal-header">
+  <div class="bb-modal-header__text">
+    <h5 class="modal-title bb-title-clamp">
+      {{
+        (direction === 'ul'
+          ? 'components.modals.limit-transfer-rate.title-upload'
+          : 'components.modals.limit-transfer-rate.title-download'
+        ) | translate
+      }}
+    </h5>
+
+    <div
+      class="small text-body-secondary mt-1 bb-hash-clamp"
+      [ngbTooltip]="tooltipText()"
+      bbTooltipOverflow
+      tooltipClass="single-line-tooltip"
+      placement="bottom"
+    >
+      @if (target === 'global') {
+        {{ 'components.modals.limit-transfer-rate.global' | translate }}
+      } @else if (selected() === 1) {
+        {{ selectionName() }}
+      } @else {
+        {{ 'general.label.torrent-selected' | translate: { count: selected() } }}
+      }
+    </div>
+  </div>
+
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="activeModal.dismiss()"
+  ></button>
+</div>
+<div class="modal-body">
+  <form [formGroup]="limitTransferForm" (submit)="handleSubmit()">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+          <div class="input-group">
+            <div class="form-floating">
+              <input
+                type="number"
+                class="form-control"
+                id="limit"
+                placeholder="0"
+                autofocus
+                formControlName="limit"
+                min="0"
+              />
+              <label for="limit">
+                {{
+                  (direction === 'ul'
+                    ? 'components.modals.limit-transfer-rate.limit-upload'
+                    : 'components.modals.limit-transfer-rate.limit-download'
+                  ) | translate
+                }}</label
+              >
+            </div>
+            <span class="input-group-text">KiB/s</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button type="submit" hidden [disabled]="!canSave()"></button>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="handleSubmit()" [disabled]="!canSave()">
+    {{ 'general.button.set' | translate }}
+  </button>
+  @if (hasClearableLimit()) {
+    <button type="button" class="btn btn-link" (click)="clearFilters()" [disabled]="!canSave()">
+      {{ 'components.modals.limit-transfer-rate.clear-limit' | translate }}
+    </button>
+  }
+  <button type="button" class="btn btn-link" (click)="activeModal.close()">
+    {{ 'general.button.cancel' | translate }}
+  </button>
+</div>

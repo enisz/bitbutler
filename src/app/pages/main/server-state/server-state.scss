@@ -1,0 +1,137 @@
+.bb-bottom-bar {
+  flex-wrap: nowrap;
+  overflow: hidden;
+  height: 34px;
+  background: var(--bs-body-bg);
+  border-top: 1px solid var(--bs-border-color);
+  color: var(--bs-body-color);
+  font-size: 0.8rem;
+  user-select: none;
+  display: flex;
+  align-items: center;
+}
+
+.d-flex {
+  display: flex;
+  align-items: center;
+}
+
+.bb-widget {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.2rem 0.75rem;
+  margin: 0 1px;
+  border-radius: 50px;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: rgba(var(--bs-emphasis-color-rgb), 0.07);
+  }
+}
+
+.status-dot {
+  font-size: 0.55rem;
+  &.connected {
+    color: var(--bs-success);
+  }
+  &.firewalled {
+    color: var(--bs-warning);
+  }
+  &.disconnected,
+  &.offline {
+    color: var(--bs-danger);
+  }
+}
+
+.icon-dl {
+  color: var(--bs-success);
+}
+.icon-ul {
+  color: var(--bs-info);
+}
+.icon-disk {
+  color: var(--bs-secondary);
+}
+
+.bb-value {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.bb-divider {
+  width: 1px;
+  height: 14px;
+  background: var(--bs-border-color);
+  opacity: 0.4;
+  margin: 0 2px;
+}
+
+.bb-fixed-num {
+  display: inline-block;
+  text-align: right;
+}
+.bb-width-speed {
+  width: 10ch;
+}
+.bb-width-size {
+  width: 9.5ch;
+}
+.bb-width-count {
+  width: 5ch;
+}
+
+.bb-alt-speed {
+  color: var(--bs-secondary);
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+
+  &.active {
+    color: var(--bs-warning);
+    background-color: rgba(var(--bs-warning-rgb), 0.15);
+
+    &:hover {
+      background-color: rgba(var(--bs-warning-rgb), 0.25);
+    }
+  }
+}
+
+.poll-container {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(var(--bs-emphasis-color-rgb), 0.1);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: conic-gradient(var(--bs-primary) calc(var(--p) * 1%), transparent 0);
+    -webkit-mask: radial-gradient(farthest-side, transparent 65%, black 70%);
+    mask: radial-gradient(farthest-side, transparent 65%, black 70%);
+  }
+}
+
+.poll-dot {
+  width: 4px;
+  height: 4px;
+  background-color: var(--bs-primary);
+  border-radius: 50%;
+  opacity: 0.5;
+}
+
+.speed-limit-stack {
+  line-height: 1.1;
+  align-items: flex-end;
+}
+
+.speed-limit-value {
+  font-size: 0.7em;
+  color: var(--bs-secondary);
+}

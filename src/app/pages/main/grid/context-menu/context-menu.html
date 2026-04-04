@@ -1,0 +1,37 @@
+<div class="bb-menu" role="menu" (contextmenu)="$event.preventDefault()">
+  @for (entry of items; track trackBy($index, entry)) {
+    @if (entry.kind === 'header') {
+      <div class="bb-header">
+        {{ entry.label | translate }}
+      </div>
+    }
+    @if (entry.kind === 'divider') {
+      <div class="bb-sep"></div>
+    }
+    @if (entry.kind === 'item') {
+      <button
+        type="button"
+        class="bb-item"
+        [class.bb-danger]="entry.variant === 'danger'"
+        [class.bb-warning]="entry.variant === 'warning'"
+        [class.bb-success]="entry.variant === 'success'"
+        [class.bb-info]="entry.variant === 'info'"
+        [disabled]="entry.disabled"
+        (click)="onEntryClick(entry)"
+        role="menuitem"
+      >
+        <span class="bb-icon" aria-hidden="true">
+          @if (entry.icon) {
+            <fa-icon [icon]="entry.icon"></fa-icon>
+          }
+        </span>
+
+        <span class="bb-label">{{ entry.label | translate }}</span>
+
+        @if (entry.hint) {
+          <span class="bb-hint">{{ entry.hint }}</span>
+        }
+      </button>
+    }
+  }
+</div>

@@ -1,0 +1,116 @@
+:host {
+  display: block;
+
+  --bb-filetree-hover: rgba(255, 255, 255, 0.08);
+}
+
+.bb-file-tree {
+  user-select: none;
+  font-size: 0.95rem;
+}
+
+.bb-node {
+  display: block;
+}
+
+.bb-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.25rem;
+  border-radius: 0.5rem;
+}
+
+.bb-row--dir {
+  cursor: pointer;
+}
+
+.bb-row--dir:hover,
+.bb-row--file:hover {
+  background: var(--bb-filetree-hover);
+}
+
+:host-context([data-bs-theme='light']) {
+  --bb-filetree-hover: rgba(199, 165, 122, 0.22);
+}
+
+:host-context([data-bs-theme='dark']) {
+  --bb-filetree-hover: rgba(225, 185, 133, 0.16);
+}
+
+.bb-toggle {
+  width: 1.5rem;
+  height: 1.5rem;
+  display: inline-grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.bb-caret {
+  width: 0;
+  height: 0;
+  border-left: 6px solid currentColor;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  opacity: 0.75;
+  transform: rotate(0deg);
+  transition: transform 120ms ease;
+}
+
+.bb-caret--open {
+  transform: rotate(90deg);
+}
+
+.bb-icon {
+  opacity: 0.9;
+}
+
+.bb-icon--folder {
+  opacity: 0.95;
+}
+
+.bb-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bb-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  opacity: 0.85;
+  font-size: 0.85rem;
+}
+
+.bb-pill {
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.bb-size {
+  opacity: 0.8;
+}
+
+.bb-spacer {
+  width: 1.5rem;
+  flex: 0 0 auto;
+}
+
+.bb-children {
+  margin-left: 1.25rem;
+  padding-left: 0.25rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+
+  display: none;
+}
+
+.bb-children--open {
+  display: block;
+}

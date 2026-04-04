@@ -1,0 +1,21 @@
+<div class="bb-toast-container">
+  @for (toast of toasts(); track toast.id) {
+    <div class="bb-toast-wrapper" [class.bb-toast-closing]="toast.isClosing">
+      <div
+        class="bb-toast"
+        [class]="'bb-toast-' + toast.type"
+        (mouseenter)="onEnter(toast.id)"
+        (mouseleave)="onLeave(toast.id)"
+      >
+        <div class="bb-toast-header">
+          <fa-icon class="bb-toast-type-icon" [icon]="iconFor(toast.type)" />
+          <div class="bb-toast-title">{{ toast.title }}</div>
+          <button type="button" class="bb-toast-close" (click)="dismiss(toast.id)">
+            <fa-icon [icon]="xmark" />
+          </button>
+        </div>
+        <div class="bb-toast-body" [innerHTML]="toast.html"></div>
+      </div>
+    </div>
+  }
+</div>

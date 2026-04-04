@@ -1,0 +1,198 @@
+<div class="bb-bottom-bar px-2">
+  <div class="d-flex align-items-center">
+    @for (id of settings()?.left; track id; let last = $last) {
+      <ng-container *ngTemplateOutlet="widgetRegistry; context: { $implicit: id }"></ng-container>
+      @if (!last) {
+        <div class="bb-divider"></div>
+      }
+    }
+  </div>
+
+  <div class="ms-auto d-flex align-items-center">
+    <div
+      class="bb-widget bb-alt-speed"
+      [class.active]="useAltSpeedLimits()"
+      [ngbTooltip]="
+        (useAltSpeedLimits()
+          ? 'pages.main.server-state.alt-speed-on'
+          : 'pages.main.server-state.alt-speed-off'
+        ) | translate
+      "
+      placement="top"
+      container="body"
+      (click)="toggleAlternativeSpeedLimit()"
+    >
+      <fa-icon [icon]="useAltSpeedLimits() ? icons.faClock : icons.faTachometerAlt"></fa-icon>
+    </div>
+
+    @for (id of settings()?.right; track id) {
+      <div class="bb-divider"></div>
+      <ng-container *ngTemplateOutlet="widgetRegistry; context: { $implicit: id }"></ng-container>
+    }
+  </div>
+</div>
+
+<ng-template #widgetRegistry let-id>
+  @switch (id) {
+    @case ('connection-status') {
+      <div
+        class="bb-widget"
+        [ngbTooltip]="'pages.main.server-state.network-status' | translate"
+        placement="top"
+        container="body"
+      >
+        <fa-icon [icon]="icons.faCircle" [class]="'status-dot ' + connectionStatus()"></fa-icon>
+        <span class="bb-value ms-1 text-uppercase" style="font-size: 0.7rem">{{
+          connectionStatus()
+        }}</span>
+      </div>
+    }
+    @case ('nodes') {
+      <div
+        class="bb-widget"
+        [ngbTooltip]="'pages.main.server-state.dht-nodes' | translate"
+        placement="top"
+        container="body"
+      >
+        <fa-icon [icon]="icons.faNetworkWired" class="text-secondary opacity-75"></fa-icon>
+        <span class="bb-value bb-fixed-num bb-width-count">{{ dhtNodes() }}</span>
+      </div>
+    }
+    @case ('ratio') {
+      <div class="bb-widget" [ngbTooltip]="tipRatioGlobal" placement="top" container="body">
+        <fa-icon [icon]="icons.faShareAlt" class="text-secondary opacity-75"></fa-icon>
+        <span class="bb-value">{{ sessionRatio() }}</span>
+      </div>
+    }
+    @case ('global-down') {
+      <div class="bb-widget" [ngbTooltip]="tipGlobalDl" placement="top" container="body">
+        <fa-icon [icon]="icons.faCloudDownloadAlt" class="icon-dl opacity-75"></fa-icon>
+        <span class="bb-value bb-fixed-num bb-width-size">{{
+          state?.dl_info_data ?? 0 | fileSize
+        }}</span>
+      </div>
+    }
+    @case ('global-up') {
+      <div class="bb-widget" [ngbTooltip]="tipGlobalUl" placement="top" container="body">
+        <fa-icon [icon]="icons.faCloudUploadAlt" class="icon-ul opacity-75"></fa-icon>
+        <span class="bb-value bb-fixed-num bb-width-size">{{
+          state?.up_info_data ?? 0 | fileSize
+        }}</span>
+      </div>
+    }
+    @case ('download-speed') {
+      <div
+        class="bb-widget cursor-pointer"
+        [ngbTooltip]="tipLiveDl"
+        placement="top"
+        container="body"
+        (click)="setGlobalTransferLimit('dl')"
+      >
+        <fa-icon [icon]="icons.faDownload" class="icon-dl"></fa-icon>
+        <div class="d-flex flex-column speed-limit-stack">
+          <span class="bb-value bb-fixed-num bb-width-speed">{{ dlSpeed() | fileSize }}/s</span>
+          @if (dlLimit() > 0) {
+            <span class="bb-value speed-limit-value"> {{ dlLimit() | fileSize }}/s </span>
+          }
+        </div>
+      </div>
+    }
+    @case ('upload-speed') {
+      <div
+        class="bb-widget cursor-pointer"
+        [ngbTooltip]="tipLiveUl"
+        placement="top"
+        container="body"
+        (click)="setGlobalTransferLimit('ul')"
+      >
+        <fa-icon [icon]="icons.faUpload" class="icon-ul"></fa-icon>
+        <div class="d-flex flex-column speed-limit-stack">
+          <span class="bb-value bb-fixed-num bb-width-speed">{{ upSpeed() | fileSize }}/s</span>
+          @if (upLimit() > 0) {
+            <span class="bb-value speed-limit-value"> {{ upLimit() | fileSize }}/s </span>
+          }
+        </div>
+      </div>
+    }
+    @case ('free-space') {
+      <div
+        class="bb-widget"
+        [ngbTooltip]="'pages.main.server-state.free-space' | translate"
+        placement="top"
+        container="body"
+      >
+        <fa-icon [icon]="icons.faHdd" class="icon-disk"></fa-icon>
+        <span class="bb-value bb-fixed-num bb-width-size">{{ diskSpace() | fileSize }}</span>
+      </div>
+    }
+    @case ('selection') {
+      <div
+        class="bb-widget"
+        [ngbTooltip]="'pages.main.server-state.current-selection' | translate"
+        placement="top"
+        container="body"
+      >
+        <fa-icon
+          [icon]="icons.faCircle"
+          class="text-secondary opacity-50"
+          style="font-size: 0.4rem"
+        ></fa-icon>
+        <span class="bb-value ms-1">
+          {{ selectedCount() }} / {{ filteredCount() }}
+          <span
+            class="ms-1 opacity-75 fw-normal"
+            style="font-size: 0.7rem"
+            [textContent]="'pages.main.server-state.selected' | translate"
+          ></span>
+        </span>
+      </div>
+    }
+    @case ('polling-indicator') {
+      <div
+        class="bb-widget"
+        [ngbTooltip]="
+          'pages.main.server-state.server-polling' | translate: { interval: pollingInterval() }
+        "
+        placement="top"
+        container="body"
+      >
+        <div class="poll-container" [style.--p]="pollProgress()">
+          <div class="poll-dot"></div>
+        </div>
+      </div>
+    }
+  }
+</ng-template>
+
+<ng-template #tipConnection>{{ 'pages.main.server-state.network-status' | translate }}</ng-template>
+<ng-template #tipRatioGlobal>
+  {{ 'pages.main.server-state.global-ratio' | translate }}<br /><span class="opacity-75">{{
+    'pages.main.server-state.all-time' | translate: { value: globalRatio() }
+  }}</span>
+</ng-template>
+<ng-template #tipGlobalDl>
+  {{ 'pages.main.server-state.total-downloaded' | translate }}<br /><span class="opacity-75">{{
+    'pages.main.server-state.all-time' | translate: { value: (allTimeDl() | fileSize) }
+  }}</span>
+</ng-template>
+<ng-template #tipGlobalUl>
+  {{ 'pages.main.server-state.total-uploaded' | translate }}<br /><span class="opacity-75">{{
+    'pages.main.server-state.all-time' | translate: { value: (allTimeUl() | fileSize) }
+  }}</span>
+</ng-template>
+<ng-template #tipLiveDl>
+  {{ 'pages.main.server-state.download-speed' | translate }}
+  @if (dlLimit() > 0) {
+    <br /><span class="opacity-75">{{
+      'pages.main.server-state.limit' | translate: { value: (dlLimit() | fileSize) }
+    }}</span>
+  }
+</ng-template>
+<ng-template #tipLiveUl>
+  {{ 'pages.main.server-state.upload-speed' | translate }}
+  @if (upLimit() > 0) {
+    <br /><span class="opacity-75">{{
+      'pages.main.server-state.limit' | translate: { value: (upLimit() | fileSize) }
+    }}</span>
+  }
+</ng-template>

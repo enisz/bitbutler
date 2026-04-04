@@ -1,0 +1,21 @@
+.bb-spinner {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 3px solid color-mix(in srgb, var(--bs-border-color) 55%, transparent);
+  border-top-color: var(--bs-secondary-color);
+  animation: bb-spin 0.9s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes bb-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bb-spinner {
+    animation: none;
+  }
+}

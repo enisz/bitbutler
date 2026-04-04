@@ -1,0 +1,45 @@
+<div class="modal-header bb-modal-header">
+  <div class="bb-modal-header__text">
+    <h5 class="modal-title bb-title-clamp">
+      {{ 'components.modals.set-torrent-category.title' | translate }}
+    </h5>
+
+    <div
+      #element
+      class="small text-body-secondary mt-1 bb-hash-clamp"
+      [ngbTooltip]="torrent.name"
+      bbTooltipOverflow
+      placement="top"
+      tooltipClass="single-line-tooltip"
+    >
+      {{ torrent.name }}
+    </div>
+  </div>
+
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="activeModal.dismiss()"
+  ></button>
+</div>
+<div class="modal-body">
+  <form [formGroup]="setTorrentCategoryForm" (submit)="handleSubmit()">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+          <app-category-select formControlName="category" [autofocus]="true"></app-category-select>
+        </div>
+      </div>
+    </div>
+    <button type="submit" hidden [disabled]="!canSave()"></button>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="handleSubmit()" [disabled]="!canSave()">
+    {{ 'general.button.save' | translate }}
+  </button>
+  <button type="button" class="btn btn-link" (click)="activeModal.close()">
+    {{ 'general.button.cancel' | translate }}
+  </button>
+</div>

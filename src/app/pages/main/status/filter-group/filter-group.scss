@@ -1,0 +1,49 @@
+@use 'sass:color';
+
+.list-group-item-action {
+  border-color: var(--bs-border-color);
+
+  &.active {
+    background-color: var(--bb-active-list-item-bg);
+    color: var(--bs-body-color);
+    font-weight: 600;
+    box-shadow: inset 3px 0 0 var(--bb-accent);
+    border-color: var(--bb-active-list-item-bg) !important;
+
+    .bb-status-badge {
+      background-color: var(--bb-accent);
+      color: var(--bb-primary-ink);
+    }
+  }
+
+  &:not(.active) {
+    .bb-status-badge {
+      background-color: var(--bs-tertiary-bg);
+      color: var(--bs-emphasis-color);
+    }
+  }
+
+  .bb-status-badge {
+    --bs-badge-font-weight: 600;
+    padding: 0.35rem 0.5rem;
+  }
+}
+
+.list-group {
+  --bs-list-group-action-hover-bg: var(--bb-hover-list-item-bg);
+}
+
+.form-control {
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid var(--bs-border-color);
+  border-radius: 0;
+  padding-left: 15px;
+  padding-right: 15px;
+
+  &:focus {
+    background-color: transparent;
+    box-shadow: none;
+    border-bottom-color: var(--bb-accent);
+  }
+}

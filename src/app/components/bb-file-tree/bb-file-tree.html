@@ -1,0 +1,39 @@
+<cdk-tree [dataSource]="data" [treeControl]="treeControl" class="bb-file-tree">
+  <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: hasChild" class="bb-node">
+    <div class="bb-row bb-row--dir" (click)="toggle(node)">
+      <button
+        type="button"
+        class="bb-toggle"
+        (click)="$event.stopPropagation(); toggle(node)"
+        [attr.aria-label]="isExpanded(node) ? 'Collapse folder' : 'Expand folder'"
+      >
+        <span class="bb-caret" [class.bb-caret--open]="isExpanded(node)"></span>
+      </button>
+
+      <span class="bb-icon bb-icon--folder" aria-hidden="true">📁</span>
+      <span class="bb-name" [title]="node.name">{{ node.name }}</span>
+    </div>
+
+    <div class="bb-children" [class.bb-children--open]="isExpanded(node)">
+      <ng-container cdkTreeNodeOutlet></ng-container>
+    </div>
+  </cdk-nested-tree-node>
+
+  <cdk-tree-node *cdkTreeNodeDef="let node" class="bb-node">
+    <div class="bb-row bb-row--file">
+      <span class="bb-spacer"></span>
+      <span class="bb-icon" aria-hidden="true">📄</span>
+      <span class="bb-name" [title]="node.name">{{ node.name }}</span>
+
+      <ng-container *ngIf="showMeta && node.file as f">
+        <span class="bb-meta">
+          <span *ngIf="f.progress !== null" class="bb-pill">
+            {{ formatProgress(f.progress) }}
+          </span>
+          <span *ngIf="f.priority !== null" class="bb-pill"> {{ priorityLabel(f.priority) }} </span>
+          <span class="bb-size"> {{ formatBytes(f.length) }} </span>
+        </span>
+      </ng-container>
+    </div>
+  </cdk-tree-node>
+</cdk-tree>

@@ -1,0 +1,102 @@
+.mode-indicator {
+  border-radius: 100%;
+  border: solid 1px black;
+  width: 25px;
+  height: 25px;
+
+  &[data-bb-theme='bitbutler'] {
+    &.light {
+      background-color: #f5ede3;
+    }
+    &.dark {
+      background-color: #121213;
+    }
+    &.system {
+      background: linear-gradient(45deg, #f5ede3 50%, #121213 50%);
+    }
+  }
+
+  &[data-bb-theme='aurora'] {
+    &.light {
+      background-color: #f3f7ff;
+    }
+    &.dark {
+      background-color: #0b1020;
+    }
+    &.system {
+      background: linear-gradient(45deg, #f3f7ff 50%, #0b1020 50%);
+    }
+  }
+
+  &[data-bb-theme='mint-green'] {
+    &.light {
+      background-color: #f0f3f0;
+    }
+    &.dark {
+      background-color: #1a2e2b;
+    }
+    &.system {
+      background: linear-gradient(45deg, #f0f3f0 50%, #1a2e2b 50%);
+    }
+  }
+
+  &[data-bb-theme='purple-haze'] {
+    &.light {
+      background-color: #f3e5f5;
+    }
+    &.dark {
+      background-color: #1a1a2e;
+    }
+    &.system {
+      background: linear-gradient(45deg, #f3e5f5 50%, #1a1a2e 50%);
+    }
+  }
+
+  &[data-bb-theme='ocean-breeze'] {
+    &.light {
+      background-color: #e1f5fe;
+    }
+    &.dark {
+      background-color: #0d253f;
+    }
+    &.system {
+      background: linear-gradient(45deg, #e1f5fe 50%, #0d253f 50%);
+    }
+  }
+
+  &[data-bb-theme='pumpkin-spice'] {
+    &.light {
+      background-color: #fff3e0;
+    }
+    &.dark {
+      background-color: #1f160c;
+    }
+    &.system {
+      background: linear-gradient(45deg, #fff3e0 50%, #1f160c 50%);
+    }
+  }
+
+  &[data-bb-theme='deep-sea'] {
+    &.light {
+      background-color: #ebf4f6;
+    }
+    &.dark {
+      background-color: #051a21;
+    }
+    &.system {
+      background: linear-gradient(45deg, #ebf4f6 50%, #051a21 50%);
+    }
+  }
+
+  &[data-bb-theme='crimson-ember'] {
+    &.light {
+      background-color: #fcf2f0;
+    }
+    &.dark {
+      background-color: #1a0604;
+    }
+    &.system {
+      background: linear-gradient(45deg, #fcf2f0 50%, #1a0604 50%);
+    }
+  }
+}

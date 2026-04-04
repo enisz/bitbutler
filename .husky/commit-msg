@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+
+commit_msg=$(cat "$1")
+
+case "$commit_msg" in
+  Merge* | Release\ v* ) exit 0 ;;
+esac
+
+regex="^#[0-9]+(:|[[:space:]])+.+"
+
+if ! echo "$commit_msg" | grep -iqE "$regex"; then
+  echo ""
+  echo "❌ INVALID COMMIT MESSAGE"
+  echo "-------------------------------------------------------"
+  echo "Your message: \"$commit_msg\""
+  echo "Format required: #123 Your message here"
+  echo "             or: #123: Your message here"
+  echo "-------------------------------------------------------"
+  echo "The hashmark (#) and Issue ID are mandatory."
+  echo ""
+  exit 1
+fi

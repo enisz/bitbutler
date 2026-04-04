@@ -1,0 +1,71 @@
+<div class="modal-body bb-about p-0 overflow-hidden">
+  <div class="bb-about__header p-4 d-flex align-items-center gap-4">
+    <div class="bb-about__logo-wrapper">
+      <img [src]="logoUrl()" class="bb-about__logo" alt="BitButler logo" />
+    </div>
+
+    <div class="bb-about__hero">
+      <h1 class="bb-about__title mb-0">BitButler</h1>
+      <p class="bb-about__tagline text-primary mb-2">
+        {{ 'components.about.tagline' | translate }}
+      </p>
+      <div class="d-flex gap-2">
+        <span
+          class="badge rounded-pill bb-badge-outline-muted cursor-pointer"
+          (click)="goToRelease()"
+          >v{{ version }}</span
+        >
+        @if (commit) {
+          <span
+            class="badge rounded-pill bb-badge-outline-info cursor-pointer"
+            (click)="goToCommit()"
+            >#{{ commit.slice(0, 7) }}</span
+          >
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="p-4 pt-0">
+    <p class="bb-about__description mt-3 mb-4"></p>
+
+    <div class="bb-about__grid">
+      <div class="bb-about__item">
+        <div class="d-flex flex-column">
+          <span class="bb-about__label">{{ 'components.about.released' | translate }}</span>
+          <span class="bb-about__value">{{ releaseDate ?? undefined | localTimestamp }}</span>
+        </div>
+      </div>
+
+      <div class="bb-about__item">
+        <div class="d-flex flex-column">
+          <span class="bb-about__label">{{ 'components.about.platform' | translate }}</span>
+          <span class="bb-about__value">Angular & Electron</span>
+        </div>
+      </div>
+    </div>
+
+    <hr class="my-4 opacity-10" />
+
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="d-flex gap-2">
+        <button
+          class="btn btn-sm btn-outline-secondary px-3"
+          (click)="openExternalUrl('https://github.com/enisz/bitbutler')"
+        >
+          <fa-icon [icon]="icons.faGithub" class="me-2"></fa-icon>github@bitbutler
+        </button>
+        <button
+          class="btn btn-sm btn-outline-secondary px-3"
+          (click)="openExternalUrl('https://github.com/enisz')"
+        >
+          <fa-icon [icon]="icons.faUser" class="me-2"></fa-icon>@enisz
+        </button>
+      </div>
+
+      <button type="button" class="btn btn-secondary px-4" (click)="activeModal.close()" autofocus>
+        {{ 'general.button.close' | translate }}
+      </button>
+    </div>
+  </div>
+</div>

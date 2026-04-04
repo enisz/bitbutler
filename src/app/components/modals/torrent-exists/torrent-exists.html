@@ -1,0 +1,38 @@
+@if (torrent(); as t) {
+  <div class="modal-header bb-modal-header">
+    <div class="bb-modal-header__text">
+      <h5 class="modal-title bb-title-clamp">
+        {{ 'components.modals.torrent-exists.title' | translate }}
+      </h5>
+
+      <div
+        #element
+        class="small text-body-secondary mt-1 bb-hash-clamp"
+        [ngbTooltip]="element.offsetWidth < element.scrollWidth ? t.name : null"
+        tooltipClass="single-line-tooltip"
+        placement="bottom"
+      >
+        {{ t.name }}
+      </div>
+    </div>
+
+    <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
+  </div>
+
+  <div class="modal-body">
+    <p>{{ 'components.modals.torrent-exists.already-in-list' | translate }}</p>
+    <p>
+      {{ t.save_path }}<br />
+      {{ t.added_on | localTimestamp }} ({{ t.added_on * 1000 | timeago }})
+    </p>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="showAndClose()" autofocus>
+      {{ 'general.button.show' | translate }}
+    </button>
+    <button type="button" class="btn btn-link" (click)="closeModal()">
+      {{ 'general.button.close' | translate }}
+    </button>
+  </div>
+}

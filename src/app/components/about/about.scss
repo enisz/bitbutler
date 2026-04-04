@@ -1,0 +1,135 @@
+@keyframes butlerFloat {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes shadowPulse {
+  0% {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+  50% {
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+  }
+  100% {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.bb-about {
+  padding: 0;
+}
+
+.bb-about__header {
+  background: linear-gradient(135deg, rgba(var(--bs-primary-rgb), 0.08) 0%, transparent 100%);
+  border-bottom: 1px solid var(--bs-border-color);
+  padding: 1.5rem 2rem;
+}
+
+.bb-about__logo-wrapper {
+  background: var(--bb-surface-2);
+  padding: 12px;
+  border-radius: 20px;
+  border: 1px solid var(--bs-border-color);
+  flex-shrink: 0;
+
+  animation:
+    butlerFloat 4s ease-in-out infinite,
+    shadowPulse 4s ease-in-out infinite;
+
+  .bb-about__logo {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+  }
+}
+
+.bb-about__hero {
+  display: flex;
+  flex-direction: column;
+}
+
+.bb-about__title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 1.75rem;
+  letter-spacing: -0.5px;
+}
+
+.bb-about__tagline {
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  opacity: 0.9;
+}
+
+.bb-badge-outline-muted {
+  background-color: rgba(var(--bs-secondary-rgb), 0.05);
+  color: var(--bs-secondary);
+  border: 1px solid rgba(var(--bs-secondary-rgb), 0.3);
+  padding: 0.35em 0.8em;
+}
+
+.bb-badge-outline-info {
+  background-color: rgba(var(--bs-info-rgb), 0.05);
+  color: var(--bs-info);
+  border: 1px solid rgba(var(--bs-info-rgb), 0.4);
+  padding: 0.35em 0.8em;
+  font-variant-numeric: tabular-nums;
+}
+
+.bb-about__description {
+  font-size: 0.9rem;
+  opacity: 0.85;
+  line-height: 1.6;
+}
+
+.bb-about__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.bb-about__item {
+  padding: 0.85rem 1.15rem;
+  background: rgba(var(--bs-emphasis-color-rgb), 0.03);
+  border-radius: 14px;
+  border: 1px solid var(--bs-border-color);
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
+
+  &:hover {
+    background-color: rgba(var(--bs-emphasis-color-rgb), 0.05);
+  }
+}
+
+.bb-about__label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  opacity: 0.5;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.bb-about__value {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.modal-footer {
+  border-top: 1px solid rgba(var(--bs-emphasis-color-rgb), 0.05);
+  padding: 1rem 1.5rem;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}

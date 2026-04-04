@@ -1,0 +1,216 @@
+{
+  "name": "bitbutler",
+  "version": "0.0.0",
+  "productName": "BitButler",
+  "description": "BitButler - qBittorrent-nox remote client",
+  "author": {
+    "name": "Enisz Abdalla",
+    "email": "enisz87@gmail.com",
+    "url": "https://github.com/enisz"
+  },
+  "homepage": "https://github.com/enisz/bitbutler",
+  "repository": "github:enisz/bitbutler",
+  "type": "module",
+  "main": "electron-main.js",
+  "license": "MIT",
+  "scripts": {
+    "postinstall": "electron-builder install-app-deps",
+    "ng": "ng",
+    "serve": "ng serve",
+    "electron-dev": "wait-on http://localhost:4200 && electron . --no-sandbox --disable-gpu-sandbox",
+    "start": "concurrently -n \"angular,electron\" -c \"red,blue\" \"npm:serve\" \"npm:electron-dev\"",
+    "workspace:clean": "rimraf dist-electron dist",
+    "build": "ng build",
+    "build:ui": "npm run workspace:clean && ng build --configuration production --base-href ./",
+    "pack": "npm run build:ui && electron-builder --dir",
+    "dist": "npm run build:ui && electron-builder",
+    "dist:win": "npm run build:ui && electron-builder --win",
+    "dist:linux": "npm run build:ui && electron-builder --linux",
+    "format": "prettier --write .",
+    "lint": "eslint \"src/**/*.{ts,html}\" \"electron/**/*.{ts,js}\" \"electron-main.js\"",
+    "lint:fix": "npm run lint -- --fix",
+    "prepare": "husky",
+    "test": "echo 'No tests yet!' && exit 0"
+  },
+  "lint-staged": {
+    "*.{ts,js,html}": [
+      "eslint --max-warnings=0 --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,scss,css}": [
+      "prettier --write"
+    ]
+  },
+  "build": {
+    "publish": null,
+    "forceCodeSigning": false,
+    "executableName": "BitButler",
+    "appId": "com.enisz.bitbutler",
+    "asar": true,
+    "asarUnpack": [
+      "**/*.node"
+    ],
+    "extraMetadata": {
+      "main": "electron-main.js"
+    },
+    "files": [
+      "dist/bitbutler/**",
+      "electron/**",
+      "electron-main.js",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "src/assets/icons/bitbutler.png",
+        "to": "bitbutler.png"
+      }
+    ],
+    "directories": {
+      "output": "dist-electron"
+    },
+    "win": {
+      "artifactName": "${name}-${version}.${ext}",
+      "target": [
+        "nsis",
+        "portable",
+        "zip"
+      ],
+      "icon": "src/assets/icons/bitbutler.ico",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "portable": {
+      "artifactName": "${name}-portable-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "BitButler",
+      "uninstallDisplayName": "BitButler",
+      "artifactName": "bitbutler-setup-${version}.${ext}",
+      "installerIcon": "src/assets/icons/bitbutler.ico",
+      "uninstallerIcon": "src/assets/icons/bitbutler.ico",
+      "installerHeader": "build/installerHeader.bmp",
+      "installerSidebar": "build/installerSidebar.bmp"
+    },
+    "linux": {
+      "artifactName": "${name}-${version}.${ext}",
+      "target": [
+        "AppImage",
+        "deb",
+        "rpm",
+        "snap",
+        "tar.gz"
+      ],
+      "category": "Network",
+      "synopsis": "qBittorrent remote client",
+      "description": "BitButler is a cross-platform remote client for qBittorrent-nox. Connect to multiple servers, manage torrents, and monitor activity from a clean, modern interface.",
+      "mimeTypes": [
+        "application/x-bittorrent"
+      ],
+      "icon": "src/assets/icons/bitbutler.png"
+    },
+    "deb": {
+      "depends": [
+        "libgtk-3-0",
+        "libnotify4",
+        "libnss3",
+        "libxss1",
+        "libxtst6",
+        "xdg-utils"
+      ]
+    },
+    "fileAssociations": [
+      {
+        "ext": "torrent",
+        "name": "BitTorrent File",
+        "description": "BitTorrent file",
+        "mimeType": "application/x-bittorrent",
+        "role": "Viewer",
+        "icon": "src/assets/icons/bitbutler.ico"
+      }
+    ]
+  },
+  "prettier": {
+    "printWidth": 100,
+    "singleQuote": true,
+    "overrides": [
+      {
+        "files": "*.html",
+        "options": {
+          "parser": "angular"
+        }
+      }
+    ]
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/cdk": "^20.2.14",
+    "@angular/common": "^20.3.0",
+    "@angular/compiler": "^20.3.0",
+    "@angular/core": "^20.3.0",
+    "@angular/forms": "^20.3.0",
+    "@angular/platform-browser": "^20.3.0",
+    "@angular/router": "^20.3.0",
+    "@fortawesome/angular-fontawesome": "^3.0.0",
+    "@fortawesome/free-brands-svg-icons": "^7.1.0",
+    "@fortawesome/free-regular-svg-icons": "^7.1.0",
+    "@fortawesome/free-solid-svg-icons": "^7.1.0",
+    "@ng-bootstrap/ng-bootstrap": "^19.0.1",
+    "@ng-select/ng-select": "^20.7.0",
+    "@ngx-translate/core": "^17.0.0",
+    "@ngx-translate/http-loader": "^17.0.0",
+    "@popperjs/core": "^2.11.8",
+    "ag-grid-angular": "^35.0.0",
+    "axios": "^1.13.6",
+    "better-sqlite3": "^12.5.0",
+    "bootstrap": "^5.3.6",
+    "filesize": "^11.0.13",
+    "flag-icons": "^7.5.0",
+    "form-data": "^4.0.5",
+    "humanize-duration": "^3.33.2",
+    "marked": "^16.4.2",
+    "ngx-markdown": "^20.1.0",
+    "ngx-timeago": "^4.1.0",
+    "parse-torrent": "^11.0.19",
+    "rxjs": "~7.8.0",
+    "semver": "^7.7.4",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular-eslint/builder": "^20.7.0",
+    "@angular-eslint/eslint-plugin": "^20.7.0",
+    "@angular-eslint/eslint-plugin-template": "^20.7.0",
+    "@angular-eslint/template-parser": "^20.7.0",
+    "@angular/build": "^20.3.13",
+    "@angular/cli": "^20.3.13",
+    "@angular/compiler-cli": "^20.3.0",
+    "@angular/localize": "^20.3.0",
+    "@types/humanize-duration": "^3.27.4",
+    "@types/jasmine": "~5.1.0",
+    "@typescript-eslint/eslint-plugin": "^8.54.0",
+    "@typescript-eslint/parser": "^8.54.0",
+    "concurrently": "^9.2.1",
+    "electron": "^39.2.5",
+    "electron-builder": "^26.4.0",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-n": "^17.23.2",
+    "eslint-plugin-prettier": "^5.5.5",
+    "husky": "^9.1.7",
+    "jasmine-core": "~5.9.0",
+    "karma": "~6.4.0",
+    "karma-chrome-launcher": "~3.2.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.1.0",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.8.1",
+    "rimraf": "^6.1.2",
+    "typescript": "~5.9.2",
+    "wait-on": "^9.0.3"
+  }
+}

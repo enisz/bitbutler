@@ -1,0 +1,14 @@
+<div class="bb-datefilter p-2">
+  <ngb-datepicker
+    [(ngModel)]="selectedDate"
+    (ngModelChange)="onDateChanged()"
+    [outsideDays]="'collapsed'"
+  >
+  </ngb-datepicker>
+
+  <div class="d-flex justify-content-end mt-2">
+    <button class="btn btn-sm btn-outline-secondary" (click)="clear()">
+      {{ 'general.button.clear' | translate }}
+    </button>
+  </div>
+</div>

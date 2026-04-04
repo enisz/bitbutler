@@ -1,0 +1,146 @@
+import { CommonModule } from '@angular/common';
+import { Component, DestroyRef, NgZone, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {
+  IconDefinition,
+  faFolderOpen,
+  faMinus,
+  faPlus,
+  faTriangleExclamation,
+} from '@fortawesome/free-solid-svg-icons';
+import { NgbTooltip, NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
+import { TranslatePipe } from '@ngx-translate/core';
+import { debounceTime, from, switchMap, tap } from 'rxjs';
+import { BbPopover } from '../../../components/bb-popover/bb-popover';
+import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
+import { ServerSettings } from '../../../models/server-settings.model';
+import { ElectronService } from '../../../services/electron.service';
+import { ServerSettingsService } from '../../../services/server-settings.service';
+import { ServerStoreService } from '../../../services/server-store.service';
+import { ToastService } from '../../../services/toast.service';
+import { TypeaheadService } from '../../../services/typeahead.service';
+import { SettingsTabComponent } from '../settings.interface';
+
+@Component({
+  selector: 'app-server',
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    NgbTypeahead,
+    FontAwesomeModule,
+    NgbTooltip,
+    BbSpinner,
+    BbPopover,
+    TranslatePipe,
+  ],
+  templateUrl: './server.html',
+  styleUrl: './server.scss',
+})
+export class Server implements SettingsTabComponent, OnInit {
+  private readonly electronService = inject(ElectronService);
+  private readonly zone = inject(NgZone);
+  private readonly serverSettingsService = inject(ServerSettingsService);
+  private readonly toastService = inject(ToastService);
+  private readonly typeaheadService = inject(TypeaheadService);
+  private readonly destoryRef = inject(DestroyRef);
+  private readonly serverStoreService = inject(ServerStoreService);
+
+  public icons: Record<string, IconDefinition> = {
+    faPlus,
+    faMinus,
+    faTriangleExclamation,
+    faFolderOpen,
+  };
+
+  public settings$ = toObservable(this.serverStoreService.currentServerId).pipe(
+    switchMap(() => from(this.serverSettingsService.reload() as Promise<ServerSettings>)),
+
+    tap((settings: ServerSettings) => {
+      const { pathMappings, ...rest } = settings;
+
+      this.serverSettingsForm.patchValue(rest, { emitEvent: false });
+
+      this.pathMappings.clear({ emitEvent: false });
+
+      const mappings = pathMappings?.length ? pathMappings : [{ remote: '', local: '' }];
+
+      mappings.forEach((m) => {
+        this.pathMappings.push(
+          new FormGroup({
+            remote: new FormControl(m.remote, { nonNullable: true }),
+            local: new FormControl(m.local, { nonNullable: true }),
+          }),
+          { emitEvent: false },
+        );
+      });
+    }),
+  );
+
+  public readonly searchSavePaths = this.typeaheadService.searchSavePaths;
+
+  public serverSettingsForm = new FormGroup({
+    polling: new FormGroup({
+      foreground: new FormControl(2000, { nonNullable: true }),
+      background: new FormControl(5000, { nonNullable: true }),
+    }),
+    pathMappings: new FormArray([
+      new FormGroup({
+        remote: new FormControl('', { nonNullable: true }),
+        local: new FormControl('', { nonNullable: true }),
+      }),
+    ]),
+  });
+
+  public ngOnInit(): void {
+    this.serverSettingsForm.valueChanges
+      .pipe(debounceTime(1000), takeUntilDestroyed(this.destoryRef))
+      .subscribe(() => this.saveSettings());
+  }
+
+  private saveSettings(): void {
+    const settings: ServerSettings = this.serverSettingsForm.getRawValue();
+    this.serverSettingsService.save(settings);
+    this.toastService.success('Server Settings Saved!');
+  }
+
+  get pathMappings(): FormArray {
+    return this.serverSettingsForm.controls.pathMappings;
+  }
+
+  public addPathMapping(): void {
+    this.pathMappings.push(
+      new FormGroup({
+        remote: new FormControl('', { nonNullable: true }),
+        local: new FormControl('', { nonNullable: true }),
+      }),
+      { emitEvent: false },
+    );
+  }
+
+  public testMapping(path: string): void {
+    this.electronService.openPath(path);
+  }
+
+  public removePathMapping(index: number): void {
+    if (this.pathMappings.length === 1) {
+      this.pathMappings.at(index).reset({ remote: '', local: '' });
+    } else {
+      this.pathMappings.removeAt(index);
+    }
+  }
+
+  public async onBrowse(index: number): Promise<void> {
+    const path = await this.electronService.showOpenDialog();
+    if (path) {
+      this.zone.run(() => {
+        const localControl = this.pathMappings.at(index).get('local');
+        if (localControl) {
+          localControl.setValue(path);
+          localControl.markAsDirty();
+        }
+      });
+    }
+  }
+}

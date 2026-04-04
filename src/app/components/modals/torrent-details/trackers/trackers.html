@@ -1,0 +1,10 @@
+<ag-grid-angular
+  class="w-100"
+  style="height: 600px"
+  (gridReady)="onGridReady($event)"
+  [loading]="loading"
+  [rowData]="trackers"
+  [columnDefs]="colDefs"
+  [theme]="theme() === 'dark' ? bbDark : bbLight"
+  [suppressCellFocus]="true"
+/>

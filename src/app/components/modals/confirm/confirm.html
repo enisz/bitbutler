@@ -1,0 +1,18 @@
+<div class="modal-header">
+  <h4 class="modal-title">{{ title | translate: titleParams }}</h4>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="activeModal.dismiss()"
+  ></button>
+</div>
+<div class="modal-body" [innerHTML]="message | translate: messageParams"></div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-danger" (click)="activeModal.close(true)">
+    {{ btnOkText | translate }}
+  </button>
+  <button type="button" class="btn btn-link" (click)="activeModal.close(false)">
+    {{ btnCancelText | translate }}
+  </button>
+</div>

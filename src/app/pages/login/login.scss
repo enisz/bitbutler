@@ -1,0 +1,35 @@
+.server-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 15px;
+}
+
+span.version {
+  position: fixed;
+  top: 0;
+  right: 0;
+  padding: 5px;
+}
+
+.bb-badge-outline-muted {
+  background-color: rgba(var(--bs-secondary-rgb), 0.05);
+  color: var(--bs-secondary);
+  border: 1px solid rgba(var(--bs-secondary-rgb), 0.3);
+  padding: 0.35em 0.8em;
+}
+
+.bb-badge-outline-info {
+  background-color: rgba(var(--bs-info-rgb), 0.05);
+  color: var(--bs-info);
+  border: 1px solid rgba(var(--bs-info-rgb), 0.4);
+  padding: 0.35em 0.8em;
+  font-variant-numeric: tabular-nums;
+}
+
+::ng-deep {
+  .tooltip {
+    z-index: 10000 !important;
+    pointer-events: none;
+  }
+}

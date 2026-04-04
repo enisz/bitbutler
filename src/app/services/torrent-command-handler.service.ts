@@ -1,0 +1,261 @@
+import { DestroyRef, inject, Injectable } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter } from 'rxjs';
+import { AppCommand, TorrentCommand } from '../models/command.model';
+import { CommandBusService } from './command-bus.service';
+import { QbService } from './qb.service';
+import { SelectionStoreService } from './selection-store.service';
+import { ServerStoreService } from './server-store.service';
+import { ToastService } from './toast.service';
+import { TorrentStoreService } from './torrent-store.service';
+
+@Injectable({ providedIn: 'root' })
+export class TorrentCommandHandlerService {
+  private readonly commandBusService = inject(CommandBusService);
+  private readonly qbService = inject(QbService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly selectionStore = inject(SelectionStoreService);
+  private readonly serverStore = inject(ServerStoreService);
+  private readonly torrentStore = inject(TorrentStoreService);
+  private readonly toastService = inject(ToastService);
+
+  public start(): void {
+    this.commandBusService.commands$
+      .pipe(filter(this.torrentCommandGuard), takeUntilDestroyed(this.destroyRef))
+      .subscribe((cmd) => {
+        switch (cmd.type) {
+          case 'TORRENT_DELETE_CONFIRM':
+            void this.handleDelete(cmd.removeFiles);
+            break;
+          case 'TORRENT_DELETE_CANCEL':
+            console.log('delete cancelled');
+            break;
+          case 'TORRENT_PAUSE':
+            void this.handlePause();
+            break;
+          case 'TORRENT_RESUME':
+            void this.handleResume();
+            break;
+          case 'TORRENT_PAUSE_ALL':
+            void this.handlePauseAll();
+            break;
+          case 'TORRENT_RESUME_ALL':
+            void this.handleResumeAll();
+            break;
+          case 'QUEUE_MOVE_TOP':
+            void this.handleQueueMoveTop();
+            break;
+          case 'QUEUE_MOVE_UP':
+            void this.handleQueueMoveUp();
+            break;
+          case 'QUEUE_MOVE_DOWN':
+            void this.handleQueueMoveDown();
+            break;
+          case 'QUEUE_MOVE_BOTTOM':
+            void this.handleQueueMoveBottom();
+            break;
+          case 'TORRENT_REANNOUNCE':
+            this.handleReannounce();
+            break;
+          case 'TORRENT_RECHECK':
+            void this.handleRecheck();
+            break;
+          case 'TORRENT_SUPER_SEEDING':
+            this.handleSuperSeeding(cmd.status);
+            break;
+          case 'TORRENT_FORCE_RESUME':
+            this.handleForceResume();
+            break;
+          case 'TORRENT_AUTO_TMM':
+            this.handleAutoTmm(cmd.status);
+            break;
+          default:
+            console.error(TorrentCommandHandlerService.name, 'start', 'Unhandled command', cmd);
+        }
+      });
+  }
+
+  private handleAutoTmm(status: boolean): void {
+    const serverId = this.serverStore.currentServerId() ?? '';
+    const hashes = this.selectionStore.selectedHashes();
+
+    this.qbService.setAutoManagement(serverId, hashes, !status);
+  }
+  private handleForceResume(): void {
+    const serverId = this.serverStore.currentServerId() ?? '';
+    const hashes = this.selectionStore.selectedHashes();
+
+    this.qbService.setForceStart(serverId, hashes, true);
+  }
+
+  private handleSuperSeeding(status: boolean): void {
+    const serverId = this.serverStore.currentServerId() ?? '';
+    const hashes = this.selectionStore.selectedHashes();
+
+    this.qbService.setSuperSeeding(serverId, hashes, !status);
+  }
+
+  private handleReannounce(): void {
+    const serverId = this.serverStore.currentServerId() ?? '';
+    const hashes = this.selectionStore.selectedHashes();
+
+    this.qbService.reannounceTorrents(serverId, hashes);
+  }
+
+  private handleRecheck(): void {
+    const serverId = this.serverStore.currentServerId() ?? '';
+    const hashes = this.selectionStore.selectedHashes();
+
+    this.qbService.recheckTorrents(serverId, hashes);
+  }
+
+  private torrentCommandGuard(command: AppCommand): command is TorrentCommand {
+    return command.type.startsWith('TORRENT_') || command.type.startsWith('QUEUE_');
+  }
+
+  private async handleDelete(removeFiles: boolean): Promise<void> {
+    const serverId = this.serverStore.currentServerId();
+    const hashes = this.selectionStore.selectedHashes();
+
+    if (!serverId) return;
+    if (hashes.length === 0) return;
+
+    try {
+      await this.qbService.deleteTorrents(serverId, hashes, removeFiles);
+      hashes.map((hash: string) => this.commandBusService.emit({ type: 'TORRENT_DELETED', hash }));
+      this.selectionStore.clear();
+    } catch (error: any) {
+      console.error('Delete failed', error);
+      this.toastService.danger(error.message, 'Failed to delete torrent(s)');
+    }
+  }
+
+  private getContext(): { serverId: string; hashes: string[] } | null {
+    const serverId = this.serverStore.currentServerId();
+    const hashes = this.selectionStore.selectedHashes();
+
+    if (!serverId) {
+      console.warn('Action ignored: no server selected');
+      return null;
+    }
+    if (hashes.length === 0) {
+      console.warn('Action ignored: no torrents selected');
+      return null;
+    }
+    return { serverId, hashes };
+  }
+
+  private async handlePause(): Promise<void> {
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    try {
+      await this.qbService.pauseTorrents(ctx.serverId, ctx.hashes);
+      console.log(`Paused ${ctx.hashes.length} torrent(s).`);
+    } catch (e) {
+      console.error('Pause failed', e);
+    }
+  }
+
+  private async handleResume(): Promise<void> {
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    try {
+      await this.qbService.resumeTorrents(ctx.serverId, ctx.hashes);
+      console.log(`Resumed ${ctx.hashes.length} torrent(s).`);
+    } catch (e) {
+      console.error('Resume failed', e);
+    }
+  }
+
+  private async handleResumeAll(): Promise<void> {
+    const serverId = this.serverStore.currentServerId();
+    if (!serverId) {
+      console.warn('Action ignored: no server selected');
+      return;
+    }
+
+    const hashes = this.torrentStore.torrentsArray().map((t) => t.hash);
+    if (hashes.length === 0) {
+      console.log('No torrents to resume.');
+      return;
+    }
+
+    try {
+      await this.qbService.resumeTorrents(serverId, hashes);
+      console.log(`Resumed all torrents.`);
+    } catch (e) {
+      console.error('Resume all failed', e);
+    }
+  }
+
+  private async handlePauseAll(): Promise<void> {
+    const serverId = this.serverStore.currentServerId();
+    if (!serverId) {
+      console.warn('Action ignored: no server selected');
+      return;
+    }
+
+    const hashes = this.torrentStore.torrentsArray().map((t) => t.hash);
+    if (hashes.length === 0) {
+      console.log('No torrents to pause.');
+      return;
+    }
+
+    try {
+      await this.qbService.pauseTorrents(serverId, hashes);
+      console.log(`Paused all torrents.`);
+    } catch (e) {
+      console.error('Pause all failed', e);
+    }
+  }
+
+  private async handleQueueMoveTop(): Promise<void> {
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    try {
+      await this.qbService.topPrio(ctx.serverId, ctx.hashes);
+      console.log(`Moved ${ctx.hashes.length} torrent(s) to top of queue.`);
+    } catch (e) {
+      console.error('Failed to move torrent(s) to top of queue', e);
+    }
+  }
+
+  private async handleQueueMoveUp(): Promise<void> {
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    try {
+      await this.qbService.increasePrio(ctx.serverId, ctx.hashes);
+      console.log(`Moved ${ctx.hashes.length} torrent(s) up in queue.`);
+    } catch (e) {
+      console.error('Failed to move torrent(s) up in queue', e);
+    }
+  }
+
+  private async handleQueueMoveDown(): Promise<void> {
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    try {
+      await this.qbService.decreasePrio(ctx.serverId, ctx.hashes);
+      console.log(`Moved ${ctx.hashes.length} torrent(s) down in queue.`);
+    } catch (e) {
+      console.error('Failed to move torrent(s) down in queue', e);
+    }
+  }
+
+  private async handleQueueMoveBottom(): Promise<void> {
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    try {
+      await this.qbService.bottomPrio(ctx.serverId, ctx.hashes);
+      console.log(`Moved ${ctx.hashes.length} torrent(s) to bottom of queue.`);
+    } catch (e) {
+      console.error('Failed to move torrent(s) to bottom of queue', e);
+    }
+  }
+}

@@ -1,0 +1,57 @@
+div.bb-section {
+  padding: 10px;
+  position: relative;
+  border-radius: 4px;
+  transition: background-color 0.15s ease-in-out;
+
+  &:hover,
+  &:focus-within {
+    background-color: var(--bb-hover-list-item-bg);
+
+    div.button-container {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+  div.button-container {
+    position: absolute;
+    right: 15px;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition:
+      opacity 0.15s ease-in-out,
+      visibility 0.15s ease-in-out;
+  }
+
+  span.section-header {
+    display: block;
+    text-transform: uppercase;
+    color: var(--bs-secondary);
+    font-size: 0.8rem;
+  }
+
+  span.section-value {
+    small {
+      display: block;
+    }
+
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: calc(100% - 100px);
+  }
+}
+
+app-bb-progress {
+  display: block;
+  margin-top: 4px;
+  width: 100%;
+}

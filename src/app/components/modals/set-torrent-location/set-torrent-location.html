@@ -1,0 +1,66 @@
+<div class="modal-header bb-modal-header">
+  <div class="bb-modal-header__text">
+    <h5 class="modal-title bb-title-clamp">
+      {{ 'components.modals.set-torrent-location.title' | translate }}
+    </h5>
+
+    <div
+      #element
+      class="small text-body-secondary mt-1 bb-hash-clamp"
+      [ngbTooltip]="selected === 1 ? torrent.name : null"
+      bbTooltipOverflow
+      tooltipClass="single-line-tooltip"
+      placement="bottom"
+    >
+      @if (selected > 1) {
+        {{ 'general.label.torrent-selected' | translate: { count: selected } }}
+      } @else {
+        {{ torrent.name }}
+      }
+    </div>
+  </div>
+
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="activeModal.dismiss()"
+  ></button>
+</div>
+<div class="modal-body">
+  <form [formGroup]="setLocationForm" (submit)="handleSubmit()">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+          <div class="form-floating">
+            <input
+              #savePathControl
+              id="path"
+              type="text"
+              class="form-control"
+              [placeholder]="
+                'components.modals.set-torrent-location.set-location-form.path' | translate
+              "
+              formControlName="path"
+              autofocus
+              [ngbTypeahead]="searchSavePaths"
+              [editable]="true"
+            />
+            <label for="path">{{
+              'components.modals.set-torrent-location.set-location-form.path' | translate
+            }}</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button type="submit" hidden [disabled]="!canSave()"></button>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="handleSubmit()" [disabled]="!canSave()">
+    {{ 'general.button.save' | translate }}
+  </button>
+  <button type="button" class="btn btn-link" (click)="activeModal.close()">
+    {{ 'general.button.cancel' | translate }}
+  </button>
+</div>

@@ -1,0 +1,55 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.bb-progress {
+  height: 18px !important;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 12px !important;
+  overflow: hidden;
+  position: relative;
+  border: none;
+
+  --label-on-fill: #121213;
+  --label-on-empty: #e5d6c1;
+
+  .progress-bar {
+    height: 100% !important;
+    border-radius: 0 !important;
+    transition: width 0.1s ease-out;
+  }
+}
+
+:host-context([data-bs-theme='light']) .bb-progress {
+  --label-on-empty: #212529;
+  --label-on-fill: #fff;
+}
+
+.bb-progress-label {
+  position: absolute;
+  margin-top: 2px;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: 600;
+  font-size: 11px;
+
+  line-height: 1;
+  pointer-events: none;
+  z-index: 5;
+
+  background: linear-gradient(
+    to right,
+    var(--label-on-fill) 0%,
+    var(--label-on-fill) var(--p),
+    var(--label-on-empty) var(--p),
+    var(--label-on-empty) 100%
+  );
+
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

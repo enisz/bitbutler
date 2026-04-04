@@ -1,0 +1,245 @@
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.bb-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  width: 100%;
+  min-width: 0;
+
+  padding: 8px 10px;
+  border-radius: 14px;
+
+  background: color-mix(in srgb, var(--bs-dropdown-bg) 88%, transparent);
+  border: 1px solid var(--bs-border-color);
+  backdrop-filter: blur(8px);
+}
+
+.bb-toolbar__left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.bb-toolbar__divider {
+  width: 1px;
+  align-self: stretch;
+  background: color-mix(in srgb, var(--bs-body-color) 14%, transparent);
+}
+
+.bb-toolbar__meta {
+  margin-left: 8px;
+  white-space: nowrap;
+  opacity: 0.8;
+}
+
+.bb-toolbar__search {
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+
+.bb-toolbar__search .form-control {
+  width: 240px;
+  max-width: 100%;
+}
+
+.bb-tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 8px 10px;
+  border-radius: 12px;
+
+  border: 1px solid color-mix(in srgb, var(--bs-border-color) 85%, transparent);
+  background: transparent;
+  color: var(--bs-body-color);
+
+  cursor: pointer;
+  user-select: none;
+
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease,
+    transform 80ms ease;
+
+  &:hover {
+    background: color-mix(in srgb, var(--bs-body-color) 7%, transparent);
+    border-color: color-mix(in srgb, var(--bs-border-color) 60%, var(--bs-secondary) 40%);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem var(--bb-control-focus-ring) !important;
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
+.bb-tool__icon {
+  width: 14px;
+  min-width: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  fa-icon {
+    font-size: 13px;
+    line-height: 1;
+  }
+}
+
+.bb-tool__label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  margin: auto 5px;
+}
+
+.bb-tool--primary {
+  color: var(--bs-primary);
+  &:hover {
+    background: color-mix(in srgb, var(--bs-primary) 14%, transparent);
+  }
+}
+.bb-tool--secondary {
+  color: var(--bs-secondary);
+  &:hover {
+    background: color-mix(in srgb, var(--bs-secondary) 14%, transparent);
+  }
+}
+.bb-tool--success {
+  color: var(--bs-success);
+  &:hover {
+    background: color-mix(in srgb, var(--bs-success) 16%, transparent);
+  }
+}
+.bb-tool--info {
+  color: var(--bs-info);
+  &:hover {
+    background: color-mix(in srgb, var(--bs-info) 16%, transparent);
+  }
+}
+.bb-tool--warning {
+  color: var(--bs-warning);
+  &:hover {
+    background: color-mix(in srgb, var(--bs-warning) 16%, transparent);
+  }
+}
+.bb-tool--danger {
+  color: var(--bs-danger);
+  &:hover {
+    background: color-mix(in srgb, var(--bs-danger) 16%, transparent);
+  }
+}
+
+.bb-search {
+  border: 1px solid var(--bb-control-border);
+  border-radius: var(--bb-control-radius);
+  background-color: var(--bb-control-bg);
+
+  overflow: hidden;
+  box-shadow: none;
+
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.bb-search > .bb-search__addon,
+.bb-search > .bb-search__input {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.bb-search__addon {
+  color: var(--bb-control-placeholder);
+  padding-inline: 0.85rem;
+}
+
+.bb-search__input {
+  min-width: 220px;
+  padding-left: 0;
+}
+
+.bb-search__clear {
+  &.inactive {
+    opacity: 0.5;
+    cursor: auto;
+  }
+  cursor: pointer;
+  user-select: none;
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--bb-control-hover-bg) 85%, transparent) !important;
+  }
+
+  &:active {
+    background-color: color-mix(in srgb, var(--bb-control-hover-bg) 70%, transparent) !important;
+  }
+}
+
+.bb-search:focus-within {
+  border-color: var(--bb-control-focus-border);
+  box-shadow: 0 0 0 0.2rem var(--bb-control-focus-ring);
+}
+
+.bb-search .bb-search__addon,
+.bb-search .bb-search__input {
+  display: flex;
+  align-items: center;
+}
+
+.bb-tool__label {
+  margin: auto 5px;
+}
+
+@media (max-width: 1399.98px) {
+  .bb-tool {
+    gap: 0;
+  }
+  .bb-tool__icon {
+    width: 16px;
+    min-width: 16px;
+  }
+}
+
+@media (max-width: 1920px) {
+  .bb-tool__label {
+    display: none;
+  }
+
+  .bb-tool {
+    gap: 0;
+    padding: 8px 10px;
+  }
+
+  .bb-tool__icon {
+    width: 16px;
+    min-width: 16px;
+  }
+}
+
+@media (min-width: 1921px) {
+  .bb-tool__label {
+    display: inline;
+  }
+}

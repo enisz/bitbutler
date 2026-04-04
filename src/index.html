@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark" data-bb-theme="bitbutler">
+  <head>
+    <meta charset="utf-8" />
+    <title>Bitbutler</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <script>
+      const mode = localStorage.getItem('bb-theme-mode');
+      const family = localStorage.getItem('bb-theme-family') || 'bitbutler';
+
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const effective =
+        mode === 'dark' ? 'dark' : mode === 'light' ? 'light' : prefersDark ? 'dark' : 'light';
+
+      document.documentElement.setAttribute('data-bb-theme', family);
+      document.documentElement.setAttribute('data-bs-theme', effective);
+    </script>
+  </head>
+  <body spellcheck="false">
+    <app-root></app-root>
+  </body>
+</html>

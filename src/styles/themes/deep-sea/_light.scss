@@ -1,0 +1,127 @@
+@use 'sass:string';
+
+$deep-sea-light-primary: #09637e;
+$deep-sea-light-secondary: #088395;
+
+$deep-sea-light-success: #4aae70;
+$deep-sea-light-danger: #d9534f;
+$deep-sea-light-warning: #f0ad4e;
+$deep-sea-light-info: #5bc0de;
+
+$deep-sea-light-body-bg: #ebf4f6;
+$deep-sea-light-body-color: #04161d;
+$deep-sea-light-border: #7ab2b2;
+$deep-sea-light-surface: #ffffff;
+
+@mixin install() {
+  :root[data-bb-theme='deep-sea'][data-bs-theme='light'] {
+    --bb-black: #000;
+    --bs-primary: #{$deep-sea-light-primary};
+    --bs-primary-rgb: #{string.unquote('9, 99, 126')};
+
+    --bs-secondary: #{$deep-sea-light-secondary};
+    --bs-secondary-rgb: #{string.unquote('8, 131, 149')};
+
+    --bs-success: #{$deep-sea-light-success};
+    --bs-success-rgb: #{string.unquote('74, 174, 112')};
+
+    --bs-danger: #{$deep-sea-light-danger};
+    --bs-danger-rgb: #{string.unquote('217, 83, 79')};
+
+    --bb-primary-ink: #fff;
+    --bb-secondary-ink: #fff;
+    --bb-success-ink: #fff;
+    --bb-danger-ink: #fff;
+    --bb-warning-ink: #fff;
+    --bb-info-ink: #fff;
+    --bb-light-ink: #000;
+    --bb-dark-ink: #fff;
+
+    --bs-warning: #{$deep-sea-light-warning};
+    --bs-warning-rgb: #{string.unquote('240, 173, 78')};
+
+    --bs-info: #{$deep-sea-light-info};
+    --bs-info-rgb: #{string.unquote('91, 192, 222')};
+
+    --bs-body-bg: #{$deep-sea-light-body-bg};
+    --bs-body-color: #{$deep-sea-light-body-color};
+    --bs-border-color: #{$deep-sea-light-border};
+
+    --bs-card-bg: #ffffff;
+    --bs-card-color: #{$deep-sea-light-body-color};
+    --bs-card-border-color: #{$deep-sea-light-border};
+    --bs-card-cap-bg: #dcedf0; // Slightly darker than Cold
+    --bs-card-cap-color: #{$deep-sea-light-primary};
+
+    --bs-tooltip-bg: var(--bs-card-cap-bg);
+    --bs-tooltip-color: var(--bs-body-color);
+    --bs-tooltip-opacity: 0.95;
+
+    --bs-link-color: #{$deep-sea-light-primary};
+    --bs-link-hover-color: #04161d;
+
+    --bs-navbar-color: #{$deep-sea-light-body-color};
+    --bs-navbar-brand-color: #{$deep-sea-light-primary};
+    --bs-dropdown-link-color: #{$deep-sea-light-body-color};
+    --bs-dropdown-bg: #{$deep-sea-light-surface};
+
+    --bb-accent: var(--bs-secondary);
+    --bb-accent-rgb: var(--bs-secondary-rgb);
+
+    --bb-active-list-item-bg: color-mix(in srgb, var(--bb-accent) 18%, transparent);
+    --bb-hover-list-item-bg: color-mix(in srgb, var(--bb-accent) 10%, transparent);
+
+    --bb-grid-header-border: var(--bs-border-color);
+    --bb-grid-row-hover-bg: color-mix(in srgb, var(--bb-accent) 16%, transparent);
+    --bb-grid-focus-outline: var(--bb-accent);
+    --bb-grid-selected-accent: var(--bb-accent);
+
+    --bb-ng-surface: var(--bs-card-bg);
+    --bb-ng-panel: color-mix(in srgb, var(--bs-body-bg) 65%, var(--bs-card-bg) 35%);
+    --bb-ng-text: var(--bs-body-color);
+    --bb-ng-border: var(--bs-border-color);
+    --bb-ng-hover-bg: color-mix(in srgb, var(--bs-primary) 10%, transparent);
+    --bb-ng-active-bg: color-mix(in srgb, var(--bs-secondary) 22%, transparent);
+    --bb-ng-accent: var(--bs-secondary);
+    --bb-ng-focus-ring: rgba(var(--bs-primary-rgb), 0.18);
+
+    --bb-control-bg: color-mix(in srgb, var(--bs-body-bg) 55%, var(--bs-card-bg) 45%);
+    --bb-control-border: color-mix(in srgb, var(--bs-border-color) 85%, #000 15%);
+    --bb-control-text: var(--bs-body-color);
+    --bb-control-placeholder: color-mix(in srgb, var(--bs-body-color) 55%, transparent);
+
+    --bb-control-hover-bg: color-mix(in srgb, var(--bb-control-bg) 88%, #000 12%);
+    --bb-control-hover-border: color-mix(
+      in srgb,
+      var(--bb-control-border) 70%,
+      var(--bs-primary) 30%
+    );
+
+    --bb-control-focus-border: var(--bs-primary);
+    --bb-control-focus-ring: rgba(var(--bs-primary-rgb), 0.18);
+
+    --bb-control-radius: 12px;
+
+    --bb-dp-bg: var(--bs-dropdown-bg);
+    --bb-dp-border: var(--bs-border-color);
+    --bb-dp-text: var(--bs-body-color);
+    --bb-dp-muted: color-mix(in srgb, var(--bs-body-color) 65%, transparent);
+
+    --bb-dp-hover: color-mix(in srgb, var(--bb-control-bg) 85%, #000 15%);
+    --bb-dp-focus-ring: var(--bb-control-focus-ring);
+
+    --bb-dp-accent: var(--bs-primary);
+    --bb-dp-accent-ink: #fff;
+    --bb-dp-range: color-mix(in srgb, var(--bb-dp-accent) 22%, transparent);
+
+    --bb-toast-bg: #ffffff;
+    --bb-toast-border-opacity: 1;
+    --bb-toast-glow-opacity: 0.05;
+
+    --bs-popover-bg: #ffffff;
+    --bs-popover-border-color: #{$deep-sea-light-border};
+    --bs-popover-header-bg: #dcedf0;
+    --bs-popover-header-color: #{$deep-sea-light-primary};
+    --bs-popover-body-color: #{$deep-sea-light-body-color};
+  }
+}

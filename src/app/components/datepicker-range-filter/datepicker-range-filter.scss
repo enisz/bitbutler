@@ -1,0 +1,202 @@
+.bb-day {
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 2.1rem;
+  font-size: 0.85rem;
+  color: var(--bb-dp-text);
+  transition: all 0.15s ease;
+
+  &--today {
+    font-weight: 800;
+    color: var(--bs-primary) !important;
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 4px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background-color: var(--bs-primary);
+    }
+  }
+
+  &--from,
+  &--to {
+    background-color: var(--bb-dp-accent) !important;
+    color: var(--bb-dp-accent-ink) !important;
+    border-radius: 50% !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    z-index: 2;
+  }
+
+  &--between {
+    background-color: var(--bb-dp-range) !important;
+    border-radius: 0 !important;
+    color: var(--bb-dp-text) !important;
+  }
+
+  &:hover:not(&--range) {
+    background-color: var(--bb-dp-hover);
+    border-radius: 50%;
+  }
+}
+
+:host ::ng-deep {
+  .bb-datefilter {
+    min-width: 520px;
+    background-color: var(--bb-dp-bg);
+    border-radius: 16px;
+    border: 1px solid var(--bb-dp-border);
+    overflow: hidden;
+    box-shadow:
+      0 15px 35px rgba(0, 0, 0, 0.4),
+      0 0 15px color-mix(in srgb, var(--bs-primary) 15%, transparent);
+  }
+
+  .bb-datepicker-header {
+    width: 490px;
+    margin: 0 auto;
+  }
+
+  .bb-header-side {
+    flex: 0 0 50%;
+  }
+
+  .bb-select-month {
+    width: 160px;
+    margin-right: 5px;
+  }
+
+  .bb-select-year {
+    width: 120px;
+    margin-left: 5px;
+  }
+
+  .ngb-dp-header {
+    display: none !important;
+  }
+
+  .ngb-dp-months {
+    background: none !important;
+    padding: 0.5rem 1rem 1rem 1rem !important;
+    justify-content: center;
+    gap: 0 !important;
+  }
+
+  .ngb-dp-month {
+    width: 245px !important;
+    padding: 0 0.75rem !important;
+    & + .ngb-dp-month {
+      border-left: 1px solid var(--bb-dp-border);
+    }
+  }
+
+  .ngb-dp-month-name {
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.12em !important;
+    color: var(--bb-dp-muted) !important;
+    margin-bottom: 0.8rem !important;
+    text-align: center;
+  }
+
+  .ngb-dp-weekdays,
+  .ngb-dp-week {
+    display: flex !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+  }
+
+  .ngb-dp-weekdays {
+    border-bottom: 1px solid var(--bb-dp-border) !important;
+    opacity: 0.4;
+    margin-bottom: 0.5rem !important;
+    padding-bottom: 0.2rem !important;
+  }
+
+  .ngb-dp-weekday,
+  .ngb-dp-day {
+    flex: 0 0 14.2857% !important;
+    width: 14.2857% !important;
+    text-align: center;
+  }
+
+  .ngb-dp-weekday {
+    color: var(--bb-dp-muted) !important;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  .ngb-dp-day {
+    height: 2.1rem !important;
+    .btn-light {
+      background: none !important;
+      border: none !important;
+      width: 100%;
+      height: 100%;
+      color: inherit !important;
+    }
+  }
+  .ngb-dp-week-number {
+    display: none !important;
+  }
+
+  .ng-select {
+    .ng-select-container {
+      background-color: var(--bb-control-bg) !important;
+      border: 1px solid var(--bb-control-border) !important;
+      border-radius: 12px !important;
+      min-height: 36px !important;
+      .ng-value-container .ng-value {
+        color: var(--bb-dp-text) !important;
+        font-size: 0.85rem;
+        font-weight: 500;
+      }
+    }
+    .ng-dropdown-panel {
+      background-color: var(--bb-dp-bg) !important;
+      border: 1px solid var(--bb-dp-border) !important;
+      z-index: 1200 !important;
+      .ng-option {
+        color: var(--bb-dp-text) !important;
+        &.ng-option-marked {
+          background-color: var(--bb-ng-hover-bg) !important;
+        }
+      }
+    }
+  }
+
+  .bb-dp-nav-btn {
+    color: var(--bs-link-color) !important;
+    &:hover {
+      transform: scale(1.15);
+      color: var(--bs-link-hover-color) !important;
+    }
+  }
+  .bb-date-chip {
+    background: var(--bb-control-bg);
+    border: 1px solid var(--bb-control-border);
+    padding: 0.15rem 0.6rem;
+    border-radius: 8px;
+    color: var(--bs-primary);
+    font-family: monospace;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .btn-outline-secondary {
+    border: 1px solid var(--bb-dp-border) !important;
+    border-radius: 10px !important;
+    &:hover {
+      background-color: var(--bb-dp-hover) !important;
+      border-color: var(--bs-primary) !important;
+      color: var(--bs-primary) !important;
+    }
+  }
+}

@@ -1,0 +1,251 @@
+@if (settings$ | async) {
+  <form [formGroup]="generalSettingsForm">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">{{ 'pages.settings.tab.general.description' | translate }}</div>
+      </div>
+
+      <fieldset class="bb-fieldset" formGroupName="behavior">
+        <legend>{{ 'pages.settings.tab.general.label.behavior' | translate }}</legend>
+
+        <div class="container">
+          <div class="row mb-3">
+            <div class="col-12">
+              <div class="form-check form-switch">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  id="delete-torrent-file"
+                  formControlName="deleteTorrentFile"
+                />
+                <label class="form-check-label" for="delete-torrent-file"
+                  >{{
+                    'pages.settings.tab.general.general-settings-form.behavior.delete-torrent-after-added'
+                      | translate
+                  }}
+
+                  <bb-popover
+                    [subject]="
+                      'pages.settings.tab.general.popover.deleting-torrent-file.title' | translate
+                    "
+                    [description]="
+                      'pages.settings.tab.general.popover.deleting-torrent-file.description'
+                        | translate
+                    "
+                  ></bb-popover>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="row mt-2 mb-3">
+            <div class="col-9">
+              <div class="form-check form-switch">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  id="automatic-update"
+                  formControlName="automaticUpdate"
+                />
+                <label class="form-check-label" for="automatic-update">{{
+                  'pages.settings.tab.general.general-settings-form.behavior.automatic-update'
+                    | translate
+                }}</label>
+              </div>
+            </div>
+            <div class="col-3 d-flex justify-content-end">
+              <button type="button" class="btn btn-sm btn-link" (click)="checkUpdates()">
+                {{
+                  'pages.settings.tab.general.general-settings-form.behavior.check-for-update'
+                    | translate
+                }}
+              </button>
+            </div>
+          </div>
+          <div class="row mt-2 mb-3">
+            <div class="col-6 d-flex align-items-center">
+              {{
+                'pages.settings.tab.general.general-settings-form.behavior.notification-position'
+                  | translate
+              }}
+            </div>
+
+            <div class="col-6">
+              <ng-select
+                [items]="toastPositions()"
+                [clearable]="false"
+                [openOnEnter]="false"
+                [clearSearchOnAdd]="true"
+                [searchable]="false"
+                [hideSelected]="true"
+                bindLabel="label"
+                bindValue="value"
+                formControlName="toastPosition"
+              >
+              </ng-select>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+      <fieldset class="bb-fieldset" formGroupName="language">
+        <legend>{{ 'pages.settings.tab.general.label.language' | translate }}</legend>
+
+        <div class="container">
+          <div class="row mb-3">
+            <div class="col-6 d-flex align-items-center">
+              {{ 'pages.settings.tab.general.general-settings-form.language.language' | translate }}
+            </div>
+
+            <div class="col-6">
+              <ng-select
+                [items]="languages()"
+                [clearable]="false"
+                [openOnEnter]="false"
+                [clearSearchOnAdd]="true"
+                [searchable]="false"
+                [hideSelected]="true"
+                bindLabel="label"
+                bindValue="value"
+                formControlName="language"
+              >
+                <ng-template
+                  ng-option-tmp
+                  let-item="item"
+                  let-index="index"
+                  let-search="searchTerm"
+                >
+                  <div class="d-flex flex-row align-items-center">
+                    <span class="fi" [ngClass]="'fi-' + item.value"></span>
+                    <span class="ms-3">{{ item.label }}</span>
+                  </div>
+                </ng-template>
+
+                <ng-template ng-label-tmp let-item="item">
+                  <div class="d-flex flex-row align-items-center">
+                    <span class="fi" [ngClass]="'fi-' + item.value"></span>
+                    <span class="ms-3">{{ item.label }}</span>
+                  </div>
+                </ng-template>
+              </ng-select>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="bb-fieldset" formGroupName="appearance">
+        <legend>{{ 'pages.settings.tab.general.label.appearance' | translate }}</legend>
+
+        <div class="container">
+          <div class="row mt-2 mb-3">
+            <div class="col-6 d-flex align-items-center">
+              {{ 'pages.settings.tab.general.general-settings-form.appearance.family' | translate }}
+            </div>
+
+            <div class="col-6">
+              <ng-select
+                [items]="families"
+                [clearable]="false"
+                [openOnEnter]="false"
+                [clearSearchOnAdd]="true"
+                [searchable]="false"
+                [hideSelected]="true"
+                bindLabel="label"
+                bindValue="value"
+                formControlName="family"
+                appendTo="ngb-modal-window"
+                (change)="onThemeChange('family', $event)"
+              >
+                <ng-template
+                  ng-option-tmp
+                  let-item="item"
+                  let-index="index"
+                  let-search="searchTerm"
+                >
+                  <div class="d-flex flex-row align-items-center">
+                    <img
+                      [ngSrc]="getFamilyLogo(item.value)"
+                      [alt]="item.label"
+                      width="25"
+                      height="25"
+                      priority
+                    />
+                    <span class="ms-3 mt-1">{{ item.label }}</span>
+                  </div>
+                </ng-template>
+
+                <ng-template ng-label-tmp let-item="item">
+                  <div class="d-flex flex-row align-items-center">
+                    <img
+                      [ngSrc]="getFamilyLogo(item.value)"
+                      [alt]="item.label"
+                      width="25"
+                      height="25"
+                      priority
+                    />
+                    <span class="ms-3 mt-1">{{ item.label }}</span>
+                  </div>
+                </ng-template>
+              </ng-select>
+            </div>
+          </div>
+
+          <div class="row mt-2 mb-3">
+            <div class="col-6 d-flex align-items-center">
+              {{ 'pages.settings.tab.general.general-settings-form.appearance.mode' | translate }}
+            </div>
+
+            <div class="col-6">
+              <ng-select
+                [items]="modes()"
+                [clearable]="false"
+                [openOnEnter]="false"
+                [clearSearchOnAdd]="true"
+                [searchable]="false"
+                [hideSelected]="true"
+                bindLabel="label"
+                bindValue="value"
+                formControlName="mode"
+                appendTo="ngb-modal-window"
+                (change)="onThemeChange('mode', $event)"
+              >
+                <ng-template
+                  ng-option-tmp
+                  let-item="item"
+                  let-index="index"
+                  let-search="searchTerm"
+                >
+                  <div class="d-flex flex-row align-items-center">
+                    <div
+                      class="mode-indicator me-2"
+                      [attr.data-bb-theme]="
+                        generalSettingsForm.controls.appearance.controls.family.value
+                      "
+                      [ngClass]="item.value"
+                    ></div>
+                    <span class="ms-2 mt-1">{{ item.label }}</span>
+                  </div>
+                </ng-template>
+
+                <ng-template ng-label-tmp let-item="item">
+                  <div class="d-flex flex-row align-items-center">
+                    <div
+                      class="mode-indicator me-2"
+                      [attr.data-bb-theme]="
+                        generalSettingsForm.controls.appearance.controls.family.value
+                      "
+                      [ngClass]="item.value"
+                    ></div>
+                    <span class="ms-2 mt-1">{{ item.label }}</span>
+                  </div>
+                </ng-template>
+              </ng-select>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+  </form>
+} @else {
+  <app-bb-spinner></app-bb-spinner>
+}

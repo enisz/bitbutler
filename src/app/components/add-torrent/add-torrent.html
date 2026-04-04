@@ -1,0 +1,381 @@
+<div class="modal-header bb-modal-header">
+  <div class="bb-modal-header__text">
+    <h5 class="modal-title bb-title-clamp">{{ 'components.add-torrent.title' | translate }}</h5>
+
+    @if (initialQueueCount() > 1) {
+      <div class="small text-body-secondary mt-1 bb-hash-clamp">
+        ({{ currentDraftNumber() }} / {{ initialQueueCount() }})
+      </div>
+    }
+  </div>
+
+  <button type="button" class="btn-close" aria-label="Close" (click)="handleCancel()"></button>
+</div>
+
+<div class="modal-body">
+  <form [formGroup]="addForm" (submit)="handleSubmit($event)">
+    <div class="form-floating mb-3">
+      <div class="input-group mb-1">
+        <div class="form-floating">
+          <input
+            type="text"
+            class="form-control"
+            id="file_browser"
+            [placeholder]="'components.add-torrent.add-form.file-browser' | translate"
+            formControlName="file"
+            [class.is-invalid]="
+              addForm.controls.file.invalid &&
+              (addForm.controls.file.touched || addForm.controls.file.dirty)
+            "
+            readonly
+          />
+          <label for="file_browser">{{
+            'components.add-torrent.add-form.file-browser' | translate
+          }}</label>
+        </div>
+
+        <button type="button" class="btn btn-outline-primary" (click)="fileInput.click()">
+          {{ 'general.button.browse' | translate }}
+        </button>
+        <input
+          type="file"
+          #fileInput
+          hidden
+          accept=".torrent"
+          (change)="handleFileSelected($event)"
+        />
+      </div>
+    </div>
+
+    <div class="form-floating mb-3">
+      <input
+        #savePathControl
+        type="text"
+        class="form-control"
+        id="savepath"
+        [placeholder]="'components.add-torrent.add-form.save-path' | translate"
+        formControlName="savepath"
+        [ngbTypeahead]="searchSavePaths"
+        [editable]="true"
+        [autofocus]="addForm.controls.file.value.length > 0"
+        [class.is-invalid]="addForm.controls.savepath.invalid && addForm.controls.savepath.dirty"
+      />
+      <label for="savepath">{{ 'components.add-torrent.add-form.save-path' | translate }}</label>
+      @if (addForm.controls.savepath.invalid && addForm.controls.savepath.dirty) {
+        @if (addForm.controls.savepath.hasError('required')) {
+          <div class="invalid-feedback px-2">
+            {{ 'general.form.feedback.required' | translate }}
+          </div>
+        }
+      }
+    </div>
+
+    <div class="form-floating mb-3">
+      <input
+        type="text"
+        class="form-control"
+        id="rename"
+        [placeholder]="'components.add-torrent.add-form.rename' | translate"
+        formControlName="rename"
+        [class.is-invalid]="addForm.controls.rename.invalid && addForm.controls.rename.dirty"
+      />
+      <label for="rename">{{ 'components.add-torrent.add-form.rename' | translate }}</label>
+      @if (addForm.controls.rename.invalid && addForm.controls.rename.dirty) {
+        @if (addForm.controls.rename.hasError('noSlash')) {
+          <div class="invalid-feedback px-2">
+            {{ 'general.form.feedback.no-slash' | translate }}
+          </div>
+        }
+        @if (addForm.controls.rename.hasError('required')) {
+          <div class="invalid-feedback px-2">
+            {{ 'general.form.feedback.required' | translate }}
+          </div>
+        }
+      }
+    </div>
+
+    <div class="mb-3">
+      <app-category-select formControlName="category"></app-category-select>
+    </div>
+
+    <div class="mb-3">
+      <app-tag-select formControlName="tags"></app-tag-select>
+    </div>
+
+    <div class="text-uppercase mb-3">{{ 'components.add-torrent.label.settings' | translate }}</div>
+
+    <div class="container-fluid px-0">
+      <div class="row">
+        <div class="col-6">
+          <div class="form-check form-switch mb-3">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="skip_checking"
+              formControlName="skip_checking"
+            />
+            <label class="form-check-label" for="skip_checking">{{
+              'components.add-torrent.add-form.skip-hash-checking' | translate
+            }}</label>
+            <bb-popover
+              [subject]="'components.add-torrent.popover.skip-hash-checking.title' | translate"
+              [description]="skipChecking"
+            ></bb-popover>
+          </div>
+        </div>
+
+        <div class="col-6">
+          <div class="form-check form-switch mb-3">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="paused"
+              formControlName="paused"
+            />
+            <label class="form-check-label" for="paused">{{
+              'components.add-torrent.add-form.paused' | translate
+            }}</label>
+            <bb-popover
+              [subject]="'components.add-torrent.popover.paused-state.title' | translate"
+              [description]="pausedState"
+              placement="left"
+            ></bb-popover>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="form-floating mb-3">
+            <ng-select
+              id="root_folder"
+              formControlName="root_folder"
+              [items]="rootFolderOptions"
+              bindValue="value"
+              bindLabel="label"
+              [clearable]="false"
+              [searchable]="false"
+            ></ng-select>
+            <label for="root_folder">{{
+              'components.add-torrent.add-form.root-folder' | translate
+            }}</label>
+          </div>
+        </div>
+
+        <div class="col-6">
+          <div class="form-check form-switch mb-3">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="autoTMM"
+              formControlName="autoTMM"
+            />
+            <label class="form-check-label" for="autoTMM">{{
+              'components.add-torrent.add-form.auto-tmm' | translate
+            }}</label>
+            <bb-popover
+              [subject]="'components.add-torrent.popover.auto-tmm.title' | translate"
+              [description]="autoTMM"
+            ></bb-popover>
+          </div>
+        </div>
+
+        <div class="col-6">
+          <div class="form-check form-switch mb-3">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="sequentialDownload"
+              formControlName="sequentialDownload"
+            />
+            <label class="form-check-label" for="sequentialDownload">{{
+              'components.add-torrent.add-form.sequential-download' | translate
+            }}</label>
+            <bb-popover
+              [subject]="'components.add-torrent.popover.sequential-download.title' | translate"
+              [description]="sequentialDownload"
+              placement="left"
+            ></bb-popover>
+          </div>
+        </div>
+
+        <div class="col-6">
+          <div class="form-check form-switch mb-3">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="firstLastPiecePrio"
+              formControlName="firstLastPiecePrio"
+            />
+            <label class="form-check-label" for="firstLastPiecePrio">{{
+              'components.add-torrent.add-form.first-last-piece-prio' | translate
+            }}</label>
+            <bb-popover
+              [subject]="'components.add-torrent.popover.first-last-piece-prio.title' | translate"
+              [description]="firstLastPiece"
+            ></bb-popover>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-uppercase mb-3">{{ 'components.add-torrent.label.limits' | translate }}</div>
+
+    <div class="container px-0">
+      <div class="row">
+        <div class="col-6">
+          <div class="input-group mb-3">
+            <div class="form-floating">
+              <input
+                type="number"
+                class="form-control"
+                id="upLimitKbps"
+                [placeholder]="'components.add-torrent.add-form.up-limit' | translate"
+                formControlName="upLimitKbps"
+                min="0"
+              />
+              <label for="upLimitKbps">{{
+                'components.add-torrent.add-form.up-limit' | translate
+              }}</label>
+            </div>
+            <span class="input-group-text">KiB/s</span>
+          </div>
+        </div>
+
+        <div class="col-6">
+          <div class="input-group mb-3">
+            <div class="form-floating">
+              <input
+                type="number"
+                class="form-control"
+                id="dlLimitKbps"
+                [placeholder]="'components.add-torrent.add-form.down-limit' | translate"
+                formControlName="dlLimitKbps"
+                min="0"
+              />
+              <label for="dlLimitKbps">{{
+                'components.add-torrent.add-form.down-limit' | translate
+              }}</label>
+            </div>
+            <span class="input-group-text">KiB/s</span>
+          </div>
+        </div>
+
+        <div class="col-6">
+          <div class="form-floating">
+            <input
+              type="number"
+              class="form-control"
+              id="ratioLimit"
+              [placeholder]="'components.add-torrent.add-form.ratio-limit' | translate"
+              formControlName="ratioLimit"
+            />
+            <label for="ratioLimit">{{
+              'components.add-torrent.add-form.ratio-limit' | translate
+            }}</label>
+          </div>
+        </div>
+
+        <div class="col-6">
+          <div class="input-group mb-3">
+            <div class="form-floating">
+              <input
+                type="number"
+                class="form-control"
+                id="seedingTimeLimit"
+                [placeholder]="'components.add-torrent.add-form.seeding-time-limit' | translate"
+                formControlName="seedingTimeLimit"
+              />
+              <label for="seedingTimeLimit">{{
+                'components.add-torrent.add-form.seeding-time-limit' | translate
+              }}</label>
+            </div>
+            <span class="input-group-text">{{
+              'components.add-torrent.add-form.seeding-time-limit-unit' | translate
+            }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    @if (showTree() && effectiveDraft() && effectiveDraft().torrent?.files?.length) {
+      <div class="text-uppercase mb-3 d-flex">
+        Files ({{ effectiveDraft()!.torrent!.files.length }})
+        <span class="text-muted ms-auto">{{
+          effectiveDraft()!.torrent!.totalSize | fileSize
+        }}</span>
+      </div>
+
+      <app-bb-file-tree
+        [files]="effectiveDraft()!.torrent!.files"
+        [expandAll]="true"
+        [showMeta]="true"
+      >
+      </app-bb-file-tree>
+    }
+
+    <button type="submit" hidden></button>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button
+    type="button"
+    class="btn btn-secondary"
+    (click)="handleSubmit($event)"
+    [disabled]="!canSubmit()"
+    [autofocus]="addForm.controls.file.value.length === 0"
+  >
+    {{ 'general.button.add' | translate }}
+  </button>
+  <button type="button" class="btn btn-link" (click)="handleCancel()">
+    {{ 'general.button.cancel' | translate }}
+  </button>
+</div>
+
+<ng-template #skipChecking>
+  <p>
+    {{ 'components.add-torrent.popover.skip-hash-checking.description.line1' | translate }}
+  </p>
+  <p class="text-warning">
+    <fa-icon [icon]="faExclamationTriangle" class="me-1"></fa-icon>
+    {{ 'components.add-torrent.popover.skip-hash-checking.description.line2' | translate }}
+  </p>
+</ng-template>
+
+<ng-template #pausedState>
+  <p>
+    {{ 'components.add-torrent.popover.paused-state.description.line1' | translate }}
+  </p>
+  <p>
+    {{ 'components.add-torrent.popover.paused-state.description.line2' | translate }}
+  </p>
+</ng-template>
+
+<ng-template #autoTMM>
+  <p>
+    {{ 'components.add-torrent.popover.auto-tmm.description.line1' | translate }}
+  </p>
+  <p>
+    {{ 'components.add-torrent.popover.auto-tmm.description.line2' | translate }}
+  </p>
+</ng-template>
+
+<ng-template #sequentialDownload>
+  <p>
+    {{ 'components.add-torrent.popover.sequential-download.description.line1' | translate }}
+  </p>
+  <p>
+    {{ 'components.add-torrent.popover.sequential-download.description.line2' | translate }}
+  </p>
+</ng-template>
+
+<ng-template #firstLastPiece>
+  <p>{{ 'components.add-torrent.popover.first-last-piece-prio.description.line1' | translate }}</p>
+  <p>
+    {{ 'components.add-torrent.popover.first-last-piece-prio.description.line2' | translate }}
+  </p>
+</ng-template>

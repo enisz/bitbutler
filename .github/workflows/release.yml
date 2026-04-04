@@ -1,0 +1,159 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        type: choice
+        description: 'Version to release'
+        options:
+          - major
+          - minor
+          - patch
+        default: 'patch'
+
+run-name: 'Release ${{ inputs.version }} by @${{ github.actor }}'
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  prepare-release:
+    name: 'Prepare Release'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      upload_url: ${{ steps.release_drafter.outputs.upload_url }}
+      version: ${{ steps.get_version.outputs.version }}
+      raw_version: ${{ steps.get_version.outputs.raw_version }}
+      app_name: ${{ steps.get_version.outputs.app_name }}
+      commit_sha: ${{ steps.final_commit.outputs.sha }}
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor}}@users.noreply.github.com"
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Bump version and add metadata
+        id: get_version
+        run: |
+          NEW_VERSION=$(npm version ${{ github.event.inputs.version }} --no-git-tag-version)
+
+          RELEASE_DATE=$(date +%s)
+          COMMIT_HASH=$(git rev-parse HEAD)
+
+          npm pkg set "release.commit"="$COMMIT_HASH"
+          npm pkg set "release.date"="$RELEASE_DATE"
+
+          NAME=$(node -p "require('./package.json').name")
+          APP_NAME="$(echo ${NAME:0:1} | tr '[:lower:]' '[:upper:]')${NAME:1}"
+
+          echo "version=${NEW_VERSION#v}" >> $GITHUB_OUTPUT
+          echo "app_name=$APP_NAME" >> $GITHUB_OUTPUT
+          echo "raw_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Commit and Tag
+        id: final_commit
+        run: |
+          git add package.json
+          git commit -m "Release ${{ steps.get_version.outputs.raw_version }}"
+
+          git tag ${{ steps.get_version.outputs.raw_version }}
+
+          echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Push new version
+        run: git push origin main --tags
+
+      # Phase 1: Draft the release, but KEEP IT HIDDEN (publish: false)
+      - name: Draft release notes
+        uses: release-drafter/release-drafter@v5
+        id: release_drafter
+        with:
+          tag: ${{ steps.get_version.outputs.raw_version }}
+          name: BitButler ${{ steps.get_version.outputs.raw_version }}
+          version: ${{ steps.get_version.outputs.raw_version }}
+          publish: false
+          prerelease: false
+          disable-autolabeler: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-and-package:
+    name: 'Build and Package'
+    needs: prepare-release
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare-release.outputs.commit_sha }}
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Linux Build Dependencies (RPM)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rpm
+
+      - name: Build Angular application
+        run: npm run build:ui
+
+      - name: Package application for distribution
+        run: npx electron-builder
+
+      # Phase 2: Upload the files to the hidden draft release
+      - name: Upload Release Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.prepare-release.outputs.raw_version }}
+          files: |
+            dist-electron/*.exe
+            dist-electron/*.zip
+            dist-electron/*.deb
+            dist-electron/*.AppImage
+            dist-electron/*.rpm
+            dist-electron/*.snap
+            dist-electron/*.tar.gz
+
+  # Phase 3: Publish the release to the public once all files are uploaded!
+  publish-release:
+    name: 'Publish Release'
+    needs: [prepare-release, build-and-package]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Publish the Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release edit ${{ needs.prepare-release.outputs.raw_version }} --draft=false

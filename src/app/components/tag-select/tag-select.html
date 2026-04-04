@@ -1,0 +1,17 @@
+<div class="form-floating">
+  <ng-select
+    [items]="tags()"
+    [multiple]="true"
+    [addTag]="addTag"
+    [hideSelected]="true"
+    [searchable]="true"
+    [clearable]="true"
+    [clearSearchOnAdd]="true"
+    [formControl]="selectControl"
+    [keyDownFn]="keyDownFn"
+    [openOnEnter]="false"
+    #ngselect
+  >
+  </ng-select>
+  <label>{{ 'components.tag-select.label' | translate }}</label>
+</div>

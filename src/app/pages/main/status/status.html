@@ -1,0 +1,45 @@
+<div class="d-flex flex-column p-2">
+  <app-filter-group
+    [label]="'pages.main.status.label.status' | translate"
+    [items]="statusItems()"
+    [activeKey]="activeKey()"
+    [showAllCount]="totalCount()"
+    (itemSelected)="setGroup($event)"
+  ></app-filter-group>
+
+  <app-filter-group
+    class="mt-3"
+    [label]="'pages.main.status.label.trackers' | translate"
+    [items]="trackersWithCounts()"
+    [activeKey]="activeTrackerKey()"
+    [showAllCount]="totalCount()"
+    (itemSelected)="setTrackerGroup($event)"
+  ></app-filter-group>
+
+  <app-filter-group
+    class="mt-3"
+    [label]="'pages.main.status.label.categories' | translate"
+    [items]="categoriesWithCounts()"
+    [activeKey]="activeCategoryKey()"
+    [showAllCount]="totalCount()"
+    (itemSelected)="setCategoryGroup($event)"
+  ></app-filter-group>
+
+  <app-filter-group
+    class="mt-3"
+    [label]="'pages.main.status.label.tags' | translate"
+    [items]="tagsWithCounts()"
+    [activeKey]="activeTagKey()"
+    [showAllCount]="totalCount()"
+    (itemSelected)="setTagGroup($event)"
+  ></app-filter-group>
+
+  <app-filter-group
+    class="mt-3"
+    [label]="'pages.main.status.label.save-paths' | translate"
+    [items]="savePathsWithCounts()"
+    [activeKey]="activeSavePathKey()"
+    [showAllCount]="totalCount()"
+    (itemSelected)="setSavePathGroup($event)"
+  ></app-filter-group>
+</div>

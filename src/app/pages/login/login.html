@@ -1,0 +1,103 @@
+<span class="version">
+  <span
+    class="badge rounded-pill bb-badge-outline-muted cursor-pointer user-select-none"
+    (click)="goToRelease()"
+    >v{{ version }}</span
+  >
+</span>
+
+<div class="d-flex flex-column vw-100 vh-100 align-items-center pt-2">
+  <div class="d-flex flex-column justify-content-center align-items-center user-select-none">
+    <img [ngSrc]="logoUrl()" alt="Bitbutler logo" width="400" height="400" priority />
+    <h1 class="brand-title">BitButler</h1>
+    <small>{{ 'pages.login.tagline' | translate }}</small>
+  </div>
+
+  <div class="d-flex flex-column align-items-center mt-3">
+    <form [formGroup]="serverForm" style="width: 400px">
+      <div class="form-floating">
+        <ng-select
+          id="server"
+          bindLabel="name"
+          bindValue="id"
+          formControlName="server"
+          placeholder="No hosts"
+          [searchable]="false"
+          [clearable]="false"
+          [items]="servers()"
+          [readonly]="servers().length === 0"
+          [trackByFn]="trackByFn"
+        >
+          <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+            <div class="d-flex flex-column w-100">
+              <div class="mb-2 d-flex flex-row align-items-center">
+                <strong class="server-name">{{ item.name }}</strong>
+                <div class="ms-auto">
+                  <div
+                    class="btn-group btn-group btn-group-sm"
+                    role="group"
+                    aria-label="Basic example"
+                  >
+                    <button
+                      type="button"
+                      class="btn btn-link"
+                      placement="top"
+                      [ngbTooltip]="
+                        (item?.auto_login
+                          ? 'pages.login.action.remove-default'
+                          : 'pages.login.action.make-default'
+                        ) | translate
+                      "
+                      (click)="toggleAutoLogin($event, item)"
+                    >
+                      <fa-icon [icon]="item.auto_login ? icon.faSquareCheck : icon.faSquare" />
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-link"
+                      placement="top"
+                      [ngbTooltip]="'pages.login.action.edit' | translate"
+                      (click)="editServer(item)"
+                    >
+                      <fa-icon [icon]="icon.faEdit" />
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-link text-danger"
+                      placement="top"
+                      [ngbTooltip]="'pages.login.action.delete' | translate"
+                      (click)="deleteServer(item)"
+                    >
+                      <fa-icon [icon]="icon.faTrashCan" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div>{{ item.protocol }}://{{ item.host }}:{{ item.port }}</div>
+            </div>
+          </ng-template>
+          <ng-template ng-label-tmp let-item="item" style="margin: 50px">
+            {{ item.name }}
+          </ng-template>
+        </ng-select>
+        <label for="server">{{ 'pages.login.server-form.host' | translate }}</label>
+      </div>
+    </form>
+  </div>
+
+  <div class="mt-3" style="width: 400px">
+    <div class="d-grid gap-2 w-100">
+      <button
+        type="button"
+        class="btn btn-lg btn-primary"
+        (click)="connect()"
+        [disabled]="!canConnect()"
+      >
+        {{ 'general.button.connect' | translate }}
+      </button>
+      <button type="button" class="btn btn-lg btn-secondary" (click)="addServer()">
+        {{ 'general.button.add-server' | translate }}
+      </button>
+    </div>
+  </div>
+</div>

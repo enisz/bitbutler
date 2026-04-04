@@ -1,0 +1,17 @@
+name: 🤔 Something Else
+description: Anything that doesn't belong to any of the above.
+title: '[OTHER]: '
+labels: ['chore']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a question or a general comment? Drop it here!
+  - type: textarea
+    id: details
+    attributes:
+      label: What's on your mind?
+      description: Please provide as much context as possible.
+      placeholder: I was wondering if...
+    validations:
+      required: true

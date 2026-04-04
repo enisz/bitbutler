@@ -1,0 +1,59 @@
+<div class="d-flex flex-column">
+  <div class="small text-uppercase fw-semibold opacity-75 user-select-none">
+    {{ label }} ({{ items.length }})
+  </div>
+  <div class="p-2">
+    <input
+      type="text"
+      class="form-control form-control-sm"
+      placeholder="Filter..."
+      [formControl]="filterCtrl"
+    />
+  </div>
+  <div class="list-group list-group-flush">
+    @if (showAll) {
+      <button
+        type="button"
+        class="list-group-item list-group-item-action d-flex align-items-center gap-2"
+        [class.active]="activeKey === 'all'"
+        (click)="onItemSelected('all')"
+        [ngbTooltip]="'pages.main.status.filter-group.all' | translate"
+        bbTooltipOverflow
+        placement="end"
+      >
+        <span #allLabel class="bb-status-label flex-grow-1 text-truncate">{{
+          'pages.main.status.filter-group.all' | translate
+        }}</span>
+        <span class="badge bb-status-badge">{{ showAllCount }}</span>
+      </button>
+    }
+    @for (item of filteredItems$ | async; track item.key) {
+      <button
+        type="button"
+        class="list-group-item list-group-item-action d-flex align-items-center gap-2"
+        [class.active]="activeKey === item.key"
+        (click)="onItemSelected(item.key)"
+        [ngbTooltip]="item.label"
+        tooltipClass="single-line-tooltip"
+        placement="end"
+      >
+        @if (item.icon) {
+          @if (isIconArray(item.icon)) {
+            <span class="d-inline-flex align-items-center gap-1">
+              @for (icon of item.icon; track icon.iconName) {
+                <fa-icon
+                  [icon]="icon"
+                  [ngClass]="{ 'opacity-75': $first, 'opacity-50': !$first }"
+                ></fa-icon>
+              }
+            </span>
+          } @else {
+            <fa-icon [icon]="item.icon" class="opacity-75"></fa-icon>
+          }
+        }
+        <span #label class="bb-status-label flex-grow-1 text-truncate">{{ item.label }}</span>
+        <span class="badge bb-status-badge">{{ item.count }}</span>
+      </button>
+    }
+  </div>
+</div>

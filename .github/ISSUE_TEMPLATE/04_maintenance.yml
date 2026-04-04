@@ -1,0 +1,13 @@
+name: 🧰 Maintenance
+description: Refactors, cleanups, or technical debt.
+title: '[MAINTENANCE]: '
+labels: ['maintenance']
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Technical Goal
+      description: What are you cleaning up or refactoring?
+      placeholder: I will change...
+    validations:
+      required: true

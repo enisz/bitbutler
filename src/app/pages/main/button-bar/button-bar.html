@@ -1,0 +1,65 @@
+<div class="bb-toolbar" role="toolbar" aria-label="Torrent actions">
+  <div class="bb-toolbar__left">
+    @for (e of entries(); track trackBy($index, e)) {
+      @if (e.kind === 'divider') {
+        <div class="bb-toolbar__divider" aria-hidden="true"></div>
+      } @else {
+        <button
+          type="button"
+          class="bb-tool"
+          [disabled]="e.disabled"
+          [class.bb-tool--primary]="e.variant === 'primary'"
+          [class.bb-tool--secondary]="e.variant === 'secondary'"
+          [class.bb-tool--success]="e.variant === 'success'"
+          [class.bb-tool--info]="e.variant === 'info'"
+          [class.bb-tool--warning]="e.variant === 'warning'"
+          [class.bb-tool--danger]="e.variant === 'danger'"
+          (click)="onClick(e.id)"
+          [ngbTooltip]="e.label"
+          placement="bottom"
+          container="body"
+          [disableTooltip]="!compact"
+        >
+          <span class="bb-tool__icon" aria-hidden="true">
+            @if (e.icon) {
+              <fa-icon [icon]="e.icon"></fa-icon>
+            }
+          </span>
+
+          <span class="bb-tool__label bb-label">{{ e.label | translate }}</span>
+        </button>
+      }
+    }
+  </div>
+
+  <form
+    class="bb-toolbar__search"
+    autocomplete="off"
+    (submit)="$event.preventDefault()"
+    [formGroup]="searchForm"
+  >
+    <div class="input-group bb-search" role="search">
+      <span class="input-group-text bb-search__addon" aria-hidden="true">
+        <fa-icon [icon]="icons.faSearch"></fa-icon>
+      </span>
+
+      <input
+        #searchInput
+        type="text"
+        class="form-control bb-search__input"
+        [placeholder]="'pages.main.button-bar.search-form.search' | translate"
+        formControlName="search"
+      />
+
+      <button
+        type="button"
+        [ngClass]="{ inactive: !searchForm.get('search')?.value?.trim().length }"
+        class="input-group-text bb-search__addon bb-search__clear"
+        (click)="clearSearchField()"
+        aria-label="Clear search"
+      >
+        <fa-icon [icon]="icons.faDeleteLeft"></fa-icon>
+      </button>
+    </div>
+  </form>
+</div>
