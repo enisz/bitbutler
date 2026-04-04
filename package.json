@@ -1,6 +1,6 @@
 {
   "name": "bitbutler",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "productName": "BitButler",
   "description": "BitButler - qBittorrent-nox remote client",
   "author": {
@@ -212,5 +212,9 @@
     "rimraf": "^6.1.2",
     "typescript": "~5.9.2",
     "wait-on": "^9.0.3"
+  },
+  "release": {
+    "commit": "db30fbe79bbaca7129133d7155a2a89c85fcb36c",
+    "date": "1775322225"
   }
 }
