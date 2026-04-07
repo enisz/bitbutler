@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MarkdownComponent } from 'ngx-markdown';
@@ -13,13 +13,9 @@ import { FilesizePipe } from '../../../pipes/filesize-pipe';
   templateUrl: './update-available.html',
   styleUrl: './update-available.scss',
 })
-export class UpdateAvailable implements OnInit {
+export class UpdateAvailable {
   @Input() public update: UpdateCheckResponse | null = null;
   public readonly activeModal = inject(NgbActiveModal);
-
-  public ngOnInit(): void {
-    console.log(UpdateAvailable.name, 'ngOnInit', this.update);
-  }
 
   get cleanedBody(): string {
     const body = this.update?.release?.body || '';

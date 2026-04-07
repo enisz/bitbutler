@@ -63,6 +63,8 @@ async function checkForUpdate() {
         release: response.data,
       };
     }
+
+    return { updateAvailable: false };
   } catch (error) {
     console.error('Update check failed:', error.message);
     return { updateAvailable: false, error: error.message };
