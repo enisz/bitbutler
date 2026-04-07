@@ -1,5 +1,5 @@
-## 🔗 Issue ID
+## Issue ID
 
 Fixes #
 
-## 📖 Description
+## Description
