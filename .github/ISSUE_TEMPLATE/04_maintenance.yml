@@ -7,7 +7,6 @@ body:
     id: goal
     attributes:
       label: Technical Goal
-      description: What are you cleaning up or refactoring?
-      placeholder: I will change...
+      placeholder: What are you cleaning up or refactoring?
     validations:
       required: true
