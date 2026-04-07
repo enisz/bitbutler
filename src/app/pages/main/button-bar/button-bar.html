@@ -15,7 +15,7 @@
           [class.bb-tool--warning]="e.variant === 'warning'"
           [class.bb-tool--danger]="e.variant === 'danger'"
           (click)="onClick(e.id)"
-          [ngbTooltip]="e.label"
+          [ngbTooltip]="e.label | translate"
           placement="bottom"
           container="body"
           [disableTooltip]="!compact"
