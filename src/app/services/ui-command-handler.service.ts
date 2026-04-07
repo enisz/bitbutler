@@ -236,7 +236,7 @@ export class UiCommandHandlerService {
               centered: true,
             });
 
-            updateAvailableModalRef.componentInstance.update = command.update;
+            updateAvailableModalRef.componentInstance.update.set(command.update);
 
             updateAvailableModalRef.result
               .then((res: any) => {

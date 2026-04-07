@@ -52,14 +52,15 @@ async function checkForUpdate() {
       },
     );
 
+    console.log('response.data', response.data);
+
     const latestVersion = response.data.tag_name.replace('v', '');
     const releaseUrl = response.data.html_url;
 
-    if (Semver.gt(latestVersion, app.getVersion())) {
+    if (Semver.gt(latestVersion, '0.0.0')) {
+      // if (Semver.gt(latestVersion, app.getVersion())) {
       return {
         updateAvailable: true,
-        version: latestVersion,
-        url: releaseUrl,
         release: response.data,
       };
     }
