@@ -57,8 +57,7 @@ async function checkForUpdate() {
     const latestVersion = response.data.tag_name.replace('v', '');
     const releaseUrl = response.data.html_url;
 
-    if (Semver.gt(latestVersion, '0.0.0')) {
-      // if (Semver.gt(latestVersion, app.getVersion())) {
+    if (Semver.gt(latestVersion, app.getVersion())) {
       return {
         updateAvailable: true,
         release: response.data,
