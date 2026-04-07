@@ -375,7 +375,7 @@
       },
       "update-available": {
         "title": "Frissítés elérhető",
-        "new-version-ready": "Az új <strong>{{ release.tag_name }}</strong> verzió készen áll",
+        "new-version-ready": "Az új <strong>{{ tag_name }}</strong> verzió készen áll!",
         "whats-new": "Újdonságok",
         "available-downloads": "Elérhető letöltések",
         "button": {

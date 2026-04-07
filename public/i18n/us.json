@@ -377,7 +377,7 @@
       },
       "update-available": {
         "title": "Update Available",
-        "new-version-ready": "New version <strong>{{ release.tag_name }}</strong> is ready",
+        "new-version-ready": "New version <strong>{{ tag_name }}</strong> is ready!",
         "whats-new": "What's New",
         "available-downloads": "Available Downloads",
         "button": {
