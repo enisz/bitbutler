@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MarkdownComponent } from 'ngx-markdown';
+import { clean } from 'semver';
 import { UpdateCheckResponse } from '../../../models/electron.model';
 import { FilesizePipe } from '../../../pipes/filesize-pipe';
 
@@ -13,16 +14,13 @@ import { FilesizePipe } from '../../../pipes/filesize-pipe';
   templateUrl: './update-available.html',
   styleUrl: './update-available.scss',
 })
-export class UpdateAvailable implements OnInit {
-  @Input() public update: UpdateCheckResponse | null = null;
+export class UpdateAvailable {
+  public update = signal<UpdateCheckResponse | null>(null);
   public readonly activeModal = inject(NgbActiveModal);
-
-  public ngOnInit(): void {
-    console.log(UpdateAvailable.name, 'ngOnInit', this.update);
-  }
+  public clean = clean;
 
   get cleanedBody(): string {
-    const body = this.update?.release?.body || '';
+    const body = this.update()?.release?.body || '';
     return body.replace(/^#+\s*What's\s*Changed\s*\n/i, '').trim();
   }
 
