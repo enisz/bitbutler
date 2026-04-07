@@ -23,12 +23,11 @@ jobs:
             const pr = context.payload.pull_request;
             const body = pr.body || "";
 
-            // Looks for "Fixes #123" or just "#123"
             const issueRegex = /(?:Fixes\s+)?#([0-9]+)/i;
             const match = body.match(issueRegex);
 
             if (!match) {
-              core.setFailed("❌ ERROR: Every PR must link to an Issue (e.g., 'Fixes #123') in the description.");
+              core.setFailed("ERROR: Every PR must link to an Issue (e.g., 'Fixes #123') in the description.");
               return;
             }
 
@@ -48,25 +47,11 @@ jobs:
                   issue_number: pr.number,
                   labels: labels
                 });
-                console.log(`✅ Synced labels: ${labels.join(', ')}`);
-              }
-
-              // 2. Enrich the description with the Issue Title
-              // This converts "Fixes #123" into "Fixes [#123 Issue Title](url)"
-              const linkedString = `#${issueNumber}: ${issue.title}`;
-
-              if (!body.includes(issue.title)) {
-                const newBody = body.replace(`#${issueNumber}`, linkedString);
-                await github.rest.pulls.update({
-                  owner, repo,
-                  pull_number: pr.number,
-                  body: newBody
-                });
-                console.log("✅ Updated PR description with linked Issue title.");
+                console.log(`Synced labels: ${labels.join(', ')}`);
               }
 
             } catch (error) {
-              core.setFailed(`❌ Error processing Issue #${issueNumber}: ${error.message}`);
+              core.setFailed(`Error processing Issue #${issueNumber}: ${error.message}`);
             }
 
   lint:
