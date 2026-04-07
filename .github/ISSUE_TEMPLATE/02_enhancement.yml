@@ -7,14 +7,13 @@ body:
     id: description
     attributes:
       label: Current Behavior
-      description: How does the feature work right now?
+      placeholder: How does the feature work right now?
     validations:
       required: true
   - type: textarea
     id: proposal
     attributes:
       label: Proposed Improvement
-      description: What change are you suggesting and why?
-      placeholder: I would like to see...
+      placeholder: What change are you suggesting and why?
     validations:
       required: true

@@ -3,20 +3,15 @@ description: Suggest an idea for BitButler
 title: '[FEATURE]: '
 labels: ['feature']
 body:
-  - type: markdown
-    attributes:
-      value: |
-        Thanks for suggesting a new feature!
   - type: textarea
     id: description
     attributes:
       label: Description
-      description: What should this feature do?
-      placeholder: I want BitButler to...
+      placeholder: What should this feature do?
     validations:
       required: true
   - type: textarea
     id: use_case
     attributes:
       label: Use Case
-      description: Why is this feature useful?
+      placeholder: Why is this feature useful?
