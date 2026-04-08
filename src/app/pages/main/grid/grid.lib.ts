@@ -506,7 +506,10 @@ export function getGridOptions(
     getRowId: (params: GetRowIdParams<Torrent, any>) => params.data.hash,
     rowClassRules: {
       'bb-row-paused': (params: RowClassParams<Torrent, any>): boolean =>
-        params.data?.state === 'pausedDL' || params.data?.state === 'pausedUP',
+        params.data?.state === 'pausedDL' ||
+        params.data?.state === 'pausedUP' ||
+        params.data?.state === 'stoppedDL' ||
+        params.data?.state === 'stoppedUP',
     },
     rowSelection: {
       mode: 'multiRow',
