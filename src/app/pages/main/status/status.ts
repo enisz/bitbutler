@@ -85,7 +85,15 @@ export class Status {
     all: [],
     downloading: ['downloading', 'forcedDL', 'queuedDL', 'metaDL'],
     seeding: ['uploading', 'forcedUP', 'queuedUP'],
-    completed: ['uploading', 'pausedUP', 'queuedUP', 'stalledUP', 'checkingUP', 'forcedUP'],
+    completed: [
+      'uploading',
+      'pausedUP',
+      'stoppedUP',
+      'queuedUP',
+      'stalledUP',
+      'checkingUP',
+      'forcedUP',
+    ],
     resumed: [
       'downloading',
       'metaDL',
@@ -102,7 +110,7 @@ export class Status {
       'queuedUP',
       'checkingResumeData',
     ],
-    paused: ['pausedDL', 'pausedUP'],
+    paused: ['pausedDL', 'pausedUP', 'stoppedDL', 'stoppedUP'],
     active: ['downloading', 'uploading', 'forcedDL', 'forcedUP', 'metaDL'],
     inactive: ['queuedDL', 'queuedUP', 'stalledDL', 'stalledUP'],
     stalled: ['stalledDL', 'stalledUP'],
@@ -140,6 +148,7 @@ export class Status {
         count: sumStates(
           'uploading',
           'pausedUP',
+          'stoppedUP',
           'queuedUP',
           'stalledUP',
           'checkingUP',
@@ -171,7 +180,7 @@ export class Status {
       {
         key: 'paused',
         label: this.translateService.instant('pages.main.status.paused'),
-        count: sumStates('pausedDL', 'pausedUP'),
+        count: sumStates('pausedDL', 'pausedUP', 'stoppedDL', 'stoppedUP'),
         icon: this.icon.faPause,
       },
       {
