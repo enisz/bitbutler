@@ -579,15 +579,10 @@
       },
       "status": {
         "downloading": "Downloading",
-        "seeding": "Seeding",
         "completed": "Completed",
-        "resumed": "Resumed",
-        "paused": "Paused",
         "active": "Active",
         "inactive": "Inactive",
-        "stalled": "Stalled",
-        "stalledUP": "Stalled Uploading",
-        "stalledDL": "Stalled Downloading",
+        "stopped": "Stopped",
         "checking": "Checking",
         "errored": "Errored",
         "filter-group": {

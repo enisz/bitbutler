@@ -577,15 +577,10 @@
       },
       "status": {
         "downloading": "Letöltés",
-        "seeding": "Seedelés",
         "completed": "Befejezett",
-        "resumed": "Folytatva",
-        "paused": "Felfüggesztve",
         "active": "Aktív",
         "inactive": "Inaktív",
-        "stalled": "Várakozik",
-        "stalledUP": "Feltöltés várakozik",
-        "stalledDL": "Letöltés várakozik",
+        "stopped": "Leállítva",
         "checking": "Ellenőrzés",
         "errored": "Hibás",
         "filter-group": {
