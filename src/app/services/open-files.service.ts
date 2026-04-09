@@ -11,10 +11,6 @@ type Unsub = () => void;
 
 @Injectable({ providedIn: 'root' })
 export class OpenFilesService {
-  /**
-   * Optional: raw paths queue (legacy/migration).
-   * Ideally you only use pendingDrafts in UI flows.
-   */
   readonly pending = signal<string[]>([]);
 
   readonly pendingDrafts = signal<PendingAddTorrent[]>([]);

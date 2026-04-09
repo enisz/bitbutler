@@ -38,13 +38,7 @@ export class TorrentStoreService {
 
   private readonly _finished$ = new Subject<TorrentFinishedEvent>();
   readonly finished$ = this._finished$.asObservable();
-
   private readonly finishedByHash = new Map<string, boolean>();
-
-  /**
-   * If true, we won't emit "finished" events until we've done at least one ingest.
-   * This prevents notifications for torrents that were already completed when BitButler starts.
-   */
   private primed = false;
 
   applyMaindata(data: Maindata): TorrentTxnDelta {

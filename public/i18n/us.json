@@ -456,7 +456,6 @@
     "main": {
       "button-bar": {
         "button": {
-          "add-link": "Add Link",
           "add-file": "Add File",
           "delete": "Delete",
           "start": "Start",

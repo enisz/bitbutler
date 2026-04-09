@@ -60,7 +60,6 @@ export class QbPollingService {
     this._isInitialLoading$.next(true);
     void this.serverSettingsService.load();
 
-    // Pass them down to the stream
     return this.qb.streamMaindata(serverId, 0, sortBy, sortDesc).pipe(
       takeUntil(this.stopPolling$),
       switchMap((state: StreamMaindataState) => {

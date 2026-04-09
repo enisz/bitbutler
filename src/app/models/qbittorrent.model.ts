@@ -20,77 +20,48 @@ export interface QbtRequest {
   body?: Record<string, any>;
   timeoutMs?: number;
   protocol?: 'http' | 'https';
-
-  /**
-   * Optional key for cookie jar/session, e.g. "server:42".
-   * If omitted, baseUrl (http:
-   */
   sessionKey?: string;
 }
 
-/**
- * qBittorrent: /api/v2/torrents/properties?hash=...
- * "Get torrent generic properties"
- */
 export interface QbTorrentProperties {
   save_path: string;
   creation_date: number;
   piece_size: number;
   comment: string;
-
   total_wasted: number;
   total_uploaded: number;
   total_uploaded_session: number;
   total_downloaded: number;
   total_downloaded_session: number;
-
   up_limit: number;
   dl_limit: number;
-
   time_elapsed: number;
   seeding_time: number;
-
   nb_connections: number;
   nb_connections_limit: number;
-
   share_ratio: number;
-
   addition_date: number;
   completion_date: number;
   created_by: string;
-
   dl_speed_avg: number;
   dl_speed: number;
-
   eta: number;
-
   last_seen: number;
-
   peers: number;
   peers_total: number;
-
   pieces_have: number;
   pieces_num: number;
-
   reannounce: number;
-
   seeds: number;
   seeds_total: number;
-
   total_size: number;
-
   up_speed_avg: number;
   up_speed: number;
-
   isPrivate: boolean;
-
   infohash_v1: string;
   infohash_v2: string;
 }
 
-/**
- * qBittorrent torrent tracker status values
- */
 export enum QbTrackerStatus {
   Disabled = 0,
   NotContacted = 1,
@@ -99,50 +70,22 @@ export enum QbTrackerStatus {
   NotWorking = 4,
 }
 
-/**
- * Single tracker entry returned by /api/v2/torrents/trackers
- */
 export interface QbTorrentTracker {
   url: string;
-
-  /**
-   * Tracker status
-   * @see QbTrackerStatus
-   */
   status: QbTrackerStatus;
-
-  /**
-   * Tracker priority tier
-   * Lower tiers are tried first
-   * < 0 is used for special trackers (DHT, PeX, LSD)
-   */
   tier: number;
-
   num_peers: number;
-
   num_seeds: number;
-
   num_leeches: number;
-
   num_downloaded: number;
-
-  /**
-   * Tracker message (tracker-defined, arbitrary content)
-   * Often empty string
-   */
-
   msg: string;
 }
 
 export interface QbResponse<T> {
   ok: boolean;
-
   status: number;
-
   statusText: string;
-
   body: T;
-
   path?: string;
 }
 
