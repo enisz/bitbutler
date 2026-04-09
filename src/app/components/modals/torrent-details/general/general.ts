@@ -46,7 +46,6 @@ import { QbService } from '../../../../services/qb.service';
 import { ServerStoreService } from '../../../../services/server-store.service';
 import { ToastService } from '../../../../services/toast.service';
 import { TorrentStoreService } from '../../../../services/torrent-store.service';
-import { torrentStateText } from '../../../../utils/torrent-state-text';
 import { BbPopover } from '../../../bb-popover/bb-popover';
 import { BbProgress } from '../../../bb-progress/bb-progress';
 import { BbSpinner } from '../../../bb-spinner/bb-spinner';
@@ -157,8 +156,6 @@ export class General implements TorrentDetailTabComponent, OnInit {
       .then((content: QbTorrentContent[]) => this.singleFile.set(content.length === 1))
       .catch((error: any) => this.toastService.danger(error));
   }
-
-  public torrentStateText = (state: string): string => torrentStateText(state);
 
   private async load(): Promise<void> {
     const serverId = this.serverStoreService.currentServerId();

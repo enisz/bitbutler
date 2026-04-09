@@ -22,7 +22,6 @@ import { FilterService, GRID_FILTER_INITIAL } from '../../../services/filter.ser
 import { GridStateService } from '../../../services/grid-state.service';
 import { SelectionStoreService } from '../../../services/selection-store.service';
 import { UiFormatService } from '../../../services/ui-format.service';
-import { torrentStateText } from '../../../utils/torrent-state-text';
 import { GridContextMenuService } from './context-menu/grid-context-menu.service';
 import { LoadingOverlay } from './overlays/loading-overlay/loading-overlay';
 import { NoRowOverlay } from './overlays/no-row-overlay/no-row-overlay';
@@ -94,7 +93,7 @@ export function getGridColDefs(
       minWidth: 50,
       width: 120,
       tooltipValueGetter: (params: ITooltipParams<Torrent, string, any>) =>
-        torrentStateText(params.value ?? 'unkwnown'),
+        translateService.instant(`torrent.state.${params.value ?? 'unkwnown'}`),
     },
     {
       colId: 'category',
