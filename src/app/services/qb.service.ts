@@ -273,20 +273,24 @@ export class QbService {
           attempt++;
 
           if (ipcStatus === 403 || ipcStatus === 401) {
-            console.warn(
-              `[QbService] Auth error (${ipcStatus}). Attempting to re-login... (${attempt}/${maxRetries})`,
+            console.error(
+              QbService.name,
+              'request',
+              `Auth error (${ipcStatus}). Attempting to re-login... (${attempt}/${maxRetries})`,
             );
             try {
               await this.login(serverId);
             } catch (loginErr) {
-              console.error('[QbService] Re-login attempt failed', loginErr);
+              console.error(QbService.name, 'request', 'Re-login attempt failed', loginErr);
             }
           } else {
             if (!options?.suppressErrors) {
               this.toastService.danger('Failed to connect. Retrying...', `[QbService] WARNING`);
             }
-            console.warn(
-              `[QbService] Request failed, retrying (${attempt}/${maxRetries})...`,
+            console.error(
+              QbService.name,
+              'request',
+              `Request failed, retrying (${attempt}/${maxRetries})...`,
               fullReq.method,
               fullReq.path,
             );

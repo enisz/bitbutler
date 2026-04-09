@@ -133,14 +133,9 @@ export class TorrentCommandHandlerService {
     const serverId = this.serverStore.currentServerId();
     const hashes = this.selectionStore.selectedHashes();
 
-    if (!serverId) {
-      console.warn('Action ignored: no server selected');
-      return null;
-    }
-    if (hashes.length === 0) {
-      console.warn('Action ignored: no torrents selected');
-      return null;
-    }
+    if (!serverId) return null;
+    if (hashes.length === 0) return null;
+
     return { serverId, hashes };
   }
 

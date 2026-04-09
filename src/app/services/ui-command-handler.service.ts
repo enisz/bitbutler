@@ -223,7 +223,7 @@ export class UiCommandHandlerService {
             updateAvailableModalRef.result.then((res: any) => {}).catch((error: any) => {});
             break;
           default:
-            console.warn('Unhandled UI command', command);
+            console.warn(UiCommandHandlerService.name, 'start', 'Unhandled UI command', command);
         }
       });
   }
