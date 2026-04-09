@@ -155,6 +155,7 @@
     "@angular/forms": "^20.3.0",
     "@angular/platform-browser": "^20.3.0",
     "@angular/router": "^20.3.0",
+    "@formatjs/intl-durationformat": "^0.10.3",
     "@fortawesome/angular-fontawesome": "^3.0.0",
     "@fortawesome/free-brands-svg-icons": "^7.1.0",
     "@fortawesome/free-regular-svg-icons": "^7.1.0",
