@@ -191,7 +191,6 @@
     "@angular/localize": "^20.3.0",
     "@types/humanize-duration": "^3.27.4",
     "@types/jasmine": "~5.1.0",
-    "@types/semver": "^7.7.1",
     "@typescript-eslint/eslint-plugin": "^8.54.0",
     "@typescript-eslint/parser": "^8.54.0",
     "concurrently": "^9.2.1",
