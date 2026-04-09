@@ -4,6 +4,31 @@
       "finished-downloading": "A letöltés befejeződött!"
     }
   },
+  "torrent": {
+    "state": {
+      "error": "Hiba történt. Szüneteltetett torrentekre vonatkozik.",
+      "missingFiles": "A torrent adatfájljai hiányoznak.",
+      "uploading": "Feltöltés folyamatban.",
+      "pausedUP": "Feltöltés szüneteltetve (letöltés befejezve).",
+      "stoppedUP": "Feltöltés leállítva (letöltés befejezve).",
+      "queuedUP": "Feltöltési sorba állítva.",
+      "stalledUP": "Feltöltés elakadt (nincs kapcsolat).",
+      "checkingUP": "Adatellenőrzés (letöltés befejezve).",
+      "forcedUP": "Kényszerített feltöltés.",
+      "allocating": "Lemezterület lefoglalása.",
+      "downloading": "Letöltés folyamatban.",
+      "metaDL": "Metaadatok lekérése.",
+      "pausedDL": "Letöltés szüneteltetve.",
+      "stoppedDL": "Letöltés leállítva.",
+      "queuedDL": "Letöltési sorba állítva.",
+      "stalledDL": "Letöltés elakadt (nincs kapcsolat).",
+      "checkingDL": "Adatellenőrzés (letöltés folyamatban).",
+      "forcedDL": "Kényszerített letöltés.",
+      "checkingResumeData": "Folytatási adatok ellenőrzése.",
+      "moving": "Áthelyezés folyamatban.",
+      "unknown": "Ismeretlen állapot."
+    }
+  },
   "components": {
     "about": {
       "tagline": "A torrentjeid digitális komornyikja",
@@ -577,15 +602,10 @@
       },
       "status": {
         "downloading": "Letöltés",
-        "seeding": "Seedelés",
         "completed": "Befejezett",
-        "resumed": "Folytatva",
-        "paused": "Felfüggesztve",
         "active": "Aktív",
         "inactive": "Inaktív",
-        "stalled": "Várakozik",
-        "stalledUP": "Feltöltés várakozik",
-        "stalledDL": "Letöltés várakozik",
+        "stopped": "Leállítva",
         "checking": "Ellenőrzés",
         "errored": "Hibás",
         "filter-group": {

@@ -31,15 +31,10 @@ type CountItem = { key: string; label: string; count: number };
 type StatusKey =
   | 'all'
   | 'downloading'
-  | 'seeding'
   | 'completed'
-  | 'resumed'
-  | 'paused'
   | 'active'
   | 'inactive'
-  | 'stalled'
-  | 'stalledUP'
-  | 'stalledDL'
+  | 'stopped'
   | 'checking'
   | 'errored';
 
@@ -83,31 +78,19 @@ export class Status {
 
   private readonly groups: Record<StatusKey, TorrentState[]> = {
     all: [],
-    downloading: ['downloading', 'forcedDL', 'queuedDL', 'metaDL'],
-    seeding: ['uploading', 'forcedUP', 'queuedUP'],
-    completed: ['uploading', 'pausedUP', 'queuedUP', 'stalledUP', 'checkingUP', 'forcedUP'],
-    resumed: [
-      'downloading',
-      'metaDL',
+    downloading: ['downloading', 'forcedDL', 'queuedDL', 'metaDL', 'stalledDL'],
+    completed: [
       'uploading',
-      'checkingDL',
-      'checkingUP',
-      'allocating',
-      'moving',
-      'forcedDL',
-      'forcedUP',
-      'stalledDL',
-      'stalledUP',
-      'queuedDL',
+      'pausedUP',
+      'stoppedUP',
       'queuedUP',
-      'checkingResumeData',
+      'stalledUP',
+      'checkingUP',
+      'forcedUP',
     ],
-    paused: ['pausedDL', 'pausedUP'],
-    active: ['downloading', 'uploading', 'forcedDL', 'forcedUP', 'metaDL'],
+    active: ['downloading', 'uploading', 'forcedDL', 'forcedUP', 'metaDL', 'moving', 'allocating'],
     inactive: ['queuedDL', 'queuedUP', 'stalledDL', 'stalledUP'],
-    stalled: ['stalledDL', 'stalledUP'],
-    stalledUP: ['stalledUP'],
-    stalledDL: ['stalledDL'],
+    stopped: ['pausedDL', 'pausedUP', 'stoppedDL', 'stoppedUP'],
     checking: ['checkingDL', 'checkingUP', 'checkingResumeData'],
     errored: ['error', 'missingFiles'],
   };
@@ -125,14 +108,8 @@ export class Status {
       {
         key: 'downloading',
         label: this.translateService.instant('pages.main.status.downloading'),
-        count: sumStates('downloading', 'forcedDL', 'queuedDL', 'metaDL'),
+        count: sumStates('downloading', 'forcedDL', 'queuedDL', 'metaDL', 'stalledDL'),
         icon: this.icon.faDownload,
-      },
-      {
-        key: 'seeding',
-        label: this.translateService.instant('pages.main.status.seeding'),
-        count: sumStates('uploading', 'forcedUP', 'queuedUP'),
-        icon: this.icon.faUpload,
       },
       {
         key: 'completed',
@@ -140,6 +117,7 @@ export class Status {
         count: sumStates(
           'uploading',
           'pausedUP',
+          'stoppedUP',
           'queuedUP',
           'stalledUP',
           'checkingUP',
@@ -148,36 +126,17 @@ export class Status {
         icon: this.icon.faCheckCircle,
       },
       {
-        key: 'resumed',
-        label: this.translateService.instant('pages.main.status.resumed'),
-        count: sumStates(
-          'downloading',
-          'metaDL',
-          'uploading',
-          'checkingDL',
-          'checkingUP',
-          'allocating',
-          'moving',
-          'forcedDL',
-          'forcedUP',
-          'stalledDL',
-          'stalledUP',
-          'queuedDL',
-          'queuedUP',
-          'checkingResumeData',
-        ),
-        icon: this.icon.faPlay,
-      },
-      {
-        key: 'paused',
-        label: this.translateService.instant('pages.main.status.paused'),
-        count: sumStates('pausedDL', 'pausedUP'),
-        icon: this.icon.faPause,
-      },
-      {
         key: 'active',
         label: this.translateService.instant('pages.main.status.active'),
-        count: sumStates('downloading', 'uploading', 'forcedDL', 'forcedUP', 'metaDL'),
+        count: sumStates(
+          'downloading',
+          'uploading',
+          'forcedDL',
+          'forcedUP',
+          'metaDL',
+          'moving',
+          'allocating',
+        ),
         icon: this.icon.faBolt,
       },
       {
@@ -187,22 +146,10 @@ export class Status {
         icon: this.icon.faMoon,
       },
       {
-        key: 'stalled',
-        label: this.translateService.instant('pages.main.status.stalled'),
-        count: sumStates('stalledDL', 'stalledUP'),
-        icon: this.icon.faHourglassHalf,
-      },
-      {
-        key: 'stalledUP',
-        label: this.translateService.instant('pages.main.status.stalledUP'),
-        count: counts.stalledUP ?? 0,
-        icon: [this.icon.faUpload, this.icon.faHourglassHalf],
-      },
-      {
-        key: 'stalledDL',
-        label: this.translateService.instant('pages.main.status.stalledDL'),
-        count: counts.stalledDL ?? 0,
-        icon: [this.icon.faDownload, this.icon.faHourglassHalf],
+        key: 'stopped',
+        label: this.translateService.instant('pages.main.status.stopped'),
+        count: sumStates('pausedDL', 'pausedUP', 'stoppedDL', 'stoppedUP'),
+        icon: this.icon.faPause,
       },
       {
         key: 'checking',

@@ -4,6 +4,31 @@
       "finished-downloading": "Download Finished!"
     }
   },
+  "torrent": {
+    "state": {
+      "error": "An error occurred. Applies to paused torrents.",
+      "missingFiles": "Torrent data files are missing.",
+      "uploading": "Torrent is seeding and data is being uploaded.",
+      "pausedUP": "Torrent is paused and has finished downloading.",
+      "stoppedUP": "Torrent is stopped and has finished downloading.",
+      "queuedUP": "Queuing is enabled and torrent is queued for upload.",
+      "stalledUP": "Torrent is seeding, but no connections were made.",
+      "checkingUP": "Torrent has finished downloading and is being checked.",
+      "forcedUP": "Torrent is forced to upload and ignores queue limits.",
+      "allocating": "Torrent is allocating disk space for download.",
+      "downloading": "Torrent is downloading and data is being transferred.",
+      "metaDL": "Torrent has started and is fetching metadata.",
+      "pausedDL": "Torrent is paused and has not finished downloading.",
+      "stoppedDL": "Torrent is stopped and has not finished downloading.",
+      "queuedDL": "Queuing is enabled and torrent is queued for download.",
+      "stalledDL": "Torrent is downloading, but no connections were made.",
+      "checkingDL": "Torrent is being checked and has not finished downloading.",
+      "forcedDL": "Torrent is forced to download and ignores queue limits.",
+      "checkingResumeData": "Checking resume data on qBittorrent startup.",
+      "moving": "Torrent is being moved to another location.",
+      "unknown": "Unknown torrent status."
+    }
+  },
   "components": {
     "about": {
       "tagline": "The digital butler for your torrents",
@@ -579,15 +604,10 @@
       },
       "status": {
         "downloading": "Downloading",
-        "seeding": "Seeding",
         "completed": "Completed",
-        "resumed": "Resumed",
-        "paused": "Paused",
         "active": "Active",
         "inactive": "Inactive",
-        "stalled": "Stalled",
-        "stalledUP": "Stalled Uploading",
-        "stalledDL": "Stalled Downloading",
+        "stopped": "Stopped",
         "checking": "Checking",
         "errored": "Errored",
         "filter-group": {

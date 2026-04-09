@@ -142,7 +142,9 @@
           <span class="section-header">{{
             'components.modals.torrent-details.general.state' | translate
           }}</span>
-          <span class="section-value">{{ torrentStateText(torrent()!.data.state) }} </span>
+          <span class="section-value"
+            >{{ 'torrent.state.' + torrent()!.data.state | translate }}
+          </span>
           <div class="button-container">
             <button
               class="btn btn-sm btn-link"

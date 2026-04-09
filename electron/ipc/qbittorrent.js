@@ -52,6 +52,7 @@ async function qbTorrentsAdd(payload) {
   for (const [k, v] of Object.entries(options ?? {})) {
     if (v === undefined || v === null) continue;
     if (typeof v === 'string' && v.trim() === '') continue;
+    if (k === 'paused') fd.append('stopped', String(v));
     fd.append(k, String(v));
   }
 

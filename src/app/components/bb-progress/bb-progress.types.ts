@@ -5,6 +5,8 @@ export type BbProgressState =
   | 'missingFiles'
   | 'pausedDL'
   | 'pausedUP'
+  | 'stoppedDL'
+  | 'stoppedUP'
   | 'downloading'
   | 'forcedDL'
   | 'uploading'
