@@ -7,6 +7,7 @@ import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
+import { TooltipOverflow } from '../../../../directives/tooltip-overflow';
 
 export interface FilterItem {
   key: string;
@@ -25,6 +26,7 @@ export interface FilterItem {
     ReactiveFormsModule,
     NgbTooltip,
     TranslatePipe,
+    TooltipOverflow,
   ],
   templateUrl: './filter-group.html',
   styleUrl: './filter-group.scss',

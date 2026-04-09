@@ -18,7 +18,7 @@
         [class.active]="activeKey === 'all'"
         (click)="onItemSelected('all')"
         [ngbTooltip]="'pages.main.status.filter-group.all' | translate"
-        bbTooltipOverflow
+        [bbTooltipOverflow]="allLabel"
         placement="end"
       >
         <span #allLabel class="bb-status-label flex-grow-1 text-truncate">{{
@@ -35,6 +35,7 @@
         (click)="onItemSelected(item.key)"
         [ngbTooltip]="item.label"
         tooltipClass="single-line-tooltip"
+        [bbTooltipOverflow]="label"
         placement="end"
       >
         @if (item.icon) {
