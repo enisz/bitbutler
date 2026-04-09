@@ -11,7 +11,7 @@
             class="text-muted"
             [innerHTML]="
               'components.modals.update-available.new-version-ready'
-                | translate: { tag_name: clean(release.tag_name) }
+                | translate: { tag_name: getVersion(release.tag_name) }
             "
           ></small>
         }

@@ -3,7 +3,6 @@ import { Component, inject, signal } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MarkdownComponent } from 'ngx-markdown';
-import { clean } from 'semver';
 import { UpdateCheckResponse } from '../../../models/electron.model';
 import { FilesizePipe } from '../../../pipes/filesize-pipe';
 
@@ -17,11 +16,14 @@ import { FilesizePipe } from '../../../pipes/filesize-pipe';
 export class UpdateAvailable {
   public update = signal<UpdateCheckResponse | null>(null);
   public readonly activeModal = inject(NgbActiveModal);
-  public clean = clean;
 
   get cleanedBody(): string {
     const body = this.update()?.release?.body || '';
     return body.replace(/^#+\s*What's\s*Changed\s*\n/i, '').trim();
+  }
+
+  public getVersion(version: string): string {
+    return version.replace(/^v/, '');
   }
 
   downloadAsset(url: string): void {

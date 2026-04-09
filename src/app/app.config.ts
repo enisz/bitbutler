@@ -2,9 +2,10 @@ import { OverlayModule } from '@angular/cdk/overlay';
 import { PortalModule } from '@angular/cdk/portal';
 import { provideHttpClient } from '@angular/common/http';
 import {
-  APP_INITIALIZER,
   ApplicationConfig,
   importProvidersFrom,
+  inject,
+  provideAppInitializer,
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection,
 } from '@angular/core';
@@ -14,17 +15,13 @@ import { routes } from './app.routes';
 import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { MARKED_OPTIONS, MarkedOptions, MarkedRenderer, provideMarkdown } from 'ngx-markdown';
-import { provideTimeago } from 'ngx-timeago';
+import { provideTimeago, TimeagoCustomFormatter, TimeagoFormatter, TimeagoIntl } from 'ngx-timeago';
 import { FilesizePipe } from './pipes/filesize-pipe';
 import { HumanizeDurationPipe } from './pipes/humanize-duration-pipe';
 import { LocalTimestampPipe } from './pipes/local-timestamp-pipe';
 import { RatioLimitPipe } from './pipes/ratio-limit-pipe';
 import { RatioPipe } from './pipes/ratio-pipe';
 import { ThemeService } from './services/theme.service';
-
-export function initializeTheme(themeService: ThemeService) {
-  return () => themeService.init();
-}
 
 export function markedOptionsFactory(): MarkedOptions {
   const renderer = new MarkedRenderer();
@@ -72,17 +69,18 @@ export const appConfig: ApplicationConfig = {
       fallbackLang: 'us',
     }),
     importProvidersFrom(OverlayModule, PortalModule),
-    provideTimeago(),
+    provideTimeago({
+      intl: { provide: TimeagoIntl, useClass: TimeagoIntl },
+      formatter: { provide: TimeagoFormatter, useClass: TimeagoCustomFormatter },
+    }),
     FilesizePipe,
     HumanizeDurationPipe,
     RatioPipe,
     LocalTimestampPipe,
     RatioLimitPipe,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initializeTheme,
-      deps: [ThemeService],
-      multi: true,
-    },
+    provideAppInitializer(() => {
+      const themeService = inject(ThemeService);
+      return themeService.init();
+    }),
   ],
 };
