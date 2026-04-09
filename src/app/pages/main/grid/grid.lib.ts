@@ -54,7 +54,6 @@ export function getGridColDefs(
     {
       colId: 'progress',
       field: 'progress',
-      tooltipField: 'progress',
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.progress'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.progress'),
       width: 135,
