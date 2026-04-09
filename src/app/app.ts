@@ -3,7 +3,10 @@ import { Component, DestroyRef, effect, inject, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterOutlet } from '@angular/router';
 import { NgbModalConfig, NgbTooltipConfig } from '@ng-bootstrap/ng-bootstrap';
-import { TranslateService } from '@ngx-translate/core';
+import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
+import { TimeagoIntl } from 'ngx-timeago';
+import { strings as usStrings } from 'ngx-timeago/language-strings/en.js';
+import { strings as huStrings } from 'ngx-timeago/language-strings/hu.js';
 import { filter } from 'rxjs';
 import { GeneralSettings } from './models/general-settings.model';
 import { CommandBusService } from './services/command-bus.service';
@@ -44,6 +47,7 @@ export class App implements OnInit {
   private readonly serverCommandHandlerService = inject(ServerCommandHandlerService);
   private readonly updateCommandHandlerService = inject(UpdateCommandHandlerService);
   private readonly translateService = inject(TranslateService);
+  private readonly timeagoIntl = inject(TimeagoIntl);
 
   public isDev$ = this.electronService.isDev();
   private updateCheckedOnStartup = false;
@@ -74,6 +78,10 @@ export class App implements OnInit {
     this.serverCommandHandlerService.start();
     this.updateCommandHandlerService.start();
 
+    this.translateService.onLangChange
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event: LangChangeEvent) => this.setTimeagoLanguage(event.lang));
+
     this.torrentStoreService.finished$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((event: TorrentFinishedEvent) => {
@@ -98,11 +106,27 @@ export class App implements OnInit {
         }
 
         if (generalSettings?.language.language) {
-          console.log(App.name, 'language', generalSettings.language.language);
           if (this.translateService.getCurrentLang() !== generalSettings.language.language) {
             this.translateService.use(generalSettings.language.language);
           }
         }
       });
+  }
+
+  private setTimeagoLanguage(lang: string): void {
+    switch (lang) {
+      case 'us':
+        this.timeagoIntl.strings = usStrings;
+        break;
+      case 'hu':
+        this.timeagoIntl.strings = huStrings;
+        break;
+      case 'en':
+      default:
+        this.timeagoIntl.strings = usStrings;
+        break;
+    }
+
+    this.timeagoIntl.changes.next();
   }
 }
