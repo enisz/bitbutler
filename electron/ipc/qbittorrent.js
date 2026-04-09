@@ -286,7 +286,6 @@ function requireString(value, field) {
   return value.trim();
 }
 
-// Inside electron/ipc/qbittorrent.js
 async function qbSyncMaindataStream(event, payload) {
   const { id, rid, chunkSize = 500, delayMs = 15, sortBy, sortDesc } = payload;
   const channel = 'qb:sync-maindata-chunk';
