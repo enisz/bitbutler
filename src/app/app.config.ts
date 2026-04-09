@@ -2,9 +2,10 @@ import { OverlayModule } from '@angular/cdk/overlay';
 import { PortalModule } from '@angular/cdk/portal';
 import { provideHttpClient } from '@angular/common/http';
 import {
-  APP_INITIALIZER,
   ApplicationConfig,
   importProvidersFrom,
+  inject,
+  provideAppInitializer,
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection,
 } from '@angular/core';
@@ -21,10 +22,6 @@ import { LocalTimestampPipe } from './pipes/local-timestamp-pipe';
 import { RatioLimitPipe } from './pipes/ratio-limit-pipe';
 import { RatioPipe } from './pipes/ratio-pipe';
 import { ThemeService } from './services/theme.service';
-
-export function initializeTheme(themeService: ThemeService) {
-  return () => themeService.init();
-}
 
 export function markedOptionsFactory(): MarkedOptions {
   const renderer = new MarkedRenderer();
@@ -81,11 +78,9 @@ export const appConfig: ApplicationConfig = {
     RatioPipe,
     LocalTimestampPipe,
     RatioLimitPipe,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initializeTheme,
-      deps: [ThemeService],
-      multi: true,
-    },
+    provideAppInitializer(() => {
+      const themeService = inject(ThemeService);
+      return themeService.init();
+    }),
   ],
 };
