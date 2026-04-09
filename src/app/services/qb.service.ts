@@ -255,7 +255,6 @@ export class QbService {
     while (true) {
       try {
         const body = await (window.bitbutler.qb.request(fullReq) as Promise<T>);
-        console.log('[QbService] ←', fullReq.method, fullReq.path, body);
         return { ok: true, status: 200, statusText: 'OK', body };
       } catch (err: any) {
         const errJson = this.extractJson(err);
@@ -303,7 +302,6 @@ export class QbService {
         }
 
         if (!options?.suppressErrors) {
-          console.log('[QbService] ERROR');
           const message = errJson?.body ? String(errJson.body) : err?.message || String(err);
           this.toastService.danger(message, `[QbService] ERROR`);
           console.error('[QbService] ERROR', fullReq.method, fullReq.path, {
@@ -619,7 +617,6 @@ export class QbService {
       form,
     });
 
-    console.log('setUploadLImit', res);
     if (!res.ok) throw new HttpError(res.status, res.statusText, `Failed to set upload limit`);
   }
 
@@ -783,8 +780,6 @@ export class QbService {
     action: 'pause' | 'resume',
     hashes: string[],
   ): Promise<void> {
-    console.log('[QbService] cached run api =', this.runApiCache.get(serverId));
-
     const clean = (hashes ?? []).map((h) => (h ?? '').trim()).filter(Boolean);
     if (clean.length === 0) return;
 
@@ -808,16 +803,12 @@ export class QbService {
           : action === 'pause'
             ? '/api/v2/torrents/pause'
             : '/api/v2/torrents/resume';
-
-      console.log('[QbService] trying', api, pathPreview);
       try {
         await this.callRunEndpoint(serverId, api, action, form, { suppressErrors: true });
         this.runApiCache.set(serverId, api);
-        console.log('[QbService] run api detected for', serverId, api);
         return;
       } catch (e: any) {
         lastErr = e;
-        console.log('[QbService] caught', e, 'while trying', api);
       }
     }
 

@@ -168,10 +168,6 @@ export class TorrentStoreService {
       const wasFinished = this.finishedByHash.get(hash) ?? false;
 
       if (allowEmit && !wasFinished && nowFinished) {
-        console.log(
-          TorrentStoreService.name,
-          `[TorrentStore] Emitting finished event for: ${t.name || hash}`,
-        );
         this._finished$.next({ hash, torrent: t, ts: now });
       }
 

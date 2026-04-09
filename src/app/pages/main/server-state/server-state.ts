@@ -140,12 +140,10 @@ export class ServerState implements OnChanges {
   }
 
   public toggleAlternativeSpeedLimit(): void {
-    console.log(ServerState.name, 'toggleAlternativeSpeedLimit');
     this.commandBusService.emit({ type: 'TRANSFER_LIMIT_ALTERNATIVE_TOGGLE' });
   }
 
   public setGlobalTransferLimit(direction: LimitDirectionType): void {
-    console.log(ServerState.name, 'setGlobalTransferLimit', direction);
     this.commandBusService.emit({ type: 'UI_LIMIT_TRANSFER', target: 'global', direction });
   }
 

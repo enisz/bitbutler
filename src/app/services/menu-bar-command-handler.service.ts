@@ -43,11 +43,8 @@ export class MenuBarCommandHandlerService {
           break;
 
         case 'server.select':
-          console.log(MenuBarCommandHandlerService.name, 'server.select', payload);
           const { serverId } = payload;
-          if (serverId) {
-            this.handleServerSwitch(serverId);
-          }
+          if (serverId) this.handleServerSwitch(serverId);
           break;
 
         case 'help.checkForUpdates':

@@ -119,13 +119,7 @@ export class UiCommandHandlerService {
 
             renameModalRef.componentInstance.torrent = command.torrent;
 
-            renameModalRef.result
-              .then((res: any) => {
-                console.log('ok', res);
-              })
-              .catch((error: any) => {
-                console.log('not ok', error);
-              });
+            renameModalRef.result.then((res: any) => {}).catch((error: any) => {});
             break;
 
           case 'UI_SET_TORRENT_LOCATION':
@@ -139,13 +133,7 @@ export class UiCommandHandlerService {
 
             setLocationModalRef.componentInstance.torrent = command.torrent;
 
-            setLocationModalRef.result
-              .then((res: any) => {
-                console.log('ok', res);
-              })
-              .catch((error: any) => {
-                console.log('not ok', error);
-              });
+            setLocationModalRef.result.then((res: any) => {}).catch((error: any) => {});
             break;
 
           case 'UI_LIMIT_TRANSFER':
@@ -157,13 +145,7 @@ export class UiCommandHandlerService {
             limitTransferModalRef.componentInstance.direction = command.direction;
             limitTransferModalRef.componentInstance.target = command.target;
 
-            limitTransferModalRef.result
-              .then((res: any) => {
-                console.log('ok', res);
-              })
-              .catch((error: any) => {
-                console.log('not ok', error);
-              });
+            limitTransferModalRef.result.then((res: any) => {}).catch((error: any) => {});
             break;
 
           case 'UI_SET_TORRENT_TAGS':
@@ -238,13 +220,7 @@ export class UiCommandHandlerService {
 
             updateAvailableModalRef.componentInstance.update.set(command.update);
 
-            updateAvailableModalRef.result
-              .then((res: any) => {
-                console.log('ok', res);
-              })
-              .catch((error: any) => {
-                console.log('not ok', error);
-              });
+            updateAvailableModalRef.result.then((res: any) => {}).catch((error: any) => {});
             break;
           default:
             console.warn('Unhandled UI command', command);
