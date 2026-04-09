@@ -3,10 +3,6 @@ import { GridOptions, iconSetQuartzLight, themeQuartz } from 'ag-grid-community'
 export const API_URL = '/api/v2';
 export const DEFAULT_DATE_FORMATTER = 'yyyy-MM-dd HH:mm:ss';
 
-/**
- * AG Grid theme params should reference CSS variables so the active theme family
- * (bitbutler / aurora / future themes) automatically affects the grid too.
- */
 const GRID_PARAMS_SHARED = {
   fontFamily: 'inherit',
   accentColor: 'var(--bb-accent)',
@@ -41,8 +37,10 @@ export const GRID_DARK_THEME = themeQuartz.withPart(iconSetQuartzLight).withPara
 });
 
 export const GRID_SHARED_OPTIONS: GridOptions = {
-  enableBrowserTooltips: true,
+  enableBrowserTooltips: false,
+  tooltipShowDelay: 500,
+  tooltipShowMode: 'whenTruncated',
   suppressCellFocus: true,
   columnHoverHighlight: false,
-  animateRows: false,
+  tooltipMouseTrack: true,
 };
