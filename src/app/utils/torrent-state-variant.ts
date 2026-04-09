@@ -8,6 +8,10 @@ export function variantForTorrentState(state: BbProgressState): BbProgressVarian
 
     case 'pausedDL':
     case 'pausedUP':
+    case 'stoppedDL':
+    case 'stoppedUP':
+    case 'queuedDL':
+    case 'queuedUP':
       return 'secondary';
 
     case 'stalledDL':
