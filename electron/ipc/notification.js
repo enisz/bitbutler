@@ -12,10 +12,6 @@ function asPlainObject(v) {
   return v && typeof v === 'object' && !Array.isArray(v) ? v : null;
 }
 
-/**
- * Register notification IPC.
- * Renderer -> Main: notification:show
- */
 export function registerNotificationIpcHandlers() {
   ipcMain.handle('notification:show', async (_event, payload) => {
     const p = asPlainObject(payload) ?? {};

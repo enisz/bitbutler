@@ -66,7 +66,7 @@ export class Trackers implements TorrentDetailTabComponent, OnInit {
       this.trackers = await this.qbService.torrentTrackers(serverId, hash);
     } catch (e: any) {
       const error = e?.message ?? String(e);
-      console.log(Trackers.name, 'load', 'Failed to fetch torrent trackers!', error);
+      console.error(Trackers.name, 'load', 'Failed to fetch torrent trackers!', error);
       throw new Error(error);
     } finally {
       this.loading = false;

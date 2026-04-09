@@ -5,13 +5,6 @@ function norm(p) {
   return String(p ?? '').replace(/\\/g, '/');
 }
 
-/**
- * Convert a .torrent buffer into a JSON-serializable "draft" object
- * that can be sent to the renderer via IPC.
- *
- * IMPORTANT: never return Buffers / Uint8Arrays / big objects here.
- * Keep it strictly plain JSON: strings, numbers, booleans, arrays, objects.
- */
 export async function parseTorrentBufferToDraft(buffer, meta) {
   try {
     const parsed = await Promise.resolve(parseTorrent(buffer));
@@ -54,20 +47,7 @@ export async function parseTorrentBufferToDraft(buffer, meta) {
 
     const infoHashV1 = typeof parsed?.infoHash === 'string' ? parsed.infoHash : undefined;
     const infoHashV2 = typeof parsed?.infoHashV2 === 'string' ? parsed.infoHashV2 : undefined;
-
     const isPrivate = typeof parsed?.private === 'boolean' ? parsed.private : undefined;
-
-    console.log('\n[BitButler][torrent-parse] Normalized summary:');
-    console.log({
-      name,
-      singleFileLength: typeof parsed?.length === 'number' ? parsed.length : undefined,
-      multiFileCount: files.length,
-      totalSize,
-      trackersCount: uniqTrackers.length,
-      infoHashV1,
-      infoHashV2,
-      private: isPrivate,
-    });
 
     return {
       source: meta.source,
@@ -85,7 +65,7 @@ export async function parseTorrentBufferToDraft(buffer, meta) {
       },
     };
   } catch (e) {
-    console.log('[BitButler][torrent-parse] ERROR:', e);
+    console.error('[BitButler][torrent-parse] ERROR:', e);
 
     return {
       source: meta.source,
@@ -100,10 +80,6 @@ export async function parseTorrentBufferToDraft(buffer, meta) {
   }
 }
 
-/**
- * Build a draft using the file path as meta (name/path/source).
- * NOTE: this does NOT read the file — you already do that in window.js
- */
 export async function draftFromPathBuffer(buffer, filePath, source) {
   return parseTorrentBufferToDraft(buffer, {
     source,

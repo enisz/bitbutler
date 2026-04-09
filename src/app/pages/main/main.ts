@@ -26,16 +26,12 @@ export class Main implements OnDestroy {
   private readonly windowService = inject(WindowService);
   private readonly themeService = inject(ThemeService);
   private readonly torrentListGridSettingsService = inject(TorrentListGridSettingsService);
-
   private pollSub: Subscription | null = null;
-
   public currentServer = this.serverStoreService.currentServer;
+  public readonly logoUrl = computed(
+    () => `assets/images/bitbutler-logo-${this.themeService.family()}.png`,
+  );
 
-  public readonly logoUrl = computed(() => {
-    const p = `assets/images/bitbutler-logo-${this.themeService.family()}.png`;
-    console.log(p);
-    return p;
-  });
   readonly lastDelta = signal<TorrentTxnDelta | null>(null);
   readonly theme = this.themeService.effectiveMode;
   readonly serverState = signal<QbServerState | null>(null);

@@ -10,15 +10,6 @@ export const setActiveServerId = (id) => {
   activeServerId = id;
 };
 
-/**
- * IPC handlers:
- * - server:list
- * - server:add
- * - server:delete
- * - server:getById
- * - server:getByHost
- */
-
 export function registerServerIpcHandlers() {
   ipcMain.handle('server:list', async () => serverList());
   ipcMain.handle('server:add', async (_event, server) => serverAdd(server));

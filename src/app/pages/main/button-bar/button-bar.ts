@@ -65,14 +65,6 @@ export class ButtonBar implements OnInit {
 
   readonly entries = computed<ToolbarEntry[]>(() => {
     return [
-      // {
-      //   kind: 'action',
-      //   id: 'new.addTorrentLink',
-      //   label: 'pages.main.button-bar.button.add-link',
-      //   icon: faLink,
-      //   variant: 'primary',
-      //   disabled: true,
-      // },
       {
         kind: 'action',
         id: 'new.addTorrentFile',

@@ -454,7 +454,6 @@
     "main": {
       "button-bar": {
         "button": {
-          "add-link": "Link hozzáadása",
           "add-file": "Fájl hozzáadása",
           "delete": "Törlés",
           "start": "Indítás",

@@ -62,11 +62,6 @@ export class SetTorrentLocation implements OnInit {
     }
 
     try {
-      console.log({
-        serverId,
-        selectedHashes: this.selectionStoreService.selectedHashes() || this.torrent.hash,
-        newPath,
-      });
       await this.qbService.setTorrentLocation(
         serverId,
         this.selectionStoreService.selectedHashes(),

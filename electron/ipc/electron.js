@@ -52,8 +52,6 @@ async function checkForUpdate() {
       },
     );
 
-    console.log('response.data', response.data);
-
     const latestVersion = response.data.tag_name.replace('v', '');
     const releaseUrl = response.data.html_url;
 

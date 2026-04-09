@@ -32,10 +32,6 @@ function createOrRestoreMainWindow() {
   }
 
   mainWindow = createMainWindow();
-  mainWindow.on('unmaximize', () => {
-    console.log('\n[win-event] unmaximize event fired');
-    console.trace('[unmaximize stack]');
-  });
 
   installMenu(mainWindow);
 
@@ -48,8 +44,6 @@ function createOrRestoreMainWindow() {
   registerElectronIpcHandlers();
 
   createTray(mainWindow);
-
-  console.log('[second-instance] listeners:', app.listenerCount('second-instance'));
 
   mainWindow.on('minimize', (e) => {
     e.preventDefault();
@@ -72,7 +66,6 @@ const gotLock = app.requestSingleInstanceLock();
 if (!gotLock) {
   app.quit();
 } else {
-  // ✅ The ONLY second-instance handler in the whole app
   app.on('second-instance', (_event, argv) => {
     createOrRestoreMainWindow();
     handleSecondInstanceArgv(argv);
@@ -81,7 +74,6 @@ if (!gotLock) {
   app.whenReady().then(() => {
     createOrRestoreMainWindow();
 
-    // On Windows/Linux this usually won't fire, but harmless.
     app.on('activate', () => {
       createOrRestoreMainWindow();
     });

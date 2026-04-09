@@ -22,18 +22,9 @@ export class WindowService {
   });
 
   constructor() {
-    console.log(WindowService.name, 'constructor initialized');
-    if (window?.bitbutler?.window?.onStateChange) {
-      window.bitbutler.window.onStateChange((state: WindowState) => {
-        console.log(WindowService.name, 'constructor', 'onStateChange', state);
-        this.zone.run(() => this.windowState.next(state));
-      });
-    } else {
-      console.warn(
-        WindowService.name,
-        `'window.bitbutler.window.onStateChange' is not defined in the preload script!`,
-      );
-    }
+    window.bitbutler.window.onStateChange((state: WindowState) => {
+      this.zone.run(() => this.windowState.next(state));
+    });
   }
 
   public windowStateAsObservable(): Observable<WindowState> {

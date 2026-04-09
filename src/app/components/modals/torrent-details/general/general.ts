@@ -175,7 +175,7 @@ export class General implements TorrentDetailTabComponent, OnInit {
       this.properties.set(await this.qbService.torrentProperties(serverId, hash));
     } catch (e: any) {
       const error = e?.message ?? String(e);
-      console.log(General.name, 'load', 'Failed to fetch torrent properties!', error);
+      console.error(General.name, 'load', 'Failed to fetch torrent properties!', error);
       throw new Error(error);
     }
   }
@@ -245,12 +245,11 @@ export class General implements TorrentDetailTabComponent, OnInit {
   }
 
   public changeShareRatioLimit(): void {
-    console.log(General.name, 'changeShareRatioLimit');
+    this.toastService.info('Changing share ratio limit.');
   }
 
   public clearShareRatioLimit(): void {
     this.toastService.info('Clearing share ratio limit.');
-    console.log(General.name, 'clearShareRatioLimit');
   }
 
   public forceReannounce(): void {

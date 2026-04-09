@@ -32,7 +32,12 @@ export class TransferLimitCommandHandlerService {
             break;
 
           default:
-            console.warn('Unhandled UI command', command);
+            console.warn(
+              TransferLimitCommandHandlerService.name,
+              'start',
+              'Unhandled UI command',
+              command,
+            );
         }
       });
   }

@@ -19,9 +19,6 @@ function getArgStartIndex() {
   return 1;
 }
 
-/**
- * Extract only existing .torrent files from argv.
- */
 function extractExistingTorrentFiles(argv = [], startIndex = 0) {
   const out = [];
 
@@ -69,7 +66,6 @@ function pushOpenFilesToRenderer(paths) {
   const unique = Array.from(new Set((paths ?? []).filter(Boolean)));
   if (!unique.length) return;
 
-  console.log('[BitButler][open-files] push -> renderer (paths):', unique);
   try {
     mainWindowRef.webContents.send(CHANNEL_OPEN_FILES, unique);
   } catch (e) {
@@ -80,11 +76,6 @@ function pushOpenFilesToRenderer(paths) {
 function pushTorrentDraftsToRenderer(drafts) {
   const safe = Array.isArray(drafts) ? drafts.filter(Boolean) : [];
   if (!safe.length) return;
-
-  console.log(
-    '[BitButler][open-files] push -> renderer (drafts):',
-    safe.map((d) => d?.originalName ?? d?.originalPath),
-  );
 
   try {
     mainWindowRef.webContents.send(CHANNEL_TORRENT_DRAFTS, safe);
@@ -100,7 +91,6 @@ function queueOpenFiles(paths, reason) {
   const unique = Array.from(new Set((paths ?? []).filter(Boolean)));
   if (!unique.length) return;
 
-  console.log(`[BitButler][open-files] queued (${reason})`, unique);
   pendingOpenFiles.push(...unique);
 }
 
@@ -130,8 +120,6 @@ async function handleIncomingOpenFiles(paths, reason) {
   try {
     const unique = Array.from(new Set((paths ?? []).filter(Boolean)));
     if (!unique.length) return;
-
-    console.log(`[BitButler][open-files] received (${reason}):`, unique);
 
     if (!canSendToRendererNow()) {
       queueOpenFiles(
@@ -166,9 +154,6 @@ async function flushQueueIfPossible() {
 
     const toSend = Array.from(new Set(pendingOpenFiles));
     pendingOpenFiles = [];
-
-    console.log('[BitButler][open-files] flushing queue -> renderer:', toSend);
-
     pushOpenFilesToRenderer(toSend);
 
     const drafts = await pathsToDrafts(toSend, 'startup');
@@ -178,12 +163,7 @@ async function flushQueueIfPossible() {
   }
 }
 
-/**
- * ✅ Called by electron-main.js when a second instance is launched with argv
- */
 export function handleSecondInstanceArgv(argv) {
-  console.log('[BitButler][second-instance] argv:', argv);
-
   const startIndex = getArgStartIndex();
   const paths = extractExistingTorrentFiles(argv, startIndex);
 
@@ -213,7 +193,6 @@ export function registerWindowIpcHandlers(mainWindow) {
 
   ipcMain.handle('window:open-files:set-enabled', async (_e, enabled) => {
     openHandlingEnabled = !!enabled;
-    console.log('[BitButler][open-files] set-enabled:', openHandlingEnabled);
 
     if (openHandlingEnabled) {
       void flushQueueIfPossible();
@@ -225,7 +204,7 @@ export function registerWindowIpcHandlers(mainWindow) {
   ipcMain.handle('window:open-files:drain', async () => {
     const toSend = Array.from(new Set(pendingOpenFiles));
     pendingOpenFiles = [];
-    console.log('[BitButler][open-files] drained by renderer (paths):', toSend);
+
     return toSend;
   });
 
@@ -233,7 +212,6 @@ export function registerWindowIpcHandlers(mainWindow) {
     const toSend = Array.from(new Set(pendingOpenFiles));
     pendingOpenFiles = [];
 
-    console.log('[BitButler][open-files] drained by renderer (drafts):', toSend);
     return pathsToDrafts(toSend, 'startup');
   });
 
@@ -241,13 +219,11 @@ export function registerWindowIpcHandlers(mainWindow) {
     void flushQueueIfPossible();
   });
 
-  console.log('[BitButler][startup] process.argv:', process.argv);
   const initial = extractExistingTorrentFiles(process.argv, getArgStartIndex());
   void handleIncomingOpenFiles(initial, 'startup');
 }
 
 function maximize(mainWindow) {
-  console.log('window.js', 'maximize');
   mainWindow.maximize();
 }
 
@@ -260,8 +236,6 @@ function toggleMaximize(mainWindow) {
 }
 
 function setSize(mainWindow, width, height) {
-  console.log('window.js', 'setSize', { width, height });
-
   if (!Number.isFinite(width) || !Number.isFinite(height)) return;
 
   if (mainWindow.isFullScreen()) {

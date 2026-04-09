@@ -1,13 +1,6 @@
 import { ipcMain } from 'electron';
 import db from '../db.js';
 
-/**
- * IPC handlers:
- * - settings:get
- * - settings:upsert
- * - settings:delete
- */
-
 export function registerSettingsIpcHandlers() {
   ipcMain.handle('settings:get', async (_event, payload) => settingsGet(payload));
   ipcMain.handle('settings:upsert', async (_event, payload) => settingsUpsert(payload));

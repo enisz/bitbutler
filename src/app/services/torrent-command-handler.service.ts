@@ -28,7 +28,6 @@ export class TorrentCommandHandlerService {
             void this.handleDelete(cmd.removeFiles);
             break;
           case 'TORRENT_DELETE_CANCEL':
-            console.log('delete cancelled');
             break;
           case 'TORRENT_PAUSE':
             void this.handlePause();
@@ -134,14 +133,9 @@ export class TorrentCommandHandlerService {
     const serverId = this.serverStore.currentServerId();
     const hashes = this.selectionStore.selectedHashes();
 
-    if (!serverId) {
-      console.warn('Action ignored: no server selected');
-      return null;
-    }
-    if (hashes.length === 0) {
-      console.warn('Action ignored: no torrents selected');
-      return null;
-    }
+    if (!serverId) return null;
+    if (hashes.length === 0) return null;
+
     return { serverId, hashes };
   }
 
@@ -151,9 +145,8 @@ export class TorrentCommandHandlerService {
 
     try {
       await this.qbService.pauseTorrents(ctx.serverId, ctx.hashes);
-      console.log(`Paused ${ctx.hashes.length} torrent(s).`);
     } catch (e) {
-      console.error('Pause failed', e);
+      console.error(TorrentCommandHandlerService.name, 'handlePause', 'Pause failed!', e);
     }
   }
 
@@ -163,51 +156,36 @@ export class TorrentCommandHandlerService {
 
     try {
       await this.qbService.resumeTorrents(ctx.serverId, ctx.hashes);
-      console.log(`Resumed ${ctx.hashes.length} torrent(s).`);
     } catch (e) {
-      console.error('Resume failed', e);
+      console.error(TorrentCommandHandlerService.name, 'handleResume', 'Resume failed!', e);
     }
   }
 
   private async handleResumeAll(): Promise<void> {
     const serverId = this.serverStore.currentServerId();
-    if (!serverId) {
-      console.warn('Action ignored: no server selected');
-      return;
-    }
-
     const hashes = this.torrentStore.torrentsArray().map((t) => t.hash);
-    if (hashes.length === 0) {
-      console.log('No torrents to resume.');
-      return;
-    }
+
+    if (!serverId) return;
+    if (hashes.length === 0) return;
 
     try {
       await this.qbService.resumeTorrents(serverId, hashes);
-      console.log(`Resumed all torrents.`);
     } catch (e) {
-      console.error('Resume all failed', e);
+      console.error(TorrentCommandHandlerService.name, 'handleResumeAll', 'Resume all failed!', e);
     }
   }
 
   private async handlePauseAll(): Promise<void> {
     const serverId = this.serverStore.currentServerId();
-    if (!serverId) {
-      console.warn('Action ignored: no server selected');
-      return;
-    }
-
     const hashes = this.torrentStore.torrentsArray().map((t) => t.hash);
-    if (hashes.length === 0) {
-      console.log('No torrents to pause.');
-      return;
-    }
+
+    if (!serverId) return;
+    if (hashes.length === 0) return;
 
     try {
       await this.qbService.pauseTorrents(serverId, hashes);
-      console.log(`Paused all torrents.`);
     } catch (e) {
-      console.error('Pause all failed', e);
+      console.error(TorrentCommandHandlerService.name, 'handlePauseAll', 'Pause all failed', e);
     }
   }
 
@@ -217,9 +195,13 @@ export class TorrentCommandHandlerService {
 
     try {
       await this.qbService.topPrio(ctx.serverId, ctx.hashes);
-      console.log(`Moved ${ctx.hashes.length} torrent(s) to top of queue.`);
     } catch (e) {
-      console.error('Failed to move torrent(s) to top of queue', e);
+      console.error(
+        TorrentCommandHandlerService.name,
+        'handleQueueMoveTop',
+        'Failed to move torrent(s) to top of queue',
+        e,
+      );
     }
   }
 
@@ -229,9 +211,13 @@ export class TorrentCommandHandlerService {
 
     try {
       await this.qbService.increasePrio(ctx.serverId, ctx.hashes);
-      console.log(`Moved ${ctx.hashes.length} torrent(s) up in queue.`);
     } catch (e) {
-      console.error('Failed to move torrent(s) up in queue', e);
+      console.error(
+        TorrentCommandHandlerService.name,
+        'handleQueueMoveUp',
+        'Failed to move torrent(s) up in queue',
+        e,
+      );
     }
   }
 
@@ -241,9 +227,13 @@ export class TorrentCommandHandlerService {
 
     try {
       await this.qbService.decreasePrio(ctx.serverId, ctx.hashes);
-      console.log(`Moved ${ctx.hashes.length} torrent(s) down in queue.`);
     } catch (e) {
-      console.error('Failed to move torrent(s) down in queue', e);
+      console.error(
+        TorrentCommandHandlerService.name,
+        'handleQueueMoveDown',
+        'Failed to move torrent(s) down in queue',
+        e,
+      );
     }
   }
 
@@ -253,9 +243,13 @@ export class TorrentCommandHandlerService {
 
     try {
       await this.qbService.bottomPrio(ctx.serverId, ctx.hashes);
-      console.log(`Moved ${ctx.hashes.length} torrent(s) to bottom of queue.`);
     } catch (e) {
-      console.error('Failed to move torrent(s) to bottom of queue', e);
+      console.error(
+        TorrentCommandHandlerService.name,
+        'handleQueueMoveBottom',
+        'Failed to move torrent(s) to bottom of queue',
+        e,
+      );
     }
   }
 }

@@ -98,8 +98,6 @@ export class App implements OnInit {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((generalSettings: GeneralSettings) => {
-        console.log(App.name, 'generalSettings', generalSettings);
-
         if (generalSettings?.behavior.automaticUpdate && !this.updateCheckedOnStartup) {
           this.commandBusService.emit({ type: 'UPDATE_CHECK_FOR_UPDATE' });
           this.updateCheckedOnStartup = true;

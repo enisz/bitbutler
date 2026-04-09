@@ -10,9 +10,9 @@ export class NotificationService {
         const res = await api({ title, body, options });
         if (res?.ok) return;
 
-        console.warn('[NotificationService] main notification rejected:', res?.error);
+        console.error(NotificationService.name, 'send', 'main notification rejected:', res?.error);
       } catch (e) {
-        console.warn('[NotificationService] main notification failed:', e);
+        console.error(NotificationService.name, 'send', 'main notification failed:', e);
       }
     }
 
@@ -25,7 +25,7 @@ export class NotificationService {
           if (perm === 'granted') new Notification(title, { body });
         }
       } catch (e) {
-        console.warn('[NotificationService] renderer notification failed:', e);
+        console.error(NotificationService.name, 'send', 'renderer notification failed:', e);
       }
     }
   }
