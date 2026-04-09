@@ -15,7 +15,6 @@ export function rebuildMenu(mainWindowArg) {
 
   const cookieJar = getCookieJar();
   const loggedIn = !!cookieJar.size;
-  console.log('loggedIn', loggedIn);
 
   const servers = serverList();
   const activeServerId = getActiveServerId();

@@ -47,20 +47,7 @@ export async function parseTorrentBufferToDraft(buffer, meta) {
 
     const infoHashV1 = typeof parsed?.infoHash === 'string' ? parsed.infoHash : undefined;
     const infoHashV2 = typeof parsed?.infoHashV2 === 'string' ? parsed.infoHashV2 : undefined;
-
     const isPrivate = typeof parsed?.private === 'boolean' ? parsed.private : undefined;
-
-    console.log('\n[BitButler][torrent-parse] Normalized summary:');
-    console.log({
-      name,
-      singleFileLength: typeof parsed?.length === 'number' ? parsed.length : undefined,
-      multiFileCount: files.length,
-      totalSize,
-      trackersCount: uniqTrackers.length,
-      infoHashV1,
-      infoHashV2,
-      private: isPrivate,
-    });
 
     return {
       source: meta.source,
@@ -78,7 +65,7 @@ export async function parseTorrentBufferToDraft(buffer, meta) {
       },
     };
   } catch (e) {
-    console.log('[BitButler][torrent-parse] ERROR:', e);
+    console.error('[BitButler][torrent-parse] ERROR:', e);
 
     return {
       source: meta.source,

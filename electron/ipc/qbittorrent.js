@@ -28,7 +28,6 @@ const stmtGetByIdFull = db.prepare(`
 `);
 
 async function qbTorrentsAdd(payload) {
-  console.log('qbTorrentsAdd', payload);
   const { id, torrents, options } = payload;
 
   const fd = new FormData();
@@ -62,15 +61,6 @@ async function qbTorrentsAdd(payload) {
     ...fd.getHeaders(),
     'Content-Length': String(bodyBuffer.length),
   };
-
-  console.log('[qbTorrentsAdd] headers:', headers);
-  console.log('[qbTorrentsAdd] request:', {
-    id,
-    method: 'POST',
-    path: '/api/v2/torrents/add',
-    headers,
-    body: bodyBuffer,
-  });
 
   return qbRequest({
     id,
@@ -215,7 +205,6 @@ async function qbRequest(payload) {
   });
 
   const text = await res.text();
-  console.log('[qbRequest] status=', res.status, 'path=', path, 'resp=', text.substring(0, 150));
 
   if (!res.ok) {
     throw JSON.stringify({

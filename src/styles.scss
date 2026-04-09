@@ -122,7 +122,6 @@ ngb-modal-window {
   cursor: pointer;
 }
 
-/* Base ng-select styling (outside of floating labels) */
 .ng-select .ng-clear-wrapper {
   color: var(--bb-control-placeholder) !important;
   &:hover .ng-clear {
@@ -242,7 +241,6 @@ ng-select.ng-select .ng-select-container .ng-input input {
   cursor: not-allowed;
 }
 
-/* Floating Label Placeholder Hiding */
 .form-floating > .form-control::placeholder,
 .form-floating > .form-control:focus::placeholder,
 .form-floating > .form-control:not(:placeholder-shown)::placeholder,
@@ -252,14 +250,9 @@ ng-select.ng-select .ng-select-container .ng-input input {
   opacity: 0 !important;
 }
 
-/* ========================================================
-   MASTER FLOATING LABEL RULES FOR NG-SELECT
-   Handles BOTH Single-Select and Multi-Select perfectly
-======================================================== */
 .form-floating {
   position: relative;
 
-  /* 1. MASTER LABEL STYLES (Applies to Native & ng-select identically) */
   label {
     position: absolute;
     top: 0;
@@ -278,22 +271,18 @@ ng-select.ng-select .ng-select-container .ng-input input {
       opacity 0.1s ease-in-out,
       transform 0.1s ease-in-out;
 
-    /* Use your theme's custom placeholder variable uniformly */
     color: var(--bb-control-placeholder) !important;
-    opacity: 1 !important; /* Reset opacity so the variable does all the work */
+    opacity: 1 !important;
   }
 
-  /* 2. MASTER FOCUSED STYLES (Applies to Native & ng-select identically) */
   > .form-control:focus ~ label,
   > .form-select:focus ~ label,
   ng-select.ng-select.ng-select-focused ~ label {
     color: var(--bb-control-focus-border) !important;
-    opacity: 1 !important; /* Make it brightly glow with your theme color */
+    opacity: 1 !important;
   }
 
-  /* 3. NG-SELECT SPECIFIC LAYOUT */
   ng-select.ng-select {
-    /* ALWAYS float the label for ng-select (Colors are now handled above!) */
     ~ label {
       transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
       z-index: 999;
@@ -304,7 +293,6 @@ ng-select.ng-select .ng-select-container .ng-input input {
       border-radius: var(--bb-control-radius) !important;
     }
 
-    /* 1. SINGLE-SELECT LOGIC */
     &:not(.ng-select-multiple) {
       .ng-select-container {
         height: calc(3.5rem + 2px) !important;
@@ -353,12 +341,10 @@ ng-select.ng-select .ng-select-container .ng-input input {
       }
     }
 
-    /* 2. MULTI-SELECT (TAGS) LOGIC */
     &.ng-select-multiple {
       .ng-select-container {
         height: auto !important;
         min-height: calc(3.5rem + 2px) !important;
-        /* Padding-top here ensures tags push down below the floating label! */
         padding-top: 1.625rem !important;
         padding-bottom: 0.5rem !important;
         padding-left: 0.75rem !important;
@@ -423,7 +409,6 @@ ng-select.ng-select .ng-select-container .ng-input input {
       }
     }
 
-    /* 3. FOCUS AND VALIDATION (Shared) */
     &.ng-select-focused .ng-select-container {
       border-color: var(--bb-control-focus-border) !important;
       box-shadow: 0 0 0 0.2rem var(--bb-control-focus-ring) !important;
@@ -932,16 +917,13 @@ html ngb-typeahead-window.dropdown-menu .dropdown-item:active {
   dark
 );
 
-/* --- Final Unified Tooltips Fix --- */
 .tooltip {
-  /* Main bubble styling */
   .tooltip-inner {
     span {
-      font-weight: 400; /* Normal weight for sub-text */
-      display: inline-block; /* Helps with spacing if needed */
+      font-weight: 400;
+      display: inline-block;
     }
 
-    /* Specifically for your color-coded limits */
     .text-success,
     .text-info {
       font-weight: 400;
@@ -959,14 +941,12 @@ html ngb-typeahead-window.dropdown-menu .dropdown-item:active {
     font-weight: 600;
   }
 
-  /* Core arrow behavior - makes triangle transparent by default */
   .tooltip-arrow::before {
     border-color: transparent !important;
     border-style: solid !important;
   }
 }
 
-/* Specific Arrow Color & Border Continuity Logic */
 .bs-tooltip-top,
 .bs-tooltip-auto[x-placement^='top'] {
   .tooltip-arrow::before {
