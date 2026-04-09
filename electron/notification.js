@@ -6,11 +6,6 @@ function getNotificationIconPath() {
   return path.join(app.getAppPath(), 'src', 'assets', 'icons', 'bitbutler.png');
 }
 
-/**
- * @param {string} title
- * @param {string} body
- * @param {{ silent?: boolean }} [options]
- */
 export function notify(title, body, options) {
   try {
     if (!Notification.isSupported()) {

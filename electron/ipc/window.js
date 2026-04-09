@@ -19,9 +19,6 @@ function getArgStartIndex() {
   return 1;
 }
 
-/**
- * Extract only existing .torrent files from argv.
- */
 function extractExistingTorrentFiles(argv = [], startIndex = 0) {
   const out = [];
 
@@ -178,9 +175,6 @@ async function flushQueueIfPossible() {
   }
 }
 
-/**
- * ✅ Called by electron-main.js when a second instance is launched with argv
- */
 export function handleSecondInstanceArgv(argv) {
   console.log('[BitButler][second-instance] argv:', argv);
 

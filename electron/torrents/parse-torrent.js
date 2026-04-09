@@ -5,13 +5,6 @@ function norm(p) {
   return String(p ?? '').replace(/\\/g, '/');
 }
 
-/**
- * Convert a .torrent buffer into a JSON-serializable "draft" object
- * that can be sent to the renderer via IPC.
- *
- * IMPORTANT: never return Buffers / Uint8Arrays / big objects here.
- * Keep it strictly plain JSON: strings, numbers, booleans, arrays, objects.
- */
 export async function parseTorrentBufferToDraft(buffer, meta) {
   try {
     const parsed = await Promise.resolve(parseTorrent(buffer));
@@ -100,10 +93,6 @@ export async function parseTorrentBufferToDraft(buffer, meta) {
   }
 }
 
-/**
- * Build a draft using the file path as meta (name/path/source).
- * NOTE: this does NOT read the file — you already do that in window.js
- */
 export async function draftFromPathBuffer(buffer, filePath, source) {
   return parseTorrentBufferToDraft(buffer, {
     source,
