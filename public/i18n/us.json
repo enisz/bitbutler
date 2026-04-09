@@ -44,7 +44,14 @@
         "rename": "Rename",
         "skip-hash-checking": "Skip hash checking",
         "paused": "Add torrents in the paused state",
-        "root-folder": "Root Folder",
+        "root-folder": {
+          "title": "Root Folder",
+          "option": {
+            "default": "Default (unset)",
+            "create-root-folder": "Create root folder",
+            "do-not-create-root-folder": "Do not create root folder"
+          }
+        },
         "auto-tmm": "Use Auto TMM",
         "sequential-download": "Enable sequential download",
         "first-last-piece-prio": "Prioritize download first last piece",
@@ -59,6 +66,15 @@
         "limits": "Limits"
       },
       "popover": {
+        "root-folder": {
+          "title": "Root Folder",
+          "description": {
+            "line1": "Controls whether the torrent’s files are nested inside a main folder or placed directly in the download path.",
+            "line2": "<strong>Default (unset):</strong> Uses the global setting defined in your qBittorrent options.",
+            "line3": "<strong>Create root folder:</strong> Forces the creation of a containing folder (based on the torrent's name) inside your download directory.",
+            "line4": "<strong>Do not create root folder:</strong> Places the contents directly into the download directory. This is useful for single-file torrents to avoid unnecessary subfolders."
+          }
+        },
         "skip-hash-checking": {
           "title": "Skip hash checking",
           "description": {

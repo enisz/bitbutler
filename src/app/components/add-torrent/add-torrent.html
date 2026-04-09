@@ -28,6 +28,7 @@
               (addForm.controls.file.touched || addForm.controls.file.dirty)
             "
             readonly
+            (click)="fileInput.click()"
           />
           <label for="file_browser">{{
             'components.add-torrent.add-form.file-browser' | translate
@@ -106,7 +107,32 @@
 
     <div class="container-fluid px-0">
       <div class="row">
-        <div class="col-6">
+        <div class="col-11">
+          <div class="form-floating mb-3">
+            <ng-select
+              id="root_folder"
+              formControlName="root_folder"
+              [items]="rootFolderOptions"
+              bindValue="value"
+              bindLabel="label"
+              [clearable]="false"
+              [searchable]="false"
+            ></ng-select>
+            <label for="root_folder">{{
+              'components.add-torrent.add-form.root-folder.title' | translate
+            }}</label>
+          </div>
+        </div>
+
+        <div class="col-1 d-flex align-items-center mb-3">
+          <bb-popover
+            [subject]="'components.add-torrent.popover.root-folder.title' | translate"
+            [description]="rootFolder"
+            placement="left"
+          ></bb-popover>
+        </div>
+
+        <div class="col-12">
           <div class="form-check form-switch mb-3">
             <input
               class="form-check-input"
@@ -121,11 +147,12 @@
             <bb-popover
               [subject]="'components.add-torrent.popover.skip-hash-checking.title' | translate"
               [description]="skipChecking"
+              placement="right"
             ></bb-popover>
           </div>
         </div>
 
-        <div class="col-6">
+        <div class="col-12">
           <div class="form-check form-switch mb-3">
             <input
               class="form-check-input"
@@ -140,29 +167,12 @@
             <bb-popover
               [subject]="'components.add-torrent.popover.paused-state.title' | translate"
               [description]="pausedState"
-              placement="left"
+              placement="right"
             ></bb-popover>
           </div>
         </div>
 
         <div class="col-12">
-          <div class="form-floating mb-3">
-            <ng-select
-              id="root_folder"
-              formControlName="root_folder"
-              [items]="rootFolderOptions"
-              bindValue="value"
-              bindLabel="label"
-              [clearable]="false"
-              [searchable]="false"
-            ></ng-select>
-            <label for="root_folder">{{
-              'components.add-torrent.add-form.root-folder' | translate
-            }}</label>
-          </div>
-        </div>
-
-        <div class="col-6">
           <div class="form-check form-switch mb-3">
             <input
               class="form-check-input"
@@ -177,11 +187,12 @@
             <bb-popover
               [subject]="'components.add-torrent.popover.auto-tmm.title' | translate"
               [description]="autoTMM"
+              placement="right"
             ></bb-popover>
           </div>
         </div>
 
-        <div class="col-6">
+        <div class="col-12">
           <div class="form-check form-switch mb-3">
             <input
               class="form-check-input"
@@ -197,11 +208,12 @@
               [subject]="'components.add-torrent.popover.sequential-download.title' | translate"
               [description]="sequentialDownload"
               placement="left"
+              placement="right"
             ></bb-popover>
           </div>
         </div>
 
-        <div class="col-6">
+        <div class="col-12">
           <div class="form-check form-switch mb-3">
             <input
               class="form-check-input"
@@ -216,6 +228,7 @@
             <bb-popover
               [subject]="'components.add-torrent.popover.first-last-piece-prio.title' | translate"
               [description]="firstLastPiece"
+              placement="right"
             ></bb-popover>
           </div>
         </div>
@@ -335,6 +348,21 @@
     {{ 'general.button.cancel' | translate }}
   </button>
 </div>
+
+<ng-template #rootFolder>
+  <p>{{ 'components.add-torrent.popover.root-folder.description.line1' | translate }}</p>
+  <ul class="mb-0">
+    <li
+      [innerHTML]="'components.add-torrent.popover.root-folder.description.line2' | translate"
+    ></li>
+    <li
+      [innerHTML]="'components.add-torrent.popover.root-folder.description.line3' | translate"
+    ></li>
+    <li
+      [innerHTML]="'components.add-torrent.popover.root-folder.description.line4' | translate"
+    ></li>
+  </ul>
+</ng-template>
 
 <ng-template #skipChecking>
   <p>

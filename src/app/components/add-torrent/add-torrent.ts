@@ -22,7 +22,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbModal, NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AutofocusDirective } from '../../directives/autofocus';
 import { RootFolderMode } from '../../models/add-torrent.model';
 import type { SelectedTorrentInput } from '../../models/command.model';
@@ -93,6 +93,7 @@ export class AddTorrent implements OnInit {
   private readonly typeaheadService = inject(TypeaheadService);
   private readonly qbService = inject(QbService);
   private readonly openFilesService = inject(OpenFilesService);
+  private readonly translateService = inject(TranslateService);
 
   public pending = this.openFilesService.pendingDrafts;
   public queueCount = computed(() => this.pending().length);
@@ -128,9 +129,24 @@ export class AddTorrent implements OnInit {
   });
 
   public rootFolderOptions = [
-    { value: 'unset', label: 'Default (unset)' },
-    { value: 'true', label: 'Create root folder' },
-    { value: 'false', label: 'Do not create root folder' },
+    {
+      value: 'unset',
+      label: this.translateService.instant(
+        'components.add-torrent.add-form.root-folder.option.default',
+      ),
+    },
+    {
+      value: 'true',
+      label: this.translateService.instant(
+        'components.add-torrent.add-form.root-folder.option.create-root-folder',
+      ),
+    },
+    {
+      value: 'false',
+      label: this.translateService.instant(
+        'components.add-torrent.add-form.root-folder.option.do-not-create-root-folder',
+      ),
+    },
   ];
 
   private noSlashValidator(): ValidatorFn {

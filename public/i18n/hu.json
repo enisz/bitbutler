@@ -44,7 +44,14 @@
         "rename": "Átnevezés",
         "skip-hash-checking": "Hash-ellenőrzés kihagyása",
         "paused": "Hozzáadás felfüggesztett állapotban",
-        "root-folder": "Gyökérmappa",
+        "root-folder": {
+          "title": "Gyökérmappa",
+          "option": {
+            "default": "Alapértelmezett",
+            "create-root-folder": "Gyökérmappa létrehozása",
+            "do-not-create-root-folder": "Ne hozzon létre gyökérmappát"
+          }
+        },
         "auto-tmm": "Automatikus Torrentkezelés (TMM) használata",
         "sequential-download": "Sorrendi letöltés engedélyezése",
         "first-last-piece-prio": "Első és utolsó szelet priorizálása",
@@ -59,6 +66,15 @@
         "limits": "Korlátok"
       },
       "popover": {
+        "root-folder": {
+          "title": "Gyökérmappa",
+          "description": {
+            "line1": "Meghatározza, hogy a torrent fájljai egy gyűjtőmappába kerüljenek, vagy közvetlenül a letöltési mentési útvonalra.",
+            "line2": "<strong>Alapértelmezett:</strong> A qBittorrent globális beállításaiban megadott értéket használja.",
+            "line3": "<strong>Gyökérmappa létrehozása:</strong> Mindenképpen létrehoz egy (a torrent neve alapján elnevezett) mappát a letöltési könyvtáron belül.",
+            "line4": "<strong>Ne hozzon létre gyökérmappát:</strong> A fájlokat közvetlenül a letöltési könyvtárba helyezi. Hasznos egyetlen fájlból álló torrentek esetén a felesleges almappák elkerüléséhez."
+          }
+        },
         "skip-hash-checking": {
           "title": "Hash-ellenőrzés kihagyása",
           "description": {
