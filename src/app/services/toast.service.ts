@@ -205,7 +205,11 @@ export class ToastService {
     return this.showHtml(html, { type: 'success', title, duration });
   }
 
-  danger(html: string, title = 'Danger', duration = 6000): string {
+  error(html: string, title = 'Error', duration = 6000): string {
+    return this.showHtml(html, { type: 'danger', title, duration });
+  }
+
+  danger(html: string, title = 'Error', duration = 6000): string {
     return this.showHtml(html, { type: 'danger', title, duration });
   }
 
