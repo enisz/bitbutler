@@ -12,6 +12,7 @@ import {
   faDownload,
   faEye,
   faEyeSlash,
+  faFilePen,
   faFilterCircleXmark,
   faFolderOpen,
   faFolderTree,
@@ -163,13 +164,13 @@ export class GridContextMenuService {
         icon: faPen,
         action: () => this.commandBusService.emit({ type: 'UI_RENAME_TORRENT', torrent: data.row }),
       },
-      // {
-      //   kind: 'item',
-      //   id: 'files.renameFiles',
-      //   label: 'pages.main.grid.context-menu.item.rename-files',
-      //   icon: faFilePen,
-      //   disabled: true,
-      // },
+      {
+        kind: 'item',
+        id: 'files.renameFiles',
+        label: 'pages.main.grid.context-menu.item.rename-files',
+        icon: faFilePen,
+        action: () => this.commandBusService.emit({ type: 'UI_RENAME_FILES', hash: data.row.hash }),
+      },
       {
         kind: 'item',
         id: 'files.category',
