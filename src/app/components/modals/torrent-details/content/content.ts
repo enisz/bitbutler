@@ -39,11 +39,6 @@ export class Content implements TorrentDetailTabComponent, OnInit {
   }
 
   private async load(): Promise<void> {
-    this.toastService.danger(
-      this.translateService.instant(
-        'components.modals.torrent-details.content.error.failed-to-load',
-      ),
-    );
     const serverId = this.serverStoreService.currentServerId();
     const hash = this.hash;
 
