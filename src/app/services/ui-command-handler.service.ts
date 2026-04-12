@@ -234,6 +234,7 @@ export class UiCommandHandlerService {
             });
             contentModalRef.componentInstance.hash = command.hash;
             contentModalRef.componentInstance.tabToOpen = 'content';
+            contentModalRef.componentInstance.context = { editMode: true };
 
             contentModalRef.result.then(() => {}).catch(() => {});
             break;

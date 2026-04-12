@@ -1,17 +1,20 @@
 <cdk-tree [dataSource]="data" [treeControl]="treeControl" class="bb-file-tree">
   <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: hasChild" class="bb-node">
     <div class="bb-row bb-row--dir" (click)="toggle(node)">
-      <button
-        type="button"
-        class="bb-toggle"
-        (click)="$event.stopPropagation(); toggle(node)"
-        [attr.aria-label]="isExpanded(node) ? 'Collapse folder' : 'Expand folder'"
-      >
+      <button type="button" class="bb-toggle" (click)="$event.stopPropagation(); toggle(node)">
         <span class="bb-caret" [class.bb-caret--open]="isExpanded(node)"></span>
       </button>
 
-      <span class="bb-icon bb-icon--folder" aria-hidden="true">📁</span>
-      <span class="bb-name" [title]="node.name">{{ node.name }}</span>
+      <span class="bb-icon">📁</span>
+
+      <span *ngIf="mode === 'view'" class="bb-name">{{ node.name }}</span>
+      <input
+        *ngIf="mode === 'edit'"
+        class="bb-input"
+        [(ngModel)]="node.name"
+        (click)="$event.stopPropagation()"
+        (change)="emitChanges()"
+      />
     </div>
 
     <div class="bb-children" [class.bb-children--open]="isExpanded(node)">
@@ -20,19 +23,37 @@
   </cdk-nested-tree-node>
 
   <cdk-tree-node *cdkTreeNodeDef="let node" class="bb-node">
-    <div class="bb-row bb-row--file">
+    <div class="bb-row bb-row--file" [class.bb-row--skipped]="node.file?.priority === 0">
       <span class="bb-spacer"></span>
-      <span class="bb-icon" aria-hidden="true">📄</span>
-      <span class="bb-name" [title]="node.name">{{ node.name }}</span>
+      <span class="bb-icon">📄</span>
+
+      <span *ngIf="mode === 'view'" class="bb-name" [title]="node.name">{{ node.name }}</span>
+      <input
+        *ngIf="mode === 'edit'"
+        class="bb-input"
+        [(ngModel)]="node.name"
+        (change)="emitChanges()"
+      />
 
       <ng-container *ngIf="showMeta && node.file as f">
-        <span class="bb-meta">
-          <span *ngIf="f.progress !== null" class="bb-pill">
-            {{ formatProgress(f.progress) }}
-          </span>
-          <span *ngIf="f.priority !== null" class="bb-pill"> {{ priorityLabel(f.priority) }} </span>
-          <span class="bb-size"> {{ formatBytes(f.length) }} </span>
-        </span>
+        <div class="bb-meta">
+          <ng-container *ngIf="mode === 'view'">
+            <span *ngIf="f.progress !== undefined" class="bb-pill">{{
+              formatProgress(f.progress)
+            }}</span>
+            <span class="bb-pill">{{ priorityLabel(f.priority) }}</span>
+          </ng-container>
+
+          <ng-container *ngIf="mode === 'edit'">
+            <select class="bb-select" [(ngModel)]="f.priority" (change)="emitChanges()">
+              <option *ngFor="let opt of priorityOptions" [value]="opt.value">
+                {{ opt.label }}
+              </option>
+            </select>
+          </ng-container>
+
+          <span class="bb-size">{{ formatBytes(f.length) }}</span>
+        </div>
       </ng-container>
     </div>
   </cdk-tree-node>

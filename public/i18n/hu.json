@@ -194,7 +194,12 @@
         "title": "Címkék beállítása"
       },
       "torrent-details": {
-        "content": {},
+        "content": {
+          "loading": "Torrent tartalmának a betöltése...",
+          "error": {
+            "failed-to-load": "Nem sikerült a torrent tartalmát betölteni!"
+          }
+        },
         "general": {
           "loading": "Általános tulajdonságok betöltése",
           "name": "Név",

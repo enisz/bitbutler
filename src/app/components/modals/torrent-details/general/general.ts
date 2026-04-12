@@ -78,6 +78,7 @@ interface MergedData {
 })
 export class General implements TorrentDetailTabComponent, OnInit {
   @Input() public hash: string = '';
+  @Input() public context: Record<string, any> = {};
 
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly qbService = inject(QbService);

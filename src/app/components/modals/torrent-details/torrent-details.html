@@ -40,7 +40,7 @@
 <div class="modal-body">
   @if (loadedComponent()) {
     <ng-container
-      *ngComponentOutlet="loadedComponent(); inputs: { hash: torrent()?.hash }"
+      *ngComponentOutlet="loadedComponent(); inputs: { hash: torrent()?.hash, context }"
     ></ng-container>
   } @else {
     <app-bb-spinner></app-bb-spinner>

@@ -194,7 +194,12 @@
         "title": "Set Torrent Tags"
       },
       "torrent-details": {
-        "content": {},
+        "content": {
+          "loading": "Loading Torrent Contents...",
+          "error": {
+            "failed-to-load": "Failed to load torrent contents!"
+          }
+        },
         "general": {
           "loading": "Loading General Properties",
           "name": "Name",

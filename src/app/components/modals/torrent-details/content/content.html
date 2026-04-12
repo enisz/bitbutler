@@ -1,1 +1,16 @@
-<app-bb-file-tree [files]="content" [expandAll]="true" [showMeta]="true"> </app-bb-file-tree>
+@if (loading()) {
+  <div class="w-100 text-center">
+    <app-bb-spinner></app-bb-spinner>
+    <small class="d-block mt-2">{{
+      'components.modals.torrent-details.content.loading' | translate
+    }}</small>
+  </div>
+} @else {
+  <app-bb-file-tree
+    [files]="content"
+    [expandAll]="false"
+    [showMeta]="true"
+    [mode]="editMode() ? 'edit' : 'view'"
+  >
+  </app-bb-file-tree>
+}

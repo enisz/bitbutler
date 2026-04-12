@@ -44,6 +44,7 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
   private peerMap = new Map<string, QbTorrentPeer>();
 
   @Input() public hash: string = '';
+  @Input() public context: Record<string, any> = {};
 
   public theme = this.themeService.effectiveMode;
   public peers: QbTorrentPeer[] = [];

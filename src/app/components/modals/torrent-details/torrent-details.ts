@@ -29,6 +29,7 @@ import { Tab, TorrentDetailTabComponent, TorrentDetailTabId } from './torrent-de
 export class TorrentDetails implements OnInit {
   @Input() hash: string | null = null;
   @Input() public tabToOpen: TorrentDetailTabId = 'general';
+  @Input() public context: Record<string, any> = {};
 
   public readonly activeModal = inject(NgbActiveModal);
   private readonly commandBusService = inject(CommandBusService);
