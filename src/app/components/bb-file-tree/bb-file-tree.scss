@@ -1,39 +1,87 @@
 :host {
   display: block;
-  --bb-indent-line: rgba(255, 255, 255, 0.1);
-  --bb-input-bg: rgba(255, 255, 255, 0.05);
-  --bb-row-hover: rgba(255, 255, 255, 0.08);
+  // Standard indentation width matching image_2.png feel
+  --bb-tree-indent: 1.5rem;
+  color: var(--bs-body-color);
 }
 
-.bb-file-tree {
-  user-select: none;
-  font-family: inherit;
-}
-
-.bb-row {
+.bb-tree-header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
-  min-height: 2rem;
-  transition: background 0.15s ease;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 0.75rem;
+  background: var(--bb-control-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bb-control-radius);
+  font-size: 0.85rem;
 
-  &:hover {
-    background: var(--bb-row-hover);
+  .bb-tree-stats {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: var(--bb-control-placeholder);
+
+    .bb-stat-item {
+      display: flex;
+      align-items: center;
+
+      strong {
+        color: var(--bb-accent);
+        margin-right: 0.35rem;
+      }
+    }
+
+    .bb-stat-divider {
+      color: var(--bs-border-color);
+      opacity: 0.5;
+    }
   }
 
-  &--skipped {
-    opacity: 0.5;
-    .bb-icon {
-      filter: grayscale(1);
+  .bb-tree-total-size {
+    color: var(--bb-control-placeholder);
+
+    strong {
+      color: var(--bb-accent);
+      margin-left: 0.35rem;
     }
   }
 }
 
+.bb-file-tree {
+  user-select: none;
+  // Ensure no base borders on the tree component itself
+  border: none;
+}
+
+// ROW STYLING - Completely clean, no borders (Matches image_2.png style)
+.bb-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.1rem 0.75rem;
+  min-height: 2.25rem;
+  transition: background 0.1s ease;
+
+  // Explicitly ensuring no grid lines
+  border: none !important;
+  border-bottom: none !important;
+
+  // Kept subtle hover for interactivity
+  &:hover {
+    background: var(--bb-hover-list-item-bg);
+  }
+
+  &--skipped {
+    opacity: 0.4;
+    filter: grayscale(0.8);
+  }
+}
+
 .bb-toggle {
-  width: 1.25rem;
-  height: 1.25rem;
+  // Width ensures toggles and spacers align
+  width: 1.5rem;
+  height: 1.5rem;
   padding: 0;
   border: 0;
   background: transparent;
@@ -41,7 +89,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: inherit;
+  color: var(--bb-accent);
+  flex-shrink: 0;
 }
 
 .bb-caret {
@@ -50,82 +99,111 @@
   border-left: 5px solid currentColor;
   border-top: 4px solid transparent;
   border-bottom: 4px solid transparent;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   &--open {
     transform: rotate(90deg);
   }
 }
 
+.bb-icon {
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  // Explicit width to match spacers
+  width: 1.5rem;
+}
+
 .bb-name {
   flex: 1;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  text-overflow: ellipsis; // Truncation logic
+  white-space: nowrap; // Keeps it on one line
   font-size: 0.9rem;
+  cursor: default;
+  // Add a small gap after the icon before text starts
+  padding-left: 0.25rem;
 }
 
 .bb-input {
   flex: 1;
-  background: var(--bb-input-bg);
-  border: 1px solid var(--bb-indent-line);
-  border-radius: 4px;
-  color: inherit;
+  background: var(--bb-control-bg);
+  border: 1px solid var(--bb-control-border);
+  border-radius: 6px;
+  color: var(--bb-control-text);
   font-size: 0.85rem;
   padding: 2px 8px;
   outline: none;
   max-width: 400px;
 
   &:focus {
-    border-color: #666;
+    border-color: var(--bb-control-focus-border);
+    box-shadow: 0 0 0 2px var(--bb-control-focus-ring);
   }
 }
 
 .bb-meta {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.8rem;
   font-size: 0.8rem;
   margin-left: auto;
+  flex-shrink: 0; // Metadata must stay visible
 }
 
 .bb-pill {
-  background: var(--bb-input-bg);
+  // Semi-transparent bg based on theme colors
+  background: color-mix(in srgb, var(--bs-body-color) 8%, transparent);
   padding: 2px 8px;
-  border-radius: 10px;
-  font-size: 0.75rem;
-  border: 1px solid var(--bb-indent-line);
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  border: 1px solid var(--bs-border-color);
+  white-space: nowrap;
 }
 
 .bb-select {
-  background: #222;
-  color: #ccc;
-  border: 1px solid var(--bb-indent-line);
+  // uses generic control bg from theme
+  background: var(--bb-control-bg);
+  color: var(--bb-control-text);
+  border: 1px solid var(--bb-control-border);
   border-radius: 4px;
   font-size: 0.75rem;
   padding: 1px 4px;
+  outline: none;
+
+  &:focus {
+    border-color: var(--bb-control-focus-border);
+  }
 }
 
+// Hierarchy is shown ONLY via indentation now. (Matches image_2.png style)
 .bb-children {
-  margin-left: 0.625rem;
-  padding-left: 0.875rem;
-  border-left: 1px solid var(--bb-indent-line);
+  // removed the border-left hierarchy line
+  border-left: none !important;
+
+  // Base indentation for children
+  margin-left: var(--bb-tree-indent);
+  // Ensure left padding is clear
+  padding-left: 0;
+
   display: none;
   &--open {
     display: block;
   }
 }
 
+// Matches width of toggles to keep icons aligned
 .bb-spacer {
-  width: 1.25rem;
+  width: 1.5rem;
+  flex-shrink: 0;
 }
 
-/* Light Theme Overrides */
-:host-context([data-bs-theme='light']) {
-  --bb-indent-line: rgba(0, 0, 0, 0.1);
-  --bb-input-bg: rgba(0, 0, 0, 0.05);
-  --bb-row-hover: rgba(0, 0, 0, 0.04);
-  .bb-select {
-    background: #fff;
-    color: #333;
-  }
+.bb-size {
+  min-width: 65px;
+  text-align: right;
+  // Tabular nums ensure digits align vertically in lists
+  font-variant-numeric: tabular-nums;
+  color: var(--bb-control-placeholder);
 }

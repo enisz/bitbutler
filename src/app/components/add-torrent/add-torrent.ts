@@ -29,7 +29,6 @@ import type { SelectedTorrentInput } from '../../models/command.model';
 import { HttpError } from '../../models/http.model';
 import { TorrentDraft } from '../../models/torrent-draft.model';
 import { QbTorrentContent } from '../../models/torrent.model';
-import { FilesizePipe } from '../../pipes/filesize-pipe';
 import { AddTorrentSettingsService } from '../../services/add-torrent-settings.service';
 import { OpenFilesService, PendingAddTorrent } from '../../services/open-files.service';
 import { QbService } from '../../services/qb.service';
@@ -66,7 +65,6 @@ type AddTorrentFormValue = {
     ReactiveFormsModule,
     NgbTypeahead,
     BbFileTree,
-    FilesizePipe,
     TagSelect,
     CategorySelect,
     AutofocusDirective,

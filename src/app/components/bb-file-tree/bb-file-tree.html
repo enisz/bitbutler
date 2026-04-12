@@ -1,4 +1,26 @@
-<cdk-tree [dataSource]="data" [treeControl]="treeControl" class="bb-file-tree">
+<div class="bb-tree-header">
+  <div class="bb-tree-stats">
+    @if (totalFolders > 0) {
+      <div class="bb-stat-item">
+        <strong>{{ totalFolders }}</strong> folders
+      </div>
+      <span class="bb-stat-divider">|</span>
+    }
+    <div class="bb-stat-item">
+      <strong>{{ totalFiles }}</strong> files
+    </div>
+  </div>
+  <div class="bb-tree-total-size">
+    Total: <strong>{{ totalSize | fileSize }}</strong>
+  </div>
+</div>
+
+<cdk-tree
+  [dataSource]="data"
+  [treeControl]="treeControl"
+  [trackBy]="trackByPath"
+  class="bb-file-tree"
+>
   <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: hasChild" class="bb-node">
     <div class="bb-row bb-row--dir" (click)="toggle(node)">
       <button type="button" class="bb-toggle" (click)="$event.stopPropagation(); toggle(node)">
@@ -7,7 +29,15 @@
 
       <span class="bb-icon">📁</span>
 
-      <span *ngIf="mode === 'view'" class="bb-name">{{ node.name }}</span>
+      <span
+        *ngIf="mode === 'view'"
+        class="bb-name"
+        [ngbTooltip]="node.name"
+        placement="top-left"
+        [openDelay]="500"
+      >
+        {{ node.name }}
+      </span>
       <input
         *ngIf="mode === 'edit'"
         class="bb-input"
@@ -27,7 +57,15 @@
       <span class="bb-spacer"></span>
       <span class="bb-icon">📄</span>
 
-      <span *ngIf="mode === 'view'" class="bb-name" [title]="node.name">{{ node.name }}</span>
+      <span
+        *ngIf="mode === 'view'"
+        class="bb-name"
+        [ngbTooltip]="node.name"
+        placement="top-left"
+        [openDelay]="500"
+      >
+        {{ node.name }}
+      </span>
       <input
         *ngIf="mode === 'edit'"
         class="bb-input"
@@ -37,10 +75,15 @@
 
       <ng-container *ngIf="showMeta && node.file as f">
         <div class="bb-meta">
+          <span class="bb-size">{{ f.length | fileSize }}</span>
+
           <ng-container *ngIf="mode === 'view'">
-            <span *ngIf="f.progress !== undefined" class="bb-pill">{{
-              formatProgress(f.progress)
-            }}</span>
+            <app-bb-progress
+              [progress]="f.progress"
+              variant="secondary"
+              style="width: 100px"
+            ></app-bb-progress>
+
             <span class="bb-pill">{{ priorityLabel(f.priority) }}</span>
           </ng-container>
 
@@ -51,8 +94,6 @@
               </option>
             </select>
           </ng-container>
-
-          <span class="bb-size">{{ formatBytes(f.length) }}</span>
         </div>
       </ng-container>
     </div>

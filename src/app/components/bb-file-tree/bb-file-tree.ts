@@ -8,8 +8,11 @@ import {
   OnChanges,
   Output,
 } from '@angular/core';
-import { FormsModule } from '@angular/forms'; // Required for Edit Mode
+import { FormsModule } from '@angular/forms';
+import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TorrentFileEntry } from '../../models/torrent-draft.model';
+import { FilesizePipe } from '../../pipes/filesize-pipe';
+import { BbProgress } from '../bb-progress/bb-progress';
 
 export type TreeMode = 'view' | 'edit';
 
@@ -24,7 +27,7 @@ export type BbFileTreeNode = {
 @Component({
   selector: 'app-bb-file-tree',
   standalone: true,
-  imports: [CommonModule, CdkTreeModule, FormsModule],
+  imports: [CommonModule, CdkTreeModule, FormsModule, FilesizePipe, BbProgress, NgbTooltipModule],
   templateUrl: './bb-file-tree.html',
   styleUrl: './bb-file-tree.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -35,11 +38,14 @@ export class BbFileTree implements OnChanges {
   @Input() expandAll = false;
   @Input() showMeta = true;
 
-  // Emits the full flattened list of files whenever an edit is made
   @Output() filesChanged = new EventEmitter<TorrentFileEntry[]>();
 
-  treeControl = new NestedTreeControl<BbFileTreeNode>((n) => n.children ?? []);
-  data: BbFileTreeNode[] = [];
+  public treeControl = new NestedTreeControl<BbFileTreeNode>((n) => n.children ?? []);
+  public data: BbFileTreeNode[] = [];
+
+  public totalFiles = 0;
+  public totalFolders = 0;
+  public totalSize = 0;
 
   readonly priorityOptions = [
     { value: 0, label: 'Skip' },
@@ -48,10 +54,30 @@ export class BbFileTree implements OnChanges {
     { value: 7, label: 'Max' },
   ];
 
+  /**
+   * Track nodes by their full path to prevent flickering during refreshes.
+   */
+  trackByPath = (_index: number, node: BbFileTreeNode): string => node.fullPath;
+
   ngOnChanges(): void {
-    this.data = buildTree(this.files);
+    // 1. Capture expanded state
+    const expandedPaths = new Set<string>();
+    this.treeControl.expansionModel.selected.forEach((node) => {
+      expandedPaths.add(node.fullPath);
+    });
+
+    // 2. Rebuild tree
+    const result = buildTree(this.files);
+    this.data = result.nodes;
+    this.totalFolders = result.folderCount;
+    this.totalFiles = this.files.length;
+    this.totalSize = this.files.reduce((acc, f) => acc + (Number(f.length) || 0), 0);
+
+    // 3. Restore state
     if (this.expandAll) {
       this.expandAllNodes();
+    } else {
+      this.restoreExpansionState(this.data, expandedPaths);
     }
   }
 
@@ -65,10 +91,6 @@ export class BbFileTree implements OnChanges {
     return this.treeControl.isExpanded(node);
   }
 
-  /**
-   * Called on input/select changes in Edit mode.
-   * Flattens the tree back into the TorrentFileEntry format and emits it.
-   */
   emitChanges(): void {
     const flattened = this.flatten(this.data);
     this.filesChanged.emit(flattened);
@@ -78,36 +100,13 @@ export class BbFileTree implements OnChanges {
     let result: TorrentFileEntry[] = [];
     for (const node of nodes) {
       if (node.kind === 'file' && node.file) {
-        // We update the path in case the user renamed the file
-        result.push({
-          ...node.file,
-          path: node.fullPath,
-        });
+        result.push({ ...node.file, path: node.fullPath });
       }
       if (node.children) {
         result = result.concat(this.flatten(node.children));
       }
     }
     return result;
-  }
-
-  // --- Helpers ---
-
-  formatBytes(bytes: number): string {
-    if (!Number.isFinite(bytes) || bytes < 0) return '0 B';
-    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
-    let v = bytes;
-    let i = 0;
-    while (v >= 1024 && i < units.length - 1) {
-      v /= 1024;
-      i++;
-    }
-    return `${v.toFixed(i < 2 ? 1 : 2)} ${units[i]}`;
-  }
-
-  formatProgress(p?: number): string {
-    if (p == null) return '0%';
-    return `${Math.round(Math.max(0, Math.min(1, p)) * 100)}%`;
   }
 
   priorityLabel(prio?: number): string {
@@ -125,12 +124,18 @@ export class BbFileTree implements OnChanges {
     }
   }
 
-  trackByPath = (_: number, node: BbFileTreeNode) => node.fullPath;
+  private restoreExpansionState(nodes: BbFileTreeNode[], expandedPaths: Set<string>): void {
+    if (!nodes || expandedPaths.size === 0) return;
+    for (const node of nodes) {
+      if (node.children?.length && expandedPaths.has(node.fullPath)) {
+        this.treeControl.expand(node);
+        this.restoreExpansionState(node.children, expandedPaths);
+      }
+    }
+  }
 }
 
-// --- Internal Tree Builder Logic ---
-
-function buildTree(files: TorrentFileEntry[]): BbFileTreeNode[] {
+function buildTree(files: TorrentFileEntry[]): { nodes: BbFileTreeNode[]; folderCount: number } {
   const root: BbFileTreeNode = { name: '', fullPath: '', kind: 'dir', children: [] };
   const dirMap = new Map<string, BbFileTreeNode>();
   dirMap.set('', root);
@@ -138,6 +143,10 @@ function buildTree(files: TorrentFileEntry[]): BbFileTreeNode[] {
   for (const f of files ?? []) {
     const normalized = (f.path ?? '').replace(/\\/g, '/').replace(/\/+$/, '').replace(/^\/+/, '');
     if (!normalized) continue;
+
+    if (f.priority === undefined || f.priority === null) {
+      f.priority = 1;
+    }
 
     const parts = normalized.split('/');
     let currentPath = '';
@@ -164,7 +173,7 @@ function buildTree(files: TorrentFileEntry[]): BbFileTreeNode[] {
     }
   }
   sortTree(root);
-  return root.children ?? [];
+  return { nodes: root.children ?? [], folderCount: dirMap.size - 1 };
 }
 
 function sortTree(node: BbFileTreeNode): void {

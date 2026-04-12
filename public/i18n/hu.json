@@ -63,7 +63,8 @@
       },
       "label": {
         "settings": "Beállítások",
-        "limits": "Korlátok"
+        "limits": "Korlátok",
+        "files": "Fájlok"
       },
       "popover": {
         "root-folder": {

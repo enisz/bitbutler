@@ -1,8 +1,11 @@
-import { Component, Input, OnInit, inject, signal } from '@angular/core';
+import { Component, DestroyRef, inject, Input, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { catchError, EMPTY, from, switchMap, take, tap, timer } from 'rxjs';
 import { TorrentFileEntry } from '../../../../models/torrent-draft.model';
 import { QbTorrentContent } from '../../../../models/torrent.model';
 import { QbService } from '../../../../services/qb.service';
+import { ServerSettingsService } from '../../../../services/server-settings.service';
 import { ServerStoreService } from '../../../../services/server-store.service';
 import { ToastService } from '../../../../services/toast.service';
 import { BbFileTree } from '../../../bb-file-tree/bb-file-tree';
@@ -26,45 +29,57 @@ export class Content implements TorrentDetailTabComponent, OnInit {
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
+  private readonly serverSettingsService = inject(ServerSettingsService);
+  private readonly destroyRef = inject(DestroyRef);
 
   public loading = signal<boolean>(true);
   public content: TorrentFileEntry[] = [];
 
-  public ngOnInit(): void {
-    this.load();
+  public async ngOnInit(): Promise<void> {
+    const serverSettings = await this.serverSettingsService.load();
+    const pollingInterval = serverSettings.polling.foreground;
+
+    timer(0, pollingInterval)
+      .pipe(
+        switchMap(() => from(this.load())),
+        take(1), // run only once
+        tap((data: TorrentFileEntry[]) => {
+          this.content = data;
+          this.loading.set(false);
+        }),
+        catchError((e) => {
+          console.error(Content.name, 'load', 'Failed to load torrent contents', e);
+          this.toastService.danger(
+            this.translateService.instant(
+              'components.modals.torrent-details.content.error.failed-to-load',
+            ),
+          );
+          this.loading.set(false);
+          return EMPTY;
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe();
 
     if (this.context['editMode']) {
       this.editMode.set(this.context['editMode']);
     }
   }
 
-  private async load(): Promise<void> {
+  private async load(): Promise<TorrentFileEntry[]> {
     const serverId = this.serverStoreService.currentServerId();
     const hash = this.hash;
 
     if (!serverId) throw new Error('ServerId is missing!');
     if (!hash) throw new Error('Torrent hash is missing!');
 
-    this.loading.set(true);
-
-    try {
-      this.content = (await this.qbService.torrentContents(serverId, hash)).map(
-        (content: QbTorrentContent) => ({
-          length: content.size,
-          path: content.name,
-          priority: content.priority,
-          progress: content.progress,
-        }),
-      );
-    } catch (e) {
-      console.error(Content.name, 'load', 'Failed to fetch torrent content!', e);
-      this.toastService.danger(
-        this.translateService.instant(
-          'components.modals.torrent-details.content.error.failed-to-load',
-        ),
-      );
-    } finally {
-      this.loading.set(false);
-    }
+    return (await this.qbService.torrentContents(serverId, hash)).map(
+      (content: QbTorrentContent) => ({
+        length: content.size,
+        path: content.name,
+        priority: content.priority,
+        progress: content.progress,
+      }),
+    );
   }
 }

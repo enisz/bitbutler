@@ -63,7 +63,8 @@
       },
       "label": {
         "settings": "Settings",
-        "limits": "Limits"
+        "limits": "Limits",
+        "files": "Files"
       },
       "popover": {
         "root-folder": {
