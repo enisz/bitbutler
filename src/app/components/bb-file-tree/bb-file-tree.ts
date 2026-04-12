@@ -43,37 +43,33 @@ export class BbFileTree implements OnChanges {
   public treeControl = new NestedTreeControl<BbFileTreeNode>((n) => n.children ?? []);
   public data: BbFileTreeNode[] = [];
 
+  // Stats
   public totalFiles = 0;
   public totalFolders = 0;
   public totalSize = 0;
+  public selectedSize = 0;
+  public downloadCount = 0;
+  public skipCount = 0;
 
   readonly priorityOptions = [
-    { value: 0, label: 'Skip' },
     { value: 1, label: 'Normal' },
     { value: 6, label: 'High' },
     { value: 7, label: 'Max' },
   ];
 
-  /**
-   * Track nodes by their full path to prevent flickering during refreshes.
-   */
   trackByPath = (_index: number, node: BbFileTreeNode): string => node.fullPath;
 
   ngOnChanges(): void {
-    // 1. Capture expanded state
     const expandedPaths = new Set<string>();
-    this.treeControl.expansionModel.selected.forEach((node) => {
-      expandedPaths.add(node.fullPath);
-    });
+    this.treeControl.expansionModel.selected.forEach((node) => expandedPaths.add(node.fullPath));
 
-    // 2. Rebuild tree
     const result = buildTree(this.files);
     this.data = result.nodes;
     this.totalFolders = result.folderCount;
     this.totalFiles = this.files.length;
-    this.totalSize = this.files.reduce((acc, f) => acc + (Number(f.length) || 0), 0);
 
-    // 3. Restore state
+    this.calculateStats();
+
     if (this.expandAll) {
       this.expandAllNodes();
     } else {
@@ -81,17 +77,52 @@ export class BbFileTree implements OnChanges {
     }
   }
 
+  private calculateStats(): void {
+    this.totalSize = this.files.reduce((acc, f) => acc + (Number(f.length) || 0), 0);
+    this.selectedSize = this.files.reduce(
+      (acc, f) => acc + (f.priority !== 0 ? Number(f.length) || 0 : 0),
+      0,
+    );
+    this.downloadCount = this.files.filter((f) => f.priority !== 0).length;
+    this.skipCount = this.totalFiles - this.downloadCount;
+  }
+
+  /* --- Folder Actions --- */
+
+  toggleFolderSelection(node: BbFileTreeNode, event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.updateRecursive(node, (f) => (f.priority = checked ? 1 : 0));
+    this.emitChanges();
+  }
+
+  setFolderPriority(node: BbFileTreeNode, priority: number): void {
+    this.updateRecursive(node, (f) => {
+      if (f.priority !== 0) f.priority = priority;
+    });
+    this.emitChanges();
+  }
+
+  private updateRecursive(node: BbFileTreeNode, action: (f: TorrentFileEntry) => void): void {
+    if (node.file) action(node.file);
+    node.children?.forEach((child) => this.updateRecursive(child, action));
+  }
+
+  /* --- File Actions --- */
+
+  toggleFileSelection(f: TorrentFileEntry, event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    f.priority = checked ? 1 : 0;
+    this.emitChanges();
+  }
+
+  /* --- Helpers --- */
+
   hasChild = (_: number, node: BbFileTreeNode) => !!node.children?.length;
-
-  toggle(node: BbFileTreeNode): void {
-    this.treeControl.toggle(node);
-  }
-
-  isExpanded(node: BbFileTreeNode): boolean {
-    return this.treeControl.isExpanded(node);
-  }
+  toggle = (node: BbFileTreeNode) => this.treeControl.toggle(node);
+  isExpanded = (node: BbFileTreeNode) => this.treeControl.isExpanded(node);
 
   emitChanges(): void {
+    this.calculateStats();
     const flattened = this.flatten(this.data);
     this.filesChanged.emit(flattened);
   }
@@ -102,15 +133,22 @@ export class BbFileTree implements OnChanges {
       if (node.kind === 'file' && node.file) {
         result.push({ ...node.file, path: node.fullPath });
       }
-      if (node.children) {
-        result = result.concat(this.flatten(node.children));
-      }
+      if (node.children) result = result.concat(this.flatten(node.children));
     }
     return result;
   }
 
-  priorityLabel(prio?: number): string {
-    return this.priorityOptions.find((o) => o.value === prio)?.label ?? `Prio ${prio}`;
+  // Returns true if all files under this directory are NOT skipped
+  isFolderSelected(node: BbFileTreeNode): boolean {
+    const files = this.getNestedFiles(node);
+    return files.length > 0 && files.every((f) => f.priority !== 0);
+  }
+
+  private getNestedFiles(node: BbFileTreeNode): TorrentFileEntry[] {
+    let res: TorrentFileEntry[] = [];
+    if (node.file) res.push(node.file);
+    node.children?.forEach((c) => (res = res.concat(this.getNestedFiles(c))));
+    return res;
   }
 
   private expandAllNodes(): void {
@@ -135,28 +173,22 @@ export class BbFileTree implements OnChanges {
   }
 }
 
+/* --- BuildTree logic remains the same as previous response --- */
 function buildTree(files: TorrentFileEntry[]): { nodes: BbFileTreeNode[]; folderCount: number } {
   const root: BbFileTreeNode = { name: '', fullPath: '', kind: 'dir', children: [] };
   const dirMap = new Map<string, BbFileTreeNode>();
   dirMap.set('', root);
-
   for (const f of files ?? []) {
     const normalized = (f.path ?? '').replace(/\\/g, '/').replace(/\/+$/, '').replace(/^\/+/, '');
     if (!normalized) continue;
-
-    if (f.priority === undefined || f.priority === null) {
-      f.priority = 1;
-    }
-
+    if (f.priority === undefined || f.priority === null) f.priority = 1;
     const parts = normalized.split('/');
     let currentPath = '';
     let parent = root;
-
     for (let i = 0; i < parts.length; i++) {
       const part = parts[i];
       const isLast = i === parts.length - 1;
       currentPath = currentPath ? `${currentPath}/${part}` : part;
-
       if (isLast) {
         parent.children ??= [];
         parent.children.push({ name: part, fullPath: currentPath, kind: 'file', file: f });

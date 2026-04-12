@@ -1,17 +1,16 @@
 <div class="bb-tree-header">
   <div class="bb-tree-stats">
-    @if (totalFolders > 0) {
-      <div class="bb-stat-item">
-        <strong>{{ totalFolders }}</strong> folders
-      </div>
-      <span class="bb-stat-divider">|</span>
-    }
     <div class="bb-stat-item">
-      <strong>{{ totalFiles }}</strong> files
+      <strong>{{ totalFolders }}</strong> folders
+    </div>
+    <span class="bb-stat-divider">|</span>
+    <div class="bb-stat-item">
+      <strong>{{ downloadCount }}</strong> of {{ totalFiles }} files
+      <span class="bb-stat-sub">({{ skipCount }} skipped)</span>
     </div>
   </div>
   <div class="bb-tree-total-size">
-    Total: <strong>{{ totalSize | fileSize }}</strong>
+    <strong>{{ selectedSize | fileSize }}</strong> / {{ totalSize | fileSize }}
   </div>
 </div>
 
@@ -27,17 +26,18 @@
         <span class="bb-caret" [class.bb-caret--open]="isExpanded(node)"></span>
       </button>
 
+      <input
+        *ngIf="mode === 'edit'"
+        type="checkbox"
+        class="bb-checkbox"
+        [checked]="isFolderSelected(node)"
+        (click)="$event.stopPropagation()"
+        (change)="toggleFolderSelection(node, $event)"
+      />
+
       <span class="bb-icon">📁</span>
 
-      <span
-        *ngIf="mode === 'view'"
-        class="bb-name"
-        [ngbTooltip]="node.name"
-        placement="top-left"
-        [openDelay]="500"
-      >
-        {{ node.name }}
-      </span>
+      <span *ngIf="mode === 'view'" class="bb-name">{{ node.name }}</span>
       <input
         *ngIf="mode === 'edit'"
         class="bb-input"
@@ -45,6 +45,17 @@
         (click)="$event.stopPropagation()"
         (change)="emitChanges()"
       />
+
+      <div class="bb-meta" *ngIf="mode === 'edit'">
+        <select
+          class="bb-select"
+          (click)="$event.stopPropagation()"
+          (change)="setFolderPriority(node, +$any($event.target).value)"
+        >
+          <option value="" disabled selected>Set Priority...</option>
+          <option *ngFor="let opt of priorityOptions" [value]="opt.value">{{ opt.label }}</option>
+        </select>
+      </div>
     </div>
 
     <div class="bb-children" [class.bb-children--open]="isExpanded(node)">
@@ -55,6 +66,15 @@
   <cdk-tree-node *cdkTreeNodeDef="let node" class="bb-node">
     <div class="bb-row bb-row--file" [class.bb-row--skipped]="node.file?.priority === 0">
       <span class="bb-spacer"></span>
+
+      <input
+        *ngIf="mode === 'edit' && node.file as f"
+        type="checkbox"
+        class="bb-checkbox"
+        [checked]="f.priority !== 0"
+        (change)="toggleFileSelection(f, $event)"
+      />
+
       <span class="bb-icon">📄</span>
 
       <span
@@ -63,9 +83,8 @@
         [ngbTooltip]="node.name"
         placement="top-left"
         [openDelay]="500"
+        >{{ node.name }}</span
       >
-        {{ node.name }}
-      </span>
       <input
         *ngIf="mode === 'edit'"
         class="bb-input"
@@ -83,16 +102,23 @@
               variant="secondary"
               style="width: 100px"
             ></app-bb-progress>
-
-            <span class="bb-pill">{{ priorityLabel(f.priority) }}</span>
+            <span class="bb-pill" *ngIf="f.priority !== 0">{{
+              f.priority === 7 ? 'Max' : f.priority === 6 ? 'High' : 'Normal'
+            }}</span>
           </ng-container>
 
           <ng-container *ngIf="mode === 'edit'">
-            <select class="bb-select" [(ngModel)]="f.priority" (change)="emitChanges()">
+            <select
+              *ngIf="f.priority !== 0"
+              class="bb-select"
+              [(ngModel)]="f.priority"
+              (change)="emitChanges()"
+            >
               <option *ngFor="let opt of priorityOptions" [value]="opt.value">
                 {{ opt.label }}
               </option>
             </select>
+            <span *ngIf="f.priority === 0" class="bb-skipped-label">Skipped</span>
           </ng-container>
         </div>
       </ng-container>
