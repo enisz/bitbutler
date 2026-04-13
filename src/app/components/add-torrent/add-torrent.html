@@ -322,6 +322,9 @@
         [expandAll]="true"
         [showMeta]="true"
         mode="edit"
+        (filesChanged)="onFilesChanged($event)"
+        (fileRenamed)="onFileRenamed($event)"
+        (folderRenamed)="onFolderRenamed($event)"
       >
       </app-bb-file-tree>
     }

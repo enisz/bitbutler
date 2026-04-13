@@ -262,7 +262,10 @@ export class AddTorrent implements OnInit {
     try {
       await window.bitbutler.qb.torrentsAdd(payload);
       const desired = (raw.rename ?? '').trim();
-      if (desired) {
+      const customized = this.customizedFiles();
+      const hasTreeCustomizations =
+        this.renameQueue.length > 0 || (customized?.some((f) => (f.priority ?? 1) === 0) ?? false);
+      if (desired || hasTreeCustomizations) {
         await this.tryRenameContentAfterAdd(serverId, desired);
       }
       await this.addTorrentSettings.save({
@@ -444,6 +447,18 @@ export class AddTorrent implements OnInit {
           const newRoot = this.sanitizeFolderName(desiredRaw);
           if (newRoot && newRoot !== root) {
             await this.qbService.renameTorrentFolder(serverId, hash, root, newRoot);
+            // Rebase any queued renames whose paths start with the old root prefix
+            const oldPrefix = root + '/';
+            const newPrefix = newRoot + '/';
+            this.renameQueue = this.renameQueue.map((item) => ({
+              ...item,
+              oldPath: item.oldPath.startsWith(oldPrefix)
+                ? newPrefix + item.oldPath.slice(oldPrefix.length)
+                : item.oldPath,
+              newPath: item.newPath.startsWith(oldPrefix)
+                ? newPrefix + item.newPath.slice(oldPrefix.length)
+                : item.newPath,
+            }));
           }
         }
       }
