@@ -197,8 +197,14 @@
       "torrent-details": {
         "content": {
           "loading": "Torrent tartalmának a betöltése...",
+          "button": {
+            "edit": "Szerkesztés",
+            "save": "Mentés",
+            "cancel": "Mégse"
+          },
           "error": {
-            "failed-to-load": "Nem sikerült a torrent tartalmát betölteni!"
+            "failed-to-load": "Nem sikerült a torrent tartalmát betölteni!",
+            "failed-to-save": "Nem sikerült a változtatásokat menteni!"
           }
         },
         "general": {

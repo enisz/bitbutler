@@ -197,8 +197,14 @@
       "torrent-details": {
         "content": {
           "loading": "Loading Torrent Contents...",
+          "button": {
+            "edit": "Edit",
+            "save": "Save",
+            "cancel": "Cancel"
+          },
           "error": {
-            "failed-to-load": "Failed to load torrent contents!"
+            "failed-to-load": "Failed to load torrent contents!",
+            "failed-to-save": "Failed to save changes!"
           }
         },
         "general": {
