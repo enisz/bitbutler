@@ -8,8 +8,36 @@
       <strong>{{ downloadCount }}</strong> of {{ totalFiles }} files
     </div>
   </div>
-  <div class="bb-tree-total-size">
+  <div class="bb-tree-total-size ms-auto">
     <strong>{{ selectedSize | fileSize }}</strong> / {{ totalSize | fileSize }}
+  </div>
+  <div class="button-bar ms-2">
+    <button
+      class="btn btn-sm btn-link text-secondary"
+      [ngbTooltip]="'components.bb-file-tree.button.edit' | translate"
+      tooltipClass="single-line-tooltip"
+      placement="top"
+    >
+      <fa-icon [icon]="icon.faEdit"></fa-icon>
+    </button>
+
+    <button
+      class="btn btn-sm btn-link text-success"
+      [ngbTooltip]="'components.bb-file-tree.button.save' | translate"
+      tooltipClass="single-line-tooltip"
+      placement="top"
+    >
+      <fa-icon [icon]="icon.faCheck"></fa-icon>
+    </button>
+
+    <button
+      class="btn btn-sm btn-link text-danger"
+      [ngbTooltip]="'components.bb-file-tree.button.cancel' | translate"
+      tooltipClass="single-line-tooltip"
+      placement="top"
+    >
+      <fa-icon [icon]="icon.faX"></fa-icon>
+    </button>
   </div>
 </div>
 
@@ -85,7 +113,8 @@
         *ngIf="mode === 'view'"
         class="bb-name"
         [ngbTooltip]="node.name"
-        placement="top-left"
+        tooltipClass="single-line-tooltip"
+        placement="right"
         [openDelay]="500"
         >{{ node.name }}</span
       >

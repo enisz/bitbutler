@@ -4,12 +4,16 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
+  inject,
   Input,
   OnChanges,
   Output,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faCheck, faEdit, faX } from '@fortawesome/free-solid-svg-icons';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TorrentFileEntry } from '../../models/torrent-draft.model';
 import { FilesizePipe } from '../../pipes/filesize-pipe';
 import { BbProgress } from '../bb-progress/bb-progress';
@@ -27,7 +31,16 @@ export type BbFileTreeNode = {
 @Component({
   selector: 'app-bb-file-tree',
   standalone: true,
-  imports: [CommonModule, CdkTreeModule, FormsModule, FilesizePipe, BbProgress, NgbTooltipModule],
+  imports: [
+    CommonModule,
+    CdkTreeModule,
+    FormsModule,
+    FilesizePipe,
+    BbProgress,
+    NgbTooltipModule,
+    FontAwesomeModule,
+    TranslatePipe,
+  ],
   templateUrl: './bb-file-tree.html',
   styleUrl: './bb-file-tree.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -44,6 +57,7 @@ export class BbFileTree implements OnChanges {
 
   public treeControl = new NestedTreeControl<BbFileTreeNode>((n) => n.children ?? []);
   public data: BbFileTreeNode[] = [];
+  private readonly translateService = inject(TranslateService);
 
   public totalFiles = 0;
   public totalFolders = 0;
@@ -56,6 +70,8 @@ export class BbFileTree implements OnChanges {
     { value: 6, label: 'High' },
     { value: 7, label: 'Max' },
   ];
+
+  public icon = { faEdit, faCheck, faX };
 
   trackByPath = (_index: number, node: BbFileTreeNode): string => node.fullPath;
 
