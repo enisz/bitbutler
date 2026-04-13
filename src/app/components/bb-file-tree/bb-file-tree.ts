@@ -39,6 +39,8 @@ export class BbFileTree implements OnChanges {
   @Input() showMeta = true;
 
   @Output() filesChanged = new EventEmitter<TorrentFileEntry[]>();
+  @Output() fileRenamed = new EventEmitter<{ oldPath: string; newPath: string }>();
+  @Output() folderRenamed = new EventEmitter<{ oldPath: string; newPath: string }>();
 
   public treeControl = new NestedTreeControl<BbFileTreeNode>((n) => n.children ?? []);
   public data: BbFileTreeNode[] = [];
@@ -117,6 +119,34 @@ export class BbFileTree implements OnChanges {
     const checked = (event.target as HTMLInputElement).checked;
     f.priority = checked ? 1 : 0;
     this.emitChanges();
+  }
+
+  onFileNameChange(node: BbFileTreeNode): void {
+    const oldPath = node.fullPath;
+    const slashIdx = oldPath.lastIndexOf('/');
+    const parentPath = slashIdx >= 0 ? oldPath.slice(0, slashIdx) : '';
+    const newPath = parentPath ? `${parentPath}/${node.name}` : node.name;
+    this.fileRenamed.emit({ oldPath, newPath });
+    node.fullPath = newPath;
+    this.emitChanges();
+  }
+
+  onFolderNameChange(node: BbFileTreeNode): void {
+    const oldPath = node.fullPath;
+    const slashIdx = oldPath.lastIndexOf('/');
+    const parentPath = slashIdx >= 0 ? oldPath.slice(0, slashIdx) : '';
+    const newPath = parentPath ? `${parentPath}/${node.name}` : node.name;
+    this.folderRenamed.emit({ oldPath, newPath });
+    node.fullPath = newPath;
+    this.updateChildPaths(node.children ?? [], oldPath, newPath);
+    this.emitChanges();
+  }
+
+  private updateChildPaths(nodes: BbFileTreeNode[], oldPrefix: string, newPrefix: string): void {
+    for (const child of nodes) {
+      child.fullPath = newPrefix + child.fullPath.slice(oldPrefix.length);
+      if (child.children) this.updateChildPaths(child.children, oldPrefix, newPrefix);
+    }
   }
 
   hasChild = (_: number, node: BbFileTreeNode) => !!node.children?.length;

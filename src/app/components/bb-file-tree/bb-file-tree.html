@@ -47,7 +47,7 @@
         class="bb-input"
         [(ngModel)]="node.name"
         (click)="$event.stopPropagation()"
-        (change)="emitChanges()"
+        (change)="onFolderNameChange(node)"
       />
 
       <div class="bb-meta" *ngIf="mode === 'edit'">
@@ -93,7 +93,7 @@
         *ngIf="mode === 'edit'"
         class="bb-input"
         [(ngModel)]="node.name"
-        (change)="emitChanges()"
+        (change)="onFileNameChange(node)"
       />
 
       <ng-container *ngIf="showMeta && node.file as f">
