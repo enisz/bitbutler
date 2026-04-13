@@ -11,6 +11,7 @@
     [expandAll]="false"
     [showMeta]="true"
     [allowEdit]="true"
+    [startInEditMode]="!!context['editMode']"
     (saved)="onSaved($event)"
   >
   </app-bb-file-tree>

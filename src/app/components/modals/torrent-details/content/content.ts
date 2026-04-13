@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, DestroyRef, inject, Input, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, inject, Input, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { catchError, EMPTY, from, switchMap, take, tap, timer } from 'rxjs';
@@ -19,7 +19,7 @@ import { TorrentDetailTabComponent } from '../torrent-details.interface';
   templateUrl: './content.html',
   styleUrl: './content.scss',
 })
-export class Content implements TorrentDetailTabComponent, OnInit, AfterViewInit {
+export class Content implements TorrentDetailTabComponent, OnInit {
   @Input() public hash: string = '';
   @Input() public context: Record<string, any> = {};
 
@@ -33,15 +33,7 @@ export class Content implements TorrentDetailTabComponent, OnInit, AfterViewInit
   public loading = signal<boolean>(true);
   public content: TorrentFileEntry[] = [];
 
-  public ngAfterViewInit(): void {
-    console.log(Content.name, 'ngAfterViewInit', 'Loading torrent contents...', this.content);
-  }
-
   public async ngOnInit(): Promise<void> {
-    console.log(Content.name, 'ngOnInit', 'Loading torrent contents...', this.content);
-    setTimeout(() => {
-      console.log(Content.name, 'ngOnInit', 'Loading torrent contents...', this.content);
-    }, 1000);
     const serverSettings = await this.serverSettingsService.load();
     const pollingInterval = serverSettings.polling.foreground;
 

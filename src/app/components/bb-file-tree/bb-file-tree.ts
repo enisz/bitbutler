@@ -52,6 +52,7 @@ export type FileTreeSaveEvent = {
 export class BbFileTree implements OnChanges {
   @Input({ required: true }) files: TorrentFileEntry[] = [];
   @Input() allowEdit = false;
+  @Input() startInEditMode = false;
   @Input() expandAll = false;
   @Input() showMeta = true;
   @Input() hideProgress = false;
@@ -61,6 +62,7 @@ export class BbFileTree implements OnChanges {
   public editMode = signal(false);
   private originalFiles: TorrentFileEntry[] = [];
   private renameQueue: { type: 'file' | 'folder'; oldPath: string; newPath: string }[] = [];
+  private autoEditTriggered = false;
 
   public treeControl = new NestedTreeControl<BbFileTreeNode>((n) => n.children ?? []);
   public data: BbFileTreeNode[] = [];
@@ -107,6 +109,11 @@ export class BbFileTree implements OnChanges {
       this.expandAllNodes();
     } else {
       this.restoreExpansionState(this.data, expandedPaths);
+    }
+
+    if (this.startInEditMode && !this.autoEditTriggered && this.data.length > 0) {
+      this.autoEditTriggered = true;
+      this.enterEditMode();
     }
   }
 
