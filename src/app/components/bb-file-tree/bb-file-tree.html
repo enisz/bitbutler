@@ -93,10 +93,10 @@
         <div class="bb-meta">
           <select
             class="bb-select"
+            [ngModel]="getDominantFolderPriority(node)"
             (click)="$event.stopPropagation()"
             (change)="setFolderPriority(node, +$any($event.target).value)"
           >
-            <option value="" disabled selected>Set Priority...</option>
             @for (opt of priorityOptions; track opt.value) {
               <option [value]="opt.value">{{ opt.label }}</option>
             }

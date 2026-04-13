@@ -50,6 +50,7 @@
 .bb-file-tree {
   user-select: none;
   border: none;
+  overflow: hidden;
 }
 
 .bb-row {
@@ -58,11 +59,23 @@
   gap: 0.5rem;
   padding: 0.1rem 0.75rem;
   min-height: 2.25rem;
-  transition: background 0.1s ease;
   border: none !important;
   border-bottom: none !important;
+  position: relative;
 
-  &:hover {
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -9999px;
+    right: -9999px;
+    background: transparent;
+    transition: background 0.1s ease;
+    z-index: -1;
+  }
+
+  &:hover::before {
     background: var(--bb-hover-list-item-bg);
   }
 

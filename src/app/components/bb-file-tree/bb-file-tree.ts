@@ -254,6 +254,13 @@ export class BbFileTree implements OnChanges {
     return files.some((f) => f.priority !== 0) && files.some((f) => f.priority === 0);
   }
 
+  getDominantFolderPriority(node: BbFileTreeNode): number {
+    const files = this.getNestedFiles(node).filter((f) => f.priority !== 0);
+    if (files.length === 0) return 1;
+    const first = files[0].priority ?? 1;
+    return files.every((f) => f.priority === first) ? first : 1;
+  }
+
   private getNestedFiles(node: BbFileTreeNode): TorrentFileEntry[] {
     let res: TorrentFileEntry[] = [];
     if (node.file) res.push(node.file);
