@@ -34,8 +34,8 @@ export class Content implements TorrentDetailTabComponent, OnInit {
 
   public loading = signal<boolean>(true);
   public isSaving = signal<boolean>(false);
-  public originalContent: TorrentFileEntry[] = [];
-  public renameQueue: { type: 'file' | 'folder'; oldPath: string; newPath: string }[] = [];
+  private originalContent: TorrentFileEntry[] = [];
+  private renameQueue: { type: 'file' | 'folder'; oldPath: string; newPath: string }[] = [];
   public content: TorrentFileEntry[] = [];
 
   public async ngOnInit(): Promise<void> {
@@ -76,7 +76,7 @@ export class Content implements TorrentDetailTabComponent, OnInit {
   }
 
   public cancelEdit(): void {
-    this.content = this.originalContent;
+    this.content = structuredClone(this.originalContent);
     this.renameQueue = [];
     this.editMode.set(false);
   }
@@ -87,12 +87,14 @@ export class Content implements TorrentDetailTabComponent, OnInit {
 
     this.isSaving.set(true);
     try {
-      for (const item of this.renameQueue) {
+      while (this.renameQueue.length) {
+        const item = this.renameQueue[0];
         if (item.type === 'folder') {
           await this.qbService.renameTorrentFolder(serverId, this.hash, item.oldPath, item.newPath);
         } else {
           await this.qbService.renameTorrentFile(serverId, this.hash, item.oldPath, item.newPath);
         }
+        this.renameQueue.shift();
       }
 
       for (const file of this.content) {
