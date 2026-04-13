@@ -27,7 +27,7 @@ import { AutofocusDirective } from '../../directives/autofocus';
 import { RootFolderMode } from '../../models/add-torrent.model';
 import type { SelectedTorrentInput } from '../../models/command.model';
 import { HttpError } from '../../models/http.model';
-import { TorrentDraft } from '../../models/torrent-draft.model';
+import { TorrentDraft, TorrentFileEntry } from '../../models/torrent-draft.model';
 import { QbTorrentContent } from '../../models/torrent.model';
 import { AddTorrentSettingsService } from '../../services/add-torrent-settings.service';
 import { OpenFilesService, PendingAddTorrent } from '../../services/open-files.service';
@@ -100,6 +100,8 @@ export class AddTorrent implements OnInit {
   public manualDraft = signal<TorrentDraft | null>(null);
   public readonly searchSavePaths = this.typeaheadService.searchSavePaths;
   public showTree = signal(false);
+  public customizedFiles = signal<TorrentFileEntry[] | null>(null);
+  private renameQueue: { type: 'file' | 'folder'; oldPath: string; newPath: string }[] = [];
 
   private selectedTorrentFile = signal<SelectedTorrentInput | null>(null);
   public initialQueueCount = signal(0);
@@ -206,6 +208,18 @@ export class AddTorrent implements OnInit {
     } else {
       this.activeModal.dismiss();
     }
+  }
+
+  public onFilesChanged(files: TorrentFileEntry[]): void {
+    this.customizedFiles.set(files);
+  }
+
+  public onFileRenamed(event: { oldPath: string; newPath: string }): void {
+    this.renameQueue.push({ type: 'file', ...event });
+  }
+
+  public onFolderRenamed(event: { oldPath: string; newPath: string }): void {
+    this.renameQueue.push({ type: 'folder', ...event });
   }
 
   public async handleSubmit(event: SubmitEvent | PointerEvent): Promise<void> {
@@ -336,6 +350,8 @@ export class AddTorrent implements OnInit {
     this.addForm.patchValue(oldSettings);
     this.addForm.get('file')?.setErrors(null);
     this.manualDraft.set(null);
+    this.customizedFiles.set(null);
+    this.renameQueue = [];
 
     if (!draft || draft.error) {
       this.showTree.set(false);
@@ -415,23 +431,44 @@ export class AddTorrent implements OnInit {
 
       if (isSingleFile) {
         const oldName = (contents[0]?.name ?? '').trim();
-        if (!oldName) return;
-
-        const newName = this.buildSingleFileName(oldName, desiredRaw);
-        if (!newName || newName === oldName) return;
-
-        await this.qbService.renameTorrentFile(serverId, hash, oldName, newName);
-        return;
+        if (oldName) {
+          const newName = this.buildSingleFileName(oldName, desiredRaw);
+          if (newName && newName !== oldName) {
+            await this.qbService.renameTorrentFile(serverId, hash, oldName, newName);
+          }
+        }
+      } else {
+        const firstPath = (contents[0]?.name ?? '').trim();
+        const root = this.getRootFolder(firstPath);
+        if (root) {
+          const newRoot = this.sanitizeFolderName(desiredRaw);
+          if (newRoot && newRoot !== root) {
+            await this.qbService.renameTorrentFolder(serverId, hash, root, newRoot);
+          }
+        }
       }
 
-      const firstPath = (contents[0]?.name ?? '').trim();
-      const root = this.getRootFolder(firstPath);
-      if (!root) return;
+      // Apply individual file/folder renames queued from the tree
+      while (this.renameQueue.length) {
+        const item = this.renameQueue[0];
+        if (item.type === 'folder') {
+          await this.qbService.renameTorrentFolder(serverId, hash, item.oldPath, item.newPath);
+        } else {
+          await this.qbService.renameTorrentFile(serverId, hash, item.oldPath, item.newPath);
+        }
+        this.renameQueue.shift();
+      }
 
-      const newRoot = this.sanitizeFolderName(desiredRaw);
-      if (!newRoot || newRoot === root) return;
-
-      await this.qbService.renameTorrentFolder(serverId, hash, root, newRoot);
+      // Apply priority = 0 for files the user unchecked (matched by array position)
+      const customized = this.customizedFiles();
+      if (customized) {
+        const skipped = customized
+          .map((f, i) => ({ index: i, priority: f.priority ?? 1 }))
+          .filter((f) => f.priority === 0);
+        for (const f of skipped) {
+          await this.qbService.setFilePriority(serverId, hash, [f.index], 0);
+        }
+      }
     } catch (error) {
       console.error(
         AddTorrent.name,
