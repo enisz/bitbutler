@@ -455,7 +455,7 @@ export class QbService {
     priority: number,
   ): Promise<void> {
     const h = (hash ?? '').trim();
-    const clean = (ids ?? []).filter((id) => typeof id === 'number');
+    const clean = ids ?? [];
     if (!h) return Promise.reject(new Error('hash is required'));
     if (clean.length === 0) return Promise.reject(new Error('ids are required'));
 
