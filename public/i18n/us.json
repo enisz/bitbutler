@@ -117,10 +117,11 @@
       "default-title": "Loading..."
     },
     "bb-file-tree": {
-      "button": {
-        "edit": "Edit",
-        "save": "Save",
-        "cancel": "Cancel"
+      "priority-option": {
+        "skipped": "Skipped",
+        "normal": "Normal",
+        "high": "High",
+        "max": "Max"
       }
     },
     "bb-popover": {},
@@ -453,9 +454,7 @@
       },
       "action": {
         "remove-default": "Remove Default",
-        "make-default": "Make Default",
-        "edit": "Edit",
-        "delete": "Delete"
+        "make-default": "Make Default"
       },
       "error": {
         "connection-failed": "Connection failed.",
@@ -853,7 +852,8 @@
       "set": "Set",
       "save": "Save",
       "update": "Update",
-      "show": "Show"
+      "show": "Show",
+      "edit": "Edit"
     },
     "form": {
       "feedback": {

@@ -117,10 +117,11 @@
       "default-title": "Betöltés..."
     },
     "bb-file-tree": {
-      "button": {
-        "edit": "Szerkesztés",
-        "save": "Mentés",
-        "cancel": "Mégse"
+      "priority-option": {
+        "skipped": "Kihagy",
+        "normal": "Normál",
+        "high": "Magas",
+        "max": "Maximum"
       }
     },
     "bb-popover": {},
@@ -451,9 +452,7 @@
       },
       "action": {
         "remove-default": "Alapértelmezés törlése",
-        "make-default": "Legyen alapértelmezett",
-        "edit": "Szerkesztés",
-        "delete": "Törlés"
+        "make-default": "Legyen alapértelmezett"
       },
       "error": {
         "connection-failed": "A csatlakozás sikertelen.",
@@ -851,7 +850,8 @@
       "set": "Beállítás",
       "save": "Mentés",
       "update": "Frissítés",
-      "show": "Megjelenítés"
+      "show": "Megjelenítés",
+      "edit": "Szerkesztés"
     },
     "form": {
       "feedback": {

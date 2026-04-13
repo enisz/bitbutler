@@ -31,6 +31,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { TimeagoPipe } from 'ngx-timeago';
 import { take, timer } from 'rxjs';
 import { DEFAULT_DATE_FORMATTER } from '../../../../app.const';
+import { TooltipOverflow } from '../../../../directives/tooltip-overflow';
 import { GeneralSettings } from '../../../../models/general-settings.model';
 import { QbTorrentProperties } from '../../../../models/qbittorrent.model';
 import { QbTorrentContent, Torrent } from '../../../../models/torrent.model';
@@ -70,6 +71,8 @@ interface MergedData {
     RatioPipe,
     BbPopover,
     TranslatePipe,
+    NgbTooltip,
+    TooltipOverflow,
   ],
   providers: [DatePipe, TimeagoPipe, HumanizeDurationPipe, RatioLimitPipe, RatioPipe],
   templateUrl: './general.html',

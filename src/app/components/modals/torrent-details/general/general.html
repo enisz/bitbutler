@@ -14,7 +14,13 @@
           <span class="section-header">{{
             'components.modals.torrent-details.general.name' | translate
           }}</span>
-          <span class="section-value">{{ torrent()!.data.name }}</span>
+          <span
+            class="section-value"
+            [ngbTooltip]="torrent()!.data.name"
+            bbTooltipOverflow
+            placement="bottom"
+            >{{ torrent()!.data.name }}</span
+          >
 
           <div class="button-container">
             <button
@@ -80,7 +86,13 @@
           <span class="section-header">{{
             'components.modals.torrent-details.general.remote-path' | translate
           }}</span>
-          <span class="section-value">{{ torrent()!.data.content_path }}</span>
+          <span
+            class="section-value"
+            [ngbTooltip]="torrent()!.data.content_path"
+            bbTooltipOverflow
+            placement="bottom"
+            >{{ torrent()!.data.content_path }}</span
+          >
           <div class="button-container">
             <button
               class="btn btn-sm btn-link"
@@ -88,7 +100,7 @@
               [ngbTooltip]="
                 'components.modals.torrent-details.general.copy-to-clipboard' | translate
               "
-              (click)="toClipboard('remote path', torrent()!.data.save_path)"
+              (click)="toClipboard('remote path', torrent()!.data.content_path)"
             >
               <fa-icon [icon]="icons['faClipboard']" />
             </button>
@@ -99,7 +111,13 @@
             <span class="section-header">{{
               'components.modals.torrent-details.general.local-path' | translate
             }}</span>
-            <span class="section-value">{{ localPath() }}</span>
+            <span
+              class="section-value"
+              [ngbTooltip]="localPath()"
+              bbTooltipOverflow
+              placement="bottom"
+              >{{ localPath() }}</span
+            >
             <div class="button-container">
               <button
                 class="btn btn-sm btn-link"
@@ -142,7 +160,11 @@
           <span class="section-header">{{
             'components.modals.torrent-details.general.state' | translate
           }}</span>
-          <span class="section-value"
+          <span
+            class="section-value"
+            [ngbTooltip]="'torrent.state.' + torrent()!.data.state | translate"
+            bbTooltipOverflow
+            placement="bottom"
             >{{ 'torrent.state.' + torrent()!.data.state | translate }}
           </span>
           <div class="button-container">
