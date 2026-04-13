@@ -33,6 +33,9 @@ export class Content implements TorrentDetailTabComponent, OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   public loading = signal<boolean>(true);
+  public isSaving = signal<boolean>(false);
+  public originalContent: TorrentFileEntry[] = [];
+  public renameQueue: { type: 'file' | 'folder'; oldPath: string; newPath: string }[] = [];
   public content: TorrentFileEntry[] = [];
 
   public async ngOnInit(): Promise<void> {
@@ -66,8 +69,70 @@ export class Content implements TorrentDetailTabComponent, OnInit {
     }
   }
 
-  public filesChanged(files: TorrentFileEntry[]): void {
-    console.log(Content.name, 'filesChanged', files);
+  public enterEditMode(): void {
+    this.originalContent = structuredClone(this.content);
+    this.renameQueue = [];
+    this.editMode.set(true);
+  }
+
+  public cancelEdit(): void {
+    this.content = this.originalContent;
+    this.renameQueue = [];
+    this.editMode.set(false);
+  }
+
+  public async saveEdit(): Promise<void> {
+    const serverId = this.serverStoreService.currentServerId();
+    if (!serverId) return;
+
+    this.isSaving.set(true);
+    try {
+      for (const item of this.renameQueue) {
+        if (item.type === 'folder') {
+          await this.qbService.renameTorrentFolder(serverId, this.hash, item.oldPath, item.newPath);
+        } else {
+          await this.qbService.renameTorrentFile(serverId, this.hash, item.oldPath, item.newPath);
+        }
+      }
+
+      for (const file of this.content) {
+        if (file.index === undefined) continue;
+        const original = this.originalContent.find((f) => f.index === file.index);
+        if (original && original.priority !== file.priority) {
+          await this.qbService.setFilePriority(
+            serverId,
+            this.hash,
+            [file.index],
+            file.priority ?? 0,
+          );
+        }
+      }
+
+      this.renameQueue = [];
+      this.originalContent = [];
+      this.editMode.set(false);
+    } catch (e) {
+      console.error(Content.name, 'saveEdit', 'Failed to save changes', e);
+      this.toastService.danger(
+        this.translateService.instant(
+          'components.modals.torrent-details.content.error.failed-to-save',
+        ),
+      );
+    } finally {
+      this.isSaving.set(false);
+    }
+  }
+
+  public onFileRenamed(event: { oldPath: string; newPath: string }): void {
+    this.renameQueue.push({ type: 'file', ...event });
+  }
+
+  public onFolderRenamed(event: { oldPath: string; newPath: string }): void {
+    this.renameQueue.push({ type: 'folder', ...event });
+  }
+
+  public onFilesChanged(files: TorrentFileEntry[]): void {
+    this.content = files;
   }
 
   private async load(): Promise<TorrentFileEntry[]> {
@@ -83,6 +148,7 @@ export class Content implements TorrentDetailTabComponent, OnInit {
         path: content.name,
         priority: content.priority,
         progress: content.progress,
+        index: content.index,
       }),
     );
   }
