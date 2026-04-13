@@ -6,6 +6,7 @@ export type TorrentFileEntry = {
   length: number;
   priority?: number;
   progress?: number;
+  index?: number; // qBittorrent file index; present when loaded from the API
 };
 
 export type TorrentDraftError = {
