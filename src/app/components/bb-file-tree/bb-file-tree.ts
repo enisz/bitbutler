@@ -122,24 +122,28 @@ export class BbFileTree implements OnChanges {
   }
 
   onFileNameChange(node: BbFileTreeNode): void {
-    const oldPath = node.fullPath;
-    const slashIdx = oldPath.lastIndexOf('/');
-    const parentPath = slashIdx >= 0 ? oldPath.slice(0, slashIdx) : '';
-    const newPath = parentPath ? `${parentPath}/${node.name}` : node.name;
+    const { oldPath, newPath } = this.deriveRenamePayload(node);
+    if (oldPath === newPath) return;
     this.fileRenamed.emit({ oldPath, newPath });
     node.fullPath = newPath;
     this.emitChanges();
   }
 
   onFolderNameChange(node: BbFileTreeNode): void {
-    const oldPath = node.fullPath;
-    const slashIdx = oldPath.lastIndexOf('/');
-    const parentPath = slashIdx >= 0 ? oldPath.slice(0, slashIdx) : '';
-    const newPath = parentPath ? `${parentPath}/${node.name}` : node.name;
+    const { oldPath, newPath } = this.deriveRenamePayload(node);
+    if (oldPath === newPath) return;
     this.folderRenamed.emit({ oldPath, newPath });
     node.fullPath = newPath;
     this.updateChildPaths(node.children ?? [], oldPath, newPath);
     this.emitChanges();
+  }
+
+  private deriveRenamePayload(node: BbFileTreeNode): { oldPath: string; newPath: string } {
+    const oldPath = node.fullPath;
+    const slashIdx = oldPath.lastIndexOf('/');
+    const parentPath = slashIdx >= 0 ? oldPath.slice(0, slashIdx) : '';
+    const newPath = parentPath ? `${parentPath}/${node.name}` : node.name;
+    return { oldPath, newPath };
   }
 
   private updateChildPaths(nodes: BbFileTreeNode[], oldPrefix: string, newPrefix: string): void {
