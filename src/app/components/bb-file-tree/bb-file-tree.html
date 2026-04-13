@@ -6,7 +6,6 @@
     <span class="bb-stat-divider">|</span>
     <div class="bb-stat-item">
       <strong>{{ downloadCount }}</strong> of {{ totalFiles }} files
-      <span class="bb-stat-sub">({{ skipCount }} skipped)</span>
     </div>
   </div>
   <div class="bb-tree-total-size">
@@ -21,7 +20,11 @@
   class="bb-file-tree"
 >
   <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: hasChild" class="bb-node">
-    <div class="bb-row bb-row--dir" (click)="toggle(node)">
+    <div
+      class="bb-row bb-row--dir"
+      [class.bb-row--skipped]="isFolderEmpty(node)"
+      (click)="toggle(node)"
+    >
       <button type="button" class="bb-toggle" (click)="$event.stopPropagation(); toggle(node)">
         <span class="bb-caret" [class.bb-caret--open]="isExpanded(node)"></span>
       </button>
@@ -31,6 +34,7 @@
         type="checkbox"
         class="bb-checkbox"
         [checked]="isFolderSelected(node)"
+        [indeterminate]="isFolderIndeterminate(node)"
         (click)="$event.stopPropagation()"
         (change)="toggleFolderSelection(node, $event)"
       />

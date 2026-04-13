@@ -66,6 +66,10 @@ export class Content implements TorrentDetailTabComponent, OnInit {
     }
   }
 
+  public filesChanged(files: TorrentFileEntry[]): void {
+    console.log(Content.name, 'filesChanged', files);
+  }
+
   private async load(): Promise<TorrentFileEntry[]> {
     const serverId = this.serverStoreService.currentServerId();
     const hash = this.hash;

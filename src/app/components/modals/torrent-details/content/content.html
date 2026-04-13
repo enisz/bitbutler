@@ -11,6 +11,7 @@
     [expandAll]="false"
     [showMeta]="true"
     [mode]="editMode() ? 'edit' : 'view'"
+    (filesChanged)="filesChanged($event)"
   >
   </app-bb-file-tree>
 }
