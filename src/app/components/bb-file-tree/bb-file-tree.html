@@ -14,6 +14,7 @@
   <div class="button-bar ms-2" *ngIf="allowEdit">
     <button
       *ngIf="!editMode()"
+      type="button"
       class="btn btn-sm btn-link text-secondary"
       [ngbTooltip]="'components.bb-file-tree.button.edit' | translate"
       tooltipClass="single-line-tooltip"
@@ -25,6 +26,7 @@
 
     <button
       *ngIf="editMode()"
+      type="button"
       class="btn btn-sm btn-link text-success"
       [ngbTooltip]="'components.bb-file-tree.button.save' | translate"
       tooltipClass="single-line-tooltip"
@@ -36,6 +38,7 @@
 
     <button
       *ngIf="editMode()"
+      type="button"
       class="btn btn-sm btn-link text-danger"
       [ngbTooltip]="'components.bb-file-tree.button.cancel' | translate"
       tooltipClass="single-line-tooltip"
