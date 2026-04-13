@@ -50,32 +50,19 @@
 .bb-file-tree {
   user-select: none;
   border: none;
-  overflow: hidden;
 }
 
 .bb-row {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.1rem 0.75rem;
+  padding: 0.1rem 0.75rem 0.1rem calc(var(--node-depth, 0) * var(--bb-tree-indent) + 0.75rem);
   min-height: 2.25rem;
+  transition: background 0.1s ease;
   border: none !important;
   border-bottom: none !important;
-  position: relative;
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: -9999px;
-    right: -9999px;
-    background: transparent;
-    transition: background 0.1s ease;
-    z-index: -1;
-  }
-
-  &:hover::before {
+  &:hover {
     background: var(--bb-hover-list-item-bg);
   }
 
@@ -166,6 +153,24 @@
   font-weight: 500;
   border: 1px solid var(--bs-border-color);
   white-space: nowrap;
+
+  &--normal {
+    color: var(--bs-success);
+    border-color: var(--bs-success);
+    background: color-mix(in srgb, var(--bs-success) 12%, transparent);
+  }
+
+  &--high {
+    color: var(--bs-warning);
+    border-color: var(--bs-warning);
+    background: color-mix(in srgb, var(--bs-warning) 12%, transparent);
+  }
+
+  &--max {
+    color: var(--bs-danger);
+    border-color: var(--bs-danger);
+    background: color-mix(in srgb, var(--bs-danger) 12%, transparent);
+  }
 }
 
 .bb-select {
@@ -175,6 +180,7 @@
   border-radius: 4px;
   font-size: 0.75rem;
   padding: 1px 4px;
+  margin-right: 5px;
   outline: none;
 
   &:focus {
@@ -184,8 +190,6 @@
 
 .bb-children {
   border-left: none !important;
-  margin-left: var(--bb-tree-indent);
-  padding-left: 0;
   display: none;
 
   &--open {

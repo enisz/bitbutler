@@ -1,4 +1,13 @@
-import { Component, DestroyRef, inject, Input, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  inject,
+  Input,
+  OnChanges,
+  OnInit,
+  signal,
+  SimpleChanges,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { catchError, EMPTY, from, switchMap, take, tap, timer } from 'rxjs';
@@ -19,7 +28,7 @@ import { TorrentDetailTabComponent } from '../torrent-details.interface';
   templateUrl: './content.html',
   styleUrl: './content.scss',
 })
-export class Content implements TorrentDetailTabComponent, OnInit {
+export class Content implements TorrentDetailTabComponent, OnChanges, OnInit {
   @Input() public hash: string = '';
   @Input() public context: Record<string, any> = {};
 
@@ -32,6 +41,14 @@ export class Content implements TorrentDetailTabComponent, OnInit {
 
   public loading = signal<boolean>(true);
   public content: TorrentFileEntry[] = [];
+  public startInEditMode = false;
+
+  public ngOnChanges(changes: SimpleChanges): void {
+    if (changes['context']?.currentValue?.['editMode']) {
+      this.startInEditMode = true;
+      this.context['editMode'] = false;
+    }
+  }
 
   public async ngOnInit(): Promise<void> {
     const serverSettings = await this.serverSettingsService.load();

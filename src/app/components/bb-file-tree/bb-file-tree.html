@@ -61,6 +61,7 @@
     <div
       class="bb-row bb-row--dir"
       [class.bb-row--skipped]="isFolderEmpty(node)"
+      [style.--node-depth]="getNodeDepth(node)"
       (click)="toggle(node)"
     >
       <button type="button" class="bb-toggle" (click)="$event.stopPropagation(); toggle(node)">
@@ -111,7 +112,11 @@
   </cdk-nested-tree-node>
 
   <cdk-tree-node *cdkTreeNodeDef="let node" class="bb-node">
-    <div class="bb-row bb-row--file" [class.bb-row--skipped]="node.file?.priority === 0">
+    <div
+      class="bb-row bb-row--file"
+      [class.bb-row--skipped]="node.file?.priority === 0"
+      [style.--node-depth]="getNodeDepth(node)"
+    >
       <span class="bb-spacer"></span>
 
       @if (editMode()) {
@@ -150,9 +155,15 @@
               <app-bb-progress [progress]="f.progress" variant="secondary"></app-bb-progress>
             }
             @if (f.priority !== 0) {
-              <span class="bb-pill">{{
-                f.priority === 7 ? 'Max' : f.priority === 6 ? 'High' : 'Normal'
-              }}</span>
+              <span
+                class="bb-pill"
+                [ngClass]="{
+                  'bb-pill--normal': f.priority === 1,
+                  'bb-pill--high': f.priority === 6,
+                  'bb-pill--max': f.priority === 7,
+                }"
+                >{{ f.priority === 7 ? 'Max' : f.priority === 6 ? 'High' : 'Normal' }}</span
+              >
             }
           } @else {
             @if (f.priority !== 0) {

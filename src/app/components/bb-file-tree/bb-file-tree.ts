@@ -1,4 +1,5 @@
 import { CdkTreeModule, NestedTreeControl } from '@angular/cdk/tree';
+import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -44,6 +45,7 @@ export type FileTreeSaveEvent = {
     TooltipOverflow,
     FontAwesomeModule,
     TranslatePipe,
+    CommonModule,
   ],
   templateUrl: './bb-file-tree.html',
   styleUrl: './bb-file-tree.scss',
@@ -63,6 +65,7 @@ export class BbFileTree implements OnChanges {
   private originalFiles: TorrentFileEntry[] = [];
   private renameQueue: { type: 'file' | 'folder'; oldPath: string; newPath: string }[] = [];
   private autoEditTriggered = false;
+  private folderPriorityMemory = new Map<string, number>();
 
   public treeControl = new NestedTreeControl<BbFileTreeNode>((n) => n.children ?? []);
   public data: BbFileTreeNode[] = [];
@@ -120,6 +123,7 @@ export class BbFileTree implements OnChanges {
   public enterEditMode(): void {
     this.originalFiles = structuredClone(this.files);
     this.renameQueue = [];
+    this.folderPriorityMemory.clear();
     this.editMode.set(true);
   }
 
@@ -137,6 +141,7 @@ export class BbFileTree implements OnChanges {
     else this.restoreExpansionState(this.data, expandedPaths);
     this.renameQueue = [];
     this.originalFiles = [];
+    this.folderPriorityMemory.clear();
     this.editMode.set(false);
   }
 
@@ -145,6 +150,7 @@ export class BbFileTree implements OnChanges {
     this.saved.emit({ files, renames: [...this.renameQueue] });
     this.renameQueue = [];
     this.originalFiles = [];
+    this.folderPriorityMemory.clear();
     this.editMode.set(false);
   }
 
@@ -171,7 +177,13 @@ export class BbFileTree implements OnChanges {
 
   toggleFolderSelection(node: BbFileTreeNode, event: Event): void {
     const checked = (event.target as HTMLInputElement).checked;
-    this.updateRecursive(node, (f) => (f.priority = checked ? 1 : 0));
+    if (checked) {
+      const restored = this.folderPriorityMemory.get(node.fullPath) ?? 1;
+      this.updateRecursive(node, (f) => (f.priority = restored));
+    } else {
+      this.folderPriorityMemory.set(node.fullPath, this.getDominantFolderPriority(node));
+      this.updateRecursive(node, (f) => (f.priority = 0));
+    }
     this.calculateStats();
   }
 
@@ -226,6 +238,8 @@ export class BbFileTree implements OnChanges {
   hasChild = (_: number, node: BbFileTreeNode) => !!node.children?.length;
   toggle = (node: BbFileTreeNode) => this.treeControl.toggle(node);
   isExpanded = (node: BbFileTreeNode) => this.treeControl.isExpanded(node);
+  getNodeDepth = (node: BbFileTreeNode): number =>
+    node.fullPath ? node.fullPath.split('/').length - 1 : 0;
 
   private flatten(nodes: BbFileTreeNode[], parentPath: string): TorrentFileEntry[] {
     let result: TorrentFileEntry[] = [];
