@@ -11,43 +11,44 @@
   <div class="bb-tree-total-size ms-auto">
     <strong>{{ selectedSize | fileSize }}</strong> / {{ totalSize | fileSize }}
   </div>
-  <div class="button-bar ms-2" *ngIf="allowEdit">
-    <button
-      *ngIf="!editMode()"
-      type="button"
-      class="btn btn-sm btn-link text-secondary"
-      [ngbTooltip]="'components.bb-file-tree.button.edit' | translate"
-      tooltipClass="single-line-tooltip"
-      placement="top"
-      (click)="enterEditMode()"
-    >
-      <fa-icon [icon]="icon.faEdit"></fa-icon>
-    </button>
+  @if (allowEdit) {
+    <div class="button-bar ms-2">
+      @if (!editMode()) {
+        <button
+          type="button"
+          class="btn btn-sm btn-link text-secondary"
+          [ngbTooltip]="'components.bb-file-tree.button.edit' | translate"
+          tooltipClass="single-line-tooltip"
+          placement="top"
+          (click)="enterEditMode()"
+        >
+          <fa-icon [icon]="icon.faEdit"></fa-icon>
+        </button>
+      } @else {
+        <button
+          type="button"
+          class="btn btn-sm btn-link text-success"
+          [ngbTooltip]="'components.bb-file-tree.button.save' | translate"
+          tooltipClass="single-line-tooltip"
+          placement="top"
+          (click)="saveEdit()"
+        >
+          <fa-icon [icon]="icon.faCheck"></fa-icon>
+        </button>
 
-    <button
-      *ngIf="editMode()"
-      type="button"
-      class="btn btn-sm btn-link text-success"
-      [ngbTooltip]="'components.bb-file-tree.button.save' | translate"
-      tooltipClass="single-line-tooltip"
-      placement="top"
-      (click)="saveEdit()"
-    >
-      <fa-icon [icon]="icon.faCheck"></fa-icon>
-    </button>
-
-    <button
-      *ngIf="editMode()"
-      type="button"
-      class="btn btn-sm btn-link text-danger"
-      [ngbTooltip]="'components.bb-file-tree.button.cancel' | translate"
-      tooltipClass="single-line-tooltip"
-      placement="top"
-      (click)="cancelEdit()"
-    >
-      <fa-icon [icon]="icon.faX"></fa-icon>
-    </button>
-  </div>
+        <button
+          type="button"
+          class="btn btn-sm btn-link text-danger"
+          [ngbTooltip]="'components.bb-file-tree.button.cancel' | translate"
+          tooltipClass="single-line-tooltip"
+          placement="top"
+          (click)="cancelEdit()"
+        >
+          <fa-icon [icon]="icon.faX"></fa-icon>
+        </button>
+      }
+    </div>
+  }
 </div>
 
 <cdk-tree
@@ -66,37 +67,42 @@
         <span class="bb-caret" [class.bb-caret--open]="isExpanded(node)"></span>
       </button>
 
-      <input
-        *ngIf="editMode()"
-        type="checkbox"
-        class="bb-checkbox"
-        [checked]="isFolderSelected(node)"
-        [indeterminate]="isFolderIndeterminate(node)"
-        (click)="$event.stopPropagation()"
-        (change)="toggleFolderSelection(node, $event)"
-      />
+      @if (editMode()) {
+        <input
+          type="checkbox"
+          class="bb-checkbox"
+          [checked]="isFolderSelected(node)"
+          [indeterminate]="isFolderIndeterminate(node)"
+          (click)="$event.stopPropagation()"
+          (change)="toggleFolderSelection(node, $event)"
+        />
+      }
 
       <span class="bb-icon">📁</span>
 
-      <span *ngIf="!editMode()" class="bb-name">{{ node.name }}</span>
-      <input
-        *ngIf="editMode()"
-        class="bb-input"
-        [(ngModel)]="node.name"
-        (click)="$event.stopPropagation()"
-        (change)="onFolderNameChange(node)"
-      />
-
-      <div class="bb-meta" *ngIf="editMode()">
-        <select
-          class="bb-select"
+      @if (!editMode()) {
+        <span class="bb-name">{{ node.name }}</span>
+      } @else {
+        <input
+          class="bb-input"
+          [(ngModel)]="node.name"
           (click)="$event.stopPropagation()"
-          (change)="setFolderPriority(node, +$any($event.target).value)"
-        >
-          <option value="" disabled selected>Set Priority...</option>
-          <option *ngFor="let opt of priorityOptions" [value]="opt.value">{{ opt.label }}</option>
-        </select>
-      </div>
+          (change)="onFolderNameChange(node)"
+        />
+
+        <div class="bb-meta">
+          <select
+            class="bb-select"
+            (click)="$event.stopPropagation()"
+            (change)="setFolderPriority(node, +$any($event.target).value)"
+          >
+            <option value="" disabled selected>Set Priority...</option>
+            @for (opt of priorityOptions; track opt.value) {
+              <option [value]="opt.value">{{ opt.label }}</option>
+            }
+          </select>
+        </div>
+      }
     </div>
 
     <div class="bb-children" [class.bb-children--open]="isExpanded(node)">
@@ -108,62 +114,61 @@
     <div class="bb-row bb-row--file" [class.bb-row--skipped]="node.file?.priority === 0">
       <span class="bb-spacer"></span>
 
-      <input
-        *ngIf="editMode() && node.file as f"
-        type="checkbox"
-        class="bb-checkbox"
-        [checked]="f.priority !== 0"
-        (change)="toggleFileSelection(f, $event)"
-      />
+      @if (editMode()) {
+        @if (node.file; as f) {
+          <input
+            type="checkbox"
+            class="bb-checkbox"
+            [checked]="f.priority !== 0"
+            (change)="toggleFileSelection(f, $event)"
+          />
+        }
+      }
 
       <span class="bb-icon">📄</span>
 
-      <span
-        *ngIf="!editMode()"
-        class="bb-name"
-        [ngbTooltip]="node.name"
-        tooltipClass="single-line-tooltip"
-        placement="right"
-        [openDelay]="500"
-        >{{ node.name }}</span
-      >
-      <input
-        *ngIf="editMode()"
-        class="bb-input"
-        [(ngModel)]="node.name"
-        (change)="onFileNameChange(node)"
-      />
+      @if (!editMode()) {
+        <span
+          class="bb-name"
+          [ngbTooltip]="node.name"
+          tooltipClass="single-line-tooltip"
+          bbTooltipOverflow
+          placement="top"
+          [openDelay]="500"
+          >{{ node.name }}</span
+        >
+      } @else {
+        <input class="bb-input" [(ngModel)]="node.name" (change)="onFileNameChange(node)" />
+      }
 
-      <ng-container *ngIf="showMeta && node.file as f">
+      @if (showMeta && node.file; as f) {
         <div class="bb-meta">
           <span class="bb-size">{{ f.length | fileSize }}</span>
 
-          <ng-container *ngIf="!editMode()">
-            <app-bb-progress
-              [progress]="f.progress"
-              variant="secondary"
-              style="width: 100px"
-            ></app-bb-progress>
-            <span class="bb-pill" *ngIf="f.priority !== 0">{{
-              f.priority === 7 ? 'Max' : f.priority === 6 ? 'High' : 'Normal'
-            }}</span>
-          </ng-container>
-
-          <ng-container *ngIf="editMode()">
-            <select
-              *ngIf="f.priority !== 0"
-              class="bb-select"
-              [(ngModel)]="f.priority"
-              (change)="calculateStats()"
-            >
-              <option *ngFor="let opt of priorityOptions" [value]="opt.value">
-                {{ opt.label }}
-              </option>
-            </select>
-            <span *ngIf="f.priority === 0" class="bb-skipped-label">Skipped</span>
-          </ng-container>
+          @if (!editMode()) {
+            @if (!hideProgress) {
+              <app-bb-progress [progress]="f.progress" variant="secondary"></app-bb-progress>
+            }
+            @if (f.priority !== 0) {
+              <span class="bb-pill">{{
+                f.priority === 7 ? 'Max' : f.priority === 6 ? 'High' : 'Normal'
+              }}</span>
+            }
+          } @else {
+            @if (f.priority !== 0) {
+              <select class="bb-select" [(ngModel)]="f.priority" (change)="calculateStats()">
+                @for (opt of priorityOptions; track opt.value) {
+                  <option [value]="opt.value">{{ opt.label }}</option>
+                }
+              </select>
+            } @else {
+              <span class="bb-skipped-label">{{
+                'components.bb-file-tree.priority-option.skipped' | translate
+              }}</span>
+            }
+          }
         </div>
-      </ng-container>
+      }
     </div>
   </cdk-tree-node>
 </cdk-tree>

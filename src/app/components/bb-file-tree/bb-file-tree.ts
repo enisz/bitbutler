@@ -1,5 +1,4 @@
 import { CdkTreeModule, NestedTreeControl } from '@angular/cdk/tree';
-import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -15,6 +14,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCheck, faEdit, faX } from '@fortawesome/free-solid-svg-icons';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { TooltipOverflow } from '../../directives/tooltip-overflow';
 import { TorrentFileEntry } from '../../models/torrent-draft.model';
 import { FilesizePipe } from '../../pipes/filesize-pipe';
 import { BbProgress } from '../bb-progress/bb-progress';
@@ -36,12 +36,12 @@ export type FileTreeSaveEvent = {
   selector: 'app-bb-file-tree',
   standalone: true,
   imports: [
-    CommonModule,
     CdkTreeModule,
     FormsModule,
     FilesizePipe,
     BbProgress,
     NgbTooltipModule,
+    TooltipOverflow,
     FontAwesomeModule,
     TranslatePipe,
   ],
@@ -54,6 +54,7 @@ export class BbFileTree implements OnChanges {
   @Input() allowEdit = false;
   @Input() expandAll = false;
   @Input() showMeta = true;
+  @Input() hideProgress = false;
 
   @Output() saved = new EventEmitter<FileTreeSaveEvent>();
 
@@ -72,9 +73,18 @@ export class BbFileTree implements OnChanges {
   public downloadCount = 0;
 
   readonly priorityOptions = [
-    { value: 1, label: 'Normal' },
-    { value: 6, label: 'High' },
-    { value: 7, label: 'Max' },
+    {
+      value: 1,
+      label: this.translateService.instant('components.bb-file-tree.priority-option.normal'),
+    },
+    {
+      value: 6,
+      label: this.translateService.instant('components.bb-file-tree.priority-option.high'),
+    },
+    {
+      value: 7,
+      label: this.translateService.instant('components.bb-file-tree.priority-option.max'),
+    },
   ];
 
   public icon = { faEdit, faCheck, faX };
