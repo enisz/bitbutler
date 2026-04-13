@@ -6,12 +6,39 @@
     }}</small>
   </div>
 } @else {
+  <div class="d-flex justify-content-end gap-2 mb-3">
+    @if (!editMode()) {
+      <button type="button" class="btn btn-sm btn-secondary" (click)="enterEditMode()">
+        {{ 'components.modals.torrent-details.content.button.edit' | translate }}
+      </button>
+    } @else {
+      <button
+        type="button"
+        class="btn btn-sm btn-secondary"
+        [disabled]="isSaving()"
+        (click)="cancelEdit()"
+      >
+        {{ 'components.modals.torrent-details.content.button.cancel' | translate }}
+      </button>
+      <button
+        type="button"
+        class="btn btn-sm btn-primary"
+        [disabled]="isSaving()"
+        (click)="saveEdit()"
+      >
+        {{ 'components.modals.torrent-details.content.button.save' | translate }}
+      </button>
+    }
+  </div>
+
   <app-bb-file-tree
     [files]="content"
     [expandAll]="false"
     [showMeta]="true"
     [mode]="editMode() ? 'edit' : 'view'"
-    (filesChanged)="filesChanged($event)"
+    (filesChanged)="onFilesChanged($event)"
+    (fileRenamed)="onFileRenamed($event)"
+    (folderRenamed)="onFolderRenamed($event)"
   >
   </app-bb-file-tree>
 }
