@@ -8,6 +8,7 @@ import {
   Input,
   OnChanges,
   Output,
+  signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -18,14 +19,17 @@ import { TorrentFileEntry } from '../../models/torrent-draft.model';
 import { FilesizePipe } from '../../pipes/filesize-pipe';
 import { BbProgress } from '../bb-progress/bb-progress';
 
-export type TreeMode = 'view' | 'edit';
-
 export type BbFileTreeNode = {
   name: string;
   fullPath: string;
   kind: 'dir' | 'file';
   children?: BbFileTreeNode[];
   file?: TorrentFileEntry;
+};
+
+export type FileTreeSaveEvent = {
+  files: TorrentFileEntry[];
+  renames: { type: 'file' | 'folder'; oldPath: string; newPath: string }[];
 };
 
 @Component({
@@ -47,13 +51,15 @@ export type BbFileTreeNode = {
 })
 export class BbFileTree implements OnChanges {
   @Input({ required: true }) files: TorrentFileEntry[] = [];
-  @Input() mode: TreeMode = 'view';
+  @Input() allowEdit = false;
   @Input() expandAll = false;
   @Input() showMeta = true;
 
-  @Output() filesChanged = new EventEmitter<TorrentFileEntry[]>();
-  @Output() fileRenamed = new EventEmitter<{ oldPath: string; newPath: string }>();
-  @Output() folderRenamed = new EventEmitter<{ oldPath: string; newPath: string }>();
+  @Output() saved = new EventEmitter<FileTreeSaveEvent>();
+
+  public editMode = signal(false);
+  private originalFiles: TorrentFileEntry[] = [];
+  private renameQueue: { type: 'file' | 'folder'; oldPath: string; newPath: string }[] = [];
 
   public treeControl = new NestedTreeControl<BbFileTreeNode>((n) => n.children ?? []);
   public data: BbFileTreeNode[] = [];
@@ -76,6 +82,8 @@ export class BbFileTree implements OnChanges {
   trackByPath = (_index: number, node: BbFileTreeNode): string => node.fullPath;
 
   ngOnChanges(): void {
+    if (this.editMode()) return;
+
     const expandedPaths = new Set<string>();
     this.treeControl.expansionModel.selected.forEach((node) => expandedPaths.add(node.fullPath));
 
@@ -92,7 +100,38 @@ export class BbFileTree implements OnChanges {
     }
   }
 
-  private calculateStats(): void {
+  public enterEditMode(): void {
+    this.originalFiles = structuredClone(this.files);
+    this.renameQueue = [];
+    this.editMode.set(true);
+  }
+
+  public cancelEdit(): void {
+    for (let i = 0; i < this.originalFiles.length && i < this.files.length; i++) {
+      this.files[i].priority = this.originalFiles[i].priority;
+    }
+    const expandedPaths = new Set<string>();
+    this.treeControl.expansionModel.selected.forEach((n) => expandedPaths.add(n.fullPath));
+    const result = buildTree(this.files);
+    this.data = result.nodes;
+    this.totalFiles = this.files.length;
+    this.calculateStats();
+    if (this.expandAll) this.expandAllNodes();
+    else this.restoreExpansionState(this.data, expandedPaths);
+    this.renameQueue = [];
+    this.originalFiles = [];
+    this.editMode.set(false);
+  }
+
+  public saveEdit(): void {
+    const files = this.flatten(this.data, '');
+    this.saved.emit({ files, renames: [...this.renameQueue] });
+    this.renameQueue = [];
+    this.originalFiles = [];
+    this.editMode.set(false);
+  }
+
+  calculateStats(): void {
     this.totalSize = this.files.reduce((acc, f) => acc + (Number(f.length) || 0), 0);
     this.selectedSize = this.files.reduce(
       (acc, f) => acc + (f.priority !== 0 ? Number(f.length) || 0 : 0),
@@ -116,14 +155,14 @@ export class BbFileTree implements OnChanges {
   toggleFolderSelection(node: BbFileTreeNode, event: Event): void {
     const checked = (event.target as HTMLInputElement).checked;
     this.updateRecursive(node, (f) => (f.priority = checked ? 1 : 0));
-    this.emitChanges();
+    this.calculateStats();
   }
 
   setFolderPriority(node: BbFileTreeNode, priority: number): void {
     this.updateRecursive(node, (f) => {
       if (f.priority !== 0) f.priority = priority;
     });
-    this.emitChanges();
+    this.calculateStats();
   }
 
   private updateRecursive(node: BbFileTreeNode, action: (f: TorrentFileEntry) => void): void {
@@ -134,24 +173,22 @@ export class BbFileTree implements OnChanges {
   toggleFileSelection(f: TorrentFileEntry, event: Event): void {
     const checked = (event.target as HTMLInputElement).checked;
     f.priority = checked ? 1 : 0;
-    this.emitChanges();
+    this.calculateStats();
   }
 
   onFileNameChange(node: BbFileTreeNode): void {
     const { oldPath, newPath } = this.deriveRenamePayload(node);
     if (oldPath === newPath) return;
-    this.fileRenamed.emit({ oldPath, newPath });
+    this.renameQueue.push({ type: 'file', oldPath, newPath });
     node.fullPath = newPath;
-    this.emitChanges();
   }
 
   onFolderNameChange(node: BbFileTreeNode): void {
     const { oldPath, newPath } = this.deriveRenamePayload(node);
     if (oldPath === newPath) return;
-    this.folderRenamed.emit({ oldPath, newPath });
+    this.renameQueue.push({ type: 'folder', oldPath, newPath });
     node.fullPath = newPath;
     this.updateChildPaths(node.children ?? [], oldPath, newPath);
-    this.emitChanges();
   }
 
   private deriveRenamePayload(node: BbFileTreeNode): { oldPath: string; newPath: string } {
@@ -172,12 +209,6 @@ export class BbFileTree implements OnChanges {
   hasChild = (_: number, node: BbFileTreeNode) => !!node.children?.length;
   toggle = (node: BbFileTreeNode) => this.treeControl.toggle(node);
   isExpanded = (node: BbFileTreeNode) => this.treeControl.isExpanded(node);
-
-  emitChanges(): void {
-    this.calculateStats();
-    const flattened = this.flatten(this.data, '');
-    this.filesChanged.emit(flattened);
-  }
 
   private flatten(nodes: BbFileTreeNode[], parentPath: string): TorrentFileEntry[] {
     let result: TorrentFileEntry[] = [];

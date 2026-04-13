@@ -27,7 +27,7 @@ import { AutofocusDirective } from '../../directives/autofocus';
 import { RootFolderMode } from '../../models/add-torrent.model';
 import type { SelectedTorrentInput } from '../../models/command.model';
 import { HttpError } from '../../models/http.model';
-import { TorrentDraft, TorrentFileEntry } from '../../models/torrent-draft.model';
+import { TorrentDraft } from '../../models/torrent-draft.model';
 import { QbTorrentContent } from '../../models/torrent.model';
 import { AddTorrentSettingsService } from '../../services/add-torrent-settings.service';
 import { OpenFilesService, PendingAddTorrent } from '../../services/open-files.service';
@@ -35,7 +35,7 @@ import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
 import { TypeaheadService } from '../../services/typeahead.service';
-import { BbFileTree } from '../bb-file-tree/bb-file-tree';
+import { BbFileTree, FileTreeSaveEvent } from '../bb-file-tree/bb-file-tree';
 import { BbPopover } from '../bb-popover/bb-popover';
 import { CategorySelect } from '../category-select/category-select';
 import { TorrentExists } from '../modals/torrent-exists/torrent-exists';
@@ -100,8 +100,7 @@ export class AddTorrent implements OnInit {
   public manualDraft = signal<TorrentDraft | null>(null);
   public readonly searchSavePaths = this.typeaheadService.searchSavePaths;
   public showTree = signal(false);
-  public customizedFiles = signal<TorrentFileEntry[] | null>(null);
-  private renameQueue: { type: 'file' | 'folder'; oldPath: string; newPath: string }[] = [];
+  private savedFileState: FileTreeSaveEvent | null = null;
 
   private selectedTorrentFile = signal<SelectedTorrentInput | null>(null);
   public initialQueueCount = signal(0);
@@ -210,16 +209,8 @@ export class AddTorrent implements OnInit {
     }
   }
 
-  public onFilesChanged(files: TorrentFileEntry[]): void {
-    this.customizedFiles.set(files);
-  }
-
-  public onFileRenamed(event: { oldPath: string; newPath: string }): void {
-    this.renameQueue.push({ type: 'file', ...event });
-  }
-
-  public onFolderRenamed(event: { oldPath: string; newPath: string }): void {
-    this.renameQueue.push({ type: 'folder', ...event });
+  public onTreeSaved(event: FileTreeSaveEvent): void {
+    this.savedFileState = event;
   }
 
   public async handleSubmit(event: SubmitEvent | PointerEvent): Promise<void> {
@@ -262,9 +253,10 @@ export class AddTorrent implements OnInit {
     try {
       await window.bitbutler.qb.torrentsAdd(payload);
       const desired = (raw.rename ?? '').trim();
-      const customized = this.customizedFiles();
+      const state = this.savedFileState;
       const hasTreeCustomizations =
-        this.renameQueue.length > 0 || (customized?.some((f) => (f.priority ?? 1) === 0) ?? false);
+        state != null &&
+        (state.renames.length > 0 || state.files.some((f) => (f.priority ?? 1) === 0));
       if (desired || hasTreeCustomizations) {
         await this.tryRenameContentAfterAdd(serverId, desired);
       }
@@ -353,8 +345,7 @@ export class AddTorrent implements OnInit {
     this.addForm.patchValue(oldSettings);
     this.addForm.get('file')?.setErrors(null);
     this.manualDraft.set(null);
-    this.customizedFiles.set(null);
-    this.renameQueue = [];
+    this.savedFileState = null;
 
     if (!draft || draft.error) {
       this.showTree.set(false);
@@ -432,52 +423,55 @@ export class AddTorrent implements OnInit {
 
       const isSingleFile = contents.length === 1 && !this.hasFolderPrefix(contents[0]?.name ?? '');
 
+      const renames = this.savedFileState ? [...this.savedFileState.renames] : [];
+      const savedFiles = this.savedFileState?.files ?? null;
+
       if (isSingleFile) {
-        const oldName = (contents[0]?.name ?? '').trim();
-        if (oldName) {
-          const newName = this.buildSingleFileName(oldName, desiredRaw);
-          if (newName && newName !== oldName) {
-            await this.qbService.renameTorrentFile(serverId, hash, oldName, newName);
+        if (desiredRaw) {
+          const oldName = (contents[0]?.name ?? '').trim();
+          if (oldName) {
+            const newName = this.buildSingleFileName(oldName, desiredRaw);
+            if (newName && newName !== oldName) {
+              await this.qbService.renameTorrentFile(serverId, hash, oldName, newName);
+            }
           }
         }
       } else {
-        const firstPath = (contents[0]?.name ?? '').trim();
-        const root = this.getRootFolder(firstPath);
-        if (root) {
-          const newRoot = this.sanitizeFolderName(desiredRaw);
-          if (newRoot && newRoot !== root) {
-            await this.qbService.renameTorrentFolder(serverId, hash, root, newRoot);
-            // Rebase any queued renames whose paths start with the old root prefix
-            const oldPrefix = root + '/';
-            const newPrefix = newRoot + '/';
-            this.renameQueue = this.renameQueue.map((item) => ({
-              ...item,
-              oldPath: item.oldPath.startsWith(oldPrefix)
-                ? newPrefix + item.oldPath.slice(oldPrefix.length)
-                : item.oldPath,
-              newPath: item.newPath.startsWith(oldPrefix)
-                ? newPrefix + item.newPath.slice(oldPrefix.length)
-                : item.newPath,
-            }));
+        if (desiredRaw) {
+          const firstPath = (contents[0]?.name ?? '').trim();
+          const root = this.getRootFolder(firstPath);
+          if (root) {
+            const newRoot = this.sanitizeFolderName(desiredRaw);
+            if (newRoot && newRoot !== root) {
+              await this.qbService.renameTorrentFolder(serverId, hash, root, newRoot);
+              const oldPrefix = root + '/';
+              const newPrefix = newRoot + '/';
+              for (let i = 0; i < renames.length; i++) {
+                renames[i] = {
+                  ...renames[i],
+                  oldPath: renames[i].oldPath.startsWith(oldPrefix)
+                    ? newPrefix + renames[i].oldPath.slice(oldPrefix.length)
+                    : renames[i].oldPath,
+                  newPath: renames[i].newPath.startsWith(oldPrefix)
+                    ? newPrefix + renames[i].newPath.slice(oldPrefix.length)
+                    : renames[i].newPath,
+                };
+              }
+            }
           }
         }
       }
 
-      // Apply individual file/folder renames queued from the tree
-      while (this.renameQueue.length) {
-        const item = this.renameQueue[0];
+      for (const item of renames) {
         if (item.type === 'folder') {
           await this.qbService.renameTorrentFolder(serverId, hash, item.oldPath, item.newPath);
         } else {
           await this.qbService.renameTorrentFile(serverId, hash, item.oldPath, item.newPath);
         }
-        this.renameQueue.shift();
       }
 
-      // Apply priority = 0 for files the user unchecked (matched by array position)
-      const customized = this.customizedFiles();
-      if (customized) {
-        const skipped = customized
+      if (savedFiles) {
+        const skipped = savedFiles
           .map((f, i) => ({ index: i, priority: f.priority ?? 1 }))
           .filter((f) => f.priority === 0);
         for (const f of skipped) {

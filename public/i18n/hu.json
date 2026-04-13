@@ -116,7 +116,13 @@
     "app-loader": {
       "default-title": "Betöltés..."
     },
-    "bb-file-tree": {},
+    "bb-file-tree": {
+      "button": {
+        "edit": "Szerkesztés",
+        "save": "Mentés",
+        "cancel": "Mégse"
+      }
+    },
     "bb-popover": {},
     "bb-progress": {},
     "bb-spinner": {},
@@ -197,11 +203,6 @@
       "torrent-details": {
         "content": {
           "loading": "Torrent tartalmának a betöltése...",
-          "button": {
-            "edit": "Szerkesztés",
-            "save": "Mentés",
-            "cancel": "Mégse"
-          },
           "error": {
             "failed-to-load": "Nem sikerült a torrent tartalmát betölteni!",
             "failed-to-save": "Nem sikerült a változtatásokat menteni!"

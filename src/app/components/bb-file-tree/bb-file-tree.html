@@ -11,30 +11,36 @@
   <div class="bb-tree-total-size ms-auto">
     <strong>{{ selectedSize | fileSize }}</strong> / {{ totalSize | fileSize }}
   </div>
-  <div class="button-bar ms-2">
+  <div class="button-bar ms-2" *ngIf="allowEdit">
     <button
+      *ngIf="!editMode()"
       class="btn btn-sm btn-link text-secondary"
       [ngbTooltip]="'components.bb-file-tree.button.edit' | translate"
       tooltipClass="single-line-tooltip"
       placement="top"
+      (click)="enterEditMode()"
     >
       <fa-icon [icon]="icon.faEdit"></fa-icon>
     </button>
 
     <button
+      *ngIf="editMode()"
       class="btn btn-sm btn-link text-success"
       [ngbTooltip]="'components.bb-file-tree.button.save' | translate"
       tooltipClass="single-line-tooltip"
       placement="top"
+      (click)="saveEdit()"
     >
       <fa-icon [icon]="icon.faCheck"></fa-icon>
     </button>
 
     <button
+      *ngIf="editMode()"
       class="btn btn-sm btn-link text-danger"
       [ngbTooltip]="'components.bb-file-tree.button.cancel' | translate"
       tooltipClass="single-line-tooltip"
       placement="top"
+      (click)="cancelEdit()"
     >
       <fa-icon [icon]="icon.faX"></fa-icon>
     </button>
@@ -58,7 +64,7 @@
       </button>
 
       <input
-        *ngIf="mode === 'edit'"
+        *ngIf="editMode()"
         type="checkbox"
         class="bb-checkbox"
         [checked]="isFolderSelected(node)"
@@ -69,16 +75,16 @@
 
       <span class="bb-icon">📁</span>
 
-      <span *ngIf="mode === 'view'" class="bb-name">{{ node.name }}</span>
+      <span *ngIf="!editMode()" class="bb-name">{{ node.name }}</span>
       <input
-        *ngIf="mode === 'edit'"
+        *ngIf="editMode()"
         class="bb-input"
         [(ngModel)]="node.name"
         (click)="$event.stopPropagation()"
         (change)="onFolderNameChange(node)"
       />
 
-      <div class="bb-meta" *ngIf="mode === 'edit'">
+      <div class="bb-meta" *ngIf="editMode()">
         <select
           class="bb-select"
           (click)="$event.stopPropagation()"
@@ -100,7 +106,7 @@
       <span class="bb-spacer"></span>
 
       <input
-        *ngIf="mode === 'edit' && node.file as f"
+        *ngIf="editMode() && node.file as f"
         type="checkbox"
         class="bb-checkbox"
         [checked]="f.priority !== 0"
@@ -110,7 +116,7 @@
       <span class="bb-icon">📄</span>
 
       <span
-        *ngIf="mode === 'view'"
+        *ngIf="!editMode()"
         class="bb-name"
         [ngbTooltip]="node.name"
         tooltipClass="single-line-tooltip"
@@ -119,7 +125,7 @@
         >{{ node.name }}</span
       >
       <input
-        *ngIf="mode === 'edit'"
+        *ngIf="editMode()"
         class="bb-input"
         [(ngModel)]="node.name"
         (change)="onFileNameChange(node)"
@@ -129,7 +135,7 @@
         <div class="bb-meta">
           <span class="bb-size">{{ f.length | fileSize }}</span>
 
-          <ng-container *ngIf="mode === 'view'">
+          <ng-container *ngIf="!editMode()">
             <app-bb-progress
               [progress]="f.progress"
               variant="secondary"
@@ -140,12 +146,12 @@
             }}</span>
           </ng-container>
 
-          <ng-container *ngIf="mode === 'edit'">
+          <ng-container *ngIf="editMode()">
             <select
               *ngIf="f.priority !== 0"
               class="bb-select"
               [(ngModel)]="f.priority"
-              (change)="emitChanges()"
+              (change)="calculateStats()"
             >
               <option *ngFor="let opt of priorityOptions" [value]="opt.value">
                 {{ opt.label }}
