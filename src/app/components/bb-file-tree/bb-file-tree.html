@@ -1,15 +1,15 @@
 <div class="bb-tree-header">
   <div class="bb-tree-stats">
     <div class="bb-stat-item">
-      <strong>{{ totalFolders }}</strong> folders
+      <strong>{{ totalFolders() }}</strong> folders
     </div>
     <span class="bb-stat-divider">|</span>
     <div class="bb-stat-item">
-      <strong>{{ downloadCount }}</strong> of {{ totalFiles }} files
+      <strong>{{ downloadCount() }}</strong> of {{ totalFiles() }} files
     </div>
   </div>
   <div class="bb-tree-total-size ms-auto">
-    <strong>{{ selectedSize | fileSize }}</strong> / {{ totalSize | fileSize }}
+    <strong>{{ selectedSize() | fileSize }}</strong> / {{ totalSize() | fileSize }}
   </div>
   @if (allowEdit) {
     <div class="button-bar ms-2">

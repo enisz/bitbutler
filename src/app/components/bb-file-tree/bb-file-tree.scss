@@ -155,9 +155,9 @@
   white-space: nowrap;
 
   &--normal {
-    color: var(--bs-success);
-    border-color: var(--bs-success);
-    background: color-mix(in srgb, var(--bs-success) 12%, transparent);
+    color: var(--bb-control-text);
+    border-color: var(--bb-control-border);
+    background: color-mix(in srgb, var(--bb-control-bg) 12%, transparent);
   }
 
   &--high {

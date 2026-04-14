@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { catchError, EMPTY, from, switchMap, take, tap, timer } from 'rxjs';
+import { catchError, EMPTY, from, switchMap, tap, timer } from 'rxjs';
 import { TorrentFileEntry } from '../../../../models/torrent-draft.model';
 import { QbTorrentContent } from '../../../../models/torrent.model';
 import { QbService } from '../../../../services/qb.service';
@@ -40,7 +40,7 @@ export class Content implements TorrentDetailTabComponent, OnChanges, OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   public loading = signal<boolean>(true);
-  public content: TorrentFileEntry[] = [];
+  public content = signal<TorrentFileEntry[]>([]);
   public startInEditMode = false;
 
   public ngOnChanges(changes: SimpleChanges): void {
@@ -57,9 +57,8 @@ export class Content implements TorrentDetailTabComponent, OnChanges, OnInit {
     timer(0, pollingInterval)
       .pipe(
         switchMap(() => from(this.load())),
-        take(1),
         tap((data: TorrentFileEntry[]) => {
-          this.content = data;
+          this.content.set(data);
           this.loading.set(false);
         }),
         catchError((e) => {
@@ -81,8 +80,8 @@ export class Content implements TorrentDetailTabComponent, OnChanges, OnInit {
     const serverId = this.serverStoreService.currentServerId();
     if (!serverId) return;
 
-    const originalContent = this.content;
-    this.content = event.files;
+    const originalContent = this.content();
+    this.content.set(event.files);
 
     try {
       for (const item of event.renames) {
