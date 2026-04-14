@@ -61,6 +61,7 @@ export class BbFileTree implements OnChanges {
   @Input() hideProgress = false;
 
   @Output() saved = new EventEmitter<FileTreeSaveEvent>();
+  @Output() editModeChange = new EventEmitter<boolean>();
 
   @ViewChild(CdkTree) private tree!: CdkTree<BbFileTreeNode>;
 
@@ -160,6 +161,7 @@ export class BbFileTree implements OnChanges {
     this.renameQueue = [];
     this.folderPriorityMemory.clear();
     this.editMode.set(true);
+    this.editModeChange.emit(true);
   }
 
   public cancelEdit(): void {
@@ -178,6 +180,7 @@ export class BbFileTree implements OnChanges {
     this.originalFiles = [];
     this.folderPriorityMemory.clear();
     this.editMode.set(false);
+    this.editModeChange.emit(false);
   }
 
   public saveEdit(): void {
@@ -187,6 +190,7 @@ export class BbFileTree implements OnChanges {
     this.originalFiles = [];
     this.folderPriorityMemory.clear();
     this.editMode.set(false);
+    this.editModeChange.emit(false);
   }
 
   calculateStats(): void {

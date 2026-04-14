@@ -324,6 +324,7 @@
         [allowEdit]="true"
         [hideProgress]="true"
         (saved)="onTreeSaved($event)"
+        (editModeChange)="treeInEditMode.set($event)"
       >
       </app-bb-file-tree>
     }
