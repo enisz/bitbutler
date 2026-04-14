@@ -9,6 +9,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import {
@@ -62,6 +63,7 @@ export class Grid implements AfterViewInit {
   private readonly electronService = inject(ElectronService);
   private readonly translateService = inject(TranslateService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly modalService = inject(NgbModal);
 
   private readonly saveGridState$ = new Subject<void>();
 
@@ -92,6 +94,8 @@ export class Grid implements AfterViewInit {
 
   @HostListener('window:keydown', ['$event'])
   public onKeyDown(event: KeyboardEvent): void {
+    if (this.modalService.hasOpenModals()) return;
+
     this.handleGridSelectAll(event);
     this.handleGridKeyboardSelection(event);
   }
@@ -247,7 +251,15 @@ export class Grid implements AfterViewInit {
 
   private handleGridKeyboardSelection(event: KeyboardEvent): void {
     const { code, shiftKey, ctrlKey } = event;
-    const isNavKey = ['ArrowDown', 'ArrowUp', 'Home', 'End', 'PageDown', 'PageUp'].includes(code);
+    const isNavKey = [
+      'ArrowDown',
+      'ArrowUp',
+      'Home',
+      'End',
+      'PageDown',
+      'PageUp',
+      'Enter',
+    ].includes(code);
     if (!isNavKey || this.isTypingTarget(event.target)) return;
 
     const api = this.api;

@@ -151,7 +151,7 @@
           <span class="bb-size">{{ f.length | fileSize }}</span>
 
           @if (!editMode()) {
-            @if (!hideProgress) {
+            @if (!hideProgress && f.priority !== 0) {
               <app-bb-progress [progress]="f.progress" variant="secondary"></app-bb-progress>
             }
             @if (f.priority !== 0) {
@@ -162,14 +162,25 @@
                   'bb-pill--high': f.priority === 6,
                   'bb-pill--max': f.priority === 7,
                 }"
-                >{{ f.priority === 7 ? 'Max' : f.priority === 6 ? 'High' : 'Normal' }}</span
+                >{{
+                  (f.priority === 7
+                    ? 'components.bb-file-tree.priority-option.max'
+                    : f.priority === 6
+                      ? 'components.bb-file-tree.priority-option.high'
+                      : 'components.bb-file-tree.priority-option.normal'
+                  ) | translate
+                }}</span
               >
+            } @else {
+              <span class="bb-pill bb-pill--skipped">{{
+                'components.bb-file-tree.priority-option.skipped' | translate
+              }}</span>
             }
           } @else {
             @if (f.priority !== 0) {
               <select class="bb-select" [(ngModel)]="f.priority" (change)="calculateStats()">
                 @for (opt of priorityOptions; track opt.value) {
-                  <option [value]="opt.value">{{ opt.label }}</option>
+                  <option [ngValue]="opt.value">{{ opt.label }}</option>
                 }
               </select>
             } @else {

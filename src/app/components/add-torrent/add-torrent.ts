@@ -256,7 +256,7 @@ export class AddTorrent implements OnInit {
       const state = this.savedFileState;
       const hasTreeCustomizations =
         state != null &&
-        (state.renames.length > 0 || state.files.some((f) => (f.priority ?? 1) === 0));
+        (state.renames.length > 0 || state.files.some((f) => (f.priority ?? 1) !== 1));
       if (desired || hasTreeCustomizations) {
         await this.tryRenameContentAfterAdd(serverId, desired);
       }
@@ -471,11 +471,11 @@ export class AddTorrent implements OnInit {
       }
 
       if (savedFiles) {
-        const skipped = savedFiles
+        const nonDefault = savedFiles
           .map((f, i) => ({ index: i, priority: f.priority ?? 1 }))
-          .filter((f) => f.priority === 0);
-        for (const f of skipped) {
-          await this.qbService.setFilePriority(serverId, hash, [f.index], 0);
+          .filter((f) => f.priority !== 1);
+        for (const f of nonDefault) {
+          await this.qbService.setFilePriority(serverId, hash, [f.index], f.priority);
         }
       }
     } catch (error) {
