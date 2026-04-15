@@ -443,6 +443,9 @@
         "button": {
           "view-on-github": "View on GitHub"
         }
+      },
+      "limit-torrent-share": {
+        "title": "Set Share Limits"
       }
     },
     "tag-select": {
@@ -521,6 +524,7 @@
             "remove": "Remove",
             "limit-upload-rate": "Limit upload rate",
             "limit-download-rate": "Limit download rate",
+            "limit-torrent-share": "Set Share Limits",
             "enable-super-seeding": "Enable Super Seeding",
             "disable-super-seeding": "Disable Super Seeding",
             "force-recheck": "Force recheck",

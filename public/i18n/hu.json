@@ -441,6 +441,9 @@
         "button": {
           "view-on-github": "Megtekintés GitHubon"
         }
+      },
+      "limit-torrent-share": {
+        "title": "Set Share Limits"
       }
     },
     "tag-select": {
@@ -519,6 +522,7 @@
             "remove": "Eltávolítás",
             "limit-upload-rate": "Feltöltési sebesség korlátozása",
             "limit-download-rate": "Letöltési sebesség korlátozása",
+            "limit-torrent-share": "Megosztási korlátok beállítása",
             "enable-super-seeding": "Super seeding engedélyezése",
             "disable-super-seeding": "Super seeding tiltása",
             "force-recheck": "Kényszerített ellenőrzés",

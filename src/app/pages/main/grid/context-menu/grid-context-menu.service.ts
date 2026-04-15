@@ -24,6 +24,7 @@ import {
   faPen,
   faPlay,
   faRotate,
+  faShare,
   faTags,
   faTrashCan,
   faUpload,
@@ -227,6 +228,17 @@ export class GridContextMenuService {
             direction: 'dl',
             target: 'torrent',
           }),
+      },
+      {
+        kind: 'item',
+        id: 'speed.limitTorrentShare',
+        label: 'pages.main.grid.context-menu.item.limit-torrent-share',
+        icon: faShare,
+        action: () => {
+          this.commandBusService.emit({
+            type: 'UI_LIMIT_SHARE',
+          });
+        },
       },
       {
         kind: 'item',
