@@ -233,6 +233,12 @@
   text-align: center;
 }
 
+.bb-row--dir {
+  .bb-name {
+    cursor: pointer;
+  }
+}
+
 .bb-row--skipped {
   .bb-name,
   .bb-icon,

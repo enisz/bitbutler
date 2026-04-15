@@ -72,7 +72,7 @@
 >
   <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: hasChild" class="bb-node">
     <div
-      class="bb-row bb-row--dir"
+      class="bb-row bb-row--dir cursor-pointer"
       [class.bb-row--skipped]="isFolderEmpty(node)"
       [style.--node-depth]="getNodeDepth(node)"
       (click)="toggle(node)"
