@@ -63,7 +63,8 @@
       },
       "label": {
         "settings": "Settings",
-        "limits": "Limits"
+        "limits": "Limits",
+        "files": "Files"
       },
       "popover": {
         "root-folder": {
@@ -115,7 +116,19 @@
     "app-loader": {
       "default-title": "Loading..."
     },
-    "bb-file-tree": {},
+    "bb-file-tree": {
+      "stats": {
+        "folders": "folders",
+        "of": "of",
+        "files": "files"
+      },
+      "priority-option": {
+        "skipped": "Skipped",
+        "normal": "Normal",
+        "high": "High",
+        "max": "Max"
+      }
+    },
     "bb-popover": {},
     "bb-progress": {},
     "bb-spinner": {},
@@ -194,7 +207,13 @@
         "title": "Set Torrent Tags"
       },
       "torrent-details": {
-        "content": {},
+        "content": {
+          "loading": "Loading Torrent Contents...",
+          "error": {
+            "failed-to-load": "Failed to load torrent contents!",
+            "failed-to-save": "Failed to save changes!"
+          }
+        },
         "general": {
           "loading": "Loading General Properties",
           "name": "Name",
@@ -440,9 +459,7 @@
       },
       "action": {
         "remove-default": "Remove Default",
-        "make-default": "Make Default",
-        "edit": "Edit",
-        "delete": "Delete"
+        "make-default": "Make Default"
       },
       "error": {
         "connection-failed": "Connection failed.",
@@ -823,7 +840,20 @@
       "no-limit": "No Limit"
     }
   },
-  "services": {},
+  "services": {
+    "menu-bar-command-handler": {
+      "app-loader": {
+        "title": "Switching Server",
+        "message": "Connecting to {{name}}..."
+      },
+      "error": {
+        "failed-to-connect": "Failed to connect to {{name}}!"
+      },
+      "info": {
+        "switching-server": "Switching to {{name}}"
+      }
+    }
+  },
   "utils": {},
   "general": {
     "button": {
@@ -840,7 +870,8 @@
       "set": "Set",
       "save": "Save",
       "update": "Update",
-      "show": "Show"
+      "show": "Show",
+      "edit": "Edit"
     },
     "form": {
       "feedback": {

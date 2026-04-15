@@ -10,4 +10,5 @@ export interface Tab {
 
 export interface TorrentDetailTabComponent {
   hash: string;
+  context: Record<string, any>;
 }

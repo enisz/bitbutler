@@ -63,7 +63,8 @@
       },
       "label": {
         "settings": "Beállítások",
-        "limits": "Korlátok"
+        "limits": "Korlátok",
+        "files": "Fájlok"
       },
       "popover": {
         "root-folder": {
@@ -115,7 +116,19 @@
     "app-loader": {
       "default-title": "Betöltés..."
     },
-    "bb-file-tree": {},
+    "bb-file-tree": {
+      "stats": {
+        "folders": "mappa",
+        "of": "/",
+        "files": "fájl"
+      },
+      "priority-option": {
+        "skipped": "Kihagy",
+        "normal": "Normál",
+        "high": "Magas",
+        "max": "Maximum"
+      }
+    },
     "bb-popover": {},
     "bb-progress": {},
     "bb-spinner": {},
@@ -194,7 +207,13 @@
         "title": "Címkék beállítása"
       },
       "torrent-details": {
-        "content": {},
+        "content": {
+          "loading": "Torrent tartalmának a betöltése...",
+          "error": {
+            "failed-to-load": "Nem sikerült a torrent tartalmát betölteni!",
+            "failed-to-save": "Nem sikerült a változtatásokat menteni!"
+          }
+        },
         "general": {
           "loading": "Általános tulajdonságok betöltése",
           "name": "Név",
@@ -438,9 +457,7 @@
       },
       "action": {
         "remove-default": "Alapértelmezés törlése",
-        "make-default": "Legyen alapértelmezett",
-        "edit": "Szerkesztés",
-        "delete": "Törlés"
+        "make-default": "Legyen alapértelmezett"
       },
       "error": {
         "connection-failed": "A csatlakozás sikertelen.",
@@ -821,7 +838,20 @@
       "no-limit": "Nincs korlát"
     }
   },
-  "services": {},
+  "services": {
+    "menu-bar-command-handler": {
+      "app-loader": {
+        "title": "Szerverváltás",
+        "message": "Csatlakozás a(z) {{name}} szerverhez..."
+      },
+      "error": {
+        "failed-to-connect": "Sikertelen csatlakozás a(z) {{name}} szerverhez!"
+      },
+      "info": {
+        "switching-server": "Váltás a(z) {{name}} szerverre"
+      }
+    }
+  },
   "utils": {},
   "general": {
     "button": {
@@ -838,7 +868,8 @@
       "set": "Beállítás",
       "save": "Mentés",
       "update": "Frissítés",
-      "show": "Megjelenítés"
+      "show": "Megjelenítés",
+      "edit": "Szerkesztés"
     },
     "form": {
       "feedback": {

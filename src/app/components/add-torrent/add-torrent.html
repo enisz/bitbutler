@@ -315,17 +315,16 @@
     </div>
 
     @if (showTree() && effectiveDraft() && effectiveDraft().torrent?.files?.length) {
-      <div class="text-uppercase mb-3 d-flex">
-        Files ({{ effectiveDraft()!.torrent!.files.length }})
-        <span class="text-muted ms-auto">{{
-          effectiveDraft()!.torrent!.totalSize | fileSize
-        }}</span>
-      </div>
+      <div class="text-uppercase mb-3">{{ 'components.add-torrent.label.files' | translate }}</div>
 
       <app-bb-file-tree
         [files]="effectiveDraft()!.torrent!.files"
-        [expandAll]="true"
+        [expandAll]="false"
         [showMeta]="true"
+        [allowEdit]="true"
+        [hideProgress]="true"
+        (saved)="onTreeSaved($event)"
+        (editModeChange)="treeInEditMode.set($event)"
       >
       </app-bb-file-tree>
     }

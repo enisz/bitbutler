@@ -1,17 +1,122 @@
-<cdk-tree [dataSource]="data" [treeControl]="treeControl" class="bb-file-tree">
+<div class="bb-tree-header">
+  <div class="bb-tree-stats">
+    @if (allFolders() > 0) {
+      <div class="bb-stat-item">
+        <strong>{{ totalFolders() }}</strong>
+        @if (totalFolders() < allFolders()) {
+          {{ 'components.bb-file-tree.stats.of' | translate }} {{ allFolders() }}
+        }
+        {{ 'components.bb-file-tree.stats.folders' | translate }}
+      </div>
+      <span class="bb-stat-divider">|</span>
+    }
+    <div class="bb-stat-item">
+      <strong>{{ downloadCount() }}</strong>
+      @if (downloadCount() < totalFiles()) {
+        {{ 'components.bb-file-tree.stats.of' | translate }} {{ totalFiles() }}
+      }
+      {{ 'components.bb-file-tree.stats.files' | translate }}
+    </div>
+  </div>
+  <div class="bb-tree-total-size ms-auto">
+    <strong>{{ selectedSize() | fileSize }}</strong>
+    @if (selectedSize() < totalSize()) {
+      / {{ totalSize() | fileSize }}
+    }
+  </div>
+  @if (allowEdit) {
+    <div class="button-bar ms-2">
+      @if (!editMode()) {
+        <button
+          type="button"
+          class="btn btn-sm btn-link text-secondary"
+          [ngbTooltip]="'general.button.edit' | translate"
+          tooltipClass="single-line-tooltip"
+          placement="top"
+          (click)="enterEditMode()"
+        >
+          <fa-icon [icon]="icon.faEdit"></fa-icon>
+        </button>
+      } @else {
+        <button
+          type="button"
+          class="btn btn-sm btn-link text-success"
+          [ngbTooltip]="'general.button.save' | translate"
+          tooltipClass="single-line-tooltip"
+          placement="top"
+          (click)="saveEdit()"
+        >
+          <fa-icon [icon]="icon.faCheck"></fa-icon>
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-sm btn-link text-danger"
+          [ngbTooltip]="'general.button.cancel' | translate"
+          tooltipClass="single-line-tooltip"
+          placement="top"
+          (click)="cancelEdit()"
+        >
+          <fa-icon [icon]="icon.faX"></fa-icon>
+        </button>
+      }
+    </div>
+  }
+</div>
+
+<cdk-tree
+  [dataSource]="data"
+  [treeControl]="treeControl"
+  [trackBy]="trackByPath"
+  class="bb-file-tree"
+>
   <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: hasChild" class="bb-node">
-    <div class="bb-row bb-row--dir" (click)="toggle(node)">
-      <button
-        type="button"
-        class="bb-toggle"
-        (click)="$event.stopPropagation(); toggle(node)"
-        [attr.aria-label]="isExpanded(node) ? 'Collapse folder' : 'Expand folder'"
-      >
+    <div
+      class="bb-row bb-row--dir cursor-pointer"
+      [class.bb-row--skipped]="isFolderEmpty(node)"
+      [style.--node-depth]="getNodeDepth(node)"
+      (click)="toggle(node)"
+    >
+      <button type="button" class="bb-toggle" (click)="$event.stopPropagation(); toggle(node)">
         <span class="bb-caret" [class.bb-caret--open]="isExpanded(node)"></span>
       </button>
 
-      <span class="bb-icon bb-icon--folder" aria-hidden="true">📁</span>
-      <span class="bb-name" [title]="node.name">{{ node.name }}</span>
+      @if (editMode()) {
+        <input
+          type="checkbox"
+          class="bb-checkbox"
+          [checked]="isFolderSelected(node)"
+          [indeterminate]="isFolderIndeterminate(node)"
+          (click)="$event.stopPropagation()"
+          (change)="toggleFolderSelection(node, $event)"
+        />
+      }
+
+      <span class="bb-icon">📁</span>
+
+      @if (!editMode()) {
+        <span class="bb-name">{{ node.name }}</span>
+      } @else {
+        <input
+          class="bb-input"
+          [(ngModel)]="node.name"
+          (click)="$event.stopPropagation()"
+          (change)="onFolderNameChange(node)"
+        />
+
+        <div class="bb-meta">
+          <select
+            class="bb-select"
+            [ngModel]="getDominantFolderPriority(node)"
+            (click)="$event.stopPropagation()"
+            (change)="setFolderPriority(node, +$any($event.target).value)"
+          >
+            @for (opt of priorityOptions; track opt.value) {
+              <option [value]="opt.value">{{ opt.label }}</option>
+            }
+          </select>
+        </div>
+      }
     </div>
 
     <div class="bb-children" [class.bb-children--open]="isExpanded(node)">
@@ -20,20 +125,85 @@
   </cdk-nested-tree-node>
 
   <cdk-tree-node *cdkTreeNodeDef="let node" class="bb-node">
-    <div class="bb-row bb-row--file">
+    <div
+      class="bb-row bb-row--file"
+      [class.bb-row--skipped]="node.file?.priority === 0"
+      [style.--node-depth]="getNodeDepth(node)"
+    >
       <span class="bb-spacer"></span>
-      <span class="bb-icon" aria-hidden="true">📄</span>
-      <span class="bb-name" [title]="node.name">{{ node.name }}</span>
 
-      <ng-container *ngIf="showMeta && node.file as f">
-        <span class="bb-meta">
-          <span *ngIf="f.progress !== null" class="bb-pill">
-            {{ formatProgress(f.progress) }}
-          </span>
-          <span *ngIf="f.priority !== null" class="bb-pill"> {{ priorityLabel(f.priority) }} </span>
-          <span class="bb-size"> {{ formatBytes(f.length) }} </span>
-        </span>
-      </ng-container>
+      @if (editMode()) {
+        @if (node.file; as f) {
+          <input
+            type="checkbox"
+            class="bb-checkbox"
+            [checked]="f.priority !== 0"
+            (change)="toggleFileSelection(f, $event)"
+          />
+        }
+      }
+
+      <span class="bb-icon">📄</span>
+
+      @if (!editMode()) {
+        <span
+          class="bb-name"
+          [ngbTooltip]="node.name"
+          tooltipClass="single-line-tooltip"
+          bbTooltipOverflow
+          placement="top"
+          [openDelay]="500"
+          >{{ node.name }}</span
+        >
+      } @else {
+        <input class="bb-input" [(ngModel)]="node.name" (change)="onFileNameChange(node)" />
+      }
+
+      @if (showMeta && node.file; as f) {
+        <div class="bb-meta">
+          <span class="bb-size">{{ f.length | fileSize }}</span>
+
+          @if (!editMode()) {
+            @if (!hideProgress && f.priority !== 0) {
+              <app-bb-progress [progress]="f.progress" variant="secondary"></app-bb-progress>
+            }
+            @if (f.priority !== 0) {
+              <span
+                class="bb-pill"
+                [ngClass]="{
+                  'bb-pill--normal': f.priority === 1,
+                  'bb-pill--high': f.priority === 6,
+                  'bb-pill--max': f.priority === 7,
+                }"
+                >{{
+                  (f.priority === 7
+                    ? 'components.bb-file-tree.priority-option.max'
+                    : f.priority === 6
+                      ? 'components.bb-file-tree.priority-option.high'
+                      : 'components.bb-file-tree.priority-option.normal'
+                  ) | translate
+                }}</span
+              >
+            } @else {
+              <span class="bb-pill bb-pill--skipped">{{
+                'components.bb-file-tree.priority-option.skipped' | translate
+              }}</span>
+            }
+          } @else {
+            @if (f.priority !== 0) {
+              <select class="bb-select" [(ngModel)]="f.priority" (change)="calculateStats()">
+                @for (opt of priorityOptions; track opt.value) {
+                  <option [ngValue]="opt.value">{{ opt.label }}</option>
+                }
+              </select>
+            } @else {
+              <span class="bb-skipped-label">{{
+                'components.bb-file-tree.priority-option.skipped' | translate
+              }}</span>
+            }
+          }
+        </div>
+      }
     </div>
   </cdk-tree-node>
 </cdk-tree>

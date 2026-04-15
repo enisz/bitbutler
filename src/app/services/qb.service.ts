@@ -448,6 +448,27 @@ export class QbService {
     throw new HttpError(res.status, res.statusText, `Failed to rename torrent folder`);
   }
 
+  async setFilePriority(
+    serverId: string,
+    hash: string,
+    ids: number[],
+    priority: number,
+  ): Promise<void> {
+    const h = (hash ?? '').trim();
+    const clean = ids ?? [];
+    if (!h) return Promise.reject(new Error('hash is required'));
+    if (clean.length === 0) return Promise.reject(new Error('ids are required'));
+
+    const res = await this.request<void>(serverId, {
+      path: '/api/v2/torrents/filePrio',
+      method: 'POST',
+      form: { hash: h, id: clean.join('|'), priority: String(priority) },
+    });
+
+    if (res.ok) return res.body;
+    throw new HttpError(res.status, res.statusText, `Failed to set file priority`);
+  }
+
   async increasePrio(serverId: string, hashes: string[]): Promise<void> {
     const clean = (hashes ?? []).map((h) => (h ?? '').trim()).filter(Boolean);
     if (clean.length === 0) return;

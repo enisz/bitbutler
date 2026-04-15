@@ -19,6 +19,8 @@ import { TorrentDetailTabComponent } from '../torrent-details.interface';
 })
 export class Trackers implements TorrentDetailTabComponent, OnInit {
   @Input() public hash: string = '';
+  @Input() public context: Record<string, any> = {};
+
   private readonly qbService = inject(QbService);
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly changeDetectorRef = inject(ChangeDetectorRef);

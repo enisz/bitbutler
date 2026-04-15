@@ -222,6 +222,22 @@ export class UiCommandHandlerService {
 
             updateAvailableModalRef.result.then((res: any) => {}).catch((error: any) => {});
             break;
+
+          case 'UI_RENAME_FILES':
+            if (!command.hash) return;
+            if (this.isModalOpen(TorrentDetails)) break;
+
+            const contentModalRef = this.modalService.open(TorrentDetails, {
+              size: 'xl',
+              scrollable: true,
+              centered: false,
+            });
+            contentModalRef.componentInstance.hash = command.hash;
+            contentModalRef.componentInstance.tabToOpen = 'content';
+            contentModalRef.componentInstance.context = { editMode: true };
+
+            contentModalRef.result.then(() => {}).catch(() => {});
+            break;
           default:
             console.warn(UiCommandHandlerService.name, 'start', 'Unhandled UI command', command);
         }

@@ -1,9 +1,27 @@
-import { CdkTreeModule, NestedTreeControl } from '@angular/cdk/tree';
+import { CdkTree, CdkTreeModule, NestedTreeControl } from '@angular/cdk/tree';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, OnChanges } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnChanges,
+  Output,
+  signal,
+  ViewChild,
+} from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faCheck, faEdit, faX } from '@fortawesome/free-solid-svg-icons';
+import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { TooltipOverflow } from '../../directives/tooltip-overflow';
 import { TorrentFileEntry } from '../../models/torrent-draft.model';
+import { FilesizePipe } from '../../pipes/filesize-pipe';
+import { BbProgress } from '../bb-progress/bb-progress';
 
-type BbFileTreeNode = {
+export type BbFileTreeNode = {
   name: string;
   fullPath: string;
   kind: 'dir' | 'file';
@@ -11,76 +29,309 @@ type BbFileTreeNode = {
   file?: TorrentFileEntry;
 };
 
+export type FileTreeSaveEvent = {
+  files: TorrentFileEntry[];
+  renames: { type: 'file' | 'folder'; oldPath: string; newPath: string }[];
+};
+
 @Component({
   selector: 'app-bb-file-tree',
   standalone: true,
-  imports: [CommonModule, CdkTreeModule],
+  imports: [
+    CdkTreeModule,
+    FormsModule,
+    FilesizePipe,
+    BbProgress,
+    NgbTooltipModule,
+    TooltipOverflow,
+    FontAwesomeModule,
+    TranslatePipe,
+    CommonModule,
+  ],
   templateUrl: './bb-file-tree.html',
   styleUrl: './bb-file-tree.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BbFileTree implements OnChanges {
   @Input({ required: true }) files: TorrentFileEntry[] = [];
-
+  @Input() allowEdit = false;
+  @Input() startInEditMode = false;
   @Input() expandAll = false;
-
   @Input() showMeta = true;
+  @Input() hideProgress = false;
 
-  treeControl = new NestedTreeControl<BbFileTreeNode>((n) => n.children ?? []);
-  data: BbFileTreeNode[] = [];
+  @Output() saved = new EventEmitter<FileTreeSaveEvent>();
+  @Output() editModeChange = new EventEmitter<boolean>();
+
+  @ViewChild(CdkTree) private tree!: CdkTree<BbFileTreeNode>;
+
+  public editMode = signal(false);
+  private originalFiles: TorrentFileEntry[] = [];
+  private renameQueue: { type: 'file' | 'folder'; oldPath: string; newPath: string }[] = [];
+  private autoEditTriggered = false;
+  private folderPriorityMemory = new Map<string, number>();
+
+  public treeControl = new NestedTreeControl<BbFileTreeNode>((n) => n.children ?? []);
+  public data: BbFileTreeNode[] = [];
+  private readonly translateService = inject(TranslateService);
+
+  public totalFiles = signal(0);
+  public allFolders = signal(0);
+  public totalFolders = signal(0);
+  public totalSize = signal(0);
+  public selectedSize = signal(0);
+  public downloadCount = signal(0);
+
+  readonly priorityOptions = [
+    {
+      value: 1,
+      label: this.translateService.instant('components.bb-file-tree.priority-option.normal'),
+    },
+    {
+      value: 6,
+      label: this.translateService.instant('components.bb-file-tree.priority-option.high'),
+    },
+    {
+      value: 7,
+      label: this.translateService.instant('components.bb-file-tree.priority-option.max'),
+    },
+  ];
+
+  public icon = { faEdit, faCheck, faX };
+
+  trackByPath = (_index: number, node: BbFileTreeNode): string => node.fullPath;
 
   ngOnChanges(): void {
-    this.data = buildTree(this.files);
+    if (this.editMode()) return;
+
+    const expandedPaths = new Set<string>();
+    this.treeControl.expansionModel.selected.forEach((node) => expandedPaths.add(node.fullPath));
+
+    if (this.data.length > 0) {
+      const fileMap = new Map<string, TorrentFileEntry>();
+      for (const f of this.files) {
+        fileMap.set(normalizePath(f.path), f);
+      }
+      const updated = this.updateNodeFiles(this.data, fileMap);
+      if (updated === this.files.length) {
+        this.data = [...this.data];
+        this.totalFiles.set(this.files.length);
+        this.calculateStats();
+        this.tree?.renderNodeChanges(this.data);
+        return;
+      }
+    }
+
+    const result = buildTree(this.files);
+    this.data = result.nodes;
+    this.totalFiles.set(this.files.length);
+
+    this.calculateStats();
 
     if (this.expandAll) {
       this.expandAllNodes();
+    } else {
+      this.restoreExpansionState(this.data, expandedPaths);
+    }
+
+    if (this.startInEditMode && !this.autoEditTriggered && this.data.length > 0) {
+      this.autoEditTriggered = true;
+      this.enterEditMode();
+    }
+  }
+
+  private updateNodeFiles(nodes: BbFileTreeNode[], fileMap: Map<string, TorrentFileEntry>): number {
+    let count = 0;
+    for (const node of nodes) {
+      if (node.kind === 'file') {
+        const newFile = fileMap.get(node.fullPath);
+        if (!newFile) return -1;
+        node.file = newFile;
+        count++;
+      } else {
+        const childCount = this.updateNodeFiles(node.children ?? [], fileMap);
+        if (childCount === -1) return -1;
+        count += childCount;
+      }
+    }
+    return count;
+  }
+
+  public enterEditMode(): void {
+    this.originalFiles = structuredClone(this.files);
+    this.renameQueue = [];
+    this.folderPriorityMemory.clear();
+    this.editMode.set(true);
+    this.editModeChange.emit(true);
+  }
+
+  public cancelEdit(): void {
+    for (let i = 0; i < this.originalFiles.length && i < this.files.length; i++) {
+      this.files[i].priority = this.originalFiles[i].priority;
+    }
+    const expandedPaths = new Set<string>();
+    this.treeControl.expansionModel.selected.forEach((n) => expandedPaths.add(n.fullPath));
+    const result = buildTree(this.files);
+    this.data = result.nodes;
+    this.totalFiles.set(this.files.length);
+    this.calculateStats();
+    if (this.expandAll) this.expandAllNodes();
+    else this.restoreExpansionState(this.data, expandedPaths);
+    this.renameQueue = [];
+    this.originalFiles = [];
+    this.folderPriorityMemory.clear();
+    this.editMode.set(false);
+    this.editModeChange.emit(false);
+  }
+
+  public saveEdit(): void {
+    const files = this.flatten(this.data, '');
+    this.saved.emit({ files, renames: [...this.renameQueue] });
+    this.renameQueue = [];
+    this.originalFiles = [];
+    this.folderPriorityMemory.clear();
+    this.editMode.set(false);
+    this.editModeChange.emit(false);
+  }
+
+  calculateStats(): void {
+    const files = this.data.flatMap((n) => this.getNestedFiles(n));
+    this.totalSize.set(files.reduce((acc, f) => acc + (Number(f.length) || 0), 0));
+    this.selectedSize.set(
+      files.reduce((acc, f) => acc + (f.priority !== 0 ? Number(f.length) || 0 : 0), 0),
+    );
+    this.downloadCount.set(files.filter((f) => f.priority !== 0).length);
+    this.allFolders.set(this.countFolders(this.data));
+    this.totalFolders.set(this.countActiveFolders(this.data));
+  }
+
+  private countFolders(nodes: BbFileTreeNode[]): number {
+    let count = 0;
+    for (const node of nodes) {
+      if (node.kind === 'dir') {
+        count++;
+        count += this.countFolders(node.children ?? []);
+      }
+    }
+    return count;
+  }
+
+  private countActiveFolders(nodes: BbFileTreeNode[]): number {
+    let count = 0;
+    for (const node of nodes) {
+      if (node.kind === 'dir') {
+        if (this.getNestedFiles(node).some((f) => f.priority !== 0)) count++;
+        count += this.countActiveFolders(node.children ?? []);
+      }
+    }
+    return count;
+  }
+
+  toggleFolderSelection(node: BbFileTreeNode, event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    if (checked) {
+      const restored = this.folderPriorityMemory.get(node.fullPath) ?? 1;
+      this.updateRecursive(node, (f) => (f.priority = restored));
+    } else {
+      this.folderPriorityMemory.set(node.fullPath, this.getDominantFolderPriority(node));
+      this.updateRecursive(node, (f) => (f.priority = 0));
+    }
+    this.calculateStats();
+  }
+
+  setFolderPriority(node: BbFileTreeNode, priority: number): void {
+    this.updateRecursive(node, (f) => {
+      if (f.priority !== 0) f.priority = priority;
+    });
+    this.calculateStats();
+  }
+
+  private updateRecursive(node: BbFileTreeNode, action: (f: TorrentFileEntry) => void): void {
+    if (node.file) action(node.file);
+    node.children?.forEach((child) => this.updateRecursive(child, action));
+  }
+
+  toggleFileSelection(f: TorrentFileEntry, event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    f.priority = checked ? 1 : 0;
+    this.calculateStats();
+  }
+
+  onFileNameChange(node: BbFileTreeNode): void {
+    const { oldPath, newPath } = this.deriveRenamePayload(node);
+    if (oldPath === newPath) return;
+    this.renameQueue.push({ type: 'file', oldPath, newPath });
+    node.fullPath = newPath;
+  }
+
+  onFolderNameChange(node: BbFileTreeNode): void {
+    const { oldPath, newPath } = this.deriveRenamePayload(node);
+    if (oldPath === newPath) return;
+    this.renameQueue.push({ type: 'folder', oldPath, newPath });
+    node.fullPath = newPath;
+    this.updateChildPaths(node.children ?? [], oldPath, newPath);
+  }
+
+  private deriveRenamePayload(node: BbFileTreeNode): { oldPath: string; newPath: string } {
+    const oldPath = node.fullPath;
+    const slashIdx = oldPath.lastIndexOf('/');
+    const parentPath = slashIdx >= 0 ? oldPath.slice(0, slashIdx) : '';
+    const newPath = parentPath ? `${parentPath}/${node.name}` : node.name;
+    return { oldPath, newPath };
+  }
+
+  private updateChildPaths(nodes: BbFileTreeNode[], oldPrefix: string, newPrefix: string): void {
+    for (const child of nodes) {
+      child.fullPath = newPrefix + child.fullPath.slice(oldPrefix.length);
+      if (child.children) this.updateChildPaths(child.children, oldPrefix, newPrefix);
     }
   }
 
   hasChild = (_: number, node: BbFileTreeNode) => !!node.children?.length;
+  toggle = (node: BbFileTreeNode) => this.treeControl.toggle(node);
+  isExpanded = (node: BbFileTreeNode) => this.treeControl.isExpanded(node);
+  getNodeDepth = (node: BbFileTreeNode): number =>
+    node.fullPath ? node.fullPath.split('/').length - 1 : 0;
 
-  toggle(node: BbFileTreeNode): void {
-    this.treeControl.toggle(node);
-  }
-
-  isExpanded(node: BbFileTreeNode): boolean {
-    return this.treeControl.isExpanded(node);
-  }
-
-  formatBytes(bytes: number): string {
-    if (!Number.isFinite(bytes) || bytes < 0) return '';
-    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
-    let v = bytes;
-    let i = 0;
-    while (v >= 1024 && i < units.length - 1) {
-      v /= 1024;
-      i++;
+  private flatten(nodes: BbFileTreeNode[], parentPath: string): TorrentFileEntry[] {
+    let result: TorrentFileEntry[] = [];
+    for (const node of nodes) {
+      const currentPath = parentPath ? `${parentPath}/${node.name}` : node.name;
+      if (node.kind === 'file' && node.file) {
+        result.push({ ...node.file, path: currentPath });
+      }
+      if (node.children) result = result.concat(this.flatten(node.children, currentPath));
     }
-    const digits = i === 0 ? 0 : i === 1 ? 1 : 2;
-    return `${v.toFixed(digits)} ${units[i]}`;
+    return result;
   }
 
-  formatProgress(p?: number): string {
-    if (p == null || !Number.isFinite(p)) return '';
-    const clamped = Math.max(0, Math.min(1, p));
-    return `${Math.round(clamped * 100)}%`;
+  isFolderSelected(node: BbFileTreeNode): boolean {
+    const files = this.getNestedFiles(node);
+    return files.length > 0 && files.every((f) => f.priority !== 0);
   }
 
-  priorityLabel(prio?: number): string {
-    if (prio == null) return '';
+  isFolderEmpty(node: BbFileTreeNode): boolean {
+    const files = this.getNestedFiles(node);
+    return files.length > 0 && files.every((f) => f.priority === 0);
+  }
 
-    switch (prio) {
-      case 0:
-        return 'Skip';
-      case 1:
-        return 'Normal';
-      case 6:
-        return 'High';
-      case 7:
-        return 'Max';
-      default:
-        return `Prio ${prio}`;
-    }
+  isFolderIndeterminate(node: BbFileTreeNode): boolean {
+    const files = this.getNestedFiles(node);
+    return files.some((f) => f.priority !== 0) && files.some((f) => f.priority === 0);
+  }
+
+  getDominantFolderPriority(node: BbFileTreeNode): number {
+    const files = this.getNestedFiles(node).filter((f) => f.priority !== 0);
+    if (files.length === 0) return 1;
+    const first = files[0].priority ?? 1;
+    return files.every((f) => f.priority === first) ? first : 1;
+  }
+
+  private getNestedFiles(node: BbFileTreeNode): TorrentFileEntry[] {
+    let res: TorrentFileEntry[] = [];
+    if (node.file) res.push(node.file);
+    node.children?.forEach((c) => (res = res.concat(this.getNestedFiles(c))));
+    return res;
   }
 
   private expandAllNodes(): void {
@@ -94,71 +345,60 @@ export class BbFileTree implements OnChanges {
     }
   }
 
-  trackByPath = (_: number, node: BbFileTreeNode) => node.fullPath;
+  private restoreExpansionState(nodes: BbFileTreeNode[], expandedPaths: Set<string>): void {
+    if (!nodes || expandedPaths.size === 0) return;
+    for (const node of nodes) {
+      if (node.children?.length && expandedPaths.has(node.fullPath)) {
+        this.treeControl.expand(node);
+        this.restoreExpansionState(node.children, expandedPaths);
+      }
+    }
+  }
 }
 
-function buildTree(files: TorrentFileEntry[]): BbFileTreeNode[] {
-  const root: BbFileTreeNode = { name: '', fullPath: '', kind: 'dir', children: [] };
+function normalizePath(path: string | undefined): string {
+  return (path ?? '').replace(/\\/g, '/').replace(/\/+$/, '').replace(/^\/+/, '');
+}
 
+function buildTree(files: TorrentFileEntry[]): { nodes: BbFileTreeNode[]; folderCount: number } {
+  const root: BbFileTreeNode = { name: '', fullPath: '', kind: 'dir', children: [] };
   const dirMap = new Map<string, BbFileTreeNode>();
   dirMap.set('', root);
-
-  for (const f of files ?? []) {
+  for (const f of files) {
     const normalized = normalizePath(f.path);
     if (!normalized) continue;
-
-    const parts = normalized.split('/').filter(Boolean);
+    if (f.priority === undefined || f.priority === null) f.priority = 1;
+    const parts = normalized.split('/');
     let currentPath = '';
     let parent = root;
-
     for (let i = 0; i < parts.length; i++) {
       const part = parts[i];
       const isLast = i === parts.length - 1;
-
-      const nextPath = currentPath ? `${currentPath}/${part}` : part;
-
+      currentPath = currentPath ? `${currentPath}/${part}` : part;
       if (isLast) {
         parent.children ??= [];
-        parent.children.push({
-          name: part,
-          fullPath: nextPath,
-          kind: 'file',
-          file: f,
-        });
+        parent.children.push({ name: part, fullPath: currentPath, kind: 'file', file: f });
       } else {
-        let dir = dirMap.get(nextPath);
+        let dir = dirMap.get(currentPath);
         if (!dir) {
-          dir = { name: part, fullPath: nextPath, kind: 'dir', children: [] };
-          dirMap.set(nextPath, dir);
+          dir = { name: part, fullPath: currentPath, kind: 'dir', children: [] };
+          dirMap.set(currentPath, dir);
           parent.children ??= [];
           parent.children.push(dir);
         }
         parent = dir;
-        currentPath = nextPath;
       }
     }
   }
-
   sortTree(root);
-  return root.children ?? [];
-}
-
-function normalizePath(p: string): string {
-  return (p ?? '')
-    .replaceAll('\\', '/')
-    .replaceAll('//', '/')
-    .trim()
-    .replace(/^\/+/, '')
-    .replace(/\/+$/, '');
+  return { nodes: root.children ?? [], folderCount: dirMap.size - 1 };
 }
 
 function sortTree(node: BbFileTreeNode): void {
-  if (!node.children?.length) return;
-
+  if (!node.children) return;
   node.children.sort((a, b) => {
     if (a.kind !== b.kind) return a.kind === 'dir' ? -1 : 1;
     return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
   });
-
-  for (const child of node.children) sortTree(child);
+  node.children.forEach(sortTree);
 }
