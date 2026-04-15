@@ -780,6 +780,30 @@ export class QbService {
     if (!res.ok) throw new HttpError(res.status, res.statusText, `Failed to remove categories`);
   }
 
+  async setShareLimits(
+    serverId: string,
+    hashes: string[],
+    ratioLimit: number,
+    seedingTimeLimit: number,
+    inactiveSeedingTimeLimit: number,
+  ): Promise<void> {
+    const cleanHashes = (hashes ?? []).map((h) => (h ?? '').trim()).filter(Boolean);
+    if (cleanHashes.length === 0) return Promise.reject(new Error('No hashes provided'));
+
+    const res = await this.request<void>(serverId, {
+      path: '/api/v2/torrents/setShareLimits',
+      method: 'POST',
+      form: {
+        hashes: cleanHashes.join('|'),
+        ratioLimit,
+        seedingTimeLimit,
+        inactiveSeedingTimeLimit,
+      },
+    });
+
+    if (!res.ok) throw new HttpError(res.status, res.statusText, `Failed to set share limits`);
+  }
+
   public async getAlternativeSpeedLimitState(serverId: string): Promise<boolean> {
     const res = await this.request<number>(serverId, {
       path: '/api/v2/transfer/speedLimitsMode',
