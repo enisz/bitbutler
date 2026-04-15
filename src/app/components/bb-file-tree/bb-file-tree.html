@@ -1,17 +1,28 @@
 <div class="bb-tree-header">
   <div class="bb-tree-stats">
+    @if (allFolders() > 0) {
+      <div class="bb-stat-item">
+        <strong>{{ totalFolders() }}</strong>
+        @if (totalFolders() < allFolders()) {
+          {{ 'components.bb-file-tree.stats.of' | translate }} {{ allFolders() }}
+        }
+        {{ 'components.bb-file-tree.stats.folders' | translate }}
+      </div>
+      <span class="bb-stat-divider">|</span>
+    }
     <div class="bb-stat-item">
-      <strong>{{ totalFolders() }}</strong>
-      {{ 'components.bb-file-tree.stats.folders' | translate }}
-    </div>
-    <span class="bb-stat-divider">|</span>
-    <div class="bb-stat-item">
-      <strong>{{ downloadCount() }}</strong> {{ 'components.bb-file-tree.stats.of' | translate }}
-      {{ totalFiles() }} {{ 'components.bb-file-tree.stats.files' | translate }}
+      <strong>{{ downloadCount() }}</strong>
+      @if (downloadCount() < totalFiles()) {
+        {{ 'components.bb-file-tree.stats.of' | translate }} {{ totalFiles() }}
+      }
+      {{ 'components.bb-file-tree.stats.files' | translate }}
     </div>
   </div>
   <div class="bb-tree-total-size ms-auto">
-    <strong>{{ selectedSize() | fileSize }}</strong> / {{ totalSize() | fileSize }}
+    <strong>{{ selectedSize() | fileSize }}</strong>
+    @if (selectedSize() < totalSize()) {
+      / {{ totalSize() | fileSize }}
+    }
   </div>
   @if (allowEdit) {
     <div class="button-bar ms-2">

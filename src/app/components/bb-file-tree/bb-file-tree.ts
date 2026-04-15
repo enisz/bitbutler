@@ -76,6 +76,7 @@ export class BbFileTree implements OnChanges {
   private readonly translateService = inject(TranslateService);
 
   public totalFiles = signal(0);
+  public allFolders = signal(0);
   public totalFolders = signal(0);
   public totalSize = signal(0);
   public selectedSize = signal(0);
@@ -194,12 +195,25 @@ export class BbFileTree implements OnChanges {
   }
 
   calculateStats(): void {
-    this.totalSize.set(this.files.reduce((acc, f) => acc + (Number(f.length) || 0), 0));
+    const files = this.data.flatMap((n) => this.getNestedFiles(n));
+    this.totalSize.set(files.reduce((acc, f) => acc + (Number(f.length) || 0), 0));
     this.selectedSize.set(
-      this.files.reduce((acc, f) => acc + (f.priority !== 0 ? Number(f.length) || 0 : 0), 0),
+      files.reduce((acc, f) => acc + (f.priority !== 0 ? Number(f.length) || 0 : 0), 0),
     );
-    this.downloadCount.set(this.files.filter((f) => f.priority !== 0).length);
+    this.downloadCount.set(files.filter((f) => f.priority !== 0).length);
+    this.allFolders.set(this.countFolders(this.data));
     this.totalFolders.set(this.countActiveFolders(this.data));
+  }
+
+  private countFolders(nodes: BbFileTreeNode[]): number {
+    let count = 0;
+    for (const node of nodes) {
+      if (node.kind === 'dir') {
+        count++;
+        count += this.countFolders(node.children ?? []);
+      }
+    }
+    return count;
   }
 
   private countActiveFolders(nodes: BbFileTreeNode[]): number {
