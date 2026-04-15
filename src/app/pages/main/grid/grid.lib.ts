@@ -609,11 +609,16 @@ export function getGridOptions(
     columnDefs: getGridColDefs(uiFormatService, translateService),
     getRowId: (params: GetRowIdParams<Torrent, any>) => params.data.hash,
     rowClassRules: {
-      'bb-row-paused': (params: RowClassParams<Torrent, any>): boolean =>
+      'text-secondary bg-secondary-subtle bb-row-paused': (
+        params: RowClassParams<Torrent, any>,
+      ): boolean =>
         params.data?.state === 'pausedDL' ||
         params.data?.state === 'pausedUP' ||
         params.data?.state === 'stoppedDL' ||
         params.data?.state === 'stoppedUP',
+
+      'text-danger bg-danger-subtle': (params: RowClassParams<Torrent, any>): boolean =>
+        params.data?.state === 'error',
     },
     rowSelection: {
       mode: 'multiRow',
