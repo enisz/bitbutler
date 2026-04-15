@@ -117,6 +117,11 @@
       "default-title": "Loading..."
     },
     "bb-file-tree": {
+      "stats": {
+        "folders": "folders",
+        "of": "of",
+        "files": "files"
+      },
       "priority-option": {
         "skipped": "Skipped",
         "normal": "Normal",
@@ -835,7 +840,20 @@
       "no-limit": "No Limit"
     }
   },
-  "services": {},
+  "services": {
+    "menu-bar-command-handler": {
+      "app-loader": {
+        "title": "Switching Server",
+        "message": "Connecting to {{name}}..."
+      },
+      "error": {
+        "failed-to-connect": "Failed to connect to {{name}}!"
+      },
+      "info": {
+        "switching-server": "Switching to {{name}}"
+      }
+    }
+  },
   "utils": {},
   "general": {
     "button": {

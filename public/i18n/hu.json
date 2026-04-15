@@ -117,6 +117,11 @@
       "default-title": "Betöltés..."
     },
     "bb-file-tree": {
+      "stats": {
+        "folders": "mappa",
+        "of": "/",
+        "files": "fájl"
+      },
       "priority-option": {
         "skipped": "Kihagy",
         "normal": "Normál",
@@ -833,7 +838,20 @@
       "no-limit": "Nincs korlát"
     }
   },
-  "services": {},
+  "services": {
+    "menu-bar-command-handler": {
+      "app-loader": {
+        "title": "Szerverváltás",
+        "message": "Csatlakozás a(z) {{name}} szerverhez..."
+      },
+      "error": {
+        "failed-to-connect": "Sikertelen csatlakozás a(z) {{name}} szerverhez!"
+      },
+      "info": {
+        "switching-server": "Váltás a(z) {{name}} szerverre"
+      }
+    }
+  },
   "utils": {},
   "general": {
     "button": {
