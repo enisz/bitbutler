@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use 'sass:string';
 
 $deep-sea-dark-primary: #7ab2b2;
@@ -124,6 +125,31 @@ $deep-sea-dark-surface: #06242e; // Slightly lighter surface
     --bs-popover-header-bg: #07313f;
     --bs-popover-header-color: #{$deep-sea-dark-primary};
     --bs-popover-body-color: #{$deep-sea-dark-body-color};
+
+    // Subtle bg/border/text variants derived from theme colors
+    --bs-primary-bg-subtle: #{color.mix(black, $deep-sea-dark-primary, 80%)};
+    --bs-primary-border-subtle: #{color.mix(black, $deep-sea-dark-primary, 40%)};
+    --bs-primary-text-emphasis: #{color.mix(white, $deep-sea-dark-primary, 40%)};
+
+    --bs-secondary-bg-subtle: #{color.mix(black, $deep-sea-dark-secondary, 80%)};
+    --bs-secondary-border-subtle: #{color.mix(black, $deep-sea-dark-secondary, 40%)};
+    --bs-secondary-text-emphasis: #{color.mix(white, $deep-sea-dark-secondary, 40%)};
+
+    --bs-success-bg-subtle: #{color.mix(black, $deep-sea-dark-success, 80%)};
+    --bs-success-border-subtle: #{color.mix(black, $deep-sea-dark-success, 40%)};
+    --bs-success-text-emphasis: #{color.mix(white, $deep-sea-dark-success, 40%)};
+
+    --bs-danger-bg-subtle: #{color.mix(black, $deep-sea-dark-danger, 80%)};
+    --bs-danger-border-subtle: #{color.mix(black, $deep-sea-dark-danger, 40%)};
+    --bs-danger-text-emphasis: #{color.mix(white, $deep-sea-dark-danger, 40%)};
+
+    --bs-warning-bg-subtle: #{color.mix(black, $deep-sea-dark-warning, 80%)};
+    --bs-warning-border-subtle: #{color.mix(black, $deep-sea-dark-warning, 40%)};
+    --bs-warning-text-emphasis: #{color.mix(white, $deep-sea-dark-warning, 40%)};
+
+    --bs-info-bg-subtle: #{color.mix(black, $deep-sea-dark-info, 80%)};
+    --bs-info-border-subtle: #{color.mix(black, $deep-sea-dark-info, 40%)};
+    --bs-info-text-emphasis: #{color.mix(white, $deep-sea-dark-info, 40%)};
   }
 }
 

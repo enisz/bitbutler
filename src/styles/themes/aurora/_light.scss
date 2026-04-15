@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use 'sass:string';
 
 $au-light-primary: #2d3a8c;
@@ -124,5 +125,30 @@ $au-light-surface: #ffffff;
     --bs-popover-header-bg: var(--bs-card-cap-bg);
     --bs-popover-header-color: #{$au-light-body-color};
     --bs-popover-body-color: #{$au-light-body-color};
+
+    // Subtle bg/border/text variants derived from theme colors
+    --bs-primary-bg-subtle: #{color.mix(white, $au-light-primary, 80%)};
+    --bs-primary-border-subtle: #{color.mix(white, $au-light-primary, 60%)};
+    --bs-primary-text-emphasis: #{color.mix(black, $au-light-primary, 60%)};
+
+    --bs-secondary-bg-subtle: #{color.mix(white, $au-light-secondary, 80%)};
+    --bs-secondary-border-subtle: #{color.mix(white, $au-light-secondary, 60%)};
+    --bs-secondary-text-emphasis: #{color.mix(black, $au-light-secondary, 60%)};
+
+    --bs-success-bg-subtle: #{color.mix(white, $au-light-success, 80%)};
+    --bs-success-border-subtle: #{color.mix(white, $au-light-success, 60%)};
+    --bs-success-text-emphasis: #{color.mix(black, $au-light-success, 60%)};
+
+    --bs-danger-bg-subtle: #{color.mix(white, $au-light-danger, 80%)};
+    --bs-danger-border-subtle: #{color.mix(white, $au-light-danger, 60%)};
+    --bs-danger-text-emphasis: #{color.mix(black, $au-light-danger, 60%)};
+
+    --bs-warning-bg-subtle: #{color.mix(white, $au-light-warning, 80%)};
+    --bs-warning-border-subtle: #{color.mix(white, $au-light-warning, 60%)};
+    --bs-warning-text-emphasis: #{color.mix(black, $au-light-warning, 60%)};
+
+    --bs-info-bg-subtle: #{color.mix(white, $au-light-info, 80%)};
+    --bs-info-border-subtle: #{color.mix(white, $au-light-info, 60%)};
+    --bs-info-text-emphasis: #{color.mix(black, $au-light-info, 60%)};
   }
 }

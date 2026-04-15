@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use 'sass:string';
 
 $bb-dark-primary: #c3110c;
@@ -122,5 +123,30 @@ $bb-dark-surface: #280905;
     --bs-popover-header-bg: var(--bs-card-cap-bg);
     --bs-popover-header-color: var(--bs-card-cap-color);
     --bs-popover-body-color: #{$bb-dark-body-color};
+
+    // Subtle bg/border/text variants derived from theme colors
+    --bs-primary-bg-subtle: #{color.mix(black, $bb-dark-primary, 80%)};
+    --bs-primary-border-subtle: #{color.mix(black, $bb-dark-primary, 40%)};
+    --bs-primary-text-emphasis: #{color.mix(white, $bb-dark-primary, 40%)};
+
+    --bs-secondary-bg-subtle: #{color.mix(black, $bb-dark-secondary, 80%)};
+    --bs-secondary-border-subtle: #{color.mix(black, $bb-dark-secondary, 40%)};
+    --bs-secondary-text-emphasis: #{color.mix(white, $bb-dark-secondary, 40%)};
+
+    --bs-success-bg-subtle: #{color.mix(black, $bb-dark-success, 80%)};
+    --bs-success-border-subtle: #{color.mix(black, $bb-dark-success, 40%)};
+    --bs-success-text-emphasis: #{color.mix(white, $bb-dark-success, 40%)};
+
+    --bs-danger-bg-subtle: #{color.mix(black, $bb-dark-danger, 80%)};
+    --bs-danger-border-subtle: #{color.mix(black, $bb-dark-danger, 40%)};
+    --bs-danger-text-emphasis: #{color.mix(white, $bb-dark-danger, 40%)};
+
+    --bs-warning-bg-subtle: #{color.mix(black, $bb-dark-warning, 80%)};
+    --bs-warning-border-subtle: #{color.mix(black, $bb-dark-warning, 40%)};
+    --bs-warning-text-emphasis: #{color.mix(white, $bb-dark-warning, 40%)};
+
+    --bs-info-bg-subtle: #{color.mix(black, $bb-dark-info, 80%)};
+    --bs-info-border-subtle: #{color.mix(black, $bb-dark-info, 40%)};
+    --bs-info-text-emphasis: #{color.mix(white, $bb-dark-info, 40%)};
   }
 }
