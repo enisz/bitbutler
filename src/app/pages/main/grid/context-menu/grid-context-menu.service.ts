@@ -2,6 +2,8 @@ import { inject, Injectable } from '@angular/core';
 import { faSquare, faSquareCheck } from '@fortawesome/free-regular-svg-icons';
 import {
   faArrowDown,
+  faArrowLeft,
+  faArrowRight,
   faArrowsDownToLine,
   faArrowsUpToLine,
   faArrowUp,
@@ -28,6 +30,7 @@ import {
   faTags,
   faTrashCan,
   faUpload,
+  faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import type { Column, ColumnHeaderContextMenuEvent } from 'ag-grid-community';
 
@@ -60,6 +63,32 @@ export class GridContextMenuService {
         label: 'pages.main.grid.context-menu.item.copy-cell-value',
         icon: faCopy,
         action: () => this.clipboard.copy(String(data.cell.value)),
+      },
+      { kind: 'divider' },
+      { kind: 'header', label: 'pages.main.grid.context-menu.header.row' },
+      {
+        kind: 'item',
+        id: 'row.pinToTop',
+        icon: faArrowUp,
+        label: 'pages.main.grid.context-menu.item.pin-to-top',
+        disabled: data.rowPinned === 'top',
+        action: () => this.commandBusService.emit({ type: 'UI_TORRENT_PIN_TOP' }),
+      },
+      {
+        kind: 'item',
+        id: 'row.pinToBottom',
+        icon: faArrowDown,
+        label: 'pages.main.grid.context-menu.item.pin-to-bottom',
+        disabled: data.rowPinned === 'bottom',
+        action: () => this.commandBusService.emit({ type: 'UI_TORRENT_PIN_BOTTOM' }),
+      },
+      {
+        kind: 'item',
+        id: 'row.unpin',
+        icon: faXmark,
+        label: 'pages.main.grid.context-menu.item.unpin',
+        disabled: !data.rowPinned,
+        action: () => this.commandBusService.emit({ type: 'UI_TORRENT_UNPIN' }),
       },
       { kind: 'divider' },
       {
@@ -374,6 +403,30 @@ export class GridContextMenuService {
         action: () => {
           this.filterService.clearColumnFilter(payload.colId);
         },
+      },
+      {
+        kind: 'item',
+        id: `pinLeft.${payload.colId}`,
+        label: 'pages.main.grid.context-menu.item.pin-left',
+        icon: faArrowLeft,
+        disabled: column.isPinnedLeft(),
+        action: () => api.setColumnsPinned([payload.colId], 'left'),
+      },
+      {
+        kind: 'item',
+        id: `pinRight.${payload.colId}`,
+        label: 'pages.main.grid.context-menu.item.pin-right',
+        icon: faArrowRight,
+        disabled: column.isPinnedRight(),
+        action: () => api.setColumnsPinned([payload.colId], 'right'),
+      },
+      {
+        kind: 'item',
+        id: `unpinColumn.${payload.colId}`,
+        label: 'pages.main.grid.context-menu.item.unpin-column',
+        icon: faXmark,
+        disabled: !column.getPinned(),
+        action: () => api.setColumnsPinned([payload.colId], null),
       },
       { kind: 'divider' },
       {

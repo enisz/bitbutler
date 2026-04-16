@@ -533,6 +533,7 @@
         "context-menu": {
           "header": {
             "cell": "Cella",
+            "row": "Sor",
             "torrent": "Torrent",
             "control": "Vezérlés",
             "files": "Fájlok",
@@ -575,7 +576,13 @@
             "hide-column": "Oszlop elrejtése",
             "clear-filter": "Szűrő törlése",
             "show-all": "Összes megjelenítése",
-            "hide-all": "Összes elrejtése"
+            "hide-all": "Összes elrejtése",
+            "pin-to-top": "Rögzítés felülre",
+            "pin-to-bottom": "Rögzítés alulra",
+            "unpin": "Rögzítés feloldása",
+            "pin-left": "Rögzítés balra",
+            "pin-right": "Rögzítés jobbra",
+            "unpin-column": "Oszlop rögzítésének feloldása"
           }
         },
         "overlays": {

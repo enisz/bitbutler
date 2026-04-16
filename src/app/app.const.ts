@@ -23,6 +23,8 @@ const GRID_PARAMS_SHARED = {
   spacing: 6,
   borderRadius: 6,
   wrapperBorderRadius: 10,
+  pinnedRowBorder: '2px solid var(--bb-accent)',
+  pinnedColumnBorder: '2px solid var(--bb-accent)',
 } as const;
 
 export const GRID_LIGHT_THEME = themeQuartz.withPart(iconSetQuartzLight).withParams({
