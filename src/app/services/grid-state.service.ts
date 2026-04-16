@@ -48,8 +48,12 @@ export class GridStateService {
       ...settings,
       columnState: null,
       filterModel: null,
+      pinnedTopHashes: [],
+      pinnedBottomHashes: [],
     });
     api.setFilterModel(null);
     api.resetColumnState();
+    api.setGridOption('pinnedTopRowData', []);
+    api.setGridOption('pinnedBottomRowData', []);
   }
 }
