@@ -1,9 +1,12 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { OverlayRef } from '@angular/cdk/overlay';
+import { Overlay, OverlayRef } from '@angular/cdk/overlay';
+import { ComponentPortal } from '@angular/cdk/portal';
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, Injector, OnDestroy, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe } from '@ngx-translate/core';
+import { fromEvent } from 'rxjs';
 import { CommandBusService } from '../../../../services/command-bus.service';
 import { CONTEXT_MENU_CONFIG } from './context-menu.tokens';
 import type { ContextMenuConfig, ContextMenuEntry } from './context-menu.types';
@@ -15,11 +18,24 @@ import type { ContextMenuConfig, ContextMenuEntry } from './context-menu.types';
   templateUrl: './context-menu.html',
   styleUrl: './context-menu.scss',
 })
-export class ContextMenu {
+export class ContextMenu implements OnDestroy {
   private readonly overlayRef = inject(OverlayRef);
+  private readonly overlay = inject(Overlay);
+  private readonly injector = inject(Injector);
   readonly config = inject<ContextMenuConfig<any>>(CONTEXT_MENU_CONFIG);
   private readonly clipboard = inject(Clipboard);
   private readonly commandBus = inject(CommandBusService);
+
+  readonly faChevronRight = faChevronRight;
+  readonly activeSubmenuId = signal<string | null>(null);
+
+  private childOverlayRef?: OverlayRef;
+  private openTimer?: ReturnType<typeof setTimeout>;
+  private closeTimer?: ReturnType<typeof setTimeout>;
+
+  constructor() {
+    this.overlayRef.detachments().subscribe(() => this.disposeChild());
+  }
 
   get items(): ContextMenuEntry[] {
     return this.config.items;
@@ -43,10 +59,73 @@ export class ContextMenu {
     this.close();
   }
 
+  onSubmenuEnter(
+    entry: Extract<ContextMenuEntry, { kind: 'submenu' }>,
+    triggerEl: HTMLElement,
+  ): void {
+    clearTimeout(this.closeTimer);
+    this.openTimer = setTimeout(() => {
+      this.disposeChild();
+
+      const positionStrategy = this.overlay
+        .position()
+        .flexibleConnectedTo(triggerEl)
+        .withPositions([
+          { originX: 'end', originY: 'top', overlayX: 'start', overlayY: 'top' },
+          { originX: 'start', originY: 'top', overlayX: 'end', overlayY: 'top' },
+        ])
+        .withPush(true)
+        .withViewportMargin(8)
+        .withFlexibleDimensions(false);
+
+      this.childOverlayRef = this.overlay.create({
+        positionStrategy,
+        scrollStrategy: this.overlay.scrollStrategies.reposition(),
+        panelClass: 'bb-context-menu-panel',
+      });
+
+      fromEvent(this.childOverlayRef.overlayElement, 'mouseenter').subscribe(() => {
+        clearTimeout(this.closeTimer);
+      });
+      fromEvent(this.childOverlayRef.overlayElement, 'mouseleave').subscribe(() => {
+        this.closeTimer = setTimeout(() => this.disposeChild(), 150);
+      });
+
+      const inj = Injector.create({
+        parent: this.injector,
+        providers: [
+          { provide: CONTEXT_MENU_CONFIG, useValue: { items: entry.children } },
+          { provide: OverlayRef, useValue: this.childOverlayRef },
+        ],
+      });
+
+      this.childOverlayRef.attach(new ComponentPortal(ContextMenu, null, inj));
+      this.activeSubmenuId.set(entry.id);
+    }, 150);
+  }
+
+  onSubmenuLeave(): void {
+    clearTimeout(this.openTimer);
+    this.closeTimer = setTimeout(() => this.disposeChild(), 150);
+  }
+
+  private disposeChild(): void {
+    clearTimeout(this.openTimer);
+    clearTimeout(this.closeTimer);
+    this.childOverlayRef?.dispose();
+    this.childOverlayRef = undefined;
+    this.activeSubmenuId.set(null);
+  }
+
   trackBy(i: number, e: ContextMenuEntry): string {
     if (e.kind === 'item') return `item:${e.id}`;
+    if (e.kind === 'submenu') return `submenu:${e.id}`;
     if (e.kind === 'header') return `header:${e.label}`;
     return `divider:${i}`;
+  }
+
+  ngOnDestroy(): void {
+    this.disposeChild();
   }
 
   copy(value: string): void {

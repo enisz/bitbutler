@@ -28,8 +28,16 @@ export type ContextMenuEntry =
       variant?: ContextMenuVariant;
       disabled?: boolean;
       action?: AppCommand | (() => void);
-
       hint?: string;
+    }
+  | {
+      kind: 'submenu';
+      id: string;
+      label: string;
+      icon?: IconDefinition;
+      variant?: ContextMenuVariant;
+      disabled?: boolean;
+      children: ContextMenuEntry[];
     };
 
 export type ContextMenuConfig<TPayload = unknown> = {
