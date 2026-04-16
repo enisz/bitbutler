@@ -543,6 +543,15 @@
             "fields": "Fields",
             "visibility": "Visibility"
           },
+          "submenu": {
+            "copy": "Copy",
+            "pin-row": "Pin Row",
+            "files": "Files",
+            "speed": "Speed",
+            "maintenance": "Maintenance",
+            "queue": "Queue",
+            "pin-column": "Pin Column"
+          },
           "item": {
             "copy-cell-value": "Copy cell value",
             "copy-info-hash": "Copy info hash",

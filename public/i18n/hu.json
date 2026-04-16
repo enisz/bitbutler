@@ -543,6 +543,15 @@
             "fields": "Mezők",
             "visibility": "Láthatóság"
           },
+          "submenu": {
+            "copy": "Másolás",
+            "pin-row": "Sor rögzítése",
+            "files": "Fájlok",
+            "speed": "Sebesség",
+            "maintenance": "Karbantartás",
+            "queue": "Sor",
+            "pin-column": "Oszlop rögzítése"
+          },
           "item": {
             "copy-cell-value": "Cella értékének másolása",
             "copy-info-hash": "Info hash másolása",
