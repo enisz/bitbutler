@@ -27,7 +27,6 @@ import {
   faPlay,
   faRotate,
   faTags,
-  faThumbTack,
   faTrashCan,
   faUpload,
   faXmark,
@@ -69,7 +68,7 @@ export class GridContextMenuService {
       {
         kind: 'item',
         id: 'row.pinToTop',
-        icon: faThumbTack,
+        icon: faArrowUp,
         label: 'pages.main.grid.context-menu.item.pin-to-top',
         disabled: data.rowPinned === 'top',
         action: () => this.commandBusService.emit({ type: 'UI_TORRENT_PIN_TOP' }),
@@ -77,7 +76,7 @@ export class GridContextMenuService {
       {
         kind: 'item',
         id: 'row.pinToBottom',
-        icon: faThumbTack,
+        icon: faArrowDown,
         label: 'pages.main.grid.context-menu.item.pin-to-bottom',
         disabled: data.rowPinned === 'bottom',
         action: () => this.commandBusService.emit({ type: 'UI_TORRENT_PIN_BOTTOM' }),
