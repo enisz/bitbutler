@@ -257,12 +257,16 @@
           "clear-upload-limit": "Clear Upload Limit",
           "wasted": "Wasted",
           "share-ratio": "Share Ratio",
-          "limit": "Limit",
-          "change-share-ratio-limit": "Change Share Ratio Limit",
-          "clear-share-ratio-limit": "Clear Share Ratio Limit",
           "reannounce-in": "Reannounce In",
           "force-reannounce": "Force Reannounce",
           "last-seen-complete": "Last Seen Complete",
+          "ratio-limit": "Ratio Limit",
+          "seeding-time-limit": "Seeding Time Limit",
+          "inactive-seeding-time-limit": "Inactive Seeding Time Limit",
+          "edit-share-limits": "Edit Share Limits",
+          "clear-ratio-limit": "Clear Ratio Limit",
+          "clear-seeding-time-limit": "Clear Seeding Time Limit",
+          "clear-inactive-seeding-time-limit": "Clear Inactive Seeding Time Limit",
           "total-size": "Total Size",
           "pieces": "Pieces",
           "pieces-value": "pieces",
@@ -339,6 +343,18 @@
             "last-seen-complete": {
               "title": "Last Seen Complete",
               "description": "The last time this client was connected to a peer with 100% of the file."
+            },
+            "ratio-limit": {
+              "title": "Ratio Limit",
+              "description": "The upload/download ratio at which this torrent will stop seeding."
+            },
+            "seeding-time-limit": {
+              "title": "Seeding Time Limit",
+              "description": "How long (in minutes) this torrent will keep seeding after it completes."
+            },
+            "inactive-seeding-time-limit": {
+              "title": "Inactive Seeding Time Limit",
+              "description": "How long (in minutes) this torrent may remain idle while seeding before it is stopped."
             },
             "total-size": {
               "title": "Total Size",

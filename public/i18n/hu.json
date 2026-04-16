@@ -257,12 +257,16 @@
           "clear-upload-limit": "Feltöltési korlát törlése",
           "wasted": "Kárba veszett",
           "share-ratio": "Megosztási arány",
-          "limit": "Korlát",
-          "change-share-ratio-limit": "Megosztási arány korlát módosítása",
-          "clear-share-ratio-limit": "Megosztási arány korlát törlése",
           "reannounce-in": "Újrajelentkezés",
           "force-reannounce": "Kényszerített újrajelentkezés",
           "last-seen-complete": "Utoljára teljesnek látva",
+          "ratio-limit": "Arány korlát",
+          "seeding-time-limit": "Seedelési idő korlát",
+          "inactive-seeding-time-limit": "Inaktív seedelési idő korlát",
+          "edit-share-limits": "Megosztási korlátok szerkesztése",
+          "clear-ratio-limit": "Arány korlát törlése",
+          "clear-seeding-time-limit": "Seedelési idő korlát törlése",
+          "clear-inactive-seeding-time-limit": "Inaktív seedelési idő korlát törlése",
           "total-size": "Teljes méret",
           "pieces": "Szeletek",
           "pieces-value": "szelet",
@@ -339,6 +343,18 @@
             "last-seen-complete": {
               "title": "Utoljára teljesnek látva",
               "description": "Amikor a kliens utoljára csatlakozott olyan peerhez, akinek megvolt a fájl 100%-a."
+            },
+            "ratio-limit": {
+              "title": "Arány korlát",
+              "description": "A feltöltési/letöltési arány, amelynél ez a torrent leáll a seedeléssel."
+            },
+            "seeding-time-limit": {
+              "title": "Seedelési idő korlát",
+              "description": "Mennyi ideig (percben) seedel ez a torrent a befejezés után."
+            },
+            "inactive-seeding-time-limit": {
+              "title": "Inaktív seedelési idő korlát",
+              "description": "Mennyi ideig (percben) maradhat inaktív ez a torrent seedelés közben, mielőtt leáll."
             },
             "total-size": {
               "title": "Teljes méret",

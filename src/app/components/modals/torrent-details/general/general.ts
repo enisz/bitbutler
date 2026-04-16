@@ -39,6 +39,7 @@ import { HumanizeDurationPipe } from '../../../../pipes/humanize-duration-pipe';
 import { RatioLimitPipe } from '../../../../pipes/ratio-limit-pipe';
 import { RatioPipe } from '../../../../pipes/ratio-pipe';
 import { SpeedLimitPipe } from '../../../../pipes/speed-limit-pipe';
+import { TimeLimitPipe } from '../../../../pipes/time-limit-pipe';
 import { CommandBusService } from '../../../../services/command-bus.service';
 import { GeneralSettingsService } from '../../../../services/general-settings.service';
 import { PathService } from '../../../../services/path.service';
@@ -70,6 +71,7 @@ interface MergedData {
     NgbTooltip,
     RatioLimitPipe,
     RatioPipe,
+    TimeLimitPipe,
     BbPopover,
     TranslatePipe,
     TooltipOverflow,
@@ -233,12 +235,41 @@ export class General implements TorrentDetailTabComponent, OnInit {
     ]);
   }
 
-  public changeShareRatioLimit(): void {
-    this.toastService.info('Changing share ratio limit.');
+  public openShareLimitsModal(): void {
+    this.commandBusService.emit({ type: 'UI_LIMIT_SHARE' });
   }
 
-  public clearShareRatioLimit(): void {
-    this.toastService.info('Clearing share ratio limit.');
+  public clearRatioLimit(): void {
+    const t = this.torrent()!.data;
+    this.qbService.setShareLimits(
+      this.serverStoreService.currentServerId() as string,
+      [this.hash],
+      -1,
+      t.seeding_time_limit,
+      t.inactive_seeding_time_limit,
+    );
+  }
+
+  public clearSeedingTimeLimit(): void {
+    const t = this.torrent()!.data;
+    this.qbService.setShareLimits(
+      this.serverStoreService.currentServerId() as string,
+      [this.hash],
+      t.ratio_limit,
+      -1,
+      t.inactive_seeding_time_limit,
+    );
+  }
+
+  public clearInactiveSeedingTimeLimit(): void {
+    const t = this.torrent()!.data;
+    this.qbService.setShareLimits(
+      this.serverStoreService.currentServerId() as string,
+      [this.hash],
+      t.ratio_limit,
+      t.seeding_time_limit,
+      -1,
+    );
   }
 
   public forceReannounce(): void {

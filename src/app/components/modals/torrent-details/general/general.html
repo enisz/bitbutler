@@ -519,37 +519,7 @@
           </span>
           <span class="section-value">
             {{ torrent()!.data.ratio | ratio }}
-
-            @if (torrent()!.data.ratio_limit > 0) {
-              <small>
-                {{ 'components.modals.torrent-details.general.limit' | translate }}:
-                {{ torrent()!.data.ratio_limit | ratioLimit }}</small
-              >
-            }
           </span>
-          <div class="button-container">
-            <button
-              class="btn btn-sm btn-link"
-              placement="top"
-              [ngbTooltip]="
-                'components.modals.torrent-details.general.change-share-ratio-limit' | translate
-              "
-              (click)="changeShareRatioLimit()"
-            >
-              <fa-icon [icon]="icons['faPenToSquare']" />
-            </button>
-
-            <button
-              class="btn btn-sm btn-link"
-              placement="top"
-              [ngbTooltip]="
-                'components.modals.torrent-details.general.clear-share-ratio-limit' | translate
-              "
-              (click)="clearShareRatioLimit()"
-            >
-              <fa-icon [icon]="icons['faX']" />
-            </button>
-          </div>
         </div>
         <div class="col-12 col-lg-6 col-xl-4 bb-section">
           <span class="section-header">
@@ -601,6 +571,130 @@
           <span class="section-value">{{
             torrent()!.data.last_activity * 1000 | date: 'yyyy-MM-dd HH:mm:ss'
           }}</span>
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.ratio-limit' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.ratio-limit.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.ratio-limit.description'
+                  | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value">{{ torrent()!.data.ratio_limit | ratioLimit }}</span>
+          <div class="button-container">
+            <button
+              class="btn btn-sm btn-link"
+              placement="top"
+              [ngbTooltip]="
+                'components.modals.torrent-details.general.edit-share-limits' | translate
+              "
+              (click)="openShareLimitsModal()"
+            >
+              <fa-icon [icon]="icons['faPenToSquare']" />
+            </button>
+            <button
+              class="btn btn-sm btn-link"
+              placement="top"
+              [ngbTooltip]="
+                'components.modals.torrent-details.general.clear-ratio-limit' | translate
+              "
+              [disabled]="torrent()!.data.ratio_limit === -1"
+              (click)="clearRatioLimit()"
+            >
+              <fa-icon [icon]="icons['faX']" />
+            </button>
+          </div>
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.seeding-time-limit' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.seeding-time-limit.title'
+                  | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.seeding-time-limit.description'
+                  | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value">{{ torrent()!.data.seeding_time_limit | timeLimit }}</span>
+          <div class="button-container">
+            <button
+              class="btn btn-sm btn-link"
+              placement="top"
+              [ngbTooltip]="
+                'components.modals.torrent-details.general.edit-share-limits' | translate
+              "
+              (click)="openShareLimitsModal()"
+            >
+              <fa-icon [icon]="icons['faPenToSquare']" />
+            </button>
+            <button
+              class="btn btn-sm btn-link"
+              placement="top"
+              [ngbTooltip]="
+                'components.modals.torrent-details.general.clear-seeding-time-limit' | translate
+              "
+              [disabled]="torrent()!.data.seeding_time_limit === -1"
+              (click)="clearSeedingTimeLimit()"
+            >
+              <fa-icon [icon]="icons['faX']" />
+            </button>
+          </div>
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{
+              'components.modals.torrent-details.general.inactive-seeding-time-limit' | translate
+            }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.inactive-seeding-time-limit.title'
+                  | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.inactive-seeding-time-limit.description'
+                  | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value">{{
+            torrent()!.data.inactive_seeding_time_limit | timeLimit
+          }}</span>
+          <div class="button-container">
+            <button
+              class="btn btn-sm btn-link"
+              placement="top"
+              [ngbTooltip]="
+                'components.modals.torrent-details.general.edit-share-limits' | translate
+              "
+              (click)="openShareLimitsModal()"
+            >
+              <fa-icon [icon]="icons['faPenToSquare']" />
+            </button>
+            <button
+              class="btn btn-sm btn-link"
+              placement="top"
+              [ngbTooltip]="
+                'components.modals.torrent-details.general.clear-inactive-seeding-time-limit'
+                  | translate
+              "
+              [disabled]="torrent()!.data.inactive_seeding_time_limit === -1"
+              (click)="clearInactiveSeedingTimeLimit()"
+            >
+              <fa-icon [icon]="icons['faX']" />
+            </button>
+          </div>
         </div>
       </div>
     </fieldset>
