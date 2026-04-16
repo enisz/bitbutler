@@ -493,6 +493,7 @@
         "context-menu": {
           "header": {
             "cell": "Cell",
+            "row": "Row",
             "torrent": "Torrent",
             "control": "Control",
             "files": "Files",
@@ -504,6 +505,8 @@
           },
           "item": {
             "copy-cell-value": "Copy cell value",
+            "pin-to-top": "Pin to top",
+            "pin-to-bottom": "Pin to bottom",
             "copy-info-hash": "Copy info hash",
             "copy-magnet-link": "Copy magnet link",
             "copy-as-json": "Copy as JSON",
@@ -534,7 +537,11 @@
             "hide-column": "Hide Column",
             "clear-filter": "Clear Filter",
             "show-all": "Show All",
-            "hide-all": "Hide All"
+            "hide-all": "Hide All",
+            "unpin": "Unpin",
+            "pin-left": "Pin left",
+            "pin-right": "Pin right",
+            "unpin-column": "Unpin column"
           }
         },
         "overlays": {
