@@ -6,6 +6,7 @@ import {
   HostListener,
   inject,
   Input,
+  signal,
   ViewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -19,8 +20,9 @@ import {
   type GridOptions,
   type RowDoubleClickedEvent,
 } from 'ag-grid-community';
-import { firstValueFrom, skip, Subject, throttleTime } from 'rxjs';
+import { filter, firstValueFrom, skip, Subject, throttleTime } from 'rxjs';
 import { GRID_DARK_THEME, GRID_LIGHT_THEME } from '../../../app.const';
+import { UiCommand } from '../../../models/command.model';
 import { TorrentListGridSettings } from '../../../models/torrent-list-grid.model';
 import { Torrent } from '../../../models/torrent.model';
 import { CommandBusService } from '../../../services/command-bus.service';
@@ -68,6 +70,8 @@ export class Grid implements AfterViewInit {
   private readonly saveGridState$ = new Subject<void>();
 
   private api: GridApi<Torrent> | null = null;
+  private readonly pinnedTopHashes = signal<Set<string>>(new Set());
+  private readonly pinnedBottomHashes = signal<Set<string>>(new Set());
   private selectionAnchorIndex: number | null = null;
   private selectionLeadIndex: number | null = null;
 
@@ -165,8 +169,17 @@ export class Grid implements AfterViewInit {
 
     effect(() => {
       const torrents = this.torrentStore.torrentsArray();
+      const topHashes = this.pinnedTopHashes();
+      const bottomHashes = this.pinnedBottomHashes();
       if (!this.api) return;
-      this.api.setGridOption('rowData', torrents);
+
+      const pinnedTop = torrents.filter((t) => topHashes.has(t.hash));
+      const pinnedBottom = torrents.filter((t) => bottomHashes.has(t.hash));
+      const mainRows = torrents.filter((t) => !topHashes.has(t.hash) && !bottomHashes.has(t.hash));
+
+      this.api.setGridOption('rowData', mainRows);
+      this.api.setGridOption('pinnedTopRowData', pinnedTop);
+      this.api.setGridOption('pinnedBottomRowData', pinnedBottom);
     });
 
     effect(() => {
@@ -189,6 +202,49 @@ export class Grid implements AfterViewInit {
         }
       });
     });
+
+    this.commandBusService.commands$
+      .pipe(
+        filter(
+          (cmd): cmd is UiCommand =>
+            cmd.type === 'UI_TORRENT_PIN_TOP' ||
+            cmd.type === 'UI_TORRENT_PIN_BOTTOM' ||
+            cmd.type === 'UI_TORRENT_UNPIN',
+        ),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((cmd) => {
+        const hashes = this.selectionStore.selected().map((t) => t.hash);
+
+        if (cmd.type === 'UI_TORRENT_UNPIN') {
+          this.pinnedTopHashes.set(
+            new Set([...this.pinnedTopHashes()].filter((h) => !hashes.includes(h))),
+          );
+          this.pinnedBottomHashes.set(
+            new Set([...this.pinnedBottomHashes()].filter((h) => !hashes.includes(h))),
+          );
+        } else if (cmd.type === 'UI_TORRENT_PIN_TOP') {
+          // Move from bottom to top if already bottom-pinned
+          this.pinnedBottomHashes.set(
+            new Set([...this.pinnedBottomHashes()].filter((h) => !hashes.includes(h))),
+          );
+          this.pinnedTopHashes.set(new Set([...this.pinnedTopHashes(), ...hashes]));
+        } else {
+          // UI_TORRENT_PIN_BOTTOM — move from top to bottom if already top-pinned
+          this.pinnedTopHashes.set(
+            new Set([...this.pinnedTopHashes()].filter((h) => !hashes.includes(h))),
+          );
+          this.pinnedBottomHashes.set(new Set([...this.pinnedBottomHashes(), ...hashes]));
+        }
+
+        if (this.api) {
+          void this.gridStateService.save(
+            this.api,
+            [...this.pinnedTopHashes()],
+            [...this.pinnedBottomHashes()],
+          );
+        }
+      });
   }
 
   private areSelectionsEqual(a: Torrent[], b: Torrent[]): boolean {
@@ -206,12 +262,19 @@ export class Grid implements AfterViewInit {
 
     this.api.setGridOption('pagination', settings.pagination);
     this.api.setGridOption('animateRows', settings.animateRows);
+
+    this.pinnedTopHashes.set(new Set(settings.pinnedTopHashes ?? []));
+    this.pinnedBottomHashes.set(new Set(settings.pinnedBottomHashes ?? []));
   }
 
   ngAfterViewInit(): void {
     this.saveGridState$.pipe(throttleTime(500, undefined, { trailing: true })).subscribe(() => {
       if (!this.api) return;
-      this.gridStateService.save(this.api);
+      void this.gridStateService.save(
+        this.api,
+        [...this.pinnedTopHashes()],
+        [...this.pinnedBottomHashes()],
+      );
     });
 
     this.filterService.external$
@@ -373,6 +436,7 @@ export class Grid implements AfterViewInit {
         row: event.data,
         cell: { value: event.value, colId: event.column.getColId(), rowId: event.data.hash },
         selected: this.selectionStore.selected(),
+        rowPinned: event.node.rowPinned,
       }),
     });
   };
