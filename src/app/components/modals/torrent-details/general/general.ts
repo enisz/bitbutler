@@ -30,7 +30,6 @@ import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { TimeagoPipe } from 'ngx-timeago';
 import { take, timer } from 'rxjs';
-import { DEFAULT_DATE_FORMATTER } from '../../../../app.const';
 import { TooltipOverflow } from '../../../../directives/tooltip-overflow';
 import { GeneralSettings } from '../../../../models/general-settings.model';
 import { QbTorrentProperties } from '../../../../models/qbittorrent.model';
@@ -61,6 +60,8 @@ interface MergedData {
   selector: 'app-general',
   imports: [
     BbSpinner,
+    DatePipe,
+    TimeagoPipe,
     FilesizePipe,
     HumanizeDurationPipe,
     SpeedLimitPipe,
@@ -71,10 +72,9 @@ interface MergedData {
     RatioPipe,
     BbPopover,
     TranslatePipe,
-    NgbTooltip,
     TooltipOverflow,
   ],
-  providers: [DatePipe, TimeagoPipe, HumanizeDurationPipe, RatioLimitPipe, RatioPipe],
+  providers: [],
   templateUrl: './general.html',
   styleUrl: './general.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -85,9 +85,6 @@ export class General implements TorrentDetailTabComponent, OnInit {
 
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly qbService = inject(QbService);
-  private readonly datePipe = inject(DatePipe);
-  private readonly timeagoPipe = inject(TimeagoPipe);
-  private readonly humanizeDurationPipe = inject(HumanizeDurationPipe);
   private readonly torrentStoreService = inject(TorrentStoreService);
   private readonly commandBusService = inject(CommandBusService);
   private readonly generalSettingsService = inject(GeneralSettingsService);
@@ -182,14 +179,6 @@ export class General implements TorrentDetailTabComponent, OnInit {
       console.error(General.name, 'load', 'Failed to fetch torrent properties!', error);
       throw new Error(error);
     }
-  }
-
-  public formatDate(seconds: number): string {
-    return this.datePipe.transform(new Date(seconds * 1000), DEFAULT_DATE_FORMATTER) ?? '—';
-  }
-
-  public formatAgo(seconds: number): string {
-    return this.timeagoPipe.transform(new Date(seconds * 1000)) ?? '—';
   }
 
   public changeDownloadLimit(): void {

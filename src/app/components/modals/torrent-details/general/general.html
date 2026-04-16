@@ -598,7 +598,9 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">{{ formatDate(torrent()!.data.last_activity) }}</span>
+          <span class="section-value">{{
+            torrent()!.data.last_activity * 1000 | date: 'yyyy-MM-dd HH:mm:ss'
+          }}</span>
         </div>
       </div>
     </fieldset>
@@ -674,9 +676,11 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">{{ formatDate(torrent()!.data.added_on) }}</span>
+          <span class="section-value">{{
+            torrent()!.data.added_on * 1000 | date: 'yyyy-MM-dd HH:mm:ss'
+          }}</span>
           <span class="section-value"
-            ><small>{{ formatAgo(torrent()!.data.added_on) }}</small></span
+            ><small>{{ torrent()!.data.added_on * 1000 | timeago }}</small></span
           >
         </div>
         <div class="col-12 col-lg-6 col-xl-4 bb-section">
@@ -695,8 +699,8 @@
           </span>
           <span class="section-value">
             @if (torrent()!.data.completion_on > 0) {
-              {{ formatDate(torrent()!.data.completion_on) }}
-              <small>{{ formatAgo(torrent()!.data.completion_on) }}</small>
+              {{ torrent()!.data.completion_on * 1000 | date: 'yyyy-MM-dd HH:mm:ss' }}
+              <small>{{ torrent()!.data.completion_on * 1000 | timeago }}</small>
             } @else {
               -
             }
@@ -716,9 +720,11 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">{{ formatDate(torrent()!.properties.creation_date) }}</span>
+          <span class="section-value">{{
+            torrent()!.properties.creation_date * 1000 | date: 'yyyy-MM-dd HH:mm:ss'
+          }}</span>
           <span class="section-value"
-            ><small>{{ formatAgo(torrent()!.properties.creation_date) }}</small></span
+            ><small>{{ torrent()!.properties.creation_date * 1000 | timeago }}</small></span
           >
         </div>
         <div class="col-12 bb-section">

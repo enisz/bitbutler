@@ -1,7 +1,6 @@
 import { GridOptions, iconSetQuartzLight, themeQuartz } from 'ag-grid-community';
 
 export const API_URL = '/api/v2';
-export const DEFAULT_DATE_FORMATTER = 'yyyy-MM-dd HH:mm:ss';
 
 const GRID_PARAMS_SHARED = {
   fontFamily: 'inherit',
