@@ -193,14 +193,27 @@ export class Grid implements AfterViewInit {
       }
 
       const selectedHashes = new Set(selectedTorrents.map((t) => t.hash));
-      this.api.forEachNode((node) => {
+      const syncNode = (node: {
+        data?: Torrent;
+        isSelected: () => boolean;
+        setSelected: (v: boolean) => void;
+      }) => {
         if (node.data) {
           const shouldBeSelected = selectedHashes.has(node.data.hash);
           if (node.isSelected() !== shouldBeSelected) {
             node.setSelected(shouldBeSelected);
           }
         }
-      });
+      };
+      this.api.forEachNode(syncNode);
+      for (let i = 0; i < this.api.getPinnedTopRowCount(); i++) {
+        const node = this.api.getPinnedTopRow(i);
+        if (node) syncNode(node);
+      }
+      for (let i = 0; i < this.api.getPinnedBottomRowCount(); i++) {
+        const node = this.api.getPinnedBottomRow(i);
+        if (node) syncNode(node);
+      }
     });
 
     this.commandBusService.commands$
@@ -215,24 +228,25 @@ export class Grid implements AfterViewInit {
       )
       .subscribe((cmd) => {
         const hashes = this.selectionStore.selected().map((t) => t.hash);
+        const hashSet = new Set(hashes);
 
         if (cmd.type === 'UI_TORRENT_UNPIN') {
           this.pinnedTopHashes.set(
-            new Set([...this.pinnedTopHashes()].filter((h) => !hashes.includes(h))),
+            new Set([...this.pinnedTopHashes()].filter((h) => !hashSet.has(h))),
           );
           this.pinnedBottomHashes.set(
-            new Set([...this.pinnedBottomHashes()].filter((h) => !hashes.includes(h))),
+            new Set([...this.pinnedBottomHashes()].filter((h) => !hashSet.has(h))),
           );
         } else if (cmd.type === 'UI_TORRENT_PIN_TOP') {
           // Move from bottom to top if already bottom-pinned
           this.pinnedBottomHashes.set(
-            new Set([...this.pinnedBottomHashes()].filter((h) => !hashes.includes(h))),
+            new Set([...this.pinnedBottomHashes()].filter((h) => !hashSet.has(h))),
           );
           this.pinnedTopHashes.set(new Set([...this.pinnedTopHashes(), ...hashes]));
         } else {
           // UI_TORRENT_PIN_BOTTOM — move from top to bottom if already top-pinned
           this.pinnedTopHashes.set(
-            new Set([...this.pinnedTopHashes()].filter((h) => !hashes.includes(h))),
+            new Set([...this.pinnedTopHashes()].filter((h) => !hashSet.has(h))),
           );
           this.pinnedBottomHashes.set(new Set([...this.pinnedBottomHashes(), ...hashes]));
         }
