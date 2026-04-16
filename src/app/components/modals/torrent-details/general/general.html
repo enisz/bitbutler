@@ -59,7 +59,13 @@
           <span class="section-header">{{
             'components.modals.torrent-details.general.save-path' | translate
           }}</span>
-          <span class="section-value">{{ torrent()!.data.save_path }}</span>
+          <span
+            class="section-value"
+            [ngbTooltip]="torrent()!.data.save_path"
+            bbTooltipOverflow
+            placement="bottom"
+            >{{ torrent()!.data.save_path }}</span
+          >
           <div class="button-container">
             <button
               class="btn btn-sm btn-link"
@@ -200,7 +206,13 @@
           <span class="section-header">{{
             'components.modals.torrent-details.general.category' | translate
           }}</span>
-          <span class="section-value">{{ torrent()!.data.category || '-' }}</span>
+          <span
+            class="section-value"
+            [ngbTooltip]="torrent()!.data.category || '-'"
+            bbTooltipOverflow
+            placement="bottom"
+            >{{ torrent()!.data.category || '-' }}</span
+          >
           <div class="button-container">
             <button
               class="btn btn-sm btn-link"
@@ -226,7 +238,13 @@
           <span class="section-header">{{
             'components.modals.torrent-details.general.tags' | translate
           }}</span>
-          <span class="section-value">{{ torrent()!.data.tags || '-' }}</span>
+          <span
+            class="section-value"
+            [ngbTooltip]="torrent()!.data.tags || '-'"
+            bbTooltipOverflow
+            placement="bottom"
+            >{{ torrent()!.data.tags || '-' }}</span
+          >
           <div class="button-container">
             <button
               class="btn btn-sm btn-link"
@@ -269,9 +287,13 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">{{
-            torrent()!.data.time_active | humanizeDuration: 'long' : 2
-          }}</span>
+          <span
+            class="section-value"
+            [ngbTooltip]="torrent()!.data.time_active | humanizeDuration: 'long' : 2"
+            bbTooltipOverflow
+            placement="bottom"
+            >{{ torrent()!.data.time_active | humanizeDuration: 'long' : 2 }}</span
+          >
         </div>
         <div class="col-12 col-lg-6 col-xl-4 bb-section">
           <span class="section-header">
@@ -284,7 +306,14 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">
+          <span
+            class="section-value"
+            [ngbTooltip]="
+              isDownloading() ? (torrent()!.data.eta | humanizeDuration: 'long' : 2) : '-'
+            "
+            bbTooltipOverflow
+            placement="bottom"
+          >
             {{ isDownloading() ? (torrent()!.data.eta | humanizeDuration: 'long' : 2) : '-' }}
           </span>
         </div>
@@ -323,7 +352,13 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">{{ torrent()!.data.downloaded | fileSize }}</span>
+          <span
+            class="section-value"
+            [ngbTooltip]="torrent()!.data.downloaded | fileSize"
+            bbTooltipOverflow
+            placement="bottom"
+            >{{ torrent()!.data.downloaded | fileSize }}</span
+          >
         </div>
         <div class="col-12 col-lg-6 col-xl-4 bb-section">
           <span class="section-header">
@@ -338,7 +373,13 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">{{ torrent()!.data.uploaded | fileSize }}</span>
+          <span
+            class="section-value"
+            [ngbTooltip]="torrent()!.data.uploaded | fileSize"
+            bbTooltipOverflow
+            placement="bottom"
+            >{{ torrent()!.data.uploaded | fileSize }}</span
+          >
         </div>
         <div class="col-12 col-lg-6 col-xl-4 bb-section">
           <span class="section-header">
@@ -372,7 +413,13 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">{{ torrent()!.data.dlspeed | fileSize }}/s</span>
+          <span
+            class="section-value"
+            [ngbTooltip]="torrent()!.data.dlspeed | fileSize"
+            bbTooltipOverflow
+            placement="bottom"
+            >{{ torrent()!.data.dlspeed | fileSize }}/s</span
+          >
         </div>
         <div class="col-12 col-lg-6 col-xl-4 bb-section">
           <span class="section-header">
@@ -388,7 +435,13 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">{{ torrent()!.data.upspeed | fileSize }}/s</span>
+          <span
+            class="section-value"
+            [ngbTooltip]="torrent()!.data.upspeed | fileSize"
+            bbTooltipOverflow
+            placement="bottom"
+            >{{ torrent()!.data.upspeed | fileSize }}/s</span
+          >
         </div>
         <div class="col-12 col-lg-6 col-xl-4 bb-section">
           <span class="section-header">
@@ -422,7 +475,13 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">{{ torrent()!.data.dl_limit | speedLimit }}</span>
+          <span
+            class="section-value"
+            [ngbTooltip]="torrent()!.data.dl_limit | speedLimit"
+            bbTooltipOverflow
+            placement="bottom"
+            >{{ torrent()!.data.dl_limit | speedLimit }}</span
+          >
           <div class="button-container">
             <button
               class="btn btn-sm btn-link"
@@ -462,7 +521,13 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">{{ torrent()!.data.up_limit | speedLimit }}</span>
+          <span
+            class="section-value"
+            [ngbTooltip]="torrent()!.data.up_limit | speedLimit"
+            bbTooltipOverflow
+            placement="bottom"
+            >{{ torrent()!.data.up_limit | speedLimit }}</span
+          >
           <div class="button-container">
             <button
               class="btn btn-sm btn-link"
@@ -501,7 +566,13 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">{{ torrent()!.properties.total_wasted | fileSize }}</span>
+          <span
+            class="section-value"
+            [ngbTooltip]="torrent()!.properties.total_wasted | fileSize"
+            bbTooltipOverflow
+            placement="bottom"
+            >{{ torrent()!.properties.total_wasted | fileSize }}</span
+          >
         </div>
         <div class="col-12 col-lg-6 col-xl-4 bb-section">
           <span class="section-header">
@@ -517,7 +588,12 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">
+          <span
+            class="section-value"
+            [ngbTooltip]="torrent()!.data.ratio | ratio"
+            bbTooltipOverflow
+            placement="bottom"
+          >
             {{ torrent()!.data.ratio | ratio }}
           </span>
         </div>
@@ -535,11 +611,21 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">{{
-            torrent()!.properties.reannounce
-              ? (torrent()!.properties.reannounce * 1000 | humanizeDuration: 'long' : 2)
-              : '-'
-          }}</span>
+          <span
+            class="section-value"
+            [ngbTooltip]="
+              torrent()!.properties.reannounce
+                ? (torrent()!.properties.reannounce * 1000 | humanizeDuration: 'long' : 2)
+                : '-'
+            "
+            bbTooltipOverflow
+            placement="bottom"
+            >{{
+              torrent()!.properties.reannounce
+                ? (torrent()!.properties.reannounce * 1000 | humanizeDuration: 'long' : 2)
+                : '-'
+            }}</span
+          >
           <div class="button-container">
             <button
               class="btn btn-sm btn-link"
@@ -568,9 +654,13 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">{{
-            torrent()!.data.last_activity * 1000 | date: 'yyyy-MM-dd HH:mm:ss'
-          }}</span>
+          <span
+            class="section-value"
+            [ngbTooltip]="torrent()!.data.last_activity * 1000 | date: 'yyyy-MM-dd HH:mm:ss'"
+            bbTooltipOverflow
+            placement="bottom"
+            >{{ torrent()!.data.last_activity * 1000 | date: 'yyyy-MM-dd HH:mm:ss' }}</span
+          >
         </div>
         <div class="col-12 col-lg-6 col-xl-4 bb-section">
           <span class="section-header">
@@ -586,7 +676,13 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">{{ torrent()!.data.ratio_limit | ratioLimit }}</span>
+          <span
+            class="section-value"
+            [ngbTooltip]="torrent()!.data.ratio_limit | ratioLimit"
+            bbTooltipOverflow
+            placement="bottom"
+            >{{ torrent()!.data.ratio_limit | ratioLimit }}</span
+          >
           <div class="button-container">
             <button
               class="btn btn-sm btn-link"
@@ -626,7 +722,13 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">{{ torrent()!.data.seeding_time_limit | timeLimit }}</span>
+          <span
+            class="section-value"
+            [ngbTooltip]="torrent()!.data.seeding_time_limit | timeLimit"
+            bbTooltipOverflow
+            placement="bottom"
+            >{{ torrent()!.data.seeding_time_limit | timeLimit }}</span
+          >
           <div class="button-container">
             <button
               class="btn btn-sm btn-link"
@@ -668,9 +770,13 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">{{
-            torrent()!.data.inactive_seeding_time_limit | timeLimit
-          }}</span>
+          <span
+            class="section-value"
+            [ngbTooltip]="torrent()!.data.inactive_seeding_time_limit | timeLimit"
+            bbTooltipOverflow
+            placement="bottom"
+            >{{ torrent()!.data.inactive_seeding_time_limit | timeLimit }}</span
+          >
           <div class="button-container">
             <button
               class="btn btn-sm btn-link"
@@ -718,7 +824,13 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">{{ torrent()!.data.total_size | fileSize }}</span>
+          <span
+            class="section-value"
+            [ngbTooltip]="torrent()!.data.total_size | fileSize"
+            bbTooltipOverflow
+            placement="bottom"
+            >{{ torrent()!.data.total_size | fileSize }}</span
+          >
         </div>
         <div class="col-12 col-lg-6 col-xl-4 bb-section">
           <span class="section-header">
@@ -755,7 +867,13 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">{{ torrent()!.properties.created_by }}</span>
+          <span
+            class="section-value"
+            [ngbTooltip]="torrent()!.properties.created_by"
+            bbTooltipOverflow
+            placement="bottom"
+            >{{ torrent()!.properties.created_by }}</span
+          >
         </div>
         <div class="col-12 col-lg-6 col-xl-4 bb-section">
           <span class="section-header">
@@ -770,9 +888,13 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">{{
-            torrent()!.data.added_on * 1000 | date: 'yyyy-MM-dd HH:mm:ss'
-          }}</span>
+          <span
+            class="section-value"
+            [ngbTooltip]="torrent()!.data.added_on * 1000 | date: 'yyyy-MM-dd HH:mm:ss'"
+            bbTooltipOverflow
+            placement="bottom"
+            >{{ torrent()!.data.added_on * 1000 | date: 'yyyy-MM-dd HH:mm:ss' }}</span
+          >
           <span class="section-value"
             ><small>{{ torrent()!.data.added_on * 1000 | timeago }}</small></span
           >
@@ -814,9 +936,13 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">{{
-            torrent()!.properties.creation_date * 1000 | date: 'yyyy-MM-dd HH:mm:ss'
-          }}</span>
+          <span
+            class="section-value"
+            [ngbTooltip]="torrent()!.properties.creation_date * 1000 | date: 'yyyy-MM-dd HH:mm:ss'"
+            bbTooltipOverflow
+            placement="bottom"
+            >{{ torrent()!.properties.creation_date * 1000 | date: 'yyyy-MM-dd HH:mm:ss' }}</span
+          >
           <span class="section-value"
             ><small>{{ torrent()!.properties.creation_date * 1000 | timeago }}</small></span
           >
@@ -835,7 +961,12 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">
+          <span
+            class="section-value"
+            [ngbTooltip]="torrent()!.data.infohash_v1"
+            bbTooltipOverflow
+            placement="bottom"
+          >
             @if (torrent()!.data.infohash_v1) {
               <code>{{ torrent()!.data.infohash_v1 }}</code>
             } @else {
@@ -872,7 +1003,12 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">
+          <span
+            class="section-value"
+            [ngbTooltip]="torrent()!.data.infohash_v2"
+            bbTooltipOverflow
+            placement="bottom"
+          >
             @if (torrent()!.data.infohash_v2) {
               <code>{{ torrent()!.data.infohash_v2 }}</code>
             } @else {
@@ -908,7 +1044,12 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">
+          <span
+            class="section-value"
+            [ngbTooltip]="torrent()!.properties.comment"
+            bbTooltipOverflow
+            placement="bottom"
+          >
             @if (torrent()!.properties.comment) {
               {{ torrent()!.properties.comment }}
             } @else {

@@ -6,7 +6,7 @@ import { formatBytes } from '../utils/format-bytes';
   standalone: true,
 })
 export class SpeedLimitPipe implements PipeTransform {
-  transform(limit: number): unknown {
+  transform(limit: number): string {
     return limit <= 0 ? '-' : formatBytes(limit) + '/s';
   }
 }
