@@ -125,6 +125,28 @@ export class GridContextMenuService {
         action: () =>
           this.commandBusService.emit({ type: 'UI_OPEN_TORRENT_DETAILS', hash: data.row.hash }),
       },
+      {
+        kind: 'submenu',
+        id: 'test.nested',
+        label: 'Test Submenu',
+        icon: faCode,
+        children: [
+          { kind: 'header', label: 'Nested Header' },
+          { kind: 'item', id: 'test.nested.a', label: 'Nested Item A', icon: faPlay },
+          { kind: 'item', id: 'test.nested.b', label: 'Nested Item B', icon: faPause },
+          { kind: 'divider' },
+          {
+            kind: 'submenu',
+            id: 'test.nested.deep',
+            label: 'Deeper Submenu',
+            icon: faCode,
+            children: [
+              { kind: 'item', id: 'test.deep.a', label: 'Deep Item A' },
+              { kind: 'item', id: 'test.deep.b', label: 'Deep Item B' },
+            ],
+          },
+        ],
+      },
       { kind: 'divider' },
       {
         kind: 'header',
