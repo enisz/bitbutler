@@ -21,6 +21,7 @@ import { HumanizeDurationPipe } from './pipes/humanize-duration-pipe';
 import { LocalTimestampPipe } from './pipes/local-timestamp-pipe';
 import { RatioLimitPipe } from './pipes/ratio-limit-pipe';
 import { RatioPipe } from './pipes/ratio-pipe';
+import { TimeLimitPipe } from './pipes/time-limit-pipe';
 import { ThemeService } from './services/theme.service';
 
 export function markedOptionsFactory(): MarkedOptions {
@@ -78,6 +79,7 @@ export const appConfig: ApplicationConfig = {
     RatioPipe,
     LocalTimestampPipe,
     RatioLimitPipe,
+    TimeLimitPipe,
     provideAppInitializer(() => {
       const themeService = inject(ThemeService);
       return themeService.init();

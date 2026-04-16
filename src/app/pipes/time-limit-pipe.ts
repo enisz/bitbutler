@@ -1,11 +1,12 @@
 import { inject, Pipe, PipeTransform } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { HumanizeDurationPipe } from './humanize-duration-pipe';
 
 @Pipe({
-  name: 'ratioLimit',
-  standalone: true,
+  name: 'timeLimit',
 })
-export class RatioLimitPipe implements PipeTransform {
+export class TimeLimitPipe implements PipeTransform {
+  private readonly humanizeDurationPipe = inject(HumanizeDurationPipe);
   private readonly translateService = inject(TranslateService);
 
   transform(value: number): string {
@@ -14,7 +15,7 @@ export class RatioLimitPipe implements PipeTransform {
     } else if (value === -1) {
       return this.translateService.instant('general.limit.no-limit');
     } else {
-      return value.toFixed(2);
+      return this.humanizeDurationPipe.transform(value * 60 * 1000, 'long', 2);
     }
   }
 }

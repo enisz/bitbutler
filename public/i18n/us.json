@@ -62,6 +62,7 @@
         "seeding-time-limit-unit": "minute"
       },
       "label": {
+        "general": "General",
         "settings": "Settings",
         "limits": "Limits",
         "files": "Files"
@@ -256,12 +257,16 @@
           "clear-upload-limit": "Clear Upload Limit",
           "wasted": "Wasted",
           "share-ratio": "Share Ratio",
-          "limit": "Limit",
-          "change-share-ratio-limit": "Change Share Ratio Limit",
-          "clear-share-ratio-limit": "Clear Share Ratio Limit",
           "reannounce-in": "Reannounce In",
           "force-reannounce": "Force Reannounce",
           "last-seen-complete": "Last Seen Complete",
+          "ratio-limit": "Ratio Limit",
+          "seeding-time-limit": "Seeding Time Limit",
+          "inactive-seeding-time-limit": "Inactive Seeding Time Limit",
+          "edit-share-limits": "Edit Share Limits",
+          "clear-ratio-limit": "Clear Ratio Limit",
+          "clear-seeding-time-limit": "Clear Seeding Time Limit",
+          "clear-inactive-seeding-time-limit": "Clear Inactive Seeding Time Limit",
           "total-size": "Total Size",
           "pieces": "Pieces",
           "pieces-value": "pieces",
@@ -338,6 +343,18 @@
             "last-seen-complete": {
               "title": "Last Seen Complete",
               "description": "The last time this client was connected to a peer with 100% of the file."
+            },
+            "ratio-limit": {
+              "title": "Ratio Limit",
+              "description": "The upload/download ratio at which this torrent will stop seeding."
+            },
+            "seeding-time-limit": {
+              "title": "Seeding Time Limit",
+              "description": "How long (in minutes) this torrent will keep seeding after it completes."
+            },
+            "inactive-seeding-time-limit": {
+              "title": "Inactive Seeding Time Limit",
+              "description": "How long (in minutes) this torrent may remain idle while seeding before it is stopped."
             },
             "total-size": {
               "title": "Total Size",
@@ -443,6 +460,29 @@
         "button": {
           "view-on-github": "View on GitHub"
         }
+      },
+      "limit-torrent-share": {
+        "title": "Set Share Limits"
+      }
+    },
+    "share-limit": {
+      "ratio-limit": "Ratio Limit",
+      "seeding-time-limit": "Seeding Time Limit",
+      "inactive-seeding-time-limit": "Inactive Seeding Time Limit",
+      "time-unit": "min",
+      "popover": {
+        "ratio-limit": {
+          "title": "Ratio Limit",
+          "description": "Stop seeding when the upload/download ratio reaches this value. Leave empty for no limit (-1), or enter -2 to use the global limit."
+        },
+        "seeding-time-limit": {
+          "title": "Seeding Time Limit",
+          "description": "Stop seeding after the torrent has been seeding for this many minutes. Leave empty for no limit (-1), or enter -2 to use the global limit."
+        },
+        "inactive-seeding-time-limit": {
+          "title": "Inactive Seeding Time Limit",
+          "description": "Stop seeding after the torrent has been inactive for this many minutes. Leave empty for no limit (-1), or enter -2 to use the global limit."
+        }
       }
     },
     "tag-select": {
@@ -521,6 +561,7 @@
             "remove": "Remove",
             "limit-upload-rate": "Limit upload rate",
             "limit-download-rate": "Limit download rate",
+            "limit-torrent-share": "Set Share Limits",
             "enable-super-seeding": "Enable Super Seeding",
             "disable-super-seeding": "Disable Super Seeding",
             "force-recheck": "Force recheck",
@@ -834,12 +875,7 @@
       }
     }
   },
-  "pipes": {
-    "ratio-limit-pipe": {
-      "global": "Global",
-      "no-limit": "No Limit"
-    }
-  },
+  "pipes": {},
   "services": {
     "menu-bar-command-handler": {
       "app-loader": {
@@ -862,6 +898,7 @@
       "add": "Add",
       "cancel": "Cancel",
       "clear": "Clear",
+      "clear-all": "Clear",
       "today": "Today",
       "connect": "Connect",
       "add-server": "Add Server",
@@ -922,6 +959,10 @@
         "6": "Sa",
         "7": "Su"
       }
+    },
+    "limit": {
+      "global": "Global Limit",
+      "no-limit": "No Limit"
     }
   },
   "language": {

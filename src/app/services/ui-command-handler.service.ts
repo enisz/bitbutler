@@ -5,6 +5,7 @@ import { filter } from 'rxjs';
 import { About } from '../components/about/about';
 import { AddTorrent } from '../components/add-torrent/add-torrent';
 import { DeleteTorrent } from '../components/modals/delete-torrent/delete-torrent';
+import { LimitTorrentShare } from '../components/modals/limit-torrent-share/limit-torrent-share';
 import { LimitTransferRate } from '../components/modals/limit-transfer-rate/limit-transfer-rate';
 import { RenameTorrent } from '../components/modals/rename-torrent/rename-torrent';
 import { ServerEditor } from '../components/modals/server-editor/server-editor';
@@ -146,6 +147,14 @@ export class UiCommandHandlerService {
             limitTransferModalRef.componentInstance.target = command.target;
 
             limitTransferModalRef.result.then((res: any) => {}).catch((error: any) => {});
+            break;
+
+          case 'UI_LIMIT_SHARE':
+            if (this.isModalOpen(LimitTorrentShare)) break;
+
+            const limitTorrentShare = this.modalService.open(LimitTorrentShare, { size: 'lg' });
+
+            limitTorrentShare.result.then((res: any) => {}).catch((error: any) => {});
             break;
 
           case 'UI_SET_TORRENT_TAGS':

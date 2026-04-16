@@ -1,3 +1,5 @@
+import { ShareLimitValue } from '../components/share-limit/share-limit';
+
 export type RootFolderMode = 'unset' | 'true' | 'false';
 
 export type AddTorrentSettings = {
@@ -12,8 +14,7 @@ export type AddTorrentSettings = {
   autoTMM: boolean;
   upLimitKbps: number | null;
   dlLimitKbps: number | null;
-  ratioLimit: number | null;
-  seedingTimeLimit: number | null;
+  shareLimits: ShareLimitValue | null;
 };
 
 export const DEFAULT_ADD_TORRENT_SETTINGS: AddTorrentSettings = {
@@ -28,6 +29,5 @@ export const DEFAULT_ADD_TORRENT_SETTINGS: AddTorrentSettings = {
   autoTMM: false,
   upLimitKbps: null,
   dlLimitKbps: null,
-  ratioLimit: null,
-  seedingTimeLimit: null,
+  shareLimits: null,
 };

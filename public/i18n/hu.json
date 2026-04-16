@@ -62,6 +62,7 @@
         "seeding-time-limit-unit": "perc"
       },
       "label": {
+        "general": "Általános",
         "settings": "Beállítások",
         "limits": "Korlátok",
         "files": "Fájlok"
@@ -256,12 +257,16 @@
           "clear-upload-limit": "Feltöltési korlát törlése",
           "wasted": "Kárba veszett",
           "share-ratio": "Megosztási arány",
-          "limit": "Korlát",
-          "change-share-ratio-limit": "Megosztási arány korlát módosítása",
-          "clear-share-ratio-limit": "Megosztási arány korlát törlése",
           "reannounce-in": "Újrajelentkezés",
           "force-reannounce": "Kényszerített újrajelentkezés",
           "last-seen-complete": "Utoljára teljesnek látva",
+          "ratio-limit": "Arány korlát",
+          "seeding-time-limit": "Seedelési idő korlát",
+          "inactive-seeding-time-limit": "Inaktív seedelési idő korlát",
+          "edit-share-limits": "Megosztási korlátok szerkesztése",
+          "clear-ratio-limit": "Arány korlát törlése",
+          "clear-seeding-time-limit": "Seedelési idő korlát törlése",
+          "clear-inactive-seeding-time-limit": "Inaktív seedelési idő korlát törlése",
           "total-size": "Teljes méret",
           "pieces": "Szeletek",
           "pieces-value": "szelet",
@@ -339,6 +344,18 @@
               "title": "Utoljára teljesnek látva",
               "description": "Amikor a kliens utoljára csatlakozott olyan peerhez, akinek megvolt a fájl 100%-a."
             },
+            "ratio-limit": {
+              "title": "Arány korlát",
+              "description": "A feltöltési/letöltési arány, amelynél ez a torrent leáll a seedeléssel."
+            },
+            "seeding-time-limit": {
+              "title": "Seedelési idő korlát",
+              "description": "Mennyi ideig (percben) seedel ez a torrent a befejezés után."
+            },
+            "inactive-seeding-time-limit": {
+              "title": "Inaktív seedelési idő korlát",
+              "description": "Mennyi ideig (percben) maradhat inaktív ez a torrent seedelés közben, mielőtt leáll."
+            },
             "total-size": {
               "title": "Teljes méret",
               "description": "A torrentben szereplő összes fájl teljes mérete."
@@ -375,7 +392,9 @@
               "title": "Megjegyzés",
               "description": "A készítő által megadott opcionális szöveg (pl. forrásinfó)."
             }
-          }
+          },
+          "info": {},
+          "error": {}
         },
         "peers": {
           "grid-options": {
@@ -440,6 +459,29 @@
         "available-downloads": "Elérhető letöltések",
         "button": {
           "view-on-github": "Megtekintés GitHubon"
+        }
+      },
+      "limit-torrent-share": {
+        "title": "Set Share Limits"
+      }
+    },
+    "share-limit": {
+      "ratio-limit": "Arány korlát",
+      "seeding-time-limit": "Seedelési időkorlát",
+      "inactive-seeding-time-limit": "Inaktív seedelési időkorlát",
+      "time-unit": "perc",
+      "popover": {
+        "ratio-limit": {
+          "title": "Arány korlát",
+          "description": "Seedelés leállítása, ha a feltöltés/letöltés arány eléri ezt az értéket. Hagyd üresen a korlát nélküli módhoz (-1), vagy írd be -2-t a globális korlát használatához."
+        },
+        "seeding-time-limit": {
+          "title": "Seedelési időkorlát",
+          "description": "Seedelés leállítása, miután a torrent ennyi percig seedelt. Hagyd üresen a korlát nélküli módhoz (-1), vagy írd be -2-t a globális korlát használatához."
+        },
+        "inactive-seeding-time-limit": {
+          "title": "Inaktív seedelési időkorlát",
+          "description": "Seedelés leállítása, ha a torrent ennyi percig inaktív volt. Hagyd üresen a korlát nélküli módhoz (-1), vagy írd be -2-t a globális korlát használatához."
         }
       }
     },
@@ -519,6 +561,7 @@
             "remove": "Eltávolítás",
             "limit-upload-rate": "Feltöltési sebesség korlátozása",
             "limit-download-rate": "Letöltési sebesség korlátozása",
+            "limit-torrent-share": "Megosztási korlátok beállítása",
             "enable-super-seeding": "Super seeding engedélyezése",
             "disable-super-seeding": "Super seeding tiltása",
             "force-recheck": "Kényszerített ellenőrzés",
@@ -832,12 +875,7 @@
       }
     }
   },
-  "pipes": {
-    "ratio-limit-pipe": {
-      "global": "Globális",
-      "no-limit": "Nincs korlát"
-    }
-  },
+  "pipes": {},
   "services": {
     "menu-bar-command-handler": {
       "app-loader": {
@@ -860,6 +898,7 @@
       "add": "Hozzáadás",
       "cancel": "Mégse",
       "clear": "Törlés",
+      "clear-all": "Összes törlése",
       "today": "Ma",
       "connect": "Csatlakozás",
       "add-server": "Szerver hozzáadása",
@@ -920,6 +959,10 @@
         "6": "Szo",
         "7": "Va"
       }
+    },
+    "limit": {
+      "global": "Globális korlát",
+      "no-limit": "Nincs korlát"
     }
   },
   "language": {

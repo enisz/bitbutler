@@ -30,7 +30,6 @@ import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { TimeagoPipe } from 'ngx-timeago';
 import { take, timer } from 'rxjs';
-import { DEFAULT_DATE_FORMATTER } from '../../../../app.const';
 import { TooltipOverflow } from '../../../../directives/tooltip-overflow';
 import { GeneralSettings } from '../../../../models/general-settings.model';
 import { QbTorrentProperties } from '../../../../models/qbittorrent.model';
@@ -40,6 +39,7 @@ import { HumanizeDurationPipe } from '../../../../pipes/humanize-duration-pipe';
 import { RatioLimitPipe } from '../../../../pipes/ratio-limit-pipe';
 import { RatioPipe } from '../../../../pipes/ratio-pipe';
 import { SpeedLimitPipe } from '../../../../pipes/speed-limit-pipe';
+import { TimeLimitPipe } from '../../../../pipes/time-limit-pipe';
 import { CommandBusService } from '../../../../services/command-bus.service';
 import { GeneralSettingsService } from '../../../../services/general-settings.service';
 import { PathService } from '../../../../services/path.service';
@@ -61,6 +61,8 @@ interface MergedData {
   selector: 'app-general',
   imports: [
     BbSpinner,
+    DatePipe,
+    TimeagoPipe,
     FilesizePipe,
     HumanizeDurationPipe,
     SpeedLimitPipe,
@@ -69,12 +71,12 @@ interface MergedData {
     NgbTooltip,
     RatioLimitPipe,
     RatioPipe,
+    TimeLimitPipe,
     BbPopover,
     TranslatePipe,
-    NgbTooltip,
     TooltipOverflow,
   ],
-  providers: [DatePipe, TimeagoPipe, HumanizeDurationPipe, RatioLimitPipe, RatioPipe],
+  providers: [],
   templateUrl: './general.html',
   styleUrl: './general.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -85,9 +87,6 @@ export class General implements TorrentDetailTabComponent, OnInit {
 
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly qbService = inject(QbService);
-  private readonly datePipe = inject(DatePipe);
-  private readonly timeagoPipe = inject(TimeagoPipe);
-  private readonly humanizeDurationPipe = inject(HumanizeDurationPipe);
   private readonly torrentStoreService = inject(TorrentStoreService);
   private readonly commandBusService = inject(CommandBusService);
   private readonly generalSettingsService = inject(GeneralSettingsService);
@@ -184,18 +183,6 @@ export class General implements TorrentDetailTabComponent, OnInit {
     }
   }
 
-  public formatDate(seconds: number): string {
-    return this.datePipe.transform(new Date(seconds * 1000), DEFAULT_DATE_FORMATTER) ?? '—';
-  }
-
-  public formatAgo(seconds: number): string {
-    return this.timeagoPipe.transform(new Date(seconds * 1000)) ?? '—';
-  }
-
-  public humanizeDuration(seconds: number | undefined): string {
-    return seconds ? this.humanizeDurationPipe.transform(seconds) : '-';
-  }
-
   public changeDownloadLimit(): void {
     this.commandBusService.emit({
       type: 'UI_LIMIT_TRANSFER',
@@ -248,12 +235,41 @@ export class General implements TorrentDetailTabComponent, OnInit {
     ]);
   }
 
-  public changeShareRatioLimit(): void {
-    this.toastService.info('Changing share ratio limit.');
+  public openShareLimitsModal(): void {
+    this.commandBusService.emit({ type: 'UI_LIMIT_SHARE' });
   }
 
-  public clearShareRatioLimit(): void {
-    this.toastService.info('Clearing share ratio limit.');
+  public clearRatioLimit(): void {
+    const t = this.torrent()!.data;
+    this.qbService.setShareLimits(
+      this.serverStoreService.currentServerId() as string,
+      [this.hash],
+      -1,
+      t.seeding_time_limit,
+      t.inactive_seeding_time_limit,
+    );
+  }
+
+  public clearSeedingTimeLimit(): void {
+    const t = this.torrent()!.data;
+    this.qbService.setShareLimits(
+      this.serverStoreService.currentServerId() as string,
+      [this.hash],
+      t.ratio_limit,
+      -1,
+      t.inactive_seeding_time_limit,
+    );
+  }
+
+  public clearInactiveSeedingTimeLimit(): void {
+    const t = this.torrent()!.data;
+    this.qbService.setShareLimits(
+      this.serverStoreService.currentServerId() as string,
+      [this.hash],
+      t.ratio_limit,
+      t.seeding_time_limit,
+      -1,
+    );
   }
 
   public forceReannounce(): void {
@@ -318,5 +334,17 @@ export class General implements TorrentDetailTabComponent, OnInit {
   public toClipboard(field: string, value: string): void {
     this.toastService.info(`Copied ${field} to clipboard.`);
     this.clipboard.copy(value);
+  }
+
+  public isDownloading(): boolean {
+    return (
+      this.torrent()?.data.state === 'downloading' ||
+      this.torrent()?.data.state === 'pausedDL' ||
+      this.torrent()?.data.state === 'stoppedDL' ||
+      this.torrent()?.data.state === 'queuedDL' ||
+      this.torrent()?.data.state === 'stalledDL' ||
+      this.torrent()?.data.state === 'checkingDL' ||
+      this.torrent()?.data.state === 'forcedDL'
+    );
   }
 }

@@ -210,7 +210,7 @@ export class QbService {
   }
 
   async setTorrentLocation(serverId: string, hashes: string[], location: string): Promise<void> {
-    const clean = (hashes ?? []).map((h) => (h ?? '').trim()).filter(Boolean);
+    const clean = this.cleanHashList(hashes);
     const loc = (location ?? '').trim();
 
     if (clean.length === 0) return Promise.reject(new Error('No hashes provided'));
@@ -353,7 +353,7 @@ export class QbService {
   }
 
   async deleteTorrents(serverId: string, hashes: string[], deleteFiles: boolean): Promise<string> {
-    const clean = (hashes ?? []).map((h) => (h ?? '').trim()).filter(Boolean);
+    const clean = this.cleanHashList(hashes);
     if (clean.length === 0) return Promise.reject(new Error('No hashes to delete'));
 
     const res = await this.request<string>(serverId, {
@@ -367,7 +367,7 @@ export class QbService {
   }
 
   async recheckTorrents(serverId: string, hashes: string[]): Promise<void> {
-    const clean = (hashes ?? []).map((h) => (h ?? '').trim()).filter(Boolean);
+    const clean = this.cleanHashList(hashes);
     if (clean.length === 0) return;
 
     const res = await this.request<void>(serverId, {
@@ -380,7 +380,7 @@ export class QbService {
   }
 
   async reannounceTorrents(serverId: string, hashes: string[]): Promise<void> {
-    const clean = (hashes ?? []).map((h) => (h ?? '').trim()).filter(Boolean);
+    const clean = this.cleanHashList(hashes);
     if (clean.length === 0) return;
 
     const res = await this.request<void>(serverId, {
@@ -470,7 +470,7 @@ export class QbService {
   }
 
   async increasePrio(serverId: string, hashes: string[]): Promise<void> {
-    const clean = (hashes ?? []).map((h) => (h ?? '').trim()).filter(Boolean);
+    const clean = this.cleanHashList(hashes);
     if (clean.length === 0) return;
 
     const res = await this.request<void>(serverId, {
@@ -484,7 +484,7 @@ export class QbService {
   }
 
   async decreasePrio(serverId: string, hashes: string[]): Promise<void> {
-    const clean = (hashes ?? []).map((h) => (h ?? '').trim()).filter(Boolean);
+    const clean = this.cleanHashList(hashes);
     if (clean.length === 0) return;
 
     const res = await this.request<void>(serverId, {
@@ -498,7 +498,7 @@ export class QbService {
   }
 
   async topPrio(serverId: string, hashes: string[]): Promise<void> {
-    const clean = (hashes ?? []).map((h) => (h ?? '').trim()).filter(Boolean);
+    const clean = this.cleanHashList(hashes);
     if (clean.length === 0) return;
 
     const res = await this.request<void>(serverId, {
@@ -512,7 +512,7 @@ export class QbService {
   }
 
   async bottomPrio(serverId: string, hashes: string[]): Promise<void> {
-    const clean = (hashes ?? []).map((h) => (h ?? '').trim()).filter(Boolean);
+    const clean = this.cleanHashList(hashes);
     if (clean.length === 0) return;
 
     const res = await this.request<void>(serverId, {
@@ -526,7 +526,7 @@ export class QbService {
   }
 
   async setForceStart(serverId: string, hashes: string[], value: boolean): Promise<void> {
-    const clean = (hashes ?? []).map((h) => (h ?? '').trim()).filter(Boolean);
+    const clean = this.cleanHashList(hashes);
     if (clean.length === 0) return;
 
     const res = await this.request<void>(serverId, {
@@ -539,7 +539,7 @@ export class QbService {
   }
 
   async setSuperSeeding(serverId: string, hashes: string[], value: boolean): Promise<void> {
-    const clean = (hashes ?? []).map((h) => (h ?? '').trim()).filter(Boolean);
+    const clean = this.cleanHashList(hashes);
     if (clean.length === 0) return;
 
     const res = await this.request<void>(serverId, {
@@ -552,7 +552,7 @@ export class QbService {
   }
 
   async setAutoManagement(serverId: string, hashes: string[], enable: boolean): Promise<void> {
-    const cleanHashes = (hashes ?? []).map((h) => (h ?? '').trim()).filter(Boolean);
+    const cleanHashes = this.cleanHashList(hashes);
     if (cleanHashes.length === 0) return;
 
     const res = await this.request<void>(serverId, {
@@ -569,7 +569,7 @@ export class QbService {
     serverId: string,
     hashes?: string[],
   ): Promise<number | Record<string, number>> {
-    const cleanHashes = (hashes ?? []).map((h) => (h ?? '').trim()).filter(Boolean);
+    const cleanHashes = this.cleanHashList(hashes);
     const isPerTorrent = cleanHashes.length > 0;
 
     const path = isPerTorrent ? '/api/v2/torrents/downloadLimit' : '/api/v2/transfer/downloadLimit';
@@ -587,7 +587,7 @@ export class QbService {
   }
 
   async setDownloadLimit(serverId: string, limit: number, hashes?: string[]): Promise<void> {
-    const cleanHashes = (hashes ?? []).map((h) => (h ?? '').trim()).filter(Boolean);
+    const cleanHashes = this.cleanHashList(hashes);
     const isPerTorrent = cleanHashes.length > 0;
 
     const path = isPerTorrent
@@ -609,7 +609,7 @@ export class QbService {
     serverId: string,
     hashes?: string[],
   ): Promise<number | Record<string, number>> {
-    const cleanHashes = (hashes ?? []).map((h) => (h ?? '').trim()).filter(Boolean);
+    const cleanHashes = this.cleanHashList(hashes);
     const isPerTorrent = cleanHashes.length > 0;
 
     const path = isPerTorrent ? '/api/v2/torrents/uploadLimit' : '/api/v2/transfer/uploadLimit';
@@ -627,7 +627,7 @@ export class QbService {
   }
 
   async setUploadLimit(serverId: string, limit: number, hashes?: string[]): Promise<void> {
-    const cleanHashes = (hashes ?? []).map((h) => (h ?? '').trim()).filter(Boolean);
+    const cleanHashes = this.cleanHashList(hashes);
     const isPerTorrent = cleanHashes.length > 0;
 
     const path = isPerTorrent
@@ -646,7 +646,7 @@ export class QbService {
   }
 
   async addTorrentTags(serverId: string, hashes: string[], tags: string[]): Promise<void> {
-    const cleanHashes = (hashes ?? []).map((h) => (h ?? '').trim()).filter(Boolean);
+    const cleanHashes = this.cleanHashList(hashes);
     if (cleanHashes.length === 0) return;
 
     const cleanTags = (tags ?? []).map((t) => (t ?? '').trim()).filter(Boolean);
@@ -662,7 +662,7 @@ export class QbService {
   }
 
   async removeTorrentTags(serverId: string, hashes: string[], tags: string[]): Promise<void> {
-    const cleanHashes = (hashes ?? []).map((h) => (h ?? '').trim()).filter(Boolean);
+    const cleanHashes = this.cleanHashList(hashes);
     if (cleanHashes.length === 0) return;
 
     const cleanTags = (tags ?? []).map((t) => (t ?? '').trim()).filter(Boolean);
@@ -714,7 +714,7 @@ export class QbService {
   }
 
   async setTorrentCategory(serverId: string, hashes: string[], category: string): Promise<void> {
-    const cleanHashes = (hashes ?? []).map((h) => (h ?? '').trim()).filter(Boolean);
+    const cleanHashes = this.cleanHashList(hashes);
     if (cleanHashes.length === 0) return;
 
     const res = await this.request<void>(serverId, {
@@ -727,7 +727,7 @@ export class QbService {
   }
 
   async clearTorrentsCategory(serverId: string, hashes: string[]): Promise<void> {
-    const cleanHashes = (hashes ?? []).map((h) => (h ?? '').trim()).filter(Boolean);
+    const cleanHashes = this.cleanHashList(hashes);
     if (cleanHashes.length === 0) return;
 
     await this.request<void>(serverId, {
@@ -780,6 +780,30 @@ export class QbService {
     if (!res.ok) throw new HttpError(res.status, res.statusText, `Failed to remove categories`);
   }
 
+  async setShareLimits(
+    serverId: string,
+    hashes: string[],
+    ratioLimit: number,
+    seedingTimeLimit: number,
+    inactiveSeedingTimeLimit: number,
+  ): Promise<void> {
+    const cleanHashes = this.cleanHashList(hashes);
+    if (cleanHashes.length === 0) return Promise.reject(new Error('No hashes provided'));
+
+    const res = await this.request<void>(serverId, {
+      path: '/api/v2/torrents/setShareLimits',
+      method: 'POST',
+      form: {
+        hashes: cleanHashes.join('|'),
+        ratioLimit,
+        seedingTimeLimit,
+        inactiveSeedingTimeLimit,
+      },
+    });
+
+    if (!res.ok) throw new HttpError(res.status, res.statusText, `Failed to set share limits`);
+  }
+
   public async getAlternativeSpeedLimitState(serverId: string): Promise<boolean> {
     const res = await this.request<number>(serverId, {
       path: '/api/v2/transfer/speedLimitsMode',
@@ -805,7 +829,7 @@ export class QbService {
     action: 'pause' | 'resume',
     hashes: string[],
   ): Promise<void> {
-    const clean = (hashes ?? []).map((h) => (h ?? '').trim()).filter(Boolean);
+    const clean = this.cleanHashList(hashes);
     if (clean.length === 0) return;
 
     const form = { hashes: clean.join('|') };
@@ -859,6 +883,10 @@ export class QbService {
     const res = await this.request<string>(serverId, { path, method: 'POST', form }, options);
 
     if (!res.ok) throw new HttpError(res.status, res.statusText, `Failed to ${action} torrents`);
+  }
+
+  private cleanHashList(hashes: string[] | undefined): string[] {
+    return (hashes ?? []).map((h) => (h ?? '').trim()).filter(Boolean);
   }
 
   private extractIpcStatus(err: any): number | null {
