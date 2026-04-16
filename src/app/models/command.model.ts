@@ -25,7 +25,10 @@ export type UiCommand =
   | { type: 'UI_SET_TORRENT_CATEGORY'; torrent: Torrent }
   | { type: 'UI_OPEN_DESTINATION'; remotePath: string | null; hash: string }
   | { type: 'UI_UPDATE_AVAILABLE'; update: UpdateCheckResponse }
-  | { type: 'UI_RENAME_FILES'; hash: string };
+  | { type: 'UI_RENAME_FILES'; hash: string }
+  | { type: 'UI_TORRENT_PIN_TOP' }
+  | { type: 'UI_TORRENT_PIN_BOTTOM' }
+  | { type: 'UI_TORRENT_UNPIN' };
 
 export type TorrentCommand =
   | { type: 'TORRENT_DELETE_CONFIRM'; removeFiles: boolean }

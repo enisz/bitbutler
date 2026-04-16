@@ -12,6 +12,7 @@ export interface GridContextMenuData {
 
   row: Torrent;
   selected: Torrent[];
+  rowPinned: 'top' | 'bottom' | null | undefined;
 }
 
 export type ContextMenuVariant = 'default' | 'info' | 'success' | 'warning' | 'danger';
