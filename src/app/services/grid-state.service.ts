@@ -23,7 +23,7 @@ export class GridStateService {
     return hasColumnState || hasFilterModel;
   }
 
-  async save(api: GridApi): Promise<void> {
+  async save(api: GridApi, pinnedTopHashes: string[], pinnedBottomHashes: string[]): Promise<void> {
     const settings = await firstValueFrom(
       this.torrentListGridSettingsService
         .asObservable()
@@ -33,6 +33,8 @@ export class GridStateService {
       ...settings,
       columnState: api.getColumnState(),
       filterModel: api.getFilterModel(),
+      pinnedTopHashes,
+      pinnedBottomHashes,
     });
   }
 
