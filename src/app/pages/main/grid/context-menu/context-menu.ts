@@ -7,6 +7,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe } from '@ngx-translate/core';
 import { fromEvent } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { CommandBusService } from '../../../../services/command-bus.service';
 import { CONTEXT_MENU_CONFIG } from './context-menu.tokens';
 import type { ContextMenuConfig, ContextMenuEntry } from './context-menu.types';
@@ -84,12 +85,16 @@ export class ContextMenu implements OnDestroy {
         panelClass: 'bb-context-menu-panel',
       });
 
-      fromEvent(this.childOverlayRef.overlayElement, 'mouseenter').subscribe(() => {
-        clearTimeout(this.closeTimer);
-      });
-      fromEvent(this.childOverlayRef.overlayElement, 'mouseleave').subscribe(() => {
-        this.closeTimer = setTimeout(() => this.disposeChild(), 150);
-      });
+      fromEvent(this.childOverlayRef.overlayElement, 'mouseenter')
+        .pipe(takeUntil(this.childOverlayRef.detachments()))
+        .subscribe(() => {
+          clearTimeout(this.closeTimer);
+        });
+      fromEvent(this.childOverlayRef.overlayElement, 'mouseleave')
+        .pipe(takeUntil(this.childOverlayRef.detachments()))
+        .subscribe(() => {
+          this.closeTimer = setTimeout(() => this.disposeChild(), 150);
+        });
 
       const inj = Injector.create({
         parent: this.injector,
