@@ -505,8 +505,6 @@
           },
           "item": {
             "copy-cell-value": "Copy cell value",
-            "pin-to-top": "Pin to top",
-            "pin-to-bottom": "Pin to bottom",
             "copy-info-hash": "Copy info hash",
             "copy-magnet-link": "Copy magnet link",
             "copy-as-json": "Copy as JSON",
@@ -538,6 +536,8 @@
             "clear-filter": "Clear Filter",
             "show-all": "Show All",
             "hide-all": "Hide All",
+            "pin-to-top": "Pin to top",
+            "pin-to-bottom": "Pin to bottom",
             "unpin": "Unpin",
             "pin-left": "Pin left",
             "pin-right": "Pin right",
