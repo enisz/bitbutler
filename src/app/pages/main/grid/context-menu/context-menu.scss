@@ -116,3 +116,22 @@
 .bb-item:disabled {
   color: inherit;
 }
+
+.bb-chevron {
+  width: 14px;
+  min-width: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+  margin-left: auto;
+
+  fa-icon {
+    font-size: 10px;
+    line-height: 1;
+  }
+}
+
+.bb-item.bb-item--submenu-open {
+  background: color-mix(in srgb, var(--bs-body-color) 8%, transparent);
+}

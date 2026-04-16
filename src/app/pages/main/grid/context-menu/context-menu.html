@@ -35,7 +35,6 @@
     }
     @if (entry.kind === 'submenu') {
       <button
-        #submenuBtn
         type="button"
         class="bb-item"
         [class.bb-item--submenu-open]="activeSubmenuId() === entry.id"
@@ -44,10 +43,11 @@
         [class.bb-success]="entry.variant === 'success'"
         [class.bb-info]="entry.variant === 'info'"
         [disabled]="entry.disabled"
-        (mouseenter)="onSubmenuEnter(entry, submenuBtn)"
+        (mouseenter)="onSubmenuEnter(entry, asHtmlElement($event.currentTarget))"
         (mouseleave)="onSubmenuLeave()"
         role="menuitem"
-        aria-haspopup="true"
+        aria-haspopup="menu"
+        [attr.aria-expanded]="activeSubmenuId() === entry.id"
       >
         <span class="bb-icon" aria-hidden="true">
           @if (entry.icon) {

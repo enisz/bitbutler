@@ -140,4 +140,6 @@ export class ContextMenu implements OnDestroy {
   emit(cmd: any): void {
     this.commandBus.emit(cmd);
   }
+
+  protected readonly asHtmlElement = (el: EventTarget | null): HTMLElement => el as HTMLElement;
 }
