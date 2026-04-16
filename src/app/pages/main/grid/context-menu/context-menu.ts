@@ -3,6 +3,7 @@ import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { CommonModule } from '@angular/common';
 import { Component, inject, Injector, OnDestroy, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -35,7 +36,10 @@ export class ContextMenu implements OnDestroy {
   private closeTimer?: ReturnType<typeof setTimeout>;
 
   constructor() {
-    this.overlayRef.detachments().subscribe(() => this.disposeChild());
+    this.overlayRef
+      .detachments()
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.disposeChild());
   }
 
   get items(): ContextMenuEntry[] {
@@ -64,7 +68,9 @@ export class ContextMenu implements OnDestroy {
     entry: Extract<ContextMenuEntry, { kind: 'submenu' }>,
     triggerEl: HTMLElement,
   ): void {
+    clearTimeout(this.openTimer);
     clearTimeout(this.closeTimer);
+    if (entry.disabled) return;
     this.openTimer = setTimeout(() => {
       this.disposeChild();
 
