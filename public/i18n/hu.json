@@ -446,6 +446,12 @@
         "title": "Set Share Limits"
       }
     },
+    "share-limit": {
+      "ratio-limit": "Arány korlát",
+      "seeding-time-limit": "Seedelési időkorlát",
+      "inactive-seeding-time-limit": "Inaktív seedelési időkorlát",
+      "time-unit": "perc"
+    },
     "tag-select": {
       "label": "Címkék"
     },

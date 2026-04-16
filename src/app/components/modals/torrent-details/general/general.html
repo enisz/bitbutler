@@ -269,7 +269,9 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">{{ torrent()!.data.time_active | humanizeDuration }}</span>
+          <span class="section-value">{{
+            torrent()!.data.time_active | humanizeDuration: 'long' : 2
+          }}</span>
         </div>
         <div class="col-12 col-lg-6 col-xl-4 bb-section">
           <span class="section-header">
@@ -283,7 +285,7 @@
             ></bb-popover>
           </span>
           <span class="section-value">
-            {{ (torrent()!.data.eta | humanizeDuration) || '-' }}
+            {{ isDownloading() ? (torrent()!.data.eta | humanizeDuration: 'long' : 2) : '-' }}
           </span>
         </div>
         <div class="col-12 col-lg-6 col-xl-4 bb-section">
@@ -564,7 +566,9 @@
             ></bb-popover>
           </span>
           <span class="section-value">{{
-            humanizeDuration(torrent()!.properties.reannounce)
+            torrent()!.properties.reannounce
+              ? (torrent()!.properties.reannounce * 1000 | humanizeDuration: 'long' : 2)
+              : '-'
           }}</span>
           <div class="button-container">
             <button

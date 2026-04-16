@@ -192,10 +192,6 @@ export class General implements TorrentDetailTabComponent, OnInit {
     return this.timeagoPipe.transform(new Date(seconds * 1000)) ?? '—';
   }
 
-  public humanizeDuration(seconds: number | undefined): string {
-    return seconds ? this.humanizeDurationPipe.transform(seconds) : '-';
-  }
-
   public changeDownloadLimit(): void {
     this.commandBusService.emit({
       type: 'UI_LIMIT_TRANSFER',
@@ -318,5 +314,17 @@ export class General implements TorrentDetailTabComponent, OnInit {
   public toClipboard(field: string, value: string): void {
     this.toastService.info(`Copied ${field} to clipboard.`);
     this.clipboard.copy(value);
+  }
+
+  public isDownloading(): boolean {
+    return (
+      this.torrent()?.data.state === 'downloading' ||
+      this.torrent()?.data.state === 'pausedDL' ||
+      this.torrent()?.data.state === 'stoppedDL' ||
+      this.torrent()?.data.state === 'queuedDL' ||
+      this.torrent()?.data.state === 'stalledDL' ||
+      this.torrent()?.data.state === 'checkingDL' ||
+      this.torrent()?.data.state === 'forcedDL'
+    );
   }
 }

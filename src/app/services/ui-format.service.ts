@@ -5,6 +5,7 @@ import { HumanizeDurationPipe } from '../pipes/humanize-duration-pipe';
 import { LocalTimestampPipe } from '../pipes/local-timestamp-pipe';
 import { RatioLimitPipe } from '../pipes/ratio-limit-pipe';
 import { RatioPipe } from '../pipes/ratio-pipe';
+import { TimeLimitPipe } from '../pipes/time-limit-pipe';
 
 @Injectable({ providedIn: 'root' })
 export class UiFormatService {
@@ -13,6 +14,7 @@ export class UiFormatService {
   private readonly ratioPipe = inject(RatioPipe);
   private readonly localTimestampPipe = inject(LocalTimestampPipe);
   private readonly ratioLimitPipe = inject(RatioLimitPipe);
+  private readonly timeLimitPipe = inject(TimeLimitPipe);
 
   public readonly utcDateComparator = (
     filterLocalDateAtMidnight: Date,
@@ -54,4 +56,7 @@ export class UiFormatService {
 
   public readonly ratioLimit = (params: ValueFormatterParams): string =>
     this.ratioLimitPipe.transform(params.value);
+
+  public readonly timeLimit = (params: ValueFormatterParams): string =>
+    this.timeLimitPipe.transform(params.value);
 }

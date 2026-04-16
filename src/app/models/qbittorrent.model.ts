@@ -164,6 +164,8 @@ export interface QbAppPreferences {
   max_ratio_enabled: boolean;
   max_seeding_time: number;
   max_seeding_time_enabled: boolean;
+  max_inactive_seeding_time?: number;
+  max_inactive_seeding_time_enabled?: boolean;
   outgoing_ports_max: number;
   outgoing_ports_min: number;
   peer_proportional: boolean;

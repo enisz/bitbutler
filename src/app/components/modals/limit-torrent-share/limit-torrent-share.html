@@ -4,7 +4,19 @@
       {{ 'components.modals.limit-torrent-share.title' | translate }}
     </h5>
 
-    <div class="small text-body-secondary mt-1 bb-hash-clamp">subtitle</div>
+    <div
+      class="small text-body-secondary mt-1 bb-hash-clamp"
+      [ngbTooltip]="tooltipText()"
+      bbTooltipOverflow
+      tooltipClass="single-line-tooltip"
+      placement="bottom"
+    >
+      @if (selected() === 1) {
+        {{ selectionName() }}
+      } @else {
+        {{ 'general.label.torrent-selected' | translate: { count: selected() } }}
+      }
+    </div>
   </div>
 
   <button
@@ -16,14 +28,17 @@
 </div>
 
 <div class="modal-body">
-  <app-share-limit></app-share-limit>
+  <form [formGroup]="form" (submit)="handleSubmit()">
+    <app-share-limit formControlName="shareLimits"></app-share-limit>
+    <button type="submit" hidden [disabled]="!canSave()"></button>
+  </form>
 </div>
 
 <div class="modal-footer">
-  <button type="button" class="btn btn-secondary" [disabled]="!canSave()">
+  <button type="button" class="btn btn-secondary" (click)="handleSubmit()" [disabled]="!canSave()">
     {{ 'general.button.set' | translate }}
   </button>
-  <button type="button" class="btn btn-link" (click)="activeModal.close()">
+  <button type="button" class="btn btn-link" (click)="activeModal.dismiss()">
     {{ 'general.button.cancel' | translate }}
   </button>
 </div>

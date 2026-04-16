@@ -12,6 +12,7 @@ import {
   RowClassParams,
   RowDoubleClickedEvent,
   SelectionChangedEvent,
+  ValueFormatterParams,
 } from 'ag-grid-community';
 import { GRID_SHARED_OPTIONS } from '../../../app.const';
 import { DatepickerRangeFilter } from '../../../components/datepicker-range-filter/datepicker-range-filter';
@@ -149,7 +150,16 @@ export function getGridColDefs(
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.eta'),
       minWidth: 50,
       width: 200,
-      valueFormatter: uiFormatService.duration,
+      valueFormatter: (params: ValueFormatterParams<Torrent, any>): string =>
+        params.data?.state === 'uploading' ||
+        params.data?.state === 'pausedUP' ||
+        params.data?.state === 'stoppedUP' ||
+        params.data?.state === 'queuedUP' ||
+        params.data?.state === 'stalledUP' ||
+        params.data?.state === 'checkingUP' ||
+        params.data?.state === 'forcedUP'
+          ? ''
+          : uiFormatService.duration(params),
     },
     {
       colId: 'size',
@@ -317,6 +327,7 @@ export function getGridColDefs(
       minWidth: 50,
       width: 155,
       cellClass: 'tabular-nums',
+      valueFormatter: uiFormatService.timeLimit,
     },
     {
       colId: 'time_active',
@@ -480,6 +491,7 @@ export function getGridColDefs(
       minWidth: 50,
       width: 165,
       cellClass: 'tabular-nums',
+      valueFormatter: uiFormatService.timeLimit,
     },
     {
       colId: 'max_inactive_seeding_time',
@@ -494,6 +506,7 @@ export function getGridColDefs(
       minWidth: 50,
       width: 165,
       cellClass: 'tabular-nums',
+      valueFormatter: uiFormatService.timeLimit,
     },
     {
       colId: 'inactive_seeding_time_limit',
@@ -508,6 +521,7 @@ export function getGridColDefs(
       minWidth: 50,
       width: 170,
       cellClass: 'tabular-nums',
+      valueFormatter: uiFormatService.timeLimit,
     },
     {
       colId: 'content_path',

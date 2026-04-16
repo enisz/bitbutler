@@ -448,6 +448,12 @@
         "title": "Set Share Limits"
       }
     },
+    "share-limit": {
+      "ratio-limit": "Ratio Limit",
+      "seeding-time-limit": "Seeding Time Limit",
+      "inactive-seeding-time-limit": "Inactive Seeding Time Limit",
+      "time-unit": "min"
+    },
     "tag-select": {
       "label": "Tags"
     },
@@ -838,12 +844,7 @@
       }
     }
   },
-  "pipes": {
-    "ratio-limit-pipe": {
-      "global": "Global",
-      "no-limit": "No Limit"
-    }
-  },
+  "pipes": {},
   "services": {
     "menu-bar-command-handler": {
       "app-loader": {
@@ -926,6 +927,10 @@
         "6": "Sa",
         "7": "Su"
       }
+    },
+    "limit": {
+      "global": "Global",
+      "no-limit": "No Limit"
     }
   },
   "language": {
