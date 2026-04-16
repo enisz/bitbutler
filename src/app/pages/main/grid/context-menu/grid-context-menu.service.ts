@@ -2,6 +2,8 @@ import { inject, Injectable } from '@angular/core';
 import { faSquare, faSquareCheck } from '@fortawesome/free-regular-svg-icons';
 import {
   faArrowDown,
+  faArrowLeft,
+  faArrowRight,
   faArrowsDownToLine,
   faArrowsUpToLine,
   faArrowUp,
@@ -69,6 +71,7 @@ export class GridContextMenuService {
         id: 'row.pinToTop',
         icon: faThumbTack,
         label: 'pages.main.grid.context-menu.item.pin-to-top',
+        disabled: data.rowPinned === 'top',
         action: () => this.commandBusService.emit({ type: 'UI_TORRENT_PIN_TOP' }),
       },
       {
@@ -76,6 +79,7 @@ export class GridContextMenuService {
         id: 'row.pinToBottom',
         icon: faThumbTack,
         label: 'pages.main.grid.context-menu.item.pin-to-bottom',
+        disabled: data.rowPinned === 'bottom',
         action: () => this.commandBusService.emit({ type: 'UI_TORRENT_PIN_BOTTOM' }),
       },
       {
@@ -388,6 +392,30 @@ export class GridContextMenuService {
         action: () => {
           this.filterService.clearColumnFilter(payload.colId);
         },
+      },
+      {
+        kind: 'item',
+        id: `pinLeft.${payload.colId}`,
+        label: 'pages.main.grid.context-menu.item.pin-left',
+        icon: faArrowLeft,
+        disabled: column.isPinnedLeft(),
+        action: () => api.setColumnsPinned([payload.colId], 'left'),
+      },
+      {
+        kind: 'item',
+        id: `pinRight.${payload.colId}`,
+        label: 'pages.main.grid.context-menu.item.pin-right',
+        icon: faArrowRight,
+        disabled: column.isPinnedRight(),
+        action: () => api.setColumnsPinned([payload.colId], 'right'),
+      },
+      {
+        kind: 'item',
+        id: `unpinColumn.${payload.colId}`,
+        label: 'pages.main.grid.context-menu.item.unpin-column',
+        icon: faXmark,
+        disabled: !column.getPinned(),
+        action: () => api.setColumnsPinned([payload.colId], null),
       },
       { kind: 'divider' },
       {
