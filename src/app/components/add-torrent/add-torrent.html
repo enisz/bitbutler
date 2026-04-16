@@ -14,289 +14,298 @@
 
 <div class="modal-body">
   <form [formGroup]="addForm" (submit)="handleSubmit($event)">
-    <div class="form-floating mb-3">
-      <div class="input-group mb-1">
-        <div class="form-floating">
+    <fieldset class="bb-fieldset mt-0">
+      <legend>{{ 'components.add-torrent.label.general' | translate }}</legend>
+
+      <div class="form-floating mb-3">
+        <div class="input-group mb-1">
+          <div class="form-floating">
+            <input
+              type="text"
+              class="form-control"
+              id="file_browser"
+              [placeholder]="'components.add-torrent.add-form.file-browser' | translate"
+              formControlName="file"
+              [class.is-invalid]="
+                addForm.controls.file.invalid &&
+                (addForm.controls.file.touched || addForm.controls.file.dirty)
+              "
+              readonly
+              (click)="fileInput.click()"
+            />
+            <label for="file_browser">{{
+              'components.add-torrent.add-form.file-browser' | translate
+            }}</label>
+          </div>
+
+          <button type="button" class="btn btn-outline-primary" (click)="fileInput.click()">
+            {{ 'general.button.browse' | translate }}
+          </button>
           <input
-            type="text"
-            class="form-control"
-            id="file_browser"
-            [placeholder]="'components.add-torrent.add-form.file-browser' | translate"
-            formControlName="file"
-            [class.is-invalid]="
-              addForm.controls.file.invalid &&
-              (addForm.controls.file.touched || addForm.controls.file.dirty)
-            "
-            readonly
-            (click)="fileInput.click()"
+            type="file"
+            #fileInput
+            hidden
+            accept=".torrent"
+            (change)="handleFileSelected($event)"
           />
-          <label for="file_browser">{{
-            'components.add-torrent.add-form.file-browser' | translate
-          }}</label>
         </div>
+      </div>
 
-        <button type="button" class="btn btn-outline-primary" (click)="fileInput.click()">
-          {{ 'general.button.browse' | translate }}
-        </button>
+      <div class="form-floating mb-3">
         <input
-          type="file"
-          #fileInput
-          hidden
-          accept=".torrent"
-          (change)="handleFileSelected($event)"
+          #savePathControl
+          type="text"
+          class="form-control"
+          id="savepath"
+          [placeholder]="'components.add-torrent.add-form.save-path' | translate"
+          formControlName="savepath"
+          [ngbTypeahead]="searchSavePaths"
+          [editable]="true"
+          [autofocus]="addForm.controls.file.value.length > 0"
+          [class.is-invalid]="addForm.controls.savepath.invalid && addForm.controls.savepath.dirty"
         />
+        <label for="savepath">{{ 'components.add-torrent.add-form.save-path' | translate }}</label>
+        @if (addForm.controls.savepath.invalid && addForm.controls.savepath.dirty) {
+          @if (addForm.controls.savepath.hasError('required')) {
+            <div class="invalid-feedback px-2">
+              {{ 'general.form.feedback.required' | translate }}
+            </div>
+          }
+        }
       </div>
-    </div>
 
-    <div class="form-floating mb-3">
-      <input
-        #savePathControl
-        type="text"
-        class="form-control"
-        id="savepath"
-        [placeholder]="'components.add-torrent.add-form.save-path' | translate"
-        formControlName="savepath"
-        [ngbTypeahead]="searchSavePaths"
-        [editable]="true"
-        [autofocus]="addForm.controls.file.value.length > 0"
-        [class.is-invalid]="addForm.controls.savepath.invalid && addForm.controls.savepath.dirty"
-      />
-      <label for="savepath">{{ 'components.add-torrent.add-form.save-path' | translate }}</label>
-      @if (addForm.controls.savepath.invalid && addForm.controls.savepath.dirty) {
-        @if (addForm.controls.savepath.hasError('required')) {
-          <div class="invalid-feedback px-2">
-            {{ 'general.form.feedback.required' | translate }}
-          </div>
+      <div class="form-floating mb-3">
+        <input
+          type="text"
+          class="form-control"
+          id="rename"
+          [placeholder]="'components.add-torrent.add-form.rename' | translate"
+          formControlName="rename"
+          [class.is-invalid]="addForm.controls.rename.invalid && addForm.controls.rename.dirty"
+        />
+        <label for="rename">{{ 'components.add-torrent.add-form.rename' | translate }}</label>
+        @if (addForm.controls.rename.invalid && addForm.controls.rename.dirty) {
+          @if (addForm.controls.rename.hasError('noSlash')) {
+            <div class="invalid-feedback px-2">
+              {{ 'general.form.feedback.no-slash' | translate }}
+            </div>
+          }
+          @if (addForm.controls.rename.hasError('required')) {
+            <div class="invalid-feedback px-2">
+              {{ 'general.form.feedback.required' | translate }}
+            </div>
+          }
         }
-      }
-    </div>
+      </div>
 
-    <div class="form-floating mb-3">
-      <input
-        type="text"
-        class="form-control"
-        id="rename"
-        [placeholder]="'components.add-torrent.add-form.rename' | translate"
-        formControlName="rename"
-        [class.is-invalid]="addForm.controls.rename.invalid && addForm.controls.rename.dirty"
-      />
-      <label for="rename">{{ 'components.add-torrent.add-form.rename' | translate }}</label>
-      @if (addForm.controls.rename.invalid && addForm.controls.rename.dirty) {
-        @if (addForm.controls.rename.hasError('noSlash')) {
-          <div class="invalid-feedback px-2">
-            {{ 'general.form.feedback.no-slash' | translate }}
+      <div class="mb-3">
+        <app-category-select formControlName="category"></app-category-select>
+      </div>
+
+      <div class="mb-3">
+        <app-tag-select formControlName="tags"></app-tag-select>
+      </div>
+    </fieldset>
+
+    <fieldset class="bb-fieldset">
+      <legend>{{ 'components.add-torrent.label.settings' | translate }}</legend>
+
+      <div class="container-fluid px-0">
+        <div class="row">
+          <div class="col-11">
+            <div class="form-floating mb-3">
+              <ng-select
+                id="root_folder"
+                formControlName="root_folder"
+                [items]="rootFolderOptions"
+                bindValue="value"
+                bindLabel="label"
+                [clearable]="false"
+                [searchable]="false"
+              ></ng-select>
+              <label for="root_folder">{{
+                'components.add-torrent.add-form.root-folder.title' | translate
+              }}</label>
+            </div>
           </div>
-        }
-        @if (addForm.controls.rename.hasError('required')) {
-          <div class="invalid-feedback px-2">
-            {{ 'general.form.feedback.required' | translate }}
-          </div>
-        }
-      }
-    </div>
 
-    <div class="mb-3">
-      <app-category-select formControlName="category"></app-category-select>
-    </div>
-
-    <div class="mb-3">
-      <app-tag-select formControlName="tags"></app-tag-select>
-    </div>
-
-    <div class="text-uppercase mb-3">{{ 'components.add-torrent.label.settings' | translate }}</div>
-
-    <div class="container-fluid px-0">
-      <div class="row">
-        <div class="col-11">
-          <div class="form-floating mb-3">
-            <ng-select
-              id="root_folder"
-              formControlName="root_folder"
-              [items]="rootFolderOptions"
-              bindValue="value"
-              bindLabel="label"
-              [clearable]="false"
-              [searchable]="false"
-            ></ng-select>
-            <label for="root_folder">{{
-              'components.add-torrent.add-form.root-folder.title' | translate
-            }}</label>
-          </div>
-        </div>
-
-        <div class="col-1 d-flex align-items-center mb-3">
-          <bb-popover
-            class="mt-2"
-            [subject]="'components.add-torrent.popover.root-folder.title' | translate"
-            [description]="rootFolder"
-            placement="left"
-          ></bb-popover>
-        </div>
-
-        <div class="col-12">
-          <div class="form-check form-switch mb-3">
-            <input
-              class="form-check-input"
-              type="checkbox"
-              role="switch"
-              id="skip_checking"
-              formControlName="skip_checking"
-            />
-            <label class="form-check-label" for="skip_checking">{{
-              'components.add-torrent.add-form.skip-hash-checking' | translate
-            }}</label>
+          <div class="col-1 d-flex align-items-center mb-3">
             <bb-popover
-              [subject]="'components.add-torrent.popover.skip-hash-checking.title' | translate"
-              [description]="skipChecking"
-              placement="right"
-            ></bb-popover>
-          </div>
-        </div>
-
-        <div class="col-12">
-          <div class="form-check form-switch mb-3">
-            <input
-              class="form-check-input"
-              type="checkbox"
-              role="switch"
-              id="paused"
-              formControlName="paused"
-            />
-            <label class="form-check-label" for="paused">{{
-              'components.add-torrent.add-form.paused' | translate
-            }}</label>
-            <bb-popover
-              [subject]="'components.add-torrent.popover.paused-state.title' | translate"
-              [description]="pausedState"
-              placement="right"
-            ></bb-popover>
-          </div>
-        </div>
-
-        <div class="col-12">
-          <div class="form-check form-switch mb-3">
-            <input
-              class="form-check-input"
-              type="checkbox"
-              role="switch"
-              id="autoTMM"
-              formControlName="autoTMM"
-            />
-            <label class="form-check-label" for="autoTMM">{{
-              'components.add-torrent.add-form.auto-tmm' | translate
-            }}</label>
-            <bb-popover
-              [subject]="'components.add-torrent.popover.auto-tmm.title' | translate"
-              [description]="autoTMM"
-              placement="right"
-            ></bb-popover>
-          </div>
-        </div>
-
-        <div class="col-12">
-          <div class="form-check form-switch mb-3">
-            <input
-              class="form-check-input"
-              type="checkbox"
-              role="switch"
-              id="sequentialDownload"
-              formControlName="sequentialDownload"
-            />
-            <label class="form-check-label" for="sequentialDownload">{{
-              'components.add-torrent.add-form.sequential-download' | translate
-            }}</label>
-            <bb-popover
-              [subject]="'components.add-torrent.popover.sequential-download.title' | translate"
-              [description]="sequentialDownload"
+              class="mt-2"
+              [subject]="'components.add-torrent.popover.root-folder.title' | translate"
+              [description]="rootFolder"
               placement="left"
-              placement="right"
             ></bb-popover>
           </div>
-        </div>
 
-        <div class="col-12">
-          <div class="form-check form-switch mb-3">
-            <input
-              class="form-check-input"
-              type="checkbox"
-              role="switch"
-              id="firstLastPiecePrio"
-              formControlName="firstLastPiecePrio"
-            />
-            <label class="form-check-label" for="firstLastPiecePrio">{{
-              'components.add-torrent.add-form.first-last-piece-prio' | translate
-            }}</label>
-            <bb-popover
-              [subject]="'components.add-torrent.popover.first-last-piece-prio.title' | translate"
-              [description]="firstLastPiece"
-              placement="right"
-            ></bb-popover>
+          <div class="col-12">
+            <div class="form-check form-switch mb-3">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="skip_checking"
+                formControlName="skip_checking"
+              />
+              <label class="form-check-label" for="skip_checking">{{
+                'components.add-torrent.add-form.skip-hash-checking' | translate
+              }}</label>
+              <bb-popover
+                [subject]="'components.add-torrent.popover.skip-hash-checking.title' | translate"
+                [description]="skipChecking"
+                placement="right"
+              ></bb-popover>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="form-check form-switch mb-3">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="paused"
+                formControlName="paused"
+              />
+              <label class="form-check-label" for="paused">{{
+                'components.add-torrent.add-form.paused' | translate
+              }}</label>
+              <bb-popover
+                [subject]="'components.add-torrent.popover.paused-state.title' | translate"
+                [description]="pausedState"
+                placement="right"
+              ></bb-popover>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="form-check form-switch mb-3">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="autoTMM"
+                formControlName="autoTMM"
+              />
+              <label class="form-check-label" for="autoTMM">{{
+                'components.add-torrent.add-form.auto-tmm' | translate
+              }}</label>
+              <bb-popover
+                [subject]="'components.add-torrent.popover.auto-tmm.title' | translate"
+                [description]="autoTMM"
+                placement="right"
+              ></bb-popover>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="form-check form-switch mb-3">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="sequentialDownload"
+                formControlName="sequentialDownload"
+              />
+              <label class="form-check-label" for="sequentialDownload">{{
+                'components.add-torrent.add-form.sequential-download' | translate
+              }}</label>
+              <bb-popover
+                [subject]="'components.add-torrent.popover.sequential-download.title' | translate"
+                [description]="sequentialDownload"
+                placement="right"
+              ></bb-popover>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="form-check form-switch mb-3">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="firstLastPiecePrio"
+                formControlName="firstLastPiecePrio"
+              />
+              <label class="form-check-label" for="firstLastPiecePrio">{{
+                'components.add-torrent.add-form.first-last-piece-prio' | translate
+              }}</label>
+              <bb-popover
+                [subject]="'components.add-torrent.popover.first-last-piece-prio.title' | translate"
+                [description]="firstLastPiece"
+                placement="right"
+              ></bb-popover>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </fieldset>
 
-    <div class="text-uppercase mb-3">{{ 'components.add-torrent.label.limits' | translate }}</div>
+    <fieldset class="bb-fieldset">
+      <legend>{{ 'components.add-torrent.label.limits' | translate }}</legend>
 
-    <div class="container px-0">
-      <div class="row">
-        <div class="col-6">
-          <div class="input-group mb-3">
-            <div class="form-floating">
-              <input
-                type="number"
-                class="form-control"
-                id="upLimitKbps"
-                [placeholder]="'components.add-torrent.add-form.up-limit' | translate"
-                formControlName="upLimitKbps"
-                min="0"
-              />
-              <label for="upLimitKbps">{{
-                'components.add-torrent.add-form.up-limit' | translate
-              }}</label>
+      <div class="container px-0">
+        <div class="row">
+          <div class="col-6">
+            <div class="input-group mb-3">
+              <div class="form-floating">
+                <input
+                  type="number"
+                  class="form-control"
+                  id="upLimitKbps"
+                  [placeholder]="'components.add-torrent.add-form.up-limit' | translate"
+                  formControlName="upLimitKbps"
+                  min="0"
+                />
+                <label for="upLimitKbps">{{
+                  'components.add-torrent.add-form.up-limit' | translate
+                }}</label>
+              </div>
+              <span class="input-group-text">KiB/s</span>
             </div>
-            <span class="input-group-text">KiB/s</span>
           </div>
-        </div>
 
-        <div class="col-6">
-          <div class="input-group mb-3">
-            <div class="form-floating">
-              <input
-                type="number"
-                class="form-control"
-                id="dlLimitKbps"
-                [placeholder]="'components.add-torrent.add-form.down-limit' | translate"
-                formControlName="dlLimitKbps"
-                min="0"
-              />
-              <label for="dlLimitKbps">{{
-                'components.add-torrent.add-form.down-limit' | translate
-              }}</label>
+          <div class="col-6">
+            <div class="input-group mb-3">
+              <div class="form-floating">
+                <input
+                  type="number"
+                  class="form-control"
+                  id="dlLimitKbps"
+                  [placeholder]="'components.add-torrent.add-form.down-limit' | translate"
+                  formControlName="dlLimitKbps"
+                  min="0"
+                />
+                <label for="dlLimitKbps">{{
+                  'components.add-torrent.add-form.down-limit' | translate
+                }}</label>
+              </div>
+              <span class="input-group-text">KiB/s</span>
             </div>
-            <span class="input-group-text">KiB/s</span>
           </div>
-        </div>
 
-        <div class="col-12">
-          <app-share-limit formControlName="shareLimits" [hideInactive]="true"></app-share-limit>
+          <div class="col-12">
+            <app-share-limit formControlName="shareLimits" [hideInactive]="true"></app-share-limit>
+          </div>
         </div>
       </div>
-    </div>
+    </fieldset>
 
     @if (showTree() && effectiveDraft() && effectiveDraft().torrent?.files?.length) {
-      <div class="text-uppercase mb-3">{{ 'components.add-torrent.label.files' | translate }}</div>
+      <fieldset class="bb-fieldset">
+        <legend>{{ 'components.add-torrent.label.files' | translate }}</legend>
 
-      <app-bb-file-tree
-        [files]="effectiveDraft()!.torrent!.files"
-        [expandAll]="false"
-        [showMeta]="true"
-        [allowEdit]="true"
-        [hideProgress]="true"
-        (saved)="onTreeSaved($event)"
-        (editModeChange)="treeInEditMode.set($event)"
-      >
-      </app-bb-file-tree>
+        <app-bb-file-tree
+          [files]="effectiveDraft()!.torrent!.files"
+          [expandAll]="false"
+          [showMeta]="true"
+          [allowEdit]="true"
+          [hideProgress]="true"
+          (saved)="onTreeSaved($event)"
+          (editModeChange)="treeInEditMode.set($event)"
+        >
+        </app-bb-file-tree>
+      </fieldset>
     }
 
     <button type="submit" hidden></button>

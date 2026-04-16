@@ -62,6 +62,7 @@
         "seeding-time-limit-unit": "minute"
       },
       "label": {
+        "general": "General",
         "settings": "Settings",
         "limits": "Limits",
         "files": "Files"

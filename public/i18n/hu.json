@@ -62,6 +62,7 @@
         "seeding-time-limit-unit": "perc"
       },
       "label": {
+        "general": "Általános",
         "settings": "Beállítások",
         "limits": "Korlátok",
         "files": "Fájlok"
