@@ -43,4 +43,5 @@ export const GRID_SHARED_OPTIONS: GridOptions = {
   suppressCellFocus: true,
   columnHoverHighlight: false,
   tooltipMouseTrack: true,
+  enableRowPinning: true,
 };
