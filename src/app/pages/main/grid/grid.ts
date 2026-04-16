@@ -195,7 +195,7 @@ export class Grid implements AfterViewInit {
       const selectedHashes = new Set(selectedTorrents.map((t) => t.hash));
       const syncNode = (node: {
         data?: Torrent;
-        isSelected: () => boolean;
+        isSelected: () => boolean | undefined;
         setSelected: (v: boolean) => void;
       }) => {
         if (node.data) {

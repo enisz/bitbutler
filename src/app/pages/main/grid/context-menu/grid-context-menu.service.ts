@@ -25,8 +25,10 @@ import {
   faPlay,
   faRotate,
   faTags,
+  faThumbTack,
   faTrashCan,
   faUpload,
+  faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import type { Column, ColumnHeaderContextMenuEvent } from 'ag-grid-community';
 
@@ -59,6 +61,30 @@ export class GridContextMenuService {
         label: 'pages.main.grid.context-menu.item.copy-cell-value',
         icon: faCopy,
         action: () => this.clipboard.copy(String(data.cell.value)),
+      },
+      { kind: 'divider' },
+      { kind: 'header', label: 'pages.main.grid.context-menu.header.row' },
+      {
+        kind: 'item',
+        id: 'row.pinToTop',
+        icon: faThumbTack,
+        label: 'pages.main.grid.context-menu.item.pin-to-top',
+        action: () => this.commandBusService.emit({ type: 'UI_TORRENT_PIN_TOP' }),
+      },
+      {
+        kind: 'item',
+        id: 'row.pinToBottom',
+        icon: faThumbTack,
+        label: 'pages.main.grid.context-menu.item.pin-to-bottom',
+        action: () => this.commandBusService.emit({ type: 'UI_TORRENT_PIN_BOTTOM' }),
+      },
+      {
+        kind: 'item',
+        id: 'row.unpin',
+        icon: faXmark,
+        label: 'pages.main.grid.context-menu.item.unpin',
+        disabled: !data.rowPinned,
+        action: () => this.commandBusService.emit({ type: 'UI_TORRENT_UNPIN' }),
       },
       { kind: 'divider' },
       {

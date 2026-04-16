@@ -24,6 +24,7 @@ const GRID_PARAMS_SHARED = {
   spacing: 6,
   borderRadius: 6,
   wrapperBorderRadius: 10,
+  pinnedRowBorder: '2px solid var(--bb-accent)',
 } as const;
 
 export const GRID_LIGHT_THEME = themeQuartz.withPart(iconSetQuartzLight).withParams({
@@ -43,5 +44,4 @@ export const GRID_SHARED_OPTIONS: GridOptions = {
   suppressCellFocus: true,
   columnHoverHighlight: false,
   tooltipMouseTrack: true,
-  enableRowPinning: true,
 };
