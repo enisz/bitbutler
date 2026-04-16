@@ -1,6 +1,6 @@
-<div [formGroup]="form" class="container-fluid">
+<div [formGroup]="form" class="container-fluid px-0">
   <div class="row">
-    <div class="col-11 mb-3">
+    <div class="col-11">
       <div class="form-floating">
         <input
           type="number"
@@ -13,21 +13,24 @@
         />
         <label for="ratioLimit">{{ 'components.share-limit.ratio-limit' | translate }}</label>
       </div>
-
-      <div class="form-text mt-1 ms-2">
-        {{ form.controls.ratioLimit.value ?? -1 | ratioLimit }}
-      </div>
     </div>
 
-    <div class="col-1 d-flex align-items-center mb-3">
+    <div class="col-1 d-flex align-items-center">
       <bb-popover
+        class="mt-2"
         [subject]="'components.share-limit.popover.ratio-limit.title' | translate"
         [description]="'components.share-limit.popover.ratio-limit.description' | translate"
         placement="left"
       ></bb-popover>
     </div>
 
-    <div class="col-11 mb-3">
+    <div class="col-12 mb-3">
+      <div class="form-text mt-1 ms-2">
+        {{ form.controls.ratioLimit.value ?? -1 | ratioLimit }}
+      </div>
+    </div>
+
+    <div class="col-11">
       <div class="input-group">
         <div class="form-floating">
           <input
@@ -44,21 +47,25 @@
         </div>
         <span class="input-group-text">{{ 'components.share-limit.time-unit' | translate }}</span>
       </div>
-      <div class="form-text mt-1 ms-2">
-        {{ form.controls.seedingTimeLimit.value ?? -1 | timeLimit }}
-      </div>
     </div>
 
-    <div class="col-1 d-flex align-items-center mb-3">
+    <div class="col-1 d-flex align-items-center">
       <bb-popover
+        class="mt-2"
         [subject]="'components.share-limit.popover.seeding-time-limit.title' | translate"
         [description]="'components.share-limit.popover.seeding-time-limit.description' | translate"
         placement="left"
       ></bb-popover>
     </div>
 
+    <div class="col-12 mb-3">
+      <div class="form-text mt-1 ms-2">
+        {{ form.controls.seedingTimeLimit.value ?? -1 | timeLimit }}
+      </div>
+    </div>
+
     @if (!hideInactive) {
-      <div class="col-11 mb-3">
+      <div class="col-11">
         <div class="input-group">
           <div class="form-floating">
             <input
@@ -75,14 +82,11 @@
           </div>
           <span class="input-group-text">{{ 'components.share-limit.time-unit' | translate }}</span>
         </div>
-
-        <div class="form-text mt-1 ms-2">
-          {{ form.controls.inactiveSeedingTimeLimit.value ?? -1 | timeLimit }}
-        </div>
       </div>
 
       <div class="col-1 d-flex align-items-center">
         <bb-popover
+          class="mt-2"
           [subject]="'components.share-limit.popover.inactive-seeding-time-limit.title' | translate"
           [description]="
             'components.share-limit.popover.inactive-seeding-time-limit.description' | translate
@@ -90,12 +94,12 @@
           placement="left"
         ></bb-popover>
       </div>
-    }
 
-    <div class="col-12">
-      <p class="small text-body-secondary mb-0">
-        {{ 'components.share-limit.hint' | translate }}
-      </p>
-    </div>
+      <div class="col-12">
+        <div class="form-text mt-1 ms-2">
+          {{ form.controls.inactiveSeedingTimeLimit.value ?? -1 | timeLimit }}
+        </div>
+      </div>
+    }
   </div>
 </div>

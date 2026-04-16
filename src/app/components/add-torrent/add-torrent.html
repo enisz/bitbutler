@@ -126,6 +126,7 @@
 
         <div class="col-1 d-flex align-items-center mb-3">
           <bb-popover
+            class="mt-2"
             [subject]="'components.add-torrent.popover.root-folder.title' | translate"
             [description]="rootFolder"
             placement="left"
@@ -277,39 +278,8 @@
           </div>
         </div>
 
-        <div class="col-6">
-          <div class="form-floating">
-            <input
-              type="number"
-              class="form-control"
-              id="ratioLimit"
-              [placeholder]="'components.add-torrent.add-form.ratio-limit' | translate"
-              formControlName="ratioLimit"
-            />
-            <label for="ratioLimit">{{
-              'components.add-torrent.add-form.ratio-limit' | translate
-            }}</label>
-          </div>
-        </div>
-
-        <div class="col-6">
-          <div class="input-group mb-3">
-            <div class="form-floating">
-              <input
-                type="number"
-                class="form-control"
-                id="seedingTimeLimit"
-                [placeholder]="'components.add-torrent.add-form.seeding-time-limit' | translate"
-                formControlName="seedingTimeLimit"
-              />
-              <label for="seedingTimeLimit">{{
-                'components.add-torrent.add-form.seeding-time-limit' | translate
-              }}</label>
-            </div>
-            <span class="input-group-text">{{
-              'components.add-torrent.add-form.seeding-time-limit-unit' | translate
-            }}</span>
-          </div>
+        <div class="col-12">
+          <app-share-limit formControlName="shareLimits" [hideInactive]="true"></app-share-limit>
         </div>
       </div>
     </div>

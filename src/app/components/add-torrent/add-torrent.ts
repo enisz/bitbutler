@@ -38,6 +38,7 @@ import { BbFileTree, FileTreeSaveEvent } from '../bb-file-tree/bb-file-tree';
 import { BbPopover } from '../bb-popover/bb-popover';
 import { CategorySelect } from '../category-select/category-select';
 import { TorrentExists } from '../modals/torrent-exists/torrent-exists';
+import { ShareLimit, ShareLimitValue } from '../share-limit/share-limit';
 import { TagSelect } from '../tag-select/tag-select';
 
 type AddTorrentFormValue = {
@@ -53,8 +54,7 @@ type AddTorrentFormValue = {
   firstLastPiecePrio: boolean;
   upLimitKbps: number | null;
   dlLimitKbps: number | null;
-  ratioLimit: number | null;
-  seedingTimeLimit: number | null;
+  shareLimits: ShareLimitValue | null;
   autoTMM: boolean;
 };
 
@@ -71,6 +71,7 @@ type AddTorrentFormValue = {
     FontAwesomeModule,
     NgSelectModule,
     TranslatePipe,
+    ShareLimit,
   ],
   templateUrl: './add-torrent.html',
   styleUrl: './add-torrent.scss',
@@ -122,8 +123,7 @@ export class AddTorrent implements OnInit {
     firstLastPiecePrio: new FormControl<boolean>(false, { nonNullable: true }),
     upLimitKbps: new FormControl<number | null>(null),
     dlLimitKbps: new FormControl<number | null>(null),
-    ratioLimit: new FormControl<number | null>(null),
-    seedingTimeLimit: new FormControl<number | null>(null),
+    shareLimits: new FormControl<ShareLimitValue | null>(null),
     autoTMM: new FormControl<boolean>(false, { nonNullable: true }),
   });
 
@@ -244,8 +244,12 @@ export class AddTorrent implements OnInit {
         root_folder: raw.root_folder === 'unset' ? undefined : raw.root_folder,
         upLimit: raw.upLimitKbps != null ? String(Math.round(raw.upLimitKbps * 1024)) : undefined,
         dlLimit: raw.dlLimitKbps != null ? String(Math.round(raw.dlLimitKbps * 1024)) : undefined,
-        ratioLimit: raw.ratioLimit != null ? String(raw.ratioLimit) : undefined,
-        seedingTimeLimit: raw.seedingTimeLimit != null ? String(raw.seedingTimeLimit) : undefined,
+        ratioLimit:
+          raw.shareLimits?.ratioLimit != null ? String(raw.shareLimits.ratioLimit) : undefined,
+        seedingTimeLimit:
+          raw.shareLimits?.seedingTimeLimit != null
+            ? String(raw.shareLimits.seedingTimeLimit)
+            : undefined,
       },
     };
 
@@ -271,8 +275,7 @@ export class AddTorrent implements OnInit {
         autoTMM: raw.autoTMM,
         upLimitKbps: raw.upLimitKbps,
         dlLimitKbps: raw.dlLimitKbps,
-        ratioLimit: raw.ratioLimit,
-        seedingTimeLimit: raw.seedingTimeLimit,
+        shareLimits: raw.shareLimits,
       });
       this.openFilesService.consumeCurrentDraft();
     } catch (e) {

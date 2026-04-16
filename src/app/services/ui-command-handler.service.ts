@@ -152,7 +152,7 @@ export class UiCommandHandlerService {
           case 'UI_LIMIT_SHARE':
             if (this.isModalOpen(LimitTorrentShare)) break;
 
-            const limitTorrentShare = this.modalService.open(LimitTorrentShare, {});
+            const limitTorrentShare = this.modalService.open(LimitTorrentShare, { size: 'lg' });
 
             limitTorrentShare.result.then((res: any) => {}).catch((error: any) => {});
             break;

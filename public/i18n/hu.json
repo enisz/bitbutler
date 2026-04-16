@@ -453,19 +453,18 @@
       "seeding-time-limit": "Seedelési időkorlát",
       "inactive-seeding-time-limit": "Inaktív seedelési időkorlát",
       "time-unit": "perc",
-      "hint": "Hagyd üresen a mezőt a korlát nélküli módhoz (-1). Írd be -2-t a globális korlát használatához.",
       "popover": {
         "ratio-limit": {
           "title": "Arány korlát",
-          "description": "Seedelés leállítása, ha a feltöltés/letöltés arány eléri ezt az értéket."
+          "description": "Seedelés leállítása, ha a feltöltés/letöltés arány eléri ezt az értéket. Hagyd üresen a korlát nélküli módhoz (-1), vagy írd be -2-t a globális korlát használatához."
         },
         "seeding-time-limit": {
           "title": "Seedelési időkorlát",
-          "description": "Seedelés leállítása, miután a torrent ennyi percig seedelt."
+          "description": "Seedelés leállítása, miután a torrent ennyi percig seedelt. Hagyd üresen a korlát nélküli módhoz (-1), vagy írd be -2-t a globális korlát használatához."
         },
         "inactive-seeding-time-limit": {
           "title": "Inaktív seedelési időkorlát",
-          "description": "Seedelés leállítása, ha a torrent ennyi percig inaktív volt."
+          "description": "Seedelés leállítása, ha a torrent ennyi percig inaktív volt. Hagyd üresen a korlát nélküli módhoz (-1), vagy írd be -2-t a globális korlát használatához."
         }
       }
     },
@@ -882,6 +881,7 @@
       "add": "Hozzáadás",
       "cancel": "Mégse",
       "clear": "Törlés",
+      "clear-all": "Összes törlése",
       "today": "Ma",
       "connect": "Csatlakozás",
       "add-server": "Szerver hozzáadása",
@@ -891,8 +891,7 @@
       "save": "Mentés",
       "update": "Frissítés",
       "show": "Megjelenítés",
-      "edit": "Szerkesztés",
-      "reset": "Visszaállítás"
+      "edit": "Szerkesztés"
     },
     "form": {
       "feedback": {
