@@ -10,7 +10,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { CommandBusService } from '../../../../services/command-bus.service';
-import { CONTEXT_MENU_CONFIG } from './context-menu.tokens';
+import { CANCEL_ANCESTOR_CLOSE, CONTEXT_MENU_CONFIG } from './context-menu.tokens';
 import type { ContextMenuConfig, ContextMenuEntry } from './context-menu.types';
 
 @Component({
@@ -27,6 +27,8 @@ export class ContextMenu implements OnDestroy {
   readonly config = inject<ContextMenuConfig<any>>(CONTEXT_MENU_CONFIG);
   private readonly clipboard = inject(Clipboard);
   private readonly commandBus = inject(CommandBusService);
+  // Provided by the parent ContextMenu level; null for the root menu.
+  private readonly cancelAncestorClose = inject(CANCEL_ANCESTOR_CLOSE, { optional: true });
 
   readonly faChevronRight = faChevronRight;
   readonly activeSubmenuId = signal<string | null>(null);
@@ -95,6 +97,10 @@ export class ContextMenu implements OnDestroy {
         .pipe(takeUntil(this.childOverlayRef.detachments()))
         .subscribe(() => {
           clearTimeout(this.closeTimer);
+          // Cancel close timers on all ancestor levels too. Each level's panel fires
+          // mouseleave when the mouse moves into a deeper sibling overlay, so without
+          // this every ancestor would schedule its own close and collapse the chain.
+          this.cancelAncestorClose?.();
         });
       fromEvent(this.childOverlayRef.overlayElement, 'mouseleave')
         .pipe(takeUntil(this.childOverlayRef.detachments()))
@@ -102,11 +108,19 @@ export class ContextMenu implements OnDestroy {
           this.closeTimer = setTimeout(() => this.disposeChild(), 150);
         });
 
+      // Provide a chained cancel function so that entering a grandchild panel
+      // cancels close timers all the way up the ancestor chain.
+      const cancelThisAndAncestors = () => {
+        clearTimeout(this.closeTimer);
+        this.cancelAncestorClose?.();
+      };
+
       const inj = Injector.create({
         parent: this.injector,
         providers: [
           { provide: CONTEXT_MENU_CONFIG, useValue: { items: entry.children } },
           { provide: OverlayRef, useValue: this.childOverlayRef },
+          { provide: CANCEL_ANCESTOR_CLOSE, useValue: cancelThisAndAncestors },
         ],
       });
 
