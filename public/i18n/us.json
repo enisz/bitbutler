@@ -452,7 +452,22 @@
       "ratio-limit": "Ratio Limit",
       "seeding-time-limit": "Seeding Time Limit",
       "inactive-seeding-time-limit": "Inactive Seeding Time Limit",
-      "time-unit": "min"
+      "time-unit": "min",
+      "hint": "Leave a field empty to set no limit (-1). Enter -2 to use the global limit.",
+      "popover": {
+        "ratio-limit": {
+          "title": "Ratio Limit",
+          "description": "Stop seeding when the upload/download ratio reaches this value."
+        },
+        "seeding-time-limit": {
+          "title": "Seeding Time Limit",
+          "description": "Stop seeding after the torrent has been seeding for this many minutes."
+        },
+        "inactive-seeding-time-limit": {
+          "title": "Inactive Seeding Time Limit",
+          "description": "Stop seeding after the torrent has been inactive for this many minutes."
+        }
+      }
     },
     "tag-select": {
       "label": "Tags"
@@ -876,7 +891,8 @@
       "save": "Save",
       "update": "Update",
       "show": "Show",
-      "edit": "Edit"
+      "edit": "Edit",
+      "reset": "Reset"
     },
     "form": {
       "feedback": {
@@ -929,7 +945,7 @@
       }
     },
     "limit": {
-      "global": "Global",
+      "global": "Global Limit",
       "no-limit": "No Limit"
     }
   },

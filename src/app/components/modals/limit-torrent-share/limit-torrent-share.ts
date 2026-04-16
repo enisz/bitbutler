@@ -90,6 +90,22 @@ export class LimitTorrentShare implements OnInit {
     }
   }
 
+  public hasClearableValues(): boolean {
+    const v = this.form.controls.shareLimits.value;
+    return (
+      v !== null &&
+      (v.ratioLimit !== null || v.seedingTimeLimit !== null || v.inactiveSeedingTimeLimit !== null)
+    );
+  }
+
+  public clearAll(): void {
+    this.form.controls.shareLimits.setValue({
+      ratioLimit: null,
+      seedingTimeLimit: null,
+      inactiveSeedingTimeLimit: null,
+    });
+  }
+
   public canSave(): boolean {
     return !this.saving();
   }

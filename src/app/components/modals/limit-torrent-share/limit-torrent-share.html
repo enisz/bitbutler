@@ -36,8 +36,18 @@
 
 <div class="modal-footer">
   <button type="button" class="btn btn-secondary" (click)="handleSubmit()" [disabled]="!canSave()">
-    {{ 'general.button.set' | translate }}
+    {{ 'general.button.save' | translate }}
   </button>
+  @if (hasClearableValues()) {
+    <button
+      type="button"
+      class="btn btn-link text-danger"
+      (click)="clearAll()"
+      [disabled]="!canSave()"
+    >
+      {{ 'general.button.reset' | translate }}
+    </button>
+  }
   <button type="button" class="btn btn-link" (click)="activeModal.dismiss()">
     {{ 'general.button.cancel' | translate }}
   </button>

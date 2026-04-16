@@ -375,7 +375,9 @@
               "title": "Megjegyzés",
               "description": "A készítő által megadott opcionális szöveg (pl. forrásinfó)."
             }
-          }
+          },
+          "info": {},
+          "error": {}
         },
         "peers": {
           "grid-options": {
@@ -450,7 +452,22 @@
       "ratio-limit": "Arány korlát",
       "seeding-time-limit": "Seedelési időkorlát",
       "inactive-seeding-time-limit": "Inaktív seedelési időkorlát",
-      "time-unit": "perc"
+      "time-unit": "perc",
+      "hint": "Hagyd üresen a mezőt a korlát nélküli módhoz (-1). Írd be -2-t a globális korlát használatához.",
+      "popover": {
+        "ratio-limit": {
+          "title": "Arány korlát",
+          "description": "Seedelés leállítása, ha a feltöltés/letöltés arány eléri ezt az értéket."
+        },
+        "seeding-time-limit": {
+          "title": "Seedelési időkorlát",
+          "description": "Seedelés leállítása, miután a torrent ennyi percig seedelt."
+        },
+        "inactive-seeding-time-limit": {
+          "title": "Inaktív seedelési időkorlát",
+          "description": "Seedelés leállítása, ha a torrent ennyi percig inaktív volt."
+        }
+      }
     },
     "tag-select": {
       "label": "Címkék"
@@ -842,12 +859,7 @@
       }
     }
   },
-  "pipes": {
-    "ratio-limit-pipe": {
-      "global": "Globális",
-      "no-limit": "Nincs korlát"
-    }
-  },
+  "pipes": {},
   "services": {
     "menu-bar-command-handler": {
       "app-loader": {
@@ -879,7 +891,8 @@
       "save": "Mentés",
       "update": "Frissítés",
       "show": "Megjelenítés",
-      "edit": "Szerkesztés"
+      "edit": "Szerkesztés",
+      "reset": "Visszaállítás"
     },
     "form": {
       "feedback": {
@@ -930,6 +943,10 @@
         "6": "Szo",
         "7": "Va"
       }
+    },
+    "limit": {
+      "global": "Globális korlát",
+      "no-limit": "Nincs korlát"
     }
   },
   "language": {
