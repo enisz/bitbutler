@@ -1,15 +1,23 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbAccordionModule, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MarkdownComponent } from 'ngx-markdown';
-import { UpdateCheckResponse } from '../../../models/electron.model';
+import { TimeagoPipe } from 'ngx-timeago';
+import { Release, UpdateCheckResponse } from '../../../models/electron.model';
 import { FilesizePipe } from '../../../pipes/filesize-pipe';
 
 @Component({
   selector: 'app-update-available',
   standalone: true,
-  imports: [CommonModule, MarkdownComponent, FilesizePipe, TranslatePipe],
+  imports: [
+    CommonModule,
+    NgbAccordionModule,
+    MarkdownComponent,
+    FilesizePipe,
+    TimeagoPipe,
+    TranslatePipe,
+  ],
   templateUrl: './update-available.html',
   styleUrl: './update-available.scss',
 })
@@ -17,8 +25,12 @@ export class UpdateAvailable {
   public update = signal<UpdateCheckResponse | null>(null);
   public readonly activeModal = inject(NgbActiveModal);
 
-  get cleanedBody(): string {
-    const body = this.update()?.release?.body || '';
+  get latestRelease(): Release | undefined {
+    return this.update()?.releases?.[0];
+  }
+
+  public cleanedBody(release: Release): string {
+    const body = release.body || '';
     return body.replace(/^#+\s*What's\s*Changed\s*\n/i, '').trim();
   }
 
@@ -26,7 +38,11 @@ export class UpdateAvailable {
     return version.replace(/^v/, '');
   }
 
-  downloadAsset(url: string): void {
+  public toMs(dateStr: string | null | undefined): number {
+    return dateStr ? new Date(dateStr).getTime() : Date.now();
+  }
+
+  public downloadAsset(url: string): void {
     window.open(url, '_self');
   }
 }
