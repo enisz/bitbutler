@@ -550,7 +550,10 @@
             "speed": "Speed",
             "maintenance": "Maintenance",
             "queue": "Queue",
-            "pin-column": "Pin Column"
+            "pin-column": "Pin Column",
+            "sort": "Sort",
+            "filter": "Filter",
+            "resize": "Resize"
           },
           "item": {
             "copy-cell-value": "Copy cell value",
@@ -591,7 +594,15 @@
             "unpin": "Unpin",
             "pin-left": "Pin left",
             "pin-right": "Pin right",
-            "unpin-column": "Unpin column"
+            "unpin-column": "Unpin column",
+            "sort-ascending": "Sort Ascending",
+            "sort-descending": "Sort Descending",
+            "clear-sort": "Clear Sort",
+            "open-filter": "Open Filter",
+            "show-floating-filters": "Show Floating Filters",
+            "hide-floating-filters": "Hide Floating Filters",
+            "autosize-column": "Auto-size This Column",
+            "autosize-all-columns": "Auto-size All Columns"
           }
         },
         "overlays": {
