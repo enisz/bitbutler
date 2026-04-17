@@ -126,7 +126,6 @@ $ob-dark-surface: #1a3a5e;
     --bs-popover-header-color: var(--bs-card-cap-color);
     --bs-popover-body-color: #{$ob-dark-body-color};
 
-    // Subtle bg/border/text variants derived from theme colors
     --bs-primary-bg-subtle: #{color.mix(black, $ob-dark-primary, 80%)};
     --bs-primary-border-subtle: #{color.mix(black, $ob-dark-primary, 40%)};
     --bs-primary-text-emphasis: #{color.mix(white, $ob-dark-primary, 40%)};

@@ -33,5 +33,34 @@
         }
       </button>
     }
+    @if (entry.kind === 'submenu') {
+      <button
+        type="button"
+        class="bb-item"
+        [class.bb-item--submenu-open]="activeSubmenuId() === entry.id"
+        [class.bb-danger]="entry.variant === 'danger'"
+        [class.bb-warning]="entry.variant === 'warning'"
+        [class.bb-success]="entry.variant === 'success'"
+        [class.bb-info]="entry.variant === 'info'"
+        [disabled]="entry.disabled"
+        (mouseenter)="onSubmenuEnter(entry, asHtmlElement($event.currentTarget))"
+        (mouseleave)="onSubmenuLeave()"
+        role="menuitem"
+        aria-haspopup="menu"
+        [attr.aria-expanded]="activeSubmenuId() === entry.id"
+      >
+        <span class="bb-icon" aria-hidden="true">
+          @if (entry.icon) {
+            <fa-icon [icon]="entry.icon"></fa-icon>
+          }
+        </span>
+
+        <span class="bb-label">{{ entry.label | translate }}</span>
+
+        <span class="bb-chevron" aria-hidden="true">
+          <fa-icon [icon]="faChevronRight"></fa-icon>
+        </span>
+      </button>
+    }
   }
 </div>

@@ -126,7 +126,6 @@ $deep-sea-dark-surface: #06242e; // Slightly lighter surface
     --bs-popover-header-color: #{$deep-sea-dark-primary};
     --bs-popover-body-color: #{$deep-sea-dark-body-color};
 
-    // Subtle bg/border/text variants derived from theme colors
     --bs-primary-bg-subtle: #{color.mix(black, $deep-sea-dark-primary, 80%)};
     --bs-primary-border-subtle: #{color.mix(black, $deep-sea-dark-primary, 40%)};
     --bs-primary-text-emphasis: #{color.mix(white, $deep-sea-dark-primary, 40%)};

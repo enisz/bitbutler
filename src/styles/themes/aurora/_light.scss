@@ -126,7 +126,6 @@ $au-light-surface: #ffffff;
     --bs-popover-header-color: #{$au-light-body-color};
     --bs-popover-body-color: #{$au-light-body-color};
 
-    // Subtle bg/border/text variants derived from theme colors
     --bs-primary-bg-subtle: #{color.mix(white, $au-light-primary, 80%)};
     --bs-primary-border-subtle: #{color.mix(white, $au-light-primary, 60%)};
     --bs-primary-text-emphasis: #{color.mix(black, $au-light-primary, 60%)};

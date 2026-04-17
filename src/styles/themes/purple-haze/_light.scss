@@ -125,7 +125,6 @@ $ph-light-surface: #ede7f6;
     --bs-popover-header-color: #{$ph-light-body-color};
     --bs-popover-body-color: #{$ph-light-body-color};
 
-    // Subtle bg/border/text variants derived from theme colors
     --bs-primary-bg-subtle: #{color.mix(white, $ph-light-primary, 80%)};
     --bs-primary-border-subtle: #{color.mix(white, $ph-light-primary, 60%)};
     --bs-primary-text-emphasis: #{color.mix(black, $ph-light-primary, 60%)};
