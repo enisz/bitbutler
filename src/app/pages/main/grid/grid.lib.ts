@@ -40,7 +40,7 @@ export function getGridColDefs(
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.name'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.name'),
       minWidth: 50,
-      width: 589,
+      width: 590, // Rounded up from 589
       tooltipField: 'name',
       filter: true,
     },
@@ -51,7 +51,7 @@ export function getGridColDefs(
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.hash'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.hash'),
       minWidth: 50,
-      width: 339,
+      width: 340, // Rounded up from 339
       cellRenderer: CodeCellRenderer,
       filter: true,
       hide: true,
@@ -131,7 +131,7 @@ export function getGridColDefs(
         'pages.main.grid.grid-lib.col-def.downloaded_session',
       ),
       minWidth: 50,
-      width: 191,
+      width: 195, // Rounded up from 191
       valueFormatter: uiFormatService.fileSize,
       cellClass: 'tabular-nums',
       hide: true,
@@ -154,7 +154,7 @@ export function getGridColDefs(
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.uploaded_session'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.uploaded_session'),
       minWidth: 50,
-      width: 171,
+      width: 175, // Rounded up from 171
       valueFormatter: uiFormatService.fileSize,
       cellClass: 'tabular-nums',
       hide: true,
@@ -166,7 +166,7 @@ export function getGridColDefs(
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.dlspeed'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.dlspeed'),
       minWidth: 50,
-      width: 143,
+      width: 145, // Rounded up from 143
       valueFormatter: uiFormatService.fileSizePerSecond,
       cellClass: 'tabular-nums',
     },
@@ -177,7 +177,7 @@ export function getGridColDefs(
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.upspeed'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.upspeed'),
       minWidth: 50,
-      width: 129,
+      width: 130, // Rounded up from 129
       valueFormatter: uiFormatService.fileSizePerSecond,
       cellClass: 'tabular-nums',
     },
@@ -188,7 +188,7 @@ export function getGridColDefs(
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.ratio'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.ratio'),
       minWidth: 50,
-      width: 101,
+      width: 105, // Rounded up from 101
       valueFormatter: uiFormatService.ratio,
       cellClass: 'tabular-nums',
     },
@@ -199,7 +199,7 @@ export function getGridColDefs(
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.eta'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.eta'),
       minWidth: 50,
-      width: 219,
+      width: 220, // Rounded up from 219
       valueFormatter: (params: ValueFormatterParams<Torrent, any>): string =>
         params.data?.state === 'uploading' ||
         params.data?.state === 'pausedUP' ||
@@ -218,7 +218,7 @@ export function getGridColDefs(
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.added_on'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.added_on'),
       minWidth: 50,
-      width: 168,
+      width: 170, // Rounded up from 168
       valueFormatter: uiFormatService.localTimestamp,
       filter: DatepickerRangeFilter,
       floatingFilter: false,
@@ -231,7 +231,7 @@ export function getGridColDefs(
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.state'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.state'),
       minWidth: 50,
-      width: 137,
+      width: 140, // Rounded up from 137
       tooltipField: 'state',
       filter: true,
       hide: true,
@@ -243,7 +243,7 @@ export function getGridColDefs(
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.category'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.category'),
       minWidth: 50,
-      width: 178,
+      width: 180, // Rounded up from 178
       filter: true,
       hide: true,
     },
@@ -254,7 +254,7 @@ export function getGridColDefs(
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.tags'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.tags'),
       minWidth: 50,
-      width: 177,
+      width: 180, // Rounded up from 177
       filter: true,
       hide: true,
     },
@@ -276,7 +276,7 @@ export function getGridColDefs(
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.trackers_count'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.trackers_count'),
       minWidth: 50,
-      width: 113,
+      width: 115, // Rounded up from 113
       cellClass: 'tabular-nums',
       filter: true,
       hide: true,
@@ -312,7 +312,7 @@ export function getGridColDefs(
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.max_ratio'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.max_ratio'),
       minWidth: 50,
-      width: 123,
+      width: 125, // Rounded up from 123
       cellClass: 'tabular-nums',
       valueFormatter: uiFormatService.ratioLimit,
       hide: true,
@@ -324,7 +324,7 @@ export function getGridColDefs(
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.ratio_limit'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.ratio_limit'),
       minWidth: 50,
-      width: 131,
+      width: 135, // Rounded up from 131
       cellClass: 'tabular-nums',
       valueFormatter: uiFormatService.ratioLimit,
       hide: true,
@@ -336,7 +336,7 @@ export function getGridColDefs(
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.seeding_time'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.seeding_time'),
       minWidth: 50,
-      width: 247,
+      width: 250, // Rounded up from 247
       valueFormatter: uiFormatService.duration,
       hide: true,
     },
@@ -372,7 +372,7 @@ export function getGridColDefs(
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.last_activity'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.last_activity'),
       minWidth: 50,
-      width: 182,
+      width: 185, // Rounded up from 182
       valueFormatter: uiFormatService.localTimestamp,
       filter: DatepickerRangeFilter,
       floatingFilter: false,
@@ -386,7 +386,7 @@ export function getGridColDefs(
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.seen_complete'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.seen_complete'),
       minWidth: 50,
-      width: 182,
+      width: 185, // Rounded up from 182
       valueFormatter: uiFormatService.localTimestamp,
       filter: DatepickerRangeFilter,
       floatingFilter: false,
@@ -450,7 +450,7 @@ export function getGridColDefs(
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.num_incomplete'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.num_incomplete'),
       minWidth: 50,
-      width: 136,
+      width: 140, // Rounded up from 136
       cellClass: 'tabular-nums',
       filter: true,
       hide: true,
@@ -507,7 +507,7 @@ export function getGridColDefs(
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.super_seeding'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.super_seeding'),
       minWidth: 50,
-      width: 179,
+      width: 180, // Rounded up from 179
       filter: true,
       hide: true,
     },
@@ -518,7 +518,7 @@ export function getGridColDefs(
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.f_l_piece_prio'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.f_l_piece_prio'),
       minWidth: 50,
-      width: 254,
+      width: 255, // Rounded up from 254
       filter: true,
       hide: true,
     },
@@ -528,7 +528,7 @@ export function getGridColDefs(
       tooltipField: 'availability',
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.availability'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.availability'),
-      width: 199,
+      width: 200, // Rounded up from 199
       hide: true,
     },
     {
@@ -538,7 +538,7 @@ export function getGridColDefs(
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.max_seeding_time'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.max_seeding_time'),
       minWidth: 50,
-      width: 228,
+      width: 230, // Rounded up from 228
       cellClass: 'tabular-nums',
       valueFormatter: uiFormatService.timeLimit,
       hide: true,
@@ -554,7 +554,7 @@ export function getGridColDefs(
         'pages.main.grid.grid-lib.col-def.max_inactive_seeding_time',
       ),
       minWidth: 50,
-      width: 284,
+      width: 285, // Rounded up from 284
       cellClass: 'tabular-nums',
       valueFormatter: uiFormatService.timeLimit,
       hide: true,
@@ -570,7 +570,7 @@ export function getGridColDefs(
         'pages.main.grid.grid-lib.col-def.inactive_seeding_time_limit',
       ),
       minWidth: 50,
-      width: 251,
+      width: 255, // Rounded up from 251
       cellClass: 'tabular-nums',
       valueFormatter: uiFormatService.timeLimit,
       hide: true,
@@ -593,7 +593,7 @@ export function getGridColDefs(
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.save_path'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.save_path'),
       minWidth: 50,
-      width: 364,
+      width: 365, // Rounded up from 364
       filter: true,
     },
     {
@@ -603,7 +603,7 @@ export function getGridColDefs(
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.download_path'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.download_path'),
       minWidth: 50,
-      width: 356,
+      width: 360, // Rounded up from 356
       filter: true,
       hide: true,
     },
