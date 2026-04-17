@@ -377,6 +377,7 @@ export class GridContextMenuService {
   public buildHeaderMenu(event: ColumnHeaderContextMenuEvent<any, any>): ContextMenuEntry[] {
     const api = event.api;
     const column = event.column as Column;
+    const floatingFilterActive = api.getGridOption('floatingFilter') === true;
 
     const columns =
       api
@@ -465,11 +466,10 @@ export class GridContextMenuService {
           {
             kind: 'item',
             id: `filter.toggleFloating.${payload.colId}`,
-            label:
-              api.getGridOption('floatingFilter') === true
-                ? 'pages.main.grid.context-menu.item.hide-floating-filters'
-                : 'pages.main.grid.context-menu.item.show-floating-filters',
-            icon: api.getGridOption('floatingFilter') === true ? faEyeSlash : faEye,
+            label: floatingFilterActive
+              ? 'pages.main.grid.context-menu.item.hide-floating-filters'
+              : 'pages.main.grid.context-menu.item.show-floating-filters',
+            icon: floatingFilterActive ? faEyeSlash : faEye,
             action: () => api.setGridOption('floatingFilter', !api.getGridOption('floatingFilter')),
           },
         ],
