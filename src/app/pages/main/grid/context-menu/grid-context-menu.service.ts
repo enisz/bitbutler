@@ -34,6 +34,7 @@ import {
   faSortUp,
   faTableColumns,
   faTags,
+  faThumbTack,
   faTrashCan,
   faUpload,
   faXmark,
@@ -492,7 +493,7 @@ export class GridContextMenuService {
         kind: 'submenu',
         id: `pin.${payload.colId}`,
         label: 'pages.main.grid.context-menu.submenu.pin-column',
-        icon: faArrowLeft,
+        icon: faThumbTack,
         children: [
           {
             kind: 'item',

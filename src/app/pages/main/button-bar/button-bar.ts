@@ -17,7 +17,7 @@ import {
   faArrowsDownToLine,
   faArrowsUpToLine,
   faArrowUp,
-  faDeleteLeft,
+  faCircleXmark,
   faFileArrowUp,
   faGear,
   faPause,
@@ -56,7 +56,7 @@ export class ButtonBar implements OnInit {
   private searchInputRef?: ElementRef<HTMLInputElement>;
 
   public compact = false;
-  public icons = { faSearch, faDeleteLeft };
+  public icons = { faSearch, faCircleXmark };
   public readonly selected = this.selectionStore.selected;
   public readonly hasSelection = computed(() => this.selected().length > 0);
   public searchForm: FormGroup = new FormGroup({
