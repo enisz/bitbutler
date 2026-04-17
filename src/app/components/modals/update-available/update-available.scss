@@ -19,7 +19,7 @@
   overflow: hidden;
   border: 1px solid var(--bb-control-border);
 
-  ::ng-deep {
+  :host ::ng-deep {
     .accordion-item {
       background-color: var(--bb-control-bg);
       border-color: var(--bb-control-border);
