@@ -60,7 +60,6 @@ export class GridContextMenuService {
 
   public async buildTorrentMenu(data: GridContextMenuData): Promise<ContextMenuEntry[]> {
     return [
-      // ── Primary actions (flat) ──────────────────────────────────────
       {
         kind: 'item',
         id: 'control.start',
@@ -107,7 +106,7 @@ export class GridContextMenuService {
           }),
       },
       { kind: 'divider' },
-      // ── Copy submenu ────────────────────────────────────────────────
+
       {
         kind: 'submenu',
         id: 'copy',
@@ -144,7 +143,7 @@ export class GridContextMenuService {
           },
         ],
       },
-      // ── Pin Row submenu ─────────────────────────────────────────────
+
       {
         kind: 'submenu',
         id: 'row.pin',
@@ -177,7 +176,7 @@ export class GridContextMenuService {
           },
         ],
       },
-      // ── Files submenu ───────────────────────────────────────────────
+
       {
         kind: 'submenu',
         id: 'files',
@@ -247,7 +246,7 @@ export class GridContextMenuService {
           },
         ],
       },
-      // ── Speed submenu ───────────────────────────────────────────────
+
       {
         kind: 'submenu',
         id: 'speed',
@@ -300,7 +299,7 @@ export class GridContextMenuService {
           },
         ],
       },
-      // ── Maintenance submenu ─────────────────────────────────────────
+
       {
         kind: 'submenu',
         id: 'maintenance',
@@ -333,7 +332,7 @@ export class GridContextMenuService {
           },
         ],
       },
-      // ── Queue submenu ───────────────────────────────────────────────
+
       {
         kind: 'submenu',
         id: 'queue',
@@ -412,7 +411,7 @@ export class GridContextMenuService {
 
     const items: ContextMenuEntry[] = [
       { kind: 'header', label: payload.displayName },
-      // ── Sort submenu ────────────────────────────────────────────────────────
+
       {
         kind: 'submenu',
         id: `sort.${payload.colId}`,
@@ -445,7 +444,7 @@ export class GridContextMenuService {
           },
         ],
       },
-      // ── Filter submenu ───────────────────────────────────────────────────────
+
       {
         kind: 'submenu',
         id: `filter.${payload.colId}`,
@@ -521,7 +520,7 @@ export class GridContextMenuService {
           },
         ],
       },
-      // ── Resize submenu ───────────────────────────────────────────────────────
+
       {
         kind: 'submenu',
         id: `resize.${payload.colId}`,
@@ -555,7 +554,7 @@ export class GridContextMenuService {
           api.setColumnsVisible([payload.colId], !col.isVisible());
         },
       },
-      // ── Columns submenu ──────────────────────────────────────────────────────
+
       {
         kind: 'submenu',
         id: `columns.${payload.colId}`,

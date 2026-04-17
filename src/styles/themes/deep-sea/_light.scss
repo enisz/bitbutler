@@ -125,7 +125,6 @@ $deep-sea-light-surface: #ffffff;
     --bs-popover-header-color: #{$deep-sea-light-primary};
     --bs-popover-body-color: #{$deep-sea-light-body-color};
 
-    // Subtle bg/border/text variants derived from theme colors
     --bs-primary-bg-subtle: #{color.mix(white, $deep-sea-light-primary, 80%)};
     --bs-primary-border-subtle: #{color.mix(white, $deep-sea-light-primary, 60%)};
     --bs-primary-text-emphasis: #{color.mix(black, $deep-sea-light-primary, 60%)};

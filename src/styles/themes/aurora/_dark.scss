@@ -126,7 +126,6 @@ $au-dark-surface: #121a33;
     --bs-popover-header-color: #{$au-dark-primary};
     --bs-popover-body-color: #{$au-dark-body-color};
 
-    // Subtle bg/border/text variants derived from theme colors
     --bs-primary-bg-subtle: #{color.mix(black, $au-dark-primary, 80%)};
     --bs-primary-border-subtle: #{color.mix(black, $au-dark-primary, 40%)};
     --bs-primary-text-emphasis: #{color.mix(white, $au-dark-primary, 40%)};

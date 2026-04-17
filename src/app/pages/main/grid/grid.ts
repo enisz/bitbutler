@@ -238,13 +238,11 @@ export class Grid implements AfterViewInit {
             new Set([...this.pinnedBottomHashes()].filter((h) => !hashSet.has(h))),
           );
         } else if (cmd.type === 'UI_TORRENT_PIN_TOP') {
-          // Move from bottom to top if already bottom-pinned
           this.pinnedBottomHashes.set(
             new Set([...this.pinnedBottomHashes()].filter((h) => !hashSet.has(h))),
           );
           this.pinnedTopHashes.set(new Set([...this.pinnedTopHashes(), ...hashes]));
         } else {
-          // UI_TORRENT_PIN_BOTTOM — move from top to bottom if already top-pinned
           this.pinnedTopHashes.set(
             new Set([...this.pinnedTopHashes()].filter((h) => !hashSet.has(h))),
           );
