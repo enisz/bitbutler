@@ -53,105 +53,7 @@ export class GridContextMenuService {
 
   public async buildTorrentMenu(data: GridContextMenuData): Promise<ContextMenuEntry[]> {
     return [
-      {
-        kind: 'header',
-        label: 'pages.main.grid.context-menu.header.cell',
-      },
-      {
-        kind: 'item',
-        id: 'cell.copyValue',
-        label: 'pages.main.grid.context-menu.item.copy-cell-value',
-        icon: faCopy,
-        action: () => this.clipboard.copy(String(data.cell.value)),
-      },
-      { kind: 'divider' },
-      { kind: 'header', label: 'pages.main.grid.context-menu.header.row' },
-      {
-        kind: 'item',
-        id: 'row.pinToTop',
-        icon: faArrowUp,
-        label: 'pages.main.grid.context-menu.item.pin-to-top',
-        disabled: data.rowPinned === 'top',
-        action: () => this.commandBusService.emit({ type: 'UI_TORRENT_PIN_TOP' }),
-      },
-      {
-        kind: 'item',
-        id: 'row.pinToBottom',
-        icon: faArrowDown,
-        label: 'pages.main.grid.context-menu.item.pin-to-bottom',
-        disabled: data.rowPinned === 'bottom',
-        action: () => this.commandBusService.emit({ type: 'UI_TORRENT_PIN_BOTTOM' }),
-      },
-      {
-        kind: 'item',
-        id: 'row.unpin',
-        icon: faXmark,
-        label: 'pages.main.grid.context-menu.item.unpin',
-        disabled: !data.rowPinned,
-        action: () => this.commandBusService.emit({ type: 'UI_TORRENT_UNPIN' }),
-      },
-      { kind: 'divider' },
-      {
-        kind: 'header',
-        label: 'pages.main.grid.context-menu.header.torrent',
-      },
-      {
-        kind: 'item',
-        id: 'torrent.copyInfoHash',
-        label: 'pages.main.grid.context-menu.item.copy-info-hash',
-        icon: faHashtag,
-        action: () => this.clipboard.copy(String(data.row.hash)),
-      },
-      {
-        kind: 'item',
-        id: 'torrent.copyMagnet',
-        label: 'pages.main.grid.context-menu.item.copy-magnet-link',
-        icon: faLink,
-        action: () => this.clipboard.copy(String(data.row.magnet_uri)),
-      },
-      {
-        kind: 'item',
-        id: 'torrent.copyJson',
-        label: 'pages.main.grid.context-menu.item.copy-as-json',
-        icon: faCode,
-        action: () => this.clipboard.copy(String(JSON.stringify(data.row, null, 2))),
-      },
-      {
-        kind: 'item',
-        id: 'torrent.details',
-        label: 'pages.main.grid.context-menu.item.torrent-details',
-        icon: faInfoCircle,
-        variant: 'info',
-        action: () =>
-          this.commandBusService.emit({ type: 'UI_OPEN_TORRENT_DETAILS', hash: data.row.hash }),
-      },
-      {
-        kind: 'submenu',
-        id: 'test.nested',
-        label: 'Test Submenu',
-        icon: faCode,
-        children: [
-          { kind: 'header', label: 'Nested Header' },
-          { kind: 'item', id: 'test.nested.a', label: 'Nested Item A', icon: faPlay },
-          { kind: 'item', id: 'test.nested.b', label: 'Nested Item B', icon: faPause },
-          { kind: 'divider' },
-          {
-            kind: 'submenu',
-            id: 'test.nested.deep',
-            label: 'Deeper Submenu',
-            icon: faCode,
-            children: [
-              { kind: 'item', id: 'test.deep.a', label: 'Deep Item A' },
-              { kind: 'item', id: 'test.deep.b', label: 'Deep Item B' },
-            ],
-          },
-        ],
-      },
-      { kind: 'divider' },
-      {
-        kind: 'header',
-        label: 'pages.main.grid.context-menu.header.control',
-      },
+      // ── Primary actions (flat) ──────────────────────────────────────
       {
         kind: 'item',
         id: 'control.start',
@@ -177,67 +79,13 @@ export class GridContextMenuService {
       },
       { kind: 'divider' },
       {
-        kind: 'header',
-        label: 'pages.main.grid.context-menu.header.files',
-      },
-      {
         kind: 'item',
-        id: 'files.setLocation',
-        label: 'pages.main.grid.context-menu.item.set-location',
-        icon: faFolderOpen,
+        id: 'torrent.details',
+        label: 'pages.main.grid.context-menu.item.torrent-details',
+        icon: faInfoCircle,
+        variant: 'info',
         action: () =>
-          this.commandBusService.emit({ type: 'UI_SET_TORRENT_LOCATION', torrent: data.row }),
-      },
-      {
-        kind: 'item',
-        id: 'files.openDestination',
-        label:
-          (
-            await this.qbService.torrentContents(
-              this.serverStoreService.currentServerId() as string,
-              data.row.hash,
-            )
-          ).length === 1
-            ? 'pages.main.grid.context-menu.item.show-in-folder'
-            : 'pages.main.grid.context-menu.item.open-destination',
-        icon: faFolderOpen,
-        disabled: (await this.pathService.resolveLocalPath(data.row.save_path)) === null,
-        action: () =>
-          this.commandBusService.emit({
-            type: 'UI_OPEN_DESTINATION',
-            remotePath: data.row.content_path,
-            hash: data.row.hash,
-          }),
-      },
-      {
-        kind: 'item',
-        id: 'files.renameTorrent',
-        label: 'pages.main.grid.context-menu.item.rename-torrent',
-        icon: faPen,
-        action: () => this.commandBusService.emit({ type: 'UI_RENAME_TORRENT', torrent: data.row }),
-      },
-      {
-        kind: 'item',
-        id: 'files.renameFiles',
-        label: 'pages.main.grid.context-menu.item.rename-files',
-        icon: faFilePen,
-        action: () => this.commandBusService.emit({ type: 'UI_RENAME_FILES', hash: data.row.hash }),
-      },
-      {
-        kind: 'item',
-        id: 'files.category',
-        label: 'pages.main.grid.context-menu.item.set-category',
-        icon: faFolderTree,
-        action: () =>
-          this.commandBusService.emit({ type: 'UI_SET_TORRENT_CATEGORY', torrent: data.row }),
-      },
-      {
-        kind: 'item',
-        id: 'files.tags',
-        label: 'pages.main.grid.context-menu.item.set-tags',
-        icon: faTags,
-        action: () =>
-          this.commandBusService.emit({ type: 'UI_SET_TORRENT_TAGS', torrent: data.row }),
+          this.commandBusService.emit({ type: 'UI_OPEN_TORRENT_DETAILS', hash: data.row.hash }),
       },
       {
         kind: 'item',
@@ -252,123 +100,272 @@ export class GridContextMenuService {
           }),
       },
       { kind: 'divider' },
+      // ── Copy submenu ────────────────────────────────────────────────
       {
-        kind: 'header',
-        label: 'pages.main.grid.context-menu.header.speed',
+        kind: 'submenu',
+        id: 'copy',
+        label: 'pages.main.grid.context-menu.submenu.copy',
+        icon: faCopy,
+        children: [
+          {
+            kind: 'item',
+            id: 'cell.copyValue',
+            label: 'pages.main.grid.context-menu.item.copy-cell-value',
+            icon: faCopy,
+            action: () => this.clipboard.copy(String(data.cell.value)),
+          },
+          {
+            kind: 'item',
+            id: 'torrent.copyInfoHash',
+            label: 'pages.main.grid.context-menu.item.copy-info-hash',
+            icon: faHashtag,
+            action: () => this.clipboard.copy(String(data.row.hash)),
+          },
+          {
+            kind: 'item',
+            id: 'torrent.copyMagnet',
+            label: 'pages.main.grid.context-menu.item.copy-magnet-link',
+            icon: faLink,
+            action: () => this.clipboard.copy(String(data.row.magnet_uri)),
+          },
+          {
+            kind: 'item',
+            id: 'torrent.copyJson',
+            label: 'pages.main.grid.context-menu.item.copy-as-json',
+            icon: faCode,
+            action: () => this.clipboard.copy(String(JSON.stringify(data.row, null, 2))),
+          },
+        ],
       },
+      // ── Pin Row submenu ─────────────────────────────────────────────
       {
-        kind: 'item',
-        id: 'speed.limitUpload',
-        label: 'pages.main.grid.context-menu.item.limit-upload-rate',
-        icon: faUpload,
-        action: () =>
-          this.commandBusService.emit({
-            type: 'UI_LIMIT_TRANSFER',
-            direction: 'ul',
-            target: 'torrent',
-          }),
-      },
-      {
-        kind: 'item',
-        id: 'speed.limitDownload',
-        label: 'pages.main.grid.context-menu.item.limit-download-rate',
-        icon: faDownload,
-        action: () =>
-          this.commandBusService.emit({
-            type: 'UI_LIMIT_TRANSFER',
-            direction: 'dl',
-            target: 'torrent',
-          }),
-      },
-      {
-        kind: 'item',
-        id: 'speed.limitTorrentShare',
-        label: 'pages.main.grid.context-menu.item.limit-torrent-share',
-        icon: faShare,
-        action: () => {
-          this.commandBusService.emit({
-            type: 'UI_LIMIT_SHARE',
-          });
-        },
-      },
-      {
-        kind: 'item',
-        id: 'speed.superSeeding',
-        label: data.row.super_seeding
-          ? 'pages.main.grid.context-menu.item.disable-super-seeding'
-          : 'pages.main.grid.context-menu.item.enable-super-seeding',
-        icon: data.row.super_seeding ? faSquareCheck : faSquare,
-        action: () =>
-          this.commandBusService.emit({
-            type: 'TORRENT_SUPER_SEEDING',
-            status: data.row.super_seeding,
-          }),
-      },
-      { kind: 'divider' },
-      {
-        kind: 'header',
-        label: 'pages.main.grid.context-menu.header.maintenance',
-      },
-      {
-        kind: 'item',
-        id: 'maintenance.forceRecheck',
-        label: 'pages.main.grid.context-menu.item.force-recheck',
-        icon: faRotate,
-        action: () => this.commandBusService.emit({ type: 'TORRENT_RECHECK' }),
-      },
-      {
-        kind: 'item',
-        id: 'maintenance.forceReannounce',
-        label: 'pages.main.grid.context-menu.item.force-reannounce',
-        icon: faBullhorn,
-        action: () => this.commandBusService.emit({ type: 'TORRENT_REANNOUNCE' }),
-      },
-      {
-        kind: 'item',
-        id: 'maintenance.autoTmm',
-        label: data.row.auto_tmm
-          ? 'pages.main.grid.context-menu.item.disable-auto-tmm'
-          : 'pages.main.grid.context-menu.item.enable-auto-tmm',
-        icon: data.row.auto_tmm ? faSquareCheck : faSquare,
-        action: () =>
-          this.commandBusService.emit({ type: 'TORRENT_AUTO_TMM', status: data.row.auto_tmm }),
-      },
-      { kind: 'divider' },
-      {
-        kind: 'header',
-        label: 'pages.main.grid.context-menu.header.queue',
-      },
-      {
-        kind: 'item',
-        id: 'queue.moveTop',
-        label: 'pages.main.grid.context-menu.item.move-to-top',
-        icon: faArrowsUpToLine,
-        variant: 'info',
-        action: () => this.commandBusService.emit({ type: 'QUEUE_MOVE_TOP' }),
-      },
-      {
-        kind: 'item',
-        id: 'queue.moveUp',
-        label: 'pages.main.grid.context-menu.item.move-up',
+        kind: 'submenu',
+        id: 'row.pin',
+        label: 'pages.main.grid.context-menu.submenu.pin-row',
         icon: faArrowUp,
-        variant: 'info',
-        action: () => this.commandBusService.emit({ type: 'QUEUE_MOVE_UP' }),
+        children: [
+          {
+            kind: 'item',
+            id: 'row.pinToTop',
+            icon: faArrowUp,
+            label: 'pages.main.grid.context-menu.item.pin-to-top',
+            disabled: data.rowPinned === 'top',
+            action: () => this.commandBusService.emit({ type: 'UI_TORRENT_PIN_TOP' }),
+          },
+          {
+            kind: 'item',
+            id: 'row.pinToBottom',
+            icon: faArrowDown,
+            label: 'pages.main.grid.context-menu.item.pin-to-bottom',
+            disabled: data.rowPinned === 'bottom',
+            action: () => this.commandBusService.emit({ type: 'UI_TORRENT_PIN_BOTTOM' }),
+          },
+          {
+            kind: 'item',
+            id: 'row.unpin',
+            icon: faXmark,
+            label: 'pages.main.grid.context-menu.item.unpin',
+            disabled: !data.rowPinned,
+            action: () => this.commandBusService.emit({ type: 'UI_TORRENT_UNPIN' }),
+          },
+        ],
       },
+      // ── Files submenu ───────────────────────────────────────────────
       {
-        kind: 'item',
-        id: 'queue.moveDown',
-        label: 'pages.main.grid.context-menu.item.move-down',
-        icon: faArrowDown,
-        variant: 'info',
-        action: () => this.commandBusService.emit({ type: 'QUEUE_MOVE_DOWN' }),
+        kind: 'submenu',
+        id: 'files',
+        label: 'pages.main.grid.context-menu.submenu.files',
+        icon: faFolderOpen,
+        children: [
+          {
+            kind: 'item',
+            id: 'files.setLocation',
+            label: 'pages.main.grid.context-menu.item.set-location',
+            icon: faFolderOpen,
+            action: () =>
+              this.commandBusService.emit({ type: 'UI_SET_TORRENT_LOCATION', torrent: data.row }),
+          },
+          {
+            kind: 'item',
+            id: 'files.openDestination',
+            label:
+              (
+                await this.qbService.torrentContents(
+                  this.serverStoreService.currentServerId() as string,
+                  data.row.hash,
+                )
+              ).length === 1
+                ? 'pages.main.grid.context-menu.item.show-in-folder'
+                : 'pages.main.grid.context-menu.item.open-destination',
+            icon: faFolderOpen,
+            disabled: (await this.pathService.resolveLocalPath(data.row.save_path)) === null,
+            action: () =>
+              this.commandBusService.emit({
+                type: 'UI_OPEN_DESTINATION',
+                remotePath: data.row.content_path,
+                hash: data.row.hash,
+              }),
+          },
+          {
+            kind: 'item',
+            id: 'files.renameTorrent',
+            label: 'pages.main.grid.context-menu.item.rename-torrent',
+            icon: faPen,
+            action: () =>
+              this.commandBusService.emit({ type: 'UI_RENAME_TORRENT', torrent: data.row }),
+          },
+          {
+            kind: 'item',
+            id: 'files.renameFiles',
+            label: 'pages.main.grid.context-menu.item.rename-files',
+            icon: faFilePen,
+            action: () =>
+              this.commandBusService.emit({ type: 'UI_RENAME_FILES', hash: data.row.hash }),
+          },
+          {
+            kind: 'item',
+            id: 'files.category',
+            label: 'pages.main.grid.context-menu.item.set-category',
+            icon: faFolderTree,
+            action: () =>
+              this.commandBusService.emit({ type: 'UI_SET_TORRENT_CATEGORY', torrent: data.row }),
+          },
+          {
+            kind: 'item',
+            id: 'files.tags',
+            label: 'pages.main.grid.context-menu.item.set-tags',
+            icon: faTags,
+            action: () =>
+              this.commandBusService.emit({ type: 'UI_SET_TORRENT_TAGS', torrent: data.row }),
+          },
+        ],
       },
+      // ── Speed submenu ───────────────────────────────────────────────
       {
-        kind: 'item',
-        id: 'queue.moveBottom',
-        label: 'pages.main.grid.context-menu.item.move-to-bottom',
-        icon: faArrowsDownToLine,
-        variant: 'info',
-        action: () => this.commandBusService.emit({ type: 'QUEUE_MOVE_BOTTOM' }),
+        kind: 'submenu',
+        id: 'speed',
+        label: 'pages.main.grid.context-menu.submenu.speed',
+        icon: faUpload,
+        children: [
+          {
+            kind: 'item',
+            id: 'speed.limitUpload',
+            label: 'pages.main.grid.context-menu.item.limit-upload-rate',
+            icon: faUpload,
+            action: () =>
+              this.commandBusService.emit({
+                type: 'UI_LIMIT_TRANSFER',
+                direction: 'ul',
+                target: 'torrent',
+              }),
+          },
+          {
+            kind: 'item',
+            id: 'speed.limitDownload',
+            label: 'pages.main.grid.context-menu.item.limit-download-rate',
+            icon: faDownload,
+            action: () =>
+              this.commandBusService.emit({
+                type: 'UI_LIMIT_TRANSFER',
+                direction: 'dl',
+                target: 'torrent',
+              }),
+          },
+          {
+            kind: 'item',
+            id: 'speed.limitTorrentShare',
+            label: 'pages.main.grid.context-menu.item.limit-torrent-share',
+            icon: faShare,
+            action: () => this.commandBusService.emit({ type: 'UI_LIMIT_SHARE' }),
+          },
+          {
+            kind: 'item',
+            id: 'speed.superSeeding',
+            label: data.row.super_seeding
+              ? 'pages.main.grid.context-menu.item.disable-super-seeding'
+              : 'pages.main.grid.context-menu.item.enable-super-seeding',
+            icon: data.row.super_seeding ? faSquareCheck : faSquare,
+            action: () =>
+              this.commandBusService.emit({
+                type: 'TORRENT_SUPER_SEEDING',
+                status: data.row.super_seeding,
+              }),
+          },
+        ],
+      },
+      // ── Maintenance submenu ─────────────────────────────────────────
+      {
+        kind: 'submenu',
+        id: 'maintenance',
+        label: 'pages.main.grid.context-menu.submenu.maintenance',
+        icon: faRotate,
+        children: [
+          {
+            kind: 'item',
+            id: 'maintenance.forceRecheck',
+            label: 'pages.main.grid.context-menu.item.force-recheck',
+            icon: faRotate,
+            action: () => this.commandBusService.emit({ type: 'TORRENT_RECHECK' }),
+          },
+          {
+            kind: 'item',
+            id: 'maintenance.forceReannounce',
+            label: 'pages.main.grid.context-menu.item.force-reannounce',
+            icon: faBullhorn,
+            action: () => this.commandBusService.emit({ type: 'TORRENT_REANNOUNCE' }),
+          },
+          {
+            kind: 'item',
+            id: 'maintenance.autoTmm',
+            label: data.row.auto_tmm
+              ? 'pages.main.grid.context-menu.item.disable-auto-tmm'
+              : 'pages.main.grid.context-menu.item.enable-auto-tmm',
+            icon: data.row.auto_tmm ? faSquareCheck : faSquare,
+            action: () =>
+              this.commandBusService.emit({ type: 'TORRENT_AUTO_TMM', status: data.row.auto_tmm }),
+          },
+        ],
+      },
+      // ── Queue submenu ───────────────────────────────────────────────
+      {
+        kind: 'submenu',
+        id: 'queue',
+        label: 'pages.main.grid.context-menu.submenu.queue',
+        icon: faArrowsUpToLine,
+        children: [
+          {
+            kind: 'item',
+            id: 'queue.moveTop',
+            label: 'pages.main.grid.context-menu.item.move-to-top',
+            icon: faArrowsUpToLine,
+            variant: 'info',
+            action: () => this.commandBusService.emit({ type: 'QUEUE_MOVE_TOP' }),
+          },
+          {
+            kind: 'item',
+            id: 'queue.moveUp',
+            label: 'pages.main.grid.context-menu.item.move-up',
+            icon: faArrowUp,
+            variant: 'info',
+            action: () => this.commandBusService.emit({ type: 'QUEUE_MOVE_UP' }),
+          },
+          {
+            kind: 'item',
+            id: 'queue.moveDown',
+            label: 'pages.main.grid.context-menu.item.move-down',
+            icon: faArrowDown,
+            variant: 'info',
+            action: () => this.commandBusService.emit({ type: 'QUEUE_MOVE_DOWN' }),
+          },
+          {
+            kind: 'item',
+            id: 'queue.moveBottom',
+            label: 'pages.main.grid.context-menu.item.move-to-bottom',
+            icon: faArrowsDownToLine,
+            variant: 'info',
+            action: () => this.commandBusService.emit({ type: 'QUEUE_MOVE_BOTTOM' }),
+          },
+        ],
       },
     ];
   }
