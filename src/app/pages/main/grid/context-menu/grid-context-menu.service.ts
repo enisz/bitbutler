@@ -5,6 +5,7 @@ import {
   faArrowLeft,
   faArrowRight,
   faArrowsDownToLine,
+  faArrowsLeftRight,
   faArrowsUpToLine,
   faArrowUp,
   faBullhorn,
@@ -503,6 +504,29 @@ export class GridContextMenuService {
             icon: faXmark,
             disabled: !column.getPinned(),
             action: () => api.setColumnsPinned([payload.colId], null),
+          },
+        ],
+      },
+      // ── Resize submenu ───────────────────────────────────────────────────────
+      {
+        kind: 'submenu',
+        id: `resize.${payload.colId}`,
+        label: 'pages.main.grid.context-menu.submenu.resize',
+        icon: faArrowsLeftRight,
+        children: [
+          {
+            kind: 'item',
+            id: `resize.column.${payload.colId}`,
+            label: 'pages.main.grid.context-menu.item.autosize-column',
+            icon: faArrowsLeftRight,
+            action: () => api.autoSizeColumn(payload.colId),
+          },
+          {
+            kind: 'item',
+            id: `resize.all.${payload.colId}`,
+            label: 'pages.main.grid.context-menu.item.autosize-all-columns',
+            icon: faArrowsLeftRight,
+            action: () => api.autoSizeAllColumns(),
           },
         ],
       },
