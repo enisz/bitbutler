@@ -10,3 +10,10 @@ export const CONTEXT_MENU_CONFIG = new InjectionToken<ContextMenuConfig>('CONTEX
  * so mouseleave fires on every ancestor panel as focus moves deeper).
  */
 export const CANCEL_ANCESTOR_CLOSE = new InjectionToken<() => void>('CANCEL_ANCESTOR_CLOSE');
+
+/**
+ * Injected into child ContextMenu instances. Calling it disposes the root overlay,
+ * which cascades through all levels via the detachments() → disposeChild() chain,
+ * ensuring the entire menu tree closes when any item is clicked.
+ */
+export const CLOSE_ROOT = new InjectionToken<() => void>('CLOSE_ROOT');

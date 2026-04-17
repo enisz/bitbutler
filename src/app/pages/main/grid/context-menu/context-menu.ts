@@ -10,7 +10,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { CommandBusService } from '../../../../services/command-bus.service';
-import { CANCEL_ANCESTOR_CLOSE, CONTEXT_MENU_CONFIG } from './context-menu.tokens';
+import { CANCEL_ANCESTOR_CLOSE, CLOSE_ROOT, CONTEXT_MENU_CONFIG } from './context-menu.tokens';
 import type { ContextMenuConfig, ContextMenuEntry } from './context-menu.types';
 
 @Component({
@@ -29,6 +29,8 @@ export class ContextMenu implements OnDestroy {
   private readonly commandBus = inject(CommandBusService);
   // Provided by the parent ContextMenu level; null for the root menu.
   private readonly cancelAncestorClose = inject(CANCEL_ANCESTOR_CLOSE, { optional: true });
+  // Provided by the parent ContextMenu level; null for the root menu.
+  private readonly closeRoot = inject(CLOSE_ROOT, { optional: true });
 
   readonly faChevronRight = faChevronRight;
   readonly activeSubmenuId = signal<string | null>(null);
@@ -63,7 +65,7 @@ export class ContextMenu implements OnDestroy {
       this.commandBus.emit(entry.action);
     }
 
-    this.close();
+    (this.closeRoot ?? (() => this.close()))();
   }
 
   onSubmenuEnter(
@@ -121,6 +123,7 @@ export class ContextMenu implements OnDestroy {
           { provide: CONTEXT_MENU_CONFIG, useValue: { items: entry.children } },
           { provide: OverlayRef, useValue: this.childOverlayRef },
           { provide: CANCEL_ANCESTOR_CLOSE, useValue: cancelThisAndAncestors },
+          { provide: CLOSE_ROOT, useValue: this.closeRoot ?? (() => this.close()) },
         ],
       });
 
