@@ -6,7 +6,7 @@
         <h4 class="modal-title mb-0">
           {{ 'components.modals.update-available.title' | translate }}
         </h4>
-        @if (u.release; as release) {
+        @if (latestRelease; as release) {
           <small
             class="text-muted"
             [innerHTML]="
@@ -21,16 +21,39 @@
   </div>
 
   <div class="modal-body">
-    <div class="changelog-container mb-4">
-      <h6 class="text-uppercase fw-bold text-muted small mb-3">
-        {{ 'components.modals.update-available.whats-new' | translate }}
-      </h6>
-      <div class="markdown-wrapper p-3 border">
-        <markdown [data]="cleanedBody"></markdown>
-      </div>
+    <h6 class="text-uppercase fw-bold text-muted small mb-3">
+      {{ 'components.modals.update-available.whats-new' | translate }}
+    </h6>
+
+    <div ngbAccordion class="changelog-accordion mb-4">
+      @for (release of u.releases; track release.id; let i = $index) {
+        <div ngbAccordionItem [collapsed]="i !== 0">
+          <h2 ngbAccordionHeader>
+            <button
+              ngbAccordionToggle
+              class="d-flex justify-content-between align-items-center w-100 gap-2"
+            >
+              <span class="fw-semibold">{{ getVersion(release.tag_name) }}</span>
+              <small class="text-muted text-end text-nowrap">
+                {{ release.published_at | date: 'mediumDate' }}
+                ({{ toMs(release.published_at) | timeago }})
+              </small>
+            </button>
+          </h2>
+          <div ngbAccordionCollapse>
+            <div ngbAccordionBody>
+              <ng-template>
+                <div class="markdown-wrapper">
+                  <markdown [data]="cleanedBody(release)"></markdown>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      }
     </div>
 
-    @if (u.release?.assets; as assets) {
+    @if (latestRelease?.assets; as assets) {
       <h6 class="text-uppercase fw-bold text-muted small mb-2">
         {{ 'components.modals.update-available.available-downloads' | translate }}
       </h6>
@@ -55,7 +78,7 @@
   </div>
 
   <div class="modal-footer border-0">
-    @if (u.release; as release) {
+    @if (latestRelease; as release) {
       <button type="button" class="btn btn-primary" (click)="downloadAsset(release.html_url)">
         {{ 'components.modals.update-available.button.view-on-github' | translate }}
       </button>
