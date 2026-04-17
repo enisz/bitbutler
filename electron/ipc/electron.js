@@ -55,7 +55,14 @@ async function checkForUpdate() {
     const currentVersion = app.getVersion();
     const releases = response.data
       .filter((r) => !r.draft && !r.prerelease)
-      .filter((r) => Semver.gt(r.tag_name.replace('v', ''), currentVersion));
+      .filter((r) => {
+        const v = r.tag_name.replace('v', '');
+        return Semver.valid(v) && Semver.gt(v, currentVersion);
+      })
+      .sort(
+        (a, b) =>
+          new Date(b.published_at ?? b.created_at) - new Date(a.published_at ?? a.created_at),
+      );
 
     if (releases.length > 0) {
       return {
