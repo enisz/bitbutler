@@ -1,4 +1,5 @@
 import { inject, Injectable } from '@angular/core';
+import { filter, firstValueFrom } from 'rxjs';
 import { faSquare, faSquareCheck } from '@fortawesome/free-regular-svg-icons';
 import {
   faArrowDown,
@@ -47,6 +48,7 @@ import { FilterService } from '../../../../services/filter.service';
 import { PathService } from '../../../../services/path.service';
 import { QbService } from '../../../../services/qb.service';
 import { ServerStoreService } from '../../../../services/server-store.service';
+import { TorrentListGridSettingsService } from '../../../../services/torrent-list-grid.settings.service';
 import { ContextMenuEntry, GridContextMenuData } from './context-menu.types';
 
 @Injectable({ providedIn: 'root' })
@@ -57,6 +59,7 @@ export class GridContextMenuService {
   private readonly pathService = inject(PathService);
   private readonly qbService = inject(QbService);
   private readonly serverStoreService = inject(ServerStoreService);
+  private readonly torrentListGridSettingsService = inject(TorrentListGridSettingsService);
 
   public async buildTorrentMenu(data: GridContextMenuData): Promise<ContextMenuEntry[]> {
     return [
@@ -474,7 +477,7 @@ export class GridContextMenuService {
               ? 'pages.main.grid.context-menu.item.hide-floating-filters'
               : 'pages.main.grid.context-menu.item.show-floating-filters',
             icon: floatingFilterActive ? faEyeSlash : faEye,
-            action: () => {
+            action: async () => {
               const currentDefs = api.getColumnDefs() ?? [];
               const isActive = currentDefs.some((d) => (d as ColDef<any>).floatingFilter === true);
               const newDefs = currentDefs.map((d) => {
@@ -484,6 +487,15 @@ export class GridContextMenuService {
                 return colDef;
               });
               api.updateGridOptions({ columnDefs: newDefs });
+              const settings = await firstValueFrom(
+                this.torrentListGridSettingsService
+                  .asObservable()
+                  .pipe(filter((s): s is NonNullable<typeof s> => s !== null)),
+              );
+              await this.torrentListGridSettingsService.save({
+                ...settings,
+                floatingFilters: !isActive,
+              });
             },
           },
         ],

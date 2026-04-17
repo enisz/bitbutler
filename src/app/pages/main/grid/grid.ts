@@ -15,6 +15,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import {
   type CellContextMenuEvent,
+  type ColDef,
   type ColumnState,
   type GridApi,
   type GridOptions,
@@ -277,6 +278,16 @@ export class Grid implements AfterViewInit {
 
     this.pinnedTopHashes.set(new Set(settings.pinnedTopHashes ?? []));
     this.pinnedBottomHashes.set(new Set(settings.pinnedBottomHashes ?? []));
+
+    const floatingFilters = settings.floatingFilters ?? false;
+    const currentDefs = this.api.getColumnDefs() ?? [];
+    const newDefs = currentDefs.map((d) => {
+      const colDef = { ...(d as ColDef<any>) };
+      if (colDef.floatingFilter === false) return colDef;
+      colDef.floatingFilter = floatingFilters ? true : undefined;
+      return colDef;
+    });
+    this.api.updateGridOptions({ columnDefs: newDefs as ColDef<any>[] });
   }
 
   ngAfterViewInit(): void {

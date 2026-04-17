@@ -10,6 +10,7 @@ export interface TorrentListGridSettings {
   rowDoubleClickAction: RowDoubleClickAction;
   pinnedTopHashes: string[];
   pinnedBottomHashes: string[];
+  floatingFilters: boolean;
 }
 
 export const DEFAULT_TORRENT_LIST_GRID_SETTINGS: TorrentListGridSettings = {
@@ -32,4 +33,5 @@ export const DEFAULT_TORRENT_LIST_GRID_SETTINGS: TorrentListGridSettings = {
   rowDoubleClickAction: 'DETAILS',
   pinnedTopHashes: [],
   pinnedBottomHashes: [],
+  floatingFilters: false,
 };
