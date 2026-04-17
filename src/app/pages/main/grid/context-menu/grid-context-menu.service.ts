@@ -26,6 +26,7 @@ import {
   faLink,
   faPause,
   faPen,
+  faPlaneDeparture,
   faPlay,
   faRotate,
   faShare,
@@ -252,9 +253,9 @@ export class GridContextMenuService {
 
       {
         kind: 'submenu',
-        id: 'speed',
-        label: 'pages.main.grid.context-menu.submenu.speed',
-        icon: faUpload,
+        id: 'transfer',
+        label: 'pages.main.grid.context-menu.submenu.transfer',
+        icon: faPlaneDeparture,
         children: [
           {
             kind: 'item',
