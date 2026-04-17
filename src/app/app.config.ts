@@ -66,7 +66,6 @@ export const appConfig: ApplicationConfig = {
     }),
     provideTranslateService({
       loader: provideTranslateHttpLoader({ prefix: './i18n/', suffix: '.json' }),
-      defaultLanguage: 'us',
       fallbackLang: 'us',
     }),
     importProvidersFrom(OverlayModule, PortalModule),

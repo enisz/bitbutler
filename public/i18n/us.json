@@ -553,7 +553,8 @@
             "pin-column": "Pin Column",
             "sort": "Sort",
             "filter": "Filter",
-            "resize": "Resize"
+            "resize": "Resize",
+            "columns": "Columns"
           },
           "item": {
             "copy-cell-value": "Copy cell value",

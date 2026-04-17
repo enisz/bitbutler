@@ -35,46 +35,43 @@ export class Main implements OnDestroy {
   readonly lastDelta = signal<TorrentTxnDelta | null>(null);
   readonly theme = this.themeService.effectiveMode;
   readonly serverState = signal<QbServerState | null>(null);
-  private readonly _pollEffect = effect(
-    (onCleanup) => {
-      const serverId = this.serverStoreService.currentServerId();
+  private readonly _pollEffect = effect((onCleanup) => {
+    const serverId = this.serverStoreService.currentServerId();
 
-      this.pollSub?.unsubscribe();
-      this.pollSub = null;
-      this.serverState.set(null);
-      this.lastDelta.set(null);
+    this.pollSub?.unsubscribe();
+    this.pollSub = null;
+    this.serverState.set(null);
+    this.lastDelta.set(null);
 
-      if (!serverId) return;
+    if (!serverId) return;
 
-      const sub = new Subscription();
-      this.pollSub = sub;
+    const sub = new Subscription();
+    this.pollSub = sub;
 
-      this.torrentListGridSettingsService
-        .asObservable()
-        .pipe(first())
-        .subscribe((prefs) => {
-          const sortCol = prefs?.columnState?.find(
-            (c: any) => typeof c === 'object' && c !== null && c.sort,
-          ) as any;
+    this.torrentListGridSettingsService
+      .asObservable()
+      .pipe(first())
+      .subscribe((prefs) => {
+        const sortCol = prefs?.columnState?.find(
+          (c: any) => typeof c === 'object' && c !== null && c.sort,
+        ) as any;
 
-          const sortBy = sortCol?.colId;
-          const sortDesc = sortCol?.sort === 'desc';
+        const sortBy = sortCol?.colId;
+        const sortDesc = sortCol?.sort === 'desc';
 
-          sub.add(
-            this.qbPollingService
-              .startMaindataPolling(serverId, sortBy, sortDesc)
-              .subscribe((data: Maindata) => {
-                const delta = this.torrentStore.applyMaindata(data);
-                this.lastDelta.set(delta);
-                this.serverState.update((prev) => mergeServerState(prev, data.server_state));
-              }),
-          );
-        });
+        sub.add(
+          this.qbPollingService
+            .startMaindataPolling(serverId, sortBy, sortDesc)
+            .subscribe((data: Maindata) => {
+              const delta = this.torrentStore.applyMaindata(data);
+              this.lastDelta.set(delta);
+              this.serverState.update((prev) => mergeServerState(prev, data.server_state));
+            }),
+        );
+      });
 
-      onCleanup(() => sub.unsubscribe());
-    },
-    { allowSignalWrites: true },
-  );
+    onCleanup(() => sub.unsubscribe());
+  });
 
   constructor() {
     this.windowService.maximize();

@@ -553,7 +553,8 @@
             "pin-column": "Oszlop rögzítése",
             "sort": "Rendezés",
             "filter": "Szűrő",
-            "resize": "Átméretezés"
+            "resize": "Átméretezés",
+            "columns": "Oszlopok"
           },
           "item": {
             "copy-cell-value": "Cella értékének másolása",

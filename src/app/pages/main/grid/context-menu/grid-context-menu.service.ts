@@ -32,12 +32,13 @@ import {
   faSort,
   faSortDown,
   faSortUp,
+  faTableColumns,
   faTags,
   faTrashCan,
   faUpload,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
-import type { Column, ColumnHeaderContextMenuEvent } from 'ag-grid-community';
+import type { ColDef, Column, ColumnHeaderContextMenuEvent } from 'ag-grid-community';
 
 import { Clipboard } from '@angular/cdk/clipboard';
 import { CommandBusService } from '../../../../services/command-bus.service';
@@ -378,7 +379,9 @@ export class GridContextMenuService {
   public buildHeaderMenu(event: ColumnHeaderContextMenuEvent<any, any>): ContextMenuEntry[] {
     const api = event.api;
     const column = event.column as Column;
-    const floatingFilterActive = api.getGridOption('floatingFilter') === true;
+    const floatingFilterActive = (api.getColumnDefs() ?? []).some(
+      (d) => (d as ColDef<any>).floatingFilter === true,
+    );
 
     const columns =
       api
@@ -471,7 +474,17 @@ export class GridContextMenuService {
               ? 'pages.main.grid.context-menu.item.hide-floating-filters'
               : 'pages.main.grid.context-menu.item.show-floating-filters',
             icon: floatingFilterActive ? faEyeSlash : faEye,
-            action: () => api.setGridOption('floatingFilter', !api.getGridOption('floatingFilter')),
+            action: () => {
+              const currentDefs = api.getColumnDefs() ?? [];
+              const isActive = currentDefs.some((d) => (d as ColDef<any>).floatingFilter === true);
+              const newDefs = currentDefs.map((d) => {
+                const colDef = { ...(d as ColDef<any>) };
+                if (colDef.floatingFilter === false) return colDef;
+                colDef.floatingFilter = isActive ? undefined : true;
+                return colDef;
+              });
+              api.updateGridOptions({ columnDefs: newDefs });
+            },
           },
         ],
       },
@@ -519,7 +532,7 @@ export class GridContextMenuService {
             id: `resize.column.${payload.colId}`,
             label: 'pages.main.grid.context-menu.item.autosize-column',
             icon: faArrowsLeftRight,
-            action: () => api.autoSizeColumn(payload.colId),
+            action: () => api.autoSizeColumns([payload.colId]),
           },
           {
             kind: 'item',
@@ -532,7 +545,7 @@ export class GridContextMenuService {
       },
       {
         kind: 'item',
-        id: `toggle.${payload.colId}`,
+        id: `hide.${payload.colId}`,
         label: 'pages.main.grid.context-menu.item.hide-column',
         icon: faEyeSlash,
         action: () => {
@@ -541,46 +554,44 @@ export class GridContextMenuService {
           api.setColumnsVisible([payload.colId], !col.isVisible());
         },
       },
-      { kind: 'divider' },
+      // ── Columns submenu ──────────────────────────────────────────────────────
       {
-        kind: 'header',
-        label: 'pages.main.grid.context-menu.header.fields',
-      },
-      ...fields,
-      { kind: 'divider' },
-      {
-        kind: 'header',
-        label: 'pages.main.grid.context-menu.header.visibility',
-      },
-      {
-        kind: 'item',
-        id: 'all.show',
-        label: 'pages.main.grid.context-menu.item.show-all',
-        icon: faEye,
-        action: () => {
-          const cols = api.getColumns();
-          if (!cols) return;
-
-          api.setColumnsVisible(
-            cols.map((c) => c.getColId()),
-            true,
-          );
-        },
-      },
-      {
-        kind: 'item',
-        id: 'all.hide',
-        label: 'pages.main.grid.context-menu.item.hide-all',
-        icon: faEyeSlash,
-        action: () => {
-          const cols = api.getColumns();
-          if (!cols) return;
-
-          api.setColumnsVisible(
-            cols.map((c) => c.getColId()),
-            false,
-          );
-        },
+        kind: 'submenu',
+        id: `columns.${payload.colId}`,
+        label: 'pages.main.grid.context-menu.submenu.columns',
+        icon: faTableColumns,
+        children: [
+          {
+            kind: 'item',
+            id: 'all.show',
+            label: 'pages.main.grid.context-menu.item.show-all',
+            icon: faEye,
+            action: () => {
+              const cols = api.getColumns();
+              if (!cols) return;
+              api.setColumnsVisible(
+                cols.map((c) => c.getColId()),
+                true,
+              );
+            },
+          },
+          {
+            kind: 'item',
+            id: 'all.hide',
+            label: 'pages.main.grid.context-menu.item.hide-all',
+            icon: faEyeSlash,
+            action: () => {
+              const cols = api.getColumns();
+              if (!cols) return;
+              api.setColumnsVisible(
+                cols.map((c) => c.getColId()),
+                false,
+              );
+            },
+          },
+          { kind: 'divider' },
+          ...fields,
+        ],
       },
     ];
 

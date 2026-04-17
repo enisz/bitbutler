@@ -540,6 +540,7 @@ export function getGridColDefs(
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.save_path'),
       minWidth: 50,
       width: 300,
+      filter: true,
     },
     {
       colId: 'download_path',
@@ -718,11 +719,12 @@ export function getGridOptions(
       }
     },
 
-    onFilterChanged: () => {
+    onFilterChanged: (e) => {
       const isRestoring = opts.getIsRestoringGridState();
       const isApplying = opts.getIsApplyingFilterFromService();
 
       if (!isRestoring && !isApplying) {
+        filterService.setColumnModel(e.api.getFilterModel());
         opts.queueSave();
       }
 
