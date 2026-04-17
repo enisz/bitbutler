@@ -6,6 +6,7 @@ import { MarkdownComponent } from 'ngx-markdown';
 import { TimeagoPipe } from 'ngx-timeago';
 import { Release, UpdateCheckResponse } from '../../../models/electron.model';
 import { FilesizePipe } from '../../../pipes/filesize-pipe';
+import { ElectronService } from '../../../services/electron.service';
 
 @Component({
   selector: 'app-update-available',
@@ -24,6 +25,7 @@ import { FilesizePipe } from '../../../pipes/filesize-pipe';
 export class UpdateAvailable {
   public update = signal<UpdateCheckResponse | null>(null);
   public readonly activeModal = inject(NgbActiveModal);
+  private readonly electronService = inject(ElectronService);
 
   get latestRelease(): Release | undefined {
     return this.update()?.releases?.[0];
@@ -43,6 +45,6 @@ export class UpdateAvailable {
   }
 
   public downloadAsset(url: string): void {
-    window.open(url, '_self');
+    this.electronService.openExternalUrl(url);
   }
 }
