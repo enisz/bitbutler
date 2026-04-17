@@ -31,7 +31,7 @@ export class UpdateAvailable {
 
   public cleanedBody(release: Release): string {
     const body = release.body || '';
-    return body.replace(/^#+\s*What's\s*Changed\s*\n/i, '').trim();
+    return body.replace(/^#+\s*What's\s*Changed\s*\r?\n/i, '').trim();
   }
 
   public getVersion(version: string): string {
@@ -39,7 +39,7 @@ export class UpdateAvailable {
   }
 
   public toMs(dateStr: string | null | undefined): number {
-    return dateStr ? new Date(dateStr).getTime() : Date.now();
+    return dateStr ? new Date(dateStr).getTime() : 0;
   }
 
   public downloadAsset(url: string): void {
