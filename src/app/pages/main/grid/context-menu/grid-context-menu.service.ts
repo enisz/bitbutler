@@ -15,6 +15,7 @@ import {
   faEye,
   faEyeSlash,
   faFilePen,
+  faFilter,
   faFilterCircleXmark,
   faFolderOpen,
   faFolderTree,
@@ -438,26 +439,40 @@ export class GridContextMenuService {
           },
         ],
       },
+      // ── Filter submenu ───────────────────────────────────────────────────────
       {
-        kind: 'item',
-        id: `toggle.${payload.colId}`,
-        label: 'pages.main.grid.context-menu.item.hide-column',
-        icon: faEyeSlash,
-        action: () => {
-          const col = api.getColumn(payload.colId);
-          if (!col) return;
-          api.setColumnsVisible([payload.colId], !col.isVisible());
-        },
-      },
-      {
-        kind: 'item',
-        id: `clearFilter.${payload.colId}`,
-        label: 'pages.main.grid.context-menu.item.clear-filter',
-        icon: faFilterCircleXmark,
-        disabled: !column.isFilterActive(),
-        action: () => {
-          this.filterService.clearColumnFilter(payload.colId);
-        },
+        kind: 'submenu',
+        id: `filter.${payload.colId}`,
+        label: 'pages.main.grid.context-menu.submenu.filter',
+        icon: faFilter,
+        children: [
+          {
+            kind: 'item',
+            id: `filter.open.${payload.colId}`,
+            label: 'pages.main.grid.context-menu.item.open-filter',
+            icon: faFilter,
+            disabled: column.getColDef().filter === false,
+            action: () => api.showColumnFilter(payload.colId),
+          },
+          {
+            kind: 'item',
+            id: `filter.clear.${payload.colId}`,
+            label: 'pages.main.grid.context-menu.item.clear-filter',
+            icon: faFilterCircleXmark,
+            disabled: !column.isFilterActive(),
+            action: () => this.filterService.clearColumnFilter(payload.colId),
+          },
+          {
+            kind: 'item',
+            id: `filter.toggleFloating.${payload.colId}`,
+            label:
+              api.getGridOption('floatingFilter') === true
+                ? 'pages.main.grid.context-menu.item.hide-floating-filters'
+                : 'pages.main.grid.context-menu.item.show-floating-filters',
+            icon: api.getGridOption('floatingFilter') === true ? faEyeSlash : faEye,
+            action: () => api.setGridOption('floatingFilter', !api.getGridOption('floatingFilter')),
+          },
+        ],
       },
       {
         kind: 'submenu',
@@ -490,6 +505,17 @@ export class GridContextMenuService {
             action: () => api.setColumnsPinned([payload.colId], null),
           },
         ],
+      },
+      {
+        kind: 'item',
+        id: `toggle.${payload.colId}`,
+        label: 'pages.main.grid.context-menu.item.hide-column',
+        icon: faEyeSlash,
+        action: () => {
+          const col = api.getColumn(payload.colId);
+          if (!col) return;
+          api.setColumnsVisible([payload.colId], !col.isVisible());
+        },
       },
       { kind: 'divider' },
       {
