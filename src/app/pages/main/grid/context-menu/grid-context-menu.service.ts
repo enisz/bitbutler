@@ -1,5 +1,4 @@
 import { inject, Injectable } from '@angular/core';
-import { filter, firstValueFrom } from 'rxjs';
 import { faSquare, faSquareCheck } from '@fortawesome/free-regular-svg-icons';
 import {
   faArrowDown,
@@ -41,6 +40,7 @@ import {
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import type { ColDef, Column, ColumnHeaderContextMenuEvent } from 'ag-grid-community';
+import { filter, firstValueFrom } from 'rxjs';
 
 import { Clipboard } from '@angular/cdk/clipboard';
 import { CommandBusService } from '../../../../services/command-bus.service';
@@ -151,7 +151,7 @@ export class GridContextMenuService {
         kind: 'submenu',
         id: 'row.pin',
         label: 'pages.main.grid.context-menu.submenu.pin-row',
-        icon: faArrowUp,
+        icon: faThumbTack,
         children: [
           {
             kind: 'item',
