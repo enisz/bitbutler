@@ -456,7 +456,7 @@ export class GridContextMenuService {
             id: `filter.open.${payload.colId}`,
             label: 'pages.main.grid.context-menu.item.open-filter',
             icon: faFilter,
-            disabled: column.getColDef().filter === false,
+            disabled: !column.getColDef().filter,
             action: () => api.showColumnFilter(payload.colId),
           },
           {
