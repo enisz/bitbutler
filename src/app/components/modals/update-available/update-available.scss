@@ -3,28 +3,17 @@
   color: var(--bs-body-color);
 }
 
-.update-icon {
-  font-size: 2.2rem;
-  filter: drop-shadow(0 0 10px rgba(var(--bs-success-rgb), 0.3));
+.logo-container {
+  img {
+    width: 50px;
+    height: 50px;
+  }
 }
 
 .modal-title {
   font-weight: 700;
   color: var(--bs-primary);
   letter-spacing: -0.5px;
-}
-
-.changelog-accordion {
-  // Replace Bootstrap's blue default focus ring with the app's focus ring
-  --bs-accordion-btn-focus-box-shadow: 0 0 0 0.2rem var(--bb-control-focus-ring);
-
-  ::ng-deep {
-    // Bootstrap's active-state chevron SVG has blue hardcoded in the data URL.
-    // Reuse the default (body-colored) icon for both states — rotation still works.
-    .accordion-button:not(.collapsed)::after {
-      background-image: var(--bs-accordion-btn-icon);
-    }
-  }
 }
 
 .list-group {
@@ -71,6 +60,22 @@
   padding: 1rem;
 }
 
+:host ::ng-deep .accordion-collapse {
+  will-change: height;
+}
+
+:host ::ng-deep .accordion-collapse.collapsing {
+  transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:host ::ng-deep .accordion-body {
+  padding: 0;
+}
+
+:host ::ng-deep .markdown-content {
+  padding: var(--bs-accordion-body-padding-y, 1rem) var(--bs-accordion-body-padding-x, 1.25rem);
+}
+
 :host-context([data-bs-theme='dark']) {
   .btn-close {
     filter: invert(1) grayscale(100%) brightness(200%);
@@ -84,4 +89,8 @@
   &:hover {
     opacity: 1;
   }
+}
+
+.version {
+  font-weight: 600;
 }

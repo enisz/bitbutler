@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { NgbAccordionModule, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MarkdownComponent } from 'ngx-markdown';
@@ -7,6 +7,7 @@ import { TimeagoPipe } from 'ngx-timeago';
 import { Release, UpdateCheckResponse } from '../../../models/electron.model';
 import { FilesizePipe } from '../../../pipes/filesize-pipe';
 import { ElectronService } from '../../../services/electron.service';
+import { ThemeService } from '../../../services/theme.service';
 
 @Component({
   selector: 'app-update-available',
@@ -23,9 +24,16 @@ import { ElectronService } from '../../../services/electron.service';
   styleUrl: './update-available.scss',
 })
 export class UpdateAvailable {
+  private readonly themeService = inject(ThemeService);
+
   public update = signal<UpdateCheckResponse | null>(null);
   public readonly activeModal = inject(NgbActiveModal);
   private readonly electronService = inject(ElectronService);
+  public readonly logoUrl = computed(
+    () => `assets/images/bitbutler-logo-${this.themeService.family()}.png`,
+  );
+
+  public readonly isSingleRelease = computed(() => (this.update()?.releases?.length ?? 0) === 1);
 
   get latestRelease(): Release | undefined {
     return this.update()?.releases?.[0];
