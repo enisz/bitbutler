@@ -44,7 +44,7 @@ async function showOpenDialog() {
 async function checkForUpdate() {
   try {
     const response = await Axios.get(
-      `https://api.github.com/repos/enisz/bitbutler/releases/latest`,
+      `https://api.github.com/repos/enisz/bitbutler/releases?per_page=100`,
       {
         headers: {
           'User-Agent': 'Electron-App-Updater',
@@ -52,13 +52,22 @@ async function checkForUpdate() {
       },
     );
 
-    const latestVersion = response.data.tag_name.replace('v', '');
-    const releaseUrl = response.data.html_url;
+    const currentVersion = app.getVersion();
+    const releases = response.data
+      .filter((r) => !r.draft && !r.prerelease)
+      .filter((r) => {
+        const v = r.tag_name.replace(/^v/, '');
+        return Semver.valid(v) && Semver.gt(v, currentVersion);
+      })
+      .sort(
+        (a, b) =>
+          new Date(b.published_at ?? b.created_at) - new Date(a.published_at ?? a.created_at),
+      );
 
-    if (Semver.gt(latestVersion, app.getVersion())) {
+    if (releases.length > 0) {
       return {
         updateAvailable: true,
-        release: response.data,
+        releases,
       };
     }
 

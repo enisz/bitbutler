@@ -85,6 +85,6 @@ export type HostPlatform = 'aix' | 'darwin' | 'freebsd' | 'linux' | 'openbsd' | 
 
 export interface UpdateCheckResponse {
   updateAvailable: boolean;
-  release?: Release;
+  releases?: Release[];
   error?: any;
 }
