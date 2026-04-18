@@ -225,6 +225,7 @@ export class UiCommandHandlerService {
             if (this.isModalOpen(UpdateAvailable)) break;
             const updateAvailableModalRef = this.modalService.open(UpdateAvailable, {
               centered: true,
+              scrollable: true,
             });
 
             updateAvailableModalRef.componentInstance.update.set(command.update);

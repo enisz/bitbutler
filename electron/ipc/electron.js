@@ -56,7 +56,7 @@ async function checkForUpdate() {
     const releases = response.data
       .filter((r) => !r.draft && !r.prerelease)
       .filter((r) => {
-        const v = r.tag_name.replace('v', '');
+        const v = r.tag_name.replace(/^v/, '');
         return Semver.valid(v) && Semver.gt(v, currentVersion);
       })
       .sort(

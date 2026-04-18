@@ -41,7 +41,8 @@ export class UpdateAvailable {
   }
 
   public toMs(dateStr: string | null | undefined): number {
-    return dateStr ? new Date(dateStr).getTime() : 0;
+    const ms = dateStr ? new Date(dateStr).getTime() : 0;
+    return isNaN(ms) ? 0 : ms;
   }
 
   public downloadAsset(url: string): void {
