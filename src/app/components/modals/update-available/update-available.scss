@@ -15,36 +15,37 @@
 }
 
 .changelog-accordion {
-  border-radius: var(--bb-control-radius);
-  overflow: hidden;
-  border: 1px solid var(--bb-control-border);
+  // Override Bootstrap's accordion CSS variables with app theme values.
+  // NgbAccordion adds the .accordion class, so these cascade into all internals
+  // without needing ::ng-deep for backgrounds and colors.
+  --bs-accordion-bg: var(--bb-control-bg);
+  --bs-accordion-border-color: var(--bb-control-border);
+  --bs-accordion-border-radius: var(--bb-control-radius);
+  --bs-accordion-inner-border-radius: calc(var(--bb-control-radius) - 1px);
+  --bs-accordion-btn-bg: var(--bb-control-bg);
+  --bs-accordion-btn-color: var(--bs-body-color);
+  --bs-accordion-btn-focus-box-shadow: 0 0 0 0.2rem var(--bb-control-focus-ring);
+  --bs-accordion-active-color: var(--bs-primary);
+  --bs-accordion-active-bg: color-mix(in srgb, var(--bb-control-bg) 88%, var(--bb-accent) 12%);
+  --bs-accordion-body-padding-x: 0;
+  --bs-accordion-body-padding-y: 0;
 
   ::ng-deep {
-    .accordion-item {
-      background-color: var(--bb-control-bg);
-      border-color: var(--bb-control-border);
-    }
-
+    // Custom sizing and hover not covered by Bootstrap CSS variables
     .accordion-button {
-      background-color: var(--bb-control-bg);
-      color: var(--bs-body-color);
-      box-shadow: none;
       font-size: 0.9rem;
       padding: 0.65rem 1rem;
+      transition:
+        background-color 120ms ease,
+        color 120ms ease;
+
+      &:hover {
+        background-color: var(--bb-hover-list-item-bg);
+      }
 
       &:not(.collapsed) {
-        color: var(--bs-primary);
-        background-color: var(--bb-control-bg);
-        box-shadow: none;
+        box-shadow: inset 0 -1px 0 var(--bb-control-border);
       }
-
-      &::after {
-        filter: var(--bs-accordion-btn-icon-filter, none);
-      }
-    }
-
-    .accordion-body {
-      padding: 0;
     }
   }
 
@@ -154,10 +155,6 @@
 :host-context([data-bs-theme='dark']) {
   .btn-close {
     filter: invert(1) grayscale(100%) brightness(200%);
-  }
-
-  ::ng-deep .accordion-button::after {
-    filter: invert(1);
   }
 }
 
