@@ -29,12 +29,9 @@
       @for (release of u.releases ?? []; track release.id; let i = $index) {
         <div ngbAccordionItem [collapsed]="i !== 0">
           <h2 ngbAccordionHeader>
-            <button
-              ngbAccordionToggle
-              class="d-flex justify-content-between align-items-center w-100 gap-2"
-            >
-              <span class="fw-semibold">{{ getVersion(release.tag_name) }}</span>
-              <small class="text-muted text-end text-nowrap">
+            <button ngbAccordionToggle class="w-100">
+              <span class="fw-semibold flex-grow-1">{{ getVersion(release.tag_name) }}</span>
+              <small class="text-muted me-2 text-nowrap">
                 {{ release.published_at | date: 'mediumDate' }}
                 ({{ toMs(release.published_at) | timeago }})
               </small>
