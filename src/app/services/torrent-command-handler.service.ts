@@ -27,8 +27,6 @@ export class TorrentCommandHandlerService {
           case 'TORRENT_DELETE_CONFIRM':
             void this.handleDelete(cmd.removeFiles);
             break;
-          case 'TORRENT_DELETE_CANCEL':
-            break;
           case 'TORRENT_PAUSE':
             void this.handlePause();
             break;

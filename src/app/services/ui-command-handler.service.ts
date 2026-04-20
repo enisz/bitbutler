@@ -59,7 +59,7 @@ export class UiCommandHandlerService {
               .then(({ removeFiles }) =>
                 this.commandBusService.emit({ type: 'TORRENT_DELETE_CONFIRM', removeFiles }),
               )
-              .catch(() => this.commandBusService.emit({ type: 'TORRENT_DELETE_CANCEL' }));
+              .catch(() => {});
             break;
 
           case 'UI_OPEN_SETTINGS':
