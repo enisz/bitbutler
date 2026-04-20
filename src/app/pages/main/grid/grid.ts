@@ -39,6 +39,7 @@ import { TorrentStoreService, TorrentTxnDelta } from '../../../services/torrent-
 import { UiFormatService } from '../../../services/ui-format.service';
 import { GridContextMenuService } from './context-menu/grid-context-menu.service';
 import { getGridColDefs, getGridOptions } from './grid.lib';
+import { getTrackers, normalizeTracker } from '../../../utils/tracker.utils';
 
 @Component({
   selector: 'app-grid',
@@ -128,8 +129,8 @@ export class Grid implements AfterViewInit {
         getLatestFilters: () => this.filterService.snapshot.external,
         getIsApplyingFilterFromService: () => this.isApplyingFilterFromService,
         setIsApplyingFilterFromService: (v) => (this.isApplyingFilterFromService = v),
-        normalizeTracker: (raw) => this.normalizeTracker(raw),
-        getTrackers: (t) => this.getTrackers(t),
+        normalizeTracker: (raw) => normalizeTracker(raw),
+        getTrackers: (t) => getTrackers(t),
         handleCellRightClick: this.handleCellRightClick,
         handleRowDoubleClick: this.handleRowDoubleClick,
         onApiReady: (api) => {
@@ -410,21 +411,6 @@ export class Grid implements AfterViewInit {
     const rowHeight = 32;
     const viewportHeight = api.gridBodyCtrl?.eBodyViewport?.clientHeight ?? 400;
     return Math.max(1, Math.floor(viewportHeight / rowHeight) - 1);
-  }
-
-  private getTrackers(t: Torrent): string[] {
-    return (t.tracker ?? '').split('\n').filter(Boolean);
-  }
-
-  private normalizeTracker(raw?: string | null): string {
-    const s = (raw ?? '').trim();
-    if (!s) return '(none)';
-    try {
-      const u = new URL(s);
-      return u.host || u.hostname || s;
-    } catch {
-      return s;
-    }
   }
 
   private queueSave = () => this.saveGridState$.next();
