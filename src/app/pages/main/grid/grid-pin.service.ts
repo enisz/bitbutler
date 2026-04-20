@@ -17,24 +17,25 @@ export class GridPinService {
   private readonly commandBusService = inject(CommandBusService);
   private readonly destroyRef = inject(DestroyRef);
 
-  private api: GridApi<Torrent> | null = null;
+  private readonly _api = signal<GridApi<Torrent> | null>(null);
   private readonly pinnedTopHashes = signal<Set<string>>(new Set());
   private readonly pinnedBottomHashes = signal<Set<string>>(new Set());
 
   constructor() {
     effect(() => {
+      const api = this._api();
       const torrents = this.torrentStore.torrentsArray();
       const topHashes = this.pinnedTopHashes();
       const bottomHashes = this.pinnedBottomHashes();
-      if (!this.api) return;
+      if (!api) return;
 
       const pinnedTop = torrents.filter((t) => topHashes.has(t.hash));
       const pinnedBottom = torrents.filter((t) => bottomHashes.has(t.hash));
       const mainRows = torrents.filter((t) => !topHashes.has(t.hash) && !bottomHashes.has(t.hash));
 
-      this.api.setGridOption('rowData', mainRows);
-      this.api.setGridOption('pinnedTopRowData', pinnedTop);
-      this.api.setGridOption('pinnedBottomRowData', pinnedBottom);
+      api.setGridOption('rowData', mainRows);
+      api.setGridOption('pinnedTopRowData', pinnedTop);
+      api.setGridOption('pinnedBottomRowData', pinnedBottom);
     });
 
     this.commandBusService.commands$
@@ -70,9 +71,10 @@ export class GridPinService {
           this.pinnedBottomHashes.set(new Set([...this.pinnedBottomHashes(), ...hashes]));
         }
 
-        if (this.api) {
+        const api = this._api();
+        if (api) {
           void this.gridStateService.save(
-            this.api,
+            api,
             [...this.pinnedTopHashes()],
             [...this.pinnedBottomHashes()],
           );
@@ -81,7 +83,7 @@ export class GridPinService {
   }
 
   init(api: GridApi<Torrent>): void {
-    this.api = api;
+    this._api.set(api);
   }
 
   applyPinnedState(top: string[], bottom: string[]): void {
