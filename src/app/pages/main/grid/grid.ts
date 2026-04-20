@@ -6,7 +6,6 @@ import {
   HostListener,
   inject,
   Input,
-  signal,
   ViewChild,
 } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
@@ -20,9 +19,8 @@ import {
   type GridOptions,
   type RowDoubleClickedEvent,
 } from 'ag-grid-community';
-import { filter, firstValueFrom, skip, Subject, throttleTime } from 'rxjs';
+import { firstValueFrom, skip, Subject, throttleTime } from 'rxjs';
 import { GRID_DARK_THEME, GRID_LIGHT_THEME } from '../../../app.const';
-import { UiCommand } from '../../../models/command.model';
 import { TorrentListGridSettings } from '../../../models/torrent-list-grid.model';
 import { Torrent } from '../../../models/torrent.model';
 import { CommandBusService } from '../../../services/command-bus.service';
@@ -34,10 +32,11 @@ import { GridViewStoreService } from '../../../services/grid-view-store.service'
 import { SelectionStoreService } from '../../../services/selection-store.service';
 import { ThemeService } from '../../../services/theme.service';
 import { TorrentListGridSettingsService } from '../../../services/torrent-list-grid.settings.service';
-import { TorrentStoreService, TorrentTxnDelta } from '../../../services/torrent-store.service';
+import { TorrentTxnDelta } from '../../../services/torrent-store.service';
 import { UiFormatService } from '../../../services/ui-format.service';
 import { GridContextMenuService } from './context-menu/grid-context-menu.service';
 import { GridKeyboardNavService } from './grid-keyboard-nav.service';
+import { GridPinService } from './grid-pin.service';
 import { getGridColDefs, getGridOptions } from './grid.lib';
 import { getTrackers, normalizeTracker } from '../../../utils/tracker.utils';
 
@@ -45,7 +44,7 @@ import { getTrackers, normalizeTracker } from '../../../utils/tracker.utils';
   selector: 'app-grid',
   standalone: true,
   imports: [AgGridAngular],
-  providers: [GridStateService, GridContextMenuService, GridKeyboardNavService],
+  providers: [GridStateService, GridContextMenuService, GridKeyboardNavService, GridPinService],
   templateUrl: './grid.html',
   styleUrls: ['./grid.scss'],
 })
@@ -58,7 +57,6 @@ export class Grid implements AfterViewInit {
   private readonly contextMenuService = inject(ContextMenuService);
   private readonly gridStateService = inject(GridStateService);
   private readonly gridContextMenuService = inject(GridContextMenuService);
-  private readonly torrentStore = inject(TorrentStoreService);
   private readonly themeService = inject(ThemeService);
   private readonly uiFormatService = inject(UiFormatService);
   private readonly gridViewStoreService = inject(GridViewStoreService);
@@ -68,12 +66,11 @@ export class Grid implements AfterViewInit {
   private readonly translateService = inject(TranslateService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly keyboardNavService = inject(GridKeyboardNavService);
+  private readonly gridPinService = inject(GridPinService);
 
   private readonly saveGridState$ = new Subject<void>();
 
   private api: GridApi<Torrent> | null = null;
-  private readonly pinnedTopHashes = signal<Set<string>>(new Set());
-  private readonly pinnedBottomHashes = signal<Set<string>>(new Set());
   private isProgrammaticSelection = false;
   private isApplyingFilterFromService = false;
   private hasLoadedInitialState = false;
@@ -123,6 +120,7 @@ export class Grid implements AfterViewInit {
         handleRowDoubleClick: this.handleRowDoubleClick,
         onApiReady: (api) => {
           this.keyboardNavService.init(api);
+          this.gridPinService.init(api);
           this.api = api;
 
           api.setGridOption('onRowClicked', (event) => {
@@ -159,21 +157,6 @@ export class Grid implements AfterViewInit {
     );
 
     effect(() => {
-      const torrents = this.torrentStore.torrentsArray();
-      const topHashes = this.pinnedTopHashes();
-      const bottomHashes = this.pinnedBottomHashes();
-      if (!this.api) return;
-
-      const pinnedTop = torrents.filter((t) => topHashes.has(t.hash));
-      const pinnedBottom = torrents.filter((t) => bottomHashes.has(t.hash));
-      const mainRows = torrents.filter((t) => !topHashes.has(t.hash) && !bottomHashes.has(t.hash));
-
-      this.api.setGridOption('rowData', mainRows);
-      this.api.setGridOption('pinnedTopRowData', pinnedTop);
-      this.api.setGridOption('pinnedBottomRowData', pinnedBottom);
-    });
-
-    effect(() => {
       const selectedTorrents = this.selectionStore.selected();
       if (this.isProgrammaticSelection || !this.api) return;
 
@@ -206,48 +189,6 @@ export class Grid implements AfterViewInit {
         if (node) syncNode(node);
       }
     });
-
-    this.commandBusService.commands$
-      .pipe(
-        filter(
-          (cmd): cmd is UiCommand =>
-            cmd.type === 'UI_TORRENT_PIN_TOP' ||
-            cmd.type === 'UI_TORRENT_PIN_BOTTOM' ||
-            cmd.type === 'UI_TORRENT_UNPIN',
-        ),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe((cmd) => {
-        const hashes = this.selectionStore.selected().map((t) => t.hash);
-        const hashSet = new Set(hashes);
-
-        if (cmd.type === 'UI_TORRENT_UNPIN') {
-          this.pinnedTopHashes.set(
-            new Set([...this.pinnedTopHashes()].filter((h) => !hashSet.has(h))),
-          );
-          this.pinnedBottomHashes.set(
-            new Set([...this.pinnedBottomHashes()].filter((h) => !hashSet.has(h))),
-          );
-        } else if (cmd.type === 'UI_TORRENT_PIN_TOP') {
-          this.pinnedBottomHashes.set(
-            new Set([...this.pinnedBottomHashes()].filter((h) => !hashSet.has(h))),
-          );
-          this.pinnedTopHashes.set(new Set([...this.pinnedTopHashes(), ...hashes]));
-        } else {
-          this.pinnedTopHashes.set(
-            new Set([...this.pinnedTopHashes()].filter((h) => !hashSet.has(h))),
-          );
-          this.pinnedBottomHashes.set(new Set([...this.pinnedBottomHashes(), ...hashes]));
-        }
-
-        if (this.api) {
-          void this.gridStateService.save(
-            this.api,
-            [...this.pinnedTopHashes()],
-            [...this.pinnedBottomHashes()],
-          );
-        }
-      });
   }
 
   private areSelectionsEqual(a: Torrent[], b: Torrent[]): boolean {
@@ -266,8 +207,10 @@ export class Grid implements AfterViewInit {
     this.api.setGridOption('pagination', settings.pagination);
     this.api.setGridOption('animateRows', settings.animateRows);
 
-    this.pinnedTopHashes.set(new Set(settings.pinnedTopHashes ?? []));
-    this.pinnedBottomHashes.set(new Set(settings.pinnedBottomHashes ?? []));
+    this.gridPinService.applyPinnedState(
+      settings.pinnedTopHashes ?? [],
+      settings.pinnedBottomHashes ?? [],
+    );
 
     const floatingFilters = settings.floatingFilters ?? false;
     const currentDefs = this.api.getColumnDefs() ?? [];
@@ -285,8 +228,8 @@ export class Grid implements AfterViewInit {
       if (!this.api) return;
       void this.gridStateService.save(
         this.api,
-        [...this.pinnedTopHashes()],
-        [...this.pinnedBottomHashes()],
+        this.gridPinService.getPinnedTopHashes(),
+        this.gridPinService.getPinnedBottomHashes(),
       );
     });
 
