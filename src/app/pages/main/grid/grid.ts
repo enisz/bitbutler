@@ -10,7 +10,6 @@ import {
   ViewChild,
 } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import {
@@ -38,6 +37,7 @@ import { TorrentListGridSettingsService } from '../../../services/torrent-list-g
 import { TorrentStoreService, TorrentTxnDelta } from '../../../services/torrent-store.service';
 import { UiFormatService } from '../../../services/ui-format.service';
 import { GridContextMenuService } from './context-menu/grid-context-menu.service';
+import { GridKeyboardNavService } from './grid-keyboard-nav.service';
 import { getGridColDefs, getGridOptions } from './grid.lib';
 import { getTrackers, normalizeTracker } from '../../../utils/tracker.utils';
 
@@ -45,7 +45,7 @@ import { getTrackers, normalizeTracker } from '../../../utils/tracker.utils';
   selector: 'app-grid',
   standalone: true,
   imports: [AgGridAngular],
-  providers: [GridStateService, GridContextMenuService],
+  providers: [GridStateService, GridContextMenuService, GridKeyboardNavService],
   templateUrl: './grid.html',
   styleUrls: ['./grid.scss'],
 })
@@ -67,16 +67,13 @@ export class Grid implements AfterViewInit {
   private readonly electronService = inject(ElectronService);
   private readonly translateService = inject(TranslateService);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly modalService = inject(NgbModal);
+  private readonly keyboardNavService = inject(GridKeyboardNavService);
 
   private readonly saveGridState$ = new Subject<void>();
 
   private api: GridApi<Torrent> | null = null;
   private readonly pinnedTopHashes = signal<Set<string>>(new Set());
   private readonly pinnedBottomHashes = signal<Set<string>>(new Set());
-  private selectionAnchorIndex: number | null = null;
-  private selectionLeadIndex: number | null = null;
-
   private isProgrammaticSelection = false;
   private isApplyingFilterFromService = false;
   private hasLoadedInitialState = false;
@@ -89,21 +86,12 @@ export class Grid implements AfterViewInit {
 
   @HostListener('window:keyup', ['$event'])
   public onKeyUp(event: KeyboardEvent): void {
-    const { shiftKey, code, target } = event;
-    if (code === 'Delete' && !this.isTypingTarget(target)) {
-      this.commandBusService.emit({
-        type: 'UI_TORRENT_DELETE_REQUEST',
-        defaultRemoveFiles: shiftKey,
-      });
-    }
+    this.keyboardNavService.onKeyUp(event);
   }
 
   @HostListener('window:keydown', ['$event'])
   public onKeyDown(event: KeyboardEvent): void {
-    if (this.modalService.hasOpenModals()) return;
-
-    this.handleGridSelectAll(event);
-    this.handleGridKeyboardSelection(event);
+    this.keyboardNavService.onKeyDown(event);
   }
 
   constructor() {
@@ -122,10 +110,10 @@ export class Grid implements AfterViewInit {
         setHasLoadedInitialState: (v) => (this.hasLoadedInitialState = v),
         queueSave: this.queueSave,
         updateInViewCount: this.updateInViewCount,
-        getSelectionAnchorIndex: () => this.selectionAnchorIndex,
-        getSelectionLeadIndex: () => this.selectionLeadIndex,
-        setSelectionAnchorIndex: (v) => (this.selectionAnchorIndex = v),
-        setSelectionLeadIndex: (v) => (this.selectionLeadIndex = v),
+        getSelectionAnchorIndex: () => this.keyboardNavService.anchorIndex,
+        getSelectionLeadIndex: () => this.keyboardNavService.leadIndex,
+        setSelectionAnchorIndex: (v) => (this.keyboardNavService.anchorIndex = v),
+        setSelectionLeadIndex: (v) => (this.keyboardNavService.leadIndex = v),
         getLatestFilters: () => this.filterService.external(),
         getIsApplyingFilterFromService: () => this.isApplyingFilterFromService,
         setIsApplyingFilterFromService: (v) => (this.isApplyingFilterFromService = v),
@@ -134,13 +122,14 @@ export class Grid implements AfterViewInit {
         handleCellRightClick: this.handleCellRightClick,
         handleRowDoubleClick: this.handleRowDoubleClick,
         onApiReady: (api) => {
+          this.keyboardNavService.init(api);
           this.api = api;
 
           api.setGridOption('onRowClicked', (event) => {
             const mouseEvent = event.event as MouseEvent;
             if (event.rowIndex !== null && !mouseEvent?.shiftKey) {
-              this.selectionAnchorIndex = event.rowIndex;
-              this.selectionLeadIndex = event.rowIndex;
+              this.keyboardNavService.anchorIndex = event.rowIndex;
+              this.keyboardNavService.leadIndex = event.rowIndex;
             }
           });
 
@@ -148,11 +137,11 @@ export class Grid implements AfterViewInit {
             const mouseEvent = event.event as MouseEvent;
             if (
               mouseEvent?.shiftKey &&
-              this.selectionAnchorIndex !== null &&
+              this.keyboardNavService.anchorIndex !== null &&
               event.rowIndex !== null
             ) {
-              const start = Math.min(this.selectionAnchorIndex, event.rowIndex);
-              const end = Math.max(this.selectionAnchorIndex, event.rowIndex);
+              const start = Math.min(this.keyboardNavService.anchorIndex, event.rowIndex);
+              const end = Math.max(this.keyboardNavService.anchorIndex, event.rowIndex);
 
               api.deselectAll();
               for (let i = start; i <= end; i++) {
@@ -320,97 +309,6 @@ export class Grid implements AfterViewInit {
 
   deselectRows() {
     this.api?.deselectAll();
-  }
-
-  private isTypingTarget(target: EventTarget | null): boolean {
-    if (!(target instanceof HTMLElement)) return false;
-    return ['INPUT', 'TEXTAREA'].includes(target.tagName) || target.isContentEditable;
-  }
-
-  private handleGridSelectAll(event: KeyboardEvent): void {
-    const { ctrlKey, code } = event;
-    if (!(ctrlKey && code === 'KeyA') || this.isTypingTarget(event.target)) return;
-    event.preventDefault();
-    this.api?.forEachNodeAfterFilter((node) => {
-      if (node.displayed) node.setSelected(true, false);
-    });
-  }
-
-  private handleGridKeyboardSelection(event: KeyboardEvent): void {
-    const { code, shiftKey, ctrlKey } = event;
-    const isNavKey = [
-      'ArrowDown',
-      'ArrowUp',
-      'Home',
-      'End',
-      'PageDown',
-      'PageUp',
-      'Enter',
-    ].includes(code);
-    if (!isNavKey || this.isTypingTarget(event.target)) return;
-
-    const api = this.api;
-    if (!api) return;
-
-    const selectedNodes = api.getSelectedNodes();
-    let leadIndex =
-      this.selectionLeadIndex ??
-      (selectedNodes.length ? selectedNodes[selectedNodes.length - 1].rowIndex : null);
-    if (leadIndex == null) return;
-
-    const nextIndex = this.computeNextDisplayedIndex(api, code, leadIndex);
-    if (nextIndex == null || nextIndex === leadIndex) return;
-
-    const nextNode = api.getDisplayedRowAtIndex(nextIndex);
-    if (!nextNode) return;
-
-    event.preventDefault();
-    const colId = api.getAllDisplayedColumns()?.[0]?.getColId();
-
-    if (shiftKey) {
-      if (this.selectionAnchorIndex == null) this.selectionAnchorIndex = leadIndex;
-      this.selectionLeadIndex = nextIndex;
-      const start = Math.min(this.selectionAnchorIndex, this.selectionLeadIndex);
-      const end = Math.max(this.selectionAnchorIndex, this.selectionLeadIndex);
-      if (!ctrlKey) api.deselectAll();
-      for (let i = start; i <= end; i++) api.getDisplayedRowAtIndex(i)?.setSelected(true);
-    } else if (!ctrlKey) {
-      api.deselectAll();
-      nextNode.setSelected(true, true);
-      this.selectionAnchorIndex = nextIndex;
-      this.selectionLeadIndex = nextIndex;
-    }
-
-    if (colId) api.setFocusedCell(nextIndex, colId);
-    api.ensureIndexVisible(nextIndex);
-  }
-
-  private computeNextDisplayedIndex(api: GridApi, code: string, leadIndex: number): number | null {
-    const rowCount = api.getDisplayedRowCount();
-    if (rowCount <= 0) return null;
-    const clamp = (i: number) => Math.max(0, Math.min(i, rowCount - 1));
-    switch (code) {
-      case 'ArrowDown':
-        return clamp(leadIndex + 1);
-      case 'ArrowUp':
-        return clamp(leadIndex - 1);
-      case 'Home':
-        return 0;
-      case 'End':
-        return rowCount - 1;
-      case 'PageDown':
-        return clamp(leadIndex + this.getApproxPageSize(api));
-      case 'PageUp':
-        return clamp(leadIndex - this.getApproxPageSize(api));
-      default:
-        return null;
-    }
-  }
-
-  private getApproxPageSize(api: any): number {
-    const rowHeight = 32;
-    const viewportHeight = api.gridBodyCtrl?.eBodyViewport?.clientHeight ?? 400;
-    return Math.max(1, Math.floor(viewportHeight / rowHeight) - 1);
   }
 
   private queueSave = () => this.saveGridState$.next();
