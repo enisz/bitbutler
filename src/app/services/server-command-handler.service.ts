@@ -1,7 +1,6 @@
 import { DestroyRef, inject, Injectable } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { EMPTY, from } from 'rxjs';
-import { catchError, concatMap, filter } from 'rxjs/operators';
+import { catchError, concatMap, EMPTY, filter, from } from 'rxjs';
 import { AppCommand, ServerCommand } from '../models/command.model';
 import { CommandBusService } from './command-bus.service';
 import { ServerStoreService } from './server-store.service';
