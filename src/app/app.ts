@@ -55,6 +55,7 @@ export class App implements OnInit {
   private readonly _openDraftsEffect = effect(() => {
     const items = this.openFilesService.pendingDrafts();
     if (!items.length) return;
+    if (!this.torrentStoreService.isPrimed()) return;
 
     this.commandBusService.emit({ type: 'UI_ADD_TORRENT' });
   });
