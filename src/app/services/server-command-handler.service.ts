@@ -1,6 +1,7 @@
 import { DestroyRef, inject, Injectable } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { filter } from 'rxjs';
+import { EMPTY, from } from 'rxjs';
+import { catchError, concatMap, filter } from 'rxjs/operators';
 import { AppCommand, ServerCommand } from '../models/command.model';
 import { CommandBusService } from './command-bus.service';
 import { ServerStoreService } from './server-store.service';
@@ -19,28 +20,37 @@ export class ServerCommandHandlerService {
     this.commandBusService.commands$
       .pipe(
         filter((cmd: AppCommand): cmd is ServerCommand => cmd.type.startsWith('SERVER_')),
+        concatMap((command) =>
+          from(this.handleCommand(command)).pipe(
+            catchError((err) => {
+              console.error(ServerCommandHandlerService.name, 'start', err);
+              return EMPTY;
+            }),
+          ),
+        ),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe(async (command) => {
-        switch (command.type) {
-          case 'SERVER_ADDED':
-            await this.handleServerAdded(command.id);
-            break;
-          case 'SERVER_UPDATED':
-            await this.handleServerUpdated(command.id);
-            break;
-          case 'SERVER_DELETED':
-            await this.handleServerDeleted(command.id);
-            break;
-        }
-      });
+      .subscribe();
+  }
+
+  private async handleCommand(command: ServerCommand): Promise<void> {
+    switch (command.type) {
+      case 'SERVER_ADDED':
+        await this.handleServerAdded(command.id);
+        break;
+      case 'SERVER_UPDATED':
+        await this.handleServerUpdated(command.id);
+        break;
+      case 'SERVER_DELETED':
+        await this.handleServerDeleted(command.id);
+        break;
+    }
   }
 
   private async handleServerAdded(id: string): Promise<void> {
     await this.serverStoreService.refresh();
     const server = this.serverStoreService.servers().find((s) => s.id === id);
     this.toastService.success(`Server ${server?.name || 'New Host'} added!`);
-
     this.serverStoreService.select(id);
   }
 
