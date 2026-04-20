@@ -50,7 +50,7 @@ export class Status {
   private readonly store = inject(TorrentStoreService);
   private readonly filterService = inject(FilterService);
   private readonly translateService = inject(TranslateService);
-  private readonly filtersSig = toSignal(this.filterService.external$, { requireSync: true });
+  private readonly filtersSig = this.filterService.external;
   private readonly languageChanged = toSignal(this.translateService.onLangChange);
 
   readonly totalCount = this.store.totalCount;

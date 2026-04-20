@@ -9,7 +9,7 @@ import {
   signal,
   ViewChild,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { AgGridAngular } from 'ag-grid-angular';
@@ -126,7 +126,7 @@ export class Grid implements AfterViewInit {
         getSelectionLeadIndex: () => this.selectionLeadIndex,
         setSelectionAnchorIndex: (v) => (this.selectionAnchorIndex = v),
         setSelectionLeadIndex: (v) => (this.selectionLeadIndex = v),
-        getLatestFilters: () => this.filterService.snapshot.external,
+        getLatestFilters: () => this.filterService.external(),
         getIsApplyingFilterFromService: () => this.isApplyingFilterFromService,
         setIsApplyingFilterFromService: (v) => (this.isApplyingFilterFromService = v),
         normalizeTracker: (raw) => normalizeTracker(raw),
@@ -301,11 +301,11 @@ export class Grid implements AfterViewInit {
       );
     });
 
-    this.filterService.external$
+    toObservable(this.filterService.external)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(this.onExternalFilterChange);
 
-    this.filterService.columnModel$
+    toObservable(this.filterService.columns)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(this.onColumnFilterChange);
 
