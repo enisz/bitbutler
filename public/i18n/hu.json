@@ -463,6 +463,12 @@
       },
       "limit-torrent-share": {
         "title": "Set Share Limits"
+      },
+      "guard": {
+        "unsaved-title": "Mentetlen változtatások",
+        "unsaved-message": "Mentetlen változtatásaid vannak. Biztosan elhagyod?",
+        "btn-leave": "Elhagyás",
+        "btn-stay": "Maradás"
       }
     },
     "share-limit": {
