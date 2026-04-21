@@ -9,7 +9,7 @@
 </div>
 <div class="modal-body" [innerHTML]="message | translate: messageParams"></div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-danger" (click)="activeModal.close(true)">
+  <button type="button" class="btn btn-danger" (click)="activeModal.close(true)" autofocus>
     {{ btnOkText | translate }}
   </button>
   <button type="button" class="btn btn-link" (click)="activeModal.close(false)">
