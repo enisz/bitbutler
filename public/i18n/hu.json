@@ -852,6 +852,7 @@
         },
         "torrent-list-grid": {
           "title": "Torrent lista táblázat",
+          "description": "Alkalmazásszintű torrent táblázat beállítások.",
           "torrent-list-grid-form": {
             "animate-rows": "Sorok animálása",
             "pagination": "Oldalszámozás",
