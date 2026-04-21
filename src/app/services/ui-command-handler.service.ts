@@ -85,6 +85,7 @@ export class UiCommandHandlerService {
               size: 'xl',
               scrollable: true,
               centered: false,
+              beforeDismiss: () => torrentDetailsModalRef.componentInstance.canDeactivate(),
             });
             torrentDetailsModalRef.componentInstance.hash = command.hash;
 
@@ -241,6 +242,7 @@ export class UiCommandHandlerService {
               size: 'xl',
               scrollable: true,
               centered: false,
+              beforeDismiss: () => contentModalRef.componentInstance.canDeactivate(),
             });
             contentModalRef.componentInstance.hash = command.hash;
             contentModalRef.componentInstance.tabToOpen = 'content';
