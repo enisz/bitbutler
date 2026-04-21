@@ -5,7 +5,6 @@ import {
   effect,
   HostListener,
   inject,
-  Input,
   ViewChild,
 } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
@@ -32,7 +31,6 @@ import { GridViewStoreService } from '../../../services/grid-view-store.service'
 import { SelectionStoreService } from '../../../services/selection-store.service';
 import { ThemeService } from '../../../services/theme.service';
 import { TorrentListGridSettingsService } from '../../../services/torrent-list-grid.settings.service';
-import { TorrentTxnDelta } from '../../../services/torrent-store.service';
 import { UiFormatService } from '../../../services/ui-format.service';
 import { GridContextMenuService } from './context-menu/grid-context-menu.service';
 import { GridKeyboardNavService } from './grid-keyboard-nav.service';
@@ -50,7 +48,6 @@ import { getTrackers, normalizeTracker } from '../../../utils/tracker.utils';
 })
 export class Grid implements AfterViewInit {
   @ViewChild(AgGridAngular) agGrid!: AgGridAngular;
-  @Input() delta: TorrentTxnDelta | null = null;
 
   private readonly selectionStore = inject(SelectionStoreService);
   private readonly filterService = inject(FilterService);
