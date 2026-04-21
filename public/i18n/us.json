@@ -714,6 +714,7 @@
         "filter-group": {
           "all": "All"
         },
+        "clear-all": "Clear all filters",
         "label": {
           "status": "Status",
           "trackers": "Trackers",

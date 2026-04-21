@@ -714,6 +714,7 @@
         "filter-group": {
           "all": "Összes"
         },
+        "clear-all": "Összes szűrő törlése",
         "label": {
           "status": "Állapot",
           "trackers": "Trackerek",

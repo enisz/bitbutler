@@ -58,6 +58,16 @@ export class Status {
 
   readonly hasNoTrackerFilters = computed(() => this.filtersSig().trackers.size === 0);
   readonly hasNoSavePathFilters = computed(() => this.filtersSig().savePaths.size === 0);
+  readonly hasAnyFilter = computed(() => {
+    const f = this.filtersSig();
+    return (
+      f.states.size > 0 ||
+      f.trackers.size > 0 ||
+      f.savePaths.size > 0 ||
+      f.categories.size > 0 ||
+      f.tags.size > 0
+    );
+  });
 
   readonly icon = {
     faLayerGroup,
@@ -368,6 +378,10 @@ export class Status {
 
   public clearTags(): void {
     this.filterService.clearTags();
+  }
+
+  public clearAll(): void {
+    this.filterService.resetAll();
   }
 
   public setTag(key: string): void {

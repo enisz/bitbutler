@@ -42,4 +42,12 @@
     [showAllCount]="totalCount()"
     (itemSelected)="setSavePathGroup($event)"
   ></app-filter-group>
+
+  @if (hasAnyFilter()) {
+    <div class="clear-all-bar">
+      <button class="btn btn-clear-all w-100" type="button" (click)="clearAll()">
+        {{ 'pages.main.status.clear-all' | translate }}
+      </button>
+    </div>
+  }
 </div>
