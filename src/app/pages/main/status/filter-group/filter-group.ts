@@ -1,5 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
@@ -31,7 +39,7 @@ export interface FilterItem {
   templateUrl: './filter-group.html',
   styleUrl: './filter-group.scss',
 })
-export class FilterGroupComponent implements OnInit {
+export class FilterGroupComponent implements OnInit, OnChanges {
   @Input({ required: true }) label!: string;
 
   private readonly items$ = new BehaviorSubject<FilterItem[]>([]);
@@ -52,6 +60,19 @@ export class FilterGroupComponent implements OnInit {
 
   public filterCtrl = new FormControl('', { nonNullable: true });
   public filteredItems$!: Observable<FilterItem[]>;
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['items']) {
+      const next: FilterItem[] = changes['items'].currentValue ?? [];
+      if (
+        this.activeKey &&
+        this.activeKey !== 'all' &&
+        !next.some((i) => i.key === this.activeKey)
+      ) {
+        this.itemSelected.emit('all');
+      }
+    }
+  }
 
   ngOnInit(): void {
     this.filteredItems$ = combineLatest([

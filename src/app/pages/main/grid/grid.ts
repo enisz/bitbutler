@@ -186,6 +186,14 @@ export class Grid implements AfterViewInit {
         if (node) syncNode(node);
       }
     });
+
+    toObservable(this.filterService.external)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(this.onExternalFilterChange);
+
+    toObservable(this.filterService.columns)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(this.onColumnFilterChange);
   }
 
   private areSelectionsEqual(a: Torrent[], b: Torrent[]): boolean {
@@ -229,14 +237,6 @@ export class Grid implements AfterViewInit {
         this.gridPinService.getPinnedBottomHashes(),
       );
     });
-
-    toObservable(this.filterService.external)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(this.onExternalFilterChange);
-
-    toObservable(this.filterService.columns)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(this.onColumnFilterChange);
 
     (this.torrentListGridSettingsService
       .asObservable()
