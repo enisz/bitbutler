@@ -15,6 +15,7 @@ import { SetTorrentTags } from '../components/modals/set-torrent-tags/set-torren
 import { TorrentDetails } from '../components/modals/torrent-details/torrent-details';
 import { UpdateAvailable } from '../components/modals/update-available/update-available';
 import { AppCommand, UiCommand } from '../models/command.model';
+import { GuardableModal } from '../models/guardable-modal.interface';
 import { QbTorrentContent } from '../models/torrent.model';
 import { Settings } from '../pages/settings/settings';
 import { CommandBusService } from './command-bus.service';
@@ -85,7 +86,8 @@ export class UiCommandHandlerService {
               size: 'xl',
               scrollable: true,
               centered: false,
-              beforeDismiss: () => torrentDetailsModalRef.componentInstance.canDeactivate(),
+              beforeDismiss: () =>
+                (torrentDetailsModalRef.componentInstance as GuardableModal).canDeactivate(),
             });
             torrentDetailsModalRef.componentInstance.hash = command.hash;
 
@@ -242,7 +244,8 @@ export class UiCommandHandlerService {
               size: 'xl',
               scrollable: true,
               centered: false,
-              beforeDismiss: () => contentModalRef.componentInstance.canDeactivate(),
+              beforeDismiss: () =>
+                (contentModalRef.componentInstance as GuardableModal).canDeactivate(),
             });
             contentModalRef.componentInstance.hash = command.hash;
             contentModalRef.componentInstance.tabToOpen = 'content';
