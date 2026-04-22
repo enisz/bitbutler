@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, Input, OnInit, signal, Type } from '@angular/core';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faPencil } from '@fortawesome/free-solid-svg-icons';
+import { NgbActiveModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import { BbSpinner } from '../../components/bb-spinner/bb-spinner';
@@ -13,7 +15,14 @@ import { SettingsTabComponent, SettingsTabId, Tab } from './settings.interface';
 
 @Component({
   selector: 'app-settings',
-  imports: [CommonModule, AutofocusDirective, TranslatePipe, BbSpinner],
+  imports: [
+    CommonModule,
+    AutofocusDirective,
+    TranslatePipe,
+    BbSpinner,
+    FontAwesomeModule,
+    NgbTooltipModule,
+  ],
   providers: [SettingsStateService],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
@@ -29,6 +38,8 @@ export class Settings implements OnInit, GuardableModal {
 
   public activeTabId = signal<SettingsTabId>('general');
   public loadedComponents = signal<Map<SettingsTabId, Type<SettingsTabComponent>>>(new Map());
+
+  public icon = { faPencil };
 
   public tabs: Tab[] = [
     {
