@@ -21,7 +21,6 @@ import { GeneralSettings, ToastPosition } from '../../../models/general-settings
 import { CommandBusService } from '../../../services/command-bus.service';
 import { GeneralSettingsService } from '../../../services/general-settings.service';
 import { ThemeFamily, ThemeMode, ThemeService } from '../../../services/theme.service';
-import { ToastService } from '../../../services/toast.service';
 import { SettingsStateService } from '../settings-state.service';
 import { SettingsTabComponent } from '../settings.interface';
 
@@ -50,7 +49,6 @@ interface NgSelectItem {
 export class General implements SettingsTabComponent, OnInit {
   private readonly themeService = inject(ThemeService);
   private readonly generalSettingsService = inject(GeneralSettingsService);
-  private readonly toastService = inject(ToastService);
   private readonly commandBusService = inject(CommandBusService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly translateService = inject(TranslateService);
@@ -178,12 +176,6 @@ export class General implements SettingsTabComponent, OnInit {
     }
 
     this.themeService.applyFromSettings(settings.appearance.family, settings.appearance.mode);
-
-    const message = await firstValueFrom(
-      this.translateService.get('pages.settings.tab.general.success.saved'),
-    );
-
-    this.toastService.success(message);
   }
 
   public checkUpdates(): void {

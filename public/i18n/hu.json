@@ -731,6 +731,9 @@
     },
     "settings": {
       "title": "Beállítások",
+      "success": {
+        "saved": "Beállítások mentve"
+      },
       "tab": {
         "general": {
           "title": "Általános",

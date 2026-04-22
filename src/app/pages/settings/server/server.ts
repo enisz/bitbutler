@@ -19,7 +19,6 @@ import { ServerSettings } from '../../../models/server-settings.model';
 import { ElectronService } from '../../../services/electron.service';
 import { ServerSettingsService } from '../../../services/server-settings.service';
 import { ServerStoreService } from '../../../services/server-store.service';
-import { ToastService } from '../../../services/toast.service';
 import { TypeaheadService } from '../../../services/typeahead.service';
 import { SettingsStateService } from '../settings-state.service';
 import { SettingsTabComponent } from '../settings.interface';
@@ -43,7 +42,6 @@ export class Server implements SettingsTabComponent, OnInit {
   private readonly electronService = inject(ElectronService);
   private readonly zone = inject(NgZone);
   private readonly serverSettingsService = inject(ServerSettingsService);
-  private readonly toastService = inject(ToastService);
   private readonly typeaheadService = inject(TypeaheadService);
   private readonly destoryRef = inject(DestroyRef);
   private readonly serverStoreService = inject(ServerStoreService);
@@ -106,7 +104,6 @@ export class Server implements SettingsTabComponent, OnInit {
   private async save(): Promise<void> {
     const settings: ServerSettings = this.serverSettingsForm.getRawValue();
     await this.serverSettingsService.save(settings);
-    this.toastService.success('Server Settings Saved!');
   }
 
   get pathMappings(): FormArray {

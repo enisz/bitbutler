@@ -731,6 +731,9 @@
     },
     "settings": {
       "title": "Settings",
+      "success": {
+        "saved": "Settings Saved"
+      },
       "tab": {
         "general": {
           "title": "General",

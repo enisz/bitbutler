@@ -16,7 +16,6 @@ import {
   TorrentListGridSettings,
 } from '../../../models/torrent-list-grid.model';
 import { getGridColDefs } from '../../../pages/main/grid/grid.lib';
-import { ToastService } from '../../../services/toast.service';
 import { TorrentListGridSettingsService } from '../../../services/torrent-list-grid.settings.service';
 import { UiFormatService } from '../../../services/ui-format.service';
 import { SettingsStateService } from '../settings-state.service';
@@ -44,7 +43,6 @@ export interface NgSelectColumnItem {
   styleUrl: './torrent-list-grid.scss',
 })
 export class TorrentListGrid implements SettingsTabComponent, OnInit {
-  private readonly toastService = inject(ToastService);
   private readonly torrentListGridSettingsService = inject(TorrentListGridSettingsService);
   private readonly uiFormatService = inject(UiFormatService);
   private readonly destroyRef = inject(DestroyRef);
@@ -192,7 +190,5 @@ export class TorrentListGrid implements SettingsTabComponent, OnInit {
       rowDoubleClickAction: formValue.rowDoubleClickAction ?? settings.rowDoubleClickAction,
       columnState: newColumnState,
     });
-
-    this.toastService.success('Torrent List Grid Settings Saved!', 'Success');
   }
 }

@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, Input, OnInit, signal, Type } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { firstValueFrom } from 'rxjs';
 import { BbSpinner } from '../../components/bb-spinner/bb-spinner';
 import { AutofocusDirective } from '../../directives/autofocus';
 import { GuardableModal } from '../../models/guardable-modal.interface';
 import { ConfirmService } from '../../services/confirm.service';
+import { ToastService } from '../../services/toast.service';
 import { SettingsStateService } from './settings-state.service';
 import { SettingsTabComponent, SettingsTabId, Tab } from './settings.interface';
 
@@ -22,6 +24,8 @@ export class Settings implements OnInit, GuardableModal {
   public readonly activeModal = inject(NgbActiveModal);
   public readonly stateService = inject(SettingsStateService);
   private readonly confirmService = inject(ConfirmService);
+  private readonly toastService = inject(ToastService);
+  private readonly translateService = inject(TranslateService);
 
   public activeTabId = signal<SettingsTabId>('general');
   public loadedComponents = signal<Map<SettingsTabId, Type<SettingsTabComponent>>>(new Map());
@@ -87,5 +91,7 @@ export class Settings implements OnInit, GuardableModal {
 
   public async onSave(): Promise<void> {
     await this.stateService.saveAll();
+    const message = await firstValueFrom(this.translateService.get('pages.settings.success.saved'));
+    this.toastService.success(message);
   }
 }

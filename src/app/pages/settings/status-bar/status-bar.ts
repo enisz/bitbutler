@@ -15,7 +15,6 @@ import { switchMap, tap } from 'rxjs';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { StatusBarSettings } from '../../../models/status-bar-settings.model';
 import { StatusBarSettingsService } from '../../../services/status-bar-settings.service';
-import { ToastService } from '../../../services/toast.service';
 import { SettingsStateService } from '../settings-state.service';
 import { SettingsTabComponent } from '../settings.interface';
 
@@ -41,7 +40,6 @@ interface Widget {
 })
 export class StatusBar implements SettingsTabComponent, OnInit {
   private statusBarService = inject(StatusBarSettingsService);
-  private toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
   private readonly stateService = inject(SettingsStateService);
 
@@ -113,10 +111,5 @@ export class StatusBar implements SettingsTabComponent, OnInit {
       left: this.left.map((w) => w.id),
       right: this.right.map((w) => w.id),
     });
-
-    this.toastService.success(
-      this.translateService.instant('pages.settings.tab.status-bar.success.save'),
-      'Success',
-    );
   }
 }
