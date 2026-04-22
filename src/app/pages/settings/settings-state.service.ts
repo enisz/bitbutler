@@ -12,14 +12,14 @@ const INITIAL_DIRTY: DirtyMap = {
 
 @Injectable()
 export class SettingsStateService {
-  private readonly dirtyTabs = signal<DirtyMap>({ ...INITIAL_DIRTY });
+  private readonly _dirtyTabs = signal<DirtyMap>({ ...INITIAL_DIRTY });
   private readonly saveFns = new Map<SettingsTabId, () => Promise<void>>();
 
-  public readonly isDirty = computed(() => Object.values(this.dirtyTabs()).some(Boolean));
-  public readonly isDirtyMap = computed(() => this.dirtyTabs());
+  public readonly isDirty = computed(() => Object.values(this._dirtyTabs()).some(Boolean));
+  public readonly isDirtyMap = this._dirtyTabs.asReadonly();
 
   public markDirty(id: SettingsTabId, dirty: boolean): void {
-    this.dirtyTabs.update((tabs) => ({ ...tabs, [id]: dirty }));
+    this._dirtyTabs.update((tabs) => ({ ...tabs, [id]: dirty }));
   }
 
   public registerSave(id: SettingsTabId, fn: () => Promise<void>): void {
@@ -27,11 +27,11 @@ export class SettingsStateService {
   }
 
   public resetDirty(): void {
-    this.dirtyTabs.set({ ...INITIAL_DIRTY });
+    this._dirtyTabs.set({ ...INITIAL_DIRTY });
   }
 
   public async saveAll(): Promise<void> {
-    const dirty = this.dirtyTabs();
+    const dirty = this._dirtyTabs();
     await Promise.all(
       (Object.keys(dirty) as SettingsTabId[])
         .filter((id) => dirty[id])
