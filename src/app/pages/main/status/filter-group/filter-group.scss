@@ -1,5 +1,9 @@
 @use 'sass:color';
 
+:host {
+  display: block;
+}
+
 .list-group-item-action {
   border-color: var(--bs-border-color);
 
