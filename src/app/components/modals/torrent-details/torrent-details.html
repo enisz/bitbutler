@@ -29,12 +29,7 @@
     </ul>
   </div>
 
-  <button
-    type="button"
-    class="btn-close"
-    aria-label="Close"
-    (click)="activeModal.dismiss()"
-  ></button>
+  <button type="button" class="btn-close" aria-label="Close" (click)="onDismiss()"></button>
 </div>
 
 <div class="modal-body">
@@ -48,7 +43,7 @@
 </div>
 
 <div class="modal-footer">
-  <button type="button" class="btn btn-link" (click)="activeModal.close()" autofocus>
+  <button type="button" class="btn btn-link" (click)="onClose()" autofocus>
     {{ 'general.button.close' | translate }}
   </button>
 </div>

@@ -1,17 +1,40 @@
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  font-size: 0.875rem;
+}
+
+.status-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Scrollable area for the filter groups */
+.filter-groups-wrapper {
+  padding: 0.5rem;
 }
 
 .list-group-item {
   transition:
     background-color 120ms ease,
     border-color 120ms ease;
+  padding: 0.35rem 0.5rem;
+  line-height: 1.2;
 }
 
 .list-group-item.active {
   background-color: color-mix(in srgb, var(--bs-secondary) 18%, transparent);
   border-color: color-mix(in srgb, var(--bs-secondary) 35%, var(--bs-border-color));
   color: var(--bs-body-color);
+}
+
+.small.text-uppercase {
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.25rem;
 }
 
 .bb-status-badge {
@@ -21,6 +44,8 @@
   text-align: center;
   border-radius: 10px;
   line-height: 1.2;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 :host-context([data-bs-theme='light']) .bb-status-badge {
@@ -41,33 +66,6 @@
   background-color: #c7a57a;
 }
 
-:host {
-  display: block;
-  font-size: 0.875rem;
-}
-
-.list-group-item {
-  padding: 0.35rem 0.5rem;
-  line-height: 1.2;
-}
-
-.small.text-uppercase {
-  font-size: 0.75rem;
-  letter-spacing: 0.04em;
-  margin-bottom: 0.25rem;
-}
-
-.list-group-item span.flex-grow-1 {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.bb-status-badge {
-  flex-shrink: 0;
-  white-space: nowrap;
-}
-
 .bb-status-label {
   min-width: 0;
   overflow: hidden;
@@ -78,4 +76,36 @@
 .save-path-label {
   direction: rtl;
   text-align: left;
+}
+
+.clear-all-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 100; /* Higher than Bootstrap's relative elements */
+  margin-top: auto; /* Pushes the bar to the bottom of the flex container */
+  padding: 0.75rem 0.5rem;
+  background-color: var(--bs-body-bg);
+  border-top: 1px solid var(--bs-border-color);
+
+  /* Adds a subtle shadow so it looks distinct when items scroll behind it */
+  box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.05);
+}
+
+.btn-clear-all {
+  background-color: var(--bb-accent);
+  color: var(--bb-primary-ink);
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 0.4rem 0.75rem;
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--bb-accent) 85%, #fff 15%);
+    color: var(--bb-primary-ink);
+  }
+
+  &:active {
+    background-color: color-mix(in srgb, var(--bb-accent) 75%, #000 25%);
+  }
 }

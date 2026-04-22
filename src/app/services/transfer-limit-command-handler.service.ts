@@ -1,6 +1,6 @@
 import { DestroyRef, inject, Injectable } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { filter } from 'rxjs';
+import { catchError, EMPTY, exhaustMap, filter, from } from 'rxjs';
 import { AppCommand, TransferLimitCommand } from '../models/command.model';
 import { CommandBusService } from './command-bus.service';
 import { QbService } from './qb.service';
@@ -17,29 +17,41 @@ export class TransferLimitCommandHandlerService {
 
   public start(): void {
     this.commandBusService.commands$
-      .pipe(filter(this.transferLimitCommandGuard), takeUntilDestroyed(this.destroyRef))
-      .subscribe(async (command: AppCommand): Promise<void> => {
-        switch (command.type) {
-          case 'TRANSFER_LIMIT_ALTERNATIVE_TOGGLE':
-            const state = await this.qbService.getAlternativeSpeedLimitState(
-              this.serverStoreService.currentServerId() as string,
-            );
+      .pipe(
+        filter(this.transferLimitCommandGuard),
+        exhaustMap((command: TransferLimitCommand) =>
+          from(this.handleCommand(command)).pipe(
+            catchError((err) => {
+              console.error(TransferLimitCommandHandlerService.name, 'start', err);
+              return EMPTY;
+            }),
+          ),
+        ),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe();
+  }
 
-            this.toastService.info('Turning alternative speed limit ' + (state ? 'OFF' : 'ON'));
-            this.qbService.toggleAlternativeSpeedLimit(
-              this.serverStoreService.currentServerId() as string,
-            );
-            break;
+  private async handleCommand(command: TransferLimitCommand): Promise<void> {
+    switch (command.type) {
+      case 'TRANSFER_LIMIT_ALTERNATIVE_TOGGLE':
+        await this.handleToggle();
+        break;
+      default:
+        console.warn(
+          TransferLimitCommandHandlerService.name,
+          'handleCommand',
+          'Unhandled command',
+          command,
+        );
+    }
+  }
 
-          default:
-            console.warn(
-              TransferLimitCommandHandlerService.name,
-              'start',
-              'Unhandled UI command',
-              command,
-            );
-        }
-      });
+  private async handleToggle(): Promise<void> {
+    const serverId = this.serverStoreService.currentServerId() as string;
+    const state = await this.qbService.getAlternativeSpeedLimitState(serverId);
+    this.toastService.info('Turning alternative speed limit ' + (state ? 'OFF' : 'ON'));
+    await this.qbService.toggleAlternativeSpeedLimit(serverId);
   }
 
   private transferLimitCommandGuard(cmd: AppCommand): cmd is TransferLimitCommand {

@@ -463,6 +463,12 @@
       },
       "limit-torrent-share": {
         "title": "Set Share Limits"
+      },
+      "guard": {
+        "unsaved-title": "Unsaved changes",
+        "unsaved-message": "You have unsaved changes. Leave anyway?",
+        "btn-leave": "Leave",
+        "btn-stay": "Stay"
       }
     },
     "share-limit": {
@@ -714,6 +720,7 @@
         "filter-group": {
           "all": "All"
         },
+        "clear-all": "Clear all filters",
         "label": {
           "status": "Status",
           "trackers": "Trackers",
@@ -852,6 +859,7 @@
         },
         "torrent-list-grid": {
           "title": "Torrent List Grid",
+          "description": "Application level torrent grid settings.",
           "torrent-list-grid-form": {
             "animate-rows": "Animate Rows",
             "pagination": "Pagination",

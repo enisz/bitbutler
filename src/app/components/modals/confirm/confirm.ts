@@ -1,11 +1,12 @@
 import { Component, inject, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
+import { AutofocusDirective } from '../../../directives/autofocus';
 
 @Component({
   selector: 'app-confirm',
   standalone: true,
-  imports: [TranslatePipe],
+  imports: [TranslatePipe, AutofocusDirective],
   templateUrl: './confirm.html',
 })
 export class Confirm {

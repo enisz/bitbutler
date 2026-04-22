@@ -1,6 +1,6 @@
 import { DestroyRef, inject, Injectable } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { filter } from 'rxjs';
+import { catchError, EMPTY, exhaustMap, filter, from } from 'rxjs';
 import { AppCommand, UpdateCommand } from '../models/command.model';
 import { CommandBusService } from './command-bus.service';
 import { ElectronService } from './electron.service';
@@ -17,11 +17,17 @@ export class UpdateCommandHandlerService {
     this.commandBusService.commands$
       .pipe(
         filter((cmd: AppCommand): cmd is UpdateCommand => cmd.type === 'UPDATE_CHECK_FOR_UPDATE'),
+        exhaustMap(() =>
+          from(this.handleCheckForUpdate()).pipe(
+            catchError((err) => {
+              console.error(UpdateCommandHandlerService.name, 'start', err);
+              return EMPTY;
+            }),
+          ),
+        ),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe(async () => {
-        await this.handleCheckForUpdate();
-      });
+      .subscribe();
   }
 
   private async handleCheckForUpdate(): Promise<void> {
