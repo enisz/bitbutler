@@ -12,7 +12,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { NgbTooltip, NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
-import { debounceTime, from, switchMap, tap } from 'rxjs';
+import { from, switchMap, tap } from 'rxjs';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { ServerSettings } from '../../../models/server-settings.model';
@@ -21,6 +21,7 @@ import { ServerSettingsService } from '../../../services/server-settings.service
 import { ServerStoreService } from '../../../services/server-store.service';
 import { ToastService } from '../../../services/toast.service';
 import { TypeaheadService } from '../../../services/typeahead.service';
+import { SettingsStateService } from '../settings-state.service';
 import { SettingsTabComponent } from '../settings.interface';
 
 @Component({
@@ -46,6 +47,7 @@ export class Server implements SettingsTabComponent, OnInit {
   private readonly typeaheadService = inject(TypeaheadService);
   private readonly destoryRef = inject(DestroyRef);
   private readonly serverStoreService = inject(ServerStoreService);
+  private readonly stateService = inject(SettingsStateService);
 
   public icons: Record<string, IconDefinition> = {
     faPlus,
@@ -94,14 +96,16 @@ export class Server implements SettingsTabComponent, OnInit {
   });
 
   public ngOnInit(): void {
+    this.stateService.registerSave('server', () => this.save());
+
     this.serverSettingsForm.valueChanges
-      .pipe(debounceTime(1000), takeUntilDestroyed(this.destoryRef))
-      .subscribe(() => this.saveSettings());
+      .pipe(takeUntilDestroyed(this.destoryRef))
+      .subscribe(() => this.stateService.markDirty('server', true));
   }
 
-  private saveSettings(): void {
+  private async save(): Promise<void> {
     const settings: ServerSettings = this.serverSettingsForm.getRawValue();
-    this.serverSettingsService.save(settings);
+    await this.serverSettingsService.save(settings);
     this.toastService.success('Server Settings Saved!');
   }
 
