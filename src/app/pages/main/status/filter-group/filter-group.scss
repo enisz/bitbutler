@@ -48,15 +48,9 @@
   padding: 0.15rem 0.35rem;
   line-height: 1;
   cursor: pointer;
-  border-radius: var(--bb-control-radius);
 
   &:hover {
     color: var(--bs-body-color);
-    background-color: color-mix(in srgb, var(--bb-control-hover-bg) 85%, transparent);
-  }
-
-  &:active {
-    background-color: color-mix(in srgb, var(--bb-control-hover-bg) 70%, transparent);
   }
 }
 

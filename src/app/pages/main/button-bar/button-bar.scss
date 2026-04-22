@@ -181,6 +181,7 @@
 }
 
 .bb-search__clear {
+  color: var(--bs-secondary-color);
   cursor: pointer;
   user-select: none;
 
@@ -190,6 +191,7 @@
   }
 
   &:hover {
+    color: var(--bs-body-color);
     background-color: color-mix(in srgb, var(--bb-control-hover-bg) 85%, transparent) !important;
   }
 
