@@ -17,7 +17,6 @@ import {
   faArrowsDownToLine,
   faArrowsUpToLine,
   faArrowUp,
-  faCircleXmark,
   faFileArrowUp,
   faGear,
   faPause,
@@ -25,6 +24,7 @@ import {
   faPlayCircle,
   faSearch,
   faStopCircle,
+  faXmark,
   faTrashCan,
 } from '@fortawesome/free-solid-svg-icons';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
@@ -56,7 +56,7 @@ export class ButtonBar implements OnInit {
   private searchInputRef?: ElementRef<HTMLInputElement>;
 
   public compact = false;
-  public icons = { faSearch, faCircleXmark };
+  public icons = { faSearch, faXmark };
   public readonly selected = this.selectionStore.selected;
   public readonly hasSelection = computed(() => this.selected().length > 0);
   public searchForm: FormGroup = new FormGroup({

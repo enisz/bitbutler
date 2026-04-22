@@ -181,10 +181,6 @@
 }
 
 .bb-search__clear {
-  &.inactive {
-    opacity: 0.5;
-    cursor: auto;
-  }
   cursor: pointer;
   user-select: none;
 
