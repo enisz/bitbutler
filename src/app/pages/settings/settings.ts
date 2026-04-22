@@ -81,14 +81,6 @@ export class Settings implements OnInit, GuardableModal {
     return confirmed;
   }
 
-  public async onDismiss(): Promise<void> {
-    if (await this.canDeactivate()) this.activeModal.dismiss();
-  }
-
-  public async onClose(): Promise<void> {
-    if (await this.canDeactivate()) this.activeModal.close();
-  }
-
   public async onSave(): Promise<void> {
     await this.stateService.saveAll();
     const message = await firstValueFrom(this.translateService.get('pages.settings.success.saved'));
