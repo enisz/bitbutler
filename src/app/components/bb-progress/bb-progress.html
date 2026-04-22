@@ -1,4 +1,8 @@
-<div class="progress position-relative bb-progress" [style.--p]="progressPercent() + '%'">
+<div
+  class="progress position-relative bb-progress"
+  [style.--p]="progressPercent() + '%'"
+  [style.--label-on-fill]="'var(--bb-' + displayVariant() + '-ink)'"
+>
   <div
     class="progress-bar"
     [class]="'bg-' + displayVariant()"
