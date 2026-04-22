@@ -463,6 +463,12 @@
       },
       "limit-torrent-share": {
         "title": "Set Share Limits"
+      },
+      "guard": {
+        "unsaved-title": "Unsaved changes",
+        "unsaved-message": "You have unsaved changes. Leave anyway?",
+        "btn-leave": "Leave",
+        "btn-stay": "Stay"
       }
     },
     "share-limit": {
