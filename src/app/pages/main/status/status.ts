@@ -24,6 +24,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Torrent, TorrentState } from '../../../models/torrent.model';
 import { FilterService } from '../../../services/filter.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
+import { getTrackers, normalizeTracker } from '../../../utils/tracker.utils';
 import { FilterGroupComponent, FilterItem } from './filter-group/filter-group';
 
 type CountItem = { key: string; label: string; count: number };
@@ -49,7 +50,7 @@ export class Status {
   private readonly store = inject(TorrentStoreService);
   private readonly filterService = inject(FilterService);
   private readonly translateService = inject(TranslateService);
-  private readonly filtersSig = toSignal(this.filterService.external$, { requireSync: true });
+  private readonly filtersSig = this.filterService.external;
   private readonly languageChanged = toSignal(this.translateService.onLangChange);
 
   readonly totalCount = this.store.totalCount;
@@ -57,6 +58,16 @@ export class Status {
 
   readonly hasNoTrackerFilters = computed(() => this.filtersSig().trackers.size === 0);
   readonly hasNoSavePathFilters = computed(() => this.filtersSig().savePaths.size === 0);
+  readonly hasAnyFilter = computed(() => {
+    const f = this.filtersSig();
+    return (
+      f.states.size > 0 ||
+      f.trackers.size > 0 ||
+      f.savePaths.size > 0 ||
+      f.categories.size > 0 ||
+      f.tags.size > 0
+    );
+  });
 
   readonly icon = {
     faLayerGroup,
@@ -237,43 +248,28 @@ export class Status {
     this.setSavePath(key);
   }
 
-  private getTrackers(t: Torrent): string[] {
-    return (t.tracker ?? '').split('\n').filter(Boolean);
-  }
-
-  private normalizeTracker(raw?: string | null): string {
-    const s = (raw ?? '').trim();
-    if (!s) return '(none)';
-    try {
-      const u = new URL(s);
-      return u.host || u.hostname || s;
-    } catch {
-      return s;
-    }
-  }
-
   readonly trackersWithCounts = computed<FilterItem[]>(() => {
     const map = new Map<string, CountItem>();
 
     for (const t of this.store.torrentsArray()) {
-      const trackers = this.getTrackers(t);
+      const trackers = getTrackers(t);
       if (trackers.length === 0) {
-        const key = this.normalizeTracker(null);
+        const key = normalizeTracker(null);
         const prev = map.get(key);
         if (prev) prev.count++;
         else map.set(key, { key, label: key, count: 1 });
         continue;
       }
       for (const tracker of trackers) {
-        const key = this.normalizeTracker(tracker);
+        const key = normalizeTracker(tracker);
         const prev = map.get(key);
         if (prev) prev.count++;
         else map.set(key, { key, label: key, count: 1 });
       }
     }
 
-    if (map.get(this.normalizeTracker(null))?.count === 0) {
-      map.delete(this.normalizeTracker(null));
+    if (map.get(normalizeTracker(null))?.count === 0) {
+      map.delete(normalizeTracker(null));
     }
 
     return [...map.values()]
@@ -382,6 +378,10 @@ export class Status {
 
   public clearTags(): void {
     this.filterService.clearTags();
+  }
+
+  public clearAll(): void {
+    this.filterService.resetAll();
   }
 
   public setTag(key: string): void {

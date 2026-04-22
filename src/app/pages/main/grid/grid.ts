@@ -5,12 +5,9 @@ import {
   effect,
   HostListener,
   inject,
-  Input,
-  signal,
   ViewChild,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import {
@@ -21,9 +18,8 @@ import {
   type GridOptions,
   type RowDoubleClickedEvent,
 } from 'ag-grid-community';
-import { filter, firstValueFrom, skip, Subject, throttleTime } from 'rxjs';
+import { firstValueFrom, skip, Subject, throttleTime } from 'rxjs';
 import { GRID_DARK_THEME, GRID_LIGHT_THEME } from '../../../app.const';
-import { UiCommand } from '../../../models/command.model';
 import { TorrentListGridSettings } from '../../../models/torrent-list-grid.model';
 import { Torrent } from '../../../models/torrent.model';
 import { CommandBusService } from '../../../services/command-bus.service';
@@ -35,29 +31,29 @@ import { GridViewStoreService } from '../../../services/grid-view-store.service'
 import { SelectionStoreService } from '../../../services/selection-store.service';
 import { ThemeService } from '../../../services/theme.service';
 import { TorrentListGridSettingsService } from '../../../services/torrent-list-grid.settings.service';
-import { TorrentStoreService, TorrentTxnDelta } from '../../../services/torrent-store.service';
 import { UiFormatService } from '../../../services/ui-format.service';
 import { GridContextMenuService } from './context-menu/grid-context-menu.service';
+import { GridKeyboardNavService } from './grid-keyboard-nav.service';
+import { GridPinService } from './grid-pin.service';
 import { getGridColDefs, getGridOptions } from './grid.lib';
+import { getTrackers, normalizeTracker } from '../../../utils/tracker.utils';
 
 @Component({
   selector: 'app-grid',
   standalone: true,
   imports: [AgGridAngular],
-  providers: [GridStateService, GridContextMenuService],
+  providers: [GridStateService, GridContextMenuService, GridKeyboardNavService, GridPinService],
   templateUrl: './grid.html',
   styleUrls: ['./grid.scss'],
 })
 export class Grid implements AfterViewInit {
   @ViewChild(AgGridAngular) agGrid!: AgGridAngular;
-  @Input() delta: TorrentTxnDelta | null = null;
 
   private readonly selectionStore = inject(SelectionStoreService);
   private readonly filterService = inject(FilterService);
   private readonly contextMenuService = inject(ContextMenuService);
   private readonly gridStateService = inject(GridStateService);
   private readonly gridContextMenuService = inject(GridContextMenuService);
-  private readonly torrentStore = inject(TorrentStoreService);
   private readonly themeService = inject(ThemeService);
   private readonly uiFormatService = inject(UiFormatService);
   private readonly gridViewStoreService = inject(GridViewStoreService);
@@ -66,16 +62,12 @@ export class Grid implements AfterViewInit {
   private readonly electronService = inject(ElectronService);
   private readonly translateService = inject(TranslateService);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly modalService = inject(NgbModal);
+  private readonly keyboardNavService = inject(GridKeyboardNavService);
+  private readonly gridPinService = inject(GridPinService);
 
   private readonly saveGridState$ = new Subject<void>();
 
   private api: GridApi<Torrent> | null = null;
-  private readonly pinnedTopHashes = signal<Set<string>>(new Set());
-  private readonly pinnedBottomHashes = signal<Set<string>>(new Set());
-  private selectionAnchorIndex: number | null = null;
-  private selectionLeadIndex: number | null = null;
-
   private isProgrammaticSelection = false;
   private isApplyingFilterFromService = false;
   private hasLoadedInitialState = false;
@@ -88,21 +80,12 @@ export class Grid implements AfterViewInit {
 
   @HostListener('window:keyup', ['$event'])
   public onKeyUp(event: KeyboardEvent): void {
-    const { shiftKey, code, target } = event;
-    if (code === 'Delete' && !this.isTypingTarget(target)) {
-      this.commandBusService.emit({
-        type: 'UI_TORRENT_DELETE_REQUEST',
-        defaultRemoveFiles: shiftKey,
-      });
-    }
+    this.keyboardNavService.onKeyUp(event);
   }
 
   @HostListener('window:keydown', ['$event'])
   public onKeyDown(event: KeyboardEvent): void {
-    if (this.modalService.hasOpenModals()) return;
-
-    this.handleGridSelectAll(event);
-    this.handleGridKeyboardSelection(event);
+    this.keyboardNavService.onKeyDown(event);
   }
 
   constructor() {
@@ -121,25 +104,27 @@ export class Grid implements AfterViewInit {
         setHasLoadedInitialState: (v) => (this.hasLoadedInitialState = v),
         queueSave: this.queueSave,
         updateInViewCount: this.updateInViewCount,
-        getSelectionAnchorIndex: () => this.selectionAnchorIndex,
-        getSelectionLeadIndex: () => this.selectionLeadIndex,
-        setSelectionAnchorIndex: (v) => (this.selectionAnchorIndex = v),
-        setSelectionLeadIndex: (v) => (this.selectionLeadIndex = v),
-        getLatestFilters: () => this.filterService.snapshot.external,
+        getSelectionAnchorIndex: () => this.keyboardNavService.anchorIndex,
+        getSelectionLeadIndex: () => this.keyboardNavService.leadIndex,
+        setSelectionAnchorIndex: (v) => (this.keyboardNavService.anchorIndex = v),
+        setSelectionLeadIndex: (v) => (this.keyboardNavService.leadIndex = v),
+        getLatestFilters: () => this.filterService.external(),
         getIsApplyingFilterFromService: () => this.isApplyingFilterFromService,
         setIsApplyingFilterFromService: (v) => (this.isApplyingFilterFromService = v),
-        normalizeTracker: (raw) => this.normalizeTracker(raw),
-        getTrackers: (t) => this.getTrackers(t),
+        normalizeTracker: (raw) => normalizeTracker(raw),
+        getTrackers: (t) => getTrackers(t),
         handleCellRightClick: this.handleCellRightClick,
         handleRowDoubleClick: this.handleRowDoubleClick,
         onApiReady: (api) => {
+          this.keyboardNavService.init(api);
+          this.gridPinService.init(api);
           this.api = api;
 
           api.setGridOption('onRowClicked', (event) => {
             const mouseEvent = event.event as MouseEvent;
             if (event.rowIndex !== null && !mouseEvent?.shiftKey) {
-              this.selectionAnchorIndex = event.rowIndex;
-              this.selectionLeadIndex = event.rowIndex;
+              this.keyboardNavService.anchorIndex = event.rowIndex;
+              this.keyboardNavService.leadIndex = event.rowIndex;
             }
           });
 
@@ -147,11 +132,11 @@ export class Grid implements AfterViewInit {
             const mouseEvent = event.event as MouseEvent;
             if (
               mouseEvent?.shiftKey &&
-              this.selectionAnchorIndex !== null &&
+              this.keyboardNavService.anchorIndex !== null &&
               event.rowIndex !== null
             ) {
-              const start = Math.min(this.selectionAnchorIndex, event.rowIndex);
-              const end = Math.max(this.selectionAnchorIndex, event.rowIndex);
+              const start = Math.min(this.keyboardNavService.anchorIndex, event.rowIndex);
+              const end = Math.max(this.keyboardNavService.anchorIndex, event.rowIndex);
 
               api.deselectAll();
               for (let i = start; i <= end; i++) {
@@ -167,21 +152,6 @@ export class Grid implements AfterViewInit {
         },
       },
     );
-
-    effect(() => {
-      const torrents = this.torrentStore.torrentsArray();
-      const topHashes = this.pinnedTopHashes();
-      const bottomHashes = this.pinnedBottomHashes();
-      if (!this.api) return;
-
-      const pinnedTop = torrents.filter((t) => topHashes.has(t.hash));
-      const pinnedBottom = torrents.filter((t) => bottomHashes.has(t.hash));
-      const mainRows = torrents.filter((t) => !topHashes.has(t.hash) && !bottomHashes.has(t.hash));
-
-      this.api.setGridOption('rowData', mainRows);
-      this.api.setGridOption('pinnedTopRowData', pinnedTop);
-      this.api.setGridOption('pinnedBottomRowData', pinnedBottom);
-    });
 
     effect(() => {
       const selectedTorrents = this.selectionStore.selected();
@@ -217,47 +187,13 @@ export class Grid implements AfterViewInit {
       }
     });
 
-    this.commandBusService.commands$
-      .pipe(
-        filter(
-          (cmd): cmd is UiCommand =>
-            cmd.type === 'UI_TORRENT_PIN_TOP' ||
-            cmd.type === 'UI_TORRENT_PIN_BOTTOM' ||
-            cmd.type === 'UI_TORRENT_UNPIN',
-        ),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe((cmd) => {
-        const hashes = this.selectionStore.selected().map((t) => t.hash);
-        const hashSet = new Set(hashes);
+    toObservable(this.filterService.external)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(this.onExternalFilterChange);
 
-        if (cmd.type === 'UI_TORRENT_UNPIN') {
-          this.pinnedTopHashes.set(
-            new Set([...this.pinnedTopHashes()].filter((h) => !hashSet.has(h))),
-          );
-          this.pinnedBottomHashes.set(
-            new Set([...this.pinnedBottomHashes()].filter((h) => !hashSet.has(h))),
-          );
-        } else if (cmd.type === 'UI_TORRENT_PIN_TOP') {
-          this.pinnedBottomHashes.set(
-            new Set([...this.pinnedBottomHashes()].filter((h) => !hashSet.has(h))),
-          );
-          this.pinnedTopHashes.set(new Set([...this.pinnedTopHashes(), ...hashes]));
-        } else {
-          this.pinnedTopHashes.set(
-            new Set([...this.pinnedTopHashes()].filter((h) => !hashSet.has(h))),
-          );
-          this.pinnedBottomHashes.set(new Set([...this.pinnedBottomHashes(), ...hashes]));
-        }
-
-        if (this.api) {
-          void this.gridStateService.save(
-            this.api,
-            [...this.pinnedTopHashes()],
-            [...this.pinnedBottomHashes()],
-          );
-        }
-      });
+    toObservable(this.filterService.columns)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(this.onColumnFilterChange);
   }
 
   private areSelectionsEqual(a: Torrent[], b: Torrent[]): boolean {
@@ -276,8 +212,10 @@ export class Grid implements AfterViewInit {
     this.api.setGridOption('pagination', settings.pagination);
     this.api.setGridOption('animateRows', settings.animateRows);
 
-    this.pinnedTopHashes.set(new Set(settings.pinnedTopHashes ?? []));
-    this.pinnedBottomHashes.set(new Set(settings.pinnedBottomHashes ?? []));
+    this.gridPinService.applyPinnedState(
+      settings.pinnedTopHashes ?? [],
+      settings.pinnedBottomHashes ?? [],
+    );
 
     const floatingFilters = settings.floatingFilters ?? false;
     const currentDefs = this.api.getColumnDefs() ?? [];
@@ -295,18 +233,10 @@ export class Grid implements AfterViewInit {
       if (!this.api) return;
       void this.gridStateService.save(
         this.api,
-        [...this.pinnedTopHashes()],
-        [...this.pinnedBottomHashes()],
+        this.gridPinService.getPinnedTopHashes(),
+        this.gridPinService.getPinnedBottomHashes(),
       );
     });
-
-    this.filterService.external$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(this.onExternalFilterChange);
-
-    this.filterService.columnModel$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(this.onColumnFilterChange);
 
     (this.torrentListGridSettingsService
       .asObservable()
@@ -319,112 +249,6 @@ export class Grid implements AfterViewInit {
 
   deselectRows() {
     this.api?.deselectAll();
-  }
-
-  private isTypingTarget(target: EventTarget | null): boolean {
-    if (!(target instanceof HTMLElement)) return false;
-    return ['INPUT', 'TEXTAREA'].includes(target.tagName) || target.isContentEditable;
-  }
-
-  private handleGridSelectAll(event: KeyboardEvent): void {
-    const { ctrlKey, code } = event;
-    if (!(ctrlKey && code === 'KeyA') || this.isTypingTarget(event.target)) return;
-    event.preventDefault();
-    this.api?.forEachNodeAfterFilter((node) => {
-      if (node.displayed) node.setSelected(true, false);
-    });
-  }
-
-  private handleGridKeyboardSelection(event: KeyboardEvent): void {
-    const { code, shiftKey, ctrlKey } = event;
-    const isNavKey = [
-      'ArrowDown',
-      'ArrowUp',
-      'Home',
-      'End',
-      'PageDown',
-      'PageUp',
-      'Enter',
-    ].includes(code);
-    if (!isNavKey || this.isTypingTarget(event.target)) return;
-
-    const api = this.api;
-    if (!api) return;
-
-    const selectedNodes = api.getSelectedNodes();
-    let leadIndex =
-      this.selectionLeadIndex ??
-      (selectedNodes.length ? selectedNodes[selectedNodes.length - 1].rowIndex : null);
-    if (leadIndex == null) return;
-
-    const nextIndex = this.computeNextDisplayedIndex(api, code, leadIndex);
-    if (nextIndex == null || nextIndex === leadIndex) return;
-
-    const nextNode = api.getDisplayedRowAtIndex(nextIndex);
-    if (!nextNode) return;
-
-    event.preventDefault();
-    const colId = api.getAllDisplayedColumns()?.[0]?.getColId();
-
-    if (shiftKey) {
-      if (this.selectionAnchorIndex == null) this.selectionAnchorIndex = leadIndex;
-      this.selectionLeadIndex = nextIndex;
-      const start = Math.min(this.selectionAnchorIndex, this.selectionLeadIndex);
-      const end = Math.max(this.selectionAnchorIndex, this.selectionLeadIndex);
-      if (!ctrlKey) api.deselectAll();
-      for (let i = start; i <= end; i++) api.getDisplayedRowAtIndex(i)?.setSelected(true);
-    } else if (!ctrlKey) {
-      api.deselectAll();
-      nextNode.setSelected(true, true);
-      this.selectionAnchorIndex = nextIndex;
-      this.selectionLeadIndex = nextIndex;
-    }
-
-    if (colId) api.setFocusedCell(nextIndex, colId);
-    api.ensureIndexVisible(nextIndex);
-  }
-
-  private computeNextDisplayedIndex(api: GridApi, code: string, leadIndex: number): number | null {
-    const rowCount = api.getDisplayedRowCount();
-    if (rowCount <= 0) return null;
-    const clamp = (i: number) => Math.max(0, Math.min(i, rowCount - 1));
-    switch (code) {
-      case 'ArrowDown':
-        return clamp(leadIndex + 1);
-      case 'ArrowUp':
-        return clamp(leadIndex - 1);
-      case 'Home':
-        return 0;
-      case 'End':
-        return rowCount - 1;
-      case 'PageDown':
-        return clamp(leadIndex + this.getApproxPageSize(api));
-      case 'PageUp':
-        return clamp(leadIndex - this.getApproxPageSize(api));
-      default:
-        return null;
-    }
-  }
-
-  private getApproxPageSize(api: any): number {
-    const rowHeight = 32;
-    const viewportHeight = api.gridBodyCtrl?.eBodyViewport?.clientHeight ?? 400;
-    return Math.max(1, Math.floor(viewportHeight / rowHeight) - 1);
-  }
-
-  private getTrackers(t: Torrent): string[] {
-    return (t.tracker ?? '').split('\n').filter(Boolean);
-  }
-
-  private normalizeTracker(raw?: string | null): string {
-    const s = (raw ?? '').trim();
-    if (!s) return '(none)';
-    try {
-      const u = new URL(s);
-      return u.host || u.hostname || s;
-    } catch {
-      return s;
-    }
   }
 
   private queueSave = () => this.saveGridState$.next();

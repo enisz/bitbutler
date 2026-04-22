@@ -11,19 +11,14 @@
   position: relative;
   border: none;
 
-  --label-on-fill: #121213;
-  --label-on-empty: #e5d6c1;
+  --label-on-fill: var(--bb-primary-ink);
+  --label-on-empty: var(--bs-body-color);
 
   .progress-bar {
     height: 100% !important;
     border-radius: 0 !important;
-    transition: width 0.1s ease-out;
+    transition: width 0.4s ease-out !important;
   }
-}
-
-:host-context([data-bs-theme='light']) .bb-progress {
-  --label-on-empty: #212529;
-  --label-on-fill: #fff;
 }
 
 .bb-progress-label {
@@ -36,7 +31,6 @@
 
   font-weight: 600;
   font-size: 11px;
-
   line-height: 1;
   pointer-events: none;
   z-index: 5;

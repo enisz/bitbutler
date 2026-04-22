@@ -39,7 +39,8 @@ export class TorrentStoreService {
   private readonly _finished$ = new Subject<TorrentFinishedEvent>();
   readonly finished$ = this._finished$.asObservable();
   private readonly finishedByHash = new Map<string, boolean>();
-  private primed = false;
+  private readonly _isPrimed = signal(false);
+  readonly isPrimed = this._isPrimed.asReadonly();
 
   applyMaindata(data: Maindata): TorrentTxnDelta {
     const incoming: Record<string, Partial<Torrent>> = data?.torrents ?? {};
@@ -66,8 +67,8 @@ export class TorrentStoreService {
 
       this._torrents.set(next);
 
-      this.ingestFinished(add, [], this.primed && !isStreamingChunk);
-      if (!isStreamingChunk) this.primed = true;
+      this.ingestFinished(add, [], this._isPrimed() && !isStreamingChunk);
+      if (!isStreamingChunk) this._isPrimed.set(true);
     } else {
       for (const hash of removed) {
         const existing = next.get(hash);
@@ -96,9 +97,9 @@ export class TorrentStoreService {
       this.ingestFinished(
         [...add, ...update],
         remove.map((r) => r.hash),
-        this.primed && !isStreamingChunk,
+        this._isPrimed() && !isStreamingChunk,
       );
-      if (!isStreamingChunk) this.primed = true;
+      if (!isStreamingChunk) this._isPrimed.set(true);
     }
 
     if (data.full_update) {
@@ -149,7 +150,7 @@ export class TorrentStoreService {
   clear() {
     this._torrents.set(new Map());
     this.finishedByHash.clear();
-    this.primed = false;
+    this._isPrimed.set(false);
     this._categories.set(new Map());
     this._tags.set(new Set());
   }

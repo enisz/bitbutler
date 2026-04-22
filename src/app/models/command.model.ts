@@ -33,7 +33,6 @@ export type UiCommand =
 
 export type TorrentCommand =
   | { type: 'TORRENT_DELETE_CONFIRM'; removeFiles: boolean }
-  | { type: 'TORRENT_DELETE_CANCEL' }
   | { type: 'TORRENT_DELETED'; hash: string }
   | { type: 'TORRENT_PAUSE' }
   | { type: 'TORRENT_RESUME' }

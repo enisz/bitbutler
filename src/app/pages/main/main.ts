@@ -6,7 +6,7 @@ import { QbPollingService } from '../../services/qb-polling.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { ThemeService } from '../../services/theme.service';
 import { TorrentListGridSettingsService } from '../../services/torrent-list-grid.settings.service';
-import { TorrentStoreService, TorrentTxnDelta } from '../../services/torrent-store.service';
+import { TorrentStoreService } from '../../services/torrent-store.service';
 import { WindowService } from '../../services/window.service';
 import { ButtonBar } from './button-bar/button-bar';
 import { Grid } from './grid/grid';
@@ -32,7 +32,6 @@ export class Main implements OnDestroy {
     () => `assets/images/bitbutler-logo-${this.themeService.family()}.png`,
   );
 
-  readonly lastDelta = signal<TorrentTxnDelta | null>(null);
   readonly theme = this.themeService.effectiveMode;
   readonly serverState = signal<QbServerState | null>(null);
   private readonly _pollEffect = effect((onCleanup) => {
@@ -41,7 +40,6 @@ export class Main implements OnDestroy {
     this.pollSub?.unsubscribe();
     this.pollSub = null;
     this.serverState.set(null);
-    this.lastDelta.set(null);
 
     if (!serverId) return;
 
@@ -63,8 +61,7 @@ export class Main implements OnDestroy {
           this.qbPollingService
             .startMaindataPolling(serverId, sortBy, sortDesc)
             .subscribe((data: Maindata) => {
-              const delta = this.torrentStore.applyMaindata(data);
-              this.lastDelta.set(delta);
+              this.torrentStore.applyMaindata(data);
               this.serverState.update((prev) => mergeServerState(prev, data.server_state));
             }),
         );

@@ -721,6 +721,7 @@
         "filter-group": {
           "all": "Összes"
         },
+        "clear-all": "Összes szűrő törlése",
         "label": {
           "status": "Állapot",
           "trackers": "Trackerek",
@@ -862,6 +863,7 @@
         },
         "torrent-list-grid": {
           "title": "Torrent lista táblázat",
+          "description": "Alkalmazásszintű torrent táblázat beállítások.",
           "torrent-list-grid-form": {
             "animate-rows": "Sorok animálása",
             "pagination": "Oldalszámozás",

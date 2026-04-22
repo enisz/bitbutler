@@ -721,6 +721,7 @@
         "filter-group": {
           "all": "All"
         },
+        "clear-all": "Clear all filters",
         "label": {
           "status": "Status",
           "trackers": "Trackers",
@@ -862,6 +863,7 @@
         },
         "torrent-list-grid": {
           "title": "Torrent List Grid",
+          "description": "Application level torrent grid settings.",
           "torrent-list-grid-form": {
             "animate-rows": "Animate Rows",
             "pagination": "Pagination",
