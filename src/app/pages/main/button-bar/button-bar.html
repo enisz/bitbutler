@@ -51,16 +51,15 @@
         formControlName="search"
       />
 
-      @if (searchForm.get('search')?.value?.trim().length) {
-        <button
-          type="button"
-          class="input-group-text bb-search__addon bb-search__clear"
-          (click)="clearSearchField()"
-          aria-label="Clear search"
-        >
-          <fa-icon [icon]="icons.faXmark"></fa-icon>
-        </button>
-      }
+      <button
+        type="button"
+        class="input-group-text bb-search__addon bb-search__clear"
+        [class.bb-search__clear--hidden]="!searchForm.get('search')?.value?.trim().length"
+        (click)="clearSearchField()"
+        aria-label="Clear search"
+      >
+        <fa-icon [icon]="icons.faXmark"></fa-icon>
+      </button>
     </div>
   </form>
 </div>

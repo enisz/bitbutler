@@ -181,12 +181,17 @@
 }
 
 .bb-search__clear {
-  color: var(--bs-secondary-color);
+  color: var(--bs-secondary-color) !important;
   cursor: pointer;
   user-select: none;
 
+  &--hidden {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
   &:hover {
-    color: var(--bs-body-color);
+    color: var(--bs-body-color) !important;
     background-color: color-mix(in srgb, var(--bb-control-hover-bg) 85%, transparent) !important;
   }
 
