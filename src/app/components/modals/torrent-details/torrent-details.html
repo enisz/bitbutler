@@ -22,33 +22,39 @@
             [class.active]="activeTabId() === tab.id"
             (click)="selectTab(tab.id)"
           >
-            {{ tab.label }}
+            {{ tab.label }}{{ tab.id === 'content' && guardService.isDirty() ? ' *' : '' }}
           </button>
         </li>
       }
     </ul>
   </div>
 
-  <button
-    type="button"
-    class="btn-close"
-    aria-label="Close"
-    (click)="activeModal.dismiss()"
-  ></button>
+  <button type="button" class="btn-close" aria-label="Close" (click)="onDismiss()"></button>
 </div>
 
 <div class="modal-body">
-  @if (loadedComponent()) {
-    <ng-container
-      *ngComponentOutlet="loadedComponent(); inputs: { hash: torrent()?.hash, context }"
-    ></ng-container>
+  @if (loadedComponents().size > 0) {
+    <div class="bb-tab-panels">
+      @for (tab of tabs; track tab.id) {
+        @if (loadedComponents().has(tab.id)) {
+          <div class="bb-tab-panel" [class.bb-tab-panel--active]="activeTabId() === tab.id">
+            <ng-container
+              *ngComponentOutlet="
+                loadedComponents().get(tab.id)!;
+                inputs: { hash: torrent()?.hash, context }
+              "
+            ></ng-container>
+          </div>
+        }
+      }
+    </div>
   } @else {
     <app-bb-spinner></app-bb-spinner>
   }
 </div>
 
 <div class="modal-footer">
-  <button type="button" class="btn btn-link" (click)="activeModal.close()" autofocus>
+  <button type="button" class="btn btn-link" (click)="onClose()" autofocus>
     {{ 'general.button.close' | translate }}
   </button>
 </div>

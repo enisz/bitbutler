@@ -6,8 +6,11 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { filter } from 'rxjs/operators';
 import { AutofocusDirective } from '../../../directives/autofocus';
 import { AppCommand, TorrentCommand } from '../../../models/command.model';
+import { GuardableModal } from '../../../models/guardable-modal.interface';
 import { Torrent } from '../../../models/torrent.model';
 import { CommandBusService } from '../../../services/command-bus.service';
+import { ConfirmService } from '../../../services/confirm.service';
+import { ModalGuardService } from '../../../services/modal-guard.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { BbSpinner } from '../../bb-spinner/bb-spinner';
 import { Tab, TorrentDetailTabComponent, TorrentDetailTabId } from './torrent-details.interface';
@@ -23,20 +26,25 @@ import { Tab, TorrentDetailTabComponent, TorrentDetailTabId } from './torrent-de
     NgbTooltip,
     TranslatePipe,
   ],
+  providers: [ModalGuardService],
   templateUrl: './torrent-details.html',
   styleUrl: './torrent-details.scss',
 })
-export class TorrentDetails implements OnInit {
+export class TorrentDetails implements OnInit, GuardableModal {
   @Input() hash: string | null = null;
   @Input() public tabToOpen: TorrentDetailTabId = 'general';
   @Input() public context: Record<string, any> = {};
 
   public readonly activeModal = inject(NgbActiveModal);
+  public readonly guardService = inject(ModalGuardService);
   private readonly commandBusService = inject(CommandBusService);
   private readonly torrentStoreService = inject(TorrentStoreService);
+  private readonly confirmService = inject(ConfirmService);
 
   public activeTabId = signal<TorrentDetailTabId>('general');
-  public loadedComponent = signal<Type<TorrentDetailTabComponent> | null>(null);
+  public loadedComponents = signal<Map<TorrentDetailTabId, Type<TorrentDetailTabComponent>>>(
+    new Map(),
+  );
 
   public torrent = computed<Torrent | null>(() => {
     if (!this.hash) return null;
@@ -82,19 +90,40 @@ export class TorrentDetails implements OnInit {
       .subscribe(() => this.activeModal.close());
   }
 
-  public ngOnInit(): void {
-    this.selectTab(this.tabToOpen);
+  public async ngOnInit(): Promise<void> {
+    this.activeTabId.set(this.tabToOpen);
+    const results = await Promise.all(
+      this.tabs.map((t) => t.loadComponent().then((c) => [t.id, c] as const)),
+    );
+    this.loadedComponents.set(
+      new Map(results) as Map<TorrentDetailTabId, Type<TorrentDetailTabComponent>>,
+    );
   }
 
-  public async selectTab(tabId: TorrentDetailTabId): Promise<void> {
-    if (this.activeTabId() === tabId && this.loadedComponent() !== null) return;
+  public selectTab(tabId: TorrentDetailTabId): void {
     this.activeTabId.set(tabId);
-    this.loadedComponent.set(null);
+  }
 
-    const tab = this.tabs.find((t) => t.id === tabId);
-    if (!tab) throw new Error(`Tab with id ${tabId} not found`);
+  public async canDeactivate(): Promise<boolean> {
+    if (!this.guardService.isDirty()) return true;
 
-    const component = await tab.loadComponent();
-    this.loadedComponent.set(component);
+    const confirmed = await this.confirmService.confirm(
+      'components.modals.guard.unsaved-title',
+      'components.modals.guard.unsaved-message',
+      'components.modals.guard.btn-leave',
+      'components.modals.guard.btn-stay',
+    );
+
+    if (confirmed) this.guardService.isDirty.set(false);
+
+    return confirmed;
+  }
+
+  public async onDismiss(): Promise<void> {
+    if (await this.canDeactivate()) this.activeModal.dismiss();
+  }
+
+  public async onClose(): Promise<void> {
+    if (await this.canDeactivate()) this.activeModal.close();
   }
 }
