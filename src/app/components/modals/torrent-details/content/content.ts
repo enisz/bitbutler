@@ -14,6 +14,7 @@ import { catchError, EMPTY, from, switchMap, tap, timer } from 'rxjs';
 import { TorrentFileEntry } from '../../../../models/torrent-draft.model';
 import { QbTorrentContent } from '../../../../models/torrent.model';
 import { QbService } from '../../../../services/qb.service';
+import { ModalGuardService } from '../../../../services/modal-guard.service';
 import { ServerSettingsService } from '../../../../services/server-settings.service';
 import { ServerStoreService } from '../../../../services/server-store.service';
 import { ToastService } from '../../../../services/toast.service';
@@ -38,6 +39,7 @@ export class Content implements TorrentDetailTabComponent, OnChanges, OnInit {
   private readonly translateService = inject(TranslateService);
   private readonly serverSettingsService = inject(ServerSettingsService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly guardService = inject(ModalGuardService);
 
   public loading = signal<boolean>(true);
   public content = signal<TorrentFileEntry[]>([]);
@@ -112,6 +114,10 @@ export class Content implements TorrentDetailTabComponent, OnChanges, OnInit {
         ),
       );
     }
+  }
+
+  public onEditModeChange(isEditing: boolean): void {
+    this.guardService.isDirty.set(isEditing);
   }
 
   private async load(): Promise<TorrentFileEntry[]> {
