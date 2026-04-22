@@ -33,13 +33,34 @@
   --bs-list-group-action-hover-bg: var(--bb-hover-list-item-bg);
 }
 
+.bb-filter-input {
+  position: relative;
+}
+
+.bb-filter-clear {
+  position: absolute;
+  right: 0.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: var(--bs-secondary-color);
+  padding: 0.15rem 0.35rem;
+  line-height: 1;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--bs-body-color);
+  }
+}
+
 .form-control {
   background-color: transparent;
   border: none;
   border-bottom: 1px solid var(--bs-border-color);
   border-radius: 0;
   padding-left: 15px;
-  padding-right: 15px;
+  padding-right: 1.75rem;
 
   &:focus {
     background-color: transparent;

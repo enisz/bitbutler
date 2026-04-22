@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { IconDefinition, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
@@ -58,6 +58,8 @@ export class FilterGroupComponent implements OnInit, OnChanges {
 
   @Output() itemSelected = new EventEmitter<string>();
 
+  public readonly icons = { faXmark };
+
   public filterCtrl = new FormControl('', { nonNullable: true });
   public filteredItems$!: Observable<FilterItem[]>;
 
@@ -83,6 +85,10 @@ export class FilterGroupComponent implements OnInit, OnChanges {
         items.filter((item) => item.label.toLowerCase().includes(filterText.toLowerCase())),
       ),
     );
+  }
+
+  public clearFilter(): void {
+    this.filterCtrl.reset();
   }
 
   public onItemSelected(key: string): void {
