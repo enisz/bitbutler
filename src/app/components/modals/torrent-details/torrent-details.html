@@ -22,7 +22,14 @@
             [class.active]="activeTabId() === tab.id"
             (click)="selectTab(tab.id)"
           >
-            {{ tab.label }}{{ tab.id === 'content' && guardService.isDirty() ? ' *' : '' }}
+            {{ tab.label }}
+            @if (tab.id === 'content' && guardService.isDirty()) {
+              <fa-icon
+                [icon]="icon.faPencil"
+                class="ms-2"
+                [ngbTooltip]="'components.modals.guard.unsaved-indicator' | translate"
+              ></fa-icon>
+            }
           </button>
         </li>
       }

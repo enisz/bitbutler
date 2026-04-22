@@ -468,7 +468,8 @@
         "unsaved-title": "Mentetlen változtatások",
         "unsaved-message": "Mentetlen változtatásaid vannak. Biztosan elhagyod?",
         "btn-leave": "Elhagyás",
-        "btn-stay": "Maradás"
+        "btn-stay": "Maradás",
+        "unsaved-indicator": "Mentetlen változtatások"
       }
     },
     "share-limit": {

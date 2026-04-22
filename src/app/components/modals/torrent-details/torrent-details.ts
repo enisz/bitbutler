@@ -3,6 +3,8 @@ import { Component, computed, inject, Input, OnInit, signal, Type } from '@angul
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faPencil } from '@fortawesome/free-solid-svg-icons';
 import { filter } from 'rxjs/operators';
 import { AutofocusDirective } from '../../../directives/autofocus';
 import { AppCommand, TorrentCommand } from '../../../models/command.model';
@@ -25,6 +27,7 @@ import { Tab, TorrentDetailTabComponent, TorrentDetailTabId } from './torrent-de
     AutofocusDirective,
     NgbTooltip,
     TranslatePipe,
+    FontAwesomeModule,
   ],
   providers: [ModalGuardService],
   templateUrl: './torrent-details.html',
@@ -40,6 +43,8 @@ export class TorrentDetails implements OnInit, GuardableModal {
   private readonly commandBusService = inject(CommandBusService);
   private readonly torrentStoreService = inject(TorrentStoreService);
   private readonly confirmService = inject(ConfirmService);
+
+  public readonly icon = { faPencil };
 
   public activeTabId = signal<TorrentDetailTabId>('general');
   public loadedComponents = signal<Map<TorrentDetailTabId, Type<TorrentDetailTabComponent>>>(
