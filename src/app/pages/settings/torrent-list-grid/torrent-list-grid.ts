@@ -1,3 +1,4 @@
+// src/app/pages/settings/torrent-list-grid/torrent-list-grid.ts
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -7,7 +8,7 @@ import { faGripVertical, faTriangleExclamation } from '@fortawesome/free-solid-s
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { type ColDef, type ColumnState } from 'ag-grid-community';
-import { debounceTime, take, tap } from 'rxjs';
+import { firstValueFrom, take, tap } from 'rxjs';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import {
@@ -18,6 +19,7 @@ import { getGridColDefs } from '../../../pages/main/grid/grid.lib';
 import { ToastService } from '../../../services/toast.service';
 import { TorrentListGridSettingsService } from '../../../services/torrent-list-grid.settings.service';
 import { UiFormatService } from '../../../services/ui-format.service';
+import { SettingsStateService } from '../settings-state.service';
 import { SettingsTabComponent } from '../settings.interface';
 
 export interface NgSelectColumnItem {
@@ -47,6 +49,7 @@ export class TorrentListGrid implements SettingsTabComponent, OnInit {
   private readonly uiFormatService = inject(UiFormatService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly translateService = inject(TranslateService);
+  private readonly stateService = inject(SettingsStateService);
 
   faTriangleExclamation = faTriangleExclamation;
 
@@ -87,6 +90,8 @@ export class TorrentListGrid implements SettingsTabComponent, OnInit {
         this.loaded.set(true);
       });
 
+    this.stateService.registerSave('torrent-list-grid', () => this.save());
+
     this.torrentListGridForm
       .get('columns')
       ?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
@@ -104,8 +109,8 @@ export class TorrentListGrid implements SettingsTabComponent, OnInit {
       });
 
     this.torrentListGridForm.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef), debounceTime(1000))
-      .subscribe(() => this.save());
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.stateService.markDirty('torrent-list-grid', true));
   }
 
   private initializeForm(settings: TorrentListGridSettings, allDefs: ColDef[]) {
@@ -136,67 +141,58 @@ export class TorrentListGrid implements SettingsTabComponent, OnInit {
     const columns = [...this.orderedColumns()];
     moveItemInArray(columns, event.previousIndex, event.currentIndex);
     this.orderedColumns.set(columns);
-    this.save();
+    this.stateService.markDirty('torrent-list-grid', true);
   }
 
-  private save(): void {
-    this.torrentListGridSettingsService
-      .asObservable()
-      .pipe(take(1))
-      .subscribe((settings) => {
-        const formValue = this.torrentListGridForm.getRawValue();
-        const allDefs = getGridColDefs(this.uiFormatService, this.translateService);
+  private async save(): Promise<void> {
+    const settings = await firstValueFrom(this.torrentListGridSettingsService.asObservable());
+    const formValue = this.torrentListGridForm.getRawValue();
+    const allDefs = getGridColDefs(this.uiFormatService, this.translateService);
 
-        const resolvedColumnState = (settings.columnState || []) as ColumnState[];
+    const resolvedColumnState = (settings.columnState || []) as ColumnState[];
+    const existingStateMap = new Map(resolvedColumnState.map((c) => [c.colId!, c]));
+    const defsMap = new Map(allDefs.map((d) => [d.colId, d]));
 
-        const existingStateMap = new Map(resolvedColumnState.map((c) => [c.colId!, c]));
-        const defsMap = new Map(allDefs.map((d) => [d.colId, d]));
+    const orderedVisible = this.orderedColumns();
+    const visibleIds = new Set(orderedVisible.map((c) => c.value));
 
-        const orderedVisible = this.orderedColumns();
-        const visibleIds = new Set(orderedVisible.map((c) => c.value));
+    const newColumnState: ColumnState[] = orderedVisible.map((col) => {
+      const existing = existingStateMap.get(col.value);
+      const def = defsMap.get(col.value);
+      return {
+        colId: col.value,
+        hide: false,
+        width: existing?.width ?? (typeof def?.width === 'number' ? def.width : undefined),
+        flex:
+          existing?.flex ?? (def as any)?.flex ?? (typeof def?.width === 'number' ? undefined : 1),
+        sort: existing?.sort ?? null,
+        pinned: existing?.pinned ?? null,
+      };
+    });
 
-        const newColumnState: ColumnState[] = orderedVisible.map((col) => {
-          const existing = existingStateMap.get(col.value);
-          const def = defsMap.get(col.value);
-          return {
-            colId: col.value,
-            hide: false,
-            width: existing?.width ?? (typeof def?.width === 'number' ? def.width : undefined),
-            flex:
-              existing?.flex ??
-              (def as any)?.flex ??
-              (typeof def?.width === 'number' ? undefined : 1),
-            sort: existing?.sort ?? null,
-            pinned: existing?.pinned ?? null,
-          };
+    allDefs.forEach((def) => {
+      if (!visibleIds.has(def.colId!)) {
+        const existing = existingStateMap.get(def.colId!);
+        newColumnState.push({
+          colId: def.colId!,
+          hide: true,
+          width: existing?.width ?? (typeof def.width === 'number' ? def.width : undefined),
+          flex:
+            existing?.flex ?? (def as any)?.flex ?? (typeof def.width === 'number' ? undefined : 1),
+          sort: existing?.sort ?? null,
+          pinned: existing?.pinned ?? null,
         });
+      }
+    });
 
-        allDefs.forEach((def) => {
-          if (!visibleIds.has(def.colId!)) {
-            const existing = existingStateMap.get(def.colId!);
-            newColumnState.push({
-              colId: def.colId!,
-              hide: true,
-              width: existing?.width ?? (typeof def.width === 'number' ? def.width : undefined),
-              flex:
-                existing?.flex ??
-                (def as any)?.flex ??
-                (typeof def.width === 'number' ? undefined : 1),
-              sort: existing?.sort ?? null,
-              pinned: existing?.pinned ?? null,
-            });
-          }
-        });
+    await this.torrentListGridSettingsService.save({
+      ...settings,
+      pagination: formValue.pagination ?? settings.pagination,
+      animateRows: formValue.animateRows ?? settings.animateRows,
+      rowDoubleClickAction: formValue.rowDoubleClickAction ?? settings.rowDoubleClickAction,
+      columnState: newColumnState,
+    });
 
-        this.torrentListGridSettingsService
-          .save({
-            ...settings,
-            pagination: formValue.pagination ?? settings.pagination,
-            animateRows: formValue.animateRows ?? settings.animateRows,
-            rowDoubleClickAction: formValue.rowDoubleClickAction ?? settings.rowDoubleClickAction,
-            columnState: newColumnState,
-          })
-          .then(() => this.toastService.success('Torrent List Grid Settings Saved!', 'Success'));
-      });
+    this.toastService.success('Torrent List Grid Settings Saved!', 'Success');
   }
 }
