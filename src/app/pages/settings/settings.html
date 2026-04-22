@@ -24,11 +24,9 @@
   @if (loadedComponents().size > 0) {
     <div class="bb-tab-panels">
       @for (tab of tabs; track tab.id) {
-        @if (loadedComponents().has(tab.id)) {
-          <div class="bb-tab-panel" [class.bb-tab-panel--active]="activeTabId() === tab.id">
-            <ng-container *ngComponentOutlet="loadedComponents().get(tab.id)!"></ng-container>
-          </div>
-        }
+        <div class="bb-tab-panel" [class.bb-tab-panel--active]="activeTabId() === tab.id">
+          <ng-container *ngComponentOutlet="loadedComponents().get(tab.id)!"></ng-container>
+        </div>
       }
     </div>
   } @else {

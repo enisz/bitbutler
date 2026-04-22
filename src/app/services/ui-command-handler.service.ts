@@ -68,6 +68,8 @@ export class UiCommandHandlerService {
               size: 'xl',
               centered: false,
               scrollable: true,
+              keyboard: false,
+              backdrop: 'static',
             });
 
             if (command.tabToOpen) {
