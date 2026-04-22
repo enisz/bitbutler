@@ -1,0 +1,19 @@
+.bb-tab-panels {
+  position: relative;
+}
+
+.bb-tab-panel {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+  transition: opacity 0.2s ease;
+
+  &--active {
+    position: relative;
+    overflow: visible;
+    opacity: 1;
+    pointer-events: auto;
+  }
+}

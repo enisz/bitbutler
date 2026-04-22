@@ -65,10 +65,12 @@ export class UiCommandHandlerService {
 
           case 'UI_OPEN_SETTINGS':
             if (this.isModalOpen(Settings)) break;
-            const settingsModalRef = this.modalService.open(Settings, {
+            let settingsModalRef: NgbModalRef;
+            settingsModalRef = this.modalService.open(Settings, {
               size: 'xl',
               centered: false,
               scrollable: true,
+              beforeDismiss: () => settingsModalRef.componentInstance.canDeactivate(),
             });
 
             if (command.tabToOpen) {
@@ -82,7 +84,8 @@ export class UiCommandHandlerService {
             if (!command.hash) return;
             if (this.isModalOpen(TorrentDetails)) break;
 
-            const torrentDetailsModalRef = this.modalService.open(TorrentDetails, {
+            let torrentDetailsModalRef: NgbModalRef;
+            torrentDetailsModalRef = this.modalService.open(TorrentDetails, {
               size: 'xl',
               scrollable: true,
               centered: false,
@@ -240,7 +243,8 @@ export class UiCommandHandlerService {
             if (!command.hash) return;
             if (this.isModalOpen(TorrentDetails)) break;
 
-            const contentModalRef = this.modalService.open(TorrentDetails, {
+            let contentModalRef: NgbModalRef;
+            contentModalRef = this.modalService.open(TorrentDetails, {
               size: 'xl',
               scrollable: true,
               centered: false,

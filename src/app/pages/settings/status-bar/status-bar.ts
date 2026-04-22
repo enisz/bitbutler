@@ -7,7 +7,7 @@ import {
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
 import { AsyncPipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faGripVertical } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -15,7 +15,7 @@ import { switchMap, tap } from 'rxjs';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { StatusBarSettings } from '../../../models/status-bar-settings.model';
 import { StatusBarSettingsService } from '../../../services/status-bar-settings.service';
-import { ToastService } from '../../../services/toast.service';
+import { SettingsStateService } from '../settings-state.service';
 import { SettingsTabComponent } from '../settings.interface';
 
 interface Widget {
@@ -38,10 +38,10 @@ interface Widget {
   templateUrl: './status-bar.html',
   styleUrl: './status-bar.scss',
 })
-export class StatusBar implements SettingsTabComponent {
+export class StatusBar implements SettingsTabComponent, OnInit {
   private statusBarService = inject(StatusBarSettingsService);
-  private toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
+  private readonly stateService = inject(SettingsStateService);
 
   public faGripVertical = faGripVertical;
 
@@ -81,13 +81,17 @@ export class StatusBar implements SettingsTabComponent {
       }),
     );
 
+  public ngOnInit(): void {
+    this.stateService.registerSave('status-bar', () => this.save());
+  }
+
   private mapIdsToWidgets(ids: string[]): Widget[] {
     return (ids ?? [])
       .filter((id) => !!this.MASTER_WIDGETS[id])
       .map((id) => ({ id, label: this.MASTER_WIDGETS[id] }));
   }
 
-  drop(event: CdkDragDrop<Widget[]>) {
+  public drop(event: CdkDragDrop<Widget[]>): void {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
@@ -98,19 +102,14 @@ export class StatusBar implements SettingsTabComponent {
         event.currentIndex,
       );
     }
-    this.saveSettings();
+    this.stateService.markDirty('status-bar', true);
   }
 
-  private saveSettings() {
-    this.statusBarService.save({
+  private async save(): Promise<void> {
+    await this.statusBarService.save({
       available: this.available.map((w) => w.id),
       left: this.left.map((w) => w.id),
       right: this.right.map((w) => w.id),
     });
-
-    this.toastService.success(
-      this.translateService.instant('pages.settings.tab.status-bar.success.save'),
-      'Success',
-    );
   }
 }

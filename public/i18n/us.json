@@ -468,7 +468,8 @@
         "unsaved-title": "Unsaved changes",
         "unsaved-message": "You have unsaved changes. Leave anyway?",
         "btn-leave": "Leave",
-        "btn-stay": "Stay"
+        "btn-stay": "Stay",
+        "unsaved-indicator": "Unsaved changes"
       }
     },
     "share-limit": {
@@ -732,6 +733,9 @@
     },
     "settings": {
       "title": "Settings",
+      "success": {
+        "saved": "Settings Saved"
+      },
       "tab": {
         "general": {
           "title": "General",

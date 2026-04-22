@@ -14,14 +14,14 @@ import {
   NgSelectComponent,
 } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { debounceTime, filter, firstValueFrom, from, tap } from 'rxjs';
+import { filter, firstValueFrom, from, tap } from 'rxjs';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { GeneralSettings, ToastPosition } from '../../../models/general-settings.model';
 import { CommandBusService } from '../../../services/command-bus.service';
 import { GeneralSettingsService } from '../../../services/general-settings.service';
 import { ThemeFamily, ThemeMode, ThemeService } from '../../../services/theme.service';
-import { ToastService } from '../../../services/toast.service';
+import { SettingsStateService } from '../settings-state.service';
 import { SettingsTabComponent } from '../settings.interface';
 
 interface NgSelectItem {
@@ -49,10 +49,10 @@ interface NgSelectItem {
 export class General implements SettingsTabComponent, OnInit {
   private readonly themeService = inject(ThemeService);
   private readonly generalSettingsService = inject(GeneralSettingsService);
-  private readonly toastService = inject(ToastService);
   private readonly commandBusService = inject(CommandBusService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly translateService = inject(TranslateService);
+  private readonly stateService = inject(SettingsStateService);
 
   private languageChanged = toSignal(this.translateService.onLangChange);
 
@@ -95,38 +95,14 @@ export class General implements SettingsTabComponent, OnInit {
   });
 
   public families: NgSelectItem[] = [
-    {
-      value: 'bitbutler',
-      label: 'BitButler',
-    },
-    {
-      value: 'aurora',
-      label: 'Aurora',
-    },
-    {
-      value: 'mint-green',
-      label: 'Mint Green',
-    },
-    {
-      value: 'purple-haze',
-      label: 'Purple Haze',
-    },
-    {
-      value: 'ocean-breeze',
-      label: 'Ocean Breeze',
-    },
-    {
-      value: 'pumpkin-spice',
-      label: 'Pumpkin Spice',
-    },
-    {
-      value: 'deep-sea',
-      label: 'Deep Sea',
-    },
-    {
-      value: 'crimson-ember',
-      label: 'Crimson Ember',
-    },
+    { value: 'bitbutler', label: 'BitButler' },
+    { value: 'aurora', label: 'Aurora' },
+    { value: 'mint-green', label: 'Mint Green' },
+    { value: 'purple-haze', label: 'Purple Haze' },
+    { value: 'ocean-breeze', label: 'Ocean Breeze' },
+    { value: 'pumpkin-spice', label: 'Pumpkin Spice' },
+    { value: 'deep-sea', label: 'Deep Sea' },
+    { value: 'crimson-ember', label: 'Crimson Ember' },
   ];
 
   public modes = computed<NgSelectItem[]>(() => {
@@ -179,17 +155,19 @@ export class General implements SettingsTabComponent, OnInit {
   );
 
   public async ngOnInit(): Promise<void> {
+    this.stateService.registerSave('general', () => this.save());
+
     this.generalSettingsForm.valueChanges
-      .pipe(debounceTime(1000), takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.saveSettings());
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.stateService.markDirty('general', true));
   }
 
-  private async saveSettings(): Promise<void> {
+  private async save(): Promise<void> {
     const settings = this.generalSettingsForm.getRawValue();
     const newLang = settings.language.language;
     const currentLang = this.translateService.getCurrentLang();
 
-    this.generalSettingsService.save(settings);
+    await this.generalSettingsService.save(settings);
 
     if (newLang !== currentLang) {
       await firstValueFrom(
@@ -197,21 +175,7 @@ export class General implements SettingsTabComponent, OnInit {
       );
     }
 
-    const message = await firstValueFrom(
-      this.translateService.get('pages.settings.tab.general.success.saved'),
-    );
-
-    this.toastService.success(message);
-  }
-
-  public onThemeChange(control: string, event: NgSelectItem): void {
-    const { value } = event;
-
-    if (control === 'family') {
-      this.themeService.setFamily(value as ThemeFamily);
-    } else {
-      this.themeService.setMode(value as ThemeMode);
-    }
+    this.themeService.applyFromSettings(settings.appearance.family, settings.appearance.mode);
   }
 
   public checkUpdates(): void {

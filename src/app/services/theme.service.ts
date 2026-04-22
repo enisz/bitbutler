@@ -64,6 +64,11 @@ export class ThemeService {
     this.saveSettings();
   }
 
+  public applyFromSettings(family: ThemeFamily, mode: ThemeMode): void {
+    this._family.set(family);
+    this._mode.set(mode);
+  }
+
   private async saveSettings(): Promise<void> {
     const settings = await this.generalSettingsService.load();
     settings.appearance.family = this._family();

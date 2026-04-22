@@ -11,6 +11,13 @@
             (click)="selectTab(tab.id)"
           >
             {{ tab.label | translate }}
+            @if (stateService.isDirtyMap()[tab.id]) {
+              <fa-icon
+                [icon]="icon.faPencil"
+                class="ms-2"
+                [ngbTooltip]="'components.modals.guard.unsaved-indicator' | translate"
+              ></fa-icon>
+            }
           </button>
         </li>
       }
@@ -26,15 +33,29 @@
 </div>
 
 <div class="modal-body">
-  @if (loadedComponent()) {
-    <ng-container *ngComponentOutlet="loadedComponent()"></ng-container>
+  @if (loadedComponents().size > 0) {
+    <div class="bb-tab-panels">
+      @for (tab of tabs; track tab.id) {
+        <div class="bb-tab-panel" [class.bb-tab-panel--active]="activeTabId() === tab.id">
+          <ng-container *ngComponentOutlet="loadedComponents().get(tab.id)!"></ng-container>
+        </div>
+      }
+    </div>
   } @else {
     <app-bb-spinner></app-bb-spinner>
   }
 </div>
 
 <div class="modal-footer">
-  <button type="button" class="btn btn-link" (click)="activeModal.close()" autofocus>
+  <button
+    type="button"
+    class="btn btn-secondary"
+    [disabled]="!stateService.isDirty()"
+    (click)="onSave()"
+  >
+    {{ 'general.button.save' | translate }}
+  </button>
+  <button type="button" class="btn btn-link" (click)="activeModal.dismiss()" autofocus>
     {{ 'general.button.close' | translate }}
   </button>
 </div>
