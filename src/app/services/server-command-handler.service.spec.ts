@@ -1,11 +1,11 @@
+import { signal } from '@angular/core';
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { Subject } from 'rxjs';
-import { ServerCommandHandlerService } from './server-command-handler.service';
 import { CommandBusService } from './command-bus.service';
+import { ServerCommandHandlerService } from './server-command-handler.service';
 import { ServerStoreService } from './server-store.service';
 import { ServerService } from './server.service';
 import { ToastService } from './toast.service';
-import { signal } from '@angular/core';
 
 describe('ServerCommandHandlerService', () => {
   let service: ServerCommandHandlerService;
@@ -54,7 +54,7 @@ describe('ServerCommandHandlerService', () => {
     serverStoreRefresh.and.returnValue(Promise.reject(new Error('network error')));
     commands$.next({ type: 'SERVER_ADDED', id: '1' });
     tick();
-    // subscription must still be alive
+
     serverStoreRefresh.and.returnValue(Promise.resolve());
     commands$.next({ type: 'SERVER_UPDATED', id: '1' });
     tick();
