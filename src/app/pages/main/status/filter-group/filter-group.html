@@ -3,12 +3,24 @@
     {{ label }} ({{ items.length }})
   </div>
   <div class="p-2">
-    <input
-      type="text"
-      class="form-control form-control-sm"
-      placeholder="Filter..."
-      [formControl]="filterCtrl"
-    />
+    <div class="bb-filter-input">
+      <input
+        type="text"
+        class="form-control form-control-sm"
+        placeholder="Filter..."
+        [formControl]="filterCtrl"
+      />
+      @if (filterCtrl.value) {
+        <button
+          type="button"
+          class="bb-filter-clear"
+          (click)="clearFilter()"
+          aria-label="Clear filter"
+        >
+          <fa-icon [icon]="icons.faXmark"></fa-icon>
+        </button>
+      }
+    </div>
   </div>
   <div class="list-group list-group-flush">
     @if (showAll) {

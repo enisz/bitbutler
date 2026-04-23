@@ -181,14 +181,17 @@
 }
 
 .bb-search__clear {
-  &.inactive {
-    opacity: 0.5;
-    cursor: auto;
-  }
+  color: var(--bs-secondary-color) !important;
   cursor: pointer;
   user-select: none;
 
+  &--hidden {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
   &:hover {
+    color: var(--bs-body-color) !important;
     background-color: color-mix(in srgb, var(--bb-control-hover-bg) 85%, transparent) !important;
   }
 
