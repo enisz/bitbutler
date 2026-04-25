@@ -40,6 +40,10 @@ import { CategorySelect } from '../category-select/category-select';
 import { TorrentExists } from '../modals/torrent-exists/torrent-exists';
 import { ShareLimit, ShareLimitValue } from '../share-limit/share-limit';
 import { TagSelect } from '../tag-select/tag-select';
+import {
+  TransferRateLimit,
+  TransferRateLimitValue,
+} from '../transfer-rate-limit/transfer-rate-limit';
 
 type AddTorrentFormValue = {
   file: string;
@@ -52,8 +56,7 @@ type AddTorrentFormValue = {
   skip_checking: boolean;
   sequentialDownload: boolean;
   firstLastPiecePrio: boolean;
-  upLimitKbps: number | null;
-  dlLimitKbps: number | null;
+  transferRateLimits: TransferRateLimitValue | null;
   shareLimits: ShareLimitValue | null;
   autoTMM: boolean;
 };
@@ -72,6 +75,7 @@ type AddTorrentFormValue = {
     NgSelectModule,
     TranslatePipe,
     ShareLimit,
+    TransferRateLimit,
   ],
   templateUrl: './add-torrent.html',
   styleUrl: './add-torrent.scss',
@@ -121,8 +125,7 @@ export class AddTorrent implements OnInit {
     skip_checking: new FormControl<boolean>(false, { nonNullable: true }),
     sequentialDownload: new FormControl<boolean>(false, { nonNullable: true }),
     firstLastPiecePrio: new FormControl<boolean>(false, { nonNullable: true }),
-    upLimitKbps: new FormControl<number | null>(null),
-    dlLimitKbps: new FormControl<number | null>(null),
+    transferRateLimits: new FormControl<TransferRateLimitValue | null>(null),
     shareLimits: new FormControl<ShareLimitValue | null>(null),
     autoTMM: new FormControl<boolean>(false, { nonNullable: true }),
   });
@@ -242,8 +245,14 @@ export class AddTorrent implements OnInit {
         firstLastPiecePrio: raw.firstLastPiecePrio ? 'true' : 'false',
         autoTMM: raw.autoTMM ? 'true' : 'false',
         root_folder: raw.root_folder === 'unset' ? undefined : raw.root_folder,
-        upLimit: raw.upLimitKbps != null ? String(Math.round(raw.upLimitKbps * 1024)) : undefined,
-        dlLimit: raw.dlLimitKbps != null ? String(Math.round(raw.dlLimitKbps * 1024)) : undefined,
+        upLimit:
+          raw.transferRateLimits?.uploadLimit != null
+            ? String(Math.round(raw.transferRateLimits.uploadLimit * 1024))
+            : undefined,
+        dlLimit:
+          raw.transferRateLimits?.downloadLimit != null
+            ? String(Math.round(raw.transferRateLimits.downloadLimit * 1024))
+            : undefined,
         ratioLimit:
           raw.shareLimits?.ratioLimit != null ? String(raw.shareLimits.ratioLimit) : undefined,
         seedingTimeLimit:
@@ -273,8 +282,7 @@ export class AddTorrent implements OnInit {
         sequentialDownload: raw.sequentialDownload,
         firstLastPiecePrio: raw.firstLastPiecePrio,
         autoTMM: raw.autoTMM,
-        upLimitKbps: raw.upLimitKbps,
-        dlLimitKbps: raw.dlLimitKbps,
+        transferRateLimits: raw.transferRateLimits,
         shareLimits: raw.shareLimits,
       });
       this.openFilesService.consumeCurrentDraft();
