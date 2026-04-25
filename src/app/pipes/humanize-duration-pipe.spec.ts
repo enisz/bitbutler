@@ -1,8 +1,10 @@
+import { TestBed } from '@angular/core/testing';
 import { HumanizeDurationPipe } from './humanize-duration-pipe';
 
 describe('HumanizeDurationPipe', () => {
   it('create an instance', () => {
-    const pipe = new HumanizeDurationPipe();
+    TestBed.configureTestingModule({ providers: [HumanizeDurationPipe] });
+    const pipe = TestBed.inject(HumanizeDurationPipe);
     expect(pipe).toBeTruthy();
   });
 });
