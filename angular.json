@@ -85,7 +85,8 @@
             "tsConfig": "tsconfig.spec.json",
             "runner": "vitest",
             "setupFiles": ["src/test-setup.ts"],
-            "providersFile": "src/test-providers.ts"
+            "providersFile": "src/test-providers.ts",
+            "reporters": ["verbose"]
           }
         }
       }
