@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { SetTorrentTags } from './set-torrent-tags';
+import { Torrent } from '../../../models/torrent.model';
 
 describe('SetTorrentTags', () => {
   let component: SetTorrentTags;
@@ -15,6 +16,7 @@ describe('SetTorrentTags', () => {
 
     fixture = TestBed.createComponent(SetTorrentTags);
     component = fixture.componentInstance;
+    component.torrent = { tags: '' } as Torrent;
     fixture.detectChanges();
   });
 

@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { RenameTorrent } from './rename-torrent';
+import { Torrent } from '../../../models/torrent.model';
 
 describe('RenameTorrent', () => {
   let component: RenameTorrent;
@@ -15,6 +16,7 @@ describe('RenameTorrent', () => {
 
     fixture = TestBed.createComponent(RenameTorrent);
     component = fixture.componentInstance;
+    component.torrent = { name: 'test-torrent' } as Torrent;
     fixture.detectChanges();
   });
 

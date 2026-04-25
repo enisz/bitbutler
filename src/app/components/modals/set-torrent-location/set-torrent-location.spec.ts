@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { SetTorrentLocation } from './set-torrent-location';
+import { Torrent } from '../../../models/torrent.model';
 
 describe('SetTorrentLocation', () => {
   let component: SetTorrentLocation;
@@ -15,6 +16,7 @@ describe('SetTorrentLocation', () => {
 
     fixture = TestBed.createComponent(SetTorrentLocation);
     component = fixture.componentInstance;
+    component.torrent = { save_path: '/downloads' } as Torrent;
     fixture.detectChanges();
   });
 
