@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { FlagCellRenderer } from './flag-cell-renderer';
 
 describe('FlagCellRenderer', () => {
@@ -13,6 +12,7 @@ describe('FlagCellRenderer', () => {
 
     fixture = TestBed.createComponent(FlagCellRenderer);
     component = fixture.componentInstance;
+    component.agInit({ value: 'us' } as any);
     fixture.detectChanges();
   });
 
