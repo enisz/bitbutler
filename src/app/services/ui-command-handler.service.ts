@@ -149,7 +149,6 @@ export class UiCommandHandlerService {
               centered: true,
             });
 
-            limitTransferModalRef.componentInstance.direction = command.direction;
             limitTransferModalRef.componentInstance.target = command.target;
 
             limitTransferModalRef.result.then((res: any) => {}).catch((error: any) => {});
