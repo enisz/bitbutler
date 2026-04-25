@@ -55,8 +55,6 @@
         "auto-tmm": "Automatikus Torrentkezelés (TMM) használata",
         "sequential-download": "Sorrendi letöltés engedélyezése",
         "first-last-piece-prio": "Első és utolsó szelet priorizálása",
-        "up-limit": "Feltöltési korlát",
-        "down-limit": "Letöltési korlát",
         "ratio-limit": "Arány korlát",
         "seeding-time-limit": "Seedelési időkorlát",
         "seeding-time-limit-unit": "perc"
@@ -157,12 +155,8 @@
         }
       },
       "limit-transfer-rate": {
-        "title-upload": "Feltöltési sebesség korlátozása",
-        "title-download": "Letöltési sebesség korlátozása",
-        "global": "Globális átviteli korlát",
-        "limit-upload": "Feltöltési korlát",
-        "limit-download": "Letöltési korlát",
-        "clear-limit": "Korlát törlése"
+        "title": "Átviteli sebesség korlátozása",
+        "global": "Globális átviteli korlát"
       },
       "rename-torrent": {
         "title": "Torrent átnevezése",
@@ -472,11 +466,24 @@
         "unsaved-indicator": "Mentetlen változtatások"
       }
     },
+    "transfer-rate-limit": {
+      "upload-limit": "Feltöltési korlát (KiB/s)",
+      "download-limit": "Letöltési korlát (KiB/s)",
+      "popover": {
+        "upload-limit": {
+          "title": "Feltöltési korlát",
+          "description": "Maximális feltöltési sebesség KiB/s-ban. A 0 korlátlan sebességet jelent."
+        },
+        "download-limit": {
+          "title": "Letöltési korlát",
+          "description": "Maximális letöltési sebesség KiB/s-ban. A 0 korlátlan sebességet jelent."
+        }
+      }
+    },
     "share-limit": {
       "ratio-limit": "Arány korlát",
-      "seeding-time-limit": "Seedelési időkorlát",
-      "inactive-seeding-time-limit": "Inaktív seedelési időkorlát",
-      "time-unit": "perc",
+      "seeding-time-limit": "Seedelési időkorlát (perc)",
+      "inactive-seeding-time-limit": "Inaktív seedelési időkorlát (perc)",
       "popover": {
         "ratio-limit": {
           "title": "Arány korlát",
@@ -580,8 +587,7 @@
             "set-category": "Kategória beállítása",
             "set-tags": "Címkék beállítása",
             "remove": "Eltávolítás",
-            "limit-upload-rate": "Feltöltési sebesség korlátozása",
-            "limit-download-rate": "Letöltési sebesség korlátozása",
+            "limit-transfer-rate": "Átviteli sebesség korlátozása",
             "limit-torrent-share": "Megosztási korlátok beállítása",
             "enable-super-seeding": "Super seeding engedélyezése",
             "disable-super-seeding": "Super seeding tiltása",

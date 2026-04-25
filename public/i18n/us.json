@@ -55,8 +55,6 @@
         "auto-tmm": "Use Auto TMM",
         "sequential-download": "Enable sequential download",
         "first-last-piece-prio": "Prioritize download first last piece",
-        "up-limit": "Upload Limit",
-        "down-limit": "Download Limit",
         "ratio-limit": "Ratio Limit",
         "seeding-time-limit": "Seeding Time Limit",
         "seeding-time-limit-unit": "minute"
@@ -157,12 +155,8 @@
         }
       },
       "limit-transfer-rate": {
-        "title-upload": "Limit upload Speed",
-        "title-download": "Limit download Speed",
-        "global": "Global Transfer Limit",
-        "limit-upload": "Upload Limit",
-        "limit-download": "Download Limit",
-        "clear-limit": "Clear Limit"
+        "title": "Limit Transfer Rate",
+        "global": "Global Transfer Limit"
       },
       "rename-torrent": {
         "title": "Rename Torrent",
@@ -472,11 +466,24 @@
         "unsaved-indicator": "Unsaved changes"
       }
     },
+    "transfer-rate-limit": {
+      "upload-limit": "Upload Limit (KiB/s)",
+      "download-limit": "Download Limit (KiB/s)",
+      "popover": {
+        "upload-limit": {
+          "title": "Upload Limit",
+          "description": "Maximum upload speed in KiB/s. Enter 0 for unlimited."
+        },
+        "download-limit": {
+          "title": "Download Limit",
+          "description": "Maximum download speed in KiB/s. Enter 0 for unlimited."
+        }
+      }
+    },
     "share-limit": {
       "ratio-limit": "Ratio Limit",
-      "seeding-time-limit": "Seeding Time Limit",
-      "inactive-seeding-time-limit": "Inactive Seeding Time Limit",
-      "time-unit": "min",
+      "seeding-time-limit": "Seeding Time Limit (min)",
+      "inactive-seeding-time-limit": "Inactive Seeding Time Limit (min)",
       "popover": {
         "ratio-limit": {
           "title": "Ratio Limit",
@@ -580,8 +587,7 @@
             "set-category": "Set Category",
             "set-tags": "Set Tags",
             "remove": "Remove",
-            "limit-upload-rate": "Limit upload rate",
-            "limit-download-rate": "Limit download rate",
+            "limit-transfer-rate": "Limit Transfer Rate",
             "limit-torrent-share": "Set Share Limits",
             "enable-super-seeding": "Enable Super Seeding",
             "disable-super-seeding": "Disable Super Seeding",
