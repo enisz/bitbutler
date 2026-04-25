@@ -52,6 +52,31 @@ describe('ServerCommandHandlerService', () => {
     expect(toastSuccess).toHaveBeenCalledWith('Server Test Server added!');
   });
 
+  it('should call select after SERVER_ADDED', async () => {
+    const select = TestBed.inject(ServerStoreService).select as ReturnType<typeof vi.fn>;
+    commands$.next({ type: 'SERVER_ADDED', id: '1' });
+    await flushPromises();
+    expect(select).toHaveBeenCalledWith('1');
+  });
+
+  it('should fall back to "New Host" when added server is not found', async () => {
+    commands$.next({ type: 'SERVER_ADDED', id: 'unknown' });
+    await flushPromises();
+    expect(toastSuccess).toHaveBeenCalledWith('Server New Host added!');
+  });
+
+  it('should show info toast after SERVER_UPDATED', async () => {
+    commands$.next({ type: 'SERVER_UPDATED', id: '1' });
+    await flushPromises();
+    expect(toastInfo).toHaveBeenCalledWith('Server Test Server updated!');
+  });
+
+  it('should show info toast after SERVER_DELETED', async () => {
+    commands$.next({ type: 'SERVER_DELETED', id: '1' });
+    await flushPromises();
+    expect(toastInfo).toHaveBeenCalledWith('Server Test Server deleted.');
+  });
+
   it('should not crash the subscription if a command throws', async () => {
     serverStoreRefresh.mockRejectedValueOnce(new Error('network error'));
     commands$.next({ type: 'SERVER_ADDED', id: '1' });

@@ -58,4 +58,11 @@ describe('UpdateCommandHandlerService', () => {
     await flushPromises();
     expect(checkForUpdate).toHaveBeenCalledTimes(1);
   });
+
+  it('should show danger toast when response contains an error', async () => {
+    checkForUpdate.mockResolvedValueOnce({ updateAvailable: false, error: 'Network unreachable' });
+    commands$.next({ type: 'UPDATE_CHECK_FOR_UPDATE' });
+    await flushPromises();
+    expect(toastDanger).toHaveBeenCalledWith('Network unreachable', 'Update Check Failed');
+  });
 });

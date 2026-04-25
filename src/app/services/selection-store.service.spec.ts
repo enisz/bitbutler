@@ -55,4 +55,13 @@ describe('SelectionStoreService', () => {
     service.set([torrents[0], torrents[2]]);
     expect(service.selectedHashes()).toEqual(['1', '3']);
   });
+
+  it('should start with no selection', () => {
+    expect(service.selected()).toEqual([]);
+  });
+
+  it('should skip unknown hashes in setByHashes', () => {
+    service.setByHashes(['1', 'unknown-hash']);
+    expect(service.selected()).toEqual([torrents[0]]);
+  });
 });

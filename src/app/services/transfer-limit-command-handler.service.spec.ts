@@ -48,6 +48,19 @@ describe('TransferLimitCommandHandlerService', () => {
     expect(toastInfo).toHaveBeenCalledWith('Turning alternative speed limit ON');
   });
 
+  it('should show "OFF" toast when alt speed is currently enabled', async () => {
+    getAltState.mockResolvedValueOnce(true);
+    commands$.next({ type: 'TRANSFER_LIMIT_ALTERNATIVE_TOGGLE' });
+    await flushPromises();
+    expect(toastInfo).toHaveBeenCalledWith('Turning alternative speed limit OFF');
+  });
+
+  it('should call toggleAlternativeSpeedLimit with the current server id', async () => {
+    commands$.next({ type: 'TRANSFER_LIMIT_ALTERNATIVE_TOGGLE' });
+    await flushPromises();
+    expect(toggleAlt).toHaveBeenCalledWith('server-1');
+  });
+
   it('should ignore a second toggle while first is in-flight (exhaustMap)', async () => {
     commands$.next({ type: 'TRANSFER_LIMIT_ALTERNATIVE_TOGGLE' });
     commands$.next({ type: 'TRANSFER_LIMIT_ALTERNATIVE_TOGGLE' });
