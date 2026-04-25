@@ -1,4 +1,12 @@
-import { Component, computed, inject, Input, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  computed,
+  inject,
+  Input,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -24,6 +32,7 @@ export class LimitTransferRate implements OnInit {
   private readonly qbService = inject(QbService);
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly selectionStoreService = inject(SelectionStoreService);
+  private readonly cdr = inject(ChangeDetectorRef);
   public activeModal = inject(NgbActiveModal);
 
   public form = new FormGroup({
@@ -69,6 +78,7 @@ export class LimitTransferRate implements OnInit {
       },
       { emitEvent: false },
     );
+    this.cdr.markForCheck();
   }
 
   public async handleSubmit(): Promise<void> {

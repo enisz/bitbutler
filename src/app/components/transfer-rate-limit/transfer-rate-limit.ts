@@ -1,4 +1,4 @@
-import { Component, forwardRef, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, forwardRef, inject, OnInit } from '@angular/core';
 import {
   ControlValueAccessor,
   FormControl,
@@ -29,6 +29,8 @@ export type TransferRateLimitValue = {
   ],
 })
 export class TransferRateLimit implements ControlValueAccessor, OnInit {
+  private readonly cdr = inject(ChangeDetectorRef);
+
   public form = new FormGroup({
     uploadLimit: new FormControl<number | null>(null),
     downloadLimit: new FormControl<number | null>(null),
@@ -51,6 +53,7 @@ export class TransferRateLimit implements ControlValueAccessor, OnInit {
     this.form.patchValue(value ?? { uploadLimit: null, downloadLimit: null }, {
       emitEvent: false,
     });
+    this.cdr.markForCheck();
   }
 
   public registerOnChange(fn: (value: TransferRateLimitValue) => void): void {
