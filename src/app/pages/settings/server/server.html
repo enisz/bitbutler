@@ -147,109 +147,109 @@
         </p>
 
         <div formArrayName="pathMappings">
-          <div
-            class="row mb-3"
-            *ngFor="let group of pathMappings.controls; let i = index; let last = last"
-            [formGroupName]="i"
-          >
-            <div class="col-5">
-              <div class="form-floating">
-                <input
-                  type="text"
-                  class="form-control"
-                  id="remote_{{ i }}"
-                  [placeholder]="
+          @for (group of pathMappings.controls; track $index; let i = $index) {
+            <div class="row mb-3" [formGroupName]="i">
+              <div class="col-5">
+                <div class="form-floating">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="remote_{{ i }}"
+                    [placeholder]="
+                      'pages.settings.tab.server.server-settings-form.path-mapping.remote-path'
+                        | translate
+                    "
+                    [ngbTypeahead]="searchSavePaths"
+                    formControlName="remote"
+                  />
+
+                  <label for="remote_{{ i }}">{{
                     'pages.settings.tab.server.server-settings-form.path-mapping.remote-path'
                       | translate
-                  "
-                  [ngbTypeahead]="searchSavePaths"
-                  formControlName="remote"
-                />
-
-                <label for="remote_{{ i }}">{{
-                  'pages.settings.tab.server.server-settings-form.path-mapping.remote-path'
-                    | translate
-                }}</label>
-              </div>
-            </div>
-
-            <div class="col-5">
-              <div class="form-floating">
-                <div class="input-group">
-                  <div class="form-floating">
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="local_{{ i }}"
-                      [placeholder]="
-                        'pages.settings.tab.server.server-settings-form.path-mapping.local-path'
-                          | translate
-                      "
-                      formControlName="local"
-                    />
-
-                    <label for="local_{{ i }}">{{
-                      'pages.settings.tab.server.server-settings-form.path-mapping.local-path'
-                        | translate
-                    }}</label>
-                  </div>
-
-                  <button
-                    type="button"
-                    class="btn btn-outline-primary"
-                    (click)="onBrowse(i)"
-                    [disabled]="group.disabled"
-                  >
-                    {{ 'general.button.browse' | translate }}
-                  </button>
+                  }}</label>
                 </div>
               </div>
-            </div>
 
-            <div class="col-2 d-flex align-items-center justify-content-center">
-              <button
-                class="btn btn-lg btn-link"
-                placement="top"
-                [ngbTooltip]="
-                  'pages.settings.tab.server.server-settings-form.path-mapping.button.test-mapping'
-                    | translate
-                "
-                (click)="testMapping(group.value.local)"
-                [disabled]="!group.value.remote || !group.value.local"
-              >
-                <fa-icon [icon]="icons['faFolderOpen']" />
-              </button>
-              <button
-                *ngIf="
+              <div class="col-5">
+                <div class="form-floating">
+                  <div class="input-group">
+                    <div class="form-floating">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="local_{{ i }}"
+                        [placeholder]="
+                          'pages.settings.tab.server.server-settings-form.path-mapping.local-path'
+                            | translate
+                        "
+                        formControlName="local"
+                      />
+
+                      <label for="local_{{ i }}">{{
+                        'pages.settings.tab.server.server-settings-form.path-mapping.local-path'
+                          | translate
+                      }}</label>
+                    </div>
+
+                    <button
+                      type="button"
+                      class="btn btn-outline-primary"
+                      (click)="onBrowse(i)"
+                      [disabled]="group.disabled"
+                    >
+                      {{ 'general.button.browse' | translate }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-2 d-flex align-items-center justify-content-center">
+                <button
+                  class="btn btn-lg btn-link"
+                  placement="top"
+                  [ngbTooltip]="
+                    'pages.settings.tab.server.server-settings-form.path-mapping.button.test-mapping'
+                      | translate
+                  "
+                  (click)="testMapping(group.value.local)"
+                  [disabled]="!group.value.remote || !group.value.local"
+                >
+                  <fa-icon [icon]="icons['faFolderOpen']" />
+                </button>
+                @if (
                   !(pathMappings.controls.length === 1 && !group.value.remote && !group.value.local)
-                "
-                class="btn btn-lg btn-link text-danger"
-                placement="top"
-                [ngbTooltip]="
-                  (pathMappings.controls.length === 1
-                    ? 'pages.settings.tab.server.server-settings-form.path-mapping.button.clear-mapping'
-                    : 'pages.settings.tab.server.server-settings-form.path-mapping.button.remove-mapping'
-                  ) | translate
-                "
-                (click)="removePathMapping(i)"
-              >
-                <fa-icon [icon]="icons['faMinus']" />
-              </button>
-              <button
-                *ngIf="last"
-                class="btn btn-lg btn-link text-success"
-                placement="top"
-                [ngbTooltip]="
-                  'pages.settings.tab.server.server-settings-form.path-mapping.button.add-mapping'
-                    | translate
-                "
-                (click)="addPathMapping()"
-                [disabled]="i > 0 && (!group.value.remote || !group.value.local)"
-              >
-                <fa-icon [icon]="icons['faPlus']" />
-              </button>
+                ) {
+                  <button
+                    class="btn btn-lg btn-link text-danger"
+                    placement="top"
+                    [ngbTooltip]="
+                      (pathMappings.controls.length === 1
+                        ? 'pages.settings.tab.server.server-settings-form.path-mapping.button.clear-mapping'
+                        : 'pages.settings.tab.server.server-settings-form.path-mapping.button.remove-mapping'
+                      ) | translate
+                    "
+                    (click)="removePathMapping(i)"
+                  >
+                    <fa-icon [icon]="icons['faMinus']" />
+                  </button>
+                }
+                @if ($last) {
+                  <button
+                    class="btn btn-lg btn-link text-success"
+                    placement="top"
+                    [ngbTooltip]="
+                      'pages.settings.tab.server.server-settings-form.path-mapping.button.add-mapping'
+                        | translate
+                    "
+                    (click)="addPathMapping()"
+                    [disabled]="i > 0 && (!group.value.remote || !group.value.local)"
+                  >
+                    <fa-icon [icon]="icons['faPlus']" />
+                  </button>
+                }
+              </div>
             </div>
-          </div>
+          }
         </div>
       </fieldset>
     </div>
