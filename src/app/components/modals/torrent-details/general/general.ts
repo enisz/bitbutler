@@ -186,7 +186,6 @@ export class General implements TorrentDetailTabComponent, OnInit {
   public changeDownloadLimit(): void {
     this.commandBusService.emit({
       type: 'UI_LIMIT_TRANSFER',
-      direction: 'dl',
       target: 'torrent',
     });
   }
@@ -194,7 +193,6 @@ export class General implements TorrentDetailTabComponent, OnInit {
   public changeUploadLimit(): void {
     this.commandBusService.emit({
       type: 'UI_LIMIT_TRANSFER',
-      direction: 'ul',
       target: 'torrent',
     });
   }

@@ -86,7 +86,7 @@
         [ngbTooltip]="tipLiveDl"
         placement="top"
         container="body"
-        (click)="setGlobalTransferLimit('dl')"
+        (click)="setGlobalTransferLimit()"
       >
         <fa-icon [icon]="icons.faDownload" class="icon-dl"></fa-icon>
         <div class="d-flex flex-column speed-limit-stack">
@@ -103,7 +103,7 @@
         [ngbTooltip]="tipLiveUl"
         placement="top"
         container="body"
-        (click)="setGlobalTransferLimit('ul')"
+        (click)="setGlobalTransferLimit()"
       >
         <fa-icon [icon]="icons.faUpload" class="icon-ul"></fa-icon>
         <div class="d-flex flex-column speed-limit-stack">

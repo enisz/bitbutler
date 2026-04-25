@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { faSquare, faSquareCheck } from '@fortawesome/free-regular-svg-icons';
 import {
   faArrowDown,
+  faArrowDownUpAcrossLine,
   faArrowLeft,
   faArrowRight,
   faArrowsDownToLine,
@@ -12,7 +13,6 @@ import {
   faCheck,
   faCode,
   faCopy,
-  faDownload,
   faEye,
   faEyeSlash,
   faFilePen,
@@ -38,7 +38,6 @@ import {
   faThumbTack,
   faThumbTackSlash,
   faTrashCan,
-  faUpload,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import type { ColDef, Column, ColumnHeaderContextMenuEvent } from 'ag-grid-community';
@@ -260,25 +259,12 @@ export class GridContextMenuService {
         children: [
           {
             kind: 'item',
-            id: 'speed.limitUpload',
-            label: 'pages.main.grid.context-menu.item.limit-upload-rate',
-            icon: faUpload,
+            id: 'speed.limitTransferRate',
+            label: 'pages.main.grid.context-menu.item.limit-transfer-rate',
+            icon: faArrowDownUpAcrossLine,
             action: () =>
               this.commandBusService.emit({
                 type: 'UI_LIMIT_TRANSFER',
-                direction: 'ul',
-                target: 'torrent',
-              }),
-          },
-          {
-            kind: 'item',
-            id: 'speed.limitDownload',
-            label: 'pages.main.grid.context-menu.item.limit-download-rate',
-            icon: faDownload,
-            action: () =>
-              this.commandBusService.emit({
-                type: 'UI_LIMIT_TRANSFER',
-                direction: 'dl',
                 target: 'torrent',
               }),
           },

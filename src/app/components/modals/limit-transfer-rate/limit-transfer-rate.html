@@ -1,12 +1,7 @@
 <div class="modal-header bb-modal-header">
   <div class="bb-modal-header__text">
     <h5 class="modal-title bb-title-clamp">
-      {{
-        (direction === 'ul'
-          ? 'components.modals.limit-transfer-rate.title-upload'
-          : 'components.modals.limit-transfer-rate.title-download'
-        ) | translate
-      }}
+      {{ 'components.modals.limit-transfer-rate.title' | translate }}
     </h5>
 
     <div
@@ -33,49 +28,29 @@
     (click)="activeModal.dismiss()"
   ></button>
 </div>
+
 <div class="modal-body">
-  <form [formGroup]="limitTransferForm" (submit)="handleSubmit()">
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-12">
-          <div class="input-group">
-            <div class="form-floating">
-              <input
-                type="number"
-                class="form-control"
-                id="limit"
-                placeholder="0"
-                autofocus
-                formControlName="limit"
-                min="0"
-              />
-              <label for="limit">
-                {{
-                  (direction === 'ul'
-                    ? 'components.modals.limit-transfer-rate.limit-upload'
-                    : 'components.modals.limit-transfer-rate.limit-download'
-                  ) | translate
-                }}</label
-              >
-            </div>
-            <span class="input-group-text">KiB/s</span>
-          </div>
-        </div>
-      </div>
-    </div>
+  <form [formGroup]="form" (submit)="handleSubmit()">
+    <app-transfer-rate-limit formControlName="transferRateLimits"></app-transfer-rate-limit>
     <button type="submit" hidden [disabled]="!canSave()"></button>
   </form>
 </div>
+
 <div class="modal-footer">
   <button type="button" class="btn btn-secondary" (click)="handleSubmit()" [disabled]="!canSave()">
-    {{ 'general.button.set' | translate }}
+    {{ 'general.button.save' | translate }}
   </button>
-  @if (hasClearableLimit()) {
-    <button type="button" class="btn btn-link" (click)="clearFilters()" [disabled]="!canSave()">
-      {{ 'components.modals.limit-transfer-rate.clear-limit' | translate }}
+  @if (hasClearableValues()) {
+    <button
+      type="button"
+      class="btn btn-link text-danger"
+      (click)="clearAll()"
+      [disabled]="!canSave()"
+    >
+      {{ 'general.button.clear-all' | translate }}
     </button>
   }
-  <button type="button" class="btn btn-link" (click)="activeModal.close()">
+  <button type="button" class="btn btn-link" (click)="activeModal.dismiss()">
     {{ 'general.button.cancel' | translate }}
   </button>
 </div>
