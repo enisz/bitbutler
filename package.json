@@ -30,8 +30,8 @@
     "lint": "eslint \"src/**/*.{ts,html}\" \"electron/**/*.{ts,js}\" \"electron-main.js\"",
     "lint:fix": "npm run lint -- --fix",
     "prepare": "husky",
-    "test": "ng test",
-    "test:ci": "ng test --watch=false"
+    "test": "ng test --watch=false",
+    "test:watch": "ng test"
   },
   "lint-staged": {
     "*.{ts,js,html}": [
