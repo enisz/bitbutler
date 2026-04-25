@@ -26,7 +26,7 @@ categories:
   - title: '📦 Other Changes'
     labels: []
 
-change-template: '- [PR-$NUMBER](https://github.com/enisz/bitbutler/pull/$NUMBER): $TITLE by @$AUTHOR'
+change-template: '- [#$NUMBER](https://github.com/enisz/bitbutler/pull/$NUMBER): $TITLE
 
 template: |
   ## What's Changed
