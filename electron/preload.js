@@ -83,6 +83,7 @@ contextBridge.exposeInMainWorld('bitbutler', {
 
   torrent: {
     parse: (payload) => ipcRenderer.invoke('torrent:parse', payload),
+    deleteFile: (payload) => ipcRenderer.invoke('torrent:delete-file', payload),
   },
 
   menu: {

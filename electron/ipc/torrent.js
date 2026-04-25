@@ -4,6 +4,18 @@ import path from 'path';
 import { parseTorrentBufferToDraft } from '../torrents/parse-torrent.js';
 
 export function registerTorrentIpcHandlers() {
+  ipcMain.handle('torrent:delete-file', async (_e, payload) => {
+    const filePath = typeof payload?.path === 'string' ? payload.path.trim() : null;
+    if (!filePath) return { ok: false, error: 'No path provided' };
+
+    try {
+      await fs.promises.unlink(filePath);
+      return { ok: true };
+    } catch (e) {
+      return { ok: false, error: String(e?.message ?? e) };
+    }
+  });
+
   ipcMain.handle('torrent:parse', async (_e, payload) => {
     const source = typeof payload?.source === 'string' ? payload.source : 'manual';
 
