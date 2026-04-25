@@ -30,7 +30,8 @@
     "lint": "eslint \"src/**/*.{ts,html}\" \"electron/**/*.{ts,js}\" \"electron-main.js\"",
     "lint:fix": "npm run lint -- --fix",
     "prepare": "husky",
-    "test": "echo 'No tests yet!' && exit 0"
+    "test": "ng test",
+    "test:ci": "ng test --watch=false"
   },
   "lint-staged": {
     "*.{ts,js,html}": [
@@ -182,6 +183,7 @@
     "tslib": "^2.3.0"
   },
   "devDependencies": {
+    "@analogjs/vitest-angular": "^2.4.10",
     "@angular-eslint/builder": "^20.7.0",
     "@angular-eslint/eslint-plugin": "^20.7.0",
     "@angular-eslint/eslint-plugin-template": "^20.7.0",
@@ -191,7 +193,6 @@
     "@angular/compiler-cli": "^20.3.0",
     "@angular/localize": "^20.3.0",
     "@types/humanize-duration": "^3.27.4",
-    "@types/jasmine": "~5.1.0",
     "@typescript-eslint/eslint-plugin": "^8.54.0",
     "@typescript-eslint/parser": "^8.54.0",
     "concurrently": "^9.2.1",
@@ -202,16 +203,12 @@
     "eslint-plugin-n": "^17.23.2",
     "eslint-plugin-prettier": "^5.5.5",
     "husky": "^9.1.7",
-    "jasmine-core": "~5.9.0",
-    "karma": "~6.4.0",
-    "karma-chrome-launcher": "~3.2.0",
-    "karma-coverage": "~2.2.0",
-    "karma-jasmine": "~5.1.0",
-    "karma-jasmine-html-reporter": "~2.1.0",
+    "jsdom": "^29.0.2",
     "lint-staged": "^16.2.7",
     "prettier": "^3.8.1",
     "rimraf": "^6.1.2",
     "typescript": "~5.9.2",
+    "vitest": "^3.2.4",
     "wait-on": "^9.0.3"
   },
   "release": {

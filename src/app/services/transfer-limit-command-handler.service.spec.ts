@@ -10,17 +10,15 @@ import { signal } from '@angular/core';
 describe('TransferLimitCommandHandlerService', () => {
   let service: TransferLimitCommandHandlerService;
   let commands$: Subject<any>;
-  let getAltState: jasmine.Spy;
-  let toggleAlt: jasmine.Spy;
-  let toastInfo: jasmine.Spy;
+  let getAltState: ReturnType<typeof vi.fn>;
+  let toggleAlt: ReturnType<typeof vi.fn>;
+  let toastInfo: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     commands$ = new Subject();
-    getAltState = jasmine
-      .createSpy('getAlternativeSpeedLimitState')
-      .and.returnValue(Promise.resolve(false));
-    toggleAlt = jasmine.createSpy('toggleAlternativeSpeedLimit').and.returnValue(Promise.resolve());
-    toastInfo = jasmine.createSpy('info');
+    getAltState = vi.fn().mockResolvedValue(false);
+    toggleAlt = vi.fn().mockResolvedValue(undefined);
+    toastInfo = vi.fn();
 
     TestBed.configureTestingModule({
       providers: [

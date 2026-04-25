@@ -21,7 +21,7 @@ describe('FilterService', () => {
 
   it('should update states', () => {
     service.setStates(['downloading', 'paused'] as any);
-    expect(service.external().states.has('downloading' as any)).toBeTrue();
+    expect(service.external().states.has('downloading' as any)).toBe(true);
   });
 
   it('should clear states', () => {

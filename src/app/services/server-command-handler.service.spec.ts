@@ -10,15 +10,15 @@ import { ToastService } from './toast.service';
 describe('ServerCommandHandlerService', () => {
   let service: ServerCommandHandlerService;
   let commands$: Subject<any>;
-  let serverStoreRefresh: jasmine.Spy;
-  let toastSuccess: jasmine.Spy;
-  let toastInfo: jasmine.Spy;
+  let serverStoreRefresh: ReturnType<typeof vi.fn>;
+  let toastSuccess: ReturnType<typeof vi.fn>;
+  let toastInfo: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     commands$ = new Subject();
-    serverStoreRefresh = jasmine.createSpy('refresh').and.returnValue(Promise.resolve());
-    toastSuccess = jasmine.createSpy('success');
-    toastInfo = jasmine.createSpy('info');
+    serverStoreRefresh = vi.fn().mockResolvedValue(undefined);
+    toastSuccess = vi.fn();
+    toastInfo = vi.fn();
 
     TestBed.configureTestingModule({
       providers: [
@@ -29,12 +29,12 @@ describe('ServerCommandHandlerService', () => {
           useValue: {
             refresh: serverStoreRefresh,
             servers: signal([{ id: '1', name: 'Test Server' }]),
-            select: jasmine.createSpy('select'),
+            select: vi.fn(),
           },
         },
         {
           provide: ServerService,
-          useValue: { delete: jasmine.createSpy('delete').and.returnValue(Promise.resolve()) },
+          useValue: { delete: vi.fn().mockResolvedValue(undefined) },
         },
         { provide: ToastService, useValue: { success: toastSuccess, info: toastInfo } },
       ],
@@ -51,11 +51,11 @@ describe('ServerCommandHandlerService', () => {
   }));
 
   it('should not crash the subscription if a command throws', fakeAsync(() => {
-    serverStoreRefresh.and.returnValue(Promise.reject(new Error('network error')));
+    serverStoreRefresh.mockRejectedValueOnce(new Error('network error'));
     commands$.next({ type: 'SERVER_ADDED', id: '1' });
     tick();
 
-    serverStoreRefresh.and.returnValue(Promise.resolve());
+    serverStoreRefresh.mockResolvedValueOnce(undefined);
     commands$.next({ type: 'SERVER_UPDATED', id: '1' });
     tick();
     expect(toastInfo).toHaveBeenCalled();

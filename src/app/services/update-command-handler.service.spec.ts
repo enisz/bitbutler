@@ -8,19 +8,17 @@ import { ToastService } from './toast.service';
 describe('UpdateCommandHandlerService', () => {
   let service: UpdateCommandHandlerService;
   let commands$: Subject<any>;
-  let checkForUpdate: jasmine.Spy;
-  let toastSuccess: jasmine.Spy;
-  let toastDanger: jasmine.Spy;
-  let commandBusEmit: jasmine.Spy;
+  let checkForUpdate: ReturnType<typeof vi.fn>;
+  let toastSuccess: ReturnType<typeof vi.fn>;
+  let toastDanger: ReturnType<typeof vi.fn>;
+  let commandBusEmit: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     commands$ = new Subject();
-    checkForUpdate = jasmine
-      .createSpy('checkForUpdate')
-      .and.returnValue(Promise.resolve({ updateAvailable: false, error: null }));
-    toastSuccess = jasmine.createSpy('success');
-    toastDanger = jasmine.createSpy('danger');
-    commandBusEmit = jasmine.createSpy('emit');
+    checkForUpdate = vi.fn().mockResolvedValue({ updateAvailable: false, error: null });
+    toastSuccess = vi.fn();
+    toastDanger = vi.fn();
+    commandBusEmit = vi.fn();
 
     TestBed.configureTestingModule({
       providers: [
@@ -46,7 +44,7 @@ describe('UpdateCommandHandlerService', () => {
 
   it('should emit UI_UPDATE_AVAILABLE when update is found', fakeAsync(() => {
     const update = { updateAvailable: true, error: null, version: '2.0.0' };
-    checkForUpdate.and.returnValue(Promise.resolve(update));
+    checkForUpdate.mockResolvedValueOnce(update);
     commands$.next({ type: 'UPDATE_CHECK_FOR_UPDATE' });
     tick();
     expect(commandBusEmit).toHaveBeenCalledWith({ type: 'UI_UPDATE_AVAILABLE', update });
