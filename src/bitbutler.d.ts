@@ -92,6 +92,7 @@ declare global {
 
     torrent: {
       parse(payload: TorrentParsePayload): Promise<any>;
+      deleteFile(payload: { path: string }): Promise<{ ok: boolean; error?: string }>;
     };
 
     menu: {

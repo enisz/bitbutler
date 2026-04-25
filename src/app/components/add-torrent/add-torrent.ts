@@ -29,6 +29,7 @@ import type { SelectedTorrentInput } from '../../models/command.model';
 import { HttpError } from '../../models/http.model';
 import { TorrentDraft } from '../../models/torrent-draft.model';
 import { AddTorrentSettingsService } from '../../services/add-torrent-settings.service';
+import { GeneralSettingsService } from '../../services/general-settings.service';
 import { OpenFilesService, PendingAddTorrent } from '../../services/open-files.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
@@ -92,6 +93,7 @@ export class AddTorrent implements OnInit {
   private readonly torrentStoreService = inject(TorrentStoreService);
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly addTorrentSettings = inject(AddTorrentSettingsService);
+  private readonly generalSettingsService = inject(GeneralSettingsService);
   private readonly typeaheadService = inject(TypeaheadService);
   private readonly qbService = inject(QbService);
   private readonly openFilesService = inject(OpenFilesService);
@@ -285,6 +287,15 @@ export class AddTorrent implements OnInit {
         transferRateLimits: raw.transferRateLimits,
         shareLimits: raw.shareLimits,
       });
+
+      const originalPath = this.effectiveDraft()?.originalPath;
+      if (originalPath) {
+        const generalSettings = await this.generalSettingsService.load();
+        if (generalSettings.behavior.deleteTorrentFile) {
+          await window.bitbutler.torrent.deleteFile({ path: originalPath });
+        }
+      }
+
       this.openFilesService.consumeCurrentDraft();
     } catch (e) {
       console.error(AddTorrent.name, 'handleSubmit', '[AddTorrent] qb add failed', e);
