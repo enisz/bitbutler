@@ -27,12 +27,6 @@
       ></bb-popover>
     </div>
 
-    <div class="col-12 mb-3">
-      <div class="form-text mt-1 ms-2">
-        {{ (form.controls.uploadLimit.value ?? 0) * 1024 | speedLimit }}
-      </div>
-    </div>
-
     <div class="col-5">
       <div class="form-floating">
         <input
@@ -60,7 +54,13 @@
       ></bb-popover>
     </div>
 
-    <div class="col-12">
+    <div class="col-6">
+      <div class="form-text mt-1 ms-2">
+        {{ (form.controls.uploadLimit.value ?? 0) * 1024 | speedLimit }}
+      </div>
+    </div>
+
+    <div class="col-6">
       <div class="form-text mt-1 ms-2">
         {{ (form.controls.downloadLimit.value ?? 0) * 1024 | speedLimit }}
       </div>
