@@ -20,14 +20,8 @@
         class="mt-2"
         [subject]="'components.share-limit.popover.ratio-limit.title' | translate"
         [description]="'components.share-limit.popover.ratio-limit.description' | translate"
-        placement="left"
+        placement="top"
       ></bb-popover>
-    </div>
-
-    <div class="col-12 mb-3">
-      <div class="form-text mt-1 ms-2">
-        {{ form.controls.ratioLimit.value ?? -1 | ratioLimit }}
-      </div>
     </div>
 
     <div class="col-5">
@@ -51,11 +45,17 @@
         class="mt-2"
         [subject]="'components.share-limit.popover.seeding-time-limit.title' | translate"
         [description]="'components.share-limit.popover.seeding-time-limit.description' | translate"
-        placement="left"
+        placement="top"
       ></bb-popover>
     </div>
 
-    <div class="col-12 mb-3">
+    <div class="col-6">
+      <div class="form-text mt-1 ms-2">
+        {{ form.controls.ratioLimit.value ?? -1 | ratioLimit }}
+      </div>
+    </div>
+
+    <div class="col-6 mb-3">
       <div class="form-text mt-1 ms-2">
         {{ form.controls.seedingTimeLimit.value ?? -1 | timeLimit }}
       </div>
@@ -85,7 +85,7 @@
           [description]="
             'components.share-limit.popover.inactive-seeding-time-limit.description' | translate
           "
-          placement="left"
+          placement="top"
         ></bb-popover>
       </div>
 
