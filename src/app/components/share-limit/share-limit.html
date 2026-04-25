@@ -1,6 +1,6 @@
 <div [formGroup]="form" class="container-fluid px-0">
   <div class="row">
-    <div class="col-11">
+    <div class="col-5">
       <div class="form-floating">
         <input
           type="number"
@@ -30,22 +30,19 @@
       </div>
     </div>
 
-    <div class="col-11">
-      <div class="input-group">
-        <div class="form-floating">
-          <input
-            type="number"
-            class="form-control"
-            id="seedingTimeLimit"
-            [placeholder]="'components.share-limit.seeding-time-limit' | translate"
-            formControlName="seedingTimeLimit"
-            min="0"
-          />
-          <label for="seedingTimeLimit">{{
-            'components.share-limit.seeding-time-limit' | translate
-          }}</label>
-        </div>
-        <span class="input-group-text">{{ 'components.share-limit.time-unit' | translate }}</span>
+    <div class="col-5">
+      <div class="form-floating">
+        <input
+          type="number"
+          class="form-control"
+          id="seedingTimeLimit"
+          [placeholder]="'components.share-limit.seeding-time-limit' | translate"
+          formControlName="seedingTimeLimit"
+          min="0"
+        />
+        <label for="seedingTimeLimit">{{
+          'components.share-limit.seeding-time-limit' | translate
+        }}</label>
       </div>
     </div>
 
@@ -65,22 +62,19 @@
     </div>
 
     @if (!hideInactive) {
-      <div class="col-11">
-        <div class="input-group">
-          <div class="form-floating">
-            <input
-              type="number"
-              class="form-control"
-              id="inactiveSeedingTimeLimit"
-              [placeholder]="'components.share-limit.inactive-seeding-time-limit' | translate"
-              formControlName="inactiveSeedingTimeLimit"
-              min="0"
-            />
-            <label for="inactiveSeedingTimeLimit">{{
-              'components.share-limit.inactive-seeding-time-limit' | translate
-            }}</label>
-          </div>
-          <span class="input-group-text">{{ 'components.share-limit.time-unit' | translate }}</span>
+      <div class="col-5">
+        <div class="form-floating">
+          <input
+            type="number"
+            class="form-control"
+            id="inactiveSeedingTimeLimit"
+            [placeholder]="'components.share-limit.inactive-seeding-time-limit' | translate"
+            formControlName="inactiveSeedingTimeLimit"
+            min="0"
+          />
+          <label for="inactiveSeedingTimeLimit">{{
+            'components.share-limit.inactive-seeding-time-limit' | translate
+          }}</label>
         </div>
       </div>
 
