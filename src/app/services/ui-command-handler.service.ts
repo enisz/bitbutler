@@ -147,6 +147,7 @@ export class UiCommandHandlerService {
             if (this.isModalOpen(LimitTransferRate)) break;
             const limitTransferModalRef = this.modalService.open(LimitTransferRate, {
               centered: true,
+              size: 'lg',
             });
 
             limitTransferModalRef.componentInstance.target = command.target;
