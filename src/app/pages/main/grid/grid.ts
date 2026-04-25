@@ -36,7 +36,7 @@ import { GridContextMenuService } from './context-menu/grid-context-menu.service
 import { GridKeyboardNavService } from './grid-keyboard-nav.service';
 import { GridPinService } from './grid-pin.service';
 import { getGridColDefs, getGridOptions } from './grid.lib';
-import { getTrackers, normalizeTracker } from '../../../utils/tracker.utils';
+import { getTrackers, normalizeTracker } from '../tracker.utils';
 
 @Component({
   selector: 'app-grid',

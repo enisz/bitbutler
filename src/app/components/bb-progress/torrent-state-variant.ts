@@ -1,4 +1,4 @@
-import { BbProgressState, BbProgressVariant } from '../components/bb-progress/bb-progress.types';
+import { BbProgressState, BbProgressVariant } from './bb-progress.types';
 
 export function variantForTorrentState(state: BbProgressState): BbProgressVariant {
   switch (state) {

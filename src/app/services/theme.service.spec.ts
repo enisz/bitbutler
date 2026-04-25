@@ -6,6 +6,7 @@ describe('ThemeService', () => {
   let service: ThemeService;
   let mockGeneralSettings: {
     load: ReturnType<typeof vi.fn>;
+    save: ReturnType<typeof vi.fn>;
     asObservable?: ReturnType<typeof vi.fn>;
   };
 
@@ -16,6 +17,7 @@ describe('ThemeService', () => {
         behavior: {},
         language: {},
       }),
+      save: vi.fn().mockResolvedValue(undefined),
     };
 
     TestBed.configureTestingModule({
