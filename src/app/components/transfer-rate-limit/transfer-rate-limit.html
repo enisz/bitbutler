@@ -1,0 +1,69 @@
+<div [formGroup]="form" class="container-fluid px-0">
+  <div class="row">
+    <div class="col-5">
+      <div class="form-floating">
+        <input
+          type="number"
+          class="form-control"
+          id="uploadLimit"
+          [placeholder]="'components.transfer-rate-limit.upload-limit' | translate"
+          formControlName="uploadLimit"
+          min="0"
+        />
+        <label for="uploadLimit">{{
+          'components.transfer-rate-limit.upload-limit' | translate
+        }}</label>
+      </div>
+    </div>
+
+    <div class="col-1 d-flex align-items-center">
+      <bb-popover
+        class="mt-2"
+        [subject]="'components.transfer-rate-limit.popover.upload-limit.title' | translate"
+        [description]="
+          'components.transfer-rate-limit.popover.upload-limit.description' | translate
+        "
+        placement="left"
+      ></bb-popover>
+    </div>
+
+    <div class="col-12 mb-3">
+      <div class="form-text mt-1 ms-2">
+        {{ (form.controls.uploadLimit.value ?? 0) * 1024 | speedLimit }}
+      </div>
+    </div>
+
+    <div class="col-5">
+      <div class="form-floating">
+        <input
+          type="number"
+          class="form-control"
+          id="downloadLimit"
+          [placeholder]="'components.transfer-rate-limit.download-limit' | translate"
+          formControlName="downloadLimit"
+          min="0"
+        />
+        <label for="downloadLimit">{{
+          'components.transfer-rate-limit.download-limit' | translate
+        }}</label>
+      </div>
+    </div>
+
+    <div class="col-1 d-flex align-items-center">
+      <bb-popover
+        class="mt-2"
+        [subject]="'components.transfer-rate-limit.popover.download-limit.title' | translate"
+        [description]="
+          'components.transfer-rate-limit.popover.download-limit.description' | translate
+        "
+        placement="left"
+      ></bb-popover>
+    </div>
+
+    <div class="col-12">
+      <div class="form-text mt-1 ms-2">
+        {{ (form.controls.downloadLimit.value ?? 0) * 1024 | speedLimit }}
+      </div>
+    </div>
+  </div>
+</div>
