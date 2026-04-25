@@ -1,11 +1,13 @@
 import { signal } from '@angular/core';
-import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
 import { CommandBusService } from './command-bus.service';
 import { ServerCommandHandlerService } from './server-command-handler.service';
 import { ServerStoreService } from './server-store.service';
 import { ServerService } from './server.service';
 import { ToastService } from './toast.service';
+
+const flushPromises = () => new Promise<void>((resolve) => setTimeout(resolve));
 
 describe('ServerCommandHandlerService', () => {
   let service: ServerCommandHandlerService;
@@ -44,20 +46,20 @@ describe('ServerCommandHandlerService', () => {
     service.start();
   });
 
-  it('should show success toast after SERVER_ADDED', fakeAsync(() => {
+  it('should show success toast after SERVER_ADDED', async () => {
     commands$.next({ type: 'SERVER_ADDED', id: '1' });
-    tick();
+    await flushPromises();
     expect(toastSuccess).toHaveBeenCalledWith('Server Test Server added!');
-  }));
+  });
 
-  it('should not crash the subscription if a command throws', fakeAsync(() => {
+  it('should not crash the subscription if a command throws', async () => {
     serverStoreRefresh.mockRejectedValueOnce(new Error('network error'));
     commands$.next({ type: 'SERVER_ADDED', id: '1' });
-    tick();
+    await flushPromises();
 
     serverStoreRefresh.mockResolvedValueOnce(undefined);
     commands$.next({ type: 'SERVER_UPDATED', id: '1' });
-    tick();
+    await flushPromises();
     expect(toastInfo).toHaveBeenCalled();
-  }));
+  });
 });

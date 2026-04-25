@@ -1,4 +1,4 @@
-import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
 import { TransferLimitCommandHandlerService } from './transfer-limit-command-handler.service';
 import { CommandBusService } from './command-bus.service';
@@ -6,6 +6,8 @@ import { QbService } from './qb.service';
 import { ServerStoreService } from './server-store.service';
 import { ToastService } from './toast.service';
 import { signal } from '@angular/core';
+
+const flushPromises = () => new Promise<void>((resolve) => setTimeout(resolve));
 
 describe('TransferLimitCommandHandlerService', () => {
   let service: TransferLimitCommandHandlerService;
@@ -40,16 +42,16 @@ describe('TransferLimitCommandHandlerService', () => {
     service.start();
   });
 
-  it('should show info toast on toggle', fakeAsync(() => {
+  it('should show info toast on toggle', async () => {
     commands$.next({ type: 'TRANSFER_LIMIT_ALTERNATIVE_TOGGLE' });
-    tick();
+    await flushPromises();
     expect(toastInfo).toHaveBeenCalledWith('Turning alternative speed limit ON');
-  }));
+  });
 
-  it('should ignore a second toggle while first is in-flight (exhaustMap)', fakeAsync(() => {
+  it('should ignore a second toggle while first is in-flight (exhaustMap)', async () => {
     commands$.next({ type: 'TRANSFER_LIMIT_ALTERNATIVE_TOGGLE' });
     commands$.next({ type: 'TRANSFER_LIMIT_ALTERNATIVE_TOGGLE' });
-    tick();
+    await flushPromises();
     expect(getAltState).toHaveBeenCalledTimes(1);
-  }));
+  });
 });
