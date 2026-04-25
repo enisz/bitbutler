@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { SettingsStateService } from '../settings-state.service';
 
 import { StatusBar } from './status-bar';
 
@@ -9,6 +10,7 @@ describe('StatusBar', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [StatusBar],
+      providers: [SettingsStateService],
     }).compileComponents();
 
     fixture = TestBed.createComponent(StatusBar);

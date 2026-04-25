@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { SettingsStateService } from '../settings-state.service';
 
 import { General } from './general';
 
@@ -9,6 +10,7 @@ describe('General', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [General],
+      providers: [SettingsStateService],
     }).compileComponents();
 
     fixture = TestBed.createComponent(General);

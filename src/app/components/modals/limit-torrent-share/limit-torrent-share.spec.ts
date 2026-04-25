@@ -15,7 +15,6 @@ describe('LimitTorrentShare', () => {
 
     fixture = TestBed.createComponent(LimitTorrentShare);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {
