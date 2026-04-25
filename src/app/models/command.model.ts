@@ -7,8 +7,6 @@ export type SelectedTorrentInput =
   | { name: string; path: string }
   | { name: string; bytes: number[] };
 
-export type LimitDirectionType = 'ul' | 'dl';
-
 export type LimitTargetType = 'global' | 'torrent';
 
 export type UiCommand =
@@ -20,7 +18,7 @@ export type UiCommand =
   | { type: 'UI_OPEN_ABOUT' }
   | { type: 'UI_SET_TORRENT_LOCATION'; torrent: Torrent }
   | { type: 'UI_RENAME_TORRENT'; torrent: Torrent }
-  | { type: 'UI_LIMIT_TRANSFER'; direction: LimitDirectionType; target: LimitTargetType }
+  | { type: 'UI_LIMIT_TRANSFER'; target: LimitTargetType }
   | { type: 'UI_LIMIT_SHARE' }
   | { type: 'UI_SET_TORRENT_TAGS'; torrent: Torrent }
   | { type: 'UI_SET_TORRENT_CATEGORY'; torrent: Torrent }
