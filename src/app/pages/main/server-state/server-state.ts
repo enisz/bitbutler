@@ -27,7 +27,6 @@ import {
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { animationFrameScheduler, interval, map, switchMap } from 'rxjs';
-import { LimitDirectionType } from '../../../models/command.model';
 import { QbServerState } from '../../../models/torrent.model';
 import { FilesizePipe } from '../../../pipes/filesize-pipe';
 import { CommandBusService } from '../../../services/command-bus.service';
@@ -143,8 +142,8 @@ export class ServerState implements OnChanges {
     this.commandBusService.emit({ type: 'TRANSFER_LIMIT_ALTERNATIVE_TOGGLE' });
   }
 
-  public setGlobalTransferLimit(direction: LimitDirectionType): void {
-    this.commandBusService.emit({ type: 'UI_LIMIT_TRANSFER', target: 'global', direction });
+  public setGlobalTransferLimit(): void {
+    this.commandBusService.emit({ type: 'UI_LIMIT_TRANSFER', target: 'global' });
   }
 
   private reset(): void {
