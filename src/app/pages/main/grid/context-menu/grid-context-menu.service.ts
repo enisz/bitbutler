@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { faSquare, faSquareCheck } from '@fortawesome/free-regular-svg-icons';
 import {
   faArrowDown,
+  faArrowDownUpAcrossLine,
   faArrowLeft,
   faArrowRight,
   faArrowsDownToLine,
@@ -260,7 +261,7 @@ export class GridContextMenuService {
             kind: 'item',
             id: 'speed.limitTransferRate',
             label: 'pages.main.grid.context-menu.item.limit-transfer-rate',
-            icon: faArrowsLeftRight,
+            icon: faArrowDownUpAcrossLine,
             action: () =>
               this.commandBusService.emit({
                 type: 'UI_LIMIT_TRANSFER',
