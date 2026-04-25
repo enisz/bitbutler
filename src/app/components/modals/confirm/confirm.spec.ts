@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { Confirm } from './confirm';
 
@@ -9,6 +10,7 @@ describe('Confirm', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Confirm],
+      providers: [NgbActiveModal],
     }).compileComponents();
 
     fixture = TestBed.createComponent(Confirm);
