@@ -33,7 +33,7 @@ describe('Login', () => {
   let serverServiceMock: { update: ReturnType<typeof vi.fn> };
   let themeMock: {
     family: ReturnType<typeof signal<string>>;
-    effectiveMode: ReturnType<typeof signal<string>>;
+    effectiveMode: ReturnType<typeof signal<'light' | 'dark'>>;
   };
   let toastMock: { danger: ReturnType<typeof vi.fn>; success: ReturnType<typeof vi.fn> };
   let electronMock: {
@@ -55,7 +55,7 @@ describe('Login', () => {
       clearAutoLoginSuppression: vi.fn(),
     };
     serverServiceMock = { update: vi.fn().mockResolvedValue(undefined) };
-    themeMock = { family: signal('bitbutler'), effectiveMode: signal('dark') };
+    themeMock = { family: signal('bitbutler'), effectiveMode: signal<'light' | 'dark'>('dark') };
     toastMock = { danger: vi.fn(), success: vi.fn() };
     electronMock = {
       getBitButlerVersion: vi.fn().mockReturnValue('1.0.0'),
@@ -98,6 +98,7 @@ describe('Login', () => {
     fixture = TestBed.createComponent(Login);
     component = fixture.componentInstance;
     fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create', () => {
@@ -173,6 +174,13 @@ describe('Login', () => {
       confirmMock.confirm.mockResolvedValue(false);
       await component.deleteServer({ id: 'srv-1', name: 'My Server' } as any);
       expect(commandBusMock.emit).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('goToRelease', () => {
+    it('should delegate to electronService.goToRelease', () => {
+      component.goToRelease();
+      expect(electronMock.goToRelease).toHaveBeenCalled();
     });
   });
 
