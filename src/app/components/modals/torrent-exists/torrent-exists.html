@@ -10,7 +10,7 @@
         class="small text-body-secondary mt-1 bb-hash-clamp"
         [ngbTooltip]="element.offsetWidth < element.scrollWidth ? t.name : null"
         tooltipClass="single-line-tooltip"
-        placement="bottom"
+        placement="top"
       >
         {{ t.name }}
       </div>
@@ -20,16 +20,88 @@
   </div>
 
   <div class="modal-body">
-    <p>{{ 'components.modals.torrent-exists.already-in-list' | translate }}</p>
-    <p>
-      {{ t.save_path }}<br />
-      {{ t.added_on | localTimestamp }} ({{ t.added_on * 1000 | timeago }})
-    </p>
+    <app-bb-progress
+      class="d-block mb-3"
+      [progress]="t.progress"
+      [torrentState]="t.state"
+    ></app-bb-progress>
+
+    <dl class="row mb-0 small">
+      <dt class="col-4 te-label">
+        {{ 'components.modals.torrent-exists.label.size' | translate }}
+      </dt>
+      <dd class="col-8">{{ t.total_size | fileSize }}</dd>
+
+      <dt class="col-4 te-label">
+        {{ 'components.modals.torrent-exists.label.downloaded' | translate }}
+      </dt>
+      <dd class="col-8">{{ t.downloaded | fileSize }}</dd>
+
+      <dt class="col-4 te-label">
+        {{ 'components.modals.torrent-exists.label.uploaded' | translate }}
+      </dt>
+      <dd class="col-8">{{ t.uploaded | fileSize }}</dd>
+
+      <dt class="col-4 te-label">
+        {{ 'components.modals.torrent-exists.label.ratio' | translate }}
+      </dt>
+      <dd class="col-8">{{ t.ratio | ratio }}</dd>
+
+      <dt class="col-4 te-label">
+        {{ 'components.modals.torrent-exists.label.dl-speed' | translate }}
+      </dt>
+      <dd class="col-8">{{ t.dlspeed | fileSize }}/s</dd>
+
+      <dt class="col-4 te-label">
+        {{ 'components.modals.torrent-exists.label.up-speed' | translate }}
+      </dt>
+      <dd class="col-8">{{ t.upspeed | fileSize }}/s</dd>
+
+      <dt class="col-4 te-label">
+        {{ 'components.modals.torrent-exists.label.seeds-leechers' | translate }}
+      </dt>
+      <dd class="col-8">{{ t.num_seeds }} / {{ t.num_leechs }}</dd>
+
+      <dt class="col-4 te-label">
+        {{ 'components.modals.torrent-exists.label.added-on' | translate }}
+      </dt>
+      <dd class="col-8">
+        {{ t.added_on | localTimestamp }}
+        <span class="text-body-secondary ms-1">({{ t.added_on * 1000 | timeago }})</span>
+      </dd>
+
+      <dt class="col-4 te-label">
+        {{ 'components.modals.torrent-exists.label.save-path' | translate }}
+      </dt>
+      <dd
+        class="col-8 text-truncate"
+        [ngbTooltip]="t.save_path"
+        placement="top"
+        bbTooltipOverflow
+        tooltipClass="single-line-tooltip"
+      >
+        {{ t.save_path }}
+      </dd>
+
+      @if (t.category) {
+        <dt class="col-4 te-label">
+          {{ 'components.modals.torrent-exists.label.category' | translate }}
+        </dt>
+        <dd class="col-8">{{ t.category }}</dd>
+      }
+
+      @if (t.tags) {
+        <dt class="col-4 te-label">
+          {{ 'components.modals.torrent-exists.label.tags' | translate }}
+        </dt>
+        <dd class="col-8">{{ t.tags }}</dd>
+      }
+    </dl>
   </div>
 
   <div class="modal-footer">
-    <button type="button" class="btn btn-secondary" (click)="showAndClose()" autofocus>
-      {{ 'general.button.show' | translate }}
+    <button type="button" class="btn btn-secondary" (click)="openDetails()" autofocus>
+      {{ 'general.button.open-details' | translate }}
     </button>
     <button type="button" class="btn btn-link" (click)="closeModal()">
       {{ 'general.button.close' | translate }}

@@ -444,7 +444,20 @@
       },
       "torrent-exists": {
         "title": "Torrent Exists",
-        "already-in-list": "Torrent is already in the list!"
+        "already-in-list": "Torrent is already in the list!",
+        "label": {
+          "size": "Size",
+          "downloaded": "Downloaded",
+          "uploaded": "Uploaded",
+          "ratio": "Ratio",
+          "dl-speed": "Download Speed",
+          "up-speed": "Upload Speed",
+          "seeds-leechers": "Seeds / Leechers",
+          "added-on": "Added On",
+          "save-path": "Save Path",
+          "category": "Category",
+          "tags": "Tags"
+        }
       },
       "update-available": {
         "title": "Update Available",
@@ -472,11 +485,11 @@
       "popover": {
         "upload-limit": {
           "title": "Upload Limit",
-          "description": "Maximum upload speed in KiB/s. Enter 0 for unlimited."
+          "description": "Maximum upload speed in KiB/s. Set to 0 or leave empty to remove the speed limit."
         },
         "download-limit": {
           "title": "Download Limit",
-          "description": "Maximum download speed in KiB/s. Enter 0 for unlimited."
+          "description": "Maximum download speed in KiB/s. Set to 0 or leave empty to remove the speed limit."
         }
       }
     },
@@ -954,6 +967,7 @@
       "save": "Save",
       "update": "Update",
       "show": "Show",
+      "open-details": "Open Details",
       "edit": "Edit"
     },
     "form": {
