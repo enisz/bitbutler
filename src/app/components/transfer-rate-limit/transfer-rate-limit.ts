@@ -52,8 +52,8 @@ export class TransferRateLimit implements ControlValueAccessor, OnInit {
   public writeValue(value: TransferRateLimitValue | null): void {
     this.form.patchValue(
       {
-        uploadLimit: value?.uploadLimit ?? 0,
-        downloadLimit: value?.downloadLimit ?? 0,
+        uploadLimit: value?.uploadLimit ?? null,
+        downloadLimit: value?.downloadLimit ?? null,
       },
       { emitEvent: false },
     );
