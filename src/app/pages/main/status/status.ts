@@ -24,7 +24,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Torrent, TorrentState } from '../../../models/torrent.model';
 import { FilterService } from '../../../services/filter.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
-import { getTrackers, normalizeTracker } from '../../../utils/tracker.utils';
+import { getTrackers, normalizeTracker } from '../tracker.utils';
 import { FilterGroupComponent, FilterItem } from './filter-group/filter-group';
 
 type CountItem = { key: string; label: string; count: number };

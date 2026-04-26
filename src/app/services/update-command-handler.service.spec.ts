@@ -1,26 +1,26 @@
-import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
 import { UpdateCommandHandlerService } from './update-command-handler.service';
 import { CommandBusService } from './command-bus.service';
 import { ElectronService } from './electron.service';
 import { ToastService } from './toast.service';
 
+const flushPromises = () => new Promise<void>((resolve) => setTimeout(resolve));
+
 describe('UpdateCommandHandlerService', () => {
   let service: UpdateCommandHandlerService;
   let commands$: Subject<any>;
-  let checkForUpdate: jasmine.Spy;
-  let toastSuccess: jasmine.Spy;
-  let toastDanger: jasmine.Spy;
-  let commandBusEmit: jasmine.Spy;
+  let checkForUpdate: ReturnType<typeof vi.fn>;
+  let toastSuccess: ReturnType<typeof vi.fn>;
+  let toastDanger: ReturnType<typeof vi.fn>;
+  let commandBusEmit: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     commands$ = new Subject();
-    checkForUpdate = jasmine
-      .createSpy('checkForUpdate')
-      .and.returnValue(Promise.resolve({ updateAvailable: false, error: null }));
-    toastSuccess = jasmine.createSpy('success');
-    toastDanger = jasmine.createSpy('danger');
-    commandBusEmit = jasmine.createSpy('emit');
+    checkForUpdate = vi.fn().mockResolvedValue({ updateAvailable: false, error: null });
+    toastSuccess = vi.fn();
+    toastDanger = vi.fn();
+    commandBusEmit = vi.fn();
 
     TestBed.configureTestingModule({
       providers: [
@@ -38,24 +38,31 @@ describe('UpdateCommandHandlerService', () => {
     service.start();
   });
 
-  it('should show success toast when no update available', fakeAsync(() => {
+  it('should show success toast when no update available', async () => {
     commands$.next({ type: 'UPDATE_CHECK_FOR_UPDATE' });
-    tick();
+    await flushPromises();
     expect(toastSuccess).toHaveBeenCalledWith('Your are on the latest version!');
-  }));
+  });
 
-  it('should emit UI_UPDATE_AVAILABLE when update is found', fakeAsync(() => {
+  it('should emit UI_UPDATE_AVAILABLE when update is found', async () => {
     const update = { updateAvailable: true, error: null, version: '2.0.0' };
-    checkForUpdate.and.returnValue(Promise.resolve(update));
+    checkForUpdate.mockResolvedValueOnce(update);
     commands$.next({ type: 'UPDATE_CHECK_FOR_UPDATE' });
-    tick();
+    await flushPromises();
     expect(commandBusEmit).toHaveBeenCalledWith({ type: 'UI_UPDATE_AVAILABLE', update });
-  }));
+  });
 
-  it('should ignore second check while first is in-flight (exhaustMap)', fakeAsync(() => {
+  it('should ignore second check while first is in-flight (exhaustMap)', async () => {
     commands$.next({ type: 'UPDATE_CHECK_FOR_UPDATE' });
     commands$.next({ type: 'UPDATE_CHECK_FOR_UPDATE' });
-    tick();
+    await flushPromises();
     expect(checkForUpdate).toHaveBeenCalledTimes(1);
-  }));
+  });
+
+  it('should show danger toast when response contains an error', async () => {
+    checkForUpdate.mockResolvedValueOnce({ updateAvailable: false, error: 'Network unreachable' });
+    commands$.next({ type: 'UPDATE_CHECK_FOR_UPDATE' });
+    await flushPromises();
+    expect(toastDanger).toHaveBeenCalledWith('Network unreachable', 'Update Check Failed');
+  });
 });

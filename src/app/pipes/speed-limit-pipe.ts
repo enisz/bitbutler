@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { formatBytes } from '../utils/format-bytes';
+import { formatBytes } from './format-bytes';
 
 @Pipe({
   name: 'speedLimit',

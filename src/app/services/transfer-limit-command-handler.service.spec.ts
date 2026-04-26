@@ -1,4 +1,4 @@
-import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
 import { TransferLimitCommandHandlerService } from './transfer-limit-command-handler.service';
 import { CommandBusService } from './command-bus.service';
@@ -7,20 +7,20 @@ import { ServerStoreService } from './server-store.service';
 import { ToastService } from './toast.service';
 import { signal } from '@angular/core';
 
+const flushPromises = () => new Promise<void>((resolve) => setTimeout(resolve));
+
 describe('TransferLimitCommandHandlerService', () => {
   let service: TransferLimitCommandHandlerService;
   let commands$: Subject<any>;
-  let getAltState: jasmine.Spy;
-  let toggleAlt: jasmine.Spy;
-  let toastInfo: jasmine.Spy;
+  let getAltState: ReturnType<typeof vi.fn>;
+  let toggleAlt: ReturnType<typeof vi.fn>;
+  let toastInfo: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     commands$ = new Subject();
-    getAltState = jasmine
-      .createSpy('getAlternativeSpeedLimitState')
-      .and.returnValue(Promise.resolve(false));
-    toggleAlt = jasmine.createSpy('toggleAlternativeSpeedLimit').and.returnValue(Promise.resolve());
-    toastInfo = jasmine.createSpy('info');
+    getAltState = vi.fn().mockResolvedValue(false);
+    toggleAlt = vi.fn().mockResolvedValue(undefined);
+    toastInfo = vi.fn();
 
     TestBed.configureTestingModule({
       providers: [
@@ -42,16 +42,29 @@ describe('TransferLimitCommandHandlerService', () => {
     service.start();
   });
 
-  it('should show info toast on toggle', fakeAsync(() => {
+  it('should show info toast on toggle', async () => {
     commands$.next({ type: 'TRANSFER_LIMIT_ALTERNATIVE_TOGGLE' });
-    tick();
+    await flushPromises();
     expect(toastInfo).toHaveBeenCalledWith('Turning alternative speed limit ON');
-  }));
+  });
 
-  it('should ignore a second toggle while first is in-flight (exhaustMap)', fakeAsync(() => {
+  it('should show "OFF" toast when alt speed is currently enabled', async () => {
+    getAltState.mockResolvedValueOnce(true);
+    commands$.next({ type: 'TRANSFER_LIMIT_ALTERNATIVE_TOGGLE' });
+    await flushPromises();
+    expect(toastInfo).toHaveBeenCalledWith('Turning alternative speed limit OFF');
+  });
+
+  it('should call toggleAlternativeSpeedLimit with the current server id', async () => {
+    commands$.next({ type: 'TRANSFER_LIMIT_ALTERNATIVE_TOGGLE' });
+    await flushPromises();
+    expect(toggleAlt).toHaveBeenCalledWith('server-1');
+  });
+
+  it('should ignore a second toggle while first is in-flight (exhaustMap)', async () => {
     commands$.next({ type: 'TRANSFER_LIMIT_ALTERNATIVE_TOGGLE' });
     commands$.next({ type: 'TRANSFER_LIMIT_ALTERNATIVE_TOGGLE' });
-    tick();
+    await flushPromises();
     expect(getAltState).toHaveBeenCalledTimes(1);
-  }));
+  });
 });

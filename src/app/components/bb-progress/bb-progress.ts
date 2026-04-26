@@ -1,6 +1,6 @@
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, computed, signal } from '@angular/core';
-import { variantForTorrentState } from '../../utils/torrent-state-variant';
+import { variantForTorrentState } from './torrent-state-variant';
 import { BbProgressState, BbProgressVariant } from './bb-progress.types';
 
 @Component({

@@ -1,4 +1,4 @@
-import { Torrent } from '../models/torrent.model';
+import { Torrent } from '../../models/torrent.model';
 
 export function getTrackers(t: Torrent): string[] {
   return (t.tracker ?? '').split('\n').filter(Boolean);

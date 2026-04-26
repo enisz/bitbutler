@@ -1,0 +1,122 @@
+import { TestBed } from '@angular/core/testing';
+import { DomSanitizer } from '@angular/platform-browser';
+import { Overlay } from '@angular/cdk/overlay';
+import { ToastService } from './toast.service';
+import { GeneralSettingsService } from './general-settings.service';
+import { ThemeService } from './theme.service';
+import { DEFAULT_GENERAL_SETTINGS } from '../models/general-settings.model';
+import { Subject } from 'rxjs';
+
+describe('ToastService — showText()', () => {
+  let service: ToastService;
+  let mockOverlay: any;
+  let mockGeneralSettings: any;
+  let mockThemeService: any;
+  let mockSanitizer: any;
+
+  beforeEach(() => {
+    mockOverlay = {
+      create: vi.fn().mockReturnValue({
+        attach: vi.fn().mockReturnValue({
+          instance: { add: vi.fn(), toasts: () => [], beginDismiss: vi.fn(), remove: vi.fn() },
+        }),
+        dispose: vi.fn(),
+        updatePositionStrategy: vi.fn(),
+      }),
+      position: vi.fn().mockReturnValue({
+        global: vi.fn().mockReturnValue({
+          bottom: vi.fn().mockReturnThis(),
+          right: vi.fn().mockReturnThis(),
+          top: vi.fn().mockReturnThis(),
+          left: vi.fn().mockReturnThis(),
+        }),
+      }),
+      scrollStrategies: { noop: vi.fn().mockReturnValue({}) },
+    };
+
+    mockGeneralSettings = {
+      asObservable: vi.fn().mockReturnValue(new Subject()),
+    };
+
+    mockThemeService = {
+      mode: vi.fn().mockReturnValue('dark'),
+      getSystemMode: vi.fn().mockReturnValue('dark'),
+    };
+
+    mockSanitizer = {
+      sanitize: vi.fn().mockImplementation((_ctx: any, html: string) => html),
+    };
+
+    TestBed.configureTestingModule({
+      providers: [
+        ToastService,
+        { provide: Overlay, useValue: mockOverlay },
+        { provide: DomSanitizer, useValue: mockSanitizer },
+        { provide: GeneralSettingsService, useValue: mockGeneralSettings },
+        { provide: ThemeService, useValue: mockThemeService },
+      ],
+    });
+
+    service = TestBed.inject(ToastService);
+  });
+
+  it('should escape & in showText()', () => {
+    const id = service.showText('a & b');
+    expect(mockSanitizer.sanitize).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.stringContaining('&amp;'),
+    );
+  });
+
+  it('should escape < and > in showText()', () => {
+    service.showText('<script>alert(1)</script>');
+    expect(mockSanitizer.sanitize).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.stringContaining('&lt;'),
+    );
+    expect(mockSanitizer.sanitize).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.stringContaining('&gt;'),
+    );
+  });
+
+  it('should convert \\n to <br> in showText()', () => {
+    service.showText('line1\nline2');
+    expect(mockSanitizer.sanitize).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.stringContaining('<br>'),
+    );
+  });
+
+  it('should return a non-empty string id from showText()', () => {
+    const id = service.showText('hello');
+    expect(typeof id).toBe('string');
+    expect(id.length).toBeGreaterThan(0);
+  });
+
+  it('should return a non-empty string id from showHtml()', () => {
+    const id = service.showHtml('<b>bold</b>');
+    expect(typeof id).toBe('string');
+    expect(id.length).toBeGreaterThan(0);
+  });
+
+  it('should use "dark" type for adaptive() when mode is light', () => {
+    mockThemeService.mode.mockReturnValue('light');
+    const showHtmlSpy = vi.spyOn(service, 'showHtml');
+    service.adaptive('<b>msg</b>', 'Title');
+    expect(showHtmlSpy).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ type: 'dark' }),
+    );
+  });
+
+  it('should use "light" type for adaptive() when mode is dark', () => {
+    mockThemeService.mode.mockReturnValue('dark');
+    const showHtmlSpy = vi.spyOn(service, 'showHtml');
+    service.adaptive('<b>msg</b>', 'Title');
+    expect(showHtmlSpy).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ type: 'light' }),
+    );
+  });
+});
