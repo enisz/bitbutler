@@ -485,11 +485,11 @@
       "popover": {
         "upload-limit": {
           "title": "Upload Limit",
-          "description": "Maximum upload speed in KiB/s. Enter 0 for unlimited."
+          "description": "Maximum upload speed in KiB/s. Set to 0 or leave empty to remove the speed limit."
         },
         "download-limit": {
           "title": "Download Limit",
-          "description": "Maximum download speed in KiB/s. Enter 0 for unlimited."
+          "description": "Maximum download speed in KiB/s. Set to 0 or leave empty to remove the speed limit."
         }
       }
     },

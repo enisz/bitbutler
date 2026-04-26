@@ -32,8 +32,8 @@ export class TransferRateLimit implements ControlValueAccessor, OnInit {
   private readonly cdr = inject(ChangeDetectorRef);
 
   public form = new FormGroup({
-    uploadLimit: new FormControl<number | null>(null),
-    downloadLimit: new FormControl<number | null>(null),
+    uploadLimit: new FormControl<number | null>(0),
+    downloadLimit: new FormControl<number | null>(0),
   });
 
   private onChange: (value: TransferRateLimitValue) => void = () => {};
@@ -42,17 +42,21 @@ export class TransferRateLimit implements ControlValueAccessor, OnInit {
   public ngOnInit(): void {
     this.form.valueChanges.subscribe((value) => {
       this.onChange({
-        uploadLimit: value.uploadLimit ?? null,
-        downloadLimit: value.downloadLimit ?? null,
+        uploadLimit: value.uploadLimit ? value.uploadLimit : null,
+        downloadLimit: value.downloadLimit ? value.downloadLimit : null,
       });
       this.onTouched();
     });
   }
 
   public writeValue(value: TransferRateLimitValue | null): void {
-    this.form.patchValue(value ?? { uploadLimit: null, downloadLimit: null }, {
-      emitEvent: false,
-    });
+    this.form.patchValue(
+      {
+        uploadLimit: value?.uploadLimit ?? 0,
+        downloadLimit: value?.downloadLimit ?? 0,
+      },
+      { emitEvent: false },
+    );
     this.cdr.markForCheck();
   }
 

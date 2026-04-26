@@ -485,11 +485,11 @@
       "popover": {
         "upload-limit": {
           "title": "Feltöltési korlát",
-          "description": "Maximális feltöltési sebesség KiB/s-ban. A 0 korlátlan sebességet jelent."
+          "description": "Maximális feltöltési sebesség KiB/s-ban. A 0 megadásával vagy az üres mező hagyásával a korlát eltávolítható."
         },
         "download-limit": {
           "title": "Letöltési korlát",
-          "description": "Maximális letöltési sebesség KiB/s-ban. A 0 korlátlan sebességet jelent."
+          "description": "Maximális letöltési sebesség KiB/s-ban. A 0 megadásával vagy az üres mező hagyásával a korlát eltávolítható."
         }
       }
     },

@@ -5,33 +5,6 @@
         <input
           type="number"
           class="form-control"
-          id="uploadLimit"
-          [placeholder]="'components.transfer-rate-limit.upload-limit' | translate"
-          formControlName="uploadLimit"
-          min="0"
-        />
-        <label for="uploadLimit">{{
-          'components.transfer-rate-limit.upload-limit' | translate
-        }}</label>
-      </div>
-    </div>
-
-    <div class="col-1 d-flex align-items-center">
-      <bb-popover
-        class="mt-2"
-        [subject]="'components.transfer-rate-limit.popover.upload-limit.title' | translate"
-        [description]="
-          'components.transfer-rate-limit.popover.upload-limit.description' | translate
-        "
-        placement="top"
-      ></bb-popover>
-    </div>
-
-    <div class="col-5">
-      <div class="form-floating">
-        <input
-          type="number"
-          class="form-control"
           id="downloadLimit"
           [placeholder]="'components.transfer-rate-limit.download-limit' | translate"
           formControlName="downloadLimit"
@@ -54,15 +27,50 @@
       ></bb-popover>
     </div>
 
+    <div class="col-5">
+      <div class="form-floating">
+        <input
+          type="number"
+          class="form-control"
+          id="uploadLimit"
+          [placeholder]="'components.transfer-rate-limit.upload-limit' | translate"
+          formControlName="uploadLimit"
+          min="0"
+        />
+        <label for="uploadLimit">{{
+          'components.transfer-rate-limit.upload-limit' | translate
+        }}</label>
+      </div>
+    </div>
+
+    <div class="col-1 d-flex align-items-center">
+      <bb-popover
+        class="mt-2"
+        [subject]="'components.transfer-rate-limit.popover.upload-limit.title' | translate"
+        [description]="
+          'components.transfer-rate-limit.popover.upload-limit.description' | translate
+        "
+        placement="top"
+      ></bb-popover>
+    </div>
+
     <div class="col-6">
       <div class="form-text mt-1 ms-2">
-        {{ (form.controls.uploadLimit.value ?? 0) * 1024 | speedLimit }}
+        @if (form.controls.downloadLimit.value) {
+          {{ form.controls.downloadLimit.value * 1024 | speedLimit }}
+        } @else {
+          {{ 'general.limit.no-limit' | translate }}
+        }
       </div>
     </div>
 
     <div class="col-6">
       <div class="form-text mt-1 ms-2">
-        {{ (form.controls.downloadLimit.value ?? 0) * 1024 | speedLimit }}
+        @if (form.controls.uploadLimit.value) {
+          {{ form.controls.uploadLimit.value * 1024 | speedLimit }}
+        } @else {
+          {{ 'general.limit.no-limit' | translate }}
+        }
       </div>
     </div>
   </div>
