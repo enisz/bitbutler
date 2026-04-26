@@ -387,7 +387,6 @@ export class AddTorrent implements OnInit {
     }
 
     if (this.isAlreadyInList(draft)) {
-      this.activeModal.dismiss('Torrent already exists');
       const modalRef = this.modalService.open(TorrentExists, { centered: true });
       modalRef.componentInstance.hash = draft.torrent?.infoHashV1?.toLowerCase() ?? null;
       this.openFilesService.consumeCurrentDraft();

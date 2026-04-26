@@ -444,7 +444,17 @@
       },
       "torrent-exists": {
         "title": "A torrent már létezik",
-        "already-in-list": "Ez a torrent már szerepel a listában!"
+        "already-in-list": "Ez a torrent már szerepel a listában!",
+        "label": {
+          "state": "Állapot",
+          "size": "Méret",
+          "downloaded": "Letöltve",
+          "seeds-leechers": "Seedek / Leecherek",
+          "added-on": "Hozzáadva",
+          "save-path": "Mentési útvonal",
+          "category": "Kategória",
+          "tags": "Címkék"
+        }
       },
       "update-available": {
         "title": "Frissítés elérhető",
@@ -954,6 +964,7 @@
       "save": "Mentés",
       "update": "Frissítés",
       "show": "Megjelenítés",
+      "open-details": "Részletek megnyitása",
       "edit": "Szerkesztés"
     },
     "form": {
