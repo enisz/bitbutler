@@ -10,7 +10,7 @@
         class="small text-body-secondary mt-1 bb-hash-clamp"
         [ngbTooltip]="element.offsetWidth < element.scrollWidth ? t.name : null"
         tooltipClass="single-line-tooltip"
-        placement="bottom"
+        placement="top"
       >
         {{ t.name }}
       </div>
@@ -73,7 +73,13 @@
       <dt class="col-4 te-label">
         {{ 'components.modals.torrent-exists.label.save-path' | translate }}
       </dt>
-      <dd class="col-8 text-truncate" [ngbTooltip]="t.save_path" placement="top" bbTooltipOverflow>
+      <dd
+        class="col-8 text-truncate"
+        [ngbTooltip]="t.save_path"
+        placement="top"
+        bbTooltipOverflow
+        tooltipClass="single-line-tooltip"
+      >
         {{ t.save_path }}
       </dd>
 
