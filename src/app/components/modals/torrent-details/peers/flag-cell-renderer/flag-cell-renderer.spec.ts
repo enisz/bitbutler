@@ -19,4 +19,14 @@ describe('FlagCellRenderer', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should store params after agInit', () => {
+    const params = { value: 'de', data: { country: 'Germany' } } as any;
+    component.agInit(params);
+    expect(component.params).toBe(params);
+  });
+
+  it('should return true from refresh', () => {
+    expect(component.refresh({} as any)).toBe(true);
+  });
 });

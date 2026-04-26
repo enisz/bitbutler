@@ -19,4 +19,9 @@ describe('BbSpinner', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should render a bb-spinner element', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('.bb-spinner')).toBeTruthy();
+  });
 });
