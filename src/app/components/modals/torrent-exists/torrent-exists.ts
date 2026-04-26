@@ -4,11 +4,11 @@ import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { TimeagoPipe } from 'ngx-timeago';
 import { AutofocusDirective } from '../../../directives/autofocus';
+import { TooltipOverflow } from '../../../directives/tooltip-overflow';
 import { BbProgress } from '../../bb-progress/bb-progress';
-import { BbProgressState } from '../../bb-progress/bb-progress.types';
-import { variantForTorrentState } from '../../bb-progress/torrent-state-variant';
 import { FilesizePipe } from '../../../pipes/filesize-pipe';
 import { LocalTimestampPipe } from '../../../pipes/local-timestamp-pipe';
+import { RatioPipe } from '../../../pipes/ratio-pipe';
 import { CommandBusService } from '../../../services/command-bus.service';
 import { FilterService } from '../../../services/filter.service';
 import { SelectionStoreService } from '../../../services/selection-store.service';
@@ -20,7 +20,9 @@ import { TorrentStoreService } from '../../../services/torrent-store.service';
   imports: [
     LocalTimestampPipe,
     FilesizePipe,
+    RatioPipe,
     AutofocusDirective,
+    TooltipOverflow,
     TimeagoPipe,
     NgbTooltip,
     TranslatePipe,
@@ -49,11 +51,6 @@ export class TorrentExists {
   public readonly torrent = computed(() => {
     const h = this._hash();
     return h ? this.torrentStoreService.torrentsMap().get(h) : undefined;
-  });
-
-  public readonly stateVariant = computed(() => {
-    const t = this.torrent();
-    return t ? variantForTorrentState(t.state as BbProgressState) : 'secondary';
   });
 
   constructor() {

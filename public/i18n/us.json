@@ -446,9 +446,12 @@
         "title": "Torrent Exists",
         "already-in-list": "Torrent is already in the list!",
         "label": {
-          "state": "State",
           "size": "Size",
           "downloaded": "Downloaded",
+          "uploaded": "Uploaded",
+          "ratio": "Ratio",
+          "dl-speed": "Download Speed",
+          "up-speed": "Upload Speed",
           "seeds-leechers": "Seeds / Leechers",
           "added-on": "Added On",
           "save-path": "Save Path",

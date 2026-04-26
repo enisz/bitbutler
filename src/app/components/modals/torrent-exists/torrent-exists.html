@@ -28,18 +28,6 @@
 
     <dl class="row mb-0 small">
       <dt class="col-4 te-label">
-        {{ 'components.modals.torrent-exists.label.state' | translate }}
-      </dt>
-      <dd class="col-8">
-        <span
-          class="badge bg-{{ stateVariant() }}"
-          [ngbTooltip]="'torrent.state.' + t.state | translate"
-          container="body"
-          >{{ t.state }}</span
-        >
-      </dd>
-
-      <dt class="col-4 te-label">
         {{ 'components.modals.torrent-exists.label.size' | translate }}
       </dt>
       <dd class="col-8">{{ t.total_size | fileSize }}</dd>
@@ -48,6 +36,26 @@
         {{ 'components.modals.torrent-exists.label.downloaded' | translate }}
       </dt>
       <dd class="col-8">{{ t.downloaded | fileSize }}</dd>
+
+      <dt class="col-4 te-label">
+        {{ 'components.modals.torrent-exists.label.uploaded' | translate }}
+      </dt>
+      <dd class="col-8">{{ t.uploaded | fileSize }}</dd>
+
+      <dt class="col-4 te-label">
+        {{ 'components.modals.torrent-exists.label.ratio' | translate }}
+      </dt>
+      <dd class="col-8">{{ t.ratio | ratio }}</dd>
+
+      <dt class="col-4 te-label">
+        {{ 'components.modals.torrent-exists.label.dl-speed' | translate }}
+      </dt>
+      <dd class="col-8">{{ t.dlspeed | fileSize }}/s</dd>
+
+      <dt class="col-4 te-label">
+        {{ 'components.modals.torrent-exists.label.up-speed' | translate }}
+      </dt>
+      <dd class="col-8">{{ t.upspeed | fileSize }}/s</dd>
 
       <dt class="col-4 te-label">
         {{ 'components.modals.torrent-exists.label.seeds-leechers' | translate }}
@@ -65,12 +73,7 @@
       <dt class="col-4 te-label">
         {{ 'components.modals.torrent-exists.label.save-path' | translate }}
       </dt>
-      <dd
-        class="col-8 text-truncate"
-        [ngbTooltip]="t.save_path"
-        tooltipClass="single-line-tooltip"
-        container="body"
-      >
+      <dd class="col-8 text-truncate" [ngbTooltip]="t.save_path" placement="top" bbTooltipOverflow>
         {{ t.save_path }}
       </dd>
 
