@@ -1,7 +1,7 @@
 <div class="modal-header bb-modal-header">
   <div class="bb-modal-header__text">
     <h5 class="modal-title bb-title-clamp">
-      {{ 'components.modals.limit-transfer-rate.title' | translate }}
+      {{ 'components.modals.transfer-limit.title' | translate }}
     </h5>
 
     <div
@@ -12,7 +12,7 @@
       placement="bottom"
     >
       @if (target === 'global') {
-        {{ 'components.modals.limit-transfer-rate.global' | translate }}
+        {{ 'components.modals.transfer-limit.global' | translate }}
       } @else if (selected() === 1) {
         {{ selectionName() }}
       } @else {
@@ -34,7 +34,7 @@
     <div class="w-100 text-center py-2">
       <app-bb-spinner></app-bb-spinner>
       <small class="d-block mt-2">{{
-        'components.modals.limit-transfer-rate.loading' | translate
+        'components.modals.transfer-limit.loading' | translate
       }}</small>
     </div>
   } @else {

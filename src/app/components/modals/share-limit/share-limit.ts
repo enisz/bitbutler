@@ -7,15 +7,22 @@ import { TooltipOverflow } from '../../../directives/tooltip-overflow';
 import { QbService } from '../../../services/qb.service';
 import { SelectionStoreService } from '../../../services/selection-store.service';
 import { ServerStoreService } from '../../../services/server-store.service';
-import { ShareLimit, ShareLimitValue } from '../../share-limit/share-limit';
+import { ShareLimit as ShareLimitForm, ShareLimitValue } from '../../share-limit/share-limit';
 
 @Component({
-  selector: 'app-limit-torrent-share',
-  imports: [ReactiveFormsModule, TranslatePipe, ShareLimit, NgbTooltip, TooltipOverflow, BbSpinner],
-  templateUrl: './limit-torrent-share.html',
-  styleUrl: './limit-torrent-share.scss',
+  selector: 'app-share-limit-modal',
+  imports: [
+    ReactiveFormsModule,
+    TranslatePipe,
+    ShareLimitForm,
+    NgbTooltip,
+    TooltipOverflow,
+    BbSpinner,
+  ],
+  templateUrl: './share-limit.html',
+  styleUrl: './share-limit.scss',
 })
-export class LimitTorrentShare implements OnInit {
+export class ShareLimit implements OnInit {
   public readonly activeModal = inject(NgbActiveModal);
   private readonly qbService = inject(QbService);
   private readonly selectionStoreService = inject(SelectionStoreService);
@@ -89,7 +96,7 @@ export class LimitTorrentShare implements OnInit {
       );
       this.activeModal.close();
     } catch (error) {
-      console.error(LimitTorrentShare.name, 'handleSubmit', 'Failed to set share limits!', error);
+      console.error(ShareLimit.name, 'handleSubmit', 'Failed to set share limits!', error);
     } finally {
       this.saving.set(false);
     }

@@ -154,8 +154,8 @@
           "confirmation": "A fájlok törlése a lemezről is"
         }
       },
-      "limit-transfer-rate": {
-        "title": "Átviteli sebesség korlátozása",
+      "transfer-limit": {
+        "title": "Átviteli korlát",
         "global": "Globális átviteli korlát",
         "loading": "Átviteli korlátok betöltése..."
       },
@@ -469,8 +469,8 @@
           "view-on-github": "Megtekintés GitHubon"
         }
       },
-      "limit-torrent-share": {
-        "title": "Set Share Limits",
+      "share-limit": {
+        "title": "Megosztási korlát",
         "loading": "Megosztási korlátok betöltése..."
       },
       "guard": {
@@ -602,8 +602,8 @@
             "set-category": "Kategória beállítása",
             "set-tags": "Címkék beállítása",
             "remove": "Eltávolítás",
-            "limit-transfer-rate": "Átviteli sebesség korlátozása",
-            "limit-torrent-share": "Megosztási korlátok beállítása",
+            "transfer-limit": "Átviteli korlát",
+            "share-limit": "Megosztási korlát",
             "enable-super-seeding": "Super seeding engedélyezése",
             "disable-super-seeding": "Super seeding tiltása",
             "force-recheck": "Kényszerített ellenőrzés",

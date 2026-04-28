@@ -6,14 +6,14 @@ import { Torrent } from '../../../models/torrent.model';
 import { QbService } from '../../../services/qb.service';
 import { SelectionStoreService } from '../../../services/selection-store.service';
 import { ServerStoreService } from '../../../services/server-store.service';
-import { LimitTransferRate } from './limit-transfer-rate';
+import { TransferLimit } from './transfer-limit';
 
 const makeTorrent = (overrides: Partial<Torrent> = {}): Torrent =>
   ({ name: 'My Torrent', hash: 'abc123', up_limit: 0, dl_limit: 0, ...overrides }) as Torrent;
 
-describe('LimitTransferRate', () => {
-  let component: LimitTransferRate;
-  let fixture: ComponentFixture<LimitTransferRate>;
+describe('TransferLimit', () => {
+  let component: TransferLimit;
+  let fixture: ComponentFixture<TransferLimit>;
   let mockActiveModal: Partial<NgbActiveModal>;
   let mockQbService: any;
 
@@ -27,7 +27,7 @@ describe('LimitTransferRate', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [LimitTransferRate],
+      imports: [TransferLimit],
       providers: [
         { provide: NgbActiveModal, useValue: mockActiveModal },
         { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
@@ -42,7 +42,7 @@ describe('LimitTransferRate', () => {
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(LimitTransferRate);
+    fixture = TestBed.createComponent(TransferLimit);
     component = fixture.componentInstance;
     component.target = 'torrent';
     fixture.detectChanges();
@@ -90,10 +90,10 @@ describe('LimitTransferRate', () => {
   });
 
   describe('tooltipText (global target)', () => {
-    let globalComponent: LimitTransferRate;
+    let globalComponent: TransferLimit;
 
     beforeEach(async () => {
-      const f = TestBed.createComponent(LimitTransferRate);
+      const f = TestBed.createComponent(TransferLimit);
       globalComponent = f.componentInstance;
       globalComponent.target = 'global';
       f.detectChanges();

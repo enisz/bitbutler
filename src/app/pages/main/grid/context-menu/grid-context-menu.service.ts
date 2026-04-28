@@ -260,7 +260,7 @@ export class GridContextMenuService {
           {
             kind: 'item',
             id: 'speed.limitTransferRate',
-            label: 'pages.main.grid.context-menu.item.limit-transfer-rate',
+            label: 'pages.main.grid.context-menu.item.transfer-limit',
             icon: faArrowDownUpAcrossLine,
             action: () =>
               this.commandBusService.emit({
@@ -271,7 +271,7 @@ export class GridContextMenuService {
           {
             kind: 'item',
             id: 'speed.limitTorrentShare',
-            label: 'pages.main.grid.context-menu.item.limit-torrent-share',
+            label: 'pages.main.grid.context-menu.item.share-limit',
             icon: faShare,
             action: () => this.commandBusService.emit({ type: 'UI_LIMIT_SHARE' }),
           },

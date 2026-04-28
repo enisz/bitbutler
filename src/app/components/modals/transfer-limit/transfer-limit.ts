@@ -22,7 +22,7 @@ import {
 } from '../../transfer-rate-limit/transfer-rate-limit';
 
 @Component({
-  selector: 'app-limit-transfer-rate',
+  selector: 'app-transfer-limit',
   imports: [
     ReactiveFormsModule,
     TranslatePipe,
@@ -31,10 +31,10 @@ import {
     TooltipOverflow,
     BbSpinner,
   ],
-  templateUrl: './limit-transfer-rate.html',
-  styleUrl: './limit-transfer-rate.scss',
+  templateUrl: './transfer-limit.html',
+  styleUrl: './transfer-limit.scss',
 })
-export class LimitTransferRate implements OnInit {
+export class TransferLimit implements OnInit {
   @Input() public target!: LimitTargetType;
 
   private readonly qbService = inject(QbService);
@@ -108,7 +108,7 @@ export class LimitTransferRate implements OnInit {
         this.qbService.setDownloadLimit(serverId, downloadBytes, hashes),
       ]);
     } catch (error: any) {
-      console.error(LimitTransferRate.name, 'handleSubmit', 'Failed to update limits!');
+      console.error(TransferLimit.name, 'handleSubmit', 'Failed to update limits!');
     } finally {
       this.saving.set(false);
       this.activeModal.close();

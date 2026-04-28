@@ -5,8 +5,8 @@ import { filter } from 'rxjs';
 import { About } from '../components/about/about';
 import { AddTorrent } from '../components/add-torrent/add-torrent';
 import { DeleteTorrent } from '../components/modals/delete-torrent/delete-torrent';
-import { LimitTorrentShare } from '../components/modals/limit-torrent-share/limit-torrent-share';
-import { LimitTransferRate } from '../components/modals/limit-transfer-rate/limit-transfer-rate';
+import { ShareLimit } from '../components/modals/share-limit/share-limit';
+import { TransferLimit } from '../components/modals/transfer-limit/transfer-limit';
 import { RenameTorrent } from '../components/modals/rename-torrent/rename-torrent';
 import { ServerEditor } from '../components/modals/server-editor/server-editor';
 import { SetTorrentCategory } from '../components/modals/set-torrent-category/set-torrent-category';
@@ -144,8 +144,8 @@ export class UiCommandHandlerService {
             break;
 
           case 'UI_LIMIT_TRANSFER':
-            if (this.isModalOpen(LimitTransferRate)) break;
-            const limitTransferModalRef = this.modalService.open(LimitTransferRate, {
+            if (this.isModalOpen(TransferLimit)) break;
+            const limitTransferModalRef = this.modalService.open(TransferLimit, {
               centered: true,
               size: 'lg',
             });
@@ -156,9 +156,9 @@ export class UiCommandHandlerService {
             break;
 
           case 'UI_LIMIT_SHARE':
-            if (this.isModalOpen(LimitTorrentShare)) break;
+            if (this.isModalOpen(ShareLimit)) break;
 
-            const limitTorrentShare = this.modalService.open(LimitTorrentShare, { size: 'lg' });
+            const limitTorrentShare = this.modalService.open(ShareLimit, { size: 'lg' });
 
             limitTorrentShare.result.then((res: any) => {}).catch((error: any) => {});
             break;
