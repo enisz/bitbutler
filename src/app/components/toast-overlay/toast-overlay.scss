@@ -99,3 +99,67 @@
     transform: translateX(50px);
   }
 }
+
+// ─── Left positions: align to left edge ────────────────────────────────────
+
+.bb-toast-pos-bottom-left,
+.bb-toast-pos-top-left {
+  align-items: flex-start;
+}
+
+// ─── Left positions: exit to the left ──────────────────────────────────────
+
+.bb-toast-pos-bottom-left,
+.bb-toast-pos-top-left {
+  .bb-toast-wrapper.bb-toast-closing {
+    animation: slide-out-left-and-collapse 350ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+}
+
+@keyframes slide-out-left-and-collapse {
+  0% {
+    grid-template-rows: 1fr;
+    margin-top: 8px;
+    opacity: 1;
+    transform: translateX(0);
+  }
+  50% {
+    grid-template-rows: 1fr;
+    margin-top: 8px;
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  100% {
+    grid-template-rows: 0fr;
+    margin-top: 0;
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+}
+
+// ─── Top positions: newest at top (column-reverse) ─────────────────────────
+
+.bb-toast-pos-top-right,
+.bb-toast-pos-top-left {
+  flex-direction: column-reverse;
+}
+
+// ─── Top positions: enter from above ───────────────────────────────────────
+
+.bb-toast-pos-top-right,
+.bb-toast-pos-top-left {
+  .bb-toast {
+    animation: toast-fade-in-top 250ms ease-out forwards;
+  }
+}
+
+@keyframes toast-fade-in-top {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

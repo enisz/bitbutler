@@ -105,16 +105,19 @@
         />
 
         <div class="bb-meta">
-          <select
-            class="bb-select"
+          <ng-select
+            class="bb-select-compact"
+            [items]="priorityOptions"
+            bindValue="value"
+            bindLabel="label"
+            [searchable]="false"
+            [clearable]="false"
+            appendTo="body"
             [ngModel]="getDominantFolderPriority(node)"
+            (ngModelChange)="setFolderPriority(node, $event)"
             (click)="$event.stopPropagation()"
-            (change)="setFolderPriority(node, +$any($event.target).value)"
-          >
-            @for (opt of priorityOptions; track opt.value) {
-              <option [value]="opt.value">{{ opt.label }}</option>
-            }
-          </select>
+            appendTo="ngb-modal-window"
+          ></ng-select>
         </div>
       }
     </div>
@@ -124,7 +127,7 @@
     </div>
   </cdk-nested-tree-node>
 
-  <cdk-tree-node *cdkTreeNodeDef="let node" class="bb-node">
+  <cdk-nested-tree-node *cdkTreeNodeDef="let node" class="bb-node">
     <div
       class="bb-row bb-row--file"
       [class.bb-row--skipped]="node.file?.priority === 0"
@@ -191,11 +194,17 @@
             }
           } @else {
             @if (f.priority !== 0) {
-              <select class="bb-select" [(ngModel)]="f.priority" (change)="calculateStats()">
-                @for (opt of priorityOptions; track opt.value) {
-                  <option [ngValue]="opt.value">{{ opt.label }}</option>
-                }
-              </select>
+              <ng-select
+                class="bb-select-compact"
+                [items]="priorityOptions"
+                bindValue="value"
+                bindLabel="label"
+                [searchable]="false"
+                [clearable]="false"
+                appendTo="body"
+                [(ngModel)]="f.priority"
+                (ngModelChange)="calculateStats()"
+              ></ng-select>
             } @else {
               <span class="bb-skipped-label">{{
                 'components.bb-file-tree.priority-option.skipped' | translate
@@ -205,5 +214,5 @@
         </div>
       }
     </div>
-  </cdk-tree-node>
+  </cdk-nested-tree-node>
 </cdk-tree>

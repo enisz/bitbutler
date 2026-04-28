@@ -8,6 +8,7 @@ import {
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { Toast, ToastType } from '../../models/toast.model';
+import { ToastPosition } from '../../models/general-settings.model';
 import { ToastService } from '../../services/toast.service';
 
 @Component({
@@ -22,6 +23,7 @@ export class ToastOverlay {
   private readonly toastService = inject(ToastService);
 
   readonly toasts = signal<Toast[]>([]);
+  readonly position = signal<ToastPosition>('bottom-right');
   readonly xmark = faXmark;
   readonly icons: Record<ToastType, any> = {
     primary: faCircleInfo,

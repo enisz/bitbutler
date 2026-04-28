@@ -74,6 +74,73 @@
 
 :host ::ng-deep .markdown-content {
   padding: var(--bs-accordion-body-padding-y, 1rem) var(--bs-accordion-body-padding-x, 1.25rem);
+  max-height: 250px;
+  overflow-y: auto;
+  font-size: 0.95rem;
+  line-height: 1.6;
+
+  h1,
+  h2,
+  h3 {
+    color: var(--bs-primary);
+    font-size: 1.1rem;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    border-bottom: 1px solid var(--bs-border-color);
+    padding-bottom: 0.25rem;
+  }
+
+  ul,
+  ol {
+    padding-left: 1.2rem;
+    margin-bottom: 0.5rem;
+
+    li {
+      color: var(--bs-body-color);
+      margin-bottom: 0.4rem;
+
+      &::marker {
+        color: var(--bs-secondary);
+      }
+    }
+  }
+
+  code {
+    background: var(--bs-body-bg);
+    color: var(--bs-secondary);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: monospace;
+  }
+
+  p {
+    margin-bottom: 0.75rem;
+  }
+
+  a {
+    color: var(--bs-secondary);
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+      color: var(--bs-link-hover-color);
+    }
+  }
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--bs-border-color);
+    border-radius: 10px;
+  }
 }
 
 :host-context([data-bs-theme='dark']) {

@@ -51,6 +51,7 @@ export class ToastService {
 
     const ref = this.overlayRef.attach(new ComponentPortal(ToastOverlay));
     this.container = ref.instance;
+    this.container.position.set(this.settings?.behavior.toastPosition ?? 'bottom-right');
   }
 
   private getPositionStrategy(position?: ToastPosition): GlobalPositionStrategy {
@@ -80,6 +81,7 @@ export class ToastService {
       return;
     }
     this.overlayRef.updatePositionStrategy(this.getPositionStrategy(position));
+    this.container?.position.set(position);
   }
 
   private sanitizeHtml(html: string): string {

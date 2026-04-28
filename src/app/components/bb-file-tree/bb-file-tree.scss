@@ -181,21 +181,6 @@
   }
 }
 
-.bb-select {
-  background: var(--bb-control-bg);
-  color: var(--bb-control-text);
-  border: 1px solid var(--bb-control-border);
-  border-radius: 4px;
-  font-size: 0.75rem;
-  padding: 1px 4px;
-  margin-right: 5px;
-  outline: none;
-
-  &:focus {
-    border-color: var(--bb-control-focus-border);
-  }
-}
-
 .bb-children {
   border-left: none !important;
   display: none;

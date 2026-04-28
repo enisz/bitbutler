@@ -19,8 +19,33 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  pre-flight:
+    name: 'Pre-flight Checks'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm test
+
   prepare-release:
     name: 'Prepare Release'
+    needs: pre-flight
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -45,7 +70,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '22'
 
       - name: Bump version and add metadata
         id: get_version
@@ -92,15 +117,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  build-and-package:
-    name: 'Build and Package'
+  angular-build:
+    name: 'Build Angular'
     needs: prepare-release
-    runs-on: ${{ matrix.os }}
-    permissions:
-      contents: write
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
+    runs-on: ubuntu-latest
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v4
@@ -110,7 +130,48 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+
+      - name: Build Angular application
+        run: npm run build:ui
+
+      - name: Upload Angular build
+        uses: actions/upload-artifact@v4
+        with:
+          name: angular-dist
+          path: dist/
+          retention-days: 1
+
+  build-and-package:
+    name: 'Build and Package (${{ matrix.os }})'
+    needs: [prepare-release, angular-build]
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            target: --linux
+          - os: windows-latest
+            target: --win
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare-release.outputs.commit_sha }}
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -122,11 +183,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y rpm
 
-      - name: Build Angular application
-        run: npm run build:ui
+      - name: Download Angular build
+        uses: actions/download-artifact@v4
+        with:
+          name: angular-dist
+          path: dist/
 
       - name: Package application for distribution
-        run: npx electron-builder
+        run: npx electron-builder ${{ matrix.target }}
 
       # Phase 2: Upload the files to the hidden draft release
       - name: Upload Release Assets
