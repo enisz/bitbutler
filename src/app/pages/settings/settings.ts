@@ -96,5 +96,6 @@ export class Settings implements OnInit, GuardableModal {
     await this.stateService.saveAll();
     const message = await firstValueFrom(this.translateService.get('pages.settings.success.saved'));
     this.toastService.success(message);
+    this.activeModal.close();
   }
 }
