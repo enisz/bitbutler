@@ -72,13 +72,13 @@ function buildContextMenu() {
       label: 'Remove Global Upload Limit',
       enabled: connected,
       click: () =>
-        trayQbRequest('/api/v2/transfer/uploadLimit', { limit: '0' }).catch(console.error),
+        trayQbRequest('/api/v2/transfer/setUploadLimit', { limit: '0' }).catch(console.error),
     },
     {
       label: 'Remove Global Download Limit',
       enabled: connected,
       click: () =>
-        trayQbRequest('/api/v2/transfer/downloadLimit', { limit: '0' }).catch(console.error),
+        trayQbRequest('/api/v2/transfer/setDownloadLimit', { limit: '0' }).catch(console.error),
     },
     {
       label: 'Toggle Alternative Speed',
