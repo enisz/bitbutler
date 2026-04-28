@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import { ipcMain, safeStorage } from 'electron';
 import db from '../db.js';
 import { rebuildMenu } from '../menu.js';
+import { rebuildTrayMenu } from '../tray.js';
 
 let activeServerId = null;
 
@@ -22,6 +23,7 @@ export function registerServerIpcHandlers() {
     if (activeServerId !== id) {
       activeServerId = id;
       rebuildMenu();
+      rebuildTrayMenu();
     }
   });
 }
