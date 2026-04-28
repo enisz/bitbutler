@@ -19,7 +19,7 @@ export function rebuildMenu(mainWindowArg) {
   const servers = serverList();
   const activeServerId = getActiveServerId();
   const serverMenuItems = servers.map((server) => ({
-    label: `${server.name || server.host} | ${server.protocol}://${server.host}:${server.port}`,
+    label: `${server.name || server.host}`,
     type: 'radio',
     checked: server.id === activeServerId,
     click: () => sendMenuAction(mainWindow, 'server.select', { serverId: server.id }),
@@ -77,8 +77,7 @@ export function rebuildMenu(mainWindowArg) {
           {
             label: 'Servers',
             submenu: [
-              ...serverMenuItems,
-              { type: 'separator' },
+              ...(servers.length >= 2 ? [...serverMenuItems, { type: 'separator' }] : []),
               { label: 'Add new...', click: () => sendMenuAction(mainWindow, 'server.add') },
             ],
           },
