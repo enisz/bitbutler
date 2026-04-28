@@ -230,6 +230,7 @@ export class UiCommandHandlerService {
           case 'UI_UPDATE_AVAILABLE':
             if (this.isModalOpen(UpdateAvailable)) break;
             const updateAvailableModalRef = this.modalService.open(UpdateAvailable, {
+              size: 'lg',
               centered: true,
               scrollable: true,
             });
