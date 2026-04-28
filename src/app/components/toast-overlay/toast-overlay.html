@@ -1,4 +1,4 @@
-<div class="bb-toast-container">
+<div class="bb-toast-container" [class]="'bb-toast-pos-' + position()">
   @for (toast of toasts(); track toast.id) {
     <div class="bb-toast-wrapper" [class.bb-toast-closing]="toast.isClosing">
       <div
