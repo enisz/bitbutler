@@ -156,7 +156,8 @@
       },
       "limit-transfer-rate": {
         "title": "Átviteli sebesség korlátozása",
-        "global": "Globális átviteli korlát"
+        "global": "Globális átviteli korlát",
+        "loading": "Átviteli korlátok betöltése..."
       },
       "rename-torrent": {
         "title": "Torrent átnevezése",

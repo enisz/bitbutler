@@ -156,7 +156,8 @@
       },
       "limit-transfer-rate": {
         "title": "Limit Transfer Rate",
-        "global": "Global Transfer Limit"
+        "global": "Global Transfer Limit",
+        "loading": "Loading Transfer Limits..."
       },
       "rename-torrent": {
         "title": "Rename Torrent",

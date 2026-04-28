@@ -10,6 +10,7 @@ import {
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
+import { BbSpinner } from '../../bb-spinner/bb-spinner';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
 import { LimitTargetType } from '../../../models/command.model';
 import { QbService } from '../../../services/qb.service';
@@ -22,7 +23,14 @@ import {
 
 @Component({
   selector: 'app-limit-transfer-rate',
-  imports: [ReactiveFormsModule, TranslatePipe, TransferRateLimit, NgbTooltip, TooltipOverflow],
+  imports: [
+    ReactiveFormsModule,
+    TranslatePipe,
+    TransferRateLimit,
+    NgbTooltip,
+    TooltipOverflow,
+    BbSpinner,
+  ],
   templateUrl: './limit-transfer-rate.html',
   styleUrl: './limit-transfer-rate.scss',
 })
@@ -39,6 +47,7 @@ export class LimitTransferRate implements OnInit {
     transferRateLimits: new FormControl<TransferRateLimitValue | null>(null),
   });
 
+  public loading = signal<boolean>(true);
   public saving = signal<boolean>(false);
   public selected = signal<number>(this.selectionStoreService.selected().length);
 
@@ -78,6 +87,7 @@ export class LimitTransferRate implements OnInit {
       },
       { emitEvent: false },
     );
+    this.loading.set(false);
     this.cdr.markForCheck();
   }
 

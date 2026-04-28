@@ -30,10 +30,19 @@
 </div>
 
 <div class="modal-body">
-  <form [formGroup]="form" (submit)="handleSubmit()">
-    <app-transfer-rate-limit formControlName="transferRateLimits"></app-transfer-rate-limit>
-    <button type="submit" hidden [disabled]="!canSave()"></button>
-  </form>
+  @if (loading()) {
+    <div class="w-100 text-center py-2">
+      <app-bb-spinner></app-bb-spinner>
+      <small class="d-block mt-2">{{
+        'components.modals.limit-transfer-rate.loading' | translate
+      }}</small>
+    </div>
+  } @else {
+    <form [formGroup]="form" (submit)="handleSubmit()">
+      <app-transfer-rate-limit formControlName="transferRateLimits"></app-transfer-rate-limit>
+      <button type="submit" hidden [disabled]="!canSave()"></button>
+    </form>
+  }
 </div>
 
 <div class="modal-footer">
