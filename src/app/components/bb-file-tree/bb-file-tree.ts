@@ -14,6 +14,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCheck, faEdit, faX } from '@fortawesome/free-solid-svg-icons';
+import { NgSelectComponent } from '@ng-select/ng-select';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TooltipOverflow } from '../../directives/tooltip-overflow';
@@ -47,6 +48,7 @@ export type FileTreeSaveEvent = {
     FontAwesomeModule,
     TranslatePipe,
     CommonModule,
+    NgSelectComponent,
   ],
   templateUrl: './bb-file-tree.html',
   styleUrl: './bb-file-tree.scss',
