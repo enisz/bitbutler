@@ -122,4 +122,15 @@ describe('ToastOverlay', () => {
       }
     });
   });
+
+  describe('position', () => {
+    it('should default to bottom-right', () => {
+      expect(component.position()).toBe('bottom-right');
+    });
+
+    it('should update when set directly', () => {
+      component.position.set('top-left');
+      expect(component.position()).toBe('top-left');
+    });
+  });
 });
