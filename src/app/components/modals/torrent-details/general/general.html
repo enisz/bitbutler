@@ -289,10 +289,10 @@
           </span>
           <span
             class="section-value"
-            [ngbTooltip]="torrent()!.data.time_active | humanizeDuration: 'long' : 2"
+            [ngbTooltip]="torrent()!.data.time_active * 1000 | humanizeDuration: 'long' : 2"
             bbTooltipOverflow
             placement="bottom"
-            >{{ torrent()!.data.time_active | humanizeDuration: 'long' : 2 }}</span
+            >{{ torrent()!.data.time_active * 1000 | humanizeDuration: 'long' : 2 }}</span
           >
         </div>
         <div class="col-12 col-lg-6 col-xl-4 bb-section">
