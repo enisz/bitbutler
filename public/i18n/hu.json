@@ -470,7 +470,8 @@
         }
       },
       "limit-torrent-share": {
-        "title": "Set Share Limits"
+        "title": "Set Share Limits",
+        "loading": "Megosztási korlátok betöltése..."
       },
       "guard": {
         "unsaved-title": "Mentetlen változtatások",

@@ -1,7 +1,8 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
+import { BbSpinner } from '../../bb-spinner/bb-spinner';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
 import { QbService } from '../../../services/qb.service';
 import { SelectionStoreService } from '../../../services/selection-store.service';
@@ -10,7 +11,7 @@ import { ShareLimit, ShareLimitValue } from '../../share-limit/share-limit';
 
 @Component({
   selector: 'app-limit-torrent-share',
-  imports: [ReactiveFormsModule, TranslatePipe, ShareLimit, NgbTooltip, TooltipOverflow],
+  imports: [ReactiveFormsModule, TranslatePipe, ShareLimit, NgbTooltip, TooltipOverflow, BbSpinner],
   templateUrl: './limit-torrent-share.html',
   styleUrl: './limit-torrent-share.scss',
 })
@@ -19,7 +20,9 @@ export class LimitTorrentShare implements OnInit {
   private readonly qbService = inject(QbService);
   private readonly selectionStoreService = inject(SelectionStoreService);
   private readonly serverStoreService = inject(ServerStoreService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
+  public loading = signal(true);
   public saving = signal(false);
 
   public selected = signal(this.selectionStoreService.selected().length);
@@ -61,6 +64,8 @@ export class LimitTorrentShare implements OnInit {
     }
 
     this.form.controls.shareLimits.setValue(value, { emitEvent: false });
+    this.loading.set(false);
+    this.cdr.markForCheck();
   }
 
   public async handleSubmit(): Promise<void> {

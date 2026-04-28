@@ -470,7 +470,8 @@
         }
       },
       "limit-torrent-share": {
-        "title": "Set Share Limits"
+        "title": "Set Share Limits",
+        "loading": "Loading Share Limits..."
       },
       "guard": {
         "unsaved-title": "Unsaved changes",
