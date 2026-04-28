@@ -18,7 +18,13 @@ describe('ToastService — showText()', () => {
     mockOverlay = {
       create: vi.fn().mockReturnValue({
         attach: vi.fn().mockReturnValue({
-          instance: { add: vi.fn(), toasts: () => [], beginDismiss: vi.fn(), remove: vi.fn() },
+          instance: {
+            add: vi.fn(),
+            toasts: () => [],
+            beginDismiss: vi.fn(),
+            remove: vi.fn(),
+            position: { set: vi.fn() },
+          },
         }),
         dispose: vi.fn(),
         updatePositionStrategy: vi.fn(),
