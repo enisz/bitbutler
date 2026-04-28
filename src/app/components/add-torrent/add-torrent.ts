@@ -221,6 +221,8 @@ export class AddTorrent implements OnInit {
   public async handleSubmit(event: SubmitEvent | PointerEvent): Promise<void> {
     event.preventDefault();
 
+    if (!this.canSubmit()) return;
+
     const selectedFile = this.selectedTorrentFile();
     if (!selectedFile) return;
 
