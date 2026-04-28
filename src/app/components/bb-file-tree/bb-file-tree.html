@@ -116,6 +116,7 @@
             [ngModel]="getDominantFolderPriority(node)"
             (ngModelChange)="setFolderPriority(node, $event)"
             (click)="$event.stopPropagation()"
+            appendTo="ngb-modal-window"
           ></ng-select>
         </div>
       }
