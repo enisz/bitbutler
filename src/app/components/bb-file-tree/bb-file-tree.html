@@ -124,7 +124,7 @@
     </div>
   </cdk-nested-tree-node>
 
-  <cdk-tree-node *cdkTreeNodeDef="let node" class="bb-node">
+  <cdk-nested-tree-node *cdkTreeNodeDef="let node" class="bb-node">
     <div
       class="bb-row bb-row--file"
       [class.bb-row--skipped]="node.file?.priority === 0"
@@ -205,5 +205,5 @@
         </div>
       }
     </div>
-  </cdk-tree-node>
+  </cdk-nested-tree-node>
 </cdk-tree>
