@@ -606,6 +606,11 @@ html ngb-typeahead-window.dropdown-menu .dropdown-item:active {
   border-width: 4px 3px 0 !important;
 }
 
+.bb-select-compact.ng-dropdown-panel .ng-dropdown-panel-items .ng-option {
+  padding: 0.25rem 0.5rem !important;
+  font-size: 0.75rem !important;
+}
+
 .bb-datefilter {
   background: var(--bb-dp-bg);
   border: 1px solid var(--bb-dp-border);
