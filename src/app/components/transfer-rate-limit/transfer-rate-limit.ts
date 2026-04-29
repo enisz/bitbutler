@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, forwardRef, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, forwardRef, inject } from '@angular/core';
 import {
   ControlValueAccessor,
   FormControl,

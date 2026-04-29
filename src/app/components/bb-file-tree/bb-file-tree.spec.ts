@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { TorrentFileEntry } from '../../models/torrent-draft.model';
 import { BbFileTree, BbFileTreeNode } from './bb-file-tree';
 

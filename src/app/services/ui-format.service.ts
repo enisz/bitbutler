@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import type { ValueFormatterParams } from 'ag-grid-community';
 import { FilesizePipe } from '../pipes/filesize-pipe';
 import { HumanizeDurationPipe } from '../pipes/humanize-duration-pipe';

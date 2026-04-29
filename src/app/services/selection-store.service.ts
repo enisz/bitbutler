@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { Torrent } from '../models/torrent.model';
 import { TorrentStoreService } from './torrent-store.service';
 

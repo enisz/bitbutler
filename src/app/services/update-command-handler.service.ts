@@ -1,6 +1,6 @@
-import { DestroyRef, inject, Injectable } from '@angular/core';
+import { DestroyRef, Injectable, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { catchError, EMPTY, exhaustMap, filter, from } from 'rxjs';
+import { EMPTY, catchError, exhaustMap, filter, from } from 'rxjs';
 import { AppCommand, UpdateCommand } from '../models/command.model';
 import { CommandBusService } from './command-bus.service';
 import { ElectronService } from './electron.service';

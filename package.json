@@ -151,8 +151,12 @@
       "^src/(.*)$",
       "^[./]"
     ],
-    "importOrderSeparation": true,
+    "importOrderSeparation": false,
     "importOrderSortSpecifiers": true,
+    "importOrderParserPlugins": [
+      "typescript",
+      "decorators-legacy"
+    ],
     "overrides": [
       {
         "files": "*.html",

@@ -1,5 +1,5 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SimpleChange } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { firstValueFrom, skip } from 'rxjs';
 import { FilterGroupComponent, FilterItem } from './filter-group';
 

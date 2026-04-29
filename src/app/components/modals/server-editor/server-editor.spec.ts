@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject } from 'rxjs';
-
 import { CommandBusService } from '../../../services/command-bus.service';
 import { ServerService } from '../../../services/server.service';
 import { ServerEditor } from './server-editor';

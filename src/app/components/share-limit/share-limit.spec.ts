@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { ShareLimit } from './share-limit';
 
 describe('ShareLimit', () => {

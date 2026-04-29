@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
-import { UpdateCommandHandlerService } from './update-command-handler.service';
 import { CommandBusService } from './command-bus.service';
 import { ElectronService } from './electron.service';
 import { ToastService } from './toast.service';
+import { UpdateCommandHandlerService } from './update-command-handler.service';
 
 const flushPromises = () => new Promise<void>((resolve) => setTimeout(resolve));
 

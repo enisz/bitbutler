@@ -11,6 +11,7 @@ import { ServerStoreService } from '../../../../services/server-store.service';
 import { TorrentListGridSettingsService } from '../../../../services/torrent-list-grid.settings.service';
 import type { ContextMenuEntry, GridContextMenuData } from './context-menu.types';
 import { GridContextMenuService } from './grid-context-menu.service';
+
 function findItem(
   entries: ContextMenuEntry[],
   id: string,

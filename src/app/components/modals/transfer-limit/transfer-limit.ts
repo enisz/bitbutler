@@ -1,21 +1,21 @@
 import {
   ChangeDetectorRef,
   Component,
-  computed,
-  inject,
   Input,
   OnInit,
+  computed,
+  inject,
   signal,
 } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
-import { BbSpinner } from '../../bb-spinner/bb-spinner';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
 import { LimitTargetType } from '../../../models/command.model';
 import { QbService } from '../../../services/qb.service';
 import { SelectionStoreService } from '../../../services/selection-store.service';
 import { ServerStoreService } from '../../../services/server-store.service';
+import { BbSpinner } from '../../bb-spinner/bb-spinner';
 import {
   TransferRateLimit,
   TransferRateLimitValue,

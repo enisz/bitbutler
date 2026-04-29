@@ -1,6 +1,6 @@
 import { NgOptimizedImage } from '@angular/common';
-import { Component, computed, effect, inject, OnDestroy, signal } from '@angular/core';
-import { first, Subscription } from 'rxjs';
+import { Component, OnDestroy, computed, effect, inject, signal } from '@angular/core';
+import { Subscription, first } from 'rxjs';
 import { Maindata, QbServerState } from '../../models/torrent.model';
 import { QbPollingService } from '../../services/qb-polling.service';
 import { ServerStoreService } from '../../services/server-store.service';

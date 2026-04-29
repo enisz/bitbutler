@@ -1,14 +1,15 @@
-import { inject, Injectable } from '@angular/core';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { Injectable, inject } from '@angular/core';
 import { faSquare, faSquareCheck } from '@fortawesome/free-regular-svg-icons';
 import {
   faArrowDown,
   faArrowDownUpAcrossLine,
   faArrowLeft,
   faArrowRight,
+  faArrowUp,
   faArrowsDownToLine,
   faArrowsLeftRight,
   faArrowsUpToLine,
-  faArrowUp,
   faBullhorn,
   faCheck,
   faCode,
@@ -42,8 +43,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import type { ColDef, Column, ColumnHeaderContextMenuEvent } from 'ag-grid-community';
 import { filter, firstValueFrom } from 'rxjs';
-
-import { Clipboard } from '@angular/cdk/clipboard';
 import { CommandBusService } from '../../../../services/command-bus.service';
 import { FilterService } from '../../../../services/filter.service';
 import { PathService } from '../../../../services/path.service';

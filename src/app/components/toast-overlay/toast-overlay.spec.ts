@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { Toast } from '../../models/toast.model';
 import { ToastService } from '../../services/toast.service';
 import { ToastOverlay } from './toast-overlay';

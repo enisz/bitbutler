@@ -2,12 +2,12 @@ import { CommonModule } from '@angular/common';
 import {
   AfterViewInit,
   Component,
-  forwardRef,
-  inject,
   Input,
   OnInit,
-  signal,
   ViewChild,
+  forwardRef,
+  inject,
+  signal,
 } from '@angular/core';
 import {
   ControlValueAccessor,

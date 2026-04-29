@@ -1,22 +1,22 @@
 import { CommonModule } from '@angular/common';
 import {
   Component,
-  computed,
   DestroyRef,
   ElementRef,
   HostListener,
-  inject,
   OnInit,
   ViewChild,
+  computed,
+  inject,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faArrowDown,
+  faArrowUp,
   faArrowsDownToLine,
   faArrowsUpToLine,
-  faArrowUp,
   faFileArrowUp,
   faGear,
   faPause,
@@ -24,8 +24,8 @@ import {
   faPlayCircle,
   faSearch,
   faStopCircle,
-  faXmark,
   faTrashCan,
+  faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';

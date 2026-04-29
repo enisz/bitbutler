@@ -1,4 +1,4 @@
-import { effect, inject, Injectable } from '@angular/core';
+import { Injectable, effect, inject } from '@angular/core';
 import { DEFAULT_SERVER_SETTINGS, ServerSettings } from '../models/server-settings.model';
 import { BaseSettingsService } from './base-settings.service';
 import { ServerStoreService } from './server-store.service';

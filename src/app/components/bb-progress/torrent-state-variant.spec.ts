@@ -1,5 +1,5 @@
-import { variantForTorrentState } from './torrent-state-variant';
 import { BbProgressState } from './bb-progress.types';
+import { variantForTorrentState } from './torrent-state-variant';
 
 describe('variantForTorrentState', () => {
   it('returns "danger" for error', () => {

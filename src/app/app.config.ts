@@ -10,12 +10,11 @@ import {
   provideZonelessChangeDetection,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { routes } from './app.routes';
-
 import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { MARKED_OPTIONS, MarkedOptions, MarkedRenderer, provideMarkdown } from 'ngx-markdown';
-import { provideTimeago, TimeagoCustomFormatter, TimeagoFormatter, TimeagoIntl } from 'ngx-timeago';
+import { TimeagoCustomFormatter, TimeagoFormatter, TimeagoIntl, provideTimeago } from 'ngx-timeago';
+import { routes } from './app.routes';
 import { FilesizePipe } from './pipes/filesize-pipe';
 import { HumanizeDurationPipe } from './pipes/humanize-duration-pipe';
 import { LocalTimestampPipe } from './pipes/local-timestamp-pipe';

@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron';
+import { BrowserWindow, app } from 'electron';
 import fs from 'node:fs';
 import { join } from 'node:path';
 

@@ -1,5 +1,5 @@
-import { TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 import { Torrent } from '../models/torrent.model';
 import { SelectionStoreService } from './selection-store.service';
 import { TorrentStoreService } from './torrent-store.service';

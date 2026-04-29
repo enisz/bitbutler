@@ -2,10 +2,10 @@ import {
   AfterViewInit,
   Component,
   DestroyRef,
-  effect,
   HostListener,
-  inject,
   ViewChild,
+  effect,
+  inject,
 } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
@@ -18,7 +18,7 @@ import {
   type GridOptions,
   type RowDoubleClickedEvent,
 } from 'ag-grid-community';
-import { firstValueFrom, skip, Subject, throttleTime } from 'rxjs';
+import { Subject, firstValueFrom, skip, throttleTime } from 'rxjs';
 import { GRID_DARK_THEME, GRID_LIGHT_THEME } from '../../../app.const';
 import { TorrentListGridSettings } from '../../../models/torrent-list-grid.model';
 import { Torrent } from '../../../models/torrent.model';
@@ -32,11 +32,11 @@ import { SelectionStoreService } from '../../../services/selection-store.service
 import { ThemeService } from '../../../services/theme.service';
 import { TorrentListGridSettingsService } from '../../../services/torrent-list-grid.settings.service';
 import { UiFormatService } from '../../../services/ui-format.service';
+import { getTrackers, normalizeTracker } from '../tracker.utils';
 import { GridContextMenuService } from './context-menu/grid-context-menu.service';
 import { GridKeyboardNavService } from './grid-keyboard-nav.service';
 import { GridPinService } from './grid-pin.service';
 import { getGridColDefs, getGridOptions } from './grid.lib';
-import { getTrackers, normalizeTracker } from '../tracker.utils';
 
 @Component({
   selector: 'app-grid',
