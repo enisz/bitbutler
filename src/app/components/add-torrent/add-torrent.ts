@@ -236,6 +236,7 @@ export class AddTorrent implements OnInit {
 
     const sharedOptions = {
       savepath: raw.savepath?.trim() || undefined,
+      rename: raw.rename?.trim() || undefined,
       category: raw.category?.trim() || undefined,
       tags: raw.tags?.join(',') || undefined,
       paused: raw.paused ? 'true' : 'false',
@@ -274,7 +275,7 @@ export class AddTorrent implements OnInit {
         await window.bitbutler.qb.torrentsAdd({
           id: serverId,
           torrents: [selectedFile],
-          options: { ...sharedOptions, rename: raw.rename?.trim() || undefined },
+          options: sharedOptions,
         });
 
         const state = this.savedFileState;
