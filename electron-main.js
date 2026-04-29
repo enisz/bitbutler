@@ -1,4 +1,3 @@
-// electron-main.js
 import { app } from 'electron';
 
 import { registerElectronIpcHandlers } from './electron/ipc/electron.js';
