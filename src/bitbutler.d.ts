@@ -13,6 +13,7 @@ declare global {
   type BitButlerQbTorrentsAddPayload = {
     id: string;
     torrents: SelectedTorrentInput[];
+    urls?: string[];
     options?: Record<string, unknown>;
   };
 
