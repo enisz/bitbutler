@@ -102,6 +102,7 @@
           [(ngModel)]="node.name"
           (click)="$event.stopPropagation()"
           (change)="onFolderNameChange(node)"
+          (keydown.enter)="onRenameEnter($event, node, 'folder')"
         />
 
         <div class="bb-meta">
@@ -159,7 +160,12 @@
           >{{ node.name }}</span
         >
       } @else {
-        <input class="bb-input" [(ngModel)]="node.name" (change)="onFileNameChange(node)" />
+        <input
+          class="bb-input"
+          [(ngModel)]="node.name"
+          (change)="onFileNameChange(node)"
+          (keydown.enter)="onRenameEnter($event, node, 'file')"
+        />
       }
 
       @if (showMeta && node.file; as f) {
