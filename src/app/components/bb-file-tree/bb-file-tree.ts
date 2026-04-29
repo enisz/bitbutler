@@ -260,7 +260,7 @@ export class BbFileTree implements OnChanges {
     this.calculateStats();
   }
 
-  onRenameEnter(event: KeyboardEvent, node: BbFileTreeNode, type: 'file' | 'folder'): void {
+  onRenameEnter(event: Event, node: BbFileTreeNode, type: 'file' | 'folder'): void {
     event.preventDefault();
     if (type === 'file') this.onFileNameChange(node);
     else this.onFolderNameChange(node);
