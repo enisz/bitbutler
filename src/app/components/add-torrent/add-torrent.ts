@@ -45,6 +45,7 @@ import { TransferLimit, TransferLimitValue } from '../transfer-limit/transfer-li
 
 type AddTorrentFormValue = {
   file: string;
+  magnetLinks: string;
   savepath: string | null;
   rename: string | null;
   paused: boolean;
@@ -102,6 +103,7 @@ export class AddTorrent implements OnInit {
 
   public manualDraft = signal<TorrentDraft | null>(null);
   public readonly searchSavePaths = this.typeaheadService.searchSavePaths;
+  public inputMode = signal<'file' | 'link'>('file');
   public showTree = signal(false);
   public treeInEditMode = signal(false);
   private savedFileState: FileTreeSaveEvent | null = null;
@@ -115,6 +117,7 @@ export class AddTorrent implements OnInit {
 
   public addForm = new FormGroup({
     file: new FormControl<string>('', { nonNullable: true }),
+    magnetLinks: new FormControl<string>('', { nonNullable: true }),
     savepath: new FormControl<string | null>(null, [Validators.required]),
     rename: new FormControl<string | null>(null, [Validators.required, this.noSlashValidator()]),
     paused: new FormControl<boolean>(false, { nonNullable: true }),
@@ -161,6 +164,8 @@ export class AddTorrent implements OnInit {
 
   constructor() {
     effect(() => {
+      if (this.inputMode() === 'link') return;
+
       const pending = this.pending();
       if (pending.length > this.initialQueueCount()) {
         this.initialQueueCount.set(pending.length);
@@ -220,9 +225,6 @@ export class AddTorrent implements OnInit {
 
     if (!this.canSubmit()) return;
 
-    const selectedFile = this.selectedTorrentFile();
-    if (!selectedFile) return;
-
     const serverId = this.serverStoreService.currentServerId();
 
     if (!serverId) {
@@ -232,47 +234,58 @@ export class AddTorrent implements OnInit {
 
     const raw = this.addForm.getRawValue() as AddTorrentFormValue;
 
-    const payload = {
-      id: serverId,
-      torrents: [selectedFile],
-      options: {
-        savepath: raw.savepath?.trim() || undefined,
-        rename: raw.rename?.trim() || undefined,
-        category: raw.category?.trim() || undefined,
-        tags: raw.tags?.join(',') || undefined,
-        paused: raw.paused ? 'true' : 'false',
-        skip_checking: raw.skip_checking ? 'true' : 'false',
-        sequentialDownload: raw.sequentialDownload ? 'true' : 'false',
-        firstLastPiecePrio: raw.firstLastPiecePrio ? 'true' : 'false',
-        autoTMM: raw.autoTMM ? 'true' : 'false',
-        root_folder: raw.root_folder === 'unset' ? undefined : raw.root_folder,
-        upLimit:
-          raw.transferRateLimits?.uploadLimit != null
-            ? String(Math.round(raw.transferRateLimits.uploadLimit * 1024))
-            : undefined,
-        dlLimit:
-          raw.transferRateLimits?.downloadLimit != null
-            ? String(Math.round(raw.transferRateLimits.downloadLimit * 1024))
-            : undefined,
-        ratioLimit:
-          raw.shareLimits?.ratioLimit != null ? String(raw.shareLimits.ratioLimit) : undefined,
-        seedingTimeLimit:
-          raw.shareLimits?.seedingTimeLimit != null
-            ? String(raw.shareLimits.seedingTimeLimit)
-            : undefined,
-      },
+    const sharedOptions = {
+      savepath: raw.savepath?.trim() || undefined,
+      category: raw.category?.trim() || undefined,
+      tags: raw.tags?.join(',') || undefined,
+      paused: raw.paused ? 'true' : 'false',
+      skip_checking: raw.skip_checking ? 'true' : 'false',
+      sequentialDownload: raw.sequentialDownload ? 'true' : 'false',
+      firstLastPiecePrio: raw.firstLastPiecePrio ? 'true' : 'false',
+      autoTMM: raw.autoTMM ? 'true' : 'false',
+      root_folder: raw.root_folder === 'unset' ? undefined : raw.root_folder,
+      upLimit:
+        raw.transferRateLimits?.uploadLimit != null
+          ? String(Math.round(raw.transferRateLimits.uploadLimit * 1024))
+          : undefined,
+      dlLimit:
+        raw.transferRateLimits?.downloadLimit != null
+          ? String(Math.round(raw.transferRateLimits.downloadLimit * 1024))
+          : undefined,
+      ratioLimit:
+        raw.shareLimits?.ratioLimit != null ? String(raw.shareLimits.ratioLimit) : undefined,
+      seedingTimeLimit:
+        raw.shareLimits?.seedingTimeLimit != null
+          ? String(raw.shareLimits.seedingTimeLimit)
+          : undefined,
     };
 
     this.isSubmitting.set(true);
     try {
-      await window.bitbutler.qb.torrentsAdd(payload);
-      const state = this.savedFileState;
-      const hasTreeCustomizations =
-        state != null &&
-        (state.renames.length > 0 || state.files.some((f) => (f.priority ?? 1) !== 1));
-      if (hasTreeCustomizations) {
-        await this.tryRenameContentAfterAdd(serverId);
+      if (this.inputMode() === 'link') {
+        await window.bitbutler.qb.torrentsAdd({
+          id: serverId,
+          urls: this.getMagnetLinks(),
+          torrents: [],
+          options: sharedOptions,
+        });
+      } else {
+        const selectedFile = this.selectedTorrentFile()!;
+        await window.bitbutler.qb.torrentsAdd({
+          id: serverId,
+          torrents: [selectedFile],
+          options: { ...sharedOptions, rename: raw.rename?.trim() || undefined },
+        });
+
+        const state = this.savedFileState;
+        const hasTreeCustomizations =
+          state != null &&
+          (state.renames.length > 0 || state.files.some((f) => (f.priority ?? 1) !== 1));
+        if (hasTreeCustomizations) {
+          await this.tryRenameContentAfterAdd(serverId);
+        }
       }
+
       await this.addTorrentSettings.save({
         savepath: raw.savepath,
         paused: raw.paused,
@@ -287,15 +300,18 @@ export class AddTorrent implements OnInit {
         shareLimits: raw.shareLimits,
       });
 
-      const originalPath = this.effectiveDraft()?.originalPath;
-      if (originalPath) {
-        const generalSettings = await this.generalSettingsService.load();
-        if (generalSettings.behavior.deleteTorrentFile) {
-          await window.bitbutler.torrent.deleteFile({ path: originalPath });
+      if (this.inputMode() === 'link') {
+        this.activeModal.close(true);
+      } else {
+        const originalPath = this.effectiveDraft()?.originalPath;
+        if (originalPath) {
+          const generalSettings = await this.generalSettingsService.load();
+          if (generalSettings.behavior.deleteTorrentFile) {
+            await window.bitbutler.torrent.deleteFile({ path: originalPath });
+          }
         }
+        this.openFilesService.consumeCurrentDraft();
       }
-
-      this.openFilesService.consumeCurrentDraft();
     } catch (e) {
       console.error(AddTorrent.name, 'handleSubmit', '[AddTorrent] qb add failed', e);
       this.addForm.setErrors({ addFailed: true });
@@ -305,12 +321,41 @@ export class AddTorrent implements OnInit {
   }
 
   public canSubmit(): boolean {
+    if (this.inputMode() === 'link') {
+      return (
+        !this.isSubmitting() &&
+        !this.treeInEditMode() &&
+        this.getMagnetLinks().length > 0 &&
+        this.addForm.valid
+      );
+    }
     return (
       this.addForm.valid &&
       !this.isSubmitting() &&
       this.selectedTorrentFile() !== null &&
       !this.treeInEditMode()
     );
+  }
+
+  public switchInputMode(mode: 'file' | 'link'): void {
+    this.inputMode.set(mode);
+    if (mode === 'link') {
+      this.selectedTorrentFile.set(null);
+      this.addForm.controls.file.disable();
+      this.addForm.controls.rename.disable();
+      this.showTree.set(false);
+    } else {
+      this.addForm.controls.magnetLinks.setValue('', { emitEvent: false });
+      this.addForm.controls.file.enable();
+      this.addForm.controls.rename.enable();
+    }
+  }
+
+  private getMagnetLinks(): string[] {
+    return (this.addForm.controls.magnetLinks.value ?? '')
+      .split('\n')
+      .map((l) => l.trim())
+      .filter((l) => l.length > 0);
   }
 
   public async handleFileSelected(event: Event): Promise<void> {

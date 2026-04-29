@@ -15,41 +15,60 @@
 <div class="modal-body">
   <form [formGroup]="addForm" (submit)="handleSubmit($event)">
     <fieldset class="bb-fieldset mt-0">
-      <legend>{{ 'components.add-torrent.label.general' | translate }}</legend>
+      <legend>{{ 'components.add-torrent.label.input' | translate }}</legend>
 
-      <div class="form-floating mb-3">
-        <div class="input-group mb-1">
-          <div class="form-floating">
+      @if (inputMode() === 'file') {
+        <div class="form-floating mb-3">
+          <div class="input-group mb-1">
+            <div class="form-floating">
+              <input
+                type="text"
+                class="form-control"
+                id="file_browser"
+                [placeholder]="'components.add-torrent.add-form.file-browser' | translate"
+                formControlName="file"
+                [class.is-invalid]="
+                  addForm.controls.file.invalid &&
+                  (addForm.controls.file.touched || addForm.controls.file.dirty)
+                "
+                readonly
+                (click)="fileInput.click()"
+              />
+              <label for="file_browser">{{
+                'components.add-torrent.add-form.file-browser' | translate
+              }}</label>
+            </div>
+
+            <button type="button" class="btn btn-outline-primary" (click)="fileInput.click()">
+              {{ 'general.button.browse' | translate }}
+            </button>
             <input
-              type="text"
-              class="form-control"
-              id="file_browser"
-              [placeholder]="'components.add-torrent.add-form.file-browser' | translate"
-              formControlName="file"
-              [class.is-invalid]="
-                addForm.controls.file.invalid &&
-                (addForm.controls.file.touched || addForm.controls.file.dirty)
-              "
-              readonly
-              (click)="fileInput.click()"
+              type="file"
+              #fileInput
+              hidden
+              accept=".torrent"
+              (change)="handleFileSelected($event)"
             />
-            <label for="file_browser">{{
-              'components.add-torrent.add-form.file-browser' | translate
-            }}</label>
           </div>
-
-          <button type="button" class="btn btn-outline-primary" (click)="fileInput.click()">
-            {{ 'general.button.browse' | translate }}
-          </button>
-          <input
-            type="file"
-            #fileInput
-            hidden
-            accept=".torrent"
-            (change)="handleFileSelected($event)"
-          />
         </div>
-      </div>
+      } @else {
+        <div class="form-floating mb-1">
+          <textarea
+            class="form-control"
+            id="magnet_links"
+            style="height: 120px"
+            [placeholder]="'components.add-torrent.add-form.magnet-links' | translate"
+            formControlName="magnetLinks"
+          ></textarea>
+          <label for="magnet_links">{{
+            'components.add-torrent.add-form.magnet-links' | translate
+          }}</label>
+        </div>
+      }
+    </fieldset>
+
+    <fieldset class="bb-fieldset">
+      <legend>{{ 'components.add-torrent.label.general' | translate }}</legend>
 
       <div class="form-floating mb-3">
         <input
@@ -74,29 +93,31 @@
         }
       </div>
 
-      <div class="form-floating mb-3">
-        <input
-          type="text"
-          class="form-control"
-          id="rename"
-          [placeholder]="'components.add-torrent.add-form.rename' | translate"
-          formControlName="rename"
-          [class.is-invalid]="addForm.controls.rename.invalid && addForm.controls.rename.dirty"
-        />
-        <label for="rename">{{ 'components.add-torrent.add-form.rename' | translate }}</label>
-        @if (addForm.controls.rename.invalid && addForm.controls.rename.dirty) {
-          @if (addForm.controls.rename.hasError('noSlash')) {
-            <div class="invalid-feedback px-2">
-              {{ 'general.form.feedback.no-slash' | translate }}
-            </div>
+      @if (inputMode() === 'file') {
+        <div class="form-floating mb-3">
+          <input
+            type="text"
+            class="form-control"
+            id="rename"
+            [placeholder]="'components.add-torrent.add-form.rename' | translate"
+            formControlName="rename"
+            [class.is-invalid]="addForm.controls.rename.invalid && addForm.controls.rename.dirty"
+          />
+          <label for="rename">{{ 'components.add-torrent.add-form.rename' | translate }}</label>
+          @if (addForm.controls.rename.invalid && addForm.controls.rename.dirty) {
+            @if (addForm.controls.rename.hasError('noSlash')) {
+              <div class="invalid-feedback px-2">
+                {{ 'general.form.feedback.no-slash' | translate }}
+              </div>
+            }
+            @if (addForm.controls.rename.hasError('required')) {
+              <div class="invalid-feedback px-2">
+                {{ 'general.form.feedback.required' | translate }}
+              </div>
+            }
           }
-          @if (addForm.controls.rename.hasError('required')) {
-            <div class="invalid-feedback px-2">
-              {{ 'general.form.feedback.required' | translate }}
-            </div>
-          }
-        }
-      </div>
+        </div>
+      }
 
       <div class="mb-3">
         <app-category-select formControlName="category"></app-category-select>
@@ -288,6 +309,15 @@
   >
     {{ 'general.button.add' | translate }}
   </button>
+  @if (inputMode() === 'file') {
+    <button type="button" class="btn btn-outline-secondary" (click)="switchInputMode('link')">
+      {{ 'general.button.add-link' | translate }}
+    </button>
+  } @else {
+    <button type="button" class="btn btn-outline-secondary" (click)="switchInputMode('file')">
+      {{ 'general.button.add-file' | translate }}
+    </button>
+  }
   <button type="button" class="btn btn-link" (click)="handleCancel()">
     {{ 'general.button.cancel' | translate }}
   </button>

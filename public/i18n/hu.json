@@ -40,6 +40,7 @@
       "title": "Torrent hozzáadása",
       "add-form": {
         "file-browser": "Torrent fájl",
+        "magnet-links": "Mágnes linkek (soronként egy)",
         "save-path": "Mentési útvonal",
         "rename": "Átnevezés",
         "skip-hash-checking": "Hash-ellenőrzés kihagyása",
@@ -60,6 +61,7 @@
         "seeding-time-limit-unit": "perc"
       },
       "label": {
+        "input": "Bemenet",
         "general": "Általános",
         "settings": "Beállítások",
         "limits": "Korlátok",
@@ -970,7 +972,9 @@
       "update": "Frissítés",
       "show": "Megjelenítés",
       "open-details": "Részletek megnyitása",
-      "edit": "Szerkesztés"
+      "edit": "Szerkesztés",
+      "add-link": "Link hozzáadása",
+      "add-file": "Fájl hozzáadása"
     },
     "form": {
       "feedback": {
