@@ -103,6 +103,7 @@
           (click)="$event.stopPropagation()"
           (change)="onFolderNameChange(node)"
           (keydown.enter)="onRenameEnter($event, node, 'folder')"
+          (keydown.escape)="onEscapeInInput($event)"
         />
 
         <div class="bb-meta">
@@ -165,6 +166,7 @@
           [(ngModel)]="node.name"
           (change)="onFileNameChange(node)"
           (keydown.enter)="onRenameEnter($event, node, 'file')"
+          (keydown.escape)="onEscapeInInput($event)"
         />
       }
 

@@ -58,7 +58,6 @@ export class BbFileTree implements OnChanges {
   @Input({ required: true }) files: TorrentFileEntry[] = [];
   @Input() allowEdit = false;
   @Input() startInEditMode = false;
-  @Input() saveOnEnter = false;
   @Input() expandAll = false;
   @Input() showMeta = true;
   @Input() hideProgress = false;
@@ -264,7 +263,13 @@ export class BbFileTree implements OnChanges {
     event.preventDefault();
     if (type === 'file') this.onFileNameChange(node);
     else this.onFolderNameChange(node);
-    if (this.saveOnEnter) this.saveEdit();
+    this.saveEdit();
+  }
+
+  onEscapeInInput(event: KeyboardEvent): void {
+    event.stopPropagation();
+    event.preventDefault();
+    this.cancelEdit();
   }
 
   onFileNameChange(node: BbFileTreeNode): void {
