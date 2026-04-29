@@ -19,6 +19,7 @@ import {
   faArrowsUpToLine,
   faFileArrowUp,
   faGear,
+  faLink,
   faPause,
   faPlay,
   faPlayCircle,
@@ -70,6 +71,13 @@ export class ButtonBar implements OnInit {
         id: 'new.addTorrentFile',
         label: 'pages.main.button-bar.button.add-file',
         icon: faFileArrowUp,
+        variant: 'primary',
+      },
+      {
+        kind: 'action',
+        id: 'new.addTorrentLink',
+        label: 'pages.main.button-bar.button.add-link',
+        icon: faLink,
         variant: 'primary',
       },
       { kind: 'divider' },
@@ -228,6 +236,9 @@ export class ButtonBar implements OnInit {
         break;
       case 'new.addTorrentFile':
         this.commandBusService.emit({ type: 'UI_ADD_TORRENT' });
+        break;
+      case 'new.addTorrentLink':
+        this.commandBusService.emit({ type: 'UI_ADD_TORRENT', mode: 'link' });
         break;
       case 'queue.moveTop':
         this.commandBusService.emit({ type: 'QUEUE_MOVE_TOP' });

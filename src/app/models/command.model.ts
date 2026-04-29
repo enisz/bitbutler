@@ -14,7 +14,12 @@ export type UiCommand =
   | { type: 'UI_TORRENT_DELETE_REQUEST'; defaultRemoveFiles?: boolean }
   | { type: 'UI_OPEN_SETTINGS'; tabToOpen?: SettingsTabId }
   | { type: 'UI_OPEN_TORRENT_DETAILS'; hash: string }
-  | { type: 'UI_ADD_TORRENT'; draft?: TorrentDraft; selected?: SelectedTorrentInput }
+  | {
+      type: 'UI_ADD_TORRENT';
+      draft?: TorrentDraft;
+      selected?: SelectedTorrentInput;
+      mode?: 'file' | 'link';
+    }
   | { type: 'UI_OPEN_ABOUT' }
   | { type: 'UI_SET_TORRENT_LOCATION'; torrent: Torrent }
   | { type: 'UI_RENAME_TORRENT'; torrent: Torrent }

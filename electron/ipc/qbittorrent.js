@@ -29,7 +29,7 @@ const stmtGetByIdFull = db.prepare(`
 `);
 
 async function qbTorrentsAdd(payload) {
-  const { id, torrents, options } = payload;
+  const { id, torrents, urls, options } = payload;
 
   const fd = new FormData();
   let appended = 0;
@@ -47,7 +47,12 @@ async function qbTorrentsAdd(payload) {
     }
   }
 
-  if (!appended) throw new Error('No torrent attached to form-data.');
+  if (Array.isArray(urls) && urls.length > 0) {
+    fd.append('urls', urls.join('\n'));
+    appended++;
+  }
+
+  if (!appended) throw new Error('No torrent or URL attached to form-data.');
 
   for (const [k, v] of Object.entries(options ?? {})) {
     if (v === undefined || v === null) continue;

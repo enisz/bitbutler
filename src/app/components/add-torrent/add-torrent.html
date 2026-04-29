@@ -15,41 +15,60 @@
 <div class="modal-body">
   <form [formGroup]="addForm" (submit)="handleSubmit($event)">
     <fieldset class="bb-fieldset mt-0">
-      <legend>{{ 'components.add-torrent.label.general' | translate }}</legend>
+      <legend>{{ 'components.add-torrent.label.input' | translate }}</legend>
 
-      <div class="form-floating mb-3">
-        <div class="input-group mb-1">
-          <div class="form-floating">
+      @if (inputMode() === 'file') {
+        <div class="form-floating mb-3">
+          <div class="input-group mb-1">
+            <div class="form-floating">
+              <input
+                type="text"
+                class="form-control"
+                id="file_browser"
+                [placeholder]="'components.add-torrent.add-form.file-browser' | translate"
+                formControlName="file"
+                [class.is-invalid]="
+                  addForm.controls.file.invalid &&
+                  (addForm.controls.file.touched || addForm.controls.file.dirty)
+                "
+                readonly
+                (click)="fileInput.click()"
+              />
+              <label for="file_browser">{{
+                'components.add-torrent.add-form.file-browser' | translate
+              }}</label>
+            </div>
+
+            <button type="button" class="btn btn-outline-primary" (click)="fileInput.click()">
+              {{ 'general.button.browse' | translate }}
+            </button>
             <input
-              type="text"
-              class="form-control"
-              id="file_browser"
-              [placeholder]="'components.add-torrent.add-form.file-browser' | translate"
-              formControlName="file"
-              [class.is-invalid]="
-                addForm.controls.file.invalid &&
-                (addForm.controls.file.touched || addForm.controls.file.dirty)
-              "
-              readonly
-              (click)="fileInput.click()"
+              type="file"
+              #fileInput
+              hidden
+              accept=".torrent"
+              (change)="handleFileSelected($event)"
             />
-            <label for="file_browser">{{
-              'components.add-torrent.add-form.file-browser' | translate
-            }}</label>
           </div>
-
-          <button type="button" class="btn btn-outline-primary" (click)="fileInput.click()">
-            {{ 'general.button.browse' | translate }}
-          </button>
-          <input
-            type="file"
-            #fileInput
-            hidden
-            accept=".torrent"
-            (change)="handleFileSelected($event)"
-          />
         </div>
-      </div>
+      } @else {
+        <div class="form-floating mb-1">
+          <textarea
+            class="form-control mb-3"
+            id="magnet_links"
+            style="height: 120px"
+            [placeholder]="'components.add-torrent.add-form.magnet-links' | translate"
+            formControlName="magnetLinks"
+          ></textarea>
+          <label for="magnet_links">{{
+            'components.add-torrent.add-form.magnet-links' | translate
+          }}</label>
+        </div>
+      }
+    </fieldset>
+
+    <fieldset class="bb-fieldset">
+      <legend>{{ 'components.add-torrent.label.general' | translate }}</legend>
 
       <div class="form-floating mb-3">
         <input
@@ -257,7 +276,12 @@
       </div>
     </fieldset>
 
-    @if (showTree() && effectiveDraft() && effectiveDraft().torrent?.files?.length) {
+    @if (
+      inputMode() === 'file' &&
+      showTree() &&
+      effectiveDraft() &&
+      effectiveDraft().torrent?.files?.length
+    ) {
       <fieldset class="bb-fieldset">
         <legend>{{ 'components.add-torrent.label.files' | translate }}</legend>
 

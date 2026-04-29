@@ -106,6 +106,10 @@ export class UiCommandHandlerService {
               keyboard: false,
             });
 
+            if (command.mode === 'link') {
+              addTorrentModalRef.componentInstance.switchInputMode('link');
+            }
+
             addTorrentModalRef.result.then(() => {}).catch(() => {});
             break;
 

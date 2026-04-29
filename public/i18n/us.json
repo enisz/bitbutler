@@ -40,6 +40,7 @@
       "title": "Adding a Torrent",
       "add-form": {
         "file-browser": "Torrent File",
+        "magnet-links": "Links (one per line)",
         "save-path": "Save Path",
         "rename": "Rename",
         "skip-hash-checking": "Skip hash checking",
@@ -60,6 +61,7 @@
         "seeding-time-limit-unit": "minute"
       },
       "label": {
+        "input": "Input",
         "general": "General",
         "settings": "Settings",
         "limits": "Limits",
@@ -543,6 +545,7 @@
       "button-bar": {
         "button": {
           "add-file": "Add File",
+          "add-link": "Add from Link",
           "delete": "Delete",
           "start": "Start",
           "stop": "Stop",
