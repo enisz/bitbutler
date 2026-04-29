@@ -40,7 +40,7 @@
       "title": "Torrent hozzáadása",
       "add-form": {
         "file-browser": "Torrent fájl",
-        "magnet-links": "Mágnes linkek (soronként egy)",
+        "magnet-links": "URL-ek (soronként egy)",
         "save-path": "Mentési útvonal",
         "rename": "Átnevezés",
         "skip-hash-checking": "Hash-ellenőrzés kihagyása",
@@ -545,7 +545,7 @@
       "button-bar": {
         "button": {
           "add-file": "Fájl hozzáadása",
-          "add-link": "Link hozzáadása",
+          "add-link": "URL hozzáadása",
           "delete": "Törlés",
           "start": "Indítás",
           "stop": "Leállítás",

@@ -40,7 +40,7 @@
       "title": "Adding a Torrent",
       "add-form": {
         "file-browser": "Torrent File",
-        "magnet-links": "Magnet Links (one per line)",
+        "magnet-links": "URLs (one per line)",
         "save-path": "Save Path",
         "rename": "Rename",
         "skip-hash-checking": "Skip hash checking",
@@ -545,7 +545,7 @@
       "button-bar": {
         "button": {
           "add-file": "Add File",
-          "add-link": "Add Link",
+          "add-link": "Add URL",
           "delete": "Delete",
           "start": "Start",
           "stop": "Stop",
