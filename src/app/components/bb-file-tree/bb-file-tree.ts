@@ -266,7 +266,7 @@ export class BbFileTree implements OnChanges {
     this.saveEdit();
   }
 
-  onEscapeInInput(event: KeyboardEvent): void {
+  onEscapeInInput(event: Event): void {
     event.stopPropagation();
     event.preventDefault();
     this.cancelEdit();
