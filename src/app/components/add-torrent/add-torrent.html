@@ -276,7 +276,12 @@
       </div>
     </fieldset>
 
-    @if (showTree() && effectiveDraft() && effectiveDraft().torrent?.files?.length) {
+    @if (
+      inputMode() === 'file' &&
+      showTree() &&
+      effectiveDraft() &&
+      effectiveDraft().torrent?.files?.length
+    ) {
       <fieldset class="bb-fieldset">
         <legend>{{ 'components.add-torrent.label.files' | translate }}</legend>
 
