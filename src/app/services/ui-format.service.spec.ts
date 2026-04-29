@@ -69,7 +69,7 @@ describe('UiFormatService', () => {
     });
 
     it('should return 0 when cell date equals filter date', () => {
-      const filterDate = new Date(2024, 0, 15); // Jan 15, 2024
+      const filterDate = new Date(2024, 0, 15);
       const cellTimestamp = Date.UTC(2024, 0, 15) / 1000;
       const result = service.utcDateComparator(filterDate, cellTimestamp);
       expect(result).toBe(0);

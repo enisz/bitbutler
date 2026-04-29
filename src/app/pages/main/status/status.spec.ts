@@ -1,4 +1,3 @@
-// src/app/pages/main/status/status.spec.ts
 import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FilterService, GRID_FILTER_INITIAL } from '../../../services/filter.service';
@@ -59,7 +58,6 @@ describe('Status', () => {
       providers: [
         { provide: FilterService, useValue: filterMock },
         { provide: TorrentStoreService, useValue: torrentStoreMock },
-        // TranslateService is globally provided via test-providers.ts
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();

@@ -36,12 +36,11 @@ describe('TimeLimitPipe', () => {
   });
 
   it('converts minutes to a humanized duration string', () => {
-    const result = pipe.transform(60); // 60 minutes
+    const result = pipe.transform(60);
     expect(result).toBeTruthy();
   });
 
   it('passes value in minutes (converted to ms) to HumanizeDurationPipe', () => {
-    // 1 minute should contain "1" in the output
     const result = pipe.transform(1);
     expect(result).toContain('1');
   });

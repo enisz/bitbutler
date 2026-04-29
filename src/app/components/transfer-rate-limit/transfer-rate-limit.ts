@@ -11,8 +11,8 @@ import { SpeedLimitPipe } from '../../pipes/speed-limit-pipe';
 import { BbPopover } from '../bb-popover/bb-popover';
 
 export type TransferRateLimitValue = {
-  uploadLimit: number | null; // KiB/s; null = no limit (unlimited)
-  downloadLimit: number | null; // KiB/s; null = no limit (unlimited)
+  uploadLimit: number | null;
+  downloadLimit: number | null;
 };
 
 @Component({

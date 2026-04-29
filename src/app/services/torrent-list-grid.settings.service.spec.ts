@@ -29,7 +29,6 @@ describe('TorrentListGridSettingsService', () => {
 
   it('should return settings with expected shape when nothing is stored', async () => {
     const settings = await service.load();
-    // Default columnState is a string[], which gets normalized to ColumnState[]
     expect(settings).toBeDefined();
     expect(typeof settings.pagination).toBe('boolean');
     expect(typeof settings.animateRows).toBe('boolean');
@@ -55,7 +54,6 @@ describe('TorrentListGridSettingsService', () => {
       columnState: ['name', 'size'],
     });
     const settings = await service.load();
-    // normalize converts string[] to ColumnState[]
     expect(Array.isArray(settings.columnState)).toBe(true);
     if (Array.isArray(settings.columnState) && settings.columnState.length > 0) {
       expect(typeof (settings.columnState[0] as any).colId).toBe('string');

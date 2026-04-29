@@ -25,11 +25,8 @@ describe('ModalGuardService', () => {
   });
 
   it('should be instantiated independently (not singleton)', () => {
-    // ModalGuardService is not providedIn: 'root', so each provider entry creates a new instance.
-    // Verify that the same TestBed module returns the same instance (it does since it's registered once).
     const second = TestBed.inject(ModalGuardService);
     service.isDirty.set(true);
-    // Same module = same instance
     expect(second.isDirty()).toBe(true);
   });
 });

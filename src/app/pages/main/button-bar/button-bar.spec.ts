@@ -1,4 +1,3 @@
-// src/app/pages/main/button-bar/button-bar.spec.ts
 import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CommandBusService } from '../../../services/command-bus.service';

@@ -1,4 +1,3 @@
-// src/app/pages/settings/status-bar/status-bar.spec.ts
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SettingsStateService } from '../settings-state.service';
@@ -18,11 +17,7 @@ describe('StatusBar', () => {
 
     await TestBed.configureTestingModule({
       imports: [StatusBar],
-      providers: [
-        { provide: SettingsStateService, useValue: stateServiceMock },
-        // StatusBarSettingsService resolves from global / window.bitbutler mock
-        // TranslateService resolves from global providers
-      ],
+      providers: [{ provide: SettingsStateService, useValue: stateServiceMock }],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 

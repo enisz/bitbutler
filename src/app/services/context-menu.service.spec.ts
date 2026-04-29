@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { Injector } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 import { ContextMenuService } from './context-menu.service';
 
 describe('ContextMenuService', () => {
@@ -55,7 +55,6 @@ describe('ContextMenuService', () => {
   it('should update lastMousePosition via openAt()', () => {
     const config = { items: [] } as any;
     service.openAt(100, 200, config);
-    // The overlay should have been created with a strategy containing x=100, y=200
     expect(mockOverlay.position).toHaveBeenCalled();
   });
 
@@ -64,7 +63,6 @@ describe('ContextMenuService', () => {
     service.openAt(100, 200, config);
     const firstRef = service['overlayRef'];
     service.openAt(300, 400, config);
-    // dispose should have been called on the first overlay
     expect(mockOverlayRef.dispose).toHaveBeenCalled();
   });
 

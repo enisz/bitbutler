@@ -1,9 +1,9 @@
 import { OverlayModule, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { EMPTY } from 'rxjs';
 import { ContextMenu } from './context-menu';
 import { CONTEXT_MENU_CONFIG } from './context-menu.tokens';
 import type { ContextMenuEntry } from './context-menu.types';
-import { EMPTY } from 'rxjs';
 
 function makeOverlayRefMock() {
   return {
@@ -100,7 +100,6 @@ describe('ContextMenu', () => {
     it('should not call action for non-item entries', () => {
       const action = vi.fn();
       component.onEntryClick({ kind: 'divider' } as any);
-      // no error thrown, no action called
       expect(action).not.toHaveBeenCalled();
     });
   });

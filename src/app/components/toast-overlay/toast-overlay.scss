@@ -100,14 +100,10 @@
   }
 }
 
-// ─── Left positions: align to left edge ────────────────────────────────────
-
 .bb-toast-pos-bottom-left,
 .bb-toast-pos-top-left {
   align-items: flex-start;
 }
-
-// ─── Left positions: exit to the left ──────────────────────────────────────
 
 .bb-toast-pos-bottom-left,
 .bb-toast-pos-top-left {
@@ -137,14 +133,10 @@
   }
 }
 
-// ─── Top positions: newest at top (column-reverse) ─────────────────────────
-
 .bb-toast-pos-top-right,
 .bb-toast-pos-top-left {
   flex-direction: column-reverse;
 }
-
-// ─── Top positions: enter from above ───────────────────────────────────────
 
 .bb-toast-pos-top-right,
 .bb-toast-pos-top-left {

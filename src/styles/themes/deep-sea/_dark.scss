@@ -9,10 +9,10 @@ $deep-sea-dark-danger: #e06c67;
 $deep-sea-dark-warning: #f4c46b;
 $deep-sea-dark-info: #088395;
 
-$deep-sea-dark-body-bg: #04161d; // Deepened Deep Blue
+$deep-sea-dark-body-bg: #04161d;
 $deep-sea-dark-body-color: #ebf4f6;
 $deep-sea-dark-border: #09637e;
-$deep-sea-dark-surface: #06242e; // Slightly lighter surface
+$deep-sea-dark-surface: #06242e;
 
 @mixin install() {
   :root[data-bb-theme='deep-sea'][data-bs-theme='dark'] {
