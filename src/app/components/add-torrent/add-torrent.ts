@@ -342,12 +342,10 @@ export class AddTorrent implements OnInit {
     if (mode === 'link') {
       this.selectedTorrentFile.set(null);
       this.addForm.controls.file.disable();
-      this.addForm.controls.rename.disable();
       this.showTree.set(false);
     } else {
       this.addForm.controls.magnetLinks.setValue('', { emitEvent: false });
       this.addForm.controls.file.enable();
-      this.addForm.controls.rename.enable();
     }
   }
 

@@ -545,6 +545,7 @@
       "button-bar": {
         "button": {
           "add-file": "Add File",
+          "add-link": "Add Link",
           "delete": "Delete",
           "start": "Start",
           "stop": "Stop",
@@ -972,9 +973,7 @@
       "update": "Update",
       "show": "Show",
       "open-details": "Open Details",
-      "edit": "Edit",
-      "add-link": "Add Link",
-      "add-file": "Add File"
+      "edit": "Edit"
     },
     "form": {
       "feedback": {
