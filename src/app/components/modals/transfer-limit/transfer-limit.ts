@@ -23,7 +23,7 @@ import {
 } from '../../transfer-limit/transfer-limit';
 
 @Component({
-  selector: 'app-transfer-limit',
+  selector: 'app-transfer-limit-modal',
   imports: [
     ReactiveFormsModule,
     TranslatePipe,
