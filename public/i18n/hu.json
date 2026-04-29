@@ -481,7 +481,7 @@
         "unsaved-indicator": "Mentetlen változtatások"
       }
     },
-    "transfer-rate-limit": {
+    "transfer-limit": {
       "upload-limit": "Feltöltési korlát (KiB/s)",
       "download-limit": "Letöltési korlát (KiB/s)",
       "popover": {

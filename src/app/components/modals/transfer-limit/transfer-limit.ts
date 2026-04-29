@@ -10,6 +10,7 @@ import {
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
+import { AutofocusDirective } from '../../../directives/autofocus';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
 import { LimitTargetType } from '../../../models/command.model';
 import { QbService } from '../../../services/qb.service';
@@ -17,19 +18,20 @@ import { SelectionStoreService } from '../../../services/selection-store.service
 import { ServerStoreService } from '../../../services/server-store.service';
 import { BbSpinner } from '../../bb-spinner/bb-spinner';
 import {
-  TransferRateLimit,
-  TransferRateLimitValue,
-} from '../../transfer-rate-limit/transfer-rate-limit';
+  TransferLimit as TransferLimitForm,
+  TransferLimitValue,
+} from '../../transfer-limit/transfer-limit';
 
 @Component({
   selector: 'app-transfer-limit',
   imports: [
     ReactiveFormsModule,
     TranslatePipe,
-    TransferRateLimit,
+    TransferLimitForm,
     NgbTooltip,
     TooltipOverflow,
     BbSpinner,
+    AutofocusDirective,
   ],
   templateUrl: './transfer-limit.html',
   styleUrl: './transfer-limit.scss',
@@ -44,7 +46,7 @@ export class TransferLimit implements OnInit {
   public activeModal = inject(NgbActiveModal);
 
   public form = new FormGroup({
-    transferRateLimits: new FormControl<TransferRateLimitValue | null>(null),
+    transferRateLimits: new FormControl<TransferLimitValue | null>(null),
   });
 
   public loading = signal<boolean>(true);

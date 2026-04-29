@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, OnInit, computed, inject, signal } from '
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
+import { AutofocusDirective } from '../../../directives/autofocus';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
 import { QbService } from '../../../services/qb.service';
 import { SelectionStoreService } from '../../../services/selection-store.service';
@@ -18,6 +19,7 @@ import { ShareLimit as ShareLimitForm, ShareLimitValue } from '../../share-limit
     NgbTooltip,
     TooltipOverflow,
     BbSpinner,
+    AutofocusDirective,
   ],
   templateUrl: './share-limit.html',
   styleUrl: './share-limit.scss',

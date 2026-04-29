@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TransferRateLimit } from './transfer-rate-limit';
+import { TransferLimit } from './transfer-limit';
 
-describe('TransferRateLimit', () => {
-  let component: TransferRateLimit;
-  let fixture: ComponentFixture<TransferRateLimit>;
+describe('TransferLimit', () => {
+  let component: TransferLimit;
+  let fixture: ComponentFixture<TransferLimit>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TransferRateLimit],
+      imports: [TransferLimit],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(TransferRateLimit);
+    fixture = TestBed.createComponent(TransferLimit);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

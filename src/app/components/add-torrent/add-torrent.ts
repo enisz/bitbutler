@@ -41,10 +41,7 @@ import { CategorySelect } from '../category-select/category-select';
 import { TorrentExists } from '../modals/torrent-exists/torrent-exists';
 import { ShareLimit, ShareLimitValue } from '../share-limit/share-limit';
 import { TagSelect } from '../tag-select/tag-select';
-import {
-  TransferRateLimit,
-  TransferRateLimitValue,
-} from '../transfer-rate-limit/transfer-rate-limit';
+import { TransferLimit, TransferLimitValue } from '../transfer-limit/transfer-limit';
 
 type AddTorrentFormValue = {
   file: string;
@@ -57,7 +54,7 @@ type AddTorrentFormValue = {
   skip_checking: boolean;
   sequentialDownload: boolean;
   firstLastPiecePrio: boolean;
-  transferRateLimits: TransferRateLimitValue | null;
+  transferRateLimits: TransferLimitValue | null;
   shareLimits: ShareLimitValue | null;
   autoTMM: boolean;
 };
@@ -76,7 +73,7 @@ type AddTorrentFormValue = {
     NgSelectModule,
     TranslatePipe,
     ShareLimit,
-    TransferRateLimit,
+    TransferLimit,
   ],
   templateUrl: './add-torrent.html',
   styleUrl: './add-torrent.scss',
@@ -127,7 +124,7 @@ export class AddTorrent implements OnInit {
     skip_checking: new FormControl<boolean>(false, { nonNullable: true }),
     sequentialDownload: new FormControl<boolean>(false, { nonNullable: true }),
     firstLastPiecePrio: new FormControl<boolean>(false, { nonNullable: true }),
-    transferRateLimits: new FormControl<TransferRateLimitValue | null>(null),
+    transferRateLimits: new FormControl<TransferLimitValue | null>(null),
     shareLimits: new FormControl<ShareLimitValue | null>(null),
     autoTMM: new FormControl<boolean>(false, { nonNullable: true }),
   });

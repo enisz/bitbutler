@@ -481,7 +481,7 @@
         "unsaved-indicator": "Unsaved changes"
       }
     },
-    "transfer-rate-limit": {
+    "transfer-limit": {
       "upload-limit": "Upload Limit (KiB/s)",
       "download-limit": "Download Limit (KiB/s)",
       "popover": {

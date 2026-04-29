@@ -39,14 +39,20 @@
     </div>
   } @else {
     <form [formGroup]="form" (submit)="handleSubmit()">
-      <app-transfer-rate-limit formControlName="transferRateLimits"></app-transfer-rate-limit>
+      <app-transfer-limit formControlName="transferRateLimits"></app-transfer-limit>
       <button type="submit" hidden [disabled]="!canSave()"></button>
     </form>
   }
 </div>
 
 <div class="modal-footer">
-  <button type="button" class="btn btn-secondary" (click)="handleSubmit()" [disabled]="!canSave()">
+  <button
+    type="button"
+    class="btn btn-secondary"
+    (click)="handleSubmit()"
+    [disabled]="!canSave()"
+    autofocus
+  >
     {{ 'general.button.save' | translate }}
   </button>
   @if (hasClearableValues()) {
