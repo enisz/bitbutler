@@ -101,7 +101,8 @@ export class BbFileTree implements OnChanges {
 
   public icon = { faEdit, faCheck, faX };
 
-  trackByPath = (_index: number, node: BbFileTreeNode): string => node.fullPath;
+  trackByPath = (_index: number, node: BbFileTreeNode): string =>
+    `${this.editMode()}:${node.fullPath}`;
 
   ngOnChanges(): void {
     if (this.editMode()) return;
@@ -142,14 +143,6 @@ export class BbFileTree implements OnChanges {
     }
   }
 
-  private resetNodeNamesFromPaths(nodes: BbFileTreeNode[]): void {
-    for (const node of nodes) {
-      const slashIdx = node.fullPath.lastIndexOf('/');
-      node.name = slashIdx >= 0 ? node.fullPath.slice(slashIdx + 1) : node.fullPath;
-      if (node.children) this.resetNodeNamesFromPaths(node.children);
-    }
-  }
-
   private updateNodeFiles(nodes: BbFileTreeNode[], fileMap: Map<string, TorrentFileEntry>): number {
     let count = 0;
     for (const node of nodes) {
@@ -176,7 +169,6 @@ export class BbFileTree implements OnChanges {
   }
 
   public cancelEdit(): void {
-    this.resetNodeNamesFromPaths(this.data);
     for (let i = 0; i < this.originalFiles.length && i < this.files.length; i++) {
       this.files[i].priority = this.originalFiles[i].priority;
     }
