@@ -14,7 +14,7 @@ import {
   NgSelectComponent,
 } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { filter, firstValueFrom, from, tap } from 'rxjs';
+import { firstValueFrom, from, tap } from 'rxjs';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { GeneralSettings, ToastPosition } from '../../../models/general-settings.model';
@@ -170,9 +170,7 @@ export class General implements SettingsTabComponent, OnInit {
     await this.generalSettingsService.save(settings);
 
     if (newLang !== currentLang) {
-      await firstValueFrom(
-        this.translateService.onLangChange.pipe(filter((event) => event.lang === newLang)),
-      );
+      await firstValueFrom(this.translateService.use(newLang));
     }
 
     this.themeService.applyFromSettings(settings.appearance.family, settings.appearance.mode);
