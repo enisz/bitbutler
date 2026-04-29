@@ -1,5 +1,5 @@
 import { ShareLimitValue } from '../components/share-limit/share-limit';
-import { TransferRateLimitValue } from '../components/transfer-rate-limit/transfer-rate-limit';
+import { TransferLimitValue } from '../components/transfer-limit/transfer-limit';
 
 export type RootFolderMode = 'unset' | 'true' | 'false';
 
@@ -13,7 +13,7 @@ export type AddTorrentSettings = {
   sequentialDownload: boolean;
   firstLastPiecePrio: boolean;
   autoTMM: boolean;
-  transferRateLimits: TransferRateLimitValue | null;
+  transferRateLimits: TransferLimitValue | null;
   shareLimits: ShareLimitValue | null;
 };
 

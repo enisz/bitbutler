@@ -1,9 +1,9 @@
-export {};
-
 import { NewServer, ServerRecord } from './app/models/server.model';
 import { TorrentDraft } from './app/models/torrent-draft.model';
 import { HostPlatform, UpdateCheckResponse } from './app/services/electron.service';
 import { WindowState } from './app/services/window.service';
+
+export {};
 
 declare global {
   type BitButlerServerIdPayload = { id: string };

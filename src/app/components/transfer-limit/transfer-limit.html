@@ -6,12 +6,12 @@
           type="number"
           class="form-control"
           id="downloadLimit"
-          [placeholder]="'components.transfer-rate-limit.download-limit' | translate"
+          [placeholder]="'components.transfer-limit.download-limit' | translate"
           formControlName="downloadLimit"
           min="0"
         />
         <label for="downloadLimit">{{
-          'components.transfer-rate-limit.download-limit' | translate
+          'components.transfer-limit.download-limit' | translate
         }}</label>
       </div>
     </div>
@@ -19,10 +19,8 @@
     <div class="col-1 d-flex align-items-center">
       <bb-popover
         class="mt-2"
-        [subject]="'components.transfer-rate-limit.popover.download-limit.title' | translate"
-        [description]="
-          'components.transfer-rate-limit.popover.download-limit.description' | translate
-        "
+        [subject]="'components.transfer-limit.popover.download-limit.title' | translate"
+        [description]="'components.transfer-limit.popover.download-limit.description' | translate"
         placement="top"
       ></bb-popover>
     </div>
@@ -33,23 +31,19 @@
           type="number"
           class="form-control"
           id="uploadLimit"
-          [placeholder]="'components.transfer-rate-limit.upload-limit' | translate"
+          [placeholder]="'components.transfer-limit.upload-limit' | translate"
           formControlName="uploadLimit"
           min="0"
         />
-        <label for="uploadLimit">{{
-          'components.transfer-rate-limit.upload-limit' | translate
-        }}</label>
+        <label for="uploadLimit">{{ 'components.transfer-limit.upload-limit' | translate }}</label>
       </div>
     </div>
 
     <div class="col-1 d-flex align-items-center">
       <bb-popover
         class="mt-2"
-        [subject]="'components.transfer-rate-limit.popover.upload-limit.title' | translate"
-        [description]="
-          'components.transfer-rate-limit.popover.upload-limit.description' | translate
-        "
+        [subject]="'components.transfer-limit.popover.upload-limit.title' | translate"
+        [description]="'components.transfer-limit.popover.upload-limit.description' | translate"
         placement="top"
       ></bb-popover>
     </div>

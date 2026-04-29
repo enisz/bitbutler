@@ -1,6 +1,6 @@
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import { Torrent } from '../../../../models/torrent.model';
 import { AppCommand } from '../../../../models/command.model';
+import { Torrent } from '../../../../models/torrent.model';
 
 export interface GridContextMenuData {
   cell: {

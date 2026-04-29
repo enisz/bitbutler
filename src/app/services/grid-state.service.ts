@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import type { ColumnState, GridApi } from 'ag-grid-community';
 import { filter, firstValueFrom } from 'rxjs';
 import { TorrentListGridSettingsService } from './torrent-list-grid.settings.service';

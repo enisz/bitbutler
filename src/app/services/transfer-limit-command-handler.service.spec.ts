@@ -1,11 +1,11 @@
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
-import { TransferLimitCommandHandlerService } from './transfer-limit-command-handler.service';
 import { CommandBusService } from './command-bus.service';
 import { QbService } from './qb.service';
 import { ServerStoreService } from './server-store.service';
 import { ToastService } from './toast.service';
-import { signal } from '@angular/core';
+import { TransferLimitCommandHandlerService } from './transfer-limit-command-handler.service';
 
 const flushPromises = () => new Promise<void>((resolve) => setTimeout(resolve));
 

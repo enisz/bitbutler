@@ -1,5 +1,5 @@
-import { TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
 import { Torrent } from '../models/torrent.model';

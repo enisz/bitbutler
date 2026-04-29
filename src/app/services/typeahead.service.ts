@@ -1,5 +1,5 @@
-import { computed, inject, Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
+import { Injectable, computed, inject } from '@angular/core';
+import { Observable, map } from 'rxjs';
 import { TorrentStoreService } from './torrent-store.service';
 
 @Injectable({

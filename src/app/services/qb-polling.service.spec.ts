@@ -1,6 +1,6 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { firstValueFrom, Subject } from 'rxjs';
+import { Subject, firstValueFrom } from 'rxjs';
 import { QbPollingService } from './qb-polling.service';
 import { QbService } from './qb.service';
 import { ServerSettingsService } from './server-settings.service';

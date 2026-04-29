@@ -12,7 +12,6 @@ import { TorrentListGridSettingsService } from '../../../../services/torrent-lis
 import type { ContextMenuEntry, GridContextMenuData } from './context-menu.types';
 import { GridContextMenuService } from './grid-context-menu.service';
 
-// Recursively find an item entry by id within a menu tree.
 function findItem(
   entries: ContextMenuEntry[],
   id: string,
@@ -122,8 +121,6 @@ describe('GridContextMenuService', () => {
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
-
-  // ─── buildTorrentMenu ────────────────────────────────────────────────────────
 
   describe('buildTorrentMenu', () => {
     describe('menu structure', () => {
@@ -457,8 +454,6 @@ describe('GridContextMenuService', () => {
       });
     });
   });
-
-  // ─── buildHeaderMenu ─────────────────────────────────────────────────────────
 
   describe('buildHeaderMenu', () => {
     function build(

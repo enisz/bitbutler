@@ -1,7 +1,6 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
-
 import { QbPollingService } from '../../../../services/qb-polling.service';
 import { ServerStoreService } from '../../../../services/server-store.service';
 import { ThemeService } from '../../../../services/theme.service';

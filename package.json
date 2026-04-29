@@ -138,6 +138,25 @@
   "prettier": {
     "printWidth": 100,
     "singleQuote": true,
+    "semi": true,
+    "trailingComma": "all",
+    "arrowParens": "always",
+    "plugins": [
+      "@trivago/prettier-plugin-sort-imports"
+    ],
+    "importOrder": [
+      "^@angular/(.*)$",
+      "<THIRD_PARTY_MODULES>",
+      "^electron/(.*)$",
+      "^src/(.*)$",
+      "^[./]"
+    ],
+    "importOrderSeparation": false,
+    "importOrderSortSpecifiers": true,
+    "importOrderParserPlugins": [
+      "typescript",
+      "decorators-legacy"
+    ],
     "overrides": [
       {
         "files": "*.html",
@@ -192,6 +211,7 @@
     "@angular/cli": "^20.3.13",
     "@angular/compiler-cli": "^20.3.0",
     "@angular/localize": "^20.3.0",
+    "@trivago/prettier-plugin-sort-imports": "^6.0.2",
     "@types/humanize-duration": "^3.27.4",
     "@typescript-eslint/eslint-plugin": "^8.54.0",
     "@typescript-eslint/parser": "^8.54.0",

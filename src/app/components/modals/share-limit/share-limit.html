@@ -1,7 +1,7 @@
 <div class="modal-header bb-modal-header">
   <div class="bb-modal-header__text">
-    <h5 class="modal-title bb-title-clamp">
-      {{ 'components.modals.limit-transfer-rate.title' | translate }}
+    <h5 class="modal-title">
+      {{ 'components.modals.share-limit.title' | translate }}
     </h5>
 
     <div
@@ -11,9 +11,7 @@
       tooltipClass="single-line-tooltip"
       placement="bottom"
     >
-      @if (target === 'global') {
-        {{ 'components.modals.limit-transfer-rate.global' | translate }}
-      } @else if (selected() === 1) {
+      @if (selected() === 1) {
         {{ selectionName() }}
       } @else {
         {{ 'general.label.torrent-selected' | translate: { count: selected() } }}
@@ -30,14 +28,27 @@
 </div>
 
 <div class="modal-body">
-  <form [formGroup]="form" (submit)="handleSubmit()">
-    <app-transfer-rate-limit formControlName="transferRateLimits"></app-transfer-rate-limit>
-    <button type="submit" hidden [disabled]="!canSave()"></button>
-  </form>
+  @if (loading()) {
+    <div class="w-100 text-center py-2">
+      <app-bb-spinner></app-bb-spinner>
+      <small class="d-block mt-2">{{ 'components.modals.share-limit.loading' | translate }}</small>
+    </div>
+  } @else {
+    <form [formGroup]="form" (submit)="handleSubmit()">
+      <app-share-limit formControlName="shareLimits"></app-share-limit>
+      <button type="submit" hidden [disabled]="!canSave()"></button>
+    </form>
+  }
 </div>
 
 <div class="modal-footer">
-  <button type="button" class="btn btn-secondary" (click)="handleSubmit()" [disabled]="!canSave()">
+  <button
+    type="button"
+    class="btn btn-secondary"
+    (click)="handleSubmit()"
+    [disabled]="!canSave()"
+    autofocus
+  >
     {{ 'general.button.save' | translate }}
   </button>
   @if (hasClearableValues()) {

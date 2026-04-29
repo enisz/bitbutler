@@ -1,4 +1,5 @@
-import { ChangeDetectorRef, Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import {
   ColDef,
@@ -11,8 +12,6 @@ import {
   ValueGetterParams,
 } from 'ag-grid-community';
 import { Subscription } from 'rxjs';
-
-import { TranslateService } from '@ngx-translate/core';
 import { GRID_DARK_THEME, GRID_LIGHT_THEME, GRID_SHARED_OPTIONS } from '../../../../app.const';
 import { QbTorrentPeer, QbTorrentPeersResponse } from '../../../../models/torrent.model';
 import { LoadingOverlay } from '../../../../pages/main/grid/overlays/loading-overlay/loading-overlay';

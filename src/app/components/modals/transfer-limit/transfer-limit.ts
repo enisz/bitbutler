@@ -1,32 +1,42 @@
 import {
   ChangeDetectorRef,
   Component,
-  computed,
-  inject,
   Input,
   OnInit,
+  computed,
+  inject,
   signal,
 } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
+import { AutofocusDirective } from '../../../directives/autofocus';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
 import { LimitTargetType } from '../../../models/command.model';
 import { QbService } from '../../../services/qb.service';
 import { SelectionStoreService } from '../../../services/selection-store.service';
 import { ServerStoreService } from '../../../services/server-store.service';
+import { BbSpinner } from '../../bb-spinner/bb-spinner';
 import {
-  TransferRateLimit,
-  TransferRateLimitValue,
-} from '../../transfer-rate-limit/transfer-rate-limit';
+  TransferLimit as TransferLimitForm,
+  TransferLimitValue,
+} from '../../transfer-limit/transfer-limit';
 
 @Component({
-  selector: 'app-limit-transfer-rate',
-  imports: [ReactiveFormsModule, TranslatePipe, TransferRateLimit, NgbTooltip, TooltipOverflow],
-  templateUrl: './limit-transfer-rate.html',
-  styleUrl: './limit-transfer-rate.scss',
+  selector: 'app-transfer-limit-modal',
+  imports: [
+    ReactiveFormsModule,
+    TranslatePipe,
+    TransferLimitForm,
+    NgbTooltip,
+    TooltipOverflow,
+    BbSpinner,
+    AutofocusDirective,
+  ],
+  templateUrl: './transfer-limit.html',
+  styleUrl: './transfer-limit.scss',
 })
-export class LimitTransferRate implements OnInit {
+export class TransferLimit implements OnInit {
   @Input() public target!: LimitTargetType;
 
   private readonly qbService = inject(QbService);
@@ -36,9 +46,10 @@ export class LimitTransferRate implements OnInit {
   public activeModal = inject(NgbActiveModal);
 
   public form = new FormGroup({
-    transferRateLimits: new FormControl<TransferRateLimitValue | null>(null),
+    transferRateLimits: new FormControl<TransferLimitValue | null>(null),
   });
 
+  public loading = signal<boolean>(true);
   public saving = signal<boolean>(false);
   public selected = signal<number>(this.selectionStoreService.selected().length);
 
@@ -78,6 +89,7 @@ export class LimitTransferRate implements OnInit {
       },
       { emitEvent: false },
     );
+    this.loading.set(false);
     this.cdr.markForCheck();
   }
 
@@ -98,7 +110,7 @@ export class LimitTransferRate implements OnInit {
         this.qbService.setDownloadLimit(serverId, downloadBytes, hashes),
       ]);
     } catch (error: any) {
-      console.error(LimitTransferRate.name, 'handleSubmit', 'Failed to update limits!');
+      console.error(TransferLimit.name, 'handleSubmit', 'Failed to update limits!');
     } finally {
       this.saving.set(false);
       this.activeModal.close();

@@ -1,4 +1,4 @@
-import { NO_ERRORS_SCHEMA, signal, SimpleChanges } from '@angular/core';
+import { NO_ERRORS_SCHEMA, SimpleChanges, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
 import { CommandBusService } from '../../../services/command-bus.service';

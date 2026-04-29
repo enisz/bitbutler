@@ -1,7 +1,6 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-
 import { Release, UpdateCheckResponse } from '../../../models/electron.model';
 import { ElectronService } from '../../../services/electron.service';
 import { ThemeService } from '../../../services/theme.service';

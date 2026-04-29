@@ -34,22 +34,21 @@ describe('HumanizeDurationPipe', () => {
   });
 
   it('returns a non-empty string for a valid millisecond duration', () => {
-    const result = pipe.transform(90000); // 1 min 30 sec
+    const result = pipe.transform(90000);
     expect(result).toBeTruthy();
   });
 
   it('includes seconds for a sub-minute duration', () => {
-    const result = pipe.transform(30000); // 30 seconds
+    const result = pipe.transform(30000);
     expect(result).toContain('30');
   });
 
   it('includes minutes for a minute-scale duration', () => {
-    const result = pipe.transform(120000); // 2 minutes exactly
+    const result = pipe.transform(120000);
     expect(result).toContain('2');
   });
 
   it('precision=1 limits output to the largest unit only', () => {
-    // 90 000 ms = 1 min 30 sec; with precision=1 the seconds field is zeroed
     const full = pipe.transform(90000, 'long', Infinity);
     const limited = pipe.transform(90000, 'long', 1);
     expect(limited).not.toBe(full);

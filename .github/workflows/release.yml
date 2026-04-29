@@ -103,7 +103,6 @@ jobs:
       - name: Push new version
         run: git push origin main --tags
 
-      # Phase 1: Draft the release, but KEEP IT HIDDEN (publish: false)
       - name: Draft release notes
         uses: release-drafter/release-drafter@v5
         id: release_drafter
@@ -192,7 +191,6 @@ jobs:
       - name: Package application for distribution
         run: npx electron-builder ${{ matrix.target }}
 
-      # Phase 2: Upload the files to the hidden draft release
       - name: Upload Release Assets
         uses: softprops/action-gh-release@v2
         with:
@@ -206,7 +204,6 @@ jobs:
             dist-electron/*.snap
             dist-electron/*.tar.gz
 
-  # Phase 3: Publish the release to the public once all files are uploaded!
   publish-release:
     name: 'Publish Release'
     needs: [prepare-release, build-and-package]

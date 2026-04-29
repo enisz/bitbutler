@@ -1,11 +1,10 @@
+import { Overlay } from '@angular/cdk/overlay';
 import { TestBed } from '@angular/core/testing';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Overlay } from '@angular/cdk/overlay';
-import { ToastService } from './toast.service';
+import { Subject } from 'rxjs';
 import { GeneralSettingsService } from './general-settings.service';
 import { ThemeService } from './theme.service';
-import { DEFAULT_GENERAL_SETTINGS } from '../models/general-settings.model';
-import { Subject } from 'rxjs';
+import { ToastService } from './toast.service';
 
 describe('ToastService — showText()', () => {
   let service: ToastService;

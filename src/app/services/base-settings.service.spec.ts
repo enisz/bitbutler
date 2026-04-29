@@ -91,7 +91,6 @@ describe('BaseSettingsService', () => {
   it('should clear loadPromise and rethrow on error', async () => {
     mockSettingsService.get.mockRejectedValue(new Error('storage error'));
     await expect(service.load()).rejects.toThrow('storage error');
-    // After error, load() should try again
     mockSettingsService.get.mockResolvedValue(null);
     const settings = await service.load();
     expect(settings).toEqual({ value: 'default', count: 0 });

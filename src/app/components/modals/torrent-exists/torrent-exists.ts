@@ -1,11 +1,9 @@
-import { Component, computed, effect, inject, Input, signal } from '@angular/core';
+import { Component, Input, computed, effect, inject, signal } from '@angular/core';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
-
 import { TranslatePipe } from '@ngx-translate/core';
 import { TimeagoPipe } from 'ngx-timeago';
 import { AutofocusDirective } from '../../../directives/autofocus';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
-import { BbProgress } from '../../bb-progress/bb-progress';
 import { FilesizePipe } from '../../../pipes/filesize-pipe';
 import { LocalTimestampPipe } from '../../../pipes/local-timestamp-pipe';
 import { RatioPipe } from '../../../pipes/ratio-pipe';
@@ -13,6 +11,7 @@ import { CommandBusService } from '../../../services/command-bus.service';
 import { FilterService } from '../../../services/filter.service';
 import { SelectionStoreService } from '../../../services/selection-store.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
+import { BbProgress } from '../../bb-progress/bb-progress';
 
 @Component({
   selector: 'app-torrent-exists',

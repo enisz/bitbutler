@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { PathService } from './path.service';
 import { ElectronService } from './electron.service';
+import { PathService } from './path.service';
 import { ServerSettingsService } from './server-settings.service';
 
 const makeSettings = (pathMappings: { remote: string; local: string }[]) => ({
@@ -69,13 +69,10 @@ describe('PathService', () => {
   });
 
   it('should convert path separators to backslash on win32', async () => {
-    // Override the platform mock to win32 and reload the service with a fresh module
     mockElectron.getPlatform.mockResolvedValue('win32');
     mockServerSettings.load.mockResolvedValue(
       makeSettings([{ remote: '/remote', local: 'C:\\local' }]),
     );
-    // The PathService caches the platform promise in constructor.
-    // Access private field to reset it for this test.
     (service as any).platformPromise = mockElectron.getPlatform();
     const result = await service.resolveLocalPath('/remote/subdir');
     expect(result).toContain('\\');

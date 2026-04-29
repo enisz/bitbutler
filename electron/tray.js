@@ -1,5 +1,7 @@
 import { Menu, Tray, app } from 'electron';
 import path from 'node:path';
+import { getCookieJar, qbRequest } from './ipc/qbittorrent.js';
+import { getActiveServerId } from './ipc/server.js';
 
 let tray = null;
 let mainWindowRef = null;
@@ -32,15 +34,20 @@ function showMainWindow({ maximize = true } = {}) {
   }
 }
 
-export function createTray(mainWindow) {
-  mainWindowRef = mainWindow;
-  if (tray) return;
+function isConnected() {
+  const id = getActiveServerId();
+  return id !== null && getCookieJar().has(id);
+}
 
-  const iconPath = getTrayIconPath();
-  tray = new Tray(iconPath);
-  tray.setToolTip('BitButler');
+async function trayQbRequest(path, form) {
+  const id = getActiveServerId();
+  await qbRequest({ id, method: 'POST', path, form });
+}
 
-  const contextMenu = Menu.buildFromTemplate([
+function buildContextMenu() {
+  const connected = isConnected();
+
+  return Menu.buildFromTemplate([
     {
       label: 'Show',
       click: () => showMainWindow({ maximize: true }),
@@ -48,6 +55,35 @@ export function createTray(mainWindow) {
     {
       label: 'Hide',
       click: () => mainWindowRef?.hide(),
+    },
+    { type: 'separator' },
+    {
+      label: 'Start All Torrents',
+      enabled: connected,
+      click: () => trayQbRequest('/api/v2/torrents/resume', { hashes: 'all' }).catch(console.error),
+    },
+    {
+      label: 'Stop All Torrents',
+      enabled: connected,
+      click: () => trayQbRequest('/api/v2/torrents/pause', { hashes: 'all' }).catch(console.error),
+    },
+    { type: 'separator' },
+    {
+      label: 'Remove Global Upload Limit',
+      enabled: connected,
+      click: () =>
+        trayQbRequest('/api/v2/transfer/setUploadLimit', { limit: '0' }).catch(console.error),
+    },
+    {
+      label: 'Remove Global Download Limit',
+      enabled: connected,
+      click: () =>
+        trayQbRequest('/api/v2/transfer/setDownloadLimit', { limit: '0' }).catch(console.error),
+    },
+    {
+      label: 'Toggle Alternative Speed',
+      enabled: connected,
+      click: () => trayQbRequest('/api/v2/transfer/toggleSpeedLimitsMode', {}).catch(console.error),
     },
     { type: 'separator' },
     {
@@ -59,8 +95,21 @@ export function createTray(mainWindow) {
       },
     },
   ]);
+}
 
-  tray.setContextMenu(contextMenu);
+export function rebuildTrayMenu() {
+  if (!tray) return;
+  tray.setContextMenu(buildContextMenu());
+}
+
+export function createTray(mainWindow) {
+  mainWindowRef = mainWindow;
+  if (tray) return;
+
+  const iconPath = getTrayIconPath();
+  tray = new Tray(iconPath);
+  tray.setToolTip('BitButler');
+  tray.setContextMenu(buildContextMenu());
 
   tray.on('click', () => {
     const win = mainWindowRef;

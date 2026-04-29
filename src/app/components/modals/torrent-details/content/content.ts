@@ -1,16 +1,16 @@
 import {
   Component,
   DestroyRef,
-  inject,
   Input,
   OnChanges,
   OnInit,
-  signal,
   SimpleChanges,
+  inject,
+  signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { catchError, EMPTY, from, switchMap, tap, timer } from 'rxjs';
+import { EMPTY, catchError, from, switchMap, tap, timer } from 'rxjs';
 import { TorrentFileEntry } from '../../../../models/torrent-draft.model';
 import { QbTorrentContent } from '../../../../models/torrent.model';
 import { ModalGuardService } from '../../../../services/modal-guard.service';

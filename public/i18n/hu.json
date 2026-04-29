@@ -154,9 +154,10 @@
           "confirmation": "A fájlok törlése a lemezről is"
         }
       },
-      "limit-transfer-rate": {
-        "title": "Átviteli sebesség korlátozása",
-        "global": "Globális átviteli korlát"
+      "transfer-limit": {
+        "title": "Átviteli korlát",
+        "global": "Globális átviteli korlát",
+        "loading": "Átviteli korlátok betöltése..."
       },
       "rename-torrent": {
         "title": "Torrent átnevezése",
@@ -468,8 +469,9 @@
           "view-on-github": "Megtekintés GitHubon"
         }
       },
-      "limit-torrent-share": {
-        "title": "Set Share Limits"
+      "share-limit": {
+        "title": "Megosztási korlát",
+        "loading": "Megosztási korlátok betöltése..."
       },
       "guard": {
         "unsaved-title": "Mentetlen változtatások",
@@ -479,7 +481,7 @@
         "unsaved-indicator": "Mentetlen változtatások"
       }
     },
-    "transfer-rate-limit": {
+    "transfer-limit": {
       "upload-limit": "Feltöltési korlát (KiB/s)",
       "download-limit": "Letöltési korlát (KiB/s)",
       "popover": {
@@ -600,8 +602,8 @@
             "set-category": "Kategória beállítása",
             "set-tags": "Címkék beállítása",
             "remove": "Eltávolítás",
-            "limit-transfer-rate": "Átviteli sebesség korlátozása",
-            "limit-torrent-share": "Megosztási korlátok beállítása",
+            "transfer-limit": "Átviteli korlát",
+            "share-limit": "Megosztási korlát",
             "enable-super-seeding": "Super seeding engedélyezése",
             "disable-super-seeding": "Super seeding tiltása",
             "force-recheck": "Kényszerített ellenőrzés",

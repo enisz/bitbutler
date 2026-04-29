@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common';
 import {
   Component,
-  computed,
-  inject,
   Input,
   OnChanges,
-  signal,
   SimpleChanges,
   TemplateRef,
   ViewChild,
+  computed,
+  inject,
+  signal,
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';

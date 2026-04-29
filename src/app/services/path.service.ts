@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HostPlatform } from '../models/electron.model';
 import { ElectronService } from './electron.service';
 import { ServerSettingsService } from './server-settings.service';

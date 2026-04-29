@@ -1,4 +1,3 @@
-// src/app/pages/settings/settings-state.service.spec.ts
 import { TestBed } from '@angular/core/testing';
 import { SettingsStateService } from './settings-state.service';
 

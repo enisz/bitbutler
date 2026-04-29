@@ -3,6 +3,7 @@ import FormData from 'form-data';
 import fs from 'node:fs';
 import db from '../db.js';
 import { rebuildMenu } from '../menu.js';
+import { rebuildTrayMenu } from '../tray.js';
 
 const cookieJar = new Map();
 
@@ -80,6 +81,7 @@ function qbLogout(payload) {
   cookieJar.clear();
   ipcMain.emit('server:set-active', null, null);
   rebuildMenu();
+  rebuildTrayMenu();
 
   return { loggedOut: true };
 }
@@ -123,10 +125,11 @@ async function qbLogin(payload) {
   cookieJar.set(id, cookie);
   ipcMain.emit('server:set-active', null, id);
   rebuildMenu();
+  rebuildTrayMenu();
   return { loggedIn: true };
 }
 
-async function qbRequest(payload) {
+export async function qbRequest(payload) {
   const id = requireString(payload?.id, 'id');
   const path = requireString(payload?.path, 'path');
   const method = String(payload?.method ?? 'GET').toUpperCase();

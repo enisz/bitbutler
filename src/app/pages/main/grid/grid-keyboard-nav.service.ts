@@ -1,8 +1,8 @@
-import { inject, Injectable } from '@angular/core';
-import type { GridApi } from 'ag-grid-community';
+import { Injectable, inject } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { CommandBusService } from '../../../services/command-bus.service';
+import type { GridApi } from 'ag-grid-community';
 import { Torrent } from '../../../models/torrent.model';
+import { CommandBusService } from '../../../services/command-bus.service';
 
 @Injectable()
 export class GridKeyboardNavService {

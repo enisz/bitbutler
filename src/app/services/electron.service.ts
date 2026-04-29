@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import pkg from '../../../package.json';
 import { HostPlatform, UpdateCheckResponse } from '../models/electron.model';
 import { ToastService } from './toast.service';

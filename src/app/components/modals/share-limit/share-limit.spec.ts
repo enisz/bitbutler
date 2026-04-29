@@ -1,12 +1,11 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-
 import { Torrent } from '../../../models/torrent.model';
 import { QbService } from '../../../services/qb.service';
 import { SelectionStoreService } from '../../../services/selection-store.service';
 import { ServerStoreService } from '../../../services/server-store.service';
-import { LimitTorrentShare } from './limit-torrent-share';
+import { ShareLimit } from './share-limit';
 
 const makeTorrent = (overrides: Partial<Torrent> = {}): Torrent =>
   ({
@@ -18,16 +17,16 @@ const makeTorrent = (overrides: Partial<Torrent> = {}): Torrent =>
     ...overrides,
   }) as Torrent;
 
-describe('LimitTorrentShare', () => {
-  let component: LimitTorrentShare;
-  let fixture: ComponentFixture<LimitTorrentShare>;
+describe('ShareLimit', () => {
+  let component: ShareLimit;
+  let fixture: ComponentFixture<ShareLimit>;
   let mockActiveModal: Partial<NgbActiveModal>;
 
   beforeEach(async () => {
     mockActiveModal = { close: vi.fn(), dismiss: vi.fn() };
 
     await TestBed.configureTestingModule({
-      imports: [LimitTorrentShare],
+      imports: [ShareLimit],
       providers: [
         { provide: NgbActiveModal, useValue: mockActiveModal },
         { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
@@ -55,7 +54,7 @@ describe('LimitTorrentShare', () => {
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(LimitTorrentShare);
+    fixture = TestBed.createComponent(ShareLimit);
     component = fixture.componentInstance;
   });
 

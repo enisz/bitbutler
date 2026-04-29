@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ServerRecord } from '../models/server.model';
-import { ServerService } from './server.service';
 import { ServerStoreService } from './server-store.service';
+import { ServerService } from './server.service';
 
 const makeServer = (id: string, name: string, auto_login = false): ServerRecord =>
   ({ id, name, auto_login, host: `http://${id}`, username: '', port: 8080 }) as ServerRecord;
@@ -104,7 +104,6 @@ describe('ServerStoreService', () => {
 
   it('should persist currentServerId to localStorage on select()', () => {
     service.select('abc');
-    // The effect sets localStorage; flush it
     expect(localStorage.getItem('bb.currentServerId') ?? 'abc').toBe('abc');
   });
 });

@@ -1,11 +1,10 @@
-// src/app/pages/settings/settings.spec.ts
 import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConfirmService } from '../../services/confirm.service';
 import { ToastService } from '../../services/toast.service';
-import { SettingsStateService } from './settings-state.service';
 import { Settings } from './settings';
+import { SettingsStateService } from './settings-state.service';
 
 describe('Settings', () => {
   let component: Settings;
@@ -41,7 +40,6 @@ describe('Settings', () => {
         { provide: NgbActiveModal, useValue: { close: vi.fn(), dismiss: vi.fn() } },
         { provide: ConfirmService, useValue: confirmMock },
         { provide: ToastService, useValue: toastMock },
-        // TranslateService is globally provided via test-providers.ts
       ],
       schemas: [NO_ERRORS_SCHEMA],
     })

@@ -19,7 +19,6 @@ import {
   faTags,
   faUpload,
 } from '@fortawesome/free-solid-svg-icons';
-
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Torrent, TorrentState } from '../../../models/torrent.model';
 import { FilterService } from '../../../services/filter.service';

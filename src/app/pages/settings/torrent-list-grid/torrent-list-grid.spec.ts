@@ -1,4 +1,3 @@
-// src/app/pages/settings/torrent-list-grid/torrent-list-grid.spec.ts
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
@@ -39,7 +38,6 @@ describe('TorrentListGrid', () => {
       providers: [
         { provide: SettingsStateService, useValue: stateServiceMock },
         { provide: TorrentListGridSettingsService, useValue: gridSettingsMock },
-        // UiFormatService and TranslateService resolve from global providers
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();

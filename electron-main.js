@@ -1,6 +1,4 @@
-// electron-main.js
 import { app } from 'electron';
-
 import { registerElectronIpcHandlers } from './electron/ipc/electron.js';
 import { registerNotificationIpcHandlers } from './electron/ipc/notification.js';
 import { registerQbIpcHandlers } from './electron/ipc/qbittorrent.js';

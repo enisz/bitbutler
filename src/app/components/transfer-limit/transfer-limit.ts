@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, forwardRef, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, forwardRef, inject } from '@angular/core';
 import {
   ControlValueAccessor,
   FormControl,
@@ -10,25 +10,25 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { SpeedLimitPipe } from '../../pipes/speed-limit-pipe';
 import { BbPopover } from '../bb-popover/bb-popover';
 
-export type TransferRateLimitValue = {
-  uploadLimit: number | null; // KiB/s; null = no limit (unlimited)
-  downloadLimit: number | null; // KiB/s; null = no limit (unlimited)
+export type TransferLimitValue = {
+  uploadLimit: number | null;
+  downloadLimit: number | null;
 };
 
 @Component({
-  selector: 'app-transfer-rate-limit',
+  selector: 'app-transfer-limit',
   imports: [ReactiveFormsModule, TranslatePipe, BbPopover, SpeedLimitPipe],
-  templateUrl: './transfer-rate-limit.html',
-  styleUrl: './transfer-rate-limit.scss',
+  templateUrl: './transfer-limit.html',
+  styleUrl: './transfer-limit.scss',
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => TransferRateLimit),
+      useExisting: forwardRef(() => TransferLimit),
       multi: true,
     },
   ],
 })
-export class TransferRateLimit implements ControlValueAccessor, OnInit {
+export class TransferLimit implements ControlValueAccessor, OnInit {
   private readonly cdr = inject(ChangeDetectorRef);
 
   public form = new FormGroup({
@@ -36,7 +36,7 @@ export class TransferRateLimit implements ControlValueAccessor, OnInit {
     downloadLimit: new FormControl<number | null>(0),
   });
 
-  private onChange: (value: TransferRateLimitValue) => void = () => {};
+  private onChange: (value: TransferLimitValue) => void = () => {};
   private onTouched: () => void = () => {};
 
   public ngOnInit(): void {
@@ -49,7 +49,7 @@ export class TransferRateLimit implements ControlValueAccessor, OnInit {
     });
   }
 
-  public writeValue(value: TransferRateLimitValue | null): void {
+  public writeValue(value: TransferLimitValue | null): void {
     this.form.patchValue(
       {
         uploadLimit: value?.uploadLimit ?? null,
@@ -60,7 +60,7 @@ export class TransferRateLimit implements ControlValueAccessor, OnInit {
     this.cdr.markForCheck();
   }
 
-  public registerOnChange(fn: (value: TransferRateLimitValue) => void): void {
+  public registerOnChange(fn: (value: TransferLimitValue) => void): void {
     this.onChange = fn;
   }
 

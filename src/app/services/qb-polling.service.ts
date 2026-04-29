@@ -1,13 +1,13 @@
-import { inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   BehaviorSubject,
-  combineLatest,
   EMPTY,
+  Observable,
+  Subject,
+  combineLatest,
   from,
   interval,
-  Observable,
   of,
-  Subject,
 } from 'rxjs';
 import {
   catchError,

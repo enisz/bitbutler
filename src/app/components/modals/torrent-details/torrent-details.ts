@@ -1,10 +1,10 @@
 import { CommonModule, NgComponentOutlet } from '@angular/common';
-import { Component, computed, inject, Input, OnInit, signal, Type } from '@angular/core';
+import { Component, Input, OnInit, Type, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
-import { TranslatePipe } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
+import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
+import { TranslatePipe } from '@ngx-translate/core';
 import { filter } from 'rxjs/operators';
 import { AutofocusDirective } from '../../../directives/autofocus';
 import { AppCommand, TorrentCommand } from '../../../models/command.model';

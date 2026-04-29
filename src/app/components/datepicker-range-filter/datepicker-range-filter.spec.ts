@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
-
 import { DatepickerRangeFilter } from './datepicker-range-filter';
 
 describe('DatepickerRangeFilter', () => {

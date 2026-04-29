@@ -7,8 +7,8 @@ import {
   faTriangleExclamation,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
-import { Toast, ToastType } from '../../models/toast.model';
 import { ToastPosition } from '../../models/general-settings.model';
+import { Toast, ToastType } from '../../models/toast.model';
 import { ToastService } from '../../services/toast.service';
 
 @Component({

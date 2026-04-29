@@ -1,4 +1,4 @@
-import { effect, inject, Injectable } from '@angular/core';
+import { Injectable, effect, inject } from '@angular/core';
 import { AddTorrentSettings, DEFAULT_ADD_TORRENT_SETTINGS } from '../models/add-torrent.model';
 import { BaseSettingsService } from './base-settings.service';
 import { ServerStoreService } from './server-store.service';

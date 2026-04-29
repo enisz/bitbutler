@@ -1,18 +1,18 @@
-import { DestroyRef, inject, Injectable } from '@angular/core';
+import { DestroyRef, Injectable, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { filter } from 'rxjs';
 import { About } from '../components/about/about';
 import { AddTorrent } from '../components/add-torrent/add-torrent';
 import { DeleteTorrent } from '../components/modals/delete-torrent/delete-torrent';
-import { LimitTorrentShare } from '../components/modals/limit-torrent-share/limit-torrent-share';
-import { LimitTransferRate } from '../components/modals/limit-transfer-rate/limit-transfer-rate';
 import { RenameTorrent } from '../components/modals/rename-torrent/rename-torrent';
 import { ServerEditor } from '../components/modals/server-editor/server-editor';
 import { SetTorrentCategory } from '../components/modals/set-torrent-category/set-torrent-category';
 import { SetTorrentLocation } from '../components/modals/set-torrent-location/set-torrent-location';
 import { SetTorrentTags } from '../components/modals/set-torrent-tags/set-torrent-tags';
+import { ShareLimit } from '../components/modals/share-limit/share-limit';
 import { TorrentDetails } from '../components/modals/torrent-details/torrent-details';
+import { TransferLimit } from '../components/modals/transfer-limit/transfer-limit';
 import { UpdateAvailable } from '../components/modals/update-available/update-available';
 import { AppCommand, UiCommand } from '../models/command.model';
 import { GuardableModal } from '../models/guardable-modal.interface';
@@ -144,8 +144,8 @@ export class UiCommandHandlerService {
             break;
 
           case 'UI_LIMIT_TRANSFER':
-            if (this.isModalOpen(LimitTransferRate)) break;
-            const limitTransferModalRef = this.modalService.open(LimitTransferRate, {
+            if (this.isModalOpen(TransferLimit)) break;
+            const limitTransferModalRef = this.modalService.open(TransferLimit, {
               centered: true,
               size: 'lg',
             });
@@ -156,9 +156,9 @@ export class UiCommandHandlerService {
             break;
 
           case 'UI_LIMIT_SHARE':
-            if (this.isModalOpen(LimitTorrentShare)) break;
+            if (this.isModalOpen(ShareLimit)) break;
 
-            const limitTorrentShare = this.modalService.open(LimitTorrentShare, { size: 'lg' });
+            const limitTorrentShare = this.modalService.open(ShareLimit, { size: 'lg' });
 
             limitTorrentShare.result.then((res: any) => {}).catch((error: any) => {});
             break;

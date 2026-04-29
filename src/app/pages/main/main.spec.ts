@@ -1,5 +1,4 @@
-// src/app/pages/main/main.spec.ts
-import { NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
+import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
 import { QbPollingService } from '../../services/qb-polling.service';

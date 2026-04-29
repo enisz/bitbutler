@@ -1,4 +1,3 @@
-// src/app/pages/settings/general/general.spec.ts
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CommandBusService } from '../../../services/command-bus.service';
@@ -24,7 +23,6 @@ describe('General', () => {
       providers: [
         { provide: CommandBusService, useValue: commandBusMock },
         { provide: SettingsStateService, useValue: stateServiceMock },
-        // TranslateService and GeneralSettingsService come from global providers / window.bitbutler mock
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();

@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { AppLoader } from './app-loader';
 
 describe('AppLoader', () => {

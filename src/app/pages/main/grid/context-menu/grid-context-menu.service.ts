@@ -1,14 +1,15 @@
-import { inject, Injectable } from '@angular/core';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { Injectable, inject } from '@angular/core';
 import { faSquare, faSquareCheck } from '@fortawesome/free-regular-svg-icons';
 import {
   faArrowDown,
   faArrowDownUpAcrossLine,
   faArrowLeft,
   faArrowRight,
+  faArrowUp,
   faArrowsDownToLine,
   faArrowsLeftRight,
   faArrowsUpToLine,
-  faArrowUp,
   faBullhorn,
   faCheck,
   faCode,
@@ -42,8 +43,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import type { ColDef, Column, ColumnHeaderContextMenuEvent } from 'ag-grid-community';
 import { filter, firstValueFrom } from 'rxjs';
-
-import { Clipboard } from '@angular/cdk/clipboard';
 import { CommandBusService } from '../../../../services/command-bus.service';
 import { FilterService } from '../../../../services/filter.service';
 import { PathService } from '../../../../services/path.service';
@@ -260,7 +259,7 @@ export class GridContextMenuService {
           {
             kind: 'item',
             id: 'speed.limitTransferRate',
-            label: 'pages.main.grid.context-menu.item.limit-transfer-rate',
+            label: 'pages.main.grid.context-menu.item.transfer-limit',
             icon: faArrowDownUpAcrossLine,
             action: () =>
               this.commandBusService.emit({
@@ -271,7 +270,7 @@ export class GridContextMenuService {
           {
             kind: 'item',
             id: 'speed.limitTorrentShare',
-            label: 'pages.main.grid.context-menu.item.limit-torrent-share',
+            label: 'pages.main.grid.context-menu.item.share-limit',
             icon: faShare,
             action: () => this.commandBusService.emit({ type: 'UI_LIMIT_SHARE' }),
           },

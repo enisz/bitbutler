@@ -1,25 +1,37 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
+import { AutofocusDirective } from '../../../directives/autofocus';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
 import { QbService } from '../../../services/qb.service';
 import { SelectionStoreService } from '../../../services/selection-store.service';
 import { ServerStoreService } from '../../../services/server-store.service';
-import { ShareLimit, ShareLimitValue } from '../../share-limit/share-limit';
+import { BbSpinner } from '../../bb-spinner/bb-spinner';
+import { ShareLimit as ShareLimitForm, ShareLimitValue } from '../../share-limit/share-limit';
 
 @Component({
-  selector: 'app-limit-torrent-share',
-  imports: [ReactiveFormsModule, TranslatePipe, ShareLimit, NgbTooltip, TooltipOverflow],
-  templateUrl: './limit-torrent-share.html',
-  styleUrl: './limit-torrent-share.scss',
+  selector: 'app-share-limit-modal',
+  imports: [
+    ReactiveFormsModule,
+    TranslatePipe,
+    ShareLimitForm,
+    NgbTooltip,
+    TooltipOverflow,
+    BbSpinner,
+    AutofocusDirective,
+  ],
+  templateUrl: './share-limit.html',
+  styleUrl: './share-limit.scss',
 })
-export class LimitTorrentShare implements OnInit {
+export class ShareLimit implements OnInit {
   public readonly activeModal = inject(NgbActiveModal);
   private readonly qbService = inject(QbService);
   private readonly selectionStoreService = inject(SelectionStoreService);
   private readonly serverStoreService = inject(ServerStoreService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
+  public loading = signal(true);
   public saving = signal(false);
 
   public selected = signal(this.selectionStoreService.selected().length);
@@ -61,6 +73,8 @@ export class LimitTorrentShare implements OnInit {
     }
 
     this.form.controls.shareLimits.setValue(value, { emitEvent: false });
+    this.loading.set(false);
+    this.cdr.markForCheck();
   }
 
   public async handleSubmit(): Promise<void> {
@@ -84,7 +98,7 @@ export class LimitTorrentShare implements OnInit {
       );
       this.activeModal.close();
     } catch (error) {
-      console.error(LimitTorrentShare.name, 'handleSubmit', 'Failed to set share limits!', error);
+      console.error(ShareLimit.name, 'handleSubmit', 'Failed to set share limits!', error);
     } finally {
       this.saving.set(false);
     }

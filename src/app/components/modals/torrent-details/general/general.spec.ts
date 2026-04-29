@@ -1,8 +1,7 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of, Subject } from 'rxjs';
-
+import { Subject, of } from 'rxjs';
 import { CommandBusService } from '../../../../services/command-bus.service';
 import { GeneralSettingsService } from '../../../../services/general-settings.service';
 import { PathService } from '../../../../services/path.service';

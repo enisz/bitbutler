@@ -2,7 +2,6 @@ import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject } from 'rxjs';
-
 import { CommandBusService } from '../../../services/command-bus.service';
 import { FilterService } from '../../../services/filter.service';
 import { SelectionStoreService } from '../../../services/selection-store.service';

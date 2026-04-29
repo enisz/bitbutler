@@ -154,9 +154,10 @@
           "confirmation": "Remove the files as well"
         }
       },
-      "limit-transfer-rate": {
-        "title": "Limit Transfer Rate",
-        "global": "Global Transfer Limit"
+      "transfer-limit": {
+        "title": "Transfer Limit",
+        "global": "Global Transfer Limit",
+        "loading": "Loading Transfer Limits..."
       },
       "rename-torrent": {
         "title": "Rename Torrent",
@@ -468,8 +469,9 @@
           "view-on-github": "View on GitHub"
         }
       },
-      "limit-torrent-share": {
-        "title": "Set Share Limits"
+      "share-limit": {
+        "title": "Share Limit",
+        "loading": "Loading Share Limits..."
       },
       "guard": {
         "unsaved-title": "Unsaved changes",
@@ -479,7 +481,7 @@
         "unsaved-indicator": "Unsaved changes"
       }
     },
-    "transfer-rate-limit": {
+    "transfer-limit": {
       "upload-limit": "Upload Limit (KiB/s)",
       "download-limit": "Download Limit (KiB/s)",
       "popover": {
@@ -600,8 +602,8 @@
             "set-category": "Set Category",
             "set-tags": "Set Tags",
             "remove": "Remove",
-            "limit-transfer-rate": "Limit Transfer Rate",
-            "limit-torrent-share": "Set Share Limits",
+            "transfer-limit": "Transfer Limit",
+            "share-limit": "Share Limit",
             "enable-super-seeding": "Enable Super Seeding",
             "disable-super-seeding": "Disable Super Seeding",
             "force-recheck": "Force recheck",

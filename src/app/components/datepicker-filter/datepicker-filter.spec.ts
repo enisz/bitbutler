@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
-
 import { DatepickerFilter } from './datepicker-filter';
 
 describe('DatepickerFilter', () => {
@@ -44,7 +43,7 @@ describe('DatepickerFilter', () => {
     });
 
     it('should match when cell date equals selected date (UTC comparison)', () => {
-      const timestamp = 1705276800; // 2024-01-15 00:00:00 UTC
+      const timestamp = 1705276800;
       const utcDate = new Date(timestamp * 1000);
       component.selectedDate = new NgbDate(
         utcDate.getUTCFullYear(),

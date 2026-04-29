@@ -1,4 +1,3 @@
-// src/app/pages/settings/server/server.spec.ts
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ElectronService } from '../../../services/electron.service';
@@ -30,7 +29,6 @@ describe('Server', () => {
       providers: [
         { provide: ElectronService, useValue: electronMock },
         { provide: SettingsStateService, useValue: stateServiceMock },
-        // ServerStoreService and ServerSettingsService resolve from global / window.bitbutler mock
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
@@ -67,14 +65,13 @@ describe('Server', () => {
 
   describe('removePathMapping', () => {
     it('should remove the mapping at the given index when more than one exist', () => {
-      component.addPathMapping(); // ensure at least 2
+      component.addPathMapping();
       const before = component.pathMappings.length;
       component.removePathMapping(0);
       expect(component.pathMappings.length).toBe(before - 1);
     });
 
     it('should reset the mapping to empty strings instead of removing when only one remains', () => {
-      // Start from exactly 1 mapping
       while (component.pathMappings.length > 1) {
         component.removePathMapping(0);
       }

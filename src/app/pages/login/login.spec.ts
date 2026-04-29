@@ -1,4 +1,3 @@
-// src/app/pages/login/login.spec.ts
 import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';

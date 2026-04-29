@@ -2,12 +2,12 @@ import { CommonModule } from '@angular/common';
 import {
   AfterViewInit,
   Component,
-  forwardRef,
-  inject,
   Input,
   OnInit,
-  signal,
   ViewChild,
+  forwardRef,
+  inject,
+  signal,
 } from '@angular/core';
 import {
   ControlValueAccessor,
@@ -16,7 +16,6 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { NgSelectComponent } from '@ng-select/ng-select';
-
 import { TranslatePipe } from '@ngx-translate/core';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';

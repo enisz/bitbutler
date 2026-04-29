@@ -1,5 +1,5 @@
-import { getTrackers, normalizeTracker } from './tracker.utils';
 import { Torrent } from '../../models/torrent.model';
+import { getTrackers, normalizeTracker } from './tracker.utils';
 
 describe('getTrackers', () => {
   it('should split tracker field by newline and filter empty strings', () => {

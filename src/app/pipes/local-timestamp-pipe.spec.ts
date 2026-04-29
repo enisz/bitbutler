@@ -34,9 +34,7 @@ describe('LocalTimestampPipe', () => {
   });
 
   it('pads single-digit month, day, hour and minute with a leading zero', () => {
-    // Construct a date object whose local-time fields are all single digits,
-    // then derive the unix timestamp from it — this makes the test timezone-safe.
-    const date = new Date(2024, 0, 5, 9, 7); // Jan 5 2024, 09:07 local time
+    const date = new Date(2024, 0, 5, 9, 7);
     const ts = Math.floor(date.getTime() / 1000);
     const result = pipe.transform(ts);
     expect(result).toBe('2024-01-05 09:07');
