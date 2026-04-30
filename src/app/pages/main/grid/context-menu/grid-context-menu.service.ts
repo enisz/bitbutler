@@ -544,24 +544,24 @@ export class GridContextMenuService {
           },
         ],
       },
-      {
-        kind: 'item',
-        id: `hide.${payload.colId}`,
-        label: 'pages.main.grid.context-menu.item.hide-column',
-        icon: faEyeSlash,
-        action: () => {
-          const col = api.getColumn(payload.colId);
-          if (!col) return;
-          api.setColumnsVisible([payload.colId], !col.isVisible());
-        },
-      },
-
+      { kind: 'divider' },
       {
         kind: 'submenu',
         id: `columns.${payload.colId}`,
         label: 'pages.main.grid.context-menu.submenu.columns',
         icon: faTableColumns,
         children: [
+          {
+            kind: 'item',
+            id: `hide.${payload.colId}`,
+            label: 'pages.main.grid.context-menu.item.hide-column',
+            icon: faEyeSlash,
+            action: () => {
+              const col = api.getColumn(payload.colId);
+              if (!col) return;
+              api.setColumnsVisible([payload.colId], !col.isVisible());
+            },
+          },
           {
             kind: 'item',
             id: 'all.show',
