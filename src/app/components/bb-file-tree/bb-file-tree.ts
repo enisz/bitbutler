@@ -101,7 +101,8 @@ export class BbFileTree implements OnChanges {
 
   public icon = { faEdit, faCheck, faX };
 
-  trackByPath = (_index: number, node: BbFileTreeNode): string => node.fullPath;
+  trackByPath = (_index: number, node: BbFileTreeNode): string =>
+    `${this.editMode()}:${node.fullPath}`;
 
   ngOnChanges(): void {
     if (this.editMode()) return;
@@ -257,6 +258,19 @@ export class BbFileTree implements OnChanges {
     const checked = (event.target as HTMLInputElement).checked;
     f.priority = checked ? 1 : 0;
     this.calculateStats();
+  }
+
+  onRenameEnter(event: Event, node: BbFileTreeNode, type: 'file' | 'folder'): void {
+    event.preventDefault();
+    if (type === 'file') this.onFileNameChange(node);
+    else this.onFolderNameChange(node);
+    this.saveEdit();
+  }
+
+  onEscapeInInput(event: Event): void {
+    event.stopPropagation();
+    event.preventDefault();
+    this.cancelEdit();
   }
 
   onFileNameChange(node: BbFileTreeNode): void {

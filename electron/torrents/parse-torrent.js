@@ -10,9 +10,10 @@ export async function parseTorrentBufferToDraft(buffer, meta) {
     const parsed = await Promise.resolve(parseTorrent(buffer));
 
     const files = Array.isArray(parsed?.files)
-      ? parsed.files.map((f) => ({
+      ? parsed.files.map((f, i) => ({
           path: norm(f.path),
           length: Number(f.length ?? 0),
+          index: i,
         }))
       : [];
 
