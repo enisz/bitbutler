@@ -370,7 +370,10 @@ export class GridContextMenuService {
 
   public buildHeaderMenu(
     event: ColumnHeaderContextMenuEvent<any, any>,
-    opts: { enableFloatingFiltersToggle?: boolean } = {},
+    opts: {
+      enableFloatingFiltersToggle?: boolean;
+      onFloatingFiltersToggle?: (newState: boolean) => Promise<void>;
+    } = {},
   ): ContextMenuEntry[] {
     const api = event.api;
     const column = event.column as Column;
@@ -483,15 +486,19 @@ export class GridContextMenuService {
                       return colDef;
                     });
                     api.updateGridOptions({ columnDefs: newDefs });
-                    const settings = await firstValueFrom(
-                      this.torrentListGridSettingsService
-                        .asObservable()
-                        .pipe(filter((s): s is NonNullable<typeof s> => s !== null)),
-                    );
-                    await this.torrentListGridSettingsService.save({
-                      ...settings,
-                      floatingFilters: !isActive,
-                    });
+                    if (opts.onFloatingFiltersToggle) {
+                      await opts.onFloatingFiltersToggle(!isActive);
+                    } else {
+                      const settings = await firstValueFrom(
+                        this.torrentListGridSettingsService
+                          .asObservable()
+                          .pipe(filter((s): s is NonNullable<typeof s> => s !== null)),
+                      );
+                      await this.torrentListGridSettingsService.save({
+                        ...settings,
+                        floatingFilters: !isActive,
+                      });
+                    }
                   },
                 },
               ]

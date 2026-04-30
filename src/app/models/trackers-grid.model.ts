@@ -2,9 +2,11 @@ import type { ColumnState } from 'ag-grid-community';
 
 export interface TrackersGridSettings {
   columnState: ColumnState[];
+  floatingFilters: boolean;
 }
 
 export const DEFAULT_TRACKERS_GRID_SETTINGS: TrackersGridSettings = {
+  floatingFilters: false,
   columnState: [
     { colId: 'tier', hide: false, width: 70 },
     { colId: 'url', hide: false },

@@ -95,6 +95,15 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
     try {
       const settings = await this.peersGridSettingsService.load();
       this.gridApi.applyColumnState({ state: settings.columnState, applyOrder: true });
+      const floatingFilters = settings.floatingFilters ?? false;
+      const currentDefs = this.gridApi.getColumnDefs() ?? [];
+      const newDefs = currentDefs.map((d) => {
+        const colDef = { ...(d as ColDef<QbTorrentPeer>) };
+        if (colDef.floatingFilter === false) return colDef;
+        colDef.floatingFilter = floatingFilters ? true : undefined;
+        return colDef;
+      });
+      this.gridApi.updateGridOptions({ columnDefs: newDefs });
     } finally {
       this.isRestoringState = false;
     }
@@ -103,7 +112,8 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
   private async persistColumnState(): Promise<void> {
     if (!this.gridApi) return;
     const columnState = this.gridApi.getColumnState();
-    await this.peersGridSettingsService.save({ columnState });
+    const settings = await this.peersGridSettingsService.load();
+    await this.peersGridSettingsService.save({ ...settings, columnState });
   }
 
   private queueSave(): void {
@@ -263,7 +273,10 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
         if (!e.column) return;
         this.contextMenuService.open({
           items: this.gridContextMenuService.buildHeaderMenu(e, {
-            enableFloatingFiltersToggle: false,
+            onFloatingFiltersToggle: async (newState: boolean) => {
+              const settings = await this.peersGridSettingsService.load();
+              await this.peersGridSettingsService.save({ ...settings, floatingFilters: newState });
+            },
           }),
           payload: {
             colId: e.column.getId(),
@@ -283,6 +296,7 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
         headerName: '',
         sortable: false,
         filter: false,
+        floatingFilter: false,
         cellRenderer: FlagCellRenderer,
       },
       {
@@ -295,6 +309,7 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
           'components.modals.torrent-details.peers.col-def.country',
         ),
         tooltipField: 'country',
+        filter: 'agTextColumnFilter',
       },
       {
         colId: 'ip',
@@ -307,6 +322,7 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
         ),
         tooltipField: 'ip',
         sortable: true,
+        filter: 'agTextColumnFilter',
       },
       {
         colId: 'port',
@@ -318,6 +334,7 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
           'components.modals.torrent-details.peers.col-def.port',
         ),
         tooltipField: 'port',
+        filter: 'agNumberColumnFilter',
       },
       {
         colId: 'connection',
@@ -329,6 +346,7 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
           'components.modals.torrent-details.peers.col-def.connection',
         ),
         tooltipField: 'connection',
+        filter: 'agTextColumnFilter',
       },
       {
         colId: 'flags',
@@ -340,6 +358,7 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
           'components.modals.torrent-details.peers.col-def.flags',
         ),
         tooltipField: 'flags',
+        filter: 'agTextColumnFilter',
       },
       {
         colId: 'client',
@@ -351,6 +370,7 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
           'components.modals.torrent-details.peers.col-def.client',
         ),
         tooltipField: 'client',
+        filter: 'agTextColumnFilter',
       },
       {
         colId: 'progress',
@@ -370,6 +390,8 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
         },
         valueFormatter: (params: ValueFormatterParams): string => `${params.value ?? 0}%`,
         cellRenderer: ProgressCellRenderer,
+        filter: false,
+        floatingFilter: false,
       },
       {
         colId: 'dl_speed',
@@ -383,6 +405,8 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
         tooltipField: 'dl_speed',
         valueFormatter: (params: ValueFormatterParams<QbTorrentPeer, number>) =>
           this.fileSizePipe.transform(params.value),
+        filter: false,
+        floatingFilter: false,
       },
       {
         colId: 'up_speed',
@@ -396,6 +420,8 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
         tooltipField: 'up_speed',
         valueFormatter: (params: ValueFormatterParams<QbTorrentPeer, number>) =>
           this.fileSizePipe.transform(params.value),
+        filter: false,
+        floatingFilter: false,
       },
       {
         colId: 'downloaded',
@@ -409,6 +435,8 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
         tooltipField: 'downloaded',
         valueFormatter: (params: ValueFormatterParams<QbTorrentPeer, number>) =>
           this.fileSizePipe.transform(params.value),
+        filter: false,
+        floatingFilter: false,
       },
       {
         colId: 'uploaded',
@@ -422,6 +450,8 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
         tooltipField: 'uploaded',
         valueFormatter: (params: ValueFormatterParams<QbTorrentPeer, number>) =>
           this.fileSizePipe.transform(params.value),
+        filter: false,
+        floatingFilter: false,
       },
       {
         colId: 'relevance',
@@ -433,6 +463,7 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
           'components.modals.torrent-details.peers.col-def.relevance',
         ),
         tooltipField: 'relevance',
+        filter: 'agNumberColumnFilter',
       },
       {
         colId: 'files',
@@ -444,6 +475,7 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
           'components.modals.torrent-details.peers.col-def.files',
         ),
         tooltipField: 'files',
+        filter: 'agTextColumnFilter',
       },
     ];
   }
