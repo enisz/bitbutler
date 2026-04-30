@@ -42,7 +42,7 @@ export function getGridColDefs(
       minWidth: 50,
       width: 590,
       tooltipField: 'name',
-      filter: true,
+      filter: 'agTextColumnFilter',
     },
     {
       colId: 'hash',
@@ -53,7 +53,7 @@ export function getGridColDefs(
       minWidth: 50,
       width: 340,
       cellRenderer: CodeCellRenderer,
-      filter: true,
+      filter: 'agTextColumnFilter',
       hide: true,
     },
     {
@@ -191,6 +191,7 @@ export function getGridColDefs(
       width: 105,
       valueFormatter: uiFormatService.ratio,
       cellClass: 'tabular-nums',
+      filter: 'agNumberColumnFilter',
     },
     {
       colId: 'eta',
@@ -233,7 +234,7 @@ export function getGridColDefs(
       minWidth: 50,
       width: 140,
       tooltipField: 'state',
-      filter: true,
+      filter: 'agTextColumnFilter',
       hide: true,
     },
     {
@@ -244,7 +245,7 @@ export function getGridColDefs(
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.category'),
       minWidth: 50,
       width: 180,
-      filter: true,
+      filter: 'agTextColumnFilter',
       hide: true,
     },
     {
@@ -255,7 +256,7 @@ export function getGridColDefs(
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.tags'),
       minWidth: 50,
       width: 180,
-      filter: true,
+      filter: 'agTextColumnFilter',
       hide: true,
     },
     {
@@ -266,7 +267,7 @@ export function getGridColDefs(
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.tracker'),
       minWidth: 50,
       width: 590,
-      filter: true,
+      filter: 'agTextColumnFilter',
       hide: true,
     },
     {
@@ -278,7 +279,7 @@ export function getGridColDefs(
       minWidth: 50,
       width: 115,
       cellClass: 'tabular-nums',
-      filter: true,
+      filter: 'agNumberColumnFilter',
       hide: true,
     },
     {
@@ -315,6 +316,7 @@ export function getGridColDefs(
       width: 125,
       cellClass: 'tabular-nums',
       valueFormatter: uiFormatService.ratioLimit,
+      filter: 'agNumberColumnFilter',
       hide: true,
     },
     {
@@ -327,6 +329,7 @@ export function getGridColDefs(
       width: 135,
       cellClass: 'tabular-nums',
       valueFormatter: uiFormatService.ratioLimit,
+      filter: 'agNumberColumnFilter',
       hide: true,
     },
     {
@@ -416,7 +419,7 @@ export function getGridColDefs(
       minWidth: 50,
       width: 100,
       cellClass: 'tabular-nums',
-      filter: true,
+      filter: 'agNumberColumnFilter',
       hide: true,
     },
     {
@@ -428,7 +431,7 @@ export function getGridColDefs(
       minWidth: 50,
       width: 120,
       cellClass: 'tabular-nums',
-      filter: true,
+      filter: 'agNumberColumnFilter',
       hide: true,
     },
     {
@@ -440,7 +443,7 @@ export function getGridColDefs(
       minWidth: 50,
       width: 125,
       cellClass: 'tabular-nums',
-      filter: true,
+      filter: 'agNumberColumnFilter',
       hide: true,
     },
     {
@@ -452,7 +455,7 @@ export function getGridColDefs(
       minWidth: 50,
       width: 140,
       cellClass: 'tabular-nums',
-      filter: true,
+      filter: 'agNumberColumnFilter',
       hide: true,
     },
     {
@@ -464,7 +467,7 @@ export function getGridColDefs(
       minWidth: 50,
       width: 130,
       cellClass: 'tabular-nums',
-      filter: true,
+      filter: 'agNumberColumnFilter',
       hide: true,
     },
     {
@@ -475,7 +478,7 @@ export function getGridColDefs(
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.auto_tmm'),
       minWidth: 50,
       width: 150,
-      filter: true,
+      filter: 'agTextColumnFilter',
       hide: true,
     },
     {
@@ -486,7 +489,7 @@ export function getGridColDefs(
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.seq_dl'),
       minWidth: 50,
       width: 225,
-      filter: true,
+      filter: 'agTextColumnFilter',
       hide: true,
     },
     {
@@ -497,7 +500,7 @@ export function getGridColDefs(
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.force_start'),
       minWidth: 50,
       width: 155,
-      filter: true,
+      filter: 'agTextColumnFilter',
       hide: true,
     },
     {
@@ -508,7 +511,7 @@ export function getGridColDefs(
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.super_seeding'),
       minWidth: 50,
       width: 180,
-      filter: true,
+      filter: 'agTextColumnFilter',
       hide: true,
     },
     {
@@ -519,7 +522,7 @@ export function getGridColDefs(
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.f_l_piece_prio'),
       minWidth: 50,
       width: 255,
-      filter: true,
+      filter: 'agTextColumnFilter',
       hide: true,
     },
     {
@@ -583,7 +586,7 @@ export function getGridColDefs(
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.content_path'),
       minWidth: 50,
       width: 1070,
-      filter: true,
+      filter: 'agTextColumnFilter',
       hide: true,
     },
     {
@@ -594,7 +597,7 @@ export function getGridColDefs(
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.save_path'),
       minWidth: 50,
       width: 365,
-      filter: true,
+      filter: 'agTextColumnFilter',
     },
     {
       colId: 'download_path',
@@ -604,7 +607,7 @@ export function getGridColDefs(
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.download_path'),
       minWidth: 50,
       width: 360,
-      filter: true,
+      filter: 'agTextColumnFilter',
       hide: true,
     },
     {
@@ -615,7 +618,7 @@ export function getGridColDefs(
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.magnet_uri'),
       minWidth: 50,
       width: 1010,
-      filter: true,
+      filter: 'agTextColumnFilter',
       hide: true,
     },
     {
@@ -627,7 +630,7 @@ export function getGridColDefs(
       minWidth: 50,
       width: 340,
       cellRenderer: CodeCellRenderer,
-      filter: true,
+      filter: 'agTextColumnFilter',
       hide: true,
     },
     {
@@ -639,7 +642,7 @@ export function getGridColDefs(
       minWidth: 50,
       width: 340,
       cellRenderer: CodeCellRenderer,
-      filter: true,
+      filter: 'agTextColumnFilter',
       hide: true,
     },
   ];
