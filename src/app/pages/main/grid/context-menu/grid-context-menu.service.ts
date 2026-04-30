@@ -96,89 +96,7 @@ export class GridContextMenuService {
         action: () =>
           this.commandBusService.emit({ type: 'UI_OPEN_TORRENT_DETAILS', hash: data.row.hash }),
       },
-      {
-        kind: 'item',
-        id: 'files.remove',
-        label: 'pages.main.grid.context-menu.item.remove',
-        icon: faTrashCan,
-        variant: 'danger',
-        action: () =>
-          this.commandBusService.emit({
-            type: 'UI_TORRENT_DELETE_REQUEST',
-            defaultRemoveFiles: false,
-          }),
-      },
       { kind: 'divider' },
-
-      {
-        kind: 'submenu',
-        id: 'copy',
-        label: 'pages.main.grid.context-menu.submenu.copy',
-        icon: faCopy,
-        children: [
-          {
-            kind: 'item',
-            id: 'cell.copyValue',
-            label: 'pages.main.grid.context-menu.item.copy-cell-value',
-            icon: faCopy,
-            action: () => this.clipboard.copy(String(data.cell.value)),
-          },
-          {
-            kind: 'item',
-            id: 'torrent.copyInfoHash',
-            label: 'pages.main.grid.context-menu.item.copy-info-hash',
-            icon: faHashtag,
-            action: () => this.clipboard.copy(String(data.row.hash)),
-          },
-          {
-            kind: 'item',
-            id: 'torrent.copyMagnet',
-            label: 'pages.main.grid.context-menu.item.copy-magnet-link',
-            icon: faLink,
-            action: () => this.clipboard.copy(String(data.row.magnet_uri)),
-          },
-          {
-            kind: 'item',
-            id: 'torrent.copyJson',
-            label: 'pages.main.grid.context-menu.item.copy-as-json',
-            icon: faCode,
-            action: () => this.clipboard.copy(String(JSON.stringify(data.row, null, 2))),
-          },
-        ],
-      },
-
-      {
-        kind: 'submenu',
-        id: 'row.pin',
-        label: 'pages.main.grid.context-menu.submenu.pin-row',
-        icon: faThumbTack,
-        children: [
-          {
-            kind: 'item',
-            id: 'row.pinToTop',
-            icon: faArrowUp,
-            label: 'pages.main.grid.context-menu.item.pin-to-top',
-            disabled: data.rowPinned === 'top',
-            action: () => this.commandBusService.emit({ type: 'UI_TORRENT_PIN_TOP' }),
-          },
-          {
-            kind: 'item',
-            id: 'row.pinToBottom',
-            icon: faArrowDown,
-            label: 'pages.main.grid.context-menu.item.pin-to-bottom',
-            disabled: data.rowPinned === 'bottom',
-            action: () => this.commandBusService.emit({ type: 'UI_TORRENT_PIN_BOTTOM' }),
-          },
-          {
-            kind: 'item',
-            id: 'row.unpin',
-            icon: faThumbTackSlash,
-            label: 'pages.main.grid.context-menu.item.unpin',
-            disabled: !data.rowPinned,
-            action: () => this.commandBusService.emit({ type: 'UI_TORRENT_UNPIN' }),
-          },
-        ],
-      },
 
       {
         kind: 'submenu',
@@ -186,14 +104,6 @@ export class GridContextMenuService {
         label: 'pages.main.grid.context-menu.submenu.files',
         icon: faFolderOpen,
         children: [
-          {
-            kind: 'item',
-            id: 'files.setLocation',
-            label: 'pages.main.grid.context-menu.item.set-location',
-            icon: faFolderOpen,
-            action: () =>
-              this.commandBusService.emit({ type: 'UI_SET_TORRENT_LOCATION', torrent: data.row }),
-          },
           {
             kind: 'item',
             id: 'files.openDestination',
@@ -214,6 +124,14 @@ export class GridContextMenuService {
                 remotePath: data.row.content_path,
                 hash: data.row.hash,
               }),
+          },
+          {
+            kind: 'item',
+            id: 'files.setLocation',
+            label: 'pages.main.grid.context-menu.item.set-location',
+            icon: faFolderOpen,
+            action: () =>
+              this.commandBusService.emit({ type: 'UI_SET_TORRENT_LOCATION', torrent: data.row }),
           },
           {
             kind: 'item',
@@ -246,6 +164,47 @@ export class GridContextMenuService {
             icon: faTags,
             action: () =>
               this.commandBusService.emit({ type: 'UI_SET_TORRENT_TAGS', torrent: data.row }),
+          },
+        ],
+      },
+
+      {
+        kind: 'submenu',
+        id: 'queue',
+        label: 'pages.main.grid.context-menu.submenu.queue',
+        icon: faArrowsUpToLine,
+        children: [
+          {
+            kind: 'item',
+            id: 'queue.moveTop',
+            label: 'pages.main.grid.context-menu.item.move-to-top',
+            icon: faArrowsUpToLine,
+            variant: 'info',
+            action: () => this.commandBusService.emit({ type: 'QUEUE_MOVE_TOP' }),
+          },
+          {
+            kind: 'item',
+            id: 'queue.moveUp',
+            label: 'pages.main.grid.context-menu.item.move-up',
+            icon: faArrowUp,
+            variant: 'info',
+            action: () => this.commandBusService.emit({ type: 'QUEUE_MOVE_UP' }),
+          },
+          {
+            kind: 'item',
+            id: 'queue.moveDown',
+            label: 'pages.main.grid.context-menu.item.move-down',
+            icon: faArrowDown,
+            variant: 'info',
+            action: () => this.commandBusService.emit({ type: 'QUEUE_MOVE_DOWN' }),
+          },
+          {
+            kind: 'item',
+            id: 'queue.moveBottom',
+            label: 'pages.main.grid.context-menu.item.move-to-bottom',
+            icon: faArrowsDownToLine,
+            variant: 'info',
+            action: () => this.commandBusService.emit({ type: 'QUEUE_MOVE_BOTTOM' }),
           },
         ],
       },
@@ -325,43 +284,86 @@ export class GridContextMenuService {
 
       {
         kind: 'submenu',
-        id: 'queue',
-        label: 'pages.main.grid.context-menu.submenu.queue',
-        icon: faArrowsUpToLine,
+        id: 'copy',
+        label: 'pages.main.grid.context-menu.submenu.copy',
+        icon: faCopy,
         children: [
           {
             kind: 'item',
-            id: 'queue.moveTop',
-            label: 'pages.main.grid.context-menu.item.move-to-top',
-            icon: faArrowsUpToLine,
-            variant: 'info',
-            action: () => this.commandBusService.emit({ type: 'QUEUE_MOVE_TOP' }),
+            id: 'cell.copyValue',
+            label: 'pages.main.grid.context-menu.item.copy-cell-value',
+            icon: faCopy,
+            action: () => this.clipboard.copy(String(data.cell.value)),
           },
           {
             kind: 'item',
-            id: 'queue.moveUp',
-            label: 'pages.main.grid.context-menu.item.move-up',
-            icon: faArrowUp,
-            variant: 'info',
-            action: () => this.commandBusService.emit({ type: 'QUEUE_MOVE_UP' }),
+            id: 'torrent.copyInfoHash',
+            label: 'pages.main.grid.context-menu.item.copy-info-hash',
+            icon: faHashtag,
+            action: () => this.clipboard.copy(String(data.row.hash)),
           },
           {
             kind: 'item',
-            id: 'queue.moveDown',
-            label: 'pages.main.grid.context-menu.item.move-down',
-            icon: faArrowDown,
-            variant: 'info',
-            action: () => this.commandBusService.emit({ type: 'QUEUE_MOVE_DOWN' }),
+            id: 'torrent.copyMagnet',
+            label: 'pages.main.grid.context-menu.item.copy-magnet-link',
+            icon: faLink,
+            action: () => this.clipboard.copy(String(data.row.magnet_uri)),
           },
           {
             kind: 'item',
-            id: 'queue.moveBottom',
-            label: 'pages.main.grid.context-menu.item.move-to-bottom',
-            icon: faArrowsDownToLine,
-            variant: 'info',
-            action: () => this.commandBusService.emit({ type: 'QUEUE_MOVE_BOTTOM' }),
+            id: 'torrent.copyJson',
+            label: 'pages.main.grid.context-menu.item.copy-as-json',
+            icon: faCode,
+            action: () => this.clipboard.copy(String(JSON.stringify(data.row, null, 2))),
           },
         ],
+      },
+
+      {
+        kind: 'submenu',
+        id: 'row.pin',
+        label: 'pages.main.grid.context-menu.submenu.pin-row',
+        icon: faThumbTack,
+        children: [
+          {
+            kind: 'item',
+            id: 'row.pinToTop',
+            icon: faArrowUp,
+            label: 'pages.main.grid.context-menu.item.pin-to-top',
+            disabled: data.rowPinned === 'top',
+            action: () => this.commandBusService.emit({ type: 'UI_TORRENT_PIN_TOP' }),
+          },
+          {
+            kind: 'item',
+            id: 'row.pinToBottom',
+            icon: faArrowDown,
+            label: 'pages.main.grid.context-menu.item.pin-to-bottom',
+            disabled: data.rowPinned === 'bottom',
+            action: () => this.commandBusService.emit({ type: 'UI_TORRENT_PIN_BOTTOM' }),
+          },
+          {
+            kind: 'item',
+            id: 'row.unpin',
+            icon: faThumbTackSlash,
+            label: 'pages.main.grid.context-menu.item.unpin',
+            disabled: !data.rowPinned,
+            action: () => this.commandBusService.emit({ type: 'UI_TORRENT_UNPIN' }),
+          },
+        ],
+      },
+
+      { kind: 'divider' },
+      {
+        kind: 'item',
+        id: 'files.remove',
+        label: 'pages.main.grid.context-menu.item.remove',
+        icon: faTrashCan,
+        variant: 'danger',
+        action: () =>
+          this.commandBusService.emit({
+            type: 'UI_TORRENT_DELETE_REQUEST',
+            defaultRemoveFiles: false,
+          }),
       },
     ];
   }
@@ -542,24 +544,24 @@ export class GridContextMenuService {
           },
         ],
       },
-      {
-        kind: 'item',
-        id: `hide.${payload.colId}`,
-        label: 'pages.main.grid.context-menu.item.hide-column',
-        icon: faEyeSlash,
-        action: () => {
-          const col = api.getColumn(payload.colId);
-          if (!col) return;
-          api.setColumnsVisible([payload.colId], !col.isVisible());
-        },
-      },
-
+      { kind: 'divider' },
       {
         kind: 'submenu',
         id: `columns.${payload.colId}`,
         label: 'pages.main.grid.context-menu.submenu.columns',
         icon: faTableColumns,
         children: [
+          {
+            kind: 'item',
+            id: `hide.${payload.colId}`,
+            label: 'pages.main.grid.context-menu.item.hide-column',
+            icon: faEyeSlash,
+            action: () => {
+              const col = api.getColumn(payload.colId);
+              if (!col) return;
+              api.setColumnsVisible([payload.colId], !col.isVisible());
+            },
+          },
           {
             kind: 'item',
             id: 'all.show',
