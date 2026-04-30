@@ -486,7 +486,7 @@ export class AddTorrent implements OnInit {
       const savedFiles = this.savedFileState?.files ?? null;
       if (savedFiles) {
         const nonDefault = savedFiles
-          .map((f, i) => ({ index: i, priority: f.priority ?? 1 }))
+          .map((f, i) => ({ index: f.index ?? i, priority: f.priority ?? 1 }))
           .filter((f) => f.priority !== 1);
         for (const f of nonDefault) {
           await this.qbService.setFilePriority(serverId, hash, [f.index], f.priority);
