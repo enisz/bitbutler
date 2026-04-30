@@ -292,16 +292,18 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
       {
         colId: 'country_code',
         field: 'country_code',
-        width: 30,
+        width: 40,
         headerName: '',
         sortable: false,
         filter: false,
         floatingFilter: false,
+        resizable: false,
         cellRenderer: FlagCellRenderer,
       },
       {
         colId: 'country',
         field: 'country',
+        width: 120,
         headerName: this.translateService.instant(
           'components.modals.torrent-details.peers.col-def.country',
         ),
@@ -314,6 +316,7 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
       {
         colId: 'ip',
         field: 'ip',
+        width: 150,
         headerName: this.translateService.instant(
           'components.modals.torrent-details.peers.col-def.ip',
         ),
@@ -327,6 +330,7 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
       {
         colId: 'port',
         field: 'port',
+        width: 90,
         headerName: this.translateService.instant(
           'components.modals.torrent-details.peers.col-def.port',
         ),
@@ -339,6 +343,7 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
       {
         colId: 'connection',
         field: 'connection',
+        width: 140,
         headerName: this.translateService.instant(
           'components.modals.torrent-details.peers.col-def.connection',
         ),
@@ -351,6 +356,7 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
       {
         colId: 'flags',
         field: 'flags',
+        width: 100,
         headerName: this.translateService.instant(
           'components.modals.torrent-details.peers.col-def.flags',
         ),
@@ -363,6 +369,7 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
       {
         colId: 'client',
         field: 'client',
+        width: 160,
         headerName: this.translateService.instant(
           'components.modals.torrent-details.peers.col-def.client',
         ),
@@ -375,6 +382,7 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
       {
         colId: 'progress',
         field: 'progress',
+        width: 150,
         headerName: this.translateService.instant(
           'components.modals.torrent-details.peers.col-def.progress',
         ),
@@ -396,6 +404,7 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
       {
         colId: 'dl_speed',
         field: 'dl_speed',
+        width: 160,
         headerName: this.translateService.instant(
           'components.modals.torrent-details.peers.col-def.dl_speed',
         ),
@@ -411,6 +420,7 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
       {
         colId: 'up_speed',
         field: 'up_speed',
+        width: 140,
         headerName: this.translateService.instant(
           'components.modals.torrent-details.peers.col-def.up_speed',
         ),
@@ -426,6 +436,7 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
       {
         colId: 'downloaded',
         field: 'downloaded',
+        width: 130,
         headerName: this.translateService.instant(
           'components.modals.torrent-details.peers.col-def.downloaded',
         ),
@@ -441,6 +452,7 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
       {
         colId: 'uploaded',
         field: 'uploaded',
+        width: 120,
         headerName: this.translateService.instant(
           'components.modals.torrent-details.peers.col-def.uploaded',
         ),
@@ -456,6 +468,7 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
       {
         colId: 'relevance',
         field: 'relevance',
+        width: 130,
         headerName: this.translateService.instant(
           'components.modals.torrent-details.peers.col-def.relevance',
         ),
@@ -468,6 +481,7 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
       {
         colId: 'files',
         field: 'files',
+        width: 450,
         headerName: this.translateService.instant(
           'components.modals.torrent-details.peers.col-def.files',
         ),

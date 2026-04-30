@@ -265,7 +265,7 @@ export class Trackers implements TorrentDetailTabComponent, OnInit, OnDestroy {
       {
         colId: 'tier',
         field: 'tier',
-        width: 70,
+        width: 90,
         headerName: this.translateService.instant(
           'components.modals.torrent-details.trackers.col-def.tier',
         ),
@@ -280,6 +280,7 @@ export class Trackers implements TorrentDetailTabComponent, OnInit, OnDestroy {
       {
         colId: 'url',
         field: 'url',
+        width: 590,
         headerName: this.translateService.instant(
           'components.modals.torrent-details.trackers.col-def.url',
         ),
@@ -294,6 +295,7 @@ export class Trackers implements TorrentDetailTabComponent, OnInit, OnDestroy {
       {
         colId: 'status',
         field: 'status',
+        width: 140,
         headerName: this.translateService.instant(
           'components.modals.torrent-details.trackers.col-def.status',
         ),
@@ -312,6 +314,7 @@ export class Trackers implements TorrentDetailTabComponent, OnInit, OnDestroy {
       {
         colId: 'num_peers',
         field: 'num_peers',
+        width: 100,
         headerName: this.translateService.instant(
           'components.modals.torrent-details.trackers.col-def.num_peers',
         ),
@@ -326,6 +329,7 @@ export class Trackers implements TorrentDetailTabComponent, OnInit, OnDestroy {
       {
         colId: 'num_seeds',
         field: 'num_seeds',
+        width: 100,
         headerName: this.translateService.instant(
           'components.modals.torrent-details.trackers.col-def.num_seeds',
         ),
@@ -340,6 +344,7 @@ export class Trackers implements TorrentDetailTabComponent, OnInit, OnDestroy {
       {
         colId: 'num_leeches',
         field: 'num_leeches',
+        width: 120,
         headerName: this.translateService.instant(
           'components.modals.torrent-details.trackers.col-def.num_leeches',
         ),
@@ -354,6 +359,7 @@ export class Trackers implements TorrentDetailTabComponent, OnInit, OnDestroy {
       {
         colId: 'num_downloaded',
         field: 'num_downloaded',
+        width: 190,
         headerName: this.translateService.instant(
           'components.modals.torrent-details.trackers.col-def.num_downloaded',
         ),
@@ -368,6 +374,7 @@ export class Trackers implements TorrentDetailTabComponent, OnInit, OnDestroy {
       {
         colId: 'msg',
         field: 'msg',
+        width: 260,
         headerName: this.translateService.instant(
           'components.modals.torrent-details.trackers.col-def.msg',
         ),
