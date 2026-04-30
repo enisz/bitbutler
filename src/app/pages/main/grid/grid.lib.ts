@@ -863,9 +863,6 @@ export function getGridOptions(
       return true;
     },
 
-    preventDefaultOnContextMenu: true,
-    suppressContextMenu: true,
-
     onCellContextMenu: (e: CellContextMenuEvent<Torrent>) => opts.handleCellRightClick(e),
     onRowDoubleClicked: (e: RowDoubleClickedEvent<Torrent, any>) => opts.handleRowDoubleClick(e),
     onSelectionChanged: (ev: SelectionChangedEvent<Torrent>) => {

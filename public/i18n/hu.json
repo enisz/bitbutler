@@ -417,6 +417,11 @@
             "uploaded": "Feltöltve",
             "relevance": "Relevancia",
             "files": "Fájlok"
+          },
+          "context-menu": {
+            "item": {
+              "copy-ip-port": "IP:Port másolása"
+            }
           }
         },
         "trackers": {
@@ -441,6 +446,11 @@
             "num_leeches": "Leech",
             "num_downloaded": "Letöltések száma",
             "msg": "Üzenet"
+          },
+          "context-menu": {
+            "item": {
+              "copy-url": "Tracker URL másolása"
+            }
           }
         },
         "hash": "Hash"

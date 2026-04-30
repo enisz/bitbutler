@@ -44,4 +44,6 @@ export const GRID_SHARED_OPTIONS: GridOptions = {
   suppressCellFocus: true,
   columnHoverHighlight: false,
   tooltipMouseTrack: true,
+  preventDefaultOnContextMenu: true,
+  suppressContextMenu: true,
 };

@@ -417,6 +417,11 @@
             "uploaded": "Uploaded",
             "relevance": "Relevance",
             "files": "Files"
+          },
+          "context-menu": {
+            "item": {
+              "copy-ip-port": "Copy IP:Port"
+            }
           }
         },
         "trackers": {
@@ -441,6 +446,11 @@
             "num_leeches": "Leeches",
             "num_downloaded": "Times Downloaded",
             "msg": "Message"
+          },
+          "context-menu": {
+            "item": {
+              "copy-url": "Copy tracker URL"
+            }
           }
         },
         "hash": "Hash"

@@ -1,8 +1,13 @@
+import { Clipboard } from '@angular/cdk/clipboard';
 import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
+import { faCode, faCopy, faNetworkWired } from '@fortawesome/free-solid-svg-icons';
 import { TranslateService } from '@ngx-translate/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import {
+  CellContextMenuEvent,
   ColDef,
+  Column,
+  ColumnHeaderContextMenuEvent,
   GetRowIdParams,
   GridApi,
   GridOptions,
@@ -11,13 +16,17 @@ import {
   ValueFormatterParams,
   ValueGetterParams,
 } from 'ag-grid-community';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription, debounceTime } from 'rxjs';
 import { GRID_DARK_THEME, GRID_LIGHT_THEME, GRID_SHARED_OPTIONS } from '../../../../app.const';
 import { QbTorrentPeer, QbTorrentPeersResponse } from '../../../../models/torrent.model';
+import { ContextMenuEntry } from '../../../../pages/main/grid/context-menu/context-menu.types';
+import { GridContextMenuService } from '../../../../pages/main/grid/context-menu/grid-context-menu.service';
 import { LoadingOverlay } from '../../../../pages/main/grid/overlays/loading-overlay/loading-overlay';
 import { NoRowOverlay } from '../../../../pages/main/grid/overlays/no-row-overlay/no-row-overlay';
 import { ProgressCellRenderer } from '../../../../pages/main/grid/renderers/progress-cell-renderer/progress-cell-renderer';
 import { FilesizePipe } from '../../../../pipes/filesize-pipe';
+import { ContextMenuService } from '../../../../services/context-menu.service';
+import { PeersGridSettingsService } from '../../../../services/peers-grid.settings.service';
 import { QbPollingService } from '../../../../services/qb-polling.service';
 import { ServerStoreService } from '../../../../services/server-store.service';
 import { ThemeService } from '../../../../services/theme.service';
@@ -38,9 +47,17 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
   private readonly themeService = inject(ThemeService);
   private readonly fileSizePipe = inject(FilesizePipe);
   private readonly translateService = inject(TranslateService);
+  private readonly contextMenuService = inject(ContextMenuService);
+  private readonly gridContextMenuService = inject(GridContextMenuService);
+  private readonly peersGridSettingsService = inject(PeersGridSettingsService);
+  private readonly clipboard = inject(Clipboard);
 
   private sub: Subscription | null = null;
+  private saveSub: Subscription | null = null;
+  private readonly saveState$ = new Subject<void>();
   private peerMap = new Map<string, QbTorrentPeer>();
+  private gridApi: GridApi | null = null;
+  private isRestoringState = false;
 
   @Input() public hash: string = '';
   @Input() public context: Record<string, any> = {};
@@ -48,24 +65,50 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
   public theme = this.themeService.effectiveMode;
   public peers: QbTorrentPeer[] = [];
   public loading = true;
-  public gridApi: GridApi | null = null;
   public bbDark = GRID_DARK_THEME;
   public bbLight = GRID_LIGHT_THEME;
   public gridOptions: GridOptions<QbTorrentPeer> = this.getGridOptions();
   public colDefs: ColDef<QbTorrentPeer>[] = this.getColDefs();
 
   public ngOnInit(): void {
+    this.saveSub = this.saveState$.pipe(debounceTime(500)).subscribe(() => {
+      void this.persistColumnState();
+    });
     this.startPolling();
   }
 
   public ngOnDestroy(): void {
     this.sub?.unsubscribe();
     this.sub = null;
+    this.saveSub?.unsubscribe();
+    this.saveSub = null;
   }
 
   public onGridReady(e: GridReadyEvent<QbTorrentPeer>): void {
     this.gridApi = e.api;
-    this.gridApi.autoSizeAllColumns();
+    void this.restoreColumnState();
+  }
+
+  private async restoreColumnState(): Promise<void> {
+    if (!this.gridApi) return;
+    this.isRestoringState = true;
+    try {
+      const settings = await this.peersGridSettingsService.load();
+      this.gridApi.applyColumnState({ state: settings.columnState, applyOrder: true });
+    } finally {
+      this.isRestoringState = false;
+    }
+  }
+
+  private async persistColumnState(): Promise<void> {
+    if (!this.gridApi) return;
+    const columnState = this.gridApi.getColumnState();
+    await this.peersGridSettingsService.save({ columnState });
+  }
+
+  private queueSave(): void {
+    if (this.isRestoringState) return;
+    this.saveState$.next();
   }
 
   private startPolling(): void {
@@ -135,6 +178,43 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
     }
   }
 
+  private buildRowMenu(e: CellContextMenuEvent<QbTorrentPeer>): ContextMenuEntry[] {
+    const row = e.data;
+    const ipPort = row ? `${row.ip}:${row.port}` : '';
+    return [
+      {
+        kind: 'submenu',
+        id: 'copy',
+        label: 'pages.main.grid.context-menu.submenu.copy',
+        icon: faCopy,
+        children: [
+          {
+            kind: 'item',
+            id: 'copy.cellValue',
+            label: 'pages.main.grid.context-menu.item.copy-cell-value',
+            icon: faCopy,
+            action: () => this.clipboard.copy(String(e.value ?? '')),
+          },
+          {
+            kind: 'item',
+            id: 'copy.ipPort',
+            label: 'components.modals.torrent-details.peers.context-menu.item.copy-ip-port',
+            icon: faNetworkWired,
+            disabled: !row?.ip,
+            action: () => this.clipboard.copy(ipPort),
+          },
+          {
+            kind: 'item',
+            id: 'copy.json',
+            label: 'pages.main.grid.context-menu.item.copy-as-json',
+            icon: faCode,
+            action: () => this.clipboard.copy(JSON.stringify(row, null, 2)),
+          },
+        ],
+      },
+    ];
+  }
+
   private getGridOptions(): GridOptions<QbTorrentPeer> {
     return {
       ...GRID_SHARED_OPTIONS,
@@ -169,12 +249,35 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
             return undefined;
         }
       },
+      onColumnResized: (e) => {
+        if (e.finished) this.queueSave();
+      },
+      onColumnMoved: () => this.queueSave(),
+      onColumnPinned: () => this.queueSave(),
+      onColumnVisible: () => this.queueSave(),
+      onSortChanged: () => this.queueSave(),
+      onCellContextMenu: (e: CellContextMenuEvent<QbTorrentPeer>) => {
+        this.contextMenuService.open({ items: this.buildRowMenu(e) });
+      },
+      onColumnHeaderContextMenu: (e: ColumnHeaderContextMenuEvent<QbTorrentPeer>) => {
+        if (!e.column) return;
+        this.contextMenuService.open({
+          items: this.gridContextMenuService.buildHeaderMenu(e, {
+            enableFloatingFiltersToggle: false,
+          }),
+          payload: {
+            colId: e.column.getId(),
+            displayName: e.api.getDisplayNameForColumn(e.column as Column, 'header'),
+          },
+        });
+      },
     };
   }
 
   private getColDefs(): ColDef<QbTorrentPeer>[] {
     return [
       {
+        colId: 'country_code',
         field: 'country_code',
         width: 30,
         headerName: '',
@@ -183,45 +286,79 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
         cellRenderer: FlagCellRenderer,
       },
       {
+        colId: 'country',
         field: 'country',
         headerName: this.translateService.instant(
           'components.modals.torrent-details.peers.col-def.country',
         ),
+        headerTooltip: this.translateService.instant(
+          'components.modals.torrent-details.peers.col-def.country',
+        ),
+        tooltipField: 'country',
       },
       {
+        colId: 'ip',
         field: 'ip',
         headerName: this.translateService.instant(
           'components.modals.torrent-details.peers.col-def.ip',
         ),
+        headerTooltip: this.translateService.instant(
+          'components.modals.torrent-details.peers.col-def.ip',
+        ),
+        tooltipField: 'ip',
         sortable: true,
       },
       {
+        colId: 'port',
         field: 'port',
         headerName: this.translateService.instant(
           'components.modals.torrent-details.peers.col-def.port',
         ),
+        headerTooltip: this.translateService.instant(
+          'components.modals.torrent-details.peers.col-def.port',
+        ),
+        tooltipField: 'port',
       },
       {
+        colId: 'connection',
         field: 'connection',
         headerName: this.translateService.instant(
           'components.modals.torrent-details.peers.col-def.connection',
         ),
+        headerTooltip: this.translateService.instant(
+          'components.modals.torrent-details.peers.col-def.connection',
+        ),
+        tooltipField: 'connection',
       },
       {
+        colId: 'flags',
         field: 'flags',
         headerName: this.translateService.instant(
           'components.modals.torrent-details.peers.col-def.flags',
         ),
+        headerTooltip: this.translateService.instant(
+          'components.modals.torrent-details.peers.col-def.flags',
+        ),
+        tooltipField: 'flags',
       },
       {
+        colId: 'client',
         field: 'client',
         headerName: this.translateService.instant(
           'components.modals.torrent-details.peers.col-def.client',
         ),
+        headerTooltip: this.translateService.instant(
+          'components.modals.torrent-details.peers.col-def.client',
+        ),
+        tooltipField: 'client',
       },
       {
+        colId: 'progress',
         field: 'progress',
         headerName: this.translateService.instant(
+          'components.modals.torrent-details.peers.col-def.progress',
+        ),
+        headerTooltip: this.translateService.instant(
           'components.modals.torrent-details.peers.col-def.progress',
         ),
         valueGetter: (params: ValueGetterParams<QbTorrentPeer, number>): number => {
@@ -235,48 +372,78 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
         cellRenderer: ProgressCellRenderer,
       },
       {
+        colId: 'dl_speed',
         field: 'dl_speed',
         headerName: this.translateService.instant(
           'components.modals.torrent-details.peers.col-def.dl_speed',
         ),
+        headerTooltip: this.translateService.instant(
+          'components.modals.torrent-details.peers.col-def.dl_speed',
+        ),
+        tooltipField: 'dl_speed',
         valueFormatter: (params: ValueFormatterParams<QbTorrentPeer, number>) =>
           this.fileSizePipe.transform(params.value),
       },
       {
+        colId: 'up_speed',
         field: 'up_speed',
         headerName: this.translateService.instant(
           'components.modals.torrent-details.peers.col-def.up_speed',
         ),
+        headerTooltip: this.translateService.instant(
+          'components.modals.torrent-details.peers.col-def.up_speed',
+        ),
+        tooltipField: 'up_speed',
         valueFormatter: (params: ValueFormatterParams<QbTorrentPeer, number>) =>
           this.fileSizePipe.transform(params.value),
       },
       {
+        colId: 'downloaded',
         field: 'downloaded',
         headerName: this.translateService.instant(
           'components.modals.torrent-details.peers.col-def.downloaded',
         ),
+        headerTooltip: this.translateService.instant(
+          'components.modals.torrent-details.peers.col-def.downloaded',
+        ),
+        tooltipField: 'downloaded',
         valueFormatter: (params: ValueFormatterParams<QbTorrentPeer, number>) =>
           this.fileSizePipe.transform(params.value),
       },
       {
+        colId: 'uploaded',
         field: 'uploaded',
         headerName: this.translateService.instant(
           'components.modals.torrent-details.peers.col-def.uploaded',
         ),
+        headerTooltip: this.translateService.instant(
+          'components.modals.torrent-details.peers.col-def.uploaded',
+        ),
+        tooltipField: 'uploaded',
         valueFormatter: (params: ValueFormatterParams<QbTorrentPeer, number>) =>
           this.fileSizePipe.transform(params.value),
       },
       {
+        colId: 'relevance',
         field: 'relevance',
         headerName: this.translateService.instant(
           'components.modals.torrent-details.peers.col-def.relevance',
         ),
+        headerTooltip: this.translateService.instant(
+          'components.modals.torrent-details.peers.col-def.relevance',
+        ),
+        tooltipField: 'relevance',
       },
       {
+        colId: 'files',
         field: 'files',
         headerName: this.translateService.instant(
           'components.modals.torrent-details.peers.col-def.files',
         ),
+        headerTooltip: this.translateService.instant(
+          'components.modals.torrent-details.peers.col-def.files',
+        ),
+        tooltipField: 'files',
       },
     ];
   }
