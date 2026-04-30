@@ -12,10 +12,11 @@ import {
   GridOptions,
   GridReadyEvent,
   IOverlayParams,
+  ValueFormatterParams,
 } from 'ag-grid-community';
 import { Subject, Subscription, debounceTime } from 'rxjs';
 import { GRID_DARK_THEME, GRID_LIGHT_THEME, GRID_SHARED_OPTIONS } from '../../../../app.const';
-import { QbTorrentTracker } from '../../../../models/qbittorrent.model';
+import { QbTorrentTracker, QbTrackerStatus } from '../../../../models/qbittorrent.model';
 import { ContextMenuEntry } from '../../../../pages/main/grid/context-menu/context-menu.types';
 import { GridContextMenuService } from '../../../../pages/main/grid/context-menu/grid-context-menu.service';
 import { LoadingOverlay } from '../../../../pages/main/grid/overlays/loading-overlay/loading-overlay';
@@ -97,6 +98,18 @@ export class Trackers implements TorrentDetailTabComponent, OnInit, OnDestroy {
   private queueSave(): void {
     if (this.isRestoringState) return;
     this.saveState$.next();
+  }
+
+  private trackerStatusLabel(status: QbTrackerStatus): string {
+    const keyMap: Record<number, string> = {
+      [QbTrackerStatus.Disabled]: 'components.modals.torrent-details.trackers.status.disabled',
+      [QbTrackerStatus.NotContacted]:
+        'components.modals.torrent-details.trackers.status.not-contacted',
+      [QbTrackerStatus.Working]: 'components.modals.torrent-details.trackers.status.working',
+      [QbTrackerStatus.Updating]: 'components.modals.torrent-details.trackers.status.updating',
+      [QbTrackerStatus.NotWorking]: 'components.modals.torrent-details.trackers.status.not-working',
+    };
+    return this.translateService.instant(keyMap[status] ?? String(status));
   }
 
   private async load(): Promise<void> {
@@ -268,7 +281,9 @@ export class Trackers implements TorrentDetailTabComponent, OnInit, OnDestroy {
         headerTooltip: this.translateService.instant(
           'components.modals.torrent-details.trackers.col-def.status',
         ),
-        tooltipField: 'status',
+        valueFormatter: (params: ValueFormatterParams<QbTorrentTracker, QbTrackerStatus>) =>
+          this.trackerStatusLabel(params.value ?? QbTrackerStatus.Disabled),
+        tooltipValueGetter: (params) => this.trackerStatusLabel(params.value as QbTrackerStatus),
         sortable: true,
         resizable: true,
       },

@@ -451,6 +451,13 @@
             "item": {
               "copy-url": "Tracker URL másolása"
             }
+          },
+          "status": {
+            "disabled": "Letiltva",
+            "not-contacted": "Nincs kapcsolat",
+            "working": "Működik",
+            "updating": "Frissítés alatt",
+            "not-working": "Nem működik"
           }
         },
         "hash": "Hash"

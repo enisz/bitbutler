@@ -451,6 +451,13 @@
             "item": {
               "copy-url": "Copy tracker URL"
             }
+          },
+          "status": {
+            "disabled": "Disabled",
+            "not-contacted": "Not contacted",
+            "working": "Working",
+            "updating": "Updating",
+            "not-working": "Not working"
           }
         },
         "hash": "Hash"

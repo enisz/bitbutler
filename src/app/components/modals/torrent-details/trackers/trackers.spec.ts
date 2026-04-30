@@ -104,8 +104,29 @@ describe('Trackers', () => {
       expect(component.colDefs.every((c) => !!c.headerTooltip)).toBe(true);
     });
 
-    it('every column has a tooltipField', () => {
-      expect(component.colDefs.every((c) => !!c.tooltipField)).toBe(true);
+    it('every column has either a tooltipField or tooltipValueGetter', () => {
+      expect(component.colDefs.every((c) => !!c.tooltipField || !!c.tooltipValueGetter)).toBe(true);
+    });
+
+    it('the status column uses a valueFormatter', () => {
+      const statusCol = component.colDefs.find((c) => c.colId === 'status');
+      expect(statusCol?.valueFormatter).toBeDefined();
+    });
+
+    it('the status column uses a tooltipValueGetter', () => {
+      const statusCol = component.colDefs.find((c) => c.colId === 'status');
+      expect(statusCol?.tooltipValueGetter).toBeDefined();
+    });
+
+    it('the status valueFormatter returns a translation key string for each known status', () => {
+      const statusCol = component.colDefs.find((c) => c.colId === 'status')!;
+      const fmt = statusCol.valueFormatter as (p: any) => string;
+      // TranslateService mock returns the key itself so we can verify the key is looked up
+      expect(fmt({ value: 0 })).toContain('disabled');
+      expect(fmt({ value: 1 })).toContain('not-contacted');
+      expect(fmt({ value: 2 })).toContain('working');
+      expect(fmt({ value: 3 })).toContain('updating');
+      expect(fmt({ value: 4 })).toContain('not-working');
     });
 
     it('colIds cover all expected fields', () => {
