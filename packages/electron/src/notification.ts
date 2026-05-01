@@ -1,12 +1,16 @@
 import { Notification, app } from 'electron';
 import path from 'node:path';
 
-function getNotificationIconPath() {
+function getNotificationIconPath(): string {
   if (app.isPackaged) return path.join(process.resourcesPath, 'bitbutler.png');
-  return path.join(app.getAppPath(), 'src', 'assets', 'icons', 'bitbutler.png');
+  return path.join(app.getAppPath(), 'packages', 'app', 'src', 'assets', 'icons', 'bitbutler.png');
 }
 
-export function notify(title, body, options) {
+export function notify(
+  title: string,
+  body?: string,
+  options?: { silent?: boolean },
+): Notification | null {
   try {
     if (!Notification.isSupported()) {
       console.warn('[notify] Notifications are not supported on this system.');
@@ -15,7 +19,7 @@ export function notify(title, body, options) {
 
     const n = new Notification({
       title,
-      body,
+      body: body ?? '',
       icon: getNotificationIconPath(),
       silent: !!options?.silent,
     });

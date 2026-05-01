@@ -1,3 +1,4 @@
+import type { TorrentDraft, TorrentDraftSource } from '@bitbutler/shared';
 import { app, ipcMain } from 'electron';
 import fs from 'fs';
 import path from 'path';
@@ -8,19 +9,16 @@ const WINDOW_ANIMATE = true;
 const CHANNEL_OPEN_FILES = 'bb:open-files';
 const CHANNEL_TORRENT_DRAFTS = 'bb:torrent-drafts';
 
-let mainWindowRef = null;
-
-let pendingOpenFiles = [];
-
+let mainWindowRef: Electron.BrowserWindow | null = null;
+let pendingOpenFiles: string[] = [];
 let openHandlingEnabled = false;
 
-function getArgStartIndex() {
-  if (!app.isPackaged) return 2;
-  return 1;
+function getArgStartIndex(): number {
+  return app.isPackaged ? 1 : 2;
 }
 
-function extractExistingTorrentFiles(argv = [], startIndex = 0) {
-  const out = [];
+function extractExistingTorrentFiles(argv: string[], startIndex = 0): string[] {
+  const out: string[] = [];
 
   for (const arg of argv.slice(startIndex)) {
     if (!arg || typeof arg !== 'string') continue;
@@ -33,38 +31,37 @@ function extractExistingTorrentFiles(argv = [], startIndex = 0) {
       if (!fs.existsSync(resolved)) continue;
       const stat = fs.statSync(resolved);
       if (!stat.isFile()) continue;
-
       if (path.extname(resolved).toLowerCase() !== '.torrent') continue;
-
       out.push(resolved);
-    } catch {}
+    } catch {
+      // skip unreadable paths
+    }
   }
 
   return out;
 }
 
-function focusMainWindow() {
+function focusMainWindow(): void {
   if (!mainWindowRef || mainWindowRef.isDestroyed()) return;
-
   if (mainWindowRef.isMinimized()) mainWindowRef.restore();
   mainWindowRef.show();
   mainWindowRef.focus();
 }
 
-function canSendToRendererNow() {
+function canSendToRendererNow(): boolean {
   return (
     openHandlingEnabled &&
-    mainWindowRef &&
+    mainWindowRef !== null &&
     !mainWindowRef.isDestroyed() &&
-    mainWindowRef.webContents &&
+    mainWindowRef.webContents !== null &&
     !mainWindowRef.webContents.isDestroyed() &&
     !!mainWindowRef.webContents.getURL()
   );
 }
 
-function pushOpenFilesToRenderer(paths) {
-  const unique = Array.from(new Set((paths ?? []).filter(Boolean)));
-  if (!unique.length) return;
+function pushOpenFilesToRenderer(paths: string[]): void {
+  const unique = Array.from(new Set(paths.filter(Boolean)));
+  if (!unique.length || !mainWindowRef) return;
 
   try {
     mainWindowRef.webContents.send(CHANNEL_OPEN_FILES, unique);
@@ -73,29 +70,25 @@ function pushOpenFilesToRenderer(paths) {
   }
 }
 
-function pushTorrentDraftsToRenderer(drafts) {
+function pushTorrentDraftsToRenderer(drafts: TorrentDraft[]): void {
   const safe = Array.isArray(drafts) ? drafts.filter(Boolean) : [];
-  if (!safe.length) return;
+  if (!safe.length || !mainWindowRef) return;
 
   try {
     mainWindowRef.webContents.send(CHANNEL_TORRENT_DRAFTS, safe);
   } catch (e) {
-    console.error(
-      '[BitButler][open-files] Failed to send torrent drafts (structured clone error?).',
-      e,
-    );
+    console.error('[BitButler][open-files] Failed to send torrent drafts.', e);
   }
 }
 
-function queueOpenFiles(paths, reason) {
-  const unique = Array.from(new Set((paths ?? []).filter(Boolean)));
+function queueOpenFiles(paths: string[]): void {
+  const unique = Array.from(new Set(paths.filter(Boolean)));
   if (!unique.length) return;
-
   pendingOpenFiles.push(...unique);
 }
 
-async function pathsToDrafts(paths, source) {
-  const out = [];
+async function pathsToDrafts(paths: string[], source: TorrentDraftSource): Promise<TorrentDraft[]> {
+  const out: TorrentDraft[] = [];
 
   for (const p of paths ?? []) {
     try {
@@ -108,7 +101,10 @@ async function pathsToDrafts(paths, source) {
         receivedAt: Date.now(),
         originalPath: p,
         originalName: path.basename(p),
-        error: { message: `Failed to read file: ${String(e?.message ?? e)}`, code: 'READ_FAILED' },
+        error: {
+          message: `Failed to read file: ${String((e as Error)?.message ?? e)}`,
+          code: 'READ_FAILED',
+        },
       });
     }
   }
@@ -116,29 +112,24 @@ async function pathsToDrafts(paths, source) {
   return out;
 }
 
-async function handleIncomingOpenFiles(paths, reason) {
+async function handleIncomingOpenFiles(paths: string[], reason: string): Promise<void> {
   try {
-    const unique = Array.from(new Set((paths ?? []).filter(Boolean)));
+    const unique = Array.from(new Set(paths.filter(Boolean)));
     if (!unique.length) return;
 
     if (!canSendToRendererNow()) {
-      queueOpenFiles(
-        unique,
-        !openHandlingEnabled ? 'disabled (not logged in)' : 'window not ready',
-      );
+      queueOpenFiles(unique);
       return;
     }
 
     pushOpenFilesToRenderer(unique);
 
-    const source =
+    const source: TorrentDraftSource =
       reason === 'startup'
         ? 'startup'
         : reason === 'second-instance'
           ? 'second-instance'
-          : reason === 'simulate'
-            ? 'simulate'
-            : 'unknown';
+          : 'renderer';
 
     const drafts = await pathsToDrafts(unique, source);
     pushTorrentDraftsToRenderer(drafts);
@@ -147,7 +138,7 @@ async function handleIncomingOpenFiles(paths, reason) {
   }
 }
 
-async function flushQueueIfPossible() {
+async function flushQueueIfPossible(): Promise<void> {
   try {
     if (!pendingOpenFiles.length) return;
     if (!canSendToRendererNow()) return;
@@ -163,18 +154,17 @@ async function flushQueueIfPossible() {
   }
 }
 
-export function handleSecondInstanceArgv(argv) {
+export function handleSecondInstanceArgv(argv: string[]): void {
   const startIndex = getArgStartIndex();
   const paths = extractExistingTorrentFiles(argv, startIndex);
-
   void handleIncomingOpenFiles(paths, 'second-instance');
   focusMainWindow();
 }
 
-export function registerWindowIpcHandlers(mainWindow) {
+export function registerWindowIpcHandlers(mainWindow: Electron.BrowserWindow): void {
   mainWindowRef = mainWindow;
 
-  ipcMain.handle('window:open-files:simulate', async (_e, { paths }) => {
+  ipcMain.handle('window:open-files:simulate', async (_e, { paths }: { paths: string[] }) => {
     const safe = Array.isArray(paths)
       ? paths
           .filter((p) => typeof p === 'string' && p.trim())
@@ -189,29 +179,25 @@ export function registerWindowIpcHandlers(mainWindow) {
   ipcMain.handle('window:maximize', () => maximize(mainWindow));
   ipcMain.handle('window:unmaximize', () => unmaximize(mainWindow));
   ipcMain.handle('window:toggle-maximize', () => toggleMaximize(mainWindow));
-  ipcMain.handle('window:set-size', (_event, width, height) => setSize(mainWindow, width, height));
+  ipcMain.handle('window:set-size', (_event, width: number, height: number) =>
+    setSize(mainWindow, width, height),
+  );
 
-  ipcMain.handle('window:open-files:set-enabled', async (_e, enabled) => {
+  ipcMain.handle('window:open-files:set-enabled', async (_e, enabled: boolean) => {
     openHandlingEnabled = !!enabled;
-
-    if (openHandlingEnabled) {
-      void flushQueueIfPossible();
-    }
-
+    if (openHandlingEnabled) void flushQueueIfPossible();
     return { enabled: openHandlingEnabled };
   });
 
   ipcMain.handle('window:open-files:drain', async () => {
     const toSend = Array.from(new Set(pendingOpenFiles));
     pendingOpenFiles = [];
-
     return toSend;
   });
 
   ipcMain.handle('window:open-torrents:drain', async () => {
     const toSend = Array.from(new Set(pendingOpenFiles));
     pendingOpenFiles = [];
-
     return pathsToDrafts(toSend, 'startup');
   });
 
@@ -223,27 +209,23 @@ export function registerWindowIpcHandlers(mainWindow) {
   void handleIncomingOpenFiles(initial, 'startup');
 }
 
-function maximize(mainWindow) {
+function maximize(mainWindow: Electron.BrowserWindow): void {
   mainWindow.maximize();
 }
 
-function unmaximize(mainWindow) {
+function unmaximize(mainWindow: Electron.BrowserWindow): void {
   mainWindow.unmaximize();
 }
 
-function toggleMaximize(mainWindow) {
+function toggleMaximize(mainWindow: Electron.BrowserWindow): void {
   mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize();
 }
 
-function setSize(mainWindow, width, height) {
+function setSize(mainWindow: Electron.BrowserWindow, width: number, height: number): void {
   if (!Number.isFinite(width) || !Number.isFinite(height)) return;
 
-  if (mainWindow.isFullScreen()) {
-    mainWindow.setFullScreen(false);
-  }
-  if (mainWindow.isMaximized()) {
-    mainWindow.unmaximize();
-  }
+  if (mainWindow.isFullScreen()) mainWindow.setFullScreen(false);
+  if (mainWindow.isMaximized()) mainWindow.unmaximize();
 
   mainWindow.setSize(Math.max(200, width), Math.max(200, height), WINDOW_ANIMATE);
 }

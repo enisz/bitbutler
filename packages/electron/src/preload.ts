@@ -1,9 +1,20 @@
-const { contextBridge, ipcRenderer } = require('electron');
+import type {
+  BitButlerAPI,
+  BitButlerSyncStreamResponse,
+  MenuClickPayload,
+  TorrentDraft,
+  WindowState,
+} from '@bitbutler/shared';
+import { contextBridge, ipcRenderer } from 'electron';
 
-function makeIpcSubscription(channel, mapPayload, callback) {
+function makeIpcSubscription<T>(
+  channel: string,
+  mapPayload: (payload: unknown) => T,
+  callback: ((payload: T) => void) | undefined,
+): () => void {
   if (typeof callback !== 'function') return () => {};
 
-  const handler = (_event, payload) => {
+  const handler = (_event: Electron.IpcRendererEvent, payload: unknown): void => {
     try {
       callback(mapPayload(payload));
     } catch (e) {
@@ -15,7 +26,7 @@ function makeIpcSubscription(channel, mapPayload, callback) {
   return () => ipcRenderer.removeListener(channel, handler);
 }
 
-contextBridge.exposeInMainWorld('bitbutler', {
+const api: BitButlerAPI = {
   electron: {
     isDev: () => ipcRenderer.invoke('electron:is-dev'),
     openExternalUrl: (url) => ipcRenderer.invoke('electron:open-external-url', url),
@@ -43,7 +54,12 @@ contextBridge.exposeInMainWorld('bitbutler', {
     request: (payload) => ipcRenderer.invoke('qb:request', payload),
     torrentsAdd: (payload) => ipcRenderer.invoke('qb:torrentsAdd', payload),
     startSyncStream: (payload) => ipcRenderer.send('qb:sync-maindata-stream', payload),
-    onSyncChunk: (callback) => makeIpcSubscription('qb:sync-maindata-chunk', (p) => p, callback),
+    onSyncChunk: (callback) =>
+      makeIpcSubscription(
+        'qb:sync-maindata-chunk',
+        (p) => p as BitButlerSyncStreamResponse,
+        callback,
+      ),
   },
 
   window: {
@@ -58,7 +74,10 @@ contextBridge.exposeInMainWorld('bitbutler', {
     onOpenFiles: (callback) =>
       makeIpcSubscription(
         'bb:open-files',
-        (paths) => (Array.isArray(paths) ? paths.filter((p) => typeof p === 'string') : []),
+        (paths) =>
+          Array.isArray(paths)
+            ? ((paths as unknown[]).filter((p) => typeof p === 'string') as string[])
+            : [],
         callback,
       ),
 
@@ -66,17 +85,16 @@ contextBridge.exposeInMainWorld('bitbutler', {
       makeIpcSubscription(
         'bb:torrent-drafts',
         (drafts) => {
-          if (!Array.isArray(drafts)) return [];
-          return drafts.filter((d) => d && typeof d === 'object');
+          if (!Array.isArray(drafts)) return [] as TorrentDraft[];
+          return (drafts as unknown[]).filter((d) => d && typeof d === 'object') as TorrentDraft[];
         },
         callback,
       ),
 
     onStateChange: (callback) =>
-      makeIpcSubscription('window:state-change', (state) => state, callback),
+      makeIpcSubscription('window:state-change', (state) => state as WindowState, callback),
 
     drainOpenFiles: () => ipcRenderer.invoke('window:open-files:drain'),
-
     drainOpenTorrents: () => ipcRenderer.invoke('window:open-torrents:drain'),
     simulateOpenFiles: (paths) => ipcRenderer.invoke('window:open-files:simulate', { paths }),
   },
@@ -90,7 +108,7 @@ contextBridge.exposeInMainWorld('bitbutler', {
     onClick: (handler) =>
       makeIpcSubscription(
         'menu:clicked',
-        (payload) => (payload && typeof payload === 'object' ? payload : null),
+        (payload) => (payload ?? {}) as MenuClickPayload,
         handler,
       ),
   },
@@ -104,4 +122,6 @@ contextBridge.exposeInMainWorld('bitbutler', {
     upsert: (payload) => ipcRenderer.invoke('settings:upsert', payload),
     delete: (payload) => ipcRenderer.invoke('settings:delete', payload),
   },
-});
+};
+
+contextBridge.exposeInMainWorld('bitbutler', api);

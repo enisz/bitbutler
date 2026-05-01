@@ -1,3 +1,4 @@
+import type { BitButlerQbTorrentsAddPayload, BitButlerSyncStreamPayload } from '@bitbutler/shared';
 import { ipcMain, safeStorage } from 'electron';
 import FormData from 'form-data';
 import fs from 'node:fs';
@@ -5,30 +6,56 @@ import db from '../db.js';
 import { rebuildMenu } from '../menu.js';
 import { rebuildTrayMenu } from '../tray.js';
 
-const cookieJar = new Map();
+const cookieJar = new Map<string, string>();
 
-export function getCookieJar() {
+export function getCookieJar(): Map<string, string> {
   return cookieJar;
 }
 
-export function registerQbIpcHandlers() {
-  ipcMain.handle('qb:login', async (_event, payload) => qbLogin(payload));
-  ipcMain.handle('qb:logout', async (_event, payload) => qbLogout(payload));
-  ipcMain.handle('qb:has-cookie', async (_event, payload) => qbHasCookie(payload));
-  ipcMain.handle('qb:request', async (_event, payload) => qbRequest(payload));
-  ipcMain.handle('qb:torrentsAdd', async (_evt, payload) => qbTorrentsAdd(payload));
-  ipcMain.on('qb:sync-maindata-stream', async (event, payload) =>
-    qbSyncMaindataStream(event, payload),
-  );
+interface ServerRow {
+  id: string;
+  name: string;
+  host: string;
+  protocol: string;
+  port: number;
+  username: string;
+  password: Buffer;
+  auto_login: number;
+  created_at: string;
 }
 
-const stmtGetByIdFull = db.prepare(`
+interface QbRequestPayload {
+  id: string;
+  path: string;
+  method?: string;
+  query?: Record<string, string | number | boolean>;
+  body?: unknown;
+  form?: Record<string, string>;
+  headers?: Record<string, string>;
+}
+
+const stmtGetByIdFull = db.prepare<[string], ServerRow>(`
   SELECT id, name, host, protocol, port, username, password, auto_login, created_at
   FROM servers
   WHERE id = ?
 `);
 
-async function qbTorrentsAdd(payload) {
+export function registerQbIpcHandlers(): void {
+  ipcMain.handle('qb:login', async (_event, payload: unknown) => qbLogin(payload));
+  ipcMain.handle('qb:logout', async (_event, payload: unknown) => qbLogout(payload));
+  ipcMain.handle('qb:has-cookie', async (_event, payload: unknown) => qbHasCookie(payload));
+  ipcMain.handle('qb:request', async (_event, payload: unknown) =>
+    qbRequest(payload as QbRequestPayload),
+  );
+  ipcMain.handle('qb:torrentsAdd', async (_evt, payload: BitButlerQbTorrentsAddPayload) =>
+    qbTorrentsAdd(payload),
+  );
+  ipcMain.on('qb:sync-maindata-stream', async (event, payload: BitButlerSyncStreamPayload) =>
+    qbSyncMaindataStream(event, payload),
+  );
+}
+
+async function qbTorrentsAdd(payload: BitButlerQbTorrentsAddPayload): Promise<unknown> {
   const { id, torrents, urls, options } = payload;
 
   const fd = new FormData();
@@ -37,11 +64,11 @@ async function qbTorrentsAdd(payload) {
   for (const t of torrents ?? []) {
     if (!t?.name) continue;
 
-    if (t?.path) {
+    if ('path' in t && t.path) {
       const buf = await fs.promises.readFile(t.path);
       fd.append('torrents', buf, { filename: t.name });
       appended++;
-    } else if (Array.isArray(t?.bytes)) {
+    } else if ('bytes' in t && Array.isArray(t.bytes)) {
       fd.append('torrents', Buffer.from(t.bytes), { filename: t.name });
       appended++;
     }
@@ -63,48 +90,41 @@ async function qbTorrentsAdd(payload) {
 
   const bodyBuffer = fd.getBuffer();
 
-  const headers = {
-    ...fd.getHeaders(),
-    'Content-Length': String(bodyBuffer.length),
-  };
-
   return qbRequest({
     id,
     method: 'POST',
     path: '/api/v2/torrents/add',
-    headers,
+    headers: {
+      ...fd.getHeaders(),
+      'Content-Length': String(bodyBuffer.length),
+    },
     body: bodyBuffer,
   });
 }
 
-function qbHasCookie(payload) {
-  const id = requireString(payload?.id, 'id');
+function qbHasCookie(payload: unknown): { hasCookie: boolean } {
+  const id = requireString((payload as Record<string, unknown>)?.id, 'id');
   return { hasCookie: cookieJar.has(id) };
 }
 
-function qbLogout(payload) {
+function qbLogout(_payload: unknown): { loggedOut: boolean } {
   cookieJar.clear();
   ipcMain.emit('server:set-active', null, null);
   rebuildMenu();
   rebuildTrayMenu();
-
   return { loggedOut: true };
 }
 
-async function qbLogin(payload) {
-  const id = requireString(payload?.id, 'id');
+async function qbLogin(payload: unknown): Promise<{ loggedIn: boolean }> {
+  const id = requireString((payload as Record<string, unknown>)?.id, 'id');
 
   const server = stmtGetByIdFull.get(id);
   if (!server) throw new Error('Server not found.');
 
-  const passwordEncrypted = server.password;
-  const password = decryptPassword(passwordEncrypted);
-
+  const password = decryptPassword(server.password);
   const url = buildBaseUrl(server) + '/api/v2/auth/login';
-  const body = new URLSearchParams({
-    username: server.username,
-    password,
-  });
+
+  const body = new URLSearchParams({ username: server.username, password });
 
   const res = await fetch(url, {
     method: 'POST',
@@ -134,14 +154,12 @@ async function qbLogin(payload) {
   return { loggedIn: true };
 }
 
-export async function qbRequest(payload) {
-  const id = requireString(payload?.id, 'id');
-  const path = requireString(payload?.path, 'path');
-  const method = String(payload?.method ?? 'GET').toUpperCase();
-  const query = payload?.query;
-  const body = payload?.body;
-  const form = payload?.form;
-  const headersIn = payload?.headers;
+export async function qbRequest(payload: QbRequestPayload): Promise<unknown> {
+  const { id, path, query, body, form, headers: headersIn } = payload;
+  const method = String(payload.method ?? 'GET').toUpperCase();
+
+  requireString(id, 'id');
+  requireString(path, 'path');
 
   const server = stmtGetByIdFull.get(id);
   if (!server) throw new Error('Server not found.');
@@ -159,7 +177,7 @@ export async function qbRequest(payload) {
     }
   }
 
-  const headers = {
+  const headers: Record<string, string> = {
     Cookie: sid,
     Referer: baseUrl,
     Origin: baseUrl,
@@ -169,11 +187,10 @@ export async function qbRequest(payload) {
     Object.assign(headers, headersIn);
   }
 
-  let requestBody = undefined;
+  let requestBody: BodyInit | undefined;
 
   if (form && typeof form === 'object') {
     headers['Content-Type'] = 'application/x-www-form-urlencoded';
-
     const usp = new URLSearchParams();
     for (const [k, v] of Object.entries(form)) {
       if (v === undefined || v === null) continue;
@@ -181,19 +198,23 @@ export async function qbRequest(payload) {
     }
     requestBody = usp.toString();
   } else if (body !== undefined && body !== null) {
-    const isFormData =
+    const isFormDataLike =
       typeof body === 'object' &&
-      typeof body.getHeaders === 'function' &&
-      typeof body.pipe === 'function';
+      typeof (body as Record<string, unknown>)['getHeaders'] === 'function' &&
+      typeof (body as Record<string, unknown>)['pipe'] === 'function';
 
-    const isStream = typeof body?.pipe === 'function';
+    const isStream =
+      typeof body === 'object' && typeof (body as Record<string, unknown>)['pipe'] === 'function';
     const isBuffer = Buffer.isBuffer(body);
 
-    if (isFormData) {
-      Object.assign(headers, body.getHeaders());
-      requestBody = body;
-    } else if (isStream || isBuffer) {
-      requestBody = body;
+    if (isFormDataLike) {
+      const fd = body as FormData;
+      Object.assign(headers, fd.getHeaders());
+      requestBody = fd as unknown as BodyInit;
+    } else if (isStream) {
+      requestBody = body as BodyInit;
+    } else if (isBuffer) {
+      requestBody = body as BodyInit;
     } else if (typeof body === 'string') {
       requestBody = body;
     } else if (typeof body === 'object') {
@@ -202,14 +223,10 @@ export async function qbRequest(payload) {
     }
   }
 
-  const isStreamLike =
-    requestBody && typeof requestBody === 'object' && typeof requestBody.pipe === 'function';
-
   const res = await fetch(url.toString(), {
     method,
     headers,
     body: requestBody,
-    ...(isStreamLike ? { duplex: 'half' } : {}),
   });
 
   const text = await res.text();
@@ -239,20 +256,20 @@ export async function qbRequest(payload) {
   return text;
 }
 
-function buildBaseUrl(server) {
+function buildBaseUrl(server: ServerRow): string {
   return `${server.protocol}://${server.host}:${server.port}`;
 }
 
-function decryptPassword(passwordBlob) {
+function decryptPassword(passwordBlob: Buffer | Uint8Array): string {
   const buf = Buffer.isBuffer(passwordBlob) ? passwordBlob : Buffer.from(passwordBlob ?? '');
   return safeStorage.decryptString(buf);
 }
 
-function extractSidCookie(res) {
+function extractSidCookie(res: Response): string | null {
   const h = res.headers;
 
-  if (typeof h.getSetCookie === 'function') {
-    const setCookies = h.getSetCookie();
+  if (typeof (h as unknown as Record<string, unknown>)['getSetCookie'] === 'function') {
+    const setCookies = (h as unknown as { getSetCookie(): string[] }).getSetCookie();
     return findSidInSetCookies(setCookies);
   }
 
@@ -263,50 +280,47 @@ function extractSidCookie(res) {
   return findSidInSetCookies(parts);
 }
 
-function findSidInSetCookies(setCookies) {
+function findSidInSetCookies(setCookies: string[]): string | null {
   if (!Array.isArray(setCookies)) return null;
 
   for (const c of setCookies) {
     const m = String(c).match(/(^|;\s*)SID=([^;]+)/);
-    if (m) {
-      const sidValue = m[2];
-      return `SID=${sidValue}`;
-    }
+    if (m) return `SID=${m[2]}`;
   }
   return null;
 }
 
-function requireString(value, field) {
+function requireString(value: unknown, field: string): string {
   if (typeof value !== 'string' || value.trim().length === 0) {
     throw new Error(`Field '${field}' is required.`);
   }
   return value.trim();
 }
 
-async function qbSyncMaindataStream(event, payload) {
+async function qbSyncMaindataStream(
+  event: Electron.IpcMainEvent,
+  payload: BitButlerSyncStreamPayload,
+): Promise<void> {
   const { id, rid, chunkSize = 500, delayMs = 15, sortBy, sortDesc } = payload;
   const channel = 'qb:sync-maindata-chunk';
 
   try {
-    const res = await qbRequest({
+    const res = (await qbRequest({
       id,
       method: 'GET',
       path: '/api/v2/sync/maindata',
-      query: { rid },
-    });
+      query: { rid: rid ?? 0 },
+    })) as Record<string, unknown>;
     const maindata = res;
-    const allTorrents = maindata.torrents || {};
+    const allTorrents = (maindata['torrents'] as Record<string, Record<string, unknown>>) || {};
 
     let torrentHashes = Object.keys(allTorrents);
     const totalTorrents = torrentHashes.length;
 
     if (sortBy && totalTorrents > 0) {
       torrentHashes.sort((hashA, hashB) => {
-        let valA = allTorrents[hashA][sortBy];
-        let valB = allTorrents[hashB][sortBy];
-
-        if (valA === undefined || valA === null) valA = '';
-        if (valB === undefined || valB === null) valB = '';
+        let valA = allTorrents[hashA][sortBy] ?? '';
+        let valB = allTorrents[hashB][sortBy] ?? '';
 
         if (typeof valA === 'string') valA = valA.toLowerCase();
         if (typeof valB === 'string') valB = valB.toLowerCase();
@@ -317,7 +331,7 @@ async function qbSyncMaindataStream(event, payload) {
       });
     }
 
-    delete maindata.torrents;
+    delete maindata['torrents'];
 
     event.reply(channel, { type: 'metadata', data: maindata, total: totalTorrents });
 
@@ -328,8 +342,8 @@ async function qbSyncMaindataStream(event, payload) {
 
     let currentIndex = 0;
 
-    const sendNextChunk = () => {
-      const chunk = {};
+    const sendNextChunk = (): void => {
+      const chunk: Record<string, unknown> = {};
       const end = Math.min(currentIndex + chunkSize, totalTorrents);
 
       for (let i = currentIndex; i < end; i++) {
@@ -350,6 +364,9 @@ async function qbSyncMaindataStream(event, payload) {
 
     sendNextChunk();
   } catch (error) {
-    event.reply(channel, { type: 'error', error: error.message || 'Streaming sync failed' });
+    event.reply(channel, {
+      type: 'error',
+      error: (error as Error).message || 'Streaming sync failed',
+    });
   }
 }

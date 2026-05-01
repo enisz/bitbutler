@@ -11,10 +11,10 @@ import { installMenu } from './menu.js';
 import { notify } from './notification.js';
 import { createTray } from './tray.js';
 
-let mainWindow = null;
+let mainWindow: Electron.BrowserWindow | null = null;
 let notified = false;
 
-export function getMainWindow() {
+export function getMainWindow(): Electron.BrowserWindow | null {
   return mainWindow;
 }
 
@@ -22,7 +22,7 @@ if (process.platform === 'win32') {
   app.setAppUserModelId('com.enisz.bitbutler');
 }
 
-function createOrRestoreMainWindow() {
+function createOrRestoreMainWindow(): Electron.BrowserWindow {
   if (mainWindow && !mainWindow.isDestroyed()) {
     mainWindow.show();
     mainWindow.focus();
@@ -43,9 +43,8 @@ function createOrRestoreMainWindow() {
 
   createTray(mainWindow);
 
-  mainWindow.on('minimize', (e) => {
-    e.preventDefault();
-    mainWindow.hide();
+  mainWindow.on('minimize', () => {
+    mainWindow!.hide();
 
     if (!notified) {
       notify(

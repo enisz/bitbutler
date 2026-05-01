@@ -4,16 +4,14 @@ import { join } from 'node:path';
 
 const isDev = !app.isPackaged;
 
-function firstExistingPath(paths) {
+function firstExistingPath(paths: string[]): string | null {
   for (const p of paths) {
     if (fs.existsSync(p)) return p;
   }
   return null;
 }
 
-export function createMainWindow(opts = {}) {
-  const { onCloseToTray } = opts;
-
+export function createMainWindow(): BrowserWindow {
   const appPath = app.getAppPath();
 
   const iconCandidates = [
@@ -60,12 +58,8 @@ export function createMainWindow(opts = {}) {
     console.error('render-process-gone', details);
   });
 
-  if (typeof onCloseToTray === 'function') {
-    mainWindow.on('close', (e) => onCloseToTray(mainWindow, e));
-  }
-
-  let lastState = null;
-  const sendWindowState = () => {
+  let lastState: object | null = null;
+  const sendWindowState = (): void => {
     if (mainWindow.isDestroyed()) return;
     const [width, height] = mainWindow.getSize();
     const newState = {
@@ -76,14 +70,7 @@ export function createMainWindow(opts = {}) {
       height,
     };
 
-    if (
-      lastState &&
-      newState.isMaximized === lastState.isMaximized &&
-      newState.isMinimized === lastState.isMinimized &&
-      newState.isFullScreen === lastState.isFullScreen &&
-      newState.width === lastState.width &&
-      newState.height === lastState.height
-    ) {
+    if (lastState && JSON.stringify(newState) === JSON.stringify(lastState)) {
       return;
     }
     lastState = newState;
@@ -91,7 +78,7 @@ export function createMainWindow(opts = {}) {
     mainWindow.webContents.send('window:state-change', newState);
   };
 
-  let resizeTimeout;
+  let resizeTimeout: ReturnType<typeof setTimeout>;
   mainWindow.on('resize', () => {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(sendWindowState, 100);

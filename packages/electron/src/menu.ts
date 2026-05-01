@@ -1,15 +1,19 @@
 import { Menu, app } from 'electron';
-import { getMainWindow } from '../electron-main.js';
 import { getCookieJar } from './ipc/qbittorrent.js';
 import { getActiveServerId, serverList } from './ipc/server.js';
+import { getMainWindow } from './main.js';
 import { notify } from './notification.js';
 
-function sendMenuAction(mainWindow, action, extraPayload = {}) {
+function sendMenuAction(
+  mainWindow: Electron.BrowserWindow | null,
+  action: string,
+  extraPayload: Record<string, unknown> = {},
+): void {
   if (!mainWindow || mainWindow.isDestroyed()) return;
   mainWindow.webContents.send('menu:clicked', { action, ts: Date.now(), ...extraPayload });
 }
 
-export function rebuildMenu(mainWindowArg) {
+export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void {
   const isDev = !app.isPackaged;
   const mainWindow = mainWindowArg ?? getMainWindow();
 
@@ -20,12 +24,12 @@ export function rebuildMenu(mainWindowArg) {
   const activeServerId = getActiveServerId();
   const serverMenuItems = servers.map((server) => ({
     label: `${server.name || server.host}`,
-    type: 'radio',
+    type: 'radio' as const,
     checked: server.id === activeServerId,
     click: () => sendMenuAction(mainWindow, 'server.select', { serverId: server.id }),
   }));
 
-  const template = [
+  const template: Electron.MenuItemConstructorOptions[] = [
     {
       label: 'File',
       submenu: [
@@ -52,14 +56,8 @@ export function rebuildMenu(mainWindowArg) {
           label: 'Export Torrents',
           enabled: loggedIn,
           submenu: [
-            {
-              label: 'All',
-              click: () => sendMenuAction(mainWindow, 'file.export.all'),
-            },
-            {
-              label: 'Selected',
-              click: () => sendMenuAction(mainWindow, 'file.export.selected'),
-            },
+            { label: 'All', click: () => sendMenuAction(mainWindow, 'file.export.all') },
+            { label: 'Selected', click: () => sendMenuAction(mainWindow, 'file.export.selected') },
           ],
         },
         { type: 'separator' },
@@ -77,7 +75,7 @@ export function rebuildMenu(mainWindowArg) {
           {
             label: 'Servers',
             submenu: [
-              ...(servers.length >= 2 ? [...serverMenuItems, { type: 'separator' }] : []),
+              ...(servers.length >= 2 ? [...serverMenuItems, { type: 'separator' as const }] : []),
               { label: 'Add new...', click: () => sendMenuAction(mainWindow, 'server.add') },
             ],
           },
@@ -97,7 +95,6 @@ export function rebuildMenu(mainWindowArg) {
         },
       ],
     },
-
     ...(isDev
       ? [
           {
@@ -106,9 +103,9 @@ export function rebuildMenu(mainWindowArg) {
               {
                 label: 'Open DevTools',
                 accelerator: 'F12',
-                click: () => getMainWindow().webContents.openDevTools({ mode: 'detach' }),
+                click: () => getMainWindow()?.webContents.openDevTools({ mode: 'detach' }),
               },
-              { type: 'separator' },
+              { type: 'separator' as const },
               {
                 label: 'Show a Notification',
                 submenu: [
@@ -146,23 +143,14 @@ export function rebuildMenu(mainWindowArg) {
                     label: 'Warning',
                     click: () => sendMenuAction(mainWindow, 'debug.toast.warning'),
                   },
-                  {
-                    label: 'Info',
-                    click: () => sendMenuAction(mainWindow, 'debug.toast.info'),
-                  },
-                  {
-                    label: 'Light',
-                    click: () => sendMenuAction(mainWindow, 'debug.toast.light'),
-                  },
-                  {
-                    label: 'Dark',
-                    click: () => sendMenuAction(mainWindow, 'debug.toast.dark'),
-                  },
+                  { label: 'Info', click: () => sendMenuAction(mainWindow, 'debug.toast.info') },
+                  { label: 'Light', click: () => sendMenuAction(mainWindow, 'debug.toast.light') },
+                  { label: 'Dark', click: () => sendMenuAction(mainWindow, 'debug.toast.dark') },
                   {
                     label: 'Adaptive',
                     click: () => sendMenuAction(mainWindow, 'debug.toast.adaptive'),
                   },
-                  { type: 'separator' },
+                  { type: 'separator' as const },
                   {
                     label: 'Random',
                     accelerator: 'Ctrl+.',
@@ -174,7 +162,7 @@ export function rebuildMenu(mainWindowArg) {
                   },
                 ],
               },
-              { type: 'separator' },
+              { type: 'separator' as const },
               {
                 label: 'Reload',
                 accelerator: 'Ctrl+R',
@@ -189,6 +177,6 @@ export function rebuildMenu(mainWindowArg) {
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 }
 
-export function installMenu(mainWindow) {
+export function installMenu(mainWindow: Electron.BrowserWindow): void {
   rebuildMenu(mainWindow);
 }

@@ -1,11 +1,21 @@
+import type { TorrentDraft, TorrentDraftSource } from '@bitbutler/shared';
 import parseTorrent from 'parse-torrent';
 import path from 'path';
 
-function norm(p) {
+interface ParseMeta {
+  source: TorrentDraftSource;
+  originalPath: string | null;
+  originalName: string | null;
+}
+
+function norm(p: unknown): string {
   return String(p ?? '').replace(/\\/g, '/');
 }
 
-export async function parseTorrentBufferToDraft(buffer, meta) {
+export async function parseTorrentBufferToDraft(
+  buffer: Buffer,
+  meta: ParseMeta,
+): Promise<TorrentDraft> {
   try {
     const parsed = await Promise.resolve(parseTorrent(buffer));
 
@@ -22,7 +32,7 @@ export async function parseTorrentBufferToDraft(buffer, meta) {
         ? parsed.length
         : files.reduce((s, f) => s + (f.length || 0), 0);
 
-    const trackers = [];
+    const trackers: string[] = [];
 
     if (typeof parsed?.announce === 'string') trackers.push(parsed.announce);
 
@@ -53,8 +63,8 @@ export async function parseTorrentBufferToDraft(buffer, meta) {
     return {
       source: meta.source,
       receivedAt: Date.now(),
-      originalPath: meta.originalPath,
-      originalName: meta.originalName,
+      originalPath: meta.originalPath ?? undefined,
+      originalName: meta.originalName ?? undefined,
       torrent: {
         name,
         totalSize,
@@ -67,21 +77,24 @@ export async function parseTorrentBufferToDraft(buffer, meta) {
     };
   } catch (e) {
     console.error('[BitButler][torrent-parse] ERROR:', e);
-
     return {
       source: meta.source,
       receivedAt: Date.now(),
-      originalPath: meta.originalPath,
-      originalName: meta.originalName,
+      originalPath: meta.originalPath ?? undefined,
+      originalName: meta.originalName ?? undefined,
       error: {
-        message: String(e?.message ?? e),
+        message: String((e as Error)?.message ?? e),
         code: 'PARSE_FAILED',
       },
     };
   }
 }
 
-export async function draftFromPathBuffer(buffer, filePath, source) {
+export async function draftFromPathBuffer(
+  buffer: Buffer,
+  filePath: string,
+  source: TorrentDraftSource,
+): Promise<TorrentDraft> {
   return parseTorrentBufferToDraft(buffer, {
     source,
     originalPath: filePath,

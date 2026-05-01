@@ -3,29 +3,26 @@ import path from 'node:path';
 import { getCookieJar, qbRequest } from './ipc/qbittorrent.js';
 import { getActiveServerId } from './ipc/server.js';
 
-let tray = null;
-let mainWindowRef = null;
+let tray: Tray | null = null;
+let mainWindowRef: Electron.BrowserWindow | null = null;
 
-function getTrayIconPath() {
+function getTrayIconPath(): string {
   if (app.isPackaged) {
     return path.join(process.resourcesPath, 'bitbutler.png');
   }
-  return path.join(app.getAppPath(), 'src', 'assets', 'icons', 'bitbutler.png');
+  return path.join(app.getAppPath(), 'packages', 'app', 'src', 'assets', 'icons', 'bitbutler.png');
 }
 
-function showMainWindow({ maximize = true } = {}) {
+function showMainWindow({ maximize = true } = {}): void {
   const win = mainWindowRef;
   if (!win || win.isDestroyed()) return;
 
   win.show();
-
-  if (win.isMinimized()) {
-    win.restore();
-  }
+  if (win.isMinimized()) win.restore();
 
   if (maximize) {
     setTimeout(() => {
-      if (win.isDestroyed()) return;
+      if (!win || win.isDestroyed()) return;
       win.maximize();
       win.focus();
     }, 50);
@@ -34,28 +31,23 @@ function showMainWindow({ maximize = true } = {}) {
   }
 }
 
-function isConnected() {
+function isConnected(): boolean {
   const id = getActiveServerId();
   return id !== null && getCookieJar().has(id);
 }
 
-async function trayQbRequest(path, form) {
+async function trayQbRequest(reqPath: string, form: Record<string, string>): Promise<void> {
   const id = getActiveServerId();
-  await qbRequest({ id, method: 'POST', path, form });
+  if (!id) return;
+  await qbRequest({ id, method: 'POST', path: reqPath, form });
 }
 
-function buildContextMenu() {
+function buildContextMenu(): Electron.Menu {
   const connected = isConnected();
 
   return Menu.buildFromTemplate([
-    {
-      label: 'Show',
-      click: () => showMainWindow({ maximize: true }),
-    },
-    {
-      label: 'Hide',
-      click: () => mainWindowRef?.hide(),
-    },
+    { label: 'Show', click: () => showMainWindow({ maximize: true }) },
+    { label: 'Hide', click: () => mainWindowRef?.hide() },
     { type: 'separator' },
     {
       label: 'Start All Torrents',
@@ -97,17 +89,16 @@ function buildContextMenu() {
   ]);
 }
 
-export function rebuildTrayMenu() {
+export function rebuildTrayMenu(): void {
   if (!tray) return;
   tray.setContextMenu(buildContextMenu());
 }
 
-export function createTray(mainWindow) {
+export function createTray(mainWindow: Electron.BrowserWindow): void {
   mainWindowRef = mainWindow;
   if (tray) return;
 
-  const iconPath = getTrayIconPath();
-  tray = new Tray(iconPath);
+  tray = new Tray(getTrayIconPath());
   tray.setToolTip('BitButler');
   tray.setContextMenu(buildContextMenu());
 
