@@ -32,7 +32,7 @@ export function createMainWindow(opts = {}) {
     maximizable: true,
     webPreferences: {
       contextIsolation: true,
-      preload: join(appPath, 'electron', 'preload.js'),
+      preload: join(appPath, 'packages', 'electron', 'dist', 'preload.js'),
     },
   });
 

@@ -10,7 +10,7 @@
       "extends": ["plugin:@angular-eslint/template/recommended", "plugin:prettier/recommended"]
     },
     {
-      "files": ["electron-main.js", "electron/**/*.js"],
+      "files": ["packages/electron/src/**/*.js", "packages/electron/src/**/*.ts"],
       "env": {
         "node": true,
         "es2022": true

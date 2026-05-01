@@ -1,15 +1,15 @@
 import { app } from 'electron';
-import { registerElectronIpcHandlers } from './electron/ipc/electron.js';
-import { registerNotificationIpcHandlers } from './electron/ipc/notification.js';
-import { registerQbIpcHandlers } from './electron/ipc/qbittorrent.js';
-import { registerServerIpcHandlers } from './electron/ipc/server.js';
-import { registerSettingsIpcHandlers } from './electron/ipc/settings.js';
-import { registerTorrentIpcHandlers } from './electron/ipc/torrent.js';
-import { handleSecondInstanceArgv, registerWindowIpcHandlers } from './electron/ipc/window.js';
-import { createMainWindow } from './electron/main-window.js';
-import { installMenu } from './electron/menu.js';
-import { notify } from './electron/notification.js';
-import { createTray } from './electron/tray.js';
+import { registerElectronIpcHandlers } from './ipc/electron.js';
+import { registerNotificationIpcHandlers } from './ipc/notification.js';
+import { registerQbIpcHandlers } from './ipc/qbittorrent.js';
+import { registerServerIpcHandlers } from './ipc/server.js';
+import { registerSettingsIpcHandlers } from './ipc/settings.js';
+import { registerTorrentIpcHandlers } from './ipc/torrent.js';
+import { handleSecondInstanceArgv, registerWindowIpcHandlers } from './ipc/window.js';
+import { createMainWindow } from './main-window.js';
+import { installMenu } from './menu.js';
+import { notify } from './notification.js';
+import { createTray } from './tray.js';
 
 let mainWindow = null;
 let notified = false;

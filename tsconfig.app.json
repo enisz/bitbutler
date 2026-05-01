@@ -6,6 +6,6 @@
     "outDir": "./out-tsc/app",
     "types": ["@angular/localize"]
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["src/**/*.spec.ts"]
+  "include": ["packages/app/src/**/*.ts"],
+  "exclude": ["packages/app/src/**/*.spec.ts"]
 }

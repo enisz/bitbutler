@@ -11,13 +11,13 @@
         }
       },
       "root": "",
-      "sourceRoot": "src",
+      "sourceRoot": "packages/app/src",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "browser": "src/main.ts",
+            "browser": "packages/app/src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -25,9 +25,9 @@
                 "glob": "**/*",
                 "input": "public"
               },
-              "src/assets"
+              "packages/app/src/assets"
             ],
-            "styles": ["src/styles.scss"],
+            "styles": ["packages/app/src/styles.scss"],
             "polyfills": ["@angular/localize/init"],
             "stylePreprocessorOptions": {
               "includePaths": ["node_modules"]
@@ -84,8 +84,8 @@
             "buildTarget": "bitbutler:build",
             "tsConfig": "tsconfig.spec.json",
             "runner": "vitest",
-            "setupFiles": ["src/test-setup.ts"],
-            "providersFile": "src/test-providers.ts",
+            "setupFiles": ["packages/app/src/test-setup.ts"],
+            "providersFile": "packages/app/src/test-providers.ts",
             "reporters": ["verbose"]
           }
         }

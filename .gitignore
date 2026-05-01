@@ -8,6 +8,8 @@
 /out
 /electron-out
 /dist-electron
+/packages/electron/dist
+/packages/docs/dist
 
 # Node
 /node_modules
