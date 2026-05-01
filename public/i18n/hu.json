@@ -422,6 +422,59 @@
             "item": {
               "copy-ip-port": "IP:Port másolása"
             }
+          },
+          "flags-tooltip": {
+            "title": "Peer jelzők",
+            "flags": {
+              "D": {
+                "label": "Letöltés",
+                "description": "Jelenleg adatot kapsz ettől a peertől."
+              },
+              "U": {
+                "label": "Feltöltés",
+                "description": "Jelenleg adatot küldesz ennek a peernek."
+              },
+              "d": {
+                "label": "Érdekelt (Letöltés)",
+                "description": "Tőlük akarsz letölteni, de ők fojtják a kapcsolatot (megtagadják a küldést)."
+              },
+              "u": {
+                "label": "Érdekelt (Feltöltés)",
+                "description": "Tőled akarnak letölteni, de te fojtod a kapcsolatot."
+              },
+              "O": {
+                "label": "Optimista feloldás",
+                "description": "Ezt a peert teszteled, hogy jó sebességet nyújt-e."
+              },
+              "S": {
+                "label": "Mellőzött",
+                "description": "A peer egy ideje nem küldött adatot, ezért leállítottad a küldést feléjük."
+              },
+              "I": {
+                "label": "Bejövő",
+                "description": "A peer csatlakozott hozzád (hasznos a nyitott portok ellenőrzéséhez)."
+              },
+              "E": {
+                "label": "Titkosított",
+                "description": "A kapcsolat protokoll-titkosítást használ."
+              },
+              "H": {
+                "label": "DHT",
+                "description": "Elosztott Hash Tábla (DHT) útján találtuk, tracker nélkül."
+              },
+              "X": {
+                "label": "PEX",
+                "description": "Peer Exchange (PEX) útján találtuk (más peerek ajánlották)."
+              },
+              "L": {
+                "label": "Helyi",
+                "description": "Helyi Peer Discovery útján találtuk (ugyanazon a Wi-Fi/LAN-on)."
+              },
+              "P": {
+                "label": "uTP",
+                "description": "A kapcsolat Mikro Átviteli Protokollt (UDP-alapú) használ."
+              }
+            }
           }
         },
         "trackers": {

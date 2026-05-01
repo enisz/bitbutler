@@ -7,77 +7,80 @@ export interface PeerFlagDefinition {
   color: PeerFlagColor;
 }
 
+const flagKey = (flag: string, field: 'label' | 'description'): string =>
+  `components.modals.torrent-details.peers.flags-tooltip.flags.${flag}.${field}`;
+
 export const PEER_FLAG_DEFINITIONS: PeerFlagDefinition[] = [
   {
     flag: 'D',
-    label: 'Downloading',
-    description: 'You are currently receiving data from this peer.',
+    label: flagKey('D', 'label'),
+    description: flagKey('D', 'description'),
     color: 'info',
   },
   {
     flag: 'U',
-    label: 'Uploading',
-    description: 'You are currently sending data to this peer.',
+    label: flagKey('U', 'label'),
+    description: flagKey('U', 'description'),
     color: 'success',
   },
   {
     flag: 'd',
-    label: 'Interested (Down)',
-    description: 'You want to download from them, but they are choking you (refusing to send).',
+    label: flagKey('d', 'label'),
+    description: flagKey('d', 'description'),
     color: 'info',
   },
   {
     flag: 'u',
-    label: 'Interested (Up)',
-    description: 'They want to download from you, but you are choking them.',
+    label: flagKey('u', 'label'),
+    description: flagKey('u', 'description'),
     color: 'success',
   },
   {
     flag: 'O',
-    label: 'Optimistic Unchoke',
-    description: 'You are testing this peer to see if they give you good speeds.',
+    label: flagKey('O', 'label'),
+    description: flagKey('O', 'description'),
     color: 'warning',
   },
   {
     flag: 'S',
-    label: 'Snubbed',
-    description: "The peer hasn't sent you data for a while, so you've stopped sending to them.",
+    label: flagKey('S', 'label'),
+    description: flagKey('S', 'description'),
     color: 'danger',
   },
   {
     flag: 'I',
-    label: 'Incoming',
-    description: 'The peer connected to you (useful for checking if your ports are open).',
+    label: flagKey('I', 'label'),
+    description: flagKey('I', 'description'),
     color: 'primary',
   },
   {
     flag: 'E',
-    label: 'Encrypted',
-    description: 'The connection is using protocol encryption.',
+    label: flagKey('E', 'label'),
+    description: flagKey('E', 'description'),
     color: 'warning',
   },
   {
     flag: 'H',
-    label: 'DHT',
-    description: 'Found via Distributed Hash Table (no tracker needed).',
+    label: flagKey('H', 'label'),
+    description: flagKey('H', 'description'),
     color: 'secondary',
   },
   {
     flag: 'X',
-    label: 'PEX',
-    description: 'Found via Peer Exchange (other peers told you about them).',
+    label: flagKey('X', 'label'),
+    description: flagKey('X', 'description'),
     color: 'secondary',
   },
   {
     flag: 'L',
-    label: 'Local',
-    description: 'Found via Local Peer Discovery (same Wi-Fi/LAN).',
+    label: flagKey('L', 'label'),
+    description: flagKey('L', 'description'),
     color: 'secondary',
   },
   {
     flag: 'P',
-    label: 'uTP',
-    description: 'The connection is using the Micro Transport Protocol (UDP-based).',
+    label: flagKey('P', 'label'),
+    description: flagKey('P', 'description'),
     color: 'secondary',
   },
 ];
