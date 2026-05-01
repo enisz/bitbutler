@@ -1,4 +1,5 @@
 import { Menu, app } from 'electron';
+import { t } from './i18n.js';
 import { getCookieJar } from './ipc/qbittorrent.js';
 import { getActiveServerId, serverList } from './ipc/server.js';
 import { getMainWindow } from './main.js';
@@ -31,38 +32,44 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
 
   const template: Electron.MenuItemConstructorOptions[] = [
     {
-      label: 'File',
+      label: t('electron.menu.file'),
       submenu: [
         {
-          label: 'Add Torrent…',
+          label: t('electron.menu.add-torrent'),
           accelerator: 'Ctrl+O',
           enabled: loggedIn,
           click: () => sendMenuAction(mainWindow, 'file.addTorrent'),
         },
         {
-          label: 'Settings',
+          label: t('electron.menu.settings'),
           accelerator: 'Ctrl+,',
           enabled: loggedIn,
           click: () => sendMenuAction(mainWindow, 'file.settings'),
         },
         { type: 'separator' },
         {
-          label: 'Import Torrents',
+          label: t('electron.menu.import-torrents'),
           accelerator: 'Ctrl+I',
           enabled: loggedIn,
           click: () => sendMenuAction(mainWindow, 'file.import'),
         },
         {
-          label: 'Export Torrents',
+          label: t('electron.menu.export-torrents'),
           enabled: loggedIn,
           submenu: [
-            { label: 'All', click: () => sendMenuAction(mainWindow, 'file.export.all') },
-            { label: 'Selected', click: () => sendMenuAction(mainWindow, 'file.export.selected') },
+            {
+              label: t('electron.menu.export-all'),
+              click: () => sendMenuAction(mainWindow, 'file.export.all'),
+            },
+            {
+              label: t('electron.menu.export-selected'),
+              click: () => sendMenuAction(mainWindow, 'file.export.selected'),
+            },
           ],
         },
         { type: 'separator' },
         {
-          label: 'Disconnect',
+          label: t('electron.menu.disconnect'),
           enabled: loggedIn,
           click: () => sendMenuAction(mainWindow, 'file.disconnect'),
         },
@@ -73,24 +80,27 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
     ...(loggedIn
       ? [
           {
-            label: 'Servers',
+            label: t('electron.menu.servers'),
             submenu: [
               ...(servers.length >= 2 ? [...serverMenuItems, { type: 'separator' as const }] : []),
-              { label: 'Add new...', click: () => sendMenuAction(mainWindow, 'server.add') },
+              {
+                label: t('electron.menu.add-new'),
+                click: () => sendMenuAction(mainWindow, 'server.add'),
+              },
             ],
           },
         ]
       : []),
     {
-      label: 'Help',
+      label: t('electron.menu.help'),
       submenu: [
         {
-          label: 'Check for Updates',
+          label: t('electron.menu.check-for-updates'),
           click: () => sendMenuAction(mainWindow, 'help.checkForUpdates'),
         },
         { type: 'separator' },
         {
-          label: 'About BitButler',
+          label: t('electron.menu.about'),
           click: () => sendMenuAction(mainWindow, 'help.about'),
         },
       ],
