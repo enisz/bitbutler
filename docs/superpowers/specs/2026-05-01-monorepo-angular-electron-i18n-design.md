@@ -54,6 +54,7 @@
 "scripts": {
   "serve": "ng serve",
   "build": "ng build",
+  "build:prod": "ng build --configuration production --base-href ./",
   "test": "ng test --watch=false",
   "test:watch": "ng test"
 }
@@ -61,14 +62,15 @@
 
 ### Root `package.json` — Update Scripts
 
-| Script       | Before                  | After                                         |
-| ------------ | ----------------------- | --------------------------------------------- |
-| `serve`      | `ng serve`              | `npm run serve --workspace=packages/app`      |
-| `build`      | `ng build`              | `npm run build --workspace=packages/app`      |
-| `test`       | `ng test --watch=false` | `npm run test --workspace=packages/app`       |
-| `test:watch` | `ng test`               | `npm run test:watch --workspace=packages/app` |
+| Script       | Before                                                                                         | After                                                                                              |
+| ------------ | ---------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `serve`      | `ng serve`                                                                                     | `npm run serve --workspace=packages/app`                                                           |
+| `build`      | `ng build`                                                                                     | `npm run build --workspace=packages/app`                                                           |
+| `build:ui`   | `npm run workspace:clean && ng build --configuration production ... && npm run build:electron` | `npm run workspace:clean && npm run build:prod --workspace=packages/app && npm run build:electron` |
+| `test`       | `ng test --watch=false`                                                                        | `npm run test --workspace=packages/app`                                                            |
+| `test:watch` | `ng test`                                                                                      | `npm run test:watch --workspace=packages/app`                                                      |
 
-All other scripts (`start`, `build:ui`, `dist`, etc.) are unaffected.
+All other scripts (`start`, `dist`, `dist:win`, `dist:linux`, etc.) are unaffected.
 
 ---
 
