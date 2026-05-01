@@ -30,6 +30,8 @@
     "dist": "npm run build:ui && electron-builder",
     "dist:win": "npm run build:ui && electron-builder --win",
     "dist:linux": "npm run build:ui && electron-builder --linux",
+    "docs:dev": "npm run dev --workspace=packages/docs",
+    "docs:build": "npm run build --workspace=packages/docs",
     "format": "prettier --write .",
     "lint": "eslint \"packages/app/src/**/*.{ts,html}\" \"packages/electron/src/**/*.ts\"",
     "lint:fix": "npm run lint -- --fix",
@@ -38,11 +40,19 @@
     "test:watch": "ng test"
   },
   "lint-staged": {
-    "*.{ts,js,html}": [
+    "packages/app/src/**/*.{ts,html}": [
       "eslint --max-warnings=0 --fix",
       "prettier --write"
     ],
-    "*.{json,md,scss,css}": [
+    "packages/electron/src/**/*.ts": [
+      "eslint --max-warnings=0 --fix",
+      "prettier --write"
+    ],
+    "packages/docs/src/**/*.ts": [
+      "eslint --max-warnings=0 --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,scss,css,html}": [
       "prettier --write"
     ]
   },

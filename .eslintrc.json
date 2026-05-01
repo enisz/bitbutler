@@ -21,6 +21,10 @@
         "sourceType": "module"
       },
       "extends": ["plugin:prettier/recommended"]
+    },
+    {
+      "files": ["packages/docs/src/**/*.ts", "packages/docs/vite.config.ts"],
+      "extends": ["plugin:@angular-eslint/recommended", "plugin:prettier/recommended"]
     }
   ]
 }

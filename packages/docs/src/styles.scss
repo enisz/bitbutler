@@ -1,0 +1,17 @@
+@use '../../app/src/styles/themes/index' as themes;
+
+@include themes.install-themes();
+
+@import 'bootstrap/scss/bootstrap';
+
+// Docs-specific global styles
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--bs-body-font-family, system-ui, sans-serif);
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+}
