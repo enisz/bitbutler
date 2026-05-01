@@ -1103,5 +1103,22 @@
   "language": {
     "us": "Angol",
     "hu": "Magyar"
+  },
+  "electron": {
+    "menu": {
+      "file": "Fájl",
+      "add-torrent": "Torrent hozzáadása…",
+      "settings": "Beállítások",
+      "import-torrents": "Torrentek importálása",
+      "export-torrents": "Torrentek exportálása",
+      "export-all": "Mind",
+      "export-selected": "Kiválasztottak",
+      "disconnect": "Kijelentkezés",
+      "servers": "Szerverek",
+      "add-new": "Új hozzáadása…",
+      "help": "Súgó",
+      "check-for-updates": "Frissítések keresése",
+      "about": "A BitButlerről"
+    }
   }
 }
