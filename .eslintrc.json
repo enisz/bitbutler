@@ -25,6 +25,18 @@
     {
       "files": ["packages/docs/src/**/*.ts", "packages/docs/vite.config.ts"],
       "extends": ["plugin:@angular-eslint/recommended", "plugin:prettier/recommended"]
+    },
+    {
+      "files": ["packages/shared/src/**/*.ts"],
+      "env": {
+        "es2022": true
+      },
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+      },
+      "extends": ["plugin:prettier/recommended"]
     }
   ]
 }
