@@ -79,9 +79,10 @@ describe('PeersGridSettingsService', () => {
 
   it('should save column state under the service settings ID', async () => {
     const columnState = [{ colId: 'ip', hide: false }];
-    await service.save({ columnState });
+    await service.save({ columnState, floatingFilters: false });
     expect(mockSettingsService.set).toHaveBeenCalledWith((service as any).SETTINGS_ID, {
       columnState,
+      floatingFilters: false,
     });
   });
 
