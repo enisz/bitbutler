@@ -45,5 +45,5 @@ __screenshots__/
 .DS_Store
 Thumbs.db
 
-# docs/*
-# .superpowers/
+docs/*
+.superpowers/
