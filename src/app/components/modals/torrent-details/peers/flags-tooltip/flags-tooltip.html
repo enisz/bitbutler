@@ -1,0 +1,14 @@
+<div class="flags-tooltip">
+  <div class="flags-tooltip__title">{{ title }}</div>
+  @for (flag of activeFlags; track flag.flag) {
+    <div class="flags-tooltip__entry">
+      <span class="flags-tooltip__badge flags-tooltip__badge--{{ flag.color }}">{{
+        flag.flag
+      }}</span>
+      <div class="flags-tooltip__body ms-2">
+        <span class="flags-tooltip__name">{{ flag.label }}</span>
+        <div class="flags-tooltip__desc">{{ flag.description }}</div>
+      </div>
+    </div>
+  }
+</div>

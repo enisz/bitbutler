@@ -368,7 +368,13 @@ export class GridContextMenuService {
     ];
   }
 
-  public buildHeaderMenu(event: ColumnHeaderContextMenuEvent<any, any>): ContextMenuEntry[] {
+  public buildHeaderMenu(
+    event: ColumnHeaderContextMenuEvent<any, any>,
+    opts: {
+      enableFloatingFiltersToggle?: boolean;
+      onFloatingFiltersToggle?: (newState: boolean) => Promise<void>;
+    } = {},
+  ): ContextMenuEntry[] {
     const api = event.api;
     const column = event.column as Column;
     const floatingFilterActive = (api.getColumnDefs() ?? []).some(
@@ -459,34 +465,44 @@ export class GridContextMenuService {
             disabled: !column.isFilterActive(),
             action: () => this.filterService.clearColumnFilter(payload.colId),
           },
-          {
-            kind: 'item',
-            id: `filter.toggleFloating.${payload.colId}`,
-            label: floatingFilterActive
-              ? 'pages.main.grid.context-menu.item.hide-floating-filters'
-              : 'pages.main.grid.context-menu.item.show-floating-filters',
-            icon: floatingFilterActive ? faEyeSlash : faEye,
-            action: async () => {
-              const currentDefs = api.getColumnDefs() ?? [];
-              const isActive = currentDefs.some((d) => (d as ColDef<any>).floatingFilter === true);
-              const newDefs = currentDefs.map((d) => {
-                const colDef = { ...(d as ColDef<any>) };
-                if (colDef.floatingFilter === false) return colDef;
-                colDef.floatingFilter = isActive ? undefined : true;
-                return colDef;
-              });
-              api.updateGridOptions({ columnDefs: newDefs });
-              const settings = await firstValueFrom(
-                this.torrentListGridSettingsService
-                  .asObservable()
-                  .pipe(filter((s): s is NonNullable<typeof s> => s !== null)),
-              );
-              await this.torrentListGridSettingsService.save({
-                ...settings,
-                floatingFilters: !isActive,
-              });
-            },
-          },
+          ...(opts.enableFloatingFiltersToggle !== false
+            ? [
+                {
+                  kind: 'item' as const,
+                  id: `filter.toggleFloating.${payload.colId}`,
+                  label: floatingFilterActive
+                    ? 'pages.main.grid.context-menu.item.hide-floating-filters'
+                    : 'pages.main.grid.context-menu.item.show-floating-filters',
+                  icon: floatingFilterActive ? faEyeSlash : faEye,
+                  action: async () => {
+                    const currentDefs = api.getColumnDefs() ?? [];
+                    const isActive = currentDefs.some(
+                      (d) => (d as ColDef<any>).floatingFilter === true,
+                    );
+                    const newDefs = currentDefs.map((d) => {
+                      const colDef = { ...(d as ColDef<any>) };
+                      if (colDef.floatingFilter === false) return colDef;
+                      colDef.floatingFilter = isActive ? undefined : true;
+                      return colDef;
+                    });
+                    api.updateGridOptions({ columnDefs: newDefs });
+                    if (opts.onFloatingFiltersToggle) {
+                      await opts.onFloatingFiltersToggle(!isActive);
+                    } else {
+                      const settings = await firstValueFrom(
+                        this.torrentListGridSettingsService
+                          .asObservable()
+                          .pipe(filter((s): s is NonNullable<typeof s> => s !== null)),
+                      );
+                      await this.torrentListGridSettingsService.save({
+                        ...settings,
+                        floatingFilters: !isActive,
+                      });
+                    }
+                  },
+                },
+              ]
+            : []),
         ],
       },
       {

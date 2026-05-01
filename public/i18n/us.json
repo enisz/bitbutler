@@ -411,12 +411,70 @@
             "flags": "Flags",
             "client": "Client",
             "progress": "Progress",
-            "dl_speed": "Down Speed",
-            "up_speed": "Up Speed",
+            "dl_speed": "Download Speed",
+            "up_speed": "Upload Speed",
             "downloaded": "Downloaded",
             "uploaded": "Uploaded",
             "relevance": "Relevance",
             "files": "Files"
+          },
+          "context-menu": {
+            "item": {
+              "copy-ip-port": "Copy IP:Port"
+            }
+          },
+          "flags-tooltip": {
+            "title": "Peer Flags",
+            "flags": {
+              "D": {
+                "label": "Downloading",
+                "description": "You are currently receiving data from this peer."
+              },
+              "U": {
+                "label": "Uploading",
+                "description": "You are currently sending data to this peer."
+              },
+              "d": {
+                "label": "Interested (Down)",
+                "description": "You want to download from them, but they are choking you (refusing to send)."
+              },
+              "u": {
+                "label": "Interested (Up)",
+                "description": "They want to download from you, but you are choking them."
+              },
+              "O": {
+                "label": "Optimistic Unchoke",
+                "description": "You are testing this peer to see if they give you good speeds."
+              },
+              "S": {
+                "label": "Snubbed",
+                "description": "The peer hasn't sent you data for a while, so you've stopped sending to them."
+              },
+              "I": {
+                "label": "Incoming",
+                "description": "The peer connected to you (useful for checking if your ports are open)."
+              },
+              "E": {
+                "label": "Encrypted",
+                "description": "The connection is using protocol encryption."
+              },
+              "H": {
+                "label": "DHT",
+                "description": "Found via Distributed Hash Table (no tracker needed)."
+              },
+              "X": {
+                "label": "PEX",
+                "description": "Found via Peer Exchange (other peers told you about them)."
+              },
+              "L": {
+                "label": "Local",
+                "description": "Found via Local Peer Discovery (same Wi-Fi/LAN)."
+              },
+              "P": {
+                "label": "uTP",
+                "description": "The connection is using the Micro Transport Protocol (UDP-based)."
+              }
+            }
           }
         },
         "trackers": {
@@ -441,6 +499,18 @@
             "num_leeches": "Leeches",
             "num_downloaded": "Times Downloaded",
             "msg": "Message"
+          },
+          "context-menu": {
+            "item": {
+              "copy-url": "Copy tracker URL"
+            }
+          },
+          "status": {
+            "disabled": "Disabled",
+            "not-contacted": "Not contacted",
+            "working": "Working",
+            "updating": "Updating",
+            "not-working": "Not working"
           }
         },
         "hash": "Hash"

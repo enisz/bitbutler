@@ -563,6 +563,35 @@ describe('GridContextMenuService', () => {
       });
     });
 
+    describe('floating filters toggle visibility', () => {
+      function buildWithOpts(opts: { enableFloatingFiltersToggle?: boolean }) {
+        const column = makeColumn();
+        const api = makeApi(column);
+        return service.buildHeaderMenu({ api, column } as any, opts);
+      }
+
+      it('is included when no opts are passed (default)', () => {
+        const { entries } = build();
+        expect(findItem(entries, 'filter.toggleFloating.name')).toBeDefined();
+      });
+
+      it('is included when enableFloatingFiltersToggle is true', () => {
+        const entries = buildWithOpts({ enableFloatingFiltersToggle: true });
+        expect(findItem(entries, 'filter.toggleFloating.name')).toBeDefined();
+      });
+
+      it('is excluded when enableFloatingFiltersToggle is false', () => {
+        const entries = buildWithOpts({ enableFloatingFiltersToggle: false });
+        expect(findItem(entries, 'filter.toggleFloating.name')).toBeUndefined();
+      });
+
+      it('other filter items remain present when toggle is disabled', () => {
+        const entries = buildWithOpts({ enableFloatingFiltersToggle: false });
+        expect(findItem(entries, 'filter.open.name')).toBeDefined();
+        expect(findItem(entries, 'filter.clear.name')).toBeDefined();
+      });
+    });
+
     describe('column toggle items', () => {
       it('visible columns have a checkmark icon', () => {
         const { entries } = build({ isVisible: vi.fn().mockReturnValue(true) });
