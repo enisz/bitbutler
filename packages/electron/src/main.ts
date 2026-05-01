@@ -1,9 +1,11 @@
 import { app } from 'electron';
+import { loadTranslations } from './i18n.js';
 import { registerElectronIpcHandlers } from './ipc/electron.js';
+import { registerI18nIpcHandlers } from './ipc/i18n.js';
 import { registerNotificationIpcHandlers } from './ipc/notification.js';
 import { registerQbIpcHandlers } from './ipc/qbittorrent.js';
 import { registerServerIpcHandlers } from './ipc/server.js';
-import { registerSettingsIpcHandlers } from './ipc/settings.js';
+import { getInitialLanguage, registerSettingsIpcHandlers } from './ipc/settings.js';
 import { registerTorrentIpcHandlers } from './ipc/torrent.js';
 import { handleSecondInstanceArgv, registerWindowIpcHandlers } from './ipc/window.js';
 import { createMainWindow } from './main-window.js';
@@ -69,6 +71,8 @@ if (!gotLock) {
   });
 
   app.whenReady().then(() => {
+    loadTranslations(getInitialLanguage());
+    registerI18nIpcHandlers();
     createOrRestoreMainWindow();
 
     app.on('activate', () => {
