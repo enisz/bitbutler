@@ -9,6 +9,7 @@ on:
       - 'packages/app/src/styles/**'
       - '.github/workflows/deploy-docs.yml'
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read

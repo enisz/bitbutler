@@ -218,3 +218,12 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh release edit ${{ needs.prepare-release.outputs.raw_version }} --draft=false
+
+  deploy-docs:
+    name: 'Deploy Docs'
+    needs: publish-release
+    uses: ./.github/workflows/deploy-docs.yml
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
