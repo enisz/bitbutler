@@ -9,7 +9,9 @@
 /electron-out
 /dist-electron
 /packages/electron/dist
+/packages/electron/vitest.config.js
 /packages/docs/dist
+/packages/app/dist
 
 # Node
 /node_modules
@@ -36,6 +38,7 @@ yarn-error.log
 
 # Miscellaneous
 /.angular/cache
+/packages/app/.angular/
 .sass-cache/
 /connect.lock
 /coverage

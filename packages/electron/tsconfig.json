@@ -11,5 +11,5 @@
     "verbatimModuleSyntax": true,
     "types": ["node"]
   },
-  "exclude": ["src/preload.ts", "src/**/*.spec.ts", "dist/**"]
+  "exclude": ["src/preload.ts", "src/**/*.spec.ts", "vitest.config.ts", "dist/**"]
 }
