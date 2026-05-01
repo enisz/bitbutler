@@ -32,6 +32,7 @@ import { ServerStoreService } from '../../../../services/server-store.service';
 import { ThemeService } from '../../../../services/theme.service';
 import { TorrentDetailTabComponent } from '../torrent-details.interface';
 import { FlagCellRenderer } from './flag-cell-renderer/flag-cell-renderer';
+import { FlagsTooltipComponent } from './flags-tooltip/flags-tooltip';
 
 @Component({
   selector: 'app-peers',
@@ -228,6 +229,7 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
   private getGridOptions(): GridOptions<QbTorrentPeer> {
     return {
       ...GRID_SHARED_OPTIONS,
+      tooltipShowMode: 'standard',
       getRowId: (params: GetRowIdParams<QbTorrentPeer, any>) =>
         `${params.data.ip}:${params.data.port}`,
       overlayComponentSelector: (params: IOverlayParams<QbTorrentPeer>) => {
@@ -363,7 +365,8 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
         headerTooltip: this.translateService.instant(
           'components.modals.torrent-details.peers.col-def.flags',
         ),
-        tooltipField: 'flags',
+        tooltipComponent: FlagsTooltipComponent,
+        tooltipValueGetter: (p) => p.data?.flags ?? '',
         filter: 'agTextColumnFilter',
       },
       {
