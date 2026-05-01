@@ -2,8 +2,6 @@
 
 @include themes.install-themes();
 
-@import 'bootstrap/scss/bootstrap';
-
 // Docs-specific global styles
 * {
   box-sizing: border-box;
