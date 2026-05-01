@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 @Injectable({ providedIn: 'root' })
 export class SettingsService {
   async get<T>(id: string): Promise<T | null> {
-    return window.bitbutler.settings.get({ id });
+    return window.bitbutler.settings.get({ id }) as Promise<T | null>;
   }
 
   async set(id: string, value: unknown): Promise<void> {

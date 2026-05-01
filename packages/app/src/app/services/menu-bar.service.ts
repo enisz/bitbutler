@@ -1,7 +1,8 @@
 import { Injectable, NgZone, inject } from '@angular/core';
+import type { MenuClickPayload } from '@bitbutler/shared';
 import { Subject } from 'rxjs';
 
-export type MenuClick = { action: string; ts: number; serverId?: string };
+export type MenuClick = MenuClickPayload;
 
 @Injectable({ providedIn: 'root' })
 export class MenuBarService {

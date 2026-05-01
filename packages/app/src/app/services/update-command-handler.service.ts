@@ -34,7 +34,7 @@ export class UpdateCommandHandlerService {
     const response = await this.electronService.checkForUpdate();
 
     if (response.error) {
-      this.toastService.danger(response.error, 'Update Check Failed');
+      this.toastService.danger(String(response.error), 'Update Check Failed');
       return;
     }
 

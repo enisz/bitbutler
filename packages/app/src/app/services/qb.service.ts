@@ -77,7 +77,7 @@ export class QbService {
         if (payload.type === 'metadata') {
           totalCount = payload.total;
 
-          const metaChunk = { ...payload.data, _isStreamingChunk: true } as Maindata;
+          const metaChunk = { ...payload.data, _isStreamingChunk: true } as unknown as Maindata;
           subscriber.next({ maindata: metaChunk, progress: 0, total: totalCount, done: false });
         }
 

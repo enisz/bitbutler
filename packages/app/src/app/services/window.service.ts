@@ -1,13 +1,8 @@
 import { Injectable, NgZone, inject } from '@angular/core';
+import type { WindowState } from '@bitbutler/shared';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-export interface WindowState {
-  isMaximized: boolean;
-  isMinimized: boolean;
-  isFullScreen: boolean;
-  width: number;
-  height: number;
-}
+export type { WindowState };
 
 @Injectable({ providedIn: 'root' })
 export class WindowService {
