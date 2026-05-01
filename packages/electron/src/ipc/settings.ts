@@ -56,3 +56,15 @@ function settingsDelete(payload: unknown): { ok: true } {
   stmtDelete.run(settingId);
   return { ok: true };
 }
+
+export function getInitialLanguage(): string {
+  try {
+    const row = stmtGet.get('GeneralSettingsService');
+    if (!row?.json) return 'us';
+    const settings = JSON.parse(row.json) as Record<string, unknown>;
+    const lang = (settings?.language as Record<string, unknown>)?.language;
+    return typeof lang === 'string' && lang ? lang : 'us';
+  } catch {
+    return 'us';
+  }
+}
