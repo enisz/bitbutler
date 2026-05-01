@@ -1,5 +1,5 @@
 {
-  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "$schema": "../../node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
@@ -11,26 +11,27 @@
         }
       },
       "root": "",
-      "sourceRoot": "packages/app/src",
+      "sourceRoot": "src",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "browser": "packages/app/src/main.ts",
+            "outputPath": "../../dist/bitbutler",
+            "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
               {
                 "glob": "**/*",
-                "input": "public"
+                "input": "../../public"
               },
-              "packages/app/src/assets"
+              "src/assets"
             ],
-            "styles": ["packages/app/src/styles.scss"],
+            "styles": ["src/styles.scss"],
             "polyfills": ["@angular/localize/init"],
             "stylePreprocessorOptions": {
-              "includePaths": ["node_modules"]
+              "includePaths": ["../../node_modules"]
             }
           },
           "configurations": {
@@ -84,8 +85,8 @@
             "buildTarget": "bitbutler:build",
             "tsConfig": "tsconfig.spec.json",
             "runner": "vitest",
-            "setupFiles": ["packages/app/src/test-setup.ts"],
-            "providersFile": "packages/app/src/test-providers.ts",
+            "setupFiles": ["src/test-setup.ts"],
+            "providersFile": "src/test-providers.ts",
             "reporters": ["verbose"]
           }
         }

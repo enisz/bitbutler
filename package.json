@@ -19,13 +19,13 @@
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
     "ng": "ng",
-    "serve": "ng serve",
+    "serve": "npm run serve --workspace=packages/app",
     "electron-dev": "wait-on http://localhost:4200 && npm run build:electron && electron . --no-sandbox --disable-gpu-sandbox",
     "start": "concurrently -n \"angular,electron\" -c \"red,blue\" \"npm:serve\" \"npm:electron-dev\"",
     "workspace:clean": "rimraf dist-electron dist",
-    "build": "ng build",
+    "build": "npm run build --workspace=packages/app",
     "build:electron": "npm run build --workspace=packages/electron",
-    "build:ui": "npm run workspace:clean && ng build --configuration production --base-href ./ && npm run build:electron",
+    "build:ui": "npm run workspace:clean && npm run build:prod --workspace=packages/app && npm run build:electron",
     "pack": "npm run build:ui && electron-builder --dir",
     "dist": "npm run build:ui && electron-builder",
     "dist:win": "npm run build:ui && electron-builder --win",
@@ -36,8 +36,8 @@
     "lint": "eslint \"packages/app/src/**/*.{ts,html}\" \"packages/electron/src/**/*.ts\"",
     "lint:fix": "npm run lint -- --fix",
     "prepare": "husky",
-    "test": "ng test --watch=false",
-    "test:watch": "ng test"
+    "test": "npm run test --workspace=packages/app",
+    "test:watch": "npm run test:watch --workspace=packages/app"
   },
   "lint-staged": {
     "packages/app/src/**/*.{ts,html}": [
