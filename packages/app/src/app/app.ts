@@ -81,7 +81,10 @@ export class App implements OnInit {
 
     this.translateService.onLangChange
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((event: LangChangeEvent) => this.setTimeagoLanguage(event.lang));
+      .subscribe((event: LangChangeEvent) => {
+        this.setTimeagoLanguage(event.lang);
+        window.bitbutler.i18n.languageChanged(event.lang);
+      });
 
     this.torrentStoreService.finished$
       .pipe(takeUntilDestroyed(this.destroyRef))

@@ -122,6 +122,10 @@ const api: BitButlerAPI = {
     upsert: (payload) => ipcRenderer.invoke('settings:upsert', payload),
     delete: (payload) => ipcRenderer.invoke('settings:delete', payload),
   },
+
+  i18n: {
+    languageChanged: (lang) => ipcRenderer.send('i18n:language-changed', { lang }),
+  },
 };
 
 contextBridge.exposeInMainWorld('bitbutler', api);

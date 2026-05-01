@@ -77,6 +77,10 @@
       {
         "from": "packages/app/src/assets/icons/bitbutler.png",
         "to": "bitbutler.png"
+      },
+      {
+        "from": "public/i18n",
+        "to": "i18n"
       }
     ],
     "directories": {

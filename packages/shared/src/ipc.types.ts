@@ -120,4 +120,8 @@ export interface BitButlerAPI {
     upsert(payload: { id: string; value: unknown }): Promise<{ ok: true }>;
     delete(payload: { id: string }): Promise<{ ok: true }>;
   };
+
+  i18n: {
+    languageChanged(lang: string): void;
+  };
 }
