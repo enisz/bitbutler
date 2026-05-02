@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { LeftSidebarComponent } from './left-sidebar.component';
 import { RightSidebarComponent } from './right-sidebar.component';
@@ -19,8 +19,7 @@ import { ThemeService } from './theme.service';
     <header class="docs-header">
       <div class="docs-header-inner">
         <a class="docs-brand" [routerLink]="['/index']">
-          <img class="docs-logo" [src]="logoSrc()" alt="BitButler" />
-          <span class="docs-badge">BitButlerDocs</span>
+          <strong>BitButler</strong> <span class="docs-subtitle">Docs</span>
         </a>
         <bb-theme-picker />
       </div>
@@ -66,17 +65,10 @@ import { ThemeService } from './theme.service';
         text-decoration: none;
         color: var(--bs-body-color);
         font-size: 1.1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
       }
-      .docs-logo {
-        height: 1.1rem;
-        width: auto;
-      }
-      .docs-badge {
-        font-weight: 600;
-        letter-spacing: -0.01em;
+      .docs-subtitle {
+        opacity: 0.6;
+        font-weight: 400;
       }
 
       .docs-layout {
@@ -129,5 +121,4 @@ import { ThemeService } from './theme.service';
 })
 export class AppComponent {
   private readonly themeService = inject(ThemeService);
-  readonly logoSrc = computed(() => `./images/bitbutler-logo-${this.themeService.family()}.png`);
 }
