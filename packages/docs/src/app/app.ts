@@ -23,7 +23,8 @@ import { ThemeService } from './theme.service';
     <header class="docs-header">
       <div class="docs-header-inner">
         <a class="docs-brand" [routerLink]="['/index']">
-          <strong>BitButler</strong> <span class="docs-subtitle">Docs</span>
+          <img src="/images/bitbutler-logo-bitbutler.png" alt="BitButler" class="docs-logo" />
+          <strong>BitButler</strong><span class="docs-subtitle">Docs</span>
         </a>
         <bb-search-bar class="docs-search" />
         <div class="docs-header-end">
@@ -70,13 +71,22 @@ import { ThemeService } from './theme.service';
         gap: 1rem;
       }
       .docs-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
         text-decoration: none;
         color: var(--bs-body-color);
         font-size: 1.1rem;
       }
+      .docs-logo {
+        height: 28px;
+        width: auto;
+        flex-shrink: 0;
+      }
       .docs-subtitle {
         opacity: 0.6;
         font-weight: 400;
+        margin-left: 0.25rem;
       }
       .docs-header-end {
         display: flex;

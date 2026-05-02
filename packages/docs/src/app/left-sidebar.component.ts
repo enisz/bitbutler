@@ -48,17 +48,19 @@ function folderOrder(folder: string): number {
               />
             </svg>
           </button>
-          @if (expandedGroups().has(entry.slug)) {
-            @for (child of entry.children; track child.slug) {
-              <a
-                class="sidebar-nav-link sidebar-nav-child"
-                [routerLink]="'/' + child.slug"
-                routerLinkActive="active"
-                [routerLinkActiveOptions]="{ exact: true }"
-                >{{ child.attributes.title }}</a
-              >
-            }
-          }
+          <div class="sidebar-children" [class.open]="expandedGroups().has(entry.slug)">
+            <div class="sidebar-children-inner">
+              @for (child of entry.children; track child.slug) {
+                <a
+                  class="sidebar-nav-link sidebar-nav-child"
+                  [routerLink]="'/' + child.slug"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: true }"
+                  >{{ child.attributes.title }}</a
+                >
+              }
+            </div>
+          </div>
         } @else {
           <a
             class="sidebar-nav-link"
@@ -98,6 +100,17 @@ function folderOrder(folder: string): number {
         color: var(--bs-body-color);
         font-weight: 600;
         border-left-color: var(--bb-accent);
+      }
+      .sidebar-children {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows 200ms ease;
+      }
+      .sidebar-children.open {
+        grid-template-rows: 1fr;
+      }
+      .sidebar-children-inner {
+        overflow: hidden;
       }
       .sidebar-nav-child {
         padding-left: 1.75rem;
