@@ -8,7 +8,7 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
   {
-    path: ':slug',
+    path: '**',
     component: DocPageComponent,
   },
 ];

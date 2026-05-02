@@ -1,6 +1,6 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, HostListener, OnInit, inject, signal } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ContentService } from '../content.service';
 
 export type { DocAttributes } from '../content.service';
@@ -24,16 +24,27 @@ export type { DocAttributes } from '../content.service';
 })
 export class DocPageComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly contentService = inject(ContentService);
   private readonly sanitizer = inject(DomSanitizer);
 
   readonly html = signal<SafeHtml>('');
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe((params) => {
-      const slug = params.get('slug') ?? 'index';
+    this.route.url.subscribe((segments) => {
+      const slug = segments.map((s) => s.path).join('/') || 'index';
       const file = this.contentService.getFile(slug);
       this.html.set(this.sanitizer.bypassSecurityTrustHtml(file?.html ?? '<p>Page not found.</p>'));
     });
+  }
+
+  @HostListener('click', ['$event'])
+  onClick(event: MouseEvent): void {
+    const anchor = (event.target as HTMLElement).closest('a');
+    if (!anchor) return;
+    const href = anchor.getAttribute('href');
+    if (!href || /^(https?:|\/\/|mailto:)/.test(href)) return;
+    event.preventDefault();
+    this.router.navigateByUrl(href);
   }
 }

@@ -2,8 +2,11 @@ import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { ContentService, DocFile } from './content.service';
 
-interface NavGroup {
-  page: DocFile;
+interface NavEntry {
+  isGroup: boolean;
+  label: string;
+  slug: string;
+  order: number;
   children: DocFile[];
 }
 
@@ -13,22 +16,24 @@ interface NavGroup {
   imports: [RouterLink, RouterLinkActive],
   template: `
     <nav class="left-sidebar-nav">
-      @for (group of groups; track group.page.slug) {
+      @for (entry of nav; track entry.slug) {
         <a
           class="sidebar-nav-link"
-          [routerLink]="['/', group.page.slug]"
+          [routerLink]="'/' + entry.slug"
           routerLinkActive="active"
           [routerLinkActiveOptions]="{ exact: true }"
-          >{{ group.page.attributes.title }}</a
+          >{{ entry.label }}</a
         >
-        @for (child of group.children; track child.slug) {
-          <a
-            class="sidebar-nav-link sidebar-nav-child"
-            [routerLink]="['/', child.slug]"
-            routerLinkActive="active"
-            [routerLinkActiveOptions]="{ exact: true }"
-            >{{ child.attributes.title }}</a
-          >
+        @if (entry.isGroup) {
+          @for (child of entry.children; track child.slug) {
+            <a
+              class="sidebar-nav-link sidebar-nav-child"
+              [routerLink]="'/' + child.slug"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: true }"
+              >{{ child.attributes.title }}</a
+            >
+          }
         }
       }
     </nav>
@@ -71,12 +76,32 @@ interface NavGroup {
 export class LeftSidebarComponent {
   private readonly contentService = inject(ContentService);
 
-  readonly groups: NavGroup[] = (() => {
-    const all = this.contentService.files;
-    const topLevel = all.filter((f) => !f.attributes.parent);
-    return topLevel.map((page) => ({
-      page,
-      children: all.filter((f) => f.attributes.parent === page.slug),
-    }));
+  readonly nav: NavEntry[] = (() => {
+    const files = this.contentService.files;
+
+    const entries: NavEntry[] = [
+      ...files
+        .filter((f) => f.folder === null)
+        .map((f) => ({
+          isGroup: false,
+          label: f.attributes.title,
+          slug: f.slug,
+          order: f.attributes.order ?? 99,
+          children: [],
+        })),
+      ...files
+        .filter((f) => f.isIndex)
+        .map((f) => ({
+          isGroup: true,
+          label: f.attributes.title,
+          slug: f.slug,
+          order: f.attributes.order ?? 99,
+          children: files
+            .filter((c) => c.folder === f.folder && !c.isIndex)
+            .sort((a, b) => (a.attributes.order ?? 99) - (b.attributes.order ?? 99)),
+        })),
+    ];
+
+    return entries.sort((a, b) => a.order - b.order);
   })();
 }
