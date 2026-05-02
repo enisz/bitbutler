@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('electron', () => ({
@@ -87,7 +88,7 @@ describe('i18n', () => {
     loadTranslations('us');
 
     expect(vi.mocked(fs.default.readFileSync)).toHaveBeenCalledWith(
-      '/fake/app/public/i18n/us.json',
+      path.join('/fake/app', 'public', 'i18n', 'us.json'),
       'utf-8',
     );
   });
