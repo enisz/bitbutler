@@ -112,7 +112,10 @@ export class RightSidebarComponent implements OnInit, OnDestroy {
       this.doc.querySelectorAll<HTMLElement>('.content-area h2, .content-area h3'),
     );
 
-    if (headings.length === 0) return;
+    if (headings.length === 0) {
+      this.toc.set([]);
+      return;
+    }
 
     headings.forEach((h) => {
       if (!h.id) {
