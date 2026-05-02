@@ -1,4 +1,4 @@
-import { Injectable, effect, signal } from '@angular/core';
+import { Injectable, computed, effect, signal } from '@angular/core';
 
 export type ThemeFamily =
   | 'bitbutler'
@@ -22,27 +22,28 @@ export class ThemeService {
   );
   readonly mode = signal<ThemeMode>((localStorage.getItem(MODE_KEY) as ThemeMode) ?? 'dark');
 
+  private readonly systemMode = signal<'light' | 'dark'>(
+    window.matchMedia?.('(prefers-color-scheme: dark)')?.matches ? 'dark' : 'light',
+  );
+
+  readonly effectiveMode = computed<'light' | 'dark'>(() => {
+    const mode = this.mode();
+    return mode === 'system' ? this.systemMode() : mode;
+  });
+
   constructor() {
-    const mql = window.matchMedia?.('(prefers-color-scheme: dark)');
-    mql?.addEventListener?.('change', () => {
-      if (this.mode() === 'system') {
-        document.documentElement.setAttribute('data-bs-theme', this.getSystemMode());
-      }
+    window.matchMedia?.('(prefers-color-scheme: dark)')?.addEventListener('change', (e) => {
+      this.systemMode.set(e.matches ? 'dark' : 'light');
     });
 
     effect(() => {
       const family = this.family();
-      const mode = this.mode();
-      const effectiveMode = mode === 'system' ? this.getSystemMode() : mode;
+      const effectiveMode = this.effectiveMode();
       document.documentElement.setAttribute('data-bb-theme', family);
       document.documentElement.setAttribute('data-bs-theme', effectiveMode);
       localStorage.setItem(FAMILY_KEY, family);
-      localStorage.setItem(MODE_KEY, mode);
+      localStorage.setItem(MODE_KEY, this.mode());
     });
-  }
-
-  private getSystemMode(): 'light' | 'dark' {
-    return window.matchMedia?.('(prefers-color-scheme: dark)')?.matches ? 'dark' : 'light';
   }
 
   setFamily(family: ThemeFamily): void {

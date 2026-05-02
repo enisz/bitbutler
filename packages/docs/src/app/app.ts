@@ -1,5 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
+import darkThemeCss from 'highlight.js/styles/atom-one-dark.css?inline';
+import lightThemeCss from 'highlight.js/styles/atom-one-light.css?inline';
 import { LeftSidebarComponent } from './left-sidebar.component';
 import { RightSidebarComponent } from './right-sidebar.component';
 import { ThemePickerComponent } from './theme-picker.component';
@@ -121,4 +123,17 @@ import { ThemeService } from './theme.service';
 })
 export class AppComponent {
   private readonly themeService = inject(ThemeService);
+
+  constructor() {
+    effect(() => {
+      const isDark = this.themeService.effectiveMode() === 'dark';
+      let style = document.getElementById('hljs-theme') as HTMLStyleElement | null;
+      if (!style) {
+        style = document.createElement('style');
+        style.id = 'hljs-theme';
+        document.head.appendChild(style);
+      }
+      style.textContent = isDark ? darkThemeCss : lightThemeCss;
+    });
+  }
 }

@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
+import hljs from 'highlight.js';
 import { marked } from 'marked';
+import { markedHighlight } from 'marked-highlight';
 
 export interface DocAttributes {
   title: string;
@@ -15,6 +17,17 @@ export interface DocFile {
   body: string;
   html: string;
 }
+
+marked.use(
+  markedHighlight({
+    emptyLangClass: 'hljs',
+    langPrefix: 'hljs language-',
+    highlight(code, lang) {
+      const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+      return hljs.highlight(code, { language }).value;
+    },
+  }),
+);
 
 const rawFiles = import.meta.glob('../content/*.md', {
   query: '?raw',

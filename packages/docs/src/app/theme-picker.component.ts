@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, linkedSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { ThemeMode, ThemeService } from './theme.service';
@@ -11,6 +11,7 @@ interface SelectItem {
 @Component({
   selector: 'bb-theme-picker',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgSelectComponent, FormsModule],
   template: `
     <div class="theme-picker">
@@ -21,8 +22,8 @@ interface SelectItem {
         bindLabel="label"
         [searchable]="false"
         [clearable]="false"
-        [ngModel]="themeService.mode()"
-        (ngModelChange)="themeService.setMode($event)"
+        [ngModel]="selectedMode()"
+        (ngModelChange)="onModeChange($event)"
       ></ng-select>
     </div>
   `,
@@ -37,11 +38,17 @@ interface SelectItem {
   ],
 })
 export class ThemePickerComponent {
-  readonly themeService = inject(ThemeService);
+  private readonly themeService = inject(ThemeService);
+
+  readonly selectedMode = linkedSignal(this.themeService.mode);
 
   readonly modes: SelectItem[] = [
     { value: 'light', label: 'Light' },
     { value: 'dark', label: 'Dark' },
     { value: 'system', label: 'System' },
   ];
+
+  onModeChange(mode: ThemeMode): void {
+    this.themeService.setMode(mode);
+  }
 }
