@@ -196,12 +196,16 @@ export class SearchBarComponent {
 
   @ViewChild('searchInput') private readonly searchInputEl!: ElementRef<HTMLInputElement>;
 
-  private readonly fuse = new Fuse(this.contentService.files, {
-    keys: [
-      { name: 'attributes.title', weight: 0.7 },
-      { name: 'body', weight: 0.3 },
-    ],
+  private readonly fuseTitle = new Fuse(this.contentService.files, {
+    keys: ['attributes.title'],
     threshold: 0.4,
+    includeScore: true,
+  });
+
+  private readonly fuseBody = new Fuse(this.contentService.files, {
+    keys: ['body'],
+    threshold: 0.4,
+    ignoreLocation: true,
     includeScore: true,
   });
 
@@ -225,7 +229,21 @@ export class SearchBarComponent {
 
   onSearch(query: string): void {
     const trimmed = query.trim();
-    this.results.set(trimmed ? this.fuse.search(trimmed, { limit: MAX_RESULTS }) : []);
+    if (!trimmed) {
+      this.results.set([]);
+      return;
+    }
+    const titleHits = this.fuseTitle.search(trimmed, { limit: MAX_RESULTS });
+    const bodyHits = this.fuseBody.search(trimmed, { limit: MAX_RESULTS });
+    const seen = new Set<string>();
+    const merged: FuseResult<DocFile>[] = [];
+    for (const r of [...titleHits, ...bodyHits].sort((a, b) => (a.score ?? 1) - (b.score ?? 1))) {
+      if (!seen.has(r.item.slug)) {
+        seen.add(r.item.slug);
+        merged.push(r);
+      }
+    }
+    this.results.set(merged.slice(0, MAX_RESULTS));
   }
 
   onResultClick(): void {
