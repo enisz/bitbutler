@@ -1,7 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { injectContentFiles } from '@analogjs/content';
-import { DocAttributes } from './pages/doc-page.component';
+import { ContentService } from './content.service';
 
 @Component({
   selector: 'bb-left-sidebar',
@@ -52,7 +51,6 @@ import { DocAttributes } from './pages/doc-page.component';
   ],
 })
 export class LeftSidebarComponent {
-  readonly pages = injectContentFiles<DocAttributes>()
-    .filter((f) => f.filename.startsWith('/src/content/'))
-    .sort((a, b) => (a.attributes.order ?? 99) - (b.attributes.order ?? 99));
+  private readonly contentService = inject(ContentService);
+  readonly pages = this.contentService.files;
 }

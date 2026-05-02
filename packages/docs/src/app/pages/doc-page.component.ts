@@ -1,23 +1,20 @@
-import { AsyncPipe } from '@angular/common';
-import { Component } from '@angular/core';
-import { MarkdownComponent, injectContent } from '@analogjs/content';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { MarkdownComponent } from '@analogjs/content';
+import { ContentService } from '../content.service';
 
-export interface DocAttributes {
-  title: string;
-  order: number;
-  slug: string;
-}
+export type { DocAttributes } from '../content.service';
 
 @Component({
   selector: 'bb-doc-page',
   standalone: true,
-  imports: [MarkdownComponent, AsyncPipe],
+  imports: [MarkdownComponent],
   template: `
     <div class="doc-content">
-      @if (post$ | async; as post) {
-        <analog-markdown [content]="post.content" />
+      @if (body(); as content) {
+        <analog-markdown [content]="content" />
       } @else {
-        <p>Loading…</p>
+        <p>Page not found.</p>
       }
     </div>
   `,
@@ -32,6 +29,17 @@ export interface DocAttributes {
     `,
   ],
 })
-export class DocPageComponent {
-  readonly post$ = injectContent<DocAttributes>('slug');
+export class DocPageComponent implements OnInit {
+  private readonly route = inject(ActivatedRoute);
+  private readonly contentService = inject(ContentService);
+
+  readonly body = signal('');
+
+  ngOnInit(): void {
+    this.route.paramMap.subscribe((params) => {
+      const slug = params.get('slug') ?? 'index';
+      const file = this.contentService.getFile(slug);
+      this.body.set(file?.body ?? '');
+    });
+  }
 }
