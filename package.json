@@ -39,7 +39,7 @@
     "lint": "eslint \"packages/app/src/**/*.{ts,html}\" \"packages/electron/src/**/*.ts\"",
     "lint:fix": "npm run lint -- --fix",
     "prepare": "husky",
-    "test": "npm run test --workspace=packages/app",
+    "test": "npm run test --workspaces --if-present",
     "test:watch": "npm run test:watch --workspace=packages/app"
   },
   "lint-staged": {
