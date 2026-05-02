@@ -1,6 +1,6 @@
 import { Injectable, effect, signal } from '@angular/core';
 
-export type Theme =
+export type ThemeFamily =
   | 'bitbutler'
   | 'aurora'
   | 'mint-green'
@@ -10,22 +10,46 @@ export type Theme =
   | 'deep-sea'
   | 'crimson-ember';
 
-const STORAGE_KEY = 'bb-docs-theme';
+export type ThemeMode = 'light' | 'dark' | 'system';
+
+const FAMILY_KEY = 'bb-docs-theme';
+const MODE_KEY = 'bb-docs-mode';
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
-  readonly theme = signal<Theme>((localStorage.getItem(STORAGE_KEY) as Theme) ?? 'bitbutler');
+  readonly family = signal<ThemeFamily>(
+    (localStorage.getItem(FAMILY_KEY) as ThemeFamily) ?? 'bitbutler',
+  );
+  readonly mode = signal<ThemeMode>((localStorage.getItem(MODE_KEY) as ThemeMode) ?? 'dark');
 
   constructor() {
+    const mql = window.matchMedia?.('(prefers-color-scheme: dark)');
+    mql?.addEventListener?.('change', () => {
+      if (this.mode() === 'system') {
+        document.documentElement.setAttribute('data-bs-theme', this.getSystemMode());
+      }
+    });
+
     effect(() => {
-      const t = this.theme();
-      document.documentElement.setAttribute('data-bb-theme', t);
-      document.documentElement.setAttribute('data-bs-theme', 'dark');
-      localStorage.setItem(STORAGE_KEY, t);
+      const family = this.family();
+      const mode = this.mode();
+      const effectiveMode = mode === 'system' ? this.getSystemMode() : mode;
+      document.documentElement.setAttribute('data-bb-theme', family);
+      document.documentElement.setAttribute('data-bs-theme', effectiveMode);
+      localStorage.setItem(FAMILY_KEY, family);
+      localStorage.setItem(MODE_KEY, mode);
     });
   }
 
-  setTheme(theme: Theme): void {
-    this.theme.set(theme);
+  private getSystemMode(): 'light' | 'dark' {
+    return window.matchMedia?.('(prefers-color-scheme: dark)')?.matches ? 'dark' : 'light';
+  }
+
+  setFamily(family: ThemeFamily): void {
+    this.family.set(family);
+  }
+
+  setMode(mode: ThemeMode): void {
+    this.mode.set(mode);
   }
 }

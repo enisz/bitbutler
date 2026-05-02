@@ -1,8 +1,8 @@
 @use '../../app/src/styles/themes/index' as themes;
+@use '../../app/src/styles/ng-select';
 
 @include themes.install-themes();
 
-// Docs-specific global styles
 * {
   box-sizing: border-box;
 }
@@ -12,4 +12,13 @@ body {
   font-family: var(--bs-body-font-family, system-ui, sans-serif);
   background-color: var(--bs-body-bg);
   color: var(--bs-body-color);
+}
+
+// Docs-specific widths for compact selectors in the header
+.bb-select-theme.ng-select .ng-select-container {
+  width: 140px;
+}
+
+.bb-select-mode.ng-select .ng-select-container {
+  width: 90px;
 }

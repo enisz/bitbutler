@@ -1,5 +1,6 @@
 @use 'bootstrap/scss/bootstrap' as *;
 @use '@ng-select/ng-select/themes/default.theme.css';
+@use './styles/ng-select';
 @use './styles/themes/theme-utils' as bb;
 
 @use 'flag-icons/sass/flag-icons' with (
@@ -120,88 +121,6 @@ ngb-modal-window {
 .form-check-input,
 .form-check-label {
   cursor: pointer;
-}
-
-.ng-select .ng-clear-wrapper {
-  color: var(--bb-control-placeholder) !important;
-  &:hover .ng-clear {
-    color: var(--bs-danger) !important;
-  }
-}
-
-.ng-select .ng-arrow-wrapper .ng-arrow {
-  border-color: var(--bb-control-placeholder) transparent transparent;
-}
-
-.ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-marked {
-  color: var(--bb-accent) !important;
-}
-
-.ng-select .ng-select-container {
-  color: var(--bb-ng-text) !important;
-  min-height: 44px;
-  box-shadow: none !important;
-  background-color: var(--bb-control-bg) !important;
-  border: 1px solid var(--bb-control-border) !important;
-  border-radius: var(--bb-control-radius) !important;
-  transition:
-    background-color 120ms ease,
-    border-color 120ms ease,
-    box-shadow 120ms ease;
-}
-
-.ng-select:hover .ng-select-container {
-  border-color: var(--bb-control-hover-border) !important;
-}
-
-.ng-select .ng-select-container .ng-placeholder {
-  color: color-mix(in srgb, var(--bb-ng-text) 60%, transparent) !important;
-}
-
-.ng-select .ng-select-container .ng-placeholder {
-  color: color-mix(in srgb, var(--bb-ng-text) 60%, transparent) !important;
-}
-
-.ng-select.ng-select-focused .ng-select-container {
-  border-color: var(--bb-ng-accent) !important;
-  box-shadow: 0 0 0 0.2rem var(--bb-ng-focus-ring) !important;
-}
-
-ng-select.ng-select .ng-select-container .ng-input input {
-  color: var(--bb-control-text) !important;
-  -webkit-text-fill-color: var(--bb-control-text) !important;
-}
-
-.ng-dropdown-panel {
-  background-color: var(--bb-ng-panel) !important;
-  border: 1px solid var(--bb-ng-border) !important;
-  border-radius: 12px !important;
-  overflow: hidden;
-  box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.22) !important;
-  z-index: 9999 !important;
-  color: var(--bb-ng-text) !important;
-}
-
-.ng-dropdown-panel .ng-dropdown-panel-items .ng-option {
-  background-color: transparent !important;
-  color: var(--bb-ng-text) !important;
-  padding: 0.55rem 0.75rem !important;
-  line-height: 1.15;
-}
-
-.ng-dropdown-panel .ng-dropdown-panel-items .ng-option:hover,
-.ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-marked {
-  background-color: var(--bb-ng-hover-bg) !important;
-}
-
-.ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-selected {
-  background-color: var(--bb-ng-active-bg) !important;
-  box-shadow: inset 3px 0 0 var(--bb-ng-accent) !important;
-  color: var(--bb-ng-accent) !important;
-}
-
-.ng-dropdown-panel .ng-option strong {
-  font-weight: 700;
 }
 
 .form-control,
@@ -578,37 +497,6 @@ html ngb-typeahead-window.dropdown-menu .dropdown-item:active {
     border-top-right-radius: 0 !important;
     border-bottom-right-radius: 0 !important;
   }
-}
-
-.bb-select-compact.ng-select .ng-select-container {
-  min-height: 24px !important;
-  height: 24px !important;
-  font-size: 0.75rem !important;
-  border-radius: 4px !important;
-  width: 100px;
-}
-
-.bb-select-compact.ng-select .ng-select-container .ng-value-container {
-  padding: 0 4px !important;
-}
-
-.bb-select-compact.ng-select .ng-select-container .ng-value-container .ng-input {
-  top: 0 !important;
-  padding: 0 4px !important;
-}
-
-.bb-select-compact.ng-select .ng-arrow-wrapper {
-  width: 20px !important;
-  padding-right: 4px !important;
-}
-
-.bb-select-compact.ng-select .ng-arrow-wrapper .ng-arrow {
-  border-width: 4px 3px 0 !important;
-}
-
-.bb-select-compact.ng-dropdown-panel .ng-dropdown-panel-items .ng-option {
-  padding: 0.25rem 0.5rem !important;
-  font-size: 0.75rem !important;
 }
 
 .bb-datefilter {

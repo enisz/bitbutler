@@ -1,24 +1,39 @@
 import { Component, inject } from '@angular/core';
-import { Theme, ThemeService } from './theme.service';
+import { FormsModule } from '@angular/forms';
+import { NgSelectComponent } from '@ng-select/ng-select';
+import { ThemeFamily, ThemeMode, ThemeService } from './theme.service';
+
+interface SelectItem {
+  value: string;
+  label: string;
+}
 
 @Component({
   selector: 'bb-theme-picker',
   standalone: true,
+  imports: [NgSelectComponent, FormsModule],
   template: `
     <div class="theme-picker">
-      <span class="theme-picker-label">Theme</span>
-      <div class="theme-picker-options">
-        @for (theme of themes; track theme.value) {
-          <button
-            class="theme-btn"
-            [class.active]="themeService.theme() === theme.value"
-            [attr.title]="theme.label"
-            (click)="themeService.setTheme(theme.value)"
-          >
-            {{ theme.label }}
-          </button>
-        }
-      </div>
+      <ng-select
+        class="bb-select-compact bb-select-theme"
+        [items]="families"
+        bindValue="value"
+        bindLabel="label"
+        [searchable]="false"
+        [clearable]="false"
+        [ngModel]="themeService.family()"
+        (ngModelChange)="themeService.setFamily($event)"
+      ></ng-select>
+      <ng-select
+        class="bb-select-compact bb-select-mode"
+        [items]="modes"
+        bindValue="value"
+        bindLabel="label"
+        [searchable]="false"
+        [clearable]="false"
+        [ngModel]="themeService.mode()"
+        (ngModelChange)="themeService.setMode($event)"
+      ></ng-select>
     </div>
   `,
   styles: [
@@ -28,45 +43,26 @@ import { Theme, ThemeService } from './theme.service';
         align-items: center;
         gap: 0.5rem;
       }
-      .theme-picker-label {
-        font-size: 0.8rem;
-        opacity: 0.7;
-      }
-      .theme-picker-options {
-        display: flex;
-        gap: 0.25rem;
-        flex-wrap: wrap;
-      }
-      .theme-btn {
-        padding: 0.2rem 0.5rem;
-        font-size: 0.75rem;
-        border: 1px solid var(--bs-border-color);
-        border-radius: 4px;
-        background: transparent;
-        color: var(--bs-body-color);
-        cursor: pointer;
-        transition: background 0.15s;
-      }
-      .theme-btn:hover,
-      .theme-btn.active {
-        background: var(--bs-primary);
-        color: white;
-        border-color: var(--bs-primary);
-      }
     `,
   ],
 })
 export class ThemePickerComponent {
   readonly themeService = inject(ThemeService);
 
-  readonly themes: { value: Theme; label: string }[] = [
+  readonly families: SelectItem[] = [
     { value: 'bitbutler', label: 'BitButler' },
     { value: 'aurora', label: 'Aurora' },
-    { value: 'mint-green', label: 'Mint' },
-    { value: 'purple-haze', label: 'Purple' },
-    { value: 'ocean-breeze', label: 'Ocean' },
-    { value: 'pumpkin-spice', label: 'Pumpkin' },
+    { value: 'mint-green', label: 'Mint Green' },
+    { value: 'purple-haze', label: 'Purple Haze' },
+    { value: 'ocean-breeze', label: 'Ocean Breeze' },
+    { value: 'pumpkin-spice', label: 'Pumpkin Spice' },
     { value: 'deep-sea', label: 'Deep Sea' },
-    { value: 'crimson-ember', label: 'Crimson' },
+    { value: 'crimson-ember', label: 'Crimson Ember' },
+  ];
+
+  readonly modes: SelectItem[] = [
+    { value: 'light', label: 'Light' },
+    { value: 'dark', label: 'Dark' },
+    { value: 'system', label: 'System' },
   ];
 }
