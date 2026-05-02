@@ -10,6 +10,7 @@
     "@angular/platform-browser": "^20.3.0",
     "@angular/router": "^20.3.0",
     "front-matter": "^4.0.2",
+    "fuse.js": "^7.3.0",
     "highlight.js": "^11.0.0",
     "marked": "^18.0.3",
     "marked-gfm-heading-id": "^4.1.4",

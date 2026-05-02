@@ -4,6 +4,7 @@ import darkThemeCss from 'highlight.js/styles/atom-one-dark.css?inline';
 import lightThemeCss from 'highlight.js/styles/atom-one-light.css?inline';
 import { LeftSidebarComponent } from './left-sidebar.component';
 import { RightSidebarComponent } from './right-sidebar.component';
+import { SearchBarComponent } from './search-bar.component';
 import { ThemePickerComponent } from './theme-picker.component';
 import { ThemeService } from './theme.service';
 
@@ -16,6 +17,7 @@ import { ThemeService } from './theme.service';
     ThemePickerComponent,
     LeftSidebarComponent,
     RightSidebarComponent,
+    SearchBarComponent,
   ],
   template: `
     <header class="docs-header">
@@ -23,7 +25,10 @@ import { ThemeService } from './theme.service';
         <a class="docs-brand" [routerLink]="['/index']">
           <strong>BitButler</strong> <span class="docs-subtitle">Docs</span>
         </a>
-        <bb-theme-picker />
+        <bb-search-bar class="docs-search" />
+        <div class="docs-header-end">
+          <bb-theme-picker />
+        </div>
       </div>
     </header>
 
@@ -59,9 +64,10 @@ import { ThemeService } from './theme.service';
         max-width: 1400px;
         margin: 0 auto;
         padding: 0.75rem 1.5rem;
-        display: flex;
+        display: grid;
+        grid-template-columns: 1fr minmax(200px, 360px) 1fr;
         align-items: center;
-        justify-content: space-between;
+        gap: 1rem;
       }
       .docs-brand {
         text-decoration: none;
@@ -71,6 +77,10 @@ import { ThemeService } from './theme.service';
       .docs-subtitle {
         opacity: 0.6;
         font-weight: 400;
+      }
+      .docs-header-end {
+        display: flex;
+        justify-content: flex-end;
       }
 
       .docs-layout {
