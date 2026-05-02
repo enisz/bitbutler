@@ -5,6 +5,7 @@ export interface DocAttributes {
   title: string;
   order: number;
   slug: string;
+  parent?: string;
 }
 
 export interface DocFile {

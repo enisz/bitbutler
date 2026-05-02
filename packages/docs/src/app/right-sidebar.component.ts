@@ -8,6 +8,8 @@ import {
   signal,
 } from '@angular/core';
 
+const HEADER_HEIGHT = 56;
+
 interface TocEntry {
   id: string;
   text: string;
@@ -82,12 +84,13 @@ export class RightSidebarComponent implements OnInit, OnDestroy {
   private readonly cdr = inject(ChangeDetectorRef);
   private observer: IntersectionObserver | null = null;
   private mutationObserver: MutationObserver | null = null;
+  private scrollingTimer: ReturnType<typeof setTimeout> | null = null;
+  private isScrolling = false;
 
   readonly toc = signal<TocEntry[]>([]);
   readonly activeId = signal<string>('');
 
   ngOnInit(): void {
-    // Watch the content area for DOM changes (markdown renders async)
     this.mutationObserver = new MutationObserver(() => this.buildToc());
     const contentArea = this.doc.querySelector('.content-area');
     if (contentArea) {
@@ -99,6 +102,7 @@ export class RightSidebarComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.observer?.disconnect();
     this.mutationObserver?.disconnect();
+    if (this.scrollingTimer !== null) clearTimeout(this.scrollingTimer);
   }
 
   private buildToc(): void {
@@ -110,7 +114,6 @@ export class RightSidebarComponent implements OnInit, OnDestroy {
 
     if (headings.length === 0) return;
 
-    // Ensure all headings have IDs
     headings.forEach((h) => {
       if (!h.id) {
         h.id =
@@ -129,15 +132,18 @@ export class RightSidebarComponent implements OnInit, OnDestroy {
       })),
     );
 
+    // Top margin accounts for sticky header; bottom margin narrows the active zone
+    // to the band just below the header so the active entry tracks what the user is reading.
     this.observer = new IntersectionObserver(
       (entries) => {
+        if (this.isScrolling) return;
         const visible = entries.find((e) => e.isIntersecting);
         if (visible) {
           this.activeId.set(visible.target.id);
           this.cdr.markForCheck();
         }
       },
-      { rootMargin: '-10% 0px -80% 0px', threshold: 0 },
+      { rootMargin: `-${HEADER_HEIGHT}px 0px -60% 0px`, threshold: 0 },
     );
 
     headings.forEach((h) => this.observer!.observe(h));
@@ -145,7 +151,23 @@ export class RightSidebarComponent implements OnInit, OnDestroy {
 
   scrollTo(event: Event, id: string): void {
     event.preventDefault();
-    this.doc.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    // Pause scroll-spy during smooth scrolling to prevent flickering
+    this.isScrolling = true;
+    if (this.scrollingTimer !== null) clearTimeout(this.scrollingTimer);
+
     this.activeId.set(id);
+
+    const target = this.doc.getElementById(id);
+    if (target) {
+      const y = target.getBoundingClientRect().top + this.doc.defaultView!.scrollY - HEADER_HEIGHT;
+      this.doc.defaultView!.scrollTo({ top: y, behavior: 'smooth' });
+    }
+
+    // Re-enable scroll-spy after scroll animation completes (~600ms is enough for smooth scroll)
+    this.scrollingTimer = setTimeout(() => {
+      this.isScrolling = false;
+      this.scrollingTimer = null;
+    }, 600);
   }
 }
