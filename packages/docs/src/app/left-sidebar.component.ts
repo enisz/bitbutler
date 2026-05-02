@@ -5,9 +5,23 @@ import { ContentService, DocFile } from './content.service';
 interface NavEntry {
   isGroup: boolean;
   label: string;
+  /** Raw folder name (with numeric prefix) used as stable key and for ordering. */
   slug: string;
   order: number;
   children: DocFile[];
+}
+
+function folderLabel(folder: string): string {
+  return folder
+    .replace(/^\d+-/, '')
+    .split('-')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+}
+
+function folderOrder(folder: string): number {
+  const match = folder.match(/^(\d+)-/);
+  return match ? parseInt(match[1], 10) : 999;
 }
 
 @Component({
@@ -125,6 +139,7 @@ export class LeftSidebarComponent {
 
   readonly nav: NavEntry[] = (() => {
     const files = this.contentService.files;
+    const folders = [...new Set(files.filter((f) => f.folder !== null).map((f) => f.folder!))];
 
     const entries: NavEntry[] = [
       ...files
@@ -136,17 +151,15 @@ export class LeftSidebarComponent {
           order: f.attributes.order ?? 99,
           children: [],
         })),
-      ...files
-        .filter((f) => f.isIndex)
-        .map((f) => ({
-          isGroup: true,
-          label: f.attributes.title,
-          slug: f.slug,
-          order: f.attributes.order ?? 99,
-          children: files
-            .filter((c) => c.folder === f.folder && !c.isIndex)
-            .sort((a, b) => (a.attributes.order ?? 99) - (b.attributes.order ?? 99)),
-        })),
+      ...folders.map((folder) => ({
+        isGroup: true,
+        label: folderLabel(folder),
+        slug: folder,
+        order: folderOrder(folder),
+        children: files
+          .filter((f) => f.folder === folder)
+          .sort((a, b) => (a.attributes.order ?? 99) - (b.attributes.order ?? 99)),
+      })),
     ];
 
     return entries.sort((a, b) => a.order - b.order);

@@ -12,7 +12,6 @@ export interface DocFile {
   filename: string;
   slug: string;
   folder: string | null;
-  isIndex: boolean;
   attributes: DocAttributes;
   body: string;
   html: string;
@@ -55,36 +54,20 @@ function parseFrontmatter(raw: string): { attributes: DocAttributes; body: strin
   return { attributes: attrs as DocAttributes, body: match[2].trim() };
 }
 
-function deriveMetadata(filename: string): {
-  slug: string;
-  folder: string | null;
-  isIndex: boolean;
-} {
+function deriveMetadata(filename: string): { slug: string; folder: string | null } {
   const relative = filename.replace(/^\.\.\/content\//, '');
   const parts = relative.split('/');
 
   if (parts.length === 1) {
-    return { slug: parts[0].replace(/\.md$/, ''), folder: null, isIndex: false };
+    return { slug: parts[0].replace(/\.md$/, ''), folder: null };
   }
 
   const folder = parts[0];
   const file = parts[1].replace(/\.md$/, '');
+  // Strip numeric ordering prefix from folder for clean URL slugs
+  const slugFolder = folder.replace(/^\d+-/, '');
 
-  if (file === 'index') {
-    return { slug: folder, folder, isIndex: true };
-  }
-
-  return { slug: `${folder}/${file}`, folder, isIndex: false };
-}
-
-function buildContentsHtml(children: DocFile[]): string {
-  const sorted = [...children].sort(
-    (a, b) => (a.attributes.order ?? 99) - (b.attributes.order ?? 99),
-  );
-  const items = sorted
-    .map((f) => `<li><a href="/${f.slug}">${f.attributes.title}</a></li>`)
-    .join('\n');
-  return `<ul class="contents-list">\n${items}\n</ul>`;
+  return { slug: `${slugFolder}/${file}`, folder };
 }
 
 @Injectable({ providedIn: 'root' })
@@ -92,27 +75,11 @@ export class ContentService {
   readonly files: DocFile[];
 
   constructor() {
-    const parsed: DocFile[] = Object.entries(rawFiles).map(([filename, raw]) => {
+    this.files = Object.entries(rawFiles).map(([filename, raw]) => {
       const { attributes, body } = parseFrontmatter(raw as string);
-      const { slug, folder, isIndex } = deriveMetadata(filename);
+      const { slug, folder } = deriveMetadata(filename);
       const html = marked(body) as string;
-      return { filename, slug, folder, isIndex, attributes, body, html };
-    });
-
-    const folderChildren = new Map<string, DocFile[]>();
-    for (const file of parsed) {
-      if (file.folder && !file.isIndex) {
-        const list = folderChildren.get(file.folder) ?? [];
-        list.push(file);
-        folderChildren.set(file.folder, list);
-      }
-    }
-
-    this.files = parsed.map((file) => {
-      if (!file.isIndex) return file;
-      const children = folderChildren.get(file.folder!) ?? [];
-      const html = file.html.replace(/<!--\s*contents\s*-->/gi, buildContentsHtml(children));
-      return { ...file, html };
+      return { filename, slug, folder, attributes, body, html };
     });
   }
 
