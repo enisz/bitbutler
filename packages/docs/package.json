@@ -4,10 +4,15 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "@analogjs/content": "^2.5.0",
     "@angular/common": "^20.3.0",
     "@angular/core": "^20.3.0",
     "@angular/platform-browser": "^20.3.0",
     "@angular/router": "^20.3.0",
+    "front-matter": "^4.0.2",
+    "marked": "^18.0.3",
+    "marked-gfm-heading-id": "^4.1.4",
+    "marked-mangle": "^1.1.13",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"

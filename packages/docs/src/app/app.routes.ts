@@ -1,22 +1,14 @@
 import { Routes } from '@angular/router';
+import { DocPageComponent } from './pages/doc-page.component';
 
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./pages/index.page').then((m) => m.IndexPageComponent),
+    redirectTo: 'index',
+    pathMatch: 'full',
   },
   {
-    path: 'features',
-    loadComponent: () => import('./pages/features.page').then((m) => m.FeaturesPageComponent),
+    path: ':slug',
+    component: DocPageComponent,
   },
-  {
-    path: 'architecture',
-    loadComponent: () =>
-      import('./pages/architecture.page').then((m) => m.ArchitecturePageComponent),
-  },
-  {
-    path: 'development',
-    loadComponent: () => import('./pages/development.page').then((m) => m.DevelopmentPageComponent),
-  },
-  { path: '**', redirectTo: '' },
 ];

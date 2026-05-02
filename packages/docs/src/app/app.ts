@@ -1,54 +1,124 @@
-import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { RouterLink, RouterOutlet } from '@angular/router';
+import { LeftSidebarComponent } from './left-sidebar.component';
+import { RightSidebarComponent } from './right-sidebar.component';
+import { ThemePickerComponent } from './theme-picker.component';
+import { ThemeService } from './theme.service';
 
 @Component({
   selector: 'bb-docs-root',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  standalone: true,
+  imports: [
+    RouterOutlet,
+    RouterLink,
+    ThemePickerComponent,
+    LeftSidebarComponent,
+    RightSidebarComponent,
+  ],
   template: `
-    <nav class="navbar navbar-expand-md bg-body border-bottom sticky-top">
-      <div class="container">
-        <a class="navbar-brand fw-bold" routerLink="/">BitButler</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navMenu"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navMenu">
-          <ul class="navbar-nav ms-auto gap-1">
-            @for (link of navLinks; track link.path) {
-              <li class="nav-item">
-                <a
-                  class="nav-link"
-                  [routerLink]="link.path"
-                  routerLinkActive="active"
-                  [routerLinkActiveOptions]="{ exact: link.path === '/' }"
-                >
-                  {{ link.label }}
-                </a>
-              </li>
-            }
-          </ul>
-        </div>
+    <header class="docs-header">
+      <div class="docs-header-inner">
+        <a class="docs-brand" [routerLink]="['/index']">
+          <strong>BitButler</strong> <span class="docs-subtitle">Docs</span>
+        </a>
+        <bb-theme-picker />
       </div>
-    </nav>
-    <router-outlet />
+    </header>
+
+    <div class="docs-layout">
+      <aside class="docs-sidebar-left">
+        <bb-left-sidebar />
+      </aside>
+
+      <main class="docs-main content-area">
+        <router-outlet />
+      </main>
+
+      <aside class="docs-sidebar-right">
+        <bb-right-sidebar />
+      </aside>
+    </div>
   `,
   styles: [
     `
       :host {
         display: block;
+        min-height: 100vh;
+      }
+
+      .docs-header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: var(--bs-body-bg);
+        border-bottom: 1px solid var(--bs-border-color);
+      }
+      .docs-header-inner {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0.75rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .docs-brand {
+        text-decoration: none;
+        color: var(--bs-body-color);
+        font-size: 1.1rem;
+      }
+      .docs-subtitle {
+        opacity: 0.6;
+        font-weight: 400;
+      }
+
+      .docs-layout {
+        display: grid;
+        grid-template-columns: 220px 1fr 200px;
+        max-width: 1400px;
+        margin: 0 auto;
+        min-height: calc(100vh - 56px);
+      }
+
+      .docs-sidebar-left {
+        border-right: 1px solid var(--bs-border-color);
+        position: sticky;
+        top: 56px;
+        height: calc(100vh - 56px);
+        overflow-y: auto;
+      }
+
+      .docs-main {
+        min-width: 0;
+        padding: 0;
+      }
+
+      .docs-sidebar-right {
+        border-left: 1px solid var(--bs-border-color);
+        position: sticky;
+        top: 56px;
+        height: calc(100vh - 56px);
+        overflow-y: auto;
+      }
+
+      @media (max-width: 1024px) {
+        .docs-layout {
+          grid-template-columns: 200px 1fr;
+        }
+        .docs-sidebar-right {
+          display: none;
+        }
+      }
+      @media (max-width: 640px) {
+        .docs-layout {
+          grid-template-columns: 1fr;
+        }
+        .docs-sidebar-left {
+          display: none;
+        }
       }
     `,
   ],
 })
 export class AppComponent {
-  readonly navLinks = [
-    { path: '/', label: 'Home' },
-    { path: '/features', label: 'Features' },
-    { path: '/architecture', label: 'Architecture' },
-    { path: '/development', label: 'Development' },
-  ];
+  private readonly themeService = inject(ThemeService);
 }
