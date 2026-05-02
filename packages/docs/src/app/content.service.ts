@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { marked } from 'marked';
 
 export interface DocAttributes {
   title: string;
@@ -11,6 +12,7 @@ export interface DocFile {
   slug: string;
   attributes: DocAttributes;
   body: string;
+  html: string;
 }
 
 const rawFiles = import.meta.glob('../content/*.md', {
@@ -45,7 +47,8 @@ export class ContentService {
     .map(([filename, raw]) => {
       const { attributes, body } = parseFrontmatter(raw as string);
       const slug = attributes.slug || filename.split('/').pop()!.replace(/\.md$/, '');
-      return { filename, slug, attributes: { ...attributes, slug }, body };
+      const html = marked(body) as string;
+      return { filename, slug, attributes: { ...attributes, slug }, body, html };
     })
     .sort((a, b) => (a.attributes.order ?? 99) - (b.attributes.order ?? 99));
 

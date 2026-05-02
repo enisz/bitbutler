@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { MarkdownComponent } from '@analogjs/content';
 import { ContentService } from '../content.service';
 
 export type { DocAttributes } from '../content.service';
@@ -8,16 +8,8 @@ export type { DocAttributes } from '../content.service';
 @Component({
   selector: 'bb-doc-page',
   standalone: true,
-  imports: [MarkdownComponent],
-  template: `
-    <div class="doc-content">
-      @if (body(); as content) {
-        <analog-markdown [content]="content" />
-      } @else {
-        <p>Page not found.</p>
-      }
-    </div>
-  `,
+  imports: [],
+  template: ` <div class="doc-content markdown-body" [innerHTML]="html()"></div> `,
   styles: [
     `
       :host {
@@ -25,6 +17,7 @@ export type { DocAttributes } from '../content.service';
       }
       .doc-content {
         padding: 1.5rem;
+        max-width: 860px;
       }
     `,
   ],
@@ -32,14 +25,15 @@ export type { DocAttributes } from '../content.service';
 export class DocPageComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly contentService = inject(ContentService);
+  private readonly sanitizer = inject(DomSanitizer);
 
-  readonly body = signal('');
+  readonly html = signal<SafeHtml>('');
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
       const slug = params.get('slug') ?? 'index';
       const file = this.contentService.getFile(slug);
-      this.body.set(file?.body ?? '');
+      this.html.set(this.sanitizer.bypassSecurityTrustHtml(file?.html ?? '<p>Page not found.</p>'));
     });
   }
 }
