@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import {
   ChangeDetectorRef,
   Component,
@@ -82,6 +83,7 @@ interface TocEntry {
 export class RightSidebarComponent implements OnInit, OnDestroy {
   private readonly doc = inject(DOCUMENT);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly location = inject(Location);
   private observer: IntersectionObserver | null = null;
   private mutationObserver: MutationObserver | null = null;
   private scrollingTimer: ReturnType<typeof setTimeout> | null = null;
@@ -160,6 +162,9 @@ export class RightSidebarComponent implements OnInit, OnDestroy {
     if (this.scrollingTimer !== null) clearTimeout(this.scrollingTimer);
 
     this.activeId.set(id);
+
+    // Update URL fragment without triggering router navigation
+    this.location.replaceState(this.location.path() + '#' + id);
 
     const target = this.doc.getElementById(id);
     if (target) {

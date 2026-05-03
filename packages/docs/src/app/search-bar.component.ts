@@ -9,7 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import Fuse from 'fuse.js';
 import type { DocFile } from './content.service';
 import { ContentService } from './content.service';
@@ -27,8 +27,10 @@ interface ResultDisplay {
   item: DocFile;
   slug: string;
   bestScore: number;
+  folderLabel: string | null;
   titleParts: TextPart[];
   sectionHeading: string | null;
+  sectionAnchor: string | null;
   snippetParts: TextPart[] | null;
 }
 
@@ -54,6 +56,35 @@ function extractHeading(body: string, matchPos: number): string | null {
     if (m) return m[1].trim();
   }
   return null;
+}
+
+function headingToAnchor(heading: string): string {
+  return heading
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+function folderToLabel(folder: string): string {
+  return folder
+    .replace(/^\d+-/, '')
+    .split('-')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+}
+
+function findExactIndices(text: string, query: string): Array<readonly [number, number]> {
+  const lower = text.toLowerCase();
+  const q = query.toLowerCase();
+  const results: Array<readonly [number, number]> = [];
+  let pos = 0;
+  while (pos < lower.length) {
+    const idx = lower.indexOf(q, pos);
+    if (idx === -1) break;
+    results.push([idx, idx + q.length - 1] as const);
+    pos = idx + q.length;
+  }
+  return results;
 }
 
 function cleanMarkdown(text: string): string {
@@ -117,7 +148,7 @@ function buildSnippet(body: string, indices: MatchIndices): TextPart[] | null {
         [(ngModel)]="query"
         (ngModelChange)="onSearch($event)"
         (focus)="onFocus()"
-        (keydown.escape)="close()"
+        (keydown)="onInputKeydown($event)"
       />
     </div>
     @if (isOpen()) {
@@ -129,17 +160,29 @@ function buildSnippet(body: string, indices: MatchIndices): TextPart[] | null {
       >
         @if (displayResults().length > 0) {
           <ul class="result-list">
-            @for (display of displayResults(); track display.slug) {
+            @for (display of displayResults(); track display.slug; let i = $index) {
               <li>
-                <a class="result-item" [routerLink]="'/' + display.slug" (click)="onResultClick()">
+                <a
+                  class="result-item"
+                  [class.active]="selectedIndex() === i"
+                  [routerLink]="'/' + display.slug"
+                  [fragment]="display.sectionAnchor ?? undefined"
+                  (click)="onResultClick()"
+                >
                   <span class="result-heading">
-                    @for (part of display.titleParts; track $index) {
-                      @if (part.highlighted) {
-                        <mark class="result-mark">{{ part.text }}</mark>
-                      } @else {
-                        {{ part.text }}
-                      }
+                    @if (display.folderLabel) {
+                      <span class="result-folder">{{ display.folderLabel }}</span>
+                      <span class="result-sep">›</span>
                     }
+                    <span class="result-title">
+                      @for (part of display.titleParts; track $index) {
+                        @if (part.highlighted) {
+                          <mark class="result-mark">{{ part.text }}</mark>
+                        } @else {
+                          {{ part.text }}
+                        }
+                      }
+                    </span>
                     @if (display.sectionHeading) {
                       <span class="result-sep">›</span>
                       <span class="result-section">{{ display.sectionHeading }}</span>
@@ -183,9 +226,9 @@ function buildSnippet(body: string, indices: MatchIndices): TextPart[] | null {
         position: fixed;
         inset: 0;
         z-index: 99;
-        background: rgba(0, 0, 0, 0.2);
-        backdrop-filter: blur(4px);
-        -webkit-backdrop-filter: blur(4px);
+        background: rgba(0, 0, 0, 0.35);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
       }
 
       .search-wrapper {
@@ -259,7 +302,8 @@ function buildSnippet(body: string, indices: MatchIndices): TextPart[] | null {
         transition: background 0.1s;
       }
 
-      .result-item:hover {
+      .result-item:hover,
+      .result-item.active {
         background: color-mix(in srgb, var(--bb-accent, var(--bs-primary)) 10%, transparent);
       }
 
@@ -271,6 +315,16 @@ function buildSnippet(body: string, indices: MatchIndices): TextPart[] | null {
         font-size: 0.875rem;
         font-weight: 500;
         line-height: 1.3;
+      }
+
+      .result-folder {
+        font-size: 0.8125rem;
+        font-weight: 400;
+        color: var(--bs-secondary-color);
+      }
+
+      .result-title {
+        display: inline;
       }
 
       .result-sep {
@@ -316,6 +370,7 @@ export class SearchBarComponent {
   private readonly contentService = inject(ContentService);
   private readonly elementRef = inject(ElementRef);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly router = inject(Router);
 
   @ViewChild('searchInput') private readonly searchInputEl!: ElementRef<HTMLInputElement>;
 
@@ -323,7 +378,6 @@ export class SearchBarComponent {
     keys: ['attributes.title'],
     threshold: 0.4,
     includeScore: true,
-    includeMatches: true,
   });
 
   private readonly fuseBody = new Fuse(this.contentService.files, {
@@ -331,11 +385,11 @@ export class SearchBarComponent {
     threshold: 0.4,
     ignoreLocation: true,
     includeScore: true,
-    includeMatches: true,
   });
 
   readonly isOpen = signal(false);
   readonly displayResults = signal<ResultDisplay[]>([]);
+  readonly selectedIndex = signal(-1);
   readonly dropdownTop = signal('0px');
   readonly dropdownLeft = signal('0px');
   readonly dropdownWidth = signal('360px');
@@ -348,31 +402,29 @@ export class SearchBarComponent {
   }
 
   close(): void {
+    this.query = '';
+    this.displayResults.set([]);
+    this.selectedIndex.set(-1);
     this.isOpen.set(false);
     this.searchInputEl?.nativeElement?.blur();
   }
 
   onSearch(query: string): void {
+    this.selectedIndex.set(-1);
     const trimmed = query.trim();
     if (!trimmed) {
       this.displayResults.set([]);
       return;
     }
 
-    const titleMap = new Map<string, { score: number; indices?: MatchIndices }>();
+    const titleMap = new Map<string, { score: number }>();
     for (const r of this.fuseTitle.search(trimmed, { limit: MAX_RESULTS * 2 })) {
-      titleMap.set(r.item.slug, {
-        score: r.score ?? 1,
-        indices: r.matches?.[0]?.indices as MatchIndices | undefined,
-      });
+      titleMap.set(r.item.slug, { score: r.score ?? 1 });
     }
 
-    const bodyMap = new Map<string, { score: number; indices?: MatchIndices }>();
+    const bodyMap = new Map<string, { score: number }>();
     for (const r of this.fuseBody.search(trimmed, { limit: MAX_RESULTS * 2 })) {
-      bodyMap.set(r.item.slug, {
-        score: r.score ?? 1,
-        indices: r.matches?.[0]?.indices as MatchIndices | undefined,
-      });
+      bodyMap.set(r.item.slug, { score: r.score ?? 1 });
     }
 
     const allSlugs = new Set([...titleMap.keys(), ...bodyMap.keys()]);
@@ -380,23 +432,34 @@ export class SearchBarComponent {
 
     for (const slug of allSlugs) {
       const titleData = titleMap.get(slug);
-      const bodyData = bodyMap.get(slug);
       const item = this.contentService.files.find((f) => f.slug === slug)!;
+      const bodyData = bodyMap.get(slug);
       const bestScore = Math.min(titleData?.score ?? 1, bodyData?.score ?? 1);
 
+      const exactBodyIndices = findExactIndices(item.body, trimmed);
+      const exactTitleIndices = findExactIndices(item.attributes.title, trimmed);
+
+      // Skip results that Fuse found only via fuzzy body match but no actual
+      // occurrence of the query exists in either the title or body.
+      if (!titleData && exactBodyIndices.length === 0) continue;
+
       let sectionHeading: string | null = null;
+      let sectionAnchor: string | null = null;
       let snippetParts: TextPart[] | null = null;
-      if (bodyData?.indices?.length) {
-        sectionHeading = extractHeading(item.body, bodyData.indices[0][0]);
-        snippetParts = buildSnippet(item.body, bodyData.indices);
+      if (exactBodyIndices.length) {
+        sectionHeading = extractHeading(item.body, exactBodyIndices[0][0]);
+        sectionAnchor = sectionHeading ? headingToAnchor(sectionHeading) : null;
+        snippetParts = buildSnippet(item.body, exactBodyIndices);
       }
 
       displays.push({
         item,
         slug,
         bestScore,
-        titleParts: buildParts(item.attributes.title, titleData?.indices),
+        folderLabel: item.folder ? folderToLabel(item.folder) : null,
+        titleParts: buildParts(item.attributes.title, exactTitleIndices),
         sectionHeading,
+        sectionAnchor,
         snippetParts,
       });
     }
@@ -406,10 +469,54 @@ export class SearchBarComponent {
   }
 
   onResultClick(): void {
-    this.query = '';
-    this.displayResults.set([]);
     this.close();
     this.cdr.markForCheck();
+  }
+
+  onInputKeydown(event: KeyboardEvent): void {
+    const results = this.displayResults();
+
+    switch (event.key) {
+      case 'ArrowDown':
+        if (!results.length) return;
+        event.preventDefault();
+        this.selectedIndex.update((i) => Math.min(i + 1, results.length - 1));
+        this.scrollSelectedIntoView();
+        break;
+
+      case 'ArrowUp':
+        if (!results.length) return;
+        event.preventDefault();
+        this.selectedIndex.update((i) => Math.max(i - 1, -1));
+        this.scrollSelectedIntoView();
+        break;
+
+      case 'Enter': {
+        const idx = this.selectedIndex();
+        if (idx < 0 || !results[idx]) return;
+        event.preventDefault();
+        const result = results[idx];
+        this.router.navigate(['/' + result.slug], {
+          fragment: result.sectionAnchor ?? undefined,
+        });
+        this.onResultClick();
+        break;
+      }
+
+      case 'Escape':
+        this.close();
+        break;
+    }
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  onDocumentKeydown(event: KeyboardEvent): void {
+    if (event.ctrlKey && event.key === 'k') {
+      event.preventDefault();
+      this.isOpen.set(true);
+      this.updateDropdownPosition();
+      this.searchInputEl?.nativeElement?.focus();
+    }
   }
 
   @HostListener('document:mousedown', ['$event'])
@@ -424,6 +531,13 @@ export class SearchBarComponent {
     if (this.isOpen()) {
       this.updateDropdownPosition();
     }
+  }
+
+  private scrollSelectedIntoView(): void {
+    setTimeout(() => {
+      const el = this.elementRef.nativeElement.querySelector('.result-item.active');
+      el?.scrollIntoView({ block: 'nearest' });
+    }, 0);
   }
 
   private updateDropdownPosition(): void {
