@@ -112,8 +112,8 @@
       "shortcutName": "BitButler",
       "uninstallDisplayName": "BitButler",
       "artifactName": "bitbutler-setup-${version}.${ext}",
-      "installerIcon": "src/assets/icons/bitbutler.ico",
-      "uninstallerIcon": "src/assets/icons/bitbutler.ico",
+      "installerIcon": "packages/app/src/assets/icons/bitbutler.ico",
+      "uninstallerIcon": "packages/app/src/assets/icons/bitbutler.ico",
       "installerHeader": "build/installerHeader.bmp",
       "installerSidebar": "build/installerSidebar.bmp"
     },
