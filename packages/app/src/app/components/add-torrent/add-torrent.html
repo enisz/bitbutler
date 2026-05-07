@@ -70,27 +70,8 @@
     <fieldset class="bb-fieldset">
       <legend>{{ 'components.add-torrent.label.general' | translate }}</legend>
 
-      <div class="form-floating mb-3">
-        <input
-          #savePathControl
-          type="text"
-          class="form-control"
-          id="savepath"
-          [placeholder]="'components.add-torrent.add-form.save-path' | translate"
-          formControlName="savepath"
-          [ngbTypeahead]="searchSavePaths"
-          [editable]="true"
-          [autofocus]="addForm.controls.file.value.length > 0"
-          [class.is-invalid]="addForm.controls.savepath.invalid && addForm.controls.savepath.dirty"
-        />
-        <label for="savepath">{{ 'components.add-torrent.add-form.save-path' | translate }}</label>
-        @if (addForm.controls.savepath.invalid && addForm.controls.savepath.dirty) {
-          @if (addForm.controls.savepath.hasError('required')) {
-            <div class="invalid-feedback px-2">
-              {{ 'general.form.feedback.required' | translate }}
-            </div>
-          }
-        }
+      <div class="mb-3">
+        <app-save-path-select formControlName="savepath"></app-save-path-select>
       </div>
 
       <div class="form-floating mb-3">
