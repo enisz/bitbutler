@@ -139,6 +139,20 @@
             "line1": "Egy vagy több címkét ad ehhez a torrenthez, rugalmas szűrési és csoportosítási lehetőségekért.",
             "line2": "A kategóriákkal ellentétben egy torrenthez több címke is rendelhető, és a címkék nem befolyásolják a mentési útvonalat."
           }
+        },
+        "file": {
+          "title": "Torrent fájl",
+          "description": {
+            "line1": "Válassz ki egy .torrent fájlt a számítógépedről. A fájl helyben kerül feldolgozásra — semmilyen adat nem kerül elküldésre, amíg a Hozzáadás gombra nem kattintasz.",
+            "line2": "Ha a fájl betöltődött, alább megjelenik egy fájlfa, ahol az egyes fájlokat áttekintheted és be- vagy kikapcsolhatod a hozzáadás előtt."
+          }
+        },
+        "links": {
+          "title": "Linkek",
+          "description": {
+            "line1": "Illessz be egy vagy több mágneslinket vagy közvetlen .torrent URL-t ide, soronként egyet.",
+            "line2": "A mágneslinkkek magnet:?xt=urn:btih:… kezdetűek — a közvetlen .torrent URL-ekről a qBittorrent automatikusan letölti a fájlt."
+          }
         }
       }
     },

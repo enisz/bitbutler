@@ -139,6 +139,20 @@
             "line1": "Adds one or more tags to this torrent for flexible filtering and grouping.",
             "line2": "Unlike categories, a torrent can have multiple tags, and tags do not affect the save path."
           }
+        },
+        "file": {
+          "title": "Torrent File",
+          "description": {
+            "line1": "Select a .torrent file from your computer. The file will be parsed locally — no data is sent anywhere until you click Add.",
+            "line2": "Once a file is loaded, a file tree will appear below so you can review and toggle individual files before adding."
+          }
+        },
+        "links": {
+          "title": "Links",
+          "description": {
+            "line1": "Paste one or more magnet links or direct .torrent URLs here, one per line.",
+            "line2": "Magnet links start with magnet:?xt=urn:btih:… — direct .torrent URLs point to a remote file that qBittorrent will fetch automatically."
+          }
         }
       }
     },

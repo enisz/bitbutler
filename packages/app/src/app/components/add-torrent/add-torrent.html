@@ -17,54 +17,78 @@
     <fieldset class="bb-fieldset mt-0">
       <legend>{{ 'components.add-torrent.label.input' | translate }}</legend>
 
-      @if (inputMode() === 'file') {
-        <div class="form-floating mb-3">
-          <div class="input-group mb-1">
-            <div class="form-floating">
-              <input
-                type="text"
-                class="form-control"
-                id="file_browser"
-                [placeholder]="'components.add-torrent.add-form.file-browser' | translate"
-                formControlName="file"
-                [class.is-invalid]="
-                  addForm.controls.file.invalid &&
-                  (addForm.controls.file.touched || addForm.controls.file.dirty)
-                "
-                readonly
-                (click)="fileInput.click()"
-              />
-              <label for="file_browser">{{
-                'components.add-torrent.add-form.file-browser' | translate
-              }}</label>
-            </div>
+      <div class="container-fluid px-0">
+        <div class="row">
+          <div class="col-11">
+            @if (inputMode() === 'file') {
+              <div class="form-floating mb-3">
+                <div class="input-group mb-1">
+                  <div class="form-floating">
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="file_browser"
+                      [placeholder]="'components.add-torrent.add-form.file-browser' | translate"
+                      formControlName="file"
+                      [class.is-invalid]="
+                        addForm.controls.file.invalid &&
+                        (addForm.controls.file.touched || addForm.controls.file.dirty)
+                      "
+                      readonly
+                      (click)="fileInput.click()"
+                    />
+                    <label for="file_browser">{{
+                      'components.add-torrent.add-form.file-browser' | translate
+                    }}</label>
+                  </div>
 
-            <button type="button" class="btn btn-outline-primary" (click)="fileInput.click()">
-              {{ 'general.button.browse' | translate }}
-            </button>
-            <input
-              type="file"
-              #fileInput
-              hidden
-              accept=".torrent"
-              (change)="handleFileSelected($event)"
-            />
+                  <button type="button" class="btn btn-outline-primary" (click)="fileInput.click()">
+                    {{ 'general.button.browse' | translate }}
+                  </button>
+                </div>
+                <input
+                  type="file"
+                  #fileInput
+                  hidden
+                  accept=".torrent"
+                  (change)="handleFileSelected($event)"
+                />
+              </div>
+            } @else {
+              <div class="form-floating mb-3">
+                <textarea
+                  class="form-control"
+                  id="magnet_links"
+                  style="height: 120px"
+                  [placeholder]="'components.add-torrent.add-form.magnet-links' | translate"
+                  formControlName="magnetLinks"
+                ></textarea>
+                <label for="magnet_links">{{
+                  'components.add-torrent.add-form.magnet-links' | translate
+                }}</label>
+              </div>
+            }
+          </div>
+
+          <div class="col-1 d-flex align-items-center mb-3">
+            @if (inputMode() === 'file') {
+              <bb-popover
+                class="mt-2"
+                [subject]="'components.add-torrent.popover.file.title' | translate"
+                [description]="filePopover"
+                placement="left"
+              ></bb-popover>
+            } @else {
+              <bb-popover
+                class="mt-2"
+                [subject]="'components.add-torrent.popover.links.title' | translate"
+                [description]="linksPopover"
+                placement="left"
+              ></bb-popover>
+            }
           </div>
         </div>
-      } @else {
-        <div class="form-floating mb-1">
-          <textarea
-            class="form-control mb-3"
-            id="magnet_links"
-            style="height: 120px"
-            [placeholder]="'components.add-torrent.add-form.magnet-links' | translate"
-            formControlName="magnetLinks"
-          ></textarea>
-          <label for="magnet_links">{{
-            'components.add-torrent.add-form.magnet-links' | translate
-          }}</label>
-        </div>
-      }
+      </div>
     </fieldset>
 
     <fieldset class="bb-fieldset">
@@ -344,6 +368,16 @@
     {{ 'general.button.cancel' | translate }}
   </button>
 </div>
+
+<ng-template #filePopover>
+  <p>{{ 'components.add-torrent.popover.file.description.line1' | translate }}</p>
+  <p>{{ 'components.add-torrent.popover.file.description.line2' | translate }}</p>
+</ng-template>
+
+<ng-template #linksPopover>
+  <p>{{ 'components.add-torrent.popover.links.description.line1' | translate }}</p>
+  <p>{{ 'components.add-torrent.popover.links.description.line2' | translate }}</p>
+</ng-template>
 
 <ng-template #namePopover>
   <p>{{ 'components.add-torrent.popover.name.description.line1' | translate }}</p>
