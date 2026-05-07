@@ -39,14 +39,17 @@ export class SavePathSelect implements OnInit, ControlValueAccessor, AfterViewIn
 
   private readonly torrentStoreService = inject(TorrentStoreService);
 
-  public paths = computed(() => {
-    const uniquePaths = new Set<string>();
-    for (const t of this.torrentStoreService.torrentsArray()) {
-      const path = t.save_path?.trim();
-      if (path) uniquePaths.add(path);
-    }
-    return Array.from(uniquePaths).sort();
-  });
+  public paths = computed(
+    () => {
+      const uniquePaths = new Set<string>();
+      for (const t of this.torrentStoreService.torrentsArray()) {
+        const path = t.save_path?.trim();
+        if (path) uniquePaths.add(path);
+      }
+      return Array.from(uniquePaths).sort();
+    },
+    { equal: (a, b) => a.length === b.length && a.every((v, i) => v === b[i]) },
+  );
 
   public selectControl = new FormControl<string | null>(null);
 
