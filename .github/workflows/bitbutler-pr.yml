@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   enforce-rules:
-    name: '[1/4] PR Format & Issue Sync'
+    name: '[1/5] PR Format & Issue Sync'
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -52,10 +52,44 @@ jobs:
               core.setFailed(`Error processing Issue #${issueNumber}: ${error.message}`);
             }
 
-  lint:
-    name: '[2/4] Code Quality (Lint)'
+  detect-changes:
+    name: '[2/5] Detect Changes'
     runs-on: ubuntu-latest
     needs: [enforce-rules]
+    outputs:
+      app: ${{ steps.filter.outputs.app }}
+      electron: ${{ steps.filter.outputs.electron }}
+      docs: ${{ steps.filter.outputs.docs }}
+      any-source: ${{ steps.filter.outputs.any-source }}
+    steps:
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            app:
+              - 'packages/app/**'
+              - 'packages/shared/**'
+              - 'public/**'
+            electron:
+              - 'packages/electron/**'
+              - 'packages/shared/**'
+              - 'public/**'
+            docs:
+              - 'packages/docs/**'
+              - 'packages/shared/**'
+            any-source:
+              - 'packages/**'
+              - 'public/**'
+              - '.eslint*'
+              - 'tsconfig*'
+              - 'package.json'
+              - 'package-lock.json'
+
+  lint:
+    name: '[3/5] Code Quality (Lint)'
+    runs-on: ubuntu-latest
+    needs: [detect-changes]
+    if: needs.detect-changes.outputs.any-source == 'true'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -68,9 +102,10 @@ jobs:
       - run: npm run lint
 
   test-app:
-    name: '[3/4] Unit Tests - Angular'
+    name: '[4/5] Unit Tests - Angular'
     runs-on: ubuntu-latest
-    needs: [lint]
+    needs: [detect-changes, lint]
+    if: always() && needs.detect-changes.outputs.app == 'true' && needs.lint.result == 'success'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -83,9 +118,10 @@ jobs:
       - run: npm run test --workspace=packages/app
 
   test-electron:
-    name: '[3/4] Unit Tests - Electron'
+    name: '[4/5] Unit Tests - Electron'
     runs-on: ubuntu-latest
-    needs: [lint]
+    needs: [detect-changes, lint]
+    if: always() && needs.detect-changes.outputs.electron == 'true' && needs.lint.result == 'success'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -98,9 +134,10 @@ jobs:
       - run: npm run test --workspace=packages/electron
 
   test-docs:
-    name: '[3/4] Unit Tests - Docs'
+    name: '[4/5] Unit Tests - Docs'
     runs-on: ubuntu-latest
-    needs: [lint]
+    needs: [detect-changes, lint]
+    if: always() && needs.detect-changes.outputs.docs == 'true' && needs.lint.result == 'success'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -112,10 +149,31 @@ jobs:
           ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
       - run: npm run test --workspace=packages/docs
 
+  build-docs:
+    name: '[5/5] Build & Package (Docs)'
+    runs-on: ubuntu-latest
+    needs: [detect-changes, test-docs]
+    if: always() && needs.detect-changes.outputs.docs == 'true' && needs.test-docs.result == 'success'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - run: npm ci
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+      - run: npm run docs:build
+
   build:
-    name: '[4/4] Build & Package (${{ matrix.job_name }})'
+    name: '[5/5] Build & Package (${{ matrix.job_name }})'
     runs-on: ${{ matrix.os }}
-    needs: [test-app, test-electron, test-docs]
+    needs: [detect-changes, test-app, test-electron, test-docs]
+    if: >-
+      always() &&
+      (needs.detect-changes.outputs.app == 'true' || needs.detect-changes.outputs.electron == 'true') &&
+      !contains(needs.*.result, 'failure') &&
+      !contains(needs.*.result, 'cancelled')
     strategy:
       fail-fast: true
       matrix:
