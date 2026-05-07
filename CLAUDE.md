@@ -6,18 +6,35 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 BitButler is a cross-platform **Electron desktop app** for managing remote qBittorrent-nox instances. It uses **Angular 20** (zoneless, signal-based) for the frontend and communicates with the Electron main process exclusively via IPC.
 
+## Monorepo structure
+
+This is an **npm workspaces** monorepo. All packages live under `packages/`:
+
+| Package               | Path                 | Purpose                            |
+| --------------------- | -------------------- | ---------------------------------- |
+| `@bitbutler/app`      | `packages/app/`      | Angular renderer                   |
+| `@bitbutler/electron` | `packages/electron/` | Electron main process (TypeScript) |
+| `@bitbutler/shared`   | `packages/shared/`   | Shared IPC contract & models       |
+| `@bitbutler/docs`     | `packages/docs/`     | Analog.js documentation site       |
+
+A single `npm ci` at the root installs all workspace dependencies. Workspace packages that depend on each other are symlinked automatically by npm.
+
 ## Commands
 
 ```bash
-npm start           # Angular dev server + Electron (concurrent)
-npm run serve       # Angular dev server only
-npm run lint        # ESLint (max-warnings=0 — zero warnings allowed)
-npm run lint:fix    # Auto-fix lint issues
-npm run format      # Prettier format entire codebase
-npm test            # Run tests (no tests written yet)
-npm run build       # Angular production build
-npm run dist:linux  # Build Linux distributions (AppImage, DEB, RPM, Snap, tar.gz)
-npm run dist:win    # Build Windows distributions (NSIS, portable, ZIP)
+npm start               # Angular dev server + tsc:watch + Electron hot reload (concurrent)
+npm run serve           # Angular dev server only
+npm run lint            # ESLint (max-warnings=0 — zero warnings allowed)
+npm run lint:fix        # Auto-fix lint issues
+npm run format          # Prettier format entire codebase
+npm test                # Run tests across all workspaces
+npm run build           # Angular production build
+npm run build:electron  # Compile Electron TypeScript
+npm run build:ui        # Full UI build (Angular + Electron, production)
+npm run docs:dev        # Docs dev server
+npm run docs:build      # Docs production build
+npm run dist:linux      # Build Linux distributions (AppImage, DEB, RPM, Snap, tar.gz)
+npm run dist:win        # Build Windows distributions (NSIS, portable, ZIP)
 ```
 
 Pre-commit hooks (Husky + lint-staged) enforce linting and formatting automatically on commit.
@@ -27,17 +44,26 @@ Pre-commit hooks (Husky + lint-staged) enforce linting and formatting automatica
 ### Process separation
 
 ```
-Angular (renderer) ──→ window.bitbutler.* ──→ electron/preload.js ──→ ipcMain.handle() ──→ electron/ipc/*.js
+Angular (renderer) ──→ window.bitbutler.* ──→ packages/electron/src/preload.ts ──→ ipcMain.handle() ──→ packages/electron/src/ipc/*.ts
 ```
 
-- `electron/preload.js` is the only bridge. It exposes `window.bitbutler` with namespaces: `qb`, `server`, `settings`, `window`, `electron`, `notification`, `torrent`.
+- `packages/electron/src/preload.ts` is the only bridge. It exposes `window.bitbutler` with namespaces: `qb`, `server`, `settings`, `window`, `electron`, `notification`, `torrent`.
 - Angular services call `window.bitbutler.*` directly — never `fetch()` or Node APIs.
-- `electron/ipc/qbittorrent.js` proxies all qBittorrent API calls via **axios** from the main process (avoids CORS and handles HTTP streaming for maindata).
-- `electron/db.js` holds a **better-sqlite3** database: `servers` table (passwords encrypted with Electron `safeStorage`) and `settings` table (JSON blobs).
+- `packages/electron/src/ipc/qbittorrent.ts` proxies all qBittorrent API calls via **axios** from the main process (avoids CORS and handles HTTP streaming for maindata).
+- `packages/electron/src/db.ts` holds a **better-sqlite3** database: `servers` table (passwords encrypted with Electron `safeStorage`) and `settings` table (JSON blobs).
+
+### Shared types (`@bitbutler/shared`)
+
+The `packages/shared` package is the single source of truth for the IPC contract and shared models:
+
+- `packages/shared/src/ipc.types.ts` — the canonical `BitButlerAPI` interface
+- `packages/shared/src/models/` — `ServerModel`, `ElectronModel`, `TorrentDraftModel`, `WindowModel`
+
+Both `packages/app` and `packages/electron` import from `@bitbutler/shared`. Angular model files re-export from shared; there is no type duplication across the IPC boundary.
 
 ### Angular state & data flow
 
-- **Signals** are the primary reactive primitive (Angular 19+ zoneless mode). Use `signal()`, `computed()`, `effect()` — not `BehaviorSubject` for new state.
+- **Signals** are the primary reactive primitive (Angular 20 zoneless mode). Use `signal()`, `computed()`, `effect()` — not `BehaviorSubject` for new state.
 - **RxJS** is used for async streams (polling, HTTP streaming); `QbPollingService` drives the background sync loop.
 - `TorrentStoreService` is the central torrent state. It receives maindata chunks from `QbPollingService` and applies `full_update` vs incremental diffs.
 - `ServerStoreService` tracks the active server selection; `currentServer` is a `computed()` signal.
@@ -62,8 +88,8 @@ Three lazy-loaded routes: `login`, `main` (torrent grid), `settings`. The router
 
 ### Theming & i18n
 
-- Themes live in `src/styles/themes/` (multiple SCSS files); `ThemeService` switches them at runtime.
-- Translations in `public/i18n/` (`us.json`, `hu.json`), loaded via `@ngx-translate`. Language persisted in `GeneralSettingsService`.
+- Themes live in `packages/app/src/styles/themes/` (multiple SCSS files); `ThemeService` switches them at runtime. The docs app imports these SCSS files directly so theme changes propagate automatically.
+- Translations in `public/i18n/` (`us.json`, `hu.json`), loaded via `@ngx-translate` in Angular and via `packages/electron/src/i18n.ts` in the Electron main process. Language is persisted in `GeneralSettingsService`; changing it triggers a `bitbutler:language-change` IPC call that rebuilds the tray and application menu labels at runtime.
 
 ## Commit & PR conventions
 
