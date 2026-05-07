@@ -1105,6 +1105,16 @@
     "hu": "Magyar"
   },
   "electron": {
+    "tray": {
+      "show": "Megjelenítés",
+      "hide": "Elrejtés",
+      "start-all-torrents": "Összes torrent indítása",
+      "stop-all-torrents": "Összes torrent leállítása",
+      "remove-upload-limit": "Globális feltöltési korlát eltávolítása",
+      "remove-download-limit": "Globális letöltési korlát eltávolítása",
+      "toggle-alt-speed": "Alternatív sebesség váltása",
+      "quit": "Kilépés"
+    },
     "menu": {
       "file": "Fájl",
       "add-torrent": "Torrent hozzáadása…",

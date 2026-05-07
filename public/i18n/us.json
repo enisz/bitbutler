@@ -1105,6 +1105,16 @@
     "hu": "Hungarian"
   },
   "electron": {
+    "tray": {
+      "show": "Show",
+      "hide": "Hide",
+      "start-all-torrents": "Start All Torrents",
+      "stop-all-torrents": "Stop All Torrents",
+      "remove-upload-limit": "Remove Global Upload Limit",
+      "remove-download-limit": "Remove Global Download Limit",
+      "toggle-alt-speed": "Toggle Alternative Speed",
+      "quit": "Quit"
+    },
     "menu": {
       "file": "File",
       "add-torrent": "Add Torrent…",

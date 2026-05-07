@@ -1,5 +1,6 @@
 import { Menu, Tray, app } from 'electron';
 import path from 'node:path';
+import { t } from './i18n.js';
 import { getCookieJar, qbRequest } from './ipc/qbittorrent.js';
 import { getActiveServerId } from './ipc/server.js';
 
@@ -46,40 +47,40 @@ function buildContextMenu(): Electron.Menu {
   const connected = isConnected();
 
   return Menu.buildFromTemplate([
-    { label: 'Show', click: () => showMainWindow({ maximize: true }) },
-    { label: 'Hide', click: () => mainWindowRef?.hide() },
+    { label: t('electron.tray.show'), click: () => showMainWindow({ maximize: true }) },
+    { label: t('electron.tray.hide'), click: () => mainWindowRef?.hide() },
     { type: 'separator' },
     {
-      label: 'Start All Torrents',
+      label: t('electron.tray.start-all-torrents'),
       enabled: connected,
       click: () => trayQbRequest('/api/v2/torrents/resume', { hashes: 'all' }).catch(console.error),
     },
     {
-      label: 'Stop All Torrents',
+      label: t('electron.tray.stop-all-torrents'),
       enabled: connected,
       click: () => trayQbRequest('/api/v2/torrents/pause', { hashes: 'all' }).catch(console.error),
     },
     { type: 'separator' },
     {
-      label: 'Remove Global Upload Limit',
+      label: t('electron.tray.remove-upload-limit'),
       enabled: connected,
       click: () =>
         trayQbRequest('/api/v2/transfer/setUploadLimit', { limit: '0' }).catch(console.error),
     },
     {
-      label: 'Remove Global Download Limit',
+      label: t('electron.tray.remove-download-limit'),
       enabled: connected,
       click: () =>
         trayQbRequest('/api/v2/transfer/setDownloadLimit', { limit: '0' }).catch(console.error),
     },
     {
-      label: 'Toggle Alternative Speed',
+      label: t('electron.tray.toggle-alt-speed'),
       enabled: connected,
       click: () => trayQbRequest('/api/v2/transfer/toggleSpeedLimitsMode', {}).catch(console.error),
     },
     { type: 'separator' },
     {
-      label: 'Quit',
+      label: t('electron.tray.quit'),
       click: () => {
         tray?.destroy();
         tray = null;
