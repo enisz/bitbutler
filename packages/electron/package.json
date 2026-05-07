@@ -1,0 +1,14 @@
+{
+  "name": "@bitbutler/electron",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@bitbutler/shared": "*"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && tsc -p tsconfig.preload.json",
+    "watch": "concurrently -n \"main,preload\" \"tsc -p tsconfig.json --watch --preserveWatchOutput\" \"tsc -p tsconfig.preload.json --watch --preserveWatchOutput\"",
+    "test": "vitest run"
+  }
+}

@@ -8,9 +8,14 @@
 /out
 /electron-out
 /dist-electron
+/packages/electron/dist
+/packages/electron/vitest.config.js
+/packages/docs/dist
+/packages/app/dist
 
 # Node
 /node_modules
+packages/*/node_modules
 npm-debug.log
 yarn-error.log
 
@@ -33,6 +38,7 @@ yarn-error.log
 
 # Miscellaneous
 /.angular/cache
+/packages/app/.angular/
 .sass-cache/
 /connect.lock
 /coverage
@@ -44,6 +50,3 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
-
-docs/*
-.superpowers/

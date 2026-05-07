@@ -11,34 +11,51 @@
   "homepage": "https://github.com/enisz/bitbutler",
   "repository": "github:enisz/bitbutler",
   "type": "module",
-  "main": "electron-main.js",
+  "main": "packages/electron/dist/main.js",
+  "workspaces": [
+    "packages/*"
+  ],
   "license": "MIT",
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
     "ng": "ng",
-    "serve": "ng serve",
-    "electron-dev": "wait-on http://localhost:4200 && electron . --no-sandbox --disable-gpu-sandbox",
-    "start": "concurrently -n \"angular,electron\" -c \"red,blue\" \"npm:serve\" \"npm:electron-dev\"",
+    "serve": "npm run serve --workspace=packages/app",
+    "electron-dev": "wait-on http://localhost:4200 && npm run build:electron && electron . --no-sandbox --disable-gpu-sandbox",
+    "electron-ts:watch": "rimraf packages/electron/dist && wait-on http://localhost:4200 && npm run --silent watch --workspace=packages/electron",
+    "electron-hot": "wait-on http://localhost:4200 packages/electron/dist/main.js && nodemon --watch packages/electron/dist --ext js --delay 2 --exec 'electron . --no-sandbox --disable-gpu-sandbox'",
+    "start": "concurrently -n \"angular,tsc,electron\" -c \"cyan,yellow,green\" \"npm:serve\" \"npm:electron-ts:watch\" \"npm:electron-hot\"",
+    "start:once": "concurrently -n \"angular,electron\" -c \"red,blue\" \"npm:serve\" \"npm:electron-dev\"",
     "workspace:clean": "rimraf dist-electron dist",
-    "build": "ng build",
-    "build:ui": "npm run workspace:clean && ng build --configuration production --base-href ./",
+    "build": "npm run build --workspace=packages/app",
+    "build:electron": "npm run build --workspace=packages/electron",
+    "build:ui": "npm run workspace:clean && npm run build:prod --workspace=packages/app && npm run build:electron",
     "pack": "npm run build:ui && electron-builder --dir",
     "dist": "npm run build:ui && electron-builder",
     "dist:win": "npm run build:ui && electron-builder --win",
     "dist:linux": "npm run build:ui && electron-builder --linux",
+    "docs:dev": "npm run dev --workspace=packages/docs",
+    "docs:build": "npm run build --workspace=packages/docs",
     "format": "prettier --write .",
-    "lint": "eslint \"src/**/*.{ts,html}\" \"electron/**/*.{ts,js}\" \"electron-main.js\"",
+    "lint": "eslint \"packages/app/src/**/*.{ts,html}\" \"packages/electron/src/**/*.ts\"",
     "lint:fix": "npm run lint -- --fix",
     "prepare": "husky",
-    "test": "ng test --watch=false",
-    "test:watch": "ng test"
+    "test": "npm run test --workspaces --if-present",
+    "test:watch": "npm run test:watch --workspace=packages/app"
   },
   "lint-staged": {
-    "*.{ts,js,html}": [
+    "packages/app/src/**/*.{ts,html}": [
       "eslint --max-warnings=0 --fix",
       "prettier --write"
     ],
-    "*.{json,md,scss,css}": [
+    "packages/electron/src/**/*.ts": [
+      "eslint --max-warnings=0 --fix",
+      "prettier --write"
+    ],
+    "packages/docs/src/**/*.ts": [
+      "eslint --max-warnings=0 --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,scss,css,html}": [
       "prettier --write"
     ]
   },
@@ -52,18 +69,21 @@
       "**/*.node"
     ],
     "extraMetadata": {
-      "main": "electron-main.js"
+      "main": "packages/electron/dist/main.js"
     },
     "files": [
       "dist/bitbutler/**",
-      "electron/**",
-      "electron-main.js",
+      "packages/electron/dist/**",
       "package.json"
     ],
     "extraResources": [
       {
-        "from": "src/assets/icons/bitbutler.png",
+        "from": "packages/app/src/assets/icons/bitbutler.png",
         "to": "bitbutler.png"
+      },
+      {
+        "from": "public/i18n",
+        "to": "i18n"
       }
     ],
     "directories": {
@@ -76,7 +96,7 @@
         "portable",
         "zip"
       ],
-      "icon": "src/assets/icons/bitbutler.ico",
+      "icon": "packages/app/src/assets/icons/bitbutler.ico",
       "requestedExecutionLevel": "asInvoker"
     },
     "portable": {
@@ -92,8 +112,8 @@
       "shortcutName": "BitButler",
       "uninstallDisplayName": "BitButler",
       "artifactName": "bitbutler-setup-${version}.${ext}",
-      "installerIcon": "src/assets/icons/bitbutler.ico",
-      "uninstallerIcon": "src/assets/icons/bitbutler.ico",
+      "installerIcon": "packages/app/src/assets/icons/bitbutler.ico",
+      "uninstallerIcon": "packages/app/src/assets/icons/bitbutler.ico",
       "installerHeader": "build/installerHeader.bmp",
       "installerSidebar": "build/installerSidebar.bmp"
     },
@@ -112,7 +132,7 @@
       "mimeTypes": [
         "application/x-bittorrent"
       ],
-      "icon": "src/assets/icons/bitbutler.png"
+      "icon": "packages/app/src/assets/icons/bitbutler.png"
     },
     "deb": {
       "depends": [
@@ -131,7 +151,7 @@
         "description": "BitTorrent file",
         "mimeType": "application/x-bittorrent",
         "role": "Viewer",
-        "icon": "src/assets/icons/bitbutler.ico"
+        "icon": "packages/app/src/assets/icons/bitbutler.ico"
       }
     ]
   },
@@ -212,7 +232,9 @@
     "@angular/compiler-cli": "^20.3.0",
     "@angular/localize": "^20.3.0",
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",
+    "@types/better-sqlite3": "^7.6.13",
     "@types/humanize-duration": "^3.27.4",
+    "@types/semver": "^7.7.1",
     "@typescript-eslint/eslint-plugin": "^8.54.0",
     "@typescript-eslint/parser": "^8.54.0",
     "concurrently": "^9.2.1",
@@ -225,6 +247,7 @@
     "husky": "^9.1.7",
     "jsdom": "^29.0.2",
     "lint-staged": "^16.2.7",
+    "nodemon": "^3.1.14",
     "prettier": "^3.8.1",
     "rimraf": "^6.1.2",
     "typescript": "~5.9.2",

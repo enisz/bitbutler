@@ -2,19 +2,36 @@
   "root": true,
   "overrides": [
     {
-      "files": ["*.ts"],
+      "files": ["packages/app/src/**/*.ts"],
       "extends": ["plugin:@angular-eslint/recommended", "plugin:prettier/recommended"]
     },
     {
-      "files": ["*.html"],
+      "files": ["packages/app/src/**/*.html"],
       "extends": ["plugin:@angular-eslint/template/recommended", "plugin:prettier/recommended"]
     },
     {
-      "files": ["electron-main.js", "electron/**/*.js"],
+      "files": ["packages/electron/src/**/*.ts"],
       "env": {
         "node": true,
         "es2022": true
       },
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+      },
+      "extends": ["plugin:prettier/recommended"]
+    },
+    {
+      "files": ["packages/docs/src/**/*.ts", "packages/docs/vite.config.ts"],
+      "extends": ["plugin:@angular-eslint/recommended", "plugin:prettier/recommended"]
+    },
+    {
+      "files": ["packages/shared/src/**/*.ts"],
+      "env": {
+        "es2022": true
+      },
+      "parser": "@typescript-eslint/parser",
       "parserOptions": {
         "ecmaVersion": "latest",
         "sourceType": "module"
