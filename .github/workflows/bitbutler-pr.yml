@@ -203,5 +203,8 @@ jobs:
         env:
           ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
 
+      - name: Compile Electron TypeScript
+        run: npm run build:electron
+
       - name: Build Electron App
         run: npx electron-builder ${{ matrix.target }}
