@@ -123,7 +123,7 @@
           "title": "Name",
           "description": {
             "line1": "Sets the display name and the root folder name for this torrent.",
-            "line2": "This does not affect the filenames inside the torrent — only the top-level folder or file name."
+            "line2": "This does not affect the filenames inside the torrent - only the top-level folder or file name."
           }
         },
         "category": {

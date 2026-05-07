@@ -123,7 +123,7 @@
           "title": "Név",
           "description": {
             "line1": "Beállítja a torrent megjelenítési nevét és a gyökérmappa nevét.",
-            "line2": "Ez nem érinti a torrenten belüli fájlneveket — csak a legfelső szintű mappa vagy fájl nevét."
+            "line2": "Ez nem érinti a torrenten belüli fájlneveket - csak a legfelső szintű mappa vagy fájl nevét."
           }
         },
         "category": {

@@ -105,7 +105,7 @@ export class AddTorrent implements OnInit {
   public addForm = new FormGroup({
     file: new FormControl<string>('', { nonNullable: true }),
     magnetLinks: new FormControl<string>('', { nonNullable: true }),
-    savepath: new FormControl<string | null>(null, [Validators.required]),
+    savepath: new FormControl<string | null>(null),
     rename: new FormControl<string | null>(null, [Validators.required, this.noSlashValidator()]),
     paused: new FormControl<boolean>(false, { nonNullable: true }),
     category: new FormControl<string | null>(null),
