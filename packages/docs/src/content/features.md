@@ -4,130 +4,78 @@ order: 2
 slug: 'features'
 ---
 
-# Features
+# Amet Consectetur Adipiscing
 
-A detailed look at what BitButler can do.
+Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 
-## Server Management
+## Commodo Consequat Duis
 
-**Multiple servers**
+Aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-Add and switch between any number of qBittorrent-nox instances. Each server stores its host, port, and credentials independently.
+```javascript
+function consecteturAdipiscing(dolor, sit) {
+  const amet = dolor.map((item) => ({
+    ...item,
+    ipsum: sit ? item.lorem * 2 : item.lorem,
+  }));
 
-**Encrypted credentials**
+  return amet.filter((x) => x.ipsum > 0);
+}
+```
 
-Passwords are stored using Electron's safeStorage API, which encrypts them with the OS keychain — they are never saved in plain text.
+### Sunt In Culpa Qui
 
-**Quick connect**
+Officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa quae ab illo inventore.
 
-The active server is remembered between sessions so the app reconnects automatically on launch.
+### Totam Rem Aperiam
 
-## Torrent Management
+Eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.
 
-**Add torrents**
+## Aut Odit Aut Fugit
 
-Add torrents by dropping .torrent files onto the app window, using the file picker, or pasting a magnet link. The add-torrent dialog lets you choose save location, category, tags, and other options before starting.
+Sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est qui dolorem ipsum quia dolor sit amet consectetur adipiscing elit.
 
-**Delete torrents**
+```python
+def lorem_ipsum(dolor: list[str], sit: int = 42) -> dict:
+    """Amet consectetur adipiscing elit."""
+    result = {}
+    for i, item in enumerate(dolor):
+        key = f"lorem_{i}"
+        result[key] = item.strip().upper() if sit > 0 else item
+    return result
 
-Remove one or more selected torrents, with an option to also delete the downloaded files from disk.
 
-**Rename**
+if __name__ == "__main__":
+    data = lorem_ipsum(["amet", "consectetur", "adipiscing"], sit=7)
+    print(data)
+```
 
-Rename a torrent directly from the context menu.
+## Adipisci Velit Sed
 
-**Move download location**
+Quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. See [Architecture](architecture) for implementation details or [IPC Reference](ipc-reference) for the full API surface.
 
-Relocate a torrent's save path without re-downloading.
+```css
+.lorem-ipsum {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dolor-spacing, 1rem);
+  background-color: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+}
 
-**Set category & tags**
+.lorem-ipsum__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--bs-primary);
+}
+```
 
-Assign or change a torrent's category and tags. Existing categories and tags from the connected server are presented as suggestions.
+### Minima Veniam Quis
 
-**Share limits**
-
-Configure per-torrent share ratio and seeding time limits to control seeding behaviour.
-
-**Transfer limits**
-
-Set per-torrent upload and download speed limits independently of global limits.
-
-**Priority & queue control**
-
-Pause, resume, force-start, and recheck individual torrents or entire selections.
-
-## Torrent Details
-
-**General tab**
-
-Shows transfer stats, save path, creation date, comment, and hash for the selected torrent.
-
-**Content tab**
-
-Displays the file tree of a torrent with per-file progress and priority controls.
-
-**Peers tab**
-
-Lists connected peers with country flag, IP, client, progress, and transfer speeds.
-
-**Trackers tab**
-
-Shows tracker URLs, status, and peer counts reported by each tracker.
-
-## Real-time Sync
-
-**Maindata streaming**
-
-BitButler streams the qBittorrent maindata endpoint from the Electron main process and applies incremental diffs to the local torrent store — the torrent list stays up to date without polling lag.
-
-**Transfer info**
-
-Global download/upload speeds and free disk space are updated continuously and shown in the status bar.
-
-## User Interface
-
-**Torrent grid**
-
-The main view is a feature-rich ag-Grid table. Columns can be reordered, resized, and toggled. The layout is persisted between sessions.
-
-**Filtering**
-
-Filter torrents by name, category, tag, status, date added, or completion date using the filter bar.
-
-**Context menu**
-
-Right-click any torrent row for a context menu with all common actions.
-
-**Themes**
-
-8 built-in colour themes covering light and dark modes. The active theme is persisted in settings.
-
-**Localisation**
-
-UI labels are fully translatable. English (en-US) and Hungarian (hu) are included out of the box.
-
-**Status bar**
-
-A configurable status bar at the bottom shows global transfer speeds, free disk space, and other stats. Each field can be toggled individually.
-
-## Desktop Integration
-
-**System tray**
-
-BitButler minimises to the system tray. The tray icon menu provides quick actions such as start all / stop all and shows the connection state.
-
-**Desktop notifications**
-
-Receive a native OS notification when a torrent finishes downloading.
-
-**File association**
-
-.torrent files can be opened with BitButler directly from the file manager.
-
-**Auto-update**
-
-The app checks for new releases on startup and shows an in-app banner when an update is available.
+Nostrum exercitationem ullam corporis suscipit laboriosam nisi ut aliquid ex ea commodi consequatur. Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur.
 
 ---
 
-BitButler is open source under the [MIT licence](https://github.com/enisz/bitbutler/blob/main/LICENSE) · [Report an issue](https://github.com/enisz/bitbutler/issues)
+Dolor sit amet · [Home](index) · [Development](development)

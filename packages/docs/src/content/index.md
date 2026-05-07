@@ -4,49 +4,44 @@ order: 1
 slug: 'index'
 ---
 
-# BitButler
+# Lorem Ipsum Dolor Sit Amet
 
-A cross-platform desktop client for remote qBittorrent-nox instances
+Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 
-[Download](https://github.com/enisz/bitbutler/releases) · [GitHub](https://github.com/enisz/bitbutler)
+[Getting Started](getting-started/installation) · [Architecture](architecture) · [IPC Reference](ipc-reference)
 
-## What is BitButler?
+## Quis Nostrud Exercitation
 
-BitButler is an Electron desktop app for managing remote [qBittorrent-nox](https://github.com/qbittorrent/qBittorrent) instances. Connect to multiple servers, monitor active torrents, and control downloads from a clean, modern interface — all without opening a browser.
+Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-## Getting Started
+```typescript
+const lorem = async (ipsum: string): Promise<string> => {
+  const result = await fetch(`/api/dolor?q=${encodeURIComponent(ipsum)}`);
+  if (!result.ok) throw new Error(`Sit amet: ${result.status}`);
+  return result.json();
+};
+```
 
-1. **Download** the latest release for your platform from the [releases page](https://github.com/enisz/bitbutler/releases).
-2. **Install** — AppImage, DEB, or RPM on Linux; NSIS installer or portable on Windows.
-3. **Add a server** — enter your qBittorrent-nox host, port, and credentials.
-4. **Connect** and start managing your torrents.
+## Sed Ut Perspiciatis Unde
 
-## Features
+Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
 
-### Multi-server support
+### Neque Porro Quisquam
 
-Connect to multiple qBittorrent-nox instances and switch between them.
+Ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam.
 
-### Real-time sync
+```bash
+npm install lorem-ipsum --save-dev
+npm run dolor:sit
+npm run amet -- --force
+```
 
-Torrent list updates via streaming maindata — no polling lag.
+### At Vero Eos et Accusamus
 
-### Torrent file & magnet links
+Similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio.
 
-Open .torrent files or paste magnet links directly from the app.
+## Temporibus Autem Quibusdam
 
-### System tray
+Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.
 
-Minimises to tray with quick actions for start/stop all torrents.
-
-### Themes
-
-8 built-in colour themes with light and dark mode support.
-
-### Cross-platform
-
-Available for Linux (AppImage, DEB, RPM) and Windows (installer, portable).
-
----
-
-BitButler is open source under the [MIT licence](https://github.com/enisz/bitbutler/blob/main/LICENSE) · [Report an issue](https://github.com/enisz/bitbutler/issues)
+See also [Features](features) · [Development](development) · [Report an issue](https://github.com/enisz/bitbutler/issues)

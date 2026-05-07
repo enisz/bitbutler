@@ -3,29 +3,64 @@ title: 'Configuration'
 order: 2
 ---
 
-# Configuration
+# Quasi Architecto Beatae
 
-## Adding a Server
+Vitae dicta sunt explicabo nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt neque.
 
-Open **Settings → Servers** and click **Add Server**. Fill in:
+## Porro Quisquam Est Qui
 
-- **Name** — a friendly label shown in the server switcher
-- **Host** — the hostname or IP of the machine running `qbittorrent-nox`
-- **Port** — the Web UI port (default: `8080`)
-- **Username / Password** — the credentials you set in qBittorrent Web UI settings
+Dolorem ipsum quia dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco.
 
-Passwords are encrypted at rest using Electron's `safeStorage` API (OS keychain on supported platforms).
+```json
+{
+  "lorem": {
+    "host": "192.168.1.42",
+    "port": 8080,
+    "username": "ipsum",
+    "password": "••••••••",
+    "tls": false
+  },
+  "dolor": {
+    "theme": "dark",
+    "language": "en-US",
+    "pollingInterval": 2000,
+    "notifications": true
+  }
+}
+```
 
-## Multiple Servers
+### Laboris Nisi Ut Aliquip
 
-You can add as many servers as you like. Switch between them using the server selector in the top bar. Each server maintains its own session independently.
+Ex ea commodo consequat duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat non proident sunt in culpa.
 
-## Application Settings
+```typescript
+const config: LoremConfig = {
+  host: process.env['LOREM_HOST'] ?? 'localhost',
+  port: Number(process.env['LOREM_PORT'] ?? 8080),
+  credentials: {
+    username: process.env['LOREM_USER'] ?? '',
+    password: process.env['LOREM_PASS'] ?? '',
+  },
+  options: {
+    timeout: 5_000,
+    retries: 3,
+    backoff: 'exponential',
+  },
+};
+```
 
-General preferences (theme, language, polling interval) are stored under **Settings → General**:
+### Qui Officia Deserunt
 
-| Setting          | Default | Description                          |
-| ---------------- | ------- | ------------------------------------ |
-| Theme            | System  | Light, dark, or follow the OS        |
-| Language         | English | UI language (English or Hungarian)   |
-| Polling interval | 2s      | How often the torrent list refreshes |
+Mollit anim id est laborum sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium totam rem aperiam eaque ipsa quae ab illo inventore veritatis.
+
+## Et Quasi Architecto Beatae
+
+Vitae dicta sunt explicabo. See [First Steps](first-steps) for what to do next · [IPC Reference](../ipc-reference) for advanced integration · [Home](../index) to go back.
+
+### Similique Sunt In Culpa
+
+Qui officia deserunt mollitia animi id est laborum et dolorum fuga et harum quidem rerum facilis est et expedita distinctio nam libero tempore cum soluta nobis est eligendi optio cumque.
+
+---
+
+Continue to [First Steps](first-steps) · Back to [Installation](installation)

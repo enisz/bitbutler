@@ -4,87 +4,91 @@ order: 4
 slug: 'development'
 ---
 
-# Development
+# Itaque Earum Rerum Hic
 
-How to set up, run, and build BitButler from source.
+Tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat. Nam libero tempore, cum soluta nobis est eligendi optio.
 
-## Prerequisites
+## Cumque Nihil Impedit
 
-- **Node.js** — LTS release recommended.
-- **npm** — comes with Node.js.
-- A running [qBittorrent-nox](https://github.com/qbittorrent/qBittorrent) instance to connect to during development.
-
-## Getting the Source
+Quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et.
 
 ```bash
 git clone https://github.com/enisz/bitbutler.git
 cd bitbutler
 npm install
+npm start
 ```
 
-The repository is a monorepo. Running `npm install` at the root installs dependencies for all packages.
+### Voluptates Repudiandae
 
-## Common Commands
+Sint et molestiae non recusandae itaque earum rerum hic tenetur a sapiente delectus. Ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat sed do.
 
-| Command              | Description                                                                                                   |
-| -------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `npm start`          | Starts the Angular dev server and Electron concurrently. This is the main command for day-to-day development. |
-| `npm run serve`      | Starts only the Angular dev server (without Electron).                                                        |
-| `npm run lint`       | Runs ESLint across the codebase. Zero warnings are allowed.                                                   |
-| `npm run lint:fix`   | Runs ESLint and automatically fixes any fixable issues.                                                       |
-| `npm run format`     | Runs Prettier to format all files in the codebase.                                                            |
-| `npm test`           | Runs the test suite.                                                                                          |
-| `npm run build`      | Produces an Angular production build.                                                                         |
-| `npm run dist:linux` | Builds distributable packages for Linux: AppImage, DEB, RPM, Snap, and tar.gz.                                |
-| `npm run dist:win`   | Builds distributable packages for Windows: NSIS installer, portable EXE, and ZIP.                             |
+```typescript
+import { Injectable, computed, signal } from '@angular/core';
 
-## Project Layout
+@Injectable({ providedIn: 'root' })
+export class LoremService {
+  private readonly _dolor = signal<string[]>([]);
+  private readonly _sit = signal(0);
 
-```
-packages/app/                     // Angular renderer (the UI)
-packages/app/src/app/pages/       // Lazy-loaded route pages
-packages/app/src/app/components/  // Shared UI components & modals
-packages/app/src/app/services/    // Business logic and state
-packages/app/src/app/models/      // TypeScript interfaces and types
-packages/app/src/styles/themes/   // SCSS theme files
-packages/app/public/i18n/         // Translation files (us.json, hu.json)
-packages/electron/src/            // Electron main process
-packages/electron/src/preload.ts  // IPC bridge (contextBridge)
-packages/electron/src/ipc/        // IPC handler modules
-packages/electron/src/db.ts       // SQLite database setup
-packages/docs/                    // This documentation site
+  readonly amet = computed(() => this._dolor().length > this._sit());
+
+  readonly consectetur = computed(() => this._dolor().map((item) => item.toUpperCase()));
+
+  add(item: string): void {
+    this._dolor.update((prev) => [...prev, item]);
+    this._sit.update((n) => n + 1);
+  }
+
+  reset(): void {
+    this._dolor.set([]);
+    this._sit.set(0);
+  }
+}
 ```
 
-## Code Quality
+### Similique Sunt In Culpa
 
-Pre-commit hooks (Husky + lint-staged) run automatically on every commit to ensure linting and formatting standards are met.
+Officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore cum soluta nobis est eligendi optio cumque nihil.
 
-- **ESLint** — zero warnings allowed (`--max-warnings=0`). Run `npm run lint` to check or `npm run lint:fix` to auto-fix.
-- **Prettier** — consistent formatting across the whole codebase. Run `npm run format` to apply.
+## Temporibus Autem Quibusdam
 
-## Commit Convention
+Et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus ut aut.
 
-Commits reference the GitHub issue they belong to:
+```scss
+@use 'bootstrap/scss/functions' as *;
+@use 'bootstrap/scss/variables' as *;
 
+$lorem-primary: hsl(220, 90%, 56%);
+$lorem-spacing: 1.5rem;
+
+.ipsum-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: $lorem-spacing;
+
+  &__item {
+    background-color: var(--bs-card-bg, #{$white});
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius-lg);
+    padding: $lorem-spacing;
+    transition: box-shadow 0.2s ease;
+
+    &:hover {
+      box-shadow: 0 4px 16px rgb(0 0 0 / 0.12);
+    }
+  }
+}
 ```
-#42: short description of the change
-```
 
-Pull requests should include `Fixes #IssueID` in the description to auto-close the issue on merge, and carry one of the labels: `bug`, `feature`, `enhancement`, or `maintenance`.
+## Reiciendis Voluptatibus Maiores
 
-## CI / Releases
+Alias consequatur aut perferendis doloribus asperiores repellat. Nam libero tempore cum soluta nobis est eligendi optio. See [Architecture](architecture) for structural context · [Features](features) for what's built.
 
-GitHub Actions runs on every pull request:
+### Ut Et Voluptates
 
-1. ESLint
-2. Tests
-3. Cross-platform builds (Linux + Windows)
-
-Release builds produce distribution packages for both platforms:
-
-- **Linux** — AppImage, DEB, RPM, Snap, tar.gz
-- **Windows** — NSIS installer, portable EXE, ZIP
+Repudiandae sint et molestiae non recusandae itaque earum rerum hic tenetur a sapiente delectus. Ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.
 
 ---
 
-BitButler is open source under the [MIT licence](https://github.com/enisz/bitbutler/blob/main/LICENSE) · [Report an issue](https://github.com/enisz/bitbutler/issues)
+Open source under the [MIT licence](https://github.com/enisz/bitbutler/blob/main/LICENSE) · [Report an issue](https://github.com/enisz/bitbutler/issues)

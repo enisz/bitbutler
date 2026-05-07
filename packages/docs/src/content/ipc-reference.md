@@ -5,50 +5,89 @@ slug: 'ipc-reference'
 parent: 'architecture'
 ---
 
-# IPC Reference
+# Perferendis Doloribus Asperiores
 
-This page documents all IPC channels exposed via `electron/preload.js`.
+Repellat nam libero tempore cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est omnis dolor.
 
-## qb namespace
+## Voluptas Assumenda Est
 
-All qBittorrent API proxies live under `window.bitbutler.qb`.
+Omnis dolor repellendus temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae itaque.
 
-### qb.getMainData
+```typescript
+// Earum rerum hic tenetur
+interface DolorNamespace {
+  getSit(id: string): Promise<SitResult>;
+  setSit(id: string, value: unknown): Promise<void>;
+  deleteSit(id: string): Promise<boolean>;
+  listSit(filter?: SitFilter): Promise<SitResult[]>;
+}
 
-Polls `/api/v2/sync/maindata` with an optional `rid` for incremental updates.
+interface SitResult {
+  id: string;
+  lorem: string;
+  ipsum: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-### qb.getTorrents
+interface SitFilter {
+  lorem?: string;
+  ipsum?: { min?: number; max?: number };
+  limit?: number;
+  offset?: number;
+}
+```
 
-Returns the full torrent list from `/api/v2/torrents/info`.
+### Sapiente Delectus Ut
 
-### qb.addTorrent
+Aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat. Nam libero tempore cum soluta nobis est eligendi optio cumque nihil impedit quo.
 
-Accepts a magnet URI or torrent file buffer and adds it to qBittorrent.
+### Minus Id Quod Maxime
 
-## server namespace
+Placeat facere possimus omnis voluptas assumenda est omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates.
 
-Manages server records stored in the SQLite database.
+## Repudiandae Sint Et
 
-### server.list
+Molestiae non recusandae itaque earum rerum hic tenetur a sapiente delectus ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat nam libero.
 
-Returns all saved servers (passwords are never exposed to the renderer).
+```typescript
+// Tempore cum soluta nobis
+async function consecteturCall<T>(channel: string, payload: unknown): Promise<T> {
+  const response = await window.bitbutler.lorem.invoke(channel, payload);
 
-### server.save
+  if (!response.ok) {
+    throw new LoremError(response.code, response.message);
+  }
 
-Creates or updates a server record. The password is encrypted using Electron's `safeStorage` before being written.
+  return response.data as T;
+}
 
-### server.delete
+class LoremError extends Error {
+  constructor(
+    public readonly code: string,
+    message: string,
+  ) {
+    super(`[${code}] ${message}`);
+    this.name = 'LoremError';
+  }
+}
+```
 
-Removes a server record by ID.
+### Eligendi Optio Cumque
 
-## settings namespace
+Nihil impedit quo minus id quod maxime placeat facere possimus. Omnis voluptas assumenda est omnis dolor repellendus temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus.
 
-Persists user preferences as JSON blobs in the `settings` table.
+## Saepe Eveniet Ut et
 
-### settings.get
+Voluptates repudiandae sint et molestiae non recusandae itaque earum rerum hic tenetur a sapiente delectus. See [Architecture](architecture) for the full design · [Development](development) to contribute.
 
-Reads a setting by key, returning the parsed JSON value.
+```bash
+# Temporibus autem quibusdam
+lorem-ipc listen --channel dolor.sit --format json
+lorem-ipc send dolor.sit '{"amet": true, "consectetur": 42}'
+lorem-ipc replay --from-file ./fixtures/ipsum.ndjson
+```
 
-### settings.set
+---
 
-Serializes and writes a setting value by key.
+Open source under the [MIT licence](https://github.com/enisz/bitbutler/blob/main/LICENSE) · [Report an issue](https://github.com/enisz/bitbutler/issues)

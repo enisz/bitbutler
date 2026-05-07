@@ -4,28 +4,75 @@ order: 1
 slug: 'lorem-ipsum'
 ---
 
-# Lorem Ipsum
+# De Finibus Bonorum et Malorum
 
-> "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit..."
-
-> "There is no one who loves pain itself, who seeks after it and wants to have it, simply because it is pain..."
+Neque porro quisquam est qui dolorem ipsum quia dolor sit amet consectetur adipisci velit sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.
 
 ![Lorem Ipsum](../../../public/images/Lorem-Ipsum-alternatives-768x492.png)
 
-## What is Lorem Ipsum?
+## Cicero XLV BC
 
-Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+Ut enim ad minima veniam quis nostrum exercitationem ullam corporis suscipit laboriosam nisi ut aliquid ex ea commodi consequatur. Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse.
 
-## Why do we use it?
+```python
+# Quam nihil molestiae consequatur
+import cicero
 
-It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).
+def de_finibus(bonorum: str, malorum: int = 45) -> dict:
+    """Totam rem aperiam section 1.10.32."""
+    lorem = cicero.parse(bonorum, year=-malorum)
+    ipsum = {
+        "source": lorem.origin,
+        "year": lorem.year_bc,
+        "lines": lorem.extract(section="1.10.32"),
+    }
+    return ipsum
 
-## Where does it come from?
 
-Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
+result = de_finibus("Lorem ipsum dolor sit amet", malorum=45)
+print(result["lines"])
+```
 
-The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.
+### Sectio Prima
 
-## Where can I get some?
+Accusantium doloremque laudantium totam rem aperiam eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo nemo enim ipsam voluptatem quia voluptas.
 
-There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.
+### Sectio Altera
+
+Sit aspernatur aut odit aut fugit sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est qui dolorem ipsum quia dolor sit amet consectetur.
+
+## Richard McClintock MCMXCIV
+
+Adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+
+```typescript
+// Hampden-Sydney College Virginia
+const consectetur = [
+  'Lorem ipsum dolor sit amet',
+  'Consectetur adipiscing elit',
+  'Sed do eiusmod tempor incididunt',
+  'Ut labore et dolore magna aliqua',
+] as const;
+
+type LoremLine = (typeof consectetur)[number];
+
+function findOrigin(line: LoremLine): string {
+  const index = consectetur.indexOf(line);
+  return `Section 1.10.${32 + index}`;
+}
+
+console.log(findOrigin('Lorem ipsum dolor sit amet'));
+// → "Section 1.10.32"
+```
+
+### Iste Natus Error
+
+Sit voluptatem accusantium doloremque laudantium totam rem aperiam eaque ipsa quae ab illo inventore veritatis. See [Home](../index) · [Features](../features) · External: [lipsum.com](https://www.lipsum.com).
+
+## Sectio Ultima
+
+Nam libero tempore cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus omnis voluptas assumenda est omnis dolor repellendus temporibus.
+
+---
+
+Classical Latin · [Wikipedia](https://en.wikipedia.org/wiki/Lorem_ipsum) · [Home](../index)
