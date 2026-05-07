@@ -12,6 +12,7 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "outDir": "./dist/out-tsc",
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {}
   },
