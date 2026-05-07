@@ -10,16 +10,16 @@ import {
   faPlus,
   faTriangleExclamation,
 } from '@fortawesome/free-solid-svg-icons';
-import { NgbTooltip, NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
+import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { from, switchMap, tap } from 'rxjs';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
+import { SavePathSelect } from '../../../components/save-path-select/save-path-select';
 import { ServerSettings } from '../../../models/server-settings.model';
 import { ElectronService } from '../../../services/electron.service';
 import { ServerSettingsService } from '../../../services/server-settings.service';
 import { ServerStoreService } from '../../../services/server-store.service';
-import { TypeaheadService } from '../../../services/typeahead.service';
 import { SettingsStateService } from '../settings-state.service';
 import { SettingsTabComponent } from '../settings.interface';
 
@@ -28,7 +28,7 @@ import { SettingsTabComponent } from '../settings.interface';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    NgbTypeahead,
+    SavePathSelect,
     FontAwesomeModule,
     NgbTooltip,
     BbSpinner,
@@ -42,7 +42,6 @@ export class Server implements SettingsTabComponent, OnInit {
   private readonly electronService = inject(ElectronService);
   private readonly zone = inject(NgZone);
   private readonly serverSettingsService = inject(ServerSettingsService);
-  private readonly typeaheadService = inject(TypeaheadService);
   private readonly destoryRef = inject(DestroyRef);
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly stateService = inject(SettingsStateService);
@@ -77,8 +76,6 @@ export class Server implements SettingsTabComponent, OnInit {
       });
     }),
   );
-
-  public readonly searchSavePaths = this.typeaheadService.searchSavePaths;
 
   public serverSettingsForm = new FormGroup({
     polling: new FormGroup({
