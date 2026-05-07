@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 const ipcOnHandlers = vi.hoisted(() => new Map<string, (...args: unknown[]) => unknown>());
 const mockLoadTranslations = vi.hoisted(() => vi.fn());
 const mockRebuildMenu = vi.hoisted(() => vi.fn());
+const mockRebuildTrayMenu = vi.hoisted(() => vi.fn());
 
 vi.mock('electron', () => ({
   ipcMain: {
@@ -18,6 +19,10 @@ vi.mock('../i18n.js', () => ({
 
 vi.mock('../menu.js', () => ({
   rebuildMenu: mockRebuildMenu,
+}));
+
+vi.mock('../tray.js', () => ({
+  rebuildTrayMenu: mockRebuildTrayMenu,
 }));
 
 describe('i18n:language-changed IPC event handler', () => {
@@ -46,6 +51,12 @@ describe('i18n:language-changed IPC event handler', () => {
     const handler = await getHandler();
     handler(null, { lang: 'us' });
     expect(mockRebuildMenu).toHaveBeenCalled();
+  });
+
+  it('calls rebuildTrayMenu after loading translations', async () => {
+    const handler = await getHandler();
+    handler(null, { lang: 'us' });
+    expect(mockRebuildTrayMenu).toHaveBeenCalled();
   });
 
   it('does nothing when payload has no lang field', async () => {
