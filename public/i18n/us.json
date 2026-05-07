@@ -589,6 +589,9 @@
     "tag-select": {
       "label": "Tags"
     },
+    "save-path-select": {
+      "label": "Save Path"
+    },
     "toast-overlay": {}
   },
   "pages": {

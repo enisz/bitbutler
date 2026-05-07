@@ -1,0 +1,14 @@
+<div class="form-floating">
+  <ng-select
+    [items]="paths()"
+    [addTag]="addTag"
+    [searchable]="true"
+    [clearable]="true"
+    [formControl]="selectControl"
+    [keyDownFn]="keyDownFn"
+    [openOnEnter]="false"
+    #ngselect
+  >
+  </ng-select>
+  <label>{{ 'components.save-path-select.label' | translate }}</label>
+</div>

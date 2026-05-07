@@ -589,6 +589,9 @@
     "tag-select": {
       "label": "Címkék"
     },
+    "save-path-select": {
+      "label": "Mentési útvonal"
+    },
     "toast-overlay": {}
   },
   "pages": {
