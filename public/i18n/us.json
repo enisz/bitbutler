@@ -42,7 +42,7 @@
         "file-browser": "Torrent File",
         "magnet-links": "Links (one per line)",
         "save-path": "Save Path",
-        "rename": "Rename",
+        "rename": "Name",
         "skip-hash-checking": "Skip hash checking",
         "paused": "Add torrents in the paused state",
         "root-folder": {
@@ -110,6 +110,34 @@
           "description": {
             "line1": "This tells the client to grab the very first and very last chunks of the file immediately.",
             "line2": "This is helpful for verifying that a file is valid or for certain media players to read the file headers and metadata (like duration and resolution) before the rest of the file arrives."
+          }
+        },
+        "save-path": {
+          "title": "Save Path",
+          "description": {
+            "line1": "The folder on your disk where the downloaded files will be saved.",
+            "line2": "Leave blank to use the default download location set in your qBittorrent preferences."
+          }
+        },
+        "name": {
+          "title": "Name",
+          "description": {
+            "line1": "Sets the display name and the root folder name for this torrent.",
+            "line2": "This does not affect the filenames inside the torrent — only the top-level folder or file name."
+          }
+        },
+        "category": {
+          "title": "Category",
+          "description": {
+            "line1": "Assigns the torrent to a category. Categories are useful for organizing your downloads and can also define a default save path.",
+            "line2": "If Auto TMM is enabled, changing the category may automatically move the files."
+          }
+        },
+        "tags": {
+          "title": "Tags",
+          "description": {
+            "line1": "Adds one or more tags to this torrent for flexible filtering and grouping.",
+            "line2": "Unlike categories, a torrent can have multiple tags, and tags do not affect the save path."
           }
         }
       }
