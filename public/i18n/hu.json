@@ -112,32 +112,11 @@
             "line2": "Segít ellenőrizni, hogy a fájl valódi-e, illetve bizonyos médialejátszók így már a letöltés befejezése előtt beolvashatják a metaadatokat (pl. időtartam, felbontás)."
           }
         },
-        "save-path": {
-          "title": "Mentési útvonal",
-          "description": {
-            "line1": "Az a mappa a lemezen, ahova a letöltött fájlok kerülnek.",
-            "line2": "Hagyja üresen, ha az alapértelmezett letöltési helyet szeretné használni (a qBittorrent beállításaiban megadott)."
-          }
-        },
         "name": {
           "title": "Név",
           "description": {
             "line1": "Beállítja a torrent megjelenítési nevét és a gyökérmappa nevét.",
             "line2": "Ez nem érinti a torrenten belüli fájlneveket - csak a legfelső szintű mappa vagy fájl nevét."
-          }
-        },
-        "category": {
-          "title": "Kategória",
-          "description": {
-            "line1": "Kategóriát rendel a torrenthez. A kategóriák hasznosak a letöltések rendszerezéséhez, és alapértelmezett mentési útvonalat is meghatározhatnak.",
-            "line2": "Ha az automatikus torrentkezelés (TMM) engedélyezve van, a kategória megváltoztatása automatikusan áthelyezheti a fájlokat."
-          }
-        },
-        "tags": {
-          "title": "Címkék",
-          "description": {
-            "line1": "Egy vagy több címkét ad ehhez a torrenthez, rugalmas szűrési és csoportosítási lehetőségekért.",
-            "line2": "A kategóriákkal ellentétben egy torrenthez több címke is rendelhető, és a címkék nem befolyásolják a mentési útvonalat."
           }
         },
         "file": {
@@ -176,7 +155,14 @@
     "bb-progress": {},
     "bb-spinner": {},
     "category-select": {
-      "label": "Kategória"
+      "label": "Kategória",
+      "popover": {
+        "title": "Kategória",
+        "description": {
+          "line1": "Kategóriát rendel a torrenthez. A kategóriák hasznosak a letöltések rendszerezéséhez, és alapértelmezett mentési útvonalat is meghatározhatnak.",
+          "line2": "Ha az automatikus torrentkezelés (TMM) engedélyezve van, a kategória megváltoztatása automatikusan áthelyezheti a fájlokat."
+        }
+      }
     },
     "datepicker-filter": {},
     "datepicker-range-filter": {
@@ -629,10 +615,25 @@
       }
     },
     "tag-select": {
-      "label": "Címkék"
+      "label": "Címkék",
+      "popover": {
+        "title": "Címkék",
+        "description": {
+          "line1": "Egy vagy több címkét ad ehhez a torrenthez, rugalmas szűrési és csoportosítási lehetőségekért.",
+          "line2": "A kategóriákkal ellentétben egy torrenthez több címke is rendelhető, és a címkék nem befolyásolják a mentési útvonalat."
+        }
+      }
     },
     "save-path-select": {
-      "label": "Mentési útvonal"
+      "label": "Mentési útvonal",
+      "default-path": "Alapértelmezett: {{ path }}",
+      "popover": {
+        "title": "Mentési útvonal",
+        "description": {
+          "line1": "Az a mappa a lemezen, ahova a letöltött fájlok kerülnek.",
+          "line2": "Hagyja üresen, ha az alapértelmezett letöltési helyet szeretné használni (a qBittorrent beállításaiban megadott)."
+        }
+      }
     },
     "toast-overlay": {}
   },
