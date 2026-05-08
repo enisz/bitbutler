@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, NgZone, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, NgZone, OnInit, computed, inject } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -11,15 +11,16 @@ import {
   faTriangleExclamation,
 } from '@fortawesome/free-solid-svg-icons';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
+import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe } from '@ngx-translate/core';
 import { from, switchMap, tap } from 'rxjs';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
-import { SavePathSelect } from '../../../components/save-path-select/save-path-select';
 import { ServerSettings } from '../../../models/server-settings.model';
 import { ElectronService } from '../../../services/electron.service';
 import { ServerSettingsService } from '../../../services/server-settings.service';
 import { ServerStoreService } from '../../../services/server-store.service';
+import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { SettingsStateService } from '../settings-state.service';
 import { SettingsTabComponent } from '../settings.interface';
 
@@ -28,7 +29,7 @@ import { SettingsTabComponent } from '../settings.interface';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    SavePathSelect,
+    NgSelectComponent,
     FontAwesomeModule,
     NgbTooltip,
     BbSpinner,
@@ -45,6 +46,7 @@ export class Server implements SettingsTabComponent, OnInit {
   private readonly destoryRef = inject(DestroyRef);
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly stateService = inject(SettingsStateService);
+  private readonly torrentStoreService = inject(TorrentStoreService);
 
   public icons: Record<string, IconDefinition> = {
     faPlus,
@@ -52,6 +54,27 @@ export class Server implements SettingsTabComponent, OnInit {
     faTriangleExclamation,
     faFolderOpen,
   };
+
+  public paths = computed(
+    () => {
+      const uniquePaths = new Set<string>();
+      for (const t of this.torrentStoreService.torrentsArray()) {
+        const path = t.save_path?.trim();
+        if (path) uniquePaths.add(path);
+      }
+      return Array.from(uniquePaths).sort();
+    },
+    { equal: (a, b) => a.length === b.length && a.every((v, i) => v === b[i]) },
+  );
+
+  addTag = (term: string): string => term;
+
+  keyDownFn(event: KeyboardEvent): boolean {
+    if (event.key === 'Escape') {
+      return false;
+    }
+    return true;
+  }
 
   public settings$ = toObservable(this.serverStoreService.currentServerId).pipe(
     switchMap(() => from(this.serverSettingsService.reload() as Promise<ServerSettings>)),
