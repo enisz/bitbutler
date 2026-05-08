@@ -75,11 +75,13 @@ export class SavePathSelect implements OnInit, ControlValueAccessor, AfterViewIn
       this.qbService
         .getAppPreferences(serverId)
         .then((prefs) => {
-          this.defaultPath.set(
-            this.translateService.instant('components.save-path-select.default-path', {
-              path: prefs.save_path,
-            }),
-          );
+          if (prefs.save_path) {
+            this.defaultPath.set(
+              this.translateService.instant('components.save-path-select.default-path', {
+                path: prefs.save_path,
+              }),
+            );
+          }
         })
         .catch(() => {
           // silent fallback — defaultPath stays ''
