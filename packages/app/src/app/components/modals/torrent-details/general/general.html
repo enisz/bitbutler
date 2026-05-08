@@ -309,12 +309,14 @@
           <span
             class="section-value"
             [ngbTooltip]="
-              isDownloading() ? (torrent()!.data.eta | humanizeDuration: 'long' : 2) : '-'
+              isDownloading() ? (torrent()!.data.eta * 1000 | humanizeDuration: 'long' : 2) : '-'
             "
             bbTooltipOverflow
             placement="bottom"
           >
-            {{ isDownloading() ? (torrent()!.data.eta | humanizeDuration: 'long' : 2) : '-' }}
+            {{
+              isDownloading() ? (torrent()!.data.eta * 1000 | humanizeDuration: 'long' : 2) : '-'
+            }}
           </span>
         </div>
         <div class="col-12 col-lg-6 col-xl-4 bb-section">
