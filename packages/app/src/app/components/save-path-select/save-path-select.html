@@ -1,16 +1,36 @@
-<div class="form-floating">
-  <ng-select
-    [items]="paths()"
-    [addTag]="addTag"
-    [searchable]="true"
-    [clearable]="true"
-    [clearOnBackspace]="false"
-    [editableSearchTerm]="true"
-    [formControl]="selectControl"
-    [keyDownFn]="keyDownFn"
-    [openOnEnter]="false"
-    #ngselect
-  >
-  </ng-select>
-  <label>{{ 'components.save-path-select.label' | translate }}</label>
+<div class="container-fluid px-0">
+  <div class="row">
+    <div class="col-11">
+      <div class="form-floating">
+        <ng-select
+          [items]="paths()"
+          [addTag]="addTag"
+          [searchable]="true"
+          [clearable]="true"
+          [clearOnBackspace]="false"
+          [editableSearchTerm]="true"
+          [formControl]="selectControl"
+          [keyDownFn]="keyDownFn"
+          [openOnEnter]="false"
+          [placeholder]="defaultPath()"
+          #ngselect
+        >
+        </ng-select>
+        <label>{{ 'components.save-path-select.label' | translate }}</label>
+      </div>
+    </div>
+
+    <div class="col-1 d-flex align-items-center">
+      <bb-popover
+        [subject]="'components.save-path-select.popover.title' | translate"
+        [description]="savePathPopover"
+        placement="left"
+      ></bb-popover>
+    </div>
+  </div>
 </div>
+
+<ng-template #savePathPopover>
+  <p>{{ 'components.save-path-select.popover.description.line1' | translate }}</p>
+  <p>{{ 'components.save-path-select.popover.description.line2' | translate }}</p>
+</ng-template>

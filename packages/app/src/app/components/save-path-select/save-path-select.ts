@@ -8,6 +8,7 @@ import {
   computed,
   forwardRef,
   inject,
+  signal,
 } from '@angular/core';
 import {
   ControlValueAccessor,
@@ -16,13 +17,16 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { NgSelectComponent } from '@ng-select/ng-select';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { QbService } from '../../services/qb.service';
+import { ServerStoreService } from '../../services/server-store.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
+import { BbPopover } from '../bb-popover/bb-popover';
 
 @Component({
   selector: 'app-save-path-select',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgSelectComponent, TranslatePipe],
+  imports: [CommonModule, ReactiveFormsModule, NgSelectComponent, TranslatePipe, BbPopover],
   templateUrl: './save-path-select.html',
   styleUrls: ['./save-path-select.scss'],
   providers: [
@@ -38,6 +42,9 @@ export class SavePathSelect implements OnInit, ControlValueAccessor, AfterViewIn
   @ViewChild('ngselect') ngselect!: NgSelectComponent;
 
   private readonly torrentStoreService = inject(TorrentStoreService);
+  private readonly qbService = inject(QbService);
+  private readonly serverStoreService = inject(ServerStoreService);
+  private readonly translateService = inject(TranslateService);
 
   public paths = computed(
     () => {
@@ -51,6 +58,7 @@ export class SavePathSelect implements OnInit, ControlValueAccessor, AfterViewIn
     { equal: (a, b) => a.length === b.length && a.every((v, i) => v === b[i]) },
   );
 
+  public defaultPath = signal<string>('');
   public selectControl = new FormControl<string | null>(null);
 
   private onChange: (value: string | null) => void = () => {};
@@ -61,6 +69,22 @@ export class SavePathSelect implements OnInit, ControlValueAccessor, AfterViewIn
       this.onChange(value);
       this.onTouched();
     });
+
+    const serverId = this.serverStoreService.currentServerId();
+    if (serverId) {
+      this.qbService
+        .getAppPreferences(serverId)
+        .then((prefs) => {
+          this.defaultPath.set(
+            this.translateService.instant('components.save-path-select.default-path', {
+              path: prefs.save_path,
+            }),
+          );
+        })
+        .catch(() => {
+          // silent fallback — defaultPath stays ''
+        });
+    }
   }
 
   public ngAfterViewInit(): void {
