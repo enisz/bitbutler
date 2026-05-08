@@ -133,46 +133,25 @@
             ></bb-popover>
           </div>
 
-          <div class="col-11">
+          <div class="col-12">
             <div class="mb-3">
-              <app-save-path-select formControlName="savepath"></app-save-path-select>
+              <app-save-path-select
+                formControlName="savepath"
+                [autofocus]="true"
+              ></app-save-path-select>
             </div>
           </div>
 
-          <div class="col-1 d-flex align-items-center mb-3">
-            <bb-popover
-              [subject]="'components.add-torrent.popover.save-path.title' | translate"
-              [description]="savePathPopover"
-              placement="left"
-            ></bb-popover>
-          </div>
-
-          <div class="col-11">
+          <div class="col-12">
             <div class="mb-3">
               <app-category-select formControlName="category"></app-category-select>
             </div>
           </div>
 
-          <div class="col-1 d-flex align-items-center mb-3">
-            <bb-popover
-              [subject]="'components.add-torrent.popover.category.title' | translate"
-              [description]="categoryPopover"
-              placement="left"
-            ></bb-popover>
-          </div>
-
-          <div class="col-11">
+          <div class="col-12">
             <div class="mb-3">
               <app-tag-select formControlName="tags"></app-tag-select>
             </div>
-          </div>
-
-          <div class="col-1 d-flex align-items-center mb-3">
-            <bb-popover
-              [subject]="'components.add-torrent.popover.tags.title' | translate"
-              [description]="tagsPopover"
-              placement="left"
-            ></bb-popover>
           </div>
         </div>
       </div>
@@ -382,21 +361,6 @@
 <ng-template #namePopover>
   <p>{{ 'components.add-torrent.popover.name.description.line1' | translate }}</p>
   <p>{{ 'components.add-torrent.popover.name.description.line2' | translate }}</p>
-</ng-template>
-
-<ng-template #savePathPopover>
-  <p>{{ 'components.add-torrent.popover.save-path.description.line1' | translate }}</p>
-  <p>{{ 'components.add-torrent.popover.save-path.description.line2' | translate }}</p>
-</ng-template>
-
-<ng-template #categoryPopover>
-  <p>{{ 'components.add-torrent.popover.category.description.line1' | translate }}</p>
-  <p>{{ 'components.add-torrent.popover.category.description.line2' | translate }}</p>
-</ng-template>
-
-<ng-template #tagsPopover>
-  <p>{{ 'components.add-torrent.popover.tags.description.line1' | translate }}</p>
-  <p>{{ 'components.add-torrent.popover.tags.description.line2' | translate }}</p>
 </ng-template>
 
 <ng-template #rootFolder>
