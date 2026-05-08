@@ -24,7 +24,7 @@ A single `npm ci` at the root installs all workspace dependencies. Workspace pac
 ```bash
 npm start               # Angular dev server + tsc:watch + Electron hot reload (concurrent)
 npm run serve           # Angular dev server only
-npm run lint            # ESLint (max-warnings=0 — zero warnings allowed)
+npm run lint            # ESLint (max-warnings=0 - zero warnings allowed)
 npm run lint:fix        # Auto-fix lint issues
 npm run format          # Prettier format entire codebase
 npm test                # Run tests across all workspaces
@@ -48,7 +48,7 @@ Angular (renderer) ──→ window.bitbutler.* ──→ packages/electron/src/
 ```
 
 - `packages/electron/src/preload.ts` is the only bridge. It exposes `window.bitbutler` with namespaces: `qb`, `server`, `settings`, `window`, `electron`, `notification`, `torrent`.
-- Angular services call `window.bitbutler.*` directly — never `fetch()` or Node APIs.
+- Angular services call `window.bitbutler.*` directly - never `fetch()` or Node APIs.
 - `packages/electron/src/ipc/qbittorrent.ts` proxies all qBittorrent API calls via **axios** from the main process (avoids CORS and handles HTTP streaming for maindata).
 - `packages/electron/src/db.ts` holds a **better-sqlite3** database: `servers` table (passwords encrypted with Electron `safeStorage`) and `settings` table (JSON blobs).
 
@@ -56,14 +56,14 @@ Angular (renderer) ──→ window.bitbutler.* ──→ packages/electron/src/
 
 The `packages/shared` package is the single source of truth for the IPC contract and shared models:
 
-- `packages/shared/src/ipc.types.ts` — the canonical `BitButlerAPI` interface
-- `packages/shared/src/models/` — `ServerModel`, `ElectronModel`, `TorrentDraftModel`, `WindowModel`
+- `packages/shared/src/ipc.types.ts` - the canonical `BitButlerAPI` interface
+- `packages/shared/src/models/` - `ServerModel`, `ElectronModel`, `TorrentDraftModel`, `WindowModel`
 
 Both `packages/app` and `packages/electron` import from `@bitbutler/shared`. Angular model files re-export from shared; there is no type duplication across the IPC boundary.
 
 ### Angular state & data flow
 
-- **Signals** are the primary reactive primitive (Angular 20 zoneless mode). Use `signal()`, `computed()`, `effect()` — not `BehaviorSubject` for new state.
+- **Signals** are the primary reactive primitive (Angular 20 zoneless mode). Use `signal()`, `computed()`, `effect()` - not `BehaviorSubject` for new state.
 - **RxJS** is used for async streams (polling, HTTP streaming); `QbPollingService` drives the background sync loop.
 - `TorrentStoreService` is the central torrent state. It receives maindata chunks from `QbPollingService` and applies `full_update` vs incremental diffs.
 - `ServerStoreService` tracks the active server selection; `currentServer` is a `computed()` signal.

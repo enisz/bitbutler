@@ -79,7 +79,7 @@ export class SavePathSelect implements OnInit, ControlValueAccessor, AfterViewIn
           }
         })
         .catch(() => {
-          // silent fallback — defaultPath stays ''
+          // silent fallback - defaultPath stays ''
         });
     }
   }

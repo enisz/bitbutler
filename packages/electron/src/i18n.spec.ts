@@ -64,7 +64,7 @@ describe('i18n', () => {
     const { loadTranslations, t } = await import('./i18n.js');
     loadTranslations('us');
 
-    // 'electron.menu' resolves to an object, not a string — fall back to key
+    // 'electron.menu' resolves to an object, not a string - fall back to key
     expect(t('electron.menu')).toBe('electron.menu');
   });
 

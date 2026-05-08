@@ -6,7 +6,7 @@ import { GeneralSettingsService } from './general-settings.service';
 import { ThemeService } from './theme.service';
 import { ToastService } from './toast.service';
 
-describe('ToastService — showText()', () => {
+describe('ToastService - showText()', () => {
   let service: ToastService;
   let mockOverlay: any;
   let mockGeneralSettings: any;
