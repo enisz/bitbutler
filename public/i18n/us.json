@@ -626,7 +626,6 @@
     },
     "save-path-select": {
       "label": "Save Path",
-      "default-path": "Default: {{ path }}",
       "popover": {
         "title": "Save Path",
         "description": {

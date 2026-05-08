@@ -626,7 +626,6 @@
     },
     "save-path-select": {
       "label": "Mentési útvonal",
-      "default-path": "Alapértelmezett: {{ path }}",
       "popover": {
         "title": "Mentési útvonal",
         "description": {

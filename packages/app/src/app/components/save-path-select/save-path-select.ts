@@ -17,7 +17,7 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { NgSelectComponent } from '@ng-select/ng-select';
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
@@ -44,7 +44,6 @@ export class SavePathSelect implements OnInit, ControlValueAccessor, AfterViewIn
   private readonly torrentStoreService = inject(TorrentStoreService);
   private readonly qbService = inject(QbService);
   private readonly serverStoreService = inject(ServerStoreService);
-  private readonly translateService = inject(TranslateService);
 
   public paths = computed(
     () => {
@@ -76,11 +75,7 @@ export class SavePathSelect implements OnInit, ControlValueAccessor, AfterViewIn
         .getAppPreferences(serverId)
         .then((prefs) => {
           if (prefs.save_path) {
-            this.defaultPath.set(
-              this.translateService.instant('components.save-path-select.default-path', {
-                path: prefs.save_path,
-              }),
-            );
+            this.defaultPath.set(prefs.save_path);
           }
         })
         .catch(() => {
