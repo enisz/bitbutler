@@ -19,11 +19,12 @@ import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe } from '@ngx-translate/core';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
+import { BbPopover } from '../bb-popover/bb-popover';
 
 @Component({
   selector: 'app-tag-select',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgSelectComponent, TranslatePipe],
+  imports: [CommonModule, ReactiveFormsModule, NgSelectComponent, TranslatePipe, BbPopover],
   templateUrl: './tag-select.html',
   styleUrls: ['./tag-select.scss'],
   providers: [

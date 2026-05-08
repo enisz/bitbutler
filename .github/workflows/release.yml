@@ -96,7 +96,7 @@ jobs:
             echo "changed=true" >> $GITHUB_OUTPUT
           elif git diff --quiet "$PREV_TAG"..HEAD -- packages/docs/ packages/app/src/styles/; then
             echo "changed=false" >> $GITHUB_OUTPUT
-            echo "No docs changes since $PREV_TAG — skipping docs build"
+            echo "No docs changes since $PREV_TAG - skipping docs build"
           else
             echo "changed=true" >> $GITHUB_OUTPUT
           fi

@@ -439,8 +439,6 @@ export class SearchBarComponent {
       const exactBodyIndices = findExactIndices(item.body, trimmed);
       const exactTitleIndices = findExactIndices(item.attributes.title, trimmed);
 
-      // Skip results that Fuse found only via fuzzy body match but no actual
-      // occurrence of the query exists in either the title or body.
       if (!titleData && exactBodyIndices.length === 0) continue;
 
       let sectionHeading: string | null = null;

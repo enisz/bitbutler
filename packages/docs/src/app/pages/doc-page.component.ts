@@ -41,15 +41,12 @@ export class DocPageComponent implements OnInit {
 
       const fragment = this.route.snapshot.fragment;
       if (fragment) {
-        // Defer until after innerHTML has been applied to the DOM
         setTimeout(() => this.scrollToFragment(fragment), 0);
       } else {
         this.doc.defaultView?.scrollTo({ top: 0 });
       }
     });
 
-    // Handle same-page fragment navigation (e.g. clicking a search result for a
-    // different section of the current page, which changes only the fragment).
     this.route.fragment.subscribe((fragment) => {
       if (fragment) {
         setTimeout(() => this.scrollToFragment(fragment), 0);

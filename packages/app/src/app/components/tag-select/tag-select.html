@@ -1,17 +1,36 @@
-<div class="form-floating">
-  <ng-select
-    [items]="tags()"
-    [multiple]="true"
-    [addTag]="addTag"
-    [hideSelected]="true"
-    [searchable]="true"
-    [clearable]="true"
-    [clearSearchOnAdd]="true"
-    [formControl]="selectControl"
-    [keyDownFn]="keyDownFn"
-    [openOnEnter]="false"
-    #ngselect
-  >
-  </ng-select>
-  <label>{{ 'components.tag-select.label' | translate }}</label>
+<div class="container-fluid px-0">
+  <div class="row">
+    <div class="col-11">
+      <div class="form-floating">
+        <ng-select
+          [items]="tags()"
+          [multiple]="true"
+          [addTag]="addTag"
+          [hideSelected]="true"
+          [searchable]="true"
+          [clearable]="true"
+          [clearSearchOnAdd]="true"
+          [formControl]="selectControl"
+          [keyDownFn]="keyDownFn"
+          [openOnEnter]="false"
+          #ngselect
+        >
+        </ng-select>
+        <label>{{ 'components.tag-select.label' | translate }}</label>
+      </div>
+    </div>
+
+    <div class="col-1 d-flex align-items-center">
+      <bb-popover
+        [subject]="'components.tag-select.popover.title' | translate"
+        [description]="tagPopover"
+        placement="left"
+      ></bb-popover>
+    </div>
+  </div>
 </div>
+
+<ng-template #tagPopover>
+  <p>{{ 'components.tag-select.popover.description.line1' | translate }}</p>
+  <p>{{ 'components.tag-select.popover.description.line2' | translate }}</p>
+</ng-template>

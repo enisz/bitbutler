@@ -1,42 +1,30 @@
-import { Component, ElementRef, Input, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { NgbActiveModal, NgbTooltip, NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { AutofocusDirective } from '../../../directives/autofocus';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
 import { Torrent } from '../../../models/torrent.model';
 import { QbService } from '../../../services/qb.service';
 import { SelectionStoreService } from '../../../services/selection-store.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { ToastService } from '../../../services/toast.service';
-import { TypeaheadService } from '../../../services/typeahead.service';
+import { SavePathSelect } from '../../save-path-select/save-path-select';
 
 @Component({
   selector: 'app-set-torrent-location',
-  imports: [
-    ReactiveFormsModule,
-    NgbTypeahead,
-    AutofocusDirective,
-    NgbTooltip,
-    TranslatePipe,
-    TooltipOverflow,
-  ],
+  imports: [ReactiveFormsModule, SavePathSelect, NgbTooltip, TranslatePipe, TooltipOverflow],
   templateUrl: './set-torrent-location.html',
   styleUrl: './set-torrent-location.scss',
 })
 export class SetTorrentLocation implements OnInit {
   @Input() torrent!: Torrent;
 
-  @ViewChild('savePathControl') public savePathControl!: ElementRef;
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly selectionStoreService = inject(SelectionStoreService);
-  private readonly typeaheadService = inject(TypeaheadService);
   private readonly toastService = inject(ToastService);
   private readonly qbService = inject(QbService);
   public readonly activeModal = inject(NgbActiveModal);
   private readonly translateService = inject(TranslateService);
-
-  public readonly searchSavePaths = this.typeaheadService.searchSavePaths;
   public setLocationForm = new FormGroup({
     path: new FormControl('', [Validators.required]),
   });

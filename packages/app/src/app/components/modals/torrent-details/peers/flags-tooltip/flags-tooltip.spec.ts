@@ -28,7 +28,6 @@ describe('FlagsTooltipComponent', () => {
   });
 
   it('should preserve the order defined in PEER_FLAG_DEFINITIONS', () => {
-    // D comes before U in the definitions
     component.agInit({ data: { flags: 'U D' } } as any);
     expect(component.activeFlags[0].flag).toBe('D');
     expect(component.activeFlags[1].flag).toBe('U');

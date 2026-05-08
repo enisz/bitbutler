@@ -51,6 +51,9 @@ export class UiFormatService {
   public readonly duration = (params: ValueFormatterParams): string =>
     this.humanizeDurationPipe.transform(params.value);
 
+  public readonly durationSeconds = (params: ValueFormatterParams, precision = Infinity): string =>
+    this.humanizeDurationPipe.transform(params.value * 1000, 'long', precision);
+
   public readonly ratio = (params: ValueFormatterParams): string =>
     this.ratioPipe.transform(params.value);
 

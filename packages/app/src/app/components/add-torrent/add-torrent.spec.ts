@@ -1,14 +1,12 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { of } from 'rxjs';
 import { AddTorrentSettingsService } from '../../services/add-torrent-settings.service';
 import { GeneralSettingsService } from '../../services/general-settings.service';
 import { OpenFilesService } from '../../services/open-files.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
-import { TypeaheadService } from '../../services/typeahead.service';
 import { AddTorrent } from './add-torrent';
 
 describe('AddTorrent', () => {
@@ -42,10 +40,6 @@ describe('AddTorrent', () => {
         {
           provide: GeneralSettingsService,
           useValue: { load: vi.fn().mockResolvedValue({ behavior: { deleteTorrentFile: false } }) },
-        },
-        {
-          provide: TypeaheadService,
-          useValue: { searchSavePaths: vi.fn().mockReturnValue(of([])) },
         },
         {
           provide: QbService,

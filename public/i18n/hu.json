@@ -42,7 +42,7 @@
         "file-browser": "Torrent fájl",
         "magnet-links": "Linkek (soronként egy)",
         "save-path": "Mentési útvonal",
-        "rename": "Átnevezés",
+        "rename": "Név",
         "skip-hash-checking": "Hash-ellenőrzés kihagyása",
         "paused": "Hozzáadás felfüggesztett állapotban",
         "root-folder": {
@@ -111,6 +111,27 @@
             "line1": "Ez arra utasítja a klienst, hogy a fájl legelső és legutolsó darabjait azonnal szerezze be.",
             "line2": "Segít ellenőrizni, hogy a fájl valódi-e, illetve bizonyos médialejátszók így már a letöltés befejezése előtt beolvashatják a metaadatokat (pl. időtartam, felbontás)."
           }
+        },
+        "name": {
+          "title": "Név",
+          "description": {
+            "line1": "Beállítja a torrent megjelenítési nevét és a gyökérmappa nevét.",
+            "line2": "Ez nem érinti a torrenten belüli fájlneveket - csak a megjelenítési nevet és a gyökérmappa nevét (ha gyökérmappa létrehozása be van állítva)."
+          }
+        },
+        "file": {
+          "title": "Torrent fájl",
+          "description": {
+            "line1": "Válassz ki egy .torrent fájlt a számítógépedről. A fájl helyben kerül feldolgozásra - semmilyen adat nem kerül elküldésre, amíg a Hozzáadás gombra nem kattintasz.",
+            "line2": "Ha a fájl betöltődött, alább megjelenik egy fájlfa, ahol az egyes fájlokat áttekintheted és be- vagy kikapcsolhatod a hozzáadás előtt."
+          }
+        },
+        "links": {
+          "title": "Linkek",
+          "description": {
+            "line1": "Illessz be egy vagy több mágneslinket vagy közvetlen .torrent URL-t ide, soronként egyet.",
+            "line2": "A mágneslinkkek magnet:?xt=urn:btih:… kezdetűek - a közvetlen .torrent URL-ekről a qBittorrent automatikusan letölti a fájlt."
+          }
         }
       }
     },
@@ -134,7 +155,14 @@
     "bb-progress": {},
     "bb-spinner": {},
     "category-select": {
-      "label": "Kategória"
+      "label": "Kategória",
+      "popover": {
+        "title": "Kategória",
+        "description": {
+          "line1": "Kategóriát rendel a torrenthez. A kategóriák hasznosak a letöltések rendszerezéséhez, és alapértelmezett mentési útvonalat is meghatározhatnak.",
+          "line2": "Ha az automatikus torrentkezelés (TMM) engedélyezve van, a kategória megváltoztatása automatikusan áthelyezheti a fájlokat."
+        }
+      }
     },
     "datepicker-filter": {},
     "datepicker-range-filter": {
@@ -587,7 +615,24 @@
       }
     },
     "tag-select": {
-      "label": "Címkék"
+      "label": "Címkék",
+      "popover": {
+        "title": "Címkék",
+        "description": {
+          "line1": "Egy vagy több címkét ad ehhez a torrenthez, rugalmas szűrési és csoportosítási lehetőségekért.",
+          "line2": "A kategóriákkal ellentétben egy torrenthez több címke is rendelhető, és a címkék nem befolyásolják a mentési útvonalat."
+        }
+      }
+    },
+    "save-path-select": {
+      "label": "Mentési útvonal",
+      "popover": {
+        "title": "Mentési útvonal",
+        "description": {
+          "line1": "Az a mappa a lemezen, ahova a letöltött fájlok kerülnek.",
+          "line2": "Hagyja üresen, ha az alapértelmezett letöltési helyet szeretné használni (a qBittorrent beállításaiban megadott)."
+        }
+      }
     },
     "toast-overlay": {}
   },

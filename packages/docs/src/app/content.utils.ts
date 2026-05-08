@@ -33,7 +33,6 @@ export function deriveMetadata(filename: string): { slug: string; folder: string
 
   const folder = parts[0];
   const file = parts[1].replace(/\.md$/, '');
-  // Strip numeric ordering prefix from folder for clean URL slugs
   const slugFolder = folder.replace(/^\d+-/, '');
 
   return { slug: `${slugFolder}/${file}`, folder };

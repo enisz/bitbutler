@@ -85,6 +85,7 @@ describe('Grid', () => {
             fileSizePerSecond: vi.fn(),
             ratio: vi.fn(),
             duration: vi.fn(),
+            durationSeconds: vi.fn(),
             localTimestamp: vi.fn(),
             ratioLimit: vi.fn(),
             timeLimit: vi.fn(),

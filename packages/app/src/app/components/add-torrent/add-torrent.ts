@@ -1,14 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  HostListener,
-  OnInit,
-  ViewChild,
-  computed,
-  effect,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, HostListener, OnInit, computed, effect, inject, signal } from '@angular/core';
 import {
   AbstractControl,
   FormControl,
@@ -20,7 +10,7 @@ import {
 } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import { NgbActiveModal, NgbModal, NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AutofocusDirective } from '../../directives/autofocus';
@@ -34,11 +24,11 @@ import { OpenFilesService, PendingAddTorrent } from '../../services/open-files.s
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
-import { TypeaheadService } from '../../services/typeahead.service';
 import { BbFileTree, FileTreeSaveEvent } from '../bb-file-tree/bb-file-tree';
 import { BbPopover } from '../bb-popover/bb-popover';
 import { CategorySelect } from '../category-select/category-select';
 import { TorrentExists } from '../modals/torrent-exists/torrent-exists';
+import { SavePathSelect } from '../save-path-select/save-path-select';
 import { ShareLimit, ShareLimitValue } from '../share-limit/share-limit';
 import { TagSelect } from '../tag-select/tag-select';
 import { TransferLimit, TransferLimitValue } from '../transfer-limit/transfer-limit';
@@ -64,7 +54,7 @@ type AddTorrentFormValue = {
   selector: 'app-add-torrent',
   imports: [
     ReactiveFormsModule,
-    NgbTypeahead,
+    SavePathSelect,
     BbFileTree,
     TagSelect,
     CategorySelect,
@@ -84,7 +74,6 @@ export class AddTorrent implements OnInit {
   onEscapeKey(): void {
     this.handleCancel();
   }
-  @ViewChild('savePathControl') public savePathControl!: ElementRef;
   public readonly activeModal = inject(NgbActiveModal);
   private readonly modalService = inject(NgbModal);
 
@@ -92,7 +81,6 @@ export class AddTorrent implements OnInit {
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly addTorrentSettings = inject(AddTorrentSettingsService);
   private readonly generalSettingsService = inject(GeneralSettingsService);
-  private readonly typeaheadService = inject(TypeaheadService);
   private readonly qbService = inject(QbService);
   private readonly openFilesService = inject(OpenFilesService);
   private readonly translateService = inject(TranslateService);
@@ -102,7 +90,6 @@ export class AddTorrent implements OnInit {
   public currentDraftNumber = computed(() => this.initialQueueCount() - this.queueCount() + 1);
 
   public manualDraft = signal<TorrentDraft | null>(null);
-  public readonly searchSavePaths = this.typeaheadService.searchSavePaths;
   public inputMode = signal<'file' | 'link'>('file');
   public showTree = signal(false);
   public treeInEditMode = signal(false);
@@ -118,7 +105,7 @@ export class AddTorrent implements OnInit {
   public addForm = new FormGroup({
     file: new FormControl<string>('', { nonNullable: true }),
     magnetLinks: new FormControl<string>('', { nonNullable: true }),
-    savepath: new FormControl<string | null>(null, [Validators.required]),
+    savepath: new FormControl<string | null>(null),
     rename: new FormControl<string | null>(null, [Validators.required, this.noSlashValidator()]),
     paused: new FormControl<boolean>(false, { nonNullable: true }),
     category: new FormControl<string | null>(null),

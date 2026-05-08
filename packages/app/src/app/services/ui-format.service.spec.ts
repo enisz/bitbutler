@@ -42,6 +42,11 @@ describe('UiFormatService', () => {
     expect(typeof result).toBe('string');
   });
 
+  it('should return a string from durationSeconds()', () => {
+    const result = service.durationSeconds(makeParams(3600));
+    expect(typeof result).toBe('string');
+  });
+
   it('should return a string from ratio()', () => {
     const result = service.ratio(makeParams(1.5));
     expect(typeof result).toBe('string');

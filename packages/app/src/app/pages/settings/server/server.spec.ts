@@ -1,6 +1,9 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ElectronService } from '../../../services/electron.service';
+import { ServerSettingsService } from '../../../services/server-settings.service';
+import { ServerStoreService } from '../../../services/server-store.service';
+import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { SettingsStateService } from '../settings-state.service';
 import { Server } from './server';
 
@@ -29,6 +32,17 @@ describe('Server', () => {
       providers: [
         { provide: ElectronService, useValue: electronMock },
         { provide: SettingsStateService, useValue: stateServiceMock },
+        { provide: TorrentStoreService, useValue: { torrentsArray: signal([]) } },
+        { provide: ServerStoreService, useValue: { currentServerId: signal(null) } },
+        {
+          provide: ServerSettingsService,
+          useValue: {
+            reload: vi.fn().mockResolvedValue({
+              pathMappings: [],
+              polling: { foreground: 2000, background: 5000 },
+            }),
+          },
+        },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();

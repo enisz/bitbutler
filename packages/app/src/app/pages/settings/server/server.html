@@ -151,19 +151,19 @@
             <div class="row mb-3" [formGroupName]="i">
               <div class="col-5">
                 <div class="form-floating">
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="remote_{{ i }}"
-                    [placeholder]="
-                      'pages.settings.tab.server.server-settings-form.path-mapping.remote-path'
-                        | translate
-                    "
-                    [ngbTypeahead]="searchSavePaths"
+                  <ng-select
+                    [items]="paths()"
+                    [addTag]="addTag"
+                    [searchable]="true"
+                    [clearable]="true"
+                    [clearOnBackspace]="false"
+                    [editableSearchTerm]="true"
+                    [keyDownFn]="keyDownFn"
+                    [openOnEnter]="false"
+                    appendTo="ngb-modal-window"
                     formControlName="remote"
-                  />
-
-                  <label for="remote_{{ i }}">{{
+                  ></ng-select>
+                  <label>{{
                     'pages.settings.tab.server.server-settings-form.path-mapping.remote-path'
                       | translate
                   }}</label>

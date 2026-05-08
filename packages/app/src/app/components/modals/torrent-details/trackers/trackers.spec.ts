@@ -121,7 +121,6 @@ describe('Trackers', () => {
     it('the status valueFormatter returns a translation key string for each known status', () => {
       const statusCol = component.colDefs.find((c) => c.colId === 'status')!;
       const fmt = statusCol.valueFormatter as (p: any) => string;
-      // TranslateService mock returns the key itself so we can verify the key is looked up
       expect(fmt({ value: 0 })).toContain('disabled');
       expect(fmt({ value: 1 })).toContain('not-contacted');
       expect(fmt({ value: 2 })).toContain('working');

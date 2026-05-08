@@ -210,7 +210,7 @@ export function getGridColDefs(
         params.data?.state === 'checkingUP' ||
         params.data?.state === 'forcedUP'
           ? ''
-          : uiFormatService.duration(params),
+          : uiFormatService.durationSeconds(params, 2),
     },
     {
       colId: 'added_on',
@@ -340,7 +340,7 @@ export function getGridColDefs(
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.seeding_time'),
       minWidth: 50,
       width: 250,
-      valueFormatter: uiFormatService.duration,
+      valueFormatter: uiFormatService.durationSeconds,
       hide: true,
     },
     {
@@ -365,7 +365,7 @@ export function getGridColDefs(
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.time_active'),
       minWidth: 50,
       width: 200,
-      valueFormatter: uiFormatService.duration,
+      valueFormatter: uiFormatService.durationSeconds,
       hide: true,
     },
     {

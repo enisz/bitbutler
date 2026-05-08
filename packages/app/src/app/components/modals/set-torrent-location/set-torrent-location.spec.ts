@@ -1,13 +1,12 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { of } from 'rxjs';
 import { Torrent } from '../../../models/torrent.model';
 import { QbService } from '../../../services/qb.service';
 import { SelectionStoreService } from '../../../services/selection-store.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { ToastService } from '../../../services/toast.service';
-import { TypeaheadService } from '../../../services/typeahead.service';
+import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { SetTorrentLocation } from './set-torrent-location';
 
 describe('SetTorrentLocation', () => {
@@ -32,13 +31,13 @@ describe('SetTorrentLocation', () => {
         },
         {
           provide: QbService,
-          useValue: { setTorrentLocation: vi.fn().mockResolvedValue(undefined) },
+          useValue: {
+            setTorrentLocation: vi.fn().mockResolvedValue(undefined),
+            getAppPreferences: vi.fn().mockResolvedValue({}),
+          },
         },
         { provide: ToastService, useValue: { danger: vi.fn() } },
-        {
-          provide: TypeaheadService,
-          useValue: { searchSavePaths: vi.fn().mockReturnValue(of([])) },
-        },
+        { provide: TorrentStoreService, useValue: { torrentsArray: signal([]) } },
       ],
     }).compileComponents();
 

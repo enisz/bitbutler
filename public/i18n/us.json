@@ -42,7 +42,7 @@
         "file-browser": "Torrent File",
         "magnet-links": "Links (one per line)",
         "save-path": "Save Path",
-        "rename": "Rename",
+        "rename": "Name",
         "skip-hash-checking": "Skip hash checking",
         "paused": "Add torrents in the paused state",
         "root-folder": {
@@ -111,6 +111,27 @@
             "line1": "This tells the client to grab the very first and very last chunks of the file immediately.",
             "line2": "This is helpful for verifying that a file is valid or for certain media players to read the file headers and metadata (like duration and resolution) before the rest of the file arrives."
           }
+        },
+        "name": {
+          "title": "Name",
+          "description": {
+            "line1": "Sets the display name and the root folder name for this torrent.",
+            "line2": "This does not affect the filenames inside the torrent - only the display name and the root folder name (if a root folder is created)."
+          }
+        },
+        "file": {
+          "title": "Torrent File",
+          "description": {
+            "line1": "Select a .torrent file from your computer. The file will be parsed locally - no data is sent anywhere until you click Add.",
+            "line2": "Once a file is loaded, a file tree will appear below so you can review and toggle individual files before adding."
+          }
+        },
+        "links": {
+          "title": "Links",
+          "description": {
+            "line1": "Paste one or more magnet links or direct .torrent URLs here, one per line.",
+            "line2": "Magnet links start with magnet:?xt=urn:btih:… - direct .torrent URLs point to a remote file that qBittorrent will fetch automatically."
+          }
         }
       }
     },
@@ -134,7 +155,14 @@
     "bb-progress": {},
     "bb-spinner": {},
     "category-select": {
-      "label": "Category"
+      "label": "Category",
+      "popover": {
+        "title": "Category",
+        "description": {
+          "line1": "Assigns the torrent to a category. Categories are useful for organizing your downloads and can also define a default save path.",
+          "line2": "If Auto TMM is enabled, changing the category may automatically move the files."
+        }
+      }
     },
     "datepicker-filter": {},
     "datepicker-range-filter": {
@@ -587,7 +615,24 @@
       }
     },
     "tag-select": {
-      "label": "Tags"
+      "label": "Tags",
+      "popover": {
+        "title": "Tags",
+        "description": {
+          "line1": "Adds one or more tags to this torrent for flexible filtering and grouping.",
+          "line2": "Unlike categories, a torrent can have multiple tags, and tags do not affect the save path."
+        }
+      }
+    },
+    "save-path-select": {
+      "label": "Save Path",
+      "popover": {
+        "title": "Save Path",
+        "description": {
+          "line1": "The folder on your disk where the downloaded files will be saved.",
+          "line2": "Leave blank to use the default download location set in your qBittorrent preferences."
+        }
+      }
     },
     "toast-overlay": {}
   },
