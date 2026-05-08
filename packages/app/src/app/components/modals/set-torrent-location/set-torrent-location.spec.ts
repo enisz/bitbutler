@@ -31,7 +31,10 @@ describe('SetTorrentLocation', () => {
         },
         {
           provide: QbService,
-          useValue: { setTorrentLocation: vi.fn().mockResolvedValue(undefined) },
+          useValue: {
+            setTorrentLocation: vi.fn().mockResolvedValue(undefined),
+            getAppPreferences: vi.fn().mockResolvedValue({}),
+          },
         },
         { provide: ToastService, useValue: { danger: vi.fn() } },
         { provide: TorrentStoreService, useValue: { torrentsArray: signal([]) } },
