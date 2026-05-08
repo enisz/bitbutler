@@ -14,7 +14,7 @@ const HEADER_HEIGHT = 56;
 interface TocEntry {
   id: string;
   text: string;
-  level: number; // 2 = h2, 3 = h3
+  level: number;
 }
 
 @Component({
@@ -137,8 +137,6 @@ export class RightSidebarComponent implements OnInit, OnDestroy {
       })),
     );
 
-    // Top margin accounts for sticky header; bottom margin narrows the active zone
-    // to the band just below the header so the active entry tracks what the user is reading.
     this.observer = new IntersectionObserver(
       (entries) => {
         if (this.isScrolling) return;
@@ -157,13 +155,10 @@ export class RightSidebarComponent implements OnInit, OnDestroy {
   scrollTo(event: Event, id: string): void {
     event.preventDefault();
 
-    // Pause scroll-spy during smooth scrolling to prevent flickering
     this.isScrolling = true;
     if (this.scrollingTimer !== null) clearTimeout(this.scrollingTimer);
 
     this.activeId.set(id);
-
-    // Update URL fragment without triggering router navigation
     this.location.replaceState(this.location.path() + '#' + id);
 
     const target = this.doc.getElementById(id);
@@ -172,7 +167,6 @@ export class RightSidebarComponent implements OnInit, OnDestroy {
       this.doc.defaultView!.scrollTo({ top: y, behavior: 'smooth' });
     }
 
-    // Re-enable scroll-spy after scroll animation completes (~600ms is enough for smooth scroll)
     this.scrollingTimer = setTimeout(() => {
       this.isScrolling = false;
       this.scrollingTimer = null;

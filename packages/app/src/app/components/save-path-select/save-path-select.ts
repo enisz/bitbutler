@@ -78,9 +78,7 @@ export class SavePathSelect implements OnInit, ControlValueAccessor, AfterViewIn
             this.defaultPath.set(prefs.save_path);
           }
         })
-        .catch(() => {
-          // silent fallback - defaultPath stays ''
-        });
+        .catch(() => {});
     }
   }
 

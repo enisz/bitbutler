@@ -33,9 +33,7 @@ function extractExistingTorrentFiles(argv: string[], startIndex = 0): string[] {
       if (!stat.isFile()) continue;
       if (path.extname(resolved).toLowerCase() !== '.torrent') continue;
       out.push(resolved);
-    } catch {
-      // skip unreadable paths
-    }
+    } catch {}
   }
 
   return out;
