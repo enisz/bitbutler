@@ -71,6 +71,13 @@ function folderOrder(folder: string): number {
           >
         }
       }
+      <a
+        class="sidebar-nav-link"
+        routerLink="/changelog"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        >Changelog</a
+      >
     </nav>
   `,
   styles: [
