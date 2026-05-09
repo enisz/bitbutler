@@ -1,5 +1,31 @@
 {
   "permissions": {
-    "allow": ["Bash(git add *)"]
+    "allow": [
+      "Bash(git add *)",
+      "Bash(find /home/enisz/dev/bitbutler/packages/app/src -name \"*.ts\" -exec grep -l \"/**\" {} \\\\;)",
+      "Bash(wc:*)",
+      "Bash(grep -l \"docs\" /home/enisz/dev/bitbutler/.github/*.yml)",
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(/home/enisz/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.7/skills/brainstorming/scripts/start-server.sh:*)",
+      "Bash(git commit -m ':*)",
+      "Bash(grep -E \"\\\\.ts$\")",
+      "Bash(git commit:*)",
+      "Bash(rm features.md architecture.md ipc-reference.md development.md)",
+      "Bash(rm -rf 01-getting-started 02-lorem-ipsum)",
+      "Bash(timeout 15 npm run docs:dev)",
+      "Bash(npm run:*)",
+      "Bash(tee /tmp/docs-dev.log)",
+      "Bash(git diff-tree:*)",
+      "Bash([ -e \"/home/enisz/dev/bitbutler/$file\" ])",
+      "Bash(git ls-tree:*)",
+      "Bash(pkill -f \"npm run docs:dev\")",
+      "Bash(wait)",
+      "Bash(curl -s http://localhost:5175/)",
+      "Bash(curl -s http://localhost:5176/)",
+      "Bash(killall vite:*)",
+      "Bash(pkill -9 node)",
+      "Bash(curl -s http://localhost:5177/getting-started/installation)"
+    ]
   }
 }
