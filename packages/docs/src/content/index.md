@@ -1,47 +1,31 @@
 ---
 title: 'Home'
-order: 1
+order: 0
 slug: 'index'
 ---
 
-# Lorem Ipsum Dolor Sit Amet
+# BitButler Documentation
 
-Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+BitButler is a desktop application for managing remote
+[qBittorrent-nox](<https://github.com/qbittorrent/qBittorrent/wiki/Running-qBittorrent-without-X-server-(WebUI-only,-daemon-mode,-no-X-deps)>)
+instances from a clean, native interface on Windows, macOS, and Linux.
 
-[Getting Started](getting-started/installation) · [Architecture](architecture) · [IPC Reference](ipc-reference)
+## New to BitButler?
 
-## Quis Nostrud Exercitation
+Start with the Getting Started guide:
 
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+1. [Installation](./getting-started/installation) — download and install the app
+2. [Adding your first server](./getting-started/adding-your-first-server) — connect to a qBittorrent instance
+3. [Logging in](./getting-started/logging-in) — select a server and connect
+4. [Adding your first torrent](./getting-started/adding-your-first-torrent) — download something
 
-```typescript
-const lorem = async (ipsum: string): Promise<string> => {
-  const result = await fetch(`/api/dolor?q=${encodeURIComponent(ipsum)}`);
-  if (!result.ok) throw new Error(`Sit amet: ${result.status}`);
-  return result.json();
-};
-```
+## What's in these docs
 
-## Sed Ut Perspiciatis Unde
-
-Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
-
-### Neque Porro Quisquam
-
-Ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam.
-
-```bash
-npm install lorem-ipsum --save-dev
-npm run dolor:sit
-npm run amet -- --force
-```
-
-### At Vero Eos et Accusamus
-
-Similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio.
-
-## Temporibus Autem Quibusdam
-
-Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.
-
-See also [Features](features) · [Development](development) · [Report an issue](https://github.com/enisz/bitbutler/issues)
+| Section                                                    | What you'll find                                          |
+| ---------------------------------------------------------- | --------------------------------------------------------- |
+| [Getting Started](./getting-started/installation)          | Install, connect, and download your first torrent         |
+| [Managing Servers](./managing-servers/index)               | Add, edit, remove, and switch between qBittorrent servers |
+| [Adding Torrents](./adding-torrents/index)                 | From .torrent files, magnet links, and URLs               |
+| [Monitoring Downloads](./monitoring-downloads/main-screen) | The main interface, filters, grid columns, and status bar |
+| [Customizing the Interface](./customizing/general)         | Themes, language, grid settings, and status bar widgets   |
+| [Changelog](./changelog)                                   | Release history                                           |
