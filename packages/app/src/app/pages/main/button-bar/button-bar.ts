@@ -28,7 +28,7 @@ import {
   faTrashCan,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
-import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { CommandBusService } from '../../../services/command-bus.service';
@@ -50,6 +50,7 @@ export class ButtonBar implements OnInit {
   private readonly commandBusService = inject(CommandBusService);
   private readonly torrentStoreService = inject(TorrentStoreService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly modalService = inject(NgbModal);
 
   private shiftKey = false;
 
@@ -173,6 +174,8 @@ export class ButtonBar implements OnInit {
 
   @HostListener('window:keydown', ['$event'])
   public onWindowKeyDown(event: KeyboardEvent): void {
+    if (this.modalService.hasOpenModals()) return;
+
     const { ctrlKey, key, shiftKey } = event;
     this.shiftKey = shiftKey;
 
