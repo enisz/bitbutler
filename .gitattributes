@@ -1,0 +1,13 @@
+# Force LF line endings for all text files regardless of OS or git core.autocrlf setting
+* text=auto eol=lf
+
+# Explicitly binary files (no line ending conversion)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.bmp binary
+*.node binary
+*.exe binary
+*.dll binary
