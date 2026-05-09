@@ -13,7 +13,7 @@ Click the **Add file** button in the toolbar to add a torrent from a `.torrent` 
 
 > **Callouts:**
 >
-> 1. **Add file button** — click to open the file picker
+> 1. **Add file button** - click to open the file picker
 
 ## Steps
 

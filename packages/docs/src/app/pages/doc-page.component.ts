@@ -19,7 +19,6 @@ const HEADER_OFFSET = 56;
       }
       .doc-content {
         padding: 1.5rem;
-        max-width: 860px;
       }
     `,
   ],
@@ -68,6 +67,7 @@ export class DocPageComponent implements OnInit {
     const href = anchor.getAttribute('href');
     if (!href || /^(https?:|\/\/|mailto:)/.test(href)) return;
     event.preventDefault();
-    this.router.navigateByUrl(href);
+    const resolved = new URL(anchor.href);
+    this.router.navigateByUrl(resolved.pathname + resolved.search + resolved.hash);
   }
 }

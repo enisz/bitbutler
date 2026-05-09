@@ -14,17 +14,17 @@ they are positioned.
 
 > **Callouts:**
 >
-> 1. **Available** — pool of widgets not currently shown in the status bar
-> 2. **Left zone** — widgets displayed on the left side of the status bar
-> 3. **Right zone** — widgets displayed on the right side of the status bar
+> 1. **Available** - pool of widgets not currently shown in the status bar
+> 2. **Left zone** - widgets displayed on the left side of the status bar
+> 3. **Right zone** - widgets displayed on the right side of the status bar
 
 ## How it works
 
 The settings panel has three drag-and-drop zones:
 
-- **Available** — widgets that are hidden
-- **Left** — widgets shown on the left side of the status bar
-- **Right** — widgets shown on the right side of the status bar
+- **Available** - widgets that are hidden
+- **Left** - widgets shown on the left side of the status bar
+- **Right** - widgets shown on the right side of the status bar
 
 Drag a widget from one zone to another to move it. The status bar updates as soon as you save.
 

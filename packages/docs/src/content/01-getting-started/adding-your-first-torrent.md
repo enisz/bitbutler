@@ -13,8 +13,8 @@ With BitButler connected to a server, you can add torrents from the toolbar.
 
 > **Callouts:**
 >
-> 1. **Add file** — opens a file picker to select a `.torrent` file on your computer
-> 2. **Add link** — opens a text field to paste a magnet link or a `.torrent` URL
+> 1. **Add file** - opens a file picker to select a `.torrent` file on your computer
+> 2. **Add link** - opens a text field to paste a magnet link or a `.torrent` URL
 
 ## From a .torrent file
 

@@ -14,10 +14,10 @@ instances from a clean, native interface on Windows, macOS, and Linux.
 
 Start with the Getting Started guide:
 
-1. [Installation](./getting-started/installation) — download and install the app
-2. [Adding your first server](./getting-started/adding-your-first-server) — connect to a qBittorrent instance
-3. [Logging in](./getting-started/logging-in) — select a server and connect
-4. [Adding your first torrent](./getting-started/adding-your-first-torrent) — download something
+1. [Installation](./getting-started/installation) - download and install the app
+2. [Adding your first server](./getting-started/adding-your-first-server) - connect to a qBittorrent instance
+3. [Logging in](./getting-started/logging-in) - select a server and connect
+4. [Adding your first torrent](./getting-started/adding-your-first-torrent) - download something
 
 ## What's in these docs
 

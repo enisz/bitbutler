@@ -13,12 +13,12 @@ Open **Settings → General** to configure the app's appearance, language, and b
 
 > **Callouts:**
 >
-> 1. **Theme family** — the color palette (8 built-in themes)
-> 2. **Theme mode** — Light, Dark, or System (follows OS preference)
-> 3. **Language** — UI language selector
-> 4. **Delete .torrent file** — auto-delete the local file after adding to qBittorrent
-> 5. **Check for updates** — check GitHub for new releases on startup
-> 6. **Toast position** — corner where notification pop-ups appear
+> 1. **Theme family** - the color palette (8 built-in themes)
+> 2. **Theme mode** - Light, Dark, or System (follows OS preference)
+> 3. **Language** - UI language selector
+> 4. **Delete .torrent file** - auto-delete the local file after adding to qBittorrent
+> 5. **Check for updates** - check GitHub for new releases on startup
+> 6. **Toast position** - corner where notification pop-ups appear
 
 ## Appearance
 

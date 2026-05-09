@@ -47,11 +47,11 @@ interface Release {
       } @else {
         @for (release of releases(); track release.id) {
           <h2>
-            {{ release.tagName }} &mdash;
+            {{ release.tagName }} -
             {{ release.publishedAt | date: 'MMM d, yyyy' }}
             ({{ release.publishedAt | timeago }})
           </h2>
-          <div class="markdown-body" [innerHTML]="release.bodyHtml"></div>
+          <div class="markdown-body no-toc" [innerHTML]="release.bodyHtml"></div>
         }
       }
     </div>
@@ -60,7 +60,6 @@ interface Release {
     `
       .changelog-content {
         padding: 1.5rem;
-        max-width: 860px;
       }
       .changelog-loading,
       .changelog-error {

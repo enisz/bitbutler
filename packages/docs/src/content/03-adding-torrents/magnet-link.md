@@ -13,7 +13,7 @@ Click the **Add link** button in the toolbar to add a torrent from a magnet link
 
 > **Callouts:**
 >
-> 1. **Add link button** — click to open the URL input
+> 1. **Add link button** - click to open the URL input
 
 ## Steps
 

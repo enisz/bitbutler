@@ -15,12 +15,12 @@ To return to the login screen from the main view, disconnect from the current se
 
 > **Callouts:**
 >
-> 1. **Server dropdown** — lists all saved servers; select one to make it active
-> 2. **Add button** — opens the add server form
-> 3. **Edit button** — opens the edit form for the currently selected server
-> 4. **Delete button** — removes the selected server (cannot be undone)
-> 5. **Check connection button** — tests whether the selected server is currently reachable
-> 6. **Connect button** — logs in to the selected server and opens the main screen
+> 1. **Server dropdown** - lists all saved servers; select one to make it active
+> 2. **Add button** - opens the add server form
+> 3. **Edit button** - opens the edit form for the currently selected server
+> 4. **Delete button** - removes the selected server (cannot be undone)
+> 5. **Check connection button** - tests whether the selected server is currently reachable
+> 6. **Connect button** - logs in to the selected server and opens the main screen
 
 ## Adding a server
 
@@ -44,4 +44,4 @@ Select a server in the dropdown, then click **Edit**. Update any fields and clic
 
 ## Deleting a server
 
-Select a server and click **Delete**. The server is removed immediately — there is no undo.
+Select a server and click **Delete**. The server is removed immediately - there is no undo.

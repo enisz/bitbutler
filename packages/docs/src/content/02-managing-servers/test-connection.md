@@ -14,8 +14,8 @@ before logging in.
 
 > **Callouts:**
 >
-> 1. **Check connection button** — click to test the selected server
-> 2. **Result indicator** — shows success (green) or failure (red) with a brief message
+> 1. **Check connection button** - click to test the selected server
+> 2. **Result indicator** - shows success (green) or failure (red) with a brief message
 
 ## What the check verifies
 

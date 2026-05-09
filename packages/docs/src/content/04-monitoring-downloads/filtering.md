@@ -13,9 +13,9 @@ The left sidebar and the search bar let you narrow the torrent grid to exactly w
 
 > **Callouts:**
 >
-> 1. **Status filters** — filter by torrent state (All, Downloading, Completed, Active, etc.)
-> 2. **Tracker filters** — filter by tracker host
-> 3. **Save path filters** — filter by download location on the server
+> 1. **Status filters** - filter by torrent state (All, Downloading, Completed, Active, etc.)
+> 2. **Tracker filters** - filter by tracker host
+> 3. **Save path filters** - filter by download location on the server
 
 ## Status filters
 
@@ -52,10 +52,10 @@ only torrents downloading to that location.
 
 > **Callouts:**
 >
-> 1. **Search input** — type to filter torrents by name in real time
-> 2. **Keyboard shortcut** — press Ctrl+F (or Cmd+F on macOS) to focus the search bar
+> 1. **Search input** - type to filter torrents by name in real time
+> 2. **Keyboard shortcut** - press Ctrl+F (or Cmd+F on macOS) to focus the search bar
 
 Type in the search bar to instantly filter the grid to torrents whose names contain the search term.
-The status and sidebar filters remain active alongside the search — all active filters combine.
+The status and sidebar filters remain active alongside the search - all active filters combine.
 
 Press **Escape** to clear the search.

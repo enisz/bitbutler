@@ -15,8 +15,8 @@ You can disconnect from the current server and connect to a different one withou
 
 > **Callouts:**
 >
-> 1. **Application menu** — the system menu bar (or the hamburger menu on Windows/Linux)
-> 2. **Disconnect option** — logs out and returns to the login screen
+> 1. **Application menu** - the system menu bar (or the hamburger menu on Windows/Linux)
+> 2. **Disconnect option** - logs out and returns to the login screen
 
 Use **File → Disconnect** (or the equivalent in your OS's application menu) to log out of the
 current server. You return to the login screen where you can select a different server.

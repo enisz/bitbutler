@@ -14,10 +14,10 @@ currently connected server.
 
 > **Callouts:**
 >
-> 1. **Foreground polling interval** — how often (in ms) the app fetches data when the window is focused
-> 2. **Background polling interval** — how often (in ms) the app fetches data when the window is in the background
-> 3. **Path mappings list** — maps remote server paths to local file system paths
-> 4. **Add mapping button** — adds a new path mapping row
+> 1. **Foreground polling interval** - how often (in ms) the app fetches data when the window is focused
+> 2. **Background polling interval** - how often (in ms) the app fetches data when the window is in the background
+> 3. **Path mappings list** - maps remote server paths to local file system paths
+> 4. **Add mapping button** - adds a new path mapping row
 
 ## Polling
 
@@ -42,8 +42,8 @@ to an equivalent local path (e.g. a network share mounted at `Z:\downloads` on W
 ### Adding a mapping
 
 1. Click **Add mapping**.
-2. Enter the **remote path** — the path as qBittorrent reports it (e.g. `/data/downloads`).
-3. Enter the **local path** — the equivalent path on your computer.
+2. Enter the **remote path** - the path as qBittorrent reports it (e.g. `/data/downloads`).
+3. Enter the **local path** - the equivalent path on your computer.
 4. Click **Test** to verify the local path exists and is accessible.
 
 ### Tips

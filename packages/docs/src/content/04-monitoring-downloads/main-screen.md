@@ -14,10 +14,10 @@ gives you access to every management action.
 
 > **Callouts:**
 >
-> 1. **Toolbar** — action buttons (add, pause, resume, delete) and the search bar
-> 2. **Left sidebar** — filters by status, tracker, and save path
-> 3. **Torrent grid** — the main list of all torrents with columns for progress, speed, ETA, and more
-> 4. **Status bar** — real-time statistics from the connected server
+> 1. **Toolbar** - action buttons (add, pause, resume, delete) and the search bar
+> 2. **Left sidebar** - filters by status, tracker, and save path
+> 3. **Torrent grid** - the main list of all torrents with columns for progress, speed, ETA, and more
+> 4. **Status bar** - real-time statistics from the connected server
 
 ## Toolbar
 
@@ -32,7 +32,7 @@ for a full walkthrough.
 
 ## Torrent grid
 
-The grid shows all torrents matching the current filter. Columns are fully customizable —
+The grid shows all torrents matching the current filter. Columns are fully customizable -
 see [Torrent Grid](./torrent-grid) for details on available columns and how to configure them.
 
 ## Status bar

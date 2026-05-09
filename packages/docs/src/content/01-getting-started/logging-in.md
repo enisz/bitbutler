@@ -13,8 +13,8 @@ Once you have added at least one server, you can log in to start managing torren
 
 > **Callouts:**
 >
-> 1. **Server dropdown** — select the server you want to connect to
-> 2. **Connect button** — authenticates with the selected server and opens the main screen
+> 1. **Server dropdown** - select the server you want to connect to
+> 2. **Connect button** - authenticates with the selected server and opens the main screen
 
 ## Steps
 

@@ -185,9 +185,7 @@ export class LeftSidebarComponent {
     return entries.sort((a, b) => a.order - b.order);
   })();
 
-  readonly expandedGroups = signal<Set<string>>(
-    new Set(this.nav.filter((e) => e.isGroup).map((e) => e.slug)),
-  );
+  readonly expandedGroups = signal<Set<string>>(new Set());
 
   toggleGroup(slug: string): void {
     this.expandedGroups.update((set) => {

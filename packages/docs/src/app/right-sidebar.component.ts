@@ -112,7 +112,7 @@ export class RightSidebarComponent implements OnInit, OnDestroy {
 
     const headings = Array.from(
       this.doc.querySelectorAll<HTMLElement>('.content-area h2, .content-area h3'),
-    );
+    ).filter((h) => !h.closest('.no-toc'));
 
     if (headings.length === 0) {
       this.toc.set([]);

@@ -14,13 +14,13 @@ configure the download before it starts.
 
 > **Callouts:**
 >
-> 1. **Torrent name** — the name of the torrent (read-only, from the .torrent metadata)
-> 2. **Save path** — the directory on the remote server where files will be saved
-> 3. **Category** — an optional category label (must already exist in qBittorrent)
-> 4. **Tags** — optional comma-separated tags
-> 5. **Sequential download** — download pieces in order (useful for previewing media before the download completes)
-> 6. **Skip hash check** — skip the integrity check on existing files (use if you already have the files)
-> 7. **Add button** — sends the torrent to qBittorrent
+> 1. **Torrent name** - the name of the torrent (read-only, from the .torrent metadata)
+> 2. **Save path** - the directory on the remote server where files will be saved
+> 3. **Category** - an optional category label (must already exist in qBittorrent)
+> 4. **Tags** - optional comma-separated tags
+> 5. **Sequential download** - download pieces in order (useful for previewing media before the download completes)
+> 6. **Skip hash check** - skip the integrity check on existing files (use if you already have the files)
+> 7. **Add button** - sends the torrent to qBittorrent
 
 ## Save path
 
@@ -30,7 +30,7 @@ or type a new path directly.
 
 ## Category
 
-Assigns the torrent to a qBittorrent category. Categories must already exist in qBittorrent —
+Assigns the torrent to a qBittorrent category. Categories must already exist in qBittorrent -
 BitButler does not create new categories from this dialog.
 
 ## Tags

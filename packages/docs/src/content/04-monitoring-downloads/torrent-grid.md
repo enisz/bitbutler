@@ -14,16 +14,16 @@ configurable.
 
 > **Callouts:**
 >
-> 1. **Name** — the torrent name; click to sort alphabetically
-> 2. **Progress bar** — visual download progress
-> 3. **Size** — total size of the torrent
-> 4. **Download speed / Upload speed** — current transfer rates
-> 5. **ETA** — estimated time to completion
-> 6. **Ratio** — upload-to-download ratio
+> 1. **Name** - the torrent name; click to sort alphabetically
+> 2. **Progress bar** - visual download progress
+> 3. **Size** - total size of the torrent
+> 4. **Download speed / Upload speed** - current transfer rates
+> 5. **ETA** - estimated time to completion
+> 6. **Ratio** - upload-to-download ratio
 
 ## Available columns
 
-The default view shows a curated set of columns. Many more are available — add or remove them in
+The default view shows a curated set of columns. Many more are available - add or remove them in
 [Settings → Torrent Grid](../customizing/torrent-grid).
 
 | Column         | Shows                               |

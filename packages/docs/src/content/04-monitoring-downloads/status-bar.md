@@ -14,13 +14,13 @@ qBittorrent server.
 
 > **Callouts:**
 >
-> 1. **Connection status** — green when connected, red when disconnected
-> 2. **DHT nodes** — number of nodes in the DHT network
-> 3. **Global ratio** — session-wide upload-to-download ratio
-> 4. **Global downloaded / uploaded** — total session transfer totals
-> 5. **Download speed / Upload speed** — current global transfer rates
-> 6. **Free space** — available disk space on the server
-> 7. **Polling indicator** — flashes when BitButler is fetching an update from qBittorrent
+> 1. **Connection status** - green when connected, red when disconnected
+> 2. **DHT nodes** - number of nodes in the DHT network
+> 3. **Global ratio** - session-wide upload-to-download ratio
+> 4. **Global downloaded / uploaded** - total session transfer totals
+> 5. **Download speed / Upload speed** - current global transfer rates
+> 6. **Free space** - available disk space on the server
+> 7. **Polling indicator** - flashes when BitButler is fetching an update from qBittorrent
 
 ## Widgets
 

@@ -40,7 +40,10 @@ export class ContentService {
     this.files = Object.entries(rawFiles).map(([filename, raw]) => {
       const { attributes, body } = parseFrontmatter(raw as string);
       const { slug, folder } = deriveMetadata(filename);
-      const html = marked(body) as string;
+      const html = (marked(body) as string).replace(
+        /<table>/g,
+        '<table class="table table-striped table-hover">',
+      );
       return { filename, slug, folder, attributes, body, html };
     });
   }

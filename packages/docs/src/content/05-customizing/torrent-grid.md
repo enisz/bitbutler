@@ -14,11 +14,11 @@ and how the grid behaves.
 
 > **Callouts:**
 >
-> 1. **Column selector** — multi-select dropdown to choose which columns are visible
-> 2. **Column order list** — drag rows to reorder columns in the grid
-> 3. **Pagination toggle** — switch between infinite scroll and paginated view
-> 4. **Animate rows toggle** — enable/disable row animations on data updates
-> 5. **Row double-click action** — what happens when you double-click a torrent row
+> 1. **Column selector** - multi-select dropdown to choose which columns are visible
+> 2. **Column order list** - drag rows to reorder columns in the grid
+> 3. **Pagination toggle** - switch between infinite scroll and paginated view
+> 4. **Animate rows toggle** - enable/disable row animations on data updates
+> 5. **Row double-click action** - what happens when you double-click a torrent row
 
 ## Columns
 
@@ -46,12 +46,12 @@ In the **column order list**, drag a row up or down to change where that column 
 | Ratio          | ✓       | Upload/download ratio     |
 | Added on       | ✓       | Date added                |
 | Save path      | ✓       | Download location         |
-| Category       | —       | qBittorrent category      |
-| Tags           | —       | Assigned tags             |
-| Seeds          | —       | Seeder count              |
-| Peers          | —       | Peer count                |
-| State          | —       | Raw qBittorrent state     |
-| Hash           | —       | Torrent info hash         |
+| Category       | -       | qBittorrent category      |
+| Tags           | -       | Assigned tags             |
+| Seeds          | -       | Seeder count              |
+| Peers          | -       | Peer count                |
+| State          | -       | Raw qBittorrent state     |
+| Hash           | -       | Torrent info hash         |
 
 ## Pagination
 
