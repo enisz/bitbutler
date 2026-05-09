@@ -14,7 +14,9 @@
     "outDir": "./dist/out-tsc",
     "ignoreDeprecations": "6.0",
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "marked": ["./node_modules/marked"]
+    }
   },
   "angularCompilerOptions": {
     "strictInjectionParameters": true,
