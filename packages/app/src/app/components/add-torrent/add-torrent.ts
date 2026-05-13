@@ -463,11 +463,7 @@ export class AddTorrent implements OnInit {
       await pollForTorrent();
 
       for (const item of this.savedFileState?.renames ?? []) {
-        if (item.type === 'folder') {
-          await this.qbService.renameTorrentFolder(serverId, hash, item.oldPath, item.newPath);
-        } else {
-          await this.qbService.renameTorrentFile(serverId, hash, item.oldPath, item.newPath);
-        }
+        await this.qbService.renameTorrentFile(serverId, hash, item.oldPath, item.newPath);
       }
 
       const savedFiles = this.savedFileState?.files ?? null;

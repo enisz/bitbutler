@@ -23,7 +23,6 @@ describe('Content', () => {
           useValue: {
             torrentContents: vi.fn().mockResolvedValue([]),
             renameTorrentFile: vi.fn(),
-            renameTorrentFolder: vi.fn(),
             setFilePriority: vi.fn(),
           },
         },

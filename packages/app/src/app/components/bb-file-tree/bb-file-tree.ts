@@ -32,7 +32,7 @@ export type BbFileTreeNode = {
 
 export type FileTreeSaveEvent = {
   files: TorrentFileEntry[];
-  renames: { type: 'file' | 'folder'; oldPath: string; newPath: string }[];
+  renames: { oldPath: string; newPath: string }[];
 };
 
 @Component({
@@ -69,7 +69,7 @@ export class BbFileTree implements OnChanges {
 
   public editMode = signal(false);
   private originalFiles: TorrentFileEntry[] = [];
-  private renameQueue: { type: 'file' | 'folder'; oldPath: string; newPath: string }[] = [];
+  private renameQueue: { oldPath: string; newPath: string }[] = [];
   private autoEditTriggered = false;
   private folderPriorityMemory = new Map<string, number>();
 
@@ -276,14 +276,14 @@ export class BbFileTree implements OnChanges {
   onFileNameChange(node: BbFileTreeNode): void {
     const { oldPath, newPath } = this.deriveRenamePayload(node);
     if (oldPath === newPath) return;
-    this.renameQueue.push({ type: 'file', oldPath, newPath });
+    this.renameQueue.push({ oldPath, newPath });
     node.fullPath = newPath;
   }
 
   onFolderNameChange(node: BbFileTreeNode): void {
     const { oldPath, newPath } = this.deriveRenamePayload(node);
     if (oldPath === newPath) return;
-    this.renameQueue.push({ type: 'folder', oldPath, newPath });
+    this.renameQueue.push({ oldPath, newPath });
     node.fullPath = newPath;
     this.updateChildPaths(node.children ?? [], oldPath, newPath);
   }
