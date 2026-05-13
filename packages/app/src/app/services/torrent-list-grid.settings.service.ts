@@ -11,7 +11,7 @@ import { UiFormatService } from './ui-format.service';
 
 @Injectable({ providedIn: 'root' })
 export class TorrentListGridSettingsService extends BaseSettingsService<TorrentListGridSettings> {
-  protected readonly SETTINGS_ID = TorrentListGridSettingsService.name;
+  protected readonly SETTINGS_ID = 'TorrentListGridSettingsService';
   protected readonly DEFAULT_SETTINGS = DEFAULT_TORRENT_LIST_GRID_SETTINGS;
 
   private readonly uiFormatService = inject(UiFormatService);

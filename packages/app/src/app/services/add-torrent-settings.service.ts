@@ -7,7 +7,7 @@ import { ServerStoreService } from './server-store.service';
 export class AddTorrentSettingsService extends BaseSettingsService<AddTorrentSettings> {
   private readonly serverStoreService = inject(ServerStoreService);
   protected get SETTINGS_ID(): string {
-    return [AddTorrentSettingsService.name, this.serverStoreService.currentServerId()].join('.');
+    return ['AddTorrentSettingsService', this.serverStoreService.currentServerId()].join('.');
   }
   protected readonly DEFAULT_SETTINGS = DEFAULT_ADD_TORRENT_SETTINGS;
 

@@ -7,6 +7,6 @@ import { BaseSettingsService } from './base-settings.service';
 
 @Injectable({ providedIn: 'root' })
 export class TrackersGridSettingsService extends BaseSettingsService<TrackersGridSettings> {
-  protected readonly SETTINGS_ID = TrackersGridSettingsService.name;
+  protected readonly SETTINGS_ID = 'TrackersGridSettingsService';
   protected readonly DEFAULT_SETTINGS = DEFAULT_TRACKERS_GRID_SETTINGS;
 }

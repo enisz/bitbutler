@@ -7,7 +7,7 @@ import { ServerStoreService } from './server-store.service';
 export class ServerSettingsService extends BaseSettingsService<ServerSettings> {
   private readonly serverStoreService = inject(ServerStoreService);
   protected get SETTINGS_ID(): string {
-    return [ServerSettingsService.name, this.serverStoreService.currentServerId()].join('.');
+    return ['ServerSettingsService', this.serverStoreService.currentServerId()].join('.');
   }
   protected readonly DEFAULT_SETTINGS = DEFAULT_SERVER_SETTINGS;
 
