@@ -15,7 +15,6 @@ This is an **npm workspaces** monorepo. All packages live under `packages/`:
 | `@bitbutler/app`      | `packages/app/`      | Angular renderer                   |
 | `@bitbutler/electron` | `packages/electron/` | Electron main process (TypeScript) |
 | `@bitbutler/shared`   | `packages/shared/`   | Shared IPC contract & models       |
-| `@bitbutler/docs`     | `packages/docs/`     | Analog.js documentation site       |
 
 A single `npm ci` at the root installs all workspace dependencies. Workspace packages that depend on each other are symlinked automatically by npm.
 
@@ -31,8 +30,6 @@ npm test                # Run tests across all workspaces
 npm run build           # Angular production build
 npm run build:electron  # Compile Electron TypeScript
 npm run build:ui        # Full UI build (Angular + Electron, production)
-npm run docs:dev        # Docs dev server
-npm run docs:build      # Docs production build
 npm run dist:linux      # Build Linux distributions (AppImage, DEB, RPM, Snap, tar.gz)
 npm run dist:win        # Build Windows distributions (NSIS, portable, ZIP)
 ```
@@ -88,7 +85,7 @@ Three lazy-loaded routes: `login`, `main` (torrent grid), `settings`. The router
 
 ### Theming & i18n
 
-- Themes live in `packages/app/src/styles/themes/` (multiple SCSS files); `ThemeService` switches them at runtime. The docs app imports these SCSS files directly so theme changes propagate automatically.
+- Themes live in `packages/app/src/styles/themes/` (multiple SCSS files); `ThemeService` switches them at runtime.
 - Translations in `public/i18n/` (`us.json`, `hu.json`), loaded via `@ngx-translate` in Angular and via `packages/electron/src/i18n.ts` in the Electron main process. Language is persisted in `GeneralSettingsService`; changing it triggers a `bitbutler:language-change` IPC call that rebuilds the tray and application menu labels at runtime.
 
 ## Commit & PR conventions

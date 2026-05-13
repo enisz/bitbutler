@@ -59,7 +59,6 @@ jobs:
     outputs:
       app: ${{ steps.filter.outputs.app }}
       electron: ${{ steps.filter.outputs.electron }}
-      docs: ${{ steps.filter.outputs.docs }}
       any-source: ${{ steps.filter.outputs.any-source }}
     steps:
       - uses: dorny/paths-filter@v3
@@ -74,9 +73,6 @@ jobs:
               - 'packages/electron/**'
               - 'packages/shared/**'
               - 'public/**'
-            docs:
-              - 'packages/docs/**'
-              - 'packages/shared/**'
             any-source:
               - 'packages/**'
               - 'public/**'
@@ -133,42 +129,10 @@ jobs:
           ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
       - run: npm run test --workspace=packages/electron
 
-  test-docs:
-    name: '[4/5] Unit Tests - Docs'
-    runs-on: ubuntu-latest
-    needs: [detect-changes, lint]
-    if: always() && needs.detect-changes.outputs.docs == 'true' && needs.lint.result == 'success'
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-      - run: npm ci
-        env:
-          ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
-      - run: npm run test --workspace=packages/docs
-
-  build-docs:
-    name: '[5/5] Build & Package (Docs)'
-    runs-on: ubuntu-latest
-    needs: [detect-changes, test-docs]
-    if: always() && needs.detect-changes.outputs.docs == 'true' && needs.test-docs.result == 'success'
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-      - run: npm ci
-        env:
-          ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
-      - run: npm run docs:build
-
   build:
     name: '[5/5] Build & Package (${{ matrix.job_name }})'
     runs-on: ${{ matrix.os }}
-    needs: [detect-changes, test-app, test-electron, test-docs]
+    needs: [detect-changes, test-app, test-electron]
     if: >-
       always() &&
       (needs.detect-changes.outputs.app == 'true' || needs.detect-changes.outputs.electron == 'true') &&
