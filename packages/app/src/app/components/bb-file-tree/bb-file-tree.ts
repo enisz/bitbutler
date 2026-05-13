@@ -70,6 +70,7 @@ export class BbFileTree implements OnChanges {
   public editMode = signal(false);
   private originalFiles: TorrentFileEntry[] = [];
   private autoEditTriggered = false;
+  private sessionDirty = false;
   private folderPriorityMemory = new Map<string, number>();
 
   public treeControl = new NestedTreeControl<BbFileTreeNode>((n) => n.children ?? []);
@@ -160,6 +161,7 @@ export class BbFileTree implements OnChanges {
   }
 
   public enterEditMode(): void {
+    this.sessionDirty = false;
     this.originalFiles = structuredClone(this.files);
     this.folderPriorityMemory.clear();
     this.editMode.set(true);
@@ -236,6 +238,7 @@ export class BbFileTree implements OnChanges {
       this.folderPriorityMemory.set(node.fullPath, this.getDominantFolderPriority(node));
       this.updateRecursive(node, (f) => (f.priority = 0));
     }
+    this.sessionDirty = true;
     this.calculateStats();
   }
 
@@ -243,6 +246,7 @@ export class BbFileTree implements OnChanges {
     this.updateRecursive(node, (f) => {
       if (f.priority !== 0) f.priority = priority;
     });
+    this.sessionDirty = true;
     this.calculateStats();
   }
 
@@ -254,6 +258,7 @@ export class BbFileTree implements OnChanges {
   toggleFileSelection(f: TorrentFileEntry, event: Event): void {
     const checked = (event.target as HTMLInputElement).checked;
     f.priority = checked ? 1 : 0;
+    this.sessionDirty = true;
     this.calculateStats();
   }
 
@@ -274,6 +279,7 @@ export class BbFileTree implements OnChanges {
     const { oldPath, newPath } = this.deriveRenamePayload(node);
     if (oldPath === newPath) return;
     node.fullPath = newPath;
+    this.sessionDirty = true;
   }
 
   onFolderNameChange(node: BbFileTreeNode): void {
@@ -281,6 +287,7 @@ export class BbFileTree implements OnChanges {
     if (oldPath === newPath) return;
     node.fullPath = newPath;
     this.updateChildPaths(node.children ?? [], oldPath, newPath);
+    this.sessionDirty = true;
   }
 
   private deriveRenamePayload(node: BbFileTreeNode): { oldPath: string; newPath: string } {

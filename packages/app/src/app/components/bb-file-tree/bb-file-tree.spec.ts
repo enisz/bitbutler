@@ -284,4 +284,60 @@ describe('BbFileTree', () => {
       );
     });
   });
+
+  describe('sessionDirty', () => {
+    beforeEach(() => {
+      component.files = [makeFile('dir/a.txt'), makeFile('dir/b.txt')];
+      component.ngOnChanges();
+      component.enterEditMode();
+    });
+
+    it('should be false after enterEditMode', () => {
+      expect((component as any).sessionDirty).toBe(false);
+    });
+
+    it('should be true after onFileNameChange', () => {
+      const fileNode = component.data[0].children![0];
+      fileNode.name = 'z.txt';
+      component.onFileNameChange(fileNode);
+      expect((component as any).sessionDirty).toBe(true);
+    });
+
+    it('should be true after onFolderNameChange', () => {
+      const folderNode = component.data[0];
+      folderNode.name = 'other';
+      component.onFolderNameChange(folderNode);
+      expect((component as any).sessionDirty).toBe(true);
+    });
+
+    it('should be true after toggleFileSelection', () => {
+      const fileNode = component.data[0].children![0];
+      const event = { target: { checked: false } } as unknown as Event;
+      component.toggleFileSelection(fileNode.file!, event);
+      expect((component as any).sessionDirty).toBe(true);
+    });
+
+    it('should be true after toggleFolderSelection', () => {
+      const folderNode = component.data[0];
+      const event = { target: { checked: false } } as unknown as Event;
+      component.toggleFolderSelection(folderNode, event);
+      expect((component as any).sessionDirty).toBe(true);
+    });
+
+    it('should be true after setFolderPriority', () => {
+      component.setFolderPriority(component.data[0], 6);
+      expect((component as any).sessionDirty).toBe(true);
+    });
+
+    it('should reset to false on the next enterEditMode', () => {
+      const fileNode = component.data[0].children![0];
+      fileNode.name = 'z.txt';
+      component.onFileNameChange(fileNode);
+      expect((component as any).sessionDirty).toBe(true);
+
+      component.saveEdit();
+      component.enterEditMode();
+      expect((component as any).sessionDirty).toBe(false);
+    });
+  });
 });
