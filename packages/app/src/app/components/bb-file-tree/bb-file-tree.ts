@@ -13,7 +13,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faCheck, faEdit, faX } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faEdit, faRotateLeft, faX } from '@fortawesome/free-solid-svg-icons';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -99,7 +99,7 @@ export class BbFileTree implements OnChanges {
     },
   ];
 
-  public icon = { faEdit, faCheck, faX };
+  public icon = { faEdit, faCheck, faRotateLeft, faX };
 
   trackByPath = (_index: number, node: BbFileTreeNode): string =>
     `${this.editMode()}:${node.fullPath}`;
