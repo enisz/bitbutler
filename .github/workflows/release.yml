@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   pre-flight:
-    name: '[1/7] Lint & Tests'
+    name: '[1/6] Lint & Tests'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -36,11 +36,8 @@ jobs:
         run: npm run test --workspace=packages/app
       - name: Electron unit tests
         run: npm run test --workspace=packages/electron
-      - name: Docs unit tests
-        run: npm run test --workspace=packages/docs
-
   bump-version:
-    name: '[2/7] Bump Version'
+    name: '[2/6] Bump Version'
     runs-on: ubuntu-latest
     needs: [pre-flight]
     outputs:
@@ -77,32 +74,8 @@ jobs:
             packages/app/package.json
           retention-days: 1
 
-  check-docs:
-    name: '[2/7] Check Docs Changes'
-    runs-on: ubuntu-latest
-    needs: [pre-flight]
-    outputs:
-      changed: ${{ steps.check.outputs.changed }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Detect docs changes since last release tag
-        id: check
-        run: |
-          PREV_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          if [ -z "$PREV_TAG" ]; then
-            echo "changed=true" >> $GITHUB_OUTPUT
-          elif git diff --quiet "$PREV_TAG"..HEAD -- packages/docs/ packages/app/src/styles/; then
-            echo "changed=false" >> $GITHUB_OUTPUT
-            echo "No docs changes since $PREV_TAG - skipping docs build"
-          else
-            echo "changed=true" >> $GITHUB_OUTPUT
-          fi
-
   build-app:
-    name: '[3/7] Build Angular App'
+    name: '[3/6] Build Angular App'
     runs-on: ubuntu-latest
     needs: [bump-version]
     steps:
@@ -130,7 +103,7 @@ jobs:
           retention-days: 1
 
   electron-pack:
-    name: '[4/7] Package Electron (${{ matrix.job_name }})'
+    name: '[4/6] Package Electron (${{ matrix.job_name }})'
     runs-on: ${{ matrix.os }}
     needs: [bump-version, build-app]
     strategy:
@@ -183,7 +156,7 @@ jobs:
           retention-days: 1
 
   commit-and-tag:
-    name: '[5/7] Commit & Tag'
+    name: '[5/6] Commit & Tag'
     runs-on: ubuntu-latest
     needs: [bump-version, build-app, electron-pack]
     permissions:
@@ -218,7 +191,7 @@ jobs:
         run: git push origin main --tags
 
   publish-release:
-    name: '[6/7] Publish Release'
+    name: '[6/6] Publish Release'
     runs-on: ubuntu-latest
     needs: [bump-version, commit-and-tag]
     permissions:
@@ -268,12 +241,3 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh release edit ${{ needs.bump-version.outputs.raw_version }} --draft=false
 
-  deploy-docs:
-    name: '[7/7] Deploy Docs'
-    needs: [check-docs, publish-release]
-    if: needs.check-docs.outputs.changed == 'true'
-    uses: ./.github/workflows/deploy-docs.yml
-    permissions:
-      contents: read
-      pages: write
-      id-token: write

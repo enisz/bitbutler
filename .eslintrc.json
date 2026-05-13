@@ -23,10 +23,6 @@
       "extends": ["plugin:prettier/recommended"]
     },
     {
-      "files": ["packages/docs/src/**/*.ts", "packages/docs/vite.config.ts"],
-      "extends": ["plugin:@angular-eslint/recommended", "plugin:prettier/recommended"]
-    },
-    {
       "files": ["packages/shared/src/**/*.ts"],
       "env": {
         "es2022": true

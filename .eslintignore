@@ -5,5 +5,4 @@ out/
 coverage/
 .release/
 **/*.min.js
-packages/docs/index.html
 packages/*/node_modules/
