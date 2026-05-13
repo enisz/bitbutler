@@ -214,7 +214,7 @@
                 [clearable]="false"
                 appendTo="body"
                 [(ngModel)]="f.priority"
-                (ngModelChange)="calculateStats()"
+                (ngModelChange)="onFilePriorityChange()"
               ></ng-select>
             } @else {
               <span class="bb-skipped-label">{{

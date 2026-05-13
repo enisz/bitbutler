@@ -272,6 +272,11 @@ export class BbFileTree implements OnChanges {
     this.calculateStats();
   }
 
+  onFilePriorityChange(): void {
+    this.sessionDirty = true;
+    this.calculateStats();
+  }
+
   onRenameEnter(event: Event, node: BbFileTreeNode, type: 'file' | 'folder'): void {
     event.preventDefault();
     if (type === 'file') this.onFileNameChange(node);
@@ -279,10 +284,10 @@ export class BbFileTree implements OnChanges {
     this.saveEdit();
   }
 
-  onEscapeInInput(event: Event): void {
+  async onEscapeInInput(event: Event): Promise<void> {
     event.stopPropagation();
     event.preventDefault();
-    this.cancelEdit();
+    await this.cancelEdit();
   }
 
   onFileNameChange(node: BbFileTreeNode): void {
