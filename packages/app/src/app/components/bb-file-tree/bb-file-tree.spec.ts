@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TorrentFileEntry } from '../../models/torrent-draft.model';
+import { ConfirmService } from '../../services/confirm.service';
 import { BbFileTree, BbFileTreeNode, FileTreeSaveEvent } from './bb-file-tree';
 
 const makeFile = (path: string, priority = 1, length = 1000): TorrentFileEntry => ({
@@ -11,10 +12,14 @@ const makeFile = (path: string, priority = 1, length = 1000): TorrentFileEntry =
 describe('BbFileTree', () => {
   let component: BbFileTree;
   let fixture: ComponentFixture<BbFileTree>;
+  let mockConfirmService: { confirm: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
+    mockConfirmService = { confirm: vi.fn().mockResolvedValue(true) };
+
     await TestBed.configureTestingModule({
       imports: [BbFileTree],
+      providers: [{ provide: ConfirmService, useValue: mockConfirmService }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(BbFileTree);
@@ -176,17 +181,17 @@ describe('BbFileTree', () => {
       expect(spy).toHaveBeenCalledWith(true);
     });
 
-    it('should set editMode to false on cancelEdit', () => {
+    it('should set editMode to false on cancelEdit', async () => {
       component.enterEditMode();
-      component.cancelEdit();
+      await component.cancelEdit();
       expect(component.editMode()).toBe(false);
     });
 
-    it('should emit editModeChange(false) on cancelEdit', () => {
+    it('should emit editModeChange(false) on cancelEdit', async () => {
       component.enterEditMode();
       const spy = vi.fn();
       component.editModeChange.subscribe(spy);
-      component.cancelEdit();
+      await component.cancelEdit();
       expect(spy).toHaveBeenCalledWith(false);
     });
 
@@ -338,6 +343,46 @@ describe('BbFileTree', () => {
       component.saveEdit();
       component.enterEditMode();
       expect((component as any).sessionDirty).toBe(false);
+    });
+  });
+
+  describe('cancelEdit confirm guard', () => {
+    beforeEach(() => {
+      component.files = [makeFile('a.txt')];
+      component.ngOnChanges();
+      component.enterEditMode();
+    });
+
+    it('should skip confirm and cancel immediately when session is not dirty', async () => {
+      await component.cancelEdit();
+      expect(mockConfirmService.confirm).not.toHaveBeenCalled();
+      expect(component.editMode()).toBe(false);
+    });
+
+    it('should show confirm when session is dirty', async () => {
+      const node = component.data[0];
+      node.name = 'z.txt';
+      component.onFileNameChange(node);
+
+      mockConfirmService.confirm.mockResolvedValue(true);
+      await component.cancelEdit();
+
+      expect(mockConfirmService.confirm).toHaveBeenCalledWith(
+        'components.bb-file-tree.confirm.cancel.title',
+        'components.bb-file-tree.confirm.cancel.message',
+      );
+      expect(component.editMode()).toBe(false);
+    });
+
+    it('should not cancel when user declines the confirm', async () => {
+      const node = component.data[0];
+      node.name = 'z.txt';
+      component.onFileNameChange(node);
+
+      mockConfirmService.confirm.mockResolvedValue(false);
+      await component.cancelEdit();
+
+      expect(component.editMode()).toBe(true);
     });
   });
 });

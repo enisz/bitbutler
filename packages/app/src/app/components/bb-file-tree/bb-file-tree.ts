@@ -20,6 +20,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TooltipOverflow } from '../../directives/tooltip-overflow';
 import { TorrentFileEntry } from '../../models/torrent-draft.model';
 import { FilesizePipe } from '../../pipes/filesize-pipe';
+import { ConfirmService } from '../../services/confirm.service';
 import { BbProgress } from '../bb-progress/bb-progress';
 
 export type BbFileTreeNode = {
@@ -76,6 +77,7 @@ export class BbFileTree implements OnChanges {
   public treeControl = new NestedTreeControl<BbFileTreeNode>((n) => n.children ?? []);
   public data: BbFileTreeNode[] = [];
   private readonly translateService = inject(TranslateService);
+  private readonly confirmService = inject(ConfirmService);
 
   public totalFiles = signal(0);
   public allFolders = signal(0);
@@ -168,7 +170,14 @@ export class BbFileTree implements OnChanges {
     this.editModeChange.emit(true);
   }
 
-  public cancelEdit(): void {
+  public async cancelEdit(): Promise<void> {
+    if (this.sessionDirty) {
+      const confirmed = await this.confirmService.confirm(
+        'components.bb-file-tree.confirm.cancel.title',
+        'components.bb-file-tree.confirm.cancel.message',
+      );
+      if (!confirmed) return;
+    }
     for (let i = 0; i < this.originalFiles.length && i < this.files.length; i++) {
       this.files[i].priority = this.originalFiles[i].priority;
     }
@@ -182,6 +191,7 @@ export class BbFileTree implements OnChanges {
     else this.restoreExpansionState(this.data, expandedPaths);
     this.originalFiles = [];
     this.folderPriorityMemory.clear();
+    this.sessionDirty = false;
     this.editMode.set(false);
     this.editModeChange.emit(false);
   }
