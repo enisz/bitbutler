@@ -36,6 +36,7 @@ jobs:
         run: npm run test --workspace=packages/app
       - name: Electron unit tests
         run: npm run test --workspace=packages/electron
+
   bump-version:
     name: '[2/6] Bump Version'
     runs-on: ubuntu-latest
