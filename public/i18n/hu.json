@@ -149,6 +149,12 @@
         "normal": "Normál",
         "high": "Magas",
         "max": "Maximum"
+      },
+      "confirm": {
+        "cancel": {
+          "title": "Változtatások elvetése",
+          "message": "Nem mentett változtatásaid vannak. Biztosan elveted őket?"
+        }
       }
     },
     "bb-popover": {},
