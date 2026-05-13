@@ -69,7 +69,6 @@ export class BbFileTree implements OnChanges {
 
   public editMode = signal(false);
   private originalFiles: TorrentFileEntry[] = [];
-  private renameQueue: { oldPath: string; newPath: string }[] = [];
   private autoEditTriggered = false;
   private folderPriorityMemory = new Map<string, number>();
 
@@ -162,7 +161,6 @@ export class BbFileTree implements OnChanges {
 
   public enterEditMode(): void {
     this.originalFiles = structuredClone(this.files);
-    this.renameQueue = [];
     this.folderPriorityMemory.clear();
     this.editMode.set(true);
     this.editModeChange.emit(true);
@@ -180,7 +178,6 @@ export class BbFileTree implements OnChanges {
     this.calculateStats();
     if (this.expandAll) this.expandAllNodes();
     else this.restoreExpansionState(this.data, expandedPaths);
-    this.renameQueue = [];
     this.originalFiles = [];
     this.folderPriorityMemory.clear();
     this.editMode.set(false);
@@ -189,8 +186,8 @@ export class BbFileTree implements OnChanges {
 
   public saveEdit(): void {
     const files = this.flatten(this.data, '');
-    this.saved.emit({ files, renames: [...this.renameQueue] });
-    this.renameQueue = [];
+    const renames = this.collectRenames(this.data, '');
+    this.saved.emit({ files, renames });
     this.originalFiles = [];
     this.folderPriorityMemory.clear();
     this.editMode.set(false);
@@ -276,14 +273,12 @@ export class BbFileTree implements OnChanges {
   onFileNameChange(node: BbFileTreeNode): void {
     const { oldPath, newPath } = this.deriveRenamePayload(node);
     if (oldPath === newPath) return;
-    this.renameQueue.push({ oldPath, newPath });
     node.fullPath = newPath;
   }
 
   onFolderNameChange(node: BbFileTreeNode): void {
     const { oldPath, newPath } = this.deriveRenamePayload(node);
     if (oldPath === newPath) return;
-    this.renameQueue.push({ oldPath, newPath });
     node.fullPath = newPath;
     this.updateChildPaths(node.children ?? [], oldPath, newPath);
   }
@@ -317,6 +312,24 @@ export class BbFileTree implements OnChanges {
         result.push({ ...node.file, path: currentPath });
       }
       if (node.children) result = result.concat(this.flatten(node.children, currentPath));
+    }
+    return result;
+  }
+
+  private collectRenames(
+    nodes: BbFileTreeNode[],
+    parentPath: string,
+  ): { oldPath: string; newPath: string }[] {
+    const result: { oldPath: string; newPath: string }[] = [];
+    for (const node of nodes) {
+      const currentPath = parentPath ? `${parentPath}/${node.name}` : node.name;
+      if (node.kind === 'file' && node.file) {
+        const genesisPath = normalizePath(node.file.path);
+        if (genesisPath !== currentPath) {
+          result.push({ oldPath: genesisPath, newPath: currentPath });
+        }
+      }
+      if (node.children) result.push(...this.collectRenames(node.children, currentPath));
     }
     return result;
   }

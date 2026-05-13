@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TorrentFileEntry } from '../../models/torrent-draft.model';
-import { BbFileTree, BbFileTreeNode } from './bb-file-tree';
+import { BbFileTree, BbFileTreeNode, FileTreeSaveEvent } from './bb-file-tree';
 
 const makeFile = (path: string, priority = 1, length = 1000): TorrentFileEntry => ({
   path,
@@ -202,6 +202,86 @@ describe('BbFileTree', () => {
       component.enterEditMode();
       component.saveEdit();
       expect(component.editMode()).toBe(false);
+    });
+  });
+
+  describe('saveEdit renames', () => {
+    beforeEach(() => {
+      component.files = [makeFile('dir/a.txt'), makeFile('dir/b.txt')];
+      component.ngOnChanges();
+    });
+
+    it('should emit empty renames when no files were renamed', () => {
+      component.enterEditMode();
+      const spy = vi.fn();
+      component.saved.subscribe(spy);
+      component.saveEdit();
+      expect(spy).toHaveBeenCalledWith(expect.objectContaining({ renames: [] }));
+    });
+
+    it('should emit genesis-to-current rename when a file is renamed', () => {
+      component.enterEditMode();
+      const fileNode = component.data[0].children![0]; // dir/a.txt
+      fileNode.name = 'z.txt';
+      component.onFileNameChange(fileNode);
+
+      const spy = vi.fn();
+      component.saved.subscribe(spy);
+      component.saveEdit();
+
+      expect(spy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          renames: [{ oldPath: 'dir/a.txt', newPath: 'dir/z.txt' }],
+        }),
+      );
+    });
+
+    it('should emit correct rename after two edit sessions (multi-session bug)', () => {
+      component.files = [makeFile('a.txt')];
+      component.ngOnChanges();
+
+      // Session 1: a.txt → xxx.txt
+      component.enterEditMode();
+      const node = component.data[0];
+      node.name = 'xxx.txt';
+      component.onFileNameChange(node);
+      component.saveEdit();
+
+      // Session 2: xxx.txt → yyy.txt
+      component.enterEditMode();
+      node.name = 'yyy.txt';
+      component.onFileNameChange(node);
+
+      const spy = vi.fn();
+      component.saved.subscribe(spy);
+      component.saveEdit();
+
+      // Must emit genesis (a.txt) → current (yyy.txt), not stale (xxx.txt) → current
+      expect(spy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          renames: [{ oldPath: 'a.txt', newPath: 'yyy.txt' }],
+        }),
+      );
+    });
+
+    it('should emit one rename per file when a folder is renamed', () => {
+      component.enterEditMode();
+      const folderNode = component.data[0]; // dir
+      folderNode.name = 'newdir';
+      component.onFolderNameChange(folderNode);
+
+      const spy = vi.fn();
+      component.saved.subscribe(spy);
+      component.saveEdit();
+
+      const event = spy.mock.calls[0][0] as FileTreeSaveEvent;
+      expect(event.renames).toHaveLength(2);
+      expect(event.renames).toEqual(
+        expect.arrayContaining([
+          { oldPath: 'dir/a.txt', newPath: 'newdir/a.txt' },
+          { oldPath: 'dir/b.txt', newPath: 'newdir/b.txt' },
+        ]),
+      );
     });
   });
 });
