@@ -11,9 +11,12 @@
           [editableSearchTerm]="true"
           [formControl]="selectControl"
           [keyDownFn]="keyDownFn"
+          [markFirst]="true"
           [openOnEnter]="false"
           [placeholder]="defaultPath()"
           [fixedPlaceholder]="false"
+          (search)="resetHighlight()"
+          (open)="resetHighlight()"
           #ngselect
         >
         </ng-select>
