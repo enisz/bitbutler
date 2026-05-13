@@ -16,8 +16,8 @@ export class ConfirmService {
   public confirm(
     title: string | ParamWithData,
     message: string | ParamWithData,
-    btnOkText: string = 'global.button.ok',
-    btnCancelText: string = 'global.button.cancel',
+    btnOkText: string = 'general.button.ok',
+    btnCancelText: string = 'general.button.cancel',
     dialogSize: 'sm' | 'md' | 'lg' | 'xl' = 'md',
   ): Promise<boolean> {
     const modalRef = this.modalService.open(Confirm, { size: dialogSize });
