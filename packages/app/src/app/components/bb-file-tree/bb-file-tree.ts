@@ -20,6 +20,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TooltipOverflow } from '../../directives/tooltip-overflow';
 import { TorrentFileEntry } from '../../models/torrent-draft.model';
 import { FilesizePipe } from '../../pipes/filesize-pipe';
+import { ConfirmService } from '../../services/confirm.service';
 import { BbProgress } from '../bb-progress/bb-progress';
 
 export type BbFileTreeNode = {
@@ -32,7 +33,7 @@ export type BbFileTreeNode = {
 
 export type FileTreeSaveEvent = {
   files: TorrentFileEntry[];
-  renames: { type: 'file' | 'folder'; oldPath: string; newPath: string }[];
+  renames: { oldPath: string; newPath: string }[];
 };
 
 @Component({
@@ -69,13 +70,14 @@ export class BbFileTree implements OnChanges {
 
   public editMode = signal(false);
   private originalFiles: TorrentFileEntry[] = [];
-  private renameQueue: { type: 'file' | 'folder'; oldPath: string; newPath: string }[] = [];
   private autoEditTriggered = false;
+  private sessionDirty = false;
   private folderPriorityMemory = new Map<string, number>();
 
   public treeControl = new NestedTreeControl<BbFileTreeNode>((n) => n.children ?? []);
   public data: BbFileTreeNode[] = [];
   private readonly translateService = inject(TranslateService);
+  private readonly confirmService = inject(ConfirmService);
 
   public totalFiles = signal(0);
   public allFolders = signal(0);
@@ -161,14 +163,21 @@ export class BbFileTree implements OnChanges {
   }
 
   public enterEditMode(): void {
+    this.sessionDirty = false;
     this.originalFiles = structuredClone(this.files);
-    this.renameQueue = [];
     this.folderPriorityMemory.clear();
     this.editMode.set(true);
     this.editModeChange.emit(true);
   }
 
-  public cancelEdit(): void {
+  public async cancelEdit(): Promise<void> {
+    if (this.sessionDirty) {
+      const confirmed = await this.confirmService.confirm(
+        'components.bb-file-tree.confirm.cancel.title',
+        'components.bb-file-tree.confirm.cancel.message',
+      );
+      if (!confirmed) return;
+    }
     for (let i = 0; i < this.originalFiles.length && i < this.files.length; i++) {
       this.files[i].priority = this.originalFiles[i].priority;
     }
@@ -180,17 +189,17 @@ export class BbFileTree implements OnChanges {
     this.calculateStats();
     if (this.expandAll) this.expandAllNodes();
     else this.restoreExpansionState(this.data, expandedPaths);
-    this.renameQueue = [];
     this.originalFiles = [];
     this.folderPriorityMemory.clear();
+    this.sessionDirty = false;
     this.editMode.set(false);
     this.editModeChange.emit(false);
   }
 
   public saveEdit(): void {
     const files = this.flatten(this.data, '');
-    this.saved.emit({ files, renames: [...this.renameQueue] });
-    this.renameQueue = [];
+    const renames = this.collectRenames(this.data, '');
+    this.saved.emit({ files, renames });
     this.originalFiles = [];
     this.folderPriorityMemory.clear();
     this.editMode.set(false);
@@ -239,6 +248,7 @@ export class BbFileTree implements OnChanges {
       this.folderPriorityMemory.set(node.fullPath, this.getDominantFolderPriority(node));
       this.updateRecursive(node, (f) => (f.priority = 0));
     }
+    this.sessionDirty = true;
     this.calculateStats();
   }
 
@@ -246,6 +256,7 @@ export class BbFileTree implements OnChanges {
     this.updateRecursive(node, (f) => {
       if (f.priority !== 0) f.priority = priority;
     });
+    this.sessionDirty = true;
     this.calculateStats();
   }
 
@@ -257,6 +268,12 @@ export class BbFileTree implements OnChanges {
   toggleFileSelection(f: TorrentFileEntry, event: Event): void {
     const checked = (event.target as HTMLInputElement).checked;
     f.priority = checked ? 1 : 0;
+    this.sessionDirty = true;
+    this.calculateStats();
+  }
+
+  onFilePriorityChange(): void {
+    this.sessionDirty = true;
     this.calculateStats();
   }
 
@@ -267,25 +284,25 @@ export class BbFileTree implements OnChanges {
     this.saveEdit();
   }
 
-  onEscapeInInput(event: Event): void {
+  async onEscapeInInput(event: Event): Promise<void> {
     event.stopPropagation();
     event.preventDefault();
-    this.cancelEdit();
+    await this.cancelEdit();
   }
 
   onFileNameChange(node: BbFileTreeNode): void {
     const { oldPath, newPath } = this.deriveRenamePayload(node);
     if (oldPath === newPath) return;
-    this.renameQueue.push({ type: 'file', oldPath, newPath });
     node.fullPath = newPath;
+    this.sessionDirty = true;
   }
 
   onFolderNameChange(node: BbFileTreeNode): void {
     const { oldPath, newPath } = this.deriveRenamePayload(node);
     if (oldPath === newPath) return;
-    this.renameQueue.push({ type: 'folder', oldPath, newPath });
     node.fullPath = newPath;
     this.updateChildPaths(node.children ?? [], oldPath, newPath);
+    this.sessionDirty = true;
   }
 
   private deriveRenamePayload(node: BbFileTreeNode): { oldPath: string; newPath: string } {
@@ -317,6 +334,24 @@ export class BbFileTree implements OnChanges {
         result.push({ ...node.file, path: currentPath });
       }
       if (node.children) result = result.concat(this.flatten(node.children, currentPath));
+    }
+    return result;
+  }
+
+  private collectRenames(
+    nodes: BbFileTreeNode[],
+    parentPath: string,
+  ): { oldPath: string; newPath: string }[] {
+    const result: { oldPath: string; newPath: string }[] = [];
+    for (const node of nodes) {
+      const currentPath = parentPath ? `${parentPath}/${node.name}` : node.name;
+      if (node.kind === 'file' && node.file) {
+        const genesisPath = normalizePath(node.file.path);
+        if (genesisPath !== currentPath) {
+          result.push({ oldPath: genesisPath, newPath: currentPath });
+        }
+      }
+      if (node.children) result.push(...this.collectRenames(node.children, currentPath));
     }
     return result;
   }

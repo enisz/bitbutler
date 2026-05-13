@@ -87,11 +87,7 @@ export class Content implements TorrentDetailTabComponent, OnChanges, OnInit {
 
     try {
       for (const item of event.renames) {
-        if (item.type === 'folder') {
-          await this.qbService.renameTorrentFolder(serverId, this.hash, item.oldPath, item.newPath);
-        } else {
-          await this.qbService.renameTorrentFile(serverId, this.hash, item.oldPath, item.newPath);
-        }
+        await this.qbService.renameTorrentFile(serverId, this.hash, item.oldPath, item.newPath);
       }
 
       for (const file of event.files) {

@@ -48,7 +48,6 @@
         >
           <fa-icon [icon]="icon.faCheck"></fa-icon>
         </button>
-
         <button
           type="button"
           class="btn btn-sm btn-link text-danger"
@@ -211,7 +210,7 @@
                 [clearable]="false"
                 appendTo="body"
                 [(ngModel)]="f.priority"
-                (ngModelChange)="calculateStats()"
+                (ngModelChange)="onFilePriorityChange()"
               ></ng-select>
             } @else {
               <span class="bb-skipped-label">{{

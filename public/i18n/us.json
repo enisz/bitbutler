@@ -149,6 +149,12 @@
         "normal": "Normal",
         "high": "High",
         "max": "Max"
+      },
+      "confirm": {
+        "cancel": {
+          "title": "Discard changes",
+          "message": "You have unsaved changes. Are you sure you want to discard them?"
+        }
       }
     },
     "bb-popover": {},

@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TorrentFileEntry } from '../../models/torrent-draft.model';
-import { BbFileTree, BbFileTreeNode } from './bb-file-tree';
+import { ConfirmService } from '../../services/confirm.service';
+import { BbFileTree, BbFileTreeNode, FileTreeSaveEvent } from './bb-file-tree';
 
 const makeFile = (path: string, priority = 1, length = 1000): TorrentFileEntry => ({
   path,
@@ -11,10 +12,14 @@ const makeFile = (path: string, priority = 1, length = 1000): TorrentFileEntry =
 describe('BbFileTree', () => {
   let component: BbFileTree;
   let fixture: ComponentFixture<BbFileTree>;
+  let mockConfirmService: { confirm: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
+    mockConfirmService = { confirm: vi.fn().mockResolvedValue(true) };
+
     await TestBed.configureTestingModule({
       imports: [BbFileTree],
+      providers: [{ provide: ConfirmService, useValue: mockConfirmService }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(BbFileTree);
@@ -176,17 +181,17 @@ describe('BbFileTree', () => {
       expect(spy).toHaveBeenCalledWith(true);
     });
 
-    it('should set editMode to false on cancelEdit', () => {
+    it('should set editMode to false on cancelEdit', async () => {
       component.enterEditMode();
-      component.cancelEdit();
+      await component.cancelEdit();
       expect(component.editMode()).toBe(false);
     });
 
-    it('should emit editModeChange(false) on cancelEdit', () => {
+    it('should emit editModeChange(false) on cancelEdit', async () => {
       component.enterEditMode();
       const spy = vi.fn();
       component.editModeChange.subscribe(spy);
-      component.cancelEdit();
+      await component.cancelEdit();
       expect(spy).toHaveBeenCalledWith(false);
     });
 
@@ -202,6 +207,182 @@ describe('BbFileTree', () => {
       component.enterEditMode();
       component.saveEdit();
       expect(component.editMode()).toBe(false);
+    });
+  });
+
+  describe('saveEdit renames', () => {
+    beforeEach(() => {
+      component.files = [makeFile('dir/a.txt'), makeFile('dir/b.txt')];
+      component.ngOnChanges();
+    });
+
+    it('should emit empty renames when no files were renamed', () => {
+      component.enterEditMode();
+      const spy = vi.fn();
+      component.saved.subscribe(spy);
+      component.saveEdit();
+      expect(spy).toHaveBeenCalledWith(expect.objectContaining({ renames: [] }));
+    });
+
+    it('should emit genesis-to-current rename when a file is renamed', () => {
+      component.enterEditMode();
+      const fileNode = component.data[0].children![0]; // dir/a.txt
+      fileNode.name = 'z.txt';
+      component.onFileNameChange(fileNode);
+
+      const spy = vi.fn();
+      component.saved.subscribe(spy);
+      component.saveEdit();
+
+      expect(spy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          renames: [{ oldPath: 'dir/a.txt', newPath: 'dir/z.txt' }],
+        }),
+      );
+    });
+
+    it('should emit correct rename after two edit sessions (multi-session bug)', () => {
+      component.files = [makeFile('a.txt')];
+      component.ngOnChanges();
+
+      // Session 1: a.txt → xxx.txt
+      component.enterEditMode();
+      const node = component.data[0];
+      node.name = 'xxx.txt';
+      component.onFileNameChange(node);
+      component.saveEdit();
+
+      // Session 2: xxx.txt → yyy.txt
+      component.enterEditMode();
+      node.name = 'yyy.txt';
+      component.onFileNameChange(node);
+
+      const spy = vi.fn();
+      component.saved.subscribe(spy);
+      component.saveEdit();
+
+      // Must emit genesis (a.txt) → current (yyy.txt), not stale (xxx.txt) → current
+      expect(spy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          renames: [{ oldPath: 'a.txt', newPath: 'yyy.txt' }],
+        }),
+      );
+    });
+
+    it('should emit one rename per file when a folder is renamed', () => {
+      component.enterEditMode();
+      const folderNode = component.data[0]; // dir
+      folderNode.name = 'newdir';
+      component.onFolderNameChange(folderNode);
+
+      const spy = vi.fn();
+      component.saved.subscribe(spy);
+      component.saveEdit();
+
+      const event = spy.mock.calls[0][0] as FileTreeSaveEvent;
+      expect(event.renames).toHaveLength(2);
+      expect(event.renames).toEqual(
+        expect.arrayContaining([
+          { oldPath: 'dir/a.txt', newPath: 'newdir/a.txt' },
+          { oldPath: 'dir/b.txt', newPath: 'newdir/b.txt' },
+        ]),
+      );
+    });
+  });
+
+  describe('sessionDirty', () => {
+    beforeEach(() => {
+      component.files = [makeFile('dir/a.txt'), makeFile('dir/b.txt')];
+      component.ngOnChanges();
+      component.enterEditMode();
+    });
+
+    it('should be false after enterEditMode', () => {
+      expect((component as any).sessionDirty).toBe(false);
+    });
+
+    it('should be true after onFileNameChange', () => {
+      const fileNode = component.data[0].children![0];
+      fileNode.name = 'z.txt';
+      component.onFileNameChange(fileNode);
+      expect((component as any).sessionDirty).toBe(true);
+    });
+
+    it('should be true after onFolderNameChange', () => {
+      const folderNode = component.data[0];
+      folderNode.name = 'other';
+      component.onFolderNameChange(folderNode);
+      expect((component as any).sessionDirty).toBe(true);
+    });
+
+    it('should be true after toggleFileSelection', () => {
+      const fileNode = component.data[0].children![0];
+      const event = { target: { checked: false } } as unknown as Event;
+      component.toggleFileSelection(fileNode.file!, event);
+      expect((component as any).sessionDirty).toBe(true);
+    });
+
+    it('should be true after toggleFolderSelection', () => {
+      const folderNode = component.data[0];
+      const event = { target: { checked: false } } as unknown as Event;
+      component.toggleFolderSelection(folderNode, event);
+      expect((component as any).sessionDirty).toBe(true);
+    });
+
+    it('should be true after setFolderPriority', () => {
+      component.setFolderPriority(component.data[0], 6);
+      expect((component as any).sessionDirty).toBe(true);
+    });
+
+    it('should reset to false on the next enterEditMode', () => {
+      const fileNode = component.data[0].children![0];
+      fileNode.name = 'z.txt';
+      component.onFileNameChange(fileNode);
+      expect((component as any).sessionDirty).toBe(true);
+
+      component.saveEdit();
+      component.enterEditMode();
+      expect((component as any).sessionDirty).toBe(false);
+    });
+  });
+
+  describe('cancelEdit confirm guard', () => {
+    beforeEach(() => {
+      component.files = [makeFile('a.txt')];
+      component.ngOnChanges();
+      component.enterEditMode();
+    });
+
+    it('should skip confirm and cancel immediately when session is not dirty', async () => {
+      await component.cancelEdit();
+      expect(mockConfirmService.confirm).not.toHaveBeenCalled();
+      expect(component.editMode()).toBe(false);
+    });
+
+    it('should show confirm when session is dirty', async () => {
+      const node = component.data[0];
+      node.name = 'z.txt';
+      component.onFileNameChange(node);
+
+      mockConfirmService.confirm.mockResolvedValue(true);
+      await component.cancelEdit();
+
+      expect(mockConfirmService.confirm).toHaveBeenCalledWith(
+        'components.bb-file-tree.confirm.cancel.title',
+        'components.bb-file-tree.confirm.cancel.message',
+      );
+      expect(component.editMode()).toBe(false);
+    });
+
+    it('should not cancel when user declines the confirm', async () => {
+      const node = component.data[0];
+      node.name = 'z.txt';
+      component.onFileNameChange(node);
+
+      mockConfirmService.confirm.mockResolvedValue(false);
+      await component.cancelEdit();
+
+      expect(component.editMode()).toBe(true);
     });
   });
 });
