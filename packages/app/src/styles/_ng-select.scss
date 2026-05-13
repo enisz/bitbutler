@@ -1,7 +1,27 @@
 .ng-select .ng-clear-wrapper {
   color: var(--bb-control-placeholder) !important;
-  &:hover .ng-clear {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 20px !important;
+  height: 20px !important;
+  border-radius: 50% !important;
+  transition:
+    color 120ms ease,
+    background-color 120ms ease !important;
+
+  &:hover {
     color: var(--bs-danger) !important;
+    background-color: color-mix(in srgb, var(--bs-danger) 15%, transparent) !important;
+
+    .ng-clear {
+      color: inherit !important;
+    }
+  }
+
+  .ng-clear {
+    font-size: 18px !important;
+    line-height: 1 !important;
   }
 }
 
