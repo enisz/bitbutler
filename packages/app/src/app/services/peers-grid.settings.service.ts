@@ -4,6 +4,6 @@ import { BaseSettingsService } from './base-settings.service';
 
 @Injectable({ providedIn: 'root' })
 export class PeersGridSettingsService extends BaseSettingsService<PeersGridSettings> {
-  protected readonly SETTINGS_ID = PeersGridSettingsService.name;
+  protected readonly SETTINGS_ID = 'PeersGridSettingsService';
   protected readonly DEFAULT_SETTINGS = DEFAULT_PEERS_GRID_SETTINGS;
 }

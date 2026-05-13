@@ -34,7 +34,8 @@
       "Bash(npm install:*)",
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('version:', d.get\\('version'\\)\\); peers = d.get\\('peerDependencies', {}\\); print\\('peer deps:'\\); [print\\(f'  {k}: {v}'\\) for k,v in peers.items\\(\\) if 'marked' in k.lower\\(\\)]\")",
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('version:', d.get\\('version'\\)\\); print\\('peer marked:', d.get\\('peerDependencies', {}\\).get\\('marked','N/A'\\)\\)\")",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(git log:*)"
     ]
   }
 }

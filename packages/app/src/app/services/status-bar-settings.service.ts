@@ -7,7 +7,7 @@ import { BaseSettingsService } from './base-settings.service';
 
 @Injectable({ providedIn: 'root' })
 export class StatusBarSettingsService extends BaseSettingsService<StatusBarSettings> {
-  protected readonly SETTINGS_ID = StatusBarSettingsService.name;
+  protected readonly SETTINGS_ID = 'StatusBarSettingsService';
   protected readonly DEFAULT_SETTINGS = DEFAULT_STATUS_BAR_SETTINGS;
 
   protected override normalize(s: StatusBarSettings): StatusBarSettings {

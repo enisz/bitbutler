@@ -40,4 +40,29 @@ db.exec(`
   );
 `);
 
+// Migrate abbreviated setting IDs (produced by minified builds) to full service names.
+const migrateSettingsId = db.prepare<[string, string]>(`
+  UPDATE settings SET id = ? WHERE id = ?
+`);
+
+const abbreviatedIds: [string, string][] = [
+  ['GeneralSettingsService', 't'],
+  ['StatusBarSettingsService', 'e'],
+  ['TorrentListGridSettingsService', 'i'],
+];
+
+for (const [newId, oldId] of abbreviatedIds) {
+  migrateSettingsId.run(newId, oldId);
+}
+
+// Migrate server-scoped settings: r.<serverId> → ServerSettingsService.<serverId>
+const stmtSelectServerIds = db.prepare<[], { id: string }>(`
+  SELECT id FROM settings WHERE id LIKE 'r.%'
+`);
+
+for (const row of stmtSelectServerIds.all()) {
+  const serverId = row.id.slice(2); // strip 'r.'
+  migrateSettingsId.run(`ServerSettingsService.${serverId}`, row.id);
+}
+
 export default db;

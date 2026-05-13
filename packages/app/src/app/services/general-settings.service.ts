@@ -4,6 +4,6 @@ import { BaseSettingsService } from './base-settings.service';
 
 @Injectable({ providedIn: 'root' })
 export class GeneralSettingsService extends BaseSettingsService<GeneralSettings> {
-  protected readonly SETTINGS_ID = GeneralSettingsService.name;
+  protected readonly SETTINGS_ID = 'GeneralSettingsService';
   protected readonly DEFAULT_SETTINGS = DEFAULT_GENERAL_SETTINGS;
 }
