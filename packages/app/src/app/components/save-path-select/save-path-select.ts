@@ -110,6 +110,10 @@ export class SavePathSelect implements OnInit, ControlValueAccessor, AfterViewIn
 
   addTag = (term: string): string => term;
 
+  public resetHighlight(): void {
+    this.ngselect.itemsList.unmarkItem();
+  }
+
   keyDownFn(event: KeyboardEvent): boolean {
     if (event.key === 'Escape') {
       return false;
