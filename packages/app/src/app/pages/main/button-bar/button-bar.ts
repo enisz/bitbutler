@@ -19,6 +19,7 @@ import {
   faArrowsUpToLine,
   faFileArrowUp,
   faGear,
+  faGears,
   faLink,
   faPause,
   faPlay,
@@ -159,6 +160,14 @@ export class ButtonBar implements OnInit {
       { kind: 'divider' },
       {
         kind: 'action',
+        id: 'qb-settings.open',
+        label: 'pages.main.button-bar.button.qb-settings',
+        icon: faGears,
+        variant: 'default',
+      },
+      { kind: 'divider' },
+      {
+        kind: 'action',
         id: 'settings.open',
         label: 'pages.main.button-bar.button.settings',
         icon: faGear,
@@ -233,6 +242,9 @@ export class ButtonBar implements OnInit {
         break;
       case 'control.pauseAll':
         this.commandBusService.emit({ type: 'TORRENT_PAUSE_ALL' });
+        break;
+      case 'qb-settings.open':
+        this.commandBusService.emit({ type: 'UI_OPEN_QB_SETTINGS' });
         break;
       case 'settings.open':
         this.commandBusService.emit({ type: 'UI_OPEN_SETTINGS' });

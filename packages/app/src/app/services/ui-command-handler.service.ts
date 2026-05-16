@@ -17,6 +17,7 @@ import { UpdateAvailable } from '../components/modals/update-available/update-av
 import { AppCommand, UiCommand } from '../models/command.model';
 import { GuardableModal } from '../models/guardable-modal.interface';
 import { QbTorrentContent } from '../models/torrent.model';
+import { QbSettings } from '../pages/qb-settings/qb-settings';
 import { Settings } from '../pages/settings/settings';
 import { CommandBusService } from './command-bus.service';
 import { ElectronService } from './electron.service';
@@ -78,6 +79,18 @@ export class UiCommandHandlerService {
             }
 
             settingsModalRef.result.then(() => {}).catch(() => {});
+            break;
+
+          case 'UI_OPEN_QB_SETTINGS':
+            if (this.isModalOpen(QbSettings)) break;
+            let qbSettingsModalRef: NgbModalRef;
+            qbSettingsModalRef = this.modalService.open(QbSettings, {
+              size: 'xl',
+              centered: false,
+              scrollable: true,
+              beforeDismiss: () => qbSettingsModalRef.componentInstance.canDeactivate(),
+            });
+            qbSettingsModalRef.result.then(() => {}).catch(() => {});
             break;
 
           case 'UI_OPEN_TORRENT_DETAILS':
