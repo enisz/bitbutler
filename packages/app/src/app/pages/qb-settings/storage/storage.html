@@ -1,0 +1,89 @@
+<form [formGroup]="form">
+  <div class="container-fluid">
+    <fieldset class="bb-fieldset">
+      <legend>{{ 'pages.qb-settings.tab.storage.label.default-paths' | translate }}</legend>
+      <div class="container">
+        <div class="row mb-3">
+          <div class="col-4 d-flex align-items-center">
+            {{ 'pages.qb-settings.tab.storage.field.save-path' | translate }}
+          </div>
+          <div class="col-8">
+            <input type="text" class="form-control" formControlName="save_path" />
+          </div>
+        </div>
+      </div>
+    </fieldset>
+
+    @if (hasTempPath()) {
+      <fieldset class="bb-fieldset">
+        <legend>{{ 'pages.qb-settings.tab.storage.label.temp-files' | translate }}</legend>
+        <div class="container">
+          <div class="row mb-3">
+            <div class="col-12">
+              <div class="form-check form-switch">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  id="temp-path-enabled"
+                  formControlName="temp_path_enabled"
+                />
+                <label class="form-check-label" for="temp-path-enabled">
+                  {{ 'pages.qb-settings.tab.storage.field.temp-path-enabled' | translate }}
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-4 d-flex align-items-center">
+              {{ 'pages.qb-settings.tab.storage.field.temp-path' | translate }}
+            </div>
+            <div class="col-8">
+              <input type="text" class="form-control" formControlName="temp_path" />
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    }
+
+    <fieldset class="bb-fieldset">
+      <legend>{{ 'pages.qb-settings.tab.storage.label.file-management' | translate }}</legend>
+      <div class="container">
+        <div class="row mb-3">
+          <div class="col-12">
+            <div class="form-check form-switch">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="incomplete-files-ext"
+                formControlName="incomplete_files_ext"
+              />
+              <label class="form-check-label" for="incomplete-files-ext">
+                {{ 'pages.qb-settings.tab.storage.field.incomplete-files-ext' | translate }}
+              </label>
+            </div>
+          </div>
+        </div>
+        @if (hasContentLayout()) {
+          <div class="row mb-3">
+            <div class="col-6 d-flex align-items-center">
+              {{ 'pages.qb-settings.tab.storage.field.torrent-content-layout' | translate }}
+            </div>
+            <div class="col-6">
+              <ng-select
+                [items]="contentLayouts()"
+                [clearable]="false"
+                [searchable]="false"
+                bindLabel="label"
+                bindValue="value"
+                formControlName="torrent_content_layout"
+                appendTo="ngb-modal-window"
+              ></ng-select>
+            </div>
+          </div>
+        }
+      </div>
+    </fieldset>
+  </div>
+</form>
