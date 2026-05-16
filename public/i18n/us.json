@@ -676,7 +676,8 @@
           "up": "Up",
           "down": "Down",
           "bottom": "Bottom",
-          "settings": "Settings"
+          "settings": "Settings",
+          "qb-settings": "qBittorrent Settings"
         },
         "search-form": {
           "search": "Search..."
@@ -1055,6 +1056,96 @@
           "other": {
             "no-columns-selected": "No columns selected.",
             "search-columns": "Search and select columns..."
+          }
+        }
+      }
+    },
+    "qb-settings": {
+      "title": "qBittorrent Settings",
+      "success": {
+        "saved": "qBittorrent Settings Saved"
+      },
+      "tab": {
+        "bandwidth": {
+          "title": "Bandwidth",
+          "label": {
+            "global-rate-limits": "Global Rate Limits",
+            "alt-rate-limits": "Alternative Rate Limits (Turtle Mode)",
+            "scheduler": "Speed Scheduler"
+          },
+          "field": {
+            "dl-limit": "Download Limit (KB/s)",
+            "up-limit": "Upload Limit (KB/s)",
+            "alt-dl-limit": "Alternative Download Limit (KB/s)",
+            "alt-up-limit": "Alternative Upload Limit (KB/s)",
+            "scheduler-enabled": "Enable speed scheduler",
+            "schedule-from": "From",
+            "schedule-to": "To",
+            "scheduler-days": "Active on"
+          },
+          "scheduler-days": {
+            "every-day": "Every day",
+            "every-weekday": "Every weekday",
+            "every-weekend": "Every weekend",
+            "monday": "Monday",
+            "tuesday": "Tuesday",
+            "wednesday": "Wednesday",
+            "thursday": "Thursday",
+            "friday": "Friday",
+            "saturday": "Saturday",
+            "sunday": "Sunday"
+          }
+        },
+        "storage": {
+          "title": "Storage",
+          "label": {
+            "default-paths": "Default Paths",
+            "temp-files": "Temporary Files",
+            "file-management": "File Management"
+          },
+          "field": {
+            "save-path": "Default Save Path",
+            "temp-path-enabled": "Keep incomplete torrents in a separate folder",
+            "temp-path": "Incomplete Save Path",
+            "incomplete-files-ext": "Append .!qB extension to incomplete files",
+            "torrent-content-layout": "Torrent content layout"
+          },
+          "content-layout": {
+            "original": "Original",
+            "subfolder": "Create subfolder",
+            "no-subfolder": "Don't create subfolder"
+          }
+        },
+        "queue-limits": {
+          "title": "Queue & Limits",
+          "label": {
+            "active-torrents": "Active Torrent Management",
+            "download-behavior": "Download Behavior"
+          },
+          "field": {
+            "queueing-enabled": "Enable torrent queuing constraints",
+            "max-active-downloads": "Maximum active downloads",
+            "max-active-uploads": "Maximum active uploads",
+            "max-active-torrents": "Maximum total active torrents",
+            "add-to-top-of-queue": "Add new torrents to the top of the queue"
+          }
+        },
+        "seeding-ratios": {
+          "title": "Seeding Ratios",
+          "label": {
+            "share-ratio": "Share Ratio Limits",
+            "seeding-time": "Seeding Time Limits"
+          },
+          "field": {
+            "max-ratio-enabled": "Enable Share Ratio Limit",
+            "max-ratio": "Stop seeding when ratio reaches",
+            "max-ratio-act": "Action when limit is reached",
+            "max-seeding-time-enabled": "Enable Seeding Time Limit",
+            "max-seeding-time": "Stop seeding after (minutes)"
+          },
+          "ratio-act": {
+            "pause": "Pause torrent",
+            "remove": "Remove torrent"
           }
         }
       }

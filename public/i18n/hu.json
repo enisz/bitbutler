@@ -676,7 +676,8 @@
           "up": "Fel",
           "down": "Le",
           "bottom": "Legalulra",
-          "settings": "Beállítások"
+          "settings": "Beállítások",
+          "qb-settings": "qBittorrent Beállítások"
         },
         "search-form": {
           "search": "Keresés..."
@@ -1055,6 +1056,96 @@
           "other": {
             "no-columns-selected": "Nincs oszlop kiválasztva.",
             "search-columns": "Oszlopok keresése és kijelölése..."
+          }
+        }
+      }
+    },
+    "qb-settings": {
+      "title": "qBittorrent Beállítások",
+      "success": {
+        "saved": "qBittorrent Beállítások Mentve"
+      },
+      "tab": {
+        "bandwidth": {
+          "title": "Sávszélesség",
+          "label": {
+            "global-rate-limits": "Globális Sebességkorlátok",
+            "alt-rate-limits": "Alternatív Sebességkorlátok (Teknős Mód)",
+            "scheduler": "Sebesség Ütemező"
+          },
+          "field": {
+            "dl-limit": "Letöltési Korlát (KB/s)",
+            "up-limit": "Feltöltési Korlát (KB/s)",
+            "alt-dl-limit": "Alternatív Letöltési Korlát (KB/s)",
+            "alt-up-limit": "Alternatív Feltöltési Korlát (KB/s)",
+            "scheduler-enabled": "Sebesség ütemező engedélyezése",
+            "schedule-from": "Tól",
+            "schedule-to": "Ig",
+            "scheduler-days": "Aktív ekkor"
+          },
+          "scheduler-days": {
+            "every-day": "Minden nap",
+            "every-weekday": "Minden hétköznap",
+            "every-weekend": "Minden hétvégén",
+            "monday": "Hétfő",
+            "tuesday": "Kedd",
+            "wednesday": "Szerda",
+            "thursday": "Csütörtök",
+            "friday": "Péntek",
+            "saturday": "Szombat",
+            "sunday": "Vasárnap"
+          }
+        },
+        "storage": {
+          "title": "Tárhely",
+          "label": {
+            "default-paths": "Alapértelmezett Útvonalak",
+            "temp-files": "Ideiglenes Fájlok",
+            "file-management": "Fájlkezelés"
+          },
+          "field": {
+            "save-path": "Alapértelmezett Mentési Útvonal",
+            "temp-path-enabled": "Befejezetlen torrentek külön mappában tartása",
+            "temp-path": "Befejezetlen Fájlok Mentési Útvonala",
+            "incomplete-files-ext": ".!qB kiterjesztés hozzáfűzése befejezetlen fájlokhoz",
+            "torrent-content-layout": "Torrent tartalomszerkezet"
+          },
+          "content-layout": {
+            "original": "Eredeti",
+            "subfolder": "Almappa létrehozása",
+            "no-subfolder": "Ne hozzon létre almappát"
+          }
+        },
+        "queue-limits": {
+          "title": "Sor és Korlátok",
+          "label": {
+            "active-torrents": "Aktív Torrent Kezelés",
+            "download-behavior": "Letöltési Viselkedés"
+          },
+          "field": {
+            "queueing-enabled": "Torrent sorba állítási korlátok engedélyezése",
+            "max-active-downloads": "Maximális aktív letöltések",
+            "max-active-uploads": "Maximális aktív feltöltések",
+            "max-active-torrents": "Maximális összes aktív torrent",
+            "add-to-top-of-queue": "Új torrentek hozzáadása a sor elejéhez"
+          }
+        },
+        "seeding-ratios": {
+          "title": "Terjesztési Arányok",
+          "label": {
+            "share-ratio": "Megosztási Arány Korlátok",
+            "seeding-time": "Terjesztési Idő Korlátok"
+          },
+          "field": {
+            "max-ratio-enabled": "Megosztási Arány Korlát Engedélyezése",
+            "max-ratio": "Terjesztés leállítása, ha az arány eléri",
+            "max-ratio-act": "Teendő korlát elérésekor",
+            "max-seeding-time-enabled": "Terjesztési Idő Korlát Engedélyezése",
+            "max-seeding-time": "Terjesztés leállítása ennyi perc után"
+          },
+          "ratio-act": {
+            "pause": "Torrent szüneteltetése",
+            "remove": "Torrent eltávolítása"
           }
         }
       }
