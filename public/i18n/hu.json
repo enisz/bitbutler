@@ -1168,6 +1168,9 @@
   },
   "utils": {},
   "general": {
+    "error": {
+      "save-failed": "A beállítások mentése sikertelen."
+    },
     "button": {
       "close": "Bezárás",
       "browse": "Tallózás",

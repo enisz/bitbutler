@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, OnInit, computed, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectComponent } from '@ng-select/ng-select';
@@ -27,7 +27,7 @@ export class SeedingRatios implements QbSettingsTabComponent, OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly translateService = inject(TranslateService);
 
-  public readonly ratioActOptions = computed<RatioActOption[]>(() => [
+  public readonly ratioActOptions: RatioActOption[] = [
     {
       value: 0,
       label: this.translateService.instant('pages.qb-settings.tab.seeding-ratios.ratio-act.pause'),
@@ -36,7 +36,7 @@ export class SeedingRatios implements QbSettingsTabComponent, OnInit {
       value: 1,
       label: this.translateService.instant('pages.qb-settings.tab.seeding-ratios.ratio-act.remove'),
     },
-  ]);
+  ];
 
   public form = new FormGroup({
     max_ratio_enabled: new FormControl<boolean>(false, { nonNullable: true }),

@@ -1168,6 +1168,9 @@
   },
   "utils": {},
   "general": {
+    "error": {
+      "save-failed": "Failed to save settings."
+    },
     "button": {
       "close": "Close",
       "browse": "Browse",

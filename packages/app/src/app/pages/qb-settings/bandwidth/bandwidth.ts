@@ -32,7 +32,7 @@ export class Bandwidth implements QbSettingsTabComponent, OnInit {
     () => 'scheduler_enabled' in (this.stateService.preferences() ?? {}),
   );
 
-  public readonly schedulerDays = computed<SchedulerDayOption[]>(() => [
+  public readonly schedulerDays: SchedulerDayOption[] = [
     {
       value: 0,
       label: this.translateService.instant(
@@ -87,7 +87,7 @@ export class Bandwidth implements QbSettingsTabComponent, OnInit {
       value: 9,
       label: this.translateService.instant('pages.qb-settings.tab.bandwidth.scheduler-days.sunday'),
     },
-  ]);
+  ];
 
   public readonly hours = Array.from({ length: 24 }, (_, i) => i);
   public readonly minutes = Array.from({ length: 60 }, (_, i) => i);

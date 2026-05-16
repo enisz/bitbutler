@@ -101,11 +101,16 @@ export class QbSettings implements OnInit, GuardableModal {
   }
 
   public async onSave(): Promise<void> {
-    await this.stateService.saveAll();
-    const message = await firstValueFrom(
-      this.translateService.get('pages.qb-settings.success.saved'),
-    );
-    this.toastService.success(message);
-    this.activeModal.close();
+    try {
+      await this.stateService.saveAll();
+      const message = await firstValueFrom(
+        this.translateService.get('pages.qb-settings.success.saved'),
+      );
+      this.toastService.success(message);
+      this.activeModal.close();
+    } catch {
+      const message = await firstValueFrom(this.translateService.get('general.error.save-failed'));
+      this.toastService.error(message);
+    }
   }
 }

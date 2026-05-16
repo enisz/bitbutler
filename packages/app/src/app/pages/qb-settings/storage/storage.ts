@@ -35,7 +35,7 @@ export class Storage implements QbSettingsTabComponent, OnInit {
     () => 'torrent_content_layout' in (this.stateService.preferences() ?? {}),
   );
 
-  public readonly contentLayouts = computed<ContentLayoutOption[]>(() => [
+  public readonly contentLayouts: ContentLayoutOption[] = [
     {
       value: 'Original',
       label: this.translateService.instant('pages.qb-settings.tab.storage.content-layout.original'),
@@ -52,7 +52,7 @@ export class Storage implements QbSettingsTabComponent, OnInit {
         'pages.qb-settings.tab.storage.content-layout.no-subfolder',
       ),
     },
-  ]);
+  ];
 
   public form = new FormGroup({
     save_path: new FormControl<string>('', { nonNullable: true }),
