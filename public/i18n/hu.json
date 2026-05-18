@@ -1149,7 +1149,7 @@
         },
         "seeding-ratios": {
           "title": "Terjesztési Arányok",
-          "description": "Állítson be automatikus korlátokat a feltöltési arány vagy az idő alapján a terjessztés leállításához.",
+          "description": "Állítson be automatikus korlátokat a feltöltési arány vagy az idő alapján a terjesztés leállításához.",
           "label": {
             "share-ratio": "Megosztási Arány Korlátok",
             "seeding-time": "Terjesztési Idő Korlátok"
