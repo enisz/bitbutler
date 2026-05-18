@@ -121,40 +121,6 @@
           </div>
           <div class="row mb-3">
             <div class="col-6 d-flex align-items-center">
-              {{ 'pages.qb-settings.tab.bandwidth.field.schedule-from' | translate }}
-            </div>
-            <div class="col-6 d-flex gap-2">
-              <select class="form-select" formControlName="schedule_from_hour">
-                @for (h of hours; track h) {
-                  <option [value]="h">{{ h | number: '2.0-0' }}</option>
-                }
-              </select>
-              <select class="form-select" formControlName="schedule_from_min">
-                @for (m of minutes; track m) {
-                  <option [value]="m">{{ m | number: '2.0-0' }}</option>
-                }
-              </select>
-            </div>
-          </div>
-          <div class="row mb-3">
-            <div class="col-6 d-flex align-items-center">
-              {{ 'pages.qb-settings.tab.bandwidth.field.schedule-to' | translate }}
-            </div>
-            <div class="col-6 d-flex gap-2">
-              <select class="form-select" formControlName="schedule_to_hour">
-                @for (h of hours; track h) {
-                  <option [value]="h">{{ h | number: '2.0-0' }}</option>
-                }
-              </select>
-              <select class="form-select" formControlName="schedule_to_min">
-                @for (m of minutes; track m) {
-                  <option [value]="m">{{ m | number: '2.0-0' }}</option>
-                }
-              </select>
-            </div>
-          </div>
-          <div class="row mb-3">
-            <div class="col-6 d-flex align-items-center">
               {{ 'pages.qb-settings.tab.bandwidth.field.scheduler-days' | translate }}
             </div>
             <div class="col-6">
@@ -167,6 +133,68 @@
                 formControlName="scheduler_days"
                 appendTo="ngb-modal-window"
               ></ng-select>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-6 d-flex align-items-center">
+              {{ 'pages.qb-settings.tab.bandwidth.field.schedule-from' | translate }}
+            </div>
+            <div class="col-6 d-flex gap-2">
+              <ng-select
+                [items]="hours"
+                [clearable]="false"
+                [searchable]="false"
+                formControlName="schedule_from_hour"
+                appendTo="ngb-modal-window"
+              >
+                <ng-template ng-label-tmp let-item="item">{{ item | number: '2.0-0' }}</ng-template>
+                <ng-template ng-option-tmp let-item="item">{{
+                  item | number: '2.0-0'
+                }}</ng-template>
+              </ng-select>
+              <ng-select
+                [items]="minutes"
+                [clearable]="false"
+                [searchable]="false"
+                formControlName="schedule_from_min"
+                appendTo="ngb-modal-window"
+              >
+                <ng-template ng-label-tmp let-item="item">{{ item | number: '2.0-0' }}</ng-template>
+                <ng-template ng-option-tmp let-item="item">{{
+                  item | number: '2.0-0'
+                }}</ng-template>
+              </ng-select>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-6 d-flex align-items-center">
+              {{ 'pages.qb-settings.tab.bandwidth.field.schedule-to' | translate }}
+            </div>
+            <div class="col-6 d-flex gap-2">
+              <ng-select
+                [items]="hours"
+                [clearable]="false"
+                [searchable]="false"
+                formControlName="schedule_to_hour"
+                appendTo="ngb-modal-window"
+              >
+                <ng-template ng-label-tmp let-item="item">{{ item | number: '2.0-0' }}</ng-template>
+                <ng-template ng-option-tmp let-item="item">{{
+                  item | number: '2.0-0'
+                }}</ng-template>
+              </ng-select>
+              <ng-select
+                [items]="minutes"
+                [clearable]="false"
+                [searchable]="false"
+                formControlName="schedule_to_min"
+                appendTo="ngb-modal-window"
+              >
+                <ng-template ng-label-tmp let-item="item">{{ item | number: '2.0-0' }}</ng-template>
+                <ng-template ng-option-tmp let-item="item">{{
+                  item | number: '2.0-0'
+                }}</ng-template>
+              </ng-select>
             </div>
           </div>
         </div>
