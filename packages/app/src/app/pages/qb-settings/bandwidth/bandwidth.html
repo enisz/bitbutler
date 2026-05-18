@@ -1,7 +1,13 @@
 <form [formGroup]="form">
   <div class="container-fluid">
+    <div class="row mb-3">
+      <div class="col-12">{{ 'pages.qb-settings.tab.bandwidth.description' | translate }}</div>
+    </div>
     <fieldset class="bb-fieldset">
-      <legend>{{ 'pages.qb-settings.tab.bandwidth.label.global-rate-limits' | translate }}</legend>
+      <legend>
+        {{ 'pages.qb-settings.tab.bandwidth.label.global-rate-limits' | translate }}
+        <bb-popover subject="lowfast" description="decc"></bb-popover>
+      </legend>
       <div class="container">
         <div class="row mb-3">
           <div class="col-6 d-flex align-items-center">
