@@ -6,7 +6,12 @@
     <fieldset class="bb-fieldset">
       <legend>
         {{ 'pages.qb-settings.tab.bandwidth.label.global-rate-limits' | translate }}
-        <bb-popover subject="lowfast" description="decc"></bb-popover>
+        <bb-popover
+          [subject]="'pages.qb-settings.tab.bandwidth.popover.global-rate-limits.title' | translate"
+          [description]="
+            'pages.qb-settings.tab.bandwidth.popover.global-rate-limits.description' | translate
+          "
+        ></bb-popover>
       </legend>
       <div class="container">
         <div class="row mb-3">
@@ -43,7 +48,15 @@
     </fieldset>
 
     <fieldset class="bb-fieldset">
-      <legend>{{ 'pages.qb-settings.tab.bandwidth.label.alt-rate-limits' | translate }}</legend>
+      <legend>
+        {{ 'pages.qb-settings.tab.bandwidth.label.alt-rate-limits' | translate }}
+        <bb-popover
+          [subject]="'pages.qb-settings.tab.bandwidth.popover.alt-rate-limits.title' | translate"
+          [description]="
+            'pages.qb-settings.tab.bandwidth.popover.alt-rate-limits.description' | translate
+          "
+        ></bb-popover>
+      </legend>
       <div class="container">
         <div class="row mb-3">
           <div class="col-6 d-flex align-items-center">
@@ -80,7 +93,15 @@
 
     @if (hasScheduler()) {
       <fieldset class="bb-fieldset">
-        <legend>{{ 'pages.qb-settings.tab.bandwidth.label.scheduler' | translate }}</legend>
+        <legend>
+          {{ 'pages.qb-settings.tab.bandwidth.label.scheduler' | translate }}
+          <bb-popover
+            [subject]="'pages.qb-settings.tab.bandwidth.popover.scheduler.title' | translate"
+            [description]="
+              'pages.qb-settings.tab.bandwidth.popover.scheduler.description' | translate
+            "
+          ></bb-popover>
+        </legend>
         <div class="container">
           <div class="row mb-3">
             <div class="col-12">
