@@ -1068,6 +1068,21 @@
       "tab": {
         "bandwidth": {
           "title": "Bandwidth",
+          "description": "Configure download and upload speed limits, alternative rate limits for Turtle Mode, and a time-based speed scheduler.",
+          "popover": {
+            "global-rate-limits": {
+              "title": "Global Rate Limits",
+              "description": "Sets the maximum combined download and upload speed across all torrents. Enter 0 for unlimited."
+            },
+            "alt-rate-limits": {
+              "title": "Alternative Rate Limits",
+              "description": "Throttled speed limits used when Turtle Mode is manually enabled or activated by the scheduler."
+            },
+            "scheduler": {
+              "title": "Speed Scheduler",
+              "description": "Automatically switches to alternative rate limits during a configured time window on selected days."
+            }
+          },
           "label": {
             "global-rate-limits": "Global Rate Limits",
             "alt-rate-limits": "Alternative Rate Limits (Turtle Mode)",
@@ -1098,6 +1113,7 @@
         },
         "storage": {
           "title": "Storage",
+          "description": "Manage where torrents are saved, how temporary files are handled, and file naming options.",
           "label": {
             "default-paths": "Default Paths",
             "temp-files": "Temporary Files",
@@ -1118,6 +1134,7 @@
         },
         "queue-limits": {
           "title": "Queue & Limits",
+          "description": "Control how many torrents can be active at once and configure queuing behavior.",
           "label": {
             "active-torrents": "Active Torrent Management",
             "download-behavior": "Download Behavior"
@@ -1132,6 +1149,7 @@
         },
         "seeding-ratios": {
           "title": "Seeding Ratios",
+          "description": "Set automatic limits to stop seeding based on share ratio targets or time thresholds.",
           "label": {
             "share-ratio": "Share Ratio Limits",
             "seeding-time": "Seeding Time Limits"

@@ -1068,6 +1068,21 @@
       "tab": {
         "bandwidth": {
           "title": "Sávszélesség",
+          "description": "Konfigurálja a le- és feltöltési sebességkorlátokat, a Teknős Módhoz tartozó alternatív korlátokat és az időalapú sebességütemezőt.",
+          "popover": {
+            "global-rate-limits": {
+              "title": "Globális Sebességkorlátok",
+              "description": "Beállítja az összes torrent kombinált maximális le- és feltöltési sebességét. 0 értéke korlátlan."
+            },
+            "alt-rate-limits": {
+              "title": "Alternatív Sebességkorlátok",
+              "description": "Csökkentett sebességkorlátok, amelyek manuálisan (Teknős Mód) vagy az ütemező által aktiválhatók."
+            },
+            "scheduler": {
+              "title": "Sebességütemező",
+              "description": "Automatikusan az alternatív sebességkorlátokra vált egy beállított időablakban, a kiválasztott napokon."
+            }
+          },
           "label": {
             "global-rate-limits": "Globális Sebességkorlátok",
             "alt-rate-limits": "Alternatív Sebességkorlátok (Teknős Mód)",
@@ -1098,6 +1113,7 @@
         },
         "storage": {
           "title": "Tárhely",
+          "description": "Kezelje a torrentek mentési helyét, az ideiglenes fájlok kezelését és a fájlelnevezési lehetőségeket.",
           "label": {
             "default-paths": "Alapértelmezett Útvonalak",
             "temp-files": "Ideiglenes Fájlok",
@@ -1118,6 +1134,7 @@
         },
         "queue-limits": {
           "title": "Sor és Korlátok",
+          "description": "Szabályozza, hány torrent lehet egyszerre aktív, és konfigurálja a sorba állítási viselkedést.",
           "label": {
             "active-torrents": "Aktív Torrent Kezelés",
             "download-behavior": "Letöltési Viselkedés"
@@ -1132,6 +1149,7 @@
         },
         "seeding-ratios": {
           "title": "Terjesztési Arányok",
+          "description": "Állítson be automatikus korlátokat a feltöltési arány vagy az idő alapján a terjessztés leállításához.",
           "label": {
             "share-ratio": "Megosztási Arány Korlátok",
             "seeding-time": "Terjesztési Idő Korlátok"
