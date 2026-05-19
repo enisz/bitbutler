@@ -35,6 +35,7 @@ const api: BitButlerAPI = {
     showItemInFolder: (path) => ipcRenderer.invoke('electron:show-item-in-folder', path),
     getPlatform: () => ipcRenderer.invoke('electron:get-platform'),
     checkForUpdate: () => ipcRenderer.invoke('electron:check-for-update'),
+    setLoginItem: (settings) => ipcRenderer.invoke('electron:set-login-item', settings),
   },
 
   server: {

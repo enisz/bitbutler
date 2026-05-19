@@ -15,6 +15,10 @@ export interface GeneralSettings {
     family: ThemeFamily;
     mode: ThemeMode;
   };
+  startup: {
+    openAtLogin: boolean;
+    startMinimized: boolean;
+  };
 }
 
 export const DEFAULT_GENERAL_SETTINGS: GeneralSettings = {
@@ -29,5 +33,9 @@ export const DEFAULT_GENERAL_SETTINGS: GeneralSettings = {
   appearance: {
     family: 'bitbutler',
     mode: 'system',
+  },
+  startup: {
+    openAtLogin: false,
+    startMinimized: false,
   },
 };

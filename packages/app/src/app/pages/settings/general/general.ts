@@ -1,5 +1,5 @@
 import { CommonModule, NgOptimizedImage } from '@angular/common';
-import { Component, DestroyRef, OnInit, computed, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, computed, effect, inject } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -20,6 +20,7 @@ import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { GeneralSettings, ToastPosition } from '../../../models/general-settings.model';
 import { CommandBusService } from '../../../services/command-bus.service';
 import { GeneralSettingsService } from '../../../services/general-settings.service';
+import { ServerStoreService } from '../../../services/server-store.service';
 import { ThemeFamily, ThemeMode, ThemeService } from '../../../services/theme.service';
 import { SettingsStateService } from '../settings-state.service';
 import { SettingsTabComponent } from '../settings.interface';
@@ -53,8 +54,13 @@ export class General implements SettingsTabComponent, OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly translateService = inject(TranslateService);
   private readonly stateService = inject(SettingsStateService);
+  private readonly serverStoreService = inject(ServerStoreService);
 
   private languageChanged = toSignal(this.translateService.onLangChange);
+
+  public readonly hasDefaultServer = computed(() =>
+    this.serverStoreService.servers().some((s) => s.auto_login),
+  );
 
   public languages = computed<NgSelectItem[]>(() => {
     this.languageChanged();
@@ -146,12 +152,50 @@ export class General implements SettingsTabComponent, OnInit {
       family: new FormControl<ThemeFamily>('bitbutler', { nonNullable: true }),
       mode: new FormControl<ThemeMode>('system', { nonNullable: true }),
     }),
+    startup: new FormGroup({
+      openAtLogin: new FormControl({ value: false, disabled: true }, { nonNullable: true }),
+      startMinimized: new FormControl({ value: false, disabled: true }, { nonNullable: true }),
+    }),
   });
 
+  constructor() {
+    const startupGroup = this.generalSettingsForm.controls.startup;
+
+    effect(() => {
+      const openAtLoginCtrl = startupGroup.controls.openAtLogin;
+      const startMinimizedCtrl = startupGroup.controls.startMinimized;
+
+      if (this.hasDefaultServer()) {
+        openAtLoginCtrl.enable({ emitEvent: false });
+        if (openAtLoginCtrl.value) {
+          startMinimizedCtrl.enable({ emitEvent: false });
+        }
+      } else {
+        openAtLoginCtrl.disable({ emitEvent: false });
+        startMinimizedCtrl.disable({ emitEvent: false });
+      }
+    });
+
+    startupGroup.controls.openAtLogin.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value) => {
+        const ctrl = startupGroup.controls.startMinimized;
+        if (value && this.hasDefaultServer()) {
+          ctrl.enable({ emitEvent: false });
+        } else {
+          ctrl.disable({ emitEvent: false });
+        }
+      });
+  }
+
   public settings$ = from(this.generalSettingsService.load()).pipe(
-    tap((settings: GeneralSettings) =>
-      this.generalSettingsForm.patchValue(settings, { emitEvent: false }),
-    ),
+    tap((settings: GeneralSettings) => {
+      this.generalSettingsForm.patchValue(settings, { emitEvent: false });
+      const startupGroup = this.generalSettingsForm.controls.startup;
+      if (settings.startup?.openAtLogin && this.hasDefaultServer()) {
+        startupGroup.controls.startMinimized.enable({ emitEvent: false });
+      }
+    }),
   );
 
   public async ngOnInit(): Promise<void> {
@@ -164,10 +208,15 @@ export class General implements SettingsTabComponent, OnInit {
 
   private async save(): Promise<void> {
     const settings = this.generalSettingsForm.getRawValue();
+
+    if (!this.hasDefaultServer()) settings.startup.openAtLogin = false;
+    if (!settings.startup.openAtLogin) settings.startup.startMinimized = false;
+
     const newLang = settings.language.language;
     const currentLang = this.translateService.getCurrentLang();
 
     await this.generalSettingsService.save(settings);
+    await window.bitbutler.electron.setLoginItem({ openAtLogin: settings.startup.openAtLogin });
 
     if (newLang !== currentLang) {
       await firstValueFrom(this.translateService.use(newLang));

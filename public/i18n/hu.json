@@ -899,12 +899,17 @@
             "appearance": {
               "family": "Témacsalád",
               "mode": "Téma mód"
+            },
+            "startup": {
+              "open-at-login": "Alkalmazás indítása a rendszerrel",
+              "start-minimized": "Indítás minimalizálva"
             }
           },
           "label": {
             "behavior": "Viselkedés",
             "language": "Nyelv",
-            "appearance": "Megjelenés"
+            "appearance": "Megjelenés",
+            "startup": "Indítás"
           },
           "position": {
             "top-left": "Bal felül",
@@ -924,6 +929,14 @@
             "deleting-torrent-file": {
               "title": "Torrent fájl törlése",
               "description": "Engedélyezi a kliensnek a .torrent fájl törlését a lemezről, ha az sikeresen bekerült a letöltési listába."
+            },
+            "open-at-login": {
+              "title": "Indítás a rendszerrel",
+              "description": "A BitButler automatikusan elindul az operációs rendszer indításakor. Ehhez egy alapértelmezett szerver szükséges."
+            },
+            "start-minimized": {
+              "title": "Indítás minimalizálva",
+              "description": "Az alkalmazás ablaka el van rejtve indításkor. Az alkalmazás a rendszertálcáról érhető el. A \"Rendszerrel való indítás\" beállítást igényli."
             }
           }
         },

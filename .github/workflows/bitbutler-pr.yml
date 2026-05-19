@@ -17,7 +17,7 @@ jobs:
       issues: read
     steps:
       - name: Sync Issue Details
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const pr = context.payload.pull_request;
@@ -61,7 +61,7 @@ jobs:
       electron: ${{ steps.filter.outputs.electron }}
       any-source: ${{ steps.filter.outputs.any-source }}
     steps:
-      - uses: dorny/paths-filter@v3
+      - uses: dorny/paths-filter@v4
         id: filter
         with:
           filters: |
@@ -87,8 +87,8 @@ jobs:
     needs: [detect-changes]
     if: needs.detect-changes.outputs.any-source == 'true'
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: '24'
           cache: 'npm'
@@ -104,8 +104,8 @@ jobs:
     needs: [detect-changes, lint]
     if: always() && needs.detect-changes.outputs.app == 'true' && needs.lint.result == 'success'
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: '24'
           cache: 'npm'
@@ -121,8 +121,8 @@ jobs:
     needs: [detect-changes, lint]
     if: always() && needs.detect-changes.outputs.electron == 'true' && needs.lint.result == 'success'
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: '24'
           cache: 'npm'
@@ -153,8 +153,8 @@ jobs:
             target: --win
             job_name: 'Windows'
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: '24'
           cache: 'npm'

@@ -60,6 +60,7 @@ export interface BitButlerAPI {
     showItemInFolder(path: string): Promise<void>;
     getPlatform(): Promise<HostPlatform>;
     checkForUpdate(): Promise<UpdateCheckResponse>;
+    setLoginItem(settings: { openAtLogin: boolean }): Promise<void>;
   };
 
   server: {
