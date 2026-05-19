@@ -47,7 +47,11 @@
       "Bash(npm test:*)",
       "Bash(git -C /home/enisz/dev/bitbutler show c0ebc9f2626306224974fed25f1c1e1f2cb2fac2:public/i18n/us.json)",
       "Bash(git -C /home/enisz/dev/bitbutler show c0ebc9f2626306224974fed25f1c1e1f2cb2fac2:public/i18n/hu.json)",
-      "Bash(git:*)"
+      "Bash(git:*)",
+      "Bash(gh issue *)",
+      "Bash(python -m json.tool)",
+      "Bash(python *)",
+      "Bash(gh pr *)"
     ]
   }
 }

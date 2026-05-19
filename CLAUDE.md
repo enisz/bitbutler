@@ -88,6 +88,10 @@ Three lazy-loaded routes: `login`, `main` (torrent grid), `settings`. The router
 - Themes live in `packages/app/src/styles/themes/` (multiple SCSS files); `ThemeService` switches them at runtime.
 - Translations in `public/i18n/` (`us.json`, `hu.json`), loaded via `@ngx-translate` in Angular and via `packages/electron/src/i18n.ts` in the Electron main process. Language is persisted in `GeneralSettingsService`; changing it triggers a `bitbutler:language-change` IPC call that rebuilds the tray and application menu labels at runtime.
 
+## Writing style
+
+- Use `-` (hyphen) instead of `—` (em dash) in all written output: responses, PR descriptions, commit messages, and documentation.
+
 ## Commit & PR conventions
 
 - Commit format: `#IssueID: short description` (e.g. `#22: add file tree checkboxes`)
