@@ -185,7 +185,8 @@
       },
       "delete-torrent": {
         "title": "Torrent törlése",
-        "message": "Biztosan el akarod távolítani a kijelölt torrent(ek)et a listából?",
+        "message": "Biztosan el akarod távolítani a(z) {{count}} kijelölt torrent(ek)et a listából?",
+        "disk-space": "Ez {{size}} tárhelyet szabadít fel a lemezről.",
         "delete-form": {
           "confirmation": "A fájlok törlése a lemezről is"
         }

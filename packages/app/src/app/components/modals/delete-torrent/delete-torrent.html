@@ -6,7 +6,7 @@
 </div>
 
 <div class="modal-body">
-  <p>{{ 'components.modals.delete-torrent.message' | translate }}</p>
+  <p>{{ 'components.modals.delete-torrent.message' | translate: { count: selected().length } }}</p>
   <form [formGroup]="deleteForm">
     <div
       class="form-check"
@@ -25,6 +25,14 @@
         {{ 'components.modals.delete-torrent.delete-form.confirmation' | translate }}</label
       >
     </div>
+    @if (deleteForm.get('removeFiles')?.value) {
+      <p class="mt-2 mb-0 text-danger">
+        {{
+          'components.modals.delete-torrent.disk-space'
+            | translate: { size: totalSize() | fileSize }
+        }}
+      </p>
+    }
   </form>
 </div>
 
