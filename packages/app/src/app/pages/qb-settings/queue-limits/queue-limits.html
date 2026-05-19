@@ -1,0 +1,93 @@
+<form [formGroup]="form">
+  <div class="container-fluid">
+    <div class="row mb-3">
+      <div class="col-12">{{ 'pages.qb-settings.tab.queue-limits.description' | translate }}</div>
+    </div>
+    <fieldset class="bb-fieldset">
+      <legend>{{ 'pages.qb-settings.tab.queue-limits.label.active-torrents' | translate }}</legend>
+      <div class="container">
+        <div class="row mb-3">
+          <div class="col-12">
+            <div class="form-check form-switch">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="queueing-enabled"
+                formControlName="queueing_enabled"
+              />
+              <label class="form-check-label" for="queueing-enabled">
+                {{ 'pages.qb-settings.tab.queue-limits.field.queueing-enabled' | translate }}
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-6 d-flex align-items-center">
+            {{ 'pages.qb-settings.tab.queue-limits.field.max-active-downloads' | translate }}
+          </div>
+          <div class="col-6">
+            <input
+              type="number"
+              class="form-control"
+              formControlName="max_active_downloads"
+              min="0"
+            />
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-6 d-flex align-items-center">
+            {{ 'pages.qb-settings.tab.queue-limits.field.max-active-uploads' | translate }}
+          </div>
+          <div class="col-6">
+            <input
+              type="number"
+              class="form-control"
+              formControlName="max_active_uploads"
+              min="0"
+            />
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-6 d-flex align-items-center">
+            {{ 'pages.qb-settings.tab.queue-limits.field.max-active-torrents' | translate }}
+          </div>
+          <div class="col-6">
+            <input
+              type="number"
+              class="form-control"
+              formControlName="max_active_torrents"
+              min="0"
+            />
+          </div>
+        </div>
+      </div>
+    </fieldset>
+
+    @if (hasAddToTop()) {
+      <fieldset class="bb-fieldset">
+        <legend>
+          {{ 'pages.qb-settings.tab.queue-limits.label.download-behavior' | translate }}
+        </legend>
+        <div class="container">
+          <div class="row mb-3">
+            <div class="col-12">
+              <div class="form-check form-switch">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  id="add-to-top-of-queue"
+                  formControlName="add_to_top_of_queue"
+                />
+                <label class="form-check-label" for="add-to-top-of-queue">
+                  {{ 'pages.qb-settings.tab.queue-limits.field.add-to-top-of-queue' | translate }}
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    }
+  </div>
+</form>

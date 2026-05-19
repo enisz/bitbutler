@@ -82,6 +82,11 @@ describe('UiCommandHandlerService', () => {
     expect(mockModalService.open).toHaveBeenCalled();
   });
 
+  it('should open QbSettings modal for UI_OPEN_QB_SETTINGS', () => {
+    commands$.next({ type: 'UI_OPEN_QB_SETTINGS' });
+    expect(mockModalService.open).toHaveBeenCalled();
+  });
+
   it('should open About modal for UI_OPEN_ABOUT', () => {
     commands$.next({ type: 'UI_OPEN_ABOUT' });
     expect(mockModalService.open).toHaveBeenCalled();

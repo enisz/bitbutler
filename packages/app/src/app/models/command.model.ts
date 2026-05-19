@@ -12,6 +12,7 @@ export type UiCommand =
   | { type: 'UI_SERVER_EDITOR_OPEN'; id?: string }
   | { type: 'UI_TORRENT_DELETE_REQUEST'; defaultRemoveFiles?: boolean }
   | { type: 'UI_OPEN_SETTINGS'; tabToOpen?: SettingsTabId }
+  | { type: 'UI_OPEN_QB_SETTINGS' }
   | { type: 'UI_OPEN_TORRENT_DETAILS'; hash: string }
   | {
       type: 'UI_ADD_TORRENT';

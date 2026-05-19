@@ -41,7 +41,12 @@ db.exec(`
 `);
 
 // Migrate abbreviated setting IDs (produced by minified builds) to full service names.
-const migrateSettingsId = db.prepare<[string, string]>(`
+// If the target ID already exists (migration ran before, abbreviated ID was re-written by
+// a minified build), delete the stale abbreviated row instead of attempting a rename.
+const stmtDeleteOldIfNewExists = db.prepare<[string, string]>(`
+  DELETE FROM settings WHERE id = ? AND EXISTS (SELECT 1 FROM settings WHERE id = ?)
+`);
+const stmtRenameId = db.prepare<[string, string]>(`
   UPDATE settings SET id = ? WHERE id = ?
 `);
 
@@ -52,7 +57,8 @@ const abbreviatedIds: [string, string][] = [
 ];
 
 for (const [newId, oldId] of abbreviatedIds) {
-  migrateSettingsId.run(newId, oldId);
+  stmtDeleteOldIfNewExists.run(oldId, newId);
+  stmtRenameId.run(newId, oldId);
 }
 
 // Migrate server-scoped settings: r.<serverId> → ServerSettingsService.<serverId>
@@ -62,7 +68,9 @@ const stmtSelectServerIds = db.prepare<[], { id: string }>(`
 
 for (const row of stmtSelectServerIds.all()) {
   const serverId = row.id.slice(2); // strip 'r.'
-  migrateSettingsId.run(`ServerSettingsService.${serverId}`, row.id);
+  const newId = `ServerSettingsService.${serverId}`;
+  stmtDeleteOldIfNewExists.run(row.id, newId);
+  stmtRenameId.run(newId, row.id);
 }
 
 export default db;
