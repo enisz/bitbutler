@@ -1069,20 +1069,6 @@
         "bandwidth": {
           "title": "Sávszélesség",
           "description": "Konfigurálja a le- és feltöltési sebességkorlátokat, a Teknős Módhoz tartozó alternatív korlátokat és az időalapú sebességütemezőt.",
-          "popover": {
-            "global-rate-limits": {
-              "title": "Globális Sebességkorlátok",
-              "description": "Beállítja az összes torrent kombinált maximális le- és feltöltési sebességét. 0 értéke korlátlan."
-            },
-            "alt-rate-limits": {
-              "title": "Alternatív Sebességkorlátok",
-              "description": "Csökkentett sebességkorlátok, amelyek manuálisan (Teknős Mód) vagy az ütemező által aktiválhatók."
-            },
-            "scheduler": {
-              "title": "Sebességütemező",
-              "description": "Automatikusan az alternatív sebességkorlátokra vált egy beállított időablakban, a kiválasztott napokon."
-            }
-          },
           "label": {
             "global-rate-limits": "Globális Sebességkorlátok",
             "alt-rate-limits": "Alternatív Sebességkorlátok (Teknős Mód)",
@@ -1109,6 +1095,11 @@
             "friday": "Péntek",
             "saturday": "Szombat",
             "sunday": "Vasárnap"
+          },
+          "hint": {
+            "global-rate-limits": "Beállítja az összes torrent kombinált maximális le- és feltöltési sebességét. 0 értéke korlátlan.",
+            "alt-rate-limits": "Csökkentett sebességkorlátok, amelyek manuálisan (Teknős Mód) vagy az ütemező által aktiválhatók.",
+            "scheduler": "Automatikusan az alternatív sebességkorlátokra vált egy beállított időablakban, a kiválasztott napokon."
           }
         },
         "storage": {
