@@ -22,6 +22,10 @@ export class WindowService {
     });
   }
 
+  public get state(): WindowState {
+    return this.windowState.value;
+  }
+
   public windowStateAsObservable(): Observable<WindowState> {
     return this.windowState.asObservable();
   }

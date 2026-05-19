@@ -22,6 +22,7 @@ import { TorrentFinishedEvent, TorrentStoreService } from './services/torrent-st
 import { TransferLimitCommandHandlerService } from './services/transfer-limit-command-handler.service';
 import { UiCommandHandlerService } from './services/ui-command-handler.service';
 import { UpdateCommandHandlerService } from './services/update-command-handler.service';
+import { WindowService } from './services/window.service';
 
 @Component({
   selector: 'app-root',
@@ -48,6 +49,7 @@ export class App implements OnInit {
   private readonly updateCommandHandlerService = inject(UpdateCommandHandlerService);
   private readonly translateService = inject(TranslateService);
   private readonly timeagoIntl = inject(TimeagoIntl);
+  private readonly windowService = inject(WindowService);
 
   public isDev$ = this.electronService.isDev();
   private updateCheckedOnStartup = false;
@@ -91,8 +93,11 @@ export class App implements OnInit {
       .subscribe((event: TorrentFinishedEvent) => {
         const message = this.translateService.instant('app.success.finished-downloading');
 
-        this.notificationService.send(message, event.torrent.name);
-        this.toastService.success(event.torrent.name, message);
+        if (this.windowService.state.isMinimized) {
+          this.notificationService.send(message, event.torrent.name);
+        } else {
+          this.toastService.success(event.torrent.name, message);
+        }
       });
 
     this.generalSettingsService
