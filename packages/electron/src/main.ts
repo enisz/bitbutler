@@ -5,7 +5,11 @@ import { registerI18nIpcHandlers } from './ipc/i18n.js';
 import { registerNotificationIpcHandlers } from './ipc/notification.js';
 import { registerQbIpcHandlers } from './ipc/qbittorrent.js';
 import { registerServerIpcHandlers } from './ipc/server.js';
-import { getInitialLanguage, registerSettingsIpcHandlers } from './ipc/settings.js';
+import {
+  getInitialLanguage,
+  getStartupSettings,
+  registerSettingsIpcHandlers,
+} from './ipc/settings.js';
 import { registerTorrentIpcHandlers } from './ipc/torrent.js';
 import { handleSecondInstanceArgv, registerWindowIpcHandlers } from './ipc/window.js';
 import { createMainWindow } from './main-window.js';
@@ -24,14 +28,14 @@ if (process.platform === 'win32') {
   app.setAppUserModelId('com.enisz.bitbutler');
 }
 
-function createOrRestoreMainWindow(): Electron.BrowserWindow {
+function createOrRestoreMainWindow(startMinimized = false): Electron.BrowserWindow {
   if (mainWindow && !mainWindow.isDestroyed()) {
     mainWindow.show();
     mainWindow.focus();
     return mainWindow;
   }
 
-  mainWindow = createMainWindow();
+  mainWindow = createMainWindow(startMinimized);
 
   installMenu(mainWindow);
 
@@ -73,7 +77,10 @@ if (!gotLock) {
   app.whenReady().then(() => {
     loadTranslations(getInitialLanguage());
     registerI18nIpcHandlers();
-    createOrRestoreMainWindow();
+
+    const { openAtLogin, startMinimized } = getStartupSettings();
+    app.setLoginItemSettings({ openAtLogin });
+    createOrRestoreMainWindow(startMinimized);
 
     app.on('activate', () => {
       createOrRestoreMainWindow();

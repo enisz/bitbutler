@@ -12,6 +12,9 @@ export function registerElectronIpcHandlers(): void {
   ipcMain.handle('electron:show-open-dialog', async () => showOpenDialog());
   ipcMain.handle('electron:get-platform', async () => getPlatform());
   ipcMain.handle('electron:check-for-update', async () => checkForUpdate());
+  ipcMain.handle('electron:set-login-item', async (_event, settings: { openAtLogin: boolean }) =>
+    setLoginItem(settings),
+  );
 }
 
 function getPlatform(): HostPlatform {
@@ -39,6 +42,10 @@ async function showOpenDialog(): Promise<string | undefined> {
     properties: ['openDirectory'],
   });
   return filePaths[0];
+}
+
+function setLoginItem(settings: { openAtLogin: boolean }): void {
+  app.setLoginItemSettings({ openAtLogin: settings.openAtLogin });
 }
 
 async function checkForUpdate(): Promise<UpdateCheckResponse> {

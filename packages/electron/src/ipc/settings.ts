@@ -68,3 +68,18 @@ export function getInitialLanguage(): string {
     return 'us';
   }
 }
+
+export function getStartupSettings(): { openAtLogin: boolean; startMinimized: boolean } {
+  try {
+    const row = stmtGet.get('GeneralSettingsService');
+    if (!row?.json) return { openAtLogin: false, startMinimized: false };
+    const settings = JSON.parse(row.json) as Record<string, unknown>;
+    const startup = settings?.startup as Record<string, unknown> | undefined;
+    return {
+      openAtLogin: !!startup?.openAtLogin,
+      startMinimized: !!startup?.startMinimized,
+    };
+  } catch {
+    return { openAtLogin: false, startMinimized: false };
+  }
+}

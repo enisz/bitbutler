@@ -899,12 +899,17 @@
             "appearance": {
               "family": "Theme Family",
               "mode": "Theme Mode"
+            },
+            "startup": {
+              "open-at-login": "Start app with the system",
+              "start-minimized": "Start minimized"
             }
           },
           "label": {
             "behavior": "Behavior",
             "language": "Language",
-            "appearance": "Appearance"
+            "appearance": "Appearance",
+            "startup": "Startup"
           },
           "position": {
             "top-left": "Top Left",
@@ -924,6 +929,14 @@
             "deleting-torrent-file": {
               "title": "Deleting Torrent File",
               "description": "Allowing the client to delete the .torrent file from your disk if it got added to the download list succesfully."
+            },
+            "open-at-login": {
+              "title": "Start with System",
+              "description": "Automatically launch BitButler when the operating system starts. Requires a default server to be configured."
+            },
+            "start-minimized": {
+              "title": "Start Minimized",
+              "description": "Hide the application window on startup. The app will be accessible from the system tray. Requires \"Start with system\" to be enabled."
             }
           }
         },

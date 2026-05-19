@@ -11,7 +11,7 @@ function firstExistingPath(paths: string[]): string | null {
   return null;
 }
 
-export function createMainWindow(): BrowserWindow {
+export function createMainWindow(startMinimized = false): BrowserWindow {
   const appPath = app.getAppPath();
 
   const iconCandidates = [
@@ -24,6 +24,7 @@ export function createMainWindow(): BrowserWindow {
     width: 600,
     height: 750,
     backgroundColor: '#121213',
+    show: !startMinimized,
     ...(windowIcon ? { icon: windowIcon } : {}),
     resizable: true,
     fullscreenable: true,
