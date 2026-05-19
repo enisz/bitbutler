@@ -185,7 +185,8 @@
       },
       "delete-torrent": {
         "title": "Delete Torrent",
-        "message": "Are you sure you want to remove the selected torrent(s) from the list?",
+        "message": "Are you sure you want to remove {{count}} torrent(s) from the list?",
+        "disk-space": "This will free up {{size}} of disk space.",
         "delete-form": {
           "confirmation": "Remove the files as well"
         }
