@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { SpeedLimitPipe } from '../../../pipes/speed-limit-pipe';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
@@ -17,7 +18,14 @@ interface SchedulerDayOption {
 
 @Component({
   selector: 'app-qb-settings-bandwidth',
-  imports: [CommonModule, ReactiveFormsModule, NgSelectComponent, TranslatePipe, SpeedLimitPipe],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    NgSelectComponent,
+    TranslatePipe,
+    SpeedLimitPipe,
+    BbPopover,
+  ],
   templateUrl: './bandwidth.html',
   styleUrl: './bandwidth.scss',
 })
