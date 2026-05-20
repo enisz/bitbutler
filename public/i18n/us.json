@@ -168,7 +168,8 @@
           "line1": "Assigns the torrent to a category. Categories are useful for organizing your downloads and can also define a default save path.",
           "line2": "If Auto TMM is enabled, changing the category may automatically move the files."
         }
-      }
+      },
+      "manage": "Manage categories..."
     },
     "datepicker-filter": {},
     "datepicker-range-filter": {
@@ -586,6 +587,24 @@
         "btn-leave": "Leave",
         "btn-stay": "Stay",
         "unsaved-indicator": "Unsaved changes"
+      },
+      "manage-labels": {
+        "title": "Manage Labels",
+        "add-form": {
+          "name": "Label name"
+        },
+        "empty": "No labels yet."
+      },
+      "manage-categories": {
+        "title": "Manage Categories",
+        "add-form": {
+          "name": "Category name",
+          "save-path": "Save path (optional)"
+        },
+        "list": {
+          "no-save-path": "No save path"
+        },
+        "empty": "No categories yet."
       }
     },
     "transfer-limit": {
@@ -629,7 +648,8 @@
           "line1": "Adds one or more tags to this torrent for flexible filtering and grouping.",
           "line2": "Unlike categories, a torrent can have multiple tags, and tags do not affect the save path."
         }
-      }
+      },
+      "manage": "Manage labels..."
     },
     "save-path-select": {
       "label": "Save Path",
@@ -1306,6 +1326,8 @@
       "settings-menu": "Settings",
       "app-settings": "App Settings",
       "qb-settings": "qBittorrent Settings",
+      "manage-labels": "Manage Labels",
+      "manage-categories": "Manage Categories",
       "help": "Help",
       "check-for-updates": "Check for Updates",
       "about": "About BitButler"

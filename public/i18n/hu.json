@@ -168,7 +168,8 @@
           "line1": "Kategóriát rendel a torrenthez. A kategóriák hasznosak a letöltések rendszerezéséhez, és alapértelmezett mentési útvonalat is meghatározhatnak.",
           "line2": "Ha az automatikus torrentkezelés (TMM) engedélyezve van, a kategória megváltoztatása automatikusan áthelyezheti a fájlokat."
         }
-      }
+      },
+      "manage": "Kategóriák kezelése..."
     },
     "datepicker-filter": {},
     "datepicker-range-filter": {
@@ -586,6 +587,24 @@
         "btn-leave": "Elhagyás",
         "btn-stay": "Maradás",
         "unsaved-indicator": "Mentetlen változtatások"
+      },
+      "manage-labels": {
+        "title": "Cimkék kezelése",
+        "add-form": {
+          "name": "Cimke neve"
+        },
+        "empty": "Még nincsenek cimkék."
+      },
+      "manage-categories": {
+        "title": "Kategóriák kezelése",
+        "add-form": {
+          "name": "Kategória neve",
+          "save-path": "Mentési útvonal (opcionális)"
+        },
+        "list": {
+          "no-save-path": "Nincs mentési útvonal"
+        },
+        "empty": "Még nincsenek kategóriák."
       }
     },
     "transfer-limit": {
@@ -629,7 +648,8 @@
           "line1": "Egy vagy több címkét ad ehhez a torrenthez, rugalmas szűrési és csoportosítási lehetőségekért.",
           "line2": "A kategóriákkal ellentétben egy torrenthez több címke is rendelhető, és a címkék nem befolyásolják a mentési útvonalat."
         }
-      }
+      },
+      "manage": "Cimkék kezelése..."
     },
     "save-path-select": {
       "label": "Mentési útvonal",
@@ -1306,6 +1326,8 @@
       "settings-menu": "Beállítások",
       "app-settings": "Alkalmazás beállítások",
       "qb-settings": "qBittorrent beállítások",
+      "manage-labels": "Cimkék kezelése",
+      "manage-categories": "Kategóriák kezelése",
       "help": "Súgó",
       "check-for-updates": "Frissítések keresése",
       "about": "A BitButlerről"
