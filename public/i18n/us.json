@@ -678,6 +678,7 @@
           "up": "Up",
           "down": "Down",
           "bottom": "Bottom",
+          "settings-group": "Settings",
           "settings": "BitButler Settings",
           "qb-settings": "qBittorrent Settings"
         },

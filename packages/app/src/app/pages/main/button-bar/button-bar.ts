@@ -184,8 +184,8 @@ export class ButtonBar implements OnInit {
       {
         kind: 'group',
         id: 'settings',
-        label: 'pages.main.button-bar.button.settings',
-        icon: faGear,
+        label: 'pages.main.button-bar.button.settings-group',
+        icon: faGears,
         variant: 'default',
         items: [
           {
