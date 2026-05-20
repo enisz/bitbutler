@@ -36,34 +36,16 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
       submenu: [
         {
           label: t('electron.menu.add-torrent'),
-          accelerator: 'Ctrl+O',
-          enabled: loggedIn,
-          click: () => sendMenuAction(mainWindow, 'file.addTorrent'),
-        },
-        {
-          label: t('electron.menu.settings'),
-          accelerator: 'Ctrl+,',
-          enabled: loggedIn,
-          click: () => sendMenuAction(mainWindow, 'file.settings'),
-        },
-        { type: 'separator' },
-        {
-          label: t('electron.menu.import-torrents'),
-          accelerator: 'Ctrl+I',
-          enabled: loggedIn,
-          click: () => sendMenuAction(mainWindow, 'file.import'),
-        },
-        {
-          label: t('electron.menu.export-torrents'),
           enabled: loggedIn,
           submenu: [
             {
-              label: t('electron.menu.export-all'),
-              click: () => sendMenuAction(mainWindow, 'file.export.all'),
+              label: t('electron.menu.add-torrent-from-file'),
+              accelerator: 'Ctrl+O',
+              click: () => sendMenuAction(mainWindow, 'file.addTorrent.file'),
             },
             {
-              label: t('electron.menu.export-selected'),
-              click: () => sendMenuAction(mainWindow, 'file.export.selected'),
+              label: t('electron.menu.add-torrent-from-link'),
+              click: () => sendMenuAction(mainWindow, 'file.addTorrent.link'),
             },
           ],
         },
@@ -86,6 +68,20 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
               {
                 label: t('electron.menu.add-new'),
                 click: () => sendMenuAction(mainWindow, 'server.add'),
+              },
+            ],
+          },
+          {
+            label: t('electron.menu.settings-menu'),
+            submenu: [
+              {
+                label: t('electron.menu.app-settings'),
+                accelerator: 'Ctrl+,',
+                click: () => sendMenuAction(mainWindow, 'settings.app'),
+              },
+              {
+                label: t('electron.menu.qb-settings'),
+                click: () => sendMenuAction(mainWindow, 'settings.qb'),
               },
             ],
           },

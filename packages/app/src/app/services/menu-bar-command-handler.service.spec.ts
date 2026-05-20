@@ -92,14 +92,24 @@ describe('MenuBarCommandHandlerService', () => {
     service.start();
   });
 
-  it('should emit UI_ADD_TORRENT for file.addTorrent', () => {
-    clicks$.next({ action: 'file.addTorrent', ts: 1 });
+  it('should emit UI_ADD_TORRENT for file.addTorrent.file', () => {
+    clicks$.next({ action: 'file.addTorrent.file', ts: 1 });
     expect(commandBusEmit).toHaveBeenCalledWith({ type: 'UI_ADD_TORRENT' });
   });
 
-  it('should emit UI_OPEN_SETTINGS for file.settings', () => {
-    clicks$.next({ action: 'file.settings', ts: 1 });
+  it('should emit UI_ADD_TORRENT with mode link for file.addTorrent.link', () => {
+    clicks$.next({ action: 'file.addTorrent.link', ts: 1 });
+    expect(commandBusEmit).toHaveBeenCalledWith({ type: 'UI_ADD_TORRENT', mode: 'link' });
+  });
+
+  it('should emit UI_OPEN_SETTINGS for settings.app', () => {
+    clicks$.next({ action: 'settings.app', ts: 1 });
     expect(commandBusEmit).toHaveBeenCalledWith({ type: 'UI_OPEN_SETTINGS' });
+  });
+
+  it('should emit UI_OPEN_QB_SETTINGS for settings.qb', () => {
+    clicks$.next({ action: 'settings.qb', ts: 1 });
+    expect(commandBusEmit).toHaveBeenCalledWith({ type: 'UI_OPEN_QB_SETTINGS' });
   });
 
   it('should emit UI_SERVER_EDITOR_OPEN for server.add', () => {
