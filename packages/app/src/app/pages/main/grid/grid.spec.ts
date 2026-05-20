@@ -47,7 +47,7 @@ describe('Grid', () => {
       init: vi.fn(),
     };
 
-    themeServiceMock = { effectiveMode: signal<'dark' | 'light'>('dark').asReadonly() as any };
+    themeServiceMock = { effectiveMode: signal<'dark' | 'light'>('dark') };
 
     gridStateServiceMock = {
       restore: vi.fn().mockResolvedValue(undefined),
@@ -139,12 +139,16 @@ describe('Grid', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should expose bbDark from app constants', () => {
-    expect(component.bbDark).toBe(GRID_DARK_THEME);
+  it('currentTheme should return dark theme when effectiveMode is dark', () => {
+    themeServiceMock.effectiveMode.set('dark');
+    fixture.detectChanges();
+    expect(component.currentTheme()).toBe(GRID_DARK_THEME);
   });
 
-  it('should expose bbLight from app constants', () => {
-    expect(component.bbLight).toBe(GRID_LIGHT_THEME);
+  it('currentTheme should return light theme when effectiveMode is light', () => {
+    themeServiceMock.effectiveMode.set('light');
+    fixture.detectChanges();
+    expect(component.currentTheme()).toBe(GRID_LIGHT_THEME);
   });
 
   it('theme should be the signal from ThemeService.effectiveMode', () => {
