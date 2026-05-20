@@ -12,24 +12,32 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faAngular } from '@fortawesome/free-brands-svg-icons';
 import {
   faArrowDown,
   faArrowUp,
   faArrowsDownToLine,
   faArrowsUpToLine,
-  faFileArrowUp,
-  faGear,
-  faGears,
+  faAtom,
+  faChevronDown,
+  faFile,
   faLink,
   faPause,
   faPlay,
   faPlayCircle,
+  faPlus,
   faSearch,
+  faSliders,
   faStopCircle,
   faTrashCan,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
-import { NgbActiveModal, NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import {
+  NgbActiveModal,
+  NgbDropdownModule,
+  NgbModal,
+  NgbTooltipModule,
+} from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { CommandBusService } from '../../../services/command-bus.service';
@@ -41,7 +49,14 @@ import { ToolbarEntry } from './button-bar.menu';
 @Component({
   selector: 'app-button-bar',
   standalone: true,
-  imports: [CommonModule, FontAwesomeModule, ReactiveFormsModule, NgbTooltipModule, TranslatePipe],
+  imports: [
+    CommonModule,
+    FontAwesomeModule,
+    ReactiveFormsModule,
+    NgbDropdownModule,
+    NgbTooltipModule,
+    TranslatePipe,
+  ],
   templateUrl: './button-bar.html',
   styleUrl: './button-bar.scss',
 })
@@ -59,7 +74,7 @@ export class ButtonBar implements OnInit {
   private searchInputRef?: ElementRef<HTMLInputElement>;
 
   public compact = false;
-  public icons = { faSearch, faXmark };
+  public icons = { faChevronDown, faSearch, faXmark };
   public readonly selected = this.selectionStore.selected;
   public readonly hasSelection = computed(() => this.selected().length > 0);
   public searchForm: FormGroup = new FormGroup({
@@ -69,18 +84,27 @@ export class ButtonBar implements OnInit {
   readonly entries = computed<ToolbarEntry[]>(() => {
     return [
       {
-        kind: 'action',
-        id: 'new.addTorrentFile',
-        label: 'pages.main.button-bar.button.add-file',
-        icon: faFileArrowUp,
+        kind: 'group',
+        id: 'new',
+        label: 'pages.main.button-bar.button.add',
+        icon: faPlus,
         variant: 'primary',
-      },
-      {
-        kind: 'action',
-        id: 'new.addTorrentLink',
-        label: 'pages.main.button-bar.button.add-link',
-        icon: faLink,
-        variant: 'primary',
+        items: [
+          {
+            kind: 'action',
+            id: 'new.addTorrentFile',
+            label: 'pages.main.button-bar.button.add-file',
+            icon: faFile,
+            variant: 'primary',
+          },
+          {
+            kind: 'action',
+            id: 'new.addTorrentLink',
+            label: 'pages.main.button-bar.button.add-link',
+            icon: faLink,
+            variant: 'primary',
+          },
+        ],
       },
       { kind: 'divider' },
       {
@@ -159,19 +183,27 @@ export class ButtonBar implements OnInit {
       },
       { kind: 'divider' },
       {
-        kind: 'action',
-        id: 'qb-settings.open',
-        label: 'pages.main.button-bar.button.qb-settings',
-        icon: faGears,
+        kind: 'group',
+        id: 'settings',
+        label: 'pages.main.button-bar.button.settings-group',
+        icon: faSliders,
         variant: 'default',
-      },
-      { kind: 'divider' },
-      {
-        kind: 'action',
-        id: 'settings.open',
-        label: 'pages.main.button-bar.button.settings',
-        icon: faGear,
-        variant: 'default',
+        items: [
+          {
+            kind: 'action',
+            id: 'settings.open',
+            label: 'pages.main.button-bar.button.settings',
+            icon: faAngular,
+            variant: 'default',
+          },
+          {
+            kind: 'action',
+            id: 'qb-settings.open',
+            label: 'pages.main.button-bar.button.qb-settings',
+            icon: faAtom,
+            variant: 'default',
+          },
+        ],
       },
     ];
   });
@@ -273,7 +305,9 @@ export class ButtonBar implements OnInit {
   }
 
   public trackBy(_i: number, e: ToolbarEntry): string {
-    return e.kind === 'action' ? `a:${e.id}` : `d:${_i}`;
+    if (e.kind === 'action') return `a:${e.id}`;
+    if (e.kind === 'group') return `g:${e.id}`;
+    return `d:${_i}`;
   }
 
   public clearSearchField(): void {

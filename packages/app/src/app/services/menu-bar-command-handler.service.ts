@@ -31,12 +31,20 @@ export class MenuBarCommandHandlerService {
       const { action } = payload;
 
       switch (action) {
-        case 'file.addTorrent':
+        case 'file.addTorrent.file':
           this.commandBusService.emit({ type: 'UI_ADD_TORRENT' });
           break;
 
-        case 'file.settings':
+        case 'file.addTorrent.link':
+          this.commandBusService.emit({ type: 'UI_ADD_TORRENT', mode: 'link' });
+          break;
+
+        case 'settings.app':
           this.commandBusService.emit({ type: 'UI_OPEN_SETTINGS' });
+          break;
+
+        case 'settings.qb':
+          this.commandBusService.emit({ type: 'UI_OPEN_QB_SETTINGS' });
           break;
 
         case 'file.disconnect':

@@ -666,8 +666,9 @@
     "main": {
       "button-bar": {
         "button": {
-          "add-file": "Add File",
-          "add-link": "Add from Link",
+          "add": "Add Torrent",
+          "add-file": "From File",
+          "add-link": "From Link",
           "delete": "Delete",
           "start": "Start",
           "stop": "Stop",
@@ -677,7 +678,8 @@
           "up": "Up",
           "down": "Down",
           "bottom": "Bottom",
-          "settings": "Settings",
+          "settings-group": "Settings",
+          "settings": "BitButler Settings",
           "qb-settings": "qBittorrent Settings"
         },
         "search-form": {
@@ -1285,15 +1287,15 @@
     },
     "menu": {
       "file": "File",
-      "add-torrent": "Add Torrent…",
-      "settings": "Settings",
-      "import-torrents": "Import Torrents",
-      "export-torrents": "Export Torrents",
-      "export-all": "All",
-      "export-selected": "Selected",
+      "add-torrent": "Add Torrent",
+      "add-torrent-from-file": "From File…",
+      "add-torrent-from-link": "From Link…",
       "disconnect": "Disconnect",
       "servers": "Servers",
       "add-new": "Add new…",
+      "settings-menu": "Settings",
+      "app-settings": "App Settings",
+      "qb-settings": "qBittorrent Settings",
       "help": "Help",
       "check-for-updates": "Check for Updates",
       "about": "About BitButler"

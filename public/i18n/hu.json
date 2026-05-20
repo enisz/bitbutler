@@ -666,8 +666,9 @@
     "main": {
       "button-bar": {
         "button": {
-          "add-file": "Fájl hozzáadása",
-          "add-link": "Hozzáadás linkből",
+          "add": "Torrent hozzáadása",
+          "add-file": "Fájlból",
+          "add-link": "Linkből",
           "delete": "Törlés",
           "start": "Indítás",
           "stop": "Leállítás",
@@ -677,7 +678,8 @@
           "up": "Fel",
           "down": "Le",
           "bottom": "Legalulra",
-          "settings": "Beállítások",
+          "settings-group": "Beállítások",
+          "settings": "BitButler Beállítások",
           "qb-settings": "qBittorrent Beállítások"
         },
         "search-form": {
@@ -1285,15 +1287,15 @@
     },
     "menu": {
       "file": "Fájl",
-      "add-torrent": "Torrent hozzáadása…",
-      "settings": "Beállítások",
-      "import-torrents": "Torrentek importálása",
-      "export-torrents": "Torrentek exportálása",
-      "export-all": "Mind",
-      "export-selected": "Kiválasztottak",
+      "add-torrent": "Torrent hozzáadása",
+      "add-torrent-from-file": "Fájlból…",
+      "add-torrent-from-link": "Linkből…",
       "disconnect": "Kijelentkezés",
       "servers": "Szerverek",
       "add-new": "Új hozzáadása…",
+      "settings-menu": "Beállítások",
+      "app-settings": "Alkalmazás beállítások",
+      "qb-settings": "qBittorrent beállítások",
       "help": "Súgó",
       "check-for-updates": "Frissítések keresése",
       "about": "A BitButlerről"
