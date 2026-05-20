@@ -1,0 +1,58 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ 'components.modals.manage-labels.title' | translate }}</h5>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="activeModal.dismiss()"
+  ></button>
+</div>
+
+<div class="modal-body">
+  <div class="d-flex gap-2 mb-3 align-items-end">
+    <div class="form-floating flex-grow-1">
+      <input
+        type="text"
+        class="form-control"
+        id="label-name"
+        placeholder="Label name"
+        [formControl]="nameControl"
+        (keydown.enter)="add()"
+      />
+      <label for="label-name">{{
+        'components.modals.manage-labels.add-form.name' | translate
+      }}</label>
+    </div>
+    <button
+      class="btn btn-primary"
+      type="button"
+      (click)="add()"
+      [disabled]="!nameControl.valid || adding()"
+    >
+      {{ 'general.button.add' | translate }}
+    </button>
+  </div>
+
+  @if (labels().length > 0) {
+    <ul class="list-group">
+      @for (label of labels(); track label) {
+        <li class="list-group-item d-flex align-items-center justify-content-between">
+          <span>{{ label }}</span>
+          <button class="btn btn-danger btn-sm" type="button" (click)="delete(label)">
+            {{ 'general.button.delete' | translate }}
+          </button>
+        </li>
+      }
+    </ul>
+  } @else {
+    <p class="text-body-secondary small mb-0">
+      {{ 'components.modals.manage-labels.empty' | translate }}
+    </p>
+  }
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss()">
+    {{ 'general.button.close' | translate }}
+  </button>
+</div>
