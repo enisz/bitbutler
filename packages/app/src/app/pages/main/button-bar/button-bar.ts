@@ -12,21 +12,22 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faAngular } from '@fortawesome/free-brands-svg-icons';
 import {
   faArrowDown,
   faArrowUp,
   faArrowsDownToLine,
   faArrowsUpToLine,
+  faAtom,
   faChevronDown,
   faFile,
   faFileCirclePlus,
-  faGear,
-  faGears,
   faLink,
   faPause,
   faPlay,
   faPlayCircle,
   faSearch,
+  faSliders,
   faStopCircle,
   faTrashCan,
   faXmark,
@@ -185,21 +186,21 @@ export class ButtonBar implements OnInit {
         kind: 'group',
         id: 'settings',
         label: 'pages.main.button-bar.button.settings-group',
-        icon: faGears,
+        icon: faSliders,
         variant: 'default',
         items: [
           {
             kind: 'action',
             id: 'settings.open',
             label: 'pages.main.button-bar.button.settings',
-            icon: faGear,
+            icon: faAngular,
             variant: 'default',
           },
           {
             kind: 'action',
             id: 'qb-settings.open',
             label: 'pages.main.button-bar.button.qb-settings',
-            icon: faGears,
+            icon: faAtom,
             variant: 'default',
           },
         ],
