@@ -141,13 +141,11 @@ describe('Grid', () => {
 
   it('currentTheme should return dark theme when effectiveMode is dark', () => {
     themeServiceMock.effectiveMode.set('dark');
-    fixture.detectChanges();
     expect(component.currentTheme()).toBe(GRID_DARK_THEME);
   });
 
   it('currentTheme should return light theme when effectiveMode is light', () => {
     themeServiceMock.effectiveMode.set('light');
-    fixture.detectChanges();
     expect(component.currentTheme()).toBe(GRID_LIGHT_THEME);
   });
 
