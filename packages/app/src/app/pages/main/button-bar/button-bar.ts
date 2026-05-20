@@ -21,11 +21,11 @@ import {
   faAtom,
   faChevronDown,
   faFile,
-  faFileCirclePlus,
   faLink,
   faPause,
   faPlay,
   faPlayCircle,
+  faPlus,
   faSearch,
   faSliders,
   faStopCircle,
@@ -87,7 +87,7 @@ export class ButtonBar implements OnInit {
         kind: 'group',
         id: 'new',
         label: 'pages.main.button-bar.button.add',
-        icon: faFileCirclePlus,
+        icon: faPlus,
         variant: 'primary',
         items: [
           {
