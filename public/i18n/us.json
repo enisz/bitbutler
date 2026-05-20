@@ -666,8 +666,9 @@
     "main": {
       "button-bar": {
         "button": {
-          "add-file": "Add File",
-          "add-link": "Add from Link",
+          "add": "Add Torrent",
+          "add-file": "From File",
+          "add-link": "From Link",
           "delete": "Delete",
           "start": "Start",
           "stop": "Stop",
@@ -677,7 +678,7 @@
           "up": "Up",
           "down": "Down",
           "bottom": "Bottom",
-          "settings": "Settings",
+          "settings": "BitButler Settings",
           "qb-settings": "qBittorrent Settings"
         },
         "search-form": {

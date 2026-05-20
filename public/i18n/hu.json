@@ -666,8 +666,9 @@
     "main": {
       "button-bar": {
         "button": {
-          "add-file": "Fájl hozzáadása",
-          "add-link": "Hozzáadás linkből",
+          "add": "Torrent hozzáadása",
+          "add-file": "Fájlból",
+          "add-link": "Linkből",
           "delete": "Törlés",
           "start": "Indítás",
           "stop": "Leállítás",
@@ -677,7 +678,7 @@
           "up": "Fel",
           "down": "Le",
           "bottom": "Legalulra",
-          "settings": "Beállítások",
+          "settings": "BitButler Beállítások",
           "qb-settings": "qBittorrent Beállítások"
         },
         "search-form": {

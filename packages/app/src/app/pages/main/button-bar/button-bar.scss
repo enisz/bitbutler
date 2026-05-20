@@ -200,6 +200,32 @@
   }
 }
 
+.bb-tool-group {
+  display: inline-flex;
+  align-items: center;
+}
+
+.bb-tool.dropdown-toggle::after {
+  display: none;
+}
+
+.bb-tool__caret {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 4px;
+
+  fa-icon {
+    font-size: 9px;
+    line-height: 1;
+    transition: transform 120ms ease;
+  }
+}
+
+.bb-tool-group.show .bb-tool__caret fa-icon {
+  transform: rotate(180deg);
+}
+
 .bb-search:focus-within {
   border-color: var(--bb-control-focus-border);
   box-shadow: 0 0 0 0.2rem var(--bb-control-focus-ring);
@@ -238,6 +264,10 @@
   .bb-tool__icon {
     width: 16px;
     min-width: 16px;
+  }
+
+  .bb-tool__caret {
+    margin-left: 3px;
   }
 }
 

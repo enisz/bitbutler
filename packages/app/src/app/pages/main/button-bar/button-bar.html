@@ -3,6 +3,63 @@
     @for (e of entries(); track trackBy($index, e)) {
       @if (e.kind === 'divider') {
         <div class="bb-toolbar__divider" aria-hidden="true"></div>
+      } @else if (e.kind === 'group') {
+        <div class="bb-tool-group" ngbDropdown container="body" placement="bottom-start">
+          <button
+            type="button"
+            class="bb-tool"
+            [id]="'bb-dropdown-' + e.id"
+            ngbDropdownToggle
+            [disabled]="e.disabled"
+            [class.bb-tool--primary]="e.variant === 'primary'"
+            [class.bb-tool--secondary]="e.variant === 'secondary'"
+            [class.bb-tool--success]="e.variant === 'success'"
+            [class.bb-tool--info]="e.variant === 'info'"
+            [class.bb-tool--warning]="e.variant === 'warning'"
+            [class.bb-tool--danger]="e.variant === 'danger'"
+            [ngbTooltip]="e.label | translate"
+            placement="bottom"
+            container="body"
+            [disableTooltip]="!compact"
+          >
+            <span class="bb-tool__icon" aria-hidden="true">
+              @if (e.icon) {
+                <fa-icon [icon]="e.icon"></fa-icon>
+              }
+            </span>
+            <span class="bb-tool__label bb-label">{{ e.label | translate }}</span>
+            <span class="bb-tool__caret" aria-hidden="true">
+              <fa-icon [icon]="icons.faChevronDown"></fa-icon>
+            </span>
+          </button>
+          <div
+            ngbDropdownMenu
+            class="bb-toolbar-dropdown"
+            [attr.aria-labelledby]="'bb-dropdown-' + e.id"
+          >
+            @for (item of e.items; track item.id) {
+              <button
+                ngbDropdownItem
+                type="button"
+                [disabled]="!!item.disabled"
+                (click)="onClick(item.id)"
+                [class.bb-dropdown-item--primary]="item.variant === 'primary'"
+                [class.bb-dropdown-item--secondary]="item.variant === 'secondary'"
+                [class.bb-dropdown-item--success]="item.variant === 'success'"
+                [class.bb-dropdown-item--info]="item.variant === 'info'"
+                [class.bb-dropdown-item--warning]="item.variant === 'warning'"
+                [class.bb-dropdown-item--danger]="item.variant === 'danger'"
+              >
+                <span class="bb-dropdown-icon" aria-hidden="true">
+                  @if (item.icon) {
+                    <fa-icon [icon]="item.icon"></fa-icon>
+                  }
+                </span>
+                {{ item.label | translate }}
+              </button>
+            }
+          </div>
+        </div>
       } @else {
         <button
           type="button"

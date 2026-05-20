@@ -79,6 +79,10 @@ describe('ButtonBar', () => {
     it('should return d:index for divider entries', () => {
       expect(component.trackBy(3, { kind: 'divider' } as any)).toBe('d:3');
     });
+
+    it('should return g:id for group entries', () => {
+      expect(component.trackBy(0, { kind: 'group', id: 'new' } as any)).toBe('g:new');
+    });
   });
 
   describe('clearSearchField', () => {
