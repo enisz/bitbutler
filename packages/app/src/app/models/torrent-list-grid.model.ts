@@ -7,6 +7,7 @@ export interface TorrentListGridSettings {
   filterModel: any;
   pagination: boolean;
   animateRows: boolean;
+  compactRows: boolean;
   rowDoubleClickAction: RowDoubleClickAction;
   pinnedTopHashes: string[];
   pinnedBottomHashes: string[];
@@ -30,6 +31,7 @@ export const DEFAULT_TORRENT_LIST_GRID_SETTINGS: TorrentListGridSettings = {
   filterModel: {},
   pagination: false,
   animateRows: true,
+  compactRows: false,
   rowDoubleClickAction: 'DETAILS',
   pinnedTopHashes: [],
   pinnedBottomHashes: [],

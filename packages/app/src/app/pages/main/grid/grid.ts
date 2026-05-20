@@ -4,8 +4,10 @@ import {
   DestroyRef,
   HostListener,
   ViewChild,
+  computed,
   effect,
   inject,
+  signal,
 } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
@@ -75,8 +77,12 @@ export class Grid implements AfterViewInit {
 
   public readonly theme = this.themeService.effectiveMode;
   public gridOptions: GridOptions<Torrent>;
-  public readonly bbDark = GRID_DARK_THEME;
-  public readonly bbLight = GRID_LIGHT_THEME;
+
+  private readonly compactRows = signal(false);
+  public readonly currentTheme = computed(() => {
+    const base = this.theme() === 'dark' ? GRID_DARK_THEME : GRID_LIGHT_THEME;
+    return this.compactRows() ? base.withParams({ spacing: 4 }) : base;
+  });
 
   @HostListener('window:keyup', ['$event'])
   public onKeyUp(event: KeyboardEvent): void {
@@ -211,6 +217,7 @@ export class Grid implements AfterViewInit {
 
     this.api.setGridOption('pagination', settings.pagination);
     this.api.setGridOption('animateRows', settings.animateRows);
+    this.compactRows.set(settings.compactRows ?? false);
 
     this.gridPinService.applyPinnedState(
       settings.pinnedTopHashes ?? [],

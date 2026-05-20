@@ -1029,6 +1029,8 @@
           "torrent-list-grid-form": {
             "animate-rows": "Animate Rows",
             "pagination": "Pagination",
+            "compact-rows": "Compact Rows",
+            "floating-filters": "Floating Filters",
             "row-double-click": {
               "title": "Row double click behavior",
               "value": {
@@ -1052,6 +1054,14 @@
             "pagination": {
               "title": "Torrent List Pagination",
               "description": "The torrent list can be set to use pagination. Having too many torrents in your list may impact performance. If you have issues, you may try enabling pagination."
+            },
+            "compact-rows": {
+              "title": "Compact Rows",
+              "description": "Reduces the row height and cell padding in the torrent list for a denser view."
+            },
+            "floating-filters": {
+              "title": "Floating Filters",
+              "description": "Shows an inline filter row beneath the column headers. This can also be toggled per-column from the column header context menu."
             },
             "double-click-behavior": {
               "title": "Double Click Behavior",

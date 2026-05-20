@@ -63,6 +63,8 @@ export class TorrentListGrid implements SettingsTabComponent, OnInit {
     columns: new FormControl<string[]>([]),
     pagination: new FormControl(false),
     animateRows: new FormControl(false),
+    compactRows: new FormControl(false),
+    floatingFilters: new FormControl(false),
     rowDoubleClickAction: new FormControl<RowDoubleClickAction>('DETAILS'),
   });
 
@@ -119,6 +121,8 @@ export class TorrentListGrid implements SettingsTabComponent, OnInit {
         columns: visibleColIds,
         pagination: settings.pagination,
         animateRows: settings.animateRows,
+        compactRows: settings.compactRows ?? false,
+        floatingFilters: settings.floatingFilters ?? false,
         rowDoubleClickAction: settings.rowDoubleClickAction,
       },
       { emitEvent: false },
@@ -186,6 +190,8 @@ export class TorrentListGrid implements SettingsTabComponent, OnInit {
       ...settings,
       pagination: formValue.pagination ?? settings.pagination,
       animateRows: formValue.animateRows ?? settings.animateRows,
+      compactRows: formValue.compactRows ?? settings.compactRows,
+      floatingFilters: formValue.floatingFilters ?? settings.floatingFilters,
       rowDoubleClickAction: formValue.rowDoubleClickAction ?? settings.rowDoubleClickAction,
       columnState: newColumnState,
     });
