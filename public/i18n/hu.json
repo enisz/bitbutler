@@ -1029,6 +1029,8 @@
           "torrent-list-grid-form": {
             "animate-rows": "Sorok animálása",
             "pagination": "Oldalszámozás",
+            "compact-rows": "Kompakt sorok",
+            "floating-filters": "Lebegő szűrők",
             "row-double-click": {
               "title": "Dupla kattintás viselkedése",
               "value": {
@@ -1052,6 +1054,14 @@
             "pagination": {
               "title": "Torrent lista oldalszámozás",
               "description": "A torrent lista beállítható oldalszámozásra. A túl sok torrent a listában lassíthatja a teljesítményt; ha ilyen hibát észlelsz, próbáld meg bekapcsolni az oldalszámozást."
+            },
+            "compact-rows": {
+              "title": "Kompakt sorok",
+              "description": "Csökkenti a sorok magasságát és a cellák belső margóját a torrent listában, hogy több adat férjen el egyszerre."
+            },
+            "floating-filters": {
+              "title": "Lebegő szűrők",
+              "description": "Egy szűrősor jelenik meg az oszlopfejlécek alatt. Ez az oszlopfejléc helyi menüjéből is kapcsolható oszloponként."
             },
             "double-click-behavior": {
               "title": "Dupla kattintás viselkedése",
