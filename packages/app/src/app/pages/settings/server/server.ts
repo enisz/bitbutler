@@ -11,7 +11,6 @@ import {
   faTriangleExclamation,
 } from '@fortawesome/free-solid-svg-icons';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
-import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe } from '@ngx-translate/core';
 import { from, switchMap, tap } from 'rxjs';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
@@ -29,7 +28,6 @@ import { SettingsTabComponent } from '../settings.interface';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    NgSelectComponent,
     FontAwesomeModule,
     NgbTooltip,
     BbSpinner,
