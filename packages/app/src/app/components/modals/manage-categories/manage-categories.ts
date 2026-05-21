@@ -43,6 +43,7 @@ export class ManageCategories implements OnInit {
           editing: false,
         })),
       );
+      this.categories.update((cats) => [...cats].sort((a, b) => a.name.localeCompare(b.name)));
     } catch (err) {
       console.error(ManageCategories.name, 'ngOnInit', 'Failed to load categories', err);
     }
@@ -56,7 +57,11 @@ export class ManageCategories implements OnInit {
     try {
       this.adding.set(true);
       await this.qbService.addCategory(serverId, name, savePath);
-      this.categories.set([...this.categories(), { name, savePath, editing: false }]);
+      this.categories.set(
+        [...this.categories(), { name, savePath, editing: false }].sort((a, b) =>
+          a.name.localeCompare(b.name),
+        ),
+      );
       this.addForm.reset();
     } catch (err) {
       console.error(ManageCategories.name, 'add', 'Failed to add category', err);

@@ -14,7 +14,7 @@ describe('ManageTags', () => {
   beforeEach(async () => {
     mockActiveModal = { dismiss: vi.fn() };
     mockQbService = {
-      getAllTags: vi.fn().mockResolvedValue(['linux', 'movies']),
+      getAllTags: vi.fn().mockResolvedValue(['movies', 'linux']),
       createTags: vi.fn().mockResolvedValue(undefined),
       deleteTags: vi.fn().mockResolvedValue(undefined),
     };
@@ -38,7 +38,7 @@ describe('ManageTags', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should load tags on init', () => {
+  it('should load tags sorted alphabetically', () => {
     expect(mockQbService.getAllTags).toHaveBeenCalledWith('server-1');
     expect(component.tags()).toEqual(['linux', 'movies']);
   });
@@ -50,6 +50,12 @@ describe('ManageTags', () => {
       expect(mockQbService.createTags).toHaveBeenCalledWith('server-1', ['software']);
       expect(component.tags()).toContain('software');
       expect(component.nameControl.value).toBeNull();
+    });
+
+    it('should maintain alphabetical order after adding a new tag', async () => {
+      component.nameControl.setValue('alpha');
+      await component.add();
+      expect(component.tags()[0]).toBe('alpha');
     });
 
     it('should not add when name is empty', async () => {

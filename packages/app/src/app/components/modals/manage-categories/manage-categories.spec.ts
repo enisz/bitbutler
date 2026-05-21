@@ -15,8 +15,8 @@ describe('ManageCategories', () => {
     mockActiveModal = { dismiss: vi.fn() };
     mockQbService = {
       getAllCategories: vi.fn().mockResolvedValue({
-        linux: { name: 'linux', savePath: '/downloads/linux' },
         movies: { name: 'movies', savePath: '' },
+        linux: { name: 'linux', savePath: '/downloads/linux' },
       }),
       addCategory: vi.fn().mockResolvedValue(undefined),
       editCategory: vi.fn().mockResolvedValue(undefined),
@@ -42,7 +42,7 @@ describe('ManageCategories', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should load categories on init', () => {
+  it('should load categories sorted alphabetically', () => {
     expect(mockQbService.getAllCategories).toHaveBeenCalledWith('server-1');
     expect(component.categories()).toHaveLength(2);
     expect(component.categories()[0]).toEqual({
@@ -69,6 +69,12 @@ describe('ManageCategories', () => {
         editing: false,
       });
       expect(component.addForm.get('name')?.value).toBeNull();
+    });
+
+    it('should maintain alphabetical order after adding a new category', async () => {
+      component.addForm.get('name')?.setValue('alpha');
+      await component.add();
+      expect(component.categories()[0].name).toBe('alpha');
     });
 
     it('should not add when name is empty', async () => {

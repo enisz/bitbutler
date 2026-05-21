@@ -26,7 +26,7 @@ export class ManageTags implements OnInit {
       const tags = await this.qbService.getAllTags(
         this.serverStoreService.currentServerId() as string,
       );
-      this.tags.set(tags);
+      this.tags.set([...tags].sort((a, b) => a.localeCompare(b)));
     } catch (err) {
       console.error(ManageTags.name, 'ngOnInit', 'Failed to load tags', err);
     }
@@ -39,7 +39,7 @@ export class ManageTags implements OnInit {
     try {
       this.adding.set(true);
       await this.qbService.createTags(serverId, [name]);
-      this.tags.set([...this.tags(), name]);
+      this.tags.set([...this.tags(), name].sort((a, b) => a.localeCompare(b)));
       this.nameControl.reset();
     } catch (err) {
       console.error(ManageTags.name, 'add', 'Failed to add tag', err);
