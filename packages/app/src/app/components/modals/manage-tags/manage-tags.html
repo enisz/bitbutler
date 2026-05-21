@@ -18,6 +18,7 @@
         placeholder="Tag name"
         [formControl]="nameControl"
         (keydown.enter)="add()"
+        autofocus
       />
       <label for="tag-name">{{ 'components.modals.manage-tags.add-form.name' | translate }}</label>
     </div>

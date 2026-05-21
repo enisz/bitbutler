@@ -6,6 +6,7 @@ import { faEdit, faTrashCan } from '@fortawesome/free-regular-svg-icons';
 import { faCheck, faX, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
+import { AutofocusDirective } from '../../../directives/autofocus';
 import { ConfirmService } from '../../../services/confirm.service';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
@@ -21,7 +22,14 @@ interface CategoryItem {
 @Component({
   selector: 'app-manage-categories',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe, FontAwesomeModule, NgbTooltipModule, BbSpinner],
+  imports: [
+    ReactiveFormsModule,
+    TranslatePipe,
+    FontAwesomeModule,
+    NgbTooltipModule,
+    BbSpinner,
+    AutofocusDirective,
+  ],
   templateUrl: './manage-categories.html',
   styleUrl: './manage-categories.scss',
 })
