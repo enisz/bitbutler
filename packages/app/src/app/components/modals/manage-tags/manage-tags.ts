@@ -3,6 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faTrashCan } from '@fortawesome/free-regular-svg-icons';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ConfirmService } from '../../../services/confirm.service';
@@ -24,7 +25,7 @@ export class ManageTags implements OnInit {
   private readonly torrentStoreService = inject(TorrentStoreService);
   public readonly activeModal = inject(NgbActiveModal);
 
-  public readonly icon = { faTrashCan };
+  public readonly icon = { faTrashCan, faXmark };
 
   public tags = signal<string[]>([]);
   public nameControl = new FormControl('', [Validators.required]);
@@ -39,6 +40,10 @@ export class ManageTags implements OnInit {
     if (!filter) return this.tags();
     return this.tags().filter((tag) => tag.toLowerCase().includes(filter));
   });
+
+  public clearFilter(): void {
+    this.filterControl.reset();
+  }
 
   public async ngOnInit(): Promise<void> {
     try {

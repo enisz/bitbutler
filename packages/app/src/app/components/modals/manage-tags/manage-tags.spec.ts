@@ -171,5 +171,12 @@ describe('ManageTags', () => {
       component.filterControl.setValue('');
       expect(component.filteredTags()).toEqual(['linux', 'movies']);
     });
+
+    it('should clear the filter control when clearFilter is called', () => {
+      component.filterControl.setValue('linux');
+      expect(component.filterControl.value).toBe('linux');
+      component.clearFilter();
+      expect(component.filterControl.value).toBeNull();
+    });
   });
 });
