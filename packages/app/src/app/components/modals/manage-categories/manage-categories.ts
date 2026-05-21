@@ -13,6 +13,7 @@ import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { BbSpinner } from '../../bb-spinner/bb-spinner';
+import { SavePathSelect } from '../../save-path-select/save-path-select';
 
 interface CategoryItem {
   name: string;
@@ -30,6 +31,7 @@ interface CategoryItem {
     NgbTooltipModule,
     BbSpinner,
     AutofocusDirective,
+    SavePathSelect,
   ],
   templateUrl: './manage-categories.html',
   styleUrl: './manage-categories.scss',
@@ -47,9 +49,9 @@ export class ManageCategories implements OnInit, GuardableModal {
   private readonly isEditing = computed(() => this.categories().some((c) => c.editing));
   public addForm = new FormGroup({
     name: new FormControl('', [Validators.required]),
-    savePath: new FormControl(''),
+    savePath: new FormControl<string | null>(null),
   });
-  public editSavePathControl = new FormControl('');
+  public editSavePathControl = new FormControl<string | null>(null);
   public filterControl = new FormControl('');
   public adding = signal(false);
   public loading = signal(true);
@@ -121,7 +123,7 @@ export class ManageCategories implements OnInit, GuardableModal {
 
   public startEdit(item: CategoryItem): void {
     this.categories.set(this.categories().map((c) => ({ ...c, editing: c.name === item.name })));
-    this.editSavePathControl.setValue(item.savePath);
+    this.editSavePathControl.setValue(item.savePath || null);
   }
 
   public cancelEdit(): void {

@@ -120,6 +120,12 @@ describe('ManageCategories', () => {
       component.startEdit(component.categories()[0]);
       expect(component.editSavePathControl.value).toBe('/downloads/linux');
     });
+
+    it('should set editSavePathControl to null when item savePath is empty', () => {
+      const movies = component.categories().find((c) => c.name === 'movies')!;
+      component.startEdit(movies);
+      expect(component.editSavePathControl.value).toBeNull();
+    });
   });
 
   describe('cancelEdit', () => {
