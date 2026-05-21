@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faEdit, faTrashCan } from '@fortawesome/free-regular-svg-icons';
@@ -7,6 +8,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { ConfirmService } from '../../../services/confirm.service';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
+import { TorrentStoreService } from '../../../services/torrent-store.service';
 
 interface CategoryItem {
   name: string;
@@ -25,6 +27,7 @@ export class ManageCategories implements OnInit {
   private readonly qbService = inject(QbService);
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly confirmService = inject(ConfirmService);
+  private readonly torrentStoreService = inject(TorrentStoreService);
   public readonly activeModal = inject(NgbActiveModal);
 
   public readonly icon = { faEdit, faTrashCan };
@@ -35,8 +38,17 @@ export class ManageCategories implements OnInit {
     savePath: new FormControl(''),
   });
   public editSavePathControl = new FormControl('');
+  public filterControl = new FormControl('');
   public adding = signal(false);
   public loading = signal(true);
+
+  private readonly filterValue = toSignal(this.filterControl.valueChanges, { initialValue: '' });
+
+  public readonly filteredCategories = computed(() => {
+    const filter = (this.filterValue() ?? '').toLowerCase();
+    if (!filter) return this.categories();
+    return this.categories().filter((c) => c.editing || c.name.toLowerCase().includes(filter));
+  });
 
   public async ngOnInit(): Promise<void> {
     try {
@@ -105,11 +117,15 @@ export class ManageCategories implements OnInit {
   }
 
   public async delete(item: CategoryItem): Promise<void> {
+    const count = this.torrentStoreService
+      .torrentsArray()
+      .filter((t) => t.category === item.name).length;
+
     const confirmed = await this.confirmService.confirm(
       'components.modals.manage-categories.delete-confirm.title',
       {
         text: 'components.modals.manage-categories.delete-confirm.message',
-        data: { name: item.name },
+        data: { name: item.name, count },
       },
       'general.button.delete',
     );

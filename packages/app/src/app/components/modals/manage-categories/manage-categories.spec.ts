@@ -4,6 +4,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConfirmService } from '../../../services/confirm.service';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
+import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { ManageCategories } from './manage-categories';
 
 describe('ManageCategories', () => {
@@ -33,6 +34,16 @@ describe('ManageCategories', () => {
         { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
         { provide: QbService, useValue: mockQbService },
         { provide: ConfirmService, useValue: mockConfirmService },
+        {
+          provide: TorrentStoreService,
+          useValue: {
+            torrentsArray: signal([
+              { tags: '', category: 'linux' },
+              { tags: '', category: 'linux' },
+              { tags: '', category: 'movies' },
+            ] as any),
+          },
+        },
       ],
     }).compileComponents();
 
@@ -136,6 +147,16 @@ describe('ManageCategories', () => {
       expect(mockConfirmService.confirm).toHaveBeenCalled();
     });
 
+    it('should pass the torrent count to the confirm dialog', async () => {
+      const linux = component.categories()[0]; // 'linux' — 2 torrents in mock
+      await component.delete(linux);
+      expect(mockConfirmService.confirm).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({ data: { name: 'linux', count: 2 } }),
+        expect.any(String),
+      );
+    });
+
     it('should delete when the user confirms', async () => {
       (mockConfirmService.confirm as ReturnType<typeof vi.fn>).mockResolvedValue(true);
       const linux = component.categories()[0];
@@ -151,6 +172,38 @@ describe('ManageCategories', () => {
       await component.delete(linux);
       expect(mockQbService.removeCategories).not.toHaveBeenCalled();
       expect(component.categories().find((c) => c.name === 'linux')).toBeDefined();
+    });
+  });
+
+  describe('filteredCategories', () => {
+    it('should return all categories when filter is empty', () => {
+      expect(component.filteredCategories()).toHaveLength(2);
+    });
+
+    it('should filter by category name case-insensitively', () => {
+      component.filterControl.setValue('lin');
+      expect(component.filteredCategories()).toHaveLength(1);
+      expect(component.filteredCategories()[0].name).toBe('linux');
+    });
+
+    it('should match case-insensitively', () => {
+      component.filterControl.setValue('LIN');
+      expect(component.filteredCategories()).toHaveLength(1);
+      expect(component.filteredCategories()[0].name).toBe('linux');
+    });
+
+    it('should always show items currently being edited regardless of filter', () => {
+      component.startEdit(component.categories()[0]); // linux
+      component.filterControl.setValue('movies');
+      const names = component.filteredCategories().map((c) => c.name);
+      expect(names).toContain('linux'); // editing — always shown
+      expect(names).toContain('movies');
+    });
+
+    it('should return all categories when filter is cleared', () => {
+      component.filterControl.setValue('lin');
+      component.filterControl.setValue('');
+      expect(component.filteredCategories()).toHaveLength(2);
     });
   });
 });
