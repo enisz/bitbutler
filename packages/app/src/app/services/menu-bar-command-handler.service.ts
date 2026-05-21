@@ -68,8 +68,8 @@ export class MenuBarCommandHandlerService {
           this.commandBusService.emit({ type: 'UI_OPEN_ABOUT' });
           break;
 
-        case 'settings.manage-labels':
-          this.commandBusService.emit({ type: 'UI_MANAGE_LABELS' });
+        case 'settings.manage-tags':
+          this.commandBusService.emit({ type: 'UI_MANAGE_TAGS' });
           break;
 
         case 'settings.manage-categories':

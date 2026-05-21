@@ -85,8 +85,8 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
               },
               { type: 'separator' },
               {
-                label: t('electron.menu.manage-labels'),
-                click: () => sendMenuAction(mainWindow, 'settings.manage-labels'),
+                label: t('electron.menu.manage-tags'),
+                click: () => sendMenuAction(mainWindow, 'settings.manage-tags'),
               },
               {
                 label: t('electron.menu.manage-categories'),

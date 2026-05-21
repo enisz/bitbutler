@@ -3,11 +3,11 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
-import { ManageLabels } from './manage-labels';
+import { ManageTags } from './manage-tags';
 
-describe('ManageLabels', () => {
-  let component: ManageLabels;
-  let fixture: ComponentFixture<ManageLabels>;
+describe('ManageTags', () => {
+  let component: ManageTags;
+  let fixture: ComponentFixture<ManageTags>;
   let mockQbService: Partial<QbService>;
   let mockActiveModal: Partial<NgbActiveModal>;
 
@@ -20,7 +20,7 @@ describe('ManageLabels', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [ManageLabels],
+      imports: [ManageTags],
       providers: [
         { provide: NgbActiveModal, useValue: mockActiveModal },
         { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
@@ -28,7 +28,7 @@ describe('ManageLabels', () => {
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ManageLabels);
+    fixture = TestBed.createComponent(ManageTags);
     component = fixture.componentInstance;
     fixture.detectChanges();
     await fixture.whenStable();
@@ -38,17 +38,17 @@ describe('ManageLabels', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should load labels on init', () => {
+  it('should load tags on init', () => {
     expect(mockQbService.getAllTags).toHaveBeenCalledWith('server-1');
-    expect(component.labels()).toEqual(['linux', 'movies']);
+    expect(component.tags()).toEqual(['linux', 'movies']);
   });
 
   describe('add', () => {
-    it('should call createTags and append the new label', async () => {
+    it('should call createTags and append the new tag', async () => {
       component.nameControl.setValue('software');
       await component.add();
       expect(mockQbService.createTags).toHaveBeenCalledWith('server-1', ['software']);
-      expect(component.labels()).toContain('software');
+      expect(component.tags()).toContain('software');
       expect(component.nameControl.value).toBeNull();
     });
 
@@ -66,11 +66,11 @@ describe('ManageLabels', () => {
   });
 
   describe('delete', () => {
-    it('should call deleteTags and remove the label from the list', async () => {
+    it('should call deleteTags and remove the tag from the list', async () => {
       await component.delete('linux');
       expect(mockQbService.deleteTags).toHaveBeenCalledWith('server-1', ['linux']);
-      expect(component.labels()).not.toContain('linux');
-      expect(component.labels()).toContain('movies');
+      expect(component.tags()).not.toContain('linux');
+      expect(component.tags()).toContain('movies');
     });
   });
 });

@@ -588,12 +588,12 @@
         "btn-stay": "Stay",
         "unsaved-indicator": "Unsaved changes"
       },
-      "manage-labels": {
-        "title": "Manage Labels",
+      "manage-tags": {
+        "title": "Manage Tags",
         "add-form": {
-          "name": "Label name"
+          "name": "Tag name"
         },
-        "empty": "No labels yet."
+        "empty": "No tags yet."
       },
       "manage-categories": {
         "title": "Manage Categories",
@@ -649,7 +649,7 @@
           "line2": "Unlike categories, a torrent can have multiple tags, and tags do not affect the save path."
         }
       },
-      "manage": "Manage labels..."
+      "manage": "Manage tags..."
     },
     "save-path-select": {
       "label": "Save Path",
@@ -1326,7 +1326,7 @@
       "settings-menu": "Settings",
       "app-settings": "App Settings",
       "qb-settings": "qBittorrent Settings",
-      "manage-labels": "Manage Labels",
+      "manage-tags": "Manage Tags",
       "manage-categories": "Manage Categories",
       "help": "Help",
       "check-for-updates": "Check for Updates",

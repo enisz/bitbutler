@@ -80,10 +80,10 @@ describe('TagSelect', () => {
     });
   });
 
-  describe('openManageLabels', () => {
-    it('should emit UI_MANAGE_LABELS', () => {
-      component.openManageLabels();
-      expect(mockCommandBusService.emit).toHaveBeenCalledWith({ type: 'UI_MANAGE_LABELS' });
+  describe('openManageTags', () => {
+    it('should emit UI_MANAGE_TAGS', () => {
+      component.openManageTags();
+      expect(mockCommandBusService.emit).toHaveBeenCalledWith({ type: 'UI_MANAGE_TAGS' });
     });
   });
 });

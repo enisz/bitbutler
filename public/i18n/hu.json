@@ -588,7 +588,7 @@
         "btn-stay": "Maradás",
         "unsaved-indicator": "Mentetlen változtatások"
       },
-      "manage-labels": {
+      "manage-tags": {
         "title": "Cimkék kezelése",
         "add-form": {
           "name": "Cimke neve"
@@ -649,7 +649,7 @@
           "line2": "A kategóriákkal ellentétben egy torrenthez több címke is rendelhető, és a címkék nem befolyásolják a mentési útvonalat."
         }
       },
-      "manage": "Cimkék kezelése..."
+      "manage": "Manage tags..."
     },
     "save-path-select": {
       "label": "Mentési útvonal",
@@ -1326,7 +1326,7 @@
       "settings-menu": "Beállítások",
       "app-settings": "Alkalmazás beállítások",
       "qb-settings": "qBittorrent beállítások",
-      "manage-labels": "Cimkék kezelése",
+      "manage-tags": "Manage Tags",
       "manage-categories": "Kategóriák kezelése",
       "help": "Súgó",
       "check-for-updates": "Frissítések keresése",

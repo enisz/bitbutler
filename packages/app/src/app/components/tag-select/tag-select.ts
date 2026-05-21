@@ -100,9 +100,9 @@ export class TagSelect implements OnInit, ControlValueAccessor, AfterViewInit {
     return true;
   }
 
-  public openManageLabels(): void {
+  public openManageTags(): void {
     this.ngselect.close();
-    this.commandBusService.emit({ type: 'UI_MANAGE_LABELS' });
+    this.commandBusService.emit({ type: 'UI_MANAGE_TAGS' });
   }
 
   private async loadAllTags(): Promise<void> {

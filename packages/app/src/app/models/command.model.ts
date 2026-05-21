@@ -33,7 +33,7 @@ export type UiCommand =
   | { type: 'UI_TORRENT_PIN_TOP' }
   | { type: 'UI_TORRENT_PIN_BOTTOM' }
   | { type: 'UI_TORRENT_UNPIN' }
-  | { type: 'UI_MANAGE_LABELS' }
+  | { type: 'UI_MANAGE_TAGS' }
   | { type: 'UI_MANAGE_CATEGORIES' };
 
 export type TorrentCommand =

@@ -6,18 +6,18 @@ import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 
 @Component({
-  selector: 'app-manage-labels',
+  selector: 'app-manage-tags',
   standalone: true,
   imports: [ReactiveFormsModule, TranslatePipe],
-  templateUrl: './manage-labels.html',
-  styleUrl: './manage-labels.scss',
+  templateUrl: './manage-tags.html',
+  styleUrl: './manage-tags.scss',
 })
-export class ManageLabels implements OnInit {
+export class ManageTags implements OnInit {
   private readonly qbService = inject(QbService);
   private readonly serverStoreService = inject(ServerStoreService);
   public readonly activeModal = inject(NgbActiveModal);
 
-  public labels = signal<string[]>([]);
+  public tags = signal<string[]>([]);
   public nameControl = new FormControl('', [Validators.required]);
   public adding = signal(false);
 
@@ -26,9 +26,9 @@ export class ManageLabels implements OnInit {
       const tags = await this.qbService.getAllTags(
         this.serverStoreService.currentServerId() as string,
       );
-      this.labels.set(tags);
+      this.tags.set(tags);
     } catch (err) {
-      console.error(ManageLabels.name, 'ngOnInit', 'Failed to load labels', err);
+      console.error(ManageTags.name, 'ngOnInit', 'Failed to load tags', err);
     }
   }
 
@@ -39,22 +39,22 @@ export class ManageLabels implements OnInit {
     try {
       this.adding.set(true);
       await this.qbService.createTags(serverId, [name]);
-      this.labels.set([...this.labels(), name]);
+      this.tags.set([...this.tags(), name]);
       this.nameControl.reset();
     } catch (err) {
-      console.error(ManageLabels.name, 'add', 'Failed to add label', err);
+      console.error(ManageTags.name, 'add', 'Failed to add tag', err);
     } finally {
       this.adding.set(false);
     }
   }
 
-  public async delete(label: string): Promise<void> {
+  public async delete(tag: string): Promise<void> {
     const serverId = this.serverStoreService.currentServerId() as string;
     try {
-      await this.qbService.deleteTags(serverId, [label]);
-      this.labels.set(this.labels().filter((l) => l !== label));
+      await this.qbService.deleteTags(serverId, [tag]);
+      this.tags.set(this.tags().filter((t) => t !== tag));
     } catch (err) {
-      console.error(ManageLabels.name, 'delete', 'Failed to delete label', err);
+      console.error(ManageTags.name, 'delete', 'Failed to delete tag', err);
     }
   }
 }

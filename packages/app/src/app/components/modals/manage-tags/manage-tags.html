@@ -1,5 +1,5 @@
 <div class="modal-header">
-  <h5 class="modal-title">{{ 'components.modals.manage-labels.title' | translate }}</h5>
+  <h5 class="modal-title">{{ 'components.modals.manage-tags.title' | translate }}</h5>
   <button
     type="button"
     class="btn-close"
@@ -14,14 +14,12 @@
       <input
         type="text"
         class="form-control"
-        id="label-name"
-        placeholder="Label name"
+        id="tag-name"
+        placeholder="Tag name"
         [formControl]="nameControl"
         (keydown.enter)="add()"
       />
-      <label for="label-name">{{
-        'components.modals.manage-labels.add-form.name' | translate
-      }}</label>
+      <label for="tag-name">{{ 'components.modals.manage-tags.add-form.name' | translate }}</label>
     </div>
     <button
       class="btn btn-primary"
@@ -33,12 +31,12 @@
     </button>
   </div>
 
-  @if (labels().length > 0) {
+  @if (tags().length > 0) {
     <ul class="list-group">
-      @for (label of labels(); track label) {
+      @for (tag of tags(); track tag) {
         <li class="list-group-item d-flex align-items-center justify-content-between">
-          <span>{{ label }}</span>
-          <button class="btn btn-danger btn-sm" type="button" (click)="delete(label)">
+          <span>{{ tag }}</span>
+          <button class="btn btn-danger btn-sm" type="button" (click)="delete(tag)">
             {{ 'general.button.delete' | translate }}
           </button>
         </li>
@@ -46,7 +44,7 @@
     </ul>
   } @else {
     <p class="text-body-secondary small mb-0">
-      {{ 'components.modals.manage-labels.empty' | translate }}
+      {{ 'components.modals.manage-tags.empty' | translate }}
     </p>
   }
 </div>
