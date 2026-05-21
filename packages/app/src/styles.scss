@@ -1055,3 +1055,28 @@ html ngb-typeahead-window.dropdown-menu .dropdown-item:active {
   mask-size: var(--bs-accordion-btn-icon-width);
   background-color: var(--bs-primary);
 }
+
+.bb-filter-input {
+  position: relative;
+
+  .form-control {
+    padding-right: 1.75rem;
+  }
+}
+
+.bb-filter-clear {
+  position: absolute;
+  right: 0.4rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: var(--bs-secondary-color);
+  padding: 0.15rem 0.35rem;
+  line-height: 1;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--bs-body-color);
+  }
+}
