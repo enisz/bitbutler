@@ -10,8 +10,8 @@
 
 <div class="modal-body">
   <form [formGroup]="addForm">
-    <div class="d-flex gap-2 mb-3 align-items-center">
-      <div class="form-floating flex-grow-1">
+    <div class="input-group mb-2">
+      <div class="form-floating">
         <input
           type="text"
           class="form-control"
@@ -25,20 +25,22 @@
           {{ 'components.modals.manage-categories.add-form.name' | translate }}
         </label>
       </div>
-      <app-save-path-select
-        class="flex-grow-1"
-        [showPopover]="false"
-        [clearable]="true"
-        formControlName="savePath"
-      ></app-save-path-select>
       <button
-        class="btn btn-primary"
+        class="btn btn-outline-primary"
         type="button"
         (click)="add()"
         [disabled]="!(addForm.get('name')?.value ?? '').trim() || adding()"
       >
         {{ 'general.button.add' | translate }}
       </button>
+    </div>
+    <div class="mb-3">
+      <app-save-path-select
+        [showPopover]="false"
+        [clearable]="true"
+        [placeholder]="''"
+        formControlName="savePath"
+      ></app-save-path-select>
     </div>
   </form>
 
@@ -83,6 +85,7 @@
                 class="flex-grow-1"
                 [showPopover]="false"
                 [clearable]="true"
+                [placeholder]="''"
                 [label]="item.name"
                 [formControl]="editSavePathControl"
               ></app-save-path-select>

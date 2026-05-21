@@ -32,7 +32,11 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-12">
-          <app-save-path-select formControlName="path" [autofocus]="true"></app-save-path-select>
+          <app-save-path-select
+            formControlName="path"
+            [autofocus]="true"
+            [clearable]="true"
+          ></app-save-path-select>
         </div>
       </div>
     </div>

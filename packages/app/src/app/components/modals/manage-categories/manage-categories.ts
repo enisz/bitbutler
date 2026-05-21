@@ -5,12 +5,13 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faEdit, faTrashCan } from '@fortawesome/free-regular-svg-icons';
 import { faCheck, faX, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AutofocusDirective } from '../../../directives/autofocus';
 import { GuardableModal } from '../../../models/guardable-modal.interface';
 import { ConfirmService } from '../../../services/confirm.service';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
+import { ToastService } from '../../../services/toast.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { BbSpinner } from '../../bb-spinner/bb-spinner';
 import { SavePathSelect } from '../../save-path-select/save-path-select';
@@ -41,6 +42,8 @@ export class ManageCategories implements OnInit, GuardableModal {
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly confirmService = inject(ConfirmService);
   private readonly torrentStoreService = inject(TorrentStoreService);
+  private readonly toastService = inject(ToastService);
+  private readonly translateService = inject(TranslateService);
   public readonly activeModal = inject(NgbActiveModal);
 
   public readonly icon = { faEdit, faTrashCan, faCheck, faX, faXmark };
@@ -65,7 +68,7 @@ export class ManageCategories implements OnInit, GuardableModal {
   });
 
   public async canDeactivate(): Promise<boolean> {
-    if (!this.isEditing()) return true;
+    if (!this.isEditing() && !this.addForm.dirty) return true;
 
     return this.confirmService.confirm(
       'components.modals.guard.unsaved-title',
@@ -114,8 +117,18 @@ export class ManageCategories implements OnInit, GuardableModal {
         ),
       );
       this.addForm.reset();
+      this.toastService.success(
+        this.translateService.instant('components.modals.manage-categories.toast.added', { name }),
+        this.translateService.instant('components.modals.manage-categories.title'),
+      );
     } catch (err) {
       console.error(ManageCategories.name, 'add', 'Failed to add category', err);
+      this.toastService.danger(
+        this.translateService.instant('components.modals.manage-categories.toast.add-failed', {
+          name,
+        }),
+        this.translateService.instant('components.modals.manage-categories.title'),
+      );
     } finally {
       this.adding.set(false);
     }
@@ -140,8 +153,20 @@ export class ManageCategories implements OnInit, GuardableModal {
           c.name === item.name ? { ...c, savePath: newPath, editing: false } : c,
         ),
       );
+      this.toastService.success(
+        this.translateService.instant('components.modals.manage-categories.toast.updated', {
+          name: item.name,
+        }),
+        this.translateService.instant('components.modals.manage-categories.title'),
+      );
     } catch (err) {
       console.error(ManageCategories.name, 'saveEdit', 'Failed to edit category', err);
+      this.toastService.danger(
+        this.translateService.instant('components.modals.manage-categories.toast.edit-failed', {
+          name: item.name,
+        }),
+        this.translateService.instant('components.modals.manage-categories.title'),
+      );
     }
   }
 
@@ -164,8 +189,20 @@ export class ManageCategories implements OnInit, GuardableModal {
     try {
       await this.qbService.removeCategories(serverId, [item.name]);
       this.categories.set(this.categories().filter((c) => c.name !== item.name));
+      this.toastService.success(
+        this.translateService.instant('components.modals.manage-categories.toast.deleted', {
+          name: item.name,
+        }),
+        this.translateService.instant('components.modals.manage-categories.title'),
+      );
     } catch (err) {
       console.error(ManageCategories.name, 'delete', 'Failed to delete category', err);
+      this.toastService.danger(
+        this.translateService.instant('components.modals.manage-categories.toast.delete-failed', {
+          name: item.name,
+        }),
+        this.translateService.instant('components.modals.manage-categories.title'),
+      );
     }
   }
 }

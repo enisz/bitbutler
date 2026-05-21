@@ -600,6 +600,13 @@
         "delete-confirm": {
           "title": "Cimke törlése",
           "message": "Biztosan törölni szeretnéd a \"{{ name }}\" cimkét? {{ count }} torrent használja."
+        },
+        "toast": {
+          "added-one": "A \"{{ name }}\" cimke hozzáadva.",
+          "added": "{{ count }} cimke hozzáadva.",
+          "deleted": "A \"{{ name }}\" cimke törölve.",
+          "add-failed": "Nem sikerült hozzáadni a cimké(ke)t.",
+          "delete-failed": "Nem sikerült törölni a \"{{ name }}\" cimkét."
         }
       },
       "manage-categories": {
@@ -618,6 +625,14 @@
         "delete-confirm": {
           "title": "Kategória törlése",
           "message": "Biztosan törölni szeretnéd a \"{{ name }}\" kategóriát? {{ count }} torrenthez van hozzárendelve."
+        },
+        "toast": {
+          "added": "A \"{{ name }}\" kategória hozzáadva.",
+          "updated": "A \"{{ name }}\" kategória frissítve.",
+          "deleted": "A \"{{ name }}\" kategória törölve.",
+          "add-failed": "Nem sikerült hozzáadni a \"{{ name }}\" kategóriát.",
+          "edit-failed": "Nem sikerült frissíteni a \"{{ name }}\" kategóriát.",
+          "delete-failed": "Nem sikerült törölni a \"{{ name }}\" kategóriát."
         }
       }
     },

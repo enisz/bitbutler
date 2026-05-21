@@ -280,7 +280,9 @@ export class UiCommandHandlerService {
 
           case 'UI_MANAGE_TAGS':
             if (this.isModalOpen(ManageTags)) break;
-            const manageTagsModalRef = this.modalService.open(ManageTags);
+            const manageTagsModalRef = this.modalService.open(ManageTags, {
+              beforeDismiss: () => manageTagsModalRef.componentInstance.canDeactivate(),
+            });
             manageTagsModalRef.result.then(() => {}).catch(() => {});
             break;
 

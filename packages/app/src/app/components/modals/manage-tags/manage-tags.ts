@@ -5,11 +5,13 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faTrashCan } from '@fortawesome/free-regular-svg-icons';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AutofocusDirective } from '../../../directives/autofocus';
+import { GuardableModal } from '../../../models/guardable-modal.interface';
 import { ConfirmService } from '../../../services/confirm.service';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
+import { ToastService } from '../../../services/toast.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { BbSpinner } from '../../bb-spinner/bb-spinner';
 
@@ -27,11 +29,13 @@ import { BbSpinner } from '../../bb-spinner/bb-spinner';
   templateUrl: './manage-tags.html',
   styleUrl: './manage-tags.scss',
 })
-export class ManageTags implements OnInit {
+export class ManageTags implements OnInit, GuardableModal {
   private readonly qbService = inject(QbService);
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly confirmService = inject(ConfirmService);
   private readonly torrentStoreService = inject(TorrentStoreService);
+  private readonly toastService = inject(ToastService);
+  private readonly translateService = inject(TranslateService);
   public readonly activeModal = inject(NgbActiveModal);
 
   public readonly icon = { faTrashCan, faXmark };
@@ -49,6 +53,17 @@ export class ManageTags implements OnInit {
     if (!filter) return this.tags();
     return this.tags().filter((tag) => tag.toLowerCase().includes(filter));
   });
+
+  public async canDeactivate(): Promise<boolean> {
+    if (!this.nameControl.dirty) return true;
+
+    return this.confirmService.confirm(
+      'components.modals.guard.unsaved-title',
+      'components.modals.guard.unsaved-message',
+      'components.modals.guard.btn-leave',
+      'components.modals.guard.btn-stay',
+    );
+  }
 
   public clearFilter(): void {
     this.filterControl.reset();
@@ -82,8 +97,22 @@ export class ManageTags implements OnInit {
       const newNames = names.filter((n) => !this.tags().includes(n));
       this.tags.set([...this.tags(), ...newNames].sort((a, b) => a.localeCompare(b)));
       this.nameControl.reset();
+      this.toastService.success(
+        newNames.length === 1
+          ? this.translateService.instant('components.modals.manage-tags.toast.added-one', {
+              name: newNames[0],
+            })
+          : this.translateService.instant('components.modals.manage-tags.toast.added', {
+              count: newNames.length,
+            }),
+        this.translateService.instant('components.modals.manage-tags.title'),
+      );
     } catch (err) {
       console.error(ManageTags.name, 'add', 'Failed to add tag', err);
+      this.toastService.danger(
+        this.translateService.instant('components.modals.manage-tags.toast.add-failed'),
+        this.translateService.instant('components.modals.manage-tags.title'),
+      );
     } finally {
       this.adding.set(false);
     }
@@ -111,8 +140,18 @@ export class ManageTags implements OnInit {
     try {
       await this.qbService.deleteTags(serverId, [tag]);
       this.tags.set(this.tags().filter((t) => t !== tag));
+      this.toastService.success(
+        this.translateService.instant('components.modals.manage-tags.toast.deleted', { name: tag }),
+        this.translateService.instant('components.modals.manage-tags.title'),
+      );
     } catch (err) {
       console.error(ManageTags.name, 'delete', 'Failed to delete tag', err);
+      this.toastService.danger(
+        this.translateService.instant('components.modals.manage-tags.toast.delete-failed', {
+          name: tag,
+        }),
+        this.translateService.instant('components.modals.manage-tags.title'),
+      );
     }
   }
 }
