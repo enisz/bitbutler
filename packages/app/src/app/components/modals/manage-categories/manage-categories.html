@@ -83,23 +83,35 @@
         @if (item.editing) {
           <li class="list-group-item">
             <div class="d-flex gap-2 align-items-center">
-              <span class="fw-semibold text-nowrap">{{ item.name }}</span>
-              <input
-                type="text"
-                class="form-control form-control-sm flex-grow-1"
-                [formControl]="editSavePathControl"
-                (keydown.enter)="saveEdit(item)"
-                (keydown.escape)="cancelEdit()"
-              />
+              <div class="form-floating flex-grow-1">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="category-edit-path"
+                  placeholder="Save path"
+                  [formControl]="editSavePathControl"
+                  (keydown.enter)="saveEdit(item)"
+                  (keydown.escape)="cancelEdit()"
+                />
+                <label for="category-edit-path">{{ item.name }}</label>
+              </div>
               <button
-                class="btn btn-secondary btn-sm text-nowrap"
                 type="button"
+                class="btn btn-link text-success"
+                [ngbTooltip]="'general.button.save' | translate"
+                tooltipClass="single-line-tooltip"
                 (click)="saveEdit(item)"
               >
-                {{ 'general.button.save' | translate }}
+                <fa-icon [icon]="icon.faCheck"></fa-icon>
               </button>
-              <button class="btn btn-link btn-sm" type="button" (click)="cancelEdit()">
-                {{ 'general.button.cancel' | translate }}
+              <button
+                type="button"
+                class="btn btn-link text-danger"
+                [ngbTooltip]="'general.button.cancel' | translate"
+                tooltipClass="single-line-tooltip"
+                (click)="cancelEdit()"
+              >
+                <fa-icon [icon]="icon.faX"></fa-icon>
               </button>
             </div>
           </li>
