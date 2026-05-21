@@ -574,6 +574,11 @@ html ngb-typeahead-window.dropdown-menu .dropdown-item:active {
     border-top-right-radius: 0 !important;
     border-bottom-right-radius: 0 !important;
   }
+
+  > .btn:last-child {
+    border-top-right-radius: var(--bb-control-radius) !important;
+    border-bottom-right-radius: var(--bb-control-radius) !important;
+  }
 }
 
 .bb-datefilter {
