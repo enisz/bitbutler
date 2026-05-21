@@ -76,6 +76,12 @@ describe('ManageCategories', () => {
       await component.add();
       expect(mockQbService.addCategory).not.toHaveBeenCalled();
     });
+
+    it('should not add when name is whitespace only', async () => {
+      component.addForm.get('name')?.setValue('   ');
+      await component.add();
+      expect(mockQbService.addCategory).not.toHaveBeenCalled();
+    });
   });
 
   describe('startEdit', () => {
