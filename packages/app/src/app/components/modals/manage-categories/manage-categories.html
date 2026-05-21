@@ -25,19 +25,12 @@
           {{ 'components.modals.manage-categories.add-form.name' | translate }}
         </label>
       </div>
-      <div class="form-floating flex-grow-1">
-        <input
-          type="text"
-          class="form-control"
-          id="category-save-path"
-          placeholder="Save path"
-          formControlName="savePath"
-          (keydown.enter)="add()"
-        />
-        <label for="category-save-path">
-          {{ 'components.modals.manage-categories.add-form.save-path' | translate }}
-        </label>
-      </div>
+      <app-save-path-select
+        class="flex-grow-1"
+        [showPopover]="false"
+        [clearable]="true"
+        formControlName="savePath"
+      ></app-save-path-select>
       <button
         class="btn btn-primary"
         type="button"
@@ -80,20 +73,19 @@
     <ul class="list-group">
       @for (item of filteredCategories(); track item.name) {
         @if (item.editing) {
-          <li class="list-group-item">
+          <li
+            class="list-group-item"
+            (keydown.enter)="saveEdit(item)"
+            (keydown.escape)="cancelEdit()"
+          >
             <div class="d-flex gap-2 align-items-center">
-              <div class="form-floating flex-grow-1">
-                <input
-                  type="text"
-                  class="form-control"
-                  [id]="'category-edit-path-' + item.name"
-                  placeholder="Save path"
-                  [formControl]="editSavePathControl"
-                  (keydown.enter)="saveEdit(item)"
-                  (keydown.escape)="cancelEdit()"
-                />
-                <label [for]="'category-edit-path-' + item.name">{{ item.name }}</label>
-              </div>
+              <app-save-path-select
+                class="flex-grow-1"
+                [showPopover]="false"
+                [clearable]="true"
+                [label]="item.name"
+                [formControl]="editSavePathControl"
+              ></app-save-path-select>
               <div class="d-flex gap-1">
                 <button
                   type="button"

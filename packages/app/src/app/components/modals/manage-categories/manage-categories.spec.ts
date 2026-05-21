@@ -24,6 +24,7 @@ describe('ManageCategories', () => {
       addCategory: vi.fn().mockResolvedValue(undefined),
       editCategory: vi.fn().mockResolvedValue(undefined),
       removeCategories: vi.fn().mockResolvedValue(undefined),
+      getAppPreferences: vi.fn().mockResolvedValue({ save_path: '/downloads' }),
     };
     mockConfirmService = { confirm: vi.fn().mockResolvedValue(true) };
 
