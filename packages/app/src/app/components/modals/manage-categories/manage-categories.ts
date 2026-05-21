@@ -37,13 +37,14 @@ export class ManageCategories implements OnInit {
         this.serverStoreService.currentServerId() as string,
       );
       this.categories.set(
-        Object.entries(raw).map(([name, cat]) => ({
-          name,
-          savePath: cat.savePath ?? '',
-          editing: false,
-        })),
+        Object.entries(raw)
+          .map(([name, cat]) => ({
+            name,
+            savePath: cat.savePath ?? '',
+            editing: false,
+          }))
+          .sort((a, b) => a.name.localeCompare(b.name)),
       );
-      this.categories.update((cats) => [...cats].sort((a, b) => a.name.localeCompare(b.name)));
     } catch (err) {
       console.error(ManageCategories.name, 'ngOnInit', 'Failed to load categories', err);
     }
