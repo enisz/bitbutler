@@ -92,4 +92,18 @@ describe('SavePathSelect', () => {
       expect(onChange).toHaveBeenCalledWith('/new/path');
     });
   });
+
+  describe('inputs', () => {
+    it('should have clearable false by default', () => {
+      expect(component.clearable).toBe(false);
+    });
+
+    it('should have showPopover true by default', () => {
+      expect(component.showPopover).toBe(true);
+    });
+
+    it('should have label null by default', () => {
+      expect(component.label).toBeNull();
+    });
+  });
 });
