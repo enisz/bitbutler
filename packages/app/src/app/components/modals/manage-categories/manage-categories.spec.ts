@@ -1,10 +1,13 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateService } from '@ngx-translate/core';
 import { ConfirmService } from '../../../services/confirm.service';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
+import { ToastService } from '../../../services/toast.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
+import { mockTranslateService } from '../../../test-utils/translate.mock';
 import { ManageCategories } from './manage-categories';
 
 describe('ManageCategories', () => {
@@ -35,6 +38,8 @@ describe('ManageCategories', () => {
         { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
         { provide: QbService, useValue: mockQbService },
         { provide: ConfirmService, useValue: mockConfirmService },
+        { provide: ToastService, useValue: { success: vi.fn(), danger: vi.fn() } },
+        { provide: TranslateService, useFactory: mockTranslateService },
         {
           provide: TorrentStoreService,
           useValue: {
@@ -179,6 +184,31 @@ describe('ManageCategories', () => {
       await component.delete(linux);
       expect(mockQbService.removeCategories).not.toHaveBeenCalled();
       expect(component.categories().find((c) => c.name === 'linux')).toBeDefined();
+    });
+  });
+
+  describe('canDeactivate', () => {
+    it('should return true when not editing and add form is clean', async () => {
+      expect(await component.canDeactivate()).toBe(true);
+    });
+
+    it('should prompt when the add form is dirty', async () => {
+      component.addForm.get('name')?.setValue('draft');
+      component.addForm.markAsDirty();
+      await component.canDeactivate();
+      expect(mockConfirmService.confirm).toHaveBeenCalled();
+    });
+
+    it('should prompt when a category is being edited', async () => {
+      component.startEdit(component.categories()[0]);
+      await component.canDeactivate();
+      expect(mockConfirmService.confirm).toHaveBeenCalled();
+    });
+
+    it('should return the confirm result when prompted', async () => {
+      (mockConfirmService.confirm as ReturnType<typeof vi.fn>).mockResolvedValue(false);
+      component.addForm.markAsDirty();
+      expect(await component.canDeactivate()).toBe(false);
     });
   });
 

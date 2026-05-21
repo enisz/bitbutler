@@ -1,10 +1,13 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateService } from '@ngx-translate/core';
 import { ConfirmService } from '../../../services/confirm.service';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
+import { ToastService } from '../../../services/toast.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
+import { mockTranslateService } from '../../../test-utils/translate.mock';
 import { ManageTags } from './manage-tags';
 
 describe('ManageTags', () => {
@@ -30,6 +33,8 @@ describe('ManageTags', () => {
         { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
         { provide: QbService, useValue: mockQbService },
         { provide: ConfirmService, useValue: mockConfirmService },
+        { provide: ToastService, useValue: { success: vi.fn(), danger: vi.fn() } },
+        { provide: TranslateService, useFactory: mockTranslateService },
         {
           provide: TorrentStoreService,
           useValue: {
@@ -147,6 +152,25 @@ describe('ManageTags', () => {
       await component.delete('linux');
       expect(mockQbService.deleteTags).not.toHaveBeenCalled();
       expect(component.tags()).toContain('linux');
+    });
+  });
+
+  describe('canDeactivate', () => {
+    it('should return true when nameControl is not dirty', async () => {
+      expect(await component.canDeactivate()).toBe(true);
+    });
+
+    it('should prompt when nameControl is dirty', async () => {
+      component.nameControl.setValue('draft');
+      component.nameControl.markAsDirty();
+      await component.canDeactivate();
+      expect(mockConfirmService.confirm).toHaveBeenCalled();
+    });
+
+    it('should return the confirm result when prompted', async () => {
+      (mockConfirmService.confirm as ReturnType<typeof vi.fn>).mockResolvedValue(false);
+      component.nameControl.markAsDirty();
+      expect(await component.canDeactivate()).toBe(false);
     });
   });
 

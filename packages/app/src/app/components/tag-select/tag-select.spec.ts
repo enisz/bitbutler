@@ -1,6 +1,6 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { CommandBusService } from '../../services/command-bus.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { TagSelect } from './tag-select';
@@ -9,20 +9,22 @@ describe('TagSelect', () => {
   let component: TagSelect;
   let fixture: ComponentFixture<TagSelect>;
   let mockQbService: any;
-  let mockCommandBusService: Partial<CommandBusService>;
+  let mockModalService: Partial<NgbModal>;
 
   beforeEach(async () => {
     mockQbService = {
       getAllTags: vi.fn().mockResolvedValue(['action', 'comedy']),
     };
-    mockCommandBusService = { emit: vi.fn() };
+    mockModalService = {
+      open: vi.fn().mockReturnValue({ componentInstance: {}, result: Promise.resolve() }),
+    };
 
     await TestBed.configureTestingModule({
       imports: [TagSelect],
       providers: [
         { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
         { provide: QbService, useValue: mockQbService },
-        { provide: CommandBusService, useValue: mockCommandBusService },
+        { provide: NgbModal, useValue: mockModalService },
       ],
     }).compileComponents();
 
@@ -81,9 +83,9 @@ describe('TagSelect', () => {
   });
 
   describe('openManageTags', () => {
-    it('should emit UI_MANAGE_TAGS', () => {
+    it('should open the ManageTags modal', () => {
       component.openManageTags();
-      expect(mockCommandBusService.emit).toHaveBeenCalledWith({ type: 'UI_MANAGE_TAGS' });
+      expect(mockModalService.open).toHaveBeenCalled();
     });
   });
 });

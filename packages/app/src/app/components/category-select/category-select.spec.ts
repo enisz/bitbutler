@@ -1,6 +1,6 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { CommandBusService } from '../../services/command-bus.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { CategorySelect } from './category-select';
@@ -20,7 +20,12 @@ describe('CategorySelect', () => {
       providers: [
         { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
         { provide: QbService, useValue: mockQbService },
-        { provide: CommandBusService, useValue: { emit: vi.fn() } },
+        {
+          provide: NgbModal,
+          useValue: {
+            open: vi.fn().mockReturnValue({ componentInstance: {}, result: Promise.resolve() }),
+          },
+        },
       ],
     }).compileComponents();
 
@@ -88,10 +93,10 @@ describe('CategorySelect', () => {
   });
 
   describe('openManageCategories', () => {
-    it('should emit UI_MANAGE_CATEGORIES', () => {
-      const commandBus = TestBed.inject(CommandBusService);
+    it('should open the ManageCategories modal', () => {
+      const modalService = TestBed.inject(NgbModal);
       component.openManageCategories();
-      expect(commandBus.emit).toHaveBeenCalledWith({ type: 'UI_MANAGE_CATEGORIES' });
+      expect(modalService.open).toHaveBeenCalled();
     });
   });
 });
