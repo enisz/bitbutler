@@ -105,8 +105,7 @@ export class CategorySelect implements OnInit, ControlValueAccessor, AfterViewIn
     return true;
   }
 
-  public openManageCategories(event: Event): void {
-    event.preventDefault();
+  public openManageCategories(): void {
     this.ngselect.close();
     this.commandBusService.emit({ type: 'UI_MANAGE_CATEGORIES' });
   }

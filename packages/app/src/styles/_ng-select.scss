@@ -92,6 +92,10 @@ ng-select.ng-select .ng-select-container .ng-input input {
   color: var(--bb-ng-accent) !important;
 }
 
+.ng-dropdown-panel .ng-dropdown-panel-items {
+  border-bottom: none !important;
+}
+
 .ng-dropdown-panel .ng-option strong {
   font-weight: 700;
 }

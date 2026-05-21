@@ -13,9 +13,13 @@
         >
           <ng-template ng-footer-tmp>
             <div class="px-3 py-2 border-top">
-              <a href="#" class="small text-decoration-none" (click)="openManageCategories($event)">
+              <button
+                type="button"
+                class="btn btn-link btn-sm p-0"
+                (click)="openManageCategories()"
+              >
                 {{ 'components.category-select.manage' | translate }}
-              </a>
+              </button>
             </div>
           </ng-template>
         </ng-select>

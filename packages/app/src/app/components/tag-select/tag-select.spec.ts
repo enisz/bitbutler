@@ -81,11 +81,8 @@ describe('TagSelect', () => {
   });
 
   describe('openManageLabels', () => {
-    it('should emit UI_MANAGE_LABELS and prevent default', () => {
-      const event = new MouseEvent('click');
-      vi.spyOn(event, 'preventDefault');
-      component.openManageLabels(event);
-      expect(event.preventDefault).toHaveBeenCalled();
+    it('should emit UI_MANAGE_LABELS', () => {
+      component.openManageLabels();
       expect(mockCommandBusService.emit).toHaveBeenCalledWith({ type: 'UI_MANAGE_LABELS' });
     });
   });

@@ -88,12 +88,9 @@ describe('CategorySelect', () => {
   });
 
   describe('openManageCategories', () => {
-    it('should emit UI_MANAGE_CATEGORIES and prevent default', () => {
+    it('should emit UI_MANAGE_CATEGORIES', () => {
       const commandBus = TestBed.inject(CommandBusService);
-      const event = new MouseEvent('click');
-      vi.spyOn(event, 'preventDefault');
-      component.openManageCategories(event);
-      expect(event.preventDefault).toHaveBeenCalled();
+      component.openManageCategories();
       expect(commandBus.emit).toHaveBeenCalledWith({ type: 'UI_MANAGE_CATEGORIES' });
     });
   });
