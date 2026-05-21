@@ -10,6 +10,20 @@
 
 ---
 
+## Notes for Implementers
+
+**Test runner:** Tests use Vitest (`vi.fn()`, `vi.spyOn()`), not Jasmine. Run with `npm test` from the repo root (runs all workspaces).
+
+**Global test providers:** `packages/app/src/test-providers.ts` registers `provideTranslateService()`, `provideZonelessChangeDetection()`, and several pipes for every test. This is why `TranslatePipe` works in `SavePathSelect` tests without any per-test setup.
+
+**Why `save-path-select.spec.ts` only mocks `TorrentStoreService`:** `SavePathSelect` also injects `QbService` and `ServerStoreService`, but `ServerStoreService.currentServerId()` returns `null` in the test environment (no server configured). The `ngOnInit` guard `if (serverId)` prevents `getAppPreferences` from ever being called, so neither service needs to be mocked.
+
+**`class="flex-grow-1"` on `<app-save-path-select>`:** Applying a CSS class directly to a component element targets its host element. In a `d-flex` parent, `flex-grow-1` on the host makes the component expand to fill available space — the inner `form-floating` div fills the host width naturally as a block element.
+
+**`@let` + `@if` on the same line (Task 2):** The prettier Angular plugin collapses `@let resolvedLabel = ...; @if (showPopover) {` onto a single line. This is valid Angular 17+ template syntax — `@let` ends at `;` and `@if` starts immediately after. Prettier will produce the same formatting when you run lint-staged on commit, so copy the code block as-is.
+
+---
+
 ## File Map
 
 | File                                                                                 | Change                                                                      |
