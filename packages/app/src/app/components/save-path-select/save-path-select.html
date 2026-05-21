@@ -1,38 +1,63 @@
-<div class="container-fluid px-0">
-  <div class="row">
-    <div class="col-11">
-      <div class="form-floating">
-        <ng-select
-          [items]="paths()"
-          [addTag]="addTag"
-          [searchable]="true"
-          [clearable]="true"
-          [clearOnBackspace]="false"
-          [editableSearchTerm]="true"
-          [formControl]="selectControl"
-          [keyDownFn]="keyDownFn"
-          [markFirst]="true"
-          [openOnEnter]="false"
-          [placeholder]="defaultPath()"
-          [fixedPlaceholder]="false"
-          (search)="resetHighlight()"
-          (open)="resetHighlight()"
-          #ngselect
-        >
-        </ng-select>
-        <label>{{ 'components.save-path-select.label' | translate }}</label>
+@let resolvedLabel = label ?? ('components.save-path-select.label' | translate);
+@if (showPopover) {
+  <div class="container-fluid px-0">
+    <div class="row">
+      <div class="col-11">
+        <div class="form-floating">
+          <ng-select
+            [items]="paths()"
+            [addTag]="addTag"
+            [searchable]="true"
+            [clearable]="clearable"
+            [clearOnBackspace]="false"
+            [editableSearchTerm]="true"
+            [formControl]="selectControl"
+            [keyDownFn]="keyDownFn"
+            [markFirst]="true"
+            [openOnEnter]="false"
+            [placeholder]="defaultPath()"
+            [fixedPlaceholder]="false"
+            (search)="resetHighlight()"
+            (open)="resetHighlight()"
+            #ngselect
+          >
+          </ng-select>
+          <label>{{ resolvedLabel }}</label>
+        </div>
+      </div>
+
+      <div class="col-1 d-flex align-items-center">
+        <bb-popover
+          [subject]="'components.save-path-select.popover.title' | translate"
+          [description]="savePathPopover"
+          placement="left"
+        ></bb-popover>
       </div>
     </div>
-
-    <div class="col-1 d-flex align-items-center">
-      <bb-popover
-        [subject]="'components.save-path-select.popover.title' | translate"
-        [description]="savePathPopover"
-        placement="left"
-      ></bb-popover>
-    </div>
   </div>
-</div>
+} @else {
+  <div class="form-floating">
+    <ng-select
+      [items]="paths()"
+      [addTag]="addTag"
+      [searchable]="true"
+      [clearable]="clearable"
+      [clearOnBackspace]="false"
+      [editableSearchTerm]="true"
+      [formControl]="selectControl"
+      [keyDownFn]="keyDownFn"
+      [markFirst]="true"
+      [openOnEnter]="false"
+      [placeholder]="defaultPath()"
+      [fixedPlaceholder]="false"
+      (search)="resetHighlight()"
+      (open)="resetHighlight()"
+      #ngselect
+    >
+    </ng-select>
+    <label>{{ resolvedLabel }}</label>
+  </div>
+}
 
 <ng-template #savePathPopover>
   <p>{{ 'components.save-path-select.popover.description.line1' | translate }}</p>
