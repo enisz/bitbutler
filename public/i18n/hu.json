@@ -649,7 +649,7 @@
           "line2": "A kategóriákkal ellentétben egy torrenthez több címke is rendelhető, és a címkék nem befolyásolják a mentési útvonalat."
         }
       },
-      "manage": "Manage tags..."
+      "manage": "Cimkék kezelése..."
     },
     "save-path-select": {
       "label": "Mentési útvonal",
@@ -1326,7 +1326,7 @@
       "settings-menu": "Beállítások",
       "app-settings": "Alkalmazás beállítások",
       "qb-settings": "qBittorrent beállítások",
-      "manage-tags": "Manage Tags",
+      "manage-tags": "Cimkék kezelése",
       "manage-categories": "Kategóriák kezelése",
       "help": "Súgó",
       "check-for-updates": "Frissítések keresése",
