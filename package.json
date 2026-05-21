@@ -23,7 +23,7 @@
     "electron-dev": "wait-on http://localhost:4200 && npm run build:electron && electron . --no-sandbox --disable-gpu-sandbox",
     "electron-ts:watch": "rimraf packages/electron/dist && wait-on http://localhost:4200 && npm run --silent watch --workspace=packages/electron",
     "electron-hot": "wait-on http://localhost:4200 packages/electron/dist/main.js && nodemon --watch packages/electron/dist --ext js --delay 2 --exec \"electron . --no-sandbox --disable-gpu-sandbox\"",
-    "start": "concurrently -n \"angular,tsc,electron\" -c \"red,yellow,blue\" \"npm:serve\" \"npm:electron-ts:watch\" \"npm:electron-hot\"",
+    "start": "concurrently -n \"🅰️ angular,🟦 ts,⚛️ electron\" -c \"red,blue,magenta\" \"npm:serve\" \"npm:electron-ts:watch\" \"npm:electron-hot\"",
     "start:once": "concurrently -n \"angular,electron\" -c \"red,blue\" \"npm:serve\" \"npm:electron-dev\"",
     "workspace:clean": "rimraf dist-electron dist",
     "build": "npm run build --workspace=packages/app",
