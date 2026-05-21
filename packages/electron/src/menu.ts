@@ -83,6 +83,15 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
                 label: t('electron.menu.qb-settings'),
                 click: () => sendMenuAction(mainWindow, 'settings.qb'),
               },
+              { type: 'separator' },
+              {
+                label: t('electron.menu.manage-labels'),
+                click: () => sendMenuAction(mainWindow, 'settings.manage-labels'),
+              },
+              {
+                label: t('electron.menu.manage-categories'),
+                click: () => sendMenuAction(mainWindow, 'settings.manage-categories'),
+              },
             ],
           },
         ]
