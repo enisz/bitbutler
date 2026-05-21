@@ -593,7 +593,11 @@
         "add-form": {
           "name": "Tag name"
         },
-        "empty": "No tags yet."
+        "empty": "No tags yet.",
+        "delete-confirm": {
+          "title": "Delete Tag",
+          "message": "Are you sure you want to delete the tag \"{{ name }}\"?"
+        }
       },
       "manage-categories": {
         "title": "Manage Categories",
@@ -604,7 +608,11 @@
         "list": {
           "no-save-path": "No save path"
         },
-        "empty": "No categories yet."
+        "empty": "No categories yet.",
+        "delete-confirm": {
+          "title": "Delete Category",
+          "message": "Are you sure you want to delete the category \"{{ name }}\"?"
+        }
       }
     },
     "transfer-limit": {

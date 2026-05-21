@@ -1,6 +1,7 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { ConfirmService } from '../../../services/confirm.service';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { ManageCategories } from './manage-categories';
@@ -10,6 +11,7 @@ describe('ManageCategories', () => {
   let fixture: ComponentFixture<ManageCategories>;
   let mockQbService: Partial<QbService>;
   let mockActiveModal: Partial<NgbActiveModal>;
+  let mockConfirmService: Partial<ConfirmService>;
 
   beforeEach(async () => {
     mockActiveModal = { dismiss: vi.fn() };
@@ -22,6 +24,7 @@ describe('ManageCategories', () => {
       editCategory: vi.fn().mockResolvedValue(undefined),
       removeCategories: vi.fn().mockResolvedValue(undefined),
     };
+    mockConfirmService = { confirm: vi.fn().mockResolvedValue(true) };
 
     await TestBed.configureTestingModule({
       imports: [ManageCategories],
@@ -29,6 +32,7 @@ describe('ManageCategories', () => {
         { provide: NgbActiveModal, useValue: mockActiveModal },
         { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
         { provide: QbService, useValue: mockQbService },
+        { provide: ConfirmService, useValue: mockConfirmService },
       ],
     }).compileComponents();
 
@@ -127,12 +131,26 @@ describe('ManageCategories', () => {
   });
 
   describe('delete', () => {
-    it('should call removeCategories and remove the item from the list', async () => {
+    it('should show a confirm dialog before deleting', async () => {
+      await component.delete(component.categories()[0]);
+      expect(mockConfirmService.confirm).toHaveBeenCalled();
+    });
+
+    it('should delete when the user confirms', async () => {
+      (mockConfirmService.confirm as ReturnType<typeof vi.fn>).mockResolvedValue(true);
       const linux = component.categories()[0];
       await component.delete(linux);
       expect(mockQbService.removeCategories).toHaveBeenCalledWith('server-1', ['linux']);
       expect(component.categories().find((c) => c.name === 'linux')).toBeUndefined();
       expect(component.categories()).toHaveLength(1);
+    });
+
+    it('should not delete when the user cancels', async () => {
+      (mockConfirmService.confirm as ReturnType<typeof vi.fn>).mockResolvedValue(false);
+      const linux = component.categories()[0];
+      await component.delete(linux);
+      expect(mockQbService.removeCategories).not.toHaveBeenCalled();
+      expect(component.categories().find((c) => c.name === 'linux')).toBeDefined();
     });
   });
 });

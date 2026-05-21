@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
+import { ConfirmService } from '../../../services/confirm.service';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 
@@ -21,6 +22,7 @@ interface CategoryItem {
 export class ManageCategories implements OnInit {
   private readonly qbService = inject(QbService);
   private readonly serverStoreService = inject(ServerStoreService);
+  private readonly confirmService = inject(ConfirmService);
   public readonly activeModal = inject(NgbActiveModal);
 
   public categories = signal<CategoryItem[]>([]);
@@ -99,6 +101,16 @@ export class ManageCategories implements OnInit {
   }
 
   public async delete(item: CategoryItem): Promise<void> {
+    const confirmed = await this.confirmService.confirm(
+      'components.modals.manage-categories.delete-confirm.title',
+      {
+        text: 'components.modals.manage-categories.delete-confirm.message',
+        data: { name: item.name },
+      },
+      'general.button.delete',
+    );
+    if (!confirmed) return;
+
     const serverId = this.serverStoreService.currentServerId() as string;
     try {
       await this.qbService.removeCategories(serverId, [item.name]);

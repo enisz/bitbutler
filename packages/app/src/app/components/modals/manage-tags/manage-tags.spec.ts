@@ -1,6 +1,7 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { ConfirmService } from '../../../services/confirm.service';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { ManageTags } from './manage-tags';
@@ -10,6 +11,7 @@ describe('ManageTags', () => {
   let fixture: ComponentFixture<ManageTags>;
   let mockQbService: Partial<QbService>;
   let mockActiveModal: Partial<NgbActiveModal>;
+  let mockConfirmService: Partial<ConfirmService>;
 
   beforeEach(async () => {
     mockActiveModal = { dismiss: vi.fn() };
@@ -18,6 +20,7 @@ describe('ManageTags', () => {
       createTags: vi.fn().mockResolvedValue(undefined),
       deleteTags: vi.fn().mockResolvedValue(undefined),
     };
+    mockConfirmService = { confirm: vi.fn().mockResolvedValue(true) };
 
     await TestBed.configureTestingModule({
       imports: [ManageTags],
@@ -25,6 +28,7 @@ describe('ManageTags', () => {
         { provide: NgbActiveModal, useValue: mockActiveModal },
         { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
         { provide: QbService, useValue: mockQbService },
+        { provide: ConfirmService, useValue: mockConfirmService },
       ],
     }).compileComponents();
 
@@ -76,11 +80,24 @@ describe('ManageTags', () => {
   });
 
   describe('delete', () => {
-    it('should call deleteTags and remove the tag from the list', async () => {
+    it('should show a confirm dialog before deleting', async () => {
+      await component.delete('linux');
+      expect(mockConfirmService.confirm).toHaveBeenCalled();
+    });
+
+    it('should delete when the user confirms', async () => {
+      (mockConfirmService.confirm as ReturnType<typeof vi.fn>).mockResolvedValue(true);
       await component.delete('linux');
       expect(mockQbService.deleteTags).toHaveBeenCalledWith('server-1', ['linux']);
       expect(component.tags()).not.toContain('linux');
       expect(component.tags()).toContain('movies');
+    });
+
+    it('should not delete when the user cancels', async () => {
+      (mockConfirmService.confirm as ReturnType<typeof vi.fn>).mockResolvedValue(false);
+      await component.delete('linux');
+      expect(mockQbService.deleteTags).not.toHaveBeenCalled();
+      expect(component.tags()).toContain('linux');
     });
   });
 });

@@ -593,7 +593,11 @@
         "add-form": {
           "name": "Cimke neve"
         },
-        "empty": "Még nincsenek cimkék."
+        "empty": "Még nincsenek cimkék.",
+        "delete-confirm": {
+          "title": "Delete Tag",
+          "message": "Are you sure you want to delete the tag \"{{ name }}\"?"
+        }
       },
       "manage-categories": {
         "title": "Kategóriák kezelése",
@@ -604,7 +608,11 @@
         "list": {
           "no-save-path": "Nincs mentési útvonal"
         },
-        "empty": "Még nincsenek kategóriák."
+        "empty": "Még nincsenek kategóriák.",
+        "delete-confirm": {
+          "title": "Delete Category",
+          "message": "Are you sure you want to delete the category \"{{ name }}\"?"
+        }
       }
     },
     "transfer-limit": {
