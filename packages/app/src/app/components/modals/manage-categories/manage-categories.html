@@ -48,7 +48,13 @@
     </div>
   </form>
 
-  @if (categories().length > 0) {
+  @if (loading()) {
+    <div class="d-flex justify-content-center py-3">
+      <div class="spinner-border spinner-border-sm" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  } @else if (categories().length > 0) {
     <ul class="list-group">
       @for (item of categories(); track item.name) {
         @if (item.editing) {

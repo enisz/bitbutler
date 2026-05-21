@@ -42,6 +42,10 @@ describe('ManageCategories', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should set loading to false after init completes', () => {
+    expect(component.loading()).toBe(false);
+  });
+
   it('should load categories sorted alphabetically', () => {
     expect(mockQbService.getAllCategories).toHaveBeenCalledWith('server-1');
     expect(component.categories()).toHaveLength(2);

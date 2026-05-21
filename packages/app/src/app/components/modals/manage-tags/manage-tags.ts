@@ -20,6 +20,7 @@ export class ManageTags implements OnInit {
   public tags = signal<string[]>([]);
   public nameControl = new FormControl('', [Validators.required]);
   public adding = signal(false);
+  public loading = signal(true);
 
   public async ngOnInit(): Promise<void> {
     try {
@@ -29,6 +30,8 @@ export class ManageTags implements OnInit {
       this.tags.set([...tags].sort((a, b) => a.localeCompare(b)));
     } catch (err) {
       console.error(ManageTags.name, 'ngOnInit', 'Failed to load tags', err);
+    } finally {
+      this.loading.set(false);
     }
   }
 

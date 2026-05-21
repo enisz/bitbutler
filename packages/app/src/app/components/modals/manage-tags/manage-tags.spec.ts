@@ -38,6 +38,10 @@ describe('ManageTags', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should set loading to false after init completes', () => {
+    expect(component.loading()).toBe(false);
+  });
+
   it('should load tags sorted alphabetically', () => {
     expect(mockQbService.getAllTags).toHaveBeenCalledWith('server-1');
     expect(component.tags()).toEqual(['linux', 'movies']);

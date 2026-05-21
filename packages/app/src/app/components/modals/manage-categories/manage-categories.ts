@@ -30,6 +30,7 @@ export class ManageCategories implements OnInit {
   });
   public editSavePathControl = new FormControl('');
   public adding = signal(false);
+  public loading = signal(true);
 
   public async ngOnInit(): Promise<void> {
     try {
@@ -47,6 +48,8 @@ export class ManageCategories implements OnInit {
       );
     } catch (err) {
       console.error(ManageCategories.name, 'ngOnInit', 'Failed to load categories', err);
+    } finally {
+      this.loading.set(false);
     }
   }
 
