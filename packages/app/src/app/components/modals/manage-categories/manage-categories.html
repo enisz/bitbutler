@@ -92,11 +92,21 @@
               </div>
             </div>
             <div class="d-flex gap-1">
-              <button class="btn btn-secondary btn-sm" type="button" (click)="startEdit(item)">
-                {{ 'general.button.edit' | translate }}
+              <button
+                type="button"
+                class="btn btn-link p-1"
+                [ngbTooltip]="'general.button.edit' | translate"
+                (click)="startEdit(item)"
+              >
+                <fa-icon [icon]="icon.faEdit" />
               </button>
-              <button class="btn btn-danger btn-sm" type="button" (click)="delete(item)">
-                {{ 'general.button.delete' | translate }}
+              <button
+                type="button"
+                class="btn btn-link text-danger p-1"
+                [ngbTooltip]="'general.button.delete' | translate"
+                (click)="delete(item)"
+              >
+                <fa-icon [icon]="icon.faTrashCan" />
               </button>
             </div>
           </li>

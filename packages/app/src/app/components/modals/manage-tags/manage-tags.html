@@ -42,8 +42,13 @@
       @for (tag of tags(); track tag) {
         <li class="list-group-item d-flex align-items-center justify-content-between">
           <span>{{ tag }}</span>
-          <button class="btn btn-danger btn-sm" type="button" (click)="delete(tag)">
-            {{ 'general.button.delete' | translate }}
+          <button
+            type="button"
+            class="btn btn-link text-danger p-1"
+            [ngbTooltip]="'general.button.delete' | translate"
+            (click)="delete(tag)"
+          >
+            <fa-icon [icon]="icon.faTrashCan" />
           </button>
         </li>
       }

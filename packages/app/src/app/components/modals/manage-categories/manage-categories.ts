@@ -1,6 +1,8 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faEdit, faTrashCan } from '@fortawesome/free-regular-svg-icons';
+import { NgbActiveModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ConfirmService } from '../../../services/confirm.service';
 import { QbService } from '../../../services/qb.service';
@@ -15,7 +17,7 @@ interface CategoryItem {
 @Component({
   selector: 'app-manage-categories',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe],
+  imports: [ReactiveFormsModule, TranslatePipe, FontAwesomeModule, NgbTooltipModule],
   templateUrl: './manage-categories.html',
   styleUrl: './manage-categories.scss',
 })
@@ -24,6 +26,8 @@ export class ManageCategories implements OnInit {
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly confirmService = inject(ConfirmService);
   public readonly activeModal = inject(NgbActiveModal);
+
+  public readonly icon = { faEdit, faTrashCan };
 
   public categories = signal<CategoryItem[]>([]);
   public addForm = new FormGroup({
