@@ -65,7 +65,8 @@ export class ManageTags implements OnInit {
     try {
       this.adding.set(true);
       await this.qbService.createTags(serverId, names);
-      this.tags.set([...this.tags(), ...names].sort((a, b) => a.localeCompare(b)));
+      const newNames = names.filter((n) => !this.tags().includes(n));
+      this.tags.set([...this.tags(), ...newNames].sort((a, b) => a.localeCompare(b)));
       this.nameControl.reset();
     } catch (err) {
       console.error(ManageTags.name, 'add', 'Failed to add tag', err);

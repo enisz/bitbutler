@@ -109,6 +109,13 @@ describe('ManageTags', () => {
       await component.add();
       expect(mockQbService.createTags).toHaveBeenCalledWith('server-1', ['tag1', 'tag2', 'tag3']);
     });
+
+    it('should not add duplicate tags to local state when input contains existing tag', async () => {
+      component.nameControl.setValue('linux, newone'); // linux already loaded from mock
+      await component.add();
+      expect(component.tags().filter((t) => t === 'linux')).toHaveLength(1);
+      expect(component.tags()).toContain('newone');
+    });
   });
 
   describe('delete', () => {
