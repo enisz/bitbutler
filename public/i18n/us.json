@@ -593,10 +593,13 @@
         "add-form": {
           "name": "Tag name"
         },
+        "filter": {
+          "placeholder": "Filter tags..."
+        },
         "empty": "No tags yet.",
         "delete-confirm": {
           "title": "Delete Tag",
-          "message": "Are you sure you want to delete the tag \"{{ name }}\"?"
+          "message": "Are you sure you want to delete the tag \"{{ name }}\"? It is used by {{ count }} torrent(s)."
         }
       },
       "manage-categories": {
@@ -605,13 +608,16 @@
           "name": "Category name",
           "save-path": "Save path (optional)"
         },
+        "filter": {
+          "placeholder": "Filter categories..."
+        },
         "list": {
           "no-save-path": "No save path"
         },
         "empty": "No categories yet.",
         "delete-confirm": {
           "title": "Delete Category",
-          "message": "Are you sure you want to delete the category \"{{ name }}\"?"
+          "message": "Are you sure you want to delete the category \"{{ name }}\"? It is assigned to {{ count }} torrent(s)."
         }
       }
     },

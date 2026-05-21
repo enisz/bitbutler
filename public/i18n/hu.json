@@ -593,10 +593,13 @@
         "add-form": {
           "name": "Cimke neve"
         },
+        "filter": {
+          "placeholder": "Cimkék szűrése..."
+        },
         "empty": "Még nincsenek cimkék.",
         "delete-confirm": {
-          "title": "Delete Tag",
-          "message": "Are you sure you want to delete the tag \"{{ name }}\"?"
+          "title": "Cimke törlése",
+          "message": "Biztosan törölni szeretnéd a \"{{ name }}\" cimkét? {{ count }} torrent használja."
         }
       },
       "manage-categories": {
@@ -605,13 +608,16 @@
           "name": "Kategória neve",
           "save-path": "Mentési útvonal (opcionális)"
         },
+        "filter": {
+          "placeholder": "Kategóriák szűrése..."
+        },
         "list": {
           "no-save-path": "Nincs mentési útvonal"
         },
         "empty": "Még nincsenek kategóriák.",
         "delete-confirm": {
-          "title": "Delete Category",
-          "message": "Are you sure you want to delete the category \"{{ name }}\"?"
+          "title": "Kategória törlése",
+          "message": "Biztosan törölni szeretnéd a \"{{ name }}\" kategóriát? {{ count }} torrenthez van hozzárendelve."
         }
       }
     },
