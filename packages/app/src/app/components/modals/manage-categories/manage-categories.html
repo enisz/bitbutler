@@ -87,13 +87,13 @@
                 <input
                   type="text"
                   class="form-control"
-                  id="category-edit-path"
+                  [id]="'category-edit-path-' + item.name"
                   placeholder="Save path"
                   [formControl]="editSavePathControl"
                   (keydown.enter)="saveEdit(item)"
                   (keydown.escape)="cancelEdit()"
                 />
-                <label for="category-edit-path">{{ item.name }}</label>
+                <label [for]="'category-edit-path-' + item.name">{{ item.name }}</label>
               </div>
               <button
                 type="button"
