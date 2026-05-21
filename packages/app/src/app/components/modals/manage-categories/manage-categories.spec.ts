@@ -205,5 +205,12 @@ describe('ManageCategories', () => {
       component.filterControl.setValue('');
       expect(component.filteredCategories()).toHaveLength(2);
     });
+
+    it('should clear the filter control when clearFilter is called', () => {
+      component.filterControl.setValue('linux');
+      expect(component.filterControl.value).toBe('linux');
+      component.clearFilter();
+      expect(component.filterControl.value).toBeNull();
+    });
   });
 });

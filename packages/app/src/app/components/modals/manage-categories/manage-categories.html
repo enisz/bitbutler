@@ -50,12 +50,24 @@
 
   @if (!loading()) {
     <div class="mb-3">
-      <input
-        type="text"
-        class="form-control"
-        [placeholder]="'components.modals.manage-categories.filter.placeholder' | translate"
-        [formControl]="filterControl"
-      />
+      <div class="bb-filter-input">
+        <input
+          type="text"
+          class="form-control"
+          [placeholder]="'components.modals.manage-categories.filter.placeholder' | translate"
+          [formControl]="filterControl"
+        />
+        @if (filterControl.value) {
+          <button
+            type="button"
+            class="bb-filter-clear"
+            (click)="clearFilter()"
+            aria-label="Clear filter"
+          >
+            <fa-icon [icon]="icon.faXmark"></fa-icon>
+          </button>
+        }
+      </div>
     </div>
   }
 

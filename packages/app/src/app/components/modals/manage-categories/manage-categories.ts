@@ -3,6 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faEdit, faTrashCan } from '@fortawesome/free-regular-svg-icons';
+import { faCheck, faX, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ConfirmService } from '../../../services/confirm.service';
@@ -30,7 +31,7 @@ export class ManageCategories implements OnInit {
   private readonly torrentStoreService = inject(TorrentStoreService);
   public readonly activeModal = inject(NgbActiveModal);
 
-  public readonly icon = { faEdit, faTrashCan };
+  public readonly icon = { faEdit, faTrashCan, faCheck, faX, faXmark };
 
   public categories = signal<CategoryItem[]>([]);
   public addForm = new FormGroup({
@@ -49,6 +50,10 @@ export class ManageCategories implements OnInit {
     if (!filter) return this.categories();
     return this.categories().filter((c) => c.editing || c.name.toLowerCase().includes(filter));
   });
+
+  public clearFilter(): void {
+    this.filterControl.reset();
+  }
 
   public async ngOnInit(): Promise<void> {
     try {
