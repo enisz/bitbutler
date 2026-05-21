@@ -15,12 +15,13 @@ import {
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
 } from '@angular/forms';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgFooterTemplateDirective, NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe } from '@ngx-translate/core';
-import { CommandBusService } from '../../services/command-bus.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { BbPopover } from '../bb-popover/bb-popover';
+import { ManageCategories } from '../modals/manage-categories/manage-categories';
 
 @Component({
   selector: 'app-category-select',
@@ -49,7 +50,7 @@ export class CategorySelect implements OnInit, ControlValueAccessor, AfterViewIn
 
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly qbService = inject(QbService);
-  private readonly commandBusService = inject(CommandBusService);
+  private readonly modalService = inject(NgbModal);
 
   public categories = signal<string[]>([]);
   public selectControl = new FormControl('');
@@ -58,17 +59,21 @@ export class CategorySelect implements OnInit, ControlValueAccessor, AfterViewIn
   private onTouched: () => void = () => {};
 
   ngOnInit(): void {
+    this.loadCategories();
+
+    this.selectControl.valueChanges.subscribe((value) => {
+      this.onChange(value);
+      this.onTouched();
+    });
+  }
+
+  private loadCategories(): void {
     this.qbService
       .getAllCategories(this.serverStoreService.currentServerId() as string)
       .then((categories) => {
         this.categories.set(Object.keys(categories));
       })
       .catch((err) => console.error('Failed to get torrent categories!', err));
-
-    this.selectControl.valueChanges.subscribe((value) => {
-      this.onChange(value);
-      this.onTouched();
-    });
   }
 
   public ngAfterViewInit(): void {
@@ -107,6 +112,10 @@ export class CategorySelect implements OnInit, ControlValueAccessor, AfterViewIn
 
   public openManageCategories(): void {
     this.ngselect.close();
-    this.commandBusService.emit({ type: 'UI_MANAGE_CATEGORIES' });
+    const ref = this.modalService.open(ManageCategories);
+    ref.result.then(
+      () => this.loadCategories(),
+      () => this.loadCategories(),
+    );
   }
 }

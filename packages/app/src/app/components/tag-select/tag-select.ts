@@ -15,12 +15,13 @@ import {
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
 } from '@angular/forms';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgFooterTemplateDirective, NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe } from '@ngx-translate/core';
-import { CommandBusService } from '../../services/command-bus.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { BbPopover } from '../bb-popover/bb-popover';
+import { ManageTags } from '../modals/manage-tags/manage-tags';
 
 @Component({
   selector: 'app-tag-select',
@@ -49,7 +50,7 @@ export class TagSelect implements OnInit, ControlValueAccessor, AfterViewInit {
 
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly qbService = inject(QbService);
-  private readonly commandBusService = inject(CommandBusService);
+  private readonly modalService = inject(NgbModal);
 
   public tags = signal<string[]>([]);
   public selectControl = new FormControl<string[]>([]);
@@ -102,7 +103,11 @@ export class TagSelect implements OnInit, ControlValueAccessor, AfterViewInit {
 
   public openManageTags(): void {
     this.ngselect.close();
-    this.commandBusService.emit({ type: 'UI_MANAGE_TAGS' });
+    const ref = this.modalService.open(ManageTags);
+    ref.result.then(
+      () => this.loadAllTags(),
+      () => this.loadAllTags(),
+    );
   }
 
   private async loadAllTags(): Promise<void> {

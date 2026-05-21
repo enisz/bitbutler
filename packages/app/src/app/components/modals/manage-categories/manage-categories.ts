@@ -10,6 +10,7 @@ import { ConfirmService } from '../../../services/confirm.service';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
+import { BbSpinner } from '../../bb-spinner/bb-spinner';
 
 interface CategoryItem {
   name: string;
@@ -20,7 +21,7 @@ interface CategoryItem {
 @Component({
   selector: 'app-manage-categories',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe, FontAwesomeModule, NgbTooltipModule],
+  imports: [ReactiveFormsModule, TranslatePipe, FontAwesomeModule, NgbTooltipModule, BbSpinner],
   templateUrl: './manage-categories.html',
   styleUrl: './manage-categories.scss',
 })

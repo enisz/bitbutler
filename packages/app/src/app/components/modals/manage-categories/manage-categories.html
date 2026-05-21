@@ -73,9 +73,7 @@
 
   @if (loading()) {
     <div class="d-flex justify-content-center py-3">
-      <div class="spinner-border spinner-border-sm" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
+      <app-bb-spinner></app-bb-spinner>
     </div>
   } @else if (filteredCategories().length > 0) {
     <ul class="list-group">
