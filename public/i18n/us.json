@@ -169,7 +169,7 @@
           "line2": "If Auto TMM is enabled, changing the category may automatically move the files."
         }
       },
-      "manage": "Manage categories..."
+      "manage": "Manage categories"
     },
     "datepicker-filter": {},
     "datepicker-range-filter": {
@@ -663,7 +663,7 @@
           "line2": "Unlike categories, a torrent can have multiple tags, and tags do not affect the save path."
         }
       },
-      "manage": "Manage tags..."
+      "manage": "Manage tags"
     },
     "save-path-select": {
       "label": "Save Path",

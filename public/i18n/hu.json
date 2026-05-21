@@ -169,7 +169,7 @@
           "line2": "Ha az automatikus torrentkezelés (TMM) engedélyezve van, a kategória megváltoztatása automatikusan áthelyezheti a fájlokat."
         }
       },
-      "manage": "Kategóriák kezelése..."
+      "manage": "Kategóriák kezelése"
     },
     "datepicker-filter": {},
     "datepicker-range-filter": {
@@ -663,7 +663,7 @@
           "line2": "A kategóriákkal ellentétben egy torrenthez több címke is rendelhető, és a címkék nem befolyásolják a mentési útvonalat."
         }
       },
-      "manage": "Cimkék kezelése..."
+      "manage": "Cimkék kezelése"
     },
     "save-path-select": {
       "label": "Mentési útvonal",
