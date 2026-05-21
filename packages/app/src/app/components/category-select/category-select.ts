@@ -15,8 +15,9 @@ import {
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { NgSelectComponent } from '@ng-select/ng-select';
+import { NgFooterTemplateDirective, NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe } from '@ngx-translate/core';
+import { CommandBusService } from '../../services/command-bus.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { BbPopover } from '../bb-popover/bb-popover';
@@ -24,7 +25,14 @@ import { BbPopover } from '../bb-popover/bb-popover';
 @Component({
   selector: 'app-category-select',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgSelectComponent, TranslatePipe, BbPopover],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    NgSelectComponent,
+    NgFooterTemplateDirective,
+    TranslatePipe,
+    BbPopover,
+  ],
   templateUrl: './category-select.html',
   styleUrls: ['./category-select.scss'],
   providers: [
@@ -41,6 +49,7 @@ export class CategorySelect implements OnInit, ControlValueAccessor, AfterViewIn
 
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly qbService = inject(QbService);
+  private readonly commandBusService = inject(CommandBusService);
 
   public categories = signal<string[]>([]);
   public selectControl = new FormControl('');
@@ -94,5 +103,11 @@ export class CategorySelect implements OnInit, ControlValueAccessor, AfterViewIn
     }
 
     return true;
+  }
+
+  public openManageCategories(event: Event): void {
+    event.preventDefault();
+    this.ngselect.close();
+    this.commandBusService.emit({ type: 'UI_MANAGE_CATEGORIES' });
   }
 }

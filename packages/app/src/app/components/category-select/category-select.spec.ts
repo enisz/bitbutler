@@ -1,5 +1,6 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { CommandBusService } from '../../services/command-bus.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { CategorySelect } from './category-select';
@@ -19,6 +20,7 @@ describe('CategorySelect', () => {
       providers: [
         { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
         { provide: QbService, useValue: mockQbService },
+        { provide: CommandBusService, useValue: { emit: vi.fn() } },
       ],
     }).compileComponents();
 
@@ -82,6 +84,17 @@ describe('CategorySelect', () => {
       component.ngOnInit();
       component.selectControl.setValue('movies');
       expect(onChange).toHaveBeenCalledWith('movies');
+    });
+  });
+
+  describe('openManageCategories', () => {
+    it('should emit UI_MANAGE_CATEGORIES and prevent default', () => {
+      const commandBus = TestBed.inject(CommandBusService);
+      const event = new MouseEvent('click');
+      vi.spyOn(event, 'preventDefault');
+      component.openManageCategories(event);
+      expect(event.preventDefault).toHaveBeenCalled();
+      expect(commandBus.emit).toHaveBeenCalledWith({ type: 'UI_MANAGE_CATEGORIES' });
     });
   });
 });

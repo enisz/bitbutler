@@ -1,5 +1,6 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { CommandBusService } from '../../services/command-bus.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { TagSelect } from './tag-select';
@@ -8,18 +9,20 @@ describe('TagSelect', () => {
   let component: TagSelect;
   let fixture: ComponentFixture<TagSelect>;
   let mockQbService: any;
+  let mockCommandBusService: Partial<CommandBusService>;
 
   beforeEach(async () => {
     mockQbService = {
       getAllTags: vi.fn().mockResolvedValue(['action', 'comedy']),
-      createTags: vi.fn().mockResolvedValue(undefined),
     };
+    mockCommandBusService = { emit: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [TagSelect],
       providers: [
         { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
         { provide: QbService, useValue: mockQbService },
+        { provide: CommandBusService, useValue: mockCommandBusService },
       ],
     }).compileComponents();
 
@@ -77,12 +80,13 @@ describe('TagSelect', () => {
     });
   });
 
-  describe('addTag', () => {
-    it('should call createTags and add the new tag to the list', async () => {
-      component.tags.set(['action']);
-      await component.addTag('drama');
-      expect(mockQbService.createTags).toHaveBeenCalledWith('server-1', ['drama']);
-      expect(component.tags()).toContain('drama');
+  describe('openManageLabels', () => {
+    it('should emit UI_MANAGE_LABELS and prevent default', () => {
+      const event = new MouseEvent('click');
+      vi.spyOn(event, 'preventDefault');
+      component.openManageLabels(event);
+      expect(event.preventDefault).toHaveBeenCalled();
+      expect(mockCommandBusService.emit).toHaveBeenCalledWith({ type: 'UI_MANAGE_LABELS' });
     });
   });
 });

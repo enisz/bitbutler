@@ -11,6 +11,13 @@
           [openOnEnter]="false"
           #ngselect
         >
+          <ng-template ng-footer-tmp>
+            <div class="px-3 py-2 border-top">
+              <a href="#" class="small text-decoration-none" (click)="openManageCategories($event)">
+                {{ 'components.category-select.manage' | translate }}
+              </a>
+            </div>
+          </ng-template>
         </ng-select>
         <label>{{ 'components.category-select.label' | translate }}</label>
       </div>
