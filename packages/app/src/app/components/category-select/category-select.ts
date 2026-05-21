@@ -112,7 +112,9 @@ export class CategorySelect implements OnInit, ControlValueAccessor, AfterViewIn
 
   public openManageCategories(): void {
     this.ngselect.close();
-    const ref = this.modalService.open(ManageCategories);
+    const ref = this.modalService.open(ManageCategories, {
+      beforeDismiss: () => ref.componentInstance.canDeactivate(),
+    });
     ref.result.then(
       () => this.loadCategories(),
       () => this.loadCategories(),

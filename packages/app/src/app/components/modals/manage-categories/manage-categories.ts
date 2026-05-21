@@ -7,6 +7,7 @@ import { faCheck, faX, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AutofocusDirective } from '../../../directives/autofocus';
+import { GuardableModal } from '../../../models/guardable-modal.interface';
 import { ConfirmService } from '../../../services/confirm.service';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
@@ -33,7 +34,7 @@ interface CategoryItem {
   templateUrl: './manage-categories.html',
   styleUrl: './manage-categories.scss',
 })
-export class ManageCategories implements OnInit {
+export class ManageCategories implements OnInit, GuardableModal {
   private readonly qbService = inject(QbService);
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly confirmService = inject(ConfirmService);
@@ -43,6 +44,7 @@ export class ManageCategories implements OnInit {
   public readonly icon = { faEdit, faTrashCan, faCheck, faX, faXmark };
 
   public categories = signal<CategoryItem[]>([]);
+  private readonly isEditing = computed(() => this.categories().some((c) => c.editing));
   public addForm = new FormGroup({
     name: new FormControl('', [Validators.required]),
     savePath: new FormControl(''),
@@ -59,6 +61,17 @@ export class ManageCategories implements OnInit {
     if (!filter) return this.categories();
     return this.categories().filter((c) => c.editing || c.name.toLowerCase().includes(filter));
   });
+
+  public async canDeactivate(): Promise<boolean> {
+    if (!this.isEditing()) return true;
+
+    return this.confirmService.confirm(
+      'components.modals.guard.unsaved-title',
+      'components.modals.guard.unsaved-message',
+      'components.modals.guard.btn-leave',
+      'components.modals.guard.btn-stay',
+    );
+  }
 
   public clearFilter(): void {
     this.filterControl.reset();

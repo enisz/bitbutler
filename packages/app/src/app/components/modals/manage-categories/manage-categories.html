@@ -94,24 +94,26 @@
                 />
                 <label [for]="'category-edit-path-' + item.name">{{ item.name }}</label>
               </div>
-              <button
-                type="button"
-                class="btn btn-link text-success"
-                [ngbTooltip]="'general.button.save' | translate"
-                tooltipClass="single-line-tooltip"
-                (click)="saveEdit(item)"
-              >
-                <fa-icon [icon]="icon.faCheck"></fa-icon>
-              </button>
-              <button
-                type="button"
-                class="btn btn-link text-danger"
-                [ngbTooltip]="'general.button.cancel' | translate"
-                tooltipClass="single-line-tooltip"
-                (click)="cancelEdit()"
-              >
-                <fa-icon [icon]="icon.faX"></fa-icon>
-              </button>
+              <div class="d-flex gap-1">
+                <button
+                  type="button"
+                  class="btn btn-link text-success p-1"
+                  [ngbTooltip]="'general.button.save' | translate"
+                  tooltipClass="single-line-tooltip"
+                  (click)="saveEdit(item)"
+                >
+                  <fa-icon [icon]="icon.faCheck"></fa-icon>
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-link text-danger p-1"
+                  [ngbTooltip]="'general.button.cancel' | translate"
+                  tooltipClass="single-line-tooltip"
+                  (click)="cancelEdit()"
+                >
+                  <fa-icon [icon]="icon.faX"></fa-icon>
+                </button>
+              </div>
             </div>
           </li>
         } @else {

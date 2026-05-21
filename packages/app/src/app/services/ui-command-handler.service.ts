@@ -286,7 +286,9 @@ export class UiCommandHandlerService {
 
           case 'UI_MANAGE_CATEGORIES':
             if (this.isModalOpen(ManageCategories)) break;
-            const manageCategoriesModalRef = this.modalService.open(ManageCategories);
+            const manageCategoriesModalRef = this.modalService.open(ManageCategories, {
+              beforeDismiss: () => manageCategoriesModalRef.componentInstance.canDeactivate(),
+            });
             manageCategoriesModalRef.result.then(() => {}).catch(() => {});
             break;
 
