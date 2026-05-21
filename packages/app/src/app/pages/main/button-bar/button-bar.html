@@ -21,6 +21,8 @@
             placement="bottom"
             container="body"
             [disableTooltip]="!compact"
+            #groupTooltip="ngbTooltip"
+            (click)="groupTooltip.close()"
           >
             <span class="bb-tool__icon" aria-hidden="true">
               @if (e.icon) {
@@ -71,11 +73,12 @@
           [class.bb-tool--info]="e.variant === 'info'"
           [class.bb-tool--warning]="e.variant === 'warning'"
           [class.bb-tool--danger]="e.variant === 'danger'"
-          (click)="onClick(e.id)"
           [ngbTooltip]="e.label | translate"
           placement="bottom"
           container="body"
           [disableTooltip]="!compact"
+          #actionTooltip="ngbTooltip"
+          (click)="onClick(e.id); actionTooltip.close()"
         >
           <span class="bb-tool__icon" aria-hidden="true">
             @if (e.icon) {
