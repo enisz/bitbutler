@@ -106,6 +106,10 @@ describe('SavePathSelect', () => {
       expect(component.label).toBeNull();
     });
 
+    it('should have appendTo empty string by default', () => {
+      expect(component.appendTo).toBe('');
+    });
+
     it('should render bb-popover when showPopover is true (default)', () => {
       fixture.detectChanges();
       expect(fixture.nativeElement.querySelector('bb-popover')).not.toBeNull();

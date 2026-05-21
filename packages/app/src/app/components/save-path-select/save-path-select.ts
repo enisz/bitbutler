@@ -42,6 +42,7 @@ export class SavePathSelect implements OnInit, ControlValueAccessor, AfterViewIn
   @Input() clearable = false;
   @Input() showPopover = true;
   @Input() label: string | null = null;
+  @Input() appendTo = '';
   @ViewChild('ngselect') ngselect!: NgSelectComponent;
 
   private readonly torrentStoreService = inject(TorrentStoreService);
