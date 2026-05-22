@@ -30,6 +30,7 @@ import { PathService } from './path.service';
 import { QbService } from './qb.service';
 import { SelectionStoreService } from './selection-store.service';
 import { ServerStoreService } from './server-store.service';
+import { ServerService } from './server.service';
 import { ToastService } from './toast.service';
 
 @Injectable({ providedIn: 'root' })
@@ -40,6 +41,7 @@ export class UiCommandHandlerService {
   private readonly pathService = inject(PathService);
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
+  private readonly serverService = inject(ServerService);
   private readonly electronService = inject(ElectronService);
   private readonly qbService = inject(QbService);
   private readonly serverStoreService = inject(ServerStoreService);
@@ -356,6 +358,7 @@ export class UiCommandHandlerService {
           name,
         }),
       );
+      this.serverService.setActive(this.serverStoreService.currentServerId());
     } finally {
       appLoaderModal.close();
     }
