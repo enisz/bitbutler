@@ -751,6 +751,10 @@
           "down": "Le",
           "bottom": "Legalulra",
           "settings-group": "Beállítások",
+          "manage-group": "Kezelés",
+          "manage-servers": "Szerverek kezelése",
+          "manage-tags": "Cimkék kezelése",
+          "manage-categories": "Kategóriák kezelése",
           "settings": "BitButler Beállítások",
           "qb-settings": "qBittorrent Beállítások"
         },

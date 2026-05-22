@@ -752,7 +752,11 @@
           "bottom": "Bottom",
           "settings-group": "Settings",
           "settings": "BitButler Settings",
-          "qb-settings": "qBittorrent Settings"
+          "qb-settings": "qBittorrent Settings",
+          "manage-group": "Manage",
+          "manage-servers": "Manage Servers",
+          "manage-tags": "Manage Tags",
+          "manage-categories": "Manage Categories"
         },
         "search-form": {
           "search": "Search..."
