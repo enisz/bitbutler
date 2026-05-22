@@ -3,7 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faTrashCan } from '@fortawesome/free-regular-svg-icons';
-import { faPencil, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faCircleCheck, faPencil, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ServerRecord } from '../../../models/server.model';
@@ -26,7 +26,8 @@ export class ManageServers {
   private readonly modalService = inject(NgbModal);
   public readonly activeModal = inject(NgbActiveModal);
 
-  public readonly icon = { faPencil, faTrashCan, faXmark };
+  public readonly icon = { faPencil, faTrashCan, faXmark, faCircleCheck };
+  public readonly currentServerId = this.serverStoreService.currentServerId;
 
   public filterControl = new FormControl('');
   public editing = signal(false);
@@ -62,6 +63,11 @@ export class ManageServers {
     } finally {
       this.editing.set(false);
     }
+  }
+
+  public switchTo(server: ServerRecord): void {
+    this.activeModal.dismiss();
+    this.commandBusService.emit({ type: 'UI_SERVER_SWITCH', id: server.id });
   }
 
   public async delete(server: ServerRecord): Promise<void> {

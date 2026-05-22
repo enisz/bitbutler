@@ -616,6 +616,14 @@
           "placeholder": "Szerverek szűrése..."
         },
         "empty": "Nincsenek konfigurált szerverek.",
+        "button": {
+          "connect": "Csatlakozás"
+        },
+        "tooltip": {
+          "active": "Jelenleg aktív szerver",
+          "cannot-edit": "Az aktív szerver nem szerkeszthető",
+          "cannot-delete": "Az aktív szerver nem törölhető"
+        },
         "delete-confirm": {
           "title": "Szerver törlése",
           "message": "Biztosan törölni szeretnéd a \"{{ name }}\" szervert?"

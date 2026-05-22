@@ -1,9 +1,11 @@
 import { DestroyRef, Injectable, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateService } from '@ngx-translate/core';
 import { filter } from 'rxjs';
 import { About } from '../components/about/about';
 import { AddTorrent } from '../components/add-torrent/add-torrent';
+import { AppLoader } from '../components/app-loader/app-loader';
 import { DeleteTorrent } from '../components/modals/delete-torrent/delete-torrent';
 import { ManageCategories } from '../components/modals/manage-categories/manage-categories';
 import { ManageServers } from '../components/modals/manage-servers/manage-servers';
@@ -37,6 +39,7 @@ export class UiCommandHandlerService {
   private readonly selectionStoreService = inject(SelectionStoreService);
   private readonly pathService = inject(PathService);
   private readonly toastService = inject(ToastService);
+  private readonly translateService = inject(TranslateService);
   private readonly electronService = inject(ElectronService);
   private readonly qbService = inject(QbService);
   private readonly serverStoreService = inject(ServerStoreService);
@@ -301,10 +304,61 @@ export class UiCommandHandlerService {
             manageServersModalRef.result.then(() => {}).catch(() => {});
             break;
 
+          case 'UI_SERVER_SWITCH':
+            this.handleServerSwitch(command.id);
+            break;
+
           default:
             console.warn(UiCommandHandlerService.name, 'start', 'Unhandled UI command', command);
         }
       });
+  }
+
+  private async handleServerSwitch(serverId: string): Promise<void> {
+    const server = this.serverStoreService.servers().find((s) => s.id === serverId);
+    const name = server?.name || '';
+
+    this.toastService.info(
+      this.translateService.instant('services.menu-bar-command-handler.info.switching-server', {
+        name,
+      }),
+    );
+
+    const appLoaderModal = this.modalService.open(AppLoader, { size: 'sm', centered: true });
+    appLoaderModal.componentInstance.title = this.translateService.instant(
+      'services.menu-bar-command-handler.app-loader.title',
+    );
+    appLoaderModal.componentInstance.message = this.translateService.instant(
+      'services.menu-bar-command-handler.app-loader.message',
+      { name },
+    );
+
+    try {
+      const hasSession = await this.qbService.hasCookie(serverId);
+
+      if (!hasSession) {
+        const loginRes = await this.qbService.login(serverId);
+        if (!loginRes.loggedIn) {
+          throw new Error('Login failed');
+        }
+      }
+
+      (this.serverStoreService as any).select(serverId);
+    } catch (err) {
+      console.error(
+        UiCommandHandlerService.name,
+        'handleServerSwitch',
+        'Failed to switch servers',
+        err,
+      );
+      this.toastService.danger(
+        this.translateService.instant('services.menu-bar-command-handler.error.failed-to-connect', {
+          name,
+        }),
+      );
+    } finally {
+      appLoaderModal.close();
+    }
   }
 
   private uiCommandGuard(cmd: AppCommand): cmd is UiCommand {

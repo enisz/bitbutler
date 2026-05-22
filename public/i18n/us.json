@@ -616,6 +616,14 @@
           "placeholder": "Filter servers..."
         },
         "empty": "No servers configured.",
+        "button": {
+          "connect": "Connect"
+        },
+        "tooltip": {
+          "active": "Currently active server",
+          "cannot-edit": "Cannot edit the active server",
+          "cannot-delete": "Cannot delete the active server"
+        },
         "delete-confirm": {
           "title": "Delete Server",
           "message": "Are you sure you want to delete the server \"{{ name }}\"?"
