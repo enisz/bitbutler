@@ -57,7 +57,8 @@
       "Bash(Get-ChildItem -Recurse -Filter \"*.spec.ts\" \"packages/app/src\")",
       "Bash(Select-String \"TranslateService\")",
       "Bash(Select-Object -First 3 -ExpandProperty Path)",
-      "Bash(npm start *)"
+      "Bash(npm start *)",
+      "Bash(Get-ChildItem *)"
     ]
   }
 }
