@@ -96,6 +96,11 @@ ng-select.ng-select .ng-select-container .ng-input input {
   border-bottom: none !important;
 }
 
+.ng-dropdown-panel .ng-dropdown-footer {
+  border-top: none !important;
+  padding: 0 !important;
+}
+
 .ng-dropdown-panel .ng-option strong {
   font-weight: 700;
 }
