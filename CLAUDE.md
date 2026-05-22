@@ -104,4 +104,4 @@ Three lazy-loaded routes: `login`, `main` (torrent grid), `settings`. The router
 
 - **Feature branches:** Use the pattern `<issue-id>-<dash-separated-summary>` (e.g. `100-manage-labels-and-categories`).
 - **Issue templates:** When opening new issues, use the appropriate template from `.github/ISSUE_TEMPLATE/`.
-- **PR template:** PR descriptions must follow `.github/pull_request_template.md`.
+- **PR template:** ALWAYS read `.github/pull_request_template.md` before running `gh pr create` and use it as the exact structure for `--body`. Do not invent a different format.
