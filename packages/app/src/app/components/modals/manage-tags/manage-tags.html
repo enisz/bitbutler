@@ -9,8 +9,8 @@
 </div>
 
 <div class="modal-body">
-  <div class="d-flex gap-2 mb-3 align-items-center">
-    <div class="form-floating flex-grow-1">
+  <div class="input-group mb-1">
+    <div class="form-floating">
       <input
         type="text"
         class="form-control"
@@ -23,7 +23,7 @@
       <label for="tag-name">{{ 'components.modals.manage-tags.add-form.name' | translate }}</label>
     </div>
     <button
-      class="btn btn-primary"
+      class="btn btn-outline-primary"
       type="button"
       (click)="add()"
       [disabled]="!(nameControl.value ?? '').trim() || adding()"
@@ -31,6 +31,7 @@
       {{ 'general.button.add' | translate }}
     </button>
   </div>
+  <div class="form-text mb-3">{{ 'components.modals.manage-tags.add-form.hint' | translate }}</div>
 
   @if (!loading()) {
     <div class="mb-3">

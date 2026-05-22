@@ -591,7 +591,8 @@
       "manage-tags": {
         "title": "Manage Tags",
         "add-form": {
-          "name": "Tag name"
+          "name": "Tag name",
+          "hint": "Use comma separated list to add multiple tags in one go"
         },
         "filter": {
           "placeholder": "Filter tags..."

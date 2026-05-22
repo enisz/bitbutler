@@ -591,7 +591,8 @@
       "manage-tags": {
         "title": "Cimkék kezelése",
         "add-form": {
-          "name": "Cimke neve"
+          "name": "Cimke neve",
+          "hint": "Vesszővel elválasztott lista használatával egyszerre több cimkét is hozzáadhatsz"
         },
         "filter": {
           "placeholder": "Cimkék szűrése..."
