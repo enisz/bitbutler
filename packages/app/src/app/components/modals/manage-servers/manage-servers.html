@@ -36,7 +36,7 @@
     <ul class="list-group">
       @for (server of filteredServers(); track server.id) {
         <li class="list-group-item d-flex align-items-center justify-content-between">
-          <div class="overflow-hidden me-2 d-flex align-items-center gap-2">
+          <div class="overflow-hidden me-2 d-flex align-items-center gap-3">
             @if (currentServerId() === server.id) {
               <fa-icon
                 [icon]="icon.faCircleCheck"
