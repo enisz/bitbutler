@@ -3,7 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faTrashCan } from '@fortawesome/free-regular-svg-icons';
-import { faCircleCheck, faPencil, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faCircleCheck, faPencil, faPlug, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
@@ -33,7 +33,7 @@ export class ManageServers {
   private readonly modalService = inject(NgbModal);
   public readonly activeModal = inject(NgbActiveModal);
 
-  public readonly icon = { faPencil, faTrashCan, faXmark, faCircleCheck };
+  public readonly icon = { faPencil, faTrashCan, faXmark, faCircleCheck, faPlug };
   public readonly currentServerId = this.serverStoreService.currentServerId;
 
   public filterControl = new FormControl('');

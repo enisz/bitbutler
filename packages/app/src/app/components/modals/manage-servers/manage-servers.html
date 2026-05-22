@@ -67,11 +67,12 @@
             @if (currentServerId() !== server.id) {
               <button
                 type="button"
-                class="btn btn-sm btn-outline-primary"
+                class="btn btn-link p-1"
+                [ngbTooltip]="'components.modals.manage-servers.button.connect' | translate"
                 (click)="switchTo(server)"
                 [disabled]="editing()"
               >
-                {{ 'components.modals.manage-servers.button.connect' | translate }}
+                <fa-icon [icon]="icon.faPlug" />
               </button>
               <button
                 type="button"
