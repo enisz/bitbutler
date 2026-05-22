@@ -7,6 +7,7 @@ import { faCheck, faX, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AutofocusDirective } from '../../../directives/autofocus';
+import { TooltipOverflow } from '../../../directives/tooltip-overflow';
 import { GuardableModal } from '../../../models/guardable-modal.interface';
 import { ConfirmService } from '../../../services/confirm.service';
 import { QbService } from '../../../services/qb.service';
@@ -32,6 +33,7 @@ interface CategoryItem {
     NgbTooltipModule,
     BbSpinner,
     AutofocusDirective,
+    TooltipOverflow,
     SavePathSelect,
   ],
   templateUrl: './manage-categories.html',

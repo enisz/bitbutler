@@ -6,6 +6,7 @@ import { faTrashCan } from '@fortawesome/free-regular-svg-icons';
 import { faCircleCheck, faPencil, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
+import { TooltipOverflow } from '../../../directives/tooltip-overflow';
 import { ServerRecord } from '../../../models/server.model';
 import { CommandBusService } from '../../../services/command-bus.service';
 import { ConfirmService } from '../../../services/confirm.service';
@@ -15,7 +16,13 @@ import { ServerEditor } from '../server-editor/server-editor';
 @Component({
   selector: 'app-manage-servers',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe, FontAwesomeModule, NgbTooltipModule],
+  imports: [
+    ReactiveFormsModule,
+    TranslatePipe,
+    FontAwesomeModule,
+    NgbTooltipModule,
+    TooltipOverflow,
+  ],
   templateUrl: './manage-servers.html',
   styleUrl: './manage-servers.scss',
 })

@@ -113,16 +113,22 @@
           </li>
         } @else {
           <li class="list-group-item d-flex align-items-center justify-content-between">
-            <div>
-              <div class="fw-semibold">{{ item.name }}</div>
-              <div class="small text-body-secondary">
+            <div class="overflow-hidden me-2">
+              <div class="fw-semibold text-truncate" [ngbTooltip]="item.name" bbTooltipOverflow>
+                {{ item.name }}
+              </div>
+              <div
+                class="small text-body-secondary text-truncate"
+                [ngbTooltip]="item.savePath"
+                bbTooltipOverflow
+              >
                 {{
                   item.savePath ||
                     ('components.modals.manage-categories.list.no-save-path' | translate)
                 }}
               </div>
             </div>
-            <div class="d-flex gap-1">
+            <div class="d-flex gap-1 flex-shrink-0">
               <button
                 type="button"
                 class="btn btn-link p-1"

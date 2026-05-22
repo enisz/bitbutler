@@ -64,10 +64,10 @@
     <ul class="list-group">
       @for (tag of filteredTags(); track tag) {
         <li class="list-group-item d-flex align-items-center justify-content-between">
-          <span>{{ tag }}</span>
+          <span class="text-truncate me-2" [ngbTooltip]="tag" bbTooltipOverflow>{{ tag }}</span>
           <button
             type="button"
-            class="btn btn-link text-danger p-1"
+            class="btn btn-link text-danger p-1 flex-shrink-0"
             [ngbTooltip]="'general.button.delete' | translate"
             (click)="delete(tag)"
           >
