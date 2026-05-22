@@ -31,7 +31,7 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
   }));
 
   const serverSubmenuItems: Electron.MenuItemConstructorOptions[] =
-    servers.length >= 2 ? [...serverMenuItems, { type: 'separator' }] : [];
+    servers.length > 0 ? [...serverMenuItems, { type: 'separator' }] : [];
 
   const loggedInItems: Electron.MenuItemConstructorOptions[] = loggedIn
     ? [
@@ -40,8 +40,8 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
           submenu: [
             ...serverSubmenuItems,
             {
-              label: t('electron.menu.add-new'),
-              click: () => sendMenuAction(mainWindow, 'server.add'),
+              label: t('electron.menu.manage-servers'),
+              click: () => sendMenuAction(mainWindow, 'server.manage'),
             },
           ],
         },

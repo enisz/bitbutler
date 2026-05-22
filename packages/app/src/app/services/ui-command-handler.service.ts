@@ -6,6 +6,7 @@ import { About } from '../components/about/about';
 import { AddTorrent } from '../components/add-torrent/add-torrent';
 import { DeleteTorrent } from '../components/modals/delete-torrent/delete-torrent';
 import { ManageCategories } from '../components/modals/manage-categories/manage-categories';
+import { ManageServers } from '../components/modals/manage-servers/manage-servers';
 import { ManageTags } from '../components/modals/manage-tags/manage-tags';
 import { RenameTorrent } from '../components/modals/rename-torrent/rename-torrent';
 import { ServerEditor } from '../components/modals/server-editor/server-editor';
@@ -292,6 +293,12 @@ export class UiCommandHandlerService {
               beforeDismiss: () => manageCategoriesModalRef.componentInstance.canDeactivate(),
             });
             manageCategoriesModalRef.result.then(() => {}).catch(() => {});
+            break;
+
+          case 'UI_MANAGE_SERVERS':
+            if (this.isModalOpen(ManageServers)) break;
+            const manageServersModalRef = this.modalService.open(ManageServers);
+            manageServersModalRef.result.then(() => {}).catch(() => {});
             break;
 
           default:

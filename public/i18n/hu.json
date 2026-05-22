@@ -610,6 +610,17 @@
           "delete-failed": "Nem sikerült törölni a \"{{ name }}\" cimkét."
         }
       },
+      "manage-servers": {
+        "title": "Szerverek kezelése",
+        "filter": {
+          "placeholder": "Szerverek szűrése..."
+        },
+        "empty": "Nincsenek konfigurált szerverek.",
+        "delete-confirm": {
+          "title": "Szerver törlése",
+          "message": "Biztosan törölni szeretnéd a \"{{ name }}\" szervert?"
+        }
+      },
       "manage-categories": {
         "title": "Kategóriák kezelése",
         "add-form": {
@@ -1358,6 +1369,7 @@
       "qb-settings": "qBittorrent beállítások",
       "manage-tags": "Cimkék kezelése",
       "manage-categories": "Kategóriák kezelése",
+      "manage-servers": "Szerverek kezelése...",
       "help": "Súgó",
       "check-for-updates": "Frissítések keresése",
       "about": "A BitButlerről"

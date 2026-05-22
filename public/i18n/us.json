@@ -610,6 +610,17 @@
           "delete-failed": "Failed to delete tag \"{{ name }}\"."
         }
       },
+      "manage-servers": {
+        "title": "Manage Servers",
+        "filter": {
+          "placeholder": "Filter servers..."
+        },
+        "empty": "No servers configured.",
+        "delete-confirm": {
+          "title": "Delete Server",
+          "message": "Are you sure you want to delete the server \"{{ name }}\"?"
+        }
+      },
       "manage-categories": {
         "title": "Manage Categories",
         "add-form": {
@@ -1358,6 +1369,7 @@
       "qb-settings": "qBittorrent Settings",
       "manage-tags": "Manage Tags",
       "manage-categories": "Manage Categories",
+      "manage-servers": "Manage Servers...",
       "help": "Help",
       "check-for-updates": "Check for Updates",
       "about": "About BitButler"

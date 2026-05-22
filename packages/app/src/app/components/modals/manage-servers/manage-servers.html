@@ -1,0 +1,89 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ 'components.modals.manage-servers.title' | translate }}</h5>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="activeModal.dismiss()"
+  ></button>
+</div>
+
+<div class="modal-body">
+  @if (hasServers()) {
+    <div class="mb-3">
+      <div class="bb-filter-input">
+        <input
+          type="text"
+          class="form-control"
+          [placeholder]="'components.modals.manage-servers.filter.placeholder' | translate"
+          [formControl]="filterControl"
+        />
+        @if (filterControl.value) {
+          <button
+            type="button"
+            class="bb-filter-clear"
+            (click)="clearFilter()"
+            aria-label="Clear filter"
+          >
+            <fa-icon [icon]="icon.faXmark"></fa-icon>
+          </button>
+        }
+      </div>
+    </div>
+  }
+
+  @if (filteredServers().length > 0) {
+    <ul class="list-group">
+      @for (server of filteredServers(); track server.id) {
+        <li class="list-group-item d-flex align-items-center justify-content-between">
+          <div class="overflow-hidden me-2">
+            <div class="fw-medium text-truncate">{{ server.name || server.host }}</div>
+            <div class="text-body-secondary small text-truncate">
+              {{ server.protocol }}://{{ server.host }}:{{ server.port }}
+            </div>
+          </div>
+          <div class="d-flex gap-1 flex-shrink-0">
+            <button
+              type="button"
+              class="btn btn-link p-1"
+              [ngbTooltip]="'general.button.edit' | translate"
+              [disableTooltip]="editing()"
+              (click)="openEditor(server.id)"
+              [disabled]="editing()"
+            >
+              <fa-icon [icon]="icon.faPencil" />
+            </button>
+            <button
+              type="button"
+              class="btn btn-link text-danger p-1"
+              [ngbTooltip]="'general.button.delete' | translate"
+              [disableTooltip]="editing()"
+              (click)="delete(server)"
+              [disabled]="editing()"
+            >
+              <fa-icon [icon]="icon.faTrashCan" />
+            </button>
+          </div>
+        </li>
+      }
+    </ul>
+  } @else {
+    <p class="text-body-secondary small mb-0">
+      {{ 'components.modals.manage-servers.empty' | translate }}
+    </p>
+  }
+</div>
+
+<div class="modal-footer justify-content-between">
+  <button
+    type="button"
+    class="btn btn-outline-primary"
+    (click)="openEditor()"
+    [disabled]="editing()"
+  >
+    {{ 'general.button.add-server' | translate }}
+  </button>
+  <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss()">
+    {{ 'general.button.close' | translate }}
+  </button>
+</div>

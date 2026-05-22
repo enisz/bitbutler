@@ -51,8 +51,8 @@ export class MenuBarCommandHandlerService {
           this.disconnect();
           break;
 
-        case 'server.add':
-          this.commandBusService.emit({ type: 'UI_SERVER_EDITOR_OPEN' });
+        case 'server.manage':
+          this.commandBusService.emit({ type: 'UI_MANAGE_SERVERS' });
           break;
 
         case 'server.select':
