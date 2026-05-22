@@ -63,8 +63,8 @@
             </div>
           </div>
 
-          <div class="d-flex gap-1 flex-shrink-0 align-items-center">
-            @if (currentServerId() !== server.id) {
+          @if (currentServerId() !== server.id) {
+            <div class="d-flex gap-1 flex-shrink-0 align-items-center">
               <button
                 type="button"
                 class="btn btn-link p-1"
@@ -96,25 +96,8 @@
               >
                 <fa-icon [icon]="icon.faTrashCan" />
               </button>
-            } @else {
-              <span
-                [ngbTooltip]="'components.modals.manage-servers.tooltip.cannot-edit' | translate"
-                container="body"
-              >
-                <button type="button" class="btn btn-link p-1" disabled>
-                  <fa-icon [icon]="icon.faPencil" />
-                </button>
-              </span>
-              <span
-                [ngbTooltip]="'components.modals.manage-servers.tooltip.cannot-delete' | translate"
-                container="body"
-              >
-                <button type="button" class="btn btn-link text-danger p-1" disabled>
-                  <fa-icon [icon]="icon.faTrashCan" />
-                </button>
-              </span>
-            }
-          </div>
+            </div>
+          }
         </li>
       }
     </ul>

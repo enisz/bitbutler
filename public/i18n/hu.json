@@ -622,9 +622,7 @@
           "connect": "Csatlakozás"
         },
         "tooltip": {
-          "active": "Jelenleg aktív szerver",
-          "cannot-edit": "Az aktív szerver nem szerkeszthető",
-          "cannot-delete": "Az aktív szerver nem törölhető"
+          "active": "Jelenleg aktív szerver"
         },
         "delete-confirm": {
           "title": "Szerver törlése",
@@ -752,11 +750,11 @@
           "bottom": "Legalulra",
           "settings-group": "Beállítások",
           "manage-group": "Kezelés",
-          "manage-servers": "Szerverek kezelése",
-          "manage-tags": "Cimkék kezelése",
-          "manage-categories": "Kategóriák kezelése",
-          "settings": "BitButler Beállítások",
-          "qb-settings": "qBittorrent Beállítások"
+          "manage-servers": "Szerverek",
+          "manage-tags": "Cimkék",
+          "manage-categories": "Kategóriák",
+          "settings": "BitButler",
+          "qb-settings": "qBittorrent"
         },
         "search-form": {
           "search": "Keresés..."
@@ -1380,11 +1378,11 @@
       "servers": "Szerverek",
       "add-new": "Új hozzáadása…",
       "settings-menu": "Beállítások",
-      "app-settings": "Alkalmazás beállítások",
+      "app-settings": "BitButler beállítások",
       "qb-settings": "qBittorrent beállítások",
       "manage-tags": "Cimkék kezelése",
       "manage-categories": "Kategóriák kezelése",
-      "manage-servers": "Szerverek kezelése...",
+      "manage-servers": "Szerverek kezelése",
       "help": "Súgó",
       "check-for-updates": "Frissítések keresése",
       "about": "A BitButlerről"

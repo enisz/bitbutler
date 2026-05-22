@@ -622,9 +622,7 @@
           "connect": "Connect"
         },
         "tooltip": {
-          "active": "Currently active server",
-          "cannot-edit": "Cannot edit the active server",
-          "cannot-delete": "Cannot delete the active server"
+          "active": "Currently active server"
         },
         "delete-confirm": {
           "title": "Delete Server",
@@ -751,12 +749,12 @@
           "down": "Down",
           "bottom": "Bottom",
           "settings-group": "Settings",
-          "settings": "BitButler Settings",
-          "qb-settings": "qBittorrent Settings",
+          "settings": "BitButler",
+          "qb-settings": "qBittorrent",
           "manage-group": "Manage",
-          "manage-servers": "Manage Servers",
-          "manage-tags": "Manage Tags",
-          "manage-categories": "Manage Categories"
+          "manage-servers": "Servers",
+          "manage-tags": "Tags",
+          "manage-categories": "Categories"
         },
         "search-form": {
           "search": "Search..."
@@ -1380,11 +1378,11 @@
       "servers": "Servers",
       "add-new": "Add new…",
       "settings-menu": "Settings",
-      "app-settings": "App Settings",
+      "app-settings": "BitButler Settings",
       "qb-settings": "qBittorrent Settings",
       "manage-tags": "Manage Tags",
       "manage-categories": "Manage Categories",
-      "manage-servers": "Manage Servers...",
+      "manage-servers": "Manage Servers",
       "help": "Help",
       "check-for-updates": "Check for Updates",
       "about": "About BitButler"

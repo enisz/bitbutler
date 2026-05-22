@@ -16,6 +16,7 @@ import { filter } from 'rxjs';
 import { AutofocusDirective } from '../../../directives/autofocus';
 import { NewServer, ServerRecord } from '../../../models/server.model';
 import { CommandBusService } from '../../../services/command-bus.service';
+import { ServerStoreService } from '../../../services/server-store.service';
 import { ServerService } from '../../../services/server.service';
 import { BbPopover } from '../../bb-popover/bb-popover';
 import { ServerProtocol } from './server-editor.interface';
@@ -37,6 +38,7 @@ import { ServerProtocol } from './server-editor.interface';
 export class ServerEditor implements OnInit {
   private readonly activeModal = inject(NgbActiveModal);
   private readonly serverService = inject(ServerService);
+  private readonly serverStoreService = inject(ServerStoreService);
   private readonly commandBusService = inject(CommandBusService);
 
   @Input() public id: string | null = null;
@@ -135,6 +137,9 @@ export class ServerEditor implements OnInit {
           });
         })
         .catch();
+    } else {
+      const hasDefault = this.serverStoreService.servers().some((s) => s.auto_login);
+      this.editorForm.patchValue({ autoLogin: !hasDefault });
     }
   }
 
