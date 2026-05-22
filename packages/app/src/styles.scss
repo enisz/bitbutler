@@ -1030,8 +1030,16 @@ html ngb-typeahead-window.dropdown-menu .dropdown-item:active {
   }
 }
 
+body {
+  user-select: none;
+}
+
 .user-select-none {
   user-select: none;
+}
+
+.user-select-text {
+  user-select: text;
 }
 
 .pointer-events-none {
