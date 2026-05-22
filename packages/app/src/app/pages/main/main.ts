@@ -72,6 +72,7 @@ export class Main implements OnDestroy {
 
   constructor() {
     this.windowService.maximize();
+    this.serverStoreService.refresh();
   }
 
   ngOnDestroy(): void {
