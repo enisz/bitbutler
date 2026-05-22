@@ -31,6 +31,7 @@ describe('ServerCommandHandlerService', () => {
           useValue: {
             refresh: serverStoreRefresh,
             servers: signal([{ id: '1', name: 'Test Server' }]),
+            currentServerId: signal(null),
             select: vi.fn(),
           },
         },
