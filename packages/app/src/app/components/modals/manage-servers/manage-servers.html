@@ -120,7 +120,11 @@
     </ul>
   } @else {
     <p class="text-body-secondary small mb-0">
-      {{ 'components.modals.manage-servers.empty' | translate }}
+      @if (filterControl.value) {
+        {{ 'components.modals.manage-servers.filter.no-match' | translate }}
+      } @else {
+        {{ 'components.modals.manage-servers.empty' | translate }}
+      }
     </p>
   }
 </div>

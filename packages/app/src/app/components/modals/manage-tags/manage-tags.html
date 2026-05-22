@@ -78,7 +78,11 @@
     </ul>
   } @else {
     <p class="text-body-secondary small mb-0">
-      {{ 'components.modals.manage-tags.empty' | translate }}
+      @if (filterControl.value) {
+        {{ 'components.modals.manage-tags.filter.no-match' | translate }}
+      } @else {
+        {{ 'components.modals.manage-tags.empty' | translate }}
+      }
     </p>
   }
 </div>

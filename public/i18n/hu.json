@@ -595,7 +595,8 @@
           "hint": "Vesszővel elválasztott lista használatával egyszerre több cimkét is hozzáadhatsz"
         },
         "filter": {
-          "placeholder": "Cimkék szűrése..."
+          "placeholder": "Cimkék szűrése...",
+          "no-match": "Egy cimke sem felel meg a szűrőnek."
         },
         "empty": "Még nincsenek cimkék.",
         "delete-confirm": {
@@ -613,7 +614,8 @@
       "manage-servers": {
         "title": "Szerverek kezelése",
         "filter": {
-          "placeholder": "Szerverek szűrése..."
+          "placeholder": "Szerverek szűrése...",
+          "no-match": "Egy szerver sem felel meg a szűrőnek."
         },
         "empty": "Nincsenek konfigurált szerverek.",
         "button": {
@@ -636,7 +638,8 @@
           "save-path": "Mentési útvonal (opcionális)"
         },
         "filter": {
-          "placeholder": "Kategóriák szűrése..."
+          "placeholder": "Kategóriák szűrése...",
+          "no-match": "Egy kategória sem felel meg a szűrőnek."
         },
         "list": {
           "no-save-path": "Nincs mentési útvonal"

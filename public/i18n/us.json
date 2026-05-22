@@ -595,7 +595,8 @@
           "hint": "Use comma separated list to add multiple tags in one go"
         },
         "filter": {
-          "placeholder": "Filter tags..."
+          "placeholder": "Filter tags...",
+          "no-match": "No tags match your filter."
         },
         "empty": "No tags yet.",
         "delete-confirm": {
@@ -613,7 +614,8 @@
       "manage-servers": {
         "title": "Manage Servers",
         "filter": {
-          "placeholder": "Filter servers..."
+          "placeholder": "Filter servers...",
+          "no-match": "No servers match your filter."
         },
         "empty": "No servers configured.",
         "button": {
@@ -636,7 +638,8 @@
           "save-path": "Save path (optional)"
         },
         "filter": {
-          "placeholder": "Filter categories..."
+          "placeholder": "Filter categories...",
+          "no-match": "No categories match your filter."
         },
         "list": {
           "no-save-path": "No save path"

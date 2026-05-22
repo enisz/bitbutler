@@ -152,7 +152,11 @@
     </ul>
   } @else {
     <p class="text-body-secondary small mb-0">
-      {{ 'components.modals.manage-categories.empty' | translate }}
+      @if (filterControl.value) {
+        {{ 'components.modals.manage-categories.filter.no-match' | translate }}
+      } @else {
+        {{ 'components.modals.manage-categories.empty' | translate }}
+      }
     </p>
   }
 </div>
