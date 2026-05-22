@@ -3,14 +3,16 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faTrashCan } from '@fortawesome/free-regular-svg-icons';
-import { faPencil, faPlug, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faCircleNotch, faPencil, faPlug, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
 import { ServerRecord } from '../../../models/server.model';
 import { CommandBusService } from '../../../services/command-bus.service';
 import { ConfirmService } from '../../../services/confirm.service';
+import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
+import { ToastService } from '../../../services/toast.service';
 import { ServerEditor } from '../server-editor/server-editor';
 
 @Component({
@@ -30,14 +32,18 @@ export class ManageServers {
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly commandBusService = inject(CommandBusService);
   private readonly confirmService = inject(ConfirmService);
+  private readonly qbService = inject(QbService);
+  private readonly toastService = inject(ToastService);
+  private readonly translateService = inject(TranslateService);
   private readonly modalService = inject(NgbModal);
   public readonly activeModal = inject(NgbActiveModal);
 
-  public readonly icon = { faPencil, faTrashCan, faXmark, faPlug };
+  public readonly icon = { faPencil, faTrashCan, faXmark, faPlug, faCircleNotch };
   public readonly currentServerId = this.serverStoreService.currentServerId;
 
   public filterControl = new FormControl('');
   public editing = signal(false);
+  public connectingId = signal<string | null>(null);
 
   private readonly filterValue = toSignal(this.filterControl.valueChanges, { initialValue: '' });
 
@@ -52,12 +58,14 @@ export class ManageServers {
 
   public readonly hasServers = computed(() => this.serverStoreService.servers().length > 0);
 
+  public readonly busy = computed(() => this.editing() || !!this.connectingId());
+
   public clearFilter(): void {
     this.filterControl.reset();
   }
 
   public async openEditor(id?: string): Promise<void> {
-    if (this.editing()) return;
+    if (this.busy()) return;
     this.editing.set(true);
     const ref = this.modalService.open(ServerEditor, { size: 'lg' });
     if (id) ref.componentInstance.id = id;
@@ -72,9 +80,26 @@ export class ManageServers {
     }
   }
 
-  public switchTo(server: ServerRecord): void {
-    this.activeModal.dismiss();
-    this.commandBusService.emit({ type: 'UI_SERVER_SWITCH', id: server.id });
+  public async switchTo(server: ServerRecord): Promise<void> {
+    if (this.busy()) return;
+    this.connectingId.set(server.id);
+    try {
+      const hasSession = await this.qbService.hasCookie(server.id);
+      if (!hasSession) {
+        const loginRes = await this.qbService.login(server.id);
+        if (!loginRes.loggedIn) throw new Error('Login failed');
+      }
+      this.serverStoreService.select(server.id);
+      this.activeModal.dismiss();
+    } catch (err) {
+      this.toastService.danger(
+        this.translateService.instant('services.menu-bar-command-handler.error.failed-to-connect', {
+          name: server.name || server.host,
+        }),
+      );
+    } finally {
+      this.connectingId.set(null);
+    }
   }
 
   public async delete(server: ServerRecord): Promise<void> {

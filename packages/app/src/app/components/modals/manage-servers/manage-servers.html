@@ -70,16 +70,19 @@
                 class="btn btn-link p-1"
                 [ngbTooltip]="'components.modals.manage-servers.button.connect' | translate"
                 (click)="switchTo(server)"
-                [disabled]="editing()"
+                [disabled]="busy()"
               >
-                <fa-icon [icon]="icon.faPlug" />
+                <fa-icon
+                  [icon]="connectingId() === server.id ? icon.faCircleNotch : icon.faPlug"
+                  [spin]="connectingId() === server.id"
+                />
               </button>
               <button
                 type="button"
                 class="btn btn-link p-1"
                 [ngbTooltip]="'general.button.edit' | translate"
                 (click)="openEditor(server.id)"
-                [disabled]="editing()"
+                [disabled]="busy()"
               >
                 <fa-icon [icon]="icon.faPencil" />
               </button>
@@ -88,7 +91,7 @@
                 class="btn btn-link text-danger p-1"
                 [ngbTooltip]="'general.button.delete' | translate"
                 (click)="delete(server)"
-                [disabled]="editing()"
+                [disabled]="busy()"
               >
                 <fa-icon [icon]="icon.faTrashCan" />
               </button>
@@ -122,12 +125,7 @@
 </div>
 
 <div class="modal-footer justify-content-between">
-  <button
-    type="button"
-    class="btn btn-outline-primary"
-    (click)="openEditor()"
-    [disabled]="editing()"
-  >
+  <button type="button" class="btn btn-outline-primary" (click)="openEditor()" [disabled]="busy()">
     {{ 'general.button.add-server' | translate }}
   </button>
   <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss()">
