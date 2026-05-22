@@ -72,10 +72,11 @@
                 (click)="switchTo(server)"
                 [disabled]="busy()"
               >
-                <fa-icon
-                  [icon]="connectingId() === server.id ? icon.faCircleNotch : icon.faPlug"
-                  [spin]="connectingId() === server.id"
-                />
+                @if (connectingId() === server.id) {
+                  <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                } @else {
+                  <fa-icon [icon]="icon.faPlug" />
+                }
               </button>
               <button
                 type="button"
