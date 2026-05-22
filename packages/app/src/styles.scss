@@ -574,6 +574,11 @@ html ngb-typeahead-window.dropdown-menu .dropdown-item:active {
     border-top-right-radius: 0 !important;
     border-bottom-right-radius: 0 !important;
   }
+
+  > .btn:last-child {
+    border-top-right-radius: var(--bb-control-radius) !important;
+    border-bottom-right-radius: var(--bb-control-radius) !important;
+  }
 }
 
 .bb-datefilter {
@@ -1054,4 +1059,29 @@ html ngb-typeahead-window.dropdown-menu .dropdown-item:active {
   mask-repeat: no-repeat;
   mask-size: var(--bs-accordion-btn-icon-width);
   background-color: var(--bs-primary);
+}
+
+.bb-filter-input {
+  position: relative;
+
+  .form-control {
+    padding-right: 1.75rem;
+  }
+}
+
+.bb-filter-clear {
+  position: absolute;
+  right: 0.4rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: var(--bs-secondary-color);
+  padding: 0.15rem 0.35rem;
+  line-height: 1;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--bs-body-color);
+  }
 }

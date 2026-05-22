@@ -15,16 +15,25 @@ import {
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { NgSelectComponent } from '@ng-select/ng-select';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgFooterTemplateDirective, NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe } from '@ngx-translate/core';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { BbPopover } from '../bb-popover/bb-popover';
+import { ManageTags } from '../modals/manage-tags/manage-tags';
 
 @Component({
   selector: 'app-tag-select',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgSelectComponent, TranslatePipe, BbPopover],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    NgSelectComponent,
+    NgFooterTemplateDirective,
+    TranslatePipe,
+    BbPopover,
+  ],
   templateUrl: './tag-select.html',
   styleUrls: ['./tag-select.scss'],
   providers: [
@@ -41,6 +50,7 @@ export class TagSelect implements OnInit, ControlValueAccessor, AfterViewInit {
 
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly qbService = inject(QbService);
+  private readonly modalService = inject(NgbModal);
 
   public tags = signal<string[]>([]);
   public selectControl = new FormControl<string[]>([]);
@@ -83,25 +93,21 @@ export class TagSelect implements OnInit, ControlValueAccessor, AfterViewInit {
     }
   }
 
-  addTag = (term: string) => {
-    return this.qbService
-      .createTags(this.serverStoreService.currentServerId() as string, [term])
-      .then(() => {
-        this.tags.set([...this.tags(), term]);
-        return term;
-      })
-      .catch((err) => {
-        console.error(TagSelect.name, 'addTag', 'Failed to create tag!', err);
-        return null;
-      });
-  };
-
   keyDownFn(event: KeyboardEvent): boolean {
     if (event.key === 'Escape') {
       return false;
     }
 
     return true;
+  }
+
+  public openManageTags(): void {
+    this.ngselect.close();
+    const ref = this.modalService.open(ManageTags);
+    ref.result.then(
+      () => this.loadAllTags(),
+      () => this.loadAllTags(),
+    );
   }
 
   private async loadAllTags(): Promise<void> {

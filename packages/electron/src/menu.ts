@@ -30,6 +30,124 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
     click: () => sendMenuAction(mainWindow, 'server.select', { serverId: server.id }),
   }));
 
+  const serverSubmenuItems: Electron.MenuItemConstructorOptions[] =
+    servers.length >= 2 ? [...serverMenuItems, { type: 'separator' }] : [];
+
+  const loggedInItems: Electron.MenuItemConstructorOptions[] = loggedIn
+    ? [
+        {
+          label: t('electron.menu.servers'),
+          submenu: [
+            ...serverSubmenuItems,
+            {
+              label: t('electron.menu.add-new'),
+              click: () => sendMenuAction(mainWindow, 'server.add'),
+            },
+          ],
+        },
+        {
+          label: t('electron.menu.settings-menu'),
+          submenu: [
+            {
+              label: t('electron.menu.app-settings'),
+              accelerator: 'Ctrl+,',
+              click: () => sendMenuAction(mainWindow, 'settings.app'),
+            },
+            {
+              label: t('electron.menu.qb-settings'),
+              click: () => sendMenuAction(mainWindow, 'settings.qb'),
+            },
+            { type: 'separator' },
+            {
+              label: t('electron.menu.manage-tags'),
+              click: () => sendMenuAction(mainWindow, 'settings.manage-tags'),
+            },
+            {
+              label: t('electron.menu.manage-categories'),
+              click: () => sendMenuAction(mainWindow, 'settings.manage-categories'),
+            },
+          ],
+        },
+      ]
+    : [];
+
+  const devItems: Electron.MenuItemConstructorOptions[] = isDev
+    ? [
+        {
+          label: 'Debug',
+          submenu: [
+            {
+              label: 'Open DevTools',
+              accelerator: 'F12',
+              click: () => getMainWindow()?.webContents.openDevTools({ mode: 'detach' }),
+            },
+            { type: 'separator' },
+            {
+              label: 'Show a Notification',
+              submenu: [
+                {
+                  label: 'Notification from Renderer',
+                  click: () => sendMenuAction(mainWindow, 'debug.notification'),
+                },
+                {
+                  label: 'Notification from Main',
+                  click: () => notify('Notification Test', 'A notification from the Main process'),
+                },
+              ],
+            },
+            {
+              label: 'Show a toast',
+              submenu: [
+                {
+                  label: 'Primary',
+                  click: () => sendMenuAction(mainWindow, 'debug.toast.primary'),
+                },
+                {
+                  label: 'Secondary',
+                  click: () => sendMenuAction(mainWindow, 'debug.toast.secondary'),
+                },
+                {
+                  label: 'Success',
+                  click: () => sendMenuAction(mainWindow, 'debug.toast.success'),
+                },
+                {
+                  label: 'Danger',
+                  click: () => sendMenuAction(mainWindow, 'debug.toast.danger'),
+                },
+                {
+                  label: 'Warning',
+                  click: () => sendMenuAction(mainWindow, 'debug.toast.warning'),
+                },
+                { label: 'Info', click: () => sendMenuAction(mainWindow, 'debug.toast.info') },
+                { label: 'Light', click: () => sendMenuAction(mainWindow, 'debug.toast.light') },
+                { label: 'Dark', click: () => sendMenuAction(mainWindow, 'debug.toast.dark') },
+                {
+                  label: 'Adaptive',
+                  click: () => sendMenuAction(mainWindow, 'debug.toast.adaptive'),
+                },
+                { type: 'separator' },
+                {
+                  label: 'Random',
+                  accelerator: 'Ctrl+.',
+                  click: () => sendMenuAction(mainWindow, 'debug.toast.random'),
+                },
+                {
+                  label: 'One of each',
+                  click: () => sendMenuAction(mainWindow, 'debug.toast.all'),
+                },
+              ],
+            },
+            { type: 'separator' },
+            {
+              label: 'Reload',
+              accelerator: 'Ctrl+R',
+              click: () => sendMenuAction(mainWindow, 'debug.reload'),
+            },
+          ],
+        },
+      ]
+    : [];
+
   const template: Electron.MenuItemConstructorOptions[] = [
     {
       label: t('electron.menu.file'),
@@ -59,34 +177,7 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
         { role: 'quit' },
       ],
     },
-    ...(loggedIn
-      ? [
-          {
-            label: t('electron.menu.servers'),
-            submenu: [
-              ...(servers.length >= 2 ? [...serverMenuItems, { type: 'separator' as const }] : []),
-              {
-                label: t('electron.menu.add-new'),
-                click: () => sendMenuAction(mainWindow, 'server.add'),
-              },
-            ],
-          },
-          {
-            label: t('electron.menu.settings-menu'),
-            submenu: [
-              {
-                label: t('electron.menu.app-settings'),
-                accelerator: 'Ctrl+,',
-                click: () => sendMenuAction(mainWindow, 'settings.app'),
-              },
-              {
-                label: t('electron.menu.qb-settings'),
-                click: () => sendMenuAction(mainWindow, 'settings.qb'),
-              },
-            ],
-          },
-        ]
-      : []),
+    ...loggedInItems,
     {
       label: t('electron.menu.help'),
       submenu: [
@@ -101,83 +192,7 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
         },
       ],
     },
-    ...(isDev
-      ? [
-          {
-            label: 'Debug',
-            submenu: [
-              {
-                label: 'Open DevTools',
-                accelerator: 'F12',
-                click: () => getMainWindow()?.webContents.openDevTools({ mode: 'detach' }),
-              },
-              { type: 'separator' as const },
-              {
-                label: 'Show a Notification',
-                submenu: [
-                  {
-                    label: 'Notification from Renderer',
-                    click: () => sendMenuAction(mainWindow, 'debug.notification'),
-                  },
-                  {
-                    label: 'Notification from Main',
-                    click: () =>
-                      notify('Notification Test', 'A notification from the Main process'),
-                  },
-                ],
-              },
-              {
-                label: 'Show a toast',
-                submenu: [
-                  {
-                    label: 'Primary',
-                    click: () => sendMenuAction(mainWindow, 'debug.toast.primary'),
-                  },
-                  {
-                    label: 'Secondary',
-                    click: () => sendMenuAction(mainWindow, 'debug.toast.secondary'),
-                  },
-                  {
-                    label: 'Success',
-                    click: () => sendMenuAction(mainWindow, 'debug.toast.success'),
-                  },
-                  {
-                    label: 'Danger',
-                    click: () => sendMenuAction(mainWindow, 'debug.toast.danger'),
-                  },
-                  {
-                    label: 'Warning',
-                    click: () => sendMenuAction(mainWindow, 'debug.toast.warning'),
-                  },
-                  { label: 'Info', click: () => sendMenuAction(mainWindow, 'debug.toast.info') },
-                  { label: 'Light', click: () => sendMenuAction(mainWindow, 'debug.toast.light') },
-                  { label: 'Dark', click: () => sendMenuAction(mainWindow, 'debug.toast.dark') },
-                  {
-                    label: 'Adaptive',
-                    click: () => sendMenuAction(mainWindow, 'debug.toast.adaptive'),
-                  },
-                  { type: 'separator' as const },
-                  {
-                    label: 'Random',
-                    accelerator: 'Ctrl+.',
-                    click: () => sendMenuAction(mainWindow, 'debug.toast.random'),
-                  },
-                  {
-                    label: 'One of each',
-                    click: () => sendMenuAction(mainWindow, 'debug.toast.all'),
-                  },
-                ],
-              },
-              { type: 'separator' as const },
-              {
-                label: 'Reload',
-                accelerator: 'Ctrl+R',
-                click: () => sendMenuAction(mainWindow, 'debug.reload'),
-              },
-            ],
-          },
-        ]
-      : []),
+    ...devItems,
   ];
 
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));

@@ -1,5 +1,6 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { TagSelect } from './tag-select';
@@ -8,11 +9,14 @@ describe('TagSelect', () => {
   let component: TagSelect;
   let fixture: ComponentFixture<TagSelect>;
   let mockQbService: any;
+  let mockModalService: Partial<NgbModal>;
 
   beforeEach(async () => {
     mockQbService = {
       getAllTags: vi.fn().mockResolvedValue(['action', 'comedy']),
-      createTags: vi.fn().mockResolvedValue(undefined),
+    };
+    mockModalService = {
+      open: vi.fn().mockReturnValue({ componentInstance: {}, result: Promise.resolve() }),
     };
 
     await TestBed.configureTestingModule({
@@ -20,6 +24,7 @@ describe('TagSelect', () => {
       providers: [
         { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
         { provide: QbService, useValue: mockQbService },
+        { provide: NgbModal, useValue: mockModalService },
       ],
     }).compileComponents();
 
@@ -77,12 +82,10 @@ describe('TagSelect', () => {
     });
   });
 
-  describe('addTag', () => {
-    it('should call createTags and add the new tag to the list', async () => {
-      component.tags.set(['action']);
-      await component.addTag('drama');
-      expect(mockQbService.createTags).toHaveBeenCalledWith('server-1', ['drama']);
-      expect(component.tags()).toContain('drama');
+  describe('openManageTags', () => {
+    it('should open the ManageTags modal', () => {
+      component.openManageTags();
+      expect(mockModalService.open).toHaveBeenCalled();
     });
   });
 });

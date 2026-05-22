@@ -96,5 +96,12 @@ Three lazy-loaded routes: `login`, `main` (torrent grid), `settings`. The router
 
 - Commit format: `#IssueID: short description` (e.g. `#22: add file tree checkboxes`)
 - PR description must include `Fixes #IssueID` to auto-close the issue on merge.
-- Apply a label to the PR: `bug`, `feature`, `enhancement`, or `maintenance`.
+- PR title must be a clean description only - do not include the issue ID in the title.
+- Labels are applied automatically by a GitHub workflow - do not add them manually.
 - CI runs lint → tests → cross-platform builds on every PR.
+
+## Git workflow
+
+- **Feature branches:** Use the pattern `<issue-id>-<dash-separated-summary>` (e.g. `100-manage-labels-and-categories`).
+- **Issue templates:** When opening new issues, use the appropriate template from `.github/ISSUE_TEMPLATE/`.
+- **PR template:** PR descriptions must follow `.github/pull_request_template.md`.

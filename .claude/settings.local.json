@@ -51,7 +51,13 @@
       "Bash(gh issue *)",
       "Bash(python -m json.tool)",
       "Bash(python *)",
-      "Bash(gh pr *)"
+      "Bash(gh pr *)",
+      "Skill(commit-commands:commit)",
+      "Skill(commit-commands:commit-push-pr)",
+      "Bash(Get-ChildItem -Recurse -Filter \"*.spec.ts\" \"packages/app/src\")",
+      "Bash(Select-String \"TranslateService\")",
+      "Bash(Select-Object -First 3 -ExpandProperty Path)",
+      "Bash(npm start *)"
     ]
   }
 }

@@ -68,6 +68,14 @@ export class MenuBarCommandHandlerService {
           this.commandBusService.emit({ type: 'UI_OPEN_ABOUT' });
           break;
 
+        case 'settings.manage-tags':
+          this.commandBusService.emit({ type: 'UI_MANAGE_TAGS' });
+          break;
+
+        case 'settings.manage-categories':
+          this.commandBusService.emit({ type: 'UI_MANAGE_CATEGORIES' });
+          break;
+
         case 'debug.notification':
           this.notificationService.send('Notification Test', 'A notification from the Renderer');
           break;

@@ -1,0 +1,12 @@
+.list-group {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.list-group-item {
+  transition: background-color 0.15s ease-in-out;
+
+  &:hover {
+    background-color: var(--bb-hover-list-item-bg);
+  }
+}

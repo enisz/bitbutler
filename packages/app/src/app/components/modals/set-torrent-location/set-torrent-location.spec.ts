@@ -56,13 +56,44 @@ describe('SetTorrentLocation', () => {
   });
 
   describe('canSave', () => {
-    it('should return true when the path field is non-empty', () => {
+    it('should always return true', () => {
       expect(component.canSave()).toBe(true);
     });
 
-    it('should return false when the path field is empty', () => {
-      component.setLocationForm.get('path')?.setValue('');
-      expect(component.canSave()).toBe(false);
+    it('should return true even when path is cleared', () => {
+      component.setLocationForm.get('path')?.setValue(null);
+      expect(component.canSave()).toBe(true);
+    });
+  });
+
+  describe('handleSubmit fallback', () => {
+    let mockQbService: {
+      setTorrentLocation: ReturnType<typeof vi.fn>;
+      getAppPreferences: ReturnType<typeof vi.fn>;
+    };
+
+    beforeEach(() => {
+      mockQbService = TestBed.inject(QbService) as any;
+    });
+
+    it('should use the form path when it has a value', async () => {
+      component.setLocationForm.get('path')?.setValue('/custom/path');
+      await component.handleSubmit();
+      expect(mockQbService.setTorrentLocation).toHaveBeenCalledWith(
+        'server-1',
+        expect.any(Array),
+        '/custom/path',
+      );
+    });
+
+    it('should fall back to torrent.save_path when form path is cleared and no default', async () => {
+      component.setLocationForm.get('path')?.setValue(null);
+      await component.handleSubmit();
+      expect(mockQbService.setTorrentLocation).toHaveBeenCalledWith(
+        'server-1',
+        expect.any(Array),
+        '/downloads',
+      );
     });
   });
 });

@@ -1,5 +1,5 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, Input, OnInit, inject, signal } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
@@ -26,18 +26,28 @@ export class SetTorrentLocation implements OnInit {
   public readonly activeModal = inject(NgbActiveModal);
   private readonly translateService = inject(TranslateService);
   public setLocationForm = new FormGroup({
-    path: new FormControl('', [Validators.required]),
+    path: new FormControl<string | null>(null),
   });
 
   public selected = this.selectionStoreService.selected().length;
+  private defaultPath = signal<string>('');
 
-  public ngOnInit(): void {
-    this.setLocationForm.get('path')?.patchValue(this.torrent.save_path);
+  public async ngOnInit(): Promise<void> {
+    this.setLocationForm.get('path')?.patchValue(this.torrent.save_path ?? null);
+
+    const serverId = this.serverStoreService.currentServerId();
+    if (serverId) {
+      try {
+        const prefs = await this.qbService.getAppPreferences(serverId);
+        if (prefs.save_path) this.defaultPath.set(prefs.save_path);
+      } catch {}
+    }
   }
 
   public async handleSubmit(): Promise<void> {
     const serverId = this.serverStoreService.currentServerId() ?? '';
-    const newPath = this.setLocationForm.get('path')?.value ?? this.torrent.save_path;
+    const newPath =
+      this.setLocationForm.get('path')?.value || this.defaultPath() || this.torrent.save_path;
 
     if (!serverId) {
       console.error(SetTorrentLocation.name, 'handleSubmit', 'Failed to get server id');
@@ -73,6 +83,6 @@ export class SetTorrentLocation implements OnInit {
   }
 
   public canSave(): boolean {
-    return this.setLocationForm.valid;
+    return true;
   }
 }

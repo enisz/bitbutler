@@ -39,6 +39,11 @@ import { BbPopover } from '../bb-popover/bb-popover';
 })
 export class SavePathSelect implements OnInit, ControlValueAccessor, AfterViewInit {
   @Input() autofocus = false;
+  @Input() clearable = false;
+  @Input() showPopover = true;
+  @Input() label: string | null = null;
+  @Input() placeholder: string | null = null;
+  @Input() appendTo = '';
   @ViewChild('ngselect') ngselect!: NgSelectComponent;
 
   private readonly torrentStoreService = inject(TorrentStoreService);

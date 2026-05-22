@@ -1,5 +1,6 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { CategorySelect } from './category-select';
@@ -19,6 +20,12 @@ describe('CategorySelect', () => {
       providers: [
         { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
         { provide: QbService, useValue: mockQbService },
+        {
+          provide: NgbModal,
+          useValue: {
+            open: vi.fn().mockReturnValue({ componentInstance: {}, result: Promise.resolve() }),
+          },
+        },
       ],
     }).compileComponents();
 
@@ -82,6 +89,14 @@ describe('CategorySelect', () => {
       component.ngOnInit();
       component.selectControl.setValue('movies');
       expect(onChange).toHaveBeenCalledWith('movies');
+    });
+  });
+
+  describe('openManageCategories', () => {
+    it('should open the ManageCategories modal', () => {
+      const modalService = TestBed.inject(NgbModal);
+      component.openManageCategories();
+      expect(modalService.open).toHaveBeenCalled();
     });
   });
 });

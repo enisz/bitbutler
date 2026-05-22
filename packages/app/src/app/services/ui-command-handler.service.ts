@@ -5,6 +5,8 @@ import { filter } from 'rxjs';
 import { About } from '../components/about/about';
 import { AddTorrent } from '../components/add-torrent/add-torrent';
 import { DeleteTorrent } from '../components/modals/delete-torrent/delete-torrent';
+import { ManageCategories } from '../components/modals/manage-categories/manage-categories';
+import { ManageTags } from '../components/modals/manage-tags/manage-tags';
 import { RenameTorrent } from '../components/modals/rename-torrent/rename-torrent';
 import { ServerEditor } from '../components/modals/server-editor/server-editor';
 import { SetTorrentCategory } from '../components/modals/set-torrent-category/set-torrent-category';
@@ -275,6 +277,23 @@ export class UiCommandHandlerService {
 
             contentModalRef.result.then(() => {}).catch(() => {});
             break;
+
+          case 'UI_MANAGE_TAGS':
+            if (this.isModalOpen(ManageTags)) break;
+            const manageTagsModalRef = this.modalService.open(ManageTags, {
+              beforeDismiss: () => manageTagsModalRef.componentInstance.canDeactivate(),
+            });
+            manageTagsModalRef.result.then(() => {}).catch(() => {});
+            break;
+
+          case 'UI_MANAGE_CATEGORIES':
+            if (this.isModalOpen(ManageCategories)) break;
+            const manageCategoriesModalRef = this.modalService.open(ManageCategories, {
+              beforeDismiss: () => manageCategoriesModalRef.componentInstance.canDeactivate(),
+            });
+            manageCategoriesModalRef.result.then(() => {}).catch(() => {});
+            break;
+
           default:
             console.warn(UiCommandHandlerService.name, 'start', 'Unhandled UI command', command);
         }
