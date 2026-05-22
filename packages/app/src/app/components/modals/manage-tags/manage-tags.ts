@@ -7,6 +7,7 @@ import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AutofocusDirective } from '../../../directives/autofocus';
+import { TooltipOverflow } from '../../../directives/tooltip-overflow';
 import { GuardableModal } from '../../../models/guardable-modal.interface';
 import { ConfirmService } from '../../../services/confirm.service';
 import { QbService } from '../../../services/qb.service';
@@ -25,6 +26,7 @@ import { BbSpinner } from '../../bb-spinner/bb-spinner';
     NgbTooltipModule,
     BbSpinner,
     AutofocusDirective,
+    TooltipOverflow,
   ],
   templateUrl: './manage-tags.html',
   styleUrl: './manage-tags.scss',

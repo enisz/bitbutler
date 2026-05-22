@@ -31,7 +31,9 @@
       {{ 'general.button.add' | translate }}
     </button>
   </div>
-  <div class="form-text mb-3">{{ 'components.modals.manage-tags.add-form.hint' | translate }}</div>
+  <div class="form-text mb-3 mt-1 ms-2">
+    {{ 'components.modals.manage-tags.add-form.hint' | translate }}
+  </div>
 
   @if (!loading()) {
     <div class="mb-3">
@@ -64,10 +66,10 @@
     <ul class="list-group">
       @for (tag of filteredTags(); track tag) {
         <li class="list-group-item d-flex align-items-center justify-content-between">
-          <span>{{ tag }}</span>
+          <span class="text-truncate me-2" [ngbTooltip]="tag" bbTooltipOverflow>{{ tag }}</span>
           <button
             type="button"
-            class="btn btn-link text-danger p-1"
+            class="btn btn-link text-danger p-1 flex-shrink-0"
             [ngbTooltip]="'general.button.delete' | translate"
             (click)="delete(tag)"
           >
@@ -78,7 +80,11 @@
     </ul>
   } @else {
     <p class="text-body-secondary small mb-0">
-      {{ 'components.modals.manage-tags.empty' | translate }}
+      @if (filterControl.value) {
+        {{ 'components.modals.manage-tags.filter.no-match' | translate }}
+      } @else {
+        {{ 'components.modals.manage-tags.empty' | translate }}
+      }
     </p>
   }
 </div>

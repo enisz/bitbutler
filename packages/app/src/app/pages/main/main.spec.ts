@@ -20,6 +20,7 @@ describe('Main', () => {
   let serverStoreMock: {
     currentServer: ReturnType<typeof signal<any>>;
     currentServerId: ReturnType<typeof signal<string | null>>;
+    refresh: ReturnType<typeof vi.fn>;
   };
 
   beforeAll(() => {
@@ -46,6 +47,7 @@ describe('Main', () => {
     serverStoreMock = {
       currentServer: signal(null),
       currentServerId: signal(null),
+      refresh: vi.fn().mockResolvedValue(undefined),
     };
 
     await TestBed.configureTestingModule({

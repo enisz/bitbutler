@@ -21,15 +21,19 @@ import {
   faAtom,
   faChevronDown,
   faFile,
+  faLayerGroup,
   faLink,
   faPause,
   faPlay,
   faPlayCircle,
   faPlus,
   faSearch,
+  faServer,
   faSliders,
   faStopCircle,
+  faTags,
   faTrashCan,
+  faUserTie,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -205,6 +209,37 @@ export class ButtonBar implements OnInit {
           },
         ],
       },
+      { kind: 'divider' },
+      {
+        kind: 'group',
+        id: 'manage',
+        label: 'pages.main.button-bar.button.manage-group',
+        icon: faUserTie,
+        variant: 'default',
+        items: [
+          {
+            kind: 'action',
+            id: 'manage.servers',
+            label: 'pages.main.button-bar.button.manage-servers',
+            icon: faServer,
+            variant: 'default',
+          },
+          {
+            kind: 'action',
+            id: 'manage.tags',
+            label: 'pages.main.button-bar.button.manage-tags',
+            icon: faTags,
+            variant: 'default',
+          },
+          {
+            kind: 'action',
+            id: 'manage.categories',
+            label: 'pages.main.button-bar.button.manage-categories',
+            icon: faLayerGroup,
+            variant: 'default',
+          },
+        ],
+      },
     ];
   });
 
@@ -280,6 +315,15 @@ export class ButtonBar implements OnInit {
         break;
       case 'settings.open':
         this.commandBusService.emit({ type: 'UI_OPEN_SETTINGS' });
+        break;
+      case 'manage.servers':
+        this.commandBusService.emit({ type: 'UI_MANAGE_SERVERS' });
+        break;
+      case 'manage.tags':
+        this.commandBusService.emit({ type: 'UI_MANAGE_TAGS' });
+        break;
+      case 'manage.categories':
+        this.commandBusService.emit({ type: 'UI_MANAGE_CATEGORIES' });
         break;
       case 'new.addTorrentFile':
         this.commandBusService.emit({ type: 'UI_ADD_TORRENT' });

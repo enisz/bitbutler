@@ -595,7 +595,8 @@
           "hint": "Use comma separated list to add multiple tags in one go"
         },
         "filter": {
-          "placeholder": "Filter tags..."
+          "placeholder": "Filter tags...",
+          "no-match": "No tags match your filter."
         },
         "empty": "No tags yet.",
         "delete-confirm": {
@@ -610,6 +611,24 @@
           "delete-failed": "Failed to delete tag \"{{ name }}\"."
         }
       },
+      "manage-servers": {
+        "title": "Manage Servers",
+        "filter": {
+          "placeholder": "Filter servers...",
+          "no-match": "No servers match your filter."
+        },
+        "empty": "No servers configured.",
+        "button": {
+          "connect": "Connect"
+        },
+        "tooltip": {
+          "active": "Currently active server"
+        },
+        "delete-confirm": {
+          "title": "Delete Server",
+          "message": "Are you sure you want to delete the server \"{{ name }}\"?"
+        }
+      },
       "manage-categories": {
         "title": "Manage Categories",
         "add-form": {
@@ -617,7 +636,8 @@
           "save-path": "Save path (optional)"
         },
         "filter": {
-          "placeholder": "Filter categories..."
+          "placeholder": "Filter categories...",
+          "no-match": "No categories match your filter."
         },
         "list": {
           "no-save-path": "No save path"
@@ -729,8 +749,12 @@
           "down": "Down",
           "bottom": "Bottom",
           "settings-group": "Settings",
-          "settings": "BitButler Settings",
-          "qb-settings": "qBittorrent Settings"
+          "settings": "BitButler",
+          "qb-settings": "qBittorrent",
+          "manage-group": "Manage",
+          "manage-servers": "Servers",
+          "manage-tags": "Tags",
+          "manage-categories": "Categories"
         },
         "search-form": {
           "search": "Search..."
@@ -1354,10 +1378,11 @@
       "servers": "Servers",
       "add-new": "Add new…",
       "settings-menu": "Settings",
-      "app-settings": "App Settings",
+      "app-settings": "BitButler Settings",
       "qb-settings": "qBittorrent Settings",
       "manage-tags": "Manage Tags",
       "manage-categories": "Manage Categories",
+      "manage-servers": "Manage Servers",
       "help": "Help",
       "check-for-updates": "Check for Updates",
       "about": "About BitButler"

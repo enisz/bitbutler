@@ -65,7 +65,6 @@
   color: var(--bs-body-color);
 
   cursor: pointer;
-  user-select: none;
 
   transition:
     background-color 120ms ease,
@@ -183,7 +182,6 @@
 .bb-search__clear {
   color: var(--bs-secondary-color) !important;
   cursor: pointer;
-  user-select: none;
 
   &--hidden {
     visibility: hidden;

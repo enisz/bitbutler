@@ -1,8 +1,5 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { TranslateService } from '@ngx-translate/core';
-import { AppLoader } from '../components/app-loader/app-loader';
 import { ToastType } from '../models/toast.model';
 import { CommandBusService } from './command-bus.service';
 import { MenuBarService, MenuClick } from './menu-bar.service';
@@ -23,8 +20,6 @@ export class MenuBarCommandHandlerService {
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly qbService = inject(QbService);
   private readonly router = inject(Router);
-  private readonly modalService = inject(NgbModal);
-  private readonly translateService = inject(TranslateService);
 
   public start(): void {
     this.menuBarService.clicks$.subscribe((payload: MenuClick) => {
@@ -53,6 +48,10 @@ export class MenuBarCommandHandlerService {
 
         case 'server.add':
           this.commandBusService.emit({ type: 'UI_SERVER_EDITOR_OPEN' });
+          break;
+
+        case 'server.manage':
+          this.commandBusService.emit({ type: 'UI_MANAGE_SERVERS' });
           break;
 
         case 'server.select':
@@ -195,54 +194,9 @@ export class MenuBarCommandHandlerService {
     }
   }
 
-  private async handleServerSwitch(serverId: string) {
+  private handleServerSwitch(serverId: string): void {
     if (!serverId) return;
     if (this.serverStoreService.currentServerId() === serverId) return;
-
-    const { name } = this.serverStoreService.servers().find((s) => s.id === serverId) || {
-      name: '',
-    };
-
-    this.toastService.info(
-      this.translateService.instant('services.menu-bar-command-handler.info.switching-server', {
-        name,
-      }),
-    );
-
-    const appLoaderModal = this.modalService.open(AppLoader, { size: 'sm', centered: true });
-    appLoaderModal.componentInstance.title = this.translateService.instant(
-      'services.menu-bar-command-handler.app-loader.title',
-    );
-    appLoaderModal.componentInstance.message = this.translateService.instant(
-      'services.menu-bar-command-handler.app-loader.message',
-      { name },
-    );
-
-    try {
-      const hasSession = await this.qbService.hasCookie(serverId);
-
-      if (!hasSession) {
-        const loginRes = await this.qbService.login(serverId);
-        if (!loginRes.loggedIn) {
-          throw new Error('Login failed');
-        }
-      }
-
-      (this.serverStoreService as any).select(serverId);
-    } catch (err) {
-      console.error(
-        MenuBarCommandHandlerService.name,
-        'handleServerSwitch',
-        '[MenuHandler] Failed to switch servers',
-        err,
-      );
-      this.toastService.danger(
-        this.translateService.instant('services.menu-bar-command-handler.error.failed-to-connect', {
-          name,
-        }),
-      );
-    } finally {
-      appLoaderModal.close();
-    }
+    this.commandBusService.emit({ type: 'UI_SERVER_SWITCH', id: serverId });
   }
 }

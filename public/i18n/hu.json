@@ -595,7 +595,8 @@
           "hint": "Vesszővel elválasztott lista használatával egyszerre több cimkét is hozzáadhatsz"
         },
         "filter": {
-          "placeholder": "Cimkék szűrése..."
+          "placeholder": "Cimkék szűrése...",
+          "no-match": "Egy cimke sem felel meg a szűrőnek."
         },
         "empty": "Még nincsenek cimkék.",
         "delete-confirm": {
@@ -610,6 +611,24 @@
           "delete-failed": "Nem sikerült törölni a \"{{ name }}\" cimkét."
         }
       },
+      "manage-servers": {
+        "title": "Szerverek kezelése",
+        "filter": {
+          "placeholder": "Szerverek szűrése...",
+          "no-match": "Egy szerver sem felel meg a szűrőnek."
+        },
+        "empty": "Nincsenek konfigurált szerverek.",
+        "button": {
+          "connect": "Csatlakozás"
+        },
+        "tooltip": {
+          "active": "Jelenleg aktív szerver"
+        },
+        "delete-confirm": {
+          "title": "Szerver törlése",
+          "message": "Biztosan törölni szeretnéd a \"{{ name }}\" szervert?"
+        }
+      },
       "manage-categories": {
         "title": "Kategóriák kezelése",
         "add-form": {
@@ -617,7 +636,8 @@
           "save-path": "Mentési útvonal (opcionális)"
         },
         "filter": {
-          "placeholder": "Kategóriák szűrése..."
+          "placeholder": "Kategóriák szűrése...",
+          "no-match": "Egy kategória sem felel meg a szűrőnek."
         },
         "list": {
           "no-save-path": "Nincs mentési útvonal"
@@ -729,8 +749,12 @@
           "down": "Le",
           "bottom": "Legalulra",
           "settings-group": "Beállítások",
-          "settings": "BitButler Beállítások",
-          "qb-settings": "qBittorrent Beállítások"
+          "manage-group": "Kezelés",
+          "manage-servers": "Szerverek",
+          "manage-tags": "Cimkék",
+          "manage-categories": "Kategóriák",
+          "settings": "BitButler",
+          "qb-settings": "qBittorrent"
         },
         "search-form": {
           "search": "Keresés..."
@@ -1354,10 +1378,11 @@
       "servers": "Szerverek",
       "add-new": "Új hozzáadása…",
       "settings-menu": "Beállítások",
-      "app-settings": "Alkalmazás beállítások",
+      "app-settings": "BitButler beállítások",
       "qb-settings": "qBittorrent beállítások",
       "manage-tags": "Cimkék kezelése",
       "manage-categories": "Kategóriák kezelése",
+      "manage-servers": "Szerverek kezelése",
       "help": "Súgó",
       "check-for-updates": "Frissítések keresése",
       "about": "A BitButlerről"

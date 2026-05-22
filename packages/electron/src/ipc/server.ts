@@ -21,11 +21,10 @@ export function registerServerIpcHandlers(): void {
   ipcMain.handle('server:getByHost', async (_event, payload: unknown) => serverGetByHost(payload));
 
   ipcMain.on('server:set-active', (_event, id: string | null) => {
-    if (activeServerId !== id) {
-      activeServerId = id;
-      rebuildMenu();
-      rebuildTrayMenu();
-    }
+    if (activeServerId === id) return;
+    activeServerId = id;
+    rebuildMenu();
+    rebuildTrayMenu();
   });
 }
 

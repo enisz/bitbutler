@@ -50,7 +50,9 @@ export class ServerCommandHandlerService {
     await this.serverStoreService.refresh();
     const server = this.serverStoreService.servers().find((s) => s.id === id);
     this.toastService.success(`Server ${server?.name || 'New Host'} added!`);
-    this.serverStoreService.select(id);
+    if (!this.serverStoreService.currentServerId()) {
+      this.serverStoreService.select(id);
+    }
   }
 
   private async handleServerUpdated(id: string): Promise<void> {

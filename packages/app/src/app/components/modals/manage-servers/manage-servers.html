@@ -1,0 +1,122 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ 'components.modals.manage-servers.title' | translate }}</h5>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="activeModal.dismiss()"
+  ></button>
+</div>
+
+<div class="modal-body">
+  @if (hasServers()) {
+    <div class="mb-3">
+      <div class="bb-filter-input">
+        <input
+          type="text"
+          class="form-control"
+          [placeholder]="'components.modals.manage-servers.filter.placeholder' | translate"
+          [formControl]="filterControl"
+        />
+        @if (filterControl.value) {
+          <button
+            type="button"
+            class="bb-filter-clear"
+            (click)="clearFilter()"
+            aria-label="Clear filter"
+          >
+            <fa-icon [icon]="icon.faXmark"></fa-icon>
+          </button>
+        }
+      </div>
+    </div>
+  }
+
+  @if (filteredServers().length > 0) {
+    <ul class="list-group">
+      @for (server of filteredServers(); track server.id) {
+        <li class="list-group-item d-flex align-items-center justify-content-between">
+          <div class="overflow-hidden me-2 d-flex align-items-center gap-3">
+            @if (currentServerId() === server.id) {
+              <fa-icon
+                [icon]="icon.faPlug"
+                class="text-success flex-shrink-0"
+                [ngbTooltip]="'components.modals.manage-servers.tooltip.active' | translate"
+                container="body"
+              ></fa-icon>
+            }
+            <div class="overflow-hidden">
+              <div
+                class="fw-medium text-truncate"
+                [ngbTooltip]="server.name || server.host"
+                bbTooltipOverflow
+              >
+                {{ server.name || server.host }}
+              </div>
+              <div
+                class="text-body-secondary small text-truncate"
+                [ngbTooltip]="server.protocol + '://' + server.host + ':' + server.port"
+                bbTooltipOverflow
+              >
+                {{ server.protocol }}://{{ server.host }}:{{ server.port }}
+              </div>
+            </div>
+          </div>
+
+          @if (currentServerId() !== server.id) {
+            <div class="d-flex gap-1 flex-shrink-0 align-items-center">
+              <button
+                type="button"
+                class="btn btn-link p-1"
+                [ngbTooltip]="'components.modals.manage-servers.button.connect' | translate"
+                (click)="switchTo(server)"
+                [disabled]="busy()"
+              >
+                @if (connectingId() === server.id) {
+                  <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                } @else {
+                  <fa-icon [icon]="icon.faPlug" />
+                }
+              </button>
+              <button
+                type="button"
+                class="btn btn-link p-1"
+                [ngbTooltip]="'general.button.edit' | translate"
+                (click)="openEditor(server.id)"
+                [disabled]="busy()"
+              >
+                <fa-icon [icon]="icon.faPencil" />
+              </button>
+              <button
+                type="button"
+                class="btn btn-link text-danger p-1"
+                [ngbTooltip]="'general.button.delete' | translate"
+                (click)="delete(server)"
+                [disabled]="busy()"
+              >
+                <fa-icon [icon]="icon.faTrashCan" />
+              </button>
+            </div>
+          }
+        </li>
+      }
+    </ul>
+  } @else {
+    <p class="text-body-secondary small mb-0">
+      @if (filterControl.value) {
+        {{ 'components.modals.manage-servers.filter.no-match' | translate }}
+      } @else {
+        {{ 'components.modals.manage-servers.empty' | translate }}
+      }
+    </p>
+  }
+</div>
+
+<div class="modal-footer justify-content-between">
+  <button type="button" class="btn btn-outline-primary" (click)="openEditor()" [disabled]="busy()">
+    {{ 'general.button.add-server' | translate }}
+  </button>
+  <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss()">
+    {{ 'general.button.close' | translate }}
+  </button>
+</div>

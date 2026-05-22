@@ -34,7 +34,9 @@ export type UiCommand =
   | { type: 'UI_TORRENT_PIN_BOTTOM' }
   | { type: 'UI_TORRENT_UNPIN' }
   | { type: 'UI_MANAGE_TAGS' }
-  | { type: 'UI_MANAGE_CATEGORIES' };
+  | { type: 'UI_MANAGE_CATEGORIES' }
+  | { type: 'UI_MANAGE_SERVERS' }
+  | { type: 'UI_SERVER_SWITCH'; id: string };
 
 export type TorrentCommand =
   | { type: 'TORRENT_DELETE_CONFIRM'; removeFiles: boolean }

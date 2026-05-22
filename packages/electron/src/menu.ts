@@ -30,27 +30,21 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
     click: () => sendMenuAction(mainWindow, 'server.select', { serverId: server.id }),
   }));
 
-  const serverSubmenuItems: Electron.MenuItemConstructorOptions[] =
-    servers.length >= 2 ? [...serverMenuItems, { type: 'separator' }] : [];
-
   const loggedInItems: Electron.MenuItemConstructorOptions[] = loggedIn
     ? [
-        {
-          label: t('electron.menu.servers'),
-          submenu: [
-            ...serverSubmenuItems,
-            {
-              label: t('electron.menu.add-new'),
-              click: () => sendMenuAction(mainWindow, 'server.add'),
-            },
-          ],
-        },
+        ...(servers.length > 0
+          ? [
+              {
+                label: t('electron.menu.servers'),
+                submenu: serverMenuItems,
+              },
+            ]
+          : []),
         {
           label: t('electron.menu.settings-menu'),
           submenu: [
             {
               label: t('electron.menu.app-settings'),
-              accelerator: 'Ctrl+,',
               click: () => sendMenuAction(mainWindow, 'settings.app'),
             },
             {
@@ -58,6 +52,10 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
               click: () => sendMenuAction(mainWindow, 'settings.qb'),
             },
             { type: 'separator' },
+            {
+              label: t('electron.menu.manage-servers'),
+              click: () => sendMenuAction(mainWindow, 'server.manage'),
+            },
             {
               label: t('electron.menu.manage-tags'),
               click: () => sendMenuAction(mainWindow, 'settings.manage-tags'),
@@ -78,7 +76,6 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
           submenu: [
             {
               label: 'Open DevTools',
-              accelerator: 'F12',
               click: () => getMainWindow()?.webContents.openDevTools({ mode: 'detach' }),
             },
             { type: 'separator' },
@@ -128,7 +125,6 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
                 { type: 'separator' },
                 {
                   label: 'Random',
-                  accelerator: 'Ctrl+.',
                   click: () => sendMenuAction(mainWindow, 'debug.toast.random'),
                 },
                 {
@@ -140,7 +136,6 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
             { type: 'separator' },
             {
               label: 'Reload',
-              accelerator: 'Ctrl+R',
               click: () => sendMenuAction(mainWindow, 'debug.reload'),
             },
           ],
@@ -158,7 +153,6 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
           submenu: [
             {
               label: t('electron.menu.add-torrent-from-file'),
-              accelerator: 'Ctrl+O',
               click: () => sendMenuAction(mainWindow, 'file.addTorrent.file'),
             },
             {
