@@ -1307,8 +1307,7 @@
       }
     },
     "label": {
-      "torrent-selected": "{{count}} torrent kijelölve",
-      "custom": "Egyedi"
+      "torrent-selected": "{{count}} torrent kijelölve"
     },
     "calendar": {
       "months": {

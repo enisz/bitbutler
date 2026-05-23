@@ -145,7 +145,7 @@ export class ShareLimit implements OnInit {
   }
 
   public hasClearableValues(): boolean {
-    const v = this.form.controls.shareLimits.value;
+    const v = this.form.controls.shareLimits.getRawValue();
     return (
       v !== null &&
       (v.ratioLimit !== null || v.seedingTimeLimit !== null || v.inactiveSeedingTimeLimit !== null)

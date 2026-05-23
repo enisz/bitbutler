@@ -95,6 +95,7 @@ export class TransferLimit implements OnInit {
       },
       { emitEvent: false },
     );
+    this.cdr.markForCheck();
   }
 
   public async handleSubmit(): Promise<void> {
