@@ -268,7 +268,7 @@ describe('ShareLimit', () => {
         max_seeding_time_enabled: false,
         max_seeding_time: 0,
         max_inactive_seeding_time_enabled: false,
-        max_inactive_seeding_time: null,
+        max_inactive_seeding_time: undefined,
       });
     });
   });

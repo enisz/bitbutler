@@ -85,20 +85,21 @@ export class ShareLimit implements OnInit {
       return;
     }
 
+    const formValue = {
+      ratioLimit: null as number | null,
+      seedingTimeLimit: null as number | null,
+      inactiveSeedingTimeLimit: null as number | null,
+    };
     if (this.hashes.length === 1) {
       const t = this.torrentStoreService.torrentsMap().get(this.hashes[0]);
       if (t) {
-        this.form.controls.shareLimits.setValue(
-          {
-            ratioLimit: t.ratio_limit >= 0 ? t.ratio_limit : null,
-            seedingTimeLimit: t.seeding_time_limit >= 0 ? t.seeding_time_limit : null,
-            inactiveSeedingTimeLimit:
-              t.inactive_seeding_time_limit >= 0 ? t.inactive_seeding_time_limit : null,
-          },
-          { emitEvent: false },
-        );
+        formValue.ratioLimit = t.ratio_limit >= 0 ? t.ratio_limit : null;
+        formValue.seedingTimeLimit = t.seeding_time_limit >= 0 ? t.seeding_time_limit : null;
+        formValue.inactiveSeedingTimeLimit =
+          t.inactive_seeding_time_limit >= 0 ? t.inactive_seeding_time_limit : null;
       }
     }
+    this.form.controls.shareLimits.setValue(formValue, { emitEvent: false });
   }
 
   public async handleSubmit(): Promise<void> {
