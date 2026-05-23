@@ -1,6 +1,6 @@
 {
   "name": "@bitbutler/app",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "private": true,
   "scripts": {
     "serve": "ng serve",
@@ -13,7 +13,7 @@
     "@bitbutler/shared": "*"
   },
   "release": {
-    "commit": "cbfd185f9eafa22f574106b28085385a46e15521",
-    "date": "1778233251"
+    "commit": "e102502a85b71916c6da3f389dad132cd759c525",
+    "date": "1779572383"
   }
 }
