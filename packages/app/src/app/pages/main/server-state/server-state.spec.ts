@@ -297,6 +297,16 @@ describe('ServerState', () => {
     });
   });
 
+  describe('setGlobalShareLimit', () => {
+    it('emits UI_LIMIT_SHARE with global target', () => {
+      component.setGlobalShareLimit();
+      expect(commandBusEmit).toHaveBeenCalledWith({
+        type: 'UI_LIMIT_SHARE',
+        target: 'global',
+      });
+    });
+  });
+
   describe('selectedCount', () => {
     it('should reflect the number of selected torrents', () => {
       selectedSignal.set([{ hash: 'abc' }, { hash: 'def' }] as any);

@@ -59,7 +59,13 @@
       </div>
     }
     @case ('ratio') {
-      <div class="bb-widget" [ngbTooltip]="tipRatioGlobal" placement="top" container="body">
+      <div
+        class="bb-widget cursor-pointer"
+        [ngbTooltip]="tipRatioGlobal"
+        placement="top"
+        container="body"
+        (click)="setGlobalShareLimit()"
+      >
         <fa-icon [icon]="icons.faShareAlt" class="text-secondary opacity-75"></fa-icon>
         <span class="bb-value">{{ sessionRatio() }}</span>
       </div>

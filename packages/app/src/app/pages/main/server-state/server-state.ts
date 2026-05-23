@@ -146,6 +146,10 @@ export class ServerState implements OnChanges {
     this.commandBusService.emit({ type: 'UI_LIMIT_TRANSFER', target: 'global' });
   }
 
+  public setGlobalShareLimit(): void {
+    this.commandBusService.emit({ type: 'UI_LIMIT_SHARE', target: 'global' });
+  }
+
   private reset(): void {
     this.diskSpace.set(0n);
     this.dlSpeed.set(0n);
