@@ -32,6 +32,18 @@ describe('TransferLimit', () => {
       expect(component.form.value.uploadLimit).toBeNull();
       expect(component.form.value.downloadLimit).toBeNull();
     });
+
+    it('should set custom mode for positive values', () => {
+      component.writeValue({ uploadLimit: 512, downloadLimit: 1024 });
+      expect(component.uploadMode()).toBe('custom');
+      expect(component.downloadMode()).toBe('custom');
+    });
+
+    it('should set no-limit mode for null values', () => {
+      component.writeValue({ uploadLimit: null, downloadLimit: null });
+      expect(component.uploadMode()).toBe('no-limit');
+      expect(component.downloadMode()).toBe('no-limit');
+    });
   });
 
   describe('setDisabledState', () => {
@@ -40,10 +52,11 @@ describe('TransferLimit', () => {
       expect(component.form.disabled).toBe(true);
     });
 
-    it('should enable the form when false', () => {
+    it('should re-enable custom-mode controls when false', () => {
+      component.setUploadMode('custom');
       component.setDisabledState(true);
       component.setDisabledState(false);
-      expect(component.form.enabled).toBe(true);
+      expect(component.form.controls.uploadLimit.enabled).toBe(true);
     });
   });
 
@@ -52,8 +65,17 @@ describe('TransferLimit', () => {
       const onChange = vi.fn();
       component.registerOnChange(onChange);
       component.ngOnInit();
+      component.setUploadMode('custom');
       component.form.patchValue({ uploadLimit: 256 });
       expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ uploadLimit: 256 }));
+    });
+
+    it('should emit null for no-limit mode', () => {
+      const onChange = vi.fn();
+      component.registerOnChange(onChange);
+      component.ngOnInit();
+      component.setUploadMode('no-limit');
+      expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ uploadLimit: null }));
     });
   });
 

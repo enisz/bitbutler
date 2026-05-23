@@ -23,8 +23,8 @@ export type UiCommand =
   | { type: 'UI_OPEN_ABOUT' }
   | { type: 'UI_SET_TORRENT_LOCATION'; torrent: Torrent }
   | { type: 'UI_RENAME_TORRENT'; torrent: Torrent }
-  | { type: 'UI_LIMIT_TRANSFER'; target: LimitTargetType }
-  | { type: 'UI_LIMIT_SHARE' }
+  | { type: 'UI_LIMIT_TRANSFER'; target: LimitTargetType; hashes?: string[] }
+  | { type: 'UI_LIMIT_SHARE'; target?: LimitTargetType; hashes?: string[] }
   | { type: 'UI_SET_TORRENT_TAGS'; torrent: Torrent }
   | { type: 'UI_SET_TORRENT_CATEGORY'; torrent: Torrent }
   | { type: 'UI_OPEN_DESTINATION'; remotePath: string | null; hash: string }

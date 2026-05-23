@@ -1,71 +1,105 @@
-<div [formGroup]="form" class="container-fluid px-0">
-  <div class="row">
-    <div class="col-5">
-      <div class="form-floating">
-        <input
-          type="number"
-          class="form-control"
-          id="downloadLimit"
-          [placeholder]="'components.transfer-limit.download-limit' | translate"
-          formControlName="downloadLimit"
-          min="0"
-        />
-        <label for="downloadLimit">{{
-          'components.transfer-limit.download-limit' | translate
-        }}</label>
+<div [formGroup]="form" class="d-flex flex-column gap-2">
+  <div class="limit-row">
+    <div class="form-check mb-0 text-nowrap">
+      <input
+        class="form-check-input"
+        type="radio"
+        name="downloadMode"
+        id="downloadModeCustom"
+        [checked]="downloadMode() === 'custom'"
+        (change)="setDownloadMode('custom')"
+      />
+    </div>
+
+    <div class="form-floating">
+      <input
+        type="number"
+        class="form-control"
+        id="downloadLimit"
+        placeholder="0"
+        formControlName="downloadLimit"
+        min="0"
+      />
+      <label for="downloadLimit">{{
+        'components.transfer-limit.download-limit' | translate
+      }}</label>
+    </div>
+
+    <div class="form-check mb-0 text-nowrap">
+      <input
+        class="form-check-input"
+        type="radio"
+        name="downloadMode"
+        id="downloadModeNoLimit"
+        [checked]="downloadMode() === 'no-limit'"
+        (change)="setDownloadMode('no-limit')"
+      />
+      <label class="form-check-label" for="downloadModeNoLimit">
+        {{ 'general.limit.no-limit' | translate }}
+      </label>
+    </div>
+
+    <bb-popover
+      [subject]="'components.transfer-limit.popover.download-limit.title' | translate"
+      [description]="'components.transfer-limit.popover.download-limit.description' | translate"
+      placement="top"
+    ></bb-popover>
+
+    @if (downloadMode() === 'custom' && form.controls.downloadLimit.value) {
+      <div class="form-text ms-1 limit-row__helper">
+        {{ form.controls.downloadLimit.value * 1024 | speedLimit }}
       </div>
+    }
+  </div>
+
+  <div class="limit-row">
+    <div class="form-check mb-0 text-nowrap">
+      <input
+        class="form-check-input"
+        type="radio"
+        name="uploadMode"
+        id="uploadModeCustom"
+        [checked]="uploadMode() === 'custom'"
+        (change)="setUploadMode('custom')"
+      />
     </div>
 
-    <div class="col-1 d-flex align-items-center">
-      <bb-popover
-        class="mt-2"
-        [subject]="'components.transfer-limit.popover.download-limit.title' | translate"
-        [description]="'components.transfer-limit.popover.download-limit.description' | translate"
-        placement="top"
-      ></bb-popover>
+    <div class="form-floating">
+      <input
+        type="number"
+        class="form-control"
+        id="uploadLimit"
+        placeholder="0"
+        formControlName="uploadLimit"
+        min="0"
+      />
+      <label for="uploadLimit">{{ 'components.transfer-limit.upload-limit' | translate }}</label>
     </div>
 
-    <div class="col-5">
-      <div class="form-floating">
-        <input
-          type="number"
-          class="form-control"
-          id="uploadLimit"
-          [placeholder]="'components.transfer-limit.upload-limit' | translate"
-          formControlName="uploadLimit"
-          min="0"
-        />
-        <label for="uploadLimit">{{ 'components.transfer-limit.upload-limit' | translate }}</label>
+    <div class="form-check mb-0 text-nowrap">
+      <input
+        class="form-check-input"
+        type="radio"
+        name="uploadMode"
+        id="uploadModeNoLimit"
+        [checked]="uploadMode() === 'no-limit'"
+        (change)="setUploadMode('no-limit')"
+      />
+      <label class="form-check-label" for="uploadModeNoLimit">
+        {{ 'general.limit.no-limit' | translate }}
+      </label>
+    </div>
+
+    <bb-popover
+      [subject]="'components.transfer-limit.popover.upload-limit.title' | translate"
+      [description]="'components.transfer-limit.popover.upload-limit.description' | translate"
+      placement="top"
+    ></bb-popover>
+
+    @if (uploadMode() === 'custom' && form.controls.uploadLimit.value) {
+      <div class="form-text ms-1 limit-row__helper">
+        {{ form.controls.uploadLimit.value * 1024 | speedLimit }}
       </div>
-    </div>
-
-    <div class="col-1 d-flex align-items-center">
-      <bb-popover
-        class="mt-2"
-        [subject]="'components.transfer-limit.popover.upload-limit.title' | translate"
-        [description]="'components.transfer-limit.popover.upload-limit.description' | translate"
-        placement="top"
-      ></bb-popover>
-    </div>
-
-    <div class="col-6">
-      <div class="form-text mt-1 ms-2">
-        @if (form.controls.downloadLimit.value) {
-          {{ form.controls.downloadLimit.value * 1024 | speedLimit }}
-        } @else {
-          {{ 'general.limit.no-limit' | translate }}
-        }
-      </div>
-    </div>
-
-    <div class="col-6">
-      <div class="form-text mt-1 ms-2">
-        @if (form.controls.uploadLimit.value) {
-          {{ form.controls.uploadLimit.value * 1024 | speedLimit }}
-        } @else {
-          {{ 'general.limit.no-limit' | translate }}
-        }
-      </div>
-    </div>
+    }
   </div>
 </div>

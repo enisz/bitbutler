@@ -14,8 +14,8 @@ import { AutofocusDirective } from '../../../directives/autofocus';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
 import { LimitTargetType } from '../../../models/command.model';
 import { QbService } from '../../../services/qb.service';
-import { SelectionStoreService } from '../../../services/selection-store.service';
 import { ServerStoreService } from '../../../services/server-store.service';
+import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { BbSpinner } from '../../bb-spinner/bb-spinner';
 import {
   TransferLimit as TransferLimitForm,
@@ -38,10 +38,11 @@ import {
 })
 export class TransferLimit implements OnInit {
   @Input() public target!: LimitTargetType;
+  @Input() public hashes: string[] = [];
 
   private readonly qbService = inject(QbService);
   private readonly serverStoreService = inject(ServerStoreService);
-  private readonly selectionStoreService = inject(SelectionStoreService);
+  private readonly torrentStoreService = inject(TorrentStoreService);
   private readonly cdr = inject(ChangeDetectorRef);
   public activeModal = inject(NgbActiveModal);
 
@@ -49,16 +50,19 @@ export class TransferLimit implements OnInit {
     transferRateLimits: new FormControl<TransferLimitValue | null>(null),
   });
 
-  public loading = signal<boolean>(true);
+  public loading = signal<boolean>(false);
   public saving = signal<boolean>(false);
-  public selected = signal<number>(this.selectionStoreService.selected().length);
 
-  public selectionName = computed(() => {
-    const selected = this.selectionStoreService.selected();
-    return selected.length === 1 ? selected[0].name : selected.length;
+  public readonly selected = computed(() => this.hashes.length);
+
+  public readonly selectionName = computed(() => {
+    if (this.hashes.length === 1) {
+      return this.torrentStoreService.torrentsMap().get(this.hashes[0])?.name ?? this.hashes[0];
+    }
+    return this.hashes.length;
   });
 
-  public tooltipText = computed(() => {
+  public readonly tooltipText = computed(() => {
     if (this.target === 'global') return null;
     return String(this.selectionName());
   });
@@ -69,14 +73,16 @@ export class TransferLimit implements OnInit {
     let downloadBytes = 0;
 
     if (this.target === 'global') {
+      this.loading.set(true);
       [uploadBytes, downloadBytes] = await Promise.all([
         this.qbService.getUploadLimit(serverId) as Promise<number>,
         this.qbService.getDownloadLimit(serverId) as Promise<number>,
       ]);
-    } else {
-      const selectedTorrents = this.selectionStoreService.selected();
-      if (selectedTorrents.length > 0) {
-        const torrent = selectedTorrents[0];
+      this.loading.set(false);
+      this.cdr.markForCheck();
+    } else if (this.hashes.length > 0) {
+      const torrent = this.torrentStoreService.torrentsMap().get(this.hashes[0]);
+      if (torrent) {
         uploadBytes = torrent.up_limit;
         downloadBytes = torrent.dl_limit;
       }
@@ -89,7 +95,6 @@ export class TransferLimit implements OnInit {
       },
       { emitEvent: false },
     );
-    this.loading.set(false);
     this.cdr.markForCheck();
   }
 
@@ -99,10 +104,7 @@ export class TransferLimit implements OnInit {
     const value = this.form.controls.transferRateLimits.value;
     const uploadBytes = (value?.uploadLimit ?? 0) * 1024;
     const downloadBytes = (value?.downloadLimit ?? 0) * 1024;
-    const hashes =
-      this.target === 'torrent'
-        ? this.selectionStoreService.selected().map((t) => t.hash.trim())
-        : undefined;
+    const hashes = this.target === 'torrent' ? this.hashes : undefined;
 
     try {
       await Promise.all([
@@ -118,10 +120,7 @@ export class TransferLimit implements OnInit {
   }
 
   public clearAll(): void {
-    this.form.controls.transferRateLimits.setValue({
-      uploadLimit: null,
-      downloadLimit: null,
-    });
+    this.form.controls.transferRateLimits.setValue({ uploadLimit: null, downloadLimit: null });
     this.handleSubmit();
   }
 

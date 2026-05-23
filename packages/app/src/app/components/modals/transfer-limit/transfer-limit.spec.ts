@@ -3,18 +3,21 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Torrent } from '../../../models/torrent.model';
 import { QbService } from '../../../services/qb.service';
-import { SelectionStoreService } from '../../../services/selection-store.service';
 import { ServerStoreService } from '../../../services/server-store.service';
+import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { TransferLimit } from './transfer-limit';
 
 const makeTorrent = (overrides: Partial<Torrent> = {}): Torrent =>
   ({ name: 'My Torrent', hash: 'abc123', up_limit: 0, dl_limit: 0, ...overrides }) as Torrent;
+
+const makeStore = (torrents: Torrent[] = []) => signal(new Map(torrents.map((t) => [t.hash, t])));
 
 describe('TransferLimit', () => {
   let component: TransferLimit;
   let fixture: ComponentFixture<TransferLimit>;
   let mockActiveModal: Partial<NgbActiveModal>;
   let mockQbService: any;
+  let torrentsMap: ReturnType<typeof makeStore>;
 
   beforeEach(async () => {
     mockActiveModal = { close: vi.fn(), dismiss: vi.fn() };
@@ -25,17 +28,16 @@ describe('TransferLimit', () => {
       setDownloadLimit: vi.fn().mockResolvedValue(undefined),
     };
 
+    torrentsMap = makeStore([makeTorrent()]);
+
     await TestBed.configureTestingModule({
       imports: [TransferLimit],
       providers: [
         { provide: NgbActiveModal, useValue: mockActiveModal },
         { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
         {
-          provide: SelectionStoreService,
-          useValue: {
-            selected: signal([makeTorrent()]) as any,
-            selectedHashes: vi.fn().mockReturnValue(['abc123']),
-          },
+          provide: TorrentStoreService,
+          useValue: { torrentsMap },
         },
         { provide: QbService, useValue: mockQbService },
       ],
@@ -44,6 +46,7 @@ describe('TransferLimit', () => {
     fixture = TestBed.createComponent(TransferLimit);
     component = fixture.componentInstance;
     component.target = 'torrent';
+    component.hashes = ['abc123'];
     fixture.detectChanges();
   });
 
@@ -51,19 +54,58 @@ describe('TransferLimit', () => {
     expect(component).toBeTruthy();
   });
 
+  describe('torrent target - zero limits', () => {
+    it('leaves uploadLimit null when up_limit is 0', async () => {
+      await fixture.whenStable();
+      expect(component.form.controls.transferRateLimits.value?.uploadLimit).toBeNull();
+    });
+
+    it('leaves downloadLimit null when dl_limit is 0', async () => {
+      await fixture.whenStable();
+      expect(component.form.controls.transferRateLimits.value?.downloadLimit).toBeNull();
+    });
+
+    it('does not call getUploadLimit or getDownloadLimit', () => {
+      expect(mockQbService.getUploadLimit).not.toHaveBeenCalled();
+      expect(mockQbService.getDownloadLimit).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('torrent target - set limits', () => {
+    beforeEach(async () => {
+      torrentsMap.set(
+        new Map([['abc123', makeTorrent({ up_limit: 512 * 1024, dl_limit: 1024 * 1024 })]]),
+      );
+      const f = TestBed.createComponent(TransferLimit);
+      component = f.componentInstance;
+      component.target = 'torrent';
+      component.hashes = ['abc123'];
+      f.detectChanges();
+      await f.whenStable();
+    });
+
+    it('converts up_limit bytes to KiB for uploadLimit', () => {
+      expect(component.form.controls.transferRateLimits.value?.uploadLimit).toBe(512);
+    });
+
+    it('converts dl_limit bytes to KiB for downloadLimit', () => {
+      expect(component.form.controls.transferRateLimits.value?.downloadLimit).toBe(1024);
+    });
+  });
+
   describe('canSave', () => {
-    it('should return true when form is valid and not saving', () => {
+    it('returns true when form is valid and not saving', () => {
       expect(component.canSave()).toBe(true);
     });
 
-    it('should return false while saving', () => {
+    it('returns false while saving', () => {
       component.saving.set(true);
       expect(component.canSave()).toBe(false);
     });
   });
 
   describe('hasClearableValues', () => {
-    it('should return false when both limits are null', () => {
+    it('returns false when both limits are null', () => {
       component.form.controls.transferRateLimits.setValue({
         uploadLimit: null,
         downloadLimit: null,
@@ -71,7 +113,7 @@ describe('TransferLimit', () => {
       expect(component.hasClearableValues()).toBe(false);
     });
 
-    it('should return true when uploadLimit is set', () => {
+    it('returns true when uploadLimit is set', () => {
       component.form.controls.transferRateLimits.setValue({
         uploadLimit: 512,
         downloadLimit: null,
@@ -79,7 +121,7 @@ describe('TransferLimit', () => {
       expect(component.hasClearableValues()).toBe(true);
     });
 
-    it('should return true when downloadLimit is set', () => {
+    it('returns true when downloadLimit is set', () => {
       component.form.controls.transferRateLimits.setValue({
         uploadLimit: null,
         downloadLimit: 1024,
@@ -88,22 +130,32 @@ describe('TransferLimit', () => {
     });
   });
 
-  describe('tooltipText (global target)', () => {
-    let globalComponent: TransferLimit;
-
-    beforeEach(async () => {
+  describe('tooltipText', () => {
+    it('returns null for global target', () => {
       const f = TestBed.createComponent(TransferLimit);
-      globalComponent = f.componentInstance;
-      globalComponent.target = 'global';
+      const c = f.componentInstance;
+      c.target = 'global';
+      c.hashes = [];
       f.detectChanges();
+      expect(c.tooltipText()).toBeNull();
     });
 
-    it('should return null for global target', () => {
-      expect(globalComponent.tooltipText()).toBeNull();
-    });
-
-    it('should return non-null for torrent target', () => {
+    it('returns non-null for torrent target with hashes', () => {
       expect(component.tooltipText()).toBeDefined();
+    });
+  });
+
+  describe('handleSubmit - torrent target', () => {
+    it('calls setUploadLimit and setDownloadLimit with component hashes', async () => {
+      component.form.controls.transferRateLimits.setValue({
+        uploadLimit: 512,
+        downloadLimit: 1024,
+      });
+      await component.handleSubmit();
+      expect(mockQbService.setUploadLimit).toHaveBeenCalledWith('server-1', 512 * 1024, ['abc123']);
+      expect(mockQbService.setDownloadLimit).toHaveBeenCalledWith('server-1', 1024 * 1024, [
+        'abc123',
+      ]);
     });
   });
 });

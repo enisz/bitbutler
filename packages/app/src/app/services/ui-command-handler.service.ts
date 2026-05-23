@@ -168,25 +168,33 @@ export class UiCommandHandlerService {
             setLocationModalRef.result.then((res: any) => {}).catch((error: any) => {});
             break;
 
-          case 'UI_LIMIT_TRANSFER':
+          case 'UI_LIMIT_TRANSFER': {
             if (this.isModalOpen(TransferLimit)) break;
+            const transferHashes =
+              command.hashes ??
+              (command.target === 'torrent' ? this.selectionStoreService.selectedHashes() : []);
             const limitTransferModalRef = this.modalService.open(TransferLimit, {
               centered: true,
               size: 'lg',
             });
-
             limitTransferModalRef.componentInstance.target = command.target;
-
+            limitTransferModalRef.componentInstance.hashes = transferHashes;
             limitTransferModalRef.result.then((res: any) => {}).catch((error: any) => {});
             break;
+          }
 
-          case 'UI_LIMIT_SHARE':
+          case 'UI_LIMIT_SHARE': {
             if (this.isModalOpen(ShareLimit)) break;
-
+            const shareLimitTarget = command.target ?? 'torrent';
+            const shareLimitHashes =
+              command.hashes ??
+              (shareLimitTarget === 'torrent' ? this.selectionStoreService.selectedHashes() : []);
             const limitTorrentShare = this.modalService.open(ShareLimit, { size: 'lg' });
-
+            limitTorrentShare.componentInstance.target = shareLimitTarget;
+            limitTorrentShare.componentInstance.hashes = shareLimitHashes;
             limitTorrentShare.result.then((res: any) => {}).catch((error: any) => {});
             break;
+          }
 
           case 'UI_SET_TORRENT_TAGS':
             if (this.isModalOpen(SetTorrentTags)) break;

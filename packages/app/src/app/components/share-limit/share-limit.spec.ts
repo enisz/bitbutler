@@ -34,6 +34,20 @@ describe('ShareLimit', () => {
       expect(component.form.value.seedingTimeLimit).toBeNull();
       expect(component.form.value.inactiveSeedingTimeLimit).toBeNull();
     });
+
+    it('should set global mode for -2 values', () => {
+      component.writeValue({ ratioLimit: -2, seedingTimeLimit: -2, inactiveSeedingTimeLimit: -2 });
+      expect(component.ratioMode()).toBe('global');
+      expect(component.seedingMode()).toBe('global');
+      expect(component.inactiveMode()).toBe('global');
+    });
+
+    it('should set no-limit mode for -1 values', () => {
+      component.writeValue({ ratioLimit: -1, seedingTimeLimit: -1, inactiveSeedingTimeLimit: -1 });
+      expect(component.ratioMode()).toBe('no-limit');
+      expect(component.seedingMode()).toBe('no-limit');
+      expect(component.inactiveMode()).toBe('no-limit');
+    });
   });
 
   describe('setDisabledState', () => {
@@ -42,10 +56,11 @@ describe('ShareLimit', () => {
       expect(component.form.disabled).toBe(true);
     });
 
-    it('should enable the form when false', () => {
+    it('should re-enable custom-mode controls when false', () => {
+      component.setRatioMode('custom');
       component.setDisabledState(true);
       component.setDisabledState(false);
-      expect(component.form.enabled).toBe(true);
+      expect(component.form.controls.ratioLimit.enabled).toBe(true);
     });
   });
 
@@ -54,8 +69,25 @@ describe('ShareLimit', () => {
       const onChange = vi.fn();
       component.registerOnChange(onChange);
       component.ngOnInit();
+      component.setRatioMode('custom');
       component.form.patchValue({ ratioLimit: 1.5 });
       expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ ratioLimit: 1.5 }));
+    });
+
+    it('should emit -2 for global mode', () => {
+      const onChange = vi.fn();
+      component.registerOnChange(onChange);
+      component.ngOnInit();
+      component.setRatioMode('global');
+      expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ ratioLimit: -2 }));
+    });
+
+    it('should emit null for no-limit mode', () => {
+      const onChange = vi.fn();
+      component.registerOnChange(onChange);
+      component.ngOnInit();
+      component.setRatioMode('no-limit');
+      expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ ratioLimit: null }));
     });
   });
 

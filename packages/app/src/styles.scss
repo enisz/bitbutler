@@ -702,40 +702,48 @@ html ngb-typeahead-window.dropdown-menu .dropdown-item:active {
 .form-check {
   --bb-check-color: var(--bs-primary);
   --bb-check-color-rgb: var(--bs-primary-rgb);
-  --bb-check-ink: #fff;
+  --bb-check-ink: var(--bb-primary-ink, #fff);
 }
 
 .form-check.bb-check-primary {
   --bb-check-color: var(--bs-primary);
   --bb-check-color-rgb: var(--bs-primary-rgb);
+  --bb-check-ink: var(--bb-primary-ink, #fff);
 }
 .form-check.bb-check-secondary {
   --bb-check-color: var(--bs-secondary);
   --bb-check-color-rgb: var(--bs-secondary-rgb);
+  --bb-check-ink: var(--bb-secondary-ink, #fff);
 }
 .form-check.bb-check-success {
   --bb-check-color: var(--bs-success);
   --bb-check-color-rgb: var(--bs-success-rgb);
+  --bb-check-ink: var(--bb-success-ink, #fff);
 }
 .form-check.bb-check-danger {
   --bb-check-color: var(--bs-danger);
   --bb-check-color-rgb: var(--bs-danger-rgb);
+  --bb-check-ink: var(--bb-danger-ink, #fff);
 }
 .form-check.bb-check-warning {
   --bb-check-color: var(--bs-warning);
   --bb-check-color-rgb: var(--bs-warning-rgb);
+  --bb-check-ink: var(--bb-warning-ink, #fff);
 }
 .form-check.bb-check-info {
   --bb-check-color: var(--bs-info);
   --bb-check-color-rgb: var(--bs-info-rgb);
+  --bb-check-ink: var(--bb-info-ink, #fff);
 }
 .form-check.bb-check-light {
   --bb-check-color: var(--bs-light);
   --bb-check-color-rgb: 248, 249, 250;
+  --bb-check-ink: var(--bb-light-ink, #000);
 }
 .form-check.bb-check-dark {
   --bb-check-color: var(--bs-dark);
   --bb-check-color-rgb: 33, 37, 41;
+  --bb-check-ink: var(--bb-dark-ink, #fff);
 }
 
 .form-check-input {
@@ -746,6 +754,11 @@ html ngb-typeahead-window.dropdown-menu .dropdown-item:active {
 .form-check-input:indeterminate {
   background-color: var(--bb-check-color) !important;
   border-color: var(--bb-check-color) !important;
+}
+
+.form-check-input[type='radio']:checked {
+  color: var(--bs-body-bg);
+  --bs-form-check-bg-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='currentColor'/%3e%3c/svg%3e");
 }
 
 .form-check-input:focus {
