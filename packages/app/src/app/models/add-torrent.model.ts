@@ -28,5 +28,5 @@ export const DEFAULT_ADD_TORRENT_SETTINGS: AddTorrentSettings = {
   firstLastPiecePrio: false,
   autoTMM: false,
   transferRateLimits: null,
-  shareLimits: null,
+  shareLimits: { ratioLimit: -2, seedingTimeLimit: -2, inactiveSeedingTimeLimit: -2 },
 };

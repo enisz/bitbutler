@@ -1,7 +1,6 @@
 import {
   ChangeDetectorRef,
   Component,
-  Input,
   OnInit,
   WritableSignal,
   forwardRef,
@@ -42,8 +41,6 @@ export type ShareLimitValue = {
   ],
 })
 export class ShareLimit implements ControlValueAccessor, OnInit {
-  @Input() public hideInactive = false;
-
   private readonly cdr = inject(ChangeDetectorRef);
 
   public form = new FormGroup({
