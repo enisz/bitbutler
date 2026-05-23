@@ -1,4 +1,4 @@
-<div [formGroup]="form" class="d-flex flex-column gap-3">
+<div [formGroup]="form" class="d-flex flex-column gap-2">
   <div class="limit-row">
     <div class="form-check mb-0 text-nowrap">
       <input
@@ -9,9 +9,6 @@
         [checked]="downloadMode() === 'custom'"
         (change)="setDownloadMode('custom')"
       />
-      <label class="form-check-label" for="downloadModeCustom">
-        {{ 'general.label.custom' | translate }}
-      </label>
     </div>
 
     <div class="form-floating">
@@ -48,13 +45,11 @@
       placement="top"
     ></bb-popover>
 
-    <div class="form-text ms-1 limit-row__helper">
-      @if (downloadMode() === 'custom' && form.controls.downloadLimit.value) {
+    @if (downloadMode() === 'custom' && form.controls.downloadLimit.value) {
+      <div class="form-text ms-1 limit-row__helper">
         {{ form.controls.downloadLimit.value * 1024 | speedLimit }}
-      } @else {
-        &nbsp;
-      }
-    </div>
+      </div>
+    }
   </div>
 
   <div class="limit-row">
@@ -67,9 +62,6 @@
         [checked]="uploadMode() === 'custom'"
         (change)="setUploadMode('custom')"
       />
-      <label class="form-check-label" for="uploadModeCustom">
-        {{ 'general.label.custom' | translate }}
-      </label>
     </div>
 
     <div class="form-floating">
@@ -104,12 +96,10 @@
       placement="top"
     ></bb-popover>
 
-    <div class="form-text ms-1 limit-row__helper">
-      @if (uploadMode() === 'custom' && form.controls.uploadLimit.value) {
+    @if (uploadMode() === 'custom' && form.controls.uploadLimit.value) {
+      <div class="form-text ms-1 limit-row__helper">
         {{ form.controls.uploadLimit.value * 1024 | speedLimit }}
-      } @else {
-        &nbsp;
-      }
-    </div>
+      </div>
+    }
   </div>
 </div>

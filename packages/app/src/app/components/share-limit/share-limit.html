@@ -1,4 +1,4 @@
-<div [formGroup]="form" class="d-flex flex-column gap-3">
+<div [formGroup]="form" class="d-flex flex-column gap-2">
   <div class="limit-row">
     <div class="form-check mb-0 text-nowrap">
       <input
@@ -9,9 +9,6 @@
         [checked]="ratioMode() === 'custom'"
         (change)="setRatioMode('custom')"
       />
-      <label class="form-check-label" for="ratioModeCustom">
-        {{ 'general.label.custom' | translate }}
-      </label>
     </div>
 
     <div class="form-floating">
@@ -63,13 +60,11 @@
       placement="top"
     ></bb-popover>
 
-    <div class="form-text ms-1 limit-row__helper">
-      @if (ratioMode() === 'custom' && form.controls.ratioLimit.value !== null) {
+    @if (ratioMode() === 'custom' && form.controls.ratioLimit.value !== null) {
+      <div class="form-text ms-1 limit-row__helper">
         {{ form.controls.ratioLimit.value | ratioLimit }}
-      } @else {
-        &nbsp;
-      }
-    </div>
+      </div>
+    }
   </div>
 
   <div class="limit-row">
@@ -82,9 +77,6 @@
         [checked]="seedingMode() === 'custom'"
         (change)="setSeedingMode('custom')"
       />
-      <label class="form-check-label" for="seedingModeCustom">
-        {{ 'general.label.custom' | translate }}
-      </label>
     </div>
 
     <div class="form-floating">
@@ -137,13 +129,11 @@
       placement="top"
     ></bb-popover>
 
-    <div class="form-text ms-1 limit-row__helper">
-      @if (seedingMode() === 'custom' && form.controls.seedingTimeLimit.value !== null) {
+    @if (seedingMode() === 'custom' && form.controls.seedingTimeLimit.value !== null) {
+      <div class="form-text ms-1 limit-row__helper">
         {{ form.controls.seedingTimeLimit.value | timeLimit }}
-      } @else {
-        &nbsp;
-      }
-    </div>
+      </div>
+    }
   </div>
 
   @if (!hideInactive) {
@@ -157,9 +147,6 @@
           [checked]="inactiveMode() === 'custom'"
           (change)="setInactiveMode('custom')"
         />
-        <label class="form-check-label" for="inactiveModeCustom">
-          {{ 'general.label.custom' | translate }}
-        </label>
       </div>
 
       <div class="form-floating">
@@ -214,13 +201,11 @@
         placement="top"
       ></bb-popover>
 
-      <div class="form-text ms-1 limit-row__helper">
-        @if (inactiveMode() === 'custom' && form.controls.inactiveSeedingTimeLimit.value !== null) {
+      @if (inactiveMode() === 'custom' && form.controls.inactiveSeedingTimeLimit.value !== null) {
+        <div class="form-text ms-1 limit-row__helper">
           {{ form.controls.inactiveSeedingTimeLimit.value | timeLimit }}
-        } @else {
-          &nbsp;
-        }
-      </div>
+        </div>
+      }
     </div>
   }
 </div>
