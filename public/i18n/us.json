@@ -579,6 +579,7 @@
       },
       "share-limit": {
         "title": "Share Limit",
+        "global": "Global Share Limit",
         "loading": "Loading Share Limits..."
       },
       "guard": {
@@ -663,11 +664,11 @@
       "popover": {
         "upload-limit": {
           "title": "Upload Limit",
-          "description": "Maximum upload speed in KiB/s. Set to 0 or leave empty to remove the speed limit."
+          "description": "Maximum upload speed in KiB/s."
         },
         "download-limit": {
           "title": "Download Limit",
-          "description": "Maximum download speed in KiB/s. Set to 0 or leave empty to remove the speed limit."
+          "description": "Maximum download speed in KiB/s."
         }
       }
     },
@@ -678,15 +679,15 @@
       "popover": {
         "ratio-limit": {
           "title": "Ratio Limit",
-          "description": "Stop seeding when the upload/download ratio reaches this value. Leave empty for no limit (-1), or enter -2 to use the global limit."
+          "description": "Stop seeding when the upload/download ratio reaches this value."
         },
         "seeding-time-limit": {
           "title": "Seeding Time Limit",
-          "description": "Stop seeding after the torrent has been seeding for this many minutes. Leave empty for no limit (-1), or enter -2 to use the global limit."
+          "description": "Stop seeding after the torrent has been seeding for this many minutes."
         },
         "inactive-seeding-time-limit": {
           "title": "Inactive Seeding Time Limit",
-          "description": "Stop seeding after the torrent has been inactive for this many minutes. Leave empty for no limit (-1), or enter -2 to use the global limit."
+          "description": "Stop seeding after the torrent has been inactive for this many minutes."
         }
       }
     },
@@ -1306,7 +1307,8 @@
       }
     },
     "label": {
-      "torrent-selected": "{{count}} torrent(s) selected"
+      "torrent-selected": "{{count}} torrent(s) selected",
+      "custom": "Custom"
     },
     "calendar": {
       "months": {

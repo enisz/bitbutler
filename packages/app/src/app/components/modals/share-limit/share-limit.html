@@ -11,7 +11,9 @@
       tooltipClass="single-line-tooltip"
       placement="bottom"
     >
-      @if (selected() === 1) {
+      @if (target === 'global') {
+        {{ 'components.modals.share-limit.global' | translate }}
+      } @else if (selected() === 1) {
         {{ selectionName() }}
       } @else {
         {{ 'general.label.torrent-selected' | translate: { count: selected() } }}

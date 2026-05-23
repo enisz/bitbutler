@@ -93,10 +93,20 @@ export class ShareLimit implements OnInit {
     if (this.hashes.length === 1) {
       const t = this.torrentStoreService.torrentsMap().get(this.hashes[0]);
       if (t) {
-        formValue.ratioLimit = t.ratio_limit >= 0 ? t.ratio_limit : null;
-        formValue.seedingTimeLimit = t.seeding_time_limit >= 0 ? t.seeding_time_limit : null;
+        formValue.ratioLimit =
+          t.ratio_limit >= 0 ? t.ratio_limit : t.ratio_limit === -2 ? -2 : null;
+        formValue.seedingTimeLimit =
+          t.seeding_time_limit >= 0
+            ? t.seeding_time_limit
+            : t.seeding_time_limit === -2
+              ? -2
+              : null;
         formValue.inactiveSeedingTimeLimit =
-          t.inactive_seeding_time_limit >= 0 ? t.inactive_seeding_time_limit : null;
+          t.inactive_seeding_time_limit >= 0
+            ? t.inactive_seeding_time_limit
+            : t.inactive_seeding_time_limit === -2
+              ? -2
+              : null;
       }
     }
     this.form.controls.shareLimits.setValue(formValue, { emitEvent: false });

@@ -579,6 +579,7 @@
       },
       "share-limit": {
         "title": "Megosztási korlát",
+        "global": "Globális megosztási korlát",
         "loading": "Megosztási korlátok betöltése..."
       },
       "guard": {
@@ -663,11 +664,11 @@
       "popover": {
         "upload-limit": {
           "title": "Feltöltési korlát",
-          "description": "Maximális feltöltési sebesség KiB/s-ban. A 0 megadásával vagy az üres mező hagyásával a korlát eltávolítható."
+          "description": "Maximális feltöltési sebesség KiB/s-ban."
         },
         "download-limit": {
           "title": "Letöltési korlát",
-          "description": "Maximális letöltési sebesség KiB/s-ban. A 0 megadásával vagy az üres mező hagyásával a korlát eltávolítható."
+          "description": "Maximális letöltési sebesség KiB/s-ban."
         }
       }
     },
@@ -678,15 +679,15 @@
       "popover": {
         "ratio-limit": {
           "title": "Arány korlát",
-          "description": "Seedelés leállítása, ha a feltöltés/letöltés arány eléri ezt az értéket. Hagyd üresen a korlát nélküli módhoz (-1), vagy írd be -2-t a globális korlát használatához."
+          "description": "Seedelés leállítása, ha a feltöltés/letöltés arány eléri ezt az értéket."
         },
         "seeding-time-limit": {
           "title": "Seedelési időkorlát",
-          "description": "Seedelés leállítása, miután a torrent ennyi percig seedelt. Hagyd üresen a korlát nélküli módhoz (-1), vagy írd be -2-t a globális korlát használatához."
+          "description": "Seedelés leállítása, miután a torrent ennyi percig seedelt."
         },
         "inactive-seeding-time-limit": {
           "title": "Inaktív seedelési időkorlát",
-          "description": "Seedelés leállítása, ha a torrent ennyi percig inaktív volt. Hagyd üresen a korlát nélküli módhoz (-1), vagy írd be -2-t a globális korlát használatához."
+          "description": "Seedelés leállítása, ha a torrent ennyi percig inaktív volt."
         }
       }
     },
@@ -1306,7 +1307,8 @@
       }
     },
     "label": {
-      "torrent-selected": "{{count}} torrent kijelölve"
+      "torrent-selected": "{{count}} torrent kijelölve",
+      "custom": "Egyedi"
     },
     "calendar": {
       "months": {
