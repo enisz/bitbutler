@@ -269,8 +269,10 @@ export class AddTorrent implements OnInit {
         const hasTreeCustomizations =
           state != null &&
           (state.renames.length > 0 || state.files.some((f) => (f.priority ?? 1) !== 1));
-        if (hasTreeCustomizations) {
-          await this.tryRenameContentAfterAdd(serverId);
+        const inactiveLimit = raw.shareLimits?.inactiveSeedingTimeLimit ?? null;
+        const needsInactivePost = inactiveLimit !== null && inactiveLimit !== -2;
+        if (hasTreeCustomizations || needsInactivePost) {
+          await this.tryRenameContentAfterAdd(serverId, raw.shareLimits);
         }
       }
 
@@ -438,7 +440,10 @@ export class AddTorrent implements OnInit {
     this.showTree.set(!!draft.torrent?.files?.length);
   }
 
-  private async tryRenameContentAfterAdd(serverId: string): Promise<void> {
+  private async tryRenameContentAfterAdd(
+    serverId: string,
+    shareLimits?: ShareLimitValue | null,
+  ): Promise<void> {
     const hash = this.effectiveDraft()?.torrent?.infoHashV1?.trim();
     if (!hash) return;
 
@@ -478,6 +483,19 @@ export class AddTorrent implements OnInit {
               await this.qbService.setFilePriority(serverId, hash, [index], f.priority ?? 0);
             }
           }
+        }
+      }
+
+      if (shareLimits != null) {
+        const inactiveLimit = shareLimits.inactiveSeedingTimeLimit;
+        if (inactiveLimit !== null && inactiveLimit !== -2) {
+          await this.qbService.setShareLimits(
+            serverId,
+            [hash],
+            shareLimits.ratioLimit ?? -2,
+            shareLimits.seedingTimeLimit ?? -2,
+            inactiveLimit,
+          );
         }
       }
     } catch (error) {

@@ -1,6 +1,7 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import type { TorrentDraft } from '../../models/torrent-draft.model';
 import { AddTorrentSettingsService } from '../../services/add-torrent-settings.service';
 import { GeneralSettingsService } from '../../services/general-settings.service';
 import { OpenFilesService } from '../../services/open-files.service';
@@ -50,6 +51,7 @@ describe('AddTorrent', () => {
             renameTorrentFile: vi.fn(),
             renameTorrentFolder: vi.fn(),
             setFilePriority: vi.fn(),
+            setShareLimits: vi.fn().mockResolvedValue(undefined),
             getAllCategories: vi.fn().mockResolvedValue({}),
             getAllTags: vi.fn().mockResolvedValue([]),
             createTags: vi.fn().mockResolvedValue(undefined),
@@ -114,6 +116,50 @@ describe('AddTorrent', () => {
       mockOpenFilesService.pendingDrafts.set([{ draft: {}, selected: {} } as any]);
       component.handleCancel();
       expect(mockOpenFilesService.consumeCurrentDraft).toHaveBeenCalled();
+    });
+  });
+
+  describe('tryRenameContentAfterAdd', () => {
+    let mockQbService: any;
+    const hash = 'abcdef1234567890';
+    const draft: Partial<TorrentDraft> = { torrent: { infoHashV1: hash } as any };
+
+    beforeEach(() => {
+      mockQbService = TestBed.inject(QbService) as any;
+      component.manualDraft.set(draft as TorrentDraft);
+      mockQbService.torrentContents.mockResolvedValue([{ name: 'file.mkv', index: 0 }]);
+    });
+
+    it('should call setShareLimits when inactiveSeedingTimeLimit is no-limit (-1)', async () => {
+      await (component as any).tryRenameContentAfterAdd('server-1', {
+        ratioLimit: -2,
+        seedingTimeLimit: -2,
+        inactiveSeedingTimeLimit: -1,
+      });
+      expect(mockQbService.setShareLimits).toHaveBeenCalledWith('server-1', [hash], -2, -2, -1);
+    });
+
+    it('should call setShareLimits when inactiveSeedingTimeLimit is a custom value', async () => {
+      await (component as any).tryRenameContentAfterAdd('server-1', {
+        ratioLimit: 2,
+        seedingTimeLimit: 120,
+        inactiveSeedingTimeLimit: 60,
+      });
+      expect(mockQbService.setShareLimits).toHaveBeenCalledWith('server-1', [hash], 2, 120, 60);
+    });
+
+    it('should not call setShareLimits when inactiveSeedingTimeLimit is global (-2)', async () => {
+      await (component as any).tryRenameContentAfterAdd('server-1', {
+        ratioLimit: -2,
+        seedingTimeLimit: -2,
+        inactiveSeedingTimeLimit: -2,
+      });
+      expect(mockQbService.setShareLimits).not.toHaveBeenCalled();
+    });
+
+    it('should not call setShareLimits when shareLimits is null', async () => {
+      await (component as any).tryRenameContentAfterAdd('server-1', null);
+      expect(mockQbService.setShareLimits).not.toHaveBeenCalled();
     });
   });
 });
