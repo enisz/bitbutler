@@ -187,6 +187,7 @@ export class General implements TorrentDetailTabComponent, OnInit {
     this.commandBusService.emit({
       type: 'UI_LIMIT_TRANSFER',
       target: 'torrent',
+      hashes: [this.hash],
     });
   }
 
@@ -194,6 +195,7 @@ export class General implements TorrentDetailTabComponent, OnInit {
     this.commandBusService.emit({
       type: 'UI_LIMIT_TRANSFER',
       target: 'torrent',
+      hashes: [this.hash],
     });
   }
 
@@ -234,7 +236,7 @@ export class General implements TorrentDetailTabComponent, OnInit {
   }
 
   public openShareLimitsModal(): void {
-    this.commandBusService.emit({ type: 'UI_LIMIT_SHARE' });
+    this.commandBusService.emit({ type: 'UI_LIMIT_SHARE', target: 'torrent', hashes: [this.hash] });
   }
 
   public clearRatioLimit(): void {
