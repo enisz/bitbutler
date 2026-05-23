@@ -3,8 +3,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Torrent } from '../../../models/torrent.model';
 import { QbService } from '../../../services/qb.service';
-import { SelectionStoreService } from '../../../services/selection-store.service';
 import { ServerStoreService } from '../../../services/server-store.service';
+import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { ShareLimit } from './share-limit';
 
 const makeTorrent = (overrides: Partial<Torrent> = {}): Torrent =>
@@ -17,13 +17,31 @@ const makeTorrent = (overrides: Partial<Torrent> = {}): Torrent =>
     ...overrides,
   }) as Torrent;
 
+const makeStore = (torrents: Torrent[] = []) => signal(new Map(torrents.map((t) => [t.hash, t])));
+
 describe('ShareLimit', () => {
   let component: ShareLimit;
   let fixture: ComponentFixture<ShareLimit>;
   let mockActiveModal: Partial<NgbActiveModal>;
+  let mockQbService: any;
+  let torrentsMap: ReturnType<typeof makeStore>;
 
   beforeEach(async () => {
     mockActiveModal = { close: vi.fn(), dismiss: vi.fn() };
+    mockQbService = {
+      getAppPreferences: vi.fn().mockResolvedValue({
+        max_ratio_enabled: true,
+        max_ratio: 2.0,
+        max_seeding_time_enabled: false,
+        max_seeding_time: 0,
+        max_inactive_seeding_time_enabled: false,
+        max_inactive_seeding_time: null,
+      }),
+      setShareLimits: vi.fn().mockResolvedValue(undefined),
+      setAppPreferences: vi.fn().mockResolvedValue(undefined),
+    };
+
+    torrentsMap = makeStore([makeTorrent()]);
 
     await TestBed.configureTestingModule({
       imports: [ShareLimit],
@@ -31,26 +49,10 @@ describe('ShareLimit', () => {
         { provide: NgbActiveModal, useValue: mockActiveModal },
         { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
         {
-          provide: SelectionStoreService,
-          useValue: {
-            selected: signal([makeTorrent()]) as any,
-            selectedHashes: vi.fn().mockReturnValue(['abc123']),
-          },
+          provide: TorrentStoreService,
+          useValue: { torrentsMap },
         },
-        {
-          provide: QbService,
-          useValue: {
-            getAppPreferences: vi.fn().mockResolvedValue({
-              max_ratio_enabled: false,
-              max_ratio: 0,
-              max_seeding_time_enabled: false,
-              max_seeding_time: 0,
-              max_inactive_seeding_time_enabled: false,
-              max_inactive_seeding_time: null,
-            }),
-            setShareLimits: vi.fn().mockResolvedValue(undefined),
-          },
-        },
+        { provide: QbService, useValue: mockQbService },
       ],
     }).compileComponents();
 
@@ -62,19 +64,147 @@ describe('ShareLimit', () => {
     expect(component).toBeTruthy();
   });
 
+  describe('torrent target - single hash with negative limits (use global)', () => {
+    beforeEach(async () => {
+      component.target = 'torrent';
+      component.hashes = ['abc123'];
+      fixture.detectChanges();
+      await fixture.whenStable();
+    });
+
+    it('leaves all form fields null when ratio_limit and time limits are -1', () => {
+      const v = component.form.controls.shareLimits.value;
+      expect(v?.ratioLimit).toBeNull();
+      expect(v?.seedingTimeLimit).toBeNull();
+      expect(v?.inactiveSeedingTimeLimit).toBeNull();
+    });
+
+    it('does not call getAppPreferences', () => {
+      expect(mockQbService.getAppPreferences).not.toHaveBeenCalled();
+    });
+
+    it('loading stays false', () => {
+      expect(component.loading()).toBe(false);
+    });
+  });
+
+  describe('torrent target - single hash with explicit limits', () => {
+    beforeEach(async () => {
+      torrentsMap.set(
+        new Map([
+          [
+            'abc123',
+            makeTorrent({
+              ratio_limit: 1.5,
+              seeding_time_limit: 120,
+              inactive_seeding_time_limit: 30,
+            }),
+          ],
+        ]),
+      );
+      component.target = 'torrent';
+      component.hashes = ['abc123'];
+      fixture.detectChanges();
+      await fixture.whenStable();
+    });
+
+    it('populates ratioLimit from ratio_limit', () => {
+      expect(component.form.controls.shareLimits.value?.ratioLimit).toBe(1.5);
+    });
+
+    it('populates seedingTimeLimit from seeding_time_limit', () => {
+      expect(component.form.controls.shareLimits.value?.seedingTimeLimit).toBe(120);
+    });
+
+    it('populates inactiveSeedingTimeLimit from inactive_seeding_time_limit', () => {
+      expect(component.form.controls.shareLimits.value?.inactiveSeedingTimeLimit).toBe(30);
+    });
+  });
+
+  describe('torrent target - multiple hashes', () => {
+    beforeEach(async () => {
+      component.target = 'torrent';
+      component.hashes = ['abc123', 'def456'];
+      fixture.detectChanges();
+      await fixture.whenStable();
+    });
+
+    it('leaves all form fields null for multi-selection', () => {
+      const v = component.form.controls.shareLimits.value;
+      expect(v?.ratioLimit).toBeNull();
+      expect(v?.seedingTimeLimit).toBeNull();
+      expect(v?.inactiveSeedingTimeLimit).toBeNull();
+    });
+
+    it('does not call getAppPreferences', () => {
+      expect(mockQbService.getAppPreferences).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('global target', () => {
+    beforeEach(async () => {
+      component.target = 'global';
+      component.hashes = [];
+      fixture.detectChanges();
+      await fixture.whenStable();
+    });
+
+    it('calls getAppPreferences', () => {
+      expect(mockQbService.getAppPreferences).toHaveBeenCalledWith('server-1');
+    });
+
+    it('populates ratioLimit when max_ratio_enabled is true', () => {
+      expect(component.form.controls.shareLimits.value?.ratioLimit).toBe(2.0);
+    });
+
+    it('leaves seedingTimeLimit null when max_seeding_time_enabled is false', () => {
+      expect(component.form.controls.shareLimits.value?.seedingTimeLimit).toBeNull();
+    });
+
+    it('loading ends as false after init', () => {
+      expect(component.loading()).toBe(false);
+    });
+  });
+
+  describe('selectionName', () => {
+    it('returns torrent name for single hash', () => {
+      component.hashes = ['abc123'];
+      expect(component.selectionName()).toBe('My Torrent');
+    });
+
+    it('returns count for multiple hashes', () => {
+      component.hashes = ['abc123', 'def456'];
+      expect(component.selectionName()).toBe(2);
+    });
+  });
+
+  describe('tooltipText', () => {
+    it('returns null for global target', () => {
+      component.target = 'global';
+      component.hashes = [];
+      expect(component.tooltipText()).toBeNull();
+    });
+
+    it('returns string for torrent target', () => {
+      component.target = 'torrent';
+      component.hashes = ['abc123'];
+      expect(component.tooltipText()).toBe('My Torrent');
+    });
+  });
+
   describe('canSave', () => {
-    it('should return true when not saving', () => {
+    it('returns true when not saving', () => {
       expect(component.canSave()).toBe(true);
     });
 
-    it('should return false while saving', () => {
+    it('returns false while saving', () => {
       component.saving.set(true);
       expect(component.canSave()).toBe(false);
     });
   });
 
   describe('hasClearableValues', () => {
-    it('should return false when all limits are null', () => {
+    it('returns false when all limits are null', () => {
       component.form.controls.shareLimits.setValue({
         ratioLimit: null,
         seedingTimeLimit: null,
@@ -83,7 +213,7 @@ describe('ShareLimit', () => {
       expect(component.hasClearableValues()).toBe(false);
     });
 
-    it('should return true when ratioLimit is set', () => {
+    it('returns true when ratioLimit is set', () => {
       component.form.controls.shareLimits.setValue({
         ratioLimit: 2.0,
         seedingTimeLimit: null,
@@ -92,13 +222,54 @@ describe('ShareLimit', () => {
       expect(component.hasClearableValues()).toBe(true);
     });
 
-    it('should return true when seedingTimeLimit is set', () => {
+    it('returns true when seedingTimeLimit is set', () => {
       component.form.controls.shareLimits.setValue({
         ratioLimit: null,
         seedingTimeLimit: 60,
         inactiveSeedingTimeLimit: null,
       });
       expect(component.hasClearableValues()).toBe(true);
+    });
+  });
+
+  describe('handleSubmit - torrent target', () => {
+    it('calls setShareLimits with component hashes', async () => {
+      component.target = 'torrent';
+      component.hashes = ['abc123'];
+      component.form.controls.shareLimits.setValue({
+        ratioLimit: 1.5,
+        seedingTimeLimit: null,
+        inactiveSeedingTimeLimit: null,
+      });
+      await component.handleSubmit();
+      expect(mockQbService.setShareLimits).toHaveBeenCalledWith(
+        'server-1',
+        ['abc123'],
+        1.5,
+        -1,
+        -1,
+      );
+    });
+  });
+
+  describe('handleSubmit - global target', () => {
+    it('calls setAppPreferences with enabled flags', async () => {
+      component.target = 'global';
+      component.hashes = [];
+      component.form.controls.shareLimits.setValue({
+        ratioLimit: 2.0,
+        seedingTimeLimit: null,
+        inactiveSeedingTimeLimit: null,
+      });
+      await component.handleSubmit();
+      expect(mockQbService.setAppPreferences).toHaveBeenCalledWith('server-1', {
+        max_ratio_enabled: true,
+        max_ratio: 2.0,
+        max_seeding_time_enabled: false,
+        max_seeding_time: 0,
+        max_inactive_seeding_time_enabled: false,
+        max_inactive_seeding_time: null,
+      });
     });
   });
 });
