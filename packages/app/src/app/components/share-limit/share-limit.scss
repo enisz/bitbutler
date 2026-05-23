@@ -1,0 +1,10 @@
+.limit-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  column-gap: 0.5rem;
+  align-items: center;
+
+  .limit-row__helper {
+    grid-column: 2;
+  }
+}
