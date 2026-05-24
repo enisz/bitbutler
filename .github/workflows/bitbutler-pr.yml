@@ -132,8 +132,8 @@ jobs:
           ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
       - run: npm run test --workspace=packages/electron
 
-  e2e:
-    name: '[5/6] E2E Tests (Playwright / Electron)'
+  e2e-no-server:
+    name: '[5/7] E2E Tests - No Server (Playwright / Electron)'
     runs-on: ubuntu-latest
     needs: [detect-changes, test-app, test-electron]
     if: >-
@@ -166,10 +166,39 @@ jobs:
       - name: Run Playwright e2e tests
         run: npm run test:e2e:ci
 
+  e2e-server:
+    name: '[6/7] E2E Tests - Server (Playwright / Electron / qBittorrent)'
+    runs-on: ubuntu-latest
+    needs: [detect-changes, test-app, test-electron, e2e-no-server]
+    if: >-
+      always() &&
+      needs.detect-changes.outputs.any-source == 'true' &&
+      !contains(needs.*.result, 'failure') &&
+      !contains(needs.*.result, 'cancelled')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+      - run: npm install -g npm@11
+      - run: npm ci
+      - name: Install display and system libs
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libnss3 libgbm1 libasound2t64 libgtk-3-0 \
+            libxss1 libxkbcommon0 libatk-bridge2.0-0 libcups2 libdrm2
+      - name: Build Angular app
+        run: npm run build
+      - name: Build Electron TypeScript
+        run: npm run build:electron
+      - name: Run Playwright e2e server tests
+        run: npm run test:e2e:server:ci
+
   build:
-    name: '[6/6] Build & Package (${{ matrix.job_name }})'
+    name: '[7/7] Build & Package (${{ matrix.job_name }})'
     runs-on: ${{ matrix.os }}
-    needs: [detect-changes, test-app, test-electron, e2e]
+    needs: [detect-changes, test-app, test-electron, e2e-no-server, e2e-server]
     if: >-
       always() &&
       (needs.detect-changes.outputs.app == 'true' || needs.detect-changes.outputs.electron == 'true') &&
