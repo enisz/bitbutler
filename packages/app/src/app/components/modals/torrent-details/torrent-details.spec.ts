@@ -62,7 +62,7 @@ describe('TorrentDetails', () => {
 
   describe('torrent computed', () => {
     it('should return null when no hash is set', () => {
-      component.hash = null;
+      fixture.componentRef.setInput('hash', null);
       expect(component.torrent()).toBeNull();
     });
   });
