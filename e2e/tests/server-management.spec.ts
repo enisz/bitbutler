@@ -28,6 +28,6 @@ test.describe('Server management', () => {
     await handle.page.locator('button.btn-secondary', { hasText: /add/i }).click();
     await handle.page.locator('.modal-header .btn-close').click();
     await expect(handle.page.locator('h1.brand-title')).toBeVisible();
-    await expect(handle.page.locator('.modal')).not.toBeVisible();
+    await expect(handle.page.locator('.modal.show')).not.toBeVisible();
   });
 });
