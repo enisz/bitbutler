@@ -37,7 +37,7 @@ describe('SetTorrentTags', () => {
 
     fixture = TestBed.createComponent(SetTorrentTags);
     component = fixture.componentInstance;
-    component.torrent = { tags: 'action,comedy' } as Torrent;
+    fixture.componentRef.setInput('torrent', { tags: 'action,comedy' } as Torrent);
     fixture.detectChanges();
   });
 
@@ -52,7 +52,7 @@ describe('SetTorrentTags', () => {
     });
 
     it('should handle empty tags string', async () => {
-      component.torrent = { tags: '' } as Torrent;
+      fixture.componentRef.setInput('torrent', { tags: '' } as Torrent);
       await component.ngOnInit();
       expect(component.setTorrentTagsForm.get('tags')?.value).toEqual([]);
     });
