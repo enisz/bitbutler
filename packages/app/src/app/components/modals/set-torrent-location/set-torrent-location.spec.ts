@@ -43,7 +43,7 @@ describe('SetTorrentLocation', () => {
 
     fixture = TestBed.createComponent(SetTorrentLocation);
     component = fixture.componentInstance;
-    component.torrent = { save_path: '/downloads' } as Torrent;
+    fixture.componentRef.setInput('torrent', { save_path: '/downloads' } as Torrent);
     fixture.detectChanges();
   });
 

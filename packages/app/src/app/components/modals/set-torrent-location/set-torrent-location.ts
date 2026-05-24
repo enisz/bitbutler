@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, input, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -18,7 +18,7 @@ import { SavePathSelect } from '../../save-path-select/save-path-select';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SetTorrentLocation implements OnInit {
-  @Input() torrent!: Torrent;
+  readonly torrent = input.required<Torrent>();
 
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly selectionStoreService = inject(SelectionStoreService);
@@ -34,7 +34,7 @@ export class SetTorrentLocation implements OnInit {
   private defaultPath = signal<string>('');
 
   public async ngOnInit(): Promise<void> {
-    this.setLocationForm.get('path')?.patchValue(this.torrent.save_path ?? null);
+    this.setLocationForm.get('path')?.patchValue(this.torrent().save_path ?? null);
 
     const serverId = this.serverStoreService.currentServerId();
     if (serverId) {
@@ -48,7 +48,7 @@ export class SetTorrentLocation implements OnInit {
   public async handleSubmit(): Promise<void> {
     const serverId = this.serverStoreService.currentServerId() ?? '';
     const newPath =
-      this.setLocationForm.get('path')?.value || this.defaultPath() || this.torrent.save_path;
+      this.setLocationForm.get('path')?.value || this.defaultPath() || this.torrent().save_path;
 
     if (!serverId) {
       console.error(SetTorrentLocation.name, 'handleSubmit', 'Failed to get server id');

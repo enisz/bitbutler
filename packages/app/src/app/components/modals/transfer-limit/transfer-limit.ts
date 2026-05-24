@@ -1,11 +1,10 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
-  Input,
   OnInit,
   computed,
   inject,
+  input,
   signal,
 } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -39,13 +38,12 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TransferLimit implements OnInit {
-  @Input() public target!: LimitTargetType;
-  @Input() public hashes: string[] = [];
+  readonly target = input.required<LimitTargetType>();
+  readonly hashes = input<string[]>([]);
 
   private readonly qbService = inject(QbService);
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly torrentStoreService = inject(TorrentStoreService);
-  private readonly cdr = inject(ChangeDetectorRef);
   public activeModal = inject(NgbActiveModal);
 
   public form = new FormGroup({
@@ -55,17 +53,17 @@ export class TransferLimit implements OnInit {
   public loading = signal(false);
   public saving = signal(false);
 
-  public readonly selected = computed(() => this.hashes.length);
+  public readonly selected = computed(() => this.hashes().length);
 
   public readonly selectionName = computed(() => {
-    if (this.hashes.length === 1) {
-      return this.torrentStoreService.torrentsMap().get(this.hashes[0])?.name ?? this.hashes[0];
+    if (this.hashes().length === 1) {
+      return this.torrentStoreService.torrentsMap().get(this.hashes()[0])?.name ?? this.hashes()[0];
     }
-    return this.hashes.length;
+    return this.hashes().length;
   });
 
   public readonly tooltipText = computed(() => {
-    if (this.target === 'global') return null;
+    if (this.target() === 'global') return null;
     return String(this.selectionName());
   });
 
@@ -74,16 +72,15 @@ export class TransferLimit implements OnInit {
     let uploadBytes = 0;
     let downloadBytes = 0;
 
-    if (this.target === 'global') {
+    if (this.target() === 'global') {
       this.loading.set(true);
       [uploadBytes, downloadBytes] = await Promise.all([
         this.qbService.getUploadLimit(serverId) as Promise<number>,
         this.qbService.getDownloadLimit(serverId) as Promise<number>,
       ]);
       this.loading.set(false);
-      this.cdr.markForCheck();
-    } else if (this.hashes.length > 0) {
-      const torrent = this.torrentStoreService.torrentsMap().get(this.hashes[0]);
+    } else if (this.hashes().length > 0) {
+      const torrent = this.torrentStoreService.torrentsMap().get(this.hashes()[0]);
       if (torrent) {
         uploadBytes = torrent.up_limit;
         downloadBytes = torrent.dl_limit;
@@ -97,7 +94,6 @@ export class TransferLimit implements OnInit {
       },
       { emitEvent: false },
     );
-    this.cdr.markForCheck();
   }
 
   public async handleSubmit(): Promise<void> {
@@ -106,7 +102,7 @@ export class TransferLimit implements OnInit {
     const value = this.form.controls.transferRateLimits.value;
     const uploadBytes = (value?.uploadLimit ?? 0) * 1024;
     const downloadBytes = (value?.downloadLimit ?? 0) * 1024;
-    const hashes = this.target === 'torrent' ? this.hashes : undefined;
+    const hashes = this.target() === 'torrent' ? this.hashes() : undefined;
 
     try {
       await Promise.all([

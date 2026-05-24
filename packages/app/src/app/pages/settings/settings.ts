@@ -2,10 +2,10 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
-  Input,
   OnInit,
   Type,
   inject,
+  input,
   signal,
 } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -37,7 +37,7 @@ import { SettingsTabComponent, SettingsTabId, Tab } from './settings.interface';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Settings implements OnInit, GuardableModal {
-  @Input() public tabToOpen: SettingsTabId = 'general';
+  readonly tabToOpen = input<SettingsTabId>('general');
 
   public readonly activeModal = inject(NgbActiveModal);
   public readonly stateService = inject(SettingsStateService);
@@ -75,7 +75,7 @@ export class Settings implements OnInit, GuardableModal {
   ];
 
   public async ngOnInit(): Promise<void> {
-    this.activeTabId.set(this.tabToOpen);
+    this.activeTabId.set(this.tabToOpen());
     const results = await Promise.all(
       this.tabs.map((t) => t.loadComponent().then((c) => [t.id, c] as const)),
     );

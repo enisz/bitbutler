@@ -3,12 +3,11 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
   ViewChild,
+  effect,
   inject,
+  input,
+  output,
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -55,16 +54,16 @@ export type FileTreeSaveEvent = {
   styleUrl: './bb-file-tree.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BbFileTree implements OnChanges {
-  @Input({ required: true }) files: TorrentFileEntry[] = [];
-  @Input() allowEdit = false;
-  @Input() startInEditMode = false;
-  @Input() expandAll = false;
-  @Input() showMeta = true;
-  @Input() hideProgress = false;
+export class BbFileTree {
+  readonly files = input.required<TorrentFileEntry[]>();
+  readonly allowEdit = input(false);
+  readonly startInEditMode = input(false);
+  readonly expandAll = input(false);
+  readonly showMeta = input(true);
+  readonly hideProgress = input(false);
 
-  @Output() saved = new EventEmitter<FileTreeSaveEvent>();
-  @Output() editModeChange = new EventEmitter<boolean>();
+  readonly saved = output<FileTreeSaveEvent>();
+  readonly editModeChange = output<boolean>();
 
   @ViewChild(CdkTree) private tree!: CdkTree<BbFileTreeNode>;
 
@@ -106,43 +105,46 @@ export class BbFileTree implements OnChanges {
   trackByPath = (_index: number, node: BbFileTreeNode): string =>
     `${this.editMode()}:${node.fullPath}`;
 
-  ngOnChanges(): void {
-    if (this.editMode()) return;
+  constructor() {
+    effect(() => {
+      if (this.editMode()) return;
 
-    const expandedPaths = new Set<string>();
-    this.treeControl.expansionModel.selected.forEach((node) => expandedPaths.add(node.fullPath));
+      const files = this.files();
+      const expandedPaths = new Set<string>();
+      this.treeControl.expansionModel.selected.forEach((node) => expandedPaths.add(node.fullPath));
 
-    if (this.data.length > 0) {
-      const fileMap = new Map<string, TorrentFileEntry>();
-      for (const f of this.files) {
-        fileMap.set(normalizePath(f.path), f);
+      if (this.data.length > 0) {
+        const fileMap = new Map<string, TorrentFileEntry>();
+        for (const f of files) {
+          fileMap.set(normalizePath(f.path), f);
+        }
+        const updated = this.updateNodeFiles(this.data, fileMap);
+        if (updated === files.length) {
+          this.data = [...this.data];
+          this.totalFiles.set(files.length);
+          this.calculateStats();
+          this.tree?.renderNodeChanges(this.data);
+          return;
+        }
       }
-      const updated = this.updateNodeFiles(this.data, fileMap);
-      if (updated === this.files.length) {
-        this.data = [...this.data];
-        this.totalFiles.set(this.files.length);
-        this.calculateStats();
-        this.tree?.renderNodeChanges(this.data);
-        return;
+
+      const result = buildTree(files);
+      this.data = result.nodes;
+      this.totalFiles.set(files.length);
+
+      this.calculateStats();
+
+      if (this.expandAll()) {
+        this.expandAllNodes();
+      } else {
+        this.restoreExpansionState(this.data, expandedPaths);
       }
-    }
 
-    const result = buildTree(this.files);
-    this.data = result.nodes;
-    this.totalFiles.set(this.files.length);
-
-    this.calculateStats();
-
-    if (this.expandAll) {
-      this.expandAllNodes();
-    } else {
-      this.restoreExpansionState(this.data, expandedPaths);
-    }
-
-    if (this.startInEditMode && !this.autoEditTriggered && this.data.length > 0) {
-      this.autoEditTriggered = true;
-      this.enterEditMode();
-    }
+      if (this.startInEditMode() && !this.autoEditTriggered && this.data.length > 0) {
+        this.autoEditTriggered = true;
+        this.enterEditMode();
+      }
+    });
   }
 
   private updateNodeFiles(nodes: BbFileTreeNode[], fileMap: Map<string, TorrentFileEntry>): number {
@@ -164,7 +166,7 @@ export class BbFileTree implements OnChanges {
 
   public enterEditMode(): void {
     this.sessionDirty = false;
-    this.originalFiles = structuredClone(this.files);
+    this.originalFiles = structuredClone(this.files());
     this.folderPriorityMemory.clear();
     this.editMode.set(true);
     this.editModeChange.emit(true);
@@ -178,16 +180,17 @@ export class BbFileTree implements OnChanges {
       );
       if (!confirmed) return;
     }
-    for (let i = 0; i < this.originalFiles.length && i < this.files.length; i++) {
-      this.files[i].priority = this.originalFiles[i].priority;
+    const files = this.files();
+    for (let i = 0; i < this.originalFiles.length && i < files.length; i++) {
+      files[i].priority = this.originalFiles[i].priority;
     }
     const expandedPaths = new Set<string>();
     this.treeControl.expansionModel.selected.forEach((n) => expandedPaths.add(n.fullPath));
-    const result = buildTree(this.files);
+    const result = buildTree(files);
     this.data = result.nodes;
-    this.totalFiles.set(this.files.length);
+    this.totalFiles.set(files.length);
     this.calculateStats();
-    if (this.expandAll) this.expandAllNodes();
+    if (this.expandAll()) this.expandAllNodes();
     else this.restoreExpansionState(this.data, expandedPaths);
     this.originalFiles = [];
     this.folderPriorityMemory.clear();

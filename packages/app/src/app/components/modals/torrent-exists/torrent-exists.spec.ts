@@ -43,13 +43,13 @@ describe('TorrentExists', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should store hash via the setter', () => {
-    component.hash = 'abc123';
-    expect(component.hash).toBe('abc123');
+  it('should expose hash as a signal input', () => {
+    fixture.componentRef.setInput('hash', 'abc123');
+    expect(component.hash()).toBe('abc123');
   });
 
   it('should return undefined torrent when hash is null', () => {
-    component.hash = null;
+    fixture.componentRef.setInput('hash', null);
     expect(component.torrent()).toBeUndefined();
   });
 
@@ -59,7 +59,7 @@ describe('TorrentExists', () => {
 
     const fixture2 = TestBed.createComponent(TorrentExists);
     const comp2 = fixture2.componentInstance;
-    comp2.hash = 'abc123';
+    fixture2.componentRef.setInput('hash', 'abc123');
     expect(comp2.torrent()?.name).toBe('Test');
   });
 

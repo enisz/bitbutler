@@ -2,13 +2,12 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
-  Input,
-  OnChanges,
-  SimpleChanges,
   TemplateRef,
   ViewChild,
   computed,
+  effect,
   inject,
+  input,
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
@@ -49,8 +48,8 @@ export enum MouseClickButton {
   styleUrl: './server-state.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ServerState implements OnChanges {
-  @Input() public state!: QbServerState | null;
+export class ServerState {
+  readonly state = input<QbServerState | null>(null);
 
   private readonly selectionStoreService = inject(SelectionStoreService);
   private readonly gridViewStoreService = inject(GridViewStoreService);
@@ -99,6 +98,32 @@ export class ServerState implements OnChanges {
   };
 
   constructor() {
+    effect(() => {
+      const patch = this.state();
+      if (!patch) {
+        this.reset();
+        return;
+      }
+      this.applyIfPresentBigInt(patch, 'free_space_on_disk', this.diskSpace);
+      this.applyIfPresentBigInt(patch, 'dl_info_speed', this.dlSpeed);
+      this.applyIfPresentBigInt(patch, 'up_info_speed', this.upSpeed);
+      this.applyIfPresentBigInt(patch, 'dl_rate_limit', this.dlLimit);
+      this.applyIfPresentBigInt(patch, 'up_rate_limit', this.upLimit);
+      this.applyIfPresentBigInt(patch, 'alltime_dl', this.allTimeDl);
+      this.applyIfPresentBigInt(patch, 'alltime_ul', this.allTimeUl);
+
+      if ('connection_status' in patch)
+        this.connectionStatus.set(String(patch['connection_status'] || 'offline'));
+      if ('dht_nodes' in patch) this.dhtNodes.set(Number(patch['dht_nodes']) || 0);
+      if ('global_ratio' in patch) this.globalRatio.set(String(patch['global_ratio'] || '0.00'));
+      if ('use_alt_speed_limits' in patch)
+        this.useAltSpeedLimits.set(Boolean(patch['use_alt_speed_limits']));
+
+      const sDl = Number(patch['dl_info_data'] || 0);
+      const sUl = Number(patch['up_info_data'] || 0);
+      this.sessionRatio.set(sDl > 0 ? (sUl / sDl).toFixed(2) : '0.00');
+    });
+
     this.pollingService.onPoll$
       .pipe(
         takeUntilDestroyed(),
@@ -111,33 +136,6 @@ export class ServerState implements OnChanges {
         }),
       )
       .subscribe((progress) => this.pollProgress.set(progress));
-  }
-
-  public ngOnChanges(changes: SimpleChanges): void {
-    const patch: QbServerState | null = changes['state']?.currentValue ?? null;
-    if (!patch) {
-      this.reset();
-      return;
-    }
-
-    this.applyIfPresentBigInt(patch, 'free_space_on_disk', this.diskSpace);
-    this.applyIfPresentBigInt(patch, 'dl_info_speed', this.dlSpeed);
-    this.applyIfPresentBigInt(patch, 'up_info_speed', this.upSpeed);
-    this.applyIfPresentBigInt(patch, 'dl_rate_limit', this.dlLimit);
-    this.applyIfPresentBigInt(patch, 'up_rate_limit', this.upLimit);
-    this.applyIfPresentBigInt(patch, 'alltime_dl', this.allTimeDl);
-    this.applyIfPresentBigInt(patch, 'alltime_ul', this.allTimeUl);
-
-    if ('connection_status' in patch)
-      this.connectionStatus.set(String(patch['connection_status'] || 'offline'));
-    if ('dht_nodes' in patch) this.dhtNodes.set(Number(patch['dht_nodes']) || 0);
-    if ('global_ratio' in patch) this.globalRatio.set(String(patch['global_ratio'] || '0.00'));
-    if ('use_alt_speed_limits' in patch)
-      this.useAltSpeedLimits.set(Boolean(patch['use_alt_speed_limits']));
-
-    const sDl = Number(patch['dl_info_data'] || 0);
-    const sUl = Number(patch['up_info_data'] || 0);
-    this.sessionRatio.set(sDl > 0 ? (sUl / sDl).toFixed(2) : '0.00');
   }
 
   public toggleAlternativeSpeedLimit(): void {

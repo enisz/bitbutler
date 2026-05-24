@@ -24,7 +24,7 @@
       / {{ totalSize() | fileSize }}
     }
   </div>
-  @if (allowEdit) {
+  @if (allowEdit()) {
     <div class="button-bar ms-2">
       @if (!editMode()) {
         <button
@@ -169,12 +169,12 @@
         />
       }
 
-      @if (showMeta && node.file; as f) {
+      @if (showMeta() && node.file; as f) {
         <div class="bb-meta">
           <span class="bb-size">{{ f.length | fileSize }}</span>
 
           @if (!editMode()) {
-            @if (!hideProgress && f.priority !== 0) {
+            @if (!hideProgress() && f.priority !== 0) {
               <app-bb-progress [progress]="f.progress" variant="secondary"></app-bb-progress>
             }
             @if (f.priority !== 0) {

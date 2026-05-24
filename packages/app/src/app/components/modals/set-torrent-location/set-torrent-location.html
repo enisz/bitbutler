@@ -7,7 +7,7 @@
     <div
       #element
       class="small text-body-secondary mt-1 bb-hash-clamp"
-      [ngbTooltip]="selected === 1 ? torrent.name : null"
+      [ngbTooltip]="selected === 1 ? torrent().name : null"
       bbTooltipOverflow
       tooltipClass="single-line-tooltip"
       placement="bottom"
@@ -15,7 +15,7 @@
       @if (selected > 1) {
         {{ 'general.label.torrent-selected' | translate: { count: selected } }}
       } @else {
-        {{ torrent.name }}
+        {{ torrent().name }}
       }
     </div>
   </div>

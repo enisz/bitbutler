@@ -39,7 +39,7 @@ describe('DeleteTorrent', () => {
   });
 
   it('should initialise removeFiles to true when defaultRemoveFiles is true', async () => {
-    component.defaultRemoveFiles = true;
+    fixture.componentRef.setInput('defaultRemoveFiles', true);
     component.ngOnInit();
     expect(component.deleteForm.get('removeFiles')?.value).toBe(true);
   });

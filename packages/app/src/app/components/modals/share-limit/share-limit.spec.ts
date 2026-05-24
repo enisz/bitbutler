@@ -66,8 +66,8 @@ describe('ShareLimit', () => {
 
   describe('torrent target - single hash with negative limits (use global)', () => {
     beforeEach(async () => {
-      component.target = 'torrent';
-      component.hashes = ['abc123'];
+      fixture.componentRef.setInput('target', 'torrent');
+      fixture.componentRef.setInput('hashes', ['abc123']);
       fixture.detectChanges();
       await fixture.whenStable();
     });
@@ -102,8 +102,8 @@ describe('ShareLimit', () => {
           ],
         ]),
       );
-      component.target = 'torrent';
-      component.hashes = ['abc123'];
+      fixture.componentRef.setInput('target', 'torrent');
+      fixture.componentRef.setInput('hashes', ['abc123']);
       fixture.detectChanges();
       await fixture.whenStable();
     });
@@ -123,8 +123,8 @@ describe('ShareLimit', () => {
 
   describe('torrent target - multiple hashes', () => {
     beforeEach(async () => {
-      component.target = 'torrent';
-      component.hashes = ['abc123', 'def456'];
+      fixture.componentRef.setInput('target', 'torrent');
+      fixture.componentRef.setInput('hashes', ['abc123', 'def456']);
       fixture.detectChanges();
       await fixture.whenStable();
     });
@@ -143,8 +143,8 @@ describe('ShareLimit', () => {
 
   describe('global target', () => {
     beforeEach(async () => {
-      component.target = 'global';
-      component.hashes = [];
+      fixture.componentRef.setInput('target', 'global');
+      fixture.componentRef.setInput('hashes', []);
       fixture.detectChanges();
       await fixture.whenStable();
     });
@@ -168,26 +168,26 @@ describe('ShareLimit', () => {
 
   describe('selectionName', () => {
     it('returns torrent name for single hash', () => {
-      component.hashes = ['abc123'];
+      fixture.componentRef.setInput('hashes', ['abc123']);
       expect(component.selectionName()).toBe('My Torrent');
     });
 
     it('returns count for multiple hashes', () => {
-      component.hashes = ['abc123', 'def456'];
+      fixture.componentRef.setInput('hashes', ['abc123', 'def456']);
       expect(component.selectionName()).toBe(2);
     });
   });
 
   describe('tooltipText', () => {
     it('returns null for global target', () => {
-      component.target = 'global';
-      component.hashes = [];
+      fixture.componentRef.setInput('target', 'global');
+      fixture.componentRef.setInput('hashes', []);
       expect(component.tooltipText()).toBeNull();
     });
 
     it('returns string for torrent target', () => {
-      component.target = 'torrent';
-      component.hashes = ['abc123'];
+      fixture.componentRef.setInput('target', 'torrent');
+      fixture.componentRef.setInput('hashes', ['abc123']);
       expect(component.tooltipText()).toBe('My Torrent');
     });
   });
@@ -234,8 +234,8 @@ describe('ShareLimit', () => {
 
   describe('handleSubmit - torrent target', () => {
     it('calls setShareLimits with component hashes', async () => {
-      component.target = 'torrent';
-      component.hashes = ['abc123'];
+      fixture.componentRef.setInput('target', 'torrent');
+      fixture.componentRef.setInput('hashes', ['abc123']);
       component.form.controls.shareLimits.setValue({
         ratioLimit: 1.5,
         seedingTimeLimit: null,
@@ -254,8 +254,8 @@ describe('ShareLimit', () => {
 
   describe('handleSubmit - global target', () => {
     it('calls setAppPreferences with enabled flags', async () => {
-      component.target = 'global';
-      component.hashes = [];
+      fixture.componentRef.setInput('target', 'global');
+      fixture.componentRef.setInput('hashes', []);
       component.form.controls.shareLimits.setValue({
         ratioLimit: 2.0,
         seedingTimeLimit: null,

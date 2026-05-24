@@ -74,7 +74,7 @@
       <div class="bb-widget" [ngbTooltip]="tipGlobalDl" placement="top" container="body">
         <fa-icon [icon]="icons.faCloudDownloadAlt" class="icon-dl opacity-75"></fa-icon>
         <span class="bb-value bb-fixed-num bb-width-size">{{
-          state?.dl_info_data ?? 0 | fileSize
+          state()?.dl_info_data ?? 0 | fileSize
         }}</span>
       </div>
     }
@@ -82,7 +82,7 @@
       <div class="bb-widget" [ngbTooltip]="tipGlobalUl" placement="top" container="body">
         <fa-icon [icon]="icons.faCloudUploadAlt" class="icon-ul opacity-75"></fa-icon>
         <span class="bb-value bb-fixed-num bb-width-size">{{
-          state?.up_info_data ?? 0 | fileSize
+          state()?.up_info_data ?? 0 | fileSize
         }}</span>
       </div>
     }

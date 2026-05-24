@@ -1,10 +1,10 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  Input,
   TemplateRef,
   ViewEncapsulation,
   inject,
+  input,
 } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
@@ -21,9 +21,9 @@ import { NgbPopover, NgbPopoverConfig } from '@ng-bootstrap/ng-bootstrap';
 export class BbPopover {
   private readonly ngbPopoverConfig = inject(NgbPopoverConfig);
 
-  @Input() subject: string = '';
-  @Input() description: string | TemplateRef<Element> = '';
-  @Input() placement: string = 'right';
+  readonly subject = input('');
+  readonly description = input<string | TemplateRef<Element>>('');
+  readonly placement = input('right');
   faCircleQuestion = faCircleQuestion;
 
   constructor() {

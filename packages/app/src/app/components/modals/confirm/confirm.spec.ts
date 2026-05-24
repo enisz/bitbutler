@@ -25,28 +25,28 @@ describe('Confirm', () => {
   });
 
   it('should have default title translation key', () => {
-    expect(component.title).toBe('components.modals.confirm.title');
+    expect(component.title()).toBe('components.modals.confirm.title');
   });
 
   it('should have default message translation key', () => {
-    expect(component.message).toBe('components.modals.confirm.message');
+    expect(component.message()).toBe('components.modals.confirm.message');
   });
 
   it('should have default ok button translation key', () => {
-    expect(component.btnOkText).toBe('general.button.ok');
+    expect(component.btnOkText()).toBe('general.button.ok');
   });
 
   it('should have default cancel button translation key', () => {
-    expect(component.btnCancelText).toBe('general.button.cancel');
+    expect(component.btnCancelText()).toBe('general.button.cancel');
   });
 
   it('should accept custom title input', () => {
-    component.title = 'custom.title';
-    expect(component.title).toBe('custom.title');
+    fixture.componentRef.setInput('title', 'custom.title');
+    expect(component.title()).toBe('custom.title');
   });
 
   it('should accept custom title params', () => {
-    component.titleParams = { name: 'test' };
-    expect(component.titleParams).toEqual({ name: 'test' });
+    fixture.componentRef.setInput('titleParams', { name: 'test' });
+    expect(component.titleParams()).toEqual({ name: 'test' });
   });
 });

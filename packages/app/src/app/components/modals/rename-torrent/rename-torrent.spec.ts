@@ -33,7 +33,7 @@ describe('RenameTorrent', () => {
 
     fixture = TestBed.createComponent(RenameTorrent);
     component = fixture.componentInstance;
-    component.torrent = makeTorrent();
+    fixture.componentRef.setInput('torrent', makeTorrent());
     fixture.detectChanges();
   });
 
