@@ -8,6 +8,8 @@ export default defineConfig({
   retries: process.env['CI'] ? 1 : 0,
   workers: 1,
   reporter: process.env['CI'] ? 'github' : 'list',
+  globalSetup: './e2e/globalSetup.ts',
+  globalTeardown: './e2e/globalTeardown.ts',
   use: {
     actionTimeout: 10_000,
   },
