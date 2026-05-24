@@ -27,6 +27,7 @@
     "start:once": "concurrently -n \"angular,electron\" -c \"red,blue\" \"npm:serve\" \"npm:electron-dev\"",
     "workspace:clean": "rimraf dist-electron dist",
     "build": "npm run build --workspace=packages/app",
+    "build:e2e": "npm run build --workspace=packages/app -- --base-href=./ && npm run build:electron",
     "build:electron": "npm run build --workspace=packages/electron",
     "build:ui": "npm run workspace:clean && npm run build:prod --workspace=packages/app && npm run build:electron",
     "pack": "npm run build:ui && electron-builder --dir",
@@ -39,8 +40,8 @@
     "prepare": "husky",
     "test": "npm run test --workspaces --if-present",
     "test:watch": "npm run test:watch --workspace=packages/app",
-    "test:e2e": "playwright test",
-    "test:e2e:ci": "xvfb-run --auto-servernum playwright test"
+    "test:e2e": "npm run build:e2e && playwright test",
+    "test:e2e:ci": "npm run build:e2e && xvfb-run --auto-servernum playwright test"
   },
   "lint-staged": {
     "packages/app/src/**/*.{ts,html}": [
