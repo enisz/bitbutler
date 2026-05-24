@@ -13,6 +13,7 @@ import { ConfirmService } from '../../../services/confirm.service';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { ToastService } from '../../../services/toast.service';
+import { setModalInput } from '../../../utils/modal-input';
 import { ServerEditor } from '../server-editor/server-editor';
 
 @Component({
@@ -69,7 +70,7 @@ export class ManageServers {
     if (this.busy()) return;
     this.editing.set(true);
     const ref = this.modalService.open(ServerEditor, { size: 'lg' });
-    if (id) ref.componentInstance.id = id;
+    if (id) setModalInput(ref, 'id', id);
     try {
       const newId: string = await ref.result;
       if (!id) {

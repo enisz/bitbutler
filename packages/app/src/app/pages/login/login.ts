@@ -29,6 +29,7 @@ import { ServerService } from '../../services/server.service';
 import { ThemeService } from '../../services/theme.service';
 import { ToastService } from '../../services/toast.service';
 import { WindowService } from '../../services/window.service';
+import { setModalInput } from '../../utils/modal-input';
 
 @Component({
   selector: 'app-login',
@@ -132,9 +133,16 @@ export class Login implements OnInit {
       backdrop: 'static',
       keyboard: false,
     });
-    loadingModalRef.componentInstance.title =
-      this.translateService.instant('pages.login.connecting');
-    loadingModalRef.componentInstance.message = `${currentServer.protocol}://${currentServer.host}:${currentServer.port}`;
+    setModalInput(
+      loadingModalRef,
+      'title',
+      this.translateService.instant('pages.login.connecting'),
+    );
+    setModalInput(
+      loadingModalRef,
+      'message',
+      `${currentServer.protocol}://${currentServer.host}:${currentServer.port}`,
+    );
 
     this.qbittorrentService
       .login(currentServer.id)

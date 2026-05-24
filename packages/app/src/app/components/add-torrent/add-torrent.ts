@@ -33,6 +33,7 @@ import { OpenFilesService, PendingAddTorrent } from '../../services/open-files.s
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
+import { setModalInput } from '../../utils/modal-input';
 import { BbFileTree, FileTreeSaveEvent } from '../bb-file-tree/bb-file-tree';
 import { BbPopover } from '../bb-popover/bb-popover';
 import { CategorySelect } from '../category-select/category-select';
@@ -434,7 +435,7 @@ export class AddTorrent implements OnInit {
 
     if (this.isAlreadyInList(draft)) {
       const modalRef = this.modalService.open(TorrentExists, { centered: true });
-      modalRef.componentInstance.hash = draft.torrent?.infoHashV1?.toLowerCase() ?? null;
+      setModalInput(modalRef, 'hash', draft.torrent?.infoHashV1?.toLowerCase() ?? null);
       this.openFilesService.consumeCurrentDraft();
       return;
     }

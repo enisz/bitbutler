@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { Confirm } from '../components/modals/confirm/confirm';
+import { setModalInput } from '../utils/modal-input';
 
 export interface ParamWithData {
   text: string;
@@ -23,21 +24,21 @@ export class ConfirmService {
     const modalRef = this.modalService.open(Confirm, { size: dialogSize });
 
     if (typeof title !== 'string') {
-      modalRef.componentInstance.title = title.text;
-      modalRef.componentInstance.titleParams = title.data;
+      setModalInput(modalRef, 'title', title.text);
+      setModalInput(modalRef, 'titleParams', title.data);
     } else {
-      modalRef.componentInstance.title = title;
+      setModalInput(modalRef, 'title', title);
     }
 
     if (typeof message !== 'string') {
-      modalRef.componentInstance.message = message.text;
-      modalRef.componentInstance.messageParams = message.data;
+      setModalInput(modalRef, 'message', message.text);
+      setModalInput(modalRef, 'messageParams', message.data);
     } else {
-      modalRef.componentInstance.message = message;
+      setModalInput(modalRef, 'message', message);
     }
 
-    modalRef.componentInstance.btnOkText = btnOkText;
-    modalRef.componentInstance.btnCancelText = btnCancelText;
+    setModalInput(modalRef, 'btnOkText', btnOkText);
+    setModalInput(modalRef, 'btnCancelText', btnCancelText);
 
     return modalRef.result.catch(() => false);
   }

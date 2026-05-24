@@ -24,6 +24,7 @@ import { GuardableModal } from '../models/guardable-modal.interface';
 import { QbTorrentContent } from '../models/torrent.model';
 import { QbSettings } from '../pages/qb-settings/qb-settings';
 import { Settings } from '../pages/settings/settings';
+import { setModalInput } from '../utils/modal-input';
 import { CommandBusService } from './command-bus.service';
 import { ElectronService } from './electron.service';
 import { PathService } from './path.service';
@@ -63,7 +64,7 @@ export class UiCommandHandlerService {
             if (this.isModalOpen(DeleteTorrent)) break;
 
             const deleteModalRef = this.modalService.open(DeleteTorrent);
-            deleteModalRef.componentInstance.defaultRemoveFiles = command.defaultRemoveFiles;
+            setModalInput(deleteModalRef, 'defaultRemoveFiles', command.defaultRemoveFiles);
 
             deleteModalRef.result
               .then(({ removeFiles }) =>
@@ -82,7 +83,7 @@ export class UiCommandHandlerService {
             });
 
             if (command.tabToOpen) {
-              settingsModalRef.componentInstance.tabToOpen = command.tabToOpen;
+              setModalInput(settingsModalRef, 'tabToOpen', command.tabToOpen);
             }
 
             settingsModalRef.result.catch(() => {});
@@ -112,7 +113,7 @@ export class UiCommandHandlerService {
               beforeDismiss: () =>
                 (torrentDetailsModalRef.componentInstance as GuardableModal).canDeactivate(),
             });
-            torrentDetailsModalRef.componentInstance.hash = command.hash;
+            setModalInput(torrentDetailsModalRef, 'hash', command.hash);
             torrentDetailsModalRef.result.catch(() => {});
             break;
           }
@@ -150,7 +151,7 @@ export class UiCommandHandlerService {
               centered: true,
             });
 
-            renameModalRef.componentInstance.torrent = command.torrent;
+            setModalInput(renameModalRef, 'torrent', command.torrent);
             renameModalRef.result.catch(() => {});
             break;
           }
@@ -164,7 +165,7 @@ export class UiCommandHandlerService {
               centered: true,
             });
 
-            setLocationModalRef.componentInstance.torrent = command.torrent;
+            setModalInput(setLocationModalRef, 'torrent', command.torrent);
             setLocationModalRef.result.catch(() => {});
             break;
           }
@@ -178,8 +179,8 @@ export class UiCommandHandlerService {
               centered: true,
               size: 'lg',
             });
-            limitTransferModalRef.componentInstance.target = command.target;
-            limitTransferModalRef.componentInstance.hashes = transferHashes;
+            setModalInput(limitTransferModalRef, 'target', command.target);
+            setModalInput(limitTransferModalRef, 'hashes', transferHashes);
             limitTransferModalRef.result.catch(() => {});
             break;
           }
@@ -191,8 +192,8 @@ export class UiCommandHandlerService {
               command.hashes ??
               (shareLimitTarget === 'torrent' ? this.selectionStoreService.selectedHashes() : []);
             const limitTorrentShare = this.modalService.open(ShareLimit, { size: 'lg' });
-            limitTorrentShare.componentInstance.target = shareLimitTarget;
-            limitTorrentShare.componentInstance.hashes = shareLimitHashes;
+            setModalInput(limitTorrentShare, 'target', shareLimitTarget);
+            setModalInput(limitTorrentShare, 'hashes', shareLimitHashes);
             limitTorrentShare.result.catch(() => {});
             break;
           }
@@ -200,7 +201,7 @@ export class UiCommandHandlerService {
           case 'UI_SET_TORRENT_TAGS': {
             if (this.isModalOpen(SetTorrentTags)) break;
             const setTagsModalRef = this.modalService.open(SetTorrentTags, { size: 'lg' });
-            setTagsModalRef.componentInstance.torrent = command.torrent;
+            setModalInput(setTagsModalRef, 'torrent', command.torrent);
             setTagsModalRef.result.catch(() => {});
             break;
           }
@@ -208,7 +209,7 @@ export class UiCommandHandlerService {
           case 'UI_SET_TORRENT_CATEGORY': {
             if (this.isModalOpen(SetTorrentCategory)) break;
             const setCategoryModalRef = this.modalService.open(SetTorrentCategory, { size: 'lg' });
-            setCategoryModalRef.componentInstance.torrent = command.torrent;
+            setModalInput(setCategoryModalRef, 'torrent', command.torrent);
             setCategoryModalRef.result.catch(() => {});
             break;
           }
@@ -250,7 +251,7 @@ export class UiCommandHandlerService {
           case 'UI_SERVER_EDITOR_OPEN': {
             if (this.isModalOpen(ServerEditor)) break;
             const serverEditorModalRef = this.modalService.open(ServerEditor, { size: 'lg' });
-            serverEditorModalRef.componentInstance.id = command.id;
+            setModalInput(serverEditorModalRef, 'id', command.id);
             serverEditorModalRef.result
               .then((newId: string) =>
                 this.commandBusService.emit({ type: 'SERVER_ADDED', id: newId }),
@@ -282,9 +283,9 @@ export class UiCommandHandlerService {
               beforeDismiss: () =>
                 (contentModalRef.componentInstance as GuardableModal).canDeactivate(),
             });
-            contentModalRef.componentInstance.hash = command.hash;
-            contentModalRef.componentInstance.tabToOpen = 'content';
-            contentModalRef.componentInstance.context = { editMode: true };
+            setModalInput(contentModalRef, 'hash', command.hash);
+            setModalInput(contentModalRef, 'tabToOpen', 'content');
+            setModalInput(contentModalRef, 'context', { editMode: true });
             contentModalRef.result.catch(() => {});
             break;
           }
@@ -335,12 +336,17 @@ export class UiCommandHandlerService {
     );
 
     const appLoaderModal = this.modalService.open(AppLoader, { size: 'sm', centered: true });
-    appLoaderModal.componentInstance.title = this.translateService.instant(
-      'services.menu-bar-command-handler.app-loader.title',
+    setModalInput(
+      appLoaderModal,
+      'title',
+      this.translateService.instant('services.menu-bar-command-handler.app-loader.title'),
     );
-    appLoaderModal.componentInstance.message = this.translateService.instant(
-      'services.menu-bar-command-handler.app-loader.message',
-      { name },
+    setModalInput(
+      appLoaderModal,
+      'message',
+      this.translateService.instant('services.menu-bar-command-handler.app-loader.message', {
+        name,
+      }),
     );
 
     try {
