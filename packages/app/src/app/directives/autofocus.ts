@@ -1,22 +1,20 @@
-import { AfterViewInit, Directive, ElementRef, Input, inject } from '@angular/core';
+import { Directive, ElementRef, afterNextRender, inject, input } from '@angular/core';
 
 @Directive({
   selector: '[autofocus]',
   standalone: true,
 })
-export class AutofocusDirective implements AfterViewInit {
+export class AutofocusDirective {
   private readonly elementRef = inject(ElementRef);
 
-  private _autofocus = true;
+  readonly autofocus = input<boolean | string>(true);
 
-  @Input()
-  set autofocus(value: boolean | string) {
-    this._autofocus = value === '' || value === true || value === 'true';
-  }
-
-  public ngAfterViewInit(): void {
-    if (this._autofocus) {
-      setTimeout(() => this.elementRef.nativeElement.focus());
-    }
+  constructor() {
+    afterNextRender(() => {
+      const val = this.autofocus();
+      if (val === '' || val === true || val === 'true') {
+        setTimeout(() => this.elementRef.nativeElement.focus());
+      }
+    });
   }
 }
