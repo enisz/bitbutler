@@ -33,7 +33,7 @@ export function readTempPassword(): string {
   return match[1].trim();
 }
 
-export async function waitForReady(maxAttempts = 30): Promise<void> {
+export async function waitForReady(maxAttempts = 120): Promise<void> {
   for (let i = 0; i < maxAttempts; i++) {
     try {
       const res = await fetch(`${BASE_URL}/api/v2/app/version`);
