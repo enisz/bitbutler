@@ -1,10 +1,9 @@
 import { ElectronApplication, Page, _electron as electron } from '@playwright/test';
-import electronPath from 'electron';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const ELECTRON_BIN: string = require('electron') as string;
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
-
-const ELECTRON_BIN: string = electronPath;
 
 export interface AppHandle {
   app: ElectronApplication;
