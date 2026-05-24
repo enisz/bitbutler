@@ -1,7 +1,7 @@
 import type { TorrentDraft, TorrentDraftSource } from '@bitbutler/shared';
 import { app, ipcMain } from 'electron';
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 import { draftFromPathBuffer } from '../torrents/parse-torrent.js';
 
 const WINDOW_ANIMATE = true;
@@ -174,9 +174,11 @@ export function registerWindowIpcHandlers(mainWindow: Electron.BrowserWindow): v
     return { ok: true, count: safe.length };
   });
 
-  ipcMain.handle('window:maximize', () => maximize(mainWindow));
-  ipcMain.handle('window:unmaximize', () => unmaximize(mainWindow));
-  ipcMain.handle('window:toggle-maximize', () => toggleMaximize(mainWindow));
+  ipcMain.handle('window:maximize', () => mainWindow.maximize());
+  ipcMain.handle('window:unmaximize', () => mainWindow.unmaximize());
+  ipcMain.handle('window:toggle-maximize', () =>
+    mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize(),
+  );
   ipcMain.handle('window:set-size', (_event, width: number, height: number) =>
     setSize(mainWindow, width, height),
   );
@@ -205,18 +207,6 @@ export function registerWindowIpcHandlers(mainWindow: Electron.BrowserWindow): v
 
   const initial = extractExistingTorrentFiles(process.argv, getArgStartIndex());
   void handleIncomingOpenFiles(initial, 'startup');
-}
-
-function maximize(mainWindow: Electron.BrowserWindow): void {
-  mainWindow.maximize();
-}
-
-function unmaximize(mainWindow: Electron.BrowserWindow): void {
-  mainWindow.unmaximize();
-}
-
-function toggleMaximize(mainWindow: Electron.BrowserWindow): void {
-  mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize();
 }
 
 function setSize(mainWindow: Electron.BrowserWindow, width: number, height: number): void {

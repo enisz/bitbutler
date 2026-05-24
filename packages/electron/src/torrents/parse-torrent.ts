@@ -1,6 +1,6 @@
 import type { TorrentDraft, TorrentDraftSource } from '@bitbutler/shared';
+import path from 'node:path';
 import parseTorrent from 'parse-torrent';
-import path from 'path';
 
 interface ParseMeta {
   source: TorrentDraftSource;

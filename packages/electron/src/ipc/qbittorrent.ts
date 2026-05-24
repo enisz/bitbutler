@@ -305,13 +305,12 @@ async function qbSyncMaindataStream(
   const channel = 'qb:sync-maindata-chunk';
 
   try {
-    const res = (await qbRequest({
+    const maindata = (await qbRequest({
       id,
       method: 'GET',
       path: '/api/v2/sync/maindata',
       query: { rid: rid ?? 0 },
     })) as Record<string, unknown>;
-    const maindata = res;
     const allTorrents = (maindata['torrents'] as Record<string, Record<string, unknown>>) || {};
 
     let torrentHashes = Object.keys(allTorrents);

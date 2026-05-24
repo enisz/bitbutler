@@ -24,7 +24,7 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
   const servers = serverList();
   const activeServerId = getActiveServerId();
   const serverMenuItems = servers.map((server) => ({
-    label: `${server.name || server.host}`,
+    label: server.name || server.host,
     type: 'radio' as const,
     checked: server.id === activeServerId,
     click: () => sendMenuAction(mainWindow, 'server.select', { serverId: server.id }),

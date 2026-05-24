@@ -1,6 +1,6 @@
 import Database from 'better-sqlite3';
 import { app } from 'electron';
-import path from 'path';
+import path from 'node:path';
 
 const dbPath = path.join(app.getPath('userData'), 'bitbutler.db');
 const db = new Database(dbPath);
