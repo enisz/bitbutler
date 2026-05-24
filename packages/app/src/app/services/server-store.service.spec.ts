@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { ServerRecord } from '../models/server.model';
+import { ServerRecord } from '@bitbutler/shared';
 import { ServerStoreService } from './server-store.service';
 import { ServerService } from './server.service';
 

@@ -8,6 +8,7 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
+import { TorrentDraft } from '@bitbutler/shared';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -17,7 +18,6 @@ import { AutofocusDirective } from '../../directives/autofocus';
 import { RootFolderMode } from '../../models/add-torrent.model';
 import type { SelectedTorrentInput } from '../../models/command.model';
 import { HttpError } from '../../models/http.model';
-import { TorrentDraft } from '../../models/torrent-draft.model';
 import { AddTorrentSettingsService } from '../../services/add-torrent-settings.service';
 import { GeneralSettingsService } from '../../services/general-settings.service';
 import { OpenFilesService, PendingAddTorrent } from '../../services/open-files.service';

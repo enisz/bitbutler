@@ -1,13 +1,13 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { ServerRecord } from '@bitbutler/shared';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faTrashCan } from '@fortawesome/free-regular-svg-icons';
 import { faPencil, faPlug, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
-import { ServerRecord } from '../../../models/server.model';
 import { CommandBusService } from '../../../services/command-bus.service';
 import { ConfirmService } from '../../../services/confirm.service';
 import { QbService } from '../../../services/qb.service';

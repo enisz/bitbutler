@@ -12,13 +12,13 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { TorrentFileEntry } from '@bitbutler/shared';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCheck, faEdit, faX } from '@fortawesome/free-solid-svg-icons';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TooltipOverflow } from '../../directives/tooltip-overflow';
-import { TorrentFileEntry } from '../../models/torrent-draft.model';
 import { FilesizePipe } from '../../pipes/filesize-pipe';
 import { ConfirmService } from '../../services/confirm.service';
 import { BbProgress } from '../bb-progress/bb-progress';

@@ -2,6 +2,7 @@ import { NgOptimizedImage } from '@angular/common';
 import { Component, OnInit, computed, effect, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ServerRecord } from '@bitbutler/shared';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faEdit, faSquare, faSquareCheck, faTrashCan } from '@fortawesome/free-regular-svg-icons';
 import { NgbDropdownModule, NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
@@ -12,7 +13,6 @@ import {
 } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AppLoader } from '../../components/app-loader/app-loader';
-import { ServerRecord } from '../../models/server.model';
 import { CommandBusService } from '../../services/command-bus.service';
 import { ConfirmService } from '../../services/confirm.service';
 import { ElectronService } from '../../services/electron.service';

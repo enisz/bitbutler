@@ -1,5 +1,5 @@
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
-import type { ServerRecord } from '../models/server.model';
+import type { ServerRecord } from '@bitbutler/shared';
 import { ServerService } from './server.service';
 
 @Injectable({ providedIn: 'root' })

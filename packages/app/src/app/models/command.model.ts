@@ -1,7 +1,5 @@
-import type { SelectedTorrentInput } from '@bitbutler/shared';
+import type { SelectedTorrentInput, TorrentDraft, UpdateCheckResponse } from '@bitbutler/shared';
 import { SettingsTabId } from '../pages/settings/settings.interface';
-import { UpdateCheckResponse } from './electron.model';
-import { TorrentDraft } from './torrent-draft.model';
 import { Torrent } from './torrent.model';
 
 export type { SelectedTorrentInput };

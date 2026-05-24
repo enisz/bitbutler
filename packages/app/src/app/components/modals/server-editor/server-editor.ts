@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { NewServer, ServerRecord } from '@bitbutler/shared';
 import {
   faCheck,
   faCircleNotch,
@@ -14,7 +15,6 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslatePipe } from '@ngx-translate/core';
 import { filter } from 'rxjs';
 import { AutofocusDirective } from '../../../directives/autofocus';
-import { NewServer, ServerRecord } from '../../../models/server.model';
 import { CommandBusService } from '../../../services/command-bus.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { ServerService } from '../../../services/server.service';

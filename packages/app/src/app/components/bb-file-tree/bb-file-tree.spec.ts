@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TorrentFileEntry } from '../../models/torrent-draft.model';
+import { TorrentFileEntry } from '@bitbutler/shared';
 import { ConfirmService } from '../../services/confirm.service';
 import { BbFileTree, BbFileTreeNode, FileTreeSaveEvent } from './bb-file-tree';
 

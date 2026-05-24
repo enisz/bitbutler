@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
+import type { TorrentDraft } from '@bitbutler/shared';
 import type { SelectedTorrentInput } from '../models/command.model';
-import type { TorrentDraft } from '../models/torrent-draft.model';
 
 export type PendingAddTorrent = {
   draft: TorrentDraft;
