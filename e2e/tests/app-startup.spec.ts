@@ -2,14 +2,14 @@ import { expect, test } from '@playwright/test';
 import { AppHandle, closeApp, launchApp } from '../helpers/electron';
 
 test.describe('App startup', () => {
-  let handle: AppHandle | undefined;
+  let handle: AppHandle;
 
   test.beforeEach(async () => {
     handle = await launchApp();
   });
 
   test.afterEach(async () => {
-    if (handle) await closeApp(handle);
+    await closeApp(handle);
   });
 
   test('shows the login page', async () => {
