@@ -1,19 +1,19 @@
 export type TorrentDraftSource = 'startup' | 'second-instance' | 'renderer' | 'dragdrop' | 'manual';
 
-export type TorrentFileEntry = {
+export interface TorrentFileEntry {
   path: string;
   length: number;
   priority?: number;
   progress?: number;
   index?: number;
-};
+}
 
-export type TorrentDraftError = {
+export interface TorrentDraftError {
   message: string;
   code?: string;
-};
+}
 
-export type TorrentDraft = {
+export interface TorrentDraft {
   source: TorrentDraftSource;
   receivedAt: number;
   originalPath?: string;
@@ -28,4 +28,4 @@ export type TorrentDraft = {
     isPrivate?: boolean;
   };
   error?: TorrentDraftError;
-};
+}
