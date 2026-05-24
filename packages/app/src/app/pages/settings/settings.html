@@ -1,4 +1,4 @@
-<div class="modal-header bb-modal-header">
+<div class="modal-header bb-modal-header" data-testid="settings-modal">
   <div class="bb-modal-header__text">
     <h5 class="modal-title bb-title-clamp">{{ 'pages.settings.title' | translate }}</h5>
 
@@ -9,6 +9,7 @@
             class="nav-link"
             [class.active]="activeTabId() === tab.id"
             (click)="selectTab(tab.id)"
+            [attr.data-testid]="'settings-tab-' + tab.id"
           >
             {{ tab.label | translate }}
             @if (stateService.isDirtyMap()[tab.id]) {
@@ -52,10 +53,17 @@
     class="btn btn-secondary"
     [disabled]="!stateService.isDirty()"
     (click)="onSave()"
+    data-testid="settings-save"
   >
     {{ 'general.button.save' | translate }}
   </button>
-  <button type="button" class="btn btn-link" (click)="activeModal.dismiss()" autofocus>
+  <button
+    type="button"
+    class="btn btn-link"
+    (click)="activeModal.dismiss()"
+    autofocus
+    data-testid="settings-close"
+  >
     {{ 'general.button.close' | translate }}
   </button>
 </div>
