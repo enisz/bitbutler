@@ -33,6 +33,7 @@
           [ngbTooltip]="'general.button.edit' | translate"
           tooltipClass="single-line-tooltip"
           placement="top"
+          data-testid="file-tree-edit-button"
           (click)="enterEditMode()"
         >
           <fa-icon [icon]="icon.faEdit"></fa-icon>
@@ -44,6 +45,7 @@
           [ngbTooltip]="'general.button.save' | translate"
           tooltipClass="single-line-tooltip"
           placement="top"
+          data-testid="file-tree-save-button"
           (click)="saveEdit()"
         >
           <fa-icon [icon]="icon.faCheck"></fa-icon>
@@ -54,6 +56,7 @@
           [ngbTooltip]="'general.button.cancel' | translate"
           tooltipClass="single-line-tooltip"
           placement="top"
+          data-testid="file-tree-cancel-button"
           (click)="cancelEdit()"
         >
           <fa-icon [icon]="icon.faX"></fa-icon>
@@ -68,6 +71,7 @@
   [treeControl]="treeControl"
   [trackBy]="trackByPath"
   class="bb-file-tree"
+  data-testid="file-tree"
 >
   <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: hasChild" class="bb-node">
     <div
@@ -133,6 +137,7 @@
       class="bb-row bb-row--file"
       [class.bb-row--skipped]="node.file?.priority === 0"
       [style.--node-depth]="getNodeDepth(node)"
+      [attr.data-testid]="'file-row-' + node.name"
     >
       <span class="bb-spacer"></span>
 
@@ -162,6 +167,8 @@
       } @else {
         <input
           class="bb-input"
+          data-testid="file-rename-input"
+          [attr.data-testid-file]="node.name"
           [(ngModel)]="node.name"
           (change)="onFileNameChange(node)"
           (keydown.enter)="onRenameEnter($event, node, 'file')"
