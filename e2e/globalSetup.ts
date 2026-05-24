@@ -7,6 +7,7 @@ import {
   QB_USER,
   addTorrent,
   changePassword,
+  getTorrents,
   login,
   readTempPassword,
   startContainer,
@@ -15,6 +16,7 @@ import {
 
 export default async function globalSetup(): Promise<void> {
   startContainer();
+  await new Promise((r) => setTimeout(r, 3000)); // wait for container to print temp password
   await waitForReady();
 
   const tempPass = readTempPassword();
@@ -24,6 +26,10 @@ export default async function globalSetup(): Promise<void> {
   const sid = await login(QB_USER, QB_PASS);
   const torrentPath = path.resolve(__dirname, 'fixtures/test.torrent');
   await addTorrent(sid, torrentPath);
+
+  const torrents = await getTorrents(sid);
+  const fixture = torrents.find((t) => t.name === 'test-files');
+  if (fixture) process.env['FIXTURE_HASH'] = fixture.hash;
 
   process.env['QB_HOST'] = QB_HOST;
   process.env['QB_PORT'] = String(QB_PORT);

@@ -41,8 +41,8 @@
     "test": "npm run test --workspaces --if-present",
     "test:watch": "npm run test:watch --workspace=packages/app",
     "test:e2e": "npm run build:e2e && playwright test",
-    "test:e2e:ci": "npm run build:e2e && xvfb-run --auto-servernum playwright test",
-    "test:e2e:server:ci": "xvfb-run --auto-servernum playwright test"
+    "test:e2e:ci": "npm run build:e2e && xvfb-run --auto-servernum playwright test --config=playwright.noserver.config.ts",
+    "test:e2e:server:ci": "xvfb-run --auto-servernum playwright test --config=playwright.config.ts"
   },
   "lint-staged": {
     "packages/app/src/**/*.{ts,html}": [
