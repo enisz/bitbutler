@@ -76,7 +76,6 @@ interface MergedData {
     TranslatePipe,
     TooltipOverflow,
   ],
-  providers: [],
   templateUrl: './general.html',
   styleUrl: './general.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -145,7 +144,7 @@ export class General implements TorrentDetailTabComponent, OnInit {
   public ngOnInit(): void {
     this.generalSettingsService
       .asObservable()
-      .pipe(take(1), takeUntilDestroyed(this.destroyRef))
+      .pipe(take(1))
       .subscribe((settings) => {
         this.settings.set(settings);
       });

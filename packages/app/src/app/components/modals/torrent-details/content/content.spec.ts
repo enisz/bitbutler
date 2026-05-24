@@ -56,14 +56,14 @@ describe('Content', () => {
     it('should not set startInEditMode when context has no editMode flag', () => {
       fixture.componentRef.setInput('context', {});
       fixture.detectChanges();
-      expect(component.startInEditMode).toBe(false);
+      expect(component.startInEditMode()).toBe(false);
     });
 
     it('should set startInEditMode and clear the flag when context.editMode is true', () => {
       const ctx: Record<string, any> = { editMode: true };
       fixture.componentRef.setInput('context', ctx);
       fixture.detectChanges();
-      expect(component.startInEditMode).toBe(true);
+      expect(component.startInEditMode()).toBe(true);
       expect(ctx['editMode']).toBe(false);
     });
   });

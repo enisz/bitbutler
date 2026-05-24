@@ -17,7 +17,7 @@ import {
   ValueFormatterParams,
   ValueGetterParams,
 } from 'ag-grid-community';
-import { Subject, Subscription, debounceTime } from 'rxjs';
+import { Subject, debounceTime } from 'rxjs';
 import { GRID_DARK_THEME, GRID_LIGHT_THEME, GRID_SHARED_OPTIONS } from '../../../../app.const';
 import { QbTorrentPeer, QbTorrentPeersResponse } from '../../../../models/torrent.model';
 import { ContextMenuEntry } from '../../../../pages/main/grid/context-menu/context-menu.types';
@@ -55,7 +55,6 @@ export class Peers implements TorrentDetailTabComponent, OnInit {
   private readonly clipboard = inject(Clipboard);
   private readonly destroyRef = inject(DestroyRef);
 
-  private sub: Subscription | null = null;
   private readonly saveState$ = new Subject<void>();
   private peerMap = new Map<string, QbTorrentPeer>();
   private gridApi: GridApi | null = null;
@@ -71,13 +70,6 @@ export class Peers implements TorrentDetailTabComponent, OnInit {
   public bbLight = GRID_LIGHT_THEME;
   public gridOptions: GridOptions<QbTorrentPeer> = this.getGridOptions();
   public colDefs: ColDef<QbTorrentPeer>[] = this.getColDefs();
-
-  constructor() {
-    this.destroyRef.onDestroy(() => {
-      this.sub?.unsubscribe();
-      this.sub = null;
-    });
-  }
 
   public ngOnInit(): void {
     this.saveState$.pipe(debounceTime(500), takeUntilDestroyed(this.destroyRef)).subscribe(() => {
@@ -124,9 +116,6 @@ export class Peers implements TorrentDetailTabComponent, OnInit {
   }
 
   private startPolling(): void {
-    this.sub?.unsubscribe();
-    this.sub = null;
-
     this.peerMap.clear();
     this.peers = [];
     this.loading = true;
@@ -141,20 +130,23 @@ export class Peers implements TorrentDetailTabComponent, OnInit {
       return;
     }
 
-    this.sub = this.polling.startPeersPolling(serverId, hash).subscribe({
-      next: (patch: QbTorrentPeersResponse) => {
-        this.applyPatch(patch);
+    this.polling
+      .startPeersPolling(serverId, hash)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (patch: QbTorrentPeersResponse) => {
+          this.applyPatch(patch);
 
-        this.peers = Array.from(this.peerMap.values());
+          this.peers = Array.from(this.peerMap.values());
 
-        this.loading = false;
-        this.changeDetectorRef.detectChanges();
-      },
-      error: () => {
-        this.loading = false;
-        this.changeDetectorRef.detectChanges();
-      },
-    });
+          this.loading = false;
+          this.changeDetectorRef.detectChanges();
+        },
+        error: () => {
+          this.loading = false;
+          this.changeDetectorRef.detectChanges();
+        },
+      });
   }
 
   private applyPatch(patch: QbTorrentPeersResponse): void {

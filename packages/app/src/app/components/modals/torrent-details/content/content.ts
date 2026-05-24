@@ -34,13 +34,13 @@ export class Content implements TorrentDetailTabComponent, OnInit {
 
   public loading = signal(true);
   public content = signal<TorrentFileEntry[]>([]);
-  public startInEditMode = false;
+  public readonly startInEditMode = signal(false);
 
   constructor() {
     effect(() => {
       const ctx = this.context();
       if (ctx?.['editMode']) {
-        this.startInEditMode = true;
+        this.startInEditMode.set(true);
         ctx['editMode'] = false;
       }
     });
