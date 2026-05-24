@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, effect, inject } from '@angular/core';
+import { Component, DestroyRef, effect, inject } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { RouterOutlet } from '@angular/router';
 import { NgbModalConfig, NgbTooltipConfig } from '@ng-bootstrap/ng-bootstrap';
@@ -29,7 +29,7 @@ import { WindowService } from './services/window.service';
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
-export class App implements OnInit {
+export class App {
   private readonly electronService = inject(ElectronService);
   private readonly modalConfigService = inject(NgbModalConfig);
   private readonly openFilesService = inject(OpenFilesService);
@@ -65,11 +65,8 @@ export class App implements OnInit {
     this.modalConfigService.keyboard = true;
     this.modalConfigService.centered = true;
     this.modalConfigService.animation = true;
-
     this.tooltipConfigService.container = 'body';
-  }
 
-  public ngOnInit(): void {
     this.openFilesService.start();
     this.uiCommandHandlerService.start();
     this.menuBarCommandHandlerService.start();

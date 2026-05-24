@@ -6,7 +6,7 @@ import {
   moveItemInArray,
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faGripVertical } from '@fortawesome/free-solid-svg-icons';
@@ -30,7 +30,7 @@ interface Widget {
   templateUrl: './status-bar.html',
   styleUrl: './status-bar.scss',
 })
-export class StatusBar implements SettingsTabComponent, OnInit {
+export class StatusBar implements SettingsTabComponent {
   private statusBarService = inject(StatusBarSettingsService);
   private readonly translateService = inject(TranslateService);
   private readonly stateService = inject(SettingsStateService);
@@ -75,7 +75,7 @@ export class StatusBar implements SettingsTabComponent, OnInit {
 
   public readonly settingsLoaded = toSignal(this.settings$, { initialValue: null });
 
-  public ngOnInit(): void {
+  constructor() {
     this.stateService.registerSave('status-bar', () => this.save());
   }
 

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, NgZone, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, NgZone, inject } from '@angular/core';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -38,7 +38,7 @@ import { SettingsTabComponent } from '../settings.interface';
   templateUrl: './server.html',
   styleUrl: './server.scss',
 })
-export class Server implements SettingsTabComponent, OnInit {
+export class Server implements SettingsTabComponent {
   private readonly electronService = inject(ElectronService);
   private readonly zone = inject(NgZone);
   private readonly serverSettingsService = inject(ServerSettingsService);
@@ -92,7 +92,7 @@ export class Server implements SettingsTabComponent, OnInit {
     ]),
   });
 
-  public ngOnInit(): void {
+  constructor() {
     this.stateService.registerSave('server', () => this.save());
 
     this.serverSettingsForm.valueChanges

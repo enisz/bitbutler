@@ -58,4 +58,7 @@ const noopSubscription = () => noop;
     upsert: noopAsync,
     delete: noopAsync,
   },
+  i18n: {
+    languageChanged: noop,
+  },
 };

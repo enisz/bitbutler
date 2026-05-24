@@ -1,5 +1,5 @@
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
-import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FaIconComponent, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -41,7 +41,7 @@ export interface NgSelectColumnItem {
   templateUrl: './torrent-list-grid.html',
   styleUrl: './torrent-list-grid.scss',
 })
-export class TorrentListGrid implements SettingsTabComponent, OnInit {
+export class TorrentListGrid implements SettingsTabComponent {
   private readonly torrentListGridSettingsService = inject(TorrentListGridSettingsService);
   private readonly uiFormatService = inject(UiFormatService);
   private readonly destroyRef = inject(DestroyRef);
@@ -73,7 +73,7 @@ export class TorrentListGrid implements SettingsTabComponent, OnInit {
   public faGripVertical = faGripVertical;
   public loaded = signal(false);
 
-  public ngOnInit(): void {
+  constructor() {
     const allDefs: ColDef[] = getGridColDefs(this.uiFormatService, this.translateService);
     this.columns.set(
       allDefs

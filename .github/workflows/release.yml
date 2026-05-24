@@ -244,4 +244,3 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh release edit ${{ needs.bump-version.outputs.raw_version }} --draft=false
-
