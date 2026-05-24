@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, NgZone, OnInit, inject } from '@angular/core';
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
@@ -53,7 +53,7 @@ export class Server implements SettingsTabComponent, OnInit {
     faFolderOpen,
   };
 
-  public settings$ = toObservable(this.serverStoreService.currentServerId).pipe(
+  private settings$ = toObservable(this.serverStoreService.currentServerId).pipe(
     switchMap(() => from(this.serverSettingsService.reload() as Promise<ServerSettings>)),
 
     tap((settings: ServerSettings) => {
@@ -76,6 +76,8 @@ export class Server implements SettingsTabComponent, OnInit {
       });
     }),
   );
+
+  public readonly settingsLoaded = toSignal(this.settings$, { initialValue: null });
 
   public serverSettingsForm = new FormGroup({
     polling: new FormGroup({

@@ -1,13 +1,12 @@
-import { AsyncPipe } from '@angular/common';
 import { Component, DestroyRef, OnInit, effect, inject } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { RouterOutlet } from '@angular/router';
 import { NgbModalConfig, NgbTooltipConfig } from '@ng-bootstrap/ng-bootstrap';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { TimeagoIntl } from 'ngx-timeago';
 import { strings as usStrings } from 'ngx-timeago/language-strings/en.js';
 import { strings as huStrings } from 'ngx-timeago/language-strings/hu.js';
-import { filter } from 'rxjs';
+import { filter, from } from 'rxjs';
 import { GeneralSettings } from './models/general-settings.model';
 import { CommandBusService } from './services/command-bus.service';
 import { ElectronService } from './services/electron.service';
@@ -26,7 +25,7 @@ import { WindowService } from './services/window.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, AsyncPipe],
+  imports: [RouterOutlet],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
@@ -51,7 +50,7 @@ export class App implements OnInit {
   private readonly timeagoIntl = inject(TimeagoIntl);
   private readonly windowService = inject(WindowService);
 
-  public isDev$ = this.electronService.isDev();
+  public readonly isDev = toSignal(from(this.electronService.isDev()), { initialValue: false });
   private updateCheckedOnStartup = false;
 
   private readonly _openDraftsEffect = effect(() => {

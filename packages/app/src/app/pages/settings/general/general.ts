@@ -188,14 +188,17 @@ export class General implements SettingsTabComponent, OnInit {
       });
   }
 
-  public settings$ = from(this.generalSettingsService.load()).pipe(
-    tap((settings: GeneralSettings) => {
-      this.generalSettingsForm.patchValue(settings, { emitEvent: false });
-      const startupGroup = this.generalSettingsForm.controls.startup;
-      if (settings.startup?.openAtLogin && this.hasDefaultServer()) {
-        startupGroup.controls.startMinimized.enable({ emitEvent: false });
-      }
-    }),
+  public readonly settingsLoaded = toSignal(
+    from(this.generalSettingsService.load()).pipe(
+      tap((settings: GeneralSettings) => {
+        this.generalSettingsForm.patchValue(settings, { emitEvent: false });
+        const startupGroup = this.generalSettingsForm.controls.startup;
+        if (settings.startup?.openAtLogin && this.hasDefaultServer()) {
+          startupGroup.controls.startMinimized.enable({ emitEvent: false });
+        }
+      }),
+    ),
+    { initialValue: null },
   );
 
   public async ngOnInit(): Promise<void> {

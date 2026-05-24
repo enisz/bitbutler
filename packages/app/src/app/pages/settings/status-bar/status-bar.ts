@@ -6,8 +6,8 @@ import {
   moveItemInArray,
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
-import { AsyncPipe } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faGripVertical } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -26,15 +26,7 @@ interface Widget {
 @Component({
   selector: 'app-status-bar',
   standalone: true,
-  imports: [
-    CdkDrag,
-    CdkDropList,
-    CdkDropListGroup,
-    FaIconComponent,
-    BbSpinner,
-    AsyncPipe,
-    TranslatePipe,
-  ],
+  imports: [CdkDrag, CdkDropList, CdkDropListGroup, FaIconComponent, BbSpinner, TranslatePipe],
   templateUrl: './status-bar.html',
   styleUrl: './status-bar.scss',
 })
@@ -65,7 +57,7 @@ export class StatusBar implements SettingsTabComponent, OnInit {
   public left: Widget[] = [];
   public right: Widget[] = [];
 
-  public settings$ = this.translateService
+  private settings$ = this.translateService
     .get(this.MASTER_WIDGET_KEYS.map((key) => `pages.settings.tab.status-bar.widget.${key}`))
     .pipe(
       tap((translations) => {
@@ -80,6 +72,8 @@ export class StatusBar implements SettingsTabComponent, OnInit {
         this.right = this.mapIdsToWidgets(settings.right);
       }),
     );
+
+  public readonly settingsLoaded = toSignal(this.settings$, { initialValue: null });
 
   public ngOnInit(): void {
     this.stateService.registerSave('status-bar', () => this.save());
