@@ -1,20 +1,12 @@
-import { CommonModule } from '@angular/common';
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges,
-} from '@angular/core';
+import { NgClass } from '@angular/common';
+import { Component, computed, effect, input, output } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IconDefinition, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
-import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
+import { startWith } from 'rxjs/operators';
 import { TooltipOverflow } from '../../../../directives/tooltip-overflow';
 
 export interface FilterItem {
@@ -28,7 +20,7 @@ export interface FilterItem {
   selector: 'app-filter-group',
   standalone: true,
   imports: [
-    CommonModule,
+    NgClass,
     FontAwesomeModule,
     FormsModule,
     ReactiveFormsModule,
@@ -39,52 +31,35 @@ export interface FilterItem {
   templateUrl: './filter-group.html',
   styleUrl: './filter-group.scss',
 })
-export class FilterGroupComponent implements OnInit, OnChanges {
-  @Input({ required: true }) label!: string;
+export class FilterGroupComponent {
+  readonly label = input.required<string>();
+  readonly items = input<FilterItem[] | null>(null);
+  readonly activeKey = input.required<string>();
+  readonly showAll = input(true);
+  readonly showAllCount = input.required<number>();
 
-  private readonly items$ = new BehaviorSubject<FilterItem[]>([]);
-  @Input()
-  set items(value: FilterItem[] | null) {
-    this.items$.next(value ?? []);
-  }
-
-  get items(): FilterItem[] {
-    return this.items$.value;
-  }
-
-  @Input({ required: true }) activeKey!: string;
-  @Input() showAll = true;
-  @Input({ required: true }) showAllCount!: number;
-
-  @Output() itemSelected = new EventEmitter<string>();
+  readonly itemSelected = output<string>();
 
   public readonly icons = { faXmark };
-
   public filterCtrl = new FormControl('', { nonNullable: true });
-  public filteredItems$!: Observable<FilterItem[]>;
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['items']) {
-      const next: FilterItem[] = changes['items'].currentValue ?? [];
-      if (
-        this.activeKey &&
-        this.activeKey !== 'all' &&
-        !next.some((i) => i.key === this.activeKey)
-      ) {
+  private readonly filterText = toSignal(this.filterCtrl.valueChanges.pipe(startWith('')), {
+    initialValue: '',
+  });
+
+  public readonly filteredItems = computed(() => {
+    const text = this.filterText().toLowerCase();
+    return (this.items() ?? []).filter((item) => item.label.toLowerCase().includes(text));
+  });
+
+  constructor() {
+    effect(() => {
+      const next = this.items() ?? [];
+      const key = this.activeKey();
+      if (key && key !== 'all' && !next.some((i) => i.key === key)) {
         this.itemSelected.emit('all');
       }
-    }
-  }
-
-  ngOnInit(): void {
-    this.filteredItems$ = combineLatest([
-      this.items$,
-      this.filterCtrl.valueChanges.pipe(startWith('')),
-    ]).pipe(
-      map(([items, filterText]) =>
-        items.filter((item) => item.label.toLowerCase().includes(filterText.toLowerCase())),
-      ),
-    );
+    });
   }
 
   public clearFilter(): void {

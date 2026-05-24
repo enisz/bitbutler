@@ -1,6 +1,4 @@
-import { SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { firstValueFrom, skip } from 'rxjs';
 import { FilterGroupComponent, FilterItem } from './filter-group';
 
 const sampleItems: FilterItem[] = [
@@ -20,10 +18,10 @@ describe('FilterGroupComponent', () => {
 
     fixture = TestBed.createComponent(FilterGroupComponent);
     component = fixture.componentInstance;
-    component.label = 'Status';
-    component.activeKey = 'all';
-    component.showAllCount = 10;
-    component.items = sampleItems;
+    fixture.componentRef.setInput('label', 'Status');
+    fixture.componentRef.setInput('activeKey', 'all');
+    fixture.componentRef.setInput('showAllCount', 10);
+    fixture.componentRef.setInput('items', sampleItems);
     fixture.detectChanges();
   });
 
@@ -32,31 +30,25 @@ describe('FilterGroupComponent', () => {
   });
 
   describe('items input', () => {
-    it('should reflect items set via setter', () => {
-      component.items = sampleItems;
-      expect(component.items).toBe(sampleItems);
+    it('should reflect items set via signal input', () => {
+      fixture.componentRef.setInput('items', sampleItems);
+      expect(component.items()).toBe(sampleItems);
     });
 
-    it('should treat null items as empty array', () => {
-      component.items = null as any;
-      expect(component.items).toEqual([]);
+    it('should treat null items as empty array in filteredItems', () => {
+      fixture.componentRef.setInput('items', null);
+      expect(component.filteredItems()).toEqual([]);
     });
   });
 
-  describe('ngOnChanges', () => {
+  describe('auto-emit on item removal', () => {
     it('should emit "all" when active item is removed from items list', () => {
       const emitted: string[] = [];
       component.itemSelected.subscribe((key) => emitted.push(key));
 
-      component.activeKey = 'downloading';
-      component.ngOnChanges({
-        items: new SimpleChange(
-          sampleItems,
-          [{ key: 'seeding', label: 'Seeding', count: 7 }],
-          false,
-        ),
-      });
-      component.items = [{ key: 'seeding', label: 'Seeding', count: 7 }];
+      fixture.componentRef.setInput('activeKey', 'downloading');
+      fixture.componentRef.setInput('items', [{ key: 'seeding', label: 'Seeding', count: 7 }]);
+      fixture.detectChanges();
 
       expect(emitted).toContain('all');
     });
@@ -65,11 +57,9 @@ describe('FilterGroupComponent', () => {
       const emitted: string[] = [];
       component.itemSelected.subscribe((key) => emitted.push(key));
 
-      component.activeKey = 'downloading';
-      const updatedItems = [...sampleItems];
-      component.ngOnChanges({
-        items: new SimpleChange(sampleItems, updatedItems, false),
-      });
+      fixture.componentRef.setInput('activeKey', 'downloading');
+      fixture.componentRef.setInput('items', [...sampleItems]);
+      fixture.detectChanges();
 
       expect(emitted).toHaveLength(0);
     });
@@ -78,10 +68,9 @@ describe('FilterGroupComponent', () => {
       const emitted: string[] = [];
       component.itemSelected.subscribe((key) => emitted.push(key));
 
-      component.activeKey = 'all';
-      component.ngOnChanges({
-        items: new SimpleChange(sampleItems, [], false),
-      });
+      fixture.componentRef.setInput('activeKey', 'all');
+      fixture.componentRef.setInput('items', []);
+      fixture.detectChanges();
 
       expect(emitted).toHaveLength(0);
     });
@@ -116,24 +105,21 @@ describe('FilterGroupComponent', () => {
     });
   });
 
-  describe('filteredItems$', () => {
-    it('should emit all items when filter is empty', async () => {
-      const items = await firstValueFrom(component.filteredItems$);
-      expect(items.length).toBe(sampleItems.length);
+  describe('filteredItems', () => {
+    it('should return all items when filter is empty', () => {
+      expect(component.filteredItems().length).toBe(sampleItems.length);
     });
 
-    it('should filter items by label (case-insensitive)', async () => {
-      const itemsPromise = firstValueFrom(component.filteredItems$.pipe(skip(1)));
+    it('should filter items by label (case-insensitive)', () => {
       component.filterCtrl.setValue('seed');
-      const items = await itemsPromise;
-      expect(items.every((i) => i.label.toLowerCase().includes('seed'))).toBe(true);
+      expect(component.filteredItems().every((i) => i.label.toLowerCase().includes('seed'))).toBe(
+        true,
+      );
     });
 
-    it('should return empty array when no items match filter', async () => {
-      const itemsPromise = firstValueFrom(component.filteredItems$.pipe(skip(1)));
+    it('should return empty array when no items match filter', () => {
       component.filterCtrl.setValue('zzznomatch');
-      const items = await itemsPromise;
-      expect(items).toHaveLength(0);
+      expect(component.filteredItems()).toHaveLength(0);
     });
   });
 });
