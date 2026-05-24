@@ -1,4 +1,4 @@
-<div class="modal-header">
+<div class="modal-header" data-testid="delete-torrent-modal">
   <h4 class="modal-title text-danger">
     {{ 'components.modals.delete-torrent.title' | translate }}
   </h4>
@@ -20,6 +20,7 @@
         type="checkbox"
         id="remove-files"
         formControlName="removeFiles"
+        data-testid="delete-remove-files-checkbox"
       />
       <label class="form-check-label" for="remove-files">
         {{ 'components.modals.delete-torrent.delete-form.confirmation' | translate }}</label
@@ -37,10 +38,21 @@
 </div>
 
 <div class="modal-footer">
-  <button type="button" class="btn btn-danger" (click)="closeModal()" autofocus>
+  <button
+    type="button"
+    class="btn btn-danger"
+    (click)="closeModal()"
+    autofocus
+    data-testid="delete-confirm-button"
+  >
     {{ 'general.button.delete' | translate }}
   </button>
-  <button type="button" class="btn btn-link" (click)="dismissModal()">
+  <button
+    type="button"
+    class="btn btn-link"
+    (click)="dismissModal()"
+    data-testid="delete-cancel-button"
+  >
     {{ 'general.button.cancel' | translate }}
   </button>
 </div>

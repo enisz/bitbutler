@@ -1,4 +1,4 @@
-<div class="modal-header bb-modal-header">
+<div class="modal-header bb-modal-header" data-testid="set-location-modal">
   <div class="bb-modal-header__text">
     <h5 class="modal-title bb-title-clamp">
       {{ 'components.modals.set-torrent-location.title' | translate }}
@@ -44,10 +44,21 @@
   </form>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-secondary" (click)="handleSubmit()" [disabled]="!canSave()">
+  <button
+    type="button"
+    class="btn btn-secondary"
+    (click)="handleSubmit()"
+    [disabled]="!canSave()"
+    data-testid="set-location-save"
+  >
     {{ 'general.button.save' | translate }}
   </button>
-  <button type="button" class="btn btn-link" (click)="activeModal.close()">
+  <button
+    type="button"
+    class="btn btn-link"
+    (click)="activeModal.close()"
+    data-testid="set-location-cancel"
+  >
     {{ 'general.button.cancel' | translate }}
   </button>
 </div>
