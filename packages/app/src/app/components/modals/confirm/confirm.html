@@ -1,4 +1,4 @@
-<div class="modal-header">
+<div class="modal-header" data-testid="confirm-modal">
   <h4 class="modal-title">{{ title() | translate: titleParams() }}</h4>
   <button
     type="button"
@@ -9,10 +9,21 @@
 </div>
 <div class="modal-body" [innerHTML]="message() | translate: messageParams()"></div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-danger" (click)="activeModal.close(true)" autofocus>
+  <button
+    type="button"
+    class="btn btn-danger"
+    (click)="activeModal.close(true)"
+    autofocus
+    data-testid="confirm-ok-button"
+  >
     {{ btnOkText() | translate }}
   </button>
-  <button type="button" class="btn btn-link" (click)="activeModal.close(false)">
+  <button
+    type="button"
+    class="btn btn-link"
+    (click)="activeModal.close(false)"
+    data-testid="confirm-cancel-button"
+  >
     {{ btnCancelText() | translate }}
   </button>
 </div>
