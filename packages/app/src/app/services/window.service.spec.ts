@@ -9,14 +9,13 @@ describe('WindowService', () => {
     service = TestBed.inject(WindowService);
   });
 
-  it('should expose an observable for window state', () => {
-    const obs = service.windowStateAsObservable();
-    expect(obs).toBeDefined();
+  it('should expose a signal for window state', () => {
+    expect(service.state).toBeDefined();
+    expect(typeof service.state).toBe('function');
   });
 
-  it('should emit the initial state to subscribers', async () => {
-    const { firstValueFrom } = await import('rxjs');
-    const state = await firstValueFrom(service.windowStateAsObservable());
+  it('should return the initial state from the signal', () => {
+    const state = service.state();
     expect(state).toBeDefined();
     expect(typeof state.isMaximized).toBe('boolean');
   });

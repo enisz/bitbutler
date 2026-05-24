@@ -91,7 +91,7 @@ export class App implements OnInit {
       .subscribe((event: TorrentFinishedEvent) => {
         const message = this.translateService.instant('app.success.finished-downloading');
 
-        if (this.windowService.state.isMinimized) {
+        if (this.windowService.state().isMinimized) {
           this.notificationService.send(message, event.torrent.name);
         } else {
           this.toastService.success(event.torrent.name, message);
