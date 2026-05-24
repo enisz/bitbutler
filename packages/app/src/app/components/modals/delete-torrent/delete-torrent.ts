@@ -27,7 +27,7 @@ export class DeleteTorrent implements OnInit {
 
   public ngOnInit(): void {
     this.deleteForm = new FormGroup({
-      removeFiles: new FormControl(false || this.defaultRemoveFiles),
+      removeFiles: new FormControl(this.defaultRemoveFiles),
     });
   }
 

@@ -75,7 +75,7 @@ export class ServerState implements OnChanges {
   public connectionStatus = signal<string>('offline');
   public sessionRatio = signal<string>('0.00');
   public globalRatio = signal<string>('0.00');
-  public useAltSpeedLimits = signal<boolean>(false);
+  public useAltSpeedLimits = signal(false);
   public pollProgress = signal<number>(0);
   public selectedCount = computed(() => this.selectionStoreService.selected()?.length ?? 0);
   public filteredCount = this.gridViewStoreService.filteredCount;

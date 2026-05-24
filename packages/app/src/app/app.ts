@@ -68,8 +68,6 @@ export class App implements OnInit {
     this.modalConfigService.animation = true;
 
     this.tooltipConfigService.container = 'body';
-
-    this.openFilesService.start();
   }
 
   public ngOnInit(): void {

@@ -15,7 +15,7 @@ export class ServerSettingsService extends BaseSettingsService<ServerSettings> {
     super();
     effect(() => {
       this.serverStoreService.currentServerId();
-      () => void this.reload();
+      void this.reload();
     });
   }
 

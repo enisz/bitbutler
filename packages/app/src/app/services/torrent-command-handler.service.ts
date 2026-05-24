@@ -73,37 +73,41 @@ export class TorrentCommandHandlerService {
   }
 
   private handleAutoTmm(status: boolean): void {
-    const serverId = this.serverStore.currentServerId() ?? '';
-    const hashes = this.selectionStore.selectedHashes();
-
-    this.qbService.setAutoManagement(serverId, hashes, !status);
+    this.qbService.setAutoManagement(
+      this.serverStore.currentServerId() ?? '',
+      this.selectionStore.selectedHashes(),
+      !status,
+    );
   }
-  private handleForceResume(): void {
-    const serverId = this.serverStore.currentServerId() ?? '';
-    const hashes = this.selectionStore.selectedHashes();
 
-    this.qbService.setForceStart(serverId, hashes, true);
+  private handleForceResume(): void {
+    this.qbService.setForceStart(
+      this.serverStore.currentServerId() ?? '',
+      this.selectionStore.selectedHashes(),
+      true,
+    );
   }
 
   private handleSuperSeeding(status: boolean): void {
-    const serverId = this.serverStore.currentServerId() ?? '';
-    const hashes = this.selectionStore.selectedHashes();
-
-    this.qbService.setSuperSeeding(serverId, hashes, !status);
+    this.qbService.setSuperSeeding(
+      this.serverStore.currentServerId() ?? '',
+      this.selectionStore.selectedHashes(),
+      !status,
+    );
   }
 
   private handleReannounce(): void {
-    const serverId = this.serverStore.currentServerId() ?? '';
-    const hashes = this.selectionStore.selectedHashes();
-
-    this.qbService.reannounceTorrents(serverId, hashes);
+    this.qbService.reannounceTorrents(
+      this.serverStore.currentServerId() ?? '',
+      this.selectionStore.selectedHashes(),
+    );
   }
 
   private handleRecheck(): void {
-    const serverId = this.serverStore.currentServerId() ?? '';
-    const hashes = this.selectionStore.selectedHashes();
-
-    this.qbService.recheckTorrents(serverId, hashes);
+    this.qbService.recheckTorrents(
+      this.serverStore.currentServerId() ?? '',
+      this.selectionStore.selectedHashes(),
+    );
   }
 
   private torrentCommandGuard(command: AppCommand): command is TorrentCommand {
@@ -119,7 +123,9 @@ export class TorrentCommandHandlerService {
 
     try {
       await this.qbService.deleteTorrents(serverId, hashes, removeFiles);
-      hashes.map((hash: string) => this.commandBusService.emit({ type: 'TORRENT_DELETED', hash }));
+      for (const hash of hashes) {
+        this.commandBusService.emit({ type: 'TORRENT_DELETED', hash });
+      }
       this.selectionStore.clear();
     } catch (error: any) {
       console.error('Delete failed', error);

@@ -50,8 +50,8 @@ export class TransferLimit implements OnInit {
     transferRateLimits: new FormControl<TransferLimitValue | null>(null),
   });
 
-  public loading = signal<boolean>(false);
-  public saving = signal<boolean>(false);
+  public loading = signal(false);
+  public saving = signal(false);
 
   public readonly selected = computed(() => this.hashes.length);
 

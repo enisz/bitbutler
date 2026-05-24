@@ -41,7 +41,7 @@ export class Content implements TorrentDetailTabComponent, OnChanges, OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly guardService = inject(ModalGuardService);
 
-  public loading = signal<boolean>(true);
+  public loading = signal(true);
   public content = signal<TorrentFileEntry[]>([]);
   public startInEditMode = false;
 

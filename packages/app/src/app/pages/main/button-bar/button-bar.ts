@@ -36,12 +36,7 @@ import {
   faUserTie,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
-import {
-  NgbActiveModal,
-  NgbDropdownModule,
-  NgbModal,
-  NgbTooltipModule,
-} from '@ng-bootstrap/ng-bootstrap';
+import { NgbDropdownModule, NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { CommandBusService } from '../../../services/command-bus.service';

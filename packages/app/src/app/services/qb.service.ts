@@ -844,14 +844,6 @@ export class QbService {
     let lastErr: any;
 
     for (const api of candidates) {
-      const pathPreview =
-        api === 'START_STOP'
-          ? action === 'pause'
-            ? '/api/v2/torrents/stop'
-            : '/api/v2/torrents/start'
-          : action === 'pause'
-            ? '/api/v2/torrents/pause'
-            : '/api/v2/torrents/resume';
       try {
         await this.callRunEndpoint(serverId, api, action, form, { suppressErrors: true });
         this.runApiCache.set(serverId, api);
