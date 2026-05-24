@@ -1,12 +1,10 @@
 import { ElectronApplication, Page, _electron as electron } from '@playwright/test';
+import electronPath from 'electron';
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
 
-const ELECTRON_BIN =
-  process.platform === 'win32'
-    ? path.resolve('node_modules/electron/dist/electron.exe')
-    : path.resolve('node_modules/electron/dist/electron');
+const ELECTRON_BIN: string = electronPath;
 
 export interface AppHandle {
   app: ElectronApplication;
@@ -19,7 +17,8 @@ export async function launchApp(): Promise<AppHandle> {
 
   const app = await electron.launch({
     executablePath: ELECTRON_BIN,
-    args: ['--no-sandbox', `--user-data-dir=${userDataDir}`, '.'],
+    args: [`--user-data-dir=${userDataDir}`, '.'],
+    chromiumSandbox: false,
     env: {
       ...process.env,
       PLAYWRIGHT_E2E: '1',
