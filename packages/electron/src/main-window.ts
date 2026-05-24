@@ -2,7 +2,7 @@ import { BrowserWindow, app } from 'electron';
 import fs from 'node:fs';
 import { join } from 'node:path';
 
-const isDev = !app.isPackaged;
+const isDev = !app.isPackaged && !process.env['PLAYWRIGHT_E2E'];
 
 function firstExistingPath(paths: string[]): string | null {
   for (const p of paths) {
