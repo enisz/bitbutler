@@ -83,11 +83,10 @@ describe('SavePathSelect', () => {
     });
   });
 
-  describe('ngOnInit', () => {
+  describe('initialization', () => {
     it('should call onChange when selectControl value changes', () => {
       const onChange = vi.fn();
       component.registerOnChange(onChange);
-      component.ngOnInit();
       component.selectControl.setValue('/new/path');
       expect(onChange).toHaveBeenCalledWith('/new/path');
     });
@@ -95,19 +94,19 @@ describe('SavePathSelect', () => {
 
   describe('inputs', () => {
     it('should have clearable false by default', () => {
-      expect(component.clearable).toBe(false);
+      expect(component.clearable()).toBe(false);
     });
 
     it('should have showPopover true by default', () => {
-      expect(component.showPopover).toBe(true);
+      expect(component.showPopover()).toBe(true);
     });
 
     it('should have label null by default', () => {
-      expect(component.label).toBeNull();
+      expect(component.label()).toBeNull();
     });
 
     it('should have appendTo empty string by default', () => {
-      expect(component.appendTo).toBe('');
+      expect(component.appendTo()).toBe('');
     });
 
     it('should render bb-popover when showPopover is true (default)', () => {

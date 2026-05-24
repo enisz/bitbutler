@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common';
 import {
-  AfterViewInit,
   Component,
-  Input,
-  OnInit,
   ViewChild,
+  afterNextRender,
   forwardRef,
   inject,
+  input,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   ControlValueAccessor,
   FormControl,
@@ -44,9 +44,9 @@ import { ManageCategories } from '../modals/manage-categories/manage-categories'
     },
   ],
 })
-export class CategorySelect implements OnInit, ControlValueAccessor, AfterViewInit {
+export class CategorySelect implements ControlValueAccessor {
   @ViewChild('ngselect') ngselect!: NgSelectComponent;
-  @Input() autofocus = false;
+  readonly autofocus = input(false);
 
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly qbService = inject(QbService);
@@ -58,12 +58,18 @@ export class CategorySelect implements OnInit, ControlValueAccessor, AfterViewIn
   private onChange: (value: string | null) => void = () => {};
   private onTouched: () => void = () => {};
 
-  ngOnInit(): void {
+  constructor() {
     this.loadCategories();
 
-    this.selectControl.valueChanges.subscribe((value) => {
+    this.selectControl.valueChanges.pipe(takeUntilDestroyed()).subscribe((value) => {
       this.onChange(value);
       this.onTouched();
+    });
+
+    afterNextRender(() => {
+      if (this.autofocus()) {
+        this.ngselect.focus();
+      }
     });
   }
 
@@ -74,12 +80,6 @@ export class CategorySelect implements OnInit, ControlValueAccessor, AfterViewIn
         this.categories.set(Object.keys(categories));
       })
       .catch((err) => console.error('Failed to get torrent categories!', err));
-  }
-
-  public ngAfterViewInit(): void {
-    if (this.autofocus) {
-      this.ngselect.focus();
-    }
   }
 
   writeValue(value: any): void {

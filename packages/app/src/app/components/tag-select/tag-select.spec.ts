@@ -67,16 +67,15 @@ describe('TagSelect', () => {
     });
   });
 
-  describe('ngOnInit', () => {
+  describe('initialization', () => {
     it('should load all tags on init', async () => {
-      await component.ngOnInit();
+      await vi.waitUntil(() => component.tags().length > 0);
       expect(component.tags()).toEqual(['action', 'comedy']);
     });
 
     it('should call onChange when select control value changes', () => {
       const onChange = vi.fn();
       component.registerOnChange(onChange);
-      component.ngOnInit();
       component.selectControl.setValue(['action']);
       expect(onChange).toHaveBeenCalledWith(['action']);
     });

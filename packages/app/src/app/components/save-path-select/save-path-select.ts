@@ -1,15 +1,15 @@
 import { CommonModule } from '@angular/common';
 import {
-  AfterViewInit,
   Component,
-  Input,
-  OnInit,
   ViewChild,
+  afterNextRender,
   computed,
   forwardRef,
   inject,
+  input,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   ControlValueAccessor,
   FormControl,
@@ -37,13 +37,13 @@ import { BbPopover } from '../bb-popover/bb-popover';
     },
   ],
 })
-export class SavePathSelect implements OnInit, ControlValueAccessor, AfterViewInit {
-  @Input() autofocus = false;
-  @Input() clearable = false;
-  @Input() showPopover = true;
-  @Input() label: string | null = null;
-  @Input() placeholder: string | null = null;
-  @Input() appendTo = '';
+export class SavePathSelect implements ControlValueAccessor {
+  readonly autofocus = input(false);
+  readonly clearable = input(false);
+  readonly showPopover = input(true);
+  readonly label = input<string | null>(null);
+  readonly placeholder = input<string | null>(null);
+  readonly appendTo = input('');
   @ViewChild('ngselect') ngselect!: NgSelectComponent;
 
   private readonly torrentStoreService = inject(TorrentStoreService);
@@ -68,8 +68,8 @@ export class SavePathSelect implements OnInit, ControlValueAccessor, AfterViewIn
   private onChange: (value: string | null) => void = () => {};
   private onTouched: () => void = () => {};
 
-  public ngOnInit(): void {
-    this.selectControl.valueChanges.subscribe((value) => {
+  constructor() {
+    this.selectControl.valueChanges.pipe(takeUntilDestroyed()).subscribe((value) => {
       this.onChange(value);
       this.onTouched();
     });
@@ -85,12 +85,12 @@ export class SavePathSelect implements OnInit, ControlValueAccessor, AfterViewIn
         })
         .catch(() => {});
     }
-  }
 
-  public ngAfterViewInit(): void {
-    if (this.autofocus) {
-      this.ngselect.focus();
-    }
+    afterNextRender(() => {
+      if (this.autofocus()) {
+        this.ngselect.focus();
+      }
+    });
   }
 
   writeValue(value: string | null): void {
