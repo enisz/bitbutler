@@ -1,5 +1,14 @@
 import { CommonModule, NgComponentOutlet } from '@angular/common';
-import { Component, OnInit, Type, computed, inject, input, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  Type,
+  computed,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
@@ -32,6 +41,7 @@ import { Tab, TorrentDetailTabComponent, TorrentDetailTabId } from './torrent-de
   providers: [ModalGuardService],
   templateUrl: './torrent-details.html',
   styleUrl: './torrent-details.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TorrentDetails implements OnInit, GuardableModal {
   readonly hash = input<string | null>(null);

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   ViewChild,
   afterNextRender,
@@ -43,6 +44,7 @@ import { ManageCategories } from '../modals/manage-categories/manage-categories'
       multi: true,
     },
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CategorySelect implements ControlValueAccessor {
   @ViewChild('ngselect') ngselect!: NgSelectComponent;

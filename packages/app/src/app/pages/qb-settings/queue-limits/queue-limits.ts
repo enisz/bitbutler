@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, OnInit, computed, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  OnInit,
+  computed,
+  inject,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -13,6 +20,7 @@ import { QbSettingsTabComponent } from '../qb-settings.interface';
   imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './queue-limits.html',
   styleUrl: './queue-limits.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QueueLimits implements QbSettingsTabComponent, OnInit {
   private readonly stateService = inject(QbSettingsStateService);

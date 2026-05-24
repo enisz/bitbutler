@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Release, UpdateCheckResponse } from '@bitbutler/shared';
 import { NgbAccordionModule, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -22,6 +22,7 @@ import { ThemeService } from '../../../services/theme.service';
   ],
   templateUrl: './update-available.html',
   styleUrl: './update-available.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UpdateAvailable {
   private readonly themeService = inject(ThemeService);

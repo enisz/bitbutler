@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   Input,
@@ -35,6 +36,7 @@ import {
   ],
   templateUrl: './transfer-limit.html',
   styleUrl: './transfer-limit.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TransferLimit implements OnInit {
   @Input() public target!: LimitTargetType;

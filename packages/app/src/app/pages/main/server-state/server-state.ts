@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   Input,
   OnChanges,
@@ -46,6 +47,7 @@ export enum MouseClickButton {
   imports: [FontAwesomeModule, CommonModule, FilesizePipe, NgbTooltipModule, TranslatePipe],
   templateUrl: './server-state.html',
   styleUrl: './server-state.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ServerState implements OnChanges {
   @Input() public state!: QbServerState | null;

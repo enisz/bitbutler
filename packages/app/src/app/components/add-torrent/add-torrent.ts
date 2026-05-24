@@ -1,4 +1,13 @@
-import { Component, HostListener, OnInit, computed, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  HostListener,
+  OnInit,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import {
   AbstractControl,
   FormControl,
@@ -68,6 +77,7 @@ type AddTorrentFormValue = {
   ],
   templateUrl: './add-torrent.html',
   styleUrl: './add-torrent.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddTorrent implements OnInit {
   @HostListener('document:keydown.escape')

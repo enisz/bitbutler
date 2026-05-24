@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ServerRecord } from '@bitbutler/shared';
@@ -27,6 +27,7 @@ import { ServerEditor } from '../server-editor/server-editor';
   ],
   templateUrl: './manage-servers.html',
   styleUrl: './manage-servers.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ManageServers {
   private readonly serverStoreService = inject(ServerStoreService);

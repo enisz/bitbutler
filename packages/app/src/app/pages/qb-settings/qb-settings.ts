@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, Type, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, Type, inject, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
@@ -28,6 +28,7 @@ import { QbSettingsTab, QbSettingsTabComponent, QbSettingsTabId } from './qb-set
   providers: [QbSettingsStateService],
   templateUrl: './qb-settings.html',
   styleUrl: './qb-settings.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QbSettings implements OnInit, GuardableModal {
   public readonly activeModal = inject(NgbActiveModal);

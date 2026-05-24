@@ -1,5 +1,13 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { ChangeDetectorRef, Component, DestroyRef, OnInit, inject, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  OnInit,
+  inject,
+  input,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { faCode, faCopy, faNetworkWired } from '@fortawesome/free-solid-svg-icons';
 import { TranslateService } from '@ngx-translate/core';
@@ -41,6 +49,7 @@ import { FlagsTooltipComponent } from './flags-tooltip/flags-tooltip';
   providers: [FilesizePipe],
   templateUrl: './peers.html',
   styleUrl: './peers.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Peers implements TorrentDetailTabComponent, OnInit {
   private readonly polling = inject(QbPollingService);

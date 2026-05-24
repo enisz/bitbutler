@@ -6,7 +6,7 @@ import {
   moveItemInArray,
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faGripVertical } from '@fortawesome/free-solid-svg-icons';
@@ -29,6 +29,7 @@ interface Widget {
   imports: [CdkDrag, CdkDropList, CdkDropListGroup, FaIconComponent, BbSpinner, TranslatePipe],
   templateUrl: './status-bar.html',
   styleUrl: './status-bar.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StatusBar implements SettingsTabComponent {
   private statusBarService = inject(StatusBarSettingsService);

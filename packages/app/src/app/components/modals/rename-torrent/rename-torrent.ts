@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -14,6 +14,7 @@ import { ToastService } from '../../../services/toast.service';
   imports: [ReactiveFormsModule, AutofocusDirective, NgbTooltip, TranslatePipe, TooltipOverflow],
   templateUrl: './rename-torrent.html',
   styleUrl: './rename-torrent.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RenameTorrent implements OnInit {
   @Input() torrent!: Torrent;

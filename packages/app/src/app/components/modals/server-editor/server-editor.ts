@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NewServer, ServerRecord } from '@bitbutler/shared';
@@ -34,6 +34,7 @@ import { ServerProtocol } from './server-editor.interface';
   ],
   templateUrl: './server-editor.html',
   styleUrl: './server-editor.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ServerEditor implements OnInit {
   private readonly activeModal = inject(NgbActiveModal);

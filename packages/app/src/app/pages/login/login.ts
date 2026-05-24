@@ -1,5 +1,12 @@
 import { NgOptimizedImage } from '@angular/common';
-import { Component, OnInit, computed, effect, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  effect,
+  inject,
+} from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ServerRecord } from '@bitbutler/shared';
@@ -39,6 +46,7 @@ import { WindowService } from '../../services/window.service';
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Login implements OnInit {
   private readonly confirmService = inject(ConfirmService);

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -23,6 +23,7 @@ import { CategorySelect } from '../../category-select/category-select';
   ],
   templateUrl: './set-torrent-category.html',
   styleUrl: './set-torrent-category.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SetTorrentCategory implements OnInit {
   @Input() public torrent!: Torrent;

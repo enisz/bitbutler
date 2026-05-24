@@ -1,4 +1,11 @@
-import { Component, Input, TemplateRef, ViewEncapsulation, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  TemplateRef,
+  ViewEncapsulation,
+  inject,
+} from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { NgbPopover, NgbPopoverConfig } from '@ng-bootstrap/ng-bootstrap';
@@ -9,6 +16,7 @@ import { NgbPopover, NgbPopoverConfig } from '@ng-bootstrap/ng-bootstrap';
   templateUrl: './bb-popover.html',
   styleUrl: './bb-popover.scss',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BbPopover {
   private readonly ngbPopoverConfig = inject(NgbPopoverConfig);

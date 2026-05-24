@@ -1,4 +1,11 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -30,6 +37,7 @@ import { BbSpinner } from '../../bb-spinner/bb-spinner';
   ],
   templateUrl: './manage-tags.html',
   styleUrl: './manage-tags.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ManageTags implements OnInit, GuardableModal {
   private readonly qbService = inject(QbService);

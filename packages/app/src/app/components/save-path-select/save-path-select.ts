@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   ViewChild,
   afterNextRender,
@@ -36,6 +37,7 @@ import { BbPopover } from '../bb-popover/bb-popover';
       multi: true,
     },
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SavePathSelect implements ControlValueAccessor {
   readonly autofocus = input(false);

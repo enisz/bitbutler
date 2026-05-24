@@ -1,4 +1,13 @@
-import { Component, DestroyRef, OnInit, effect, inject, input, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  OnInit,
+  effect,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TorrentFileEntry } from '@bitbutler/shared';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -19,6 +28,7 @@ import { TorrentDetailTabComponent } from '../torrent-details.interface';
   imports: [BbFileTree, BbSpinner, TranslatePipe],
   templateUrl: './content.html',
   styleUrl: './content.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Content implements TorrentDetailTabComponent, OnInit {
   readonly hash = input<string>('');

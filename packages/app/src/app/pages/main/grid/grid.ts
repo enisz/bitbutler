@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   HostListener,
@@ -47,6 +48,7 @@ import { getGridColDefs, getGridOptions } from './grid.lib';
   providers: [GridStateService, GridContextMenuService, GridKeyboardNavService, GridPinService],
   templateUrl: './grid.html',
   styleUrls: ['./grid.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Grid implements AfterViewInit {
   @ViewChild(AgGridAngular) agGrid!: AgGridAngular;

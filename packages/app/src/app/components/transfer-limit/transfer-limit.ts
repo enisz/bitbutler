@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   WritableSignal,
@@ -37,6 +38,7 @@ export type TransferLimitValue = {
       multi: true,
     },
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TransferLimit implements ControlValueAccessor {
   private readonly cdr = inject(ChangeDetectorRef);

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ITooltipAngularComp } from 'ag-grid-angular';
 import { ITooltipParams } from 'ag-grid-community';
@@ -11,6 +11,7 @@ import { PEER_FLAG_DEFINITIONS, PeerFlagDefinition } from './flags-tooltip.const
   imports: [CommonModule],
   templateUrl: './flags-tooltip.html',
   styleUrl: './flags-tooltip.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FlagsTooltipComponent implements ITooltipAngularComp {
   public title = '';

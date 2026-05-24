@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, NgZone, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, NgZone, inject } from '@angular/core';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -37,6 +37,7 @@ import { SettingsTabComponent } from '../settings.interface';
   ],
   templateUrl: './server.html',
   styleUrl: './server.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Server implements SettingsTabComponent {
   private readonly electronService = inject(ElectronService);

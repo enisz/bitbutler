@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbDate, NgbDatepicker } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -10,6 +10,7 @@ import { IFilterParams } from 'ag-grid-community';
   imports: [FormsModule, NgbDatepicker, TranslatePipe],
   templateUrl: './datepicker-filter.html',
   styleUrl: './datepicker-filter.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DatepickerFilter implements IFilterAngularComp {
   private params!: IFilterParams;

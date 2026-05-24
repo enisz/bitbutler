@@ -2,7 +2,14 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { CommonModule } from '@angular/common';
-import { Component, Injector, OnDestroy, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Injector,
+  OnDestroy,
+  inject,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
@@ -19,6 +26,7 @@ import type { ContextMenuConfig, ContextMenuEntry } from './context-menu.types';
   imports: [CommonModule, FontAwesomeModule, TranslatePipe],
   templateUrl: './context-menu.html',
   styleUrl: './context-menu.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContextMenu implements OnDestroy {
   private readonly overlayRef = inject(OverlayRef);

@@ -1,5 +1,12 @@
 import { CommonModule, NgOptimizedImage } from '@angular/common';
-import { Component, DestroyRef, computed, effect, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  effect,
+  inject,
+} from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -46,6 +53,7 @@ interface NgSelectItem {
   ],
   templateUrl: './general.html',
   styleUrl: './general.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class General implements SettingsTabComponent {
   private readonly themeService = inject(ThemeService);

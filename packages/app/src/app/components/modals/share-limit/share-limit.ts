@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   Input,
@@ -32,6 +33,7 @@ import { ShareLimit as ShareLimitForm, ShareLimitValue } from '../../share-limit
   ],
   templateUrl: './share-limit.html',
   styleUrl: './share-limit.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShareLimit implements OnInit {
   public readonly activeModal = inject(NgbActiveModal);

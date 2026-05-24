@@ -1,5 +1,13 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { ChangeDetectorRef, Component, DestroyRef, OnInit, inject, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  OnInit,
+  inject,
+  input,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { faCode, faCopy, faLink } from '@fortawesome/free-solid-svg-icons';
 import { TranslateService } from '@ngx-translate/core';
@@ -35,6 +43,7 @@ import { TorrentDetailTabComponent } from '../torrent-details.interface';
   imports: [AgGridAngular],
   templateUrl: './trackers.html',
   styleUrl: './trackers.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Trackers implements TorrentDetailTabComponent, OnInit {
   readonly hash = input<string>('');

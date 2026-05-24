@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -15,6 +15,7 @@ import { SavePathSelect } from '../../save-path-select/save-path-select';
   imports: [ReactiveFormsModule, SavePathSelect, NgbTooltip, TranslatePipe, TooltipOverflow],
   templateUrl: './set-torrent-location.html',
   styleUrl: './set-torrent-location.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SetTorrentLocation implements OnInit {
   @Input() torrent!: Torrent;

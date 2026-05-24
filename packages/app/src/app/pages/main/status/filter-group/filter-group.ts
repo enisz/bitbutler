@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, computed, effect, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, input, output } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -30,6 +30,7 @@ export interface FilterItem {
   ],
   templateUrl: './filter-group.html',
   styleUrl: './filter-group.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FilterGroupComponent {
   readonly label = input.required<string>();

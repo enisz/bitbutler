@@ -1,4 +1,12 @@
-import { Component, Input, computed, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { TimeagoPipe } from 'ngx-timeago';
@@ -29,6 +37,7 @@ import { BbProgress } from '../../bb-progress/bb-progress';
   ],
   styleUrls: ['./torrent-exists.scss'],
   templateUrl: './torrent-exists.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TorrentExists {
   private readonly _hash = signal<string | null>(null);

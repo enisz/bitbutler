@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   ViewChild,
   afterNextRender,
@@ -43,6 +44,7 @@ import { ManageTags } from '../modals/manage-tags/manage-tags';
       multi: true,
     },
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TagSelect implements ControlValueAccessor {
   readonly autofocus = input(false);

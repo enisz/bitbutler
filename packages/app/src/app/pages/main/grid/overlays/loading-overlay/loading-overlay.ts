@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ILoadingOverlayAngularComp } from 'ag-grid-angular';
 import { ILoadingOverlayParams } from 'ag-grid-community';
 import { BbSpinner } from '../../../../../components/bb-spinner/bb-spinner';
@@ -14,6 +14,7 @@ type LoadingOverlayParams = ILoadingOverlayParams<Torrent, any> & {
   imports: [BbSpinner],
   templateUrl: './loading-overlay.html',
   styleUrl: './loading-overlay.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoadingOverlay implements ILoadingOverlayAngularComp {
   public title = 'Loading…';

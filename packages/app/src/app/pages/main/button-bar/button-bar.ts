@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   ElementRef,
@@ -58,6 +59,7 @@ import { ToolbarEntry } from './button-bar.menu';
   ],
   templateUrl: './button-bar.html',
   styleUrl: './button-bar.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ButtonBar implements OnInit {
   private readonly selectionStore = inject(SelectionStoreService);

@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   WritableSignal,
@@ -39,6 +40,7 @@ export type ShareLimitValue = {
       multi: true,
     },
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShareLimit implements ControlValueAccessor {
   private readonly cdr = inject(ChangeDetectorRef);

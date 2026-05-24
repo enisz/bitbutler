@@ -1,4 +1,12 @@
-import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
@@ -15,6 +23,7 @@ import { TagSelect } from '../../tag-select/tag-select';
   imports: [ReactiveFormsModule, TagSelect, NgbTooltip, TranslatePipe, TooltipOverflow],
   templateUrl: './set-torrent-tags.html',
   styleUrl: './set-torrent-tags.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SetTorrentTags implements OnInit {
   readonly torrent = input.required<Torrent>();

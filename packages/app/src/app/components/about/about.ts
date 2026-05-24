@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import {
@@ -19,6 +19,7 @@ import { ThemeService } from '../../services/theme.service';
   imports: [LocalTimestampPipe, AutofocusDirective, FontAwesomeModule, TranslatePipe],
   templateUrl: './about.html',
   styleUrl: './about.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class About {
   public readonly activeModal = inject(NgbActiveModal);
