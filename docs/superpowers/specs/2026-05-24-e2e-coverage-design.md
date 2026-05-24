@@ -195,7 +195,7 @@ acceptable (they are fast and stateless).
 
 ## Docker / qBittorrent Setup
 
-- **Image:** `qbittorrentofficial/qbittorrent-nox:latest`
+- **Image:** `qbittorrentofficial/qbittorrent-nox:5.2.0-1` (pinned; update when upgrading)
 - **Port:** `18080:8080` (non-standard to avoid conflicts with local qBittorrent)
 - **Credentials:** `admin` / `adminadmin` (default, set via env vars on the image)
 - **globalSetup sequence:**
