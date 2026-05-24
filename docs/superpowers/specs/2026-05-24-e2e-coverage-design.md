@@ -50,6 +50,35 @@ file-tree tests operate on this single seeded row. `globalTeardown` deletes it.
 
 One class per page/modal. All locators live in the POM - no inline locators in spec files.
 
+### Locator strategy
+
+All selectable elements in Angular templates get a `data-testid` attribute. Tests use
+Playwright's `getByTestId()` API exclusively for element selection:
+
+```html
+<!-- Angular template -->
+<button data-testid="connect-button" class="btn btn-primary" ...>
+  {{ 'pages.login.connect' | translate }}
+</button>
+```
+
+```typescript
+// POM class
+readonly connectButton = this.page.getByTestId('connect-button');
+```
+
+`getByTestId()` is language-independent (survives i18n), survives Bootstrap/style
+refactors, and communicates test intent directly in the template.
+
+`getByRole()` / `getByLabel()` / `getByPlaceholder()` may be used for form inputs where
+the label or placeholder is the natural identifier and language is always English in tests
+(clean `userDataDir` always boots in the default locale). `getByTestId()` is preferred
+wherever ambiguity exists.
+
+The two existing spec files (`app-startup`, `server-management`) currently use CSS class
+
+- text locators. These will be retrofitted to use `getByTestId()` as part of this work.
+
 ---
 
 ## File Structure
