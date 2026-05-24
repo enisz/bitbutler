@@ -47,7 +47,7 @@
         (click)="onItemSelected(item.key)"
         [ngbTooltip]="item.label"
         tooltipClass="single-line-tooltip"
-        [bbTooltipOverflow]="label"
+        [bbTooltipOverflow]="itemLabel"
         placement="end"
       >
         @if (item.icon) {
@@ -64,7 +64,7 @@
             <fa-icon [icon]="item.icon" class="opacity-75"></fa-icon>
           }
         }
-        <span #label class="bb-status-label flex-grow-1 text-truncate">{{ item.label }}</span>
+        <span #itemLabel class="bb-status-label flex-grow-1 text-truncate">{{ item.label }}</span>
         <span class="badge bb-status-badge">{{ item.count }}</span>
       </button>
     }
