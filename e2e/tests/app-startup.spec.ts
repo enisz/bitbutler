@@ -1,11 +1,15 @@
 import { expect, test } from '@playwright/test';
 import { AppHandle, closeApp, launchApp } from '../helpers/electron';
+import { LoginPage } from '../pages/login.page';
 
 test.describe('App startup', () => {
   let handle: AppHandle;
+  let loginPage: LoginPage;
 
   test.beforeEach(async () => {
     handle = await launchApp();
+    loginPage = new LoginPage(handle.page);
+    await loginPage.waitForReady();
   });
 
   test.afterEach(async () => {
@@ -13,20 +17,18 @@ test.describe('App startup', () => {
   });
 
   test('shows the login page', async () => {
-    await expect(handle.page.locator('h1.brand-title')).toHaveText('BitButler');
+    await expect(loginPage.brandTitle).toHaveText('BitButler');
   });
 
   test('shows the version badge', async () => {
-    await expect(handle.page.locator('.version .badge')).toBeVisible();
+    await expect(loginPage.versionBadge).toBeVisible();
   });
 
   test('connect button is disabled with no servers', async () => {
-    const connectBtn = handle.page.locator('button.btn-primary', { hasText: /connect/i });
-    await expect(connectBtn).toBeDisabled();
+    await expect(loginPage.connectButton).toBeDisabled();
   });
 
   test('add server button is enabled', async () => {
-    const addBtn = handle.page.locator('button.btn-secondary', { hasText: /add/i });
-    await expect(addBtn).toBeEnabled();
+    await expect(loginPage.addServerButton).toBeEnabled();
   });
 });

@@ -1,6 +1,7 @@
 <span class="version">
   <span
     class="badge rounded-pill bb-badge-outline-muted cursor-pointer user-select-none"
+    data-testid="version-badge"
     (click)="goToRelease()"
     >v{{ version }}</span
   >
@@ -9,7 +10,7 @@
 <div class="d-flex flex-column vw-100 vh-100 align-items-center pt-2">
   <div class="d-flex flex-column justify-content-center align-items-center user-select-none">
     <img [ngSrc]="logoUrl()" alt="Bitbutler logo" width="400" height="400" priority />
-    <h1 class="brand-title">BitButler</h1>
+    <h1 class="brand-title" data-testid="brand-title">BitButler</h1>
     <small>{{ 'pages.login.tagline' | translate }}</small>
   </div>
 
@@ -91,12 +92,18 @@
       <button
         type="button"
         class="btn btn-lg btn-primary"
+        data-testid="connect-button"
         (click)="connect()"
         [disabled]="!canConnect()"
       >
         {{ 'general.button.connect' | translate }}
       </button>
-      <button type="button" class="btn btn-lg btn-secondary" (click)="addServer()">
+      <button
+        type="button"
+        class="btn btn-lg btn-secondary"
+        data-testid="add-server-button"
+        (click)="addServer()"
+      >
         {{ 'general.button.add-server' | translate }}
       </button>
     </div>
