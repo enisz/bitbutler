@@ -14,7 +14,7 @@
     </div>
 
     <div class="d-flex flex-row flex-grow-1 min-w-0">
-      <app-button-bar class="flex-grow-1 min-w-0"></app-button-bar>
+      <app-button-bar class="flex-grow-1 min-w-0" data-testid="button-bar"></app-button-bar>
     </div>
   </header>
 
@@ -27,10 +27,10 @@
 
     <main class="d-flex flex-column flex-grow-1 min-w-0 min-h-0">
       <div class="flex-grow-1 min-h-0 overflow-hidden">
-        <app-grid class="h-100 w-100"></app-grid>
+        <app-grid class="h-100 w-100" data-testid="torrent-grid"></app-grid>
       </div>
 
-      <footer class="flex-shrink-0 border-start">
+      <footer class="flex-shrink-0 border-start" data-testid="status-bar">
         <app-server-state [state]="serverState()"></app-server-state>
       </footer>
     </main>
