@@ -1,5 +1,6 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, OnInit, inject, input } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { faCode, faCopy, faLink } from '@fortawesome/free-solid-svg-icons';
 import { TranslateService } from '@ngx-translate/core';
 import { AgGridAngular } from 'ag-grid-angular';
@@ -15,7 +16,7 @@ import {
   ValueFormatterParams,
   ValueGetterParams,
 } from 'ag-grid-community';
-import { Subject, Subscription, debounceTime } from 'rxjs';
+import { Subject, debounceTime } from 'rxjs';
 import { GRID_DARK_THEME, GRID_LIGHT_THEME, GRID_SHARED_OPTIONS } from '../../../../app.const';
 import { QbTorrentTracker, QbTrackerStatus } from '../../../../models/qbittorrent.model';
 import { ContextMenuEntry } from '../../../../pages/main/grid/context-menu/context-menu.types';
@@ -35,9 +36,9 @@ import { TorrentDetailTabComponent } from '../torrent-details.interface';
   templateUrl: './trackers.html',
   styleUrl: './trackers.scss',
 })
-export class Trackers implements TorrentDetailTabComponent, OnInit, OnDestroy {
-  @Input() public hash: string = '';
-  @Input() public context: Record<string, any> = {};
+export class Trackers implements TorrentDetailTabComponent, OnInit {
+  readonly hash = input<string>('');
+  readonly context = input<Record<string, any>>({});
 
   private readonly qbService = inject(QbService);
   private readonly serverStoreService = inject(ServerStoreService);
@@ -48,9 +49,9 @@ export class Trackers implements TorrentDetailTabComponent, OnInit, OnDestroy {
   private readonly gridContextMenuService = inject(GridContextMenuService);
   private readonly trackersGridSettingsService = inject(TrackersGridSettingsService);
   private readonly clipboard = inject(Clipboard);
+  private readonly destroyRef = inject(DestroyRef);
 
   private readonly saveState$ = new Subject<void>();
-  private saveSub: Subscription | null = null;
   private gridApi: GridApi | null = null;
   private isRestoringState = false;
 
@@ -63,15 +64,10 @@ export class Trackers implements TorrentDetailTabComponent, OnInit, OnDestroy {
   public colDefs: ColDef<QbTorrentTracker>[] = this.getColDefs();
 
   public ngOnInit(): void {
-    this.saveSub = this.saveState$.pipe(debounceTime(500)).subscribe(() => {
+    this.saveState$.pipe(debounceTime(500), takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       void this.persistColumnState();
     });
     void this.load();
-  }
-
-  public ngOnDestroy(): void {
-    this.saveSub?.unsubscribe();
-    this.saveSub = null;
   }
 
   public onGridReady(e: GridReadyEvent<QbTorrentTracker>): void {
@@ -125,7 +121,7 @@ export class Trackers implements TorrentDetailTabComponent, OnInit, OnDestroy {
 
   private async load(): Promise<void> {
     const serverId = this.serverStoreService.currentServerId();
-    const hash = this.hash;
+    const hash = this.hash();
 
     if (!serverId) {
       console.error(Trackers.name, 'load', 'ServerId is missing!');

@@ -1,5 +1,6 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, OnInit, inject, input } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { faCode, faCopy, faNetworkWired } from '@fortawesome/free-solid-svg-icons';
 import { TranslateService } from '@ngx-translate/core';
 import { AgGridAngular } from 'ag-grid-angular';
@@ -41,7 +42,7 @@ import { FlagsTooltipComponent } from './flags-tooltip/flags-tooltip';
   templateUrl: './peers.html',
   styleUrl: './peers.scss',
 })
-export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
+export class Peers implements TorrentDetailTabComponent, OnInit {
   private readonly polling = inject(QbPollingService);
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
@@ -52,16 +53,16 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
   private readonly gridContextMenuService = inject(GridContextMenuService);
   private readonly peersGridSettingsService = inject(PeersGridSettingsService);
   private readonly clipboard = inject(Clipboard);
+  private readonly destroyRef = inject(DestroyRef);
 
   private sub: Subscription | null = null;
-  private saveSub: Subscription | null = null;
   private readonly saveState$ = new Subject<void>();
   private peerMap = new Map<string, QbTorrentPeer>();
   private gridApi: GridApi | null = null;
   private isRestoringState = false;
 
-  @Input() public hash: string = '';
-  @Input() public context: Record<string, any> = {};
+  readonly hash = input<string>('');
+  readonly context = input<Record<string, any>>({});
 
   public theme = this.themeService.effectiveMode;
   public peers: QbTorrentPeer[] = [];
@@ -71,18 +72,18 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
   public gridOptions: GridOptions<QbTorrentPeer> = this.getGridOptions();
   public colDefs: ColDef<QbTorrentPeer>[] = this.getColDefs();
 
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      this.sub?.unsubscribe();
+      this.sub = null;
+    });
+  }
+
   public ngOnInit(): void {
-    this.saveSub = this.saveState$.pipe(debounceTime(500)).subscribe(() => {
+    this.saveState$.pipe(debounceTime(500), takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       void this.persistColumnState();
     });
     this.startPolling();
-  }
-
-  public ngOnDestroy(): void {
-    this.sub?.unsubscribe();
-    this.sub = null;
-    this.saveSub?.unsubscribe();
-    this.saveSub = null;
   }
 
   public onGridReady(e: GridReadyEvent<QbTorrentPeer>): void {
@@ -132,7 +133,7 @@ export class Peers implements TorrentDetailTabComponent, OnInit, OnDestroy {
     this.changeDetectorRef.detectChanges();
 
     const serverId = this.serverStoreService.currentServerId();
-    const hash = this.hash;
+    const hash = this.hash();
 
     if (!serverId || !hash) {
       this.loading = false;

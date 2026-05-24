@@ -1,5 +1,4 @@
 import { signal } from '@angular/core';
-import { SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ModalGuardService } from '../../../../services/modal-guard.service';
 import { QbService } from '../../../../services/qb.service';
@@ -53,18 +52,19 @@ describe('Content', () => {
     expect(component.loading()).toBe(true);
   });
 
-  describe('ngOnChanges', () => {
+  describe('context effect', () => {
     it('should not set startInEditMode when context has no editMode flag', () => {
-      component.context = {};
-      component.ngOnChanges({ context: new SimpleChange(null, {}, false) });
+      fixture.componentRef.setInput('context', {});
+      fixture.detectChanges();
       expect(component.startInEditMode).toBe(false);
     });
 
     it('should set startInEditMode and clear the flag when context.editMode is true', () => {
-      component.context = { editMode: true };
-      component.ngOnChanges({ context: new SimpleChange(null, { editMode: true }, false) });
+      const ctx: Record<string, any> = { editMode: true };
+      fixture.componentRef.setInput('context', ctx);
+      fixture.detectChanges();
       expect(component.startInEditMode).toBe(true);
-      expect(component.context['editMode']).toBe(false);
+      expect(ctx['editMode']).toBe(false);
     });
   });
 });
