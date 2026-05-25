@@ -60,7 +60,8 @@
       "Bash(npm start *)",
       "Bash(Get-ChildItem *)",
       "Bash(npx vitest *)",
-      "Bash(npx ng *)"
+      "Bash(npx ng *)",
+      "Bash(curl *)"
     ]
   }
 }
