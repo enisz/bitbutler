@@ -136,7 +136,9 @@ async function qbLogin(payload: unknown): Promise<{ loggedIn: boolean }> {
   });
 
   const text = await res.text();
-  if (!res.ok || !/^Ok\./i.test(text.trim())) {
+  // qBittorrent <5: 200 + "Ok." body on success, 200 + "Fails." on bad creds
+  // qBittorrent 5+: 204 no-content on success, 401 on bad creds
+  if (!res.ok || (res.status !== 204 && !/^Ok\./i.test(text.trim()))) {
     throw new Error('Login failed. Check username/password and WebUI settings.');
   }
 
@@ -276,7 +278,7 @@ function extractSidCookie(res: Response): string | null {
   const raw = h.get('set-cookie');
   if (!raw) return null;
 
-  const parts = raw.split(/,(?=\s*SID=)/g);
+  const parts = raw.split(/,(?=\s*(?:QBT_SID_\d+|SID)=)/g);
   return findSidInSetCookies(parts);
 }
 
@@ -284,8 +286,8 @@ function findSidInSetCookies(setCookies: string[]): string | null {
   if (!Array.isArray(setCookies)) return null;
 
   for (const c of setCookies) {
-    const m = String(c).match(/(^|;\s*)SID=([^;]+)/);
-    if (m) return `SID=${m[2]}`;
+    const m = String(c).match(/(^|;\s*)(QBT_SID_\d+|SID)=([^;]+)/);
+    if (m) return `${m[2]}=${m[3]}`;
   }
   return null;
 }
