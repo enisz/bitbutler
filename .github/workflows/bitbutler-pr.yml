@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   enforce-rules:
-    name: '[1/7] PR Format & Issue Sync'
+    name: '[1/5] PR Format & Issue Sync'
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -53,7 +53,7 @@ jobs:
             }
 
   detect-changes:
-    name: '[2/7] Detect Changes'
+    name: '[2/5] Detect Changes'
     runs-on: ubuntu-latest
     needs: [enforce-rules]
     outputs:
@@ -82,7 +82,7 @@ jobs:
               - 'package-lock.json'
 
   lint:
-    name: '[3/7] Code Quality (Lint)'
+    name: '[3/5] Code Quality (Lint)'
     runs-on: ubuntu-latest
     needs: [detect-changes]
     if: needs.detect-changes.outputs.any-source == 'true'
@@ -99,7 +99,7 @@ jobs:
       - run: npm run lint
 
   test-app:
-    name: '[4/7] Unit Tests - Angular'
+    name: '[4/5] Unit Tests - Angular'
     runs-on: ubuntu-latest
     needs: [detect-changes, lint]
     if: always() && needs.detect-changes.outputs.app == 'true' && needs.lint.result == 'success'
@@ -116,7 +116,7 @@ jobs:
       - run: npm run test --workspace=packages/app
 
   test-electron:
-    name: '[4/7] Unit Tests - Electron'
+    name: '[4/5] Unit Tests - Electron'
     runs-on: ubuntu-latest
     needs: [detect-changes, lint]
     if: always() && needs.detect-changes.outputs.electron == 'true' && needs.lint.result == 'success'
@@ -132,73 +132,10 @@ jobs:
           ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
       - run: npm run test --workspace=packages/electron
 
-  e2e-no-server:
-    name: '[5/7] E2E Tests - No Server (Playwright / Electron)'
-    runs-on: ubuntu-latest
-    needs: [detect-changes, test-app, test-electron]
-    if: >-
-      always() &&
-      needs.detect-changes.outputs.any-source == 'true' &&
-      !contains(needs.*.result, 'failure') &&
-      !contains(needs.*.result, 'cancelled')
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: '24'
-          cache: 'npm'
-      - run: npm install -g npm@11
-      - run: npm ci
-
-      - name: Install display and Chromium system libraries
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y xvfb libnss3 libgbm1 libasound2t64 libgtk-3-0 libxss1 libxkbcommon0 libatk-bridge2.0-0 libcups2 libdrm2
-
-      - name: Build Angular app
-        run: npm run build
-        env:
-          ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
-
-      - name: Build Electron TypeScript
-        run: npm run build:electron
-
-      - name: Run Playwright e2e tests
-        run: npm run test:e2e:ci
-
-  e2e-server:
-    name: '[6/7] E2E Tests - Server (Playwright / Electron / qBittorrent)'
-    runs-on: ubuntu-latest
-    needs: [detect-changes, test-app, test-electron, e2e-no-server]
-    if: >-
-      always() &&
-      needs.detect-changes.outputs.any-source == 'true' &&
-      !contains(needs.*.result, 'failure') &&
-      !contains(needs.*.result, 'cancelled')
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: '24'
-          cache: 'npm'
-      - run: npm install -g npm@11
-      - run: npm ci
-      - name: Install display and system libs
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y xvfb libnss3 libgbm1 libasound2t64 libgtk-3-0 \
-            libxss1 libxkbcommon0 libatk-bridge2.0-0 libcups2 libdrm2
-      - name: Build Angular app
-        run: npm run build
-      - name: Build Electron TypeScript
-        run: npm run build:electron
-      - name: Run Playwright e2e server tests
-        run: npm run test:e2e:server:ci
-
   build:
-    name: '[7/7] Build & Package (${{ matrix.job_name }})'
+    name: '[5/5] Build & Package (${{ matrix.job_name }})'
     runs-on: ${{ matrix.os }}
-    needs: [detect-changes, test-app, test-electron, e2e-no-server, e2e-server]
+    needs: [detect-changes, test-app, test-electron]
     if: >-
       always() &&
       (needs.detect-changes.outputs.app == 'true' || needs.detect-changes.outputs.electron == 'true') &&

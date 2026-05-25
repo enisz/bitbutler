@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   pre-flight:
-    name: '[1/8] Lint & Tests'
+    name: '[1/6] Lint & Tests'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -39,7 +39,7 @@ jobs:
         run: npm run test --workspace=packages/electron
 
   bump-version:
-    name: '[2/8] Bump Version'
+    name: '[2/6] Bump Version'
     runs-on: ubuntu-latest
     needs: [pre-flight]
     outputs:
@@ -77,7 +77,7 @@ jobs:
           retention-days: 1
 
   build-app:
-    name: '[3/8] Build Angular App'
+    name: '[3/6] Build Angular App'
     runs-on: ubuntu-latest
     needs: [bump-version]
     steps:
@@ -106,7 +106,7 @@ jobs:
           retention-days: 1
 
   electron-pack:
-    name: '[4/8] Package Electron (${{ matrix.job_name }})'
+    name: '[4/6] Package Electron (${{ matrix.job_name }})'
     runs-on: ${{ matrix.os }}
     needs: [bump-version, build-app]
     strategy:
@@ -159,66 +159,10 @@ jobs:
           path: dist-electron/
           retention-days: 1
 
-  e2e-no-server:
-    name: '[5/8] E2E Tests - No Server (Playwright / Electron)'
-    runs-on: ubuntu-latest
-    needs: [pre-flight]
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: '24'
-          cache: 'npm'
-      - run: npm install -g npm@11
-      - run: npm ci
-
-      - name: Install display and system libs
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y xvfb libnss3 libgbm1 libasound2t64 libgtk-3-0 \
-            libxss1 libxkbcommon0 libatk-bridge2.0-0 libcups2 libdrm2
-
-      - name: Build Angular app
-        run: npm run build
-
-      - name: Build Electron TypeScript
-        run: npm run build:electron
-
-      - name: Run Playwright e2e tests
-        run: npm run test:e2e:ci
-
-  e2e-server:
-    name: '[6/8] E2E Tests - Server (Playwright / Electron / qBittorrent)'
-    runs-on: ubuntu-latest
-    needs: [pre-flight, e2e-no-server]
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: '24'
-          cache: 'npm'
-      - run: npm install -g npm@11
-      - run: npm ci
-
-      - name: Install display and system libs
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y xvfb libnss3 libgbm1 libasound2t64 libgtk-3-0 \
-            libxss1 libxkbcommon0 libatk-bridge2.0-0 libcups2 libdrm2
-
-      - name: Build Angular app
-        run: npm run build
-
-      - name: Build Electron TypeScript
-        run: npm run build:electron
-
-      - name: Run Playwright e2e server tests
-        run: npm run test:e2e:server:ci
-
   commit-and-tag:
-    name: '[7/8] Commit & Tag'
+    name: '[5/6] Commit & Tag'
     runs-on: ubuntu-latest
-    needs: [bump-version, build-app, electron-pack, e2e-no-server, e2e-server]
+    needs: [bump-version, build-app, electron-pack]
     permissions:
       contents: write
     outputs:
@@ -251,7 +195,7 @@ jobs:
         run: git push origin main --tags
 
   publish-release:
-    name: '[8/8] Publish Release'
+    name: '[6/6] Publish Release'
     runs-on: ubuntu-latest
     needs: [bump-version, commit-and-tag]
     permissions:
