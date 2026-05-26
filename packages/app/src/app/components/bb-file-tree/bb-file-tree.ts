@@ -102,8 +102,7 @@ export class BbFileTree {
 
   public icon = { faEdit, faCheck, faX };
 
-  trackByPath = (_index: number, node: BbFileTreeNode): string =>
-    `${this.editMode()}:${node.fullPath}`;
+  trackByPath = (_index: number, node: BbFileTreeNode): string => node.fullPath;
 
   constructor() {
     effect(() => {

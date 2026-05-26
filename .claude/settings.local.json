@@ -61,7 +61,9 @@
       "Bash(Get-ChildItem *)",
       "Bash(npx vitest *)",
       "Bash(npx ng *)",
-      "Bash(curl *)"
+      "Bash(curl *)",
+      "Bash(sed 's/^-//')",
+      "Bash(npx playwright *)"
     ]
   }
 }

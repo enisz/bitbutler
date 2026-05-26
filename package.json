@@ -27,6 +27,7 @@
     "start:once": "concurrently -n \"angular,electron\" -c \"red,blue\" \"npm:serve\" \"npm:electron-dev\"",
     "workspace:clean": "rimraf dist-electron dist",
     "build": "npm run build --workspace=packages/app",
+    "build:e2e": "npm run build --workspace=packages/app -- --base-href=./index.html && npm run build:electron",
     "build:electron": "npm run build --workspace=packages/electron",
     "build:ui": "npm run workspace:clean && npm run build:prod --workspace=packages/app && npm run build:electron",
     "pack": "npm run build:ui && electron-builder --dir",
@@ -38,7 +39,10 @@
     "lint:fix": "npm run lint -- --fix",
     "prepare": "husky",
     "test": "npm run test --workspaces --if-present",
-    "test:watch": "npm run test:watch --workspace=packages/app"
+    "test:watch": "npm run test:watch --workspace=packages/app",
+    "test:e2e": "npm run build:e2e && playwright test",
+    "test:e2e:ci": "npm run build:e2e && xvfb-run --auto-servernum playwright test --config=playwright.noserver.config.ts",
+    "test:e2e:server:ci": "xvfb-run --auto-servernum playwright test --config=playwright.config.ts"
   },
   "lint-staged": {
     "packages/app/src/**/*.{ts,html}": [
@@ -226,6 +230,7 @@
     "@angular/cli": "^20.3.13",
     "@angular/compiler-cli": "^20.3.0",
     "@angular/localize": "^20.3.0",
+    "@playwright/test": "^1.60.0",
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",
     "@types/better-sqlite3": "^7.6.13",
     "@types/humanize-duration": "^3.27.4",
