@@ -52,15 +52,13 @@ test.describe('Add torrent', () => {
   });
 
   test('adding a duplicate torrent shows the torrent-exists modal', async () => {
-    // test.torrent is already seeded by globalSetup — adding it again triggers a 409 response
-    // which the app handles by showing the TorrentExists modal
+    // test.torrent is already seeded by globalSetup — the app detects the duplicate locally
+    // via isAlreadyInList() in loadDraft() and shows the TorrentExists modal directly,
+    // without requiring a submit (and without hitting qBittorrent's 409 response).
     const torrentPath = path.resolve(__dirname, '../fixtures/test.torrent');
     await handle.page.evaluate(async (filePath) => {
       await window.bitbutler.window.simulateOpenFiles([filePath]);
     }, torrentPath);
-
-    await addTorrentModal.waitForReady();
-    await addTorrentModal.submitButton.click();
 
     const torrentExistsModal = new TorrentExistsModal(handle.page);
     await torrentExistsModal.waitForReady();

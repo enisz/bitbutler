@@ -4,6 +4,7 @@ export class ManageTagsModal {
   readonly modal = this.page.getByTestId('manage-tags-modal');
   readonly nameInput = this.page.getByTestId('tag-name-input');
   readonly addButton = this.page.getByTestId('add-tag-button');
+  private readonly confirmOkButton = this.page.getByTestId('confirm-ok-button');
 
   constructor(private readonly page: Page) {}
 
@@ -24,5 +25,7 @@ export class ManageTagsModal {
   async deleteTag(name: string): Promise<void> {
     const item = this.page.getByTestId(`tag-item-${name}`);
     await item.locator('.btn-link.text-danger').click();
+    await this.confirmOkButton.waitFor({ state: 'visible' });
+    await this.confirmOkButton.click();
   }
 }

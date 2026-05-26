@@ -124,6 +124,8 @@ export class ServerEditor implements OnInit {
   public ngOnInit(): void {
     if (this.id()) {
       this.editMode.set(true);
+      this.editorForm.get('password')?.clearValidators();
+      this.editorForm.get('password')?.updateValueAndValidity();
 
       this.serverService
         .getById(this.id()!)
@@ -145,19 +147,32 @@ export class ServerEditor implements OnInit {
   }
 
   public handleSave(): void {
-    const newServer: NewServer = {
-      name: this.name,
-      protocol: this.protocol,
-      host: this.host,
-      port: this.port,
-      username: this.username,
-      password: this.password,
-      auto_login: this.autoLogin,
-    };
+    let promise: Promise<boolean | { id: string }>;
 
-    let promise = this.id()
-      ? this.serverService.update(this.id()!, newServer)
-      : this.serverService.add(newServer);
+    if (this.id()) {
+      const changes: Partial<NewServer> = {
+        name: this.name,
+        protocol: this.protocol,
+        host: this.host,
+        port: this.port,
+        username: this.username,
+        auto_login: this.autoLogin,
+      };
+      if (this.password) {
+        changes.password = this.password;
+      }
+      promise = this.serverService.update(this.id()!, changes);
+    } else {
+      promise = this.serverService.add({
+        name: this.name,
+        protocol: this.protocol,
+        host: this.host,
+        port: this.port,
+        username: this.username,
+        password: this.password,
+        auto_login: this.autoLogin,
+      });
+    }
 
     promise
       .then((response: boolean | { id: string }) => {

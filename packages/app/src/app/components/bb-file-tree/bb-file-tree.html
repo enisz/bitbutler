@@ -170,7 +170,6 @@
           data-testid="file-rename-input"
           [attr.data-testid-file]="node.name"
           [(ngModel)]="node.name"
-          (change)="onFileNameChange(node)"
           (keydown.enter)="onRenameEnter($event, node, 'file')"
           (keydown.escape)="onEscapeInInput($event)"
         />

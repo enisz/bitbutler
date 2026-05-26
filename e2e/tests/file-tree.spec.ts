@@ -53,8 +53,8 @@ test.describe('File tree', () => {
   });
 
   test('cancel button exits edit mode without saving changes', async () => {
-    // fill() triggers the input event (ngModel update) but NOT change, so sessionDirty stays false
-    // and cancelEdit() proceeds without a confirm dialog
+    // fill() updates node.name via ngModel (input event); the file input has no (change) binding
+    // so sessionDirty stays false and cancelEdit() proceeds without a confirm dialog
     await handle.page.locator('[data-testid-file="hello.txt"]').fill('modified.txt');
     await fileTreeModal.cancelEditMode();
 

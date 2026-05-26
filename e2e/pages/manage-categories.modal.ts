@@ -4,6 +4,7 @@ export class ManageCategoriesModal {
   readonly modal = this.page.getByTestId('manage-categories-modal');
   readonly nameInput = this.page.getByTestId('category-name-input');
   readonly addButton = this.page.getByTestId('add-category-button');
+  private readonly confirmOkButton = this.page.getByTestId('confirm-ok-button');
 
   constructor(private readonly page: Page) {}
 
@@ -24,5 +25,7 @@ export class ManageCategoriesModal {
   async deleteCategory(name: string): Promise<void> {
     const item = this.page.getByTestId(`category-item-${name}`);
     await item.locator('.btn-link.text-danger').click();
+    await this.confirmOkButton.waitFor({ state: 'visible' });
+    await this.confirmOkButton.click();
   }
 }

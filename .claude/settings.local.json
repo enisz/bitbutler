@@ -63,7 +63,8 @@
       "Bash(npx ng *)",
       "Bash(curl *)",
       "Bash(sed 's/^-//')",
-      "Bash(npx playwright *)"
+      "Bash(npx playwright *)",
+      "Bash(dir C:\\\\dev\\\\bitbutler\\\\e2e\\\\fixtures\\\\ *)"
     ]
   }
 }

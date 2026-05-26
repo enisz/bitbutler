@@ -314,8 +314,22 @@ export class AddTorrent implements OnInit {
         this.openFilesService.consumeCurrentDraft();
       }
     } catch (e) {
-      console.error(AddTorrent.name, 'handleSubmit', '[AddTorrent] qb add failed', e);
-      this.addForm.setErrors({ addFailed: true });
+      let parsed: { name?: string; status?: number } = {};
+      try {
+        const msg = String((e as Error)?.message ?? e);
+        const idx = msg.indexOf('{');
+        if (idx !== -1) parsed = JSON.parse(msg.slice(idx));
+      } catch {}
+
+      if (parsed.name === 'QbHttpError' && parsed.status === 409) {
+        const hash = this.effectiveDraft()?.torrent?.infoHashV1?.toLowerCase() ?? null;
+        const modalRef = this.modalService.open(TorrentExists, { centered: true });
+        setModalInput(modalRef, 'hash', hash);
+        this.openFilesService.consumeCurrentDraft();
+      } else {
+        console.error(AddTorrent.name, 'handleSubmit', '[AddTorrent] qb add failed', e);
+        this.addForm.setErrors({ addFailed: true });
+      }
     } finally {
       this.isSubmitting.set(false);
     }

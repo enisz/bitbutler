@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { AppHandle, closeApp, launchApp } from '../helpers/electron';
 import { QB_HOST, QB_PASS, QB_PORT, QB_USER } from '../helpers/qbittorrent';
+import { ConfirmModal } from '../pages/confirm.modal';
 import { LoginPage } from '../pages/login.page';
 import { ServerEditorModal } from '../pages/server-editor.modal';
 
@@ -8,11 +9,13 @@ test.describe('Server management', () => {
   let handle: AppHandle;
   let loginPage: LoginPage;
   let serverEditor: ServerEditorModal;
+  let confirmModal: ConfirmModal;
 
   test.beforeEach(async () => {
     handle = await launchApp();
     loginPage = new LoginPage(handle.page);
     serverEditor = new ServerEditorModal(handle.page);
+    confirmModal = new ConfirmModal(handle.page);
     await loginPage.waitForReady();
   });
 
@@ -88,6 +91,9 @@ test.describe('Server management', () => {
     const option = handle.page.locator('.ng-option').filter({ hasText: 'delete-me' });
     await option.waitFor({ state: 'visible' });
     await option.locator('.btn-link.text-danger').click();
+
+    await confirmModal.waitForReady();
+    await confirmModal.okButton.click();
 
     const servers = await handle.page.evaluate(() => window.bitbutler.server.list());
     expect((servers as Array<{ name: string }>).every((s) => s.name !== 'delete-me')).toBe(true);
