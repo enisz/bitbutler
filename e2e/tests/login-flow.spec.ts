@@ -56,14 +56,12 @@ test.describe('Login flow', () => {
     await loginPage.waitForReady();
 
     // Open the server dropdown and verify both servers are listed
-    await handle.page.locator('ng-select#server').click();
-    await expect(handle.page.locator('.ng-option').filter({ hasText: 'e2e-test' })).toBeVisible();
-    await expect(
-      handle.page.locator('.ng-option').filter({ hasText: 'invalid-server' }),
-    ).toBeVisible();
+    await handle.page.getByTestId('server-select').click();
+    await expect(handle.page.getByTestId('server-option-e2e-test')).toBeVisible();
+    await expect(handle.page.getByTestId('server-option-invalid-server')).toBeVisible();
 
-    // Select the valid server by clicking its name text
-    await handle.page.locator('.ng-option strong.server-name').filter({ hasText: 'e2e-test' }).click();
+    // Select the valid server by clicking its option
+    await handle.page.getByTestId('server-option-e2e-test').click();
 
     await loginPage.connectButton.click();
     await handle.page.waitForURL('**/pages/main', { timeout: 20_000 });

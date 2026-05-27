@@ -12,7 +12,7 @@ export class SetTagsModal {
   }
 
   async selectTag(name: string): Promise<void> {
-    await this.page.locator('.modal-body ng-select').first().click();
+    await this.page.getByTestId('tag-select-input').click();
     const option = this.page.locator('.ng-option').filter({ hasText: name });
     await option.waitFor({ state: 'visible', timeout: 5_000 });
     await option.click();

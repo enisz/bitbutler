@@ -12,9 +12,7 @@ export class SetCategoryModal {
   }
 
   async selectCategory(name: string): Promise<void> {
-    // Click the ng-select inside the modal body to open the dropdown
-    await this.page.locator('.modal-body ng-select').first().click();
-    // Wait for the option to appear (category list is fetched asynchronously)
+    await this.page.getByTestId('category-select-input').click();
     const option = this.page.locator('.ng-option').filter({ hasText: name });
     await option.waitFor({ state: 'visible' });
     await option.click();

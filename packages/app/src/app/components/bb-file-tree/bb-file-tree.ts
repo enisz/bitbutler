@@ -146,6 +146,21 @@ export class BbFileTree {
     });
   }
 
+  private restoreNodeNames(nodes: BbFileTreeNode[]): void {
+    for (const node of nodes) {
+      if (node.kind === 'file' && node.file) {
+        const normalized = normalizePath(node.file.path);
+        const slash = normalized.lastIndexOf('/');
+        node.name = slash >= 0 ? normalized.slice(slash + 1) : normalized;
+        node.fullPath = normalized;
+      } else if (node.kind === 'dir') {
+        const slash = node.fullPath.lastIndexOf('/');
+        node.name = slash >= 0 ? node.fullPath.slice(slash + 1) : node.fullPath;
+        this.restoreNodeNames(node.children ?? []);
+      }
+    }
+  }
+
   private updateNodeFiles(nodes: BbFileTreeNode[], fileMap: Map<string, TorrentFileEntry>): number {
     let count = 0;
     for (const node of nodes) {
@@ -179,6 +194,8 @@ export class BbFileTree {
       );
       if (!confirmed) return;
     }
+    // Restore names mutated by ngModel (input events) before CDK re-renders with reused node objects
+    this.restoreNodeNames(this.data);
     const files = this.files();
     for (let i = 0; i < this.originalFiles.length && i < files.length; i++) {
       files[i].priority = this.originalFiles[i].priority;

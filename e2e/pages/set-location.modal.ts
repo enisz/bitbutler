@@ -12,9 +12,7 @@ export class SetLocationModal {
   }
 
   async setPath(newPath: string): Promise<void> {
-    // The modal uses app-save-path-select (ng-select with addTag+editableSearchTerm)
-    // Click to open, type the path, then press Enter to add it as a new tag
-    const ngSelect = this.page.locator('.modal-body ng-select').first();
+    const ngSelect = this.page.getByTestId('save-path-select-input');
     await ngSelect.click();
     const input = ngSelect.locator('input[type="text"]');
     await input.fill(newPath);

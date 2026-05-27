@@ -51,10 +51,7 @@ test.describe('Settings', () => {
     const targetFamily = initialFamily === 'bitbutler' ? 'Aurora' : 'BitButler';
     const targetFamilyValue = targetFamily === 'Aurora' ? 'aurora' : 'bitbutler';
 
-    // Open the family ng-select (third ng-select in the general tab panel)
-    const familySelect = handle.page.locator('.bb-tab-panel--active ng-select').nth(2);
-    await familySelect.click();
-    // Options are appended to ngb-modal-window and include an img with alt text; use text filter
+    await handle.page.getByTestId('theme-family-select').click();
     await handle.page.locator('.ng-option').filter({ hasText: targetFamily }).click();
 
     // Theme is applied only after save completes (async IPC to Electron)
@@ -99,7 +96,7 @@ test.describe('Settings', () => {
     const targetFamily = initialFamily === 'bitbutler' ? 'Aurora' : 'BitButler';
     const targetFamilyValue = targetFamily === 'Aurora' ? 'aurora' : 'bitbutler';
 
-    await handle.page.locator('.bb-tab-panel--active ng-select').nth(2).click();
+    await handle.page.getByTestId('theme-family-select').click();
     await handle.page.locator('.ng-option').filter({ hasText: targetFamily }).click();
     await settingsModal.saveButton.click();
     await handle.page.waitForFunction(

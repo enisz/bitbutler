@@ -180,7 +180,7 @@ test.describe('Torrent actions', () => {
 
     const countBefore = await mainPage.getTorrentRowCount();
 
-    const lastRow = handle.page.locator('.ag-row').last();
+    const lastRow = handle.page.locator('.ag-row').filter({ hasText: 'test-add-files' });
     await lastRow.click({ button: 'right' });
     const deleteTorrentModal = new DeleteTorrentModal(handle.page);
     await mainPage.ctxDelete.click();
@@ -214,8 +214,8 @@ test.describe('Torrent actions', () => {
 
     const countBefore = await mainPage.getTorrentRowCount();
 
-    // Right-click the last row (throwaway) and delete
-    const lastRow = handle.page.locator('.ag-row').last();
+    // Right-click the throwaway row (by name, not .last() which targets the shared fixture)
+    const lastRow = handle.page.locator('.ag-row').filter({ hasText: 'test-add-files' });
     await lastRow.click({ button: 'right' });
     const deleteTorrentModal = new DeleteTorrentModal(handle.page);
     await mainPage.ctxDelete.click();

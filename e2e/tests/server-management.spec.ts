@@ -87,10 +87,9 @@ test.describe('Server management', () => {
     await loginPage.waitForReady();
 
     // Open the server dropdown and click the delete button for "delete-me"
-    await handle.page.locator('ng-select#server').click();
-    const option = handle.page.locator('.ng-option').filter({ hasText: 'delete-me' });
-    await option.waitFor({ state: 'visible' });
-    await option.locator('.btn-link.text-danger').click();
+    await handle.page.getByTestId('server-select').click();
+    await handle.page.getByTestId('server-option-delete-me').waitFor({ state: 'visible' });
+    await handle.page.getByTestId('server-delete-btn-delete-me').click();
 
     await confirmModal.waitForReady();
     await confirmModal.okButton.click();
@@ -118,11 +117,10 @@ test.describe('Server management', () => {
     await handle.page.reload();
     await loginPage.waitForReady();
 
-    // Open dropdown and click the edit button (2nd button in the btn-group)
-    await handle.page.locator('ng-select#server').click();
-    const option = handle.page.locator('.ng-option').filter({ hasText: 'edit-me' });
-    await option.waitFor({ state: 'visible' });
-    await option.locator('.btn-group .btn-link').nth(1).click();
+    // Open dropdown and click the edit button for "edit-me"
+    await handle.page.getByTestId('server-select').click();
+    await handle.page.getByTestId('server-option-edit-me').waitFor({ state: 'visible' });
+    await handle.page.getByTestId('server-edit-btn-edit-me').click();
 
     await serverEditor.waitForReady();
     await serverEditor.nameInput.fill('renamed-server');

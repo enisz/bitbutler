@@ -17,15 +17,7 @@ export class SettingsModal {
   }
 
   async selectThemeFamily(familyLabel: string): Promise<void> {
-    // The family ng-select is inside the active general tab panel.
-    // It is the third ng-select in the general tab (after toastPosition and language).
-    const familySelect = this.page
-      .locator('.bb-tab-panel--active ng-select')
-      .filter({ hasText: familyLabel })
-      .first();
-    // If the dropdown is not yet open, click the container to open it.
-    const container = this.page.locator('.bb-tab-panel--active ng-select').nth(2);
-    await container.click();
+    await this.page.getByTestId('theme-family-select').click();
     await this.page.getByRole('option', { name: familyLabel, exact: true }).click();
   }
 }

@@ -19,6 +19,7 @@
       <div class="form-floating">
         <ng-select
           id="server"
+          data-testid="server-select"
           bindLabel="name"
           bindValue="id"
           formControlName="server"
@@ -31,7 +32,7 @@
           [trackByFn]="trackByFn"
         >
           <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
-            <div class="d-flex flex-column w-100">
+            <div class="d-flex flex-column w-100" [attr.data-testid]="'server-option-' + item.name">
               <div class="mb-2 d-flex flex-row align-items-center">
                 <strong class="server-name">{{ item.name }}</strong>
                 <div class="ms-auto">
@@ -59,6 +60,7 @@
                       class="btn btn-link"
                       placement="top"
                       [ngbTooltip]="'general.button.edit' | translate"
+                      [attr.data-testid]="'server-edit-btn-' + item.name"
                       (click)="editServer(item)"
                     >
                       <fa-icon [icon]="icon.faEdit" />
@@ -68,6 +70,7 @@
                       class="btn btn-link text-danger"
                       placement="top"
                       [ngbTooltip]="'general.button.delete' | translate"
+                      [attr.data-testid]="'server-delete-btn-' + item.name"
                       (click)="deleteServer(item)"
                     >
                       <fa-icon [icon]="icon.faTrashCan" />
