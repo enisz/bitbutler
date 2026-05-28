@@ -128,6 +128,8 @@ jobs:
           cache: 'npm'
       - run: npm install -g npm@11
       - run: npm ci
+        env:
+          ELECTRON_MIRROR: 'https://npmmirror.com/mirrors/electron/'
 
       - name: Install Linux Build Dependencies (RPM)
         if: matrix.os == 'ubuntu-latest'
@@ -171,6 +173,8 @@ jobs:
           cache: 'npm'
       - run: npm install -g npm@11
       - run: npm ci
+        env:
+          ELECTRON_MIRROR: 'https://npmmirror.com/mirrors/electron/'
 
       - name: Install display and system libs
         run: |
@@ -199,6 +203,8 @@ jobs:
           cache: 'npm'
       - run: npm install -g npm@11
       - run: npm ci
+        env:
+          ELECTRON_MIRROR: 'https://npmmirror.com/mirrors/electron/'
 
       - name: Install display and system libs
         run: |
