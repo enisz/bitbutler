@@ -191,6 +191,7 @@ export class General implements SettingsTabComponent {
         if (value && this.hasDefaultServer()) {
           ctrl.enable({ emitEvent: false });
         } else {
+          ctrl.setValue(false, { emitEvent: false });
           ctrl.disable({ emitEvent: false });
         }
       });
