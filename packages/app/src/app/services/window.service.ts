@@ -1,14 +1,11 @@
-import { Injectable, NgZone, inject } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import type { WindowState } from '@bitbutler/shared';
-import { BehaviorSubject, Observable } from 'rxjs';
 
 export type { WindowState };
 
 @Injectable({ providedIn: 'root' })
 export class WindowService {
-  private readonly zone = inject(NgZone);
-
-  private windowState = new BehaviorSubject<WindowState>({
+  private readonly _state = signal<WindowState>({
     height: 0,
     isFullScreen: false,
     isMaximized: false,
@@ -16,18 +13,12 @@ export class WindowService {
     width: 0,
   });
 
+  readonly state = this._state.asReadonly();
+
   constructor() {
     window.bitbutler.window.onStateChange((state: WindowState) => {
-      this.zone.run(() => this.windowState.next(state));
+      this._state.set(state);
     });
-  }
-
-  public get state(): WindowState {
-    return this.windowState.value;
-  }
-
-  public windowStateAsObservable(): Observable<WindowState> {
-    return this.windowState.asObservable();
   }
 
   public async maximize(): Promise<void> {

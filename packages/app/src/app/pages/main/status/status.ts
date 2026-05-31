@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
@@ -44,6 +44,7 @@ type StatusKey =
   imports: [CommonModule, FontAwesomeModule, FilterGroupComponent, TranslatePipe],
   templateUrl: './status.html',
   styleUrl: './status.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Status {
   private readonly store = inject(TorrentStoreService);

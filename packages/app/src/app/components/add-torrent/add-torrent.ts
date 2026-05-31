@@ -1,4 +1,13 @@
-import { Component, HostListener, OnInit, computed, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  HostListener,
+  OnInit,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import {
   AbstractControl,
   FormControl,
@@ -8,6 +17,7 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
+import { TorrentDraft } from '@bitbutler/shared';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -17,13 +27,13 @@ import { AutofocusDirective } from '../../directives/autofocus';
 import { RootFolderMode } from '../../models/add-torrent.model';
 import type { SelectedTorrentInput } from '../../models/command.model';
 import { HttpError } from '../../models/http.model';
-import { TorrentDraft } from '../../models/torrent-draft.model';
 import { AddTorrentSettingsService } from '../../services/add-torrent-settings.service';
 import { GeneralSettingsService } from '../../services/general-settings.service';
 import { OpenFilesService, PendingAddTorrent } from '../../services/open-files.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
+import { setModalInput } from '../../utils/modal-input';
 import { BbFileTree, FileTreeSaveEvent } from '../bb-file-tree/bb-file-tree';
 import { BbPopover } from '../bb-popover/bb-popover';
 import { CategorySelect } from '../category-select/category-select';
@@ -68,6 +78,7 @@ type AddTorrentFormValue = {
   ],
   templateUrl: './add-torrent.html',
   styleUrl: './add-torrent.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddTorrent implements OnInit {
   @HostListener('document:keydown.escape')
@@ -303,8 +314,22 @@ export class AddTorrent implements OnInit {
         this.openFilesService.consumeCurrentDraft();
       }
     } catch (e) {
-      console.error(AddTorrent.name, 'handleSubmit', '[AddTorrent] qb add failed', e);
-      this.addForm.setErrors({ addFailed: true });
+      let parsed: { name?: string; status?: number } = {};
+      try {
+        const msg = String((e as Error)?.message ?? e);
+        const idx = msg.indexOf('{');
+        if (idx !== -1) parsed = JSON.parse(msg.slice(idx));
+      } catch {}
+
+      if (parsed.name === 'QbHttpError' && parsed.status === 409) {
+        const hash = this.effectiveDraft()?.torrent?.infoHashV1?.toLowerCase() ?? null;
+        const modalRef = this.modalService.open(TorrentExists, { centered: true });
+        setModalInput(modalRef, 'hash', hash);
+        this.openFilesService.consumeCurrentDraft();
+      } else {
+        console.error(AddTorrent.name, 'handleSubmit', '[AddTorrent] qb add failed', e);
+        this.addForm.setErrors({ addFailed: true });
+      }
     } finally {
       this.isSubmitting.set(false);
     }
@@ -424,7 +449,7 @@ export class AddTorrent implements OnInit {
 
     if (this.isAlreadyInList(draft)) {
       const modalRef = this.modalService.open(TorrentExists, { centered: true });
-      modalRef.componentInstance.hash = draft.torrent?.infoHashV1?.toLowerCase() ?? null;
+      setModalInput(modalRef, 'hash', draft.torrent?.infoHashV1?.toLowerCase() ?? null);
       this.openFilesService.consumeCurrentDraft();
       return;
     }

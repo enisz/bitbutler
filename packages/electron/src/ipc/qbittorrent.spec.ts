@@ -140,6 +140,111 @@ describe('qb:logout IPC handler', () => {
   });
 });
 
+describe('qb:login IPC handler', () => {
+  beforeEach(() => {
+    vi.resetModules();
+    ipcHandlers.clear();
+    vi.stubGlobal('fetch', mockFetch);
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  const fakeServerRow = {
+    id: 'srv-1',
+    name: 'Test',
+    host: 'localhost',
+    protocol: 'http',
+    port: 8080,
+    username: 'admin',
+    password: Buffer.from('secret'),
+    auto_login: 0,
+    created_at: '',
+  };
+
+  async function setup() {
+    const { registerQbIpcHandlers, getCookieJar } = await import('./qbittorrent.js');
+    registerQbIpcHandlers();
+    return { handler: ipcHandlers.get('qb:login')!, getCookieJar };
+  }
+
+  it('succeeds with qBittorrent <5 response (200 + Ok. + SID cookie)', async () => {
+    mockGet.mockReturnValue(fakeServerRow);
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: () => Promise.resolve('Ok.'),
+      headers: {
+        getSetCookie: () => ['SID=abc123; HttpOnly'],
+        get: () => null,
+      },
+    });
+    const { handler, getCookieJar } = await setup();
+    await expect(handler(null, { id: 'srv-1' })).resolves.toEqual({ loggedIn: true });
+    expect(getCookieJar().get('srv-1')).toBe('SID=abc123');
+  });
+
+  it('succeeds with qBittorrent 5+ response (204 + QBT_SID_port cookie)', async () => {
+    mockGet.mockReturnValue(fakeServerRow);
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 204,
+      text: () => Promise.resolve(''),
+      headers: {
+        getSetCookie: () => ['QBT_SID_8080=tok204; HttpOnly; SameSite=Strict'],
+        get: () => null,
+      },
+    });
+    const { handler, getCookieJar } = await setup();
+    await expect(handler(null, { id: 'srv-1' })).resolves.toEqual({ loggedIn: true });
+    expect(getCookieJar().get('srv-1')).toBe('QBT_SID_8080=tok204');
+  });
+
+  it('throws on qBittorrent <5 bad credentials (200 + Fails.)', async () => {
+    mockGet.mockReturnValue(fakeServerRow);
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: () => Promise.resolve('Fails.'),
+      headers: { getSetCookie: () => [], get: () => null },
+    });
+    const { handler } = await setup();
+    await expect(handler(null, { id: 'srv-1' })).rejects.toThrow('Login failed');
+  });
+
+  it('throws on qBittorrent 5+ bad credentials (401)', async () => {
+    mockGet.mockReturnValue(fakeServerRow);
+    mockFetch.mockResolvedValue({
+      ok: false,
+      status: 401,
+      text: () => Promise.resolve('Unauthorized'),
+      headers: { getSetCookie: () => [], get: () => null },
+    });
+    const { handler } = await setup();
+    await expect(handler(null, { id: 'srv-1' })).rejects.toThrow('Login failed');
+  });
+
+  it('throws when login succeeds but no session cookie is returned', async () => {
+    mockGet.mockReturnValue(fakeServerRow);
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: () => Promise.resolve('Ok.'),
+      headers: { getSetCookie: () => [], get: () => null },
+    });
+    const { handler } = await setup();
+    await expect(handler(null, { id: 'srv-1' })).rejects.toThrow('SID cookie was not returned');
+  });
+
+  it('throws when server is not found', async () => {
+    mockGet.mockReturnValue(undefined);
+    const { handler } = await setup();
+    await expect(handler(null, { id: 'missing' })).rejects.toThrow('Server not found');
+  });
+});
+
 describe('qbRequest', () => {
   beforeEach(() => {
     vi.resetModules();

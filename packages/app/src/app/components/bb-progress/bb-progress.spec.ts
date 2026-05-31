@@ -1,3 +1,4 @@
+// packages/app/src/app/components/bb-progress/bb-progress.spec.ts
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BbProgress } from './bb-progress';
 
@@ -25,56 +26,56 @@ describe('BbProgressBar', () => {
     });
 
     it('should convert 0-1 range to percentage', () => {
-      component.progress = 0.5;
+      fixture.componentRef.setInput('progress', 0.5);
       expect(component.progressPercent()).toBe(50);
     });
 
     it('should treat values > 1 as already a percentage', () => {
-      component.progress = 75;
+      fixture.componentRef.setInput('progress', 75);
       expect(component.progressPercent()).toBe(75);
     });
 
     it('should clamp values above 100 to 100', () => {
-      component.progress = 150;
+      fixture.componentRef.setInput('progress', 150);
       expect(component.progressPercent()).toBe(100);
     });
 
     it('should clamp negative values to 0', () => {
-      component.progress = -10;
+      fixture.componentRef.setInput('progress', -10);
       expect(component.progressPercent()).toBe(0);
     });
 
     it('should handle null gracefully', () => {
-      component.progress = null;
+      fixture.componentRef.setInput('progress', null);
       expect(component.progressPercent()).toBe(0);
     });
 
     it('should handle undefined gracefully', () => {
-      component.progress = undefined;
+      fixture.componentRef.setInput('progress', undefined);
       expect(component.progressPercent()).toBe(0);
     });
 
     it('should round to 2 decimal places', () => {
-      component.progress = 0.333;
+      fixture.componentRef.setInput('progress', 0.333);
       expect(component.progressPercent()).toBe(33.3);
     });
   });
 
   describe('displayVariant', () => {
     it('should return manual variant when no torrentState is set', () => {
-      component.variant = 'success';
+      fixture.componentRef.setInput('variant', 'success');
       expect(component.displayVariant()).toBe('success');
     });
 
     it('should derive variant from torrentState when set', () => {
-      component.torrentState = 'downloading';
+      fixture.componentRef.setInput('torrentState', 'downloading');
       const variant = component.displayVariant();
       expect(variant).toBeDefined();
     });
 
     it('should use manual variant as fallback when torrentState is undefined', () => {
-      component.variant = 'danger';
-      component.torrentState = undefined;
+      fixture.componentRef.setInput('variant', 'danger');
+      fixture.componentRef.setInput('torrentState', undefined);
       expect(component.displayVariant()).toBe('danger');
     });
   });

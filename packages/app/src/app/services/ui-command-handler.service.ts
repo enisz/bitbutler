@@ -24,6 +24,7 @@ import { GuardableModal } from '../models/guardable-modal.interface';
 import { QbTorrentContent } from '../models/torrent.model';
 import { QbSettings } from '../pages/qb-settings/qb-settings';
 import { Settings } from '../pages/settings/settings';
+import { setModalInput } from '../utils/modal-input';
 import { CommandBusService } from './command-bus.service';
 import { ElectronService } from './electron.service';
 import { PathService } from './path.service';
@@ -63,7 +64,7 @@ export class UiCommandHandlerService {
             if (this.isModalOpen(DeleteTorrent)) break;
 
             const deleteModalRef = this.modalService.open(DeleteTorrent);
-            deleteModalRef.componentInstance.defaultRemoveFiles = command.defaultRemoveFiles;
+            setModalInput(deleteModalRef, 'defaultRemoveFiles', command.defaultRemoveFiles);
 
             deleteModalRef.result
               .then(({ removeFiles }) =>
@@ -72,10 +73,9 @@ export class UiCommandHandlerService {
               .catch(() => {});
             break;
 
-          case 'UI_OPEN_SETTINGS':
+          case 'UI_OPEN_SETTINGS': {
             if (this.isModalOpen(Settings)) break;
-            let settingsModalRef: NgbModalRef;
-            settingsModalRef = this.modalService.open(Settings, {
+            const settingsModalRef = this.modalService.open(Settings, {
               size: 'xl',
               centered: false,
               scrollable: true,
@@ -83,42 +83,42 @@ export class UiCommandHandlerService {
             });
 
             if (command.tabToOpen) {
-              settingsModalRef.componentInstance.tabToOpen = command.tabToOpen;
+              setModalInput(settingsModalRef, 'tabToOpen', command.tabToOpen);
             }
 
-            settingsModalRef.result.then(() => {}).catch(() => {});
+            settingsModalRef.result.catch(() => {});
             break;
+          }
 
-          case 'UI_OPEN_QB_SETTINGS':
+          case 'UI_OPEN_QB_SETTINGS': {
             if (this.isModalOpen(QbSettings)) break;
-            let qbSettingsModalRef: NgbModalRef;
-            qbSettingsModalRef = this.modalService.open(QbSettings, {
+            const qbSettingsModalRef = this.modalService.open(QbSettings, {
               size: 'xl',
               centered: false,
               scrollable: true,
               beforeDismiss: () => qbSettingsModalRef.componentInstance.canDeactivate(),
             });
-            qbSettingsModalRef.result.then(() => {}).catch(() => {});
+            qbSettingsModalRef.result.catch(() => {});
             break;
+          }
 
-          case 'UI_OPEN_TORRENT_DETAILS':
+          case 'UI_OPEN_TORRENT_DETAILS': {
             if (!command.hash) return;
             if (this.isModalOpen(TorrentDetails)) break;
 
-            let torrentDetailsModalRef: NgbModalRef;
-            torrentDetailsModalRef = this.modalService.open(TorrentDetails, {
+            const torrentDetailsModalRef = this.modalService.open(TorrentDetails, {
               size: 'xl',
               scrollable: true,
               centered: false,
               beforeDismiss: () =>
                 (torrentDetailsModalRef.componentInstance as GuardableModal).canDeactivate(),
             });
-            torrentDetailsModalRef.componentInstance.hash = command.hash;
-
-            torrentDetailsModalRef.result.then(() => {}).catch(() => {});
+            setModalInput(torrentDetailsModalRef, 'hash', command.hash);
+            torrentDetailsModalRef.result.catch(() => {});
             break;
+          }
 
-          case 'UI_ADD_TORRENT':
+          case 'UI_ADD_TORRENT': {
             if (this.isModalOpen(AddTorrent)) break;
             const addTorrentModalRef = this.modalService.open(AddTorrent, {
               size: 'lg',
@@ -131,16 +131,18 @@ export class UiCommandHandlerService {
               addTorrentModalRef.componentInstance.switchInputMode('link');
             }
 
-            addTorrentModalRef.result.then(() => {}).catch(() => {});
+            addTorrentModalRef.result.catch(() => {});
             break;
+          }
 
-          case 'UI_OPEN_ABOUT':
+          case 'UI_OPEN_ABOUT': {
             if (this.isModalOpen(About)) break;
             const aboutModalRef = this.modalService.open(About);
-            aboutModalRef.result.then(() => {}).catch(() => {});
+            aboutModalRef.result.catch(() => {});
             break;
+          }
 
-          case 'UI_RENAME_TORRENT':
+          case 'UI_RENAME_TORRENT': {
             if (!command.torrent) return;
             if (this.isModalOpen(RenameTorrent)) break;
 
@@ -149,12 +151,12 @@ export class UiCommandHandlerService {
               centered: true,
             });
 
-            renameModalRef.componentInstance.torrent = command.torrent;
-
-            renameModalRef.result.then((res: any) => {}).catch((error: any) => {});
+            setModalInput(renameModalRef, 'torrent', command.torrent);
+            renameModalRef.result.catch(() => {});
             break;
+          }
 
-          case 'UI_SET_TORRENT_LOCATION':
+          case 'UI_SET_TORRENT_LOCATION': {
             if (!command.torrent) return;
             if (this.isModalOpen(SetTorrentLocation)) break;
 
@@ -163,10 +165,10 @@ export class UiCommandHandlerService {
               centered: true,
             });
 
-            setLocationModalRef.componentInstance.torrent = command.torrent;
-
-            setLocationModalRef.result.then((res: any) => {}).catch((error: any) => {});
+            setModalInput(setLocationModalRef, 'torrent', command.torrent);
+            setLocationModalRef.result.catch(() => {});
             break;
+          }
 
           case 'UI_LIMIT_TRANSFER': {
             if (this.isModalOpen(TransferLimit)) break;
@@ -177,9 +179,9 @@ export class UiCommandHandlerService {
               centered: true,
               size: 'lg',
             });
-            limitTransferModalRef.componentInstance.target = command.target;
-            limitTransferModalRef.componentInstance.hashes = transferHashes;
-            limitTransferModalRef.result.then((res: any) => {}).catch((error: any) => {});
+            setModalInput(limitTransferModalRef, 'target', command.target);
+            setModalInput(limitTransferModalRef, 'hashes', transferHashes);
+            limitTransferModalRef.result.catch(() => {});
             break;
           }
 
@@ -190,29 +192,27 @@ export class UiCommandHandlerService {
               command.hashes ??
               (shareLimitTarget === 'torrent' ? this.selectionStoreService.selectedHashes() : []);
             const limitTorrentShare = this.modalService.open(ShareLimit, { size: 'lg' });
-            limitTorrentShare.componentInstance.target = shareLimitTarget;
-            limitTorrentShare.componentInstance.hashes = shareLimitHashes;
-            limitTorrentShare.result.then((res: any) => {}).catch((error: any) => {});
+            setModalInput(limitTorrentShare, 'target', shareLimitTarget);
+            setModalInput(limitTorrentShare, 'hashes', shareLimitHashes);
+            limitTorrentShare.result.catch(() => {});
             break;
           }
 
-          case 'UI_SET_TORRENT_TAGS':
+          case 'UI_SET_TORRENT_TAGS': {
             if (this.isModalOpen(SetTorrentTags)) break;
             const setTagsModalRef = this.modalService.open(SetTorrentTags, { size: 'lg' });
-
-            setTagsModalRef.componentInstance.torrent = command.torrent;
-
-            setTagsModalRef.result.then(() => {}).catch(() => {});
+            setModalInput(setTagsModalRef, 'torrent', command.torrent);
+            setTagsModalRef.result.catch(() => {});
             break;
+          }
 
-          case 'UI_SET_TORRENT_CATEGORY':
+          case 'UI_SET_TORRENT_CATEGORY': {
             if (this.isModalOpen(SetTorrentCategory)) break;
             const setCategoryModalRef = this.modalService.open(SetTorrentCategory, { size: 'lg' });
-
-            setCategoryModalRef.componentInstance.torrent = command.torrent;
-
-            setCategoryModalRef.result.then(() => {}).catch(() => {});
+            setModalInput(setCategoryModalRef, 'torrent', command.torrent);
+            setCategoryModalRef.result.catch(() => {});
             break;
+          }
 
           case 'UI_OPEN_DESTINATION':
             if (!command.remotePath) {
@@ -227,9 +227,8 @@ export class UiCommandHandlerService {
               ),
               this.pathService.resolveLocalPath(command.remotePath),
             ])
-              .then((response: [QbTorrentContent[], string | null]) => {
-                const singleFile = response[0].length === 1;
-                const path = response[1];
+              .then(([contents, path]: [QbTorrentContent[], string | null]) => {
+                const singleFile = contents.length === 1;
 
                 if (!path) {
                   this.toastService.danger('Could not resolve local path!');
@@ -249,70 +248,72 @@ export class UiCommandHandlerService {
               });
             break;
 
-          case 'UI_SERVER_EDITOR_OPEN':
+          case 'UI_SERVER_EDITOR_OPEN': {
             if (this.isModalOpen(ServerEditor)) break;
             const serverEditorModalRef = this.modalService.open(ServerEditor, { size: 'lg' });
-            serverEditorModalRef.componentInstance.id = command.id;
+            setModalInput(serverEditorModalRef, 'id', command.id);
             serverEditorModalRef.result
               .then((newId: string) =>
                 this.commandBusService.emit({ type: 'SERVER_ADDED', id: newId }),
               )
               .catch(() => {});
             break;
+          }
 
-          case 'UI_UPDATE_AVAILABLE':
+          case 'UI_UPDATE_AVAILABLE': {
             if (this.isModalOpen(UpdateAvailable)) break;
             const updateAvailableModalRef = this.modalService.open(UpdateAvailable, {
               size: 'lg',
               centered: true,
               scrollable: true,
             });
-
             updateAvailableModalRef.componentInstance.update.set(command.update);
-
-            updateAvailableModalRef.result.then((res: any) => {}).catch((error: any) => {});
+            updateAvailableModalRef.result.catch(() => {});
             break;
+          }
 
-          case 'UI_RENAME_FILES':
+          case 'UI_RENAME_FILES': {
             if (!command.hash) return;
             if (this.isModalOpen(TorrentDetails)) break;
 
-            let contentModalRef: NgbModalRef;
-            contentModalRef = this.modalService.open(TorrentDetails, {
+            const contentModalRef = this.modalService.open(TorrentDetails, {
               size: 'xl',
               scrollable: true,
               centered: false,
               beforeDismiss: () =>
                 (contentModalRef.componentInstance as GuardableModal).canDeactivate(),
             });
-            contentModalRef.componentInstance.hash = command.hash;
-            contentModalRef.componentInstance.tabToOpen = 'content';
-            contentModalRef.componentInstance.context = { editMode: true };
-
-            contentModalRef.result.then(() => {}).catch(() => {});
+            setModalInput(contentModalRef, 'hash', command.hash);
+            setModalInput(contentModalRef, 'tabToOpen', 'content');
+            setModalInput(contentModalRef, 'context', { editMode: true });
+            contentModalRef.result.catch(() => {});
             break;
+          }
 
-          case 'UI_MANAGE_TAGS':
+          case 'UI_MANAGE_TAGS': {
             if (this.isModalOpen(ManageTags)) break;
             const manageTagsModalRef = this.modalService.open(ManageTags, {
               beforeDismiss: () => manageTagsModalRef.componentInstance.canDeactivate(),
             });
-            manageTagsModalRef.result.then(() => {}).catch(() => {});
+            manageTagsModalRef.result.catch(() => {});
             break;
+          }
 
-          case 'UI_MANAGE_CATEGORIES':
+          case 'UI_MANAGE_CATEGORIES': {
             if (this.isModalOpen(ManageCategories)) break;
             const manageCategoriesModalRef = this.modalService.open(ManageCategories, {
               beforeDismiss: () => manageCategoriesModalRef.componentInstance.canDeactivate(),
             });
-            manageCategoriesModalRef.result.then(() => {}).catch(() => {});
+            manageCategoriesModalRef.result.catch(() => {});
             break;
+          }
 
-          case 'UI_MANAGE_SERVERS':
+          case 'UI_MANAGE_SERVERS': {
             if (this.isModalOpen(ManageServers)) break;
             const manageServersModalRef = this.modalService.open(ManageServers);
-            manageServersModalRef.result.then(() => {}).catch(() => {});
+            manageServersModalRef.result.catch(() => {});
             break;
+          }
 
           case 'UI_SERVER_SWITCH':
             this.handleServerSwitch(command.id);
@@ -335,12 +336,17 @@ export class UiCommandHandlerService {
     );
 
     const appLoaderModal = this.modalService.open(AppLoader, { size: 'sm', centered: true });
-    appLoaderModal.componentInstance.title = this.translateService.instant(
-      'services.menu-bar-command-handler.app-loader.title',
+    setModalInput(
+      appLoaderModal,
+      'title',
+      this.translateService.instant('services.menu-bar-command-handler.app-loader.title'),
     );
-    appLoaderModal.componentInstance.message = this.translateService.instant(
-      'services.menu-bar-command-handler.app-loader.message',
-      { name },
+    setModalInput(
+      appLoaderModal,
+      'message',
+      this.translateService.instant('services.menu-bar-command-handler.app-loader.message', {
+        name,
+      }),
     );
 
     try {
@@ -353,7 +359,7 @@ export class UiCommandHandlerService {
         }
       }
 
-      (this.serverStoreService as any).select(serverId);
+      this.serverStoreService.select(serverId);
     } catch (err) {
       console.error(
         UiCommandHandlerService.name,
@@ -377,11 +383,6 @@ export class UiCommandHandlerService {
   }
 
   private isModalOpen(component: any): boolean {
-    for (const modal of this.activeModals) {
-      if (modal.componentInstance instanceof component) {
-        return true;
-      }
-    }
-    return false;
+    return this.activeModals.some((modal) => modal.componentInstance instanceof component);
   }
 }

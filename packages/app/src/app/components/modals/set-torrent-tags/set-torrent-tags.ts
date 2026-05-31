@@ -1,4 +1,13 @@
-import { Component, Input, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -14,9 +23,10 @@ import { TagSelect } from '../../tag-select/tag-select';
   imports: [ReactiveFormsModule, TagSelect, NgbTooltip, TranslatePipe, TooltipOverflow],
   templateUrl: './set-torrent-tags.html',
   styleUrl: './set-torrent-tags.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SetTorrentTags implements OnInit {
-  @Input() public torrent!: Torrent;
+  readonly torrent = input.required<Torrent>();
 
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly selectionStoreService = inject(SelectionStoreService);
@@ -36,16 +46,18 @@ export class SetTorrentTags implements OnInit {
     () => this.formStatus().valid && this.formStatus().dirty && !this.saving(),
   );
 
-  public async ngOnInit(): Promise<void> {
-    this.setTorrentTagsForm.valueChanges.subscribe(() => {
+  constructor() {
+    this.setTorrentTagsForm.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
       this.formStatus.set({
         valid: this.setTorrentTagsForm.valid,
         dirty: this.setTorrentTagsForm.dirty,
       });
     });
+  }
 
+  public ngOnInit(): void {
     try {
-      const initialTags = (this.torrent.tags || '')
+      const initialTags = (this.torrent().tags || '')
         .split(',')
         .map((t) => t.trim())
         .filter((t) => t.length > 0);
@@ -63,7 +75,7 @@ export class SetTorrentTags implements OnInit {
     const serverId = this.serverStoreService.currentServerId() ?? '';
     const hashes = this.selectionStoreService.selectedHashes();
 
-    const initialTags = (this.torrent.tags || '')
+    const initialTags = (this.torrent().tags || '')
       .split(',')
       .map((t) => t.trim())
       .filter((t) => t.length > 0);

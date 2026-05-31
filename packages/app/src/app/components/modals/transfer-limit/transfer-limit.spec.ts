@@ -45,8 +45,8 @@ describe('TransferLimit', () => {
 
     fixture = TestBed.createComponent(TransferLimit);
     component = fixture.componentInstance;
-    component.target = 'torrent';
-    component.hashes = ['abc123'];
+    fixture.componentRef.setInput('target', 'torrent');
+    fixture.componentRef.setInput('hashes', ['abc123']);
     fixture.detectChanges();
   });
 
@@ -78,8 +78,8 @@ describe('TransferLimit', () => {
       );
       const f = TestBed.createComponent(TransferLimit);
       component = f.componentInstance;
-      component.target = 'torrent';
-      component.hashes = ['abc123'];
+      f.componentRef.setInput('target', 'torrent');
+      f.componentRef.setInput('hashes', ['abc123']);
       f.detectChanges();
       await f.whenStable();
     });
@@ -134,8 +134,8 @@ describe('TransferLimit', () => {
     it('returns null for global target', () => {
       const f = TestBed.createComponent(TransferLimit);
       const c = f.componentInstance;
-      c.target = 'global';
-      c.hashes = [];
+      f.componentRef.setInput('target', 'global');
+      f.componentRef.setInput('hashes', []);
       f.detectChanges();
       expect(c.tooltipText()).toBeNull();
     });

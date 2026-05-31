@@ -108,9 +108,8 @@ export class ToastService {
 
     this.container!.add(toast);
 
-    const duration = toast.duration ?? 0;
-    if (duration > 0) {
-      this.startTimer(toast.id, duration);
+    if (toast.duration > 0) {
+      this.startTimer(toast.id, toast.duration);
     }
     return toast.id;
   }

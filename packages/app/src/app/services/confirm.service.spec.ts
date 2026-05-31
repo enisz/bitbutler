@@ -9,9 +9,17 @@ describe('ConfirmService', () => {
   let mockModalService: { open: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
+    const componentInstance: Record<string, unknown> = {};
     mockModalRef = {
-      componentInstance: {},
+      componentInstance,
       result: Promise.resolve(true),
+      _contentRef: {
+        componentRef: {
+          setInput: vi.fn((name: string, value: unknown) => {
+            componentInstance[name] = value;
+          }),
+        },
+      },
     };
     mockModalService = {
       open: vi.fn().mockReturnValue(mockModalRef),

@@ -19,7 +19,13 @@ describe('QbPollingService', () => {
     };
 
     mockWindowService = {
-      windowStateAsObservable: vi.fn().mockReturnValue(new Subject()),
+      state: signal({
+        height: 0,
+        isFullScreen: false,
+        isMaximized: false,
+        isMinimized: false,
+        width: 0,
+      }),
     };
 
     mockServerSettings = {

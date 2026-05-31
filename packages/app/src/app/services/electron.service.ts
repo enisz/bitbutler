@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
+import { HostPlatform, UpdateCheckResponse } from '@bitbutler/shared';
 import pkg from '../../../package.json';
-import { HostPlatform, UpdateCheckResponse } from '../models/electron.model';
 import { ToastService } from './toast.service';
 
 @Injectable({

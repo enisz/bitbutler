@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, OnInit, computed, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  OnInit,
+  computed,
+  inject,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectComponent } from '@ng-select/ng-select';
@@ -19,6 +26,7 @@ interface ContentLayoutOption {
   imports: [CommonModule, ReactiveFormsModule, NgSelectComponent, TranslatePipe],
   templateUrl: './storage.html',
   styleUrl: './storage.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Storage implements QbSettingsTabComponent, OnInit {
   private readonly stateService = inject(QbSettingsStateService);

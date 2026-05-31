@@ -1,4 +1,4 @@
-@if (settings$ | async) {
+@if (settingsLoaded()) {
   <form [formGroup]="serverSettingsForm">
     <div class="container-fluid">
       <div class="row">

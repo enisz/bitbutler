@@ -1,4 +1,5 @@
 import { Injectable, inject } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import {
   BehaviorSubject,
   EMPTY,
@@ -32,7 +33,7 @@ export class QbPollingService {
 
   private maindataRid$ = new BehaviorSubject<number>(0);
   private peersRidByHash = new Map<string, BehaviorSubject<number>>();
-  private windowState$ = this.windowService.windowStateAsObservable();
+  private windowState$ = toObservable(this.windowService.state);
 
   private readonly _isInitialLoading$ = new BehaviorSubject<boolean>(false);
   public readonly isInitialLoading$ = this._isInitialLoading$.asObservable();

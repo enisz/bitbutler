@@ -1,10 +1,10 @@
 import {
-  ChangeDetectorRef,
+  ChangeDetectionStrategy,
   Component,
-  Input,
   OnInit,
   computed,
   inject,
+  input,
   signal,
 } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -32,31 +32,31 @@ import { ShareLimit as ShareLimitForm, ShareLimitValue } from '../../share-limit
   ],
   templateUrl: './share-limit.html',
   styleUrl: './share-limit.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShareLimit implements OnInit {
   public readonly activeModal = inject(NgbActiveModal);
   private readonly qbService = inject(QbService);
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly torrentStoreService = inject(TorrentStoreService);
-  private readonly cdr = inject(ChangeDetectorRef);
 
-  @Input() public target: LimitTargetType = 'torrent';
-  @Input() public hashes: string[] = [];
+  readonly target = input<LimitTargetType>('torrent');
+  readonly hashes = input<string[]>([]);
 
   public loading = signal(false);
   public saving = signal(false);
 
-  public readonly selected = computed(() => this.hashes.length);
+  public readonly selected = computed(() => this.hashes().length);
 
   public readonly selectionName = computed(() => {
-    if (this.hashes.length === 1) {
-      return this.torrentStoreService.torrentsMap().get(this.hashes[0])?.name ?? this.hashes[0];
+    if (this.hashes().length === 1) {
+      return this.torrentStoreService.torrentsMap().get(this.hashes()[0])?.name ?? this.hashes()[0];
     }
-    return this.hashes.length;
+    return this.hashes().length;
   });
 
   public readonly tooltipText = computed(() => {
-    if (this.target === 'global') return null;
+    if (this.target() === 'global') return null;
     return String(this.selectionName());
   });
 
@@ -65,7 +65,7 @@ export class ShareLimit implements OnInit {
   });
 
   public async ngOnInit(): Promise<void> {
-    if (this.target === 'global') {
+    if (this.target() === 'global') {
       this.loading.set(true);
       const serverId = this.serverStoreService.currentServerId() ?? '';
       const prefs = await this.qbService.getAppPreferences(serverId);
@@ -81,7 +81,6 @@ export class ShareLimit implements OnInit {
         { emitEvent: false },
       );
       this.loading.set(false);
-      this.cdr.markForCheck();
       return;
     }
 
@@ -90,8 +89,8 @@ export class ShareLimit implements OnInit {
       seedingTimeLimit: null as number | null,
       inactiveSeedingTimeLimit: null as number | null,
     };
-    if (this.hashes.length === 1) {
-      const t = this.torrentStoreService.torrentsMap().get(this.hashes[0]);
+    if (this.hashes().length === 1) {
+      const t = this.torrentStoreService.torrentsMap().get(this.hashes()[0]);
       if (t) {
         formValue.ratioLimit =
           t.ratio_limit >= 0 ? t.ratio_limit : t.ratio_limit === -2 ? -2 : null;
@@ -118,7 +117,7 @@ export class ShareLimit implements OnInit {
     const value = this.form.getRawValue().shareLimits;
 
     try {
-      if (this.target === 'global') {
+      if (this.target() === 'global') {
         await this.qbService.setAppPreferences(serverId, {
           max_ratio_enabled: value?.ratioLimit != null,
           max_ratio: value?.ratioLimit ?? 0,
@@ -130,7 +129,7 @@ export class ShareLimit implements OnInit {
       } else {
         await this.qbService.setShareLimits(
           serverId,
-          this.hashes,
+          this.hashes(),
           value?.ratioLimit ?? -1,
           value?.seedingTimeLimit ?? -1,
           value?.inactiveSeedingTimeLimit ?? -1,

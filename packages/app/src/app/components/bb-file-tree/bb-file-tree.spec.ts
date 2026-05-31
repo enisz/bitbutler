@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TorrentFileEntry } from '../../models/torrent-draft.model';
+import { TorrentFileEntry } from '@bitbutler/shared';
 import { ConfirmService } from '../../services/confirm.service';
 import { BbFileTree, BbFileTreeNode, FileTreeSaveEvent } from './bb-file-tree';
 
@@ -24,7 +24,7 @@ describe('BbFileTree', () => {
 
     fixture = TestBed.createComponent(BbFileTree);
     component = fixture.componentInstance;
-    component.files = [];
+    fixture.componentRef.setInput('files', []);
     fixture.detectChanges();
   });
 
@@ -66,28 +66,38 @@ describe('BbFileTree', () => {
     });
   });
 
-  describe('tree stats after ngOnChanges', () => {
+  describe('tree stats after files change', () => {
     it('should compute totalFiles from provided files', () => {
-      component.files = [makeFile('a.txt'), makeFile('b.txt')];
-      component.ngOnChanges();
+      fixture.componentRef.setInput('files', [makeFile('a.txt'), makeFile('b.txt')]);
+      fixture.detectChanges();
       expect(component.totalFiles()).toBe(2);
     });
 
     it('should compute totalSize from file lengths', () => {
-      component.files = [makeFile('a.txt', 1, 500), makeFile('b.txt', 1, 300)];
-      component.ngOnChanges();
+      fixture.componentRef.setInput('files', [
+        makeFile('a.txt', 1, 500),
+        makeFile('b.txt', 1, 300),
+      ]);
+      fixture.detectChanges();
       expect(component.totalSize()).toBe(800);
     });
 
     it('should count only selected files in selectedSize', () => {
-      component.files = [makeFile('a.txt', 1, 500), makeFile('b.txt', 0, 300)];
-      component.ngOnChanges();
+      fixture.componentRef.setInput('files', [
+        makeFile('a.txt', 1, 500),
+        makeFile('b.txt', 0, 300),
+      ]);
+      fixture.detectChanges();
       expect(component.selectedSize()).toBe(500);
     });
 
     it('should count only downloading files', () => {
-      component.files = [makeFile('a.txt', 1), makeFile('b.txt', 0), makeFile('c.txt', 1)];
-      component.ngOnChanges();
+      fixture.componentRef.setInput('files', [
+        makeFile('a.txt', 1),
+        makeFile('b.txt', 0),
+        makeFile('c.txt', 1),
+      ]);
+      fixture.detectChanges();
       expect(component.downloadCount()).toBe(2);
     });
   });
@@ -165,8 +175,8 @@ describe('BbFileTree', () => {
 
   describe('enterEditMode / cancelEdit / saveEdit', () => {
     beforeEach(() => {
-      component.files = [makeFile('a.txt'), makeFile('b.txt')];
-      component.ngOnChanges();
+      fixture.componentRef.setInput('files', [makeFile('a.txt'), makeFile('b.txt')]);
+      fixture.detectChanges();
     });
 
     it('should set editMode to true on enterEditMode', () => {
@@ -212,8 +222,8 @@ describe('BbFileTree', () => {
 
   describe('saveEdit renames', () => {
     beforeEach(() => {
-      component.files = [makeFile('dir/a.txt'), makeFile('dir/b.txt')];
-      component.ngOnChanges();
+      fixture.componentRef.setInput('files', [makeFile('dir/a.txt'), makeFile('dir/b.txt')]);
+      fixture.detectChanges();
     });
 
     it('should emit empty renames when no files were renamed', () => {
@@ -242,8 +252,8 @@ describe('BbFileTree', () => {
     });
 
     it('should emit correct rename after two edit sessions (multi-session bug)', () => {
-      component.files = [makeFile('a.txt')];
-      component.ngOnChanges();
+      fixture.componentRef.setInput('files', [makeFile('a.txt')]);
+      fixture.detectChanges();
 
       // Session 1: a.txt → xxx.txt
       component.enterEditMode();
@@ -292,8 +302,8 @@ describe('BbFileTree', () => {
 
   describe('sessionDirty', () => {
     beforeEach(() => {
-      component.files = [makeFile('dir/a.txt'), makeFile('dir/b.txt')];
-      component.ngOnChanges();
+      fixture.componentRef.setInput('files', [makeFile('dir/a.txt'), makeFile('dir/b.txt')]);
+      fixture.detectChanges();
       component.enterEditMode();
     });
 
@@ -348,8 +358,8 @@ describe('BbFileTree', () => {
 
   describe('cancelEdit confirm guard', () => {
     beforeEach(() => {
-      component.files = [makeFile('a.txt')];
-      component.ngOnChanges();
+      fixture.componentRef.setInput('files', [makeFile('a.txt')]);
+      fixture.detectChanges();
       component.enterEditMode();
     });
 

@@ -1,22 +1,23 @@
-@let resolvedLabel = label ?? ('components.save-path-select.label' | translate);
-@if (showPopover) {
+@let resolvedLabel = label() ?? ('components.save-path-select.label' | translate);
+@if (showPopover()) {
   <div class="container-fluid px-0">
     <div class="row">
       <div class="col-11">
         <div class="form-floating">
           <ng-select
+            data-testid="save-path-select-input"
             [items]="paths()"
             [addTag]="addTag"
             [searchable]="true"
-            [clearable]="clearable"
+            [clearable]="clearable()"
             [clearOnBackspace]="false"
             [editableSearchTerm]="true"
             [formControl]="selectControl"
             [keyDownFn]="keyDownFn"
             [markFirst]="true"
             [openOnEnter]="false"
-            [appendTo]="appendTo"
-            [placeholder]="placeholder ?? defaultPath()"
+            [appendTo]="appendTo()"
+            [placeholder]="placeholder() ?? defaultPath()"
             [fixedPlaceholder]="false"
             (search)="resetHighlight()"
             (open)="resetHighlight()"
@@ -39,18 +40,19 @@
 } @else {
   <div class="form-floating">
     <ng-select
+      data-testid="save-path-select-input"
       [items]="paths()"
       [addTag]="addTag"
       [searchable]="true"
-      [clearable]="clearable"
+      [clearable]="clearable()"
       [clearOnBackspace]="false"
       [editableSearchTerm]="true"
       [formControl]="selectControl"
       [keyDownFn]="keyDownFn"
       [markFirst]="true"
       [openOnEnter]="false"
-      [appendTo]="appendTo"
-      [placeholder]="placeholder ?? defaultPath()"
+      [appendTo]="appendTo()"
+      [placeholder]="placeholder() ?? defaultPath()"
       [fixedPlaceholder]="false"
       (search)="resetHighlight()"
       (open)="resetHighlight()"

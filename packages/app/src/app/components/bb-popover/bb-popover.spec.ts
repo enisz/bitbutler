@@ -20,29 +20,29 @@ describe('BbPopover', () => {
   });
 
   it('should default subject to empty string', () => {
-    expect(component.subject).toBe('');
+    expect(component.subject()).toBe('');
   });
 
   it('should default description to empty string', () => {
-    expect(component.description).toBe('');
+    expect(component.description()).toBe('');
   });
 
   it('should default placement to right', () => {
-    expect(component.placement).toBe('right');
+    expect(component.placement()).toBe('right');
   });
 
   it('should accept subject input', () => {
-    component.subject = 'Test subject';
-    expect(component.subject).toBe('Test subject');
+    fixture.componentRef.setInput('subject', 'Test subject');
+    expect(component.subject()).toBe('Test subject');
   });
 
   it('should accept description input', () => {
-    component.description = 'Some description';
-    expect(component.description).toBe('Some description');
+    fixture.componentRef.setInput('description', 'Some description');
+    expect(component.description()).toBe('Some description');
   });
 
   it('should accept custom placement', () => {
-    component.placement = 'top';
-    expect(component.placement).toBe('top');
+    fixture.componentRef.setInput('placement', 'top');
+    expect(component.placement()).toBe('top');
   });
 });

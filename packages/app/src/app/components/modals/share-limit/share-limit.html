@@ -11,7 +11,7 @@
       tooltipClass="single-line-tooltip"
       placement="bottom"
     >
-      @if (target === 'global') {
+      @if (target() === 'global') {
         {{ 'components.modals.share-limit.global' | translate }}
       } @else if (selected() === 1) {
         {{ selectionName() }}

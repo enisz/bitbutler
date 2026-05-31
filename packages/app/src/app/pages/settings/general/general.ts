@@ -1,5 +1,12 @@
 import { CommonModule, NgOptimizedImage } from '@angular/common';
-import { Component, DestroyRef, OnInit, computed, effect, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  effect,
+  inject,
+} from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -46,8 +53,9 @@ interface NgSelectItem {
   ],
   templateUrl: './general.html',
   styleUrl: './general.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class General implements SettingsTabComponent, OnInit {
+export class General implements SettingsTabComponent {
   private readonly themeService = inject(ThemeService);
   private readonly generalSettingsService = inject(GeneralSettingsService);
   private readonly commandBusService = inject(CommandBusService);
@@ -186,25 +194,26 @@ export class General implements SettingsTabComponent, OnInit {
           ctrl.disable({ emitEvent: false });
         }
       });
-  }
 
-  public settings$ = from(this.generalSettingsService.load()).pipe(
-    tap((settings: GeneralSettings) => {
-      this.generalSettingsForm.patchValue(settings, { emitEvent: false });
-      const startupGroup = this.generalSettingsForm.controls.startup;
-      if (settings.startup?.openAtLogin && this.hasDefaultServer()) {
-        startupGroup.controls.startMinimized.enable({ emitEvent: false });
-      }
-    }),
-  );
-
-  public async ngOnInit(): Promise<void> {
     this.stateService.registerSave('general', () => this.save());
 
     this.generalSettingsForm.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.stateService.markDirty('general', true));
   }
+
+  public readonly settingsLoaded = toSignal(
+    from(this.generalSettingsService.load()).pipe(
+      tap((settings: GeneralSettings) => {
+        this.generalSettingsForm.patchValue(settings, { emitEvent: false });
+        const startupGroup = this.generalSettingsForm.controls.startup;
+        if (settings.startup?.openAtLogin && this.hasDefaultServer()) {
+          startupGroup.controls.startMinimized.enable({ emitEvent: false });
+        }
+      }),
+    ),
+    { initialValue: null },
+  );
 
   private async save(): Promise<void> {
     const settings = this.generalSettingsForm.getRawValue();

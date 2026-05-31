@@ -68,7 +68,6 @@ describe('ShareLimit', () => {
     it('should emit change when form value changes', () => {
       const onChange = vi.fn();
       component.registerOnChange(onChange);
-      component.ngOnInit();
       component.setRatioMode('custom');
       component.form.patchValue({ ratioLimit: 1.5 });
       expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ ratioLimit: 1.5 }));
@@ -77,7 +76,6 @@ describe('ShareLimit', () => {
     it('should emit -2 for global mode', () => {
       const onChange = vi.fn();
       component.registerOnChange(onChange);
-      component.ngOnInit();
       component.setRatioMode('global');
       expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ ratioLimit: -2 }));
     });
@@ -85,7 +83,6 @@ describe('ShareLimit', () => {
     it('should emit null for no-limit mode', () => {
       const onChange = vi.fn();
       component.registerOnChange(onChange);
-      component.ngOnInit();
       component.setRatioMode('no-limit');
       expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ ratioLimit: null }));
     });
@@ -95,7 +92,6 @@ describe('ShareLimit', () => {
     it('should call onTouched when form value changes', () => {
       const onTouched = vi.fn();
       component.registerOnTouched(onTouched);
-      component.ngOnInit();
       component.form.patchValue({ seedingTimeLimit: 120 });
       expect(onTouched).toHaveBeenCalled();
     });

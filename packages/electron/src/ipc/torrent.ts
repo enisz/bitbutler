@@ -1,7 +1,7 @@
 import type { TorrentDraft } from '@bitbutler/shared';
 import { ipcMain } from 'electron';
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 import { parseTorrentBufferToDraft } from '../torrents/parse-torrent.js';
 
 export function registerTorrentIpcHandlers(): void {

@@ -109,6 +109,8 @@ jobs:
     name: '[4/6] Package Electron (${{ matrix.job_name }})'
     runs-on: ${{ matrix.os }}
     needs: [bump-version, build-app]
+    env:
+      ELECTRON_MIRROR: 'https://npmmirror.com/mirrors/electron/'
     strategy:
       fail-fast: true
       matrix:
@@ -128,6 +130,8 @@ jobs:
           cache: 'npm'
       - run: npm install -g npm@11
       - run: npm ci
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
 
       - name: Install Linux Build Dependencies (RPM)
         if: matrix.os == 'ubuntu-latest'
@@ -244,4 +248,3 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh release edit ${{ needs.bump-version.outputs.raw_version }} --draft=false
-

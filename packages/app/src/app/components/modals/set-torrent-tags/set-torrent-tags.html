@@ -1,4 +1,4 @@
-<div class="modal-header bb-modal-header">
+<div class="modal-header bb-modal-header" data-testid="set-torrent-tags-modal">
   <div class="bb-modal-header__text">
     <h5 class="modal-title bb-title-clamp">
       {{ 'components.modals.set-torrent-tags.title' | translate }}
@@ -7,7 +7,7 @@
     <div
       #element
       class="small text-body-secondary mt-1 bb-hash-clamp"
-      [ngbTooltip]="selected === 1 ? torrent.name : null"
+      [ngbTooltip]="selected === 1 ? torrent().name : null"
       bbTooltipOverflow
       placement="bottom"
       tooltipClass="single-line-tooltip"
@@ -15,7 +15,7 @@
       @if (selected > 1) {
         {{ 'general.label.torrent-selected' | translate: { count: selected } }}
       } @else {
-        {{ torrent.name }}
+        {{ torrent().name }}
       }
     </div>
   </div>
@@ -40,10 +40,21 @@
   </form>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-secondary" (click)="handleSubmit()" [disabled]="!canSave()">
+  <button
+    type="button"
+    class="btn btn-secondary"
+    data-testid="set-torrent-tags-save"
+    (click)="handleSubmit()"
+    [disabled]="!canSave()"
+  >
     {{ 'general.button.save' | translate }}
   </button>
-  <button type="button" class="btn btn-link" (click)="activeModal.close()">
+  <button
+    type="button"
+    class="btn btn-link"
+    data-testid="set-torrent-tags-cancel"
+    (click)="activeModal.close()"
+  >
     {{ 'general.button.cancel' | translate }}
   </button>
 </div>

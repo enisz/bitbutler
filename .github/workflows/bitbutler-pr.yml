@@ -141,6 +141,8 @@ jobs:
       (needs.detect-changes.outputs.app == 'true' || needs.detect-changes.outputs.electron == 'true') &&
       !contains(needs.*.result, 'failure') &&
       !contains(needs.*.result, 'cancelled')
+    env:
+      ELECTRON_MIRROR: 'https://npmmirror.com/mirrors/electron/'
     strategy:
       fail-fast: true
       matrix:
@@ -160,6 +162,8 @@ jobs:
           cache: 'npm'
       - run: npm install -g npm@11
       - run: npm ci
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
 
       - name: Install Linux Build Dependencies (RPM)
         if: matrix.os == 'ubuntu-latest'
@@ -168,8 +172,6 @@ jobs:
           sudo apt-get install -y rpm
 
       - run: npm run build:ui
-        env:
-          ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
 
       - name: Compile Electron TypeScript
         run: npm run build:electron

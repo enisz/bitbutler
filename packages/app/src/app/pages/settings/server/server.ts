@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, NgZone, OnInit, inject } from '@angular/core';
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, DestroyRef, NgZone, inject } from '@angular/core';
+import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
@@ -37,8 +37,9 @@ import { SettingsTabComponent } from '../settings.interface';
   ],
   templateUrl: './server.html',
   styleUrl: './server.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Server implements SettingsTabComponent, OnInit {
+export class Server implements SettingsTabComponent {
   private readonly electronService = inject(ElectronService);
   private readonly zone = inject(NgZone);
   private readonly serverSettingsService = inject(ServerSettingsService);
@@ -53,7 +54,7 @@ export class Server implements SettingsTabComponent, OnInit {
     faFolderOpen,
   };
 
-  public settings$ = toObservable(this.serverStoreService.currentServerId).pipe(
+  private settings$ = toObservable(this.serverStoreService.currentServerId).pipe(
     switchMap(() => from(this.serverSettingsService.reload() as Promise<ServerSettings>)),
 
     tap((settings: ServerSettings) => {
@@ -77,6 +78,8 @@ export class Server implements SettingsTabComponent, OnInit {
     }),
   );
 
+  public readonly settingsLoaded = toSignal(this.settings$, { initialValue: null });
+
   public serverSettingsForm = new FormGroup({
     polling: new FormGroup({
       foreground: new FormControl(2000, { nonNullable: true }),
@@ -90,7 +93,7 @@ export class Server implements SettingsTabComponent, OnInit {
     ]),
   });
 
-  public ngOnInit(): void {
+  constructor() {
     this.stateService.registerSave('server', () => this.save());
 
     this.serverSettingsForm.valueChanges

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, input, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -14,9 +14,10 @@ import { ToastService } from '../../../services/toast.service';
   imports: [ReactiveFormsModule, AutofocusDirective, NgbTooltip, TranslatePipe, TooltipOverflow],
   templateUrl: './rename-torrent.html',
   styleUrl: './rename-torrent.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RenameTorrent implements OnInit {
-  @Input() torrent!: Torrent;
+  readonly torrent = input.required<Torrent>();
 
   private readonly qbService = inject(QbService);
   private readonly serverStoreService = inject(ServerStoreService);
@@ -31,7 +32,7 @@ export class RenameTorrent implements OnInit {
   });
 
   public ngOnInit(): void {
-    this.renameTorrentForm.get('name')?.patchValue(this.torrent.name);
+    this.renameTorrentForm.get('name')?.patchValue(this.torrent().name);
   }
 
   public async handleSubmit(): Promise<void> {
@@ -50,8 +51,8 @@ export class RenameTorrent implements OnInit {
 
     try {
       this.processing.set(true);
-      await this.renameTorrentContent(serverId, this.torrent.hash, desiredRaw);
-      await this.qbService.renameTorrent(serverId, this.torrent.hash, desiredRaw);
+      await this.renameTorrentContent(serverId, this.torrent().hash, desiredRaw);
+      await this.qbService.renameTorrent(serverId, this.torrent().hash, desiredRaw);
     } catch (error: any) {
       console.error(RenameTorrent.name, 'handleSubmit', 'Failed to rename the torrent!');
       this.toastService.danger(
@@ -68,7 +69,7 @@ export class RenameTorrent implements OnInit {
     const v = (this.renameTorrentForm.get('name')?.value ?? '').trim();
     return (
       this.renameTorrentForm.valid &&
-      v !== (this.torrent.name ?? '').trim() &&
+      v !== (this.torrent().name ?? '').trim() &&
       this.processing() === false
     );
   }

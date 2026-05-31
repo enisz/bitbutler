@@ -1,4 +1,11 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -38,6 +45,7 @@ interface CategoryItem {
   ],
   templateUrl: './manage-categories.html',
   styleUrl: './manage-categories.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ManageCategories implements OnInit, GuardableModal {
   private readonly qbService = inject(QbService);

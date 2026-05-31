@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import type { NewServer, ServerRecord } from '../models/server.model';
+import type { NewServer, ServerRecord } from '@bitbutler/shared';
 
 @Injectable({ providedIn: 'root' })
 export class ServerService {

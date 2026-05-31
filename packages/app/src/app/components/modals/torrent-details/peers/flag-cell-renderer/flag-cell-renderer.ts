@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ICellRendererAngularComp } from 'ag-grid-angular';
 import { ICellRendererParams } from 'ag-grid-community';
 import { QbTorrentPeer } from '../../../../../models/torrent.model';
@@ -9,6 +9,7 @@ import { QbTorrentPeer } from '../../../../../models/torrent.model';
   imports: [CommonModule],
   templateUrl: './flag-cell-renderer.html',
   styleUrl: './flag-cell-renderer.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FlagCellRenderer implements ICellRendererAngularComp {
   public params!: ICellRendererParams<QbTorrentPeer, any, any>;

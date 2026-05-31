@@ -1,5 +1,5 @@
 <div class="modal-header">
-  <h4 class="modal-title">
+  <h4 class="modal-title" data-testid="modal-title">
     {{
       (editMode()
         ? 'components.modals.server-editor.title-edit'
@@ -7,7 +7,13 @@
       ) | translate
     }}
   </h4>
-  <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
+  <button
+    type="button"
+    class="btn-close"
+    data-testid="close-button"
+    aria-label="Close"
+    (click)="close()"
+  ></button>
 </div>
 <div class="modal-body">
   <form [formGroup]="editorForm" (submit)="handleSave()">
@@ -20,6 +26,7 @@
               type="text"
               class="form-control"
               id="name"
+              data-testid="name-input"
               [placeholder]="
                 'components.modals.server-editor.editor-form.connection-name' | translate
               "
@@ -55,6 +62,7 @@
               type="text"
               class="form-control"
               id="host"
+              data-testid="host-input"
               [placeholder]="'components.modals.server-editor.editor-form.host' | translate"
               formControlName="host"
             />
@@ -69,6 +77,7 @@
               type="number"
               class="form-control"
               id="port"
+              data-testid="port-input"
               [placeholder]="'components.modals.server-editor.editor-form.port' | translate"
               formControlName="port"
               min="1"
@@ -87,6 +96,7 @@
               type="text"
               class="form-control"
               id="username"
+              data-testid="username-input"
               [placeholder]="'components.modals.server-editor.editor-form.username' | translate"
               formControlName="username"
             />
@@ -101,6 +111,7 @@
               type="password"
               class="form-control"
               id="password"
+              data-testid="password-input"
               [placeholder]="'components.modals.server-editor.editor-form.password' | translate"
               formControlName="password"
             />
@@ -140,7 +151,8 @@
 <div class="modal-footer">
   <button
     type="button"
-    class="btn btn-primary"
+    class="btn btn-secondary"
+    data-testid="save-button"
     (click)="handleSave()"
     [disabled]="!canSave() || processing()"
   >

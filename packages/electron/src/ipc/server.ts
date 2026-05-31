@@ -1,6 +1,6 @@
 import type { NewServer, ServerRecord } from '@bitbutler/shared';
-import crypto from 'crypto';
 import { ipcMain, safeStorage } from 'electron';
+import crypto from 'node:crypto';
 import db from '../db.js';
 import { rebuildMenu } from '../menu.js';
 import { rebuildTrayMenu } from '../tray.js';

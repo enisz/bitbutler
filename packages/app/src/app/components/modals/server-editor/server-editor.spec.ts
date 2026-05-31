@@ -47,7 +47,7 @@ describe('ServerEditor', () => {
   });
 
   it('should set editMode to true when id input is provided', async () => {
-    component.id = 'server-1';
+    fixture.componentRef.setInput('id', 'server-1');
     await component.ngOnInit();
     expect(component.editMode()).toBe(true);
   });

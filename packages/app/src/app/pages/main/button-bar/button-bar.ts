@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   ElementRef,
@@ -36,12 +37,7 @@ import {
   faUserTie,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
-import {
-  NgbActiveModal,
-  NgbDropdownModule,
-  NgbModal,
-  NgbTooltipModule,
-} from '@ng-bootstrap/ng-bootstrap';
+import { NgbDropdownModule, NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { CommandBusService } from '../../../services/command-bus.service';
@@ -63,6 +59,7 @@ import { ToolbarEntry } from './button-bar.menu';
   ],
   templateUrl: './button-bar.html',
   styleUrl: './button-bar.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ButtonBar implements OnInit {
   private readonly selectionStore = inject(SelectionStoreService);

@@ -1,8 +1,7 @@
 import type { HostPlatform, UpdateCheckResponse } from '@bitbutler/shared';
-import Axios from 'axios';
+import axios from 'axios';
 import { app, dialog, ipcMain, shell } from 'electron';
-import Process from 'process';
-import Semver from 'semver';
+import semver from 'semver';
 
 export function registerElectronIpcHandlers(): void {
   ipcMain.handle('electron:is-dev', async () => isDev());
@@ -18,7 +17,7 @@ export function registerElectronIpcHandlers(): void {
 }
 
 function getPlatform(): HostPlatform {
-  return Process.platform as HostPlatform;
+  return process.platform as HostPlatform;
 }
 
 function isDev(): boolean {
@@ -38,19 +37,17 @@ function showItemInFolder(p: string): void {
 }
 
 async function showOpenDialog(): Promise<string | undefined> {
-  const { filePaths } = await dialog.showOpenDialog({
-    properties: ['openDirectory'],
-  });
+  const { filePaths } = await dialog.showOpenDialog({ properties: ['openDirectory'] });
   return filePaths[0];
 }
 
-function setLoginItem(settings: { openAtLogin: boolean }): void {
-  app.setLoginItemSettings({ openAtLogin: settings.openAtLogin });
+function setLoginItem({ openAtLogin }: { openAtLogin: boolean }): void {
+  app.setLoginItemSettings({ openAtLogin });
 }
 
 async function checkForUpdate(): Promise<UpdateCheckResponse> {
   try {
-    const response = await Axios.get<UpdateCheckResponse['releases']>(
+    const response = await axios.get<UpdateCheckResponse['releases']>(
       `https://api.github.com/repos/enisz/bitbutler/releases?per_page=100`,
       { headers: { 'User-Agent': 'Electron-App-Updater' } },
     );
@@ -60,7 +57,7 @@ async function checkForUpdate(): Promise<UpdateCheckResponse> {
       .filter((r) => !r.draft && !r.prerelease)
       .filter((r) => {
         const v = r.tag_name.replace(/^v/, '');
-        return Semver.valid(v) && Semver.gt(v, currentVersion);
+        return semver.valid(v) && semver.gt(v, currentVersion);
       })
       .sort(
         (a, b) =>

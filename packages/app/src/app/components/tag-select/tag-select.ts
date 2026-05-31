@@ -1,14 +1,15 @@
 import { CommonModule } from '@angular/common';
 import {
-  AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
-  Input,
-  OnInit,
   ViewChild,
+  afterNextRender,
   forwardRef,
   inject,
+  input,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   ControlValueAccessor,
   FormControl,
@@ -43,9 +44,10 @@ import { ManageTags } from '../modals/manage-tags/manage-tags';
       multi: true,
     },
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TagSelect implements OnInit, ControlValueAccessor, AfterViewInit {
-  @Input() autofocus = false;
+export class TagSelect implements ControlValueAccessor {
+  readonly autofocus = input(false);
   @ViewChild('ngselect') ngselect!: NgSelectComponent;
 
   private readonly serverStoreService = inject(ServerStoreService);
@@ -58,19 +60,19 @@ export class TagSelect implements OnInit, ControlValueAccessor, AfterViewInit {
   private onChange: (value: string[] | null) => void = () => {};
   private onTouched: () => void = () => {};
 
-  async ngOnInit(): Promise<void> {
-    await this.loadAllTags();
+  constructor() {
+    void this.loadAllTags();
 
-    this.selectControl.valueChanges.subscribe((value) => {
+    this.selectControl.valueChanges.pipe(takeUntilDestroyed()).subscribe((value) => {
       this.onChange(value);
       this.onTouched();
     });
-  }
 
-  public ngAfterViewInit(): void {
-    if (this.autofocus) {
-      this.ngselect.focus();
-    }
+    afterNextRender(() => {
+      if (this.autofocus()) {
+        this.ngselect.focus();
+      }
+    });
   }
 
   writeValue(value: string[]): void {

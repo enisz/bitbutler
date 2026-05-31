@@ -1,12 +1,13 @@
 import {
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  OnInit,
   WritableSignal,
   forwardRef,
   inject,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   ControlValueAccessor,
   FormControl,
@@ -37,8 +38,9 @@ export type TransferLimitValue = {
       multi: true,
     },
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TransferLimit implements ControlValueAccessor, OnInit {
+export class TransferLimit implements ControlValueAccessor {
   private readonly cdr = inject(ChangeDetectorRef);
 
   public form = new FormGroup({
@@ -52,8 +54,8 @@ export class TransferLimit implements ControlValueAccessor, OnInit {
   private onChange: (value: TransferLimitValue) => void = () => {};
   private onTouched: () => void = () => {};
 
-  public ngOnInit(): void {
-    this.form.valueChanges.subscribe(() => this.emitChange());
+  constructor() {
+    this.form.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => this.emitChange());
   }
 
   public setUploadMode(mode: TransferLimitMode): void {

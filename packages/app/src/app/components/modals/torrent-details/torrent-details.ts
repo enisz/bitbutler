@@ -1,5 +1,14 @@
 import { CommonModule, NgComponentOutlet } from '@angular/common';
-import { Component, Input, OnInit, Type, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  Type,
+  computed,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
@@ -32,11 +41,12 @@ import { Tab, TorrentDetailTabComponent, TorrentDetailTabId } from './torrent-de
   providers: [ModalGuardService],
   templateUrl: './torrent-details.html',
   styleUrl: './torrent-details.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TorrentDetails implements OnInit, GuardableModal {
-  @Input() hash: string | null = null;
-  @Input() public tabToOpen: TorrentDetailTabId = 'general';
-  @Input() public context: Record<string, any> = {};
+  readonly hash = input<string | null>(null);
+  readonly tabToOpen = input<TorrentDetailTabId>('general');
+  readonly context = input<Record<string, any>>({});
 
   public readonly activeModal = inject(NgbActiveModal);
   public readonly guardService = inject(ModalGuardService);
@@ -52,8 +62,8 @@ export class TorrentDetails implements OnInit, GuardableModal {
   );
 
   public torrent = computed<Torrent | null>(() => {
-    if (!this.hash) return null;
-    return this.torrentStoreService.torrentsMap().get(this.hash) as Torrent;
+    if (!this.hash()) return null;
+    return this.torrentStoreService.torrentsMap().get(this.hash()!) as Torrent;
   });
 
   public tabs: Tab[] = [
@@ -88,7 +98,7 @@ export class TorrentDetails implements OnInit, GuardableModal {
         ),
         filter(
           (command: TorrentCommand) =>
-            command.type === 'TORRENT_DELETED' && command.hash === this.hash,
+            command.type === 'TORRENT_DELETED' && command.hash === this.hash(),
         ),
         takeUntilDestroyed(),
       )
@@ -96,7 +106,7 @@ export class TorrentDetails implements OnInit, GuardableModal {
   }
 
   public async ngOnInit(): Promise<void> {
-    this.activeTabId.set(this.tabToOpen);
+    this.activeTabId.set(this.tabToOpen());
     const results = await Promise.all(
       this.tabs.map((t) => t.loadComponent().then((c) => [t.id, c] as const)),
     );

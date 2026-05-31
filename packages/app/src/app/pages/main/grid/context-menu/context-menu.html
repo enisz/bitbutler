@@ -12,6 +12,7 @@
       <button
         type="button"
         class="bb-item"
+        [attr.data-testid]="'ctx-' + entry.id"
         [class.bb-danger]="entry.variant === 'danger'"
         [class.bb-warning]="entry.variant === 'warning'"
         [class.bb-success]="entry.variant === 'success'"
@@ -37,6 +38,7 @@
       <button
         type="button"
         class="bb-item"
+        [attr.data-testid]="'ctx-' + entry.id"
         [class.bb-item--submenu-open]="activeSubmenuId() === entry.id"
         [class.bb-danger]="entry.variant === 'danger'"
         [class.bb-warning]="entry.variant === 'warning'"

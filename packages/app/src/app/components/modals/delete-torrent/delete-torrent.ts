@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -13,9 +13,10 @@ import { SelectionStoreService } from '../../../services/selection-store.service
   imports: [ReactiveFormsModule, CommonModule, AutofocusDirective, TranslatePipe, FilesizePipe],
   templateUrl: './delete-torrent.html',
   styleUrl: './delete-torrent.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DeleteTorrent implements OnInit {
-  @Input() defaultRemoveFiles = false;
+  readonly defaultRemoveFiles = input(false);
   private readonly activeModal = inject(NgbActiveModal);
 
   private readonly selectionStore = inject(SelectionStoreService);
@@ -27,7 +28,7 @@ export class DeleteTorrent implements OnInit {
 
   public ngOnInit(): void {
     this.deleteForm = new FormGroup({
-      removeFiles: new FormControl(false || this.defaultRemoveFiles),
+      removeFiles: new FormControl(this.defaultRemoveFiles()),
     });
   }
 

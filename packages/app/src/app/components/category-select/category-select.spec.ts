@@ -75,9 +75,9 @@ describe('CategorySelect', () => {
     });
   });
 
-  describe('ngOnInit', () => {
+  describe('initialization', () => {
     it('should load categories on init', async () => {
-      await component.ngOnInit();
+      await vi.waitUntil(() => component.categories().length > 0);
       expect(mockQbService.getAllCategories).toHaveBeenCalled();
       expect(component.categories()).toContain('movies');
       expect(component.categories()).toContain('tv');
@@ -86,7 +86,6 @@ describe('CategorySelect', () => {
     it('should call onChange when selectControl value changes', () => {
       const onChange = vi.fn();
       component.registerOnChange(onChange);
-      component.ngOnInit();
       component.selectControl.setValue('movies');
       expect(onChange).toHaveBeenCalledWith('movies');
     });

@@ -58,7 +58,13 @@
       "Bash(Select-String \"TranslateService\")",
       "Bash(Select-Object -First 3 -ExpandProperty Path)",
       "Bash(npm start *)",
-      "Bash(Get-ChildItem *)"
+      "Bash(Get-ChildItem *)",
+      "Bash(npx vitest *)",
+      "Bash(npx ng *)",
+      "Bash(curl *)",
+      "Bash(sed 's/^-//')",
+      "Bash(npx playwright *)",
+      "Bash(dir C:\\\\dev\\\\bitbutler\\\\e2e\\\\fixtures\\\\ *)"
     ]
   }
 }

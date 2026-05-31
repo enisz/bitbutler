@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AutofocusDirective } from '../../../directives/autofocus';
@@ -8,14 +8,15 @@ import { AutofocusDirective } from '../../../directives/autofocus';
   standalone: true,
   imports: [TranslatePipe, AutofocusDirective],
   templateUrl: './confirm.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Confirm {
   public readonly activeModal = inject(NgbActiveModal);
 
-  @Input() title = 'components.modals.confirm.title';
-  @Input() titleParams: object = {};
-  @Input() message = 'components.modals.confirm.message';
-  @Input() messageParams: object = {};
-  @Input() btnOkText = 'general.button.ok';
-  @Input() btnCancelText = 'general.button.cancel';
+  readonly title = input('components.modals.confirm.title');
+  readonly titleParams = input<object>({});
+  readonly message = input('components.modals.confirm.message');
+  readonly messageParams = input<object>({});
+  readonly btnOkText = input('general.button.ok');
+  readonly btnCancelText = input('general.button.cancel');
 }

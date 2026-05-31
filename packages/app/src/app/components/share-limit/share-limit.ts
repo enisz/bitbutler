@@ -1,12 +1,13 @@
 import {
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  OnInit,
   WritableSignal,
   forwardRef,
   inject,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   ControlValueAccessor,
   FormControl,
@@ -39,8 +40,9 @@ export type ShareLimitValue = {
       multi: true,
     },
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ShareLimit implements ControlValueAccessor, OnInit {
+export class ShareLimit implements ControlValueAccessor {
   private readonly cdr = inject(ChangeDetectorRef);
 
   public form = new FormGroup({
@@ -56,8 +58,8 @@ export class ShareLimit implements ControlValueAccessor, OnInit {
   private onChange: (value: ShareLimitValue) => void = () => {};
   private onTouched: () => void = () => {};
 
-  public ngOnInit(): void {
-    this.form.valueChanges.subscribe(() => this.emitChange());
+  constructor() {
+    this.form.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => this.emitChange());
   }
 
   public setRatioMode(mode: LimitMode): void {

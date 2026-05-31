@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectComponent } from '@ng-select/ng-select';
@@ -19,6 +19,7 @@ interface RatioActOption {
   imports: [CommonModule, ReactiveFormsModule, NgSelectComponent, TranslatePipe],
   templateUrl: './seeding-ratios.html',
   styleUrl: './seeding-ratios.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SeedingRatios implements QbSettingsTabComponent, OnInit {
   private readonly stateService = inject(QbSettingsStateService);

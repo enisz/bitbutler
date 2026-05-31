@@ -64,7 +64,6 @@ describe('TransferLimit', () => {
     it('should call onChange when form value changes', () => {
       const onChange = vi.fn();
       component.registerOnChange(onChange);
-      component.ngOnInit();
       component.setUploadMode('custom');
       component.form.patchValue({ uploadLimit: 256 });
       expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ uploadLimit: 256 }));
@@ -73,7 +72,6 @@ describe('TransferLimit', () => {
     it('should emit null for no-limit mode', () => {
       const onChange = vi.fn();
       component.registerOnChange(onChange);
-      component.ngOnInit();
       component.setUploadMode('no-limit');
       expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ uploadLimit: null }));
     });
@@ -83,7 +81,6 @@ describe('TransferLimit', () => {
     it('should call onTouched when form value changes', () => {
       const onTouched = vi.fn();
       component.registerOnTouched(onTouched);
-      component.ngOnInit();
       component.form.patchValue({ downloadLimit: 512 });
       expect(onTouched).toHaveBeenCalled();
     });

@@ -36,7 +36,7 @@ describe('SetTorrentCategory', () => {
 
     fixture = TestBed.createComponent(SetTorrentCategory);
     component = fixture.componentInstance;
-    component.torrent = { category: 'movies' } as Torrent;
+    fixture.componentRef.setInput('torrent', { category: 'movies' } as Torrent);
     fixture.detectChanges();
   });
 

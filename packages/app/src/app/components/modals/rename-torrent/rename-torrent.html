@@ -1,4 +1,4 @@
-<div class="modal-header bb-modal-header">
+<div class="modal-header bb-modal-header" data-testid="rename-torrent-modal">
   <div class="bb-modal-header__text">
     <h5 class="modal-title bb-title-clamp">
       {{ 'components.modals.rename-torrent.title' | translate }}
@@ -7,12 +7,12 @@
     <div
       #element
       class="small text-body-secondary mt-1 bb-hash-clamp"
-      [ngbTooltip]="torrent.name"
+      [ngbTooltip]="torrent().name"
       bbTooltipOverflow
       tooltipClass="single-line-tooltip"
       placement="bottom"
     >
-      {{ torrent.name }}
+      {{ torrent().name }}
     </div>
   </div>
 
@@ -36,6 +36,7 @@
               placeholder="Name"
               formControlName="name"
               autofocus
+              data-testid="rename-torrent-input"
             />
             <label for="name">{{
               'components.modals.rename-torrent.rename-torrent-form.name' | translate
@@ -48,10 +49,21 @@
   </form>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-primary" (click)="handleSubmit()" [disabled]="!canSave()">
+  <button
+    type="button"
+    class="btn btn-primary"
+    (click)="handleSubmit()"
+    [disabled]="!canSave()"
+    data-testid="rename-torrent-save"
+  >
     {{ 'general.button.save' | translate }}
   </button>
-  <button type="button" class="btn btn-link" (click)="activeModal.dismiss()">
+  <button
+    type="button"
+    class="btn btn-link"
+    (click)="activeModal.dismiss()"
+    data-testid="rename-torrent-cancel"
+  >
     {{ 'general.button.cancel' | translate }}
   </button>
 </div>

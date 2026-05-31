@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ICellRendererAngularComp } from 'ag-grid-angular';
 import { ICellRendererParams } from 'ag-grid-community';
 
@@ -7,6 +7,7 @@ import { ICellRendererParams } from 'ag-grid-community';
   imports: [],
   templateUrl: './code-cell-renderer.html',
   styleUrl: './code-cell-renderer.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CodeCellRenderer implements ICellRendererAngularComp {
   public value: string = '';

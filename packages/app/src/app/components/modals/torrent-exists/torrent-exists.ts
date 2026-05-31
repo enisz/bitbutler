@@ -1,4 +1,4 @@
-import { Component, Input, computed, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input } from '@angular/core';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { TimeagoPipe } from 'ngx-timeago';
@@ -29,17 +29,10 @@ import { BbProgress } from '../../bb-progress/bb-progress';
   ],
   styleUrls: ['./torrent-exists.scss'],
   templateUrl: './torrent-exists.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TorrentExists {
-  private readonly _hash = signal<string | null>(null);
-
-  @Input()
-  set hash(value: string | null) {
-    this._hash.set(value);
-  }
-  get hash(): string | null {
-    return this._hash();
-  }
+  readonly hash = input<string | null>(null);
 
   private readonly torrentStoreService = inject(TorrentStoreService);
   private readonly activeModal = inject(NgbActiveModal);
@@ -48,13 +41,13 @@ export class TorrentExists {
   private readonly commandBusService = inject(CommandBusService);
 
   public readonly torrent = computed(() => {
-    const h = this._hash();
+    const h = this.hash();
     return h ? this.torrentStoreService.torrentsMap().get(h) : undefined;
   });
 
   constructor() {
     effect(() => {
-      const h = this._hash();
+      const h = this.hash();
       if (!h) return;
       this.filterService.resetAll();
       this.selectionStoreService.setByHashes([h]);
@@ -62,7 +55,7 @@ export class TorrentExists {
   }
 
   public openDetails(): void {
-    const h = this._hash();
+    const h = this.hash();
     if (h) {
       this.commandBusService.emit({ type: 'UI_OPEN_TORRENT_DETAILS', hash: h });
     }

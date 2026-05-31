@@ -1,4 +1,4 @@
-<div class="modal-header bb-modal-header">
+<div class="modal-header bb-modal-header" data-testid="torrent-details-modal">
   <div class="bb-modal-header__text">
     <h5
       #titleElement
@@ -53,7 +53,7 @@
             <ng-container
               *ngComponentOutlet="
                 loadedComponents().get(tab.id)!;
-                inputs: { hash: torrent()?.hash, context }
+                inputs: { hash: torrent()?.hash, context: context() }
               "
             ></ng-container>
           </div>

@@ -11,7 +11,7 @@
     [expandAll]="false"
     [showMeta]="true"
     [allowEdit]="true"
-    [startInEditMode]="startInEditMode"
+    [startInEditMode]="startInEditMode()"
     (saved)="onSaved($event)"
     (editModeChange)="onEditModeChange($event)"
   >

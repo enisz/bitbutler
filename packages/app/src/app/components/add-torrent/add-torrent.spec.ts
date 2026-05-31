@@ -1,7 +1,7 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type { TorrentDraft } from '@bitbutler/shared';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import type { TorrentDraft } from '../../models/torrent-draft.model';
 import { AddTorrentSettingsService } from '../../services/add-torrent-settings.service';
 import { GeneralSettingsService } from '../../services/general-settings.service';
 import { OpenFilesService } from '../../services/open-files.service';

@@ -4,13 +4,13 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
-  Input,
   OnInit,
   Signal,
   WritableSignal,
   computed,
   effect,
   inject,
+  input,
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -76,14 +76,13 @@ interface MergedData {
     TranslatePipe,
     TooltipOverflow,
   ],
-  providers: [],
   templateUrl: './general.html',
   styleUrl: './general.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class General implements TorrentDetailTabComponent, OnInit {
-  @Input() public hash: string = '';
-  @Input() public context: Record<string, any> = {};
+  readonly hash = input<string>('');
+  readonly context = input<Record<string, any>>({});
 
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly qbService = inject(QbService);
@@ -110,7 +109,7 @@ export class General implements TorrentDetailTabComponent, OnInit {
   };
 
   public torrent: Signal<MergedData | null> = computed(() => {
-    const data = this.torrentStoreService.torrentsMap().get(this.hash);
+    const data = this.torrentStoreService.torrentsMap().get(this.hash());
     const properties = this.properties();
 
     return !data || !properties ? null : { data, properties };
@@ -145,7 +144,7 @@ export class General implements TorrentDetailTabComponent, OnInit {
   public ngOnInit(): void {
     this.generalSettingsService
       .asObservable()
-      .pipe(take(1), takeUntilDestroyed(this.destroyRef))
+      .pipe(take(1))
       .subscribe((settings) => {
         this.settings.set(settings);
       });
@@ -155,14 +154,14 @@ export class General implements TorrentDetailTabComponent, OnInit {
       .subscribe(() => this.load());
 
     this.qbService
-      .torrentContents(this.serverStoreService.currentServerId() as string, this.hash)
+      .torrentContents(this.serverStoreService.currentServerId() as string, this.hash())
       .then((content: QbTorrentContent[]) => this.singleFile.set(content.length === 1))
       .catch((error: any) => this.toastService.danger(error));
   }
 
   private async load(): Promise<void> {
     const serverId = this.serverStoreService.currentServerId();
-    const hash = this.hash;
+    const hash = this.hash();
 
     if (!serverId) {
       console.error(General.name, 'load', 'ServerId is missing!');
@@ -187,7 +186,7 @@ export class General implements TorrentDetailTabComponent, OnInit {
     this.commandBusService.emit({
       type: 'UI_LIMIT_TRANSFER',
       target: 'torrent',
-      hashes: [this.hash],
+      hashes: [this.hash()],
     });
   }
 
@@ -195,7 +194,7 @@ export class General implements TorrentDetailTabComponent, OnInit {
     this.commandBusService.emit({
       type: 'UI_LIMIT_TRANSFER',
       target: 'torrent',
-      hashes: [this.hash],
+      hashes: [this.hash()],
     });
   }
 
@@ -205,19 +204,23 @@ export class General implements TorrentDetailTabComponent, OnInit {
 
   public resume(): void {
     this.toastService.info('Resuming.');
-    this.qbService.resumeTorrents(this.serverStoreService.currentServerId() as string, [this.hash]);
+    this.qbService.resumeTorrents(this.serverStoreService.currentServerId() as string, [
+      this.hash(),
+    ]);
   }
 
   public pause(): void {
     this.toastService.info('Pausing.');
-    this.qbService.pauseTorrents(this.serverStoreService.currentServerId() as string, [this.hash]);
+    this.qbService.pauseTorrents(this.serverStoreService.currentServerId() as string, [
+      this.hash(),
+    ]);
   }
 
   public forceResume(): void {
     this.toastService.info('Forcing resume.');
     this.qbService.setForceStart(
       this.serverStoreService.currentServerId() as string,
-      [this.hash],
+      [this.hash()],
       true,
     );
   }
@@ -225,25 +228,29 @@ export class General implements TorrentDetailTabComponent, OnInit {
   public clearDownloadLimit(): void {
     this.toastService.info('Clearing download limit.');
     this.qbService.setDownloadLimit(this.serverStoreService.currentServerId() as string, 0, [
-      this.hash,
+      this.hash(),
     ]);
   }
   public clearUploadLimit(): void {
     this.toastService.info('Clearing upload limit.');
     this.qbService.setUploadLimit(this.serverStoreService.currentServerId() as string, 0, [
-      this.hash,
+      this.hash(),
     ]);
   }
 
   public openShareLimitsModal(): void {
-    this.commandBusService.emit({ type: 'UI_LIMIT_SHARE', target: 'torrent', hashes: [this.hash] });
+    this.commandBusService.emit({
+      type: 'UI_LIMIT_SHARE',
+      target: 'torrent',
+      hashes: [this.hash()],
+    });
   }
 
   public clearRatioLimit(): void {
     const t = this.torrent()!.data;
     this.qbService.setShareLimits(
       this.serverStoreService.currentServerId() as string,
-      [this.hash],
+      [this.hash()],
       -1,
       t.seeding_time_limit,
       t.inactive_seeding_time_limit,
@@ -254,7 +261,7 @@ export class General implements TorrentDetailTabComponent, OnInit {
     const t = this.torrent()!.data;
     this.qbService.setShareLimits(
       this.serverStoreService.currentServerId() as string,
-      [this.hash],
+      [this.hash()],
       t.ratio_limit,
       -1,
       t.inactive_seeding_time_limit,
@@ -265,7 +272,7 @@ export class General implements TorrentDetailTabComponent, OnInit {
     const t = this.torrent()!.data;
     this.qbService.setShareLimits(
       this.serverStoreService.currentServerId() as string,
-      [this.hash],
+      [this.hash()],
       t.ratio_limit,
       t.seeding_time_limit,
       -1,
@@ -275,7 +282,7 @@ export class General implements TorrentDetailTabComponent, OnInit {
   public forceReannounce(): void {
     this.toastService.info('Reannouncing.');
     this.qbService.reannounceTorrents(this.serverStoreService.currentServerId() as string, [
-      this.hash,
+      this.hash(),
     ]);
   }
 
@@ -289,7 +296,7 @@ export class General implements TorrentDetailTabComponent, OnInit {
   public removeCategory(): void {
     this.toastService.info('Removing category.');
     this.qbService.clearTorrentsCategory(this.serverStoreService.currentServerId() as string, [
-      this.hash,
+      this.hash(),
     ]);
   }
 
@@ -301,7 +308,7 @@ export class General implements TorrentDetailTabComponent, OnInit {
     this.toastService.info('Removing all tags.');
     this.qbService.removeTorrentTags(
       this.serverStoreService.currentServerId() as string,
-      [this.hash],
+      [this.hash()],
       this.torrent()!
         .data.tags.split(',')
         .map((t) => t.trim()),
@@ -317,7 +324,7 @@ export class General implements TorrentDetailTabComponent, OnInit {
 
   public openPath(): void {
     const remotePath = this.torrent()?.data.content_path;
-    const hash = this.hash;
+    const hash = this.hash();
 
     if (!remotePath) {
       this.toastService.danger('Failed to resolve local path!');

@@ -1,4 +1,4 @@
-import { Type } from '@angular/core';
+import { InputSignal, Type } from '@angular/core';
 
 export type TorrentDetailTabId = 'general' | 'trackers' | 'peers' | 'content';
 
@@ -9,6 +9,6 @@ export interface Tab {
 }
 
 export interface TorrentDetailTabComponent {
-  hash: string;
-  context: Record<string, any>;
+  hash: InputSignal<string>;
+  context: InputSignal<Record<string, any>>;
 }

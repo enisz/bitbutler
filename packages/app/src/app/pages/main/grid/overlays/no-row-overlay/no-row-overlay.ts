@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { INoRowsOverlayAngularComp } from 'ag-grid-angular';
 import { INoRowsOverlayParams } from 'ag-grid-community';
@@ -13,6 +13,7 @@ type NoRowOverlayParams = INoRowsOverlayParams<Torrent, any> & {
   imports: [TranslatePipe],
   templateUrl: './no-row-overlay.html',
   styleUrl: './no-row-overlay.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NoRowOverlay implements INoRowsOverlayAngularComp {
   public message = '';

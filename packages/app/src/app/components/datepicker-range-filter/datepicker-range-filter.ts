@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
@@ -21,6 +21,7 @@ import { CustomDatepickerI18n } from '../../services/custom-datepicker-i18n.serv
   providers: [{ provide: NgbDatepickerI18n, useClass: CustomDatepickerI18n }],
   templateUrl: './datepicker-range-filter.html',
   styleUrl: './datepicker-range-filter.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DatepickerRangeFilter implements IFilterAngularComp, OnInit {
   readonly calendarService = inject(NgbCalendar);

@@ -1,6 +1,6 @@
 <div class="d-flex flex-column">
   <div class="small text-uppercase fw-semibold opacity-75 user-select-none">
-    {{ label }} ({{ items.length }})
+    {{ label() }} ({{ (items() ?? []).length }})
   </div>
   <div class="p-2">
     <div class="bb-filter-input">
@@ -23,11 +23,11 @@
     </div>
   </div>
   <div class="list-group list-group-flush">
-    @if (showAll) {
+    @if (showAll()) {
       <button
         type="button"
         class="list-group-item list-group-item-action d-flex align-items-center gap-2"
-        [class.active]="activeKey === 'all'"
+        [class.active]="activeKey() === 'all'"
         (click)="onItemSelected('all')"
         [ngbTooltip]="'pages.main.status.filter-group.all' | translate"
         [bbTooltipOverflow]="allLabel"
@@ -36,18 +36,18 @@
         <span #allLabel class="bb-status-label flex-grow-1 text-truncate">{{
           'pages.main.status.filter-group.all' | translate
         }}</span>
-        <span class="badge bb-status-badge">{{ showAllCount }}</span>
+        <span class="badge bb-status-badge">{{ showAllCount() }}</span>
       </button>
     }
-    @for (item of filteredItems$ | async; track item.key) {
+    @for (item of filteredItems(); track item.key) {
       <button
         type="button"
         class="list-group-item list-group-item-action d-flex align-items-center gap-2"
-        [class.active]="activeKey === item.key"
+        [class.active]="activeKey() === item.key"
         (click)="onItemSelected(item.key)"
         [ngbTooltip]="item.label"
         tooltipClass="single-line-tooltip"
-        [bbTooltipOverflow]="label"
+        [bbTooltipOverflow]="itemLabel"
         placement="end"
       >
         @if (item.icon) {
@@ -64,7 +64,7 @@
             <fa-icon [icon]="item.icon" class="opacity-75"></fa-icon>
           }
         }
-        <span #label class="bb-status-label flex-grow-1 text-truncate">{{ item.label }}</span>
+        <span #itemLabel class="bb-status-label flex-grow-1 text-truncate">{{ item.label }}</span>
         <span class="badge bb-status-badge">{{ item.count }}</span>
       </button>
     }

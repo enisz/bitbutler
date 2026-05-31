@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { NewServer, ServerRecord } from '@bitbutler/shared';
 import {
   faCheck,
   faCircleNotch,
@@ -14,7 +15,6 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslatePipe } from '@ngx-translate/core';
 import { filter } from 'rxjs';
 import { AutofocusDirective } from '../../../directives/autofocus';
-import { NewServer, ServerRecord } from '../../../models/server.model';
 import { CommandBusService } from '../../../services/command-bus.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { ServerService } from '../../../services/server.service';
@@ -34,6 +34,7 @@ import { ServerProtocol } from './server-editor.interface';
   ],
   templateUrl: './server-editor.html',
   styleUrl: './server-editor.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ServerEditor implements OnInit {
   private readonly activeModal = inject(NgbActiveModal);
@@ -41,7 +42,7 @@ export class ServerEditor implements OnInit {
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly commandBusService = inject(CommandBusService);
 
-  @Input() public id: string | null = null;
+  readonly id = input<string | null>(null);
 
   public icons = {
     faThumbsUp,
@@ -113,7 +114,7 @@ export class ServerEditor implements OnInit {
     this.editorForm
       .get('name')
       ?.valueChanges.pipe(
-        filter(() => !this.id),
+        filter(() => !this.id()),
         filter(() => this.editorForm.get('host')?.touched === false),
         takeUntilDestroyed(),
       )
@@ -121,11 +122,13 @@ export class ServerEditor implements OnInit {
   }
 
   public ngOnInit(): void {
-    if (this.id) {
+    if (this.id()) {
       this.editMode.set(true);
+      this.editorForm.get('password')?.clearValidators();
+      this.editorForm.get('password')?.updateValueAndValidity();
 
       this.serverService
-        .getById(this.id)
+        .getById(this.id()!)
         .then((server: ServerRecord | null) => {
           this.editorForm.patchValue({
             name: server?.name,
@@ -144,28 +147,41 @@ export class ServerEditor implements OnInit {
   }
 
   public handleSave(): void {
-    const newServer: NewServer = {
-      name: this.name,
-      protocol: this.protocol,
-      host: this.host,
-      port: this.port,
-      username: this.username,
-      password: this.password,
-      auto_login: this.autoLogin,
-    };
+    let promise: Promise<boolean | { id: string }>;
 
-    let promise = this.id
-      ? this.serverService.update(this.id, newServer)
-      : this.serverService.add(newServer);
+    if (this.id()) {
+      const changes: Partial<NewServer> = {
+        name: this.name,
+        protocol: this.protocol,
+        host: this.host,
+        port: this.port,
+        username: this.username,
+        auto_login: this.autoLogin,
+      };
+      if (this.password) {
+        changes.password = this.password;
+      }
+      promise = this.serverService.update(this.id()!, changes);
+    } else {
+      promise = this.serverService.add({
+        name: this.name,
+        protocol: this.protocol,
+        host: this.host,
+        port: this.port,
+        username: this.username,
+        password: this.password,
+        auto_login: this.autoLogin,
+      });
+    }
 
     promise
       .then((response: boolean | { id: string }) => {
-        const id = this.id || (response as { id: string }).id;
-        const type = this.id ? 'SERVER_UPDATED' : 'SERVER_ADDED';
+        const id = this.id() || (response as { id: string }).id;
+        const type = this.id() ? 'SERVER_UPDATED' : 'SERVER_ADDED';
 
         if (typeof response === 'boolean') {
           this.commandBusService.emit({ type, id });
-          this.activeModal.close(this.id);
+          this.activeModal.close(this.id());
         } else {
           this.activeModal.close(response.id);
         }
@@ -174,7 +190,7 @@ export class ServerEditor implements OnInit {
         console.error(
           ServerEditor.name,
           'handleSave',
-          `Failed to ${this.id ? 'update' : 'add'} the server`,
+          `Failed to ${this.id() ? 'update' : 'add'} the server`,
           error,
         );
       });
