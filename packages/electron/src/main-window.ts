@@ -100,5 +100,7 @@ export function createMainWindow(startMinimized = false): BrowserWindow {
     sendWindowState();
   });
 
+  mainWindow.webContents.once('did-finish-load', sendWindowState);
+
   return mainWindow;
 }
