@@ -141,8 +141,6 @@ jobs:
       needs.detect-changes.outputs.any-source == 'true' &&
       !contains(needs.*.result, 'failure') &&
       !contains(needs.*.result, 'cancelled')
-    env:
-      ELECTRON_MIRROR: 'https://npmmirror.com/mirrors/electron/'
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -151,6 +149,15 @@ jobs:
           cache: 'npm'
       - run: npm install -g npm@11
       - run: npm ci
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+      - name: Cache Electron binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/electron
+          key: electron-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - name: Download Electron binary
+        run: node node_modules/electron/install.js
 
       - name: Install display and Chromium system libraries
         run: |
@@ -177,8 +184,6 @@ jobs:
       needs.detect-changes.outputs.any-source == 'true' &&
       !contains(needs.*.result, 'failure') &&
       !contains(needs.*.result, 'cancelled')
-    env:
-      ELECTRON_MIRROR: 'https://npmmirror.com/mirrors/electron/'
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -187,6 +192,15 @@ jobs:
           cache: 'npm'
       - run: npm install -g npm@11
       - run: npm ci
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+      - name: Cache Electron binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/electron
+          key: electron-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - name: Download Electron binary
+        run: node node_modules/electron/install.js
       - name: Install display and system libs
         run: |
           sudo apt-get update -qq

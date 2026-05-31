@@ -167,8 +167,6 @@ jobs:
     name: '[5/8] E2E Tests - No Server (Playwright / Electron)'
     runs-on: ubuntu-latest
     needs: [pre-flight]
-    env:
-      ELECTRON_MIRROR: 'https://npmmirror.com/mirrors/electron/'
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -177,6 +175,15 @@ jobs:
           cache: 'npm'
       - run: npm install -g npm@11
       - run: npm ci
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+      - name: Cache Electron binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/electron
+          key: electron-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - name: Download Electron binary
+        run: node node_modules/electron/install.js
 
       - name: Install display and system libs
         run: |
@@ -197,8 +204,6 @@ jobs:
     name: '[6/8] E2E Tests - Server (Playwright / Electron / qBittorrent)'
     runs-on: ubuntu-latest
     needs: [pre-flight, e2e-no-server]
-    env:
-      ELECTRON_MIRROR: 'https://npmmirror.com/mirrors/electron/'
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -207,6 +212,15 @@ jobs:
           cache: 'npm'
       - run: npm install -g npm@11
       - run: npm ci
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+      - name: Cache Electron binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/electron
+          key: electron-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - name: Download Electron binary
+        run: node node_modules/electron/install.js
 
       - name: Install display and system libs
         run: |
