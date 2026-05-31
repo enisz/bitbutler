@@ -183,7 +183,7 @@ jobs:
           curl -L "https://github.com/electron/electron/releases/download/v${VERSION}/electron-v${VERSION}-linux-x64.zip" -o /tmp/electron.zip
           mkdir -p node_modules/electron/dist
           unzip -o /tmp/electron.zip -d node_modules/electron/dist
-          echo "electron" > node_modules/electron/path.txt
+          printf "electron" > node_modules/electron/path.txt
           chmod +x node_modules/electron/dist/electron
 
       - name: Install display and system libs
@@ -221,7 +221,7 @@ jobs:
           curl -L "https://github.com/electron/electron/releases/download/v${VERSION}/electron-v${VERSION}-linux-x64.zip" -o /tmp/electron.zip
           mkdir -p node_modules/electron/dist
           unzip -o /tmp/electron.zip -d node_modules/electron/dist
-          echo "electron" > node_modules/electron/path.txt
+          printf "electron" > node_modules/electron/path.txt
           chmod +x node_modules/electron/dist/electron
 
       - name: Install display and system libs
