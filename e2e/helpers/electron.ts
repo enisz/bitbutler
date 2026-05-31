@@ -12,12 +12,15 @@ export interface AppHandle {
   userDataDir: string;
 }
 
+// Linux CI has no keyring daemon; basic store makes safeStorage.isEncryptionAvailable() return true.
+const EXTRA_ARGS = process.platform === 'linux' ? ['--password-store=basic'] : [];
+
 export async function launchApp(): Promise<AppHandle> {
   const userDataDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bitbutler-e2e-'));
 
   const app = await electron.launch({
     executablePath: ELECTRON_BIN,
-    args: [`--user-data-dir=${userDataDir}`, '.'],
+    args: [`--user-data-dir=${userDataDir}`, '.', ...EXTRA_ARGS],
     chromiumSandbox: false,
     env: {
       ...process.env,
@@ -36,7 +39,7 @@ export async function launchApp(): Promise<AppHandle> {
 export async function launchAppWithDataDir(userDataDir: string): Promise<AppHandle> {
   const app = await electron.launch({
     executablePath: ELECTRON_BIN,
-    args: [`--user-data-dir=${userDataDir}`, '.'],
+    args: [`--user-data-dir=${userDataDir}`, '.', ...EXTRA_ARGS],
     chromiumSandbox: false,
     env: {
       ...process.env,
