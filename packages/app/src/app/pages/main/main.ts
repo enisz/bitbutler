@@ -80,7 +80,9 @@ export class Main implements OnDestroy {
   });
 
   constructor() {
-    this.windowService.maximize();
+    if (!this.windowService.state().isMinimized) {
+      this.windowService.maximize();
+    }
     this.serverStoreService.refresh();
   }
 

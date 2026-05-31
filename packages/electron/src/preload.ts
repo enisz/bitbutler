@@ -7,6 +7,11 @@ import type {
 } from '@bitbutler/shared';
 import { contextBridge, ipcRenderer } from 'electron';
 
+let cachedWindowState: WindowState | null = null;
+ipcRenderer.on('window:state-change', (_event, state) => {
+  cachedWindowState = state as WindowState;
+});
+
 function makeIpcSubscription<T>(
   channel: string,
   mapPayload: (payload: unknown) => T,
@@ -92,8 +97,19 @@ const api: BitButlerAPI = {
         callback,
       ),
 
-    onStateChange: (callback) =>
-      makeIpcSubscription('window:state-change', (state) => state as WindowState, callback),
+    onStateChange: (callback) => {
+      const unsubscribe = makeIpcSubscription(
+        'window:state-change',
+        (state) => state as WindowState,
+        callback,
+      );
+      if (cachedWindowState) {
+        try {
+          callback(cachedWindowState);
+        } catch {}
+      }
+      return unsubscribe;
+    },
 
     drainOpenFiles: () => ipcRenderer.invoke('window:open-files:drain'),
     drainOpenTorrents: () => ipcRenderer.invoke('window:open-torrents:drain'),
