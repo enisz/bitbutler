@@ -153,13 +153,8 @@ jobs:
           ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
       - name: Download Electron binary
         run: |
-          echo "ELECTRON_SKIP_BINARY_DOWNLOAD='$ELECTRON_SKIP_BINARY_DOWNLOAD'"
-          ls -la node_modules/electron/dist/ 2>&1 || echo "(no dist/ before install)"
-          cat node_modules/electron/path.txt 2>&1 || echo "(no path.txt before install)"
-          rm -rf node_modules/electron/dist node_modules/electron/path.txt
+          rm -rf ~/.cache/electron
           node node_modules/electron/install.js
-          ls -la node_modules/electron/dist/ 2>&1 || echo "(no dist/ after install)"
-          cat node_modules/electron/path.txt 2>&1 || echo "(no path.txt after install)"
         env:
           ELECTRON_SKIP_BINARY_DOWNLOAD: ''
 
@@ -200,13 +195,8 @@ jobs:
           ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
       - name: Download Electron binary
         run: |
-          echo "ELECTRON_SKIP_BINARY_DOWNLOAD='$ELECTRON_SKIP_BINARY_DOWNLOAD'"
-          ls -la node_modules/electron/dist/ 2>&1 || echo "(no dist/ before install)"
-          cat node_modules/electron/path.txt 2>&1 || echo "(no path.txt before install)"
-          rm -rf node_modules/electron/dist node_modules/electron/path.txt
+          rm -rf ~/.cache/electron
           node node_modules/electron/install.js
-          ls -la node_modules/electron/dist/ 2>&1 || echo "(no dist/ after install)"
-          cat node_modules/electron/path.txt 2>&1 || echo "(no path.txt after install)"
         env:
           ELECTRON_SKIP_BINARY_DOWNLOAD: ''
       - name: Install display and system libs
