@@ -153,10 +153,12 @@ jobs:
           ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
       - name: Download Electron binary
         run: |
-          rm -rf ~/.cache/electron
-          node node_modules/electron/install.js
-        env:
-          ELECTRON_SKIP_BINARY_DOWNLOAD: ''
+          VERSION=$(node -p "require('./node_modules/electron/package.json').version")
+          curl -L "https://github.com/electron/electron/releases/download/v${VERSION}/electron-v${VERSION}-linux-x64.zip" -o /tmp/electron.zip
+          mkdir -p node_modules/electron/dist
+          unzip -o /tmp/electron.zip -d node_modules/electron/dist
+          echo "electron" > node_modules/electron/path.txt
+          chmod +x node_modules/electron/dist/electron
 
       - name: Install display and Chromium system libraries
         run: |
@@ -195,10 +197,12 @@ jobs:
           ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
       - name: Download Electron binary
         run: |
-          rm -rf ~/.cache/electron
-          node node_modules/electron/install.js
-        env:
-          ELECTRON_SKIP_BINARY_DOWNLOAD: ''
+          VERSION=$(node -p "require('./node_modules/electron/package.json').version")
+          curl -L "https://github.com/electron/electron/releases/download/v${VERSION}/electron-v${VERSION}-linux-x64.zip" -o /tmp/electron.zip
+          mkdir -p node_modules/electron/dist
+          unzip -o /tmp/electron.zip -d node_modules/electron/dist
+          echo "electron" > node_modules/electron/path.txt
+          chmod +x node_modules/electron/dist/electron
       - name: Install display and system libs
         run: |
           sudo apt-get update -qq
