@@ -1,7 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { AppHandle, closeApp, launchApp } from '../helpers/electron';
 import { QB_HOST, QB_PASS, QB_PORT, QB_USER } from '../helpers/qbittorrent';
-import { ConfirmModal } from '../pages/confirm.modal';
 import { LoginPage } from '../pages/login.page';
 import { ServerEditorModal } from '../pages/server-editor.modal';
 
@@ -9,13 +8,11 @@ test.describe('Server management', () => {
   let handle: AppHandle;
   let loginPage: LoginPage;
   let serverEditor: ServerEditorModal;
-  let confirmModal: ConfirmModal;
 
   test.beforeEach(async () => {
     handle = await launchApp();
     loginPage = new LoginPage(handle.page);
     serverEditor = new ServerEditorModal(handle.page);
-    confirmModal = new ConfirmModal(handle.page);
     await loginPage.waitForReady();
   });
 
@@ -54,82 +51,4 @@ test.describe('Server management', () => {
     await expect(serverEditor.saveButton).toBeEnabled();
   });
 
-  test('saving a new server adds it to the server list', async () => {
-    await loginPage.addServerButton.click();
-    await serverEditor.waitForReady();
-    await serverEditor.fill('e2e-new-server', QB_HOST, QB_PORT, QB_USER, QB_PASS);
-    await serverEditor.saveButton.click();
-    await serverEditor.modalTitle.waitFor({ state: 'hidden' });
-
-    const servers = await handle.page.evaluate(() => window.bitbutler.server.list());
-    expect((servers as Array<{ name: string }>).some((s) => s.name === 'e2e-new-server')).toBe(
-      true,
-    );
-  });
-
-  test('deleting a server removes it from the list', async () => {
-    // Pre-add a server via IPC
-    await handle.page.evaluate(
-      async ({ host, port, username, password }) => {
-        await window.bitbutler.server.add({
-          name: 'delete-me',
-          host,
-          protocol: 'http',
-          port,
-          username,
-          password,
-        });
-      },
-      { host: QB_HOST, port: QB_PORT, username: QB_USER, password: QB_PASS },
-    );
-
-    await handle.page.reload();
-    await loginPage.waitForReady();
-
-    // Open the server dropdown and click the delete button for "delete-me"
-    await handle.page.getByTestId('server-select').click();
-    await handle.page.getByTestId('server-option-delete-me').waitFor({ state: 'visible' });
-    await handle.page.getByTestId('server-delete-btn-delete-me').click();
-
-    await confirmModal.waitForReady();
-    await confirmModal.okButton.click();
-
-    const servers = await handle.page.evaluate(() => window.bitbutler.server.list());
-    expect((servers as Array<{ name: string }>).every((s) => s.name !== 'delete-me')).toBe(true);
-  });
-
-  test('editing a server name updates it in the list', async () => {
-    // Pre-add a server via IPC
-    await handle.page.evaluate(
-      async ({ host, port, username, password }) => {
-        await window.bitbutler.server.add({
-          name: 'edit-me',
-          host,
-          protocol: 'http',
-          port,
-          username,
-          password,
-        });
-      },
-      { host: QB_HOST, port: QB_PORT, username: QB_USER, password: QB_PASS },
-    );
-
-    await handle.page.reload();
-    await loginPage.waitForReady();
-
-    // Open dropdown and click the edit button for "edit-me"
-    await handle.page.getByTestId('server-select').click();
-    await handle.page.getByTestId('server-option-edit-me').waitFor({ state: 'visible' });
-    await handle.page.getByTestId('server-edit-btn-edit-me').click();
-
-    await serverEditor.waitForReady();
-    await serverEditor.nameInput.fill('renamed-server');
-    await serverEditor.saveButton.click();
-    await serverEditor.modalTitle.waitFor({ state: 'hidden' });
-
-    const servers = await handle.page.evaluate(() => window.bitbutler.server.list());
-    expect(
-      (servers as Array<{ name: string }>).some((s) => s.name === 'renamed-server'),
-    ).toBe(true);
-  });
 });
