@@ -354,6 +354,18 @@ export class BbFileTree {
     this.calculateStats();
   }
 
+  onFileNameChange(node: BbFileTreeNode): void {
+    this.sessionDirty = true;
+    const control = this.nameControls.get(node.fullPath);
+    if (control) control.setValue(node.name);
+  }
+
+  onFolderNameChange(node: BbFileTreeNode): void {
+    this.sessionDirty = true;
+    const control = this.nameControls.get(node.fullPath);
+    if (control) control.setValue(node.name);
+  }
+
   onRenameEnter(event: Event): void {
     event.preventDefault();
     this.saveEdit();
