@@ -981,13 +981,19 @@
             "startup": {
               "open-at-login": "Start app with the system",
               "start-minimized": "Start minimized"
+            },
+            "save-path": {
+              "description": "Choose how save path fields behave when adding or moving torrents.",
+              "select": "Dropdown",
+              "typeahead": "Typeahead"
             }
           },
           "label": {
             "behavior": "Behavior",
             "language": "Language",
             "appearance": "Appearance",
-            "startup": "Startup"
+            "startup": "Startup",
+            "save-path-input": "Save Path Input"
           },
           "position": {
             "top-left": "Top Left",

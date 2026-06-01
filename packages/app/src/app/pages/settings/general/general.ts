@@ -24,7 +24,12 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom, from, tap } from 'rxjs';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
-import { GeneralSettings, ToastPosition } from '../../../models/general-settings.model';
+import { SavePathSelect } from '../../../components/save-path-select/save-path-select';
+import {
+  GeneralSettings,
+  SavePathInputType,
+  ToastPosition,
+} from '../../../models/general-settings.model';
 import { CommandBusService } from '../../../services/command-bus.service';
 import { GeneralSettingsService } from '../../../services/general-settings.service';
 import { ServerStoreService } from '../../../services/server-store.service';
@@ -50,6 +55,7 @@ interface NgSelectItem {
     BbSpinner,
     BbPopover,
     TranslatePipe,
+    SavePathSelect,
   ],
   templateUrl: './general.html',
   styleUrl: './general.scss',
@@ -163,6 +169,9 @@ export class General implements SettingsTabComponent {
     startup: new FormGroup({
       openAtLogin: new FormControl({ value: false, disabled: true }, { nonNullable: true }),
       startMinimized: new FormControl({ value: false, disabled: true }, { nonNullable: true }),
+    }),
+    savePath: new FormGroup({
+      inputType: new FormControl<SavePathInputType>('select', { nonNullable: true }),
     }),
   });
 

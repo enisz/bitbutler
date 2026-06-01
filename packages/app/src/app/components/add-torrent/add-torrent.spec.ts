@@ -2,6 +2,8 @@ import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import type { TorrentDraft } from '@bitbutler/shared';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { of } from 'rxjs';
+import { DEFAULT_GENERAL_SETTINGS } from '../../models/general-settings.model';
 import { AddTorrentSettingsService } from '../../services/add-torrent-settings.service';
 import { GeneralSettingsService } from '../../services/general-settings.service';
 import { OpenFilesService } from '../../services/open-files.service';
@@ -40,7 +42,10 @@ describe('AddTorrent', () => {
         },
         {
           provide: GeneralSettingsService,
-          useValue: { load: vi.fn().mockResolvedValue({ behavior: { deleteTorrentFile: false } }) },
+          useValue: {
+            load: vi.fn().mockResolvedValue({ behavior: { deleteTorrentFile: false } }),
+            asObservable: vi.fn().mockReturnValue(of(DEFAULT_GENERAL_SETTINGS)),
+          },
         },
         {
           provide: QbService,
