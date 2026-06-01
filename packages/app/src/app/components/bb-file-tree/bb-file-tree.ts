@@ -10,10 +10,10 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TorrentFileEntry } from '@bitbutler/shared';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faCheck, faEdit, faX } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faCircleExclamation, faEdit, faX } from '@fortawesome/free-solid-svg-icons';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -35,12 +35,15 @@ export type FileTreeSaveEvent = {
   renames: { oldPath: string; newPath: string }[];
 };
 
+const INVALID_FILENAME_CHARS = /^[^<>:"/\\|?*\x00-\x1f]+$/;
+
 @Component({
   selector: 'app-bb-file-tree',
   standalone: true,
   imports: [
     CdkTreeModule,
     FormsModule,
+    ReactiveFormsModule,
     FilesizePipe,
     BbProgress,
     NgbTooltipModule,
@@ -68,6 +71,7 @@ export class BbFileTree {
   @ViewChild(CdkTree) private tree!: CdkTree<BbFileTreeNode>;
 
   public editMode = signal(false);
+  public nameControls = new Map<string, FormControl<string>>();
   private originalFiles: TorrentFileEntry[] = [];
   private autoEditTriggered = false;
   private sessionDirty = false;
@@ -100,7 +104,7 @@ export class BbFileTree {
     },
   ];
 
-  public icon = { faEdit, faCheck, faX };
+  public icon = { faEdit, faCheck, faX, faCircleExclamation };
 
   trackByPath = (_index: number, node: BbFileTreeNode): string => node.fullPath;
 
@@ -182,19 +186,65 @@ export class BbFileTree {
     this.sessionDirty = false;
     this.originalFiles = structuredClone(this.files());
     this.folderPriorityMemory.clear();
+    this.buildFormControls(this.data);
     this.editMode.set(true);
     this.editModeChange.emit(true);
   }
 
+  private buildFormControls(nodes: BbFileTreeNode[]): void {
+    this.nameControls = new Map<string, FormControl<string>>();
+    this.addControlsForNodes(nodes);
+  }
+
+  private addControlsForNodes(nodes: BbFileTreeNode[]): void {
+    for (const node of nodes) {
+      this.nameControls.set(
+        node.fullPath,
+        new FormControl(node.name, {
+          nonNullable: true,
+          validators: [Validators.required, Validators.pattern(INVALID_FILENAME_CHARS)],
+        }),
+      );
+      if (node.children) this.addControlsForNodes(node.children);
+    }
+  }
+
+  private applyControlValues(nodes: BbFileTreeNode[]): void {
+    for (const node of nodes) {
+      const control = this.nameControls.get(node.fullPath);
+      if (control) node.name = control.value;
+      if (node.children) this.applyControlValues(node.children);
+    }
+  }
+
+  private hasInvalidControls(): boolean {
+    return Array.from(this.nameControls.values()).some((c) => c.invalid);
+  }
+
+  public getControl(node: BbFileTreeNode): FormControl<string> {
+    return this.nameControls.get(node.fullPath)!;
+  }
+
+  public getControlError(control: FormControl<string>): string {
+    if (control.hasError('required')) {
+      return this.translateService.instant('components.bb-file-tree.validation.required');
+    }
+    if (control.hasError('pattern')) {
+      return this.translateService.instant('components.bb-file-tree.validation.pattern');
+    }
+    return '';
+  }
+
   public async cancelEdit(): Promise<void> {
-    if (this.sessionDirty) {
+    const isDirty =
+      this.sessionDirty || Array.from(this.nameControls.values()).some((c) => c.dirty);
+    if (isDirty) {
       const confirmed = await this.confirmService.confirm(
         'components.bb-file-tree.confirm.cancel.title',
         'components.bb-file-tree.confirm.cancel.message',
       );
       if (!confirmed) return;
     }
-    // Restore names mutated by ngModel (input events) before CDK re-renders with reused node objects
     this.restoreNodeNames(this.data);
     const files = this.files();
     for (let i = 0; i < this.originalFiles.length && i < files.length; i++) {
@@ -208,6 +258,7 @@ export class BbFileTree {
     this.calculateStats();
     if (this.expandAll()) this.expandAllNodes();
     else this.restoreExpansionState(this.data, expandedPaths);
+    this.nameControls.clear();
     this.originalFiles = [];
     this.folderPriorityMemory.clear();
     this.sessionDirty = false;
@@ -216,11 +267,18 @@ export class BbFileTree {
   }
 
   public saveEdit(): void {
+    if (this.hasInvalidControls()) {
+      this.nameControls.forEach((c) => c.markAsDirty());
+      return;
+    }
+    this.applyControlValues(this.data);
     const files = this.flatten(this.data, '');
     const renames = this.collectRenames(this.data, '');
     this.saved.emit({ files, renames });
+    this.nameControls.clear();
     this.originalFiles = [];
     this.folderPriorityMemory.clear();
+    this.sessionDirty = false;
     this.editMode.set(false);
     this.editModeChange.emit(false);
   }
@@ -296,10 +354,8 @@ export class BbFileTree {
     this.calculateStats();
   }
 
-  onRenameEnter(event: Event, node: BbFileTreeNode, type: 'file' | 'folder'): void {
+  onRenameEnter(event: Event): void {
     event.preventDefault();
-    if (type === 'file') this.onFileNameChange(node);
-    else this.onFolderNameChange(node);
     this.saveEdit();
   }
 
@@ -307,36 +363,6 @@ export class BbFileTree {
     event.stopPropagation();
     event.preventDefault();
     await this.cancelEdit();
-  }
-
-  onFileNameChange(node: BbFileTreeNode): void {
-    const { oldPath, newPath } = this.deriveRenamePayload(node);
-    if (oldPath === newPath) return;
-    node.fullPath = newPath;
-    this.sessionDirty = true;
-  }
-
-  onFolderNameChange(node: BbFileTreeNode): void {
-    const { oldPath, newPath } = this.deriveRenamePayload(node);
-    if (oldPath === newPath) return;
-    node.fullPath = newPath;
-    this.updateChildPaths(node.children ?? [], oldPath, newPath);
-    this.sessionDirty = true;
-  }
-
-  private deriveRenamePayload(node: BbFileTreeNode): { oldPath: string; newPath: string } {
-    const oldPath = node.fullPath;
-    const slashIdx = oldPath.lastIndexOf('/');
-    const parentPath = slashIdx >= 0 ? oldPath.slice(0, slashIdx) : '';
-    const newPath = parentPath ? `${parentPath}/${node.name}` : node.name;
-    return { oldPath, newPath };
-  }
-
-  private updateChildPaths(nodes: BbFileTreeNode[], oldPrefix: string, newPrefix: string): void {
-    for (const child of nodes) {
-      child.fullPath = newPrefix + child.fullPath.slice(oldPrefix.length);
-      if (child.children) this.updateChildPaths(child.children, oldPrefix, newPrefix);
-    }
   }
 
   hasChild = (_: number, node: BbFileTreeNode) => !!node.children?.length;

@@ -155,6 +155,10 @@
           "title": "Változtatások elvetése",
           "message": "Nem mentett változtatásaid vannak. Biztosan elveted őket?"
         }
+      },
+      "validation": {
+        "required": "A név nem lehet üres",
+        "pattern": "A név érvénytelen karaktereket tartalmaz (< > : \" / \\ | ? *)"
       }
     },
     "bb-popover": {},

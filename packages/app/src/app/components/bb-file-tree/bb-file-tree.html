@@ -100,14 +100,25 @@
       @if (!editMode()) {
         <span class="bb-name">{{ node.name }}</span>
       } @else {
-        <input
-          class="bb-input"
-          [(ngModel)]="node.name"
-          (click)="$event.stopPropagation()"
-          (change)="onFolderNameChange(node)"
-          (keydown.enter)="onRenameEnter($event, node, 'folder')"
-          (keydown.escape)="onEscapeInInput($event)"
-        />
+        <div class="bb-input-wrapper">
+          <input
+            class="bb-input"
+            [class.bb-input--invalid]="getControl(node).invalid && getControl(node).dirty"
+            [formControl]="getControl(node)"
+            (click)="$event.stopPropagation()"
+            (keydown.enter)="onRenameEnter($event)"
+            (keydown.escape)="onEscapeInInput($event)"
+          />
+          @if (getControl(node).invalid && getControl(node).dirty) {
+            <fa-icon
+              class="bb-input-error-icon"
+              [icon]="icon.faCircleExclamation"
+              [ngbTooltip]="getControlError(getControl(node))"
+              tooltipClass="single-line-tooltip danger"
+              placement="top"
+            />
+          }
+        </div>
 
         <div class="bb-meta">
           <ng-select
@@ -165,14 +176,26 @@
           >{{ node.name }}</span
         >
       } @else {
-        <input
-          class="bb-input"
-          data-testid="file-rename-input"
-          [attr.data-testid-file]="node.name"
-          [(ngModel)]="node.name"
-          (keydown.enter)="onRenameEnter($event, node, 'file')"
-          (keydown.escape)="onEscapeInInput($event)"
-        />
+        <div class="bb-input-wrapper">
+          <input
+            class="bb-input"
+            data-testid="file-rename-input"
+            [attr.data-testid-file]="node.name"
+            [class.bb-input--invalid]="getControl(node).invalid && getControl(node).dirty"
+            [formControl]="getControl(node)"
+            (keydown.enter)="onRenameEnter($event)"
+            (keydown.escape)="onEscapeInInput($event)"
+          />
+          @if (getControl(node).invalid && getControl(node).dirty) {
+            <fa-icon
+              class="bb-input-error-icon"
+              [icon]="icon.faCircleExclamation"
+              [ngbTooltip]="getControlError(getControl(node))"
+              tooltipClass="single-line-tooltip danger"
+              placement="top"
+            />
+          }
+        </div>
       }
 
       @if (showMeta() && node.file; as f) {

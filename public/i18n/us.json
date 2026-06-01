@@ -155,6 +155,10 @@
           "title": "Discard changes",
           "message": "You have unsaved changes. Are you sure you want to discard them?"
         }
+      },
+      "validation": {
+        "required": "Name cannot be empty",
+        "pattern": "Name contains invalid characters (< > : \" / \\ | ? *)"
       }
     },
     "bb-popover": {},
