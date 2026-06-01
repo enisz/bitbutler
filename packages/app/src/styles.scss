@@ -873,44 +873,38 @@ html ngb-typeahead-window.dropdown-menu .dropdown-item:active {
 }
 
 .tooltip {
-  &.danger {
-    --bs-tooltip-bg: var(--bs-danger);
-    --bs-tooltip-color: var(--bb-danger-ink);
-  }
+  @each $variant in danger, success, primary, secondary, warning, info, light, dark {
+    &.#{$variant} {
+      .tooltip-inner {
+        background-color: var(--bs-#{$variant}) !important;
+        color: var(--bb-#{$variant}-ink) !important;
+        border-color: var(--bs-#{$variant}) !important;
+      }
 
-  &.success {
-    --bs-tooltip-bg: var(--bs-success);
-    --bs-tooltip-color: var(--bb-success-ink);
-  }
+      &.bs-tooltip-top .tooltip-arrow::before,
+      &.bs-tooltip-auto[x-placement^='top'] .tooltip-arrow::before {
+        border-top-color: var(--bs-#{$variant}) !important;
+        filter: none;
+      }
 
-  &.primary {
-    --bs-tooltip-bg: var(--bs-primary);
-    --bs-tooltip-color: var(--bb-primary-ink);
-  }
+      &.bs-tooltip-bottom .tooltip-arrow::before,
+      &.bs-tooltip-auto[x-placement^='bottom'] .tooltip-arrow::before {
+        border-bottom-color: var(--bs-#{$variant}) !important;
+        filter: none;
+      }
 
-  &.secondary {
-    --bs-tooltip-bg: var(--bs-secondary);
-    --bs-tooltip-color: var(--bb-secondary-ink);
-  }
+      &.bs-tooltip-start .tooltip-arrow::before,
+      &.bs-tooltip-auto[x-placement^='left'] .tooltip-arrow::before {
+        border-left-color: var(--bs-#{$variant}) !important;
+        filter: none;
+      }
 
-  &.warning {
-    --bs-tooltip-bg: var(--bs-warning);
-    --bs-tooltip-color: var(--bb-warning-ink);
-  }
-
-  &.info {
-    --bs-tooltip-bg: var(--bs-info);
-    --bs-tooltip-color: var(--bb-info-ink);
-  }
-
-  &.light {
-    --bs-tooltip-bg: var(--bs-light);
-    --bs-tooltip-color: var(--bb-light-ink);
-  }
-
-  &.dark {
-    --bs-tooltip-bg: var(--bs-dark);
-    --bs-tooltip-color: var(--bb-dark-ink);
+      &.bs-tooltip-end .tooltip-arrow::before,
+      &.bs-tooltip-auto[x-placement^='right'] .tooltip-arrow::before {
+        border-right-color: var(--bs-#{$variant}) !important;
+        filter: none;
+      }
+    }
   }
 }
 
