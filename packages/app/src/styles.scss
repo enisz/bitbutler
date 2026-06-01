@@ -750,6 +750,10 @@ html ngb-typeahead-window.dropdown-menu .dropdown-item:active {
   border-color: color-mix(in srgb, var(--bb-check-color) 35%, var(--bs-border-color)) !important;
 }
 
+.form-check-input[type='radio'] {
+  background-color: var(--bb-control-bg) !important;
+}
+
 .form-check-input:checked,
 .form-check-input:indeterminate {
   background-color: var(--bb-check-color) !important;

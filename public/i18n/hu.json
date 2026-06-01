@@ -984,8 +984,8 @@
             },
             "save-path": {
               "description": "Válaszd ki, hogyan viselkedjenek a mentési útvonal mezők torrentek hozzáadásakor vagy áthelyezésekor.",
-              "select": "Legördülő",
-              "typeahead": "Szövegkiegészítős"
+              "select": "ng-select",
+              "typeahead": "ngb-typeahead"
             }
           },
           "label": {

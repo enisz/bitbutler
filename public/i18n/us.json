@@ -984,8 +984,8 @@
             },
             "save-path": {
               "description": "Choose how save path fields behave when adding or moving torrents.",
-              "select": "Dropdown",
-              "typeahead": "Typeahead"
+              "select": "ng-select",
+              "typeahead": "ngb-typeahead"
             }
           },
           "label": {
