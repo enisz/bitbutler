@@ -5,6 +5,64 @@
         <div class="col-12">{{ 'pages.settings.tab.general.description' | translate }}</div>
       </div>
 
+      <fieldset class="bb-fieldset" formGroupName="startup">
+        <legend>{{ 'pages.settings.tab.general.label.startup' | translate }}</legend>
+
+        <div class="container">
+          <div class="row mb-3">
+            <div class="col-12">
+              <div class="form-check form-switch">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  id="open-at-login"
+                  formControlName="openAtLogin"
+                />
+                <label class="form-check-label" for="open-at-login">
+                  {{
+                    'pages.settings.tab.general.general-settings-form.startup.open-at-login'
+                      | translate
+                  }}
+                  <bb-popover
+                    [subject]="'pages.settings.tab.general.popover.open-at-login.title' | translate"
+                    [description]="
+                      'pages.settings.tab.general.popover.open-at-login.description' | translate
+                    "
+                  ></bb-popover>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-12">
+              <div class="form-check form-switch">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  id="start-minimized"
+                  formControlName="startMinimized"
+                />
+                <label class="form-check-label" for="start-minimized">
+                  {{
+                    'pages.settings.tab.general.general-settings-form.startup.start-minimized'
+                      | translate
+                  }}
+                  <bb-popover
+                    [subject]="
+                      'pages.settings.tab.general.popover.start-minimized.title' | translate
+                    "
+                    [description]="
+                      'pages.settings.tab.general.popover.start-minimized.description' | translate
+                    "
+                  ></bb-popover>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
       <fieldset class="bb-fieldset" formGroupName="behavior">
         <legend>{{ 'pages.settings.tab.general.label.behavior' | translate }}</legend>
 
@@ -246,64 +304,6 @@
         </div>
       </fieldset>
 
-      <fieldset class="bb-fieldset" formGroupName="startup">
-        <legend>{{ 'pages.settings.tab.general.label.startup' | translate }}</legend>
-
-        <div class="container">
-          <div class="row mb-3">
-            <div class="col-12">
-              <div class="form-check form-switch">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  role="switch"
-                  id="open-at-login"
-                  formControlName="openAtLogin"
-                />
-                <label class="form-check-label" for="open-at-login">
-                  {{
-                    'pages.settings.tab.general.general-settings-form.startup.open-at-login'
-                      | translate
-                  }}
-                  <bb-popover
-                    [subject]="'pages.settings.tab.general.popover.open-at-login.title' | translate"
-                    [description]="
-                      'pages.settings.tab.general.popover.open-at-login.description' | translate
-                    "
-                  ></bb-popover>
-                </label>
-              </div>
-            </div>
-          </div>
-          <div class="row mb-3">
-            <div class="col-12">
-              <div class="form-check form-switch">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  role="switch"
-                  id="start-minimized"
-                  formControlName="startMinimized"
-                />
-                <label class="form-check-label" for="start-minimized">
-                  {{
-                    'pages.settings.tab.general.general-settings-form.startup.start-minimized'
-                      | translate
-                  }}
-                  <bb-popover
-                    [subject]="
-                      'pages.settings.tab.general.popover.start-minimized.title' | translate
-                    "
-                    [description]="
-                      'pages.settings.tab.general.popover.start-minimized.description' | translate
-                    "
-                  ></bb-popover>
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
-      </fieldset>
       <fieldset class="bb-fieldset" formGroupName="savePath">
         <legend>{{ 'pages.settings.tab.general.label.save-path-input' | translate }}</legend>
 
