@@ -989,7 +989,8 @@
             },
             "startup": {
               "open-at-login": "Start app with the system",
-              "start-minimized": "Start minimized"
+              "start-minimized": "Start minimized",
+              "no-default-host-hint": "No default host configured. The app will start but won't log in automatically."
             },
             "save-path": {
               "description": "Choose how save path fields behave when adding or moving torrents.",
@@ -1025,7 +1026,7 @@
             },
             "open-at-login": {
               "title": "Start with System",
-              "description": "Automatically launch BitButler when the operating system starts. Requires a default server to be configured."
+              "description": "Automatically launch BitButler when the operating system starts."
             },
             "start-minimized": {
               "title": "Start Minimized",

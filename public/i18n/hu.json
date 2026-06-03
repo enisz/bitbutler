@@ -989,7 +989,8 @@
             },
             "startup": {
               "open-at-login": "Alkalmazás indítása a rendszerrel",
-              "start-minimized": "Indítás minimalizálva"
+              "start-minimized": "Indítás minimalizálva",
+              "no-default-host-hint": "Nincs alapértelmezett kiszolgáló beállítva. Az alkalmazás elindul, de nem fog automatikusan bejelentkezni."
             },
             "save-path": {
               "description": "Válaszd ki, hogyan viselkedjenek a mentési útvonal mezők torrentek hozzáadásakor vagy áthelyezésekor.",
@@ -1025,7 +1026,7 @@
             },
             "open-at-login": {
               "title": "Indítás a rendszerrel",
-              "description": "A BitButler automatikusan elindul az operációs rendszer indításakor. Ehhez egy alapértelmezett szerver szükséges."
+              "description": "A BitButler automatikusan elindul az operációs rendszer indításakor."
             },
             "start-minimized": {
               "title": "Indítás minimalizálva",
