@@ -4,8 +4,8 @@ import {
   Component,
   DestroyRef,
   computed,
-  effect,
   inject,
+  signal,
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -74,6 +74,11 @@ export class General implements SettingsTabComponent {
 
   public readonly hasDefaultServer = computed(() =>
     this.serverStoreService.servers().some((s) => s.auto_login),
+  );
+
+  private readonly openAtLoginValue = signal(false);
+  public readonly showNoDefaultHostHint = computed(
+    () => this.openAtLoginValue() && !this.hasDefaultServer(),
   );
 
   public languages = computed<NgSelectItem[]>(() => {
@@ -167,7 +172,7 @@ export class General implements SettingsTabComponent {
       mode: new FormControl<ThemeMode>('system', { nonNullable: true }),
     }),
     startup: new FormGroup({
-      openAtLogin: new FormControl({ value: false, disabled: true }, { nonNullable: true }),
+      openAtLogin: new FormControl(false, { nonNullable: true }),
       startMinimized: new FormControl({ value: false, disabled: true }, { nonNullable: true }),
     }),
     savePath: new FormGroup({
@@ -178,26 +183,12 @@ export class General implements SettingsTabComponent {
   constructor() {
     const startupGroup = this.generalSettingsForm.controls.startup;
 
-    effect(() => {
-      const openAtLoginCtrl = startupGroup.controls.openAtLogin;
-      const startMinimizedCtrl = startupGroup.controls.startMinimized;
-
-      if (this.hasDefaultServer()) {
-        openAtLoginCtrl.enable({ emitEvent: false });
-        if (openAtLoginCtrl.value) {
-          startMinimizedCtrl.enable({ emitEvent: false });
-        }
-      } else {
-        openAtLoginCtrl.disable({ emitEvent: false });
-        startMinimizedCtrl.disable({ emitEvent: false });
-      }
-    });
-
     startupGroup.controls.openAtLogin.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((value) => {
+        this.openAtLoginValue.set(value);
         const ctrl = startupGroup.controls.startMinimized;
-        if (value && this.hasDefaultServer()) {
+        if (value) {
           ctrl.enable({ emitEvent: false });
         } else {
           ctrl.setValue(false, { emitEvent: false });
@@ -216,8 +207,10 @@ export class General implements SettingsTabComponent {
     from(this.generalSettingsService.load()).pipe(
       tap((settings: GeneralSettings) => {
         this.generalSettingsForm.patchValue(settings, { emitEvent: false });
+        const openAtLogin = settings.startup?.openAtLogin ?? false;
+        this.openAtLoginValue.set(openAtLogin);
         const startupGroup = this.generalSettingsForm.controls.startup;
-        if (settings.startup?.openAtLogin && this.hasDefaultServer()) {
+        if (openAtLogin) {
           startupGroup.controls.startMinimized.enable({ emitEvent: false });
         }
       }),
@@ -228,7 +221,6 @@ export class General implements SettingsTabComponent {
   private async save(): Promise<void> {
     const settings = this.generalSettingsForm.getRawValue();
 
-    if (!this.hasDefaultServer()) settings.startup.openAtLogin = false;
     if (!settings.startup.openAtLogin) settings.startup.startMinimized = false;
 
     const newLang = settings.language.language;
