@@ -53,8 +53,8 @@ export class ServerEditor implements OnInit {
   };
 
   public protocols = [
-    { value: 'http', label: 'http:' },
-    { value: 'https', label: 'https:' },
+    { value: 'http', label: 'http' },
+    { value: 'https', label: 'https' },
   ];
 
   public canTest = signal(false);
@@ -154,11 +154,9 @@ export class ServerEditor implements OnInit {
         host: this.host,
         port: this.port,
         username: this.username,
+        password: this.password,
         auto_login: this.autoLogin,
       };
-      if (this.password) {
-        changes.password = this.password;
-      }
       promise = this.serverService.update(this.id()!, changes);
     } else {
       promise = this.serverService.add({

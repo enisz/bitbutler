@@ -91,6 +91,18 @@ const stmtUpdate = db.prepare(`
   WHERE id = @id
 `);
 
+const stmtUpdateWithPassword = db.prepare(`
+  UPDATE servers SET
+    name = COALESCE(@name, name),
+    host = COALESCE(@host, host),
+    protocol = COALESCE(@protocol, protocol),
+    port = COALESCE(@port, port),
+    username = COALESCE(@username, username),
+    password = @password,
+    auto_login = COALESCE(@auto_login, auto_login)
+  WHERE id = @id
+`);
+
 const stmtDelete = db.prepare<[string]>(`DELETE FROM servers WHERE id = ?`);
 const stmtUnsetAutoLogin = db.prepare(`UPDATE servers SET auto_login = 0 WHERE auto_login = 1`);
 const stmtSetAutoLogin = db.prepare<[string]>(`UPDATE servers SET auto_login = 1 WHERE id = ?`);
@@ -171,7 +183,9 @@ function serverUpdate(payload: unknown): { updated: boolean } {
     throw new Error('No changes provided.');
   }
 
-  const normalized = normalizeUpdate(changes as Record<string, unknown>);
+  const changesObj = changes as Record<string, unknown>;
+  const hasExplicitPassword = 'password' in changesObj;
+  const normalized = normalizeUpdate(changesObj);
 
   const row = {
     id,
@@ -186,7 +200,8 @@ function serverUpdate(payload: unknown): { updated: boolean } {
 
   const tx = db.transaction(() => {
     if (row.auto_login === 1) stmtUnsetAutoLogin.run();
-    const info = stmtUpdate.run(row);
+    const stmt = hasExplicitPassword ? stmtUpdateWithPassword : stmtUpdate;
+    const info = stmt.run(row);
     return info.changes > 0;
   });
 
