@@ -19,7 +19,7 @@ interface ServerRow {
   protocol: string;
   port: number;
   username: string;
-  password: Buffer;
+  password: Buffer | null;
   auto_login: number;
   created_at: string;
 }
@@ -116,15 +116,19 @@ function qbLogout(_payload: unknown): { loggedOut: boolean } {
 }
 
 async function qbLogin(payload: unknown): Promise<{ loggedIn: boolean }> {
-  const id = requireString((payload as Record<string, unknown>)?.id, 'id');
+  const p = payload as Record<string, unknown>;
+  const id = requireString(p?.id, 'id');
+  const runtimeUsername = typeof p?.username === 'string' ? p.username : undefined;
+  const runtimePassword = typeof p?.password === 'string' ? p.password : undefined;
 
   const server = stmtGetByIdFull.get(id);
   if (!server) throw new Error('Server not found.');
 
-  const password = decryptPassword(server.password);
+  const username = runtimeUsername ?? server.username;
+  const password = runtimePassword ?? decryptPassword(server.password);
   const url = buildBaseUrl(server) + '/api/v2/auth/login';
 
-  const body = new URLSearchParams({ username: server.username, password });
+  const body = new URLSearchParams({ username, password });
 
   const res = await fetch(url, {
     method: 'POST',
@@ -262,8 +266,9 @@ function buildBaseUrl(server: ServerRow): string {
   return `${server.protocol}://${server.host}:${server.port}`;
 }
 
-function decryptPassword(passwordBlob: Buffer | Uint8Array): string {
-  const buf = Buffer.isBuffer(passwordBlob) ? passwordBlob : Buffer.from(passwordBlob ?? '');
+function decryptPassword(passwordBlob: Buffer | Uint8Array | null): string {
+  if (!passwordBlob) return '';
+  const buf = Buffer.isBuffer(passwordBlob) ? passwordBlob : Buffer.from(passwordBlob);
   return safeStorage.decryptString(buf);
 }
 
