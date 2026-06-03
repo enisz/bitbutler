@@ -18,7 +18,7 @@ export interface NewServer {
   host: string;
   protocol: ServerProtocol;
   port: number;
-  username: string;
-  password: string;
+  username?: string;
+  password?: string;
   auto_login?: boolean;
 }

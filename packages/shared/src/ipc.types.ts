@@ -4,6 +4,7 @@ import type { TorrentDraft, TorrentDraftSource } from './models/torrent-draft.mo
 import type { WindowState } from './models/window.model.js';
 
 export type BitButlerServerIdPayload = { id: string };
+export type BitButlerQbLoginPayload = { id: string; username?: string; password?: string };
 
 export type BitButlerHttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -74,7 +75,7 @@ export interface BitButlerAPI {
   };
 
   qb: {
-    login(payload: BitButlerServerIdPayload): Promise<{ loggedIn: boolean }>;
+    login(payload: BitButlerQbLoginPayload): Promise<{ loggedIn: boolean }>;
     logout(payload: BitButlerServerIdPayload): Promise<{ loggedOut: boolean }>;
     hasCookie(payload: BitButlerServerIdPayload): Promise<{ hasCookie: boolean }>;
     request<TResponse = unknown, TBody = unknown>(
