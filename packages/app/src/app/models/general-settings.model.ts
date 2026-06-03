@@ -1,6 +1,7 @@
 import { ThemeFamily, ThemeMode } from '../services/theme.service';
 
 export type ToastPosition = 'top-left' | 'top-right' | 'bottom-right' | 'bottom-left';
+export type SavePathInputType = 'select' | 'typeahead';
 
 export interface GeneralSettings {
   behavior: {
@@ -18,6 +19,9 @@ export interface GeneralSettings {
   startup: {
     openAtLogin: boolean;
     startMinimized: boolean;
+  };
+  savePath: {
+    inputType: SavePathInputType;
   };
 }
 
@@ -37,5 +41,8 @@ export const DEFAULT_GENERAL_SETTINGS: GeneralSettings = {
   startup: {
     openAtLogin: false,
     startMinimized: false,
+  },
+  savePath: {
+    inputType: 'select',
   },
 };

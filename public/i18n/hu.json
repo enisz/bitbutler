@@ -985,13 +985,19 @@
             "startup": {
               "open-at-login": "Alkalmazás indítása a rendszerrel",
               "start-minimized": "Indítás minimalizálva"
+            },
+            "save-path": {
+              "description": "Válaszd ki, hogyan viselkedjenek a mentési útvonal mezők torrentek hozzáadásakor vagy áthelyezésekor.",
+              "select": "ng-select",
+              "typeahead": "ngb-typeahead"
             }
           },
           "label": {
             "behavior": "Viselkedés",
             "language": "Nyelv",
             "appearance": "Megjelenés",
-            "startup": "Indítás"
+            "startup": "Indítás",
+            "save-path-input": "Mentési útvonal bevitel"
           },
           "position": {
             "top-left": "Bal felül",

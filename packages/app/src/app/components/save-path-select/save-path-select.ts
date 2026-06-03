@@ -2,32 +2,47 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
-  ViewChild,
+  ElementRef,
   afterNextRender,
   computed,
   forwardRef,
   inject,
   input,
   signal,
+  viewChild,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import {
   ControlValueAccessor,
   FormControl,
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
 } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import { NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe } from '@ngx-translate/core';
+import { DEFAULT_GENERAL_SETTINGS, SavePathInputType } from '../../models/general-settings.model';
+import { GeneralSettingsService } from '../../services/general-settings.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
 import { BbPopover } from '../bb-popover/bb-popover';
+import { SavePathTypeaheadService } from './save-path-typeahead.service';
 
 @Component({
   selector: 'app-save-path-select',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgSelectComponent, TranslatePipe, BbPopover],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    NgSelectComponent,
+    NgbTypeahead,
+    FontAwesomeModule,
+    TranslatePipe,
+    BbPopover,
+  ],
   templateUrl: './save-path-select.html',
   styleUrls: ['./save-path-select.scss'],
   providers: [
@@ -36,6 +51,7 @@ import { BbPopover } from '../bb-popover/bb-popover';
       useExisting: forwardRef(() => SavePathSelect),
       multi: true,
     },
+    SavePathTypeaheadService,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -46,11 +62,26 @@ export class SavePathSelect implements ControlValueAccessor {
   readonly label = input<string | null>(null);
   readonly placeholder = input<string | null>(null);
   readonly appendTo = input('');
-  @ViewChild('ngselect') ngselect!: NgSelectComponent;
+  readonly inputType = input<SavePathInputType | null>(null);
+
+  private readonly ngselect = viewChild<NgSelectComponent>('ngselect');
+  private readonly typeaheadInput = viewChild<ElementRef<HTMLInputElement>>('typeaheadInput');
 
   private readonly torrentStoreService = inject(TorrentStoreService);
   private readonly qbService = inject(QbService);
   private readonly serverStoreService = inject(ServerStoreService);
+  private readonly generalSettingsService = inject(GeneralSettingsService);
+  public readonly typeaheadService = inject(SavePathTypeaheadService);
+
+  public readonly icons = { faXmark };
+
+  private readonly generalSettings = toSignal(this.generalSettingsService.asObservable(), {
+    initialValue: DEFAULT_GENERAL_SETTINGS,
+  });
+
+  public readonly resolvedInputType = computed(
+    () => this.inputType() ?? this.generalSettings().savePath.inputType,
+  );
 
   public paths = computed(
     () => {
@@ -66,6 +97,10 @@ export class SavePathSelect implements ControlValueAccessor {
 
   public defaultPath = signal<string>('');
   public selectControl = new FormControl<string | null>(null);
+
+  public readonly controlValue = toSignal(this.selectControl.valueChanges, {
+    initialValue: this.selectControl.value,
+  });
 
   private onChange: (value: string | null) => void = () => {};
   private onTouched: () => void = () => {};
@@ -90,7 +125,8 @@ export class SavePathSelect implements ControlValueAccessor {
 
     afterNextRender(() => {
       if (this.autofocus()) {
-        this.ngselect.focus();
+        this.ngselect()?.focus();
+        this.typeaheadInput()?.nativeElement.focus();
       }
     });
   }
@@ -117,8 +153,8 @@ export class SavePathSelect implements ControlValueAccessor {
 
   addTag = (term: string): string => term;
 
-  public resetHighlight(): void {
-    this.ngselect.itemsList.unmarkItem();
+  public clearValue(): void {
+    this.selectControl.setValue(null);
   }
 
   keyDownFn(event: KeyboardEvent): boolean {

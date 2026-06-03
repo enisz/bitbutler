@@ -1,31 +1,56 @@
 @let resolvedLabel = label() ?? ('components.save-path-select.label' | translate);
+
 @if (showPopover()) {
   <div class="container-fluid px-0">
     <div class="row">
       <div class="col-11">
-        <div class="form-floating">
-          <ng-select
-            data-testid="save-path-select-input"
-            [items]="paths()"
-            [addTag]="addTag"
-            [searchable]="true"
-            [clearable]="clearable()"
-            [clearOnBackspace]="false"
-            [editableSearchTerm]="true"
-            [formControl]="selectControl"
-            [keyDownFn]="keyDownFn"
-            [markFirst]="true"
-            [openOnEnter]="false"
-            [appendTo]="appendTo()"
-            [placeholder]="placeholder() ?? defaultPath()"
-            [fixedPlaceholder]="false"
-            (search)="resetHighlight()"
-            (open)="resetHighlight()"
-            #ngselect
-          >
-          </ng-select>
-          <label>{{ resolvedLabel }}</label>
-        </div>
+        @if (resolvedInputType() === 'typeahead') {
+          <div class="form-floating bb-filter-input">
+            <input
+              type="text"
+              class="form-control"
+              [placeholder]="placeholder() || defaultPath() || ' '"
+              [formControl]="selectControl"
+              [ngbTypeahead]="typeaheadService.searchSavePaths"
+              [editable]="true"
+              [focusFirst]="false"
+              autocomplete="off"
+              #typeaheadInput
+            />
+            <label>{{ resolvedLabel }}</label>
+            @if (controlValue()) {
+              <button
+                type="button"
+                class="bb-filter-clear"
+                (click)="clearValue()"
+                aria-label="Clear"
+              >
+                <fa-icon [icon]="icons.faXmark"></fa-icon>
+              </button>
+            }
+          </div>
+        } @else {
+          <div class="form-floating">
+            <ng-select
+              data-testid="save-path-select-input"
+              [items]="paths()"
+              [addTag]="addTag"
+              [searchable]="true"
+              [clearable]="clearable()"
+              [clearOnBackspace]="false"
+              [editableSearchTerm]="true"
+              [formControl]="selectControl"
+              [keyDownFn]="keyDownFn"
+              [openOnEnter]="false"
+              [appendTo]="appendTo()"
+              [placeholder]="placeholder() ?? defaultPath()"
+              [fixedPlaceholder]="false"
+              #ngselect
+            >
+            </ng-select>
+            <label>{{ resolvedLabel }}</label>
+          </div>
+        }
       </div>
 
       <div class="col-1 d-flex align-items-center">
@@ -38,29 +63,48 @@
     </div>
   </div>
 } @else {
-  <div class="form-floating">
-    <ng-select
-      data-testid="save-path-select-input"
-      [items]="paths()"
-      [addTag]="addTag"
-      [searchable]="true"
-      [clearable]="clearable()"
-      [clearOnBackspace]="false"
-      [editableSearchTerm]="true"
-      [formControl]="selectControl"
-      [keyDownFn]="keyDownFn"
-      [markFirst]="true"
-      [openOnEnter]="false"
-      [appendTo]="appendTo()"
-      [placeholder]="placeholder() ?? defaultPath()"
-      [fixedPlaceholder]="false"
-      (search)="resetHighlight()"
-      (open)="resetHighlight()"
-      #ngselect
-    >
-    </ng-select>
-    <label>{{ resolvedLabel }}</label>
-  </div>
+  @if (resolvedInputType() === 'typeahead') {
+    <div class="form-floating bb-filter-input">
+      <input
+        type="text"
+        class="form-control"
+        [placeholder]="placeholder() || defaultPath() || ' '"
+        [formControl]="selectControl"
+        [ngbTypeahead]="typeaheadService.searchSavePaths"
+        [editable]="true"
+        [focusFirst]="false"
+        autocomplete="off"
+        #typeaheadInput
+      />
+      <label>{{ resolvedLabel }}</label>
+      @if (controlValue()) {
+        <button type="button" class="bb-filter-clear" (click)="clearValue()" aria-label="Clear">
+          <fa-icon [icon]="icons.faXmark"></fa-icon>
+        </button>
+      }
+    </div>
+  } @else {
+    <div class="form-floating">
+      <ng-select
+        data-testid="save-path-select-input"
+        [items]="paths()"
+        [addTag]="addTag"
+        [searchable]="true"
+        [clearable]="clearable()"
+        [clearOnBackspace]="false"
+        [editableSearchTerm]="true"
+        [formControl]="selectControl"
+        [keyDownFn]="keyDownFn"
+        [openOnEnter]="false"
+        [appendTo]="appendTo()"
+        [placeholder]="placeholder() ?? defaultPath()"
+        [fixedPlaceholder]="false"
+        #ngselect
+      >
+      </ng-select>
+      <label>{{ resolvedLabel }}</label>
+    </div>
+  }
 }
 
 <ng-template #savePathPopover>
