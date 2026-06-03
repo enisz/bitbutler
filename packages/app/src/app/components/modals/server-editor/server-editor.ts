@@ -150,18 +150,15 @@ export class ServerEditor implements OnInit {
     let promise: Promise<boolean | { id: string }>;
 
     if (this.id()) {
-      const passwordControl = this.editorForm.get('password');
       const changes: Partial<NewServer> = {
         name: this.name,
         protocol: this.protocol,
         host: this.host,
         port: this.port,
         username: this.username,
+        password: this.password,
         auto_login: this.autoLogin,
       };
-      if (this.password || passwordControl?.dirty) {
-        changes.password = this.password;
-      }
       promise = this.serverService.update(this.id()!, changes);
     } else {
       promise = this.serverService.add({

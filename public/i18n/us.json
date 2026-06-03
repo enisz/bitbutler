@@ -220,7 +220,7 @@
           "port": "Port",
           "username": "Username (optional)",
           "password": "Password (optional)",
-          "password-saved-hint": "Saved - leave blank to keep, or enter new",
+          "password-saved-hint": "Saved - leave blank to remove, or enter new",
           "set-default": "Set this connection as default"
         },
         "popover": {
