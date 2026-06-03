@@ -240,7 +240,7 @@ function normalizeUpdate(
     out['auto_login'] = Boolean(input['auto_login'] ?? input['autoLogin']);
   }
 
-  return out as Partial<NewServer> & { password?: Buffer };
+  return out as Partial<NewServer> & { password?: Buffer | null };
 }
 
 function requireString(value: unknown, field: string): string {
