@@ -220,6 +220,7 @@
           "port": "Port",
           "username": "Felhasználónév (opcionális)",
           "password": "Jelszó (opcionális)",
+          "password-saved-hint": "Mentve - hagyja üresen a megtartáshoz, vagy adja meg az újat",
           "set-default": "Beállítás alapértelmezettként"
         },
         "popover": {

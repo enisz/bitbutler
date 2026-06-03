@@ -62,6 +62,7 @@ export class ServerEditor implements OnInit {
   public processing = signal(false);
   public canSave = signal(false);
   public editMode = signal(false);
+  public hasSavedPassword = signal(false);
 
   public editorForm: FormGroup<{
     name: FormControl<string>;
@@ -128,6 +129,7 @@ export class ServerEditor implements OnInit {
       this.serverService
         .getById(this.id()!)
         .then((server: ServerRecord | null) => {
+          this.hasSavedPassword.set(server?.has_password ?? false);
           this.editorForm.patchValue({
             name: server?.name,
             protocol: server?.protocol,
@@ -148,6 +150,7 @@ export class ServerEditor implements OnInit {
     let promise: Promise<boolean | { id: string }>;
 
     if (this.id()) {
+      const passwordControl = this.editorForm.get('password');
       const changes: Partial<NewServer> = {
         name: this.name,
         protocol: this.protocol,
@@ -156,7 +159,7 @@ export class ServerEditor implements OnInit {
         username: this.username,
         auto_login: this.autoLogin,
       };
-      if (this.password) {
+      if (this.password || passwordControl?.dirty) {
         changes.password = this.password;
       }
       promise = this.serverService.update(this.id()!, changes);
