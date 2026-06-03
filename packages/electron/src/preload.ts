@@ -54,7 +54,8 @@ const api: BitButlerAPI = {
   },
 
   qb: {
-    login: ({ id }) => ipcRenderer.invoke('qb:login', { id }),
+    login: ({ id, username, password }) =>
+      ipcRenderer.invoke('qb:login', { id, username, password }),
     logout: ({ id }) => ipcRenderer.invoke('qb:logout', { id }),
     hasCookie: ({ id }) => ipcRenderer.invoke('qb:has-cookie', { id }),
     request: (payload) => ipcRenderer.invoke('qb:request', payload),
