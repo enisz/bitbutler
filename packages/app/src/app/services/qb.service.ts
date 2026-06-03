@@ -18,8 +18,6 @@ import {
 import { ServerStoreService } from './server-store.service';
 import { ToastService } from './toast.service';
 
-type ServerIdPayload = { id: string };
-
 type QbLoginResponse = { loggedIn: boolean };
 type QbHasCookieResponse = { hasCookie: boolean };
 type TorrentRunApi = 'START_STOP' | 'PAUSE_RESUME';
@@ -48,14 +46,14 @@ export class QbService {
   private readonly router = inject(Router);
   private readonly runApiCache = new Map<string, TorrentRunApi>();
 
-  login(serverId: string): Promise<QbLoginResponse> {
+  login(serverId: string, username?: string, password?: string): Promise<QbLoginResponse> {
     this.clearRunApiCache(serverId);
-    return window.bitbutler.qb.login({ id: serverId } satisfies ServerIdPayload);
+    return window.bitbutler.qb.login({ id: serverId, username, password });
   }
 
   logout(serverId: string): Promise<{ loggedOut: boolean }> {
     this.clearRunApiCache(serverId);
-    return window.bitbutler.qb.logout({ id: serverId } satisfies ServerIdPayload);
+    return window.bitbutler.qb.logout({ id: serverId });
   }
 
   streamMaindata(
@@ -136,7 +134,7 @@ export class QbService {
   async hasCookie(serverId: string): Promise<boolean> {
     const res: QbHasCookieResponse = await window.bitbutler.qb.hasCookie({
       id: serverId,
-    } satisfies ServerIdPayload);
+    });
     return res.hasCookie;
   }
 
