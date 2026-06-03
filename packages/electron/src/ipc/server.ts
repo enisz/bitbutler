@@ -233,7 +233,8 @@ function normalizeUpdate(
   }
 
   if ('port' in input) out['port'] = requirePort(input['port'], 'port');
-  if ('username' in input) out['username'] = requireString(input['username'], 'username');
+  if ('username' in input)
+    out['username'] = typeof input['username'] === 'string' ? input['username'] : '';
   if ('password' in input) out['password'] = encryptPassword(input['password'] as string);
 
   if ('auto_login' in input || 'autoLogin' in input) {
