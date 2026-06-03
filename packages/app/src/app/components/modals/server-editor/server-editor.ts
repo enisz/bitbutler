@@ -79,8 +79,8 @@ export class ServerEditor implements OnInit {
       validators: [Validators.required],
     }),
     port: new FormControl<number>(8080, { nonNullable: true, validators: [Validators.required] }),
-    username: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
-    password: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
+    username: new FormControl<string>('', { nonNullable: true }),
+    password: new FormControl<string>('', { nonNullable: true }),
     autoLogin: new FormControl<boolean>(true, { nonNullable: true }),
   });
 
@@ -124,8 +124,6 @@ export class ServerEditor implements OnInit {
   public ngOnInit(): void {
     if (this.id()) {
       this.editMode.set(true);
-      this.editorForm.get('password')?.clearValidators();
-      this.editorForm.get('password')?.updateValueAndValidity();
 
       this.serverService
         .getById(this.id()!)

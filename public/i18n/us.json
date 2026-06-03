@@ -218,8 +218,8 @@
           "protocol": "Protocol",
           "host": "Host",
           "port": "Port",
-          "username": "Username",
-          "password": "Password",
+          "username": "Username (optional)",
+          "password": "Password (optional)",
           "set-default": "Set this connection as default"
         },
         "popover": {
@@ -228,6 +228,10 @@
             "description": "When the host is set to default, the app will select it automatically on startup and tries to connect to it."
           }
         }
+      },
+      "credential-prompt": {
+        "title": "Connect to {{name}}",
+        "save-credentials": "Save credentials for this server"
       },
       "set-torrent-category": {
         "title": "Set Torrent Category"

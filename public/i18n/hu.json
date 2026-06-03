@@ -218,8 +218,8 @@
           "protocol": "Protokoll",
           "host": "Gép (Host)",
           "port": "Port",
-          "username": "Felhasználónév",
-          "password": "Jelszó",
+          "username": "Felhasználónév (opcionális)",
+          "password": "Jelszó (opcionális)",
           "set-default": "Beállítás alapértelmezettként"
         },
         "popover": {
@@ -228,6 +228,10 @@
             "description": "Ha a host alapértelmezett, az alkalmazás indításkor automatikusan kiválasztja és megpróbál csatlakozni hozzá."
           }
         }
+      },
+      "credential-prompt": {
+        "title": "Csatlakozás: {{name}}",
+        "save-credentials": "Hitelesítő adatok mentése ehhez a szerverhez"
       },
       "set-torrent-category": {
         "title": "Kategória beállítása"
