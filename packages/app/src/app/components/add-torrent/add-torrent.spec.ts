@@ -124,6 +124,17 @@ describe('AddTorrent', () => {
     });
   });
 
+  describe('ngOnInit savepath behaviour', () => {
+    it('should leave savepath null when AddTorrentSettings returns no savepath', async () => {
+      const addTorrentSettings = TestBed.inject(AddTorrentSettingsService) as any;
+      addTorrentSettings.load.mockResolvedValue({});
+
+      await component.ngOnInit();
+
+      expect(component.addForm.controls.savepath.value).toBeNull();
+    });
+  });
+
   describe('tryRenameContentAfterAdd', () => {
     let mockQbService: any;
     const hash = 'abcdef1234567890';
