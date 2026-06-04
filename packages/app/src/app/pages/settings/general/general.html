@@ -61,6 +61,19 @@
               </div>
             </div>
           </div>
+          @if (showNoDefaultHostHint()) {
+            <div class="row mb-3">
+              <div class="col-12">
+                <small class="text-warning">
+                  <fa-icon [icon]="icons['faTriangleExclamation']" class="me-1" />
+                  {{
+                    'pages.settings.tab.general.general-settings-form.startup.no-default-host-hint'
+                      | translate
+                  }}
+                </small>
+              </div>
+            </div>
+          }
         </div>
       </fieldset>
       <fieldset class="bb-fieldset" formGroupName="behavior">

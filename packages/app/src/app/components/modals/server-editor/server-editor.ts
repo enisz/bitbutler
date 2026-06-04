@@ -53,8 +53,8 @@ export class ServerEditor implements OnInit {
   };
 
   public protocols = [
-    { value: 'http', label: 'http:' },
-    { value: 'https', label: 'https:' },
+    { value: 'http', label: 'http' },
+    { value: 'https', label: 'https' },
   ];
 
   public canTest = signal(false);
@@ -62,6 +62,7 @@ export class ServerEditor implements OnInit {
   public processing = signal(false);
   public canSave = signal(false);
   public editMode = signal(false);
+  public hasSavedPassword = signal(false);
 
   public editorForm: FormGroup<{
     name: FormControl<string>;
@@ -79,8 +80,8 @@ export class ServerEditor implements OnInit {
       validators: [Validators.required],
     }),
     port: new FormControl<number>(8080, { nonNullable: true, validators: [Validators.required] }),
-    username: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
-    password: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
+    username: new FormControl<string>('', { nonNullable: true }),
+    password: new FormControl<string>('', { nonNullable: true }),
     autoLogin: new FormControl<boolean>(true, { nonNullable: true }),
   });
 
@@ -124,12 +125,11 @@ export class ServerEditor implements OnInit {
   public ngOnInit(): void {
     if (this.id()) {
       this.editMode.set(true);
-      this.editorForm.get('password')?.clearValidators();
-      this.editorForm.get('password')?.updateValueAndValidity();
 
       this.serverService
         .getById(this.id()!)
         .then((server: ServerRecord | null) => {
+          this.hasSavedPassword.set(server?.has_password ?? false);
           this.editorForm.patchValue({
             name: server?.name,
             protocol: server?.protocol,
@@ -156,11 +156,9 @@ export class ServerEditor implements OnInit {
         host: this.host,
         port: this.port,
         username: this.username,
+        password: this.password,
         auto_login: this.autoLogin,
       };
-      if (this.password) {
-        changes.password = this.password;
-      }
       promise = this.serverService.update(this.id()!, changes);
     } else {
       promise = this.serverService.add({
