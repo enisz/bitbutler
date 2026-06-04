@@ -18,6 +18,7 @@ import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { SavePathSelect } from '../../../components/save-path-select/save-path-select';
 import { ServerSettings } from '../../../models/server-settings.model';
 import { ElectronService } from '../../../services/electron.service';
+import { QbService } from '../../../services/qb.service';
 import { ServerSettingsService } from '../../../services/server-settings.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { SettingsStateService } from '../settings-state.service';
@@ -46,6 +47,9 @@ export class Server implements SettingsTabComponent {
   private readonly destoryRef = inject(DestroyRef);
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly stateService = inject(SettingsStateService);
+  private readonly qbService = inject(QbService);
+
+  private defaultRemotePath = '';
 
   public icons: Record<string, IconDefinition> = {
     faPlus,
@@ -69,12 +73,22 @@ export class Server implements SettingsTabComponent {
       mappings.forEach((m) => {
         this.pathMappings.push(
           new FormGroup({
-            remote: new FormControl(m.remote, { nonNullable: true }),
+            remote: new FormControl<string | null>(m.remote || null),
             local: new FormControl(m.local, { nonNullable: true }),
           }),
           { emitEvent: false },
         );
       });
+
+      const serverId = this.serverStoreService.currentServerId();
+      if (serverId) {
+        this.qbService
+          .getAppPreferences(serverId)
+          .then((prefs) => {
+            if (prefs.save_path) this.defaultRemotePath = prefs.save_path;
+          })
+          .catch(() => {});
+      }
     }),
   );
 
@@ -87,7 +101,7 @@ export class Server implements SettingsTabComponent {
     }),
     pathMappings: new FormArray([
       new FormGroup({
-        remote: new FormControl('', { nonNullable: true }),
+        remote: new FormControl<string | null>(null),
         local: new FormControl('', { nonNullable: true }),
       }),
     ]),
@@ -102,7 +116,14 @@ export class Server implements SettingsTabComponent {
   }
 
   private async save(): Promise<void> {
-    const settings: ServerSettings = this.serverSettingsForm.getRawValue();
+    const raw = this.serverSettingsForm.getRawValue() as ServerSettings;
+    const settings: ServerSettings = {
+      ...raw,
+      pathMappings: raw.pathMappings.map((m) => ({
+        remote: m.remote || this.defaultRemotePath,
+        local: m.local,
+      })),
+    };
     await this.serverSettingsService.save(settings);
   }
 
@@ -113,7 +134,7 @@ export class Server implements SettingsTabComponent {
   public addPathMapping(): void {
     this.pathMappings.push(
       new FormGroup({
-        remote: new FormControl('', { nonNullable: true }),
+        remote: new FormControl<string | null>(null),
         local: new FormControl('', { nonNullable: true }),
       }),
       { emitEvent: false },
@@ -126,7 +147,7 @@ export class Server implements SettingsTabComponent {
 
   public removePathMapping(index: number): void {
     if (this.pathMappings.length === 1) {
-      this.pathMappings.at(index).reset({ remote: '', local: '' });
+      this.pathMappings.at(index).reset({ remote: null, local: '' });
     } else {
       this.pathMappings.removeAt(index);
     }

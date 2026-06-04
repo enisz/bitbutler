@@ -180,16 +180,6 @@ export class AddTorrent implements OnInit {
 
   public async ngOnInit(): Promise<void> {
     const settings = (await this.addTorrentSettings.load()) as any;
-    const serverId = this.serverStoreService.currentServerId();
-
-    if (!settings.savepath && serverId) {
-      try {
-        const prefs = await this.qbService.getAppPreferences(serverId);
-        settings.savepath = prefs.save_path;
-      } catch (err) {
-        console.error(AddTorrent.name, `ngOnInit`, `Failed to get app preferences`, err);
-      }
-    }
 
     for (const [k, v] of Object.entries(settings)) {
       const ctrl = this.addForm.get(k);
