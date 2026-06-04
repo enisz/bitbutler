@@ -78,10 +78,10 @@ describe('Server', () => {
       expect(component.pathMappings.length).toBe(before + 1);
     });
 
-    it('new mapping should have empty remote and local controls', () => {
+    it('new mapping should have null remote and empty local controls', () => {
       component.addPathMapping();
       const last = component.pathMappings.at(component.pathMappings.length - 1);
-      expect(last.get('remote')?.value).toBe('');
+      expect(last.get('remote')?.value).toBeNull();
       expect(last.get('local')?.value).toBe('');
     });
   });
@@ -94,14 +94,14 @@ describe('Server', () => {
       expect(component.pathMappings.length).toBe(before - 1);
     });
 
-    it('should reset the mapping to empty strings instead of removing when only one remains', () => {
+    it('should reset remote to null and local to empty string instead of removing when only one remains', () => {
       while (component.pathMappings.length > 1) {
         component.removePathMapping(0);
       }
       component.pathMappings.at(0).patchValue({ remote: 'r', local: 'l' });
       component.removePathMapping(0);
       expect(component.pathMappings.length).toBe(1);
-      expect(component.pathMappings.at(0).get('remote')?.value).toBe('');
+      expect(component.pathMappings.at(0).get('remote')?.value).toBeNull();
       expect(component.pathMappings.at(0).get('local')?.value).toBe('');
     });
   });

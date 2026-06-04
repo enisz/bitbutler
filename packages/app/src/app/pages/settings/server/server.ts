@@ -73,7 +73,7 @@ export class Server implements SettingsTabComponent {
       mappings.forEach((m) => {
         this.pathMappings.push(
           new FormGroup({
-            remote: new FormControl(m.remote, { nonNullable: true }),
+            remote: new FormControl<string | null>(m.remote || null),
             local: new FormControl(m.local, { nonNullable: true }),
           }),
           { emitEvent: false },
@@ -101,7 +101,7 @@ export class Server implements SettingsTabComponent {
     }),
     pathMappings: new FormArray([
       new FormGroup({
-        remote: new FormControl('', { nonNullable: true }),
+        remote: new FormControl<string | null>(null),
         local: new FormControl('', { nonNullable: true }),
       }),
     ]),
@@ -134,7 +134,7 @@ export class Server implements SettingsTabComponent {
   public addPathMapping(): void {
     this.pathMappings.push(
       new FormGroup({
-        remote: new FormControl('', { nonNullable: true }),
+        remote: new FormControl<string | null>(null),
         local: new FormControl('', { nonNullable: true }),
       }),
       { emitEvent: false },
@@ -147,7 +147,7 @@ export class Server implements SettingsTabComponent {
 
   public removePathMapping(index: number): void {
     if (this.pathMappings.length === 1) {
-      this.pathMappings.at(index).reset({ remote: '', local: '' });
+      this.pathMappings.at(index).reset({ remote: null, local: '' });
     } else {
       this.pathMappings.removeAt(index);
     }
