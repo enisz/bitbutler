@@ -1,6 +1,7 @@
 import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ElectronService } from '../../../services/electron.service';
+import { QbService } from '../../../services/qb.service';
 import { ServerSettingsService } from '../../../services/server-settings.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { SettingsStateService } from '../settings-state.service';
@@ -18,6 +19,13 @@ describe('Server', () => {
     registerSave: ReturnType<typeof vi.fn>;
     markDirty: ReturnType<typeof vi.fn>;
   };
+  let serverSettingsMock: {
+    reload: ReturnType<typeof vi.fn>;
+    save: ReturnType<typeof vi.fn>;
+  };
+  let qbMock: {
+    getAppPreferences: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(async () => {
     electronMock = {
@@ -25,6 +33,16 @@ describe('Server', () => {
       showOpenDialog: vi.fn().mockResolvedValue(null),
     };
     stateServiceMock = { registerSave: vi.fn(), markDirty: vi.fn() };
+    serverSettingsMock = {
+      reload: vi.fn().mockResolvedValue({
+        pathMappings: [],
+        polling: { foreground: 2000, background: 5000 },
+      }),
+      save: vi.fn().mockResolvedValue(undefined),
+    };
+    qbMock = {
+      getAppPreferences: vi.fn().mockResolvedValue({ save_path: '/default/downloads' }),
+    };
 
     await TestBed.configureTestingModule({
       imports: [Server],
@@ -32,15 +50,8 @@ describe('Server', () => {
         { provide: ElectronService, useValue: electronMock },
         { provide: SettingsStateService, useValue: stateServiceMock },
         { provide: ServerStoreService, useValue: { currentServerId: signal(null) } },
-        {
-          provide: ServerSettingsService,
-          useValue: {
-            reload: vi.fn().mockResolvedValue({
-              pathMappings: [],
-              polling: { foreground: 2000, background: 5000 },
-            }),
-          },
-        },
+        { provide: ServerSettingsService, useValue: serverSettingsMock },
+        { provide: QbService, useValue: qbMock },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
@@ -99,6 +110,34 @@ describe('Server', () => {
     it('should call electronService.openPath with the given path', () => {
       component.testMapping('/some/local/path');
       expect(electronMock.openPath).toHaveBeenCalledWith('/some/local/path');
+    });
+  });
+
+  describe('save', () => {
+    it('should replace empty remote with defaultRemotePath', async () => {
+      (component as any).defaultRemotePath = '/default/downloads';
+      component.pathMappings.at(0).patchValue({ remote: '', local: '/local/path' });
+
+      await (component as any).save();
+
+      expect(serverSettingsMock.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          pathMappings: [{ remote: '/default/downloads', local: '/local/path' }],
+        }),
+      );
+    });
+
+    it('should keep a non-empty remote unchanged', async () => {
+      (component as any).defaultRemotePath = '/default/downloads';
+      component.pathMappings.at(0).patchValue({ remote: '/custom/remote', local: '/local/path' });
+
+      await (component as any).save();
+
+      expect(serverSettingsMock.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          pathMappings: [{ remote: '/custom/remote', local: '/local/path' }],
+        }),
+      );
     });
   });
 });

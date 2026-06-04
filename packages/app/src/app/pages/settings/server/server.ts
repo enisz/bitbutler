@@ -18,6 +18,7 @@ import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { SavePathSelect } from '../../../components/save-path-select/save-path-select';
 import { ServerSettings } from '../../../models/server-settings.model';
 import { ElectronService } from '../../../services/electron.service';
+import { QbService } from '../../../services/qb.service';
 import { ServerSettingsService } from '../../../services/server-settings.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { SettingsStateService } from '../settings-state.service';
@@ -46,6 +47,9 @@ export class Server implements SettingsTabComponent {
   private readonly destoryRef = inject(DestroyRef);
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly stateService = inject(SettingsStateService);
+  private readonly qbService = inject(QbService);
+
+  private defaultRemotePath = '';
 
   public icons: Record<string, IconDefinition> = {
     faPlus,
@@ -75,6 +79,16 @@ export class Server implements SettingsTabComponent {
           { emitEvent: false },
         );
       });
+
+      const serverId = this.serverStoreService.currentServerId();
+      if (serverId) {
+        this.qbService
+          .getAppPreferences(serverId)
+          .then((prefs) => {
+            if (prefs.save_path) this.defaultRemotePath = prefs.save_path;
+          })
+          .catch(() => {});
+      }
     }),
   );
 
@@ -102,7 +116,14 @@ export class Server implements SettingsTabComponent {
   }
 
   private async save(): Promise<void> {
-    const settings: ServerSettings = this.serverSettingsForm.getRawValue();
+    const raw = this.serverSettingsForm.getRawValue() as ServerSettings;
+    const settings: ServerSettings = {
+      ...raw,
+      pathMappings: raw.pathMappings.map((m) => ({
+        remote: m.remote || this.defaultRemotePath,
+        local: m.local,
+      })),
+    };
     await this.serverSettingsService.save(settings);
   }
 
