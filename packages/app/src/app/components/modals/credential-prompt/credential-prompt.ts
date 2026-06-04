@@ -1,0 +1,44 @@
+import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { TranslatePipe } from '@ngx-translate/core';
+import { AutofocusDirective } from '../../../directives/autofocus';
+
+@Component({
+  selector: 'app-credential-prompt',
+  imports: [ReactiveFormsModule, TranslatePipe, AutofocusDirective],
+  templateUrl: './credential-prompt.html',
+  styleUrl: './credential-prompt.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class CredentialPrompt {
+  private readonly activeModal = inject(NgbActiveModal);
+
+  readonly serverName = input.required<string>();
+  readonly prefillUsername = input<string>('');
+
+  public credentialForm = new FormGroup({
+    username: new FormControl<string>('', { nonNullable: true }),
+    password: new FormControl<string>('', { nonNullable: true }),
+    saveCredentials: new FormControl<boolean>(false, { nonNullable: true }),
+  });
+
+  constructor() {
+    effect(() => {
+      const pre = this.prefillUsername();
+      if (pre) {
+        this.credentialForm.get('username')?.patchValue(pre);
+      }
+    });
+  }
+
+  public connect(): void {
+    const { username, password, saveCredentials } = this.credentialForm.getRawValue();
+    const save = saveCredentials && (!!username || !!password);
+    this.activeModal.close({ username, password, save });
+  }
+
+  public cancel(): void {
+    this.activeModal.dismiss();
+  }
+}

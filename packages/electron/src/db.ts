@@ -33,6 +33,38 @@ db.exec(`
   WHERE auto_login = 1;
 `);
 
+// Migrate: make password nullable (allow servers without stored credentials)
+interface ColInfo {
+  name: string;
+  notnull: number;
+}
+const cols = db.pragma('table_info(servers)') as ColInfo[];
+const pwCol = cols.find((c) => c.name === 'password');
+if (pwCol?.notnull === 1) {
+  db.transaction(() => {
+    db.exec(`
+      CREATE TABLE servers_new (
+        id           TEXT PRIMARY KEY,
+        name         TEXT NOT NULL,
+        host         TEXT NOT NULL,
+        protocol     TEXT NOT NULL CHECK (protocol IN ('http','https')),
+        port         INTEGER NOT NULL CHECK (port BETWEEN 1 AND 65535),
+        username     TEXT NOT NULL DEFAULT '',
+        password     BLOB,
+        auto_login   INTEGER NOT NULL DEFAULT 0 CHECK (auto_login IN (0,1)),
+        created_at   TEXT NOT NULL
+      )
+    `);
+    db.exec(`INSERT INTO servers_new SELECT * FROM servers`);
+    db.exec(`DROP TABLE servers`);
+    db.exec(`ALTER TABLE servers_new RENAME TO servers`);
+  })();
+  db.exec(`CREATE INDEX IF NOT EXISTS idx_servers_auto_login ON servers(auto_login)`);
+  db.exec(
+    `CREATE UNIQUE INDEX IF NOT EXISTS uq_servers_auto_login ON servers(auto_login) WHERE auto_login = 1`,
+  );
+}
+
 db.exec(`
   CREATE TABLE IF NOT EXISTS settings (
     id   TEXT PRIMARY KEY,

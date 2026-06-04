@@ -243,6 +243,77 @@ describe('qb:login IPC handler', () => {
     const { handler } = await setup();
     await expect(handler(null, { id: 'missing' })).rejects.toThrow('Server not found');
   });
+
+  it('uses stored credentials when no runtime credentials provided', async () => {
+    mockGet.mockReturnValue({
+      id: 'srv-1',
+      name: 'Local',
+      host: 'localhost',
+      protocol: 'http',
+      port: 8080,
+      username: 'admin',
+      password: Buffer.from('stored-pass'),
+    });
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: async () => 'Ok.',
+      headers: { get: () => 'SID=abc123', getSetCookie: undefined },
+    });
+    globalThis.fetch = mockFetch;
+    const { handler } = await setup();
+    await handler(null, { id: 'srv-1' });
+    const body = mockFetch.mock.calls[0][1].body.toString();
+    expect(body).toContain('username=admin');
+    expect(body).toContain('password=stored-pass');
+  });
+
+  it('uses runtime username and password when provided', async () => {
+    mockGet.mockReturnValue({
+      id: 'srv-1',
+      name: 'Local',
+      host: 'localhost',
+      protocol: 'http',
+      port: 8080,
+      username: 'admin',
+      password: Buffer.from('stored-pass'),
+    });
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: async () => 'Ok.',
+      headers: { get: () => 'SID=abc123', getSetCookie: undefined },
+    });
+    globalThis.fetch = mockFetch;
+    const { handler } = await setup();
+    await handler(null, { id: 'srv-1', username: 'runtime-user', password: 'runtime-pass' });
+    const body = mockFetch.mock.calls[0][1].body.toString();
+    expect(body).toContain('username=runtime-user');
+    expect(body).toContain('password=runtime-pass');
+  });
+
+  it('uses empty password when server has null password and no runtime password', async () => {
+    mockGet.mockReturnValue({
+      id: 'srv-1',
+      name: 'Local',
+      host: 'localhost',
+      protocol: 'http',
+      port: 8080,
+      username: 'admin',
+      password: null,
+    });
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: async () => 'Ok.',
+      headers: { get: () => 'SID=abc123', getSetCookie: undefined },
+    });
+    globalThis.fetch = mockFetch;
+    const { handler } = await setup();
+    await handler(null, { id: 'srv-1' });
+    const body = mockFetch.mock.calls[0][1].body.toString();
+    expect(body).toContain('password=');
+  });
 });
 
 describe('qbRequest', () => {

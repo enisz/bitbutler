@@ -311,18 +311,44 @@ describe('server:add IPC handler – validation', () => {
     ).rejects.toThrow("Field 'port' must be an integer");
   });
 
-  it('throws when password is empty', async () => {
+  it('succeeds with empty password (stores null)', async () => {
     const handler = await getAddHandler();
-    await expect(
-      handler(null, {
-        name: 'L',
-        host: 'localhost',
-        port: 8080,
-        username: 'u',
-        password: '',
-        protocol: 'http',
-      }),
-    ).rejects.toThrow("Field 'password' is required.");
+    const result = (await handler(null, {
+      name: 'L',
+      host: 'localhost',
+      port: 8080,
+      username: 'u',
+      password: '',
+      protocol: 'http',
+    })) as { id: string };
+    expect(typeof result.id).toBe('string');
+    expect(mockEncryptString).not.toHaveBeenCalled();
+  });
+
+  it('succeeds without password field (stores null)', async () => {
+    const handler = await getAddHandler();
+    const result = (await handler(null, {
+      name: 'L',
+      host: 'localhost',
+      port: 8080,
+      username: 'u',
+      protocol: 'http',
+    })) as { id: string };
+    expect(typeof result.id).toBe('string');
+    expect(mockEncryptString).not.toHaveBeenCalled();
+  });
+
+  it('succeeds with empty username', async () => {
+    const handler = await getAddHandler();
+    const result = (await handler(null, {
+      name: 'L',
+      host: 'localhost',
+      port: 8080,
+      username: '',
+      password: 'secret',
+      protocol: 'http',
+    })) as { id: string };
+    expect(typeof result.id).toBe('string');
   });
 
   it('throws when safeStorage encryption is unavailable', async () => {

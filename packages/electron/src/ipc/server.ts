@@ -46,7 +46,7 @@ const stmtList = db.prepare<[], ServerRow>(`
     id, name, host, protocol, port, username,
     auto_login,
     created_at,
-    1 as has_password
+    CASE WHEN password IS NOT NULL THEN 1 ELSE 0 END as has_password
   FROM servers
   ORDER BY datetime(created_at) DESC
 `);
@@ -56,7 +56,7 @@ const stmtGetById = db.prepare<[string], ServerRow>(`
     id, name, host, protocol, port, username,
     auto_login,
     created_at,
-    1 as has_password
+    CASE WHEN password IS NOT NULL THEN 1 ELSE 0 END as has_password
   FROM servers
   WHERE id = ?
 `);
@@ -66,7 +66,7 @@ const stmtGetByHost = db.prepare<[string], ServerRow>(`
     id, name, host, protocol, port, username,
     auto_login,
     created_at,
-    1 as has_password
+    CASE WHEN password IS NOT NULL THEN 1 ELSE 0 END as has_password
   FROM servers
   WHERE host = ?
 `);
@@ -87,6 +87,18 @@ const stmtUpdate = db.prepare(`
     port = COALESCE(@port, port),
     username = COALESCE(@username, username),
     password = COALESCE(@password, password),
+    auto_login = COALESCE(@auto_login, auto_login)
+  WHERE id = @id
+`);
+
+const stmtUpdateWithPassword = db.prepare(`
+  UPDATE servers SET
+    name = COALESCE(@name, name),
+    host = COALESCE(@host, host),
+    protocol = COALESCE(@protocol, protocol),
+    port = COALESCE(@port, port),
+    username = COALESCE(@username, username),
+    password = @password,
     auto_login = COALESCE(@auto_login, auto_login)
   WHERE id = @id
 `);
@@ -171,7 +183,9 @@ function serverUpdate(payload: unknown): { updated: boolean } {
     throw new Error('No changes provided.');
   }
 
-  const normalized = normalizeUpdate(changes as Record<string, unknown>);
+  const changesObj = changes as Record<string, unknown>;
+  const hasExplicitPassword = 'password' in changesObj;
+  const normalized = normalizeUpdate(changesObj);
 
   const row = {
     id,
@@ -186,7 +200,8 @@ function serverUpdate(payload: unknown): { updated: boolean } {
 
   const tx = db.transaction(() => {
     if (row.auto_login === 1) stmtUnsetAutoLogin.run();
-    const info = stmtUpdate.run(row);
+    const stmt = hasExplicitPassword ? stmtUpdateWithPassword : stmtUpdate;
+    const info = stmt.run(row);
     return info.changes > 0;
   });
 
@@ -211,8 +226,8 @@ function normalizeNewServer(input: unknown): NewServer & { id?: string } {
   const protocol =
     i['protocol'] === 'https' || i['useHttps'] === true ? ('https' as const) : ('http' as const);
   const port = requirePort(i['port'], 'port');
-  const username = requireString(i['username'] ?? '', 'username');
-  const password = requirePasswordString(i['password'], 'password');
+  const username = typeof i['username'] === 'string' ? i['username'] : '';
+  const password = typeof i['password'] === 'string' ? i['password'] : '';
   const auto_login = Boolean(i['auto_login'] ?? i['autoLogin'] ?? false);
   const id = i['id'] ? requireString(i['id'], 'id') : undefined;
 
@@ -221,7 +236,7 @@ function normalizeNewServer(input: unknown): NewServer & { id?: string } {
 
 function normalizeUpdate(
   input: Record<string, unknown>,
-): Partial<NewServer> & { password?: Buffer } {
+): Partial<NewServer> & { password?: Buffer | null } {
   const out: Record<string, unknown> = {};
 
   if ('name' in input) out['name'] = requireString(input['name'], 'name');
@@ -233,14 +248,15 @@ function normalizeUpdate(
   }
 
   if ('port' in input) out['port'] = requirePort(input['port'], 'port');
-  if ('username' in input) out['username'] = requireString(input['username'], 'username');
+  if ('username' in input)
+    out['username'] = typeof input['username'] === 'string' ? input['username'] : '';
   if ('password' in input) out['password'] = encryptPassword(input['password'] as string);
 
   if ('auto_login' in input || 'autoLogin' in input) {
     out['auto_login'] = Boolean(input['auto_login'] ?? input['autoLogin']);
   }
 
-  return out as Partial<NewServer> & { password?: Buffer };
+  return out as Partial<NewServer> & { password?: Buffer | null };
 }
 
 function requireString(value: unknown, field: string): string {
@@ -280,19 +296,10 @@ function toUserDbError(err: unknown): string {
   return `Database error: ${msg}`;
 }
 
-function encryptPassword(plain: unknown): Buffer {
+function encryptPassword(plain: unknown): Buffer | null {
+  if (!plain || (typeof plain === 'string' && plain.length === 0)) return null;
   if (!safeStorage.isEncryptionAvailable()) {
     throw new Error('Encryption is not available on this system (safeStorage).');
   }
-  if (typeof plain !== 'string' || plain.length === 0) {
-    throw new Error("Field 'password' is required.");
-  }
-  return safeStorage.encryptString(plain);
-}
-
-function requirePasswordString(value: unknown, field: string): string {
-  if (typeof value !== 'string' || value.trim().length === 0) {
-    throw new Error(`Field '${field}' is required.`);
-  }
-  return value;
+  return safeStorage.encryptString(plain as string);
 }

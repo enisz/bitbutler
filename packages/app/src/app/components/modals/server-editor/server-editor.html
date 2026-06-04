@@ -112,7 +112,11 @@
               class="form-control"
               id="password"
               data-testid="password-input"
-              [placeholder]="'components.modals.server-editor.editor-form.password' | translate"
+              [placeholder]="
+                hasSavedPassword()
+                  ? ('components.modals.server-editor.editor-form.password-saved-hint' | translate)
+                  : ('components.modals.server-editor.editor-form.password' | translate)
+              "
               formControlName="password"
             />
             <label for="password">{{

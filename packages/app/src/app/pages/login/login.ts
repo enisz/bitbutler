@@ -20,6 +20,7 @@ import {
 } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AppLoader } from '../../components/app-loader/app-loader';
+import { CredentialPrompt } from '../../components/modals/credential-prompt/credential-prompt';
 import { CommandBusService } from '../../services/command-bus.service';
 import { ConfirmService } from '../../services/confirm.service';
 import { ElectronService } from '../../services/electron.service';
@@ -114,7 +115,7 @@ export class Login implements OnInit {
       });
 
       if (autoLoginServer && !isLogoutRedirect) {
-        this.connect();
+        void this.connect();
       }
     } catch (e) {
       console.error(Login.name, 'Initialization failed', e);
@@ -123,9 +124,39 @@ export class Login implements OnInit {
     }
   }
 
-  public connect(): void {
+  public async connect(): Promise<void> {
     const currentServer = this.serverStoreService.currentServer();
     if (!currentServer) return;
+
+    let runtimeUsername: string | undefined;
+    let runtimePassword: string | undefined;
+
+    if (!currentServer.username || !currentServer.has_password) {
+      const credModalRef = this.modalService.open(CredentialPrompt);
+      setModalInput(credModalRef, 'serverName', currentServer.name);
+      setModalInput(credModalRef, 'prefillUsername', currentServer.username);
+
+      try {
+        const result = (await credModalRef.result) as {
+          username: string;
+          password: string;
+          save: boolean;
+        };
+
+        if (result.save && (result.username || result.password)) {
+          await this.serverService.update(currentServer.id, {
+            username: result.username,
+            password: result.password,
+          });
+          this.commandBusService.emit({ type: 'SERVER_UPDATED', id: currentServer.id });
+        } else {
+          runtimeUsername = result.username;
+          runtimePassword = result.password;
+        }
+      } catch {
+        return;
+      }
+    }
 
     this.loading.set(true);
     const loadingModalRef = this.modalService.open(AppLoader, {
@@ -145,10 +176,9 @@ export class Login implements OnInit {
     );
 
     this.qbittorrentService
-      .login(currentServer.id)
+      .login(currentServer.id, runtimeUsername, runtimePassword)
       .then(async (response) => {
         if (!response.loggedIn) return;
-
         this.serverStoreService.clearAutoLoginSuppression();
         await this.windowService.setOpenFilesEnabled(true);
         loadingModalRef.close();
