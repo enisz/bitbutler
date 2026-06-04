@@ -65,7 +65,11 @@
             <div class="row mb-3">
               <div class="col-12">
                 <small class="text-warning">
-                  {{ 'pages.settings.tab.general.startup.no-default-host-hint' | translate }}
+                  <fa-icon [icon]="icons['faTriangleExclamation']" class="me-1" />
+                  {{
+                    'pages.settings.tab.general.general-settings-form.startup.no-default-host-hint'
+                      | translate
+                  }}
                 </small>
               </div>
             </div>
