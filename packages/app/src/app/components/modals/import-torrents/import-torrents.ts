@@ -1,5 +1,15 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Injector,
+  OnInit,
+  computed,
+  inject,
+  input,
+  runInInjectionContext,
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import type {
   BbePathMapping,
@@ -25,10 +35,12 @@ export class ImportTorrents implements OnInit {
   readonly initialBbePath = input<string>();
 
   private readonly activeModal = inject(NgbActiveModal);
-  readonly exportService = inject(ExportService);
+  private readonly exportService = inject(ExportService);
+  private readonly injector = inject(Injector);
   readonly serverStore = inject(ServerStoreService);
 
   importForm!: FormGroup;
+  private startModeValue!: ReturnType<typeof toSignal<ImportStartMode>>;
 
   readonly restoreFieldKeys: ImportRestoreField[] = [
     'save_path',
@@ -59,13 +71,13 @@ export class ImportTorrents implements OnInit {
   });
 
   readonly startModeHint = computed(() => {
-    const mode = this.importForm?.get('startMode')?.value as ImportStartMode;
+    const mode = this.startModeValue?.() ?? 'active';
     const hints: Record<ImportStartMode, string> = {
       paused: 'components.modals.import-torrents.start-mode.hint.paused',
       active: 'components.modals.import-torrents.start-mode.hint.active',
       all: 'components.modals.import-torrents.start-mode.hint.all',
     };
-    return hints[mode] ?? hints['active'];
+    return hints[mode as ImportStartMode] ?? hints['active'];
   });
 
   readonly showPathRemap = computed(
@@ -95,6 +107,13 @@ export class ImportTorrents implements OnInit {
       }),
       pathMappings: new FormArray([this.createMappingRow()]),
     });
+
+    const startModeControl = this.importForm.get('startMode')!;
+    this.startModeValue = runInInjectionContext(this.injector, () =>
+      toSignal(startModeControl.valueChanges, {
+        initialValue: startModeControl.value as ImportStartMode,
+      }),
+    );
 
     const bbePath = this.initialBbePath();
     if (bbePath) void this.loadBbe(bbePath);
