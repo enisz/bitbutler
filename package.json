@@ -146,6 +146,14 @@
         "mimeType": "application/x-bittorrent",
         "role": "Viewer",
         "icon": "packages/app/src/assets/icons/bitbutler.ico"
+      },
+      {
+        "ext": "bbe",
+        "name": "BitButler Export File",
+        "description": "BitButler export archive",
+        "mimeType": "application/x-bitbutler-export",
+        "role": "Viewer",
+        "icon": "packages/app/src/assets/icons/bitbutler.ico"
       }
     ]
   },
@@ -201,7 +209,9 @@
     "@ngx-translate/core": "^17.0.0",
     "@ngx-translate/http-loader": "^17.0.0",
     "@popperjs/core": "^2.11.8",
+    "adm-zip": "^0.5.17",
     "ag-grid-angular": "^35.0.0",
+    "archiver": "^8.0.0",
     "axios": "^1.13.6",
     "better-sqlite3": "^12.5.0",
     "bootstrap": "^5.3.6",
@@ -227,6 +237,8 @@
     "@angular/compiler-cli": "^20.3.0",
     "@angular/localize": "^20.3.0",
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",
+    "@types/adm-zip": "^0.5.8",
+    "@types/archiver": "^7.0.0",
     "@types/better-sqlite3": "^7.6.13",
     "@types/humanize-duration": "^3.27.4",
     "@types/semver": "^7.7.1",
