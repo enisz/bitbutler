@@ -238,6 +238,7 @@ export function registerWindowIpcHandlers(mainWindow: Electron.BrowserWindow): v
   ipcMain.handle('window:open-files:set-enabled', async (_e, enabled: boolean) => {
     openHandlingEnabled = !!enabled;
     if (openHandlingEnabled) void flushQueueIfPossible();
+    if (openHandlingEnabled) flushBbeQueueIfPossible();
     return { enabled: openHandlingEnabled };
   });
 
