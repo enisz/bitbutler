@@ -333,9 +333,11 @@ The spinner covers the unzip + parse step, which can take meaningful time for ar
      - File renames / File priorities & exclusions
      - Auto-TMM / Sequential download
      - Super seeding / First/last piece priority
-   - **Start torrents after import** toggle switch (default: on) - when enabled,
-     torrents that were active at export time are resumed after all steps complete.
-     Torrents that were paused at export time remain paused either way.
+   - **Start torrents after import** toggle switch (default: on) with an inline hint
+     that updates based on the current state:
+     - ON: "Torrents that were active when exported will resume automatically"
+     - OFF: "All torrents will remain paused - start them manually when ready"
+       Torrents that were paused at export time are never resumed regardless of this setting.
    - **Import** + **Cancel** buttons
 
 3. **Progress state** - same inline pattern as export: progress bar + current torrent name + counter. Cancel button available.
