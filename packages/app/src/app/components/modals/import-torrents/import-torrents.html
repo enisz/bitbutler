@@ -1,0 +1,229 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ 'components.modals.import-torrents.title' | translate }}</h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
+</div>
+
+<div class="modal-body">
+  @if (isLoading()) {
+    <div class="d-flex justify-content-center py-4">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  }
+  @if (isError() && !isRunning() && !isDone()) {
+    <div class="alert alert-danger">{{ state().error }}</div>
+  }
+  @if (isReady() || isRunning() || isDone()) {
+    <form [formGroup]="importForm">
+      <fieldset class="bb-fieldset mt-0">
+        <legend>{{ 'components.modals.import-torrents.label.archive' | translate }}</legend>
+        @if (metadata()) {
+          <div class="small">
+            <span class="fw-bold">{{ metadata()!.source_server }}</span>
+            &nbsp;·&nbsp;{{ metadata()!.exported_at | date: 'yyyy-MM-dd' }} &nbsp;·&nbsp;{{
+              metadata()!.torrents.length
+            }}
+            {{ 'components.modals.import-torrents.archive.torrents' | translate }} &nbsp;·&nbsp;{{
+              metadata()!.export_mode === 'full'
+                ? ('components.modals.import-torrents.archive.full-mode' | translate)
+                : ('components.modals.import-torrents.archive.legacy-mode' | translate)
+            }}
+          </div>
+          <div class="small text-body-secondary mt-1">
+            {{ 'components.modals.import-torrents.archive.importing-to' | translate }}:
+            <strong>{{ serverStore.currentServer()?.name ?? '' }}</strong>
+          </div>
+        }
+      </fieldset>
+
+      @if (isReady()) {
+        <fieldset class="bb-fieldset" formGroupName="restoreFields">
+          <legend>
+            {{ 'components.modals.import-torrents.label.restore-options' | translate }}
+          </legend>
+          <div class="container-fluid px-0">
+            <div class="row">
+              @for (field of restoreFieldKeys; track field) {
+                <div class="col-6">
+                  <div class="form-check form-switch mb-2">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      role="switch"
+                      [id]="'rf-' + field"
+                      [formControlName]="field"
+                    />
+                    <label class="form-check-label" [for]="'rf-' + field">
+                      {{ 'components.modals.import-torrents.restore.' + field | translate }}
+                    </label>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </fieldset>
+
+        @if (showPathRemap()) {
+          <fieldset class="bb-fieldset" formArrayName="pathMappings">
+            <legend>
+              {{ 'components.modals.import-torrents.label.path-remap' | translate }}
+              <span class="fw-normal text-body-secondary ms-1"
+                >({{ 'components.modals.import-torrents.path-remap.optional' | translate }})</span
+              >
+            </legend>
+            @for (group of pathMappings.controls; track $index; let i = $index) {
+              <div class="row mb-2" [formGroupName]="i">
+                <div class="col-5">
+                  <div class="form-floating">
+                    <input
+                      type="text"
+                      class="form-control"
+                      [id]="'from-' + i"
+                      placeholder="from"
+                      formControlName="from"
+                    />
+                    <label [for]="'from-' + i">{{
+                      'components.modals.import-torrents.path-remap.from' | translate
+                    }}</label>
+                  </div>
+                </div>
+                <div class="col-5">
+                  <div class="input-group">
+                    <div class="form-floating flex-grow-1">
+                      <input
+                        type="text"
+                        class="form-control"
+                        [id]="'to-' + i"
+                        placeholder="to"
+                        formControlName="to"
+                      />
+                      <label [for]="'to-' + i">{{
+                        'components.modals.import-torrents.path-remap.to' | translate
+                      }}</label>
+                    </div>
+                    <button type="button" class="btn btn-outline-primary" (click)="browseToPath(i)">
+                      {{ 'general.button.browse' | translate }}
+                    </button>
+                  </div>
+                </div>
+                <div class="col-2 d-flex align-items-center justify-content-center gap-1">
+                  @if (
+                    !(
+                      pathMappings.length === 1 &&
+                      !group.get('from')?.value &&
+                      !group.get('to')?.value
+                    )
+                  ) {
+                    <button
+                      type="button"
+                      class="btn btn-lg btn-link text-danger p-0"
+                      (click)="removeMapping(i)"
+                    >
+                      <fa-icon [icon]="icons.faMinus"></fa-icon>
+                    </button>
+                  }
+                  @if ($last) {
+                    <button
+                      type="button"
+                      class="btn btn-lg btn-link text-success p-0"
+                      (click)="addMapping()"
+                    >
+                      <fa-icon [icon]="icons.faPlus"></fa-icon>
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+          </fieldset>
+        }
+
+        <fieldset class="bb-fieldset">
+          <legend>{{ 'components.modals.import-torrents.label.after-import' | translate }}</legend>
+          <div class="btn-group w-100 mb-2" role="group">
+            <input
+              type="radio"
+              class="btn-check"
+              formControlName="startMode"
+              id="sm-paused"
+              value="paused"
+            />
+            <label class="btn btn-outline-primary" for="sm-paused">
+              {{ 'components.modals.import-torrents.start-mode.paused' | translate }}
+            </label>
+            <input
+              type="radio"
+              class="btn-check"
+              formControlName="startMode"
+              id="sm-active"
+              value="active"
+            />
+            <label class="btn btn-outline-primary" for="sm-active">
+              {{ 'components.modals.import-torrents.start-mode.active' | translate }}
+            </label>
+            <input
+              type="radio"
+              class="btn-check"
+              formControlName="startMode"
+              id="sm-all"
+              value="all"
+            />
+            <label class="btn btn-outline-primary" for="sm-all">
+              {{ 'components.modals.import-torrents.start-mode.all' | translate }}
+            </label>
+          </div>
+          <div class="small text-body-secondary">{{ startModeHint() | translate }}</div>
+        </fieldset>
+      }
+      @if (isRunning() || isDone() || isError()) {
+        <fieldset class="bb-fieldset">
+          <legend>{{ 'components.modals.import-torrents.label.progress' | translate }}</legend>
+
+          @if (isRunning()) {
+            <div class="d-flex justify-content-between mb-1">
+              <span>{{ 'components.modals.import-torrents.progress.importing' | translate }}</span>
+              <span class="text-body-secondary">{{ state().current }} / {{ state().total }}</span>
+            </div>
+            <div class="progress mb-2">
+              <div class="progress-bar" role="progressbar" [style.width.%]="progressPct()"></div>
+            </div>
+            <div class="text-body-secondary small">
+              <em>{{ state().name }}</em>
+            </div>
+          }
+          @if (isDone()) {
+            <div class="alert alert-success mb-0 py-2">
+              {{ 'components.modals.import-torrents.progress.done' | translate }}
+              @if (state().skipped > 0) {
+                - {{ state().skipped }}
+                {{ 'components.modals.import-torrents.progress.skipped' | translate }}
+              }
+            </div>
+          }
+          @if (isError()) {
+            <div class="alert alert-danger mb-0 py-2">{{ state().error }}</div>
+          }
+        </fieldset>
+      }
+    </form>
+  }
+</div>
+
+<div class="modal-footer">
+  @if (isRunning()) {
+    <button type="button" class="btn btn-secondary" (click)="cancelImport()">
+      {{ 'general.button.cancel' | translate }}
+    </button>
+  } @else if (isDone() || isError()) {
+    <button type="button" class="btn btn-secondary" (click)="close()">
+      {{ 'general.button.close' | translate }}
+    </button>
+  } @else if (isReady()) {
+    <button type="button" class="btn btn-primary" (click)="startImport()">
+      {{ 'components.modals.import-torrents.button.import' | translate }}
+    </button>
+    <button type="button" class="btn btn-link" (click)="close()">
+      {{ 'general.button.cancel' | translate }}
+    </button>
+  }
+</div>
