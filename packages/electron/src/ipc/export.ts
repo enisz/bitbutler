@@ -153,8 +153,6 @@ async function runExport(event: Electron.IpcMainEvent, payload: ExportStartPaylo
       send('export:progress', progress);
     }
 
-    entries.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
-
     const metadata: BbeMetadata = {
       version: 1,
       exported_at: Math.floor(Date.now() / 1000),
