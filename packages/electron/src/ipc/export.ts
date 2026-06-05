@@ -10,6 +10,7 @@ import type {
 import AdmZip from 'adm-zip';
 import archiver from 'archiver';
 import { dialog, ipcMain } from 'electron';
+import FormData from 'form-data';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -244,9 +245,235 @@ async function buildExportEntry(
   }
 }
 
-async function runImport(
-  _event: Electron.IpcMainEvent,
-  _payload: ImportStartPayload,
+async function runImport(event: Electron.IpcMainEvent, payload: ImportStartPayload): Promise<void> {
+  importCancelled = false;
+  const { serverId, bbePath, restoreFields, startMode, pathMappings } = payload;
+
+  const send = (channel: string, data: unknown): void => {
+    if (!event.sender.isDestroyed()) event.sender.send(channel, data);
+  };
+
+  try {
+    const zip = new AdmZip(bbePath);
+    const metaEntry = zip.getEntry('metadata.json');
+    if (!metaEntry) throw new Error('Invalid .bbe: metadata.json not found');
+    const metadata = JSON.parse(metaEntry.getData().toString('utf8')) as BbeMetadata;
+
+    const torrents = metadata.torrents.filter((t) => !t.failed);
+    let skipped = 0;
+
+    for (let i = 0; i < torrents.length; i++) {
+      if (importCancelled) break;
+
+      const entry = torrents[i];
+
+      try {
+        await importTorrent(
+          serverId,
+          entry,
+          metadata.export_mode,
+          zip,
+          restoreFields,
+          startMode,
+          pathMappings,
+        );
+      } catch {
+        skipped++;
+      }
+
+      send('import:progress', {
+        current: i + 1,
+        total: torrents.length,
+        name: entry.name,
+        skipped,
+      } satisfies ExportProgressEvent);
+    }
+
+    send('import:done', { total: torrents.length, skipped });
+  } catch (err) {
+    send('import:error', { message: (err as Error)?.message ?? String(err) });
+  }
+}
+
+async function importTorrent(
+  serverId: string,
+  entry: BbeTorrentEntry,
+  exportMode: 'full' | 'legacy',
+  zip: AdmZip,
+  restoreFields: ImportStartPayload['restoreFields'],
+  startMode: ImportStartPayload['startMode'],
+  pathMappings: ImportStartPayload['pathMappings'],
 ): Promise<void> {
-  /* Task 6 */
+  const has = (field: ImportStartPayload['restoreFields'][number]): boolean =>
+    restoreFields.includes(field);
+
+  const resolvedSavePath =
+    has('save_path') && entry.save_path
+      ? applyPathMappings(entry.save_path, pathMappings)
+      : undefined;
+
+  const addOptions: Record<string, unknown> = {
+    stopped: 'true',
+    paused: 'true',
+  };
+
+  if (resolvedSavePath) addOptions['savepath'] = resolvedSavePath;
+  if (has('category_tags') && entry.category) addOptions['category'] = entry.category;
+  if (has('category_tags') && entry.tags?.length) addOptions['tags'] = entry.tags.join(',');
+  if (has('auto_tmm')) addOptions['autoTMM'] = String(entry.auto_tmm ?? false);
+  if (has('sequential_download'))
+    addOptions['sequentialDownload'] = String(entry.sequential_download ?? false);
+  if (has('first_last_piece_prio'))
+    addOptions['firstLastPiecePrio'] = String(entry.first_last_piece_prio ?? false);
+
+  if (exportMode === 'full') {
+    const torrentEntry = zip.getEntry(`torrents/${entry.hash}.torrent`);
+    if (!torrentEntry) throw new Error(`Missing torrent file for hash ${entry.hash}`);
+    const torrentBuffer = torrentEntry.getData();
+    const { headers, body } = buildAddFormData(torrentBuffer, entry.hash, addOptions);
+    await qbRequest({ id: serverId, method: 'POST', path: '/api/v2/torrents/add', headers, body });
+  } else {
+    if (!entry.magnet_link) throw new Error(`No magnet link for hash ${entry.hash}`);
+    await qbRequest({
+      id: serverId,
+      method: 'POST',
+      path: '/api/v2/torrents/add',
+      form: { urls: entry.magnet_link, ...flattenStringRecord(addOptions) },
+    });
+  }
+
+  // Poll for file tree to become available
+  let baseFiles: QbTorrentFile[] = [];
+  for (let attempt = 0; attempt < 10; attempt++) {
+    await sleep(500);
+    const res = (await qbRequest({
+      id: serverId,
+      path: '/api/v2/torrents/files',
+      query: { hash: entry.hash },
+    })) as QbTorrentFile[];
+    if (res?.length) {
+      baseFiles = res;
+      break;
+    }
+  }
+
+  // Apply renames
+  if (has('renames') && entry.files?.length && baseFiles.length) {
+    for (const saved of entry.files) {
+      const base = baseFiles.find((f) => f.index === saved.index);
+      if (base && base.name !== saved.name) {
+        await qbRequest({
+          id: serverId,
+          method: 'POST',
+          path: '/api/v2/torrents/renameFile',
+          form: { hash: entry.hash, oldPath: base.name, newPath: saved.name },
+        }).catch(() => {});
+      }
+    }
+  }
+
+  // Apply file priorities
+  if (has('priorities') && entry.files?.length) {
+    const byPriority = new Map<number, number[]>();
+    for (const f of entry.files) {
+      const list = byPriority.get(f.priority) ?? [];
+      list.push(f.index);
+      byPriority.set(f.priority, list);
+    }
+    for (const [priority, indices] of byPriority) {
+      await qbRequest({
+        id: serverId,
+        method: 'POST',
+        path: '/api/v2/torrents/filePrio',
+        form: { hash: entry.hash, id: indices.join('|'), priority: String(priority) },
+      }).catch(() => {});
+    }
+  }
+
+  // Apply speed limits
+  if (has('speed_limits')) {
+    if (entry.up_limit !== undefined) {
+      await qbRequest({
+        id: serverId,
+        method: 'POST',
+        path: '/api/v2/torrents/setUploadLimit',
+        form: { hashes: entry.hash, limit: String(entry.up_limit) },
+      }).catch(() => {});
+    }
+    if (entry.dl_limit !== undefined) {
+      await qbRequest({
+        id: serverId,
+        method: 'POST',
+        path: '/api/v2/torrents/setDownloadLimit',
+        form: { hashes: entry.hash, limit: String(entry.dl_limit) },
+      }).catch(() => {});
+    }
+  }
+
+  // Apply share limits
+  if (has('share_limits')) {
+    await qbRequest({
+      id: serverId,
+      method: 'POST',
+      path: '/api/v2/torrents/setShareLimits',
+      form: {
+        hashes: entry.hash,
+        ratioLimit: String(entry.ratio_limit ?? -1),
+        seedingTimeLimit: String(entry.seeding_time_limit ?? -1),
+        inactiveSeedingTimeLimit: String(entry.inactive_seeding_time_limit ?? -1),
+      },
+    }).catch(() => {});
+  }
+
+  // Apply super seeding
+  if (has('super_seeding') && entry.super_seeding !== undefined) {
+    await qbRequest({
+      id: serverId,
+      method: 'POST',
+      path: '/api/v2/torrents/setSuperSeeding',
+      form: { hashes: entry.hash, value: String(entry.super_seeding) },
+    }).catch(() => {});
+  }
+
+  // Resume if applicable
+  const shouldResume =
+    startMode === 'all' || (startMode === 'active' && isActiveState(entry.state));
+  if (shouldResume) {
+    await qbRequest({
+      id: serverId,
+      method: 'POST',
+      path: '/api/v2/torrents/resume',
+      form: { hashes: entry.hash },
+    }).catch(() => {});
+  }
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function flattenStringRecord(obj: Record<string, unknown>): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const [k, v] of Object.entries(obj)) {
+    if (v !== undefined && v !== null) out[k] = String(v);
+  }
+  return out;
+}
+
+function buildAddFormData(
+  torrentBuffer: Buffer,
+  hash: string,
+  options: Record<string, unknown>,
+): { headers: Record<string, string>; body: Buffer } {
+  const fd = new FormData();
+  fd.append('torrents', torrentBuffer, { filename: `${hash}.torrent` });
+  for (const [k, v] of Object.entries(options)) {
+    if (v !== undefined && v !== null) fd.append(k, String(v));
+  }
+  const body = fd.getBuffer();
+  const headers = {
+    ...fd.getHeaders(),
+    'Content-Length': String(body.length),
+  };
+  return { headers, body };
 }
