@@ -1,0 +1,159 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ 'components.modals.export-torrents.title' | translate }}</h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
+</div>
+
+<div class="modal-body">
+  <form [formGroup]="exportForm">
+    <fieldset class="bb-fieldset mt-0">
+      <legend>{{ 'components.modals.export-torrents.label.connection' | translate }}</legend>
+      <div id="version-banner" class="alert alert-success mb-0 py-2">
+        {{ 'components.modals.export-torrents.banner.full-mode' | translate }}
+      </div>
+    </fieldset>
+
+    @if (phase() === 'idle') {
+      <fieldset class="bb-fieldset">
+        <legend>{{ 'components.modals.export-torrents.label.scope' | translate }}</legend>
+        <div class="btn-group w-100" role="group">
+          <input
+            type="radio"
+            class="btn-check"
+            formControlName="scope"
+            id="scope-all"
+            value="all"
+          />
+          <label class="btn btn-outline-primary" for="scope-all">
+            {{ 'components.modals.export-torrents.scope.all' | translate }} ({{ allCount() }})
+          </label>
+          <input
+            type="radio"
+            class="btn-check"
+            formControlName="scope"
+            id="scope-filtered"
+            value="filtered"
+            [attr.disabled]="!hasFiltered() || null"
+          />
+          <label class="btn btn-outline-primary" for="scope-filtered">
+            {{ 'components.modals.export-torrents.scope.filtered' | translate }} ({{
+              filteredCount()
+            }})
+          </label>
+          <input
+            type="radio"
+            class="btn-check"
+            formControlName="scope"
+            id="scope-selected"
+            value="selected"
+            [attr.disabled]="!hasSelection() || null"
+          />
+          <label class="btn btn-outline-primary" for="scope-selected">
+            {{ 'components.modals.export-torrents.scope.selected' | translate }} ({{
+              selectedCount()
+            }})
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset class="bb-fieldset">
+        <legend>{{ 'components.modals.export-torrents.label.save-location' | translate }}</legend>
+        <div class="input-group mb-3">
+          <div class="form-floating flex-grow-1">
+            <input
+              type="text"
+              class="form-control"
+              id="destDir"
+              formControlName="destDir"
+              [placeholder]="'components.modals.export-torrents.placeholder.dest-dir' | translate"
+              readonly
+              (click)="browseDestDir()"
+            />
+            <label for="destDir">{{
+              'components.modals.export-torrents.label.dest-dir' | translate
+            }}</label>
+          </div>
+          <button type="button" class="btn btn-outline-primary" (click)="browseDestDir()">
+            {{ 'general.button.browse' | translate }}
+          </button>
+        </div>
+        <div class="input-group">
+          <div class="form-floating flex-grow-1">
+            <input
+              type="text"
+              class="form-control"
+              id="filename"
+              formControlName="filename"
+              [placeholder]="'components.modals.export-torrents.placeholder.filename' | translate"
+            />
+            <label for="filename">{{
+              'components.modals.export-torrents.label.filename' | translate
+            }}</label>
+          </div>
+          <span class="input-group-text">.bbe</span>
+        </div>
+      </fieldset>
+    }
+    @if (phase() !== 'idle') {
+      <fieldset class="bb-fieldset">
+        <legend>{{ 'components.modals.export-torrents.label.progress' | translate }}</legend>
+
+        @if (isRunning()) {
+          <div class="d-flex justify-content-between mb-1">
+            <span>{{ 'components.modals.export-torrents.progress.exporting' | translate }}</span>
+            <span class="text-body-secondary">{{ state().current }} / {{ state().total }}</span>
+          </div>
+          <div class="progress mb-2">
+            <div class="progress-bar" role="progressbar" [style.width.%]="progressPct()"></div>
+          </div>
+          <div class="text-body-secondary small">
+            {{ 'components.modals.export-torrents.progress.fetching' | translate }}:
+            <em>{{ state().name }}</em>
+          </div>
+        }
+        @if (isDone()) {
+          <div
+            class="alert alert-success mb-0 py-2 d-flex justify-content-between align-items-center"
+          >
+            <span>
+              {{ 'components.modals.export-torrents.progress.done' | translate }}
+              @if (state().skipped > 0) {
+                - {{ state().skipped }}
+                {{ 'components.modals.export-torrents.progress.skipped' | translate }}
+              }
+            </span>
+            <button type="button" class="btn btn-sm btn-outline-success" (click)="showInFolder()">
+              {{ 'components.modals.export-torrents.button.show-in-folder' | translate }}
+            </button>
+          </div>
+        }
+        @if (isError()) {
+          <div class="alert alert-danger mb-0 py-2">{{ state().error }}</div>
+        }
+      </fieldset>
+    }
+  </form>
+</div>
+
+<div class="modal-footer">
+  @if (isRunning()) {
+    <button type="button" class="btn btn-secondary" (click)="cancelExport()">
+      {{ 'general.button.cancel' | translate }}
+    </button>
+  } @else if (isDone() || isError()) {
+    <button type="button" class="btn btn-secondary" (click)="close()">
+      {{ 'general.button.close' | translate }}
+    </button>
+  } @else {
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="startExport()"
+      [disabled]="exportForm.invalid"
+    >
+      {{ 'components.modals.export-torrents.button.export' | translate }}
+    </button>
+    <button type="button" class="btn btn-link" (click)="close()">
+      {{ 'general.button.cancel' | translate }}
+    </button>
+  }
+</div>

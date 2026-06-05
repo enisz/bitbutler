@@ -1,6 +1,7 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import type { FilterModel } from 'ag-grid-community';
-import { TorrentState } from '../models/torrent.model';
+import { Torrent, TorrentState } from '../models/torrent.model';
+import { TorrentStoreService } from './torrent-store.service';
 
 export type GridExternalFilterParams = {
   search: string;
@@ -51,6 +52,8 @@ function shallowEqualFilterModel(a: FilterModel, b: FilterModel): boolean {
 
 @Injectable({ providedIn: 'root' })
 export class FilterService {
+  private readonly torrentStore = inject(TorrentStoreService);
+
   private readonly _external = signal<GridExternalFilterParams>(GRID_FILTER_INITIAL.external, {
     equal: shallowEqualExternal,
   });
@@ -60,6 +63,52 @@ export class FilterService {
 
   readonly external = this._external.asReadonly();
   readonly columns = this._columns.asReadonly();
+
+  /**
+   * Computed list of torrents that match the current external filter params.
+   * Note: ag-Grid column filters are not applied here; this reflects the
+   * sidebar/search filter state only.
+   */
+  readonly filtered = computed<Torrent[]>(() => {
+    const params = this._external();
+    const all = this.torrentStore.torrentsArray();
+    if (
+      !params.search &&
+      params.states.size === 0 &&
+      params.trackers.size === 0 &&
+      params.savePaths.size === 0 &&
+      params.categories.size === 0 &&
+      params.tags.size === 0
+    ) {
+      return all;
+    }
+    return all.filter((t) => {
+      if (params.search && !t.name.toLowerCase().includes(params.search.toLowerCase())) {
+        return false;
+      }
+      if (params.states.size > 0 && !params.states.has(t.state)) {
+        return false;
+      }
+      if (params.categories.size > 0 && !params.categories.has(t.category)) {
+        return false;
+      }
+      if (params.savePaths.size > 0 && !params.savePaths.has(t.save_path)) {
+        return false;
+      }
+      if (params.tags.size > 0) {
+        const torrentTags = new Set(
+          t.tags
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean),
+        );
+        if (![...params.tags].every((tag) => torrentTags.has(tag))) {
+          return false;
+        }
+      }
+      return true;
+    });
+  });
 
   public get snapshot(): GridFilterState {
     return { external: this._external(), columns: this._columns() };
