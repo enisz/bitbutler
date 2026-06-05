@@ -34,6 +34,8 @@ import { ServerStoreService } from '../../../services/server-store.service';
 export class ImportTorrents implements OnInit {
   readonly initialBbePath = input<string>();
 
+  private loadedBbePath = '';
+
   private readonly activeModal = inject(NgbActiveModal);
   private readonly exportService = inject(ExportService);
   private readonly injector = inject(Injector);
@@ -144,6 +146,7 @@ export class ImportTorrents implements OnInit {
   }
 
   async loadBbe(bbePath: string): Promise<void> {
+    this.loadedBbePath = bbePath;
     this.exportService.setImportLoading();
     try {
       const metadata = await window.bitbutler.export.readBbe({ path: bbePath });
@@ -165,7 +168,7 @@ export class ImportTorrents implements OnInit {
 
     const payload: ImportStartPayload = {
       serverId: this.serverStore.currentServer()?.id ?? '',
-      bbePath: this.initialBbePath() ?? '',
+      bbePath: this.loadedBbePath || this.initialBbePath() || '',
       restoreFields,
       startMode: raw.startMode,
       pathMappings,
