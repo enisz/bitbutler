@@ -639,6 +639,91 @@
           "message": "Biztosan törölni szeretnéd a \"{{ name }}\" szervert?"
         }
       },
+      "export-torrents": {
+        "title": "Export Torrents",
+        "label": {
+          "connection": "Connection",
+          "scope": "Export scope",
+          "save-location": "Save location",
+          "dest-dir": "Directory",
+          "filename": "Filename",
+          "progress": "Progress"
+        },
+        "placeholder": {
+          "dest-dir": "Select export directory",
+          "filename": "Filename"
+        },
+        "banner": {
+          "full-mode": "Full export mode",
+          "legacy-mode": "Legacy mode - only magnet links will be saved (qBittorrent < 4.5.0)"
+        },
+        "scope": {
+          "all": "All",
+          "filtered": "Filtered",
+          "selected": "Selected"
+        },
+        "progress": {
+          "exporting": "Exporting torrents...",
+          "fetching": "Fetching",
+          "done": "Export complete",
+          "skipped": "skipped"
+        },
+        "button": {
+          "export": "Export",
+          "show-in-folder": "Show in folder"
+        }
+      },
+      "import-torrents": {
+        "title": "Import Torrents",
+        "label": {
+          "archive": "Archive",
+          "restore-options": "Restore options",
+          "path-remap": "Save path remapping",
+          "after-import": "After import",
+          "progress": "Progress"
+        },
+        "archive": {
+          "torrents": "torrents",
+          "full-mode": "Full export",
+          "legacy-mode": "Legacy export",
+          "importing-to": "Importing to"
+        },
+        "restore": {
+          "save_path": "Save path",
+          "category_tags": "Category and tags",
+          "speed_limits": "Speed limits",
+          "share_limits": "Share limits",
+          "renames": "File renames",
+          "priorities": "File priorities",
+          "auto_tmm": "Auto-TMM",
+          "sequential_download": "Sequential download",
+          "super_seeding": "Super seeding",
+          "first_last_piece_prio": "First/last piece priority"
+        },
+        "path-remap": {
+          "optional": "optional",
+          "from": "From prefix",
+          "to": "To prefix"
+        },
+        "start-mode": {
+          "paused": "Keep paused",
+          "active": "Start active ones",
+          "all": "Start all",
+          "hint": {
+            "paused": "All torrents will remain paused - start them manually when ready.",
+            "active": "Torrents that were active when exported will resume automatically.",
+            "all": "All imported torrents will start immediately regardless of their previous state."
+          }
+        },
+        "progress": {
+          "importing": "Importing torrents...",
+          "done": "Import complete",
+          "skipped": "skipped"
+        },
+        "button": {
+          "import": "Import"
+        }
+      },
       "manage-categories": {
         "title": "Kategóriák kezelése",
         "add-form": {
@@ -1402,7 +1487,9 @@
       "manage-servers": "Szerverek kezelése",
       "help": "Súgó",
       "check-for-updates": "Frissítések keresése",
-      "about": "A BitButlerről"
+      "about": "A BitButlerről",
+      "export-torrents": "Export Torrents",
+      "import-torrents": "Import Torrents"
     }
   }
 }

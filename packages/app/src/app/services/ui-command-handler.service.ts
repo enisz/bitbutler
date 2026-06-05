@@ -7,6 +7,8 @@ import { About } from '../components/about/about';
 import { AddTorrent } from '../components/add-torrent/add-torrent';
 import { AppLoader } from '../components/app-loader/app-loader';
 import { DeleteTorrent } from '../components/modals/delete-torrent/delete-torrent';
+import { ExportTorrents } from '../components/modals/export-torrents/export-torrents';
+import { ImportTorrents } from '../components/modals/import-torrents/import-torrents';
 import { ManageCategories } from '../components/modals/manage-categories/manage-categories';
 import { ManageServers } from '../components/modals/manage-servers/manage-servers';
 import { ManageTags } from '../components/modals/manage-tags/manage-tags';
@@ -329,14 +331,19 @@ export class UiCommandHandlerService {
             break;
 
           case 'UI_EXPORT_TORRENTS':
-            // TODO: open ExportTorrents modal (Task 11)
-            console.log('[BitButler] UI_EXPORT_TORRENTS command received');
+            if (this.isModalOpen(ExportTorrents)) break;
+            this.modalService.open(ExportTorrents, { size: 'lg' });
             break;
 
-          case 'UI_IMPORT_TORRENTS':
-            // TODO: open ImportTorrents modal (Task 12)
-            console.log('[BitButler] UI_IMPORT_TORRENTS command received', command.bbePath);
+          case 'UI_IMPORT_TORRENTS': {
+            if (this.isModalOpen(ImportTorrents)) break;
+            const importRef = this.modalService.open(ImportTorrents, { size: 'lg' });
+            if (command.bbePath) {
+              setModalInput(importRef, 'initialBbePath', command.bbePath);
+            }
+            importRef.result.catch(() => {});
             break;
+          }
 
           default:
             console.warn(UiCommandHandlerService.name, 'start', 'Unhandled UI command', command);
