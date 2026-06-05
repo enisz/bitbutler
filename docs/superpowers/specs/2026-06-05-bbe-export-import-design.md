@@ -62,6 +62,7 @@ export.bbe
       "super_seeding": false,
       "sequential_download": false,
       "first_last_piece_prio": false,
+      "state": "seeding",
 
       "files": [{ "index": 0, "name": "ubuntu-22.04-desktop-amd64.iso", "priority": 1 }]
     },
@@ -189,6 +190,7 @@ export interface BbeTorrentEntry {
   sequential_download?: boolean;
   first_last_piece_prio?: boolean;
   magnet_link?: string; // legacy mode only
+  state?: string; // raw state string from torrents/info at export time (e.g. 'downloading', 'pausedDL', 'stoppedUP')
   files?: BbeTorrentFile[];
 }
 
@@ -366,7 +368,9 @@ ipcMain.on('import:start', async (event, payload) => {
             - setAutoManagement, setShareLimits, setSuperSeeding, etc.
     Step 6: If startAfterImport === true AND torrent was active at export time:
             - POST /api/v2/torrents/resume?hashes={hash}
-            (torrents paused at export time are never resumed regardless of the switch)
+            "Active at export time" = state is NOT one of:
+            pausedDL, pausedUP, stoppedDL, stoppedUP (covers both old and qBittorrent 5+ naming)
+            Torrents with no state field (e.g. failed entries) are never resumed.
     Push import:progress
   Push import:done or import:error
 })
