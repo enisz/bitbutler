@@ -1,6 +1,7 @@
 import { app } from 'electron';
 import { loadTranslations } from './i18n.js';
 import { registerElectronIpcHandlers } from './ipc/electron.js';
+import { registerExportIpcHandlers } from './ipc/export.js';
 import { registerI18nIpcHandlers } from './ipc/i18n.js';
 import { registerNotificationIpcHandlers } from './ipc/notification.js';
 import { registerQbIpcHandlers } from './ipc/qbittorrent.js';
@@ -46,6 +47,7 @@ function createOrRestoreMainWindow(startMinimized = false): Electron.BrowserWind
   registerTorrentIpcHandlers();
   registerSettingsIpcHandlers();
   registerElectronIpcHandlers();
+  registerExportIpcHandlers();
 
   createTray(mainWindow);
 
