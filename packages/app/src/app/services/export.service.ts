@@ -48,7 +48,13 @@ export class ExportService implements OnDestroy {
         this._export.update((s) => ({ ...s, phase: 'running', ...e })),
       ),
       api.onDone((e: ExportDoneEvent) =>
-        this._export.update((s) => ({ ...s, phase: 'done', doneEvent: e, current: s.total })),
+        this._export.update((s) => ({
+          ...s,
+          phase: 'done',
+          doneEvent: e,
+          current: e.total,
+          skipped: e.skipped,
+        })),
       ),
       api.onError((e: { message: string }) =>
         this._export.update((s) => ({ ...s, phase: 'error', error: e.message })),
@@ -57,7 +63,7 @@ export class ExportService implements OnDestroy {
         this._import.update((s) => ({ ...s, phase: 'running', ...e })),
       ),
       api.onImportDone((e: { total: number; skipped: number }) =>
-        this._import.update((s) => ({ ...s, phase: 'done', skipped: e.skipped, current: s.total })),
+        this._import.update((s) => ({ ...s, phase: 'done', skipped: e.skipped, current: e.total })),
       ),
       api.onImportError((e: { message: string }) =>
         this._import.update((s) => ({ ...s, phase: 'error', error: e.message })),
