@@ -8,9 +8,11 @@ const WINDOW_ANIMATE = true;
 
 const CHANNEL_OPEN_FILES = 'bb:open-files';
 const CHANNEL_TORRENT_DRAFTS = 'bb:torrent-drafts';
+const CHANNEL_OPEN_BBE = 'bb:open-bbe';
 
 let mainWindowRef: Electron.BrowserWindow | null = null;
 let pendingOpenFiles: string[] = [];
+let pendingOpenBbe: string[] = [];
 let openHandlingEnabled = false;
 
 function getArgStartIndex(): number {
@@ -32,6 +34,28 @@ function extractExistingTorrentFiles(argv: string[], startIndex = 0): string[] {
       const stat = fs.statSync(resolved);
       if (!stat.isFile()) continue;
       if (path.extname(resolved).toLowerCase() !== '.torrent') continue;
+      out.push(resolved);
+    } catch {}
+  }
+
+  return out;
+}
+
+function extractExistingBbeFiles(argv: string[], startIndex = 0): string[] {
+  const out: string[] = [];
+
+  for (const arg of argv.slice(startIndex)) {
+    if (!arg || typeof arg !== 'string') continue;
+    if (arg.startsWith('-')) continue;
+
+    const cleaned = arg.replace(/^"(.*)"$/, '$1').replace(/^'(.*)'$/, '$1');
+    const resolved = path.isAbsolute(cleaned) ? cleaned : path.resolve(process.cwd(), cleaned);
+
+    try {
+      if (!fs.existsSync(resolved)) continue;
+      const stat = fs.statSync(resolved);
+      if (!stat.isFile()) continue;
+      if (path.extname(resolved).toLowerCase() !== '.bbe') continue;
       out.push(resolved);
     } catch {}
   }
@@ -65,6 +89,15 @@ function pushOpenFilesToRenderer(paths: string[]): void {
     mainWindowRef.webContents.send(CHANNEL_OPEN_FILES, unique);
   } catch (e) {
     console.error('[BitButler][open-files] Failed to send open-files to renderer.', e);
+  }
+}
+
+function pushBbeToRenderer(bbePath: string): void {
+  if (!mainWindowRef) return;
+  try {
+    mainWindowRef.webContents.send(CHANNEL_OPEN_BBE, bbePath);
+  } catch (e) {
+    console.error('[BitButler][open-bbe] Failed to send bbe path to renderer.', e);
   }
 }
 
@@ -152,10 +185,29 @@ async function flushQueueIfPossible(): Promise<void> {
   }
 }
 
+function handleIncomingOpenBbe(bbePaths: string[]): void {
+  const unique = Array.from(new Set(bbePaths.filter(Boolean)));
+  if (!unique.length) return;
+  if (!canSendToRendererNow()) {
+    pendingOpenBbe.push(...unique);
+    return;
+  }
+  for (const p of unique) pushBbeToRenderer(p);
+}
+
+function flushBbeQueueIfPossible(): void {
+  if (!pendingOpenBbe.length || !canSendToRendererNow()) return;
+  const toSend = Array.from(new Set(pendingOpenBbe));
+  pendingOpenBbe = [];
+  for (const p of toSend) pushBbeToRenderer(p);
+}
+
 export function handleSecondInstanceArgv(argv: string[]): void {
   const startIndex = getArgStartIndex();
   const paths = extractExistingTorrentFiles(argv, startIndex);
   void handleIncomingOpenFiles(paths, 'second-instance');
+  const bbePaths = extractExistingBbeFiles(argv, startIndex);
+  handleIncomingOpenBbe(bbePaths);
   focusMainWindow();
 }
 
@@ -201,12 +253,22 @@ export function registerWindowIpcHandlers(mainWindow: Electron.BrowserWindow): v
     return pathsToDrafts(toSend, 'startup');
   });
 
+  ipcMain.handle('window:open-bbe:drain', async () => {
+    const toSend = Array.from(new Set(pendingOpenBbe));
+    pendingOpenBbe = [];
+    return toSend;
+  });
+
   mainWindow.webContents.on('did-finish-load', () => {
     void flushQueueIfPossible();
+    flushBbeQueueIfPossible();
   });
 
   const initial = extractExistingTorrentFiles(process.argv, getArgStartIndex());
   void handleIncomingOpenFiles(initial, 'startup');
+
+  const initialBbe = extractExistingBbeFiles(process.argv, getArgStartIndex());
+  handleIncomingOpenBbe(initialBbe);
 }
 
 function setSize(mainWindow: Electron.BrowserWindow, width: number, height: number): void {
