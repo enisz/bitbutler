@@ -330,10 +330,12 @@ export class UiCommandHandlerService {
             this.handleServerSwitch(command.id);
             break;
 
-          case 'UI_EXPORT_TORRENTS':
+          case 'UI_EXPORT_TORRENTS': {
             if (this.isModalOpen(ExportTorrents)) break;
-            this.modalService.open(ExportTorrents, { size: 'lg' });
+            const exportRef = this.modalService.open(ExportTorrents, { size: 'lg' });
+            exportRef.result.catch(() => {});
             break;
+          }
 
           case 'UI_IMPORT_TORRENTS': {
             if (this.isModalOpen(ImportTorrents)) break;
