@@ -214,6 +214,7 @@ export interface ImportStartPayload {
   serverId: string;
   bbePath: string;
   restoreFields: ImportRestoreField[];
+  startAfterImport: boolean; // if true, resume torrents that were active at export time
 }
 ```
 
@@ -330,6 +331,9 @@ The spinner covers the unzip + parse step, which can take meaningful time for ar
      - File renames / File priorities & exclusions
      - Auto-TMM / Sequential download
      - Super seeding / First/last piece priority
+   - **Start torrents after import** toggle switch (default: on) - when enabled,
+     torrents that were active at export time are resumed after all steps complete.
+     Torrents that were paused at export time remain paused either way.
    - **Import** + **Cancel** buttons
 
 3. **Progress state** - same inline pattern as export: progress bar + current torrent name + counter. Cancel button available.
@@ -360,8 +364,9 @@ ipcMain.on('import:start', async (event, payload) => {
             - POST /api/v2/torrents/filePrio per group (pipe-separated indices)
     Step 5: Apply remaining metadata fields as applicable:
             - setAutoManagement, setShareLimits, setSuperSeeding, etc.
-    Step 6: If torrent was not stopped at export time:
+    Step 6: If startAfterImport === true AND torrent was active at export time:
             - POST /api/v2/torrents/resume?hashes={hash}
+            (torrents paused at export time are never resumed regardless of the switch)
     Push import:progress
   Push import:done or import:error
 })
