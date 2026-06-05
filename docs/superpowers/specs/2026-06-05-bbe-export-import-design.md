@@ -216,7 +216,10 @@ export interface ImportStartPayload {
   serverId: string;
   bbePath: string;
   restoreFields: ImportRestoreField[];
-  startAfterImport: boolean; // if true, resume torrents that were active at export time
+  startMode: 'paused' | 'active' | 'all';
+  // paused: leave all torrents paused after import
+  // active: resume only torrents whose state was active at export time
+  // all:    resume all imported torrents regardless of export-time state
 }
 ```
 
@@ -333,11 +336,12 @@ The spinner covers the unzip + parse step, which can take meaningful time for ar
      - File renames / File priorities & exclusions
      - Auto-TMM / Sequential download
      - Super seeding / First/last piece priority
-   - **Start torrents after import** toggle switch (default: on) with an inline hint
-     that updates based on the current state:
-     - ON: "Torrents that were active when exported will resume automatically"
-     - OFF: "All torrents will remain paused - start them manually when ready"
-       Torrents that were paused at export time are never resumed regardless of this setting.
+   - **After import** button group (default: "Start active ones"), styled identically
+     to the export scope selector. An inline hint below the group updates dynamically
+     via a computed signal as the user switches between options:
+     - **Keep paused:** "All torrents will remain paused - start them manually when ready."
+     - **Start active ones:** "Torrents that were active when exported will resume automatically."
+     - **Start all:** "All imported torrents will start immediately regardless of their previous state."
    - **Import** + **Cancel** buttons
 
 3. **Progress state** - same inline pattern as export: progress bar + current torrent name + counter. Cancel button available.
@@ -368,11 +372,12 @@ ipcMain.on('import:start', async (event, payload) => {
             - POST /api/v2/torrents/filePrio per group (pipe-separated indices)
     Step 5: Apply remaining metadata fields as applicable:
             - setAutoManagement, setShareLimits, setSuperSeeding, etc.
-    Step 6: If startAfterImport === true AND torrent was active at export time:
-            - POST /api/v2/torrents/resume?hashes={hash}
-            "Active at export time" = state is NOT one of:
-            pausedDL, pausedUP, stoppedDL, stoppedUP (covers both old and qBittorrent 5+ naming)
-            Torrents with no state field (e.g. failed entries) are never resumed.
+    Step 6: Resume decision based on startMode:
+            - 'paused': skip - leave torrent paused
+            - 'active': POST resume only if state is NOT pausedDL / pausedUP / stoppedDL / stoppedUP
+                        (covers both old and qBittorrent 5+ naming)
+            - 'all':    POST resume unconditionally
+            Torrents with no state field (failed entries) are never resumed.
     Push import:progress
   Push import:done or import:error
 })
