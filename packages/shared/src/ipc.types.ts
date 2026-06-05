@@ -52,6 +52,92 @@ export type TorrentParsePayload = {
   bytes?: number[];
 };
 
+export type ExportScope = 'all' | 'filtered' | 'selected';
+export type ExportMode = 'full' | 'legacy';
+export type ImportStartMode = 'paused' | 'active' | 'all';
+
+export type ImportRestoreField =
+  | 'save_path'
+  | 'category_tags'
+  | 'speed_limits'
+  | 'share_limits'
+  | 'renames'
+  | 'priorities'
+  | 'auto_tmm'
+  | 'sequential_download'
+  | 'super_seeding'
+  | 'first_last_piece_prio';
+
+export interface ExportStartPayload {
+  serverId: string;
+  scope: ExportScope;
+  hashes: string[];
+  destDir: string;
+  filename: string;
+}
+
+export interface ExportProgressEvent {
+  current: number;
+  total: number;
+  name: string;
+  skipped: number;
+}
+
+export interface ExportDoneEvent {
+  path: string;
+  total: number;
+  skipped: number;
+}
+
+export interface BbeTorrentFile {
+  index: number;
+  name: string;
+  priority: number;
+}
+
+export interface BbeTorrentEntry {
+  hash: string;
+  name: string;
+  failed: boolean;
+  error?: string;
+  save_path?: string;
+  category?: string;
+  tags?: string[];
+  up_limit?: number;
+  dl_limit?: number;
+  auto_tmm?: boolean;
+  ratio_limit?: number;
+  seeding_time_limit?: number;
+  inactive_seeding_time_limit?: number;
+  super_seeding?: boolean;
+  sequential_download?: boolean;
+  first_last_piece_prio?: boolean;
+  magnet_link?: string;
+  state?: string;
+  files?: BbeTorrentFile[];
+}
+
+export interface BbeMetadata {
+  version: number;
+  exported_at: string;
+  source_server: string;
+  export_mode: ExportMode;
+  torrents: BbeTorrentEntry[];
+}
+
+export interface BbePathMapping {
+  from: string;
+  to: string;
+}
+
+export interface ImportStartPayload {
+  serverId: string;
+  bbePath: string;
+  restoreFields: ImportRestoreField[];
+  startMode: ImportStartMode;
+  pathMappings: BbePathMapping[];
+}
+
 export interface BitButlerAPI {
   electron: {
     isDev(): Promise<boolean>;
@@ -97,6 +183,8 @@ export interface BitButlerAPI {
     drainOpenFiles(): Promise<string[]>;
     onTorrentDrafts(callback: (drafts: TorrentDraft[]) => void): () => void;
     drainOpenTorrents(): Promise<TorrentDraft[]>;
+    onOpenBbe(callback: (path: string) => void): () => void;
+    drainOpenBbe(): Promise<string[]>;
     simulateOpenFiles(path: string[]): Promise<TorrentDraft[]>;
   };
 
@@ -125,5 +213,20 @@ export interface BitButlerAPI {
 
   i18n: {
     languageChanged(lang: string): void;
+  };
+
+  export: {
+    start(payload: ExportStartPayload): void;
+    cancel(): void;
+    openBbePicker(): Promise<string | undefined>;
+    readBbe(payload: { path: string }): Promise<BbeMetadata>;
+    importStart(payload: ImportStartPayload): void;
+    importCancel(): void;
+    onProgress(cb: (e: ExportProgressEvent) => void): () => void;
+    onDone(cb: (e: ExportDoneEvent) => void): () => void;
+    onError(cb: (e: { message: string }) => void): () => void;
+    onImportProgress(cb: (e: ExportProgressEvent) => void): () => void;
+    onImportDone(cb: (e: { total: number; skipped: number }) => void): () => void;
+    onImportError(cb: (e: { message: string }) => void): () => void;
   };
 }

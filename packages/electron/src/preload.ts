@@ -1,6 +1,11 @@
 import type {
+  BbeMetadata,
   BitButlerAPI,
   BitButlerSyncStreamResponse,
+  ExportDoneEvent,
+  ExportProgressEvent,
+  ExportStartPayload,
+  ImportStartPayload,
   MenuClickPayload,
   TorrentDraft,
   WindowState,
@@ -114,6 +119,8 @@ const api: BitButlerAPI = {
 
     drainOpenFiles: () => ipcRenderer.invoke('window:open-files:drain'),
     drainOpenTorrents: () => ipcRenderer.invoke('window:open-torrents:drain'),
+    onOpenBbe: (callback) => makeIpcSubscription('bb:open-bbe', (path) => path as string, callback),
+    drainOpenBbe: () => ipcRenderer.invoke('window:open-bbe:drain'),
     simulateOpenFiles: (paths) => ipcRenderer.invoke('window:open-files:simulate', { paths }),
   },
 
@@ -143,6 +150,28 @@ const api: BitButlerAPI = {
 
   i18n: {
     languageChanged: (lang) => ipcRenderer.send('i18n:language-changed', { lang }),
+  },
+
+  export: {
+    start: (payload: ExportStartPayload) => ipcRenderer.send('export:start', payload),
+    cancel: () => ipcRenderer.send('export:cancel'),
+    openBbePicker: () => ipcRenderer.invoke('export:open-bbe-picker'),
+    readBbe: (payload: { path: string }) =>
+      ipcRenderer.invoke('export:read-bbe', payload) as Promise<BbeMetadata>,
+    importStart: (payload: ImportStartPayload) => ipcRenderer.send('export:import-start', payload),
+    importCancel: () => ipcRenderer.send('export:import-cancel'),
+    onProgress: (cb: (e: ExportProgressEvent) => void) =>
+      makeIpcSubscription('export:progress', (e) => e as ExportProgressEvent, cb),
+    onDone: (cb: (e: ExportDoneEvent) => void) =>
+      makeIpcSubscription('export:done', (e) => e as ExportDoneEvent, cb),
+    onError: (cb: (e: { message: string }) => void) =>
+      makeIpcSubscription('export:error', (e) => e as { message: string }, cb),
+    onImportProgress: (cb: (e: ExportProgressEvent) => void) =>
+      makeIpcSubscription('export:import-progress', (e) => e as ExportProgressEvent, cb),
+    onImportDone: (cb: (e: { total: number; skipped: number }) => void) =>
+      makeIpcSubscription('export:import-done', (e) => e as { total: number; skipped: number }, cb),
+    onImportError: (cb: (e: { message: string }) => void) =>
+      makeIpcSubscription('export:import-error', (e) => e as { message: string }, cb),
   },
 };
 
