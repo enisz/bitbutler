@@ -42,6 +42,16 @@ export class MenuBarCommandHandlerService {
           this.commandBusService.emit({ type: 'UI_OPEN_QB_SETTINGS' });
           break;
 
+        case 'file.exportTorrents':
+          this.commandBusService.emit({ type: 'UI_EXPORT_TORRENTS' });
+          break;
+
+        case 'file.importTorrents':
+          void window.bitbutler.export.openBbePicker().then((bbePath) => {
+            if (bbePath) this.commandBusService.emit({ type: 'UI_IMPORT_TORRENTS', bbePath });
+          });
+          break;
+
         case 'file.disconnect':
           this.disconnect();
           break;

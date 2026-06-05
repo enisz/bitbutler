@@ -41,6 +41,8 @@ const noopSubscription = () => noop;
     onStateChange: noopSubscription,
     drainOpenFiles: noopAsync,
     drainOpenTorrents: noopAsync,
+    onOpenBbe: noopSubscription,
+    drainOpenBbe: () => Promise.resolve([]),
     simulateOpenFiles: noopAsync,
   },
   torrent: {

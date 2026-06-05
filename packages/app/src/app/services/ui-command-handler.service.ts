@@ -55,6 +55,15 @@ export class UiCommandHandlerService {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((modals) => (this.activeModals = modals));
 
+    const unsubBbe = window.bitbutler.window.onOpenBbe((bbePath) => {
+      this.commandBusService.emit({ type: 'UI_IMPORT_TORRENTS', bbePath });
+    });
+    this.destroyRef.onDestroy(unsubBbe);
+
+    void window.bitbutler.window.drainOpenBbe().then((paths) => {
+      if (paths[0]) this.commandBusService.emit({ type: 'UI_IMPORT_TORRENTS', bbePath: paths[0] });
+    });
+
     this.commandBusService.commands$
       .pipe(filter(this.uiCommandGuard), takeUntilDestroyed(this.destroyRef))
       .subscribe((command: AppCommand) => {
@@ -317,6 +326,16 @@ export class UiCommandHandlerService {
 
           case 'UI_SERVER_SWITCH':
             this.handleServerSwitch(command.id);
+            break;
+
+          case 'UI_EXPORT_TORRENTS':
+            // TODO: open ExportTorrents modal (Task 11)
+            console.log('[BitButler] UI_EXPORT_TORRENTS command received');
+            break;
+
+          case 'UI_IMPORT_TORRENTS':
+            // TODO: open ImportTorrents modal (Task 12)
+            console.log('[BitButler] UI_IMPORT_TORRENTS command received', command.bbePath);
             break;
 
           default:
