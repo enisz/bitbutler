@@ -109,6 +109,7 @@ async function runExport(event: Electron.IpcMainEvent, payload: ExportStartPaylo
     if (!event.sender.isDestroyed()) event.sender.send(channel, data);
   };
 
+  let tmpPath = '';
   try {
     const apiVersion = (await qbRequest({
       id: serverId,
@@ -116,7 +117,7 @@ async function runExport(event: Electron.IpcMainEvent, payload: ExportStartPaylo
     })) as string;
     const isFullMode = semver.gte(apiVersion.trim(), '2.8.3');
 
-    const tmpPath = path.join(os.tmpdir(), `bbe-${Date.now()}.zip`);
+    tmpPath = path.join(os.tmpdir(), `bbe-${Date.now()}.zip`);
     const output = fs.createWriteStream(tmpPath);
     const archive = archiver('zip', { zlib: { level: 6 } });
     archive.pipe(output);
@@ -124,6 +125,7 @@ async function runExport(event: Electron.IpcMainEvent, payload: ExportStartPaylo
     const outputClosed = new Promise<void>((resolve, reject) => {
       output.on('close', resolve);
       output.on('error', reject);
+      archive.on('error', reject);
     });
 
     const entries: BbeTorrentEntry[] = [];
@@ -170,6 +172,7 @@ async function runExport(event: Electron.IpcMainEvent, payload: ExportStartPaylo
     const done: ExportDoneEvent = { path: destPath, total: hashes.length, skipped };
     send('export:done', done);
   } catch (err) {
+    if (tmpPath) await fs.promises.unlink(tmpPath).catch(() => {});
     send('export:error', { message: (err as Error)?.message ?? String(err) });
   }
 }
