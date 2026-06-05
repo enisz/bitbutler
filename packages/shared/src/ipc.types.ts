@@ -70,6 +70,7 @@ export type ImportRestoreField =
 
 export interface ExportStartPayload {
   serverId: string;
+  serverName: string;
   scope: ExportScope;
   hashes: string[];
   destDir: string;
@@ -119,8 +120,9 @@ export interface BbeTorrentEntry {
 
 export interface BbeMetadata {
   version: number;
-  exported_at: string;
+  exported_at: number;
   source_server: string;
+  source_server_name?: string;
   export_mode: ExportMode;
   torrents: BbeTorrentEntry[];
 }

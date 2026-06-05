@@ -19,21 +19,45 @@
       <fieldset class="bb-fieldset mt-0">
         <legend>{{ 'components.modals.import-torrents.label.archive' | translate }}</legend>
         @if (metadata()) {
-          <div class="small">
-            <span class="fw-bold">{{ metadata()!.source_server }}</span>
-            &nbsp;·&nbsp;{{ metadata()!.exported_at | date: 'yyyy-MM-dd' }} &nbsp;·&nbsp;{{
-              metadata()!.torrents.length
-            }}
-            {{ 'components.modals.import-torrents.archive.torrents' | translate }} &nbsp;·&nbsp;{{
-              metadata()!.export_mode === 'full'
-                ? ('components.modals.import-torrents.archive.full-mode' | translate)
-                : ('components.modals.import-torrents.archive.legacy-mode' | translate)
-            }}
-          </div>
-          <div class="small text-body-secondary mt-1">
-            {{ 'components.modals.import-torrents.archive.importing-to' | translate }}:
-            <strong>{{ serverStore.currentServer()?.name ?? '' }}</strong>
-          </div>
+          <dl class="row mb-0 small">
+            <dt class="col-5 fw-normal text-body-secondary">
+              {{ 'components.modals.import-torrents.archive.exported-from' | translate }}
+            </dt>
+            <dd class="col-7">{{ metadata()!.source_server_name ?? metadata()!.source_server }}</dd>
+
+            <dt class="col-5 fw-normal text-body-secondary">
+              {{ 'components.modals.import-torrents.archive.importing-to' | translate }}
+            </dt>
+            <dd class="col-7">{{ serverStore.currentServer()?.name ?? '' }}</dd>
+
+            <dt class="col-5 fw-normal text-body-secondary">
+              {{ 'components.modals.import-torrents.archive.server-url' | translate }}
+            </dt>
+            <dd class="col-7">{{ serverUrl() }}</dd>
+
+            <dt class="col-5 fw-normal text-body-secondary">
+              {{ 'components.modals.import-torrents.archive.export-date' | translate }}
+            </dt>
+            <dd class="col-7">{{ metadata()!.exported_at | localTimestamp }}</dd>
+
+            <dt class="col-5 fw-normal text-body-secondary">
+              {{ 'components.modals.import-torrents.archive.torrents' | translate }}
+            </dt>
+            <dd class="col-7">{{ metadata()!.torrents.length }}</dd>
+
+            <dt class="col-5 fw-normal text-body-secondary">
+              {{ 'components.modals.import-torrents.archive.export-type' | translate }}
+            </dt>
+            <dd class="col-7">
+              <span [class]="metadata()!.export_mode === 'full' ? 'text-success' : 'text-warning'">
+                {{
+                  metadata()!.export_mode === 'full'
+                    ? ('components.modals.import-torrents.archive.full-mode' | translate)
+                    : ('components.modals.import-torrents.archive.legacy-mode' | translate)
+                }}
+              </span>
+            </dd>
+          </dl>
         }
       </fieldset>
 
@@ -54,7 +78,15 @@
                       [id]="'rf-' + field"
                       [formControlName]="field"
                     />
-                    <label class="form-check-label" [for]="'rf-' + field">
+                    <label
+                      class="form-check-label"
+                      [for]="'rf-' + field"
+                      [ngbTooltip]="
+                        isLegacyUnsupported(field) && metadata()?.export_mode === 'legacy'
+                          ? ('components.modals.import-torrents.legacy-unsupported' | translate)
+                          : null
+                      "
+                    >
                       {{ 'components.modals.import-torrents.restore.' + field | translate }}
                     </label>
                   </div>
@@ -68,10 +100,10 @@
           <fieldset class="bb-fieldset" formArrayName="pathMappings">
             <legend>
               {{ 'components.modals.import-torrents.label.path-remap' | translate }}
-              <span class="fw-normal text-body-secondary ms-1"
-                >({{ 'components.modals.import-torrents.path-remap.optional' | translate }})</span
-              >
             </legend>
+            <p class="small mb-3">
+              {{ 'components.modals.import-torrents.path-remap.description' | translate }}
+            </p>
             @for (group of pathMappings.controls; track $index; let i = $index) {
               <div class="row mb-2" [formGroupName]="i">
                 <div class="col-5">
@@ -89,22 +121,17 @@
                   </div>
                 </div>
                 <div class="col-5">
-                  <div class="input-group">
-                    <div class="form-floating flex-grow-1">
-                      <input
-                        type="text"
-                        class="form-control"
-                        [id]="'to-' + i"
-                        placeholder="to"
-                        formControlName="to"
-                      />
-                      <label [for]="'to-' + i">{{
-                        'components.modals.import-torrents.path-remap.to' | translate
-                      }}</label>
-                    </div>
-                    <button type="button" class="btn btn-outline-primary" (click)="browseToPath(i)">
-                      {{ 'general.button.browse' | translate }}
-                    </button>
+                  <div class="form-floating">
+                    <input
+                      type="text"
+                      class="form-control"
+                      [id]="'to-' + i"
+                      placeholder="to"
+                      formControlName="to"
+                    />
+                    <label [for]="'to-' + i">{{
+                      'components.modals.import-torrents.path-remap.to' | translate
+                    }}</label>
                   </div>
                 </div>
                 <div class="col-2 d-flex align-items-center justify-content-center gap-1">
@@ -138,7 +165,7 @@
           </fieldset>
         }
 
-        <fieldset class="bb-fieldset">
+        <fieldset class="bb-fieldset pb-3">
           <legend>{{ 'components.modals.import-torrents.label.after-import' | translate }}</legend>
           <div class="btn-group w-100 mb-2" role="group">
             <input
@@ -148,7 +175,7 @@
               id="sm-paused"
               value="paused"
             />
-            <label class="btn btn-outline-primary" for="sm-paused">
+            <label class="btn btn-outline-secondary" for="sm-paused">
               {{ 'components.modals.import-torrents.start-mode.paused' | translate }}
             </label>
             <input
@@ -158,7 +185,7 @@
               id="sm-active"
               value="active"
             />
-            <label class="btn btn-outline-primary" for="sm-active">
+            <label class="btn btn-outline-secondary" for="sm-active">
               {{ 'components.modals.import-torrents.start-mode.active' | translate }}
             </label>
             <input
@@ -168,7 +195,7 @@
               id="sm-all"
               value="all"
             />
-            <label class="btn btn-outline-primary" for="sm-all">
+            <label class="btn btn-outline-secondary" for="sm-all">
               {{ 'components.modals.import-torrents.start-mode.all' | translate }}
             </label>
           </div>
@@ -176,7 +203,7 @@
         </fieldset>
       }
       @if (isRunning() || isDone() || isError()) {
-        <fieldset class="bb-fieldset">
+        <fieldset class="bb-fieldset pb-3">
           <legend>{{ 'components.modals.import-torrents.label.progress' | translate }}</legend>
 
           @if (isRunning()) {
@@ -184,21 +211,23 @@
               <span>{{ 'components.modals.import-torrents.progress.importing' | translate }}</span>
               <span class="text-body-secondary">{{ state().current }} / {{ state().total }}</span>
             </div>
-            <div class="progress mb-2">
-              <div class="progress-bar" role="progressbar" [style.width.%]="progressPct()"></div>
-            </div>
-            <div class="text-body-secondary small">
-              <em>{{ state().name }}</em>
+            <app-bb-progress
+              class="d-block mb-2"
+              [progress]="progressPct()"
+              variant="secondary"
+            ></app-bb-progress>
+            <div class="text-body-secondary small d-flex min-w-0">
+              <em class="text-truncate">{{ state().name }}</em>
             </div>
           }
           @if (isDone()) {
-            <div class="alert alert-success mb-0 py-2">
+            <span class="text-success">
               {{ 'components.modals.import-torrents.progress.done' | translate }}
               @if (state().skipped > 0) {
                 - {{ state().skipped }}
                 {{ 'components.modals.import-torrents.progress.skipped' | translate }}
               }
-            </div>
+            </span>
           }
           @if (isError()) {
             <div class="alert alert-danger mb-0 py-2">{{ state().error }}</div>
@@ -219,7 +248,7 @@
       {{ 'general.button.close' | translate }}
     </button>
   } @else if (isReady()) {
-    <button type="button" class="btn btn-primary" (click)="startImport()">
+    <button type="button" class="btn btn-secondary" (click)="startImport()">
       {{ 'components.modals.import-torrents.button.import' | translate }}
     </button>
     <button type="button" class="btn btn-link" (click)="close()">

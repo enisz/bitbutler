@@ -14,7 +14,6 @@ import FormData from 'form-data';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import semver from 'semver';
 import { qbRequest } from './qbittorrent.js';
 
 interface QbTorrentInfo {
@@ -83,11 +82,11 @@ export function registerExportIpcHandlers(): void {
   });
 
   ipcMain.handle('export:get-server-info', async (_event, { serverId }: { serverId: string }) => {
-    const [webapiVersion, qbVersion] = await Promise.all([
+    const [webapiVersion, qbVersion, isFullMode] = await Promise.all([
       qbRequest({ id: serverId, path: '/api/v2/app/webapiVersion' }) as Promise<string>,
       qbRequest({ id: serverId, path: '/api/v2/app/version' }) as Promise<string>,
+      probeFullMode(serverId),
     ]);
-    const isFullMode = semver.gte(webapiVersion.trim(), '2.8.3');
     return { webapiVersion: webapiVersion.trim(), qbVersion: qbVersion.trim(), isFullMode };
   });
 
@@ -113,7 +112,7 @@ export function registerExportIpcHandlers(): void {
 
 async function runExport(event: Electron.IpcMainEvent, payload: ExportStartPayload): Promise<void> {
   exportCancelled = false;
-  const { serverId, hashes, destDir, filename } = payload;
+  const { serverId, serverName, hashes, destDir, filename } = payload;
 
   const send = (channel: string, data: unknown): void => {
     if (!event.sender.isDestroyed()) event.sender.send(channel, data);
@@ -121,11 +120,7 @@ async function runExport(event: Electron.IpcMainEvent, payload: ExportStartPaylo
 
   let tmpPath = '';
   try {
-    const apiVersion = (await qbRequest({
-      id: serverId,
-      path: '/api/v2/app/webapiVersion',
-    })) as string;
-    const isFullMode = semver.gte(apiVersion.trim(), '2.8.3');
+    const isFullMode = await probeFullMode(serverId);
 
     tmpPath = path.join(os.tmpdir(), `bbe-${Date.now()}.zip`);
     const output = fs.createWriteStream(tmpPath);
@@ -158,10 +153,13 @@ async function runExport(event: Electron.IpcMainEvent, payload: ExportStartPaylo
       send('export:progress', progress);
     }
 
+    entries.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+
     const metadata: BbeMetadata = {
       version: 1,
-      exported_at: new Date().toISOString(),
+      exported_at: Math.floor(Date.now() / 1000),
       source_server: serverId,
+      source_server_name: serverName,
       export_mode: isFullMode ? 'full' : 'legacy',
       torrents: entries,
     };
@@ -271,21 +269,15 @@ async function runImport(event: Electron.IpcMainEvent, payload: ImportStartPaylo
     const torrents = metadata.torrents.filter((t) => !t.failed);
     let skipped = 0;
 
+    // Phase 1: add all torrents as fast as possible
+    const addedHashes: string[] = [];
     for (let i = 0; i < torrents.length; i++) {
       if (importCancelled) break;
 
       const entry = torrents[i];
-
       try {
-        await importTorrent(
-          serverId,
-          entry,
-          metadata.export_mode,
-          zip,
-          restoreFields,
-          startMode,
-          pathMappings,
-        );
+        await addTorrent(serverId, entry, metadata.export_mode, zip, restoreFields, pathMappings);
+        addedHashes.push(entry.hash);
       } catch {
         skipped++;
       }
@@ -298,19 +290,50 @@ async function runImport(event: Electron.IpcMainEvent, payload: ImportStartPaylo
       } satisfies ExportProgressEvent);
     }
 
+    // Phase 2: wait for all added hashes to appear in qBittorrent
+    const needsPostProcess =
+      addedHashes.length > 0 &&
+      (restoreFields.some((f) =>
+        (
+          ['renames', 'priorities', 'speed_limits', 'share_limits', 'super_seeding'] as const
+        ).includes(f),
+      ) ||
+        startMode !== 'paused');
+
+    const confirmedHashes = new Set<string>();
+    if (needsPostProcess && !importCancelled) {
+      for (let attempt = 0; attempt < 20; attempt++) {
+        await sleep(500);
+        if (importCancelled) break;
+        const res = (await qbRequest({
+          id: serverId,
+          path: '/api/v2/torrents/info',
+          query: { hashes: addedHashes.join('|') },
+        })) as QbTorrentInfo[];
+        for (const t of res) confirmedHashes.add(t.hash);
+        if (confirmedHashes.size >= addedHashes.length) break;
+      }
+    }
+
+    // Phase 3: apply settings to confirmed torrents
+    for (const entry of torrents) {
+      if (importCancelled) break;
+      if (!confirmedHashes.has(entry.hash)) continue;
+      await applyTorrentSettings(serverId, entry, restoreFields, startMode).catch(() => {});
+    }
+
     send('import:done', { total: torrents.length, skipped });
   } catch (err) {
     send('import:error', { message: (err as Error)?.message ?? String(err) });
   }
 }
 
-async function importTorrent(
+async function addTorrent(
   serverId: string,
   entry: BbeTorrentEntry,
   exportMode: 'full' | 'legacy',
   zip: AdmZip,
   restoreFields: ImportStartPayload['restoreFields'],
-  startMode: ImportStartPayload['startMode'],
   pathMappings: ImportStartPayload['pathMappings'],
 ): Promise<void> {
   const has = (field: ImportStartPayload['restoreFields'][number]): boolean =>
@@ -350,19 +373,31 @@ async function importTorrent(
       form: { urls: entry.magnet_link, ...flattenStringRecord(addOptions) },
     });
   }
+}
 
-  // Poll for file tree to become available
+async function applyTorrentSettings(
+  serverId: string,
+  entry: BbeTorrentEntry,
+  restoreFields: ImportStartPayload['restoreFields'],
+  startMode: ImportStartPayload['startMode'],
+): Promise<void> {
+  const has = (field: ImportStartPayload['restoreFields'][number]): boolean =>
+    restoreFields.includes(field);
+
+  // Fetch file tree (needed for renames and priorities)
   let baseFiles: QbTorrentFile[] = [];
-  for (let attempt = 0; attempt < 10; attempt++) {
-    await sleep(500);
-    const res = (await qbRequest({
-      id: serverId,
-      path: '/api/v2/torrents/files',
-      query: { hash: entry.hash },
-    })) as QbTorrentFile[];
-    if (res?.length) {
-      baseFiles = res;
-      break;
+  if (has('renames') || has('priorities')) {
+    for (let attempt = 0; attempt < 5; attempt++) {
+      if (attempt > 0) await sleep(300);
+      const res = (await qbRequest({
+        id: serverId,
+        path: '/api/v2/torrents/files',
+        query: { hash: entry.hash },
+      })) as QbTorrentFile[];
+      if (res?.length) {
+        baseFiles = res;
+        break;
+      }
     }
   }
 
@@ -454,6 +489,20 @@ async function importTorrent(
       path: '/api/v2/torrents/resume',
       form: { hashes: entry.hash },
     }).catch(() => {});
+  }
+}
+
+async function probeFullMode(serverId: string): Promise<boolean> {
+  try {
+    await qbRequest({ id: serverId, path: '/api/v2/torrents/export', responseType: 'buffer' });
+    return true;
+  } catch (err) {
+    try {
+      const { status } = JSON.parse(err as string) as { status?: number };
+      return status !== 404;
+    } catch {
+      return false;
+    }
   }
 }
 

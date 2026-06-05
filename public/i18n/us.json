@@ -665,10 +665,10 @@
         },
         "popover": {
           "full-title": "Full export mode",
-          "full-line1": "qBittorrent 4.5.0 or later - the /api/v2/torrents/export endpoint is available.",
+          "full-line1": "The /api/v2/torrents/export endpoint was detected as available on this server.",
           "full-line2": "The archive includes .torrent files. All metadata can be fully restored after import.",
           "legacy-title": "Legacy export mode",
-          "legacy-line1": "qBittorrent older than 4.5.0 - the /api/v2/torrents/export endpoint is not available.",
+          "legacy-line1": "The /api/v2/torrents/export endpoint was not detected on this server.",
           "legacy-line2": "Only magnet links are saved. File renames and file priorities cannot be restored after import, as magnet links do not contain file structure information."
         },
         "scope": {
@@ -697,10 +697,14 @@
           "progress": "Progress"
         },
         "archive": {
-          "torrents": "torrents",
+          "exported-from": "Exported from",
+          "importing-to": "Importing to",
+          "server-url": "Server URL",
+          "export-date": "Export date",
+          "torrents": "Torrents",
+          "export-type": "Export type",
           "full-mode": "Full export",
-          "legacy-mode": "Legacy export",
-          "importing-to": "Importing to"
+          "legacy-mode": "Legacy export"
         },
         "restore": {
           "save_path": "Save path",
@@ -714,8 +718,9 @@
           "super_seeding": "Super seeding",
           "first_last_piece_prio": "First/last piece priority"
         },
+        "legacy-unsupported": "Not available in legacy export - magnet links do not contain file structure information.",
         "path-remap": {
-          "optional": "optional",
+          "description": "Rewrite save paths when the source and destination servers use different directory structures. Each rule replaces a matching path prefix - the first match wins.",
           "from": "From prefix",
           "to": "To prefix"
         },

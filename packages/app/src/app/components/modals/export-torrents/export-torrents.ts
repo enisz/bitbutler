@@ -116,7 +116,8 @@ export class ExportTorrents implements OnInit {
     }
 
     const serverId = this.serverStore.currentServer()?.id ?? '';
-    const payload: ExportStartPayload = { serverId, scope, hashes, destDir, filename };
+    const serverName = this.serverStore.currentServer()?.name ?? '';
+    const payload: ExportStartPayload = { serverId, serverName, scope, hashes, destDir, filename };
 
     this.exportService.startExport();
     window.bitbutler.export.start(payload);

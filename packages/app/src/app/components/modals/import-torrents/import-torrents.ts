@@ -1,4 +1,3 @@
-import { DatePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -19,15 +18,24 @@ import type {
 } from '@bitbutler/shared';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
+import { LocalTimestampPipe } from '../../../pipes/local-timestamp-pipe';
 import { ExportService } from '../../../services/export.service';
 import { ServerStoreService } from '../../../services/server-store.service';
+import { BbProgress } from '../../bb-progress/bb-progress';
 
 @Component({
   selector: 'app-import-torrents',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe, FaIconComponent, DatePipe],
+  imports: [
+    ReactiveFormsModule,
+    TranslatePipe,
+    FaIconComponent,
+    BbProgress,
+    LocalTimestampPipe,
+    NgbTooltip,
+  ],
   templateUrl: './import-torrents.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -43,6 +51,7 @@ export class ImportTorrents implements OnInit {
 
   importForm!: FormGroup;
   private startModeValue!: ReturnType<typeof toSignal<ImportStartMode>>;
+  private savePathEnabled!: ReturnType<typeof toSignal<boolean>>;
 
   readonly restoreFieldKeys: ImportRestoreField[] = [
     'save_path',
@@ -57,6 +66,12 @@ export class ImportTorrents implements OnInit {
     'first_last_piece_prio',
   ];
 
+  private readonly legacyUnsupportedFields: ImportRestoreField[] = ['renames', 'priorities'];
+
+  isLegacyUnsupported(field: ImportRestoreField): boolean {
+    return this.legacyUnsupportedFields.includes(field);
+  }
+
   readonly icons = { faMinus, faPlus };
 
   readonly phase = this.exportService.importPhase;
@@ -69,7 +84,7 @@ export class ImportTorrents implements OnInit {
 
   readonly progressPct = computed(() => {
     const s = this.state();
-    return s.total > 0 ? Math.round((s.current / s.total) * 100) : 0;
+    return s.total > 0 ? s.current / s.total : 0;
   });
 
   readonly startModeHint = computed(() => {
@@ -82,11 +97,14 @@ export class ImportTorrents implements OnInit {
     return hints[mode as ImportStartMode] ?? hints['active'];
   });
 
-  readonly showPathRemap = computed(
-    () => this.importForm?.get('restoreFields.save_path')?.value === true,
-  );
+  readonly showPathRemap = computed(() => this.savePathEnabled?.() === true);
 
   readonly metadata = computed(() => this.state().metadata);
+
+  readonly serverUrl = computed(() => {
+    const s = this.serverStore.currentServer();
+    return s ? `${s.protocol}://${s.host}:${s.port}` : '';
+  });
 
   get pathMappings(): FormArray {
     return this.importForm.get('pathMappings') as FormArray;
@@ -117,6 +135,11 @@ export class ImportTorrents implements OnInit {
       }),
     );
 
+    const savePathControl = this.importForm.get('restoreFields.save_path')!;
+    this.savePathEnabled = runInInjectionContext(this.injector, () =>
+      toSignal(savePathControl.valueChanges, { initialValue: savePathControl.value as boolean }),
+    );
+
     const bbePath = this.initialBbePath();
     if (bbePath) void this.loadBbe(bbePath);
   }
@@ -140,19 +163,29 @@ export class ImportTorrents implements OnInit {
     }
   }
 
-  async browseToPath(i: number): Promise<void> {
-    const dir = await window.bitbutler.electron.showOpenDialog();
-    if (dir) this.pathMappings.at(i).get('to')?.setValue(dir);
-  }
-
   async loadBbe(bbePath: string): Promise<void> {
     this.loadedBbePath = bbePath;
     this.exportService.setImportLoading();
     try {
       const metadata = await window.bitbutler.export.readBbe({ path: bbePath });
       this.exportService.setImportReady(metadata);
+      this.applyExportModeConstraints(metadata.export_mode);
     } catch (err) {
       this.exportService.setImportError((err as Error)?.message ?? String(err));
+    }
+  }
+
+  private applyExportModeConstraints(exportMode: 'full' | 'legacy'): void {
+    const group = this.importForm.get('restoreFields');
+    for (const field of this.legacyUnsupportedFields) {
+      const ctrl = group?.get(field);
+      if (!ctrl) continue;
+      if (exportMode === 'legacy') {
+        ctrl.setValue(false);
+        ctrl.disable();
+      } else {
+        ctrl.enable();
+      }
     }
   }
 
