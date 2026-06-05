@@ -61,4 +61,18 @@ const noopSubscription = () => noop;
   i18n: {
     languageChanged: noop,
   },
+  export: {
+    start: noop,
+    cancel: noop,
+    openBbePicker: () => Promise.resolve(undefined),
+    readBbe: noopAsync,
+    importStart: noop,
+    importCancel: noop,
+    onProgress: noopSubscription,
+    onDone: noopSubscription,
+    onError: noopSubscription,
+    onImportProgress: noopSubscription,
+    onImportDone: noopSubscription,
+    onImportError: noopSubscription,
+  },
 };
