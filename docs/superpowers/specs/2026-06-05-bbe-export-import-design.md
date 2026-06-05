@@ -271,22 +271,36 @@ File
 
 ### Export modal
 
-1. **Opens** - reads `export.lastPath` from settings to pre-populate the directory field. Generates default filename as `{serverName}-{YYYYMMDD}`.
+Styled and structured identically to the `add-torrent` component: `bb-fieldset` sections with
+`legend` labels, `form-floating` inputs, Bootstrap grid layout, and `modal-header` /
+`modal-body` / `modal-footer` structure.
 
-2. **Three sections:**
-   - **Version banner** - green "Full export mode" or yellow "Legacy mode - only magnet links will be saved (qBittorrent < 4.5.0)"
-   - **Scope** - three toggle buttons: All (N) / Filtered (N) / Selected (N). Filtered and Selected disabled if their count is 0.
-   - **Save location** - directory field (read-only) + Browse button opens OS directory picker; filename input group with fixed `.bbe` suffix using Bootstrap input group.
+1. **Opens** - reads `export.lastPath` from settings to pre-populate the directory field.
+   Generates default filename as `{serverName}-{YYYYMMDD}`.
 
-3. **On Export click** - button disables, progress area slides in below a divider:
+2. **Fieldset: Connection** - version/mode banner:
+   - Green alert: "Full export mode" (Web API >= 2.8.3)
+   - Yellow alert: "Legacy mode - only magnet links will be saved (qBittorrent < 4.5.0)"
+
+3. **Fieldset: Export scope** - three toggle buttons: All (N) / Filtered (N) / Selected (N).
+   Filtered and Selected disabled if their count is 0.
+
+4. **Fieldset: Save location**:
+   - Row 1: read-only `form-floating` directory input + `btn-outline-primary` Browse button
+     (opens OS directory picker via `electron:show-open-dialog`)
+   - Row 2: Bootstrap `input-group` with nested `form-floating` filename input +
+     `.bbe` text addon (forced extension, user edits filename only)
+
+5. **On Export click** - button disables, a **Fieldset: Progress** slides in:
    - "Exporting torrents..." label + `47 / 243` counter
-   - Progress bar (fills as each torrent completes)
+   - Bootstrap progress bar (fills as each torrent completes)
    - "Fetching: _{torrent name}_" current item label
    - Cancel button
 
-4. **On `export:done`** - progress bar fills to 100%, label becomes "Export complete" (or "Export complete - N skipped"). "Show in folder" link appears. Export button label becomes "Close".
+6. **On `export:done`** - progress bar fills to 100%, label becomes "Export complete"
+   (or "Export complete - N skipped"). "Show in folder" link appears. Export button becomes "Close".
 
-5. **On `export:error`** - banner switches to red with the error message. Close button appears.
+7. **On `export:error`** - banner switches to danger alert with the error message. Close button appears.
 
 ### Electron export pipeline (`ipc/export.ts`)
 
@@ -325,28 +339,46 @@ The spinner covers the unzip + parse step, which can take meaningful time for ar
 
 ### Import modal
 
-1. **Loading state** - spinner shown while `readBbe` is in flight.
+Styled identically to the `add-torrent` component: `bb-fieldset` + `legend`, `form-floating`
+inputs, Bootstrap grid, `modal-header` / `modal-body` / `modal-footer`.
 
-2. **Populated state** - shows:
-   - **Archive info banner**: source server, export date, torrent count, export mode
-   - **Importing to**: active server name
-   - **Restore options** (all checked by default):
-     - Save path / Category & tags
-     - Speed limits / Share limits
-     - File renames / File priorities & exclusions
-     - Auto-TMM / Sequential download
-     - Super seeding / First/last piece priority
-   - **After import** button group (default: "Start active ones"), styled identically
-     to the export scope selector. An inline hint below the group updates dynamically
-     via a computed signal as the user switches between options:
-     - **Keep paused:** "All torrents will remain paused - start them manually when ready."
-     - **Start active ones:** "Torrents that were active when exported will resume automatically."
-     - **Start all:** "All imported torrents will start immediately regardless of their previous state."
-   - **Import** + **Cancel** buttons
+1. **Loading state** - `bb-spinner` shown while `readBbe` is in flight.
 
-3. **Progress state** - same inline pattern as export: progress bar + current torrent name + counter. Cancel button available.
+2. **Populated state** - four fieldsets:
 
-4. **Done state** - "Imported N/N" summary (with skipped count if any). Close button.
+   **Fieldset: Archive** - info row: source server name, export date, torrent count, export mode.
+   Second line: "Importing to: {active server name}".
+
+   **Fieldset: Restore options** - two-column grid of `form-check form-switch` toggles (all on
+   by default), following the exact same `role="switch"` pattern as `add-torrent`:
+   - Save path / Category & tags
+   - Speed limits / Share limits
+   - File renames / File priorities & exclusions
+   - Auto-TMM / Sequential download
+   - Super seeding / First/last piece priority
+
+   **Fieldset: Save path remapping** - visible only when the "Save path" switch is on.
+   Implemented as a `FormArray` following the exact pattern of the server settings path mappings
+   (`server.html` fieldset `path-mappings`):
+   - Each row: `col-5` floating-label text input ("From prefix", read-only source paths -
+     no browse since these are remote server paths) + `col-5` `input-group` with nested
+     `form-floating` text input ("To prefix") + `btn-outline-primary` Browse button +
+     `col-2` `faMinus` icon link button (remove/clear) and `faPlus` on `$last` (add row)
+   - Match preview below the array: "N of M paths will be remapped" (green) or
+     "No paths matched" (red/muted), derived from a `computed()` signal
+   - Empty "from" rows are ignored at import time
+
+   **Fieldset: After import** - button group (default: "Start active ones"):
+   - Keep paused / Start active ones / Start all
+   - Inline hint text below updates via `computed()` signal per selection:
+     - Keep paused: "All torrents will remain paused - start them manually when ready."
+     - Start active ones: "Torrents that were active when exported will resume automatically."
+     - Start all: "All imported torrents will start immediately regardless of their previous state."
+
+3. **Progress state** - **Fieldset: Progress** replaces the form fieldsets: progress bar +
+   current torrent name + counter. Cancel button in modal footer.
+
+4. **Done state** - summary alert: "Imported N/N" (with skipped count if any). Close button.
 
 ### Electron import pipeline (`ipc/export.ts`)
 
