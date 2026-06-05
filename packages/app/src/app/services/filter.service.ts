@@ -95,6 +95,10 @@ export class FilterService {
       if (params.savePaths.size > 0 && !params.savePaths.has(t.save_path)) {
         return false;
       }
+      if (params.trackers.size > 0) {
+        const tracker = (t.tracker ?? '').trim();
+        if (!params.trackers.has(tracker)) return false;
+      }
       if (params.tags.size > 0) {
         const torrentTags = new Set(
           t.tags
@@ -102,7 +106,7 @@ export class FilterService {
             .map((s) => s.trim())
             .filter(Boolean),
         );
-        if (![...params.tags].every((tag) => torrentTags.has(tag))) {
+        if (![...params.tags].some((tag) => torrentTags.has(tag))) {
           return false;
         }
       }
