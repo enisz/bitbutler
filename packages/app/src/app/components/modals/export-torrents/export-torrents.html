@@ -7,15 +7,79 @@
   <form [formGroup]="exportForm">
     <fieldset class="bb-fieldset mt-0">
       <legend>{{ 'components.modals.export-torrents.label.connection' | translate }}</legend>
-      <div id="version-banner" class="alert alert-success mb-0 py-2">
-        {{ 'components.modals.export-torrents.banner.full-mode' | translate }}
-      </div>
+      @if (serverInfoLoading()) {
+        <div
+          class="d-flex justify-content-center align-items-center gap-2 text-body-secondary small mb-3"
+        >
+          <app-bb-spinner></app-bb-spinner>
+          <span>{{ 'components.modals.export-torrents.info.loading' | translate }}</span>
+        </div>
+      } @else if (serverInfoError()) {
+        <div class="text-danger small">{{ serverInfoError() }}</div>
+      } @else {
+        <dl class="row mb-0 small">
+          <dt class="col-5 fw-normal text-body-secondary">
+            {{ 'components.modals.export-torrents.info.server' | translate }}
+          </dt>
+          <dd class="col-7">{{ serverName() }}</dd>
+
+          <dt class="col-5 fw-normal text-body-secondary">
+            {{ 'components.modals.export-torrents.info.url' | translate }}
+          </dt>
+          <dd class="col-7">{{ serverUrl() }}</dd>
+
+          <dt class="col-5 fw-normal text-body-secondary">
+            {{ 'components.modals.export-torrents.info.webui-version' | translate }}
+          </dt>
+          <dd class="col-7">{{ serverInfo()?.webapiVersion }}</dd>
+
+          <dt class="col-5 fw-normal text-body-secondary">
+            {{ 'components.modals.export-torrents.info.qb-version' | translate }}
+          </dt>
+          <dd class="col-7">{{ serverInfo()?.qbVersion }}</dd>
+
+          <dt class="col-5 fw-normal text-body-secondary">
+            {{ 'components.modals.export-torrents.info.export-type' | translate }}
+          </dt>
+          <dd class="col-7 d-flex align-items-center">
+            <span [class]="serverInfo()?.isFullMode ? 'text-success' : 'text-warning'">
+              {{
+                serverInfo()?.isFullMode
+                  ? ('components.modals.export-torrents.info.full-export' | translate)
+                  : ('components.modals.export-torrents.info.legacy-export' | translate)
+              }}
+            </span>
+            <bb-popover
+              [subject]="
+                serverInfo()?.isFullMode
+                  ? ('components.modals.export-torrents.popover.full-title' | translate)
+                  : ('components.modals.export-torrents.popover.legacy-title' | translate)
+              "
+              [description]="serverInfo()?.isFullMode ? fullExportPopover : legacyExportPopover"
+              placement="right"
+            ></bb-popover>
+          </dd>
+        </dl>
+
+        <ng-template #fullExportPopover>
+          <p>{{ 'components.modals.export-torrents.popover.full-line1' | translate }}</p>
+          <p class="mb-0">
+            {{ 'components.modals.export-torrents.popover.full-line2' | translate }}
+          </p>
+        </ng-template>
+        <ng-template #legacyExportPopover>
+          <p>{{ 'components.modals.export-torrents.popover.legacy-line1' | translate }}</p>
+          <p class="mb-0">
+            {{ 'components.modals.export-torrents.popover.legacy-line2' | translate }}
+          </p>
+        </ng-template>
+      }
     </fieldset>
 
     @if (phase() === 'idle') {
       <fieldset class="bb-fieldset">
         <legend>{{ 'components.modals.export-torrents.label.scope' | translate }}</legend>
-        <div class="btn-group w-100" role="group">
+        <div class="btn-group w-100 mb-3" role="group">
           <input
             type="radio"
             class="btn-check"
@@ -23,7 +87,7 @@
             id="scope-all"
             value="all"
           />
-          <label class="btn btn-outline-primary" for="scope-all">
+          <label class="btn btn-outline-secondary" for="scope-all">
             {{ 'components.modals.export-torrents.scope.all' | translate }} ({{ allCount() }})
           </label>
           <input
@@ -34,7 +98,7 @@
             value="filtered"
             [attr.disabled]="!hasFiltered() || null"
           />
-          <label class="btn btn-outline-primary" for="scope-filtered">
+          <label class="btn btn-outline-secondary" for="scope-filtered">
             {{ 'components.modals.export-torrents.scope.filtered' | translate }} ({{
               filteredCount()
             }})
@@ -47,7 +111,7 @@
             value="selected"
             [attr.disabled]="!hasSelection() || null"
           />
-          <label class="btn btn-outline-primary" for="scope-selected">
+          <label class="btn btn-outline-secondary" for="scope-selected">
             {{ 'components.modals.export-torrents.scope.selected' | translate }} ({{
               selectedCount()
             }})
@@ -55,7 +119,7 @@
         </div>
       </fieldset>
 
-      <fieldset class="bb-fieldset">
+      <fieldset class="bb-fieldset pb-3">
         <legend>{{ 'components.modals.export-torrents.label.save-location' | translate }}</legend>
         <div class="input-group mb-3">
           <div class="form-floating flex-grow-1">
@@ -94,7 +158,7 @@
       </fieldset>
     }
     @if (phase() !== 'idle') {
-      <fieldset class="bb-fieldset">
+      <fieldset class="bb-fieldset pb-3">
         <legend>{{ 'components.modals.export-torrents.label.progress' | translate }}</legend>
 
         @if (isRunning()) {
@@ -102,26 +166,28 @@
             <span>{{ 'components.modals.export-torrents.progress.exporting' | translate }}</span>
             <span class="text-body-secondary">{{ state().current }} / {{ state().total }}</span>
           </div>
-          <div class="progress mb-2">
-            <div class="progress-bar" role="progressbar" [style.width.%]="progressPct()"></div>
-          </div>
-          <div class="text-body-secondary small">
-            {{ 'components.modals.export-torrents.progress.fetching' | translate }}:
-            <em>{{ state().name }}</em>
+          <app-bb-progress
+            class="d-block mb-2"
+            [progress]="progressPct()"
+            variant="secondary"
+          ></app-bb-progress>
+          <div class="text-body-secondary small d-flex min-w-0">
+            <span class="flex-shrink-0">
+              {{ 'components.modals.export-torrents.progress.fetching' | translate }}:&nbsp;
+            </span>
+            <em class="text-truncate">{{ state().name }}</em>
           </div>
         }
         @if (isDone()) {
-          <div
-            class="alert alert-success mb-0 py-2 d-flex justify-content-between align-items-center"
-          >
-            <span>
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="text-success">
               {{ 'components.modals.export-torrents.progress.done' | translate }}
               @if (state().skipped > 0) {
                 - {{ state().skipped }}
                 {{ 'components.modals.export-torrents.progress.skipped' | translate }}
               }
             </span>
-            <button type="button" class="btn btn-sm btn-outline-success" (click)="showInFolder()">
+            <button type="button" class="btn btn-sm btn-success" (click)="showInFolder()">
               {{ 'components.modals.export-torrents.button.show-in-folder' | translate }}
             </button>
           </div>
@@ -146,7 +212,7 @@
   } @else {
     <button
       type="button"
-      class="btn btn-primary"
+      class="btn btn-secondary"
       (click)="startExport()"
       [disabled]="exportForm.invalid"
     >

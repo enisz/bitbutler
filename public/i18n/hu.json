@@ -653,9 +653,23 @@
           "dest-dir": "Select export directory",
           "filename": "Filename"
         },
-        "banner": {
-          "full-mode": "Full export mode",
-          "legacy-mode": "Legacy mode - only magnet links will be saved (qBittorrent < 4.5.0)"
+        "info": {
+          "loading": "Loading connection details...",
+          "server": "Server",
+          "url": "URL",
+          "webui-version": "WebUI version",
+          "qb-version": "qBittorrent version",
+          "export-type": "Export type",
+          "full-export": "Full export",
+          "legacy-export": "Legacy export"
+        },
+        "popover": {
+          "full-title": "Full export mode",
+          "full-line1": "qBittorrent 4.5.0 or later - the /api/v2/torrents/export endpoint is available.",
+          "full-line2": "The archive includes .torrent files. All metadata can be fully restored after import.",
+          "legacy-title": "Legacy export mode",
+          "legacy-line1": "qBittorrent older than 4.5.0 - the /api/v2/torrents/export endpoint is not available.",
+          "legacy-line2": "Only magnet links are saved. File renames and file priorities cannot be restored after import, as magnet links do not contain file structure information."
         },
         "scope": {
           "all": "All",

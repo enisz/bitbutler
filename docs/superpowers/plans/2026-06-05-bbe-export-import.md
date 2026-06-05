@@ -412,7 +412,7 @@ describe('applyPathMappings', () => {
 npm test --workspace=packages/electron
 ```
 
-Expected: FAIL — `export.js` not found.
+Expected: FAIL - `export.js` not found.
 
 - [ ] **Step 3: Create `export.ts` with the helper implementations**
 
@@ -1065,7 +1065,7 @@ function extractExistingBbeFiles(argv: string[], startIndex = 0): string[] {
 }
 ```
 
-And refactor `extractExistingTorrentFiles` to share logic (or just duplicate — DRY matters less here since the functions are small):
+And refactor `extractExistingTorrentFiles` to share logic (or just duplicate - DRY matters less here since the functions are small):
 
 ```typescript
 function extractExistingBbeFiles(argv: string[], startIndex = 0): string[] {
@@ -1170,7 +1170,7 @@ git commit -m "#127: add .bbe file association queue to window IPC handler"
 
 ---
 
-## Task 8: Wire Electron — preload, main.ts, menu.ts
+## Task 8: Wire Electron - preload, main.ts, menu.ts
 
 **Files:**
 
@@ -1348,7 +1348,7 @@ describe('ExportService', () => {
 npm test --workspace=packages/app -- --reporter=verbose 2>&1 | grep ExportService
 ```
 
-Expected: FAIL — `ExportService` not found.
+Expected: FAIL - `ExportService` not found.
 
 - [ ] **Step 3: Implement ExportService**
 
@@ -1630,7 +1630,7 @@ describe('ExportTorrents', () => {
 npm test --workspace=packages/app -- --reporter=verbose 2>&1 | grep ExportTorrents
 ```
 
-Expected: FAIL — `ExportTorrents` not found.
+Expected: FAIL - `ExportTorrents` not found.
 
 - [ ] **Step 3: Create component TypeScript**
 
@@ -1862,7 +1862,7 @@ Create `packages/app/src/app/components/modals/export-torrents/export-torrents.h
       <div class="alert alert-success mb-0 py-2 d-flex justify-content-between align-items-center">
         <span>
           {{ 'components.modals.export-torrents.progress.done' | translate }} @if (state().skipped >
-          0) { — {{ state().skipped }} {{ 'components.modals.export-torrents.progress.skipped' |
+          0) { - {{ state().skipped }} {{ 'components.modals.export-torrents.progress.skipped' |
           translate }} }
         </span>
         <button type="button" class="btn btn-sm btn-outline-success" (click)="showInFolder()">
@@ -1995,7 +1995,7 @@ describe('ImportTorrents', () => {
 npm test --workspace=packages/app -- --reporter=verbose 2>&1 | grep ImportTorrents
 ```
 
-Expected: FAIL — `ImportTorrents` not found.
+Expected: FAIL - `ImportTorrents` not found.
 
 - [ ] **Step 3: Create component TypeScript**
 
@@ -2334,7 +2334,7 @@ Create `packages/app/src/app/components/modals/import-torrents/import-torrents.h
       } @if (isDone()) {
       <div class="alert alert-success mb-0 py-2">
         {{ 'components.modals.import-torrents.progress.done' | translate }} @if (state().skipped >
-        0) { — {{ state().skipped }} {{ 'components.modals.import-torrents.progress.skipped' |
+        0) { - {{ state().skipped }} {{ 'components.modals.import-torrents.progress.skipped' |
         translate }} }
       </div>
       } @if (isError()) {
@@ -2451,7 +2451,7 @@ In the `components` object, add:
   },
   "banner": {
     "full-mode": "✓ Full export mode",
-    "legacy-mode": "⚠ Legacy mode — only magnet links will be saved (qBittorrent < 4.5.0)"
+    "legacy-mode": "⚠ Legacy mode - only magnet links will be saved (qBittorrent < 4.5.0)"
   },
   "scope": {
     "all": "All",
@@ -2524,7 +2524,7 @@ In the `components` object, add:
 
 - [ ] **Step 2: Mirror keys to `hu.json`**
 
-Copy the same structure into `hu.json` (English text for now — translated separately):
+Copy the same structure into `hu.json` (English text for now - translated separately):
 
 Add the same JSON blocks as Step 1 into `hu.json`, identical text.
 
@@ -2557,10 +2557,10 @@ git commit -m "#127: add i18n keys for export/import modals and menu items"
 
 **Spec gaps found and addressed in this plan:**
 
-1. `pathMappings` missing from `ImportStartPayload` in spec — added in Task 2 as `BbePathMapping[]`
-2. `drainOpenBbe` missing from `window` namespace in spec — added in Tasks 7 and 8
-3. `formData` import needed in `export.ts` — `form-data` already in root `package.json` dependencies
-4. `ExportService._import` is private — `importTorrents.ts` accessing it directly for the error case is a smell; add a `setImportError(message: string)` method to `ExportService` and use that instead (update both Task 9 and Task 12)
-5. `serverStore` is used in `ImportTorrents` template but not declared as `readonly` — fix: add `readonly serverStore = inject(ServerStoreService)` explicitly
+1. `pathMappings` missing from `ImportStartPayload` in spec - added in Task 2 as `BbePathMapping[]`
+2. `drainOpenBbe` missing from `window` namespace in spec - added in Tasks 7 and 8
+3. `formData` import needed in `export.ts` - `form-data` already in root `package.json` dependencies
+4. `ExportService._import` is private - `importTorrents.ts` accessing it directly for the error case is a smell; add a `setImportError(message: string)` method to `ExportService` and use that instead (update both Task 9 and Task 12)
+5. `serverStore` is used in `ImportTorrents` template but not declared as `readonly` - fix: add `readonly serverStore = inject(ServerStoreService)` explicitly
 
 **Type consistency check:** `ExportProgressEvent` is reused for import progress events (same shape). `ImportStartMode` matches `startMode: 'paused' | 'active' | 'all'` in `ImportStartPayload`. `ImportRestoreField` union matches the `restoreFields` FormGroup keys. All consistent.

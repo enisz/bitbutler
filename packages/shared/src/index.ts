@@ -17,6 +17,7 @@ export type { WindowState } from './models/window.model.js';
 export type {
   BbeMetadata,
   BbePathMapping,
+  BbeServerInfo,
   BbeTorrentEntry,
   BbeTorrentFile,
   BitButlerAPI,

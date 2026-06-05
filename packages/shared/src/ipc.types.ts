@@ -130,6 +130,12 @@ export interface BbePathMapping {
   to: string;
 }
 
+export interface BbeServerInfo {
+  webapiVersion: string;
+  qbVersion: string;
+  isFullMode: boolean;
+}
+
 export interface ImportStartPayload {
   serverId: string;
   bbePath: string;
@@ -148,6 +154,7 @@ export interface BitButlerAPI {
     getPlatform(): Promise<HostPlatform>;
     checkForUpdate(): Promise<UpdateCheckResponse>;
     setLoginItem(settings: { openAtLogin: boolean }): Promise<void>;
+    getDownloadsPath(): Promise<string>;
   };
 
   server: {
@@ -220,6 +227,7 @@ export interface BitButlerAPI {
     cancel(): void;
     openBbePicker(): Promise<string | undefined>;
     readBbe(payload: { path: string }): Promise<BbeMetadata>;
+    getServerInfo(serverId: string): Promise<BbeServerInfo>;
     importStart(payload: ImportStartPayload): void;
     importCancel(): void;
     onProgress(cb: (e: ExportProgressEvent) => void): () => void;

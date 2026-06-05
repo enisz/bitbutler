@@ -1,5 +1,6 @@
 import type {
   BbeMetadata,
+  BbeServerInfo,
   BitButlerAPI,
   BitButlerSyncStreamResponse,
   ExportDoneEvent,
@@ -46,6 +47,7 @@ const api: BitButlerAPI = {
     getPlatform: () => ipcRenderer.invoke('electron:get-platform'),
     checkForUpdate: () => ipcRenderer.invoke('electron:check-for-update'),
     setLoginItem: (settings) => ipcRenderer.invoke('electron:set-login-item', settings),
+    getDownloadsPath: () => ipcRenderer.invoke('electron:get-downloads-path'),
   },
 
   server: {
@@ -159,6 +161,8 @@ const api: BitButlerAPI = {
     openBbePicker: () => ipcRenderer.invoke('export:open-bbe-picker'),
     readBbe: (payload: { path: string }) =>
       ipcRenderer.invoke('export:read-bbe', payload) as Promise<BbeMetadata>,
+    getServerInfo: (serverId: string) =>
+      ipcRenderer.invoke('export:get-server-info', { serverId }) as Promise<BbeServerInfo>,
     importStart: (payload: ImportStartPayload) => ipcRenderer.send('import:start', payload),
     importCancel: () => ipcRenderer.send('import:cancel'),
     onProgress: (cb: (e: ExportProgressEvent) => void) =>

@@ -1,6 +1,13 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import type { ExportScope, ExportStartPayload } from '@bitbutler/shared';
+import type { BbeServerInfo, ExportScope, ExportStartPayload } from '@bitbutler/shared';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ExportService } from '../../../services/export.service';
@@ -8,11 +15,14 @@ import { FilterService } from '../../../services/filter.service';
 import { SelectionStoreService } from '../../../services/selection-store.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
+import { BbPopover } from '../../bb-popover/bb-popover';
+import { BbProgress } from '../../bb-progress/bb-progress';
+import { BbSpinner } from '../../bb-spinner/bb-spinner';
 
 @Component({
   selector: 'app-export-torrents',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe],
+  imports: [ReactiveFormsModule, TranslatePipe, BbProgress, BbPopover, BbSpinner],
   templateUrl: './export-torrents.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -25,6 +35,16 @@ export class ExportTorrents implements OnInit {
   private readonly serverStore = inject(ServerStoreService);
 
   exportForm!: FormGroup;
+
+  readonly serverInfo = signal<BbeServerInfo | null>(null);
+  readonly serverInfoLoading = signal(true);
+  readonly serverInfoError = signal<string | null>(null);
+
+  readonly serverName = computed(() => this.serverStore.currentServer()?.name ?? '');
+  readonly serverUrl = computed(() => {
+    const s = this.serverStore.currentServer();
+    return s ? `${s.protocol}://${s.host}:${s.port}` : '';
+  });
 
   readonly allCount = computed(() => this.torrentStore.torrents().length);
   readonly filteredCount = computed(() => this.filterService.filtered().length);
@@ -41,10 +61,26 @@ export class ExportTorrents implements OnInit {
 
   readonly progressPct = computed(() => {
     const s = this.state();
-    return s.total > 0 ? Math.round((s.current / s.total) * 100) : 0;
+    return s.total > 0 ? s.current / s.total : 0;
   });
 
   ngOnInit(): void {
+    const serverId = this.serverStore.currentServer()?.id;
+
+    void Promise.all([
+      serverId ? window.bitbutler.export.getServerInfo(serverId) : Promise.resolve(null),
+      window.bitbutler.electron.getDownloadsPath(),
+    ])
+      .then(([info, downloadsPath]) => {
+        if (info) this.serverInfo.set(info);
+        this.serverInfoLoading.set(false);
+        if (downloadsPath) this.exportForm.get('destDir')?.setValue(downloadsPath);
+      })
+      .catch((err: unknown) => {
+        this.serverInfoError.set((err as Error)?.message ?? String(err));
+        this.serverInfoLoading.set(false);
+      });
+
     const today = new Date();
     const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '');
     const serverName = (this.serverStore.currentServer()?.name ?? 'export')

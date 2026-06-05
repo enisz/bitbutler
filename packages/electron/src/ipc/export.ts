@@ -82,6 +82,15 @@ export function registerExportIpcHandlers(): void {
     return filePaths[0];
   });
 
+  ipcMain.handle('export:get-server-info', async (_event, { serverId }: { serverId: string }) => {
+    const [webapiVersion, qbVersion] = await Promise.all([
+      qbRequest({ id: serverId, path: '/api/v2/app/webapiVersion' }) as Promise<string>,
+      qbRequest({ id: serverId, path: '/api/v2/app/version' }) as Promise<string>,
+    ]);
+    const isFullMode = semver.gte(webapiVersion.trim(), '2.8.3');
+    return { webapiVersion: webapiVersion.trim(), qbVersion: qbVersion.trim(), isFullMode };
+  });
+
   ipcMain.handle('export:read-bbe', async (_event, { path: bbePath }: { path: string }) => {
     const zip = new AdmZip(bbePath);
     const entry = zip.getEntry('metadata.json');
@@ -120,7 +129,7 @@ async function runExport(event: Electron.IpcMainEvent, payload: ExportStartPaylo
 
     tmpPath = path.join(os.tmpdir(), `bbe-${Date.now()}.zip`);
     const output = fs.createWriteStream(tmpPath);
-    const archive = archiver('zip', { zlib: { level: 6 } });
+    const archive = archiver('zip', { zlib: { level: 9 } });
     archive.pipe(output);
 
     const outputClosed = new Promise<void>((resolve, reject) => {
@@ -157,7 +166,7 @@ async function runExport(event: Electron.IpcMainEvent, payload: ExportStartPaylo
       torrents: entries,
     };
 
-    archive.append(JSON.stringify(metadata, null, 2), { name: 'metadata.json' });
+    archive.append(JSON.stringify(metadata), { name: 'metadata.json' });
     await archive.finalize();
     await outputClosed;
 
