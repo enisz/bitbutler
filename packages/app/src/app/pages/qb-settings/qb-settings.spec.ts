@@ -82,14 +82,23 @@ describe('QbSettings', () => {
       expect(ids).toContain('seeding-ratios');
     });
 
-    it('should select the tab passed via initialTab on init', async () => {
+    it('should select the tab passed via tabToOpen on init', async () => {
       fixture = TestBed.createComponent(QbSettings);
       component = fixture.componentInstance;
-      fixture.componentRef.setInput('initialTab', 'storage');
+      fixture.componentRef.setInput('tabToOpen', 'storage');
       fixture.detectChanges();
       await fixture.whenStable();
 
       expect(component.activeTabId()).toBe('storage');
+    });
+
+    it('should default to the bandwidth tab when tabToOpen is not provided', async () => {
+      fixture = TestBed.createComponent(QbSettings);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(component.activeTabId()).toBe('bandwidth');
     });
   });
 

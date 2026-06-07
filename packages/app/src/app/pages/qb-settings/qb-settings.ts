@@ -47,7 +47,7 @@ export class QbSettings implements OnInit, GuardableModal {
   private readonly qbService = inject(QbService);
   private readonly serverStoreService = inject(ServerStoreService);
 
-  public readonly initialTab = input<QbSettingsTabId>();
+  public readonly tabToOpen = input<QbSettingsTabId>('bandwidth');
 
   public activeTabId = signal<QbSettingsTabId>('bandwidth');
   public loadedComponents = signal<Map<QbSettingsTabId, Type<QbSettingsTabComponent>>>(new Map());
@@ -78,8 +78,7 @@ export class QbSettings implements OnInit, GuardableModal {
   ];
 
   public async ngOnInit(): Promise<void> {
-    const initialTab = this.initialTab();
-    if (initialTab) this.activeTabId.set(initialTab);
+    this.activeTabId.set(this.tabToOpen());
 
     const serverId = this.serverStoreService.currentServerId();
     if (serverId) {
