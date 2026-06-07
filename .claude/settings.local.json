@@ -68,7 +68,11 @@
       "Bash(bash *)",
       "Bash(xargs cat)",
       "Bash(netsh int *)",
-      "Bash(BRAINSTORM_PORT=54321 bash *)"
+      "Bash(BRAINSTORM_PORT=54321 bash *)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "Bash(dir C:devbitbutlerpackages *)",
+      "Bash(C:\\\\Users\\\\enisz\\\\.claude\\\\plugins\\\\cache\\\\claude-plugins-official\\\\superpowers\\\\5.1.0\\\\scripts\\\\start-server.sh *)"
     ]
   }
 }
