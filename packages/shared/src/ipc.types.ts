@@ -125,6 +125,8 @@ export interface BbeMetadata {
   source_server_name?: string;
   export_mode: ExportMode;
   torrents: BbeTorrentEntry[];
+  categories?: Record<string, { name: string; savePath: string }>;
+  tags?: string[];
 }
 
 export interface BbePathMapping {
