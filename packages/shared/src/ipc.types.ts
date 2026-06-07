@@ -53,6 +53,8 @@ export type TorrentParsePayload = {
 };
 
 export type ExportScope = 'all' | 'filtered' | 'selected';
+export type ExportCategoryScope = 'all' | 'assigned';
+export type ExportTagScope = 'all' | 'assigned';
 export type ExportMode = 'full' | 'legacy';
 export type ImportStartMode = 'paused' | 'active' | 'all';
 
@@ -73,6 +75,8 @@ export interface ExportStartPayload {
   serverId: string;
   serverName: string;
   scope: ExportScope;
+  categoryScope: ExportCategoryScope;
+  tagScope: ExportTagScope;
   hashes: string[];
   destDir: string;
   filename: string;

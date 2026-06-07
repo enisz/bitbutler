@@ -76,7 +76,20 @@
       "Bash(gh run *)",
       "Read(//tmp/**)",
       "Bash(echo \"exit=$?\")",
-      "Bash(gh api *)"
+      "Bash(gh api *)",
+      "Bash(npx eslint *)",
+      "Skill(run)",
+      "Bash(npm run *)",
+      "Bash(echo \"started with pid $!\")",
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "Bash(netstat -ano)",
+      "Bash(nohup npx ng serve --port 4201)",
+      "Bash(disown)",
+      "mcp__plugin_playwright_playwright__browser_snapshot",
+      "mcp__plugin_playwright_playwright__browser_console_messages",
+      "mcp__plugin_playwright_playwright__browser_run_code_unsafe",
+      "Bash(tasklist)",
+      "Bash(taskkill //PID 23604 //F)"
     ]
   }
 }

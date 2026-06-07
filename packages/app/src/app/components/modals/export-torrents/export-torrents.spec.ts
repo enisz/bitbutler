@@ -29,7 +29,14 @@ describe('ExportTorrents', () => {
         },
         { provide: FilterService, useValue: { filtered: signal([]) } },
         { provide: SelectionStoreService, useValue: { selected: signal([]) } },
-        { provide: TorrentStoreService, useValue: { torrents: signal([]) } },
+        {
+          provide: TorrentStoreService,
+          useValue: {
+            torrents: signal([]),
+            categoriesMap: signal(new Map()),
+            tagsSet: signal(new Set()),
+          },
+        },
         { provide: ServerStoreService, useValue: { currentServer: signal(null) } },
       ],
     }).compileComponents();

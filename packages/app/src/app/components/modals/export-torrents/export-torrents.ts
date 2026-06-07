@@ -1,13 +1,22 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  Injector,
   OnInit,
   computed,
   inject,
+  runInInjectionContext,
   signal,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import type { BbeServerInfo, ExportScope, ExportStartPayload } from '@bitbutler/shared';
+import type {
+  BbeServerInfo,
+  ExportCategoryScope,
+  ExportScope,
+  ExportStartPayload,
+  ExportTagScope,
+} from '@bitbutler/shared';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ExportService } from '../../../services/export.service';
@@ -33,8 +42,13 @@ export class ExportTorrents implements OnInit {
   private readonly selectionStore = inject(SelectionStoreService);
   private readonly torrentStore = inject(TorrentStoreService);
   private readonly serverStore = inject(ServerStoreService);
+  private readonly injector = inject(Injector);
 
   exportForm!: FormGroup;
+
+  private scopeValue!: ReturnType<typeof toSignal<ExportScope>>;
+  private categoryScopeValue!: ReturnType<typeof toSignal<ExportCategoryScope>>;
+  private tagScopeValue!: ReturnType<typeof toSignal<ExportTagScope>>;
 
   readonly serverInfo = signal<BbeServerInfo | null>(null);
   readonly serverInfoLoading = signal(true);
@@ -51,6 +65,59 @@ export class ExportTorrents implements OnInit {
   readonly selectedCount = computed(() => this.selectionStore.selected().length);
   readonly hasSelection = computed(() => this.selectedCount() > 0);
   readonly hasFiltered = computed(() => this.filteredCount() > 0);
+
+  readonly exportedTorrents = computed(() => {
+    switch (this.scopeValue?.()) {
+      case 'selected':
+        return this.selectionStore.selected();
+      case 'filtered':
+        return this.filterService.filtered();
+      default:
+        return this.torrentStore.torrents();
+    }
+  });
+
+  readonly allCategoriesCount = computed(() => this.torrentStore.categoriesMap().size);
+  readonly allTagsCount = computed(() => this.torrentStore.tagsSet().size);
+
+  readonly assignedCategoriesCount = computed(() => {
+    const categories = new Set<string>();
+    for (const t of this.exportedTorrents()) {
+      if (t.category) categories.add(t.category);
+    }
+    return categories.size;
+  });
+
+  readonly assignedTagsCount = computed(() => {
+    const tags = new Set<string>();
+    for (const t of this.exportedTorrents()) {
+      for (const tag of t.tags
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)) {
+        tags.add(tag);
+      }
+    }
+    return tags.size;
+  });
+
+  readonly categoryScopeHint = computed(() => {
+    const mode = this.categoryScopeValue?.() ?? 'all';
+    const hints: Record<ExportCategoryScope, string> = {
+      all: 'components.modals.export-torrents.category-scope.hint.all',
+      assigned: 'components.modals.export-torrents.category-scope.hint.assigned',
+    };
+    return hints[mode] ?? hints['all'];
+  });
+
+  readonly tagScopeHint = computed(() => {
+    const mode = this.tagScopeValue?.() ?? 'all';
+    const hints: Record<ExportTagScope, string> = {
+      all: 'components.modals.export-torrents.tag-scope.hint.all',
+      assigned: 'components.modals.export-torrents.tag-scope.hint.assigned',
+    };
+    return hints[mode] ?? hints['all'];
+  });
 
   readonly phase = this.exportService.exportPhase;
   readonly state = this.exportService.exportState;
@@ -89,12 +156,33 @@ export class ExportTorrents implements OnInit {
 
     this.exportForm = new FormGroup({
       scope: new FormControl<ExportScope>('all', { nonNullable: true }),
+      categoryScope: new FormControl<ExportCategoryScope>('all', { nonNullable: true }),
+      tagScope: new FormControl<ExportTagScope>('all', { nonNullable: true }),
       destDir: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
       filename: new FormControl(`${serverName}-${dateStr}`, {
         nonNullable: true,
         validators: [Validators.required],
       }),
     });
+
+    const scopeControl = this.exportForm.get('scope')!;
+    this.scopeValue = runInInjectionContext(this.injector, () =>
+      toSignal(scopeControl.valueChanges, { initialValue: scopeControl.value as ExportScope }),
+    );
+
+    const categoryScopeControl = this.exportForm.get('categoryScope')!;
+    this.categoryScopeValue = runInInjectionContext(this.injector, () =>
+      toSignal(categoryScopeControl.valueChanges, {
+        initialValue: categoryScopeControl.value as ExportCategoryScope,
+      }),
+    );
+
+    const tagScopeControl = this.exportForm.get('tagScope')!;
+    this.tagScopeValue = runInInjectionContext(this.injector, () =>
+      toSignal(tagScopeControl.valueChanges, {
+        initialValue: tagScopeControl.value as ExportTagScope,
+      }),
+    );
   }
 
   async browseDestDir(): Promise<void> {
@@ -104,20 +192,22 @@ export class ExportTorrents implements OnInit {
 
   startExport(): void {
     if (this.exportForm.invalid) return;
-    const { scope, destDir, filename } = this.exportForm.getRawValue();
+    const { scope, categoryScope, tagScope, destDir, filename } = this.exportForm.getRawValue();
 
-    let hashes: string[];
-    if (scope === 'selected') {
-      hashes = this.selectionStore.selected().map((t) => t.hash);
-    } else if (scope === 'filtered') {
-      hashes = this.filterService.filtered().map((t) => t.hash);
-    } else {
-      hashes = this.torrentStore.torrents().map((t) => t.hash);
-    }
+    const hashes = this.exportedTorrents().map((t) => t.hash);
 
     const serverId = this.serverStore.currentServer()?.id ?? '';
     const serverName = this.serverStore.currentServer()?.name ?? '';
-    const payload: ExportStartPayload = { serverId, serverName, scope, hashes, destDir, filename };
+    const payload: ExportStartPayload = {
+      serverId,
+      serverName,
+      scope,
+      categoryScope,
+      tagScope,
+      hashes,
+      destDir,
+      filename,
+    };
 
     this.exportService.startExport();
     window.bitbutler.export.start(payload);

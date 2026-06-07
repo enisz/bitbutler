@@ -672,9 +672,28 @@
           "legacy-line2": "Only magnet links are saved. File renames and file priorities cannot be restored after import, as magnet links do not contain file structure information."
         },
         "scope": {
+          "torrents": "Torrents",
+          "categories": "Categories",
+          "tags": "Tags",
           "all": "All",
           "filtered": "Filtered",
           "selected": "Selected"
+        },
+        "category-scope": {
+          "all": "All",
+          "assigned": "Assigned",
+          "hint": {
+            "all": "All categories defined on the source server will be included in the export.",
+            "assigned": "Only categories assigned to at least one of the exported torrents will be included."
+          }
+        },
+        "tag-scope": {
+          "all": "All",
+          "assigned": "Assigned",
+          "hint": {
+            "all": "All tags defined on the source server will be included in the export.",
+            "assigned": "Only tags assigned to at least one of the exported torrents will be included."
+          }
         },
         "progress": {
           "exporting": "Exporting torrents...",

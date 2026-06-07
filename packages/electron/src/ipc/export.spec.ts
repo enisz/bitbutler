@@ -186,6 +186,39 @@ describe('collectCategoriesAndTags', () => {
   });
 });
 
+describe('filterAssignedCategories', () => {
+  it('keeps only categories assigned to at least one entry', async () => {
+    const { filterAssignedCategories } = await import('./export.js');
+
+    const categories = {
+      Movies: { name: 'Movies', savePath: '/data/movies' },
+      Music: { name: 'Music', savePath: '/data/music' },
+    };
+    const entries = [
+      { hash: 'a', name: 'a', failed: false, category: 'Movies' },
+      { hash: 'b', name: 'b', failed: false, category: '' },
+    ];
+
+    expect(filterAssignedCategories(categories, entries)).toEqual({
+      Movies: { name: 'Movies', savePath: '/data/movies' },
+    });
+  });
+});
+
+describe('filterAssignedTags', () => {
+  it('keeps only tags assigned to at least one entry', async () => {
+    const { filterAssignedTags } = await import('./export.js');
+
+    const tags = ['linux', 'documentary', 'unused'];
+    const entries = [
+      { hash: 'a', name: 'a', failed: false, tags: ['linux'] },
+      { hash: 'b', name: 'b', failed: false, tags: ['documentary', 'linux'] },
+    ];
+
+    expect(filterAssignedTags(tags, entries)).toEqual(['linux', 'documentary']);
+  });
+});
+
 describe('restoreCategoriesAndTags', () => {
   const mockQbRequestRestore = vi.hoisted(() => vi.fn());
 

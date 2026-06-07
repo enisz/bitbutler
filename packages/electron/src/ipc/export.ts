@@ -80,6 +80,19 @@ export async function collectCategoriesAndTags(serverId: string): Promise<{
   return { categories, tags };
 }
 
+export function filterAssignedCategories(
+  categories: Record<string, { name: string; savePath: string }>,
+  entries: BbeTorrentEntry[],
+): Record<string, { name: string; savePath: string }> {
+  const assigned = new Set(entries.map((e) => e.category).filter((c): c is string => !!c));
+  return Object.fromEntries(Object.entries(categories).filter(([name]) => assigned.has(name)));
+}
+
+export function filterAssignedTags(tags: string[], entries: BbeTorrentEntry[]): string[] {
+  const assigned = new Set(entries.flatMap((e) => e.tags ?? []));
+  return tags.filter((tag) => assigned.has(tag));
+}
+
 export async function restoreCategoriesAndTags(
   serverId: string,
   metadata: Pick<BbeMetadata, 'categories' | 'tags'>,
@@ -173,7 +186,7 @@ export function registerExportIpcHandlers(): void {
 
 async function runExport(event: Electron.IpcMainEvent, payload: ExportStartPayload): Promise<void> {
   exportCancelled = false;
-  const { serverId, serverName, hashes, destDir, filename } = payload;
+  const { serverId, serverName, hashes, destDir, filename, categoryScope, tagScope } = payload;
 
   const send = (channel: string, data: unknown): void => {
     if (!event.sender.isDestroyed()) event.sender.send(channel, data);
@@ -214,7 +227,12 @@ async function runExport(event: Electron.IpcMainEvent, payload: ExportStartPaylo
       send('export:progress', progress);
     }
 
-    const { categories, tags } = await collectCategoriesAndTags(serverId);
+    const { categories: allCategories, tags: allTags } = await collectCategoriesAndTags(serverId);
+    const categories =
+      categoryScope === 'assigned'
+        ? filterAssignedCategories(allCategories, entries)
+        : allCategories;
+    const tags = tagScope === 'assigned' ? filterAssignedTags(allTags, entries) : allTags;
 
     const metadata: BbeMetadata = {
       version: 1,

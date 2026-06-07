@@ -77,8 +77,12 @@
     </fieldset>
 
     @if (phase() === 'idle') {
-      <fieldset class="bb-fieldset">
+      <fieldset class="bb-fieldset pb-3">
         <legend>{{ 'components.modals.export-torrents.label.scope' | translate }}</legend>
+
+        <div class="small text-body-secondary mb-1">
+          {{ 'components.modals.export-torrents.scope.torrents' | translate }}
+        </div>
         <div class="btn-group w-100 mb-3" role="group">
           <input
             type="radio"
@@ -117,6 +121,68 @@
             }})
           </label>
         </div>
+
+        <div class="small text-body-secondary mb-1">
+          {{ 'components.modals.export-torrents.scope.categories' | translate }}
+        </div>
+        <div class="btn-group w-100 mb-1" role="group">
+          <input
+            type="radio"
+            class="btn-check"
+            formControlName="categoryScope"
+            id="category-scope-all"
+            value="all"
+          />
+          <label class="btn btn-outline-secondary" for="category-scope-all">
+            {{ 'components.modals.export-torrents.category-scope.all' | translate }} ({{
+              allCategoriesCount()
+            }})
+          </label>
+          <input
+            type="radio"
+            class="btn-check"
+            formControlName="categoryScope"
+            id="category-scope-assigned"
+            value="assigned"
+          />
+          <label class="btn btn-outline-secondary" for="category-scope-assigned">
+            {{ 'components.modals.export-torrents.category-scope.assigned' | translate }} ({{
+              assignedCategoriesCount()
+            }})
+          </label>
+        </div>
+        <div class="small text-body-secondary mb-3">{{ categoryScopeHint() | translate }}</div>
+
+        <div class="small text-body-secondary mb-1">
+          {{ 'components.modals.export-torrents.scope.tags' | translate }}
+        </div>
+        <div class="btn-group w-100 mb-1" role="group">
+          <input
+            type="radio"
+            class="btn-check"
+            formControlName="tagScope"
+            id="tag-scope-all"
+            value="all"
+          />
+          <label class="btn btn-outline-secondary" for="tag-scope-all">
+            {{ 'components.modals.export-torrents.tag-scope.all' | translate }} ({{
+              allTagsCount()
+            }})
+          </label>
+          <input
+            type="radio"
+            class="btn-check"
+            formControlName="tagScope"
+            id="tag-scope-assigned"
+            value="assigned"
+          />
+          <label class="btn btn-outline-secondary" for="tag-scope-assigned">
+            {{ 'components.modals.export-torrents.tag-scope.assigned' | translate }} ({{
+              assignedTagsCount()
+            }})
+          </label>
+        </div>
+        <div class="small text-body-secondary">{{ tagScopeHint() | translate }}</div>
       </fieldset>
 
       <fieldset class="bb-fieldset pb-3">
