@@ -10,27 +10,36 @@ describe('ImportTorrents', () => {
   let component: ImportTorrents;
   let fixture: ComponentFixture<ImportTorrents>;
 
+  let mockExportService: {
+    importPhase: ReturnType<typeof signal<string>>;
+    importState: ReturnType<typeof signal<any>>;
+    setImportLoading: ReturnType<typeof vi.fn>;
+    setImportReady: ReturnType<typeof vi.fn>;
+    setImportError: ReturnType<typeof vi.fn>;
+    startImport: ReturnType<typeof vi.fn>;
+    resetImport: ReturnType<typeof vi.fn>;
+  };
+
   beforeEach(async () => {
     (window as any).bitbutler = {
       export: { importStart: vi.fn(), importCancel: vi.fn(), readBbe: vi.fn() },
+    };
+
+    mockExportService = {
+      importPhase: signal('idle'),
+      importState: signal({ phase: 'idle', current: 0, total: 0, name: '', skipped: 0 }),
+      setImportLoading: vi.fn(),
+      setImportReady: vi.fn(),
+      setImportError: vi.fn(),
+      startImport: vi.fn(),
+      resetImport: vi.fn(),
     };
 
     await TestBed.configureTestingModule({
       imports: [ImportTorrents, TranslateModule.forRoot()],
       providers: [
         { provide: NgbActiveModal, useValue: { dismiss: vi.fn() } },
-        {
-          provide: ExportService,
-          useValue: {
-            importPhase: signal('idle'),
-            importState: signal({ phase: 'idle', current: 0, total: 0, name: '', skipped: 0 }),
-            setImportLoading: vi.fn(),
-            setImportReady: vi.fn(),
-            setImportError: vi.fn(),
-            startImport: vi.fn(),
-            resetImport: vi.fn(),
-          },
-        },
+        { provide: ExportService, useValue: mockExportService },
         { provide: ServerStoreService, useValue: { currentServer: signal(null) } },
       ],
     }).compileComponents();
@@ -58,7 +67,7 @@ describe('ImportTorrents', () => {
   });
 
   it('should expose tagsCount and categoriesCount from metadata', () => {
-    (component.exportService.importState as any).set({
+    mockExportService.importState.set({
       phase: 'ready',
       current: 0,
       total: 0,

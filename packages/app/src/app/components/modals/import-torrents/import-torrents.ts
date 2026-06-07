@@ -50,7 +50,7 @@ export class ImportTorrents implements OnInit {
 
   private readonly activeModal = inject(NgbActiveModal);
   private readonly modalService = inject(NgbModal);
-  readonly exportService = inject(ExportService);
+  private readonly exportService = inject(ExportService);
   private readonly injector = inject(Injector);
   readonly serverStore = inject(ServerStoreService);
 
