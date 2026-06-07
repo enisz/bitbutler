@@ -8,14 +8,13 @@ import {
   faCircleExclamation,
   faDownload,
   faFolderOpen,
+  faFolderTree,
   faHourglassHalf,
-  faLayerGroup,
   faLink,
   faMagnifyingGlass,
   faMoon,
   faPause,
   faPlay,
-  faRectangleList,
   faTags,
   faUpload,
 } from '@fortawesome/free-solid-svg-icons';
@@ -70,7 +69,6 @@ export class Status {
   });
 
   readonly icon = {
-    faLayerGroup,
     faDownload,
     faUpload,
     faCheckCircle,
@@ -83,7 +81,7 @@ export class Status {
     faCircleExclamation,
     faLink,
     faFolderOpen,
-    faRectangleList,
+    faFolderTree,
     faTags,
   };
 
@@ -311,7 +309,7 @@ export class Status {
         key: name,
         label: name,
         count: counts.get(name) ?? 0,
-        icon: this.icon.faRectangleList,
+        icon: this.icon.faFolderTree,
       });
     });
 
