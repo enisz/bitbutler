@@ -135,3 +135,53 @@ describe('applyPathMappings', () => {
     expect(applyPathMappings('/media/downloads', [])).toBe('/media/downloads');
   });
 });
+
+describe('collectCategoriesAndTags', () => {
+  const mockQbRequest = vi.hoisted(() => vi.fn());
+
+  beforeEach(() => {
+    vi.resetModules();
+    vi.doMock('./qbittorrent.js', () => ({ qbRequest: mockQbRequest }));
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.doUnmock('./qbittorrent.js');
+  });
+
+  async function setup() {
+    return import('./export.js');
+  }
+
+  it('returns categories and tags fetched from the server', async () => {
+    mockQbRequest.mockImplementation(({ path }: { path: string }) => {
+      if (path === '/api/v2/torrents/categories') {
+        return Promise.resolve({ Movies: { name: 'Movies', savePath: '/data/movies' } });
+      }
+      if (path === '/api/v2/torrents/tags') {
+        return Promise.resolve(['linux', 'documentary']);
+      }
+      throw new Error(`unexpected path ${path}`);
+    });
+
+    const { collectCategoriesAndTags } = await setup();
+    const result = await collectCategoriesAndTags('server-1');
+
+    expect(result.categories).toEqual({ Movies: { name: 'Movies', savePath: '/data/movies' } });
+    expect(result.tags).toEqual(['linux', 'documentary']);
+  });
+
+  it('returns empty collections when the server has none', async () => {
+    mockQbRequest.mockImplementation(({ path }: { path: string }) => {
+      if (path === '/api/v2/torrents/categories') return Promise.resolve({});
+      if (path === '/api/v2/torrents/tags') return Promise.resolve([]);
+      throw new Error(`unexpected path ${path}`);
+    });
+
+    const { collectCategoriesAndTags } = await setup();
+    const result = await collectCategoriesAndTags('server-1');
+
+    expect(result.categories).toEqual({});
+    expect(result.tags).toEqual([]);
+  });
+});

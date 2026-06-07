@@ -64,6 +64,20 @@ export function applyPathMappings(
   return savePath;
 }
 
+export async function collectCategoriesAndTags(serverId: string): Promise<{
+  categories: Record<string, { name: string; savePath: string }>;
+  tags: string[];
+}> {
+  const [categories, tags] = await Promise.all([
+    qbRequest({ id: serverId, path: '/api/v2/torrents/categories' }) as Promise<
+      Record<string, { name: string; savePath: string }>
+    >,
+    qbRequest({ id: serverId, path: '/api/v2/torrents/tags' }) as Promise<string[]>,
+  ]);
+
+  return { categories, tags };
+}
+
 export function registerExportIpcHandlers(): void {
   ipcMain.on('export:cancel', () => {
     exportCancelled = true;
@@ -153,6 +167,8 @@ async function runExport(event: Electron.IpcMainEvent, payload: ExportStartPaylo
       send('export:progress', progress);
     }
 
+    const { categories, tags } = await collectCategoriesAndTags(serverId);
+
     const metadata: BbeMetadata = {
       version: 1,
       exported_at: Math.floor(Date.now() / 1000),
@@ -160,6 +176,8 @@ async function runExport(event: Electron.IpcMainEvent, payload: ExportStartPaylo
       source_server_name: serverName,
       export_mode: isFullMode ? 'full' : 'legacy',
       torrents: entries,
+      categories,
+      tags,
     };
 
     archive.append(JSON.stringify(metadata), { name: 'metadata.json' });
