@@ -194,6 +194,7 @@ export class ImportTorrents implements OnInit {
       size: 'xl',
       centered: false,
       scrollable: true,
+      beforeDismiss: () => ref.componentInstance.canDeactivate(),
     });
     setModalInput(ref, 'initialTab', 'storage');
     ref.result.catch(() => {});
