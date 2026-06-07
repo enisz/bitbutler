@@ -17,7 +17,7 @@ import type {
   ImportStartPayload,
 } from '@bitbutler/shared';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faMinus, faPlus, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { QbSettings } from '../../../pages/qb-settings/qb-settings';
@@ -79,7 +79,7 @@ export class ImportTorrents implements OnInit {
     return this.legacyUnsupportedFields.includes(field);
   }
 
-  readonly icons = { faMinus, faPlus };
+  readonly icons = { faMinus, faPlus, faTriangleExclamation };
 
   readonly phase = this.exportService.importPhase;
   readonly state = this.exportService.importState;

@@ -89,7 +89,10 @@
       "mcp__plugin_playwright_playwright__browser_console_messages",
       "mcp__plugin_playwright_playwright__browser_run_code_unsafe",
       "Bash(tasklist)",
-      "Bash(taskkill //PID 23604 //F)"
+      "Bash(taskkill //PID 23604 //F)",
+      "Bash(awk 'NR==1300{print NR\": \"$0} NR<=1314 && /^[[:space:]]*\"[a-zA-Z_-]+\":\\\\s*\\\\{/ {print NR\": \"$0}' \"C:\\\\dev\\\\bitbutler\\\\public\\\\i18n\\\\us.json\")",
+      "Bash(awk -F: '$1<1314')",
+      "Bash(awk *)"
     ]
   }
 }

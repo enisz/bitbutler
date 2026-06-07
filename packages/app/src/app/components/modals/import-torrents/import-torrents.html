@@ -183,7 +183,13 @@
             <legend>
               {{ 'components.modals.import-torrents.label.category-path-mapping' | translate }}
             </legend>
-            <div class="alert alert-info small">
+            <div class="alert alert-warning small">
+              <p class="fw-bold mb-1">
+                <fa-icon [icon]="icons.faTriangleExclamation" class="me-1"></fa-icon>
+                {{
+                  'components.modals.import-torrents.category-path-mapping.note-title' | translate
+                }}
+              </p>
               <span
                 [innerHTML]="
                   'components.modals.import-torrents.category-path-mapping.note-prefix' | translate
@@ -194,9 +200,8 @@
                 class="btn btn-link btn-sm p-0 align-baseline"
                 (click)="openQbSettings()"
               >
-                {{
-                  'components.modals.import-torrents.category-path-mapping.note-link' | translate
-                }}</button
+                {{ 'pages.qb-settings.title' | translate }} -
+                {{ 'pages.qb-settings.tab.storage.title' | translate }}</button
               >.
             </div>
             <div class="form-check form-switch mb-3">
