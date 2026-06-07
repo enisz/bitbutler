@@ -191,7 +191,7 @@
       "delete-torrent": {
         "title": "Delete Torrent",
         "message": "Are you sure you want to remove {{count}} torrent(s) from the list?",
-        "disk-space": "This will free up {{size}} of disk space.",
+        "disk-space": "Total size of the selected torrent(s): {{size}}",
         "delete-form": {
           "confirmation": "Remove the files as well"
         }
