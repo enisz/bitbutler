@@ -185,3 +185,154 @@ describe('collectCategoriesAndTags', () => {
     expect(result.tags).toEqual([]);
   });
 });
+
+describe('restoreCategoriesAndTags', () => {
+  const mockQbRequestRestore = vi.hoisted(() => vi.fn());
+
+  beforeEach(() => {
+    vi.resetModules();
+    vi.doMock('./qbittorrent.js', () => ({ qbRequest: mockQbRequestRestore }));
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.doUnmock('./qbittorrent.js');
+  });
+
+  async function setup() {
+    return import('./export.js');
+  }
+
+  it('does nothing when both restoreCategories and restoreTags are false', async () => {
+    const { restoreCategoriesAndTags } = await setup();
+    await restoreCategoriesAndTags(
+      'server-1',
+      { categories: { Movies: { name: 'Movies', savePath: '/data/movies' } }, tags: ['linux'] },
+      false,
+      false,
+      [],
+      false,
+    );
+    expect(mockQbRequestRestore).not.toHaveBeenCalled();
+  });
+
+  it('creates tags via createTags when restoreTags is true', async () => {
+    mockQbRequestRestore.mockResolvedValue(undefined);
+    const { restoreCategoriesAndTags } = await setup();
+    await restoreCategoriesAndTags(
+      'server-1',
+      { categories: {}, tags: ['linux', 'docs'] },
+      false,
+      true,
+      [],
+      false,
+    );
+
+    expect(mockQbRequestRestore).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'server-1',
+        method: 'POST',
+        path: '/api/v2/torrents/createTags',
+        form: { tags: 'linux,docs' },
+      }),
+    );
+  });
+
+  it('creates a category that does not exist on the target server', async () => {
+    mockQbRequestRestore.mockImplementation(({ path }: { path: string }) => {
+      if (path === '/api/v2/torrents/categories') return Promise.resolve({});
+      return Promise.resolve(undefined);
+    });
+    const { restoreCategoriesAndTags } = await setup();
+    await restoreCategoriesAndTags(
+      'server-1',
+      { categories: { Movies: { name: 'Movies', savePath: '/data/movies' } }, tags: [] },
+      true,
+      false,
+      [],
+      false,
+    );
+
+    expect(mockQbRequestRestore).toHaveBeenCalledWith(
+      expect.objectContaining({
+        method: 'POST',
+        path: '/api/v2/torrents/createCategory',
+        form: { category: 'Movies', savePath: '/data/movies' },
+      }),
+    );
+  });
+
+  it('leaves an existing category untouched when overwriteCategories is false', async () => {
+    mockQbRequestRestore.mockImplementation(({ path }: { path: string }) => {
+      if (path === '/api/v2/torrents/categories') {
+        return Promise.resolve({ Movies: { name: 'Movies', savePath: '/old/movies' } });
+      }
+      return Promise.resolve(undefined);
+    });
+    const { restoreCategoriesAndTags } = await setup();
+    await restoreCategoriesAndTags(
+      'server-1',
+      { categories: { Movies: { name: 'Movies', savePath: '/data/movies' } }, tags: [] },
+      true,
+      false,
+      [],
+      false,
+    );
+
+    expect(mockQbRequestRestore).not.toHaveBeenCalledWith(
+      expect.objectContaining({ path: '/api/v2/torrents/editCategory' }),
+    );
+    expect(mockQbRequestRestore).not.toHaveBeenCalledWith(
+      expect.objectContaining({ path: '/api/v2/torrents/createCategory' }),
+    );
+  });
+
+  it('edits an existing category via editCategory when overwriteCategories is true', async () => {
+    mockQbRequestRestore.mockImplementation(({ path }: { path: string }) => {
+      if (path === '/api/v2/torrents/categories') {
+        return Promise.resolve({ Movies: { name: 'Movies', savePath: '/old/movies' } });
+      }
+      return Promise.resolve(undefined);
+    });
+    const { restoreCategoriesAndTags } = await setup();
+    await restoreCategoriesAndTags(
+      'server-1',
+      { categories: { Movies: { name: 'Movies', savePath: '/data/movies' } }, tags: [] },
+      true,
+      false,
+      [],
+      true,
+    );
+
+    expect(mockQbRequestRestore).toHaveBeenCalledWith(
+      expect.objectContaining({
+        method: 'POST',
+        path: '/api/v2/torrents/editCategory',
+        form: { category: 'Movies', savePath: '/data/movies' },
+      }),
+    );
+  });
+
+  it('applies categoryPathMappings before creating a category', async () => {
+    mockQbRequestRestore.mockImplementation(({ path }: { path: string }) => {
+      if (path === '/api/v2/torrents/categories') return Promise.resolve({});
+      return Promise.resolve(undefined);
+    });
+    const { restoreCategoriesAndTags } = await setup();
+    await restoreCategoriesAndTags(
+      'server-1',
+      { categories: { Movies: { name: 'Movies', savePath: '/old/movies' } }, tags: [] },
+      true,
+      false,
+      [{ from: '/old', to: '/data' }],
+      false,
+    );
+
+    expect(mockQbRequestRestore).toHaveBeenCalledWith(
+      expect.objectContaining({
+        path: '/api/v2/torrents/createCategory',
+        form: { category: 'Movies', savePath: '/data/movies' },
+      }),
+    );
+  });
+});

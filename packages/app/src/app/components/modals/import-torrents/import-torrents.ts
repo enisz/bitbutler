@@ -207,6 +207,10 @@ export class ImportTorrents implements OnInit {
       restoreFields,
       startMode: raw.startMode,
       pathMappings,
+      restoreCategories: raw.restoreFields.categories,
+      restoreTags: raw.restoreFields.tags,
+      categoryPathMappings: [],
+      overwriteCategories: false,
     };
 
     this.exportService.startImport();

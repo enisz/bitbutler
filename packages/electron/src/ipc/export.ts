@@ -1,5 +1,6 @@
 import type {
   BbeMetadata,
+  BbePathMapping,
   BbeTorrentEntry,
   BbeTorrentFile,
   ExportDoneEvent,
@@ -76,6 +77,51 @@ export async function collectCategoriesAndTags(serverId: string): Promise<{
   ]);
 
   return { categories, tags };
+}
+
+export async function restoreCategoriesAndTags(
+  serverId: string,
+  metadata: Pick<BbeMetadata, 'categories' | 'tags'>,
+  restoreCategories: boolean,
+  restoreTags: boolean,
+  categoryPathMappings: BbePathMapping[],
+  overwriteCategories: boolean,
+): Promise<void> {
+  if (restoreTags && metadata.tags?.length) {
+    await qbRequest({
+      id: serverId,
+      method: 'POST',
+      path: '/api/v2/torrents/createTags',
+      form: { tags: metadata.tags.join(',') },
+    }).catch(() => {});
+  }
+
+  if (restoreCategories && metadata.categories) {
+    const existing = (await qbRequest({
+      id: serverId,
+      path: '/api/v2/torrents/categories',
+    }).catch(() => ({}))) as Record<string, { name: string; savePath: string }>;
+
+    for (const [name, category] of Object.entries(metadata.categories)) {
+      const mappedPath = applyPathMappings(category.savePath, categoryPathMappings);
+
+      if (!(name in existing)) {
+        await qbRequest({
+          id: serverId,
+          method: 'POST',
+          path: '/api/v2/torrents/createCategory',
+          form: { category: name, savePath: mappedPath },
+        }).catch(() => {});
+      } else if (overwriteCategories) {
+        await qbRequest({
+          id: serverId,
+          method: 'POST',
+          path: '/api/v2/torrents/editCategory',
+          form: { category: name, savePath: mappedPath },
+        }).catch(() => {});
+      }
+    }
+  }
 }
 
 export function registerExportIpcHandlers(): void {
@@ -270,7 +316,17 @@ async function buildExportEntry(
 
 async function runImport(event: Electron.IpcMainEvent, payload: ImportStartPayload): Promise<void> {
   importCancelled = false;
-  const { serverId, bbePath, restoreFields, startMode, pathMappings } = payload;
+  const {
+    serverId,
+    bbePath,
+    restoreFields,
+    startMode,
+    pathMappings,
+    restoreCategories,
+    restoreTags,
+    categoryPathMappings,
+    overwriteCategories,
+  } = payload;
 
   const send = (channel: string, data: unknown): void => {
     if (!event.sender.isDestroyed()) event.sender.send(channel, data);
@@ -284,6 +340,18 @@ async function runImport(event: Electron.IpcMainEvent, payload: ImportStartPaylo
 
     const torrents = metadata.torrents.filter((t) => !t.failed);
     let skipped = 0;
+
+    // Step 0: restore categories and tags before any torrent references them
+    if (!importCancelled) {
+      await restoreCategoriesAndTags(
+        serverId,
+        metadata,
+        restoreCategories,
+        restoreTags,
+        categoryPathMappings,
+        overwriteCategories,
+      );
+    }
 
     // Phase 1: add all torrents as fast as possible
     const addedHashes: string[] = [];

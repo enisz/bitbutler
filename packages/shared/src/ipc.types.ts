@@ -147,6 +147,10 @@ export interface ImportStartPayload {
   restoreFields: ImportRestoreField[];
   startMode: ImportStartMode;
   pathMappings: BbePathMapping[];
+  restoreCategories: boolean;
+  restoreTags: boolean;
+  categoryPathMappings: BbePathMapping[];
+  overwriteCategories: boolean;
 }
 
 export interface BitButlerAPI {
