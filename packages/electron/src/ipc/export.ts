@@ -6,6 +6,7 @@ import type {
   ExportDoneEvent,
   ExportProgressEvent,
   ExportStartPayload,
+  ImportRestoreField,
   ImportStartPayload,
 } from '@bitbutler/shared';
 import AdmZip from 'adm-zip';
@@ -379,7 +380,13 @@ async function runImport(event: Electron.IpcMainEvent, payload: ImportStartPaylo
       addedHashes.length > 0 &&
       (restoreFields.some((f) =>
         (
-          ['renames', 'priorities', 'speed_limits', 'share_limits', 'super_seeding'] as const
+          [
+            'renames',
+            'priorities',
+            'speed_limits',
+            'share_limits',
+            'super_seeding',
+          ] as ImportRestoreField[]
         ).includes(f),
       ) ||
         startMode !== 'paused');
