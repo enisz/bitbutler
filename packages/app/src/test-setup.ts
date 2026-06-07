@@ -7,6 +7,7 @@ const noopSubscription = () => noop;
     isDev: () => Promise.resolve(false),
     openExternalUrl: noopAsync,
     showOpenDialog: () => Promise.resolve(null),
+    getDownloadsPath: () => Promise.resolve(''),
     openPath: noopAsync,
     showItemInFolder: noop,
     getPlatform: () => Promise.resolve('linux'),
