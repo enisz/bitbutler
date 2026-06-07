@@ -36,22 +36,11 @@ function settingsGet(payload: unknown): unknown {
   const row = stmtGet.get(settingId);
 
   if (!row?.json) {
-    if (process.env['PLAYWRIGHT_E2E'] && settingId === 'GeneralSettingsService') {
-      return { behavior: { automaticUpdate: false } };
-    }
     return null;
   }
 
   try {
-    const parsed = JSON.parse(row.json) as Record<string, unknown>;
-    if (process.env['PLAYWRIGHT_E2E'] && settingId === 'GeneralSettingsService') {
-      const behavior = {
-        ...((parsed.behavior as Record<string, unknown> | undefined) ?? {}),
-        automaticUpdate: false,
-      };
-      return { ...parsed, behavior };
-    }
-    return parsed;
+    return JSON.parse(row.json) as Record<string, unknown>;
   } catch {
     return null;
   }
