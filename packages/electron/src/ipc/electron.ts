@@ -14,6 +14,7 @@ export function registerElectronIpcHandlers(): void {
   ipcMain.handle('electron:set-login-item', async (_event, settings: { openAtLogin: boolean }) =>
     setLoginItem(settings),
   );
+  ipcMain.handle('electron:get-downloads-path', () => app.getPath('downloads'));
 }
 
 function getPlatform(): HostPlatform {

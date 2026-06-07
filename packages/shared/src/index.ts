@@ -15,6 +15,11 @@ export type {
 } from './models/torrent-draft.model.js';
 export type { WindowState } from './models/window.model.js';
 export type {
+  BbeMetadata,
+  BbePathMapping,
+  BbeServerInfo,
+  BbeTorrentEntry,
+  BbeTorrentFile,
   BitButlerAPI,
   BitButlerHttpMethod,
   BitButlerQbRequest,
@@ -22,6 +27,16 @@ export type {
   BitButlerServerIdPayload,
   BitButlerSyncStreamPayload,
   BitButlerSyncStreamResponse,
+  ExportCategoryScope,
+  ExportDoneEvent,
+  ExportMode,
+  ExportProgressEvent,
+  ExportScope,
+  ExportStartPayload,
+  ExportTagScope,
+  ImportRestoreField,
+  ImportStartMode,
+  ImportStartPayload,
   MenuClickPayload,
   SelectedTorrentInput,
   TorrentParsePayload,

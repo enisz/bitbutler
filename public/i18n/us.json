@@ -191,7 +191,7 @@
       "delete-torrent": {
         "title": "Delete Torrent",
         "message": "Are you sure you want to remove {{count}} torrent(s) from the list?",
-        "disk-space": "This will free up {{size}} of disk space.",
+        "disk-space": "Total size of the selected torrent(s): {{size}}",
         "delete-form": {
           "confirmation": "Remove the files as well"
         }
@@ -637,6 +637,140 @@
         "delete-confirm": {
           "title": "Delete Server",
           "message": "Are you sure you want to delete the server \"{{ name }}\"?"
+        }
+      },
+      "export-torrents": {
+        "title": "Export Torrents",
+        "label": {
+          "connection": "Connection",
+          "scope": "Export scope",
+          "save-location": "Save location",
+          "dest-dir": "Directory",
+          "filename": "Filename",
+          "progress": "Progress"
+        },
+        "placeholder": {
+          "dest-dir": "Select export directory",
+          "filename": "Filename"
+        },
+        "info": {
+          "loading": "Loading connection details...",
+          "server": "Server",
+          "url": "URL",
+          "webui-version": "WebUI version",
+          "qb-version": "qBittorrent version",
+          "export-type": "Export type",
+          "full-export": "Full export",
+          "legacy-export": "Legacy export"
+        },
+        "popover": {
+          "full-title": "Full export mode",
+          "full-line1": "The /api/v2/torrents/export endpoint was detected as available on this server.",
+          "full-line2": "The archive includes .torrent files. All metadata can be fully restored after import.",
+          "legacy-title": "Legacy export mode",
+          "legacy-line1": "The /api/v2/torrents/export endpoint was not detected on this server.",
+          "legacy-line2": "Only magnet links are saved. File renames and file priorities cannot be restored after import, as magnet links do not contain file structure information."
+        },
+        "scope": {
+          "torrents": "Torrents",
+          "categories": "Categories",
+          "tags": "Tags",
+          "all": "All",
+          "filtered": "Filtered",
+          "selected": "Selected"
+        },
+        "category-scope": {
+          "all": "All",
+          "assigned": "Assigned",
+          "hint": {
+            "all": "All categories defined on the source server will be included in the export.",
+            "assigned": "Only categories assigned to at least one of the exported torrents will be included."
+          }
+        },
+        "tag-scope": {
+          "all": "All",
+          "assigned": "Assigned",
+          "hint": {
+            "all": "All tags defined on the source server will be included in the export.",
+            "assigned": "Only tags assigned to at least one of the exported torrents will be included."
+          }
+        },
+        "progress": {
+          "exporting": "Exporting torrents...",
+          "fetching": "Fetching",
+          "done": "Export complete",
+          "skipped": "skipped"
+        },
+        "button": {
+          "export": "Export",
+          "show-in-folder": "Show in folder"
+        }
+      },
+      "import-torrents": {
+        "title": "Import Torrents",
+        "label": {
+          "archive": "Archive",
+          "restore-options": "Restore options",
+          "path-remap": "Save path remapping",
+          "category-path-mapping": "Category path mapping",
+          "after-import": "After import",
+          "progress": "Progress"
+        },
+        "archive": {
+          "exported-from": "Exported from",
+          "importing-to": "Importing to",
+          "server-url": "Server URL",
+          "export-date": "Export date",
+          "torrents": "Torrents",
+          "tags": "Tags",
+          "categories": "Categories",
+          "export-type": "Export type",
+          "full-mode": "Full export",
+          "legacy-mode": "Legacy export"
+        },
+        "restore": {
+          "save_path": "Save path",
+          "categories": "Categories",
+          "tags": "Tags",
+          "speed_limits": "Speed limits",
+          "share_limits": "Share limits",
+          "renames": "File renames",
+          "priorities": "File priorities",
+          "auto_tmm": "Auto-TMM",
+          "sequential_download": "Sequential download",
+          "super_seeding": "Super seeding",
+          "first_last_piece_prio": "First/last piece priority"
+        },
+        "legacy-unsupported": "Not available in legacy export - magnet links do not contain file structure information.",
+        "path-remap": {
+          "description": "Rewrite save paths when the source and destination servers use different directory structures. Each rule replaces a matching path prefix - the first match wins.",
+          "from": "From prefix",
+          "to": "To prefix"
+        },
+        "category-path-mapping": {
+          "description": "Rewrite category save paths when the source and destination servers use different directory structures. Each rule replaces a matching path prefix - the first match wins.",
+          "note-title": "Keep in mind",
+          "note-prefix": "If <strong>When category save path changes</strong> is set to <em>Switch to Manual mode</em>, changing a category's save path will disable Auto TMM on every torrent currently assigned to it - not just the ones being imported. You can review this setting in ",
+          "overwrite": "Overwrite existing categories",
+          "overwrite-description": "Updates the save path of existing categories using qBittorrent's edit endpoint. This preserves existing torrent assignments but may trigger Auto TMM behavior depending on your 'When category save path changes' setting. If disabled, existing categories are left untouched."
+        },
+        "start-mode": {
+          "paused": "Keep paused",
+          "active": "Start active ones",
+          "all": "Start all",
+          "hint": {
+            "paused": "All torrents will remain paused - start them manually when ready.",
+            "active": "Torrents that were active when exported will resume automatically.",
+            "all": "All imported torrents will start immediately regardless of their previous state."
+          }
+        },
+        "progress": {
+          "importing": "Importing torrents...",
+          "done": "Import complete",
+          "skipped": "skipped"
+        },
+        "button": {
+          "import": "Import"
         }
       },
       "manage-categories": {
@@ -1225,19 +1359,32 @@
           "label": {
             "default-paths": "Default Paths",
             "temp-files": "Temporary Files",
-            "file-management": "File Management"
+            "file-management": "File Management",
+            "save-management": "Save Management"
           },
           "field": {
             "save-path": "Default Save Path",
             "temp-path-enabled": "Keep incomplete torrents in a separate folder",
             "temp-path": "Incomplete Save Path",
             "incomplete-files-ext": "Append .!qB extension to incomplete files",
-            "torrent-content-layout": "Torrent content layout"
+            "torrent-content-layout": "Torrent content layout",
+            "auto-tmm-enabled": "Default torrent management mode",
+            "torrent-changed-tmm-enabled": "When torrent category changes",
+            "category-changed-tmm-enabled": "When category save path changes",
+            "save-path-changed-tmm-enabled": "When default save path changes"
           },
           "content-layout": {
             "original": "Original",
             "subfolder": "Create subfolder",
             "no-subfolder": "Don't create subfolder"
+          },
+          "tmm-mode": {
+            "automatic": "Automatic",
+            "manual": "Manual"
+          },
+          "tmm-behavior": {
+            "relocate": "Relocate torrents",
+            "manual": "Switch to Manual mode"
           }
         },
         "queue-limits": {
@@ -1402,7 +1549,9 @@
       "manage-servers": "Manage Servers",
       "help": "Help",
       "check-for-updates": "Check for Updates",
-      "about": "About BitButler"
+      "about": "About BitButler",
+      "export-torrents": "Export Torrents",
+      "import-torrents": "Import Torrents"
     }
   }
 }

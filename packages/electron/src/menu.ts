@@ -163,6 +163,17 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
         },
         { type: 'separator' },
         {
+          label: t('electron.menu.export-torrents'),
+          enabled: loggedIn,
+          click: () => sendMenuAction(mainWindow, 'file.exportTorrents'),
+        },
+        {
+          label: t('electron.menu.import-torrents'),
+          enabled: loggedIn,
+          click: () => sendMenuAction(mainWindow, 'file.importTorrents'),
+        },
+        { type: 'separator' },
+        {
           label: t('electron.menu.disconnect'),
           enabled: loggedIn,
           click: () => sendMenuAction(mainWindow, 'file.disconnect'),
