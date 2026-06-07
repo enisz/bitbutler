@@ -179,7 +179,7 @@
         }
 
         @if (showCategoryPathMapping()) {
-          <fieldset class="bb-fieldset" formArrayName="categoryPathMappings">
+          <fieldset class="bb-fieldset">
             <legend>
               {{ 'components.modals.import-torrents.label.category-path-mapping' | translate }}
             </legend>
@@ -228,64 +228,66 @@
                 'components.modals.import-torrents.category-path-mapping.description' | translate
               }}
             </p>
-            @for (group of categoryPathMappings.controls; track $index; let i = $index) {
-              <div class="row mb-2" [formGroupName]="i">
-                <div class="col-5">
-                  <div class="form-floating">
-                    <input
-                      type="text"
-                      class="form-control"
-                      [id]="'cat-from-' + i"
-                      placeholder="from"
-                      formControlName="from"
-                    />
-                    <label [for]="'cat-from-' + i">{{
-                      'components.modals.import-torrents.path-remap.from' | translate
-                    }}</label>
+            <div formArrayName="categoryPathMappings">
+              @for (group of categoryPathMappings.controls; track $index; let i = $index) {
+                <div class="row mb-2" [formGroupName]="i">
+                  <div class="col-5">
+                    <div class="form-floating">
+                      <input
+                        type="text"
+                        class="form-control"
+                        [id]="'cat-from-' + i"
+                        placeholder="from"
+                        formControlName="from"
+                      />
+                      <label [for]="'cat-from-' + i">{{
+                        'components.modals.import-torrents.path-remap.from' | translate
+                      }}</label>
+                    </div>
+                  </div>
+                  <div class="col-5">
+                    <div class="form-floating">
+                      <input
+                        type="text"
+                        class="form-control"
+                        [id]="'cat-to-' + i"
+                        placeholder="to"
+                        formControlName="to"
+                      />
+                      <label [for]="'cat-to-' + i">{{
+                        'components.modals.import-torrents.path-remap.to' | translate
+                      }}</label>
+                    </div>
+                  </div>
+                  <div class="col-2 d-flex align-items-center justify-content-center gap-1">
+                    @if (
+                      !(
+                        categoryPathMappings.length === 1 &&
+                        !group.get('from')?.value &&
+                        !group.get('to')?.value
+                      )
+                    ) {
+                      <button
+                        type="button"
+                        class="btn btn-lg btn-link text-danger"
+                        (click)="removeMapping(categoryPathMappings, i)"
+                      >
+                        <fa-icon [icon]="icons.faMinus"></fa-icon>
+                      </button>
+                    }
+                    @if ($last) {
+                      <button
+                        type="button"
+                        class="btn btn-lg btn-link text-success"
+                        (click)="addMapping(categoryPathMappings)"
+                      >
+                        <fa-icon [icon]="icons.faPlus"></fa-icon>
+                      </button>
+                    }
                   </div>
                 </div>
-                <div class="col-5">
-                  <div class="form-floating">
-                    <input
-                      type="text"
-                      class="form-control"
-                      [id]="'cat-to-' + i"
-                      placeholder="to"
-                      formControlName="to"
-                    />
-                    <label [for]="'cat-to-' + i">{{
-                      'components.modals.import-torrents.path-remap.to' | translate
-                    }}</label>
-                  </div>
-                </div>
-                <div class="col-2 d-flex align-items-center justify-content-center gap-1">
-                  @if (
-                    !(
-                      categoryPathMappings.length === 1 &&
-                      !group.get('from')?.value &&
-                      !group.get('to')?.value
-                    )
-                  ) {
-                    <button
-                      type="button"
-                      class="btn btn-lg btn-link text-danger"
-                      (click)="removeMapping(categoryPathMappings, i)"
-                    >
-                      <fa-icon [icon]="icons.faMinus"></fa-icon>
-                    </button>
-                  }
-                  @if ($last) {
-                    <button
-                      type="button"
-                      class="btn btn-lg btn-link text-success"
-                      (click)="addMapping(categoryPathMappings)"
-                    >
-                      <fa-icon [icon]="icons.faPlus"></fa-icon>
-                    </button>
-                  }
-                </div>
-              </div>
-            }
+              }
+            </div>
           </fieldset>
         }
 
