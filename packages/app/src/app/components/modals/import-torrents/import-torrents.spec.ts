@@ -11,6 +11,10 @@ describe('ImportTorrents', () => {
   let fixture: ComponentFixture<ImportTorrents>;
 
   beforeEach(async () => {
+    (window as any).bitbutler = {
+      export: { importStart: vi.fn(), importCancel: vi.fn(), readBbe: vi.fn() },
+    };
+
     await TestBed.configureTestingModule({
       imports: [ImportTorrents, TranslateModule.forRoot()],
       providers: [
@@ -51,5 +55,63 @@ describe('ImportTorrents', () => {
 
   it('should compute startModeHint for active', () => {
     expect(component.startModeHint()).toContain('active');
+  });
+
+  it('should expose tagsCount and categoriesCount from metadata', () => {
+    (component.exportService.importState as any).set({
+      phase: 'ready',
+      current: 0,
+      total: 0,
+      name: '',
+      skipped: 0,
+      metadata: {
+        version: 1,
+        exported_at: 0,
+        source_server: 'srv',
+        export_mode: 'full',
+        torrents: [],
+        tags: ['linux', 'docs'],
+        categories: { Movies: { name: 'Movies', savePath: '/data/movies' } },
+      },
+    } as any);
+
+    expect(component.tagsCount()).toBe(2);
+    expect(component.categoriesCount()).toBe(1);
+  });
+
+  it('should show category path mapping only when the categories restore toggle is on', () => {
+    component.importForm.get('restoreFields.categories')?.setValue(true);
+    expect(component.showCategoryPathMapping()).toBe(true);
+
+    component.importForm.get('restoreFields.categories')?.setValue(false);
+    expect(component.showCategoryPathMapping()).toBe(false);
+  });
+
+  it('should add and remove category path mapping rows', () => {
+    expect(component.categoryPathMappings.length).toBe(1);
+
+    component.addMapping(component.categoryPathMappings);
+    expect(component.categoryPathMappings.length).toBe(2);
+
+    component.removeMapping(component.categoryPathMappings, 1);
+    expect(component.categoryPathMappings.length).toBe(1);
+  });
+
+  it('should send restoreCategories, restoreTags, categoryPathMappings and overwriteCategories in the payload', () => {
+    component.importForm.get('restoreFields.categories')?.setValue(true);
+    component.importForm.get('restoreFields.tags')?.setValue(false);
+    component.importForm.get('overwriteCategories')?.setValue(true);
+    component.categoryPathMappings.at(0).setValue({ from: '/old', to: '/new' });
+
+    component.startImport();
+
+    expect(window.bitbutler.export.importStart).toHaveBeenCalledWith(
+      expect.objectContaining({
+        restoreCategories: true,
+        restoreTags: false,
+        overwriteCategories: true,
+        categoryPathMappings: [{ from: '/old', to: '/new' }],
+      }),
+    );
   });
 });

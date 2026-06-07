@@ -693,6 +693,7 @@
           "archive": "Archive",
           "restore-options": "Restore options",
           "path-remap": "Save path remapping",
+          "category-path-mapping": "Category path mapping",
           "after-import": "After import",
           "progress": "Progress"
         },
@@ -702,6 +703,8 @@
           "server-url": "Server URL",
           "export-date": "Export date",
           "torrents": "Torrents",
+          "tags": "Tags",
+          "categories": "Categories",
           "export-type": "Export type",
           "full-mode": "Full export",
           "legacy-mode": "Legacy export"
@@ -724,6 +727,13 @@
           "description": "Rewrite save paths when the source and destination servers use different directory structures. Each rule replaces a matching path prefix - the first match wins.",
           "from": "From prefix",
           "to": "To prefix"
+        },
+        "category-path-mapping": {
+          "description": "Rewrite category save paths when the source and destination servers use different directory structures. Each rule replaces a matching path prefix - the first match wins.",
+          "note-prefix": "If <strong>When category save path changes</strong> is set to <em>Switch to Manual mode</em>, changing a category's save path will disable Auto TMM on every torrent currently assigned to it - not just the ones being imported. You can review this setting in",
+          "note-link": "qBittorrent Settings - Storage",
+          "overwrite": "Overwrite existing categories",
+          "overwrite-description": "Updates the save path of existing categories using qBittorrent's edit endpoint. This preserves existing torrent assignments but may trigger Auto TMM behavior depending on your 'When category save path changes' setting. If disabled, existing categories are left untouched."
         },
         "start-mode": {
           "paused": "Keep paused",

@@ -18,11 +18,14 @@ import type {
 } from '@bitbutler/shared';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
+import { QbSettings } from '../../../pages/qb-settings/qb-settings';
 import { LocalTimestampPipe } from '../../../pipes/local-timestamp-pipe';
 import { ExportService } from '../../../services/export.service';
 import { ServerStoreService } from '../../../services/server-store.service';
+import { setModalInput } from '../../../utils/modal-input';
+import { BbPopover } from '../../bb-popover/bb-popover';
 import { BbProgress } from '../../bb-progress/bb-progress';
 
 @Component({
@@ -33,6 +36,7 @@ import { BbProgress } from '../../bb-progress/bb-progress';
     TranslatePipe,
     FaIconComponent,
     BbProgress,
+    BbPopover,
     LocalTimestampPipe,
     NgbTooltip,
   ],
@@ -45,13 +49,15 @@ export class ImportTorrents implements OnInit {
   private loadedBbePath = '';
 
   private readonly activeModal = inject(NgbActiveModal);
-  private readonly exportService = inject(ExportService);
+  private readonly modalService = inject(NgbModal);
+  readonly exportService = inject(ExportService);
   private readonly injector = inject(Injector);
   readonly serverStore = inject(ServerStoreService);
 
   importForm!: FormGroup;
   private startModeValue!: ReturnType<typeof toSignal<ImportStartMode>>;
   private savePathEnabled!: ReturnType<typeof toSignal<boolean>>;
+  private categoriesEnabled!: ReturnType<typeof toSignal<boolean>>;
 
   readonly restoreFieldKeys: ImportRestoreField[] = [
     'save_path',
@@ -100,7 +106,12 @@ export class ImportTorrents implements OnInit {
 
   readonly showPathRemap = computed(() => this.savePathEnabled?.() === true);
 
+  readonly showCategoryPathMapping = computed(() => this.categoriesEnabled?.() === true);
+
   readonly metadata = computed(() => this.state().metadata);
+
+  readonly tagsCount = computed(() => this.metadata()?.tags?.length ?? 0);
+  readonly categoriesCount = computed(() => Object.keys(this.metadata()?.categories ?? {}).length);
 
   readonly serverUrl = computed(() => {
     const s = this.serverStore.currentServer();
@@ -109,6 +120,10 @@ export class ImportTorrents implements OnInit {
 
   get pathMappings(): FormArray {
     return this.importForm.get('pathMappings') as FormArray;
+  }
+
+  get categoryPathMappings(): FormArray {
+    return this.importForm.get('categoryPathMappings') as FormArray;
   }
 
   ngOnInit(): void {
@@ -128,6 +143,8 @@ export class ImportTorrents implements OnInit {
         first_last_piece_prio: new FormControl(true, { nonNullable: true }),
       }),
       pathMappings: new FormArray([this.createMappingRow()]),
+      categoryPathMappings: new FormArray([this.createMappingRow()]),
+      overwriteCategories: new FormControl<boolean>(false, { nonNullable: true }),
     });
 
     const startModeControl = this.importForm.get('startMode')!;
@@ -142,6 +159,13 @@ export class ImportTorrents implements OnInit {
       toSignal(savePathControl.valueChanges, { initialValue: savePathControl.value as boolean }),
     );
 
+    const categoriesControl = this.importForm.get('restoreFields.categories')!;
+    this.categoriesEnabled = runInInjectionContext(this.injector, () =>
+      toSignal(categoriesControl.valueChanges, {
+        initialValue: categoriesControl.value as boolean,
+      }),
+    );
+
     const bbePath = this.initialBbePath();
     if (bbePath) void this.loadBbe(bbePath);
   }
@@ -153,16 +177,26 @@ export class ImportTorrents implements OnInit {
     });
   }
 
-  addMapping(): void {
-    this.pathMappings.push(this.createMappingRow());
+  addMapping(array: FormArray): void {
+    array.push(this.createMappingRow());
   }
 
-  removeMapping(i: number): void {
-    if (this.pathMappings.length === 1) {
-      this.pathMappings.at(0).reset({ from: '', to: '' });
+  removeMapping(array: FormArray, i: number): void {
+    if (array.length === 1) {
+      array.at(0).reset({ from: '', to: '' });
     } else {
-      this.pathMappings.removeAt(i);
+      array.removeAt(i);
     }
+  }
+
+  openQbSettings(): void {
+    const ref = this.modalService.open(QbSettings, {
+      size: 'xl',
+      centered: false,
+      scrollable: true,
+    });
+    setModalInput(ref, 'initialTab', 'storage');
+    ref.result.catch(() => {});
   }
 
   async loadBbe(bbePath: string): Promise<void> {
@@ -201,6 +235,10 @@ export class ImportTorrents implements OnInit {
       raw.pathMappings as Array<{ from: string; to: string }>
     ).filter((r) => r.from.trim());
 
+    const categoryPathMappings: BbePathMapping[] = (
+      raw.categoryPathMappings as Array<{ from: string; to: string }>
+    ).filter((r) => r.from.trim());
+
     const payload: ImportStartPayload = {
       serverId: this.serverStore.currentServer()?.id ?? '',
       bbePath: this.loadedBbePath || this.initialBbePath() || '',
@@ -209,8 +247,8 @@ export class ImportTorrents implements OnInit {
       pathMappings,
       restoreCategories: raw.restoreFields.categories,
       restoreTags: raw.restoreFields.tags,
-      categoryPathMappings: [],
-      overwriteCategories: false,
+      categoryPathMappings,
+      overwriteCategories: raw.overwriteCategories,
     };
 
     this.exportService.startImport();
