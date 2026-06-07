@@ -640,81 +640,81 @@
         }
       },
       "export-torrents": {
-        "title": "Export Torrents",
+        "title": "Torrentek exportálása",
         "label": {
-          "connection": "Connection",
-          "scope": "Export scope",
-          "save-location": "Save location",
-          "dest-dir": "Directory",
-          "filename": "Filename",
-          "progress": "Progress"
+          "connection": "Kapcsolat",
+          "scope": "Export hatóköre",
+          "save-location": "Mentési hely",
+          "dest-dir": "Könyvtár",
+          "filename": "Fájlnév",
+          "progress": "Haladás"
         },
         "placeholder": {
-          "dest-dir": "Select export directory",
-          "filename": "Filename"
+          "dest-dir": "Válaszd ki az export könyvtárát",
+          "filename": "Fájlnév"
         },
         "info": {
-          "loading": "Loading connection details...",
-          "server": "Server",
+          "loading": "Kapcsolat adatainak betöltése...",
+          "server": "Szerver",
           "url": "URL",
-          "webui-version": "WebUI version",
-          "qb-version": "qBittorrent version",
-          "export-type": "Export type",
-          "full-export": "Full export",
-          "legacy-export": "Legacy export"
+          "webui-version": "WebUI verzió",
+          "qb-version": "qBittorrent verzió",
+          "export-type": "Export típusa",
+          "full-export": "Teljes export",
+          "legacy-export": "Örökölt export"
         },
         "popover": {
-          "full-title": "Full export mode",
-          "full-line1": "The /api/v2/torrents/export endpoint was detected as available on this server.",
-          "full-line2": "The archive includes .torrent files. All metadata can be fully restored after import.",
-          "legacy-title": "Legacy export mode",
-          "legacy-line1": "The /api/v2/torrents/export endpoint was not detected on this server.",
-          "legacy-line2": "Only magnet links are saved. File renames and file priorities cannot be restored after import, as magnet links do not contain file structure information."
+          "full-title": "Teljes export mód",
+          "full-line1": "A /api/v2/torrents/export végpont elérhetőnek bizonyult ezen a szerveren.",
+          "full-line2": "Az archívum tartalmazza a .torrent fájlokat. Importálás után minden metaadat teljesen visszaállítható.",
+          "legacy-title": "Örökölt export mód",
+          "legacy-line1": "A /api/v2/torrents/export végpont nem érhető el ezen a szerveren.",
+          "legacy-line2": "Csak a mágneslinkek kerülnek mentésre. A fájl-átnevezések és fájl-prioritások importálás után nem állíthatók vissza, mivel a mágneslinkek nem tartalmaznak fájlszerkezeti információt."
         },
         "scope": {
-          "torrents": "Torrents",
-          "categories": "Categories",
-          "tags": "Tags",
-          "all": "All",
-          "filtered": "Filtered",
-          "selected": "Selected"
+          "torrents": "Torrentek",
+          "categories": "Kategóriák",
+          "tags": "Címkék",
+          "all": "Összes",
+          "filtered": "Szűrt",
+          "selected": "Kijelölt"
         },
         "category-scope": {
-          "all": "All",
-          "assigned": "Assigned",
+          "all": "Összes",
+          "assigned": "Hozzárendelt",
           "hint": {
-            "all": "All categories defined on the source server will be included in the export.",
-            "assigned": "Only categories assigned to at least one of the exported torrents will be included."
+            "all": "A forrás szerveren definiált összes kategória bekerül az exportba.",
+            "assigned": "Csak azok a kategóriák kerülnek bele, amelyek legalább egy exportált torrenthez hozzá vannak rendelve."
           }
         },
         "tag-scope": {
-          "all": "All",
-          "assigned": "Assigned",
+          "all": "Összes",
+          "assigned": "Hozzárendelt",
           "hint": {
-            "all": "All tags defined on the source server will be included in the export.",
-            "assigned": "Only tags assigned to at least one of the exported torrents will be included."
+            "all": "A forrás szerveren definiált összes címke bekerül az exportba.",
+            "assigned": "Csak azok a címkék kerülnek bele, amelyek legalább egy exportált torrenthez hozzá vannak rendelve."
           }
         },
         "progress": {
-          "exporting": "Exporting torrents...",
-          "fetching": "Fetching",
-          "done": "Export complete",
-          "skipped": "skipped"
+          "exporting": "Torrentek exportálása...",
+          "fetching": "Lekérés",
+          "done": "Export kész",
+          "skipped": "kihagyva"
         },
         "button": {
-          "export": "Export",
-          "show-in-folder": "Show in folder"
+          "export": "Exportálás",
+          "show-in-folder": "Megjelenítés a mappában"
         }
       },
       "import-torrents": {
-        "title": "Import Torrents",
+        "title": "Torrentek importálása",
         "label": {
-          "archive": "Archive",
-          "restore-options": "Restore options",
-          "path-remap": "Save path remapping",
-          "category-path-mapping": "Category path mapping",
-          "after-import": "After import",
-          "progress": "Progress"
+          "archive": "Archívum",
+          "restore-options": "Visszaállítási beállítások",
+          "path-remap": "Mentési útvonal hozzárendelés",
+          "category-path-mapping": "Kategória útvonal hozzárendelés",
+          "after-import": "Importálás után",
+          "progress": "Haladás"
         },
         "archive": {
           "exported-from": "Exportálva innen",
@@ -722,55 +722,55 @@
           "server-url": "Szerver URL",
           "export-date": "Exportálás dátuma",
           "torrents": "Torrentek",
-          "tags": "Tags",
-          "categories": "Categories",
+          "tags": "Címkék",
+          "categories": "Kategóriák",
           "export-type": "Export típusa",
           "full-mode": "Teljes export",
           "legacy-mode": "Örökölt export"
         },
         "restore": {
-          "save_path": "Save path",
-          "categories": "Categories",
-          "tags": "Tags",
-          "speed_limits": "Speed limits",
-          "share_limits": "Share limits",
-          "renames": "File renames",
-          "priorities": "File priorities",
+          "save_path": "Mentési útvonal",
+          "categories": "Kategóriák",
+          "tags": "Címkék",
+          "speed_limits": "Sebességkorlátok",
+          "share_limits": "Megosztási korlátok",
+          "renames": "Fájlok átnevezése",
+          "priorities": "Fájl prioritások",
           "auto_tmm": "Auto-TMM",
-          "sequential_download": "Sequential download",
+          "sequential_download": "Sorrendi letöltés",
           "super_seeding": "Super seeding",
-          "first_last_piece_prio": "First/last piece priority"
+          "first_last_piece_prio": "Első/utolsó szelet prioritása"
         },
         "legacy-unsupported": "Legacy exportban nem elérhető - a mágneslinks nem tartalmaz fájlszerkezeti információt.",
         "path-remap": {
-          "description": "Rewrite save paths when the source and destination servers use different directory structures. Each rule replaces a matching path prefix - the first match wins.",
-          "from": "From prefix",
-          "to": "To prefix"
+          "description": "Mentési útvonalak átírása, ha a forrás és a cél szerver eltérő könyvtárszerkezetet használ. Minden szabály lecseréli az illeszkedő útvonal-előtagot - az első találat nyer.",
+          "from": "Forrás előtag",
+          "to": "Cél előtag"
         },
         "category-path-mapping": {
-          "description": "Rewrite category save paths when the source and destination servers use different directory structures. Each rule replaces a matching path prefix - the first match wins.",
-          "note-title": "Keep in mind",
-          "note-prefix": "If <strong>When category save path changes</strong> is set to <em>Switch to Manual mode</em>, changing a category's save path will disable Auto TMM on every torrent currently assigned to it - not just the ones being imported. You can review this setting in",
-          "overwrite": "Overwrite existing categories",
-          "overwrite-description": "Updates the save path of existing categories using qBittorrent's edit endpoint. This preserves existing torrent assignments but may trigger Auto TMM behavior depending on your 'When category save path changes' setting. If disabled, existing categories are left untouched."
+          "description": "Kategória mentési útvonalak átírása, ha a forrás és a cél szerver eltérő könyvtárszerkezetet használ. Minden szabály lecseréli az illeszkedő útvonal-előtagot - az első találat nyer.",
+          "note-title": "Tartsd szem előtt",
+          "note-prefix": "Ha a <strong>Kategória mentési útvonalának módosításakor</strong> beállítás értéke <em>Váltás kézi módra</em>, egy kategória mentési útvonalának módosítása minden hozzá jelenleg hozzárendelt torrentnél kikapcsolja az Auto TMM-et - nem csak az importáltaknál. Ezt a beállítást itt találod: ",
+          "overwrite": "Meglévő kategóriák felülírása",
+          "overwrite-description": "Frissíti a meglévő kategóriák mentési útvonalát a qBittorrent szerkesztési végpontjának használatával. Ez megőrzi a meglévő torrent-hozzárendeléseket, de a 'Kategória mentési útvonalának módosításakor' beállítástól függően kiválthatja az Auto TMM viselkedést. Ha ki van kapcsolva, a meglévő kategóriák változatlanok maradnak."
         },
         "start-mode": {
-          "paused": "Keep paused",
-          "active": "Start active ones",
-          "all": "Start all",
+          "paused": "Szüneteltetve marad",
+          "active": "Aktívak elindítása",
+          "all": "Összes elindítása",
           "hint": {
-            "paused": "All torrents will remain paused - start them manually when ready.",
-            "active": "Torrents that were active when exported will resume automatically.",
-            "all": "All imported torrents will start immediately regardless of their previous state."
+            "paused": "Minden torrent szüneteltetett állapotban marad - indítsd el őket kézzel, amikor készen állsz.",
+            "active": "Az exportáláskor aktív torrentek automatikusan folytatódnak.",
+            "all": "Minden importált torrent azonnal elindul, az előző állapotától függetlenül."
           }
         },
         "progress": {
-          "importing": "Importing torrents...",
-          "done": "Import complete",
-          "skipped": "skipped"
+          "importing": "Torrentek importálása...",
+          "done": "Import kész",
+          "skipped": "kihagyva"
         },
         "button": {
-          "import": "Import"
+          "import": "Importálás"
         }
       },
       "manage-categories": {
@@ -1040,7 +1040,7 @@
             "content_path": "Tartalom útvonala",
             "save_path": "Mentési útvonal",
             "download_path": "Letöltési útvonal",
-            "magnet_uri": "Magnet URI",
+            "magnet_uri": "Mágnes URI",
             "infohash_v1": "Infohash v1",
             "infohash_v2": "Infohash v2"
           },
@@ -1550,8 +1550,8 @@
       "help": "Súgó",
       "check-for-updates": "Frissítések keresése",
       "about": "A BitButlerről",
-      "export-torrents": "Export Torrents",
-      "import-torrents": "Import Torrents"
+      "export-torrents": "Torrentek exportálása",
+      "import-torrents": "Torrentek importálása"
     }
   }
 }
