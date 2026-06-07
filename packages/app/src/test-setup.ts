@@ -7,6 +7,7 @@ const noopSubscription = () => noop;
     isDev: () => Promise.resolve(false),
     openExternalUrl: noopAsync,
     showOpenDialog: () => Promise.resolve(null),
+    getDownloadsPath: () => Promise.resolve(''),
     openPath: noopAsync,
     showItemInFolder: noop,
     getPlatform: () => Promise.resolve('linux'),
@@ -41,6 +42,8 @@ const noopSubscription = () => noop;
     onStateChange: noopSubscription,
     drainOpenFiles: noopAsync,
     drainOpenTorrents: noopAsync,
+    onOpenBbe: noopSubscription,
+    drainOpenBbe: () => Promise.resolve([]),
     simulateOpenFiles: noopAsync,
   },
   torrent: {
@@ -60,5 +63,19 @@ const noopSubscription = () => noop;
   },
   i18n: {
     languageChanged: noop,
+  },
+  export: {
+    start: noop,
+    cancel: noop,
+    openBbePicker: () => Promise.resolve(undefined),
+    readBbe: noopAsync,
+    importStart: noop,
+    importCancel: noop,
+    onProgress: noopSubscription,
+    onDone: noopSubscription,
+    onError: noopSubscription,
+    onImportProgress: noopSubscription,
+    onImportDone: noopSubscription,
+    onImportError: noopSubscription,
   },
 };

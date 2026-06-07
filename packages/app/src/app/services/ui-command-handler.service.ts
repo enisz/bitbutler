@@ -7,6 +7,8 @@ import { About } from '../components/about/about';
 import { AddTorrent } from '../components/add-torrent/add-torrent';
 import { AppLoader } from '../components/app-loader/app-loader';
 import { DeleteTorrent } from '../components/modals/delete-torrent/delete-torrent';
+import { ExportTorrents } from '../components/modals/export-torrents/export-torrents';
+import { ImportTorrents } from '../components/modals/import-torrents/import-torrents';
 import { ManageCategories } from '../components/modals/manage-categories/manage-categories';
 import { ManageServers } from '../components/modals/manage-servers/manage-servers';
 import { ManageTags } from '../components/modals/manage-tags/manage-tags';
@@ -54,6 +56,15 @@ export class UiCommandHandlerService {
     this.modalService.activeInstances
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((modals) => (this.activeModals = modals));
+
+    const unsubBbe = window.bitbutler.window.onOpenBbe((bbePath) => {
+      this.commandBusService.emit({ type: 'UI_IMPORT_TORRENTS', bbePath });
+    });
+    this.destroyRef.onDestroy(unsubBbe);
+
+    void window.bitbutler.window.drainOpenBbe().then((paths) => {
+      if (paths[0]) this.commandBusService.emit({ type: 'UI_IMPORT_TORRENTS', bbePath: paths[0] });
+    });
 
     this.commandBusService.commands$
       .pipe(filter(this.uiCommandGuard), takeUntilDestroyed(this.destroyRef))
@@ -318,6 +329,23 @@ export class UiCommandHandlerService {
           case 'UI_SERVER_SWITCH':
             this.handleServerSwitch(command.id);
             break;
+
+          case 'UI_EXPORT_TORRENTS': {
+            if (this.isModalOpen(ExportTorrents)) break;
+            const exportRef = this.modalService.open(ExportTorrents, { size: 'lg' });
+            exportRef.result.catch(() => {});
+            break;
+          }
+
+          case 'UI_IMPORT_TORRENTS': {
+            if (this.isModalOpen(ImportTorrents)) break;
+            const importRef = this.modalService.open(ImportTorrents, { size: 'lg' });
+            if (command.bbePath) {
+              setModalInput(importRef, 'initialBbePath', command.bbePath);
+            }
+            importRef.result.catch(() => {});
+            break;
+          }
 
           default:
             console.warn(UiCommandHandlerService.name, 'start', 'Unhandled UI command', command);

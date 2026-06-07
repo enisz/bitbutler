@@ -32,6 +32,7 @@ interface QbRequestPayload {
   body?: unknown;
   form?: Record<string, string>;
   headers?: Record<string, string>;
+  responseType?: 'buffer';
 }
 
 const stmtGetByIdFull = db.prepare<[string], ServerRow>(`
@@ -235,14 +236,13 @@ export async function qbRequest(payload: QbRequestPayload): Promise<unknown> {
     body: requestBody,
   });
 
-  const text = await res.text();
-
   if (!res.ok) {
+    const errText = await res.text();
     throw JSON.stringify({
       name: 'QbHttpError',
       status: res.status,
       statusText: res.statusText,
-      body: text,
+      body: errText,
       path,
     });
   }
@@ -250,6 +250,12 @@ export async function qbRequest(payload: QbRequestPayload): Promise<unknown> {
   const rotated = extractSidCookie(res);
   if (rotated) cookieJar.set(id, rotated);
 
+  if (payload.responseType === 'buffer') {
+    const ab = await res.arrayBuffer();
+    return Buffer.from(ab);
+  }
+
+  const text = await res.text();
   const contentType = res.headers.get('content-type') ?? '';
   if (contentType.includes('application/json')) {
     try {

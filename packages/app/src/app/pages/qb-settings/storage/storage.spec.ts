@@ -11,11 +11,16 @@ const MOCK_PREFS: any = {
   temp_path: '/mnt/tmp',
   incomplete_files_ext: true,
   torrent_content_layout: 'Subfolder',
+  auto_tmm_enabled: false,
+  torrent_changed_tmm_enabled: true,
+  category_changed_tmm_enabled: false,
+  save_path_changed_tmm_enabled: true,
 };
 
 describe('Storage', () => {
   let component: Storage;
   let fixture: ComponentFixture<Storage>;
+  let qbServiceMock: { setAppPreferences: ReturnType<typeof vi.fn> };
   let stateServiceMock: {
     preferences: ReturnType<typeof signal<any>>;
     registerSave: ReturnType<typeof vi.fn>;
@@ -29,14 +34,13 @@ describe('Storage', () => {
       markDirty: vi.fn(),
     };
 
+    qbServiceMock = { setAppPreferences: vi.fn().mockResolvedValue(undefined) };
+
     await TestBed.configureTestingModule({
       imports: [Storage],
       providers: [
         { provide: QbSettingsStateService, useValue: stateServiceMock },
-        {
-          provide: QbService,
-          useValue: { setAppPreferences: vi.fn().mockResolvedValue(undefined) },
-        },
+        { provide: QbService, useValue: qbServiceMock },
         { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
       ],
       schemas: [NO_ERRORS_SCHEMA],
@@ -62,6 +66,28 @@ describe('Storage', () => {
     expect(v.temp_path).toBe('/mnt/tmp');
     expect(v.incomplete_files_ext).toBe(true);
     expect(v.torrent_content_layout).toBe('Subfolder');
+  });
+
+  it('should patch the TMM form controls from preferences on init', () => {
+    const v = component.form.getRawValue();
+    expect(v.auto_tmm_enabled).toBe(false);
+    expect(v.torrent_changed_tmm_enabled).toBe(true);
+    expect(v.category_changed_tmm_enabled).toBe(false);
+    expect(v.save_path_changed_tmm_enabled).toBe(true);
+  });
+
+  it('should include the TMM preferences when saving', async () => {
+    component.form.controls.auto_tmm_enabled.setValue(true);
+    await (component as any).save();
+    expect(qbServiceMock.setAppPreferences).toHaveBeenCalledWith(
+      'server-1',
+      expect.objectContaining({
+        auto_tmm_enabled: true,
+        torrent_changed_tmm_enabled: true,
+        category_changed_tmm_enabled: false,
+        save_path_changed_tmm_enabled: true,
+      }),
+    );
   });
 
   it('should mark dirty when form value changes', () => {

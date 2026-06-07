@@ -1,5 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, Type, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  Type,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
@@ -39,6 +47,8 @@ export class QbSettings implements OnInit, GuardableModal {
   private readonly qbService = inject(QbService);
   private readonly serverStoreService = inject(ServerStoreService);
 
+  public readonly tabToOpen = input<QbSettingsTabId>('bandwidth');
+
   public activeTabId = signal<QbSettingsTabId>('bandwidth');
   public loadedComponents = signal<Map<QbSettingsTabId, Type<QbSettingsTabComponent>>>(new Map());
 
@@ -68,6 +78,8 @@ export class QbSettings implements OnInit, GuardableModal {
   ];
 
   public async ngOnInit(): Promise<void> {
+    this.activeTabId.set(this.tabToOpen());
+
     const serverId = this.serverStoreService.currentServerId();
     if (serverId) {
       const prefs = await this.qbService.getAppPreferences(serverId);

@@ -54,6 +54,5 @@ Thumbs.db
 # Visual brainstorming sessions
 .superpowers/
 
-# Playwright
-/test-results/
-/playwright-report/
+# Playwright test results
+test-results/

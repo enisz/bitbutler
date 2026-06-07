@@ -81,11 +81,77 @@
                 bindLabel="label"
                 bindValue="value"
                 formControlName="torrent_content_layout"
-                appendTo="ngb-modal-window"
               ></ng-select>
             </div>
           </div>
         }
+      </div>
+    </fieldset>
+
+    <fieldset class="bb-fieldset">
+      <legend>{{ 'pages.qb-settings.tab.storage.label.save-management' | translate }}</legend>
+      <div class="container">
+        <div class="row mb-3">
+          <div class="col-6 d-flex align-items-center">
+            {{ 'pages.qb-settings.tab.storage.field.auto-tmm-enabled' | translate }}
+          </div>
+          <div class="col-6">
+            <ng-select
+              [items]="autoTmmModes"
+              [clearable]="false"
+              [searchable]="false"
+              bindLabel="label"
+              bindValue="value"
+              formControlName="auto_tmm_enabled"
+            ></ng-select>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-6 d-flex align-items-center">
+            {{ 'pages.qb-settings.tab.storage.field.torrent-changed-tmm-enabled' | translate }}
+          </div>
+          <div class="col-6">
+            <ng-select
+              [items]="tmmChangeBehaviors"
+              [clearable]="false"
+              [searchable]="false"
+              bindLabel="label"
+              bindValue="value"
+              formControlName="torrent_changed_tmm_enabled"
+            ></ng-select>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-6 d-flex align-items-center">
+            {{ 'pages.qb-settings.tab.storage.field.category-changed-tmm-enabled' | translate }}
+          </div>
+          <div class="col-6">
+            <ng-select
+              [items]="tmmChangeBehaviors"
+              [clearable]="false"
+              [searchable]="false"
+              bindLabel="label"
+              bindValue="value"
+              formControlName="category_changed_tmm_enabled"
+            ></ng-select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6 d-flex align-items-center">
+            {{ 'pages.qb-settings.tab.storage.field.save-path-changed-tmm-enabled' | translate }}
+          </div>
+          <div class="col-6">
+            <ng-select
+              [items]="tmmChangeBehaviors"
+              [clearable]="false"
+              [searchable]="false"
+              bindLabel="label"
+              bindValue="value"
+              formControlName="save_path_changed_tmm_enabled"
+              dropdownPosition="top"
+            ></ng-select>
+          </div>
+        </div>
       </div>
     </fieldset>
   </div>

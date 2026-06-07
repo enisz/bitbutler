@@ -1,6 +1,12 @@
 import type {
+  BbeMetadata,
+  BbeServerInfo,
   BitButlerAPI,
   BitButlerSyncStreamResponse,
+  ExportDoneEvent,
+  ExportProgressEvent,
+  ExportStartPayload,
+  ImportStartPayload,
   MenuClickPayload,
   TorrentDraft,
   WindowState,
@@ -41,6 +47,7 @@ const api: BitButlerAPI = {
     getPlatform: () => ipcRenderer.invoke('electron:get-platform'),
     checkForUpdate: () => ipcRenderer.invoke('electron:check-for-update'),
     setLoginItem: (settings) => ipcRenderer.invoke('electron:set-login-item', settings),
+    getDownloadsPath: () => ipcRenderer.invoke('electron:get-downloads-path'),
   },
 
   server: {
@@ -114,6 +121,9 @@ const api: BitButlerAPI = {
 
     drainOpenFiles: () => ipcRenderer.invoke('window:open-files:drain'),
     drainOpenTorrents: () => ipcRenderer.invoke('window:open-torrents:drain'),
+    onOpenBbe: (callback) =>
+      makeIpcSubscription('bb:open-bbe', (p) => (typeof p === 'string' ? p : ''), callback),
+    drainOpenBbe: () => ipcRenderer.invoke('window:open-bbe:drain'),
     simulateOpenFiles: (paths) => ipcRenderer.invoke('window:open-files:simulate', { paths }),
   },
 
@@ -143,6 +153,30 @@ const api: BitButlerAPI = {
 
   i18n: {
     languageChanged: (lang) => ipcRenderer.send('i18n:language-changed', { lang }),
+  },
+
+  export: {
+    start: (payload: ExportStartPayload) => ipcRenderer.send('export:start', payload),
+    cancel: () => ipcRenderer.send('export:cancel'),
+    openBbePicker: () => ipcRenderer.invoke('export:open-bbe-picker'),
+    readBbe: (payload: { path: string }) =>
+      ipcRenderer.invoke('export:read-bbe', payload) as Promise<BbeMetadata>,
+    getServerInfo: (serverId: string) =>
+      ipcRenderer.invoke('export:get-server-info', { serverId }) as Promise<BbeServerInfo>,
+    importStart: (payload: ImportStartPayload) => ipcRenderer.send('import:start', payload),
+    importCancel: () => ipcRenderer.send('import:cancel'),
+    onProgress: (cb: (e: ExportProgressEvent) => void) =>
+      makeIpcSubscription('export:progress', (e) => e as ExportProgressEvent, cb),
+    onDone: (cb: (e: ExportDoneEvent) => void) =>
+      makeIpcSubscription('export:done', (e) => e as ExportDoneEvent, cb),
+    onError: (cb: (e: { message: string }) => void) =>
+      makeIpcSubscription('export:error', (e) => e as { message: string }, cb),
+    onImportProgress: (cb: (e: ExportProgressEvent) => void) =>
+      makeIpcSubscription('import:progress', (e) => e as ExportProgressEvent, cb),
+    onImportDone: (cb: (e: { total: number; skipped: number }) => void) =>
+      makeIpcSubscription('import:done', (e) => e as { total: number; skipped: number }, cb),
+    onImportError: (cb: (e: { message: string }) => void) =>
+      makeIpcSubscription('import:error', (e) => e as { message: string }, cb),
   },
 };
 
