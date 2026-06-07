@@ -72,7 +72,11 @@
       "WebSearch",
       "WebFetch(domain:github.com)",
       "Bash(dir C:devbitbutlerpackages *)",
-      "Bash(C:\\\\Users\\\\enisz\\\\.claude\\\\plugins\\\\cache\\\\claude-plugins-official\\\\superpowers\\\\5.1.0\\\\scripts\\\\start-server.sh *)"
+      "Bash(C:\\\\Users\\\\enisz\\\\.claude\\\\plugins\\\\cache\\\\claude-plugins-official\\\\superpowers\\\\5.1.0\\\\scripts\\\\start-server.sh *)",
+      "Bash(gh run *)",
+      "Read(//tmp/**)",
+      "Bash(echo \"exit=$?\")",
+      "Bash(gh api *)"
     ]
   }
 }
