@@ -81,6 +81,16 @@ describe('QbSettings', () => {
       expect(ids).toContain('queue-limits');
       expect(ids).toContain('seeding-ratios');
     });
+
+    it('should select the tab passed via initialTab on init', async () => {
+      fixture = TestBed.createComponent(QbSettings);
+      component = fixture.componentInstance;
+      fixture.componentRef.setInput('initialTab', 'storage');
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(component.activeTabId()).toBe('storage');
+    });
   });
 
   describe('selectTab', () => {
