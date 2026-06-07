@@ -366,8 +366,8 @@ async function addTorrent(
   };
 
   if (resolvedSavePath) addOptions['savepath'] = resolvedSavePath;
-  if (has('category_tags') && entry.category) addOptions['category'] = entry.category;
-  if (has('category_tags') && entry.tags?.length) addOptions['tags'] = entry.tags.join(',');
+  if (has('categories') && entry.category) addOptions['category'] = entry.category;
+  if (has('tags') && entry.tags?.length) addOptions['tags'] = entry.tags.join(',');
   if (has('auto_tmm')) addOptions['autoTMM'] = String(entry.auto_tmm ?? false);
   if (has('sequential_download'))
     addOptions['sequentialDownload'] = String(entry.sequential_download ?? false);

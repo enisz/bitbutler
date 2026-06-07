@@ -58,7 +58,8 @@ export type ImportStartMode = 'paused' | 'active' | 'all';
 
 export type ImportRestoreField =
   | 'save_path'
-  | 'category_tags'
+  | 'categories'
+  | 'tags'
   | 'speed_limits'
   | 'share_limits'
   | 'renames'

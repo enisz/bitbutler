@@ -708,7 +708,8 @@
         },
         "restore": {
           "save_path": "Save path",
-          "category_tags": "Category and tags",
+          "categories": "Categories",
+          "tags": "Tags",
           "speed_limits": "Speed limits",
           "share_limits": "Share limits",
           "renames": "File renames",

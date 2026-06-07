@@ -55,7 +55,8 @@ export class ImportTorrents implements OnInit {
 
   readonly restoreFieldKeys: ImportRestoreField[] = [
     'save_path',
-    'category_tags',
+    'categories',
+    'tags',
     'speed_limits',
     'share_limits',
     'renames',
@@ -115,7 +116,8 @@ export class ImportTorrents implements OnInit {
       startMode: new FormControl<ImportStartMode>('active', { nonNullable: true }),
       restoreFields: new FormGroup({
         save_path: new FormControl(true, { nonNullable: true }),
-        category_tags: new FormControl(true, { nonNullable: true }),
+        categories: new FormControl(true, { nonNullable: true }),
+        tags: new FormControl(true, { nonNullable: true }),
         speed_limits: new FormControl(true, { nonNullable: true }),
         share_limits: new FormControl(true, { nonNullable: true }),
         renames: new FormControl(true, { nonNullable: true }),
