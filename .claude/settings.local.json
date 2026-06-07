@@ -93,7 +93,17 @@
       "Bash(awk 'NR==1300{print NR\": \"$0} NR<=1314 && /^[[:space:]]*\"[a-zA-Z_-]+\":\\\\s*\\\\{/ {print NR\": \"$0}' \"C:\\\\dev\\\\bitbutler\\\\public\\\\i18n\\\\us.json\")",
       "Bash(awk -F: '$1<1314')",
       "Bash(awk *)",
-      "Bash(npx prettier *)"
+      "Bash(npx prettier *)",
+      "Bash(grep -rn \"window.bitbutler\\\\s*=\" packages/app/src --include=\"*.ts\")",
+      "Bash(grep -rn \"window\\\\['bitbutler'\\\\]\\\\|window\\\\.bitbutler =\" packages/app/src/main.ts packages/app/src/index.html)",
+      "Bash(sed -n '10,15p' packages/app/src/app/services/electron.service.ts)",
+      "mcp__plugin_playwright_playwright__browser_evaluate",
+      "mcp__plugin_playwright_playwright__browser_tabs",
+      "mcp__plugin_playwright_playwright__browser_click",
+      "Bash(xargs tail -40)",
+      "mcp__plugin_playwright_playwright__browser_take_screenshot",
+      "mcp__plugin_playwright_playwright__browser_press_key",
+      "mcp__plugin_playwright_playwright__browser_resize"
     ]
   }
 }
