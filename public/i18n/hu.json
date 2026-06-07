@@ -1330,19 +1330,32 @@
           "label": {
             "default-paths": "Alapértelmezett Útvonalak",
             "temp-files": "Ideiglenes Fájlok",
-            "file-management": "Fájlkezelés"
+            "file-management": "Fájlkezelés",
+            "save-management": "Mentéskezelés"
           },
           "field": {
             "save-path": "Alapértelmezett Mentési Útvonal",
             "temp-path-enabled": "Befejezetlen torrentek külön mappában tartása",
             "temp-path": "Befejezetlen Fájlok Mentési Útvonala",
             "incomplete-files-ext": ".!qB kiterjesztés hozzáfűzése befejezetlen fájlokhoz",
-            "torrent-content-layout": "Torrent tartalomszerkezet"
+            "torrent-content-layout": "Torrent tartalomszerkezet",
+            "auto-tmm-enabled": "Alapértelmezett torrent kezelési mód",
+            "torrent-changed-tmm-enabled": "Amikor a torrent kategóriája megváltozik",
+            "category-changed-tmm-enabled": "Amikor a kategória mentési útvonala megváltozik",
+            "save-path-changed-tmm-enabled": "Amikor az alapértelmezett mentési útvonal megváltozik"
           },
           "content-layout": {
             "original": "Eredeti",
             "subfolder": "Almappa létrehozása",
             "no-subfolder": "Ne hozzon létre almappát"
+          },
+          "tmm-mode": {
+            "automatic": "Automatikus",
+            "manual": "Kézi"
+          },
+          "tmm-behavior": {
+            "relocate": "Torrentek áthelyezése",
+            "manual": "Váltás kézi módra"
           }
         },
         "queue-limits": {

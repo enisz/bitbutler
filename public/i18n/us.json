@@ -1330,19 +1330,32 @@
           "label": {
             "default-paths": "Default Paths",
             "temp-files": "Temporary Files",
-            "file-management": "File Management"
+            "file-management": "File Management",
+            "save-management": "Save Management"
           },
           "field": {
             "save-path": "Default Save Path",
             "temp-path-enabled": "Keep incomplete torrents in a separate folder",
             "temp-path": "Incomplete Save Path",
             "incomplete-files-ext": "Append .!qB extension to incomplete files",
-            "torrent-content-layout": "Torrent content layout"
+            "torrent-content-layout": "Torrent content layout",
+            "auto-tmm-enabled": "Default torrent management mode",
+            "torrent-changed-tmm-enabled": "When torrent category changes",
+            "category-changed-tmm-enabled": "When category save path changes",
+            "save-path-changed-tmm-enabled": "When default save path changes"
           },
           "content-layout": {
             "original": "Original",
             "subfolder": "Create subfolder",
             "no-subfolder": "Don't create subfolder"
+          },
+          "tmm-mode": {
+            "automatic": "Automatic",
+            "manual": "Manual"
+          },
+          "tmm-behavior": {
+            "relocate": "Relocate torrents",
+            "manual": "Switch to Manual mode"
           }
         },
         "queue-limits": {

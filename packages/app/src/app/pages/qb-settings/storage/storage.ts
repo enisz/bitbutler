@@ -21,6 +21,11 @@ interface ContentLayoutOption {
   label: string;
 }
 
+interface TmmOption {
+  value: boolean;
+  label: string;
+}
+
 @Component({
   selector: 'app-qb-settings-storage',
   imports: [CommonModule, ReactiveFormsModule, NgSelectComponent, TranslatePipe],
@@ -62,12 +67,38 @@ export class Storage implements QbSettingsTabComponent, OnInit {
     },
   ];
 
+  public readonly autoTmmModes: TmmOption[] = [
+    {
+      value: true,
+      label: this.translateService.instant('pages.qb-settings.tab.storage.tmm-mode.automatic'),
+    },
+    {
+      value: false,
+      label: this.translateService.instant('pages.qb-settings.tab.storage.tmm-mode.manual'),
+    },
+  ];
+
+  public readonly tmmChangeBehaviors: TmmOption[] = [
+    {
+      value: false,
+      label: this.translateService.instant('pages.qb-settings.tab.storage.tmm-behavior.relocate'),
+    },
+    {
+      value: true,
+      label: this.translateService.instant('pages.qb-settings.tab.storage.tmm-behavior.manual'),
+    },
+  ];
+
   public form = new FormGroup({
     save_path: new FormControl<string>('', { nonNullable: true }),
     temp_path_enabled: new FormControl<boolean>(false, { nonNullable: true }),
     temp_path: new FormControl<string>('', { nonNullable: true }),
     incomplete_files_ext: new FormControl<boolean>(false, { nonNullable: true }),
     torrent_content_layout: new FormControl<string>('Original', { nonNullable: true }),
+    auto_tmm_enabled: new FormControl<boolean>(false, { nonNullable: true }),
+    torrent_changed_tmm_enabled: new FormControl<boolean>(false, { nonNullable: true }),
+    category_changed_tmm_enabled: new FormControl<boolean>(false, { nonNullable: true }),
+    save_path_changed_tmm_enabled: new FormControl<boolean>(false, { nonNullable: true }),
   });
 
   public ngOnInit(): void {
@@ -80,6 +111,10 @@ export class Storage implements QbSettingsTabComponent, OnInit {
           temp_path: prefs.temp_path,
           incomplete_files_ext: prefs.incomplete_files_ext,
           torrent_content_layout: prefs.torrent_content_layout,
+          auto_tmm_enabled: prefs.auto_tmm_enabled,
+          torrent_changed_tmm_enabled: prefs.torrent_changed_tmm_enabled,
+          category_changed_tmm_enabled: prefs.category_changed_tmm_enabled,
+          save_path_changed_tmm_enabled: prefs.save_path_changed_tmm_enabled,
         },
         { emitEvent: false },
       );
@@ -111,6 +146,10 @@ export class Storage implements QbSettingsTabComponent, OnInit {
       temp_path: v.temp_path,
       incomplete_files_ext: v.incomplete_files_ext,
       torrent_content_layout: v.torrent_content_layout,
+      auto_tmm_enabled: v.auto_tmm_enabled,
+      torrent_changed_tmm_enabled: v.torrent_changed_tmm_enabled,
+      category_changed_tmm_enabled: v.category_changed_tmm_enabled,
+      save_path_changed_tmm_enabled: v.save_path_changed_tmm_enabled,
     });
   }
 }
