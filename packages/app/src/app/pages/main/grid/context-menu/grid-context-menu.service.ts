@@ -26,7 +26,7 @@ import {
   faInfoCircle,
   faLink,
   faPause,
-  faPen,
+  faPenToSquare,
   faPlaneDeparture,
   faPlay,
   faRotate,
@@ -164,7 +164,7 @@ export class GridContextMenuService {
                   kind: 'item' as const,
                   id: 'files.renameTorrent',
                   label: 'pages.main.grid.context-menu.item.rename-torrent',
-                  icon: faPen,
+                  icon: faPenToSquare,
                   action: () =>
                     this.commandBusService.emit({ type: 'UI_RENAME_TORRENT', torrent: data.row }),
                 },

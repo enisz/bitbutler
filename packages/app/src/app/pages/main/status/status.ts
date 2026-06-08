@@ -3,19 +3,18 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
-  faBolt,
-  faCheckCircle,
+  faCircleCheck,
+  faCircleDown,
   faCircleExclamation,
-  faDownload,
+  faCircleMinus,
+  faCircleNotch,
+  faCirclePlay,
+  faCircleStop,
   faFolderOpen,
+  faFolderTree,
   faHourglassHalf,
-  faLayerGroup,
   faLink,
-  faMagnifyingGlass,
-  faMoon,
-  faPause,
   faPlay,
-  faRectangleList,
   faTags,
   faUpload,
 } from '@fortawesome/free-solid-svg-icons';
@@ -70,20 +69,19 @@ export class Status {
   });
 
   readonly icon = {
-    faLayerGroup,
-    faDownload,
+    faCircleDown,
     faUpload,
-    faCheckCircle,
+    faCircleCheck,
     faPlay,
-    faPause,
-    faBolt,
-    faMoon,
+    faCircleStop,
+    faCirclePlay,
+    faCircleMinus,
     faHourglassHalf,
-    faMagnifyingGlass,
+    faCircleNotch,
     faCircleExclamation,
     faLink,
     faFolderOpen,
-    faRectangleList,
+    faFolderTree,
     faTags,
   };
 
@@ -120,7 +118,7 @@ export class Status {
         key: 'downloading',
         label: this.translateService.instant('pages.main.status.downloading'),
         count: sumStates('downloading', 'forcedDL', 'queuedDL', 'metaDL', 'stalledDL'),
-        icon: this.icon.faDownload,
+        icon: this.icon.faCircleDown,
       },
       {
         key: 'completed',
@@ -134,7 +132,7 @@ export class Status {
           'checkingUP',
           'forcedUP',
         ),
-        icon: this.icon.faCheckCircle,
+        icon: this.icon.faCircleCheck,
       },
       {
         key: 'active',
@@ -148,25 +146,25 @@ export class Status {
           'moving',
           'allocating',
         ),
-        icon: this.icon.faBolt,
+        icon: this.icon.faCirclePlay,
       },
       {
         key: 'inactive',
         label: this.translateService.instant('pages.main.status.inactive'),
         count: sumStates('queuedDL', 'queuedUP', 'stalledDL', 'stalledUP'),
-        icon: this.icon.faMoon,
+        icon: this.icon.faCircleMinus,
       },
       {
         key: 'stopped',
         label: this.translateService.instant('pages.main.status.stopped'),
         count: sumStates('pausedDL', 'pausedUP', 'stoppedDL', 'stoppedUP'),
-        icon: this.icon.faPause,
+        icon: this.icon.faCircleStop,
       },
       {
         key: 'checking',
         label: this.translateService.instant('pages.main.status.checking'),
         count: sumStates('checkingDL', 'checkingUP', 'checkingResumeData'),
-        icon: this.icon.faMagnifyingGlass,
+        icon: this.icon.faCircleNotch,
       },
       {
         key: 'errored',
@@ -311,7 +309,7 @@ export class Status {
         key: name,
         label: name,
         count: counts.get(name) ?? 0,
-        icon: this.icon.faRectangleList,
+        icon: this.icon.faFolderTree,
       });
     });
 
