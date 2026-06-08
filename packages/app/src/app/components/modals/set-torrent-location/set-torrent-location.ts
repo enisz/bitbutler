@@ -1,11 +1,18 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, input, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
 import { Torrent } from '../../../models/torrent.model';
 import { QbService } from '../../../services/qb.service';
-import { SelectionStoreService } from '../../../services/selection-store.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { ToastService } from '../../../services/toast.service';
 import { SavePathSelect } from '../../save-path-select/save-path-select';
@@ -19,9 +26,9 @@ import { SavePathSelect } from '../../save-path-select/save-path-select';
 })
 export class SetTorrentLocation implements OnInit {
   readonly torrent = input.required<Torrent>();
+  readonly hashes = input<string[]>([]);
 
   private readonly serverStoreService = inject(ServerStoreService);
-  private readonly selectionStoreService = inject(SelectionStoreService);
   private readonly toastService = inject(ToastService);
   private readonly qbService = inject(QbService);
   public readonly activeModal = inject(NgbActiveModal);
@@ -30,7 +37,7 @@ export class SetTorrentLocation implements OnInit {
     path: new FormControl<string | null>(null),
   });
 
-  public selected = this.selectionStoreService.selected().length;
+  public readonly selected = computed(() => this.hashes().length);
   private defaultPath = signal<string>('');
 
   public async ngOnInit(): Promise<void> {
@@ -61,11 +68,7 @@ export class SetTorrentLocation implements OnInit {
     }
 
     try {
-      await this.qbService.setTorrentLocation(
-        serverId,
-        this.selectionStoreService.selectedHashes(),
-        newPath,
-      );
+      await this.qbService.setTorrentLocation(serverId, this.hashes(), newPath);
       this.activeModal.close();
     } catch (error: any) {
       console.error(
