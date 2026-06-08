@@ -1,12 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
 import { Torrent } from '../../../models/torrent.model';
 import { QbService } from '../../../services/qb.service';
-import { SelectionStoreService } from '../../../services/selection-store.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { CategorySelect } from '../../category-select/category-select';
 
@@ -27,12 +26,13 @@ import { CategorySelect } from '../../category-select/category-select';
 })
 export class SetTorrentCategory implements OnInit {
   readonly torrent = input.required<Torrent>();
+  readonly hashes = input<string[]>([]);
 
   private readonly serverStoreService = inject(ServerStoreService);
-  private readonly selectionStoreService = inject(SelectionStoreService);
   public readonly activeModal = inject(NgbActiveModal);
   public readonly qbService = inject(QbService);
 
+  public readonly selected = computed(() => this.hashes().length);
   public saving = false;
   public setTorrentCategoryForm = new FormGroup({
     category: new FormControl(''),
@@ -47,10 +47,9 @@ export class SetTorrentCategory implements OnInit {
 
     const category = this.setTorrentCategoryForm.get('category')?.value || '';
     const serverId = this.serverStoreService.currentServerId() ?? '';
-    const hashes = this.selectionStoreService.selectedHashes();
 
     try {
-      await this.qbService.setTorrentCategory(serverId, hashes, category);
+      await this.qbService.setTorrentCategory(serverId, this.hashes(), category);
       this.activeModal.close();
     } catch (error) {
       console.error(

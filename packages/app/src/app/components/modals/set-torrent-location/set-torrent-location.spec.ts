@@ -3,7 +3,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Torrent } from '../../../models/torrent.model';
 import { QbService } from '../../../services/qb.service';
-import { SelectionStoreService } from '../../../services/selection-store.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { ToastService } from '../../../services/toast.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
@@ -23,13 +22,6 @@ describe('SetTorrentLocation', () => {
         { provide: NgbActiveModal, useValue: mockActiveModal },
         { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
         {
-          provide: SelectionStoreService,
-          useValue: {
-            selected: signal([{ save_path: '/downloads' }]),
-            selectedHashes: vi.fn().mockReturnValue([]),
-          },
-        },
-        {
           provide: QbService,
           useValue: {
             setTorrentLocation: vi.fn().mockResolvedValue(undefined),
@@ -44,6 +36,7 @@ describe('SetTorrentLocation', () => {
     fixture = TestBed.createComponent(SetTorrentLocation);
     component = fixture.componentInstance;
     fixture.componentRef.setInput('torrent', { save_path: '/downloads' } as Torrent);
+    fixture.componentRef.setInput('hashes', ['hash-1']);
     fixture.detectChanges();
   });
 
@@ -81,7 +74,7 @@ describe('SetTorrentLocation', () => {
       await component.handleSubmit();
       expect(mockQbService.setTorrentLocation).toHaveBeenCalledWith(
         'server-1',
-        expect.any(Array),
+        ['hash-1'],
         '/custom/path',
       );
     });
@@ -91,7 +84,7 @@ describe('SetTorrentLocation', () => {
       await component.handleSubmit();
       expect(mockQbService.setTorrentLocation).toHaveBeenCalledWith(
         'server-1',
-        expect.any(Array),
+        ['hash-1'],
         '/downloads',
       );
     });
