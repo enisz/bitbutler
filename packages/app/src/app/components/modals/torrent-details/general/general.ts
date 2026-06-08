@@ -290,6 +290,7 @@ export class General implements TorrentDetailTabComponent, OnInit {
     this.commandBusService.emit({
       type: 'UI_SET_TORRENT_CATEGORY',
       torrent: this.torrent()!.data,
+      hashes: [this.hash()],
     });
   }
 
@@ -301,7 +302,11 @@ export class General implements TorrentDetailTabComponent, OnInit {
   }
 
   public changeTags(): void {
-    this.commandBusService.emit({ type: 'UI_SET_TORRENT_TAGS', torrent: this.torrent()!.data });
+    this.commandBusService.emit({
+      type: 'UI_SET_TORRENT_TAGS',
+      torrent: this.torrent()!.data,
+      hashes: [this.hash()],
+    });
   }
 
   public removeAllTags(): void {
@@ -319,6 +324,7 @@ export class General implements TorrentDetailTabComponent, OnInit {
     this.commandBusService.emit({
       type: 'UI_SET_TORRENT_LOCATION',
       torrent: this.torrent()!.data,
+      hashes: [this.hash()],
     });
   }
 

@@ -3,7 +3,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Torrent } from '../../../models/torrent.model';
 import { QbService } from '../../../services/qb.service';
-import { SelectionStoreService } from '../../../services/selection-store.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { SetTorrentTags } from './set-torrent-tags';
 
@@ -21,10 +20,6 @@ describe('SetTorrentTags', () => {
         { provide: NgbActiveModal, useValue: mockActiveModal },
         { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
         {
-          provide: SelectionStoreService,
-          useValue: { selected: signal([]), selectedHashes: vi.fn().mockReturnValue([]) },
-        },
-        {
           provide: QbService,
           useValue: {
             getAllTags: vi.fn().mockResolvedValue([]),
@@ -38,6 +33,7 @@ describe('SetTorrentTags', () => {
     fixture = TestBed.createComponent(SetTorrentTags);
     component = fixture.componentInstance;
     fixture.componentRef.setInput('torrent', { tags: 'action,comedy' } as Torrent);
+    fixture.componentRef.setInput('hashes', ['hash-1']);
     fixture.detectChanges();
   });
 
@@ -69,6 +65,24 @@ describe('SetTorrentTags', () => {
       component.setTorrentTagsForm.updateValueAndValidity();
       component.setTorrentTagsForm.get('tags')?.setValue(['action']);
       expect(component.canSave()).toBe(true);
+    });
+  });
+
+  describe('handleSubmit', () => {
+    it('should apply tag changes to the hashes provided via the input, not the selection store', async () => {
+      const mockQbService = TestBed.inject(QbService) as unknown as {
+        addTorrentTags: ReturnType<typeof vi.fn>;
+        removeTorrentTags: ReturnType<typeof vi.fn>;
+      };
+      await component.ngOnInit();
+      component.setTorrentTagsForm.get('tags')?.setValue(['action', 'drama']);
+      await component.handleSubmit();
+      expect(mockQbService.addTorrentTags).toHaveBeenCalledWith('server-1', ['hash-1'], ['drama']);
+      expect(mockQbService.removeTorrentTags).toHaveBeenCalledWith(
+        'server-1',
+        ['hash-1'],
+        ['comedy'],
+      );
     });
   });
 });
