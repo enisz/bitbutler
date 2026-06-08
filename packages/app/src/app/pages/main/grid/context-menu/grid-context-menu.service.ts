@@ -1,6 +1,6 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { Injectable, inject } from '@angular/core';
-import { faSquare, faSquareCheck } from '@fortawesome/free-regular-svg-icons';
+import { faSquare, faSquareCheck, faSquareMinus } from '@fortawesome/free-regular-svg-icons';
 import {
   faArrowDown,
   faArrowDownUpAcrossLine,
@@ -62,6 +62,15 @@ export class GridContextMenuService {
   private readonly torrentListGridSettingsService = inject(TorrentListGridSettingsService);
 
   public async buildTorrentMenu(data: GridContextMenuData): Promise<ContextMenuEntry[]> {
+    const isMulti = data.selected.length > 1;
+    const hashes = data.selected.map((torrent) => torrent.hash);
+
+    const allSuperSeeding = data.selected.every((torrent) => torrent.super_seeding);
+    const noneSuperSeeding = data.selected.every((torrent) => !torrent.super_seeding);
+
+    const allAutoTmm = data.selected.every((torrent) => torrent.auto_tmm);
+    const noneAutoTmm = data.selected.every((torrent) => !torrent.auto_tmm);
+
     return [
       {
         kind: 'item',
@@ -87,16 +96,23 @@ export class GridContextMenuService {
         action: () => this.commandBusService.emit({ type: 'TORRENT_FORCE_RESUME' }),
       },
       { kind: 'divider' },
-      {
-        kind: 'item',
-        id: 'torrent.details',
-        label: 'pages.main.grid.context-menu.item.torrent-details',
-        icon: faInfoCircle,
-        variant: 'info',
-        action: () =>
-          this.commandBusService.emit({ type: 'UI_OPEN_TORRENT_DETAILS', hash: data.row.hash }),
-      },
-      { kind: 'divider' },
+      ...(isMulti
+        ? []
+        : [
+            {
+              kind: 'item' as const,
+              id: 'torrent.details',
+              label: 'pages.main.grid.context-menu.item.torrent-details',
+              icon: faInfoCircle,
+              variant: 'info' as const,
+              action: () =>
+                this.commandBusService.emit({
+                  type: 'UI_OPEN_TORRENT_DETAILS',
+                  hash: data.row.hash,
+                }),
+            },
+            { kind: 'divider' as const },
+          ]),
 
       {
         kind: 'submenu',
@@ -104,58 +120,74 @@ export class GridContextMenuService {
         label: 'pages.main.grid.context-menu.submenu.files',
         icon: faFolderOpen,
         children: [
-          {
-            kind: 'item',
-            id: 'files.openDestination',
-            label:
-              (
-                await this.qbService.torrentContents(
-                  this.serverStoreService.currentServerId() as string,
-                  data.row.hash,
-                )
-              ).length === 1
-                ? 'pages.main.grid.context-menu.item.show-in-folder'
-                : 'pages.main.grid.context-menu.item.open-destination',
-            icon: faFolderOpen,
-            disabled: (await this.pathService.resolveLocalPath(data.row.save_path)) === null,
-            action: () =>
-              this.commandBusService.emit({
-                type: 'UI_OPEN_DESTINATION',
-                remotePath: data.row.content_path,
-                hash: data.row.hash,
-              }),
-          },
+          ...(isMulti
+            ? []
+            : [
+                {
+                  kind: 'item' as const,
+                  id: 'files.openDestination',
+                  label:
+                    (
+                      await this.qbService.torrentContents(
+                        this.serverStoreService.currentServerId() as string,
+                        data.row.hash,
+                      )
+                    ).length === 1
+                      ? 'pages.main.grid.context-menu.item.show-in-folder'
+                      : 'pages.main.grid.context-menu.item.open-destination',
+                  icon: faFolderOpen,
+                  disabled: (await this.pathService.resolveLocalPath(data.row.save_path)) === null,
+                  action: () =>
+                    this.commandBusService.emit({
+                      type: 'UI_OPEN_DESTINATION',
+                      remotePath: data.row.content_path,
+                      hash: data.row.hash,
+                    }),
+                },
+              ]),
           {
             kind: 'item',
             id: 'files.setLocation',
             label: 'pages.main.grid.context-menu.item.set-location',
             icon: faFolderOpen,
             action: () =>
-              this.commandBusService.emit({ type: 'UI_SET_TORRENT_LOCATION', torrent: data.row }),
+              this.commandBusService.emit({
+                type: 'UI_SET_TORRENT_LOCATION',
+                torrent: data.row,
+                hashes,
+              }),
           },
-          {
-            kind: 'item',
-            id: 'files.renameTorrent',
-            label: 'pages.main.grid.context-menu.item.rename-torrent',
-            icon: faPen,
-            action: () =>
-              this.commandBusService.emit({ type: 'UI_RENAME_TORRENT', torrent: data.row }),
-          },
-          {
-            kind: 'item',
-            id: 'files.renameFiles',
-            label: 'pages.main.grid.context-menu.item.rename-files',
-            icon: faFilePen,
-            action: () =>
-              this.commandBusService.emit({ type: 'UI_RENAME_FILES', hash: data.row.hash }),
-          },
+          ...(isMulti
+            ? []
+            : [
+                {
+                  kind: 'item' as const,
+                  id: 'files.renameTorrent',
+                  label: 'pages.main.grid.context-menu.item.rename-torrent',
+                  icon: faPen,
+                  action: () =>
+                    this.commandBusService.emit({ type: 'UI_RENAME_TORRENT', torrent: data.row }),
+                },
+                {
+                  kind: 'item' as const,
+                  id: 'files.renameFiles',
+                  label: 'pages.main.grid.context-menu.item.rename-files',
+                  icon: faFilePen,
+                  action: () =>
+                    this.commandBusService.emit({ type: 'UI_RENAME_FILES', hash: data.row.hash }),
+                },
+              ]),
           {
             kind: 'item',
             id: 'files.category',
             label: 'pages.main.grid.context-menu.item.set-category',
             icon: faFolderTree,
             action: () =>
-              this.commandBusService.emit({ type: 'UI_SET_TORRENT_CATEGORY', torrent: data.row }),
+              this.commandBusService.emit({
+                type: 'UI_SET_TORRENT_CATEGORY',
+                torrent: data.row,
+                hashes,
+              }),
           },
           {
             kind: 'item',
@@ -163,7 +195,11 @@ export class GridContextMenuService {
             label: 'pages.main.grid.context-menu.item.set-tags',
             icon: faTags,
             action: () =>
-              this.commandBusService.emit({ type: 'UI_SET_TORRENT_TAGS', torrent: data.row }),
+              this.commandBusService.emit({
+                type: 'UI_SET_TORRENT_TAGS',
+                torrent: data.row,
+                hashes,
+              }),
           },
         ],
       },
@@ -236,14 +272,14 @@ export class GridContextMenuService {
           {
             kind: 'item',
             id: 'speed.superSeeding',
-            label: data.row.super_seeding
+            label: allSuperSeeding
               ? 'pages.main.grid.context-menu.item.disable-super-seeding'
               : 'pages.main.grid.context-menu.item.enable-super-seeding',
-            icon: data.row.super_seeding ? faSquareCheck : faSquare,
+            icon: allSuperSeeding ? faSquareCheck : noneSuperSeeding ? faSquare : faSquareMinus,
             action: () =>
               this.commandBusService.emit({
                 type: 'TORRENT_SUPER_SEEDING',
-                status: data.row.super_seeding,
+                status: allSuperSeeding,
               }),
           },
         ],
@@ -272,12 +308,12 @@ export class GridContextMenuService {
           {
             kind: 'item',
             id: 'maintenance.autoTmm',
-            label: data.row.auto_tmm
+            label: allAutoTmm
               ? 'pages.main.grid.context-menu.item.disable-auto-tmm'
               : 'pages.main.grid.context-menu.item.enable-auto-tmm',
-            icon: data.row.auto_tmm ? faSquareCheck : faSquare,
+            icon: allAutoTmm ? faSquareCheck : noneAutoTmm ? faSquare : faSquareMinus,
             action: () =>
-              this.commandBusService.emit({ type: 'TORRENT_AUTO_TMM', status: data.row.auto_tmm }),
+              this.commandBusService.emit({ type: 'TORRENT_AUTO_TMM', status: allAutoTmm }),
           },
         ],
       },
@@ -288,33 +324,46 @@ export class GridContextMenuService {
         label: 'pages.main.grid.context-menu.submenu.copy',
         icon: faCopy,
         children: [
-          {
-            kind: 'item',
-            id: 'cell.copyValue',
-            label: 'pages.main.grid.context-menu.item.copy-cell-value',
-            icon: faCopy,
-            action: () => this.clipboard.copy(String(data.cell.value)),
-          },
+          ...(isMulti
+            ? []
+            : [
+                {
+                  kind: 'item' as const,
+                  id: 'cell.copyValue',
+                  label: 'pages.main.grid.context-menu.item.copy-cell-value',
+                  icon: faCopy,
+                  action: () => this.clipboard.copy(String(data.cell.value)),
+                },
+              ]),
           {
             kind: 'item',
             id: 'torrent.copyInfoHash',
-            label: 'pages.main.grid.context-menu.item.copy-info-hash',
+            label: isMulti
+              ? 'pages.main.grid.context-menu.item.copy-info-hashes'
+              : 'pages.main.grid.context-menu.item.copy-info-hash',
             icon: faHashtag,
-            action: () => this.clipboard.copy(String(data.row.hash)),
+            action: () => this.clipboard.copy(isMulti ? hashes.join('\n') : String(data.row.hash)),
           },
           {
             kind: 'item',
             id: 'torrent.copyMagnet',
-            label: 'pages.main.grid.context-menu.item.copy-magnet-link',
+            label: isMulti
+              ? 'pages.main.grid.context-menu.item.copy-magnet-links'
+              : 'pages.main.grid.context-menu.item.copy-magnet-link',
             icon: faLink,
-            action: () => this.clipboard.copy(String(data.row.magnet_uri)),
+            action: () =>
+              this.clipboard.copy(
+                isMulti
+                  ? data.selected.map((torrent) => torrent.magnet_uri).join('\n')
+                  : String(data.row.magnet_uri),
+              ),
           },
           {
             kind: 'item',
             id: 'torrent.copyJson',
             label: 'pages.main.grid.context-menu.item.copy-as-json',
             icon: faCode,
-            action: () => this.clipboard.copy(String(JSON.stringify(data.row, null, 2))),
+            action: () => this.clipboard.copy(String(JSON.stringify(data.selected, null, 2))),
           },
         ],
       },
