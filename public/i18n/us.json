@@ -934,7 +934,9 @@
           "item": {
             "copy-cell-value": "Copy cell value",
             "copy-info-hash": "Copy info hash",
+            "copy-info-hashes": "Copy info hashes",
             "copy-magnet-link": "Copy magnet link",
+            "copy-magnet-links": "Copy magnet links",
             "copy-as-json": "Copy as JSON",
             "torrent-details": "Torrent details",
             "start": "Start",

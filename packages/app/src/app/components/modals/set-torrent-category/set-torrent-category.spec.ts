@@ -3,7 +3,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Torrent } from '../../../models/torrent.model';
 import { QbService } from '../../../services/qb.service';
-import { SelectionStoreService } from '../../../services/selection-store.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { SetTorrentCategory } from './set-torrent-category';
 
@@ -21,10 +20,6 @@ describe('SetTorrentCategory', () => {
         { provide: NgbActiveModal, useValue: mockActiveModal },
         { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
         {
-          provide: SelectionStoreService,
-          useValue: { selected: signal([]), selectedHashes: vi.fn().mockReturnValue([]) },
-        },
-        {
           provide: QbService,
           useValue: {
             getAllCategories: vi.fn().mockResolvedValue({}),
@@ -37,6 +32,7 @@ describe('SetTorrentCategory', () => {
     fixture = TestBed.createComponent(SetTorrentCategory);
     component = fixture.componentInstance;
     fixture.componentRef.setInput('torrent', { category: 'movies' } as Torrent);
+    fixture.componentRef.setInput('hashes', ['hash-1']);
     fixture.detectChanges();
   });
 
@@ -64,6 +60,17 @@ describe('SetTorrentCategory', () => {
       component.setTorrentCategoryForm.markAsDirty();
       component.saving = true;
       expect(component.canSave()).toBe(false);
+    });
+  });
+
+  describe('handleSubmit', () => {
+    it('should apply the category to the hashes provided via the input, not the selection store', async () => {
+      const mockQbService = TestBed.inject(QbService) as unknown as {
+        setTorrentCategory: ReturnType<typeof vi.fn>;
+      };
+      component.setTorrentCategoryForm.get('category')?.setValue('tv');
+      await component.handleSubmit();
+      expect(mockQbService.setTorrentCategory).toHaveBeenCalledWith('server-1', ['hash-1'], 'tv');
     });
   });
 });

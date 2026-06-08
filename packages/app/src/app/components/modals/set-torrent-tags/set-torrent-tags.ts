@@ -14,7 +14,6 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
 import { Torrent } from '../../../models/torrent.model';
 import { QbService } from '../../../services/qb.service';
-import { SelectionStoreService } from '../../../services/selection-store.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { TagSelect } from '../../tag-select/tag-select';
 
@@ -27,13 +26,13 @@ import { TagSelect } from '../../tag-select/tag-select';
 })
 export class SetTorrentTags implements OnInit {
   readonly torrent = input.required<Torrent>();
+  readonly hashes = input<string[]>([]);
 
   private readonly serverStoreService = inject(ServerStoreService);
-  private readonly selectionStoreService = inject(SelectionStoreService);
   private readonly qbService = inject(QbService);
   public readonly activeModal = inject(NgbActiveModal);
 
-  public selected = this.selectionStoreService.selected().length;
+  public readonly selected = computed(() => this.hashes().length);
   public saving = signal(false);
   public setTorrentTagsForm = new FormGroup({
     tags: new FormControl([] as string[]),
@@ -73,7 +72,7 @@ export class SetTorrentTags implements OnInit {
 
     const newTagsValue = this.setTorrentTagsForm.get('tags')?.value || [];
     const serverId = this.serverStoreService.currentServerId() ?? '';
-    const hashes = this.selectionStoreService.selectedHashes();
+    const hashes = this.hashes();
 
     const initialTags = (this.torrent().tags || '')
       .split(',')

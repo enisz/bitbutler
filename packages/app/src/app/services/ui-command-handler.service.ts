@@ -177,6 +177,11 @@ export class UiCommandHandlerService {
             });
 
             setModalInput(setLocationModalRef, 'torrent', command.torrent);
+            setModalInput(
+              setLocationModalRef,
+              'hashes',
+              command.hashes ?? this.selectionStoreService.selectedHashes(),
+            );
             setLocationModalRef.result.catch(() => {});
             break;
           }
@@ -213,6 +218,11 @@ export class UiCommandHandlerService {
             if (this.isModalOpen(SetTorrentTags)) break;
             const setTagsModalRef = this.modalService.open(SetTorrentTags, { size: 'lg' });
             setModalInput(setTagsModalRef, 'torrent', command.torrent);
+            setModalInput(
+              setTagsModalRef,
+              'hashes',
+              command.hashes ?? this.selectionStoreService.selectedHashes(),
+            );
             setTagsModalRef.result.catch(() => {});
             break;
           }
@@ -221,6 +231,11 @@ export class UiCommandHandlerService {
             if (this.isModalOpen(SetTorrentCategory)) break;
             const setCategoryModalRef = this.modalService.open(SetTorrentCategory, { size: 'lg' });
             setModalInput(setCategoryModalRef, 'torrent', command.torrent);
+            setModalInput(
+              setCategoryModalRef,
+              'hashes',
+              command.hashes ?? this.selectionStoreService.selectedHashes(),
+            );
             setCategoryModalRef.result.catch(() => {});
             break;
           }

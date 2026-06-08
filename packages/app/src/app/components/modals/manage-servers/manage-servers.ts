@@ -4,7 +4,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ServerRecord } from '@bitbutler/shared';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faTrashCan } from '@fortawesome/free-regular-svg-icons';
-import { faPencil, faPlug, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faPenToSquare, faPlug, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
@@ -40,7 +40,7 @@ export class ManageServers {
   private readonly modalService = inject(NgbModal);
   public readonly activeModal = inject(NgbActiveModal);
 
-  public readonly icon = { faPencil, faTrashCan, faXmark, faPlug };
+  public readonly icon = { faPenToSquare, faTrashCan, faXmark, faPlug };
   public readonly currentServerId = this.serverStoreService.currentServerId;
 
   public filterControl = new FormControl('');

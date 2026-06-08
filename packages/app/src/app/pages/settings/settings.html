@@ -14,7 +14,8 @@
             {{ tab.label | translate }}
             @if (stateService.isDirtyMap()[tab.id]) {
               <fa-icon
-                [icon]="icon.faPencil"
+                [icon]="icon.faAsterisk"
+                [size]="'2xs'"
                 class="ms-2"
                 [ngbTooltip]="'components.modals.guard.unsaved-indicator' | translate"
               ></fa-icon>

@@ -1,6 +1,7 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { faSquare, faSquareCheck, faSquareMinus } from '@fortawesome/free-regular-svg-icons';
 import { of } from 'rxjs';
 import type { Torrent } from '../../../../models/torrent.model';
 import { CommandBusService } from '../../../../services/command-bus.service';
@@ -40,10 +41,12 @@ function makeRow(overrides: Partial<Torrent> = {}): Torrent {
 }
 
 function makeData(overrides: Partial<GridContextMenuData> = {}): GridContextMenuData {
+  const row = overrides.row ?? makeRow();
+
   return {
-    row: makeRow(),
+    row,
     cell: { colId: 'name', rowId: 'abc123', value: 'My Torrent' },
-    selected: [],
+    selected: [row],
     rowPinned: null,
     ...overrides,
   };
@@ -289,11 +292,11 @@ describe('GridContextMenuService', () => {
         expect(clipboard.copy).toHaveBeenCalledWith('magnet:?xt=abc123');
       });
 
-      it('torrent.copyJson action copies the row as formatted JSON', async () => {
+      it('torrent.copyJson action copies the selection as formatted JSON', async () => {
         const row = makeRow();
         const entries = await service.buildTorrentMenu(makeData({ row }));
         (findItem(entries, 'torrent.copyJson')!.action as () => void)();
-        expect(clipboard.copy).toHaveBeenCalledWith(JSON.stringify(row, null, 2));
+        expect(clipboard.copy).toHaveBeenCalledWith(JSON.stringify([row], null, 2));
       });
 
       it('row.pinToTop action emits UI_TORRENT_PIN_TOP', async () => {
@@ -332,13 +335,14 @@ describe('GridContextMenuService', () => {
         expect(commandBusService.emit).toHaveBeenCalledWith({ type: 'TORRENT_FORCE_RESUME' });
       });
 
-      it('files.setLocation action emits UI_SET_TORRENT_LOCATION with the torrent', async () => {
+      it('files.setLocation action emits UI_SET_TORRENT_LOCATION with the torrent and selected hashes', async () => {
         const row = makeRow();
         const entries = await service.buildTorrentMenu(makeData({ row }));
         (findItem(entries, 'files.setLocation')!.action as () => void)();
         expect(commandBusService.emit).toHaveBeenCalledWith({
           type: 'UI_SET_TORRENT_LOCATION',
           torrent: row,
+          hashes: [row.hash],
         });
       });
 
@@ -372,23 +376,54 @@ describe('GridContextMenuService', () => {
         });
       });
 
-      it('files.category action emits UI_SET_TORRENT_CATEGORY with the torrent', async () => {
+      it('files.category action emits UI_SET_TORRENT_CATEGORY with the torrent and selected hashes', async () => {
         const row = makeRow();
         const entries = await service.buildTorrentMenu(makeData({ row }));
         (findItem(entries, 'files.category')!.action as () => void)();
         expect(commandBusService.emit).toHaveBeenCalledWith({
           type: 'UI_SET_TORRENT_CATEGORY',
           torrent: row,
+          hashes: [row.hash],
         });
       });
 
-      it('files.tags action emits UI_SET_TORRENT_TAGS with the torrent', async () => {
+      it('files.tags action emits UI_SET_TORRENT_TAGS with the torrent and selected hashes', async () => {
         const row = makeRow();
         const entries = await service.buildTorrentMenu(makeData({ row }));
         (findItem(entries, 'files.tags')!.action as () => void)();
         expect(commandBusService.emit).toHaveBeenCalledWith({
           type: 'UI_SET_TORRENT_TAGS',
           torrent: row,
+          hashes: [row.hash],
+        });
+      });
+
+      it('UI_SET_TORRENT_LOCATION/CATEGORY/TAGS carry the full selection hashes for a multi-selection', async () => {
+        const rowA = makeRow({ hash: 'hash-a' });
+        const rowB = makeRow({ hash: 'hash-b' });
+        const entries = await service.buildTorrentMenu(
+          makeData({ row: rowA, selected: [rowA, rowB] }),
+        );
+
+        (findItem(entries, 'files.setLocation')!.action as () => void)();
+        expect(commandBusService.emit).toHaveBeenCalledWith({
+          type: 'UI_SET_TORRENT_LOCATION',
+          torrent: rowA,
+          hashes: ['hash-a', 'hash-b'],
+        });
+
+        (findItem(entries, 'files.category')!.action as () => void)();
+        expect(commandBusService.emit).toHaveBeenCalledWith({
+          type: 'UI_SET_TORRENT_CATEGORY',
+          torrent: rowA,
+          hashes: ['hash-a', 'hash-b'],
+        });
+
+        (findItem(entries, 'files.tags')!.action as () => void)();
+        expect(commandBusService.emit).toHaveBeenCalledWith({
+          type: 'UI_SET_TORRENT_TAGS',
+          torrent: rowA,
+          hashes: ['hash-a', 'hash-b'],
         });
       });
 
@@ -451,6 +486,168 @@ describe('GridContextMenuService', () => {
         const entries = await service.buildTorrentMenu(makeData());
         (findItem(entries, 'queue.moveBottom')!.action as () => void)();
         expect(commandBusService.emit).toHaveBeenCalledWith({ type: 'QUEUE_MOVE_BOTTOM' });
+      });
+    });
+
+    describe('multi-selection behavior', () => {
+      it('hides single-target-only items when multiple torrents are selected', async () => {
+        const rowA = makeRow({ hash: 'hash-a' });
+        const rowB = makeRow({ hash: 'hash-b' });
+        const entries = await service.buildTorrentMenu(
+          makeData({ row: rowA, selected: [rowA, rowB] }),
+        );
+
+        expect(findItem(entries, 'torrent.details')).toBeUndefined();
+        expect(findItem(entries, 'files.openDestination')).toBeUndefined();
+        expect(findItem(entries, 'files.renameTorrent')).toBeUndefined();
+        expect(findItem(entries, 'files.renameFiles')).toBeUndefined();
+        expect(findItem(entries, 'cell.copyValue')).toBeUndefined();
+      });
+
+      it('keeps single-target-only items when a single torrent is selected', async () => {
+        const entries = await service.buildTorrentMenu(makeData());
+
+        expect(findItem(entries, 'torrent.details')).toBeDefined();
+        expect(findItem(entries, 'files.openDestination')).toBeDefined();
+        expect(findItem(entries, 'files.renameTorrent')).toBeDefined();
+        expect(findItem(entries, 'files.renameFiles')).toBeDefined();
+        expect(findItem(entries, 'cell.copyValue')).toBeDefined();
+      });
+
+      it('pluralizes copy labels and joins clipboard content with newlines for multi-selection', async () => {
+        const rowA = makeRow({ hash: 'hash-a', magnet_uri: 'magnet:?xt=hash-a' });
+        const rowB = makeRow({ hash: 'hash-b', magnet_uri: 'magnet:?xt=hash-b' });
+        const entries = await service.buildTorrentMenu(
+          makeData({ row: rowA, selected: [rowA, rowB] }),
+        );
+
+        expect(findItem(entries, 'torrent.copyInfoHash')?.label).toContain('copy-info-hashes');
+        (findItem(entries, 'torrent.copyInfoHash')!.action as () => void)();
+        expect(clipboard.copy).toHaveBeenCalledWith('hash-a\nhash-b');
+
+        expect(findItem(entries, 'torrent.copyMagnet')?.label).toContain('copy-magnet-links');
+        (findItem(entries, 'torrent.copyMagnet')!.action as () => void)();
+        expect(clipboard.copy).toHaveBeenCalledWith('magnet:?xt=hash-a\nmagnet:?xt=hash-b');
+
+        (findItem(entries, 'torrent.copyJson')!.action as () => void)();
+        expect(clipboard.copy).toHaveBeenCalledWith(JSON.stringify([rowA, rowB], null, 2));
+      });
+
+      it('uses singular copy labels for a single selection', async () => {
+        const entries = await service.buildTorrentMenu(makeData());
+
+        expect(findItem(entries, 'torrent.copyInfoHash')?.label).toBe(
+          'pages.main.grid.context-menu.item.copy-info-hash',
+        );
+        expect(findItem(entries, 'torrent.copyMagnet')?.label).toBe(
+          'pages.main.grid.context-menu.item.copy-magnet-link',
+        );
+      });
+    });
+
+    describe('super seeding tri-state', () => {
+      it('shows the checked icon, "disable" label and forces status true (toggling off) when every selected torrent has it on', async () => {
+        const rowA = makeRow({ hash: 'hash-a', super_seeding: true });
+        const rowB = makeRow({ hash: 'hash-b', super_seeding: true });
+        const entries = await service.buildTorrentMenu(
+          makeData({ row: rowA, selected: [rowA, rowB] }),
+        );
+        const item = findItem(entries, 'speed.superSeeding')!;
+
+        expect(item.label).toContain('disable-super-seeding');
+        expect(item.icon).toBe(faSquareCheck);
+        (item.action as () => void)();
+        expect(commandBusService.emit).toHaveBeenCalledWith({
+          type: 'TORRENT_SUPER_SEEDING',
+          status: true,
+        });
+      });
+
+      it('shows the empty icon, "enable" label and status false when every selected torrent has it off', async () => {
+        const rowA = makeRow({ hash: 'hash-a', super_seeding: false });
+        const rowB = makeRow({ hash: 'hash-b', super_seeding: false });
+        const entries = await service.buildTorrentMenu(
+          makeData({ row: rowA, selected: [rowA, rowB] }),
+        );
+        const item = findItem(entries, 'speed.superSeeding')!;
+
+        expect(item.label).toContain('enable-super-seeding');
+        expect(item.icon).toBe(faSquare);
+        (item.action as () => void)();
+        expect(commandBusService.emit).toHaveBeenCalledWith({
+          type: 'TORRENT_SUPER_SEEDING',
+          status: false,
+        });
+      });
+
+      it('shows the indeterminate icon, "enable" label and forces status false (enabling for all) when the selection is mixed', async () => {
+        const rowA = makeRow({ hash: 'hash-a', super_seeding: true });
+        const rowB = makeRow({ hash: 'hash-b', super_seeding: false });
+        const entries = await service.buildTorrentMenu(
+          makeData({ row: rowA, selected: [rowA, rowB] }),
+        );
+        const item = findItem(entries, 'speed.superSeeding')!;
+
+        expect(item.label).toContain('enable-super-seeding');
+        expect(item.icon).toBe(faSquareMinus);
+        (item.action as () => void)();
+        expect(commandBusService.emit).toHaveBeenCalledWith({
+          type: 'TORRENT_SUPER_SEEDING',
+          status: false,
+        });
+      });
+    });
+
+    describe('auto TMM tri-state', () => {
+      it('shows the checked icon, "disable" label and forces status true (toggling off) when every selected torrent has it on', async () => {
+        const rowA = makeRow({ hash: 'hash-a', auto_tmm: true });
+        const rowB = makeRow({ hash: 'hash-b', auto_tmm: true });
+        const entries = await service.buildTorrentMenu(
+          makeData({ row: rowA, selected: [rowA, rowB] }),
+        );
+        const item = findItem(entries, 'maintenance.autoTmm')!;
+
+        expect(item.label).toContain('disable-auto-tmm');
+        expect(item.icon).toBe(faSquareCheck);
+        (item.action as () => void)();
+        expect(commandBusService.emit).toHaveBeenCalledWith({
+          type: 'TORRENT_AUTO_TMM',
+          status: true,
+        });
+      });
+
+      it('shows the empty icon, "enable" label and status false when every selected torrent has it off', async () => {
+        const rowA = makeRow({ hash: 'hash-a', auto_tmm: false });
+        const rowB = makeRow({ hash: 'hash-b', auto_tmm: false });
+        const entries = await service.buildTorrentMenu(
+          makeData({ row: rowA, selected: [rowA, rowB] }),
+        );
+        const item = findItem(entries, 'maintenance.autoTmm')!;
+
+        expect(item.label).toContain('enable-auto-tmm');
+        expect(item.icon).toBe(faSquare);
+        (item.action as () => void)();
+        expect(commandBusService.emit).toHaveBeenCalledWith({
+          type: 'TORRENT_AUTO_TMM',
+          status: false,
+        });
+      });
+
+      it('shows the indeterminate icon, "enable" label and forces status false (enabling for all) when the selection is mixed', async () => {
+        const rowA = makeRow({ hash: 'hash-a', auto_tmm: true });
+        const rowB = makeRow({ hash: 'hash-b', auto_tmm: false });
+        const entries = await service.buildTorrentMenu(
+          makeData({ row: rowA, selected: [rowA, rowB] }),
+        );
+        const item = findItem(entries, 'maintenance.autoTmm')!;
+
+        expect(item.label).toContain('enable-auto-tmm');
+        expect(item.icon).toBe(faSquareMinus);
+        (item.action as () => void)();
+        expect(commandBusService.emit).toHaveBeenCalledWith({
+          type: 'TORRENT_AUTO_TMM',
+          status: false,
+        });
       });
     });
   });
