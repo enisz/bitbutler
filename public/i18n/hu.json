@@ -934,7 +934,9 @@
           "item": {
             "copy-cell-value": "Cella értékének másolása",
             "copy-info-hash": "Info hash másolása",
+            "copy-info-hashes": "Info hash-ek másolása",
             "copy-magnet-link": "Magnet link másolása",
+            "copy-magnet-links": "Magnet linkek másolása",
             "copy-as-json": "Másolás JSON-ként",
             "torrent-details": "Torrent részletei",
             "start": "Indítás",
