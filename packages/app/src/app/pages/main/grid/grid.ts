@@ -283,9 +283,13 @@ export class Grid implements AfterViewInit {
   private handleCellRightClick = async (event: CellContextMenuEvent<Torrent, any>) => {
     if (!event.data) return;
 
-    if (this.selectionStore.selected().length <= 1) {
-      this.selectionStore.setByHashes([event.data.hash]);
-    }
+    const currentSelection = this.selectionStore.selected();
+
+    this.selectionStore.setByHashes(
+      currentSelection.length <= 1
+        ? [event.data.hash]
+        : currentSelection.map((torrent) => torrent.hash),
+    );
 
     this.contextMenuService.open({
       items: await this.gridContextMenuService.buildTorrentMenu({
