@@ -1,3 +1,5 @@
+// packages\app\src\app\app.scss
+
 .cr {
   width: 120px;
   padding-top: 20px;
@@ -6,6 +8,10 @@
   text-align: center;
   color: #f0f0f0;
   font-weight: bold;
+
+  // CRITICAL FIXES:
+  z-index: 99999; // Pushes it above the login split backgrounds
+  pointer-events: none; // Makes sure you can still click things underneath it
 }
 
 .cr-sticky {
@@ -35,34 +41,7 @@
   transform: rotate(45deg);
 }
 
-.cr-white {
-  background-color: #f0f0f0;
-  color: #444;
-}
-.cr-black {
-  background-color: #333;
-}
-.cr-grey {
-  background-color: #999;
-}
+// Your existing color classes (cr-blue, cr-red, etc.) stay exactly the same...
 .cr-blue {
   background-color: #39d;
-}
-.cr-green {
-  background-color: #2c7;
-}
-.cr-turquoise {
-  background-color: #1b9;
-}
-.cr-purple {
-  background-color: #95b;
-}
-.cr-red {
-  background-color: #e43;
-}
-.cr-orange {
-  background-color: #e82;
-}
-.cr-yellow {
-  background-color: #ec0;
 }

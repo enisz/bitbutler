@@ -19,14 +19,14 @@
 
   <div class="login-form-side">
     @if (!showHero()) {
-      <div class="mobile-brand-header text-center mb-5">
+      <div class="mobile-brand-header text-center mb-4">
         <img
           [ngSrc]="logoUrl()"
           alt="BitButler logo"
-          width="110"
-          height="110"
+          width="180"
+          height="180"
           priority
-          class="mb-3"
+          class="mb-3 mobile-logo"
         />
         <h2 class="fw-bold mb-1">BitButler</h2>
         <p class="text-body-secondary small mb-0">{{ 'pages.login.tagline' | translate }}</p>
@@ -34,12 +34,16 @@
     }
 
     <div class="form-wrapper">
-      <div class="mb-4">
-        <h3 class="form-title" data-testid="brand-title">
-          {{ 'pages.login.form-title' | translate }}
-        </h3>
-        <p class="text-body-secondary small mb-0">{{ 'pages.login.form-subtitle' | translate }}</p>
-      </div>
+      @if (showHero()) {
+        <div class="mb-4">
+          <h3 class="form-title" data-testid="brand-title">
+            {{ 'pages.login.form-title' | translate }}
+          </h3>
+          <p class="text-body-secondary small mb-0">
+            {{ 'pages.login.form-subtitle' | translate }}
+          </p>
+        </div>
+      }
 
       <form [formGroup]="serverForm" class="mb-4">
         <div class="form-floating">

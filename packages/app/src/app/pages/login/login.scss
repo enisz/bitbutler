@@ -11,8 +11,8 @@
   flex: 0 0 50%; // Exactly half screen width
   display: flex;
   align-items: center;
-  justify-content: flex-end; // Right-align content inside the left column
-  padding: 3rem 6rem 3rem 3rem; // Heavy padding on the right to contain content comfortably near center
+  justify-content: flex-end; // Align inner frame content closer toward the divider line
+  padding: 3rem 6rem 3rem 3rem; // Heavy right-side padding anchors it beautifully near the center
   background-color: var(--bs-card-bg);
   border-right: 1px solid var(--bs-border-color);
   position: relative;
@@ -23,7 +23,7 @@
     inset: 0;
     background: radial-gradient(
       circle at 75% 45%,
-      // Shift center glow rightward toward the split border
+      // Glow core follows the graphic closer to the border line
       color-mix(in srgb, var(--bs-secondary) 6%, transparent),
       transparent 60%
     );
@@ -35,7 +35,7 @@
   position: relative;
   text-align: center;
   z-index: 2;
-  max-width: 320px; // Pin content size down so it doesn't float away
+  max-width: 320px;
 }
 
 .hero-logo-wrapper {
@@ -78,9 +78,9 @@
   flex: 0 0 50%; // Match exactly half screen width
   display: flex;
   flex-direction: column;
-  align-items: flex-start; // Left-align form context inside the right column
+  align-items: flex-start; // Pull form wrapper targets snug to the divider line
   justify-content: center;
-  padding: 3rem 3rem 3rem 6rem; // Heavy padding on the left to pull inputs near the divider line
+  padding: 3rem 3rem 3rem 6rem; // Heavy left padding mirrors the butler side
   background-color: var(--bs-body-bg);
 }
 
@@ -95,6 +95,10 @@
   font-weight: 600;
   font-size: 1.75rem;
   margin-bottom: 0.5rem;
+}
+
+.mobile-logo {
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.5));
 }
 
 @keyframes fadeInForm {
@@ -115,7 +119,7 @@
   }
 }
 
-// Fallback adjustments for tablets and smaller view windows
+// Layout adjustments when screen scales down or constraints collapse
 @media (max-width: 991.98px) {
   .login-hero-side {
     padding-right: 3rem;
@@ -129,9 +133,14 @@
   .login-container {
     flex-direction: column;
   }
+
   .login-form-side {
     flex: 1;
-    align-items: center;
+    align-items: center; // Recenter elements when stacked vertically
     padding: 2rem 1.5rem;
+  }
+
+  .mobile-brand-header {
+    margin-bottom: 2rem !important;
   }
 }
