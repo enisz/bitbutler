@@ -860,6 +860,8 @@
   "pages": {
     "login": {
       "tagline": "qBittorrent-nox távoli kliens",
+      "form-title": "Csatlakozás",
+      "form-subtitle": "Válassz gazdagépet a vezérlőpult megnyitásához.",
       "connecting": "Csatlakozás...",
       "server-form": {
         "host": "Gép (Host)"
@@ -1456,6 +1458,7 @@
       "today": "Ma",
       "connect": "Csatlakozás",
       "add-server": "Szerver hozzáadása",
+      "manage-servers": "Szerverek kezelése",
       "delete": "Törlés",
       "ok": "OK",
       "set": "Beállítás",

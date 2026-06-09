@@ -860,6 +860,8 @@
   "pages": {
     "login": {
       "tagline": "qBittorrent-nox Remote Client",
+      "form-title": "Connect to Server",
+      "form-subtitle": "Select an active host instance to open your remote dashboard.",
       "connecting": "Connecting...",
       "server-form": {
         "host": "Host"
@@ -1456,6 +1458,7 @@
       "today": "Today",
       "connect": "Connect",
       "add-server": "Add Server",
+      "manage-servers": "Manage Servers",
       "delete": "Delete",
       "ok": "OK",
       "set": "Set",
