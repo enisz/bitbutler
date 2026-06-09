@@ -52,9 +52,9 @@
   position: absolute;
   top: 0;
   right: -10px;
-  background-color: color-mix(in srgb, var(--bs-card-bg) 60%, #000);
-  border: 1px solid var(--bs-border-color);
-  color: var(--bs-secondary);
+  background-color: rgba(var(--bs-secondary-rgb), 0.1);
+  border: 1px solid rgba(var(--bs-secondary-rgb), 0.35);
+  color: var(--bs-body-color);
   font-size: 0.75rem;
   padding: 0.25rem 0.6rem;
   border-radius: 20px;

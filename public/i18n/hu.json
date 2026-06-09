@@ -624,7 +624,7 @@
       "manage-servers": {
         "title": "Szerverek kezelése",
         "filter": {
-          "placeholder": "Szerverek szűrése...",
+          "placeholder": "Szűrés név vagy host alapján...",
           "no-match": "Egy szerver sem felel meg a szűrőnek."
         },
         "empty": "Nincsenek konfigurált szerverek.",
@@ -632,7 +632,9 @@
           "connect": "Csatlakozás"
         },
         "tooltip": {
-          "active": "Jelenleg aktív szerver"
+          "active": "Jelenleg aktív szerver",
+          "set-as-default": "Beállítás alapértelmezett szerverként",
+          "unset-default": "Alapértelmezett szerver megszüntetése"
         },
         "delete-confirm": {
           "title": "Szerver törlése",

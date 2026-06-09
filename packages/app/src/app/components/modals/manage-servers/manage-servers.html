@@ -63,8 +63,8 @@
             </div>
           </div>
 
-          @if (hideConnect() || currentServerId() !== server.id) {
-            <div class="d-flex gap-1 flex-shrink-0 align-items-center">
+          <div class="d-flex gap-1 flex-shrink-0 align-items-center">
+            @if (hideConnect() || currentServerId() !== server.id) {
               @if (!hideConnect()) {
                 <button
                   type="button"
@@ -81,6 +81,22 @@
                   }
                 </button>
               }
+            }
+            <button
+              type="button"
+              class="btn btn-link p-1"
+              [ngbTooltip]="
+                (server.auto_login
+                  ? 'components.modals.manage-servers.tooltip.unset-default'
+                  : 'components.modals.manage-servers.tooltip.set-as-default'
+                ) | translate
+              "
+              (click)="toggleAutoLogin(server)"
+              [disabled]="busy()"
+            >
+              <fa-icon [icon]="server.auto_login ? icon.faSquareCheck : icon.faSquare" />
+            </button>
+            @if (hideConnect() || currentServerId() !== server.id) {
               <button
                 type="button"
                 class="btn btn-link p-1"
@@ -99,8 +115,8 @@
               >
                 <fa-icon [icon]="icon.faTrashCan" />
               </button>
-            </div>
-          }
+            }
+          </div>
         </li>
       }
     </ul>
