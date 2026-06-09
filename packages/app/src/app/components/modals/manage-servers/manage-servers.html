@@ -65,19 +65,22 @@
 
           @if (currentServerId() !== server.id) {
             <div class="d-flex gap-1 flex-shrink-0 align-items-center">
-              <button
-                type="button"
-                class="btn btn-link p-1"
-                [ngbTooltip]="'components.modals.manage-servers.button.connect' | translate"
-                (click)="switchTo(server)"
-                [disabled]="busy()"
-              >
-                @if (connectingId() === server.id) {
-                  <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-                } @else {
-                  <fa-icon [icon]="icon.faPlug" />
-                }
-              </button>
+              @if (!hideConnect()) {
+                <button
+                  type="button"
+                  class="btn btn-link p-1"
+                  data-testid="connect-btn"
+                  [ngbTooltip]="'components.modals.manage-servers.button.connect' | translate"
+                  (click)="switchTo(server)"
+                  [disabled]="busy()"
+                >
+                  @if (connectingId() === server.id) {
+                    <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                  } @else {
+                    <fa-icon [icon]="icon.faPlug" />
+                  }
+                </button>
+              }
               <button
                 type="button"
                 class="btn btn-link p-1"

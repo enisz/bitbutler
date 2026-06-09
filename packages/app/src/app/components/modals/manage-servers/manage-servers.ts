@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ServerRecord } from '@bitbutler/shared';
@@ -41,6 +41,7 @@ export class ManageServers {
   public readonly activeModal = inject(NgbActiveModal);
 
   public readonly icon = { faPenToSquare, faTrashCan, faXmark, faPlug };
+  readonly hideConnect = input(false);
   public readonly currentServerId = this.serverStoreService.currentServerId;
 
   public filterControl = new FormControl('');
