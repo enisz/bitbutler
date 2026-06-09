@@ -6,13 +6,16 @@ import {
   computed,
   effect,
   inject,
+  signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ServerRecord } from '@bitbutler/shared';
 import { NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgLabelTemplateDirective, NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { debounceTime, fromEvent } from 'rxjs';
 import { AppLoader } from '../../components/app-loader/app-loader';
 import { CredentialPrompt } from '../../components/modals/credential-prompt/credential-prompt';
 import { ManageServers } from '../../components/modals/manage-servers/manage-servers';
@@ -69,7 +72,13 @@ export class Login implements OnInit {
 
   public trackByFn = (_index: number, item: ServerRecord) => item?.id || _index;
 
+  protected readonly showHero = signal(window.innerWidth >= 768);
+
   constructor() {
+    fromEvent(window, 'resize')
+      .pipe(debounceTime(50), takeUntilDestroyed())
+      .subscribe(() => this.showHero.set(window.innerWidth >= 768));
+
     effect(() => {
       const storeId = this.serverStoreService.currentServerId();
       if (this.serverForm.get('server')?.value !== storeId) {

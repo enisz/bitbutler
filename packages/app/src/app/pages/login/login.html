@@ -1,33 +1,37 @@
 <div class="login-container">
-  <div class="login-hero-side d-none d-md-flex">
-    <div class="hero-content">
-      <div class="hero-logo-wrapper">
-        <img [ngSrc]="logoUrl()" alt="BitButler logo" width="260" height="260" priority />
-        <span
-          class="hero-version-badge cursor-pointer user-select-none"
-          data-testid="version-badge"
-          (click)="goToRelease()"
-          >v{{ version }}</span
-        >
+  @if (showHero()) {
+    <div class="login-hero-side">
+      <div class="hero-content">
+        <div class="hero-logo-wrapper">
+          <img [ngSrc]="logoUrl()" alt="BitButler logo" width="260" height="260" priority />
+          <span
+            class="hero-version-badge cursor-pointer user-select-none"
+            data-testid="version-badge"
+            (click)="goToRelease()"
+            >v{{ version }}</span
+          >
+        </div>
+        <h1 class="hero-title">BitButler</h1>
+        <p class="hero-subtitle mb-0">{{ 'pages.login.tagline' | translate }}</p>
       </div>
-      <h1 class="hero-title">BitButler</h1>
-      <p class="hero-subtitle mb-0">{{ 'pages.login.tagline' | translate }}</p>
     </div>
-  </div>
+  }
 
   <div class="login-form-side">
-    <div class="mobile-brand-header d-md-none text-center mb-5">
-      <img
-        [ngSrc]="logoUrl()"
-        alt="BitButler logo"
-        width="110"
-        height="110"
-        priority
-        class="mb-3"
-      />
-      <h2 class="fw-bold mb-1">BitButler</h2>
-      <p class="text-body-secondary small mb-0">{{ 'pages.login.tagline' | translate }}</p>
-    </div>
+    @if (!showHero()) {
+      <div class="mobile-brand-header text-center mb-5">
+        <img
+          [ngSrc]="logoUrl()"
+          alt="BitButler logo"
+          width="110"
+          height="110"
+          priority
+          class="mb-3"
+        />
+        <h2 class="fw-bold mb-1">BitButler</h2>
+        <p class="text-body-secondary small mb-0">{{ 'pages.login.tagline' | translate }}</p>
+      </div>
+    }
 
     <div class="form-wrapper">
       <div class="mb-4">
