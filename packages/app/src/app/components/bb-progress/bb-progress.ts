@@ -1,4 +1,3 @@
-// packages/app/src/app/components/bb-progress/bb-progress.ts
 import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { BbProgressState, BbProgressVariant } from './bb-progress.types';

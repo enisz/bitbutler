@@ -24,7 +24,7 @@ export function createMainWindow(startMinimized = false): BrowserWindow {
     width: 600,
     height: 750,
     backgroundColor: '#121213',
-    show: !startMinimized,
+    show: false,
     ...(windowIcon ? { icon: windowIcon } : {}),
     resizable: true,
     fullscreenable: true,

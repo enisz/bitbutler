@@ -141,8 +141,6 @@ async function qbLogin(payload: unknown): Promise<{ loggedIn: boolean }> {
   });
 
   const text = await res.text();
-  // qBittorrent <5: 200 + "Ok." body on success, 200 + "Fails." on bad creds
-  // qBittorrent 5+: 204 no-content on success, 401 on bad creds
   if (!res.ok || (res.status !== 204 && !/^Ok\./i.test(text.trim()))) {
     throw new Error('Login failed. Check username/password and WebUI settings.');
   }

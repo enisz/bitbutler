@@ -116,7 +116,7 @@ describe('ManageTags', () => {
     });
 
     it('should not add duplicate tags to local state when input contains existing tag', async () => {
-      component.nameControl.setValue('linux, newone'); // linux already loaded from mock
+      component.nameControl.setValue('linux, newone');
       await component.add();
       expect(component.tags().filter((t) => t === 'linux')).toHaveLength(1);
       expect(component.tags()).toContain('newone');
@@ -131,7 +131,7 @@ describe('ManageTags', () => {
 
     it('should pass the torrent count to the confirm dialog', async () => {
       await component.delete('linux');
-      // The mock has 2 torrents with 'linux' tag
+
       expect(mockConfirmService.confirm).toHaveBeenCalledWith(
         expect.any(String),
         expect.objectContaining({ data: { name: 'linux', count: 2 } }),

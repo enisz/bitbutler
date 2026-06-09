@@ -6,7 +6,6 @@ import { ServerStoreService } from '../../services/server-store.service';
 import { ThemeService } from '../../services/theme.service';
 import { TorrentListGridSettingsService } from '../../services/torrent-list-grid.settings.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
-import { WindowService } from '../../services/window.service';
 import { Main } from './main';
 
 describe('Main', () => {
@@ -21,10 +20,6 @@ describe('Main', () => {
     currentServer: ReturnType<typeof signal<any>>;
     currentServerId: ReturnType<typeof signal<string | null>>;
     refresh: ReturnType<typeof vi.fn>;
-  };
-  let windowMock: {
-    maximize: ReturnType<typeof vi.fn>;
-    state: ReturnType<typeof signal<{ isMinimized: boolean }>>;
   };
 
   beforeAll(() => {
@@ -54,7 +49,6 @@ describe('Main', () => {
           useValue: { startMaindataPolling: vi.fn().mockReturnValue(new Subject()) },
         },
         { provide: TorrentStoreService, useValue: { applyMaindata: vi.fn() } },
-        { provide: WindowService, useValue: windowMock },
         {
           provide: TorrentListGridSettingsService,
           useValue: { asObservable: vi.fn().mockReturnValue(new Subject().asObservable()) },
@@ -80,29 +74,11 @@ describe('Main', () => {
       currentServerId: signal(null),
       refresh: vi.fn().mockResolvedValue(undefined),
     };
-    windowMock = {
-      maximize: vi.fn(),
-      state: signal({ isMinimized: false }),
-    };
   });
 
   it('should create', async () => {
     await createComponent();
     expect(component).toBeTruthy();
-  });
-
-  describe('maximize on login', () => {
-    it('should call maximize when window is not minimized', async () => {
-      windowMock.state.set({ isMinimized: false });
-      await createComponent();
-      expect(windowMock.maximize).toHaveBeenCalled();
-    });
-
-    it('should skip maximize when window is minimized (startMinimized mode)', async () => {
-      windowMock.state.set({ isMinimized: true });
-      await createComponent();
-      expect(windowMock.maximize).not.toHaveBeenCalled();
-    });
   });
 
   describe('logoUrl', () => {

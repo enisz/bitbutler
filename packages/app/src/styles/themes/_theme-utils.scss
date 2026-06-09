@@ -56,11 +56,36 @@
   }
 }
 
+@mixin bb-dashed-button($variant) {
+  $c: bb-bs-var($variant);
+
+  .btn-dashed-#{$variant} {
+    --bs-btn-color: #{$c};
+    --bs-btn-bg: transparent;
+    --bs-btn-border-color: #{$c};
+
+    --bs-btn-hover-color: #{$c};
+    --bs-btn-hover-bg: color-mix(in srgb, #{$c} 10%, transparent);
+    --bs-btn-hover-border-color: #{$c};
+
+    --bs-btn-active-color: #{$c};
+    --bs-btn-active-bg: color-mix(in srgb, #{$c} 18%, transparent);
+    --bs-btn-active-border-color: #{$c};
+
+    --bs-btn-disabled-color: color-mix(in srgb, #{$c} 55%, transparent);
+    --bs-btn-disabled-border-color: color-mix(in srgb, #{$c} 55%, transparent);
+    --bs-btn-disabled-bg: transparent;
+
+    border-style: dashed;
+  }
+}
+
 @mixin bb-install-button-variants($variants...) {
   :root[data-bs-theme] {
     @each $v in $variants {
       @include bb-solid-button($v);
       @include bb-outline-button($v);
+      @include bb-dashed-button($v);
     }
   }
 }

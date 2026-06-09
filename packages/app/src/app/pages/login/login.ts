@@ -6,23 +6,20 @@ import {
   computed,
   effect,
   inject,
+  signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ServerRecord } from '@bitbutler/shared';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faEdit, faSquare, faSquareCheck, faTrashCan } from '@fortawesome/free-regular-svg-icons';
-import { NgbDropdownModule, NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
-import {
-  NgLabelTemplateDirective,
-  NgOptionTemplateDirective,
-  NgSelectComponent,
-} from '@ng-select/ng-select';
+import { NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgLabelTemplateDirective, NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { debounceTime, fromEvent } from 'rxjs';
 import { AppLoader } from '../../components/app-loader/app-loader';
 import { CredentialPrompt } from '../../components/modals/credential-prompt/credential-prompt';
+import { ManageServers } from '../../components/modals/manage-servers/manage-servers';
 import { CommandBusService } from '../../services/command-bus.service';
-import { ConfirmService } from '../../services/confirm.service';
 import { ElectronService } from '../../services/electron.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
@@ -39,11 +36,8 @@ import { setModalInput } from '../../utils/modal-input';
     NgOptimizedImage,
     ReactiveFormsModule,
     NgbTooltipModule,
-    NgbDropdownModule,
-    NgOptionTemplateDirective,
     NgSelectComponent,
     NgLabelTemplateDirective,
-    FontAwesomeModule,
     TranslatePipe,
   ],
   templateUrl: './login.html',
@@ -51,7 +45,6 @@ import { setModalInput } from '../../utils/modal-input';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Login implements OnInit {
-  private readonly confirmService = inject(ConfirmService);
   private readonly themeService = inject(ThemeService);
   private readonly modalService = inject(NgbModal);
   private readonly router = inject(Router);
@@ -75,12 +68,17 @@ export class Login implements OnInit {
     server: new FormControl<string | null>(this.serverStoreService.currentServerId()),
   });
 
-  public icon = { faEdit, faTrashCan, faSquareCheck, faSquare };
   public version = this.electronService.getBitButlerVersion();
 
   public trackByFn = (_index: number, item: ServerRecord) => item?.id || _index;
 
+  protected readonly showHero = signal(window.innerWidth >= 768);
+
   constructor() {
+    fromEvent(window, 'resize')
+      .pipe(debounceTime(50), takeUntilDestroyed())
+      .subscribe(() => this.showHero.set(window.innerWidth >= 768));
+
     effect(() => {
       const storeId = this.serverStoreService.currentServerId();
       if (this.serverForm.get('server')?.value !== storeId) {
@@ -90,8 +88,6 @@ export class Login implements OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
-    this.windowService.setSize(600, 750);
-
     try {
       this.loading.set(true);
       await this.serverStoreService.refresh();
@@ -194,43 +190,9 @@ export class Login implements OnInit {
       .finally(() => this.loading.set(false));
   }
 
-  public addServer(): void {
-    this.commandBusService.emit({ type: 'UI_SERVER_EDITOR_OPEN' });
-  }
-
-  public editServer(item: ServerRecord): void {
-    this.commandBusService.emit({ type: 'UI_SERVER_EDITOR_OPEN', id: item.id });
-  }
-
-  public async deleteServer(item: ServerRecord): Promise<void> {
-    const { id, name } = item;
-
-    const confirmed = await this.confirmService.confirm(
-      'pages.login.delete-confirm.title',
-      { text: 'pages.login.delete-confirm.message', data: { name } },
-      'general.button.delete',
-      'general.button.cancel',
-    );
-
-    if (confirmed) {
-      this.commandBusService.emit({ type: 'SERVER_DELETED', id });
-    }
-  }
-
-  public async toggleAutoLogin(event: Event, item: ServerRecord): Promise<void> {
-    event.preventDefault();
-    event.stopPropagation();
-
-    const { id, name, auto_login } = item;
-    try {
-      await this.serverService.update(id, { auto_login: !auto_login });
-      this.commandBusService.emit({ type: 'SERVER_UPDATED', id });
-    } catch (error: any) {
-      this.toastService.danger(
-        error.message,
-        this.translateService.instant('pages.login.error.update-server-failed', { name }),
-      );
-    }
+  public openManageServers(): void {
+    const ref = this.modalService.open(ManageServers);
+    setModalInput(ref, 'hideConnect', true);
   }
 
   public canConnect = () => !this.loading() && this.servers().length > 0;

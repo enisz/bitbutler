@@ -62,7 +62,6 @@ describe('Bandwidth', () => {
   });
 
   it('should patch form from preferences on init (converting bytes to KB/s)', () => {
-    // dl_limit: 5120000 bytes → 5000 KB/s
     expect(component.form.getRawValue().dl_limit).toBe(5000);
     expect(component.form.getRawValue().up_limit).toBe(1000);
     expect(component.form.getRawValue().alt_dl_limit).toBe(100);
