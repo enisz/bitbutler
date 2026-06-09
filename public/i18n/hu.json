@@ -861,7 +861,7 @@
     "login": {
       "tagline": "qBittorrent-nox távoli kliens",
       "form-title": "Csatlakozás",
-      "form-subtitle": "Válassz gazdagépet a vezérlőpult megnyitásához.",
+      "form-subtitle": "Válassz gazdagépet a csatlakozáshoz.",
       "connecting": "Csatlakozás...",
       "server-form": {
         "host": "Gép (Host)"

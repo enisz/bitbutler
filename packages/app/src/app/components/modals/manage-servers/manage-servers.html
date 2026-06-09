@@ -37,7 +37,7 @@
       @for (server of filteredServers(); track server.id) {
         <li class="list-group-item d-flex align-items-center justify-content-between">
           <div class="overflow-hidden me-2 d-flex align-items-center gap-3">
-            @if (currentServerId() === server.id) {
+            @if (!hideConnect() && currentServerId() === server.id) {
               <fa-icon
                 [icon]="icon.faPlug"
                 class="text-success flex-shrink-0"
@@ -63,7 +63,7 @@
             </div>
           </div>
 
-          @if (currentServerId() !== server.id) {
+          @if (hideConnect() || currentServerId() !== server.id) {
             <div class="d-flex gap-1 flex-shrink-0 align-items-center">
               @if (!hideConnect()) {
                 <button

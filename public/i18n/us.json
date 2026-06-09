@@ -861,7 +861,7 @@
     "login": {
       "tagline": "qBittorrent-nox Remote Client",
       "form-title": "Connect to Server",
-      "form-subtitle": "Select an active host instance to open your remote dashboard.",
+      "form-subtitle": "Select a host to connect to.",
       "connecting": "Connecting...",
       "server-form": {
         "host": "Host"
