@@ -1,114 +1,83 @@
-<span class="version">
-  <span
-    class="badge rounded-pill bb-badge-outline-muted cursor-pointer user-select-none"
-    data-testid="version-badge"
-    (click)="goToRelease()"
-    >v{{ version }}</span
-  >
-</span>
-
-<div class="d-flex flex-column vw-100 vh-100 align-items-center pt-2">
-  <div class="d-flex flex-column justify-content-center align-items-center user-select-none">
-    <img [ngSrc]="logoUrl()" alt="Bitbutler logo" width="400" height="400" priority />
-    <h1 class="brand-title" data-testid="brand-title">BitButler</h1>
-    <small>{{ 'pages.login.tagline' | translate }}</small>
-  </div>
-
-  <div class="d-flex flex-column align-items-center mt-3">
-    <form [formGroup]="serverForm" style="width: 400px">
-      <div class="form-floating">
-        <ng-select
-          id="server"
-          data-testid="server-select"
-          bindLabel="name"
-          bindValue="id"
-          formControlName="server"
-          placeholder="No hosts"
-          [searchable]="false"
-          [clearable]="false"
-          [items]="servers()"
-          [fixedPlaceholder]="false"
-          [readonly]="servers().length === 0"
-          [trackByFn]="trackByFn"
+<div class="login-container">
+  <div class="login-hero-side d-none d-md-flex">
+    <div class="hero-content">
+      <div class="hero-logo-wrapper">
+        <img [ngSrc]="logoUrl()" alt="BitButler logo" width="260" height="260" priority />
+        <span
+          class="hero-version-badge cursor-pointer user-select-none"
+          data-testid="version-badge"
+          (click)="goToRelease()"
+          >v{{ version }}</span
         >
-          <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
-            <div class="d-flex flex-column w-100" [attr.data-testid]="'server-option-' + item.name">
-              <div class="mb-2 d-flex flex-row align-items-center">
-                <strong class="server-name">{{ item.name }}</strong>
-                <div class="ms-auto">
-                  <div
-                    class="btn-group btn-group btn-group-sm"
-                    role="group"
-                    aria-label="Basic example"
-                  >
-                    <button
-                      type="button"
-                      class="btn btn-link"
-                      placement="top"
-                      [ngbTooltip]="
-                        (item?.auto_login
-                          ? 'pages.login.action.remove-default'
-                          : 'pages.login.action.make-default'
-                        ) | translate
-                      "
-                      (click)="toggleAutoLogin($event, item)"
-                    >
-                      <fa-icon [icon]="item.auto_login ? icon.faSquareCheck : icon.faSquare" />
-                    </button>
-                    <button
-                      type="button"
-                      class="btn btn-link"
-                      placement="top"
-                      [ngbTooltip]="'general.button.edit' | translate"
-                      [attr.data-testid]="'server-edit-btn-' + item.name"
-                      (click)="editServer(item)"
-                    >
-                      <fa-icon [icon]="icon.faEdit" />
-                    </button>
-                    <button
-                      type="button"
-                      class="btn btn-link text-danger"
-                      placement="top"
-                      [ngbTooltip]="'general.button.delete' | translate"
-                      [attr.data-testid]="'server-delete-btn-' + item.name"
-                      (click)="deleteServer(item)"
-                    >
-                      <fa-icon [icon]="icon.faTrashCan" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div>{{ item.protocol }}://{{ item.host }}:{{ item.port }}</div>
-            </div>
-          </ng-template>
-          <ng-template ng-label-tmp let-item="item" style="margin: 50px">
-            {{ item.name }}
-          </ng-template>
-        </ng-select>
-        <label for="server">{{ 'pages.login.server-form.host' | translate }}</label>
       </div>
-    </form>
+      <h1 class="hero-title">BitButler</h1>
+      <p class="hero-subtitle mb-0">{{ 'pages.login.tagline' | translate }}</p>
+    </div>
   </div>
 
-  <div class="mt-3" style="width: 400px">
-    <div class="d-grid gap-2 w-100">
-      <button
-        type="button"
-        class="btn btn-lg btn-primary"
-        data-testid="connect-button"
-        (click)="connect()"
-        [disabled]="!canConnect()"
-      >
-        {{ 'general.button.connect' | translate }}
-      </button>
-      <button
-        type="button"
-        class="btn btn-lg btn-secondary"
-        data-testid="add-server-button"
-        (click)="addServer()"
-      >
-        {{ 'general.button.add-server' | translate }}
-      </button>
+  <div class="login-form-side">
+    <div class="mobile-brand-header d-md-none text-center mb-5">
+      <img
+        [ngSrc]="logoUrl()"
+        alt="BitButler logo"
+        width="110"
+        height="110"
+        priority
+        class="mb-3"
+      />
+      <h2 class="fw-bold mb-1">BitButler</h2>
+      <p class="text-body-secondary small mb-0">{{ 'pages.login.tagline' | translate }}</p>
+    </div>
+
+    <div class="form-wrapper">
+      <div class="mb-4">
+        <h3 class="form-title" data-testid="brand-title">
+          {{ 'pages.login.form-title' | translate }}
+        </h3>
+        <p class="text-body-secondary small mb-0">{{ 'pages.login.form-subtitle' | translate }}</p>
+      </div>
+
+      <form [formGroup]="serverForm" class="mb-4">
+        <div class="form-floating">
+          <ng-select
+            id="server"
+            data-testid="server-select"
+            bindLabel="name"
+            bindValue="id"
+            formControlName="server"
+            placeholder="No hosts"
+            [searchable]="false"
+            [clearable]="false"
+            [items]="servers()"
+            [fixedPlaceholder]="false"
+            [readonly]="servers().length === 0"
+            [trackByFn]="trackByFn"
+          >
+            <ng-template ng-label-tmp let-item="item">{{ item.name }}</ng-template>
+          </ng-select>
+          <label for="server">{{ 'pages.login.server-form.host' | translate }}</label>
+        </div>
+      </form>
+
+      <div class="d-flex flex-column gap-3">
+        <button
+          type="button"
+          class="btn btn-lg btn-primary"
+          data-testid="connect-button"
+          (click)="connect()"
+          [disabled]="!canConnect()"
+        >
+          {{ 'general.button.connect' | translate }}
+        </button>
+        <button
+          type="button"
+          class="btn btn-lg btn-outline-secondary"
+          data-testid="manage-servers-button"
+          (click)="openManageServers()"
+        >
+          {{ 'general.button.manage-servers' | translate }}
+        </button>
+      </div>
     </div>
   </div>
 </div>
