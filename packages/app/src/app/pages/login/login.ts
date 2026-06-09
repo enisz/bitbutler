@@ -90,8 +90,6 @@ export class Login implements OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
-    this.windowService.setSize(600, 750);
-
     try {
       this.loading.set(true);
       await this.serverStoreService.refresh();
