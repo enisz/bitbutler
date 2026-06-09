@@ -2,16 +2,19 @@
   display: flex;
   height: 100vh;
   width: 100vw;
+  margin: 0;
+  overflow: hidden;
+  background-color: var(--bs-body-bg);
 }
 
 .login-hero-side {
-  flex: 0 0 45%;
+  flex: 0 0 50%; // Exactly half screen width
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end; // Right-align content inside the left column
+  padding: 3rem 6rem 3rem 3rem; // Heavy padding on the right to contain content comfortably near center
   background-color: var(--bs-card-bg);
   border-right: 1px solid var(--bs-border-color);
-  padding: 3rem;
   position: relative;
 
   &::before {
@@ -19,9 +22,10 @@
     position: absolute;
     inset: 0;
     background: radial-gradient(
-      circle at 30% 30%,
-      color-mix(in srgb, var(--bs-secondary) 4%, transparent),
-      transparent 70%
+      circle at 75% 45%,
+      // Shift center glow rightward toward the split border
+      color-mix(in srgb, var(--bs-secondary) 6%, transparent),
+      transparent 60%
     );
     pointer-events: none;
   }
@@ -31,12 +35,17 @@
   position: relative;
   text-align: center;
   z-index: 2;
+  max-width: 320px; // Pin content size down so it doesn't float away
 }
 
 .hero-logo-wrapper {
   position: relative;
   display: inline-block;
   margin-bottom: 2rem;
+
+  img {
+    filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.45));
+  }
 }
 
 .hero-version-badge {
@@ -66,18 +75,18 @@
 }
 
 .login-form-side {
-  flex: 1;
+  flex: 0 0 50%; // Match exactly half screen width
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start; // Left-align form context inside the right column
   justify-content: center;
-  padding: 2.5rem;
+  padding: 3rem 3rem 3rem 6rem; // Heavy padding on the left to pull inputs near the divider line
   background-color: var(--bs-body-bg);
 }
 
 .form-wrapper {
   width: 100%;
-  max-width: 420px;
+  max-width: 360px;
   animation: fadeInForm 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -103,5 +112,26 @@
   .tooltip {
     z-index: 10000 !important;
     pointer-events: none;
+  }
+}
+
+// Fallback adjustments for tablets and smaller view windows
+@media (max-width: 991.98px) {
+  .login-hero-side {
+    padding-right: 3rem;
+  }
+  .login-form-side {
+    padding-left: 3rem;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .login-container {
+    flex-direction: column;
+  }
+  .login-form-side {
+    flex: 1;
+    align-items: center;
+    padding: 2rem 1.5rem;
   }
 }
