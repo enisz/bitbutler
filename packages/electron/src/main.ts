@@ -82,7 +82,8 @@ if (!gotLock) {
 
     const { openAtLogin, startMinimized } = getStartupSettings();
     app.setLoginItemSettings({ openAtLogin });
-    createOrRestoreMainWindow(startMinimized);
+    const mainWindow = createOrRestoreMainWindow(startMinimized);
+    if (!startMinimized) mainWindow.maximize();
 
     app.on('activate', () => {
       createOrRestoreMainWindow();
