@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ServerRecord } from '@bitbutler/shared';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faTrashCan } from '@fortawesome/free-regular-svg-icons';
+import { faSquare, faSquareCheck, faTrashCan } from '@fortawesome/free-regular-svg-icons';
 import { faPenToSquare, faPlug, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -12,6 +12,7 @@ import { CommandBusService } from '../../../services/command-bus.service';
 import { ConfirmService } from '../../../services/confirm.service';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
+import { ServerService } from '../../../services/server.service';
 import { ToastService } from '../../../services/toast.service';
 import { setModalInput } from '../../../utils/modal-input';
 import { ServerEditor } from '../server-editor/server-editor';
@@ -34,13 +35,15 @@ export class ManageServers {
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly commandBusService = inject(CommandBusService);
   private readonly confirmService = inject(ConfirmService);
+  private readonly serverService = inject(ServerService);
   private readonly qbService = inject(QbService);
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
   private readonly modalService = inject(NgbModal);
   public readonly activeModal = inject(NgbActiveModal);
 
-  public readonly icon = { faPenToSquare, faTrashCan, faXmark, faPlug };
+  public readonly icon = { faPenToSquare, faTrashCan, faXmark, faPlug, faSquare, faSquareCheck };
+  readonly hideConnect = input(false);
   public readonly currentServerId = this.serverStoreService.currentServerId;
 
   public filterControl = new FormControl('');
@@ -102,6 +105,11 @@ export class ManageServers {
     } finally {
       this.connectingId.set(null);
     }
+  }
+
+  public async toggleAutoLogin(server: ServerRecord): Promise<void> {
+    await this.serverService.update(server.id, { auto_login: !server.auto_login });
+    this.commandBusService.emit({ type: 'SERVER_UPDATED', id: server.id });
   }
 
   public async delete(server: ServerRecord): Promise<void> {

@@ -2,8 +2,8 @@ import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ManageServers } from '../../components/modals/manage-servers/manage-servers';
 import { CommandBusService } from '../../services/command-bus.service';
-import { ConfirmService } from '../../services/confirm.service';
 import { ElectronService } from '../../services/electron.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
@@ -17,8 +17,6 @@ describe('Login', () => {
   let component: Login;
   let fixture: ComponentFixture<Login>;
 
-  let commandBusMock: { emit: ReturnType<typeof vi.fn> };
-  let confirmMock: { confirm: ReturnType<typeof vi.fn> };
   let serverStoreMock: {
     servers: ReturnType<typeof signal<any[]>>;
     loading: ReturnType<typeof signal<boolean>>;
@@ -29,20 +27,17 @@ describe('Login', () => {
     isAutoLoginSuppressed: ReturnType<typeof vi.fn>;
     clearAutoLoginSuppression: ReturnType<typeof vi.fn>;
   };
-  let serverServiceMock: { update: ReturnType<typeof vi.fn> };
   let themeMock: {
     family: ReturnType<typeof signal<string>>;
     effectiveMode: ReturnType<typeof signal<'light' | 'dark'>>;
   };
-  let toastMock: { danger: ReturnType<typeof vi.fn>; success: ReturnType<typeof vi.fn> };
   let electronMock: {
     getBitButlerVersion: ReturnType<typeof vi.fn>;
     goToRelease: ReturnType<typeof vi.fn>;
   };
+  let modalMock: { open: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
-    commandBusMock = { emit: vi.fn() };
-    confirmMock = { confirm: vi.fn().mockResolvedValue(false) };
     serverStoreMock = {
       servers: signal([]),
       loading: signal(false),
@@ -53,31 +48,30 @@ describe('Login', () => {
       isAutoLoginSuppressed: vi.fn().mockReturnValue(false),
       clearAutoLoginSuppression: vi.fn(),
     };
-    serverServiceMock = { update: vi.fn().mockResolvedValue(undefined) };
     themeMock = { family: signal('bitbutler'), effectiveMode: signal<'light' | 'dark'>('dark') };
-    toastMock = { danger: vi.fn(), success: vi.fn() };
     electronMock = {
       getBitButlerVersion: vi.fn().mockReturnValue('1.0.0'),
       goToRelease: vi.fn(),
+    };
+    const rejectedResult = Promise.reject<void>(undefined);
+    rejectedResult.catch(() => {});
+    modalMock = {
+      open: vi
+        .fn()
+        .mockReturnValue({ componentInstance: {}, close: vi.fn(), result: rejectedResult }),
     };
 
     await TestBed.configureTestingModule({
       imports: [Login],
       providers: [
-        { provide: CommandBusService, useValue: commandBusMock },
-        { provide: ConfirmService, useValue: confirmMock },
         { provide: ServerStoreService, useValue: serverStoreMock },
-        { provide: ServerService, useValue: serverServiceMock },
+        { provide: ServerService, useValue: { update: vi.fn().mockResolvedValue(undefined) } },
         { provide: ThemeService, useValue: themeMock },
-        { provide: ToastService, useValue: toastMock },
+        { provide: ToastService, useValue: { danger: vi.fn() } },
         { provide: ElectronService, useValue: electronMock },
+        { provide: CommandBusService, useValue: { emit: vi.fn() } },
         { provide: Router, useValue: { navigate: vi.fn() } },
-        {
-          provide: NgbModal,
-          useValue: {
-            open: vi.fn().mockReturnValue({ componentInstance: {}, close: vi.fn() }),
-          },
-        },
+        { provide: NgbModal, useValue: modalMock },
         {
           provide: QbService,
           useValue: { login: vi.fn().mockResolvedValue({ loggedIn: false }) },
@@ -85,7 +79,6 @@ describe('Login', () => {
         {
           provide: WindowService,
           useValue: {
-            setSize: vi.fn(),
             setOpenFilesEnabled: vi.fn().mockResolvedValue(undefined),
             maximize: vi.fn(),
           },
@@ -145,37 +138,6 @@ describe('Login', () => {
     });
   });
 
-  describe('addServer', () => {
-    it('should emit UI_SERVER_EDITOR_OPEN', () => {
-      component.addServer();
-      expect(commandBusMock.emit).toHaveBeenCalledWith({ type: 'UI_SERVER_EDITOR_OPEN' });
-    });
-  });
-
-  describe('editServer', () => {
-    it('should emit UI_SERVER_EDITOR_OPEN with the server id', () => {
-      component.editServer({ id: 'srv-1' } as any);
-      expect(commandBusMock.emit).toHaveBeenCalledWith({
-        type: 'UI_SERVER_EDITOR_OPEN',
-        id: 'srv-1',
-      });
-    });
-  });
-
-  describe('deleteServer', () => {
-    it('should emit SERVER_DELETED when the user confirms', async () => {
-      confirmMock.confirm.mockResolvedValue(true);
-      await component.deleteServer({ id: 'srv-1', name: 'My Server' } as any);
-      expect(commandBusMock.emit).toHaveBeenCalledWith({ type: 'SERVER_DELETED', id: 'srv-1' });
-    });
-
-    it('should not emit when the user cancels', async () => {
-      confirmMock.confirm.mockResolvedValue(false);
-      await component.deleteServer({ id: 'srv-1', name: 'My Server' } as any);
-      expect(commandBusMock.emit).not.toHaveBeenCalled();
-    });
-  });
-
   describe('goToRelease', () => {
     it('should delegate to electronService.goToRelease', () => {
       component.goToRelease();
@@ -183,27 +145,27 @@ describe('Login', () => {
     });
   });
 
-  describe('toggleAutoLogin', () => {
-    it('should update auto_login to its inverse and emit SERVER_UPDATED', async () => {
-      const event = { preventDefault: vi.fn(), stopPropagation: vi.fn() } as any;
-      await component.toggleAutoLogin(event, {
-        id: 'srv-1',
-        name: 'S',
-        auto_login: false,
-      } as any);
-      expect(serverServiceMock.update).toHaveBeenCalledWith('srv-1', { auto_login: true });
-      expect(commandBusMock.emit).toHaveBeenCalledWith({ type: 'SERVER_UPDATED', id: 'srv-1' });
+  describe('openManageServers', () => {
+    it('should open the ManageServers modal', () => {
+      component.openManageServers();
+      expect(modalMock.open).toHaveBeenCalledWith(ManageServers);
     });
 
-    it('should suppress the event default and propagation', async () => {
-      const event = { preventDefault: vi.fn(), stopPropagation: vi.fn() } as any;
-      await component.toggleAutoLogin(event, {
-        id: 'srv-1',
-        name: 'S',
-        auto_login: true,
-      } as any);
-      expect(event.preventDefault).toHaveBeenCalled();
-      expect(event.stopPropagation).toHaveBeenCalled();
+    it('should set hideConnect to true on the opened modal', () => {
+      const componentInstance: Record<string, unknown> = {};
+      const mockRef = {
+        componentInstance,
+        _contentRef: {
+          componentRef: {
+            setInput: vi.fn((name: string, value: unknown) => {
+              componentInstance[name] = value;
+            }),
+          },
+        },
+      };
+      modalMock.open.mockReturnValue(mockRef);
+      component.openManageServers();
+      expect(componentInstance['hideConnect']).toBe(true);
     });
   });
 });

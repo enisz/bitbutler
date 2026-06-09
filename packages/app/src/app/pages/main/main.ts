@@ -15,7 +15,6 @@ import { ServerStoreService } from '../../services/server-store.service';
 import { ThemeService } from '../../services/theme.service';
 import { TorrentListGridSettingsService } from '../../services/torrent-list-grid.settings.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
-import { WindowService } from '../../services/window.service';
 import { ButtonBar } from './button-bar/button-bar';
 import { Grid } from './grid/grid';
 import { ServerState } from './server-state/server-state';
@@ -32,7 +31,6 @@ export class Main implements OnDestroy {
   private readonly qbPollingService = inject(QbPollingService);
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly torrentStore = inject(TorrentStoreService);
-  private readonly windowService = inject(WindowService);
   private readonly themeService = inject(ThemeService);
   private readonly torrentListGridSettingsService = inject(TorrentListGridSettingsService);
   private pollSub: Subscription | null = null;
@@ -80,9 +78,6 @@ export class Main implements OnDestroy {
   });
 
   constructor() {
-    if (!this.windowService.state().isMinimized) {
-      this.windowService.maximize();
-    }
     this.serverStoreService.refresh();
   }
 

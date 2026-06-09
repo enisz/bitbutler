@@ -78,7 +78,6 @@ export class Storage implements QbSettingsTabComponent, OnInit {
     },
   ];
 
-  // qBittorrent's *_changed_tmm_enabled prefs: false = relocate the torrent, true = switch it to Manual mode
   public readonly tmmChangeBehaviors: TmmOption[] = [
     {
       value: false,

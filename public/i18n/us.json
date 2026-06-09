@@ -624,7 +624,7 @@
       "manage-servers": {
         "title": "Manage Servers",
         "filter": {
-          "placeholder": "Filter servers...",
+          "placeholder": "Filter by name or host...",
           "no-match": "No servers match your filter."
         },
         "empty": "No servers configured.",
@@ -632,7 +632,9 @@
           "connect": "Connect"
         },
         "tooltip": {
-          "active": "Currently active server"
+          "active": "Currently active server",
+          "set-as-default": "Set as default server",
+          "unset-default": "Unset default server"
         },
         "delete-confirm": {
           "title": "Delete Server",
@@ -860,6 +862,8 @@
   "pages": {
     "login": {
       "tagline": "qBittorrent-nox Remote Client",
+      "form-title": "Connect to Server",
+      "form-subtitle": "Select a host to connect to.",
       "connecting": "Connecting...",
       "server-form": {
         "host": "Host"
@@ -1456,6 +1460,7 @@
       "today": "Today",
       "connect": "Connect",
       "add-server": "Add Server",
+      "manage-servers": "Manage Servers",
       "delete": "Delete",
       "ok": "OK",
       "set": "Set",

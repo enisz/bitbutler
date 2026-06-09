@@ -360,7 +360,6 @@ async function runImport(event: Electron.IpcMainEvent, payload: ImportStartPaylo
     const torrents = metadata.torrents.filter((t) => !t.failed);
     let skipped = 0;
 
-    // Step 0: restore categories and tags before any torrent references them
     if (!importCancelled) {
       await restoreCategoriesAndTags(
         serverId,
@@ -372,7 +371,6 @@ async function runImport(event: Electron.IpcMainEvent, payload: ImportStartPaylo
       );
     }
 
-    // Phase 1: add all torrents as fast as possible
     const addedHashes: string[] = [];
     for (let i = 0; i < torrents.length; i++) {
       if (importCancelled) break;
@@ -393,7 +391,6 @@ async function runImport(event: Electron.IpcMainEvent, payload: ImportStartPaylo
       } satisfies ExportProgressEvent);
     }
 
-    // Phase 2: wait for all added hashes to appear in qBittorrent
     const needsPostProcess =
       addedHashes.length > 0 &&
       (restoreFields.some((f) =>
@@ -424,7 +421,6 @@ async function runImport(event: Electron.IpcMainEvent, payload: ImportStartPaylo
       }
     }
 
-    // Phase 3: apply settings to confirmed torrents
     for (const entry of torrents) {
       if (importCancelled) break;
       if (!confirmedHashes.has(entry.hash)) continue;
@@ -493,7 +489,6 @@ async function applyTorrentSettings(
   const has = (field: ImportStartPayload['restoreFields'][number]): boolean =>
     restoreFields.includes(field);
 
-  // Fetch file tree (needed for renames and priorities)
   let baseFiles: QbTorrentFile[] = [];
   if (has('renames') || has('priorities')) {
     for (let attempt = 0; attempt < 5; attempt++) {
@@ -510,7 +505,6 @@ async function applyTorrentSettings(
     }
   }
 
-  // Apply renames
   if (has('renames') && entry.files?.length && baseFiles.length) {
     for (const saved of entry.files) {
       const base = baseFiles.find((f) => f.index === saved.index);
@@ -525,7 +519,6 @@ async function applyTorrentSettings(
     }
   }
 
-  // Apply file priorities
   if (has('priorities') && entry.files?.length) {
     const byPriority = new Map<number, number[]>();
     for (const f of entry.files) {
@@ -543,7 +536,6 @@ async function applyTorrentSettings(
     }
   }
 
-  // Apply speed limits
   if (has('speed_limits')) {
     if (entry.up_limit !== undefined) {
       await qbRequest({
@@ -563,7 +555,6 @@ async function applyTorrentSettings(
     }
   }
 
-  // Apply share limits
   if (has('share_limits')) {
     await qbRequest({
       id: serverId,
@@ -578,7 +569,6 @@ async function applyTorrentSettings(
     }).catch(() => {});
   }
 
-  // Apply super seeding
   if (has('super_seeding') && entry.super_seeding !== undefined) {
     await qbRequest({
       id: serverId,
@@ -588,7 +578,6 @@ async function applyTorrentSettings(
     }).catch(() => {});
   }
 
-  // Resume if applicable
   const shouldResume =
     startMode === 'all' || (startMode === 'active' && isActiveState(entry.state));
   if (shouldResume) {

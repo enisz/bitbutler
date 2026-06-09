@@ -99,7 +99,7 @@ const stmtSelectServerIds = db.prepare<[], { id: string }>(`
 `);
 
 for (const row of stmtSelectServerIds.all()) {
-  const serverId = row.id.slice(2); // strip 'r.'
+  const serverId = row.id.slice(2);
   const newId = `ServerSettingsService.${serverId}`;
   stmtDeleteOldIfNewExists.run(row.id, newId);
   stmtRenameId.run(newId, row.id);
