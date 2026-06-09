@@ -64,11 +64,6 @@ export class FilterService {
   readonly external = this._external.asReadonly();
   readonly columns = this._columns.asReadonly();
 
-  /**
-   * Computed list of torrents that match the current external filter params.
-   * Note: ag-Grid column filters are not applied here; this reflects the
-   * sidebar/search filter state only.
-   */
   readonly filtered = computed<Torrent[]>(() => {
     const params = this._external();
     const all = this.torrentStore.torrentsArray();

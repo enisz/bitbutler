@@ -236,7 +236,7 @@ describe('BbFileTree', () => {
 
     it('should emit genesis-to-current rename when a file is renamed', () => {
       component.enterEditMode();
-      const fileNode = component.data[0].children![0]; // dir/a.txt
+      const fileNode = component.data[0].children![0];
       fileNode.name = 'z.txt';
       component.onFileNameChange(fileNode);
 
@@ -255,14 +255,12 @@ describe('BbFileTree', () => {
       fixture.componentRef.setInput('files', [makeFile('a.txt')]);
       fixture.detectChanges();
 
-      // Session 1: a.txt → xxx.txt
       component.enterEditMode();
       const node = component.data[0];
       node.name = 'xxx.txt';
       component.onFileNameChange(node);
       component.saveEdit();
 
-      // Session 2: xxx.txt → yyy.txt
       component.enterEditMode();
       node.name = 'yyy.txt';
       component.onFileNameChange(node);
@@ -271,7 +269,6 @@ describe('BbFileTree', () => {
       component.saved.subscribe(spy);
       component.saveEdit();
 
-      // Must emit genesis (a.txt) → current (yyy.txt), not stale (xxx.txt) → current
       expect(spy).toHaveBeenCalledWith(
         expect.objectContaining({
           renames: [{ oldPath: 'a.txt', newPath: 'yyy.txt' }],
@@ -281,7 +278,7 @@ describe('BbFileTree', () => {
 
     it('should emit one rename per file when a folder is renamed', () => {
       component.enterEditMode();
-      const folderNode = component.data[0]; // dir
+      const folderNode = component.data[0];
       folderNode.name = 'newdir';
       component.onFolderNameChange(folderNode);
 

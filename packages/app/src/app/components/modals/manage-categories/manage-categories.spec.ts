@@ -160,7 +160,7 @@ describe('ManageCategories', () => {
     });
 
     it('should pass the torrent count to the confirm dialog', async () => {
-      const linux = component.categories()[0]; // 'linux' - 2 torrents in mock
+      const linux = component.categories()[0];
       await component.delete(linux);
       expect(mockConfirmService.confirm).toHaveBeenCalledWith(
         expect.any(String),
@@ -230,10 +230,10 @@ describe('ManageCategories', () => {
     });
 
     it('should always show items currently being edited regardless of filter', () => {
-      component.startEdit(component.categories()[0]); // linux
+      component.startEdit(component.categories()[0]);
       component.filterControl.setValue('movies');
       const names = component.filteredCategories().map((c) => c.name);
-      expect(names).toContain('linux'); // editing - always shown
+      expect(names).toContain('linux');
       expect(names).toContain('movies');
     });
 

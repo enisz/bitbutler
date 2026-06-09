@@ -26,7 +26,6 @@ export class TorrentStoreService {
   readonly tagsSet = this._tags.asReadonly();
 
   readonly torrentsArray = computed(() => Array.from(this._torrents().values()));
-  /** Alias for torrentsArray - use for all-torrent access. */
   readonly torrents = this.torrentsArray;
   readonly totalCount = computed(() => this._torrents().size);
 

@@ -63,7 +63,6 @@ describe('ManageServers', () => {
     });
 
     it('should show the connect button when false', () => {
-      // Add a server that is not the current server so the action buttons render
       const serverStoreMock = TestBed.inject(ServerStoreService) as any;
       serverStoreMock.servers.set([
         { id: 'srv-1', name: 'Test', host: 'localhost', port: 8080, protocol: 'http' },

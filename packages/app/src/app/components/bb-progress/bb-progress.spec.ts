@@ -1,4 +1,3 @@
-// packages/app/src/app/components/bb-progress/bb-progress.spec.ts
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BbProgress } from './bb-progress';
 
