@@ -106,5 +106,5 @@ Three lazy-loaded routes: `login`, `main` (torrent grid), `settings`. The router
 ## Git workflow
 
 - **Feature branches:** Use the pattern `<issue-id>-<dash-separated-summary>` (e.g. `100-manage-labels-and-categories`).
-- **Issue templates:** When opening new issues, use the appropriate template from `.github/ISSUE_TEMPLATE/`.
+- **Issue templates:** When opening new issues, use the appropriate template from `.github/ISSUE_TEMPLATE/`. `gh issue create` does NOT auto-apply a template's `labels:` field in non-interactive mode - pass `--label <label>` explicitly matching the chosen template (e.g. `--label maintenance` for `04_maintenance.yml`, `--label bug` for `01_bug_report.yml`, etc.).
 - **PR template:** ALWAYS read `.github/pull_request_template.md` before running `gh pr create` and use it as the exact structure for `--body`. Do not invent a different format.
