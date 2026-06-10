@@ -12,6 +12,8 @@ Every change must be tracked by an issue. This ensures we can discuss features a
 - **🚀 Feature Request:** Use for proposing new ideas.
 - **🧰 Maintenance:** For refactoring, updating dependencies, or cleaning up technical debt.
 
+Issue titles should be clean descriptions - the template's label already conveys the type, so there's no need for a `[BUG]:`/`[FEATURE]:`/etc. prefix.
+
 ### 2. Branching & Commit Messages
 
 We use **Husky** and **lint-staged** to ensure code is formatted and linted before it reaches the repo. Your commit messages must reference the Issue ID.
@@ -25,13 +27,16 @@ Our **BitButler PR Verification** workflow ensures the build never breaks. When 
 
 1. **The Description:** You must include a reference to the issue using the "Fixes" keyword (e.g., `Fixes #123`). This ensures the issue closes automatically when merged.
 2. **The Title:** Unlike commit messages, PR titles are flexible! Make them descriptive (e.g., `Refactor grid sorting logic`).
-3. **Manual Labeling:** Apply the matching label (`bug`, `feature`, `enhancement`, or `maintenance`) to the PR.
 
 **What the Butler does for you:** Once you save your PR, our GitHub Action will:
 
 - Automatically fetch the **Issue Title** and add it to your description.
-- Sync the **Labels** from the linked issue to your PR for the release notes.
+- Sync the **Labels** from the linked issue to your PR for the release notes - no need to add labels manually.
 - Run linter, unit tests, and cross-platform builds (Windows/Linux) to ensure no format breaks.
+
+### 4. Merging
+
+When your PR is squash-merged, accept GitHub's default commit message (`<PR title> (#<PR number>)`) - there's no need to manually prepend the issue ID.
 
 ## 🚀 Build & Release Process
 
@@ -44,6 +49,8 @@ Releases are completely automated via GitHub Actions:
    - **Windows:** NSIS Installer, Portable, and ZIP
    - **Linux:** AppImage, DEB, RPM, Snap, and Tarball
 5. The freshly built binaries are automatically uploaded and attached to a drafted GitHub Release.
+
+The release notes are generated from merged PR titles. PRs labeled `maintenance` or `chore` are excluded from the changelog (and the in-app "What's new" modal).
 
 ## 🛠 Quality Standards
 
