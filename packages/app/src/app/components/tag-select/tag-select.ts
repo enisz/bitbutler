@@ -17,7 +17,7 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { NgFooterTemplateDirective, NgSelectComponent } from '@ng-select/ng-select';
+import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe } from '@ngx-translate/core';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
@@ -27,14 +27,7 @@ import { ManageTags } from '../modals/manage-tags/manage-tags';
 @Component({
   selector: 'app-tag-select',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    NgSelectComponent,
-    NgFooterTemplateDirective,
-    TranslatePipe,
-    BbPopover,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, NgSelectComponent, TranslatePipe, BbPopover],
   templateUrl: './tag-select.html',
   styleUrls: ['./tag-select.scss'],
   providers: [

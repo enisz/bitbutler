@@ -87,4 +87,16 @@ describe('TagSelect', () => {
       expect(mockModalService.open).toHaveBeenCalled();
     });
   });
+
+  describe('manage hint link', () => {
+    it('should open the ManageTags modal when clicked', () => {
+      const button = fixture.nativeElement.querySelector(
+        '[data-testid="tag-select-manage"]',
+      ) as HTMLButtonElement;
+
+      button.click();
+
+      expect(mockModalService.open).toHaveBeenCalled();
+    });
+  });
 });
