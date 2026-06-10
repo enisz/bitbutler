@@ -5,6 +5,10 @@ branches:
   - main
 disable-autolabeler: true
 
+exclude-labels:
+  - 'maintenance'
+  - 'chore'
+
 version-resolver:
   major:
     labels: ['major']
@@ -21,8 +25,6 @@ categories:
     labels: ['enhancement']
   - title: '🪲 Bug Fixes'
     labels: ['bug']
-  - title: '🧰 Maintenance'
-    labels: ['maintenance']
   - title: '📦 Other Changes'
     labels: []
 
