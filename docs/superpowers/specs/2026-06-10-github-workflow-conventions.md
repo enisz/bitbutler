@@ -28,6 +28,9 @@ their `[TYPE]:` prefixes as historical record; no bulk renames.
   work is excluded from that list entirely.
 - `Fixes #IssueID` remains the sole mechanism for issue↔PR traceability
   (GitHub auto-links and closes the issue on merge).
+- `gh issue create` (non-interactive) explicitly passes `--label` matching
+  the chosen template - GitHub does not auto-apply a template's `labels:`
+  field outside the web form, so this must be done manually.
 
 ## Out of scope
 
@@ -147,5 +150,20 @@ Update the section to:
 - CI runs lint → tests → cross-platform builds on every PR.
 ```
 
-(All other CLAUDE.md sections - Git workflow, Writing style, Architecture,
-etc. - are unchanged.)
+(All other sections of `CLAUDE.md` - Writing style, Architecture, etc. - are
+unchanged.)
+
+### 4. `CLAUDE.md` - `## Git workflow`
+
+The "Issue templates" bullet gets a note about the `gh issue create --label`
+gotcha discovered while using this exact convention: when issues were created
+via `gh issue create` (non-interactive), the label indicated by the chosen
+issue template was not applied automatically - it must be passed explicitly.
+
+```markdown
+## Git workflow
+
+- **Feature branches:** Use the pattern `<issue-id>-<dash-separated-summary>` (e.g. `100-manage-labels-and-categories`).
+- **Issue templates:** When opening new issues, use the appropriate template from `.github/ISSUE_TEMPLATE/`. `gh issue create` does NOT auto-apply a template's `labels:` field in non-interactive mode - pass `--label <label>` explicitly matching the chosen template (e.g. `--label maintenance` for `04_maintenance.yml`, `--label bug` for `01_bug_report.yml`, etc.).
+- **PR template:** ALWAYS read `.github/pull_request_template.md` before running `gh pr create` and use it as the exact structure for `--body`. Do not invent a different format.
+```
