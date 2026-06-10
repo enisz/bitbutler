@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject } from '
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { RouterOutlet } from '@angular/router';
 import { NgbModalConfig, NgbTooltipConfig } from '@ng-bootstrap/ng-bootstrap';
+import { NgSelectConfig } from '@ng-select/ng-select';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { TimeagoIntl } from 'ngx-timeago';
 import { strings as usStrings } from 'ngx-timeago/language-strings/en.js';
@@ -41,6 +42,7 @@ export class App {
   private readonly menuBarCommandHandlerService = inject(MenuBarCommandHandlerService);
   private readonly torrentCommandHandlerService = inject(TorrentCommandHandlerService);
   private readonly tooltipConfigService = inject(NgbTooltipConfig);
+  private readonly ngSelectConfigService = inject(NgSelectConfig);
   private readonly toastService = inject(ToastService);
   private readonly generalSettingsService = inject(GeneralSettingsService);
   private readonly transferLimitcommandHandlerService = inject(TransferLimitCommandHandlerService);
@@ -67,6 +69,7 @@ export class App {
     this.modalConfigService.centered = true;
     this.modalConfigService.animation = true;
     this.tooltipConfigService.container = 'body';
+    this.setNgSelectTranslations();
 
     this.openFilesService.start();
     this.uiCommandHandlerService.start();
@@ -80,6 +83,7 @@ export class App {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((event: LangChangeEvent) => {
         this.setTimeagoLanguage(event.lang);
+        this.setNgSelectTranslations();
         window.bitbutler.i18n.languageChanged(event.lang);
       });
 
@@ -113,6 +117,24 @@ export class App {
           }
         }
       });
+  }
+
+  private setNgSelectTranslations(): void {
+    this.ngSelectConfigService.addTagText = this.translateService.instant(
+      'general.form.ng-select.add-tag',
+    );
+    this.ngSelectConfigService.clearAllText = this.translateService.instant(
+      'general.form.ng-select.clear-all',
+    );
+    this.ngSelectConfigService.loadingText = this.translateService.instant(
+      'general.form.ng-select.loading',
+    );
+    this.ngSelectConfigService.notFoundText = this.translateService.instant(
+      'general.form.ng-select.not-found',
+    );
+    this.ngSelectConfigService.typeToSearchText = this.translateService.instant(
+      'general.form.ng-select.type-to-search',
+    );
   }
 
   private setTimeagoLanguage(lang: string): void {

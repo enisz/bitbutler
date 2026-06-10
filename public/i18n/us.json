@@ -1473,6 +1473,13 @@
       "feedback": {
         "required": "This field is required.",
         "no-slash": "The name must not contain slashes."
+      },
+      "ng-select": {
+        "add-tag": "Add item",
+        "clear-all": "Clear all",
+        "loading": "Loading...",
+        "not-found": "No items found",
+        "type-to-search": "Type to search"
       }
     },
     "label": {

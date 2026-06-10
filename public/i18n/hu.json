@@ -1473,6 +1473,13 @@
       "feedback": {
         "required": "Ez a mező kötelező.",
         "no-slash": "A név nem tartalmazhat perjelet (/)."
+      },
+      "ng-select": {
+        "add-tag": "Elem hozzáadása",
+        "clear-all": "Összes törlése",
+        "loading": "Betöltés...",
+        "not-found": "Nem található elem",
+        "type-to-search": "Gépeljen a kereséshez"
       }
     },
     "label": {
