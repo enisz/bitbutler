@@ -94,14 +94,17 @@ Three lazy-loaded routes: `login`, `main` (torrent grid), `settings`. The router
 
 ## Commit & PR conventions
 
-- Commit format: `#IssueID: short description` (e.g. `#22: add file tree checkboxes`)
+- Commit format: `#IssueID: short description` (e.g. `#22: add file tree checkboxes`) - applies to commits within a feature branch.
 - PR description must include `Fixes #IssueID` to auto-close the issue on merge.
 - PR title must be a clean description only - do not include the issue ID in the title.
+- Issue titles are clean descriptions only - no `[TYPE]:` prefix; the label (applied automatically by the issue template) conveys the type.
+- When squash-merging a PR, accept GitHub's default commit message (`<PR title> (#<PR number>)`) - do not manually prepend the issue ID.
 - Labels are applied automatically by a GitHub workflow - do not add them manually.
+- `maintenance` and `chore` labeled PRs are excluded from the release-notes changelog (and the in-app "What's new" modal) via release-drafter `exclude-labels`.
 - CI runs lint → tests → cross-platform builds on every PR.
 
 ## Git workflow
 
 - **Feature branches:** Use the pattern `<issue-id>-<dash-separated-summary>` (e.g. `100-manage-labels-and-categories`).
-- **Issue templates:** When opening new issues, use the appropriate template from `.github/ISSUE_TEMPLATE/`.
+- **Issue templates:** When opening new issues, use the appropriate template from `.github/ISSUE_TEMPLATE/`. `gh issue create` does NOT auto-apply a template's `labels:` field in non-interactive mode - pass `--label <label>` explicitly matching the chosen template (e.g. `--label maintenance` for `04_maintenance.yml`, `--label bug` for `01_bug_report.yml`, etc.).
 - **PR template:** ALWAYS read `.github/pull_request_template.md` before running `gh pr create` and use it as the exact structure for `--body`. Do not invent a different format.

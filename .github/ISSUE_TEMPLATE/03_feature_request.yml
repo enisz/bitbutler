@@ -1,6 +1,5 @@
 name: 🚀 Feature Request
 description: Suggest an idea for BitButler
-title: '[FEATURE]: '
 labels: ['feature']
 body:
   - type: textarea

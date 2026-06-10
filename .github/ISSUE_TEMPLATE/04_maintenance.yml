@@ -1,6 +1,5 @@
 name: 🧰 Maintenance
 description: Refactors, cleanups, or technical debt.
-title: '[MAINTENANCE]: '
 labels: ['maintenance']
 body:
   - type: textarea
