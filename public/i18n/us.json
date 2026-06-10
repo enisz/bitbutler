@@ -170,10 +170,10 @@
         "title": "Category",
         "description": {
           "line1": "Assigns the torrent to a category. Categories are useful for organizing your downloads and can also define a default save path.",
-          "line2": "If Auto TMM is enabled, changing the category may automatically move the files."
+          "line2": "If Auto TMM is enabled, changing the category may automatically move the files.",
+          "line3": "Adding a new category here creates it with an empty save path. Whether this affects where your torrents are stored depends on the qBittorrent 'Default torrent management mode' and 'When category save path changes' settings."
         }
-      },
-      "manage": "Manage categories"
+      }
     },
     "datepicker-filter": {},
     "datepicker-range-filter": {
@@ -844,8 +844,7 @@
           "line1": "Adds one or more tags to this torrent for flexible filtering and grouping.",
           "line2": "Unlike categories, a torrent can have multiple tags, and tags do not affect the save path."
         }
-      },
-      "manage": "Manage tags"
+      }
     },
     "save-path-select": {
       "label": "Save Path",

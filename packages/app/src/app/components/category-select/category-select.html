@@ -7,23 +7,12 @@
           [items]="categories()"
           [searchable]="true"
           [clearable]="true"
+          [addTag]="addTag"
           [formControl]="selectControl"
           [keyDownFn]="keyDownFn"
           [openOnEnter]="false"
           #ngselect
-        >
-          <ng-template ng-footer-tmp>
-            <div class="px-3 py-2 border-top d-flex justify-content-end">
-              <button
-                type="button"
-                class="btn btn-secondary btn-sm"
-                (click)="openManageCategories()"
-              >
-                {{ 'components.category-select.manage' | translate }}
-              </button>
-            </div>
-          </ng-template>
-        </ng-select>
+        ></ng-select>
         <label>{{ 'components.category-select.label' | translate }}</label>
       </div>
     </div>
@@ -41,4 +30,8 @@
 <ng-template #categoryPopover>
   <p>{{ 'components.category-select.popover.description.line1' | translate }}</p>
   <p>{{ 'components.category-select.popover.description.line2' | translate }}</p>
+  <p class="text-warning mb-0">
+    <fa-icon [icon]="icons.faTriangleExclamation" class="me-1"></fa-icon>
+    {{ 'components.category-select.popover.description.line3' | translate }}
+  </p>
 </ng-template>

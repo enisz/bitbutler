@@ -7,6 +7,7 @@ import {
   effect,
   inject,
   signal,
+  viewChild,
 } from '@angular/core';
 import {
   AbstractControl,
@@ -95,6 +96,8 @@ export class AddTorrent implements OnInit {
   private readonly qbService = inject(QbService);
   private readonly openFilesService = inject(OpenFilesService);
   private readonly translateService = inject(TranslateService);
+
+  private readonly categorySelect = viewChild(CategorySelect);
 
   public pending = this.openFilesService.pendingDrafts;
   public queueCount = computed(() => this.pending().length);
@@ -217,6 +220,10 @@ export class AddTorrent implements OnInit {
 
     if (!serverId) {
       this.addForm.setErrors({ noServerSelected: true });
+      return;
+    }
+
+    if (!(await this.categorySelect()?.ensureCategoryExists())) {
       return;
     }
 

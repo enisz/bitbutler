@@ -1,6 +1,5 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { TagSelect } from './tag-select';
@@ -9,14 +8,10 @@ describe('TagSelect', () => {
   let component: TagSelect;
   let fixture: ComponentFixture<TagSelect>;
   let mockQbService: any;
-  let mockModalService: Partial<NgbModal>;
 
   beforeEach(async () => {
     mockQbService = {
       getAllTags: vi.fn().mockResolvedValue(['action', 'comedy']),
-    };
-    mockModalService = {
-      open: vi.fn().mockReturnValue({ componentInstance: {}, result: Promise.resolve() }),
     };
 
     await TestBed.configureTestingModule({
@@ -24,7 +19,6 @@ describe('TagSelect', () => {
       providers: [
         { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
         { provide: QbService, useValue: mockQbService },
-        { provide: NgbModal, useValue: mockModalService },
       ],
     }).compileComponents();
 
@@ -67,6 +61,12 @@ describe('TagSelect', () => {
     });
   });
 
+  describe('addTag', () => {
+    it('should return the trimmed term', () => {
+      expect(component.addTag('  new-tag  ')).toBe('new-tag');
+    });
+  });
+
   describe('initialization', () => {
     it('should load all tags on init', async () => {
       await vi.waitUntil(() => component.tags().length > 0);
@@ -78,13 +78,6 @@ describe('TagSelect', () => {
       component.registerOnChange(onChange);
       component.selectControl.setValue(['action']);
       expect(onChange).toHaveBeenCalledWith(['action']);
-    });
-  });
-
-  describe('openManageTags', () => {
-    it('should open the ManageTags modal', () => {
-      component.openManageTags();
-      expect(mockModalService.open).toHaveBeenCalled();
     });
   });
 });

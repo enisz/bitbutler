@@ -1,5 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  input,
+  viewChild,
+} from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -32,6 +40,8 @@ export class SetTorrentCategory implements OnInit {
   public readonly activeModal = inject(NgbActiveModal);
   public readonly qbService = inject(QbService);
 
+  private readonly categorySelect = viewChild(CategorySelect);
+
   public readonly selected = computed(() => this.hashes().length);
   public saving = false;
   public setTorrentCategoryForm = new FormGroup({
@@ -44,6 +54,11 @@ export class SetTorrentCategory implements OnInit {
 
   public async handleSubmit(): Promise<void> {
     this.saving = true;
+
+    if (!(await this.categorySelect()?.ensureCategoryExists())) {
+      this.saving = false;
+      return;
+    }
 
     const category = this.setTorrentCategoryForm.get('category')?.value || '';
     const serverId = this.serverStoreService.currentServerId() ?? '';

@@ -58,6 +58,7 @@ describe('AddTorrent', () => {
             setFilePriority: vi.fn(),
             setShareLimits: vi.fn().mockResolvedValue(undefined),
             getAllCategories: vi.fn().mockResolvedValue({}),
+            addCategory: vi.fn().mockResolvedValue(undefined),
             getAllTags: vi.fn().mockResolvedValue([]),
             createTags: vi.fn().mockResolvedValue(undefined),
           },
@@ -176,6 +177,41 @@ describe('AddTorrent', () => {
     it('should not call setShareLimits when shareLimits is null', async () => {
       await (component as any).tryRenameContentAfterAdd('server-1', null);
       expect(mockQbService.setShareLimits).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('handleSubmit category creation', () => {
+    let mockQbService: any;
+    let torrentsAddSpy: any;
+
+    beforeEach(() => {
+      mockQbService = TestBed.inject(QbService) as any;
+      torrentsAddSpy = vi.spyOn(window.bitbutler.qb, 'torrentsAdd').mockClear();
+      (component as any).selectedTorrentFile.set({
+        name: 'test.torrent',
+        path: '/tmp/test.torrent',
+      });
+      component.addForm.controls.rename.setValue('test-torrent');
+    });
+
+    it('should create a typed category before adding the torrent', async () => {
+      component.addForm.controls.category.setValue('new-category');
+
+      await component.handleSubmit({ preventDefault: () => {} } as unknown as SubmitEvent);
+
+      expect(mockQbService.addCategory).toHaveBeenCalledWith('server-1', 'new-category', '');
+      expect(torrentsAddSpy).toHaveBeenCalled();
+    });
+
+    it('should abort without adding the torrent when category creation fails', async () => {
+      mockQbService.addCategory.mockRejectedValueOnce(new Error('failed'));
+      component.addForm.controls.category.setValue('bad-category');
+
+      await component.handleSubmit({ preventDefault: () => {} } as unknown as SubmitEvent);
+
+      expect(mockQbService.addCategory).toHaveBeenCalledWith('server-1', 'bad-category', '');
+      expect(torrentsAddSpy).not.toHaveBeenCalled();
+      expect(component.isSubmitting()).toBe(false);
     });
   });
 });

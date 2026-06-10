@@ -16,13 +16,13 @@ import {
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { NgFooterTemplateDirective, NgSelectComponent } from '@ng-select/ng-select';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
+import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe } from '@ngx-translate/core';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { BbPopover } from '../bb-popover/bb-popover';
-import { ManageCategories } from '../modals/manage-categories/manage-categories';
 
 @Component({
   selector: 'app-category-select',
@@ -31,7 +31,7 @@ import { ManageCategories } from '../modals/manage-categories/manage-categories'
     CommonModule,
     ReactiveFormsModule,
     NgSelectComponent,
-    NgFooterTemplateDirective,
+    FaIconComponent,
     TranslatePipe,
     BbPopover,
   ],
@@ -52,7 +52,8 @@ export class CategorySelect implements ControlValueAccessor {
 
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly qbService = inject(QbService);
-  private readonly modalService = inject(NgbModal);
+
+  public readonly icons = { faTriangleExclamation };
 
   public categories = signal<string[]>([]);
   public selectControl = new FormControl('');
@@ -104,6 +105,8 @@ export class CategorySelect implements ControlValueAccessor {
     }
   }
 
+  addTag = (term: string): string => term.trim();
+
   keyDownFn(event: KeyboardEvent): boolean {
     if (event.key === 'Escape') {
       return false;
@@ -112,14 +115,22 @@ export class CategorySelect implements ControlValueAccessor {
     return true;
   }
 
-  public openManageCategories(): void {
-    this.ngselect.close();
-    const ref = this.modalService.open(ManageCategories, {
-      beforeDismiss: () => ref.componentInstance.canDeactivate(),
-    });
-    ref.result.then(
-      () => this.loadCategories(),
-      () => this.loadCategories(),
-    );
+  public async ensureCategoryExists(): Promise<boolean> {
+    const value = (this.selectControl.value ?? '').trim();
+    if (!value || this.categories().includes(value)) {
+      return true;
+    }
+
+    try {
+      await this.qbService.addCategory(
+        this.serverStoreService.currentServerId() as string,
+        value,
+        '',
+      );
+      this.categories.update((cats) => [...cats, value]);
+      return true;
+    } catch {
+      return false;
+    }
   }
 }
