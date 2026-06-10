@@ -104,7 +104,9 @@
       "mcp__plugin_playwright_playwright__browser_take_screenshot",
       "mcp__plugin_playwright_playwright__browser_press_key",
       "mcp__plugin_playwright_playwright__browser_resize",
-      "Bash(Select-String -Pattern \"Server\")"
+      "Bash(Select-String -Pattern \"Server\")",
+      "Bash(gh release *)",
+      "Bash(gh label *)"
     ]
   }
 }

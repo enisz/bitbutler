@@ -18,13 +18,11 @@ import {
 } from '@angular/forms';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe } from '@ngx-translate/core';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { BbPopover } from '../bb-popover/bb-popover';
-import { ManageCategories } from '../modals/manage-categories/manage-categories';
 
 @Component({
   selector: 'app-category-select',
@@ -54,7 +52,6 @@ export class CategorySelect implements ControlValueAccessor {
 
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly qbService = inject(QbService);
-  private readonly modalService = inject(NgbModal);
 
   public readonly icons = { faTriangleExclamation };
 
@@ -135,16 +132,5 @@ export class CategorySelect implements ControlValueAccessor {
     } catch {
       return false;
     }
-  }
-
-  public openManageCategories(): void {
-    this.ngselect.close();
-    const ref = this.modalService.open(ManageCategories, {
-      beforeDismiss: () => ref.componentInstance.canDeactivate(),
-    });
-    ref.result.then(
-      () => this.loadCategories(),
-      () => this.loadCategories(),
-    );
   }
 }

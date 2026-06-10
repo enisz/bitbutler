@@ -173,8 +173,7 @@
           "line2": "Ha az automatikus torrentkezelés (TMM) engedélyezve van, a kategória megváltoztatása automatikusan áthelyezheti a fájlokat.",
           "line3": "Az itt hozzáadott új kategória üres mentési útvonallal jön létre. Hogy ez hogyan befolyásolja a torrentek tárolási helyét, az a qBittorrent 'Alapértelmezett torrent kezelési mód' és 'Amikor a kategória mentési útvonala megváltozik' beállításaitól függ."
         }
-      },
-      "manage": "Kategóriák kezelése"
+      }
     },
     "datepicker-filter": {},
     "datepicker-range-filter": {
@@ -845,8 +844,7 @@
           "line1": "Egy vagy több címkét ad ehhez a torrenthez, rugalmas szűrési és csoportosítási lehetőségekért.",
           "line2": "A kategóriákkal ellentétben egy torrenthez több címke is rendelhető, és a címkék nem befolyásolják a mentési útvonalat."
         }
-      },
-      "manage": "Cimkék kezelése"
+      }
     },
     "save-path-select": {
       "label": "Mentési útvonal",
