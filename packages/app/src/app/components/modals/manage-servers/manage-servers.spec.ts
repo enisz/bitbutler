@@ -58,7 +58,7 @@ describe('ManageServers', () => {
       serverStoreMock.currentServerId.set('other-id');
       fixture.componentRef.setInput('hideConnect', true);
       fixture.detectChanges();
-      const connectBtn = fixture.nativeElement.querySelector('[data-testid="connect-btn"]');
+      const connectBtn = fixture.nativeElement.querySelector('.connect-btn');
       expect(connectBtn).toBeNull();
     });
 
@@ -70,7 +70,7 @@ describe('ManageServers', () => {
       serverStoreMock.currentServerId.set('other-id');
       fixture.componentRef.setInput('hideConnect', false);
       fixture.detectChanges();
-      const connectBtn = fixture.nativeElement.querySelector('[data-testid="connect-btn"]');
+      const connectBtn = fixture.nativeElement.querySelector('.connect-btn');
       expect(connectBtn).not.toBeNull();
     });
   });

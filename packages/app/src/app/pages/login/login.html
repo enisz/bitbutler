@@ -4,10 +4,7 @@
       <div class="hero-content">
         <div class="hero-logo-wrapper">
           <img [ngSrc]="logoUrl()" alt="BitButler logo" width="260" height="260" priority />
-          <span
-            class="hero-version-badge cursor-pointer user-select-none"
-            data-testid="version-badge"
-            (click)="goToRelease()"
+          <span class="hero-version-badge cursor-pointer user-select-none" (click)="goToRelease()"
             >v{{ version }}</span
           >
         </div>
@@ -36,7 +33,7 @@
     <div class="form-wrapper">
       @if (showHero()) {
         <div class="mb-4">
-          <h3 class="form-title" data-testid="brand-title">
+          <h3 class="form-title">
             {{ 'pages.login.form-title' | translate }}
           </h3>
           <p class="text-body-secondary small mb-0">
@@ -49,7 +46,6 @@
         <div class="form-floating">
           <ng-select
             id="server"
-            data-testid="server-select"
             bindLabel="name"
             bindValue="id"
             formControlName="server"
@@ -71,18 +67,12 @@
         <button
           type="button"
           class="btn btn-lg btn-primary"
-          data-testid="connect-button"
           (click)="connect()"
           [disabled]="!canConnect()"
         >
           {{ 'general.button.connect' | translate }}
         </button>
-        <button
-          type="button"
-          class="btn btn-lg btn-dashed-secondary"
-          data-testid="manage-servers-button"
-          (click)="openManageServers()"
-        >
+        <button type="button" class="btn btn-lg btn-dashed-secondary" (click)="openManageServers()">
           {{ 'general.button.manage-servers' | translate }}
         </button>
       </div>

@@ -1,4 +1,4 @@
-<div class="modal-header" data-testid="manage-tags-modal">
+<div class="modal-header">
   <h5 class="modal-title">{{ 'components.modals.manage-tags.title' | translate }}</h5>
   <button
     type="button"
@@ -19,7 +19,6 @@
         [formControl]="nameControl"
         (keydown.enter)="add()"
         autofocus
-        data-testid="tag-name-input"
       />
       <label for="tag-name">{{ 'components.modals.manage-tags.add-form.name' | translate }}</label>
     </div>
@@ -28,7 +27,6 @@
       type="button"
       (click)="add()"
       [disabled]="!(nameControl.value ?? '').trim() || adding()"
-      data-testid="add-tag-button"
     >
       {{ 'general.button.add' | translate }}
     </button>
@@ -67,10 +65,7 @@
   } @else if (filteredTags().length > 0) {
     <ul class="list-group">
       @for (tag of filteredTags(); track tag) {
-        <li
-          class="list-group-item d-flex align-items-center justify-content-between"
-          [attr.data-testid]="'tag-item-' + tag"
-        >
+        <li class="list-group-item d-flex align-items-center justify-content-between">
           <span class="text-truncate me-2" [ngbTooltip]="tag" bbTooltipOverflow>{{ tag }}</span>
           <button
             type="button"

@@ -1,4 +1,4 @@
-<div class="modal-header bb-modal-header" data-testid="set-category-modal">
+<div class="modal-header bb-modal-header">
   <div class="bb-modal-header__text">
     <h5 class="modal-title bb-title-clamp">
       {{ 'components.modals.set-torrent-category.title' | translate }}
@@ -32,11 +32,7 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-12">
-          <app-category-select
-            formControlName="category"
-            [autofocus]="true"
-            data-testid="category-select"
-          ></app-category-select>
+          <app-category-select formControlName="category" [autofocus]="true"></app-category-select>
         </div>
       </div>
     </div>
@@ -44,21 +40,10 @@
   </form>
 </div>
 <div class="modal-footer">
-  <button
-    type="button"
-    class="btn btn-secondary"
-    (click)="handleSubmit()"
-    [disabled]="!canSave()"
-    data-testid="set-category-save"
-  >
+  <button type="button" class="btn btn-secondary" (click)="handleSubmit()" [disabled]="!canSave()">
     {{ 'general.button.save' | translate }}
   </button>
-  <button
-    type="button"
-    class="btn btn-link"
-    (click)="activeModal.close()"
-    data-testid="set-category-cancel"
-  >
+  <button type="button" class="btn btn-link" (click)="activeModal.close()">
     {{ 'general.button.cancel' | translate }}
   </button>
 </div>

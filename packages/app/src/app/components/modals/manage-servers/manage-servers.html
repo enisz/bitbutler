@@ -68,8 +68,7 @@
               @if (!hideConnect()) {
                 <button
                   type="button"
-                  class="btn btn-link p-1"
-                  data-testid="connect-btn"
+                  class="btn btn-link p-1 connect-btn"
                   [ngbTooltip]="'components.modals.manage-servers.button.connect' | translate"
                   (click)="switchTo(server)"
                   [disabled]="busy()"
