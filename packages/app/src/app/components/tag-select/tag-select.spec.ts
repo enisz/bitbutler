@@ -67,6 +67,12 @@ describe('TagSelect', () => {
     });
   });
 
+  describe('addTag', () => {
+    it('should return the trimmed term', () => {
+      expect(component.addTag('  new-tag  ')).toBe('new-tag');
+    });
+  });
+
   describe('initialization', () => {
     it('should load all tags on init', async () => {
       await vi.waitUntil(() => component.tags().length > 0);
