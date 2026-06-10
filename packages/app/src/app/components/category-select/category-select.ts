@@ -17,7 +17,7 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { NgFooterTemplateDirective, NgSelectComponent } from '@ng-select/ng-select';
+import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe } from '@ngx-translate/core';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
@@ -27,14 +27,7 @@ import { ManageCategories } from '../modals/manage-categories/manage-categories'
 @Component({
   selector: 'app-category-select',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    NgSelectComponent,
-    NgFooterTemplateDirective,
-    TranslatePipe,
-    BbPopover,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, NgSelectComponent, TranslatePipe, BbPopover],
   templateUrl: './category-select.html',
   styleUrls: ['./category-select.scss'],
   providers: [

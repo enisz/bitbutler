@@ -98,4 +98,17 @@ describe('CategorySelect', () => {
       expect(modalService.open).toHaveBeenCalled();
     });
   });
+
+  describe('manage hint link', () => {
+    it('should open the ManageCategories modal when clicked', () => {
+      const modalService = TestBed.inject(NgbModal);
+      const button = fixture.nativeElement.querySelector(
+        '[data-testid="category-select-manage"]',
+      ) as HTMLButtonElement;
+
+      button.click();
+
+      expect(modalService.open).toHaveBeenCalled();
+    });
+  });
 });
