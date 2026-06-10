@@ -16,6 +16,8 @@ import {
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
 } from '@angular/forms';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -27,7 +29,14 @@ import { ManageCategories } from '../modals/manage-categories/manage-categories'
 @Component({
   selector: 'app-category-select',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgSelectComponent, TranslatePipe, BbPopover],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    NgSelectComponent,
+    FaIconComponent,
+    TranslatePipe,
+    BbPopover,
+  ],
   templateUrl: './category-select.html',
   styleUrls: ['./category-select.scss'],
   providers: [
@@ -46,6 +55,8 @@ export class CategorySelect implements ControlValueAccessor {
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly qbService = inject(QbService);
   private readonly modalService = inject(NgbModal);
+
+  public readonly icons = { faTriangleExclamation };
 
   public categories = signal<string[]>([]);
   public selectControl = new FormControl('');

@@ -41,4 +41,8 @@
 <ng-template #categoryPopover>
   <p>{{ 'components.category-select.popover.description.line1' | translate }}</p>
   <p>{{ 'components.category-select.popover.description.line2' | translate }}</p>
+  <p class="text-warning mb-0">
+    <fa-icon [icon]="icons.faTriangleExclamation" class="me-1"></fa-icon>
+    {{ 'components.category-select.popover.description.line3' | translate }}
+  </p>
 </ng-template>
