@@ -9,7 +9,6 @@
             type="button"
             class="bb-tool"
             [id]="'bb-dropdown-' + e.id"
-            [attr.data-testid]="'toolbar-btn-' + e.id"
             ngbDropdownToggle
             [disabled]="e.disabled"
             [class.bb-tool--primary]="e.variant === 'primary'"
@@ -44,7 +43,6 @@
               <button
                 ngbDropdownItem
                 type="button"
-                [attr.data-testid]="'toolbar-btn-' + item.id"
                 [disabled]="!!item.disabled"
                 (click)="onClick(item.id)"
                 [class.bb-dropdown-item--primary]="item.variant === 'primary'"
@@ -68,7 +66,6 @@
         <button
           type="button"
           class="bb-tool"
-          [attr.data-testid]="'toolbar-btn-' + e.id"
           [disabled]="e.disabled"
           [class.bb-tool--primary]="e.variant === 'primary'"
           [class.bb-tool--secondary]="e.variant === 'secondary'"

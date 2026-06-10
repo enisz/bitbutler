@@ -1,4 +1,4 @@
-<div class="modal-header bb-modal-header" data-testid="add-torrent-modal">
+<div class="modal-header bb-modal-header">
   <div class="bb-modal-header__text">
     <h5 class="modal-title bb-title-clamp">{{ 'components.add-torrent.title' | translate }}</h5>
 
@@ -338,19 +338,13 @@
   <button
     type="button"
     class="btn btn-secondary"
-    data-testid="add-torrent-submit"
     (click)="handleSubmit($event)"
     [disabled]="!canSubmit()"
     [autofocus]="addForm.controls.file.value.length === 0"
   >
     {{ 'general.button.add' | translate }}
   </button>
-  <button
-    type="button"
-    class="btn btn-link"
-    data-testid="add-torrent-cancel"
-    (click)="handleCancel()"
-  >
+  <button type="button" class="btn btn-link" (click)="handleCancel()">
     {{ 'general.button.cancel' | translate }}
   </button>
 </div>

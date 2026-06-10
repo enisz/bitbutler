@@ -1,4 +1,4 @@
-<div class="modal-header bb-modal-header" data-testid="rename-torrent-modal">
+<div class="modal-header bb-modal-header">
   <div class="bb-modal-header__text">
     <h5 class="modal-title bb-title-clamp">
       {{ 'components.modals.rename-torrent.title' | translate }}
@@ -36,7 +36,6 @@
               placeholder="Name"
               formControlName="name"
               autofocus
-              data-testid="rename-torrent-input"
             />
             <label for="name">{{
               'components.modals.rename-torrent.rename-torrent-form.name' | translate
@@ -49,21 +48,10 @@
   </form>
 </div>
 <div class="modal-footer">
-  <button
-    type="button"
-    class="btn btn-primary"
-    (click)="handleSubmit()"
-    [disabled]="!canSave()"
-    data-testid="rename-torrent-save"
-  >
+  <button type="button" class="btn btn-primary" (click)="handleSubmit()" [disabled]="!canSave()">
     {{ 'general.button.save' | translate }}
   </button>
-  <button
-    type="button"
-    class="btn btn-link"
-    (click)="activeModal.dismiss()"
-    data-testid="rename-torrent-cancel"
-  >
+  <button type="button" class="btn btn-link" (click)="activeModal.dismiss()">
     {{ 'general.button.cancel' | translate }}
   </button>
 </div>

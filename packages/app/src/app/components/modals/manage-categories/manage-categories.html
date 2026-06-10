@@ -1,4 +1,4 @@
-<div class="modal-header" data-testid="manage-categories-modal">
+<div class="modal-header">
   <h5 class="modal-title">{{ 'components.modals.manage-categories.title' | translate }}</h5>
   <button
     type="button"
@@ -20,7 +20,6 @@
           formControlName="name"
           (keydown.enter)="add()"
           autofocus
-          data-testid="category-name-input"
         />
         <label for="category-name">
           {{ 'components.modals.manage-categories.add-form.name' | translate }}
@@ -31,7 +30,6 @@
         type="button"
         (click)="add()"
         [disabled]="!(addForm.get('name')?.value ?? '').trim() || adding()"
-        data-testid="add-category-button"
       >
         {{ 'general.button.add' | translate }}
       </button>
@@ -115,10 +113,7 @@
             </div>
           </li>
         } @else {
-          <li
-            class="list-group-item d-flex align-items-center justify-content-between"
-            [attr.data-testid]="'category-item-' + item.name"
-          >
+          <li class="list-group-item d-flex align-items-center justify-content-between">
             <div class="overflow-hidden me-2">
               <div class="fw-semibold text-truncate" [ngbTooltip]="item.name" bbTooltipOverflow>
                 {{ item.name }}
