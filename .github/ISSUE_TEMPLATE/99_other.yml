@@ -1,6 +1,5 @@
 name: 🤔 Something Else
 description: Anything that doesn't belong to any of the above.
-title: '[OTHER]: '
 labels: ['chore']
 body:
   - type: textarea
