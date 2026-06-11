@@ -26,6 +26,26 @@
   </div>
   @if (allowEdit()) {
     <div class="button-bar ms-2">
+      <button
+        type="button"
+        class="btn btn-sm btn-link text-secondary"
+        [ngbTooltip]="'components.bb-file-tree.toolbar.expand-all' | translate"
+        tooltipClass="single-line-tooltip"
+        placement="top"
+        (click)="expandAllNodes()"
+      >
+        <fa-icon [icon]="icon.faCircleChevronDown"></fa-icon>
+      </button>
+      <button
+        type="button"
+        class="btn btn-sm btn-link text-secondary"
+        [ngbTooltip]="'components.bb-file-tree.toolbar.collapse-all' | translate"
+        tooltipClass="single-line-tooltip"
+        placement="top"
+        (click)="collapseAllNodes()"
+      >
+        <fa-icon [icon]="icon.faCircleChevronUp"></fa-icon>
+      </button>
       @if (!editMode()) {
         <button
           type="button"
@@ -33,6 +53,7 @@
           [ngbTooltip]="'general.button.edit' | translate"
           tooltipClass="single-line-tooltip"
           placement="top"
+          [disabled]="hasNoMatches()"
           (click)="enterEditMode()"
         >
           <fa-icon [icon]="icon.faEdit"></fa-icon>
@@ -60,16 +81,55 @@
         </button>
       }
     </div>
+    <div class="bb-tree-filter">
+      <div class="input-group input-group-sm bb-search">
+        <span class="input-group-text bb-search__addon" aria-hidden="true">
+          <fa-icon [icon]="icon.faMagnifyingGlass"></fa-icon>
+        </span>
+        <input
+          #filterInput
+          type="text"
+          class="form-control bb-search__input"
+          [placeholder]="'components.bb-file-tree.filter.placeholder' | translate"
+          [value]="filterText()"
+          [disabled]="editMode()"
+          (input)="onFilterInput(filterInput.value)"
+        />
+        <button
+          type="button"
+          class="input-group-text bb-search__addon bb-search__clear"
+          [class.bb-search__clear--hidden]="!filterText()"
+          [disabled]="editMode()"
+          [ngbTooltip]="'general.button.clear' | translate"
+          tooltipClass="single-line-tooltip"
+          placement="top"
+          (click)="clearFilter()"
+        >
+          <fa-icon [icon]="icon.faX"></fa-icon>
+        </button>
+      </div>
+    </div>
   }
 </div>
+
+@if (hasNoMatches()) {
+  <p class="bb-no-match">
+    {{ 'components.bb-file-tree.filter.no-match' | translate }}
+  </p>
+}
 
 <cdk-tree
   [dataSource]="data"
   [treeControl]="treeControl"
   [trackBy]="trackByPath"
   class="bb-file-tree"
+  [class.bb-file-tree--hidden]="hasNoMatches()"
 >
-  <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: hasChild" class="bb-node">
+  <cdk-nested-tree-node
+    *cdkTreeNodeDef="let node; when: hasChild"
+    class="bb-node"
+    [class.bb-node--hidden]="!isVisible(node)"
+  >
     <div
       class="bb-row bb-row--dir cursor-pointer"
       [class.bb-row--skipped]="isFolderEmpty(node)"
@@ -138,7 +198,11 @@
     </div>
   </cdk-nested-tree-node>
 
-  <cdk-nested-tree-node *cdkTreeNodeDef="let node" class="bb-node">
+  <cdk-nested-tree-node
+    *cdkTreeNodeDef="let node"
+    class="bb-node"
+    [class.bb-node--hidden]="!isVisible(node)"
+  >
     <div
       class="bb-row bb-row--file"
       [class.bb-row--skipped]="node.file?.priority === 0"
