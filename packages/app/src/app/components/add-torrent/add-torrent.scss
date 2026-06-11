@@ -1,0 +1,10 @@
+.bb-fieldset--file-tree {
+  display: flex;
+  flex-direction: column;
+  max-height: 50vh;
+
+  app-bb-file-tree {
+    flex: 1;
+    min-height: 0;
+  }
+}
