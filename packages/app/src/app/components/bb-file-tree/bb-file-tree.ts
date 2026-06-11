@@ -574,21 +574,15 @@ function computeVisiblePaths(nodes: BbFileTreeNode[], query: string): Set<string
 function markVisible(node: BbFileTreeNode, query: string, visible: Set<string>): boolean {
   const selfMatches = node.name.toLowerCase().includes(query);
 
-  if (selfMatches) {
-    markSubtreeVisible(node, visible);
-    return true;
-  }
-
   let childVisible = false;
   for (const child of node.children ?? []) {
     if (markVisible(child, query, visible)) childVisible = true;
   }
 
-  if (childVisible) visible.add(node.fullPath);
-  return childVisible;
-}
+  if (selfMatches || childVisible) {
+    visible.add(node.fullPath);
+    return true;
+  }
 
-function markSubtreeVisible(node: BbFileTreeNode, visible: Set<string>): void {
-  visible.add(node.fullPath);
-  node.children?.forEach((child) => markSubtreeVisible(child, visible));
+  return false;
 }

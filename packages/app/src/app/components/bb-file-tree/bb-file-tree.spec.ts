@@ -426,7 +426,7 @@ describe('BbFileTree', () => {
       expect(component.isVisible(otherNode)).toBe(false);
     });
 
-    it('should reveal the entire subtree when a folder name matches', () => {
+    it('should keep a matching folder visible without revealing non-matching children', () => {
       component.onFilterInput('dir');
       fixture.detectChanges();
 
@@ -435,8 +435,8 @@ describe('BbFileTree', () => {
       const betaNode = dirNode.children!.find((n) => n.name === 'beta.txt')!;
 
       expect(component.isVisible(dirNode)).toBe(true);
-      expect(component.isVisible(alphaNode)).toBe(true);
-      expect(component.isVisible(betaNode)).toBe(true);
+      expect(component.isVisible(alphaNode)).toBe(false);
+      expect(component.isVisible(betaNode)).toBe(false);
     });
 
     it('should match case-insensitively', () => {
