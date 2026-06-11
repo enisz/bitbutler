@@ -116,176 +116,57 @@
   <p class="bb-no-match">
     {{ 'components.bb-file-tree.filter.no-match' | translate }}
   </p>
-}
-
-<cdk-tree
-  [dataSource]="data"
-  [treeControl]="treeControl"
-  [trackBy]="trackByPath"
-  class="bb-file-tree"
-  [class.bb-file-tree--hidden]="hasNoMatches()"
->
-  <cdk-nested-tree-node
-    *cdkTreeNodeDef="let node; when: hasChild"
-    class="bb-node"
-    [class.bb-node--hidden]="!isVisible(node)"
-  >
-    <div
-      class="bb-row bb-row--dir cursor-pointer"
-      [class.bb-row--skipped]="isFolderEmpty(node)"
-      [style.--node-depth]="getNodeDepth(node)"
-      (click)="toggle(node)"
-    >
-      <button type="button" class="bb-toggle" (click)="$event.stopPropagation(); toggle(node)">
-        <span class="bb-caret" [class.bb-caret--open]="isExpanded(node)"></span>
-      </button>
-
-      @if (editMode()) {
-        <input
-          type="checkbox"
-          class="bb-checkbox"
-          [checked]="isFolderSelected(node)"
-          [indeterminate]="isFolderIndeterminate(node)"
-          (click)="$event.stopPropagation()"
-          (change)="toggleFolderSelection(node, $event)"
-        />
-      }
-
-      <span class="bb-icon">📁</span>
-
-      @if (!editMode()) {
-        <span class="bb-name">{{ node.name }}</span>
-      } @else {
-        <div class="bb-input-wrapper">
-          <input
-            class="bb-input"
-            [class.bb-input--invalid]="getControl(node).invalid && getControl(node).dirty"
-            [formControl]="getControl(node)"
-            (click)="$event.stopPropagation()"
-            (keydown.enter)="onRenameEnter($event)"
-            (keydown.escape)="onEscapeInInput($event)"
-          />
-          @if (getControl(node).invalid && getControl(node).dirty) {
-            <fa-icon
-              class="bb-input-error-icon"
-              [icon]="icon.faCircleExclamation"
-              [ngbTooltip]="getControlError(getControl(node))"
-              tooltipClass="single-line-tooltip danger"
-              placement="top"
-            />
-          }
-        </div>
-
-        <div class="bb-meta">
-          <ng-select
-            class="bb-select-compact"
-            [items]="priorityOptions"
-            bindValue="value"
-            bindLabel="label"
-            [searchable]="false"
-            [clearable]="false"
-            appendTo="body"
-            [ngModel]="getDominantFolderPriority(node)"
-            (ngModelChange)="setFolderPriority(node, $event)"
-            (click)="$event.stopPropagation()"
-          ></ng-select>
-        </div>
-      }
-    </div>
-
-    <div class="bb-children" [class.bb-children--open]="isExpanded(node)">
-      <ng-container cdkTreeNodeOutlet></ng-container>
-    </div>
-  </cdk-nested-tree-node>
-
-  <cdk-nested-tree-node
-    *cdkTreeNodeDef="let node"
-    class="bb-node"
-    [class.bb-node--hidden]="!isVisible(node)"
-  >
-    <div
-      class="bb-row bb-row--file"
-      [class.bb-row--skipped]="node.file?.priority === 0"
-      [style.--node-depth]="getNodeDepth(node)"
-    >
-      <span class="bb-spacer"></span>
-
-      @if (editMode()) {
-        @if (node.file; as f) {
-          <input
-            type="checkbox"
-            class="bb-checkbox"
-            [checked]="f.priority !== 0"
-            (change)="toggleFileSelection(f, $event)"
-          />
-        }
-      }
-
-      <span class="bb-icon">📄</span>
-
-      @if (!editMode()) {
-        <span
-          class="bb-name"
-          [ngbTooltip]="node.name"
-          tooltipClass="single-line-tooltip"
-          bbTooltipOverflow
-          placement="top"
-          [openDelay]="500"
-          >{{ node.name }}</span
+} @else {
+  <cdk-virtual-scroll-viewport itemSize="36" class="bb-file-tree">
+    <div *cdkVirtualFor="let node of visibleNodes(); trackBy: trackByPath" class="bb-node">
+      @if (node.kind === 'dir') {
+        <div
+          class="bb-row bb-row--dir cursor-pointer"
+          [class.bb-row--skipped]="isFolderEmpty(node)"
+          [style.--node-depth]="getNodeDepth(node)"
+          (click)="toggle(node)"
         >
-      } @else {
-        <div class="bb-input-wrapper">
-          <input
-            class="bb-input"
-            [class.bb-input--invalid]="getControl(node).invalid && getControl(node).dirty"
-            [formControl]="getControl(node)"
-            (keydown.enter)="onRenameEnter($event)"
-            (keydown.escape)="onEscapeInInput($event)"
-          />
-          @if (getControl(node).invalid && getControl(node).dirty) {
-            <fa-icon
-              class="bb-input-error-icon"
-              [icon]="icon.faCircleExclamation"
-              [ngbTooltip]="getControlError(getControl(node))"
-              tooltipClass="single-line-tooltip danger"
-              placement="top"
+          <button type="button" class="bb-toggle" (click)="$event.stopPropagation(); toggle(node)">
+            <span class="bb-caret" [class.bb-caret--open]="isExpanded(node)"></span>
+          </button>
+
+          @if (editMode()) {
+            <input
+              type="checkbox"
+              class="bb-checkbox"
+              [checked]="isFolderSelected(node)"
+              [indeterminate]="isFolderIndeterminate(node)"
+              (click)="$event.stopPropagation()"
+              (change)="toggleFolderSelection(node, $event)"
             />
           }
-        </div>
-      }
 
-      @if (showMeta() && node.file; as f) {
-        <div class="bb-meta">
-          <span class="bb-size">{{ f.length | fileSize }}</span>
+          <span class="bb-icon">📁</span>
 
           @if (!editMode()) {
-            @if (!hideProgress() && f.priority !== 0) {
-              <app-bb-progress [progress]="f.progress" variant="secondary"></app-bb-progress>
-            }
-            @if (f.priority !== 0) {
-              <span
-                class="bb-pill"
-                [ngClass]="{
-                  'bb-pill--normal': f.priority === 1,
-                  'bb-pill--high': f.priority === 6,
-                  'bb-pill--max': f.priority === 7,
-                }"
-                >{{
-                  (f.priority === 7
-                    ? 'components.bb-file-tree.priority-option.max'
-                    : f.priority === 6
-                      ? 'components.bb-file-tree.priority-option.high'
-                      : 'components.bb-file-tree.priority-option.normal'
-                  ) | translate
-                }}</span
-              >
-            } @else {
-              <span class="bb-pill bb-pill--skipped">{{
-                'components.bb-file-tree.priority-option.skipped' | translate
-              }}</span>
-            }
+            <span class="bb-name">{{ node.name }}</span>
           } @else {
-            @if (f.priority !== 0) {
+            <div class="bb-input-wrapper">
+              <input
+                class="bb-input"
+                [class.bb-input--invalid]="getControl(node).invalid && getControl(node).dirty"
+                [formControl]="getControl(node)"
+                (click)="$event.stopPropagation()"
+                (keydown.enter)="onRenameEnter($event)"
+                (keydown.escape)="onEscapeInInput($event)"
+              />
+              @if (getControl(node).invalid && getControl(node).dirty) {
+                <fa-icon
+                  class="bb-input-error-icon"
+                  [icon]="icon.faCircleExclamation"
+                  [ngbTooltip]="getControlError(getControl(node))"
+                  tooltipClass="single-line-tooltip danger"
+                  placement="top"
+                />
+              }
+            </div>
+
+            <div class="bb-meta">
               <ng-select
                 class="bb-select-compact"
                 [items]="priorityOptions"
@@ -294,17 +175,118 @@
                 [searchable]="false"
                 [clearable]="false"
                 appendTo="body"
-                [(ngModel)]="f.priority"
-                (ngModelChange)="onFilePriorityChange()"
+                [ngModel]="getDominantFolderPriority(node)"
+                (ngModelChange)="setFolderPriority(node, $event)"
+                (click)="$event.stopPropagation()"
               ></ng-select>
-            } @else {
-              <span class="bb-skipped-label">{{
-                'components.bb-file-tree.priority-option.skipped' | translate
-              }}</span>
+            </div>
+          }
+        </div>
+      } @else {
+        <div
+          class="bb-row bb-row--file"
+          [class.bb-row--skipped]="node.file?.priority === 0"
+          [style.--node-depth]="getNodeDepth(node)"
+        >
+          <span class="bb-spacer"></span>
+
+          @if (editMode()) {
+            @if (node.file; as f) {
+              <input
+                type="checkbox"
+                class="bb-checkbox"
+                [checked]="f.priority !== 0"
+                (change)="toggleFileSelection(f, $event)"
+              />
             }
+          }
+
+          <span class="bb-icon">📄</span>
+
+          @if (!editMode()) {
+            <span
+              class="bb-name"
+              [ngbTooltip]="node.name"
+              tooltipClass="single-line-tooltip"
+              bbTooltipOverflow
+              placement="top"
+              [openDelay]="500"
+              >{{ node.name }}</span
+            >
+          } @else {
+            <div class="bb-input-wrapper">
+              <input
+                class="bb-input"
+                [class.bb-input--invalid]="getControl(node).invalid && getControl(node).dirty"
+                [formControl]="getControl(node)"
+                (keydown.enter)="onRenameEnter($event)"
+                (keydown.escape)="onEscapeInInput($event)"
+              />
+              @if (getControl(node).invalid && getControl(node).dirty) {
+                <fa-icon
+                  class="bb-input-error-icon"
+                  [icon]="icon.faCircleExclamation"
+                  [ngbTooltip]="getControlError(getControl(node))"
+                  tooltipClass="single-line-tooltip danger"
+                  placement="top"
+                />
+              }
+            </div>
+          }
+
+          @if (showMeta() && node.file; as f) {
+            <div class="bb-meta">
+              <span class="bb-size">{{ f.length | fileSize }}</span>
+
+              @if (!editMode()) {
+                @if (!hideProgress() && f.priority !== 0) {
+                  <app-bb-progress [progress]="f.progress" variant="secondary"></app-bb-progress>
+                }
+                @if (f.priority !== 0) {
+                  <span
+                    class="bb-pill"
+                    [ngClass]="{
+                      'bb-pill--normal': f.priority === 1,
+                      'bb-pill--high': f.priority === 6,
+                      'bb-pill--max': f.priority === 7,
+                    }"
+                    >{{
+                      (f.priority === 7
+                        ? 'components.bb-file-tree.priority-option.max'
+                        : f.priority === 6
+                          ? 'components.bb-file-tree.priority-option.high'
+                          : 'components.bb-file-tree.priority-option.normal'
+                      ) | translate
+                    }}</span
+                  >
+                } @else {
+                  <span class="bb-pill bb-pill--skipped">{{
+                    'components.bb-file-tree.priority-option.skipped' | translate
+                  }}</span>
+                }
+              } @else {
+                @if (f.priority !== 0) {
+                  <ng-select
+                    class="bb-select-compact"
+                    [items]="priorityOptions"
+                    bindValue="value"
+                    bindLabel="label"
+                    [searchable]="false"
+                    [clearable]="false"
+                    appendTo="body"
+                    [(ngModel)]="f.priority"
+                    (ngModelChange)="onFilePriorityChange()"
+                  ></ng-select>
+                } @else {
+                  <span class="bb-skipped-label">{{
+                    'components.bb-file-tree.priority-option.skipped' | translate
+                  }}</span>
+                }
+              }
+            </div>
           }
         </div>
       }
     </div>
-  </cdk-nested-tree-node>
-</cdk-tree>
+  </cdk-virtual-scroll-viewport>
+}
