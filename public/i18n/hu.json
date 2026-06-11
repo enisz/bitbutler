@@ -161,7 +161,8 @@
         "pattern": "A név érvénytelen karaktereket tartalmaz (< > : \" / \\ | ? *)"
       },
       "filter": {
-        "placeholder": "Fájlok és mappák szűrése"
+        "placeholder": "Fájlok és mappák szűrése",
+        "no-match": "Egyetlen fájl vagy mappa sem felel meg a szűrőnek."
       },
       "toolbar": {
         "expand-all": "Összes kibontása",

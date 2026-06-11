@@ -114,11 +114,18 @@
   }
 </div>
 
+@if (hasNoMatches()) {
+  <p class="bb-no-match">
+    {{ 'components.bb-file-tree.filter.no-match' | translate }}
+  </p>
+}
+
 <cdk-tree
   [dataSource]="data"
   [treeControl]="treeControl"
   [trackBy]="trackByPath"
   class="bb-file-tree"
+  [class.bb-file-tree--hidden]="hasNoMatches()"
 >
   <cdk-nested-tree-node
     *cdkTreeNodeDef="let node; when: hasChild"

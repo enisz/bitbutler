@@ -161,7 +161,8 @@
         "pattern": "Name contains invalid characters (< > : \" / \\ | ? *)"
       },
       "filter": {
-        "placeholder": "Filter files and folders"
+        "placeholder": "Filter files and folders",
+        "no-match": "No files or folders match your filter."
       },
       "toolbar": {
         "expand-all": "Expand all",

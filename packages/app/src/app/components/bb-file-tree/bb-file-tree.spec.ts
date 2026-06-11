@@ -478,6 +478,33 @@ describe('BbFileTree', () => {
       expect(component.filterText()).toBe('');
       expect(component.isVisible(otherNode)).toBe(true);
     });
+
+    it('should not show a no-match message when there are matches', () => {
+      component.onFilterInput('alpha');
+      fixture.detectChanges();
+
+      const message = fixture.nativeElement.querySelector('.bb-no-match');
+      expect(message).toBeNull();
+    });
+
+    it('should show a no-match message when nothing matches the filter', () => {
+      component.onFilterInput('zzz');
+      fixture.detectChanges();
+
+      const message = fixture.nativeElement.querySelector('.bb-no-match');
+      expect(message).not.toBeNull();
+    });
+
+    it('should hide the no-match message once a match is found again', () => {
+      component.onFilterInput('zzz');
+      fixture.detectChanges();
+
+      component.onFilterInput('alpha');
+      fixture.detectChanges();
+
+      const message = fixture.nativeElement.querySelector('.bb-no-match');
+      expect(message).toBeNull();
+    });
   });
 
   describe('expandAllNodes / collapseAllNodes', () => {
