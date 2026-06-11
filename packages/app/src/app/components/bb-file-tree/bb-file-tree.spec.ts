@@ -403,15 +403,20 @@ describe('BbFileTree', () => {
       fixture.detectChanges();
     });
 
-    it('should mark all nodes visible when filter is empty', () => {
+    it('should include all nodes in visibleNodes when filter is empty and expanded', () => {
+      component.expandAllNodes();
+      fixture.detectChanges();
+
       const dirNode = component.data.find((n) => n.name === 'dir')!;
       const fileNode = dirNode.children!.find((n) => n.name === 'alpha.txt')!;
 
-      expect(component.isVisible(dirNode)).toBe(true);
-      expect(component.isVisible(fileNode)).toBe(true);
+      const visible = component.visibleNodes();
+      expect(visible).toContain(dirNode);
+      expect(visible).toContain(fileNode);
     });
 
     it('should show matching files and their parent folders, hiding the rest', () => {
+      component.expandAllNodes();
       component.onFilterInput('alpha');
       fixture.detectChanges();
 
@@ -420,13 +425,15 @@ describe('BbFileTree', () => {
       const betaNode = dirNode.children!.find((n) => n.name === 'beta.txt')!;
       const otherNode = component.data.find((n) => n.name === 'other')!;
 
-      expect(component.isVisible(dirNode)).toBe(true);
-      expect(component.isVisible(alphaNode)).toBe(true);
-      expect(component.isVisible(betaNode)).toBe(false);
-      expect(component.isVisible(otherNode)).toBe(false);
+      const visible = component.visibleNodes();
+      expect(visible).toContain(dirNode);
+      expect(visible).toContain(alphaNode);
+      expect(visible).not.toContain(betaNode);
+      expect(visible).not.toContain(otherNode);
     });
 
     it('should keep a matching folder visible without revealing non-matching children', () => {
+      component.expandAllNodes();
       component.onFilterInput('dir');
       fixture.detectChanges();
 
@@ -434,19 +441,21 @@ describe('BbFileTree', () => {
       const alphaNode = dirNode.children!.find((n) => n.name === 'alpha.txt')!;
       const betaNode = dirNode.children!.find((n) => n.name === 'beta.txt')!;
 
-      expect(component.isVisible(dirNode)).toBe(true);
-      expect(component.isVisible(alphaNode)).toBe(false);
-      expect(component.isVisible(betaNode)).toBe(false);
+      const visible = component.visibleNodes();
+      expect(visible).toContain(dirNode);
+      expect(visible).not.toContain(alphaNode);
+      expect(visible).not.toContain(betaNode);
     });
 
     it('should match case-insensitively', () => {
+      component.expandAllNodes();
       component.onFilterInput('ALPHA');
       fixture.detectChanges();
 
       const dirNode = component.data.find((n) => n.name === 'dir')!;
       const alphaNode = dirNode.children!.find((n) => n.name === 'alpha.txt')!;
 
-      expect(component.isVisible(alphaNode)).toBe(true);
+      expect(component.visibleNodes()).toContain(alphaNode);
     });
 
     it('should report no matches when nothing matches the filter', () => {
@@ -476,7 +485,7 @@ describe('BbFileTree', () => {
 
       const otherNode = component.data.find((n) => n.name === 'other')!;
       expect(component.filterText()).toBe('');
-      expect(component.isVisible(otherNode)).toBe(true);
+      expect(component.visibleNodes()).toContain(otherNode);
     });
 
     it('should not show a no-match message when there are matches', () => {
@@ -530,6 +539,98 @@ describe('BbFileTree', () => {
       component.collapseAllNodes();
 
       expect(component.isExpanded(dirNode)).toBe(false);
+    });
+  });
+
+  describe('visibleNodes', () => {
+    beforeEach(() => {
+      fixture.componentRef.setInput('files', [
+        makeFile('dir/alpha.txt'),
+        makeFile('dir/beta.txt'),
+        makeFile('other/gamma.txt'),
+      ]);
+      fixture.detectChanges();
+    });
+
+    it('should only include root-level nodes by default', () => {
+      const dirNode = component.data.find((n) => n.name === 'dir')!;
+      const otherNode = component.data.find((n) => n.name === 'other')!;
+      const alphaNode = dirNode.children!.find((n) => n.name === 'alpha.txt')!;
+
+      const visible = component.visibleNodes();
+      expect(visible).toContain(dirNode);
+      expect(visible).toContain(otherNode);
+      expect(visible).not.toContain(alphaNode);
+    });
+
+    it('should reveal a folder children after expanding it via toggle', () => {
+      const dirNode = component.data.find((n) => n.name === 'dir')!;
+      const alphaNode = dirNode.children!.find((n) => n.name === 'alpha.txt')!;
+
+      component.toggle(dirNode);
+
+      expect(component.visibleNodes()).toContain(alphaNode);
+    });
+
+    it('should hide a folder children again after collapsing it via toggle', () => {
+      const dirNode = component.data.find((n) => n.name === 'dir')!;
+      const alphaNode = dirNode.children!.find((n) => n.name === 'alpha.txt')!;
+
+      component.toggle(dirNode);
+      expect(component.visibleNodes()).toContain(alphaNode);
+
+      component.toggle(dirNode);
+      expect(component.visibleNodes()).not.toContain(alphaNode);
+    });
+
+    it('should reveal nested children for all folders after expandAllNodes', () => {
+      const dirNode = component.data.find((n) => n.name === 'dir')!;
+      const alphaNode = dirNode.children!.find((n) => n.name === 'alpha.txt')!;
+      const otherNode = component.data.find((n) => n.name === 'other')!;
+      const gammaNode = otherNode.children!.find((n) => n.name === 'gamma.txt')!;
+
+      component.expandAllNodes();
+
+      const visible = component.visibleNodes();
+      expect(visible).toContain(alphaNode);
+      expect(visible).toContain(gammaNode);
+    });
+
+    it('should hide all nested children again after collapseAllNodes', () => {
+      const dirNode = component.data.find((n) => n.name === 'dir')!;
+      const alphaNode = dirNode.children!.find((n) => n.name === 'alpha.txt')!;
+
+      component.expandAllNodes();
+      expect(component.visibleNodes()).toContain(alphaNode);
+
+      component.collapseAllNodes();
+      expect(component.visibleNodes()).not.toContain(alphaNode);
+    });
+
+    it('should exclude a non-matching expanded folder and its descendants entirely', () => {
+      component.expandAllNodes();
+
+      const otherNode = component.data.find((n) => n.name === 'other')!;
+      const gammaNode = otherNode.children!.find((n) => n.name === 'gamma.txt')!;
+
+      component.onFilterInput('alpha');
+      fixture.detectChanges();
+
+      const visible = component.visibleNodes();
+      expect(visible).not.toContain(otherNode);
+      expect(visible).not.toContain(gammaNode);
+    });
+
+    it('should keep a collapsed parent-of-match visible while hiding its children', () => {
+      const dirNode = component.data.find((n) => n.name === 'dir')!;
+      const alphaNode = dirNode.children!.find((n) => n.name === 'alpha.txt')!;
+
+      component.onFilterInput('alpha');
+      fixture.detectChanges();
+
+      const visible = component.visibleNodes();
+      expect(visible).toContain(dirNode);
+      expect(visible).not.toContain(alphaNode);
     });
   });
 });
