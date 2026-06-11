@@ -6,8 +6,10 @@
 
 .bb-tree-header {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
+  row-gap: 0.5rem;
   padding: 0.75rem 1.25rem;
   margin-bottom: 0.75rem;
   background: var(--bb-control-bg);
@@ -47,8 +49,79 @@
   }
 }
 
+.bb-tree-filter {
+  flex: 0 1 240px;
+  min-width: 0;
+}
+
+.bb-search {
+  display: flex;
+  border: 1px solid var(--bb-control-border);
+  border-radius: var(--bb-control-radius);
+  background-color: var(--bb-control-bg);
+  overflow: hidden;
+  box-shadow: none;
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease,
+    box-shadow 120ms ease;
+
+  &:focus-within {
+    border-color: var(--bb-control-focus-border);
+    box-shadow: 0 0 0 0.2rem var(--bb-control-focus-ring);
+  }
+
+  > .bb-search__addon,
+  > .bb-search__input {
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .bb-search__addon {
+    display: flex;
+    align-items: center;
+    color: var(--bb-control-placeholder);
+    padding-inline: 0.6rem;
+  }
+
+  .bb-search__input {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    padding-left: 0;
+    color: var(--bb-control-text);
+
+    &::placeholder {
+      color: var(--bb-control-placeholder);
+    }
+  }
+
+  .bb-search__clear {
+    color: var(--bs-secondary-color) !important;
+    cursor: pointer;
+
+    &--hidden {
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    &:hover {
+      color: var(--bs-body-color) !important;
+    }
+
+    &:disabled {
+      cursor: default;
+    }
+  }
+}
+
 .bb-file-tree {
   border: none;
+}
+
+.bb-node--hidden {
+  display: none;
 }
 
 .bb-row {

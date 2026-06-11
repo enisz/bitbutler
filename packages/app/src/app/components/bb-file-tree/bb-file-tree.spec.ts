@@ -392,4 +392,117 @@ describe('BbFileTree', () => {
       expect(component.editMode()).toBe(true);
     });
   });
+
+  describe('file filtering', () => {
+    beforeEach(() => {
+      fixture.componentRef.setInput('files', [
+        makeFile('dir/alpha.txt'),
+        makeFile('dir/beta.txt'),
+        makeFile('other/gamma.txt'),
+      ]);
+      fixture.detectChanges();
+    });
+
+    it('should mark all nodes visible when filter is empty', () => {
+      const dirNode = component.data.find((n) => n.name === 'dir')!;
+      const fileNode = dirNode.children!.find((n) => n.name === 'alpha.txt')!;
+
+      expect(component.isVisible(dirNode)).toBe(true);
+      expect(component.isVisible(fileNode)).toBe(true);
+    });
+
+    it('should show matching files and their parent folders, hiding the rest', () => {
+      component.onFilterInput('alpha');
+      fixture.detectChanges();
+
+      const dirNode = component.data.find((n) => n.name === 'dir')!;
+      const alphaNode = dirNode.children!.find((n) => n.name === 'alpha.txt')!;
+      const betaNode = dirNode.children!.find((n) => n.name === 'beta.txt')!;
+      const otherNode = component.data.find((n) => n.name === 'other')!;
+
+      expect(component.isVisible(dirNode)).toBe(true);
+      expect(component.isVisible(alphaNode)).toBe(true);
+      expect(component.isVisible(betaNode)).toBe(false);
+      expect(component.isVisible(otherNode)).toBe(false);
+    });
+
+    it('should reveal the entire subtree when a folder name matches', () => {
+      component.onFilterInput('dir');
+      fixture.detectChanges();
+
+      const dirNode = component.data.find((n) => n.name === 'dir')!;
+      const alphaNode = dirNode.children!.find((n) => n.name === 'alpha.txt')!;
+      const betaNode = dirNode.children!.find((n) => n.name === 'beta.txt')!;
+
+      expect(component.isVisible(dirNode)).toBe(true);
+      expect(component.isVisible(alphaNode)).toBe(true);
+      expect(component.isVisible(betaNode)).toBe(true);
+    });
+
+    it('should match case-insensitively', () => {
+      component.onFilterInput('ALPHA');
+      fixture.detectChanges();
+
+      const dirNode = component.data.find((n) => n.name === 'dir')!;
+      const alphaNode = dirNode.children!.find((n) => n.name === 'alpha.txt')!;
+
+      expect(component.isVisible(alphaNode)).toBe(true);
+    });
+
+    it('should report no matches when nothing matches the filter', () => {
+      component.onFilterInput('zzz');
+      fixture.detectChanges();
+
+      expect(component.hasNoMatches()).toBe(true);
+    });
+
+    it('should not report no matches when the filter is empty', () => {
+      expect(component.hasNoMatches()).toBe(false);
+    });
+
+    it('should not report no matches when there are matches', () => {
+      component.onFilterInput('alpha');
+      fixture.detectChanges();
+
+      expect(component.hasNoMatches()).toBe(false);
+    });
+
+    it('should restore full visibility when the filter is cleared', () => {
+      component.onFilterInput('alpha');
+      fixture.detectChanges();
+
+      component.clearFilter();
+      fixture.detectChanges();
+
+      const otherNode = component.data.find((n) => n.name === 'other')!;
+      expect(component.filterText()).toBe('');
+      expect(component.isVisible(otherNode)).toBe(true);
+    });
+  });
+
+  describe('expandAllNodes / collapseAllNodes', () => {
+    beforeEach(() => {
+      fixture.componentRef.setInput('files', [makeFile('dir/a.txt'), makeFile('dir/b.txt')]);
+      fixture.detectChanges();
+    });
+
+    it('should expand all folder nodes', () => {
+      const dirNode = component.data.find((n) => n.name === 'dir')!;
+      expect(component.isExpanded(dirNode)).toBe(false);
+
+      component.expandAllNodes();
+
+      expect(component.isExpanded(dirNode)).toBe(true);
+    });
+
+    it('should collapse all expanded folder nodes', () => {
+      component.expandAllNodes();
+      const dirNode = component.data.find((n) => n.name === 'dir')!;
+      expect(component.isExpanded(dirNode)).toBe(true);
+
+      component.collapseAllNodes();
+
+      expect(component.isExpanded(dirNode)).toBe(false);
+    });
+  });
 });

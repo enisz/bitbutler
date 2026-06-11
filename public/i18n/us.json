@@ -159,6 +159,13 @@
       "validation": {
         "required": "Name cannot be empty",
         "pattern": "Name contains invalid characters (< > : \" / \\ | ? *)"
+      },
+      "filter": {
+        "placeholder": "Filter files and folders"
+      },
+      "toolbar": {
+        "expand-all": "Expand all",
+        "collapse-all": "Collapse all"
       }
     },
     "bb-popover": {},

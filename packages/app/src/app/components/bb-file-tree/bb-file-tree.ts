@@ -4,6 +4,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   ViewChild,
+  computed,
   effect,
   inject,
   input,
@@ -13,7 +14,15 @@ import {
 import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TorrentFileEntry } from '@bitbutler/shared';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faCheck, faCircleExclamation, faEdit, faX } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCheck,
+  faCircleChevronDown,
+  faCircleChevronUp,
+  faCircleExclamation,
+  faEdit,
+  faMagnifyingGlass,
+  faX,
+} from '@fortawesome/free-solid-svg-icons';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -79,8 +88,23 @@ export class BbFileTree {
 
   public treeControl = new NestedTreeControl<BbFileTreeNode>((n) => n.children ?? []);
   public data: BbFileTreeNode[] = [];
+  private dataVersion = signal(0);
   private readonly translateService = inject(TranslateService);
   private readonly confirmService = inject(ConfirmService);
+
+  public filterText = signal('');
+
+  public visiblePaths = computed<Set<string> | null>(() => {
+    this.dataVersion();
+    const query = this.filterText().trim().toLowerCase();
+    if (!query) return null;
+    return computeVisiblePaths(this.data, query);
+  });
+
+  public hasNoMatches = computed(() => {
+    if (!this.filterText().trim()) return false;
+    return (this.visiblePaths()?.size ?? 0) === 0;
+  });
 
   public totalFiles = signal(0);
   public allFolders = signal(0);
@@ -104,7 +128,15 @@ export class BbFileTree {
     },
   ];
 
-  public icon = { faEdit, faCheck, faX, faCircleExclamation };
+  public icon = {
+    faEdit,
+    faCheck,
+    faX,
+    faCircleExclamation,
+    faCircleChevronDown,
+    faCircleChevronUp,
+    faMagnifyingGlass,
+  };
 
   trackByPath = (_index: number, node: BbFileTreeNode): string => node.fullPath;
 
@@ -124,6 +156,7 @@ export class BbFileTree {
         const updated = this.updateNodeFiles(this.data, fileMap);
         if (updated === files.length) {
           this.data = [...this.data];
+          this.dataVersion.update((v) => v + 1);
           this.totalFiles.set(files.length);
           this.calculateStats();
           this.tree?.renderNodeChanges(this.data);
@@ -133,6 +166,7 @@ export class BbFileTree {
 
       const result = buildTree(files);
       this.data = result.nodes;
+      this.dataVersion.update((v) => v + 1);
       this.totalFiles.set(files.length);
 
       this.calculateStats();
@@ -254,6 +288,7 @@ export class BbFileTree {
     this.treeControl.expansionModel.selected.forEach((n) => expandedPaths.add(n.fullPath));
     const result = buildTree(files);
     this.data = result.nodes;
+    this.dataVersion.update((v) => v + 1);
     this.totalFiles.set(files.length);
     this.calculateStats();
     if (this.expandAll()) this.expandAllNodes();
@@ -377,6 +412,19 @@ export class BbFileTree {
     await this.cancelEdit();
   }
 
+  onFilterInput(value: string): void {
+    this.filterText.set(value);
+  }
+
+  clearFilter(): void {
+    this.filterText.set('');
+  }
+
+  isVisible(node: BbFileTreeNode): boolean {
+    const visible = this.visiblePaths();
+    return !visible || visible.has(node.fullPath);
+  }
+
   hasChild = (_: number, node: BbFileTreeNode) => !!node.children?.length;
   toggle = (node: BbFileTreeNode) => this.treeControl.toggle(node);
   isExpanded = (node: BbFileTreeNode) => this.treeControl.isExpanded(node);
@@ -442,7 +490,7 @@ export class BbFileTree {
     return res;
   }
 
-  private expandAllNodes(): void {
+  expandAllNodes(): void {
     const stack = [...this.data];
     while (stack.length) {
       const n = stack.pop()!;
@@ -451,6 +499,10 @@ export class BbFileTree {
         stack.push(...n.children);
       }
     }
+  }
+
+  collapseAllNodes(): void {
+    this.treeControl.collapseAll();
   }
 
   private restoreExpansionState(nodes: BbFileTreeNode[], expandedPaths: Set<string>): void {
@@ -509,4 +561,34 @@ function sortTree(node: BbFileTreeNode): void {
     return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
   });
   node.children.forEach(sortTree);
+}
+
+function computeVisiblePaths(nodes: BbFileTreeNode[], query: string): Set<string> {
+  const visible = new Set<string>();
+  for (const node of nodes) {
+    markVisible(node, query, visible);
+  }
+  return visible;
+}
+
+function markVisible(node: BbFileTreeNode, query: string, visible: Set<string>): boolean {
+  const selfMatches = node.name.toLowerCase().includes(query);
+
+  if (selfMatches) {
+    markSubtreeVisible(node, visible);
+    return true;
+  }
+
+  let childVisible = false;
+  for (const child of node.children ?? []) {
+    if (markVisible(child, query, visible)) childVisible = true;
+  }
+
+  if (childVisible) visible.add(node.fullPath);
+  return childVisible;
+}
+
+function markSubtreeVisible(node: BbFileTreeNode, visible: Set<string>): void {
+  visible.add(node.fullPath);
+  node.children?.forEach((child) => markSubtreeVisible(child, visible));
 }

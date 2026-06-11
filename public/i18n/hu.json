@@ -159,6 +159,13 @@
       "validation": {
         "required": "A név nem lehet üres",
         "pattern": "A név érvénytelen karaktereket tartalmaz (< > : \" / \\ | ? *)"
+      },
+      "filter": {
+        "placeholder": "Fájlok és mappák szűrése"
+      },
+      "toolbar": {
+        "expand-all": "Összes kibontása",
+        "collapse-all": "Összes összecsukása"
       }
     },
     "bb-popover": {},
