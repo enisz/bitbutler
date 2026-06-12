@@ -156,13 +156,14 @@ $bb-dark-surface: #1c1c1e;
   .form-switch .form-check-input {
     background-color: color-mix(in srgb, var(--bb-control-bg) 85%, #000 15%);
     border-color: var(--bb-control-border);
-    border-radius: 999px;
+    border-radius: var(--bb-control-radius, 999px);
 
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba(229,214,193,0.45)'/%3e%3c/svg%3e");
 
     &:focus {
       border-color: var(--bb-control-focus-border);
       box-shadow: 0 0 0 0.2rem var(--bb-control-focus-ring);
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba(229,214,193,0.85)'/%3e%3c/svg%3e");
     }
   }
 
