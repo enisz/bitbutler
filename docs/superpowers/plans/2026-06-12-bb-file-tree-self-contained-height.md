@@ -233,13 +233,8 @@ In `add-torrent.html`, find:
         <app-bb-file-tree
 ```
 
-Replace the first line with:
-
-```html
-<fieldset class="bb-fieldset"></fieldset>
-```
-
-(leave the `<legend>` and `<app-bb-file-tree>` lines unchanged).
+Change `class="bb-fieldset bb-fieldset--file-tree"` to `class="bb-fieldset"`
+on that line (leave the `<legend>` and `<app-bb-file-tree>` lines unchanged).
 
 - [ ] **Step 2: Empty `add-torrent.scss`**
 
