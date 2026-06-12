@@ -1,13 +1,5 @@
-.modal-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-}
-
 .bb-tab-panels {
   position: relative;
-  flex: 1;
-  min-height: 0;
 }
 
 .bb-tab-panel {
@@ -19,9 +11,8 @@
   transition: opacity 0.2s ease;
 
   &--active {
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
+    position: relative;
+    overflow: visible;
     opacity: 1;
     pointer-events: auto;
   }
