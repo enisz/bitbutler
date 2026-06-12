@@ -1,9 +1,9 @@
-import { CdkTree, CdkTreeModule, NestedTreeControl } from '@angular/cdk/tree';
+import { ScrollingModule } from '@angular/cdk/scrolling';
+import { NestedTreeControl } from '@angular/cdk/tree';
 import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
-  ViewChild,
   computed,
   effect,
   inject,
@@ -50,7 +50,7 @@ const INVALID_FILENAME_CHARS = /^[^<>:"/\\|?*\x00-\x1f]+$/;
   selector: 'app-bb-file-tree',
   standalone: true,
   imports: [
-    CdkTreeModule,
+    ScrollingModule,
     FormsModule,
     ReactiveFormsModule,
     FilesizePipe,
@@ -77,8 +77,6 @@ export class BbFileTree {
   readonly saved = output<FileTreeSaveEvent>();
   readonly editModeChange = output<boolean>();
 
-  @ViewChild(CdkTree) private tree!: CdkTree<BbFileTreeNode>;
-
   public editMode = signal(false);
   public nameControls = new Map<string, FormControl<string>>();
   private originalFiles: TorrentFileEntry[] = [];
@@ -89,6 +87,7 @@ export class BbFileTree {
   public treeControl = new NestedTreeControl<BbFileTreeNode>((n) => n.children ?? []);
   public data: BbFileTreeNode[] = [];
   private dataVersion = signal(0);
+  private expansionVersion = signal(0);
   private readonly translateService = inject(TranslateService);
   private readonly confirmService = inject(ConfirmService);
 
@@ -104,6 +103,24 @@ export class BbFileTree {
   public hasNoMatches = computed(() => {
     if (!this.filterText().trim()) return false;
     return (this.visiblePaths()?.size ?? 0) === 0;
+  });
+
+  public visibleNodes = computed<BbFileTreeNode[]>(() => {
+    this.dataVersion();
+    this.expansionVersion();
+    const visiblePaths = this.visiblePaths();
+    const result: BbFileTreeNode[] = [];
+    const walk = (nodes: BbFileTreeNode[]) => {
+      for (const node of nodes) {
+        if (visiblePaths !== null && !visiblePaths.has(node.fullPath)) continue;
+        result.push(node);
+        if (node.kind === 'dir' && node.children?.length && this.treeControl.isExpanded(node)) {
+          walk(node.children);
+        }
+      }
+    };
+    walk(this.data);
+    return result;
   });
 
   public totalFiles = signal(0);
@@ -159,7 +176,6 @@ export class BbFileTree {
           this.dataVersion.update((v) => v + 1);
           this.totalFiles.set(files.length);
           this.calculateStats();
-          this.tree?.renderNodeChanges(this.data);
           return;
         }
       }
@@ -420,13 +436,11 @@ export class BbFileTree {
     this.filterText.set('');
   }
 
-  isVisible(node: BbFileTreeNode): boolean {
-    const visible = this.visiblePaths();
-    return !visible || visible.has(node.fullPath);
-  }
-
   hasChild = (_: number, node: BbFileTreeNode) => !!node.children?.length;
-  toggle = (node: BbFileTreeNode) => this.treeControl.toggle(node);
+  toggle = (node: BbFileTreeNode) => {
+    this.treeControl.toggle(node);
+    this.expansionVersion.update((v) => v + 1);
+  };
   isExpanded = (node: BbFileTreeNode) => this.treeControl.isExpanded(node);
   getNodeDepth = (node: BbFileTreeNode): number =>
     node.fullPath ? node.fullPath.split('/').length - 1 : 0;
@@ -499,18 +513,29 @@ export class BbFileTree {
         stack.push(...n.children);
       }
     }
+    this.expansionVersion.update((v) => v + 1);
   }
 
   collapseAllNodes(): void {
     this.treeControl.collapseAll();
+    this.expansionVersion.update((v) => v + 1);
   }
 
   private restoreExpansionState(nodes: BbFileTreeNode[], expandedPaths: Set<string>): void {
-    if (!nodes || expandedPaths.size === 0) return;
+    if (nodes && expandedPaths.size > 0) {
+      this.restoreExpansionStateRecursive(nodes, expandedPaths);
+    }
+    this.expansionVersion.update((v) => v + 1);
+  }
+
+  private restoreExpansionStateRecursive(
+    nodes: BbFileTreeNode[],
+    expandedPaths: Set<string>,
+  ): void {
     for (const node of nodes) {
       if (node.children?.length && expandedPaths.has(node.fullPath)) {
         this.treeControl.expand(node);
-        this.restoreExpansionState(node.children, expandedPaths);
+        this.restoreExpansionStateRecursive(node.children, expandedPaths);
       }
     }
   }

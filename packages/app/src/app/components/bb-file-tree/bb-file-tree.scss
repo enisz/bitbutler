@@ -1,5 +1,7 @@
 :host {
-  display: block;
+  height: var(--bb-file-tree-height, min(60vh, 480px));
+  display: flex;
+  flex-direction: column;
   --bb-tree-indent: 1.5rem;
   color: var(--bs-body-color);
 }
@@ -50,7 +52,7 @@
 }
 
 .bb-tree-filter {
-  flex: 0 1 240px;
+  flex: 0 1 300px;
   min-width: 0;
 }
 
@@ -118,10 +120,9 @@
 
 .bb-file-tree {
   border: none;
-
-  &--hidden {
-    display: none;
-  }
+  display: block;
+  flex: 1;
+  min-height: 0;
 }
 
 .bb-no-match {
@@ -131,16 +132,12 @@
   color: var(--bb-control-placeholder);
 }
 
-.bb-node--hidden {
-  display: none;
-}
-
 .bb-row {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.1rem 0.75rem 0.1rem calc(var(--node-depth, 0) * var(--bb-tree-indent) + 0.75rem);
-  min-height: 2.25rem;
+  height: 2.25rem;
   transition: background 0.1s ease;
   border: none !important;
   border-bottom: none !important;
@@ -285,15 +282,6 @@
     color: var(--bs-secondary);
     border-color: var(--bs-secondary);
     background: color-mix(in srgb, var(--bs-secondary) 12%, transparent);
-  }
-}
-
-.bb-children {
-  border-left: none !important;
-  display: none;
-
-  &--open {
-    display: block;
   }
 }
 
