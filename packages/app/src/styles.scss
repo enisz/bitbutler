@@ -702,44 +702,23 @@ html ngb-typeahead-window.dropdown-menu .dropdown-item:active {
   .form-check-label {
     margin-top: 1px;
     margin-left: 6px;
+    cursor: pointer;
     user-select: none;
   }
 }
 
-.form-check.bb-check-primary {
-  --bb-check-color: var(--bs-primary);
-}
-.form-check.bb-check-secondary {
-  --bb-check-color: var(--bs-secondary);
-}
-.form-check.bb-check-success {
-  --bb-check-color: var(--bs-success);
-}
-.form-check.bb-check-danger {
-  --bb-check-color: var(--bs-danger);
-}
-.form-check.bb-check-warning {
-  --bb-check-color: var(--bs-warning);
-}
-.form-check.bb-check-info {
-  --bb-check-color: var(--bs-info);
-}
-.form-check.bb-check-light {
-  --bb-check-color: var(--bs-light);
-}
-.form-check.bb-check-dark {
-  --bb-check-color: var(--bs-dark);
-}
-
 .form-check-input {
   cursor: pointer;
-  background-color: var(--bb-control-bg) !important;
-  border: 1px solid var(--bb-control-border) !important;
-  border-radius: 6px !important;
   transition:
     background-color 120ms ease,
     border-color 120ms ease,
     box-shadow 120ms ease;
+
+  &:not(.form-switch &) {
+    background-color: var(--bb-control-bg) !important;
+    border: 1px solid var(--bb-control-border) !important;
+    border-radius: 4px !important;
+  }
 
   &:hover:not(:disabled):not(:checked) {
     border-color: var(--bb-control-hover-border) !important;
@@ -750,19 +729,8 @@ html ngb-typeahead-window.dropdown-menu .dropdown-item:active {
     box-shadow: 0 0 0 0.2rem var(--bb-control-focus-ring) !important;
   }
 
-  &:checked,
-  &:indeterminate {
-    background-color: var(--bb-check-color, var(--bb-accent, var(--bs-primary))) !important;
-    border-color: var(--bb-check-color, var(--bb-accent, var(--bs-primary))) !important;
-  }
-
   &[type='radio'] {
     border-radius: 50% !important;
-
-    &:checked {
-      color: var(--bs-body-bg) !important;
-      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='currentColor'/%3e%3c/svg%3e") !important;
-    }
   }
 
   &:disabled {
