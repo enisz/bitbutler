@@ -34,6 +34,7 @@ html[data-bs-theme] .btn,
 html[data-bs-theme] .form-control,
 html[data-bs-theme] .form-select,
 html[data-bs-theme] .form-check-input,
+html[data-bs-theme] .form-switch .form-check-input,
 html[data-bs-theme] .list-group-item,
 html[data-bs-theme] .modal-content {
   transition-property: background-color, color, border-color, box-shadow;
@@ -116,11 +117,6 @@ ngb-modal-window {
 
 .bb-ag-dark .ag-row-selected {
   box-shadow: inset 3px 0 0 var(--bb-grid-selected-accent);
-}
-
-.form-check-input,
-.form-check-label {
-  cursor: pointer;
 }
 
 .form-control,
@@ -700,89 +696,84 @@ html ngb-typeahead-window.dropdown-menu .dropdown-item:active {
 }
 
 .form-check {
-  --bb-check-color: var(--bs-primary);
-  --bb-check-color-rgb: var(--bs-primary-rgb);
-  --bb-check-ink: var(--bb-primary-ink, #fff);
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+
+  .form-check-label {
+    margin-top: 1px;
+    margin-left: 6px;
+    user-select: none;
+  }
 }
 
 .form-check.bb-check-primary {
   --bb-check-color: var(--bs-primary);
-  --bb-check-color-rgb: var(--bs-primary-rgb);
-  --bb-check-ink: var(--bb-primary-ink, #fff);
 }
 .form-check.bb-check-secondary {
   --bb-check-color: var(--bs-secondary);
-  --bb-check-color-rgb: var(--bs-secondary-rgb);
-  --bb-check-ink: var(--bb-secondary-ink, #fff);
 }
 .form-check.bb-check-success {
   --bb-check-color: var(--bs-success);
-  --bb-check-color-rgb: var(--bs-success-rgb);
-  --bb-check-ink: var(--bb-success-ink, #fff);
 }
 .form-check.bb-check-danger {
   --bb-check-color: var(--bs-danger);
-  --bb-check-color-rgb: var(--bs-danger-rgb);
-  --bb-check-ink: var(--bb-danger-ink, #fff);
 }
 .form-check.bb-check-warning {
   --bb-check-color: var(--bs-warning);
-  --bb-check-color-rgb: var(--bs-warning-rgb);
-  --bb-check-ink: var(--bb-warning-ink, #fff);
 }
 .form-check.bb-check-info {
   --bb-check-color: var(--bs-info);
-  --bb-check-color-rgb: var(--bs-info-rgb);
-  --bb-check-ink: var(--bb-info-ink, #fff);
 }
 .form-check.bb-check-light {
   --bb-check-color: var(--bs-light);
-  --bb-check-color-rgb: 248, 249, 250;
-  --bb-check-ink: var(--bb-light-ink, #000);
 }
 .form-check.bb-check-dark {
   --bb-check-color: var(--bs-dark);
-  --bb-check-color-rgb: 33, 37, 41;
-  --bb-check-ink: var(--bb-dark-ink, #fff);
 }
 
 .form-check-input {
-  border-color: color-mix(in srgb, var(--bb-check-color) 35%, var(--bs-border-color)) !important;
-}
-
-.form-check-input[type='radio'] {
+  cursor: pointer;
   background-color: var(--bb-control-bg) !important;
-}
+  border: 1px solid var(--bb-control-border) !important;
+  border-radius: 6px !important;
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease,
+    box-shadow 120ms ease;
 
-.form-check-input:checked,
-.form-check-input:indeterminate {
-  background-color: var(--bb-check-color) !important;
-  border-color: var(--bb-check-color) !important;
-}
+  &:hover:not(:disabled):not(:checked) {
+    border-color: var(--bb-control-hover-border) !important;
+  }
 
-.form-check-input[type='radio']:checked {
-  color: var(--bs-body-bg);
-  --bs-form-check-bg-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='currentColor'/%3e%3c/svg%3e");
-}
+  &:focus {
+    border-color: var(--bb-control-focus-border) !important;
+    box-shadow: 0 0 0 0.2rem var(--bb-control-focus-ring) !important;
+  }
 
-.form-check-input:focus {
-  border-color: var(--bb-check-color) !important;
-  box-shadow: 0 0 0 0.2rem rgba(var(--bb-check-color-rgb), 0.25) !important;
-}
+  &:checked,
+  &:indeterminate {
+    background-color: var(--bb-check-color, var(--bb-accent, var(--bs-primary))) !important;
+    border-color: var(--bb-check-color, var(--bb-accent, var(--bs-primary))) !important;
+  }
 
-.form-check-input:active {
-  filter: brightness(0.95);
-}
+  &[type='radio'] {
+    border-radius: 50% !important;
 
-.form-check-input:disabled,
-.form-check-input[disabled] {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
+    &:checked {
+      color: var(--bs-body-bg) !important;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='currentColor'/%3e%3c/svg%3e") !important;
+    }
+  }
 
-.form-check-input:disabled ~ .form-check-label {
-  cursor: not-allowed;
-  opacity: 0.75;
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+
+    ~ .form-check-label {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+  }
 }
 
 .cdk-overlay-container,
@@ -991,19 +982,6 @@ html ngb-typeahead-window.dropdown-menu .dropdown-item:active {
 
 @include bb.bb-install-range-variants(primary, secondary, success, danger, warning, info);
 
-.form-switch {
-  .form-check-input {
-    cursor: pointer;
-  }
-
-  .form-check-label {
-    margin-top: 1px;
-    margin-left: 8px;
-    cursor: pointer;
-    user-select: none;
-  }
-}
-
 .bb-datefilter {
   background: var(--bb-dp-bg);
 
@@ -1024,7 +1002,6 @@ html ngb-typeahead-window.dropdown-menu .dropdown-item:active {
       background-color: var(--bb-control-bg) !important;
       color: var(--bb-control-text) !important;
       border: 1px solid var(--bb-control-border) !important;
-      filter: invert(var(--bs-theme-invert, 0));
     }
 
     .ngb-dp-month-name {
@@ -1044,20 +1021,8 @@ body {
   user-select: none;
 }
 
-.user-select-none {
-  user-select: none;
-}
-
 .user-select-text {
   user-select: text;
-}
-
-.pointer-events-none {
-  pointer-events: none;
-}
-
-.cursor-pointer {
-  cursor: pointer;
 }
 
 .accordion-button:focus {

@@ -323,6 +323,10 @@
 }
 
 .bb-row--dir {
+  &.cursor-pointer {
+    cursor: pointer;
+  }
+
   .bb-name {
     cursor: pointer;
   }

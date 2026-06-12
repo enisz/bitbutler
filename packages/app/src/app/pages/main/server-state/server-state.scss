@@ -28,6 +28,10 @@
   &:hover {
     background-color: rgba(var(--bs-emphasis-color-rgb), 0.07);
   }
+
+  &.cursor-pointer {
+    cursor: pointer;
+  }
 }
 
 .status-dot {
