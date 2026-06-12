@@ -20,6 +20,8 @@ import {
   faCircleChevronUp,
   faCircleExclamation,
   faEdit,
+  faFolder,
+  faFolderOpen,
   faMagnifyingGlass,
   faX,
 } from '@fortawesome/free-solid-svg-icons';
@@ -30,6 +32,7 @@ import { TooltipOverflow } from '../../directives/tooltip-overflow';
 import { FilesizePipe } from '../../pipes/filesize-pipe';
 import { ConfirmService } from '../../services/confirm.service';
 import { BbProgress } from '../bb-progress/bb-progress';
+import { getFileIcon } from './file-icon';
 
 export type BbFileTreeNode = {
   name: string;
@@ -153,7 +156,11 @@ export class BbFileTree {
     faCircleChevronDown,
     faCircleChevronUp,
     faMagnifyingGlass,
+    faFolder,
+    faFolderOpen,
   };
+
+  public getFileIcon = getFileIcon;
 
   trackByPath = (_index: number, node: BbFileTreeNode): string => node.fullPath;
 

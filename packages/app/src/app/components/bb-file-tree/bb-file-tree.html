@@ -141,7 +141,10 @@
             />
           }
 
-          <span class="bb-icon">📁</span>
+          <fa-icon
+            class="bb-icon bb-icon--dir"
+            [icon]="isExpanded(node) ? icon.faFolderOpen : icon.faFolder"
+          ></fa-icon>
 
           @if (!editMode()) {
             <span class="bb-name">{{ node.name }}</span>
@@ -201,7 +204,7 @@
             }
           }
 
-          <span class="bb-icon">📄</span>
+          <fa-icon class="bb-icon bb-icon--file" [icon]="getFileIcon(node.name)"></fa-icon>
 
           @if (!editMode()) {
             <span
