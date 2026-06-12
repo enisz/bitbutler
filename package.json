@@ -219,6 +219,7 @@
     "flag-icons": "^7.5.0",
     "form-data": "^4.0.5",
     "marked": "^16.4.2",
+    "mime": "^4.1.0",
     "ngx-markdown": "^20.1.0",
     "ngx-timeago": "^4.1.0",
     "parse-torrent": "^11.0.19",

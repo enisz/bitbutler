@@ -179,12 +179,21 @@
 }
 
 .bb-icon {
-  font-size: 1.1rem;
+  font-size: 1rem;
+  line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   width: 1.5rem;
+
+  &--dir {
+    color: var(--bb-accent);
+  }
+
+  &--file {
+    color: var(--bb-control-placeholder);
+  }
 }
 
 .bb-name {
