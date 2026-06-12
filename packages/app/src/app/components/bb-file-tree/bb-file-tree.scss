@@ -1,4 +1,5 @@
 :host {
+  height: var(--bb-file-tree-height, min(60vh, 480px));
   display: flex;
   flex-direction: column;
   --bb-tree-indent: 1.5rem;
