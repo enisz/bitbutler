@@ -84,7 +84,7 @@ $bb-dark-check-marker-colors: (
     --bb-hover-list-item-bg: color-mix(in srgb, var(--bb-accent) 10%, transparent);
 
     --bb-grid-header-border: var(--bs-border-color);
-    --bb-grid-row-hover-bg: color-mix(in srgb, var(--bb-accent) 12%, transparent);
+    --bb-grid-row-hover-bg: color-mix(in srgb, var(--bb-accent) 16%, transparent);
     --bb-grid-focus-outline: var(--bb-accent);
     --bb-grid-selected-accent: var(--bb-accent);
 
@@ -92,10 +92,10 @@ $bb-dark-check-marker-colors: (
     --bb-ng-panel: var(--bs-dropdown-bg);
     --bb-ng-text: var(--bs-body-color);
     --bb-ng-border: var(--bs-border-color);
-    --bb-ng-hover-bg: color-mix(in srgb, var(--bs-primary) 15%, transparent);
-    --bb-ng-active-bg: color-mix(in srgb, var(--bs-secondary) 20%, transparent);
+    --bb-ng-hover-bg: color-mix(in srgb, var(--bs-primary) 10%, transparent);
+    --bb-ng-active-bg: color-mix(in srgb, var(--bs-secondary) 26%, transparent);
     --bb-ng-accent: var(--bs-secondary);
-    --bb-ng-focus-ring: rgba(var(--bs-secondary-rgb), 0.25);
+    --bb-ng-focus-ring: rgba(var(--bs-secondary-rgb), 0.2);
 
     --bb-control-bg: #120302;
     --bb-control-border: #{$bb-dark-blood};
@@ -106,7 +106,7 @@ $bb-dark-check-marker-colors: (
     --bb-control-hover-border: var(--bs-primary);
 
     --bb-control-focus-border: var(--bs-secondary);
-    --bb-control-focus-ring: rgba(var(--bs-secondary-rgb), 0.3);
+    --bb-control-focus-ring: rgba(var(--bs-secondary-rgb), 0.22);
 
     --bb-control-radius: 12px;
 
@@ -120,7 +120,7 @@ $bb-dark-check-marker-colors: (
 
     --bb-dp-accent: var(--bs-primary);
     --bb-dp-accent-ink: #fff;
-    --bb-dp-range: color-mix(in srgb, var(--bb-dp-accent) 25%, transparent);
+    --bb-dp-range: color-mix(in srgb, var(--bb-dp-accent) 28%, transparent);
 
     --bb-toast-bg: color-mix(in srgb, var(--bs-card-bg) 80%, #000);
     --bb-toast-border-opacity: 0.4;

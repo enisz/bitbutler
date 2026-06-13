@@ -4,9 +4,6 @@
       <div class="hero-content">
         <div class="hero-logo-wrapper">
           <img [ngSrc]="logoUrl()" alt="BitButler logo" width="260" height="260" priority />
-          <span class="hero-version-badge user-select-none" (click)="goToRelease()"
-            >v{{ version }}</span
-          >
         </div>
         <h1 class="hero-title">BitButler</h1>
         <p class="hero-subtitle mb-0">{{ 'pages.login.tagline' | translate }}</p>
@@ -77,94 +74,100 @@
         </button>
       </div>
 
-      <div class="d-flex justify-content-end gap-2 mt-3">
-        <div ngbDropdown container="body" placement="top-end">
-          <button
-            type="button"
-            class="btn btn-link bb-quick-setting"
-            ngbDropdownToggle
-            [ngbTooltip]="'pages.settings.tab.general.label.language' | translate"
-            [attr.aria-label]="'pages.settings.tab.general.label.language' | translate"
-          >
-            <fa-icon [icon]="icons.faLanguage" />
-          </button>
-          <div ngbDropdownMenu class="bb-toolbar-dropdown">
-            @for (lang of languages(); track lang.value) {
-              <button
-                ngbDropdownItem
-                type="button"
-                [class.active]="lang.value === currentLang()"
-                (click)="setLanguage(lang.value)"
-              >
-                <span class="fi" [ngClass]="'fi-' + lang.value"></span>
-                <span>{{ lang.label }}</span>
-              </button>
-            }
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <button type="button" class="btn btn-link" (click)="goToRelease()">v{{ version }}</button>
+        <div class="d-flex gap-2">
+          <div ngbDropdown container="body" placement="top-end">
+            <button
+              type="button"
+              class="btn btn-link bb-quick-setting"
+              ngbDropdownToggle
+              [ngbTooltip]="'pages.settings.tab.general.label.language' | translate"
+              [attr.aria-label]="'pages.settings.tab.general.label.language' | translate"
+              [placement]="'bottom'"
+            >
+              <fa-icon [icon]="icons.faLanguage" />
+            </button>
+            <div ngbDropdownMenu class="bb-toolbar-dropdown">
+              @for (lang of languages(); track lang.value) {
+                <button
+                  ngbDropdownItem
+                  type="button"
+                  [class.active]="lang.value === currentLang()"
+                  (click)="setLanguage(lang.value)"
+                >
+                  <span class="fi" [ngClass]="'fi-' + lang.value"></span>
+                  <span>{{ lang.label }}</span>
+                </button>
+              }
+            </div>
           </div>
-        </div>
-        <div ngbDropdown container="body" placement="top-end">
-          <button
-            type="button"
-            class="btn btn-link bb-quick-setting"
-            ngbDropdownToggle
-            [ngbTooltip]="
-              'pages.settings.tab.general.general-settings-form.appearance.family' | translate
-            "
-            [attr.aria-label]="
-              'pages.settings.tab.general.general-settings-form.appearance.family' | translate
-            "
-          >
-            <fa-icon [icon]="icons.faPalette" />
-          </button>
-          <div ngbDropdownMenu class="bb-toolbar-dropdown">
-            @for (fam of families; track fam.value) {
-              <button
-                ngbDropdownItem
-                type="button"
-                [class.active]="fam.value === currentFamily()"
-                (click)="setFamily(fam.value)"
-              >
-                <img
-                  [ngSrc]="getFamilyLogoUrl(fam.value)"
-                  [alt]="fam.label"
-                  width="20"
-                  height="20"
-                />
-                <span>{{ fam.label }}</span>
-              </button>
-            }
+          <div ngbDropdown container="body" placement="top-end">
+            <button
+              type="button"
+              class="btn btn-link bb-quick-setting"
+              ngbDropdownToggle
+              [ngbTooltip]="
+                'pages.settings.tab.general.general-settings-form.appearance.family' | translate
+              "
+              [attr.aria-label]="
+                'pages.settings.tab.general.general-settings-form.appearance.family' | translate
+              "
+              [placement]="'bottom'"
+            >
+              <fa-icon [icon]="icons.faPalette" />
+            </button>
+            <div ngbDropdownMenu class="bb-toolbar-dropdown">
+              @for (fam of families; track fam.value) {
+                <button
+                  ngbDropdownItem
+                  type="button"
+                  [class.active]="fam.value === currentFamily()"
+                  (click)="setFamily(fam.value)"
+                >
+                  <img
+                    [ngSrc]="getFamilyLogoUrl(fam.value)"
+                    [alt]="fam.label"
+                    width="20"
+                    height="20"
+                  />
+                  <span>{{ fam.label }}</span>
+                </button>
+              }
+            </div>
           </div>
-        </div>
-        <div ngbDropdown container="body" placement="top-end">
-          <button
-            type="button"
-            class="btn btn-link bb-quick-setting"
-            ngbDropdownToggle
-            [ngbTooltip]="
-              'pages.settings.tab.general.general-settings-form.appearance.mode' | translate
-            "
-            [attr.aria-label]="
-              'pages.settings.tab.general.general-settings-form.appearance.mode' | translate
-            "
-          >
-            <fa-icon [icon]="icons.faCircleHalfStroke" />
-          </button>
-          <div ngbDropdownMenu class="bb-toolbar-dropdown">
-            @for (m of modes(); track m.value) {
-              <button
-                ngbDropdownItem
-                type="button"
-                [class.active]="m.value === currentMode()"
-                (click)="setMode(m.value)"
-              >
-                <div
-                  class="mode-indicator"
-                  [attr.data-bb-theme]="currentFamily()"
-                  [ngClass]="m.value"
-                ></div>
-                <span>{{ m.label }}</span>
-              </button>
-            }
+          <div ngbDropdown container="body" placement="top-end">
+            <button
+              type="button"
+              class="btn btn-link bb-quick-setting"
+              ngbDropdownToggle
+              [ngbTooltip]="
+                'pages.settings.tab.general.general-settings-form.appearance.mode' | translate
+              "
+              [attr.aria-label]="
+                'pages.settings.tab.general.general-settings-form.appearance.mode' | translate
+              "
+              [placement]="'bottom'"
+            >
+              <fa-icon [icon]="icons.faCircleHalfStroke" />
+            </button>
+            <div ngbDropdownMenu class="bb-toolbar-dropdown">
+              @for (m of modes(); track m.value) {
+                <button
+                  ngbDropdownItem
+                  type="button"
+                  [class.active]="m.value === currentMode()"
+                  (click)="setMode(m.value)"
+                >
+                  <div
+                    class="mode-indicator"
+                    [attr.data-bb-theme]="currentFamily()"
+                    [ngClass]="m.value"
+                  ></div>
+                  <span>{{ m.label }}</span>
+                </button>
+              }
+            </div>
           </div>
         </div>
       </div>

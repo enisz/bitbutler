@@ -65,7 +65,8 @@ ng-select.ng-select .ng-select-container .ng-input input {
 }
 
 .ng-dropdown-panel {
-  background-color: var(--bb-ng-panel) !important;
+  background: color-mix(in srgb, var(--bs-dropdown-bg) 92%, transparent) !important;
+  backdrop-filter: blur(8px);
   border: 1px solid var(--bb-ng-border) !important;
   border-radius: 12px !important;
   overflow: hidden;
@@ -87,9 +88,9 @@ ng-select.ng-select .ng-select-container .ng-input input {
 }
 
 .ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-selected {
-  background-color: var(--bb-ng-active-bg) !important;
-  box-shadow: inset 3px 0 0 var(--bb-ng-accent) !important;
+  background-color: var(--bb-active-list-item-bg) !important;
   color: var(--bb-ng-accent) !important;
+  font-weight: normal !important;
 }
 
 .ng-dropdown-panel .ng-dropdown-panel-items {

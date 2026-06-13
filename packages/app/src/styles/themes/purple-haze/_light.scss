@@ -62,6 +62,10 @@ $ph-light-check-marker-colors: (
     --bs-card-cap-bg: #f0f0f0;
     --bs-card-cap-color: #{$ph-light-body-color};
 
+    --bs-tooltip-bg: var(--bs-card-cap-bg);
+    --bs-tooltip-color: var(--bs-body-color);
+    --bs-tooltip-opacity: 0.95;
+
     --bs-link-color: #{$ph-light-primary};
     --bs-link-hover-color: #4a148c;
 
@@ -118,10 +122,6 @@ $ph-light-check-marker-colors: (
     --bb-dp-accent: var(--bs-primary);
     --bb-dp-accent-ink: #fff;
     --bb-dp-range: color-mix(in srgb, var(--bb-dp-accent) 22%, transparent);
-
-    --bs-tooltip-bg: var(--bs-secondary);
-    --bs-tooltip-color: var(--bb-secondary-ink);
-    --bs-tooltip-opacity: 0.95;
 
     --bb-toast-bg: #ffffff;
     --bb-toast-border-opacity: 1;

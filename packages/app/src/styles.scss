@@ -115,10 +115,6 @@ ngb-modal-window {
   outline-offset: -2px;
 }
 
-.bb-ag-dark .ag-row-selected {
-  box-shadow: inset 3px 0 0 var(--bb-grid-selected-accent);
-}
-
 .form-control,
 .form-select,
 .input-group-text {
@@ -382,6 +378,11 @@ ngb-modal-window {
       color: var(--bs-body-color) !important;
     }
 
+    &.active {
+      background: var(--bb-active-list-item-bg) !important;
+      color: var(--bs-body-color) !important;
+    }
+
     &:focus {
       outline: none;
       background: color-mix(in srgb, var(--bs-body-color) 7%, transparent);
@@ -563,7 +564,6 @@ ngb-typeahead-window .dropdown-item.active,
 ngb-typeahead-window .dropdown-item:active {
   background-color: color-mix(in srgb, var(--bb-control-hover-bg) 85%, transparent) !important;
   color: var(--bb-control-text) !important;
-  box-shadow: inset 3px 0 0 var(--bb-control-focus-border) !important;
 }
 
 ngb-typeahead-window .dropdown-item:focus {
@@ -634,11 +634,6 @@ ngb-typeahead-window.dropdown-menu {
   }
 
   align-items: start;
-}
-
-html ngb-typeahead-window.dropdown-menu .dropdown-item.active,
-html ngb-typeahead-window.dropdown-menu .dropdown-item:active {
-  box-shadow: none !important;
 }
 
 .input-group {
