@@ -696,6 +696,7 @@ html ngb-typeahead-window.dropdown-menu .dropdown-item:active {
 }
 
 .form-check {
+  width: fit-content;
   margin-bottom: 0.5rem;
   cursor: pointer;
 
@@ -718,6 +719,10 @@ html ngb-typeahead-window.dropdown-menu .dropdown-item:active {
     background-color: var(--bb-control-bg) !important;
     border: 1px solid var(--bb-control-border) !important;
     border-radius: 4px !important;
+
+    &[type='radio'] {
+      border-radius: 50% !important;
+    }
   }
 
   &:hover:not(:disabled):not(:checked) {
@@ -727,10 +732,6 @@ html ngb-typeahead-window.dropdown-menu .dropdown-item:active {
   &:focus {
     border-color: var(--bb-control-focus-border) !important;
     box-shadow: 0 0 0 0.2rem var(--bb-control-focus-ring) !important;
-  }
-
-  &[type='radio'] {
-    border-radius: 50% !important;
   }
 
   &:disabled {
