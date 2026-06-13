@@ -48,7 +48,7 @@
 <div class="modal-footer">
   <button
     type="button"
-    class="btn btn-secondary"
+    class="btn btn-primary"
     (click)="handleSubmit()"
     [disabled]="!canSave()"
     autofocus
@@ -58,7 +58,7 @@
   @if (hasClearableValues()) {
     <button
       type="button"
-      class="btn btn-link text-danger"
+      class="btn btn-dashed-danger"
       (click)="clearAll()"
       [disabled]="!canSave()"
     >

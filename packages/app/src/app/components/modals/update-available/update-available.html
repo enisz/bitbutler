@@ -83,7 +83,11 @@
 
   <div class="modal-footer border-0">
     @if (latestRelease; as release) {
-      <button type="button" class="btn btn-secondary" (click)="downloadAsset(release.html_url)">
+      <button
+        type="button"
+        class="btn btn-dashed-secondary"
+        (click)="downloadAsset(release.html_url)"
+      >
         {{ 'components.modals.update-available.button.view-on-github' | translate }}
       </button>
     }

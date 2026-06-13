@@ -130,11 +130,11 @@
   }
 </div>
 
-<div class="modal-footer justify-content-between">
-  <button type="button" class="btn btn-outline-primary" (click)="openEditor()" [disabled]="busy()">
+<div class="modal-footer justify-content-end">
+  <button type="button" class="btn btn-primary" (click)="openEditor()" [disabled]="busy()">
     {{ 'general.button.add-server' | translate }}
   </button>
-  <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss()">
+  <button type="button" class="btn btn-link" (click)="activeModal.dismiss()">
     {{ 'general.button.close' | translate }}
   </button>
 </div>

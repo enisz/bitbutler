@@ -371,15 +371,15 @@
 
 <div class="modal-footer">
   @if (isRunning()) {
-    <button type="button" class="btn btn-secondary" (click)="cancelImport()">
+    <button type="button" class="btn btn-link" (click)="cancelImport()">
       {{ 'general.button.cancel' | translate }}
     </button>
   } @else if (isDone() || isError()) {
-    <button type="button" class="btn btn-secondary" (click)="close()">
+    <button type="button" class="btn btn-link" (click)="close()">
       {{ 'general.button.close' | translate }}
     </button>
   } @else if (isReady()) {
-    <button type="button" class="btn btn-secondary" (click)="startImport()">
+    <button type="button" class="btn btn-primary" (click)="startImport()">
       {{ 'components.modals.import-torrents.button.import' | translate }}
     </button>
     <button type="button" class="btn btn-link" (click)="close()">
