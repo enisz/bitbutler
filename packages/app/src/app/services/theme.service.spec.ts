@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { GeneralSettingsService } from './general-settings.service';
-import { ThemeService } from './theme.service';
+import { THEME_FAMILIES, ThemeService, getFamilyLogoUrl } from './theme.service';
 
 describe('ThemeService', () => {
   let service: ThemeService;
@@ -68,5 +68,33 @@ describe('ThemeService', () => {
   it('should return light or dark from getSystemMode()', () => {
     const mode = service.getSystemMode();
     expect(['light', 'dark']).toContain(mode);
+  });
+
+  it('should export THEME_FAMILIES with 8 entries', () => {
+    expect(THEME_FAMILIES).toHaveLength(8);
+    expect(THEME_FAMILIES.map((f) => f.value)).toEqual([
+      'bitbutler',
+      'aurora',
+      'mint-green',
+      'purple-haze',
+      'ocean-breeze',
+      'pumpkin-spice',
+      'deep-sea',
+      'crimson-ember',
+    ]);
+  });
+
+  it('should label each theme family for display', () => {
+    expect(THEME_FAMILIES.find((f) => f.value === 'mint-green')?.label).toBe('Mint Green');
+  });
+
+  describe('getFamilyLogoUrl', () => {
+    it('should build a logo URL for the given family', () => {
+      expect(getFamilyLogoUrl('aurora')).toBe('assets/images/bitbutler-logo-aurora.png');
+    });
+
+    it('should use the exact family name in the URL', () => {
+      expect(getFamilyLogoUrl('mint-green')).toBe('assets/images/bitbutler-logo-mint-green.png');
+    });
   });
 });
