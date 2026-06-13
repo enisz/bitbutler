@@ -23,6 +23,7 @@ import { CredentialPrompt } from '../../components/modals/credential-prompt/cred
 import { ManageServers } from '../../components/modals/manage-servers/manage-servers';
 import { CommandBusService } from '../../services/command-bus.service';
 import { ElectronService } from '../../services/electron.service';
+import { GeneralSettingsService } from '../../services/general-settings.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { ServerService } from '../../services/server.service';
@@ -67,6 +68,7 @@ export class Login implements OnInit {
   private readonly electronService = inject(ElectronService);
   private readonly commandBusService = inject(CommandBusService);
   private readonly translateService = inject(TranslateService);
+  private readonly generalSettingsService = inject(GeneralSettingsService);
 
   private readonly languageChanged = toSignal(this.translateService.onLangChange);
 
@@ -250,4 +252,21 @@ export class Login implements OnInit {
 
   public canConnect = () => !this.loading() && this.servers().length > 0;
   public goToRelease = () => this.electronService.goToRelease();
+
+  public setFamily(family: ThemeFamily): void {
+    this.themeService.setFamily(family);
+  }
+
+  public setMode(mode: ThemeMode): void {
+    this.themeService.setMode(mode);
+  }
+
+  public async setLanguage(lang: string): Promise<void> {
+    if (this.translateService.getCurrentLang() === lang) return;
+
+    const settings = await this.generalSettingsService.load();
+    settings.language.language = lang;
+    await this.generalSettingsService.save(settings);
+    await firstValueFrom(this.translateService.use(lang));
+  }
 }

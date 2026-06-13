@@ -6,6 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ManageServers } from '../../components/modals/manage-servers/manage-servers';
 import { CommandBusService } from '../../services/command-bus.service';
 import { ElectronService } from '../../services/electron.service';
+import { GeneralSettingsService } from '../../services/general-settings.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { ServerService } from '../../services/server.service';
@@ -37,6 +38,7 @@ describe('Login', () => {
     setMode: ReturnType<typeof vi.fn>;
   };
   let translateMock: ReturnType<typeof mockTranslateService>;
+  let generalSettingsMock: { load: ReturnType<typeof vi.fn>; save: ReturnType<typeof vi.fn> };
   let electronMock: {
     getBitButlerVersion: ReturnType<typeof vi.fn>;
     goToRelease: ReturnType<typeof vi.fn>;
@@ -62,6 +64,10 @@ describe('Login', () => {
       setMode: vi.fn(),
     };
     translateMock = mockTranslateService();
+    generalSettingsMock = {
+      load: vi.fn().mockResolvedValue({ language: { language: 'us' } }),
+      save: vi.fn().mockResolvedValue(undefined),
+    };
     electronMock = {
       getBitButlerVersion: vi.fn().mockReturnValue('1.0.0'),
       goToRelease: vi.fn(),
@@ -81,6 +87,7 @@ describe('Login', () => {
         { provide: ServerService, useValue: { update: vi.fn().mockResolvedValue(undefined) } },
         { provide: ThemeService, useValue: themeMock },
         { provide: TranslateService, useValue: translateMock },
+        { provide: GeneralSettingsService, useValue: generalSettingsMock },
         { provide: ToastService, useValue: { danger: vi.fn() } },
         { provide: ElectronService, useValue: electronMock },
         { provide: CommandBusService, useValue: { emit: vi.fn() } },
@@ -195,6 +202,36 @@ describe('Login', () => {
   describe('getFamilyLogoUrl', () => {
     it('should build a logo URL for a given family', () => {
       expect(component.getFamilyLogoUrl('aurora')).toBe('assets/images/bitbutler-logo-aurora.png');
+    });
+  });
+
+  describe('setFamily', () => {
+    it('should delegate to themeService.setFamily', () => {
+      component.setFamily('aurora');
+      expect(themeMock.setFamily).toHaveBeenCalledWith('aurora');
+    });
+  });
+
+  describe('setMode', () => {
+    it('should delegate to themeService.setMode', () => {
+      component.setMode('dark');
+      expect(themeMock.setMode).toHaveBeenCalledWith('dark');
+    });
+  });
+
+  describe('setLanguage', () => {
+    it('should do nothing when the language is already active', async () => {
+      translateMock.getCurrentLang.mockReturnValue('us');
+      await component.setLanguage('us');
+      expect(generalSettingsMock.load).not.toHaveBeenCalled();
+      expect(translateMock.use).not.toHaveBeenCalled();
+    });
+
+    it('should persist and switch the language when it changes', async () => {
+      translateMock.getCurrentLang.mockReturnValue('us');
+      await component.setLanguage('hu');
+      expect(generalSettingsMock.save).toHaveBeenCalledWith({ language: { language: 'hu' } });
+      expect(translateMock.use).toHaveBeenCalledWith('hu');
     });
   });
 
