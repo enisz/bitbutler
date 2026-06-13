@@ -2,6 +2,7 @@ import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateService } from '@ngx-translate/core';
 import { ManageServers } from '../../components/modals/manage-servers/manage-servers';
 import { CommandBusService } from '../../services/command-bus.service';
 import { ElectronService } from '../../services/electron.service';
@@ -11,6 +12,7 @@ import { ServerService } from '../../services/server.service';
 import { ThemeService } from '../../services/theme.service';
 import { ToastService } from '../../services/toast.service';
 import { WindowService } from '../../services/window.service';
+import { mockTranslateService } from '../../test-utils/translate.mock';
 import { Login } from './login';
 
 describe('Login', () => {
@@ -29,8 +31,12 @@ describe('Login', () => {
   };
   let themeMock: {
     family: ReturnType<typeof signal<string>>;
+    mode: ReturnType<typeof signal<string>>;
     effectiveMode: ReturnType<typeof signal<'light' | 'dark'>>;
+    setFamily: ReturnType<typeof vi.fn>;
+    setMode: ReturnType<typeof vi.fn>;
   };
+  let translateMock: ReturnType<typeof mockTranslateService>;
   let electronMock: {
     getBitButlerVersion: ReturnType<typeof vi.fn>;
     goToRelease: ReturnType<typeof vi.fn>;
@@ -48,7 +54,14 @@ describe('Login', () => {
       isAutoLoginSuppressed: vi.fn().mockReturnValue(false),
       clearAutoLoginSuppression: vi.fn(),
     };
-    themeMock = { family: signal('bitbutler'), effectiveMode: signal<'light' | 'dark'>('dark') };
+    themeMock = {
+      family: signal('bitbutler'),
+      mode: signal('system'),
+      effectiveMode: signal<'light' | 'dark'>('dark'),
+      setFamily: vi.fn(),
+      setMode: vi.fn(),
+    };
+    translateMock = mockTranslateService();
     electronMock = {
       getBitButlerVersion: vi.fn().mockReturnValue('1.0.0'),
       goToRelease: vi.fn(),
@@ -67,6 +80,7 @@ describe('Login', () => {
         { provide: ServerStoreService, useValue: serverStoreMock },
         { provide: ServerService, useValue: { update: vi.fn().mockResolvedValue(undefined) } },
         { provide: ThemeService, useValue: themeMock },
+        { provide: TranslateService, useValue: translateMock },
         { provide: ToastService, useValue: { danger: vi.fn() } },
         { provide: ElectronService, useValue: electronMock },
         { provide: CommandBusService, useValue: { emit: vi.fn() } },
@@ -135,6 +149,52 @@ describe('Login', () => {
     it('should build a URL from the current theme family', () => {
       themeMock.family.set('aurora');
       expect(component.logoUrl()).toBe('assets/images/bitbutler-logo-aurora.png');
+    });
+  });
+
+  describe('families', () => {
+    it('should expose the shared THEME_FAMILIES list', () => {
+      expect(component.families).toHaveLength(8);
+      expect(component.families[0]).toEqual({ value: 'bitbutler', label: 'BitButler' });
+    });
+  });
+
+  describe('languages', () => {
+    it('should list the available languages', () => {
+      expect(component.languages().map((l) => l.value)).toEqual(['us', 'hu']);
+    });
+  });
+
+  describe('modes', () => {
+    it('should list the available theme modes', () => {
+      expect(component.modes().map((m) => m.value)).toEqual(['light', 'dark', 'system']);
+    });
+  });
+
+  describe('currentFamily', () => {
+    it('should reflect the active theme family', () => {
+      themeMock.family.set('aurora');
+      expect(component.currentFamily()).toBe('aurora');
+    });
+  });
+
+  describe('currentMode', () => {
+    it('should reflect the active theme mode', () => {
+      themeMock.mode.set('dark');
+      expect(component.currentMode()).toBe('dark');
+    });
+  });
+
+  describe('currentLang', () => {
+    it('should reflect the active language', () => {
+      translateMock.getCurrentLang.mockReturnValue('hu');
+      expect(component.currentLang()).toBe('hu');
+    });
+  });
+
+  describe('getFamilyLogoUrl', () => {
+    it('should build a logo URL for a given family', () => {
+      expect(component.getFamilyLogoUrl('aurora')).toBe('assets/images/bitbutler-logo-aurora.png');
     });
   });
 

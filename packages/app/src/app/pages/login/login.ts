@@ -1,4 +1,4 @@
-import { NgOptimizedImage } from '@angular/common';
+import { NgClass, NgOptimizedImage } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -8,14 +8,16 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ServerRecord } from '@bitbutler/shared';
-import { NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faCircleHalfStroke, faLanguage, faPalette } from '@fortawesome/free-solid-svg-icons';
+import { NgbDropdownModule, NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgLabelTemplateDirective, NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { debounceTime, fromEvent } from 'rxjs';
+import { debounceTime, firstValueFrom, fromEvent } from 'rxjs';
 import { AppLoader } from '../../components/app-loader/app-loader';
 import { CredentialPrompt } from '../../components/modals/credential-prompt/credential-prompt';
 import { ManageServers } from '../../components/modals/manage-servers/manage-servers';
@@ -24,7 +26,13 @@ import { ElectronService } from '../../services/electron.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { ServerService } from '../../services/server.service';
-import { ThemeService } from '../../services/theme.service';
+import {
+  THEME_FAMILIES,
+  ThemeFamily,
+  ThemeMode,
+  ThemeService,
+  getFamilyLogoUrl,
+} from '../../services/theme.service';
 import { ToastService } from '../../services/toast.service';
 import { WindowService } from '../../services/window.service';
 import { setModalInput } from '../../utils/modal-input';
@@ -34,8 +42,11 @@ import { setModalInput } from '../../utils/modal-input';
   standalone: true,
   imports: [
     NgOptimizedImage,
+    NgClass,
     ReactiveFormsModule,
     NgbTooltipModule,
+    NgbDropdownModule,
+    FontAwesomeModule,
     NgSelectComponent,
     NgLabelTemplateDirective,
     TranslatePipe,
@@ -57,9 +68,51 @@ export class Login implements OnInit {
   private readonly commandBusService = inject(CommandBusService);
   private readonly translateService = inject(TranslateService);
 
-  public readonly logoUrl = computed(
-    () => `assets/images/bitbutler-logo-${this.themeService.family()}.png`,
-  );
+  private readonly languageChanged = toSignal(this.translateService.onLangChange);
+
+  public readonly logoUrl = computed(() => getFamilyLogoUrl(this.themeService.family()));
+
+  public readonly icons = { faLanguage, faPalette, faCircleHalfStroke };
+
+  public readonly families = THEME_FAMILIES;
+
+  public readonly languages = computed<{ value: string; label: string }[]>(() => {
+    this.languageChanged();
+
+    return [
+      { value: 'us', label: this.translateService.instant('language.us') },
+      { value: 'hu', label: this.translateService.instant('language.hu') },
+    ].sort((a, b) => a.label.localeCompare(b.label));
+  });
+
+  public readonly modes = computed<{ value: ThemeMode; label: string }[]>(() => {
+    this.languageChanged();
+
+    return [
+      {
+        value: 'light',
+        label: this.translateService.instant('pages.settings.tab.general.mode.light'),
+      },
+      {
+        value: 'dark',
+        label: this.translateService.instant('pages.settings.tab.general.mode.dark'),
+      },
+      {
+        value: 'system',
+        label: this.translateService.instant('pages.settings.tab.general.mode.system'),
+      },
+    ];
+  });
+
+  public readonly currentFamily = this.themeService.family;
+  public readonly currentMode = this.themeService.mode;
+
+  public readonly currentLang = computed(() => {
+    this.languageChanged();
+    return this.translateService.getCurrentLang();
+  });
+
+  public readonly getFamilyLogoUrl = getFamilyLogoUrl;
 
   public servers = this.serverStoreService.servers;
   public loading = this.serverStoreService.loading;
