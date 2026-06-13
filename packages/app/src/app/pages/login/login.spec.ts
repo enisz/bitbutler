@@ -1,8 +1,10 @@
 import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
+import { of } from 'rxjs';
 import { ManageServers } from '../../components/modals/manage-servers/manage-servers';
 import { CommandBusService } from '../../services/command-bus.service';
 import { ElectronService } from '../../services/electron.service';
@@ -64,6 +66,7 @@ describe('Login', () => {
       setMode: vi.fn(),
     };
     translateMock = mockTranslateService();
+    translateMock.get.mockImplementation((key: string) => of(key));
     generalSettingsMock = {
       load: vi.fn().mockResolvedValue({ language: { language: 'us' } }),
       save: vi.fn().mockResolvedValue(undefined),
@@ -195,6 +198,7 @@ describe('Login', () => {
   describe('currentLang', () => {
     it('should reflect the active language', () => {
       translateMock.getCurrentLang.mockReturnValue('hu');
+      translateMock.onLangChange.next({ lang: 'hu', translations: {} });
       expect(component.currentLang()).toBe('hu');
     });
   });
@@ -232,6 +236,20 @@ describe('Login', () => {
       await component.setLanguage('hu');
       expect(generalSettingsMock.save).toHaveBeenCalledWith({ language: { language: 'hu' } });
       expect(translateMock.use).toHaveBeenCalledWith('hu');
+    });
+  });
+
+  describe('quick settings toolbar', () => {
+    it('should render three icon-only quick-setting buttons', () => {
+      const buttons = fixture.debugElement.queryAll(By.css('.bb-quick-setting'));
+      expect(buttons.length).toBe(3);
+    });
+
+    it('should label each quick-setting button for accessibility', () => {
+      const buttons = fixture.debugElement.queryAll(By.css('.bb-quick-setting'));
+      for (const button of buttons) {
+        expect(button.attributes['aria-label']).toBeTruthy();
+      }
     });
   });
 
