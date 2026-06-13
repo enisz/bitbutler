@@ -16,6 +16,14 @@ $bb-dark-body-color: #f1e2e0;
 $bb-dark-border: #4e110c;
 $bb-dark-surface: #280905;
 
+$bb-dark-check-marker-colors: (
+  'default': $bb-dark-secondary,
+  'success': $bb-dark-success,
+  'danger': $bb-dark-danger,
+  'warning': $bb-dark-warning,
+  'info': $bb-dark-info,
+);
+
 @mixin install() {
   :root[data-bb-theme='crimson-ember'][data-bs-theme='dark'] {
     --bb-black: #000;
@@ -147,5 +155,50 @@ $bb-dark-surface: #280905;
     --bs-info-bg-subtle: #{color.mix(black, $bb-dark-info, 80%)};
     --bs-info-border-subtle: #{color.mix(black, $bb-dark-info, 40%)};
     --bs-info-text-emphasis: #{color.mix(white, $bb-dark-info, 40%)};
+  }
+}
+
+[data-bb-theme='crimson-ember'][data-bs-theme='dark'] {
+  .form-switch .form-check-input {
+    background-color: color-mix(in srgb, var(--bb-control-bg) 85%, #000 15%);
+    border-color: var(--bb-control-border);
+    border-radius: var(--bb-control-radius, 999px);
+
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba(241,226,224,0.45)'/%3e%3c/svg%3e");
+
+    &:focus {
+      border-color: var(--bb-control-focus-border);
+      box-shadow: 0 0 0 0.2rem var(--bb-control-focus-ring);
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba(241,226,224,0.85)'/%3e%3c/svg%3e");
+    }
+  }
+
+  .form-switch .form-check-input:checked {
+    background-color: var(--bb-accent);
+    border-color: var(--bb-accent);
+
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%231a0604'/%3e%3c/svg%3e");
+  }
+
+  .form-switch .form-check-input:disabled {
+    opacity: 0.45;
+  }
+
+  .form-check-input[type='radio'],
+  .form-check-input[type='checkbox']:not(.form-switch .form-check-input) {
+    background-color: var(--bs-body-bg) !important;
+  }
+
+  @each $variant, $hex in $bb-dark-check-marker-colors {
+    $hex-code: '%23' + string.slice('#{$hex}', 2);
+    $scope: if($variant == 'default', '', '.bb-check-#{$variant} ');
+
+    #{$scope}.form-check-input[type='radio']:checked {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='#{$hex-code}'/%3e%3c/svg%3e");
+    }
+
+    #{$scope}.form-check-input[type='checkbox']:checked:not(.form-switch .form-check-input) {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='#{$hex-code}' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10l3 3l6-6'/%3e%3c/svg%3e");
+    }
   }
 }

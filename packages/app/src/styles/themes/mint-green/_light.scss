@@ -14,6 +14,14 @@ $bb-light-body-color: #344e41;
 $bb-light-border: #dad7cd;
 $bb-light-surface: #e8eae8;
 
+$bb-light-check-marker-colors: (
+  'default': $bb-light-secondary,
+  'success': $bb-light-success,
+  'danger': $bb-light-danger,
+  'warning': $bb-light-warning,
+  'info': $bb-light-info,
+);
+
 @mixin install() {
   :root[data-bb-theme='mint-green'][data-bs-theme='light'] {
     --bb-black: #000;
@@ -148,5 +156,49 @@ $bb-light-surface: #e8eae8;
     --bs-info-bg-subtle: #{color.mix(white, $bb-light-info, 80%)};
     --bs-info-border-subtle: #{color.mix(white, $bb-light-info, 60%)};
     --bs-info-text-emphasis: #{color.mix(black, $bb-light-info, 60%)};
+  }
+}
+
+[data-bb-theme='mint-green'][data-bs-theme='light'] {
+  .form-switch .form-check-input {
+    background-color: var(--bb-control-bg);
+    border-color: var(--bb-control-border);
+    border-radius: var(--bb-control-radius, 12px);
+
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23588157' opacity='0.45'/%3e%3c/svg%3e");
+
+    &:focus {
+      border-color: var(--bb-control-focus-border);
+      box-shadow: 0 0 0 0.2rem var(--bb-control-focus-ring);
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23588157'/%3e%3c/svg%3e");
+    }
+  }
+
+  .form-switch .form-check-input:checked {
+    background-color: var(--bb-accent);
+    border-color: var(--bb-accent);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23344e41'/%3e%3c/svg%3e");
+  }
+
+  .form-switch .form-check-input:disabled {
+    opacity: 0.45;
+  }
+
+  .form-check-input[type='radio'],
+  .form-check-input[type='checkbox']:not(.form-switch .form-check-input) {
+    background-color: var(--bs-body-bg) !important;
+  }
+
+  @each $variant, $hex in $bb-light-check-marker-colors {
+    $hex-code: '%23' + string.slice('#{$hex}', 2);
+    $scope: if($variant == 'default', '', '.bb-check-#{$variant} ');
+
+    #{$scope}.form-check-input[type='radio']:checked {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='#{$hex-code}'/%3e%3c/svg%3e");
+    }
+
+    #{$scope}.form-check-input[type='checkbox']:checked:not(.form-switch .form-check-input) {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='#{$hex-code}' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10l3 3l6-6'/%3e%3c/svg%3e");
+    }
   }
 }
