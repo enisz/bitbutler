@@ -33,7 +33,13 @@ import {
 import { CommandBusService } from '../../../services/command-bus.service';
 import { GeneralSettingsService } from '../../../services/general-settings.service';
 import { ServerStoreService } from '../../../services/server-store.service';
-import { ThemeFamily, ThemeMode, ThemeService } from '../../../services/theme.service';
+import {
+  THEME_FAMILIES,
+  ThemeFamily,
+  ThemeMode,
+  ThemeService,
+  getFamilyLogoUrl,
+} from '../../../services/theme.service';
 import { SettingsStateService } from '../settings-state.service';
 import { SettingsTabComponent } from '../settings.interface';
 
@@ -119,16 +125,7 @@ export class General implements SettingsTabComponent {
     ];
   });
 
-  public families: NgSelectItem[] = [
-    { value: 'bitbutler', label: 'BitButler' },
-    { value: 'aurora', label: 'Aurora' },
-    { value: 'mint-green', label: 'Mint Green' },
-    { value: 'purple-haze', label: 'Purple Haze' },
-    { value: 'ocean-breeze', label: 'Ocean Breeze' },
-    { value: 'pumpkin-spice', label: 'Pumpkin Spice' },
-    { value: 'deep-sea', label: 'Deep Sea' },
-    { value: 'crimson-ember', label: 'Crimson Ember' },
-  ];
+  public families = THEME_FAMILIES;
 
   public modes = computed<NgSelectItem[]>(() => {
     this.languageChanged();
@@ -154,9 +151,7 @@ export class General implements SettingsTabComponent {
     faCircleQuestion,
   };
 
-  public getFamilyLogo(family: string): string {
-    return `assets/images/bitbutler-logo-${family}.png`;
-  }
+  public getFamilyLogo = getFamilyLogoUrl;
 
   public generalSettingsForm = new FormGroup({
     behavior: new FormGroup({

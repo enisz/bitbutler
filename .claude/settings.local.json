@@ -95,7 +95,11 @@
       "Bash(xargs tail -40)",
       "Bash(Select-String -Pattern \"Server\")",
       "Bash(gh release *)",
-      "Bash(gh label *)"
+      "Bash(gh label *)",
+      "Bash(npx --no-install sass --version)",
+      "Bash(command -v chromium-cli)",
+      "Read(//usr/local/**)",
+      "Bash(npm ls *)"
     ]
   }
 }

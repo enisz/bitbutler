@@ -1,4 +1,4 @@
-import { EMPTY, Subject } from 'rxjs';
+import { EMPTY, Subject, of } from 'rxjs';
 
 export function mockTranslateService() {
   return {
@@ -10,5 +10,6 @@ export function mockTranslateService() {
     onFallbackLangChange: new Subject(),
     getCurrentLang: vi.fn().mockReturnValue('en'),
     getFallbackLang: vi.fn().mockReturnValue(null),
+    use: vi.fn().mockReturnValue(of(undefined)),
   };
 }

@@ -47,19 +47,6 @@
   }
 }
 
-.hero-version-badge {
-  position: absolute;
-  top: 0;
-  right: -10px;
-  background-color: rgba(var(--bs-secondary-rgb), 0.1);
-  border: 1px solid rgba(var(--bs-secondary-rgb), 0.35);
-  color: var(--bs-body-color);
-  font-size: 0.75rem;
-  padding: 0.25rem 0.6rem;
-  border-radius: 20px;
-  font-family: monospace;
-}
-
 .hero-title {
   color: var(--bs-primary);
   font-size: 2.75rem;
@@ -141,4 +128,8 @@
   .mobile-brand-header {
     margin-bottom: 2rem !important;
   }
+}
+
+.bb-quick-setting.dropdown-toggle::after {
+  display: none;
 }

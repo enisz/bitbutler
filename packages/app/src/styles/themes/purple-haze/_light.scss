@@ -14,6 +14,14 @@ $ph-light-body-color: #311b92;
 $ph-light-border: #d1c4e9;
 $ph-light-surface: #ede7f6;
 
+$ph-light-check-marker-colors: (
+  'default': $ph-light-secondary,
+  'success': $ph-light-success,
+  'danger': $ph-light-danger,
+  'warning': $ph-light-warning,
+  'info': $ph-light-info,
+);
+
 @mixin install() {
   :root[data-bb-theme='purple-haze'][data-bs-theme='light'] {
     --bb-black: #000;
@@ -53,6 +61,10 @@ $ph-light-surface: #ede7f6;
     --bs-card-border-color: #{$ph-light-border};
     --bs-card-cap-bg: #f0f0f0;
     --bs-card-cap-color: #{$ph-light-body-color};
+
+    --bs-tooltip-bg: var(--bs-card-cap-bg);
+    --bs-tooltip-color: var(--bs-body-color);
+    --bs-tooltip-opacity: 0.95;
 
     --bs-link-color: #{$ph-light-primary};
     --bs-link-hover-color: #4a148c;
@@ -111,10 +123,6 @@ $ph-light-surface: #ede7f6;
     --bb-dp-accent-ink: #fff;
     --bb-dp-range: color-mix(in srgb, var(--bb-dp-accent) 22%, transparent);
 
-    --bs-tooltip-bg: var(--bs-secondary);
-    --bs-tooltip-color: var(--bb-secondary-ink);
-    --bs-tooltip-opacity: 0.95;
-
     --bb-toast-bg: #ffffff;
     --bb-toast-border-opacity: 1;
     --bb-toast-glow-opacity: 0.05;
@@ -148,5 +156,49 @@ $ph-light-surface: #ede7f6;
     --bs-info-bg-subtle: #{color.mix(white, $ph-light-info, 80%)};
     --bs-info-border-subtle: #{color.mix(white, $ph-light-info, 60%)};
     --bs-info-text-emphasis: #{color.mix(black, $ph-light-info, 60%)};
+  }
+}
+
+[data-bb-theme='purple-haze'][data-bs-theme='light'] {
+  .form-switch .form-check-input {
+    background-color: var(--bb-control-bg);
+    border-color: var(--bb-control-border);
+    border-radius: var(--bb-control-radius, 12px);
+
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%236a1b9a' opacity='0.45'/%3e%3c/svg%3e");
+
+    &:focus {
+      border-color: var(--bb-control-focus-border);
+      box-shadow: 0 0 0 0.2rem var(--bb-control-focus-ring);
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%236a1b9a'/%3e%3c/svg%3e");
+    }
+  }
+
+  .form-switch .form-check-input:checked {
+    background-color: var(--bb-accent);
+    border-color: var(--bb-accent);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23311b92'/%3e%3c/svg%3e");
+  }
+
+  .form-switch .form-check-input:disabled {
+    opacity: 0.45;
+  }
+
+  .form-check-input[type='radio'],
+  .form-check-input[type='checkbox']:not(.form-switch .form-check-input) {
+    background-color: var(--bs-body-bg) !important;
+  }
+
+  @each $variant, $hex in $ph-light-check-marker-colors {
+    $hex-code: '%23' + string.slice('#{$hex}', 2);
+    $scope: if($variant == 'default', '', '.bb-check-#{$variant} ');
+
+    #{$scope}.form-check-input[type='radio']:checked {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='#{$hex-code}'/%3e%3c/svg%3e");
+    }
+
+    #{$scope}.form-check-input[type='checkbox']:checked:not(.form-switch .form-check-input) {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='#{$hex-code}' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10l3 3l6-6'/%3e%3c/svg%3e");
+    }
   }
 }

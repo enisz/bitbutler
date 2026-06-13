@@ -10,8 +10,6 @@
   &.active {
     background-color: var(--bb-active-list-item-bg);
     color: var(--bs-body-color);
-    font-weight: 600;
-    box-shadow: inset 3px 0 0 var(--bb-accent);
     border-color: var(--bb-active-list-item-bg) !important;
 
     .bb-status-badge {

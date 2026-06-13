@@ -50,20 +50,20 @@
     <div class="d-flex justify-content-between align-items-center">
       <div class="d-flex gap-2">
         <button
-          class="btn btn-sm btn-outline-secondary px-3"
+          class="btn btn-dashed-secondary px-3"
           (click)="openExternalUrl('https://github.com/enisz/bitbutler')"
         >
           <fa-icon [icon]="icons.faGithub" class="me-2"></fa-icon>github@bitbutler
         </button>
         <button
-          class="btn btn-sm btn-outline-secondary px-3"
+          class="btn btn-dashed-secondary px-3"
           (click)="openExternalUrl('https://github.com/enisz')"
         >
           <fa-icon [icon]="icons.faUser" class="me-2"></fa-icon>@enisz
         </button>
       </div>
 
-      <button type="button" class="btn btn-secondary px-4" (click)="activeModal.close()" autofocus>
+      <button type="button" class="btn btn-link px-4" (click)="activeModal.close()" autofocus>
         {{ 'general.button.close' | translate }}
       </button>
     </div>

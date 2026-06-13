@@ -12,6 +12,21 @@ export type ThemeFamily =
   | 'crimson-ember';
 export type ThemeMode = 'light' | 'dark' | 'system';
 
+export const THEME_FAMILIES: { value: ThemeFamily; label: string }[] = [
+  { value: 'bitbutler', label: 'BitButler' },
+  { value: 'aurora', label: 'Aurora' },
+  { value: 'mint-green', label: 'Mint Green' },
+  { value: 'purple-haze', label: 'Purple Haze' },
+  { value: 'ocean-breeze', label: 'Ocean Breeze' },
+  { value: 'pumpkin-spice', label: 'Pumpkin Spice' },
+  { value: 'deep-sea', label: 'Deep Sea' },
+  { value: 'crimson-ember', label: 'Crimson Ember' },
+];
+
+export function getFamilyLogoUrl(family: string): string {
+  return `assets/images/bitbutler-logo-${family}.png`;
+}
+
 const THEME_FAMILY_KEY = 'bb-theme-family';
 const THEME_MODE_KEY = 'bb-theme-mode';
 

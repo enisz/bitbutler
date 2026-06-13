@@ -1,16 +1,21 @@
 import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateService } from '@ngx-translate/core';
+import { of } from 'rxjs';
 import { ManageServers } from '../../components/modals/manage-servers/manage-servers';
 import { CommandBusService } from '../../services/command-bus.service';
 import { ElectronService } from '../../services/electron.service';
+import { GeneralSettingsService } from '../../services/general-settings.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { ServerService } from '../../services/server.service';
 import { ThemeService } from '../../services/theme.service';
 import { ToastService } from '../../services/toast.service';
 import { WindowService } from '../../services/window.service';
+import { mockTranslateService } from '../../test-utils/translate.mock';
 import { Login } from './login';
 
 describe('Login', () => {
@@ -29,8 +34,13 @@ describe('Login', () => {
   };
   let themeMock: {
     family: ReturnType<typeof signal<string>>;
+    mode: ReturnType<typeof signal<string>>;
     effectiveMode: ReturnType<typeof signal<'light' | 'dark'>>;
+    setFamily: ReturnType<typeof vi.fn>;
+    setMode: ReturnType<typeof vi.fn>;
   };
+  let translateMock: ReturnType<typeof mockTranslateService>;
+  let generalSettingsMock: { load: ReturnType<typeof vi.fn>; save: ReturnType<typeof vi.fn> };
   let electronMock: {
     getBitButlerVersion: ReturnType<typeof vi.fn>;
     goToRelease: ReturnType<typeof vi.fn>;
@@ -48,7 +58,19 @@ describe('Login', () => {
       isAutoLoginSuppressed: vi.fn().mockReturnValue(false),
       clearAutoLoginSuppression: vi.fn(),
     };
-    themeMock = { family: signal('bitbutler'), effectiveMode: signal<'light' | 'dark'>('dark') };
+    themeMock = {
+      family: signal('bitbutler'),
+      mode: signal('system'),
+      effectiveMode: signal<'light' | 'dark'>('dark'),
+      setFamily: vi.fn(),
+      setMode: vi.fn(),
+    };
+    translateMock = mockTranslateService();
+    translateMock.get.mockImplementation((key: string) => of(key));
+    generalSettingsMock = {
+      load: vi.fn().mockResolvedValue({ language: { language: 'us' } }),
+      save: vi.fn().mockResolvedValue(undefined),
+    };
     electronMock = {
       getBitButlerVersion: vi.fn().mockReturnValue('1.0.0'),
       goToRelease: vi.fn(),
@@ -67,6 +89,8 @@ describe('Login', () => {
         { provide: ServerStoreService, useValue: serverStoreMock },
         { provide: ServerService, useValue: { update: vi.fn().mockResolvedValue(undefined) } },
         { provide: ThemeService, useValue: themeMock },
+        { provide: TranslateService, useValue: translateMock },
+        { provide: GeneralSettingsService, useValue: generalSettingsMock },
         { provide: ToastService, useValue: { danger: vi.fn() } },
         { provide: ElectronService, useValue: electronMock },
         { provide: CommandBusService, useValue: { emit: vi.fn() } },
@@ -135,6 +159,97 @@ describe('Login', () => {
     it('should build a URL from the current theme family', () => {
       themeMock.family.set('aurora');
       expect(component.logoUrl()).toBe('assets/images/bitbutler-logo-aurora.png');
+    });
+  });
+
+  describe('families', () => {
+    it('should expose the shared THEME_FAMILIES list', () => {
+      expect(component.families).toHaveLength(8);
+      expect(component.families[0]).toEqual({ value: 'bitbutler', label: 'BitButler' });
+    });
+  });
+
+  describe('languages', () => {
+    it('should list the available languages', () => {
+      expect(component.languages().map((l) => l.value)).toEqual(['us', 'hu']);
+    });
+  });
+
+  describe('modes', () => {
+    it('should list the available theme modes', () => {
+      expect(component.modes().map((m) => m.value)).toEqual(['light', 'dark', 'system']);
+    });
+  });
+
+  describe('currentFamily', () => {
+    it('should reflect the active theme family', () => {
+      themeMock.family.set('aurora');
+      expect(component.currentFamily()).toBe('aurora');
+    });
+  });
+
+  describe('currentMode', () => {
+    it('should reflect the active theme mode', () => {
+      themeMock.mode.set('dark');
+      expect(component.currentMode()).toBe('dark');
+    });
+  });
+
+  describe('currentLang', () => {
+    it('should reflect the active language', () => {
+      translateMock.getCurrentLang.mockReturnValue('hu');
+      translateMock.onLangChange.next({ lang: 'hu', translations: {} });
+      expect(component.currentLang()).toBe('hu');
+    });
+  });
+
+  describe('getFamilyLogoUrl', () => {
+    it('should build a logo URL for a given family', () => {
+      expect(component.getFamilyLogoUrl('aurora')).toBe('assets/images/bitbutler-logo-aurora.png');
+    });
+  });
+
+  describe('setFamily', () => {
+    it('should delegate to themeService.setFamily', () => {
+      component.setFamily('aurora');
+      expect(themeMock.setFamily).toHaveBeenCalledWith('aurora');
+    });
+  });
+
+  describe('setMode', () => {
+    it('should delegate to themeService.setMode', () => {
+      component.setMode('dark');
+      expect(themeMock.setMode).toHaveBeenCalledWith('dark');
+    });
+  });
+
+  describe('setLanguage', () => {
+    it('should do nothing when the language is already active', async () => {
+      translateMock.getCurrentLang.mockReturnValue('us');
+      await component.setLanguage('us');
+      expect(generalSettingsMock.load).not.toHaveBeenCalled();
+      expect(translateMock.use).not.toHaveBeenCalled();
+    });
+
+    it('should persist and switch the language when it changes', async () => {
+      translateMock.getCurrentLang.mockReturnValue('us');
+      await component.setLanguage('hu');
+      expect(generalSettingsMock.save).toHaveBeenCalledWith({ language: { language: 'hu' } });
+      expect(translateMock.use).toHaveBeenCalledWith('hu');
+    });
+  });
+
+  describe('quick settings toolbar', () => {
+    it('should render three icon-only quick-setting buttons', () => {
+      const buttons = fixture.debugElement.queryAll(By.css('.bb-quick-setting'));
+      expect(buttons.length).toBe(3);
+    });
+
+    it('should label each quick-setting button for accessibility', () => {
+      const buttons = fixture.debugElement.queryAll(By.css('.bb-quick-setting'));
+      for (const button of buttons) {
+        expect(button.attributes['aria-label']).toBeTruthy();
+      }
     });
   });
 

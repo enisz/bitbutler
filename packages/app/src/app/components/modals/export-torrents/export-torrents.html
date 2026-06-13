@@ -268,17 +268,17 @@
 
 <div class="modal-footer">
   @if (isRunning()) {
-    <button type="button" class="btn btn-secondary" (click)="cancelExport()">
+    <button type="button" class="btn btn-link" (click)="cancelExport()">
       {{ 'general.button.cancel' | translate }}
     </button>
   } @else if (isDone() || isError()) {
-    <button type="button" class="btn btn-secondary" (click)="close()">
+    <button type="button" class="btn btn-link" (click)="close()">
       {{ 'general.button.close' | translate }}
     </button>
   } @else {
     <button
       type="button"
-      class="btn btn-secondary"
+      class="btn btn-primary"
       (click)="startExport()"
       [disabled]="exportForm.invalid"
     >
