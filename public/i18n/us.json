@@ -1581,8 +1581,6 @@
     "menu": {
       "file": "File",
       "add-torrent": "Add Torrent",
-      "add-torrent-from-file": "From File…",
-      "add-torrent-from-link": "From Link…",
       "disconnect": "Disconnect",
       "servers": "Servers",
       "add-new": "Add new…",

@@ -1581,8 +1581,6 @@
     "menu": {
       "file": "Fájl",
       "add-torrent": "Torrent hozzáadása",
-      "add-torrent-from-file": "Fájlból…",
-      "add-torrent-from-link": "Linkből…",
       "disconnect": "Kijelentkezés",
       "servers": "Szerverek",
       "add-new": "Új hozzáadása…",

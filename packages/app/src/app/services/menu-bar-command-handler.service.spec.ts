@@ -92,14 +92,9 @@ describe('MenuBarCommandHandlerService', () => {
     service.start();
   });
 
-  it('should emit UI_ADD_TORRENT for file.addTorrent.file', () => {
-    clicks$.next({ action: 'file.addTorrent.file', ts: 1 });
+  it('should emit UI_ADD_TORRENT for file.addTorrent', () => {
+    clicks$.next({ action: 'file.addTorrent', ts: 1 });
     expect(commandBusEmit).toHaveBeenCalledWith({ type: 'UI_ADD_TORRENT' });
-  });
-
-  it('should emit UI_ADD_TORRENT with mode link for file.addTorrent.link', () => {
-    clicks$.next({ action: 'file.addTorrent.link', ts: 1 });
-    expect(commandBusEmit).toHaveBeenCalledWith({ type: 'UI_ADD_TORRENT', mode: 'link' });
   });
 
   it('should emit UI_OPEN_SETTINGS for settings.app', () => {
