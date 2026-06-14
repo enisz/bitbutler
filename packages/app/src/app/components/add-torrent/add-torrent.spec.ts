@@ -12,6 +12,16 @@ import { ServerStoreService } from '../../services/server-store.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
 import { AddTorrent } from './add-torrent';
 
+const draftWithFiles: TorrentDraft = {
+  source: 'manual',
+  receivedAt: Date.now(),
+  torrent: {
+    name: 'test-torrent',
+    totalSize: 100,
+    files: [{ path: 'file1.txt', length: 100 }],
+  },
+};
+
 describe('AddTorrent', () => {
   let component: AddTorrent;
   let fixture: ComponentFixture<AddTorrent>;
@@ -92,22 +102,139 @@ describe('AddTorrent', () => {
       component.isSubmitting.set(true);
       expect(component.canSubmit()).toBe(false);
     });
+
+    it('should return true in link mode with magnet links and an empty rename', () => {
+      component.switchInputMode('link');
+      component.addForm.controls.magnetLinks.setValue('magnet:?xt=urn:btih:abcdef');
+
+      expect(component.canSubmit()).toBe(true);
+    });
+
+    it('should return false when the file tree is in edit mode even if the form is otherwise valid', () => {
+      component.switchInputMode('link');
+      component.addForm.controls.magnetLinks.setValue('magnet:?xt=urn:btih:abcdef');
+      component.treeInEditMode.set(true);
+
+      expect(component.canSubmit()).toBe(false);
+    });
   });
 
   describe('rename validator (via form)', () => {
     it('should be invalid when rename contains a forward slash', () => {
       component.addForm.controls.rename.setValue('folder/name');
-      expect(component.addForm.controls.rename.errors).toHaveProperty('noSlash');
+      expect(component.addForm.controls.rename.errors).toHaveProperty('pattern');
     });
 
     it('should be invalid when rename contains a backslash', () => {
       component.addForm.controls.rename.setValue('folder\\name');
-      expect(component.addForm.controls.rename.errors).toHaveProperty('noSlash');
+      expect(component.addForm.controls.rename.errors).toHaveProperty('pattern');
     });
 
-    it('should be valid when rename contains no slashes', () => {
+    it('should be invalid when rename contains other reserved characters', () => {
+      component.addForm.controls.rename.setValue('bad<name>');
+      expect(component.addForm.controls.rename.errors).toHaveProperty('pattern');
+    });
+
+    it('should be valid when rename contains no invalid characters', () => {
       component.addForm.controls.rename.setValue('valid-name');
       expect(component.addForm.controls.rename.errors).toBeNull();
+    });
+  });
+
+  describe('tabIssues / hasActiveWarnings', () => {
+    it('should report a required-rename issue on the general tab by default', () => {
+      expect(component.tabIssues().general).toContain('general.form.feedback.required');
+      expect(component.hasActiveWarnings()).toBe(true);
+    });
+
+    it('should clear the general tab issue once rename is set to a valid value', () => {
+      component.addForm.controls.rename.setValue('valid-name');
+
+      expect(component.tabIssues().general).toBeUndefined();
+      expect(component.hasActiveWarnings()).toBe(false);
+    });
+
+    it('should report a pattern issue on the general tab for invalid characters', () => {
+      component.addForm.controls.rename.setValue('bad<name>');
+
+      expect(component.tabIssues().general).toContain('general.form.feedback.pattern');
+    });
+
+    it('should report a noServerSelected issue on the general tab', () => {
+      component.addForm.controls.rename.setValue('valid-name');
+      component.addForm.setErrors({ noServerSelected: true });
+
+      expect(component.tabIssues().general).toContain(
+        'components.add-torrent.feedback.no-server-selected',
+      );
+    });
+
+    it('should report an addFailed issue on the general tab', () => {
+      component.addForm.controls.rename.setValue('valid-name');
+      component.addForm.setErrors({ addFailed: true });
+
+      expect(component.tabIssues().general).toContain('components.add-torrent.feedback.add-failed');
+    });
+
+    it('should report a files tab issue while the file tree is in edit mode', () => {
+      component.treeInEditMode.set(true);
+
+      expect(component.tabIssues().files).toContain(
+        'components.add-torrent.tab.files.issue.edit-in-progress',
+      );
+      expect(component.hasActiveWarnings()).toBe(true);
+    });
+  });
+
+  describe('filesTabDisabled / filesTabDisabledReason', () => {
+    it('should be disabled with a no-files reason by default', () => {
+      expect(component.filesTabDisabledReason()).toBe(
+        'components.add-torrent.tab.files.disabled.no-files',
+      );
+      expect(component.filesTabDisabled()).toBe(true);
+    });
+
+    it('should be disabled with a link-mode reason when input mode is link', () => {
+      component.switchInputMode('link');
+
+      expect(component.filesTabDisabledReason()).toBe(
+        'components.add-torrent.tab.files.disabled.link-mode',
+      );
+      expect(component.filesTabDisabled()).toBe(true);
+    });
+
+    it('should be enabled when a draft with files is loaded and the tree is shown', () => {
+      component.manualDraft.set(draftWithFiles);
+      component.showTree.set(true);
+
+      expect(component.filesTabDisabledReason()).toBeNull();
+      expect(component.filesTabDisabled()).toBe(false);
+    });
+  });
+
+  describe('selectTab / activeTabId', () => {
+    it('should default to the general tab', () => {
+      expect(component.activeTabId()).toBe('general');
+    });
+
+    it('should switch tabs via selectTab', () => {
+      component.selectTab('options');
+      expect(component.activeTabId()).toBe('options');
+    });
+
+    it('should switch away from the files tab once it becomes disabled', () => {
+      component.manualDraft.set(draftWithFiles);
+      component.showTree.set(true);
+      fixture.detectChanges();
+
+      component.selectTab('files');
+      fixture.detectChanges();
+      expect(component.activeTabId()).toBe('files');
+
+      component.switchInputMode('link');
+      fixture.detectChanges();
+
+      expect(component.activeTabId()).toBe('general');
     });
   });
 

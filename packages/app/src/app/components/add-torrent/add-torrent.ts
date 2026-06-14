@@ -9,23 +9,17 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import {
-  AbstractControl,
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  ValidationErrors,
-  ValidatorFn,
-  Validators,
-} from '@angular/forms';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TorrentDraft } from '@bitbutler/shared';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { NgSelectModule } from '@ng-select/ng-select';
+import { faCircleQuestion, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
+import { NgbActiveModal, NgbModal, NgbPopover } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { merge, scan } from 'rxjs';
+import { INVALID_FILENAME_CHARS } from '../../app.const';
 import { AutofocusDirective } from '../../directives/autofocus';
-import { RootFolderMode } from '../../models/add-torrent.model';
+import { AddTorrentFormGroup, RootFolderMode } from '../../models/add-torrent.model';
 import type { SelectedTorrentInput } from '../../models/command.model';
 import { HttpError } from '../../models/http.model';
 import { AddTorrentSettingsService } from '../../services/add-torrent-settings.service';
@@ -35,47 +29,34 @@ import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
 import { setModalInput } from '../../utils/modal-input';
-import { BbFileTree, FileTreeSaveEvent } from '../bb-file-tree/bb-file-tree';
-import { BbPopover } from '../bb-popover/bb-popover';
-import { CategorySelect } from '../category-select/category-select';
+import { FileTreeSaveEvent } from '../bb-file-tree/bb-file-tree';
 import { TorrentExists } from '../modals/torrent-exists/torrent-exists';
-import { SavePathSelect } from '../save-path-select/save-path-select';
-import { ShareLimit, ShareLimitValue } from '../share-limit/share-limit';
-import { TagSelect } from '../tag-select/tag-select';
-import { TransferLimit, TransferLimitValue } from '../transfer-limit/transfer-limit';
+import { ShareLimitValue } from '../share-limit/share-limit';
+import { TransferLimitValue } from '../transfer-limit/transfer-limit';
+import { AddTorrentFiles } from './files/files';
+import { AddTorrentGeneral } from './general/general';
+import { AddTorrentLimits } from './limits/limits';
+import { AddTorrentOptions } from './options/options';
 
-type AddTorrentFormValue = {
-  file: string;
-  magnetLinks: string;
-  savepath: string | null;
-  rename: string | null;
-  paused: boolean;
-  category: string | null;
-  root_folder: RootFolderMode;
-  tags: string[] | null;
-  skip_checking: boolean;
-  sequentialDownload: boolean;
-  firstLastPiecePrio: boolean;
-  transferRateLimits: TransferLimitValue | null;
-  shareLimits: ShareLimitValue | null;
-  autoTMM: boolean;
-};
+export type AddTorrentTabId = 'general' | 'options' | 'limits' | 'files';
+
+interface AddTorrentTab {
+  id: AddTorrentTabId;
+  label: string;
+}
 
 @Component({
   selector: 'app-add-torrent',
   imports: [
     ReactiveFormsModule,
-    SavePathSelect,
-    BbFileTree,
-    TagSelect,
-    CategorySelect,
     AutofocusDirective,
-    BbPopover,
     FontAwesomeModule,
-    NgSelectModule,
+    NgbPopover,
     TranslatePipe,
-    ShareLimit,
-    TransferLimit,
+    AddTorrentFiles,
+    AddTorrentGeneral,
+    AddTorrentLimits,
+    AddTorrentOptions,
   ],
   templateUrl: './add-torrent.html',
   styleUrl: './add-torrent.scss',
@@ -97,7 +78,7 @@ export class AddTorrent implements OnInit {
   private readonly openFilesService = inject(OpenFilesService);
   private readonly translateService = inject(TranslateService);
 
-  private readonly categorySelect = viewChild(CategorySelect);
+  private readonly generalTab = viewChild(AddTorrentGeneral);
 
   public pending = this.openFilesService.pendingDrafts;
   public queueCount = computed(() => this.pending().length);
@@ -114,13 +95,25 @@ export class AddTorrent implements OnInit {
   public isSubmitting = signal(false);
   private loadedDraftIdentifier = signal<string | null>(null);
 
-  faExclamationTriangle = faExclamationTriangle;
+  public icons = { faTriangleExclamation, faCircleQuestion };
 
-  public addForm = new FormGroup({
+  public activeTabId = signal<AddTorrentTabId>('general');
+
+  public tabs: AddTorrentTab[] = [
+    { id: 'general', label: 'components.add-torrent.tab.general.title' },
+    { id: 'options', label: 'components.add-torrent.tab.options.title' },
+    { id: 'limits', label: 'components.add-torrent.tab.limits.title' },
+    { id: 'files', label: 'components.add-torrent.tab.files.title' },
+  ];
+
+  public addForm: AddTorrentFormGroup = new FormGroup({
     file: new FormControl<string>('', { nonNullable: true }),
     magnetLinks: new FormControl<string>('', { nonNullable: true }),
     savepath: new FormControl<string | null>(null),
-    rename: new FormControl<string | null>(null, [Validators.required, this.noSlashValidator()]),
+    rename: new FormControl<string | null>(null, [
+      Validators.required,
+      Validators.pattern(INVALID_FILENAME_CHARS),
+    ]),
     paused: new FormControl<boolean>(false, { nonNullable: true }),
     category: new FormControl<string | null>(null),
     root_folder: new FormControl<RootFolderMode>('unset', { nonNullable: true }),
@@ -133,35 +126,67 @@ export class AddTorrent implements OnInit {
     autoTMM: new FormControl<boolean>(false, { nonNullable: true }),
   });
 
-  public rootFolderOptions = [
-    {
-      value: 'unset',
-      label: this.translateService.instant(
-        'components.add-torrent.add-form.root-folder.option.default',
-      ),
-    },
-    {
-      value: 'true',
-      label: this.translateService.instant(
-        'components.add-torrent.add-form.root-folder.option.create-root-folder',
-      ),
-    },
-    {
-      value: 'false',
-      label: this.translateService.instant(
-        'components.add-torrent.add-form.root-folder.option.do-not-create-root-folder',
-      ),
-    },
-  ];
-
-  private noSlashValidator(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const value = (control.value ?? '').trim();
-      return value.includes('/') || value.includes('\\') ? { noSlash: true } : null;
-    };
-  }
+  // Tracks every form status/value change as an incrementing counter so `tabIssues` always
+  // recomputes - `statusChanges` alone does not emit a distinct value when the status string
+  // stays the same (e.g. INVALID -> INVALID when the `required` error is replaced by `pattern`).
+  private readonly formStatus = toSignal(
+    merge(this.addForm.statusChanges, this.addForm.valueChanges).pipe(
+      scan((count) => count + 1, 0),
+    ),
+    { initialValue: 0 },
+  );
 
   public effectiveDraft = computed(() => this.manualDraft() ?? this.pending()?.[0]?.draft);
+
+  public readonly tabIssues = computed<Partial<Record<AddTorrentTabId, string[]>>>(() => {
+    this.formStatus(); // re-run when addForm validity changes
+    const issues: Partial<Record<AddTorrentTabId, string[]>> = {};
+
+    const general: string[] = [];
+    const renameErrors = this.addForm.controls.rename.errors;
+    if (renameErrors?.['required']) {
+      general.push(this.translateService.instant('general.form.feedback.required'));
+    }
+    if (renameErrors?.['pattern']) {
+      general.push(this.translateService.instant('general.form.feedback.pattern'));
+    }
+
+    const formErrors = this.addForm.errors;
+    if (formErrors?.['noServerSelected']) {
+      general.push(
+        this.translateService.instant('components.add-torrent.feedback.no-server-selected'),
+      );
+    }
+    if (formErrors?.['addFailed']) {
+      general.push(this.translateService.instant('components.add-torrent.feedback.add-failed'));
+    }
+    if (general.length) issues.general = general;
+
+    if (this.treeInEditMode()) {
+      issues.files = [
+        this.translateService.instant('components.add-torrent.tab.files.issue.edit-in-progress'),
+      ];
+    }
+
+    return issues;
+  });
+
+  public readonly hasActiveWarnings = computed(() =>
+    Object.values(this.tabIssues()).some((list) => (list?.length ?? 0) > 0),
+  );
+
+  public readonly filesTabDisabledReason = computed<string | null>(() => {
+    if (this.inputMode() === 'link') {
+      return this.translateService.instant('components.add-torrent.tab.files.disabled.link-mode');
+    }
+    const draft = this.effectiveDraft();
+    if (!this.showTree() || !draft?.torrent?.files?.length) {
+      return this.translateService.instant('components.add-torrent.tab.files.disabled.no-files');
+    }
+    return null;
+  });
+
+  public readonly filesTabDisabled = computed(() => this.filesTabDisabledReason() !== null);
 
   constructor() {
     effect(() => {
@@ -178,6 +203,12 @@ export class AddTorrent implements OnInit {
         return;
       }
       this.loadDraft(first, 'input');
+    });
+
+    effect(() => {
+      if (this.activeTabId() === 'files' && this.filesTabDisabled()) {
+        this.activeTabId.set('general');
+      }
     });
   }
 
@@ -211,6 +242,10 @@ export class AddTorrent implements OnInit {
     this.savedFileState = event;
   }
 
+  public selectTab(tabId: AddTorrentTabId): void {
+    this.activeTabId.set(tabId);
+  }
+
   public async handleSubmit(event: SubmitEvent | PointerEvent): Promise<void> {
     event.preventDefault();
 
@@ -223,11 +258,11 @@ export class AddTorrent implements OnInit {
       return;
     }
 
-    if (!(await this.categorySelect()?.ensureCategoryExists())) {
+    if (!(await this.generalTab()?.ensureCategoryExists())) {
       return;
     }
 
-    const raw = this.addForm.getRawValue() as AddTorrentFormValue;
+    const raw = this.addForm.getRawValue();
 
     const sharedOptions = {
       savepath: raw.savepath?.trim() || undefined,
@@ -333,20 +368,10 @@ export class AddTorrent implements OnInit {
   }
 
   public canSubmit(): boolean {
-    if (this.inputMode() === 'link') {
-      return (
-        !this.isSubmitting() &&
-        !this.treeInEditMode() &&
-        this.getMagnetLinks().length > 0 &&
-        this.addForm.valid
-      );
-    }
-    return (
-      this.addForm.valid &&
-      !this.isSubmitting() &&
-      this.selectedTorrentFile() !== null &&
-      !this.treeInEditMode()
-    );
+    if (!this.addForm.valid || this.hasActiveWarnings() || this.isSubmitting()) return false;
+    return this.inputMode() === 'link'
+      ? this.getMagnetLinks().length > 0
+      : this.selectedTorrentFile() !== null;
   }
 
   public switchInputMode(mode: 'file' | 'link'): void {

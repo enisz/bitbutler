@@ -61,11 +61,6 @@
         "seeding-time-limit-unit": "minute"
       },
       "label": {
-        "input": "Input",
-        "general": "General",
-        "settings": "Settings",
-        "limits": "Limits",
-        "files": "Files",
         "transfer-rate-limits": "Transfer Rate Limits",
         "share-limits": "Share Limits"
       },
@@ -1511,7 +1506,6 @@
     "form": {
       "feedback": {
         "required": "This field is required.",
-        "no-slash": "The name must not contain slashes.",
         "pattern": "Name contains invalid characters (< > : \" / \\ | ? *)"
       },
       "ng-select": {
