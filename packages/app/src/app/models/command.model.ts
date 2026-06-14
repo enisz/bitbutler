@@ -16,7 +16,6 @@ export type UiCommand =
       type: 'UI_ADD_TORRENT';
       draft?: TorrentDraft;
       selected?: SelectedTorrentInput;
-      mode?: 'file' | 'link';
     }
   | { type: 'UI_OPEN_ABOUT' }
   | { type: 'UI_SET_TORRENT_LOCATION'; torrent: Torrent; hashes?: string[] }
