@@ -112,10 +112,16 @@
             id="rename"
             [placeholder]="'components.add-torrent.add-form.rename' | translate"
             formControlName="rename"
-            [class.is-invalid]="form().controls.rename.invalid && form().controls.rename.dirty"
+            [class.is-invalid]="
+              form().controls.rename.invalid &&
+              (form().controls.rename.touched || form().controls.rename.dirty)
+            "
           />
           <label for="rename">{{ 'components.add-torrent.add-form.rename' | translate }}</label>
-          @if (form().controls.rename.invalid && form().controls.rename.dirty) {
+          @if (
+            form().controls.rename.invalid &&
+            (form().controls.rename.touched || form().controls.rename.dirty)
+          ) {
             @if (form().controls.rename.hasError('required')) {
               <div class="invalid-feedback px-2">
                 {{ 'general.form.feedback.required' | translate }}

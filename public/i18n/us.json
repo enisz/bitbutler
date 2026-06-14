@@ -133,7 +133,10 @@
       },
       "tab": {
         "general": {
-          "title": "General"
+          "title": "General",
+          "issue": {
+            "invalid-fields": "Some fields need attention."
+          }
         },
         "options": {
           "title": "Options"

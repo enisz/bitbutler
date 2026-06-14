@@ -149,11 +149,10 @@ export class AddTorrent implements OnInit {
 
     const general: string[] = [];
     const renameErrors = this.addForm.controls.rename.errors;
-    if (renameErrors?.['required']) {
-      general.push(this.translateService.instant('general.form.feedback.required'));
-    }
-    if (renameErrors?.['pattern']) {
-      general.push(this.translateService.instant('general.form.feedback.pattern'));
+    if (renameErrors?.['required'] || renameErrors?.['pattern']) {
+      general.push(
+        this.translateService.instant('components.add-torrent.tab.general.issue.invalid-fields'),
+      );
     }
 
     const formErrors = this.addForm.errors;
@@ -213,6 +212,13 @@ export class AddTorrent implements OnInit {
     effect(() => {
       if (this.activeTabId() === 'files' && this.filesTabDisabled()) {
         this.activeTabId.set('general');
+      }
+    });
+
+    effect(() => {
+      this.formStatus(); // re-run when addForm validity changes
+      if (this.addForm.controls.rename.invalid) {
+        this.addForm.controls.rename.markAsTouched();
       }
     });
   }

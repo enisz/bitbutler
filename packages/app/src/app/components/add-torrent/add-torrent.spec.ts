@@ -142,8 +142,10 @@ describe('AddTorrent', () => {
   });
 
   describe('tabIssues / hasActiveWarnings', () => {
-    it('should report a required-rename issue on the general tab by default', () => {
-      expect(component.tabIssues().general).toContain('general.form.feedback.required');
+    it('should report an invalid-fields issue on the general tab by default', () => {
+      expect(component.tabIssues().general).toContain(
+        'components.add-torrent.tab.general.issue.invalid-fields',
+      );
       expect(component.hasActiveWarnings()).toBe(true);
     });
 
@@ -154,10 +156,12 @@ describe('AddTorrent', () => {
       expect(component.hasActiveWarnings()).toBe(false);
     });
 
-    it('should report a pattern issue on the general tab for invalid characters', () => {
+    it('should report an invalid-fields issue on the general tab for invalid characters', () => {
       component.addForm.controls.rename.setValue('bad<name>');
 
-      expect(component.tabIssues().general).toContain('general.form.feedback.pattern');
+      expect(component.tabIssues().general).toContain(
+        'components.add-torrent.tab.general.issue.invalid-fields',
+      );
     });
 
     it('should report a noServerSelected issue on the general tab', () => {
@@ -339,6 +343,14 @@ describe('AddTorrent', () => {
       expect(mockQbService.addCategory).toHaveBeenCalledWith('server-1', 'bad-category', '');
       expect(torrentsAddSpy).not.toHaveBeenCalled();
       expect(component.isSubmitting()).toBe(false);
+    });
+  });
+
+  describe('eager rename validation', () => {
+    it('should mark rename as touched on init when it is invalid', () => {
+      fixture.detectChanges();
+
+      expect(component.addForm.controls.rename.touched).toBe(true);
     });
   });
 

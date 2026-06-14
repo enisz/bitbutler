@@ -133,7 +133,10 @@
       },
       "tab": {
         "general": {
-          "title": "Általános"
+          "title": "Általános",
+          "issue": {
+            "invalid-fields": "Néhány mező figyelmet igényel."
+          }
         },
         "options": {
           "title": "Beállítások"
