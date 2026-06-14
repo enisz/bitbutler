@@ -54,7 +54,7 @@
         <app-add-torrent-general
           [form]="addForm"
           [inputMode]="inputMode()"
-          (inputModeChange)="switchInputMode($event)"
+          (inputModeChange)="handleInputModeChange($event)"
           (fileSelected)="handleFileSelected($event)"
         ></app-add-torrent-general>
       </div>

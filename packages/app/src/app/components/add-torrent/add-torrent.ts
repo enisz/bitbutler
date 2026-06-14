@@ -23,6 +23,7 @@ import { AddTorrentFormGroup, RootFolderMode } from '../../models/add-torrent.mo
 import type { SelectedTorrentInput } from '../../models/command.model';
 import { HttpError } from '../../models/http.model';
 import { AddTorrentSettingsService } from '../../services/add-torrent-settings.service';
+import { ConfirmService } from '../../services/confirm.service';
 import { GeneralSettingsService } from '../../services/general-settings.service';
 import { OpenFilesService, PendingAddTorrent } from '../../services/open-files.service';
 import { QbService } from '../../services/qb.service';
@@ -73,6 +74,7 @@ export class AddTorrent implements OnInit {
   private readonly torrentStoreService = inject(TorrentStoreService);
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly addTorrentSettings = inject(AddTorrentSettingsService);
+  private readonly confirmService = inject(ConfirmService);
   private readonly generalSettingsService = inject(GeneralSettingsService);
   private readonly qbService = inject(QbService);
   private readonly openFilesService = inject(OpenFilesService);
@@ -399,6 +401,21 @@ export class AddTorrent implements OnInit {
     return this.inputMode() === 'link'
       ? this.getMagnetLinks().length > 0
       : this.selectedTorrentFile() !== null;
+  }
+
+  public async handleInputModeChange(mode: 'file' | 'link'): Promise<void> {
+    if (mode === this.inputMode()) return;
+
+    if (this.addForm.dirty) {
+      const confirmed = await this.confirmService.confirm(
+        'components.add-torrent.confirm.switch-mode.title',
+        'components.add-torrent.confirm.switch-mode.message',
+      );
+      if (!confirmed) return;
+    }
+
+    this.switchInputMode(mode);
+    await this.resetToSavedSettings();
   }
 
   public switchInputMode(mode: 'file' | 'link'): void {

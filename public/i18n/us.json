@@ -171,6 +171,12 @@
       "feedback": {
         "no-server-selected": "No server is selected. Choose a server before adding this torrent.",
         "add-failed": "Adding the torrent failed. Please try again."
+      },
+      "confirm": {
+        "switch-mode": {
+          "title": "Switch input mode",
+          "message": "Switching input mode will reset your changes back to the saved defaults. Continue?"
+        }
       }
     },
     "app-loader": {

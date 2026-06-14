@@ -5,6 +5,7 @@ import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { of } from 'rxjs';
 import { DEFAULT_GENERAL_SETTINGS } from '../../models/general-settings.model';
 import { AddTorrentSettingsService } from '../../services/add-torrent-settings.service';
+import { ConfirmService } from '../../services/confirm.service';
 import { GeneralSettingsService } from '../../services/general-settings.service';
 import { OpenFilesService } from '../../services/open-files.service';
 import { QbService } from '../../services/qb.service';
@@ -50,6 +51,7 @@ describe('AddTorrent', () => {
             save: vi.fn().mockResolvedValue(undefined),
           },
         },
+        { provide: ConfirmService, useValue: { confirm: vi.fn().mockResolvedValue(true) } },
         {
           provide: GeneralSettingsService,
           useValue: {
@@ -364,6 +366,59 @@ describe('AddTorrent', () => {
       component.addForm.controls.savepath.setValue('/changed');
 
       expect(component.formDirty()).toBe(true);
+    });
+  });
+
+  describe('handleInputModeChange', () => {
+    let confirmService: { confirm: ReturnType<typeof vi.fn> };
+
+    beforeEach(() => {
+      confirmService = TestBed.inject(ConfirmService) as any;
+      confirmService.confirm.mockReset();
+    });
+
+    it('should do nothing when the mode is unchanged', async () => {
+      await component.handleInputModeChange('file');
+
+      expect(confirmService.confirm).not.toHaveBeenCalled();
+      expect(component.inputMode()).toBe('file');
+    });
+
+    it('should switch and reset without confirming when the form is pristine', async () => {
+      const addTorrentSettings = TestBed.inject(AddTorrentSettingsService) as any;
+      addTorrentSettings.load.mockResolvedValue({});
+
+      await component.handleInputModeChange('link');
+
+      expect(confirmService.confirm).not.toHaveBeenCalled();
+      expect(component.inputMode()).toBe('link');
+    });
+
+    it('should ask for confirmation when the form is dirty, and do nothing if cancelled', async () => {
+      confirmService.confirm.mockResolvedValue(false);
+      component.addForm.controls.savepath.markAsDirty();
+      component.addForm.controls.savepath.setValue('/changed');
+
+      await component.handleInputModeChange('link');
+
+      expect(confirmService.confirm).toHaveBeenCalledWith(
+        'components.add-torrent.confirm.switch-mode.title',
+        'components.add-torrent.confirm.switch-mode.message',
+      );
+      expect(component.inputMode()).toBe('file');
+    });
+
+    it('should switch and reset when the form is dirty and the user confirms', async () => {
+      const addTorrentSettings = TestBed.inject(AddTorrentSettingsService) as any;
+      addTorrentSettings.load.mockResolvedValue({ savepath: '/downloads' });
+      confirmService.confirm.mockResolvedValue(true);
+      component.addForm.controls.savepath.markAsDirty();
+      component.addForm.controls.savepath.setValue('/changed');
+
+      await component.handleInputModeChange('link');
+
+      expect(component.inputMode()).toBe('link');
+      expect(component.addForm.controls.savepath.value).toBe('/downloads');
     });
   });
 
