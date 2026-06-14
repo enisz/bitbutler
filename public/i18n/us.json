@@ -65,7 +65,9 @@
         "general": "General",
         "settings": "Settings",
         "limits": "Limits",
-        "files": "Files"
+        "files": "Files",
+        "transfer-rate-limits": "Transfer Rate Limits",
+        "share-limits": "Share Limits"
       },
       "popover": {
         "root-folder": {
@@ -133,6 +135,35 @@
             "line2": "Magnet links start with magnet:?xt=urn:btih:… - direct .torrent URLs point to a remote file that qBittorrent will fetch automatically."
           }
         }
+      },
+      "tab": {
+        "general": {
+          "title": "General"
+        },
+        "options": {
+          "title": "Options"
+        },
+        "limits": {
+          "title": "Limits"
+        },
+        "files": {
+          "title": "Files",
+          "disabled": {
+            "link-mode": "Not available when adding by magnet link.",
+            "no-files": "No file list available yet."
+          },
+          "issue": {
+            "edit-in-progress": "Finish editing the file list before adding the torrent."
+          }
+        }
+      },
+      "input-mode": {
+        "file": "File",
+        "link": "Link"
+      },
+      "feedback": {
+        "no-server-selected": "No server is selected. Choose a server before adding this torrent.",
+        "add-failed": "Adding the torrent failed. Please try again."
       }
     },
     "app-loader": {
@@ -1480,7 +1511,8 @@
     "form": {
       "feedback": {
         "required": "This field is required.",
-        "no-slash": "The name must not contain slashes."
+        "no-slash": "The name must not contain slashes.",
+        "pattern": "Name contains invalid characters (< > : \" / \\ | ? *)"
       },
       "ng-select": {
         "add-tag": "Add item",

@@ -65,7 +65,9 @@
         "general": "Általános",
         "settings": "Beállítások",
         "limits": "Korlátok",
-        "files": "Fájlok"
+        "files": "Fájlok",
+        "transfer-rate-limits": "Átviteli sebesség korlátok",
+        "share-limits": "Megosztási korlátok"
       },
       "popover": {
         "root-folder": {
@@ -133,6 +135,35 @@
             "line2": "A mágneslinkkek magnet:?xt=urn:btih:… kezdetűek - a közvetlen .torrent URL-ekről a qBittorrent automatikusan letölti a fájlt."
           }
         }
+      },
+      "tab": {
+        "general": {
+          "title": "Általános"
+        },
+        "options": {
+          "title": "Beállítások"
+        },
+        "limits": {
+          "title": "Korlátok"
+        },
+        "files": {
+          "title": "Fájlok",
+          "disabled": {
+            "link-mode": "Mágneslink hozzáadásakor nem elérhető.",
+            "no-files": "Még nem érhető el fájllista."
+          },
+          "issue": {
+            "edit-in-progress": "Fejezd be a fájllista szerkesztését, mielőtt hozzáadod a torrentet."
+          }
+        }
+      },
+      "input-mode": {
+        "file": "Fájl",
+        "link": "Link"
+      },
+      "feedback": {
+        "no-server-selected": "Nincs kiválasztva szerver. Válassz szervert a torrent hozzáadása előtt.",
+        "add-failed": "A torrent hozzáadása sikertelen. Próbáld újra."
       }
     },
     "app-loader": {
@@ -1480,7 +1511,8 @@
     "form": {
       "feedback": {
         "required": "Ez a mező kötelező.",
-        "no-slash": "A név nem tartalmazhat perjelet (/)."
+        "no-slash": "A név nem tartalmazhat perjelet (/).",
+        "pattern": "A név érvénytelen karaktereket tartalmaz (< > : \" / \\ | ? *)"
       },
       "ng-select": {
         "add-tag": "Elem hozzáadása",
