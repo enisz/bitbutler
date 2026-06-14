@@ -918,8 +918,6 @@
       "button-bar": {
         "button": {
           "add": "Add Torrent",
-          "add-file": "From File",
-          "add-link": "From Link",
           "delete": "Delete",
           "start": "Start",
           "stop": "Stop",

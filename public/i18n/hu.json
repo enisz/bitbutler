@@ -918,8 +918,6 @@
       "button-bar": {
         "button": {
           "add": "Torrent hozzáadása",
-          "add-file": "Fájlból",
-          "add-link": "Linkből",
           "delete": "Törlés",
           "start": "Indítás",
           "stop": "Leállítás",

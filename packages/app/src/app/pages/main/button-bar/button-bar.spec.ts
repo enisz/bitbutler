@@ -124,8 +124,8 @@ describe('ButtonBar', () => {
       expect(commandBusMock.emit).toHaveBeenCalledWith({ type: 'UI_OPEN_SETTINGS' });
     });
 
-    it('should emit UI_ADD_TORRENT for new.addTorrentFile', () => {
-      component.onClick('new.addTorrentFile');
+    it('should emit UI_ADD_TORRENT for new.addTorrent', () => {
+      component.onClick('new.addTorrent');
       expect(commandBusMock.emit).toHaveBeenCalledWith({ type: 'UI_ADD_TORRENT' });
     });
 
