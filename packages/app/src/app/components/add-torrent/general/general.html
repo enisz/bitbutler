@@ -1,0 +1,179 @@
+<div [formGroup]="form()">
+  <div class="container-fluid px-0">
+    <div class="row">
+      <div class="col-12 mb-3">
+        <div class="btn-group" role="group">
+          <input
+            type="radio"
+            class="btn-check"
+            name="inputMode"
+            id="inputMode_file"
+            autocomplete="off"
+            [checked]="inputMode() === 'file'"
+            (change)="inputModeChange.emit('file')"
+          />
+          <label class="btn btn-outline-primary" for="inputMode_file">
+            <fa-icon [icon]="icons.faFile" class="me-1"></fa-icon>
+            {{ 'components.add-torrent.input-mode.file' | translate }}
+          </label>
+
+          <input
+            type="radio"
+            class="btn-check"
+            name="inputMode"
+            id="inputMode_link"
+            autocomplete="off"
+            [checked]="inputMode() === 'link'"
+            (change)="inputModeChange.emit('link')"
+          />
+          <label class="btn btn-outline-primary" for="inputMode_link">
+            <fa-icon [icon]="icons.faLink" class="me-1"></fa-icon>
+            {{ 'components.add-torrent.input-mode.link' | translate }}
+          </label>
+        </div>
+      </div>
+
+      <div class="col-11">
+        @if (inputMode() === 'file') {
+          <div class="form-floating mb-3">
+            <div class="input-group mb-1">
+              <div class="form-floating">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="file_browser"
+                  [placeholder]="'components.add-torrent.add-form.file-browser' | translate"
+                  formControlName="file"
+                  [class.is-invalid]="
+                    form().controls.file.invalid &&
+                    (form().controls.file.touched || form().controls.file.dirty)
+                  "
+                  readonly
+                  (click)="fileInput.click()"
+                />
+                <label for="file_browser">{{
+                  'components.add-torrent.add-form.file-browser' | translate
+                }}</label>
+              </div>
+
+              <button type="button" class="btn btn-outline-primary" (click)="fileInput.click()">
+                {{ 'general.button.browse' | translate }}
+              </button>
+            </div>
+            <input
+              type="file"
+              #fileInput
+              hidden
+              accept=".torrent"
+              (change)="fileSelected.emit($event)"
+            />
+          </div>
+        } @else {
+          <div class="form-floating mb-3">
+            <textarea
+              class="form-control"
+              id="magnet_links"
+              style="height: 120px"
+              [placeholder]="'components.add-torrent.add-form.magnet-links' | translate"
+              formControlName="magnetLinks"
+            ></textarea>
+            <label for="magnet_links">{{
+              'components.add-torrent.add-form.magnet-links' | translate
+            }}</label>
+          </div>
+        }
+      </div>
+
+      <div class="col-1 d-flex align-items-center mb-3">
+        @if (inputMode() === 'file') {
+          <bb-popover
+            class="mt-2"
+            [subject]="'components.add-torrent.popover.file.title' | translate"
+            [description]="filePopover"
+            placement="left"
+          ></bb-popover>
+        } @else {
+          <bb-popover
+            class="mt-2"
+            [subject]="'components.add-torrent.popover.links.title' | translate"
+            [description]="linksPopover"
+            placement="left"
+          ></bb-popover>
+        }
+      </div>
+
+      <div class="col-12"><hr class="mt-0" /></div>
+
+      <div class="col-11">
+        <div class="form-floating mb-3">
+          <input
+            type="text"
+            class="form-control"
+            id="rename"
+            [placeholder]="'components.add-torrent.add-form.rename' | translate"
+            formControlName="rename"
+            [class.is-invalid]="form().controls.rename.invalid && form().controls.rename.dirty"
+          />
+          <label for="rename">{{ 'components.add-torrent.add-form.rename' | translate }}</label>
+          @if (form().controls.rename.invalid && form().controls.rename.dirty) {
+            @if (form().controls.rename.hasError('required')) {
+              <div class="invalid-feedback px-2">
+                {{ 'general.form.feedback.required' | translate }}
+              </div>
+            } @else if (form().controls.rename.hasError('pattern')) {
+              <div class="invalid-feedback px-2">
+                {{ 'general.form.feedback.pattern' | translate }}
+              </div>
+            }
+          }
+        </div>
+      </div>
+
+      <div class="col-1 d-flex align-items-center mb-3">
+        <bb-popover
+          class="mt-2"
+          [subject]="'components.add-torrent.popover.name.title' | translate"
+          [description]="namePopover"
+          placement="left"
+        ></bb-popover>
+      </div>
+
+      <div class="col-12">
+        <div class="mb-3">
+          <app-save-path-select
+            formControlName="savepath"
+            [autofocus]="true"
+            [clearable]="true"
+          ></app-save-path-select>
+        </div>
+      </div>
+
+      <div class="col-12">
+        <div class="mb-3">
+          <app-category-select formControlName="category"></app-category-select>
+        </div>
+      </div>
+
+      <div class="col-12">
+        <div class="mb-3">
+          <app-tag-select formControlName="tags"></app-tag-select>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #filePopover>
+  <p>{{ 'components.add-torrent.popover.file.description.line1' | translate }}</p>
+  <p>{{ 'components.add-torrent.popover.file.description.line2' | translate }}</p>
+</ng-template>
+
+<ng-template #linksPopover>
+  <p>{{ 'components.add-torrent.popover.links.description.line1' | translate }}</p>
+  <p>{{ 'components.add-torrent.popover.links.description.line2' | translate }}</p>
+</ng-template>
+
+<ng-template #namePopover>
+  <p>{{ 'components.add-torrent.popover.name.description.line1' | translate }}</p>
+  <p>{{ 'components.add-torrent.popover.name.description.line2' | translate }}</p>
+</ng-template>
