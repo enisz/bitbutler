@@ -136,6 +136,11 @@ export class AddTorrent implements OnInit {
     { initialValue: 0 },
   );
 
+  public readonly formDirty = computed(() => {
+    this.formStatus(); // re-run when addForm dirty/value state changes
+    return this.addForm.dirty;
+  });
+
   public effectiveDraft = computed(() => this.manualDraft() ?? this.pending()?.[0]?.draft);
 
   public readonly tabIssues = computed<Partial<Record<AddTorrentTabId, string[]>>>(() => {
@@ -227,6 +232,22 @@ export class AddTorrent implements OnInit {
           ctrl.patchValue(v as any, { emitEvent: false });
         }
       }
+    }
+  }
+
+  public async resetToSavedSettings(): Promise<void> {
+    const settings = (await this.addTorrentSettings.load()) as any;
+
+    for (const [k, v] of Object.entries(settings)) {
+      const ctrl = this.addForm.get(k);
+      if (!ctrl) continue;
+
+      if (k === 'tags' && typeof v === 'string') {
+        ctrl.patchValue(v.split(',').map((t) => t.trim()));
+      } else {
+        ctrl.patchValue(v as any);
+      }
+      ctrl.markAsPristine();
     }
   }
 

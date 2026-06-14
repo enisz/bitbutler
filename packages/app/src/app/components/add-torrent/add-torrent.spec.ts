@@ -341,4 +341,62 @@ describe('AddTorrent', () => {
       expect(component.isSubmitting()).toBe(false);
     });
   });
+
+  describe('formDirty', () => {
+    it('should be false initially', () => {
+      expect(component.formDirty()).toBe(false);
+    });
+
+    it('should become true once a control is marked dirty', () => {
+      component.addForm.controls.savepath.markAsDirty();
+      component.addForm.controls.savepath.setValue('/changed');
+
+      expect(component.formDirty()).toBe(true);
+    });
+  });
+
+  describe('resetToSavedSettings', () => {
+    it('should reapply saved AddTorrentSettings fields, mark them pristine, and clear formDirty', async () => {
+      const addTorrentSettings = TestBed.inject(AddTorrentSettingsService) as any;
+      addTorrentSettings.load.mockResolvedValue({
+        savepath: '/downloads',
+        paused: true,
+        category: 'movies',
+        tags: 'a, b',
+        root_folder: 'true',
+        skip_checking: true,
+        sequentialDownload: true,
+        firstLastPiecePrio: true,
+        autoTMM: true,
+        transferRateLimits: { uploadLimit: 100, downloadLimit: 200 },
+        shareLimits: { ratioLimit: 2, seedingTimeLimit: 60, inactiveSeedingTimeLimit: -1 },
+      });
+
+      component.addForm.controls.savepath.markAsDirty();
+      component.addForm.controls.savepath.setValue('/changed');
+      expect(component.formDirty()).toBe(true);
+
+      await component.resetToSavedSettings();
+
+      expect(component.addForm.controls.savepath.value).toBe('/downloads');
+      expect(component.addForm.controls.tags.value).toEqual(['a', 'b']);
+      expect(component.addForm.controls.savepath.dirty).toBe(false);
+      expect(component.formDirty()).toBe(false);
+    });
+
+    it('should leave rename dirty (and the form dirty) when only rename was edited', async () => {
+      const addTorrentSettings = TestBed.inject(AddTorrentSettingsService) as any;
+      addTorrentSettings.load.mockResolvedValue({ savepath: '/downloads' });
+
+      component.addForm.controls.rename.markAsDirty();
+      component.addForm.controls.rename.setValue('my-name');
+      expect(component.formDirty()).toBe(true);
+
+      await component.resetToSavedSettings();
+
+      expect(component.addForm.controls.rename.value).toBe('my-name');
+      expect(component.addForm.controls.rename.dirty).toBe(true);
+      expect(component.formDirty()).toBe(true);
+    });
+  });
 });

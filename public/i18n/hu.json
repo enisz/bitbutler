@@ -1499,7 +1499,8 @@
       "update": "Frissítés",
       "show": "Megjelenítés",
       "open-details": "Részletek megnyitása",
-      "edit": "Szerkesztés"
+      "edit": "Szerkesztés",
+      "reset": "Visszaállítás"
     },
     "form": {
       "feedback": {

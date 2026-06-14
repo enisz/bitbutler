@@ -92,6 +92,14 @@
   >
     {{ 'general.button.add' | translate }}
   </button>
+  <button
+    type="button"
+    class="btn btn-dashed-secondary"
+    (click)="resetToSavedSettings()"
+    [disabled]="!formDirty()"
+  >
+    {{ 'general.button.reset' | translate }}
+  </button>
   <button type="button" class="btn btn-link" (click)="handleCancel()">
     {{ 'general.button.cancel' | translate }}
   </button>

@@ -1499,7 +1499,8 @@
       "update": "Update",
       "show": "Show",
       "open-details": "Open Details",
-      "edit": "Edit"
+      "edit": "Edit",
+      "reset": "Reset"
     },
     "form": {
       "feedback": {
