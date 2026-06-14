@@ -28,6 +28,7 @@ import {
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { INVALID_FILENAME_CHARS } from '../../app.const';
 import { TooltipOverflow } from '../../directives/tooltip-overflow';
 import { FilesizePipe } from '../../pipes/filesize-pipe';
 import { ConfirmService } from '../../services/confirm.service';
@@ -46,8 +47,6 @@ export type FileTreeSaveEvent = {
   files: TorrentFileEntry[];
   renames: { oldPath: string; newPath: string }[];
 };
-
-const INVALID_FILENAME_CHARS = /^[^<>:"/\\|?*\x00-\x1f]+$/;
 
 @Component({
   selector: 'app-bb-file-tree',

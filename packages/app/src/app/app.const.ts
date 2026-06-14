@@ -2,6 +2,8 @@ import { GridOptions, iconSetQuartzLight, themeQuartz } from 'ag-grid-community'
 
 export const API_URL = '/api/v2';
 
+export const INVALID_FILENAME_CHARS = /^[^<>:"/\\|?*\x00-\x1f]+$/;
+
 const GRID_PARAMS_SHARED = {
   fontFamily: 'inherit',
   accentColor: 'var(--bb-accent)',
