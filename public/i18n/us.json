@@ -62,7 +62,9 @@
       },
       "label": {
         "transfer-rate-limits": "Transfer Rate Limits",
-        "share-limits": "Share Limits"
+        "share-limits": "Share Limits",
+        "input": "Input",
+        "storage": "Storage"
       },
       "popover": {
         "root-folder": {
@@ -128,6 +130,13 @@
           "description": {
             "line1": "Paste one or more magnet links or direct .torrent URLs here, one per line.",
             "line2": "Magnet links start with magnet:?xt=urn:btih:… - direct .torrent URLs point to a remote file that qBittorrent will fetch automatically."
+          }
+        },
+        "input-mode": {
+          "title": "Input Mode",
+          "description": {
+            "line1": "Choose whether you're adding this torrent from a local .torrent file or from a magnet link / URL.",
+            "line2": "Switching modes resets save path, category, tags, and other options back to your saved defaults."
           }
         }
       },

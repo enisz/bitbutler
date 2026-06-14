@@ -118,6 +118,28 @@ describe('AddTorrentGeneral', () => {
     });
   });
 
+  describe('fieldset layout', () => {
+    it('should render the Input and Storage fieldsets with their legends', () => {
+      const legends: NodeListOf<HTMLElement> = fixture.nativeElement.querySelectorAll(
+        'fieldset.bb-fieldset > legend',
+      );
+
+      expect(legends.length).toBe(2);
+      expect(legends[0].textContent).toContain('components.add-torrent.label.input');
+      expect(legends[1].textContent).toContain('components.add-torrent.label.storage');
+    });
+
+    it('should make the input-mode toggle full width and show a popover beside it', () => {
+      const toggle: HTMLElement = fixture.nativeElement.querySelector('.btn-group');
+
+      expect(toggle.classList.contains('w-100')).toBe(true);
+
+      // 3 popovers defined directly in general.html (input-mode, file/links, name)
+      // plus 1 each from the nested save-path/category/tag select components.
+      expect(fixture.nativeElement.querySelectorAll('bb-popover').length).toBe(6);
+    });
+  });
+
   describe('rename validation feedback', () => {
     it('should show the required message when the rename control has a required error', () => {
       component.form().controls.rename.setErrors({ required: true });

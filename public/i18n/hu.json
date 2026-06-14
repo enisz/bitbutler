@@ -62,7 +62,9 @@
       },
       "label": {
         "transfer-rate-limits": "Átviteli sebesség korlátok",
-        "share-limits": "Megosztási korlátok"
+        "share-limits": "Megosztási korlátok",
+        "input": "Bemenet",
+        "storage": "Tárhely"
       },
       "popover": {
         "root-folder": {
@@ -128,6 +130,13 @@
           "description": {
             "line1": "Illessz be egy vagy több mágneslinket vagy közvetlen .torrent URL-t ide, soronként egyet.",
             "line2": "A mágneslinkkek magnet:?xt=urn:btih:… kezdetűek - a közvetlen .torrent URL-ekről a qBittorrent automatikusan letölti a fájlt."
+          }
+        },
+        "input-mode": {
+          "title": "Bemeneti mód",
+          "description": {
+            "line1": "Válaszd ki, hogy ezt a torrentet egy helyi .torrent fájlból vagy egy mágneslinkből/URL-ből szeretnéd hozzáadni.",
+            "line2": "A mód váltása visszaállítja a mentési útvonalat, a kategóriát, a címkéket és a többi beállítást a mentett alapértékekre."
           }
         }
       },
