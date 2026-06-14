@@ -117,4 +117,36 @@ describe('AddTorrentGeneral', () => {
       expect(await component.ensureCategoryExists()).toBe(true);
     });
   });
+
+  describe('rename validation feedback', () => {
+    it('should show the required message when the rename control has a required error', () => {
+      component.form().controls.rename.setErrors({ required: true });
+      component.form().controls.rename.markAsDirty();
+      fixture.detectChanges();
+
+      const messages: NodeListOf<HTMLElement> =
+        fixture.nativeElement.querySelectorAll('.invalid-feedback');
+
+      expect(messages.length).toBe(1);
+      expect(messages[0].textContent).toContain('general.form.feedback.required');
+      expect(messages[0].textContent).not.toContain('general.form.feedback.pattern');
+    });
+
+    it('should show the pattern message when the rename control has a pattern error', () => {
+      component.form().controls.rename.setErrors({ pattern: true });
+      component.form().controls.rename.markAsDirty();
+      fixture.detectChanges();
+
+      const messages: NodeListOf<HTMLElement> =
+        fixture.nativeElement.querySelectorAll('.invalid-feedback');
+
+      expect(messages.length).toBe(1);
+      expect(messages[0].textContent).toContain('general.form.feedback.pattern');
+      expect(messages[0].textContent).not.toContain('general.form.feedback.required');
+    });
+
+    it('should not show any validation message when the rename control is valid', () => {
+      expect(fixture.nativeElement.querySelectorAll('.invalid-feedback').length).toBe(0);
+    });
+  });
 });
