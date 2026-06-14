@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Split the "Add Torrent" modal into a 4-tab layout (General, Options, Limits, Files) matching the Settings modal's tab pattern, and consolidate the toolbar's "Add Torrent" file/link actions into a single entry.
+**Goal:** Split the "Add Torrent" modal into a 4-tab layout (General, Options, Limits, Files) matching the Settings modal's tab pattern, and consolidate the toolbar's and application menu's "Add Torrent" file/link actions into single entries.
 
 **Architecture:** The existing monolithic `AddTorrent` component is split into a thin tab-shell parent (`add-torrent.ts`/`.html`) plus four new presentational child components (`AddTorrentGeneral`, `AddTorrentOptions`, `AddTorrentLimits`, `AddTorrentFiles`), each receiving the shared `AddTorrentFormGroup` reactive form via `input.required()`. The parent owns all state/signals/effects (tab selection, warning computation, submit handling) and renders all four tab panels using the CSS-based `.bb-tab-panels`/`.bb-tab-panel--active` overlay pattern (moved from `settings.scss`/`qb-settings.scss` into global `styles.scss`), mirroring `settings.html`'s `NgbTooltipModule`-based tab navigation.
 
@@ -21,7 +21,9 @@ packages/app/src/
 │   │   ├── add-torrent.model.ts                        [MODIFY: add AddTorrentFormGroup type]
 │   │   └── command.model.ts                            [MODIFY: remove UI_ADD_TORRENT.mode]
 │   ├── services/
-│   │   └── ui-command-handler.service.ts               [MODIFY: remove mode-based switchInputMode call]
+│   │   ├── ui-command-handler.service.ts               [MODIFY: remove mode-based switchInputMode call]
+│   │   ├── menu-bar-command-handler.service.ts         [MODIFY: consolidate file.addTorrent.* actions]
+│   │   └── menu-bar-command-handler.service.spec.ts    [MODIFY: update test]
 │   ├── components/
 │   │   ├── bb-file-tree/
 │   │   │   └── bb-file-tree.ts                         [MODIFY: import INVALID_FILENAME_CHARS from app.const]
@@ -55,6 +57,9 @@ packages/app/src/
 └── public/i18n/
     ├── us.json                                         [MODIFY: add/remove keys]
     └── hu.json                                         [MODIFY: add/remove keys]
+
+packages/electron/src/
+└── menu.ts                                             [MODIFY: consolidate Add Torrent submenu into one item]
 ```
 
 ---
@@ -2786,4 +2791,546 @@ git commit -m "#159: refactor add-torrent into tabbed layout"
 
 ---
 
-<!-- PLAN-CONTINUE -->
+### Task 10: Consolidate button bar "Add Torrent" entry to a single action
+
+**Files:**
+
+- Modify: `packages/app/src/app/pages/main/button-bar/button-bar.spec.ts`
+- Modify: `packages/app/src/app/pages/main/button-bar/button-bar.ts`
+- Modify: `public/i18n/us.json`
+- Modify: `public/i18n/hu.json`
+
+The toolbar's "new" entry is currently a dropdown `group` with two items
+(`new.addTorrentFile` / `new.addTorrentLink`). Since the Add Torrent modal now has its own
+file/link toggle (Task 5), this collapses to a single `action` entry `new.addTorrent` that
+opens the modal in its default (file) mode.
+
+- [ ] **Step 1: Update the button-bar spec (will fail)**
+
+In `packages/app/src/app/pages/main/button-bar/button-bar.spec.ts`, replace:
+
+```typescript
+it('should emit UI_ADD_TORRENT for new.addTorrentFile', () => {
+  component.onClick('new.addTorrentFile');
+  expect(commandBusMock.emit).toHaveBeenCalledWith({ type: 'UI_ADD_TORRENT' });
+});
+```
+
+with:
+
+```typescript
+it('should emit UI_ADD_TORRENT for new.addTorrent', () => {
+  component.onClick('new.addTorrent');
+  expect(commandBusMock.emit).toHaveBeenCalledWith({ type: 'UI_ADD_TORRENT' });
+});
+```
+
+- [ ] **Step 2: Run the spec to confirm it fails**
+
+Run: `npm test -w @bitbutler/app -- button-bar`
+Expected: FAIL - `onClick('new.addTorrent')` throws `OnClick action 'new.addTorrent' not defined`
+(the current switch only handles `new.addTorrentFile`/`new.addTorrentLink`).
+
+- [ ] **Step 3: Collapse the `new` group entry to a single action**
+
+In `packages/app/src/app/pages/main/button-bar/button-bar.ts`, replace:
+
+```typescript
+  readonly entries = computed<ToolbarEntry[]>(() => {
+    return [
+      {
+        kind: 'group',
+        id: 'new',
+        label: 'pages.main.button-bar.button.add',
+        icon: faPlus,
+        variant: 'default',
+        items: [
+          {
+            kind: 'action',
+            id: 'new.addTorrentFile',
+            label: 'pages.main.button-bar.button.add-file',
+            icon: faFile,
+            variant: 'default',
+          },
+          {
+            kind: 'action',
+            id: 'new.addTorrentLink',
+            label: 'pages.main.button-bar.button.add-link',
+            icon: faLink,
+            variant: 'default',
+          },
+        ],
+      },
+      { kind: 'divider' },
+```
+
+with:
+
+```typescript
+  readonly entries = computed<ToolbarEntry[]>(() => {
+    return [
+      {
+        kind: 'action',
+        id: 'new.addTorrent',
+        label: 'pages.main.button-bar.button.add',
+        icon: faPlus,
+        variant: 'default',
+      },
+      { kind: 'divider' },
+```
+
+The template (`button-bar.html`) already renders `kind: 'action'` entries generically (the
+`@else` branch at the bottom of the `@for` loop), so no template change is needed - the
+"new" button moves from a dropdown-with-caret to a plain toolbar button automatically.
+
+- [ ] **Step 4: Update the `onClick` switch**
+
+In the same file, replace:
+
+```typescript
+      case 'new.addTorrentFile':
+        this.commandBusService.emit({ type: 'UI_ADD_TORRENT' });
+        break;
+      case 'new.addTorrentLink':
+        this.commandBusService.emit({ type: 'UI_ADD_TORRENT', mode: 'link' });
+        break;
+```
+
+with:
+
+```typescript
+      case 'new.addTorrent':
+        this.commandBusService.emit({ type: 'UI_ADD_TORRENT' });
+        break;
+```
+
+- [ ] **Step 5: Remove the now-unused `faFile`/`faLink` imports**
+
+In the same file, replace:
+
+```typescript
+import {
+  faArrowDown,
+  faArrowUp,
+  faArrowsDownToLine,
+  faArrowsUpToLine,
+  faAtom,
+  faChevronDown,
+  faFile,
+  faFolderTree,
+  faLink,
+  faPause,
+  faPlay,
+  faPlayCircle,
+  faPlus,
+  faSearch,
+  faServer,
+  faSliders,
+  faStopCircle,
+  faTags,
+  faTrashCan,
+  faUserTie,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
+```
+
+with:
+
+```typescript
+import {
+  faArrowDown,
+  faArrowUp,
+  faArrowsDownToLine,
+  faArrowsUpToLine,
+  faAtom,
+  faChevronDown,
+  faFolderTree,
+  faPause,
+  faPlay,
+  faPlayCircle,
+  faPlus,
+  faSearch,
+  faServer,
+  faSliders,
+  faStopCircle,
+  faTags,
+  faTrashCan,
+  faUserTie,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
+```
+
+- [ ] **Step 6: Run the spec again to confirm it passes**
+
+Run: `npm test -w @bitbutler/app -- button-bar`
+Expected: PASS (all tests in `button-bar.spec.ts`)
+
+- [ ] **Step 7: Remove the now-unused `add-file`/`add-link` i18n keys**
+
+In `public/i18n/us.json`, replace:
+
+```json
+        "button": {
+          "add": "Add Torrent",
+          "add-file": "From File",
+          "add-link": "From Link",
+          "delete": "Delete",
+```
+
+with:
+
+```json
+        "button": {
+          "add": "Add Torrent",
+          "delete": "Delete",
+```
+
+In `public/i18n/hu.json`, replace:
+
+```json
+        "button": {
+          "add": "Torrent hozzáadása",
+          "add-file": "Fájlból",
+          "add-link": "Linkből",
+          "delete": "Törlés",
+```
+
+with:
+
+```json
+        "button": {
+          "add": "Torrent hozzáadása",
+          "delete": "Törlés",
+```
+
+- [ ] **Step 8: Verify lint, tests, and build**
+
+Run: `npm run lint -w @bitbutler/app`
+Expected: no errors (max-warnings=0)
+
+Run: `npm test -w @bitbutler/app -- button-bar`
+Expected: PASS
+
+Run: `npm run build -w @bitbutler/app`
+Expected: build succeeds
+
+- [ ] **Step 9: Commit**
+
+```bash
+git add packages/app/src/app/pages/main/button-bar/button-bar.ts packages/app/src/app/pages/main/button-bar/button-bar.spec.ts public/i18n/us.json public/i18n/hu.json
+git commit -m "#159: consolidate add-torrent button bar entry"
+```
+
+---
+
+### Task 11: Consolidate the Electron "Add Torrent" menu into a single item
+
+**Files:**
+
+- Modify: `packages/app/src/app/services/menu-bar-command-handler.service.spec.ts`
+- Modify: `packages/app/src/app/services/menu-bar-command-handler.service.ts`
+- Modify: `packages/electron/src/menu.ts`
+- Modify: `public/i18n/us.json`
+- Modify: `public/i18n/hu.json`
+
+This addresses a gap in the design spec: the Electron application menu's "File > Add
+Torrent" submenu has separate "From File…" / "From Link…" items (`file.addTorrent.file` /
+`file.addTorrent.link`), mirroring the toolbar split Task 10 just removed. The link item is
+handled by `MenuBarCommandHandlerService` emitting `{ type: 'UI_ADD_TORRENT', mode: 'link' }`
+
+- the same `mode` field Task 12 removes from the command type. Since the Add Torrent modal
+  now owns the file/link toggle (Task 5), this submenu collapses to a single "Add Torrent"
+  entry too, consistent with Task 10.
+
+- [ ] **Step 1: Update the menu-bar-command-handler spec (will fail)**
+
+In `packages/app/src/app/services/menu-bar-command-handler.service.spec.ts`, replace:
+
+```typescript
+it('should emit UI_ADD_TORRENT for file.addTorrent.file', () => {
+  clicks$.next({ action: 'file.addTorrent.file', ts: 1 });
+  expect(commandBusEmit).toHaveBeenCalledWith({ type: 'UI_ADD_TORRENT' });
+});
+
+it('should emit UI_ADD_TORRENT with mode link for file.addTorrent.link', () => {
+  clicks$.next({ action: 'file.addTorrent.link', ts: 1 });
+  expect(commandBusEmit).toHaveBeenCalledWith({ type: 'UI_ADD_TORRENT', mode: 'link' });
+});
+```
+
+with:
+
+```typescript
+it('should emit UI_ADD_TORRENT for file.addTorrent', () => {
+  clicks$.next({ action: 'file.addTorrent', ts: 1 });
+  expect(commandBusEmit).toHaveBeenCalledWith({ type: 'UI_ADD_TORRENT' });
+});
+```
+
+- [ ] **Step 2: Run the spec to confirm it fails**
+
+Run: `npm test -w @bitbutler/app -- menu-bar-command-handler`
+Expected: FAIL - the `'should emit UI_ADD_TORRENT for file.addTorrent'` test fails because
+the current `switch` has no `'file.addTorrent'` case (only `.file`/`.link` suffixed cases),
+so it falls through to `default` and never calls `commandBusEmit`.
+
+- [ ] **Step 3: Update the handler's switch**
+
+In `packages/app/src/app/services/menu-bar-command-handler.service.ts`, replace:
+
+```typescript
+      switch (action) {
+        case 'file.addTorrent.file':
+          this.commandBusService.emit({ type: 'UI_ADD_TORRENT' });
+          break;
+
+        case 'file.addTorrent.link':
+          this.commandBusService.emit({ type: 'UI_ADD_TORRENT', mode: 'link' });
+          break;
+
+        case 'settings.app':
+```
+
+with:
+
+```typescript
+      switch (action) {
+        case 'file.addTorrent':
+          this.commandBusService.emit({ type: 'UI_ADD_TORRENT' });
+          break;
+
+        case 'settings.app':
+```
+
+- [ ] **Step 4: Run the spec again to confirm it passes**
+
+Run: `npm test -w @bitbutler/app -- menu-bar-command-handler`
+Expected: PASS (all tests in `menu-bar-command-handler.service.spec.ts`)
+
+- [ ] **Step 5: Collapse the Electron "Add Torrent" submenu into a single item**
+
+In `packages/electron/src/menu.ts`, replace:
+
+```typescript
+  const template: Electron.MenuItemConstructorOptions[] = [
+    {
+      label: t('electron.menu.file'),
+      submenu: [
+        {
+          label: t('electron.menu.add-torrent'),
+          enabled: loggedIn,
+          submenu: [
+            {
+              label: t('electron.menu.add-torrent-from-file'),
+              click: () => sendMenuAction(mainWindow, 'file.addTorrent.file'),
+            },
+            {
+              label: t('electron.menu.add-torrent-from-link'),
+              click: () => sendMenuAction(mainWindow, 'file.addTorrent.link'),
+            },
+          ],
+        },
+        { type: 'separator' },
+```
+
+with:
+
+```typescript
+  const template: Electron.MenuItemConstructorOptions[] = [
+    {
+      label: t('electron.menu.file'),
+      submenu: [
+        {
+          label: t('electron.menu.add-torrent'),
+          enabled: loggedIn,
+          click: () => sendMenuAction(mainWindow, 'file.addTorrent'),
+        },
+        { type: 'separator' },
+```
+
+- [ ] **Step 6: Remove the now-unused `add-torrent-from-file`/`add-torrent-from-link` i18n keys**
+
+In `public/i18n/us.json`, replace:
+
+```json
+    "menu": {
+      "file": "File",
+      "add-torrent": "Add Torrent",
+      "add-torrent-from-file": "From File…",
+      "add-torrent-from-link": "From Link…",
+      "disconnect": "Disconnect",
+```
+
+with:
+
+```json
+    "menu": {
+      "file": "File",
+      "add-torrent": "Add Torrent",
+      "disconnect": "Disconnect",
+```
+
+In `public/i18n/hu.json`, replace:
+
+```json
+    "menu": {
+      "file": "Fájl",
+      "add-torrent": "Torrent hozzáadása",
+      "add-torrent-from-file": "Fájlból…",
+      "add-torrent-from-link": "Linkből…",
+      "disconnect": "Kijelentkezés",
+```
+
+with:
+
+```json
+    "menu": {
+      "file": "Fájl",
+      "add-torrent": "Torrent hozzáadása",
+      "disconnect": "Kijelentkezés",
+```
+
+- [ ] **Step 7: Verify lint, tests, and builds**
+
+Run: `npm run lint -w @bitbutler/app`
+Expected: no errors (max-warnings=0)
+
+Run: `npm test -w @bitbutler/app -- menu-bar-command-handler`
+Expected: PASS
+
+Run: `npm run build:electron`
+Expected: build succeeds (TypeScript compiles `menu.ts` with no errors)
+
+- [ ] **Step 8: Commit**
+
+```bash
+git add packages/app/src/app/services/menu-bar-command-handler.service.ts packages/app/src/app/services/menu-bar-command-handler.service.spec.ts packages/electron/src/menu.ts public/i18n/us.json public/i18n/hu.json
+git commit -m "#159: consolidate add-torrent application menu entry"
+```
+
+---
+
+### Task 12: Remove unused `mode` field from `UI_ADD_TORRENT` and final verification
+
+**Files:**
+
+- Modify: `packages/app/src/app/models/command.model.ts`
+- Modify: `packages/app/src/app/services/ui-command-handler.service.ts`
+
+After Tasks 10 and 11, nothing emits `UI_ADD_TORRENT` with a `mode` field anymore. This task
+removes the now-dead `mode` field and the branch that consumed it, then runs the full
+verification suite for the whole feature.
+
+- [ ] **Step 1: Remove the `mode` field from the `UI_ADD_TORRENT` command type**
+
+In `packages/app/src/app/models/command.model.ts`, replace:
+
+```typescript
+  | {
+      type: 'UI_ADD_TORRENT';
+      draft?: TorrentDraft;
+      selected?: SelectedTorrentInput;
+      mode?: 'file' | 'link';
+    }
+```
+
+with:
+
+```typescript
+  | {
+      type: 'UI_ADD_TORRENT';
+      draft?: TorrentDraft;
+      selected?: SelectedTorrentInput;
+    }
+```
+
+- [ ] **Step 2: Remove the dead `mode === 'link'` branch**
+
+In `packages/app/src/app/services/ui-command-handler.service.ts`, replace:
+
+```typescript
+          case 'UI_ADD_TORRENT': {
+            if (this.isModalOpen(AddTorrent)) break;
+            const addTorrentModalRef = this.modalService.open(AddTorrent, {
+              size: 'lg',
+              scrollable: true,
+              centered: false,
+              keyboard: false,
+            });
+
+            if (command.mode === 'link') {
+              addTorrentModalRef.componentInstance.switchInputMode('link');
+            }
+
+            addTorrentModalRef.result.catch(() => {});
+            break;
+          }
+```
+
+with:
+
+```typescript
+          case 'UI_ADD_TORRENT': {
+            if (this.isModalOpen(AddTorrent)) break;
+            const addTorrentModalRef = this.modalService.open(AddTorrent, {
+              size: 'lg',
+              scrollable: true,
+              centered: false,
+              keyboard: false,
+            });
+
+            addTorrentModalRef.result.catch(() => {});
+            break;
+          }
+```
+
+- [ ] **Step 3: Run the full verification suite**
+
+Run: `npm run lint`
+Expected: no errors across all workspaces (max-warnings=0)
+
+Run: `npm test`
+Expected: all tests PASS across all workspaces
+
+Run: `npm run build`
+Expected: Angular production build succeeds
+
+Run: `npm run build:electron`
+Expected: Electron TypeScript compiles with no errors
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add packages/app/src/app/models/command.model.ts packages/app/src/app/services/ui-command-handler.service.ts
+git commit -m "#159: remove unused mode field from UI_ADD_TORRENT"
+```
+
+- [ ] **Step 5: Manual UI pass**
+
+With `npm start` running:
+
+1. Open the Add Torrent modal via the toolbar's single "Add Torrent" button - it should open
+   directly (no dropdown) on the **General** tab in file mode.
+2. Open the Add Torrent modal via the application menu's **File > Add Torrent** item - same
+   single entry, no submenu.
+3. In the modal's General tab, use the file/link toggle to switch to link mode; confirm the
+   **Files** tab becomes disabled with a "Not available when adding by magnet link" popover
+   (`components.add-torrent.tab.files.disabled.link-mode`).
+4. Switch back to file mode, select a `.torrent` file with a file list; confirm the
+   **Files** tab becomes enabled and shows the file tree.
+5. Clear the **Rename** field (General tab) - confirm the General tab shows a warning icon
+   with the "required" message, and the Add button is disabled.
+6. Type an invalid character (e.g. `<`) into **Rename** - confirm the warning message
+   switches to the "invalid characters" pattern message
+   (`general.form.feedback.pattern`).
+7. With a file selected, enter the Files tab and start editing (rename a file) without
+   saving - confirm a warning icon appears on the Files tab
+   (`components.add-torrent.tab.files.issue.edit-in-progress`) and the Add button is
+   disabled until you finish/cancel the edit.
+8. Switch the app language between English and Hungarian (Settings) and reopen the modal -
+   confirm all four tab titles, the input-mode toggle labels, and the warning/disabled
+   popover messages render translated text (no raw i18n keys).
+9. Submit a torrent successfully and confirm the modal closes / advances the queue as
+   before.
+
+---
