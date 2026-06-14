@@ -54,6 +54,7 @@ export class CategorySelect implements ControlValueAccessor {
   private readonly qbService = inject(QbService);
 
   public readonly icons = { faTriangleExclamation };
+  public readonly appendTo = input('');
 
   public categories = signal<string[]>([]);
   public selectControl = new FormControl('');
