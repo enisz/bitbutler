@@ -13,6 +13,7 @@
           [formControl]="selectControl"
           [keyDownFn]="keyDownFn"
           [openOnEnter]="false"
+          [appendTo]="appendTo()"
           #ngselect
         ></ng-select>
         <label>{{ 'components.tag-select.label' | translate }}</label>
