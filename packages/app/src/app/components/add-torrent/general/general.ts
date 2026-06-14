@@ -1,7 +1,5 @@
 import { ChangeDetectionStrategy, Component, input, output, viewChild } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faFile, faLink } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AutofocusDirective } from '../../../directives/autofocus';
 import { AddTorrentFormGroup } from '../../../models/add-torrent.model';
@@ -15,7 +13,6 @@ import { TagSelect } from '../../tag-select/tag-select';
   imports: [
     ReactiveFormsModule,
     AutofocusDirective,
-    FontAwesomeModule,
     BbPopover,
     TranslatePipe,
     CategorySelect,
@@ -32,8 +29,6 @@ export class AddTorrentGeneral {
   public fileSelected = output<Event>();
 
   private readonly categorySelect = viewChild(CategorySelect);
-
-  public icons = { faFile, faLink };
 
   public ensureCategoryExists(): Promise<boolean> | undefined {
     return this.categorySelect()?.ensureCategoryExists();

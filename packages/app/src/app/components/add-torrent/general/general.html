@@ -15,8 +15,7 @@
               [checked]="inputMode() === 'file'"
               (change)="inputModeChange.emit('file')"
             />
-            <label class="btn btn-outline-primary" for="inputMode_file">
-              <fa-icon [icon]="icons.faFile" class="me-1"></fa-icon>
+            <label class="btn btn-outline-secondary" for="inputMode_file">
               {{ 'components.add-torrent.input-mode.file' | translate }}
             </label>
 
@@ -29,8 +28,7 @@
               [checked]="inputMode() === 'link'"
               (change)="inputModeChange.emit('link')"
             />
-            <label class="btn btn-outline-primary" for="inputMode_link">
-              <fa-icon [icon]="icons.faLink" class="me-1"></fa-icon>
+            <label class="btn btn-outline-secondary" for="inputMode_link">
               {{ 'components.add-torrent.input-mode.link' | translate }}
             </label>
           </div>
