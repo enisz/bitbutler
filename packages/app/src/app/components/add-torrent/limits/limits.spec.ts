@@ -50,4 +50,19 @@ describe('AddTorrentLimits', () => {
   it('should render the share limit control', () => {
     expect(fixture.nativeElement.querySelector('app-share-limit')).toBeTruthy();
   });
+
+  it('should wrap each limit control in a bb-fieldset with the correct legend', () => {
+    const fieldsets: NodeListOf<HTMLElement> =
+      fixture.nativeElement.querySelectorAll('fieldset.bb-fieldset');
+
+    expect(fieldsets.length).toBe(2);
+    expect(fieldsets[0].querySelector('legend')?.textContent).toContain(
+      'components.add-torrent.label.transfer-rate-limits',
+    );
+    expect(fieldsets[0].querySelector('app-transfer-limit')).toBeTruthy();
+    expect(fieldsets[1].querySelector('legend')?.textContent).toContain(
+      'components.add-torrent.label.share-limits',
+    );
+    expect(fieldsets[1].querySelector('app-share-limit')).toBeTruthy();
+  });
 });
