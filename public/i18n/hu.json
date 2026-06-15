@@ -1515,7 +1515,6 @@
     },
     "form": {
       "feedback": {
-        "required": "Ez a mező kötelező.",
         "pattern": "A név érvénytelen karaktereket tartalmaz (< > : \" / \\ | ? *)"
       },
       "ng-select": {

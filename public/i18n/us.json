@@ -1515,7 +1515,6 @@
     },
     "form": {
       "feedback": {
-        "required": "This field is required.",
         "pattern": "Name contains invalid characters (< > : \" / \\ | ? *)"
       },
       "ng-select": {
