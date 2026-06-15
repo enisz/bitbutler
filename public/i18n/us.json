@@ -122,7 +122,7 @@
           "title": "Torrent File",
           "description": {
             "line1": "Select a .torrent file from your computer. The file will be parsed locally - no data is sent anywhere until you click Add.",
-            "line2": "Once a file is loaded, a file tree will appear below so you can review and toggle individual files before adding."
+            "line2": "Once a file is loaded, switch to the Files tab to review and toggle individual files before adding."
           }
         },
         "links": {
