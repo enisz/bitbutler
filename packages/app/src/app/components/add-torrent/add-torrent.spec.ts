@@ -107,14 +107,18 @@ describe('AddTorrent', () => {
 
     it('should return true in link mode with magnet links and an empty rename', () => {
       component.switchInputMode('link');
-      component.addForm.controls.magnetLinks.setValue('magnet:?xt=urn:btih:abcdef');
+      component.addForm.controls.linkGroup.controls.magnetLinks.setValue(
+        'magnet:?xt=urn:btih:abcdef',
+      );
 
       expect(component.canSubmit()).toBe(true);
     });
 
     it('should return false when the file tree is in edit mode even if the form is otherwise valid', () => {
       component.switchInputMode('link');
-      component.addForm.controls.magnetLinks.setValue('magnet:?xt=urn:btih:abcdef');
+      component.addForm.controls.linkGroup.controls.magnetLinks.setValue(
+        'magnet:?xt=urn:btih:abcdef',
+      );
       component.treeInEditMode.set(true);
 
       expect(component.canSubmit()).toBe(false);
@@ -123,43 +127,60 @@ describe('AddTorrent', () => {
 
   describe('rename validator (via form)', () => {
     it('should be invalid when rename contains a forward slash', () => {
-      component.addForm.controls.rename.setValue('folder/name');
-      expect(component.addForm.controls.rename.errors).toHaveProperty('pattern');
+      component.addForm.controls.fileGroup.controls.rename.setValue('folder/name');
+      expect(component.addForm.controls.fileGroup.controls.rename.errors).toHaveProperty('pattern');
     });
 
     it('should be invalid when rename contains a backslash', () => {
-      component.addForm.controls.rename.setValue('folder\\name');
-      expect(component.addForm.controls.rename.errors).toHaveProperty('pattern');
+      component.addForm.controls.fileGroup.controls.rename.setValue('folder\\name');
+      expect(component.addForm.controls.fileGroup.controls.rename.errors).toHaveProperty('pattern');
     });
 
     it('should be invalid when rename contains other reserved characters', () => {
-      component.addForm.controls.rename.setValue('bad<name>');
-      expect(component.addForm.controls.rename.errors).toHaveProperty('pattern');
+      component.addForm.controls.fileGroup.controls.rename.setValue('bad<name>');
+      expect(component.addForm.controls.fileGroup.controls.rename.errors).toHaveProperty('pattern');
     });
 
     it('should be valid when rename contains no invalid characters', () => {
-      component.addForm.controls.rename.setValue('valid-name');
-      expect(component.addForm.controls.rename.errors).toBeNull();
+      component.addForm.controls.fileGroup.controls.rename.setValue('valid-name');
+      expect(component.addForm.controls.fileGroup.controls.rename.errors).toBeNull();
+    });
+
+    it('should be valid when fileGroup rename is left empty', () => {
+      expect(component.addForm.controls.fileGroup.controls.rename.value).toBeNull();
+      expect(component.addForm.controls.fileGroup.controls.rename.errors).toBeNull();
+    });
+
+    it('should be valid when linkGroup rename is left empty', () => {
+      expect(component.addForm.controls.linkGroup.controls.rename.value).toBeNull();
+      expect(component.addForm.controls.linkGroup.controls.rename.errors).toBeNull();
     });
   });
 
   describe('tabIssues / hasActiveWarnings', () => {
-    it('should report an invalid-fields issue on the general tab by default', () => {
-      expect(component.tabIssues().general).toBe(
-        'components.add-torrent.tab.general.issue.invalid-fields',
-      );
-      expect(component.hasActiveWarnings()).toBe(true);
+    it('should report no general tab issue by default', () => {
+      expect(component.tabIssues().general).toBeUndefined();
+      expect(component.hasActiveWarnings()).toBe(false);
     });
 
     it('should clear the general tab issue once rename is set to a valid value', () => {
-      component.addForm.controls.rename.setValue('valid-name');
+      component.addForm.controls.fileGroup.controls.rename.setValue('valid-name');
 
       expect(component.tabIssues().general).toBeUndefined();
       expect(component.hasActiveWarnings()).toBe(false);
     });
 
     it('should report an invalid-fields issue on the general tab for invalid characters', () => {
-      component.addForm.controls.rename.setValue('bad<name>');
+      component.addForm.controls.fileGroup.controls.rename.setValue('bad<name>');
+
+      expect(component.tabIssues().general).toBe(
+        'components.add-torrent.tab.general.issue.invalid-fields',
+      );
+    });
+
+    it('should report an invalid-fields issue on the general tab for invalid characters in link mode', () => {
+      component.switchInputMode('link');
+      component.addForm.controls.linkGroup.controls.rename.setValue('bad<name>');
 
       expect(component.tabIssues().general).toBe(
         'components.add-torrent.tab.general.issue.invalid-fields',
@@ -167,7 +188,7 @@ describe('AddTorrent', () => {
     });
 
     it('should report a noServerSelected issue on the general tab', () => {
-      component.addForm.controls.rename.setValue('valid-name');
+      component.addForm.controls.fileGroup.controls.rename.setValue('valid-name');
       component.addForm.setErrors({ noServerSelected: true });
 
       expect(component.tabIssues().general).toBe(
@@ -176,7 +197,7 @@ describe('AddTorrent', () => {
     });
 
     it('should report an addFailed issue on the general tab', () => {
-      component.addForm.controls.rename.setValue('valid-name');
+      component.addForm.controls.fileGroup.controls.rename.setValue('valid-name');
       component.addForm.setErrors({ addFailed: true });
 
       expect(component.tabIssues().general).toBe('components.add-torrent.feedback.add-failed');
@@ -324,7 +345,7 @@ describe('AddTorrent', () => {
         name: 'test.torrent',
         path: '/tmp/test.torrent',
       });
-      component.addForm.controls.rename.setValue('test-torrent');
+      component.addForm.controls.fileGroup.controls.rename.setValue('test-torrent');
     });
 
     it('should create a typed category before adding the torrent', async () => {
@@ -349,108 +370,86 @@ describe('AddTorrent', () => {
   });
 
   describe('eager rename validation', () => {
-    it('should mark rename as touched on init when it is invalid', () => {
+    it('should not mark fileGroup rename as touched on init when it is empty (valid)', () => {
       fixture.detectChanges();
 
-      expect(component.addForm.controls.rename.touched).toBe(true);
+      expect(component.addForm.controls.fileGroup.controls.rename.touched).toBe(false);
+    });
+
+    it('should mark fileGroup rename as touched once it becomes pattern-invalid', () => {
+      component.addForm.controls.fileGroup.controls.rename.setValue('bad<name>');
+      fixture.detectChanges();
+
+      expect(component.addForm.controls.fileGroup.controls.rename.touched).toBe(true);
+    });
+
+    it('should mark linkGroup rename as touched once it becomes pattern-invalid in link mode', () => {
+      component.switchInputMode('link');
+      component.addForm.controls.linkGroup.controls.rename.setValue('bad<name>');
+      fixture.detectChanges();
+
+      expect(component.addForm.controls.linkGroup.controls.rename.touched).toBe(true);
     });
   });
 
   describe('handleInputModeChange', () => {
-    let confirmService: { confirm: ReturnType<typeof vi.fn> };
+    it('should do nothing when the mode is unchanged', () => {
+      component.handleInputModeChange('file');
 
-    beforeEach(() => {
-      confirmService = TestBed.inject(ConfirmService) as any;
-      confirmService.confirm.mockReset();
-    });
-
-    it('should do nothing when the mode is unchanged', async () => {
-      await component.handleInputModeChange('file');
-
-      expect(confirmService.confirm).not.toHaveBeenCalled();
       expect(component.inputMode()).toBe('file');
     });
 
-    it('should switch and reset without confirming when the form is pristine', async () => {
-      const addTorrentSettings = TestBed.inject(AddTorrentSettingsService) as any;
-      addTorrentSettings.load.mockResolvedValue({});
-
-      await component.handleInputModeChange('link');
-
-      expect(confirmService.confirm).not.toHaveBeenCalled();
-      expect(component.inputMode()).toBe('link');
-    });
-
-    it('should ask for confirmation when the form is dirty, and do nothing if cancelled', async () => {
-      confirmService.confirm.mockResolvedValue(false);
-      component.addForm.controls.savepath.markAsDirty();
-      component.addForm.controls.savepath.setValue('/changed');
-
-      await component.handleInputModeChange('link');
-
-      expect(confirmService.confirm).toHaveBeenCalledWith(
-        'components.add-torrent.confirm.switch-mode.title',
-        'components.add-torrent.confirm.switch-mode.message',
-      );
-      expect(component.inputMode()).toBe('file');
-    });
-
-    it('should switch and reset when the form is dirty and the user confirms', async () => {
-      const addTorrentSettings = TestBed.inject(AddTorrentSettingsService) as any;
-      addTorrentSettings.load.mockResolvedValue({ savepath: '/downloads' });
-      confirmService.confirm.mockResolvedValue(true);
-      component.addForm.controls.savepath.markAsDirty();
-      component.addForm.controls.savepath.setValue('/changed');
-
-      await component.handleInputModeChange('link');
-
-      expect(component.inputMode()).toBe('link');
-      expect(component.addForm.controls.savepath.value).toBe('/downloads');
-    });
-  });
-
-  describe('resetToSavedSettings', () => {
-    it('should reapply saved AddTorrentSettings fields, mark them pristine, and clear the dirty state', async () => {
-      const addTorrentSettings = TestBed.inject(AddTorrentSettingsService) as any;
-      addTorrentSettings.load.mockResolvedValue({
-        savepath: '/downloads',
-        paused: true,
-        category: 'movies',
-        tags: 'a, b',
-        root_folder: 'true',
-        skip_checking: true,
-        sequentialDownload: true,
-        firstLastPiecePrio: true,
-        autoTMM: true,
-        transferRateLimits: { uploadLimit: 100, downloadLimit: 200 },
-        shareLimits: { ratioLimit: 2, seedingTimeLimit: 60, inactiveSeedingTimeLimit: -1 },
+    it('should preserve fileGroup state across a file -> link -> file round trip', () => {
+      component.addForm.controls.fileGroup.controls.file.setValue('movie.torrent', {
+        emitEvent: false,
       });
+      component.addForm.controls.fileGroup.controls.rename.setValue('renamed-movie');
+      (component as any).selectedTorrentFile.set({
+        name: 'movie.torrent',
+        path: '/tmp/movie.torrent',
+      });
+      (component as any).savedFileState = { renames: [], files: [] };
+      component.showTree.set(true);
 
-      component.addForm.controls.savepath.markAsDirty();
-      component.addForm.controls.savepath.setValue('/changed');
-      expect(component.addForm.dirty).toBe(true);
+      component.handleInputModeChange('link');
+      component.handleInputModeChange('file');
 
-      await component.resetToSavedSettings();
-
-      expect(component.addForm.controls.savepath.value).toBe('/downloads');
-      expect(component.addForm.controls.tags.value).toEqual(['a', 'b']);
-      expect(component.addForm.controls.savepath.dirty).toBe(false);
-      expect(component.addForm.dirty).toBe(false);
+      expect(component.addForm.controls.fileGroup.controls.file.value).toBe('movie.torrent');
+      expect(component.addForm.controls.fileGroup.controls.rename.value).toBe('renamed-movie');
+      expect((component as any).selectedTorrentFile()).toEqual({
+        name: 'movie.torrent',
+        path: '/tmp/movie.torrent',
+      });
+      expect((component as any).savedFileState).toEqual({ renames: [], files: [] });
+      expect(component.showTree()).toBe(true);
     });
 
-    it('should leave rename dirty (and the form dirty) when only rename was edited', async () => {
-      const addTorrentSettings = TestBed.inject(AddTorrentSettingsService) as any;
-      addTorrentSettings.load.mockResolvedValue({ savepath: '/downloads' });
+    it('should preserve linkGroup state across a link -> file -> link round trip', () => {
+      component.switchInputMode('link');
+      component.addForm.controls.linkGroup.controls.magnetLinks.setValue(
+        'magnet:?xt=urn:btih:abcdef',
+      );
+      component.addForm.controls.linkGroup.controls.rename.setValue('renamed-magnet');
 
-      component.addForm.controls.rename.markAsDirty();
-      component.addForm.controls.rename.setValue('my-name');
-      expect(component.addForm.dirty).toBe(true);
+      component.handleInputModeChange('file');
+      component.handleInputModeChange('link');
 
-      await component.resetToSavedSettings();
+      expect(component.addForm.controls.linkGroup.controls.magnetLinks.value).toBe(
+        'magnet:?xt=urn:btih:abcdef',
+      );
+      expect(component.addForm.controls.linkGroup.controls.rename.value).toBe('renamed-magnet');
+    });
 
-      expect(component.addForm.controls.rename.value).toBe('my-name');
-      expect(component.addForm.controls.rename.dirty).toBe(true);
-      expect(component.addForm.dirty).toBe(true);
+    it('should reset treeInEditMode and clear the files tab issue when switching modes', () => {
+      component.treeInEditMode.set(true);
+      expect(component.tabIssues().files).toBe(
+        'components.add-torrent.tab.files.issue.edit-in-progress',
+      );
+
+      component.handleInputModeChange('link');
+
+      expect(component.treeInEditMode()).toBe(false);
+      expect(component.tabIssues().files).toBeUndefined();
     });
   });
 });

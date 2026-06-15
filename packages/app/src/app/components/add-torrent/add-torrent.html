@@ -89,7 +89,7 @@
     class="btn btn-primary"
     (click)="handleSubmit($event)"
     [disabled]="!canSubmit()"
-    [autofocus]="addForm.controls.file.value.length === 0"
+    [autofocus]="addForm.controls.fileGroup.controls.file.value.length === 0"
   >
     {{ 'general.button.add' | translate }}
   </button>

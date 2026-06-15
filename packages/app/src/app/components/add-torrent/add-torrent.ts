@@ -27,7 +27,6 @@ import { AddTorrentFormGroup, RootFolderMode } from '../../models/add-torrent.mo
 import type { SelectedTorrentInput } from '../../models/command.model';
 import { HttpError } from '../../models/http.model';
 import { AddTorrentSettingsService } from '../../services/add-torrent-settings.service';
-import { ConfirmService } from '../../services/confirm.service';
 import { GeneralSettingsService } from '../../services/general-settings.service';
 import { OpenFilesService, PendingAddTorrent } from '../../services/open-files.service';
 import { QbService } from '../../services/qb.service';
@@ -78,7 +77,6 @@ export class AddTorrent implements OnInit {
   private readonly torrentStoreService = inject(TorrentStoreService);
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly addTorrentSettings = inject(AddTorrentSettingsService);
-  private readonly confirmService = inject(ConfirmService);
   private readonly generalSettingsService = inject(GeneralSettingsService);
   private readonly qbService = inject(QbService);
   private readonly openFilesService = inject(OpenFilesService);
@@ -113,13 +111,15 @@ export class AddTorrent implements OnInit {
   ];
 
   public addForm: AddTorrentFormGroup = new FormGroup({
-    file: new FormControl<string>('', { nonNullable: true }),
-    magnetLinks: new FormControl<string>('', { nonNullable: true }),
+    fileGroup: new FormGroup({
+      file: new FormControl<string>('', { nonNullable: true }),
+      rename: new FormControl<string | null>(null, [Validators.pattern(INVALID_FILENAME_CHARS)]),
+    }),
+    linkGroup: new FormGroup({
+      magnetLinks: new FormControl<string>('', { nonNullable: true }),
+      rename: new FormControl<string | null>(null, [Validators.pattern(INVALID_FILENAME_CHARS)]),
+    }),
     savepath: new FormControl<string | null>(null),
-    rename: new FormControl<string | null>(null, [
-      Validators.required,
-      Validators.pattern(INVALID_FILENAME_CHARS),
-    ]),
     paused: new FormControl<boolean>(false, { nonNullable: true }),
     category: new FormControl<string | null>(null),
     root_folder: new FormControl<RootFolderMode>('unset', { nonNullable: true }),
@@ -148,9 +148,14 @@ export class AddTorrent implements OnInit {
     this.formStatus(); // re-run when addForm validity changes
     const issues: Partial<Record<AddTorrentTabId, string>> = {};
 
-    const renameErrors = this.addForm.controls.rename.errors;
+    const activeRename =
+      this.inputMode() === 'file'
+        ? this.addForm.controls.fileGroup.controls.rename
+        : this.addForm.controls.linkGroup.controls.rename;
+    const renameErrors = activeRename.errors;
     const formErrors = this.addForm.errors;
-    if (renameErrors?.['required'] || renameErrors?.['pattern']) {
+
+    if (renameErrors?.['pattern']) {
       issues.general = this.translateService.instant(
         'components.add-torrent.tab.general.issue.invalid-fields',
       );
@@ -213,8 +218,12 @@ export class AddTorrent implements OnInit {
 
     effect(() => {
       this.formStatus(); // re-run when addForm validity changes
-      if (this.addForm.controls.rename.invalid) {
-        this.addForm.controls.rename.markAsTouched();
+      const activeRename =
+        this.inputMode() === 'file'
+          ? this.addForm.controls.fileGroup.controls.rename
+          : this.addForm.controls.linkGroup.controls.rename;
+      if (activeRename.invalid) {
+        activeRename.markAsTouched();
       }
     });
   }
@@ -234,22 +243,6 @@ export class AddTorrent implements OnInit {
           ctrl.patchValue(v as any, { emitEvent: false });
         }
       }
-    }
-  }
-
-  public async resetToSavedSettings(): Promise<void> {
-    const settings = (await this.addTorrentSettings.load()) as any;
-
-    for (const [k, v] of Object.entries(settings)) {
-      const ctrl = this.addForm.get(k);
-      if (!ctrl) continue;
-
-      if (k === 'tags' && typeof v === 'string') {
-        ctrl.patchValue(v.split(',').map((t) => t.trim()));
-      } else {
-        ctrl.patchValue(v as any);
-      }
-      ctrl.markAsPristine();
     }
   }
 
@@ -286,10 +279,11 @@ export class AddTorrent implements OnInit {
     }
 
     const raw = this.addForm.getRawValue();
+    const rename = this.inputMode() === 'file' ? raw.fileGroup.rename : raw.linkGroup.rename;
 
     const sharedOptions = {
       savepath: raw.savepath?.trim() || undefined,
-      rename: raw.rename?.trim() || undefined,
+      rename: rename?.trim() || undefined,
       category: raw.category?.trim() || undefined,
       tags: raw.tags?.join(',') || undefined,
       paused: raw.paused ? 'true' : 'false',
@@ -391,45 +385,27 @@ export class AddTorrent implements OnInit {
   }
 
   public canSubmit(): boolean {
-    if (!this.addForm.valid || this.hasActiveWarnings() || this.isSubmitting()) return false;
+    if (this.hasActiveWarnings() || this.isSubmitting() || this.addForm.errors) return false;
+
     return this.inputMode() === 'link'
-      ? this.getMagnetLinks().length > 0
-      : this.selectedTorrentFile() !== null;
-  }
-
-  public async handleInputModeChange(mode: 'file' | 'link'): Promise<void> {
-    if (mode === this.inputMode()) return;
-
-    if (this.addForm.dirty) {
-      const confirmed = await this.confirmService.confirm(
-        'components.add-torrent.confirm.switch-mode.title',
-        'components.add-torrent.confirm.switch-mode.message',
-      );
-      if (!confirmed) return;
-    }
-
-    this.switchInputMode(mode);
-    await this.resetToSavedSettings();
+      ? this.addForm.controls.linkGroup.valid && this.getMagnetLinks().length > 0
+      : this.addForm.controls.fileGroup.valid && this.selectedTorrentFile() !== null;
   }
 
   public switchInputMode(mode: 'file' | 'link'): void {
     this.inputMode.set(mode);
-    if (mode === 'link') {
-      this.selectedTorrentFile.set(null);
-      this.addForm.controls.file.disable();
-      this.addForm.controls.rename.removeValidators(Validators.required);
-      this.addForm.controls.rename.updateValueAndValidity();
-      this.showTree.set(false);
-    } else {
-      this.addForm.controls.magnetLinks.setValue('', { emitEvent: false });
-      this.addForm.controls.file.enable();
-      this.addForm.controls.rename.addValidators(Validators.required);
-      this.addForm.controls.rename.updateValueAndValidity();
+    if (this.treeInEditMode()) {
+      this.treeInEditMode.set(false);
     }
   }
 
+  public handleInputModeChange(mode: 'file' | 'link'): void {
+    if (mode === this.inputMode()) return;
+    this.switchInputMode(mode);
+  }
+
   private getMagnetLinks(): string[] {
-    return (this.addForm.controls.magnetLinks.value ?? '')
+    return (this.addForm.controls.linkGroup.controls.magnetLinks.value ?? '')
       .split('\n')
       .map((l) => l.trim())
       .filter((l) => l.length > 0);
@@ -490,7 +466,7 @@ export class AddTorrent implements OnInit {
     const oldSettings = this.addForm.value;
     this.addForm.reset();
     this.addForm.patchValue(oldSettings);
-    this.addForm.get('file')?.setErrors(null);
+    this.addForm.controls.fileGroup.controls.file.setErrors(null);
     this.manualDraft.set(null);
     this.savedFileState = null;
 
@@ -502,9 +478,13 @@ export class AddTorrent implements OnInit {
     this.selectedTorrentFile.set(pending.selected);
 
     if (pending.selected.name) {
-      this.addForm.controls.file.setValue(pending.selected.name, { emitEvent: false });
+      this.addForm.controls.fileGroup.controls.file.setValue(pending.selected.name, {
+        emitEvent: false,
+      });
     } else if (draft.originalName) {
-      this.addForm.controls.file.setValue(draft.originalName, { emitEvent: false });
+      this.addForm.controls.fileGroup.controls.file.setValue(draft.originalName, {
+        emitEvent: false,
+      });
     }
 
     if (this.isAlreadyInList(draft)) {
@@ -517,7 +497,7 @@ export class AddTorrent implements OnInit {
     const suggested =
       draft.torrent?.name?.trim() ?? draft.originalName?.replace(/\.torrent$/i, '') ?? '';
 
-    const renameCtrl = this.addForm.controls.rename;
+    const renameCtrl = this.addForm.controls.fileGroup.controls.rename;
     if (suggested && !renameCtrl.dirty) {
       renameCtrl.setValue(suggested, { emitEvent: false });
     }

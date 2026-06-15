@@ -7,10 +7,15 @@ import { AddTorrentLimits } from './limits';
 
 function createForm(): AddTorrentFormGroup {
   return new FormGroup({
-    file: new FormControl<string>('', { nonNullable: true }),
-    magnetLinks: new FormControl<string>('', { nonNullable: true }),
+    fileGroup: new FormGroup({
+      file: new FormControl<string>('', { nonNullable: true }),
+      rename: new FormControl<string | null>(null),
+    }),
+    linkGroup: new FormGroup({
+      magnetLinks: new FormControl<string>('', { nonNullable: true }),
+      rename: new FormControl<string | null>(null),
+    }),
     savepath: new FormControl<string | null>(null),
-    rename: new FormControl<string | null>(null),
     paused: new FormControl<boolean>(false, { nonNullable: true }),
     category: new FormControl<string | null>(null),
     root_folder: new FormControl<RootFolderMode>('unset', { nonNullable: true }),

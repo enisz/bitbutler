@@ -33,10 +33,15 @@ export const DEFAULT_ADD_TORRENT_SETTINGS: AddTorrentSettings = {
 };
 
 export type AddTorrentFormGroup = FormGroup<{
-  file: FormControl<string>;
-  magnetLinks: FormControl<string>;
+  fileGroup: FormGroup<{
+    file: FormControl<string>;
+    rename: FormControl<string | null>;
+  }>;
+  linkGroup: FormGroup<{
+    magnetLinks: FormControl<string>;
+    rename: FormControl<string | null>;
+  }>;
   savepath: FormControl<string | null>;
-  rename: FormControl<string | null>;
   paused: FormControl<boolean>;
   category: FormControl<string | null>;
   root_folder: FormControl<RootFolderMode>;

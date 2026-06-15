@@ -14,10 +14,15 @@ import { AddTorrentGeneral } from './general';
 
 function createForm(): AddTorrentFormGroup {
   return new FormGroup({
-    file: new FormControl<string>('', { nonNullable: true }),
-    magnetLinks: new FormControl<string>('', { nonNullable: true }),
+    fileGroup: new FormGroup({
+      file: new FormControl<string>('', { nonNullable: true }),
+      rename: new FormControl<string | null>(null),
+    }),
+    linkGroup: new FormGroup({
+      magnetLinks: new FormControl<string>('', { nonNullable: true }),
+      rename: new FormControl<string | null>(null),
+    }),
     savepath: new FormControl<string | null>(null),
-    rename: new FormControl<string | null>(null),
     paused: new FormControl<boolean>(false, { nonNullable: true }),
     category: new FormControl<string | null>(null),
     root_folder: new FormControl<RootFolderMode>('unset', { nonNullable: true }),
@@ -109,7 +114,7 @@ describe('AddTorrentGeneral', () => {
     renameInput.value = 'my-torrent';
     renameInput.dispatchEvent(new Event('input'));
 
-    expect(component.form().controls.rename.value).toBe('my-torrent');
+    expect(component.form().controls.fileGroup.controls.rename.value).toBe('my-torrent');
   });
 
   describe('ensureCategoryExists', () => {
@@ -141,22 +146,9 @@ describe('AddTorrentGeneral', () => {
   });
 
   describe('rename validation feedback', () => {
-    it('should show the required message when the rename control has a required error', () => {
-      component.form().controls.rename.setErrors({ required: true });
-      component.form().controls.rename.markAsDirty();
-      fixture.detectChanges();
-
-      const messages: NodeListOf<HTMLElement> =
-        fixture.nativeElement.querySelectorAll('.invalid-feedback');
-
-      expect(messages.length).toBe(1);
-      expect(messages[0].textContent).toContain('general.form.feedback.required');
-      expect(messages[0].textContent).not.toContain('general.form.feedback.pattern');
-    });
-
-    it('should show the pattern message when the rename control has a pattern error', () => {
-      component.form().controls.rename.setErrors({ pattern: true });
-      component.form().controls.rename.markAsDirty();
+    it('should show the pattern message when the fileGroup rename control has a pattern error', () => {
+      component.form().controls.fileGroup.controls.rename.setErrors({ pattern: true });
+      component.form().controls.fileGroup.controls.rename.markAsDirty();
       fixture.detectChanges();
 
       const messages: NodeListOf<HTMLElement> =
@@ -164,23 +156,37 @@ describe('AddTorrentGeneral', () => {
 
       expect(messages.length).toBe(1);
       expect(messages[0].textContent).toContain('general.form.feedback.pattern');
-      expect(messages[0].textContent).not.toContain('general.form.feedback.required');
     });
 
-    it('should not show any validation message when the rename control is valid', () => {
+    it('should not show any validation message when the fileGroup rename control is valid', () => {
       expect(fixture.nativeElement.querySelectorAll('.invalid-feedback').length).toBe(0);
     });
 
-    it('should show the required message when the rename control is touched but not dirty', () => {
-      component.form().controls.rename.setErrors({ required: true });
-      component.form().controls.rename.markAsTouched();
+    it('should show the pattern message when the linkGroup rename control has a pattern error', () => {
+      fixture.componentRef.setInput('inputMode', 'link');
+      fixture.detectChanges();
+
+      component.form().controls.linkGroup.controls.rename.setErrors({ pattern: true });
+      component.form().controls.linkGroup.controls.rename.markAsDirty();
       fixture.detectChanges();
 
       const messages: NodeListOf<HTMLElement> =
         fixture.nativeElement.querySelectorAll('.invalid-feedback');
 
       expect(messages.length).toBe(1);
-      expect(messages[0].textContent).toContain('general.form.feedback.required');
+      expect(messages[0].textContent).toContain('general.form.feedback.pattern');
+    });
+
+    it('should show the pattern message when the rename control is touched but not dirty', () => {
+      component.form().controls.fileGroup.controls.rename.setErrors({ pattern: true });
+      component.form().controls.fileGroup.controls.rename.markAsTouched();
+      fixture.detectChanges();
+
+      const messages: NodeListOf<HTMLElement> =
+        fixture.nativeElement.querySelectorAll('.invalid-feedback');
+
+      expect(messages.length).toBe(1);
+      expect(messages[0].textContent).toContain('general.form.feedback.pattern');
     });
   });
 });
