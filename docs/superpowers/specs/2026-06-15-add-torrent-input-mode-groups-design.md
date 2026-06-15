@@ -53,10 +53,7 @@ export type AddTorrentFormGroup = FormGroup<{
 public addForm: AddTorrentFormGroup = new FormGroup({
   fileGroup: new FormGroup({
     file: new FormControl<string>('', { nonNullable: true }),
-    rename: new FormControl<string | null>(null, [
-      Validators.required,
-      Validators.pattern(INVALID_FILENAME_CHARS),
-    ]),
+    rename: new FormControl<string | null>(null, [Validators.pattern(INVALID_FILENAME_CHARS)]),
   }),
   linkGroup: new FormGroup({
     magnetLinks: new FormControl<string>('', { nonNullable: true }),
@@ -76,9 +73,15 @@ public addForm: AddTorrentFormGroup = new FormGroup({
 });
 ```
 
-Each `rename` control's validators are now fixed at construction - `fileGroup.rename` is always
-`required` + pattern, `linkGroup.rename` is pattern-only. No more
-`addValidators`/`removeValidators`/`updateValueAndValidity` calls anywhere.
+Each `rename` control's validators are now fixed at construction and identical for both groups -
+pattern-only, no `required`. No more `addValidators`/`removeValidators`/`updateValueAndValidity`
+calls anywhere.
+
+**Why `rename` isn't `required`:** qBittorrent's `/api/v2/torrents/add` reads `rename` into
+`AddTorrentParams.name`. `TorrentImpl::name()` only uses that value if non-empty; otherwise it
+falls back to the torrent's own metadata name (`TorrentInfo::name()`), and for magnets without
+metadata yet, the same fallback applies once metadata arrives. So an empty `rename` is a valid,
+well-supported "use the torrent's own name" signal - there's nothing to require.
 
 `savepath`/`category`/`tags`/etc. stay top-level and untouched - `ngOnInit`'s
 `AddTorrentSettings` patch loop (`this.addForm.get(k)` for keys like `savepath`, `category`, ...)
@@ -131,12 +134,10 @@ permanent no-op as it already is today - only the path changes, not the behavior
   <label for="rename">{{ 'components.add-torrent.add-form.rename' | translate }}</label>
   @if ( form().controls.fileGroup.controls.rename.invalid &&
   (form().controls.fileGroup.controls.rename.touched ||
-  form().controls.fileGroup.controls.rename.dirty) ) { @if
-  (form().controls.fileGroup.controls.rename.hasError('required')) {
-  <div class="invalid-feedback px-2">{{ 'general.form.feedback.required' | translate }}</div>
-  } @else if (form().controls.fileGroup.controls.rename.hasError('pattern')) {
+  form().controls.fileGroup.controls.rename.dirty) &&
+  form().controls.fileGroup.controls.rename.hasError('pattern') ) {
   <div class="invalid-feedback px-2">{{ 'general.form.feedback.pattern' | translate }}</div>
-  } }
+  }
 </div>
 } @else {
 <div formGroupName="linkGroup" class="form-floating mb-3">
@@ -161,6 +162,11 @@ permanent no-op as it already is today - only the path changes, not the behavior
 </div>
 }
 ```
+
+The two branches are now structurally identical aside from `formGroupName` and the
+`fileGroup`/`linkGroup` control paths - both show only the pattern-error message, since neither
+`rename` control is `required` anymore. The `general.form.feedback.required` message (and the
+`hasError('required')` branch) is dropped from this template entirely.
 
 `savepath`/`category`/`tags` rows below stay under the top-level `[formGroup]="form()"`,
 unchanged.
@@ -207,9 +213,9 @@ public canSubmit(): boolean {
 }
 ```
 
-Only the _active_ group's validity gates submission - the inactive group (e.g. an empty,
-`required` `fileGroup.rename` while in link mode) no longer blocks `addForm.valid` as a whole from
-mattering, because we stop checking `addForm.valid` wholesale and check `addForm.errors`
+Only the _active_ group's validity gates submission - the inactive group (e.g. a leftover
+pattern-invalid `fileGroup.rename` while in link mode) no longer blocks `addForm.valid` as a whole
+from mattering, because we stop checking `addForm.valid` wholesale and check `addForm.errors`
 (`noServerSelected` / `addFailed`, set via `setErrors`) plus the active group directly.
 
 ### `tabIssues()`
@@ -227,7 +233,7 @@ public readonly tabIssues = computed<Partial<Record<AddTorrentTabId, string>>>((
   const renameErrors = activeRename.errors;
   const formErrors = this.addForm.errors;
 
-  if (renameErrors?.['required'] || renameErrors?.['pattern']) {
+  if (renameErrors?.['pattern']) {
     issues.general = this.translateService.instant(
       'components.add-torrent.tab.general.issue.invalid-fields',
     );
@@ -265,8 +271,10 @@ effect(() => {
 ```
 
 Reading `this.inputMode()` makes this effect re-run on mode switches too, so switching into a
-mode whose `rename` is currently invalid (e.g. empty `fileGroup.rename`) immediately shows the
-validation message, matching the existing "eager rename validation" behavior.
+mode whose `rename` currently contains invalid characters immediately shows the pattern
+validation message, matching the existing "eager rename validation" behavior. An empty `rename`
+is valid in both groups now, so switching to/from a mode with an empty `rename` no longer
+triggers any eager error - there's simply nothing to flag.
 
 ## E. `handleSubmit` / `getMagnetLinks` / `loadDraft`
 
@@ -371,11 +379,14 @@ place that clears/replaces them (when a genuinely new draft loads).
 - Remove `describe('resetToSavedSettings', ...)` entirely.
 - `canSubmit`: update `magnetLinks`/`rename` references to `linkGroup.controls.*`.
 - `rename validator (via form)`: target `fileGroup.controls.rename` (default mode is `'file'`).
+  Drop the `required` case; add a case asserting an empty/`null` value is valid (no errors) for
+  both `fileGroup.controls.rename` and `linkGroup.controls.rename`. Keep the pattern-invalid case.
 - `tabIssues / hasActiveWarnings`: target `fileGroup.controls.rename` for file-mode cases; add a
   link-mode case asserting `linkGroup.controls.rename` pattern errors surface the same
   `invalid-fields` issue.
-- `eager rename validation`: unchanged in spirit, asserts
-  `fileGroup.controls.rename.touched === true` on init.
+- `eager rename validation`: update expectations - `fileGroup.controls.rename.touched` is now
+  `false` on init (empty rename is valid, nothing to eagerly flag). Add a case where a control
+  starts with a pattern-invalid value and assert it's marked touched after the effect runs.
 - `handleSubmit category creation`: update `addForm.controls.rename` ->
   `addForm.controls.fileGroup.controls.rename`.
 
