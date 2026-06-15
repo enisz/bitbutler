@@ -209,6 +209,12 @@ ngb-modal-window {
     opacity: 1 !important;
   }
 
+  > textarea:focus ~ label::after,
+  > textarea:not(:placeholder-shown) ~ label::after,
+  > textarea:disabled ~ label::after {
+    background-color: transparent !important;
+  }
+
   ng-select.ng-select {
     ~ label {
       transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
