@@ -171,12 +171,6 @@
       "feedback": {
         "no-server-selected": "Nincs kiválasztva szerver. Válassz szervert a torrent hozzáadása előtt.",
         "add-failed": "A torrent hozzáadása sikertelen. Próbáld újra."
-      },
-      "confirm": {
-        "switch-mode": {
-          "title": "Bemeneti mód váltása",
-          "message": "A bemeneti mód váltása visszaállítja a módosításaidat a mentett alapértékekre. Folytatod?"
-        }
       }
     },
     "app-loader": {
