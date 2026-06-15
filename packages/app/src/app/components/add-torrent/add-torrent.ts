@@ -385,6 +385,8 @@ export class AddTorrent implements OnInit {
   }
 
   public canSubmit(): boolean {
+    // Intentionally not `this.addForm.valid` - fileGroup/linkGroup are never disabled, so that
+    // would require both groups valid and let an invalid inactive-mode rename block submission.
     if (this.hasActiveWarnings() || this.isSubmitting() || this.addForm.errors) return false;
 
     return this.inputMode() === 'link'
