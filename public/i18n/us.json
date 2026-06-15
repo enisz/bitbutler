@@ -156,7 +156,7 @@
         "files": {
           "title": "Files",
           "disabled": {
-            "link-mode": "Not available when adding by magnet link.",
+            "link-mode": "Not available when adding by link.",
             "no-files": "No file list available yet."
           },
           "issue": {

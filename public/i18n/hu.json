@@ -156,7 +156,7 @@
         "files": {
           "title": "Fájlok",
           "disabled": {
-            "link-mode": "Mágneslink hozzáadásakor nem elérhető.",
+            "link-mode": "Nem elérhető link hozzáadásakor.",
             "no-files": "Még nem érhető el fájllista."
           },
           "issue": {
