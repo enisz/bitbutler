@@ -87,7 +87,8 @@
             "runner": "vitest",
             "setupFiles": ["src/test-setup.ts"],
             "providersFile": "src/test-providers.ts",
-            "reporters": ["verbose"]
+            "reporters": ["verbose"],
+            "codeCoverageReporters": ["text-summary", "html", "lcov"]
           }
         }
       }
