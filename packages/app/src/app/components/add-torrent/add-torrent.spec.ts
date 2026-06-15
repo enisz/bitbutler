@@ -11,6 +11,8 @@ import { OpenFilesService } from '../../services/open-files.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
+import { FileTreeSaveEvent } from '../bb-file-tree/bb-file-tree';
+import { TorrentExists } from '../modals/torrent-exists/torrent-exists';
 import { AddTorrent } from './add-torrent';
 
 const draftWithFiles: TorrentDraft = {
@@ -110,6 +112,15 @@ describe('AddTorrent', () => {
       component.addForm.controls.linkGroup.controls.magnetLinks.setValue(
         'magnet:?xt=urn:btih:abcdef',
       );
+
+      expect(component.canSubmit()).toBe(true);
+    });
+
+    it('should return true in file mode when a torrent file is selected and fileGroup is valid', () => {
+      (component as any).selectedTorrentFile.set({
+        name: 'test.torrent',
+        path: '/tmp/test.torrent',
+      });
 
       expect(component.canSubmit()).toBe(true);
     });
@@ -279,6 +290,19 @@ describe('AddTorrent', () => {
     });
   });
 
+  describe('onTreeSaved', () => {
+    it('should store the saved file tree state', () => {
+      const event: FileTreeSaveEvent = {
+        files: [{ path: 'file1.txt', length: 100, priority: 0 }],
+        renames: [{ oldPath: 'old.txt', newPath: 'new.txt' }],
+      };
+
+      component.onTreeSaved(event);
+
+      expect((component as any).savedFileState).toEqual(event);
+    });
+  });
+
   describe('ngOnInit savepath behaviour', () => {
     it('should leave savepath null when AddTorrentSettings returns no savepath', async () => {
       const addTorrentSettings = TestBed.inject(AddTorrentSettingsService) as any;
@@ -287,6 +311,46 @@ describe('AddTorrent', () => {
       await component.ngOnInit();
 
       expect(component.addForm.controls.savepath.value).toBeNull();
+    });
+
+    it('should patch form controls from saved AddTorrentSettings', async () => {
+      const addTorrentSettings = TestBed.inject(AddTorrentSettingsService) as any;
+      addTorrentSettings.load.mockResolvedValue({
+        savepath: '/downloads/movies',
+        paused: true,
+        category: 'movies',
+        root_folder: 'true',
+        skip_checking: true,
+      });
+
+      await component.ngOnInit();
+
+      expect(component.addForm.controls.savepath.value).toBe('/downloads/movies');
+      expect(component.addForm.controls.paused.value).toBe(true);
+      expect(component.addForm.controls.category.value).toBe('movies');
+      expect(component.addForm.controls.root_folder.value).toBe('true');
+      expect(component.addForm.controls.skip_checking.value).toBe(true);
+    });
+
+    it('should convert a comma-separated tags string into an array', async () => {
+      const addTorrentSettings = TestBed.inject(AddTorrentSettingsService) as any;
+      addTorrentSettings.load.mockResolvedValue({ tags: 'movies, 4k, favorites' });
+
+      await component.ngOnInit();
+
+      expect(component.addForm.controls.tags.value).toEqual(['movies', '4k', 'favorites']);
+    });
+
+    it('should not overwrite a dirty control with a saved setting', async () => {
+      const addTorrentSettings = TestBed.inject(AddTorrentSettingsService) as any;
+      addTorrentSettings.load.mockResolvedValue({ savepath: '/downloads/movies' });
+
+      component.addForm.controls.savepath.setValue('/custom/path');
+      component.addForm.controls.savepath.markAsDirty();
+
+      await component.ngOnInit();
+
+      expect(component.addForm.controls.savepath.value).toBe('/custom/path');
     });
   });
 
@@ -332,6 +396,90 @@ describe('AddTorrent', () => {
       await (component as any).tryRenameContentAfterAdd('server-1', null);
       expect(mockQbService.setShareLimits).not.toHaveBeenCalled();
     });
+
+    it('should do nothing when the effective draft has no infoHashV1', async () => {
+      component.manualDraft.set({
+        source: 'manual',
+        receivedAt: Date.now(),
+        torrent: { name: 'x', totalSize: 1, files: [] },
+      });
+
+      await (component as any).tryRenameContentAfterAdd('server-1', null);
+
+      expect(mockQbService.torrentContents).not.toHaveBeenCalled();
+    });
+
+    it('should apply saved file renames via renameTorrentFile', async () => {
+      (component as any).savedFileState = {
+        files: [],
+        renames: [{ oldPath: 'old.txt', newPath: 'new.txt' }],
+      };
+
+      await (component as any).tryRenameContentAfterAdd('server-1', null);
+
+      expect(mockQbService.renameTorrentFile).toHaveBeenCalledWith(
+        'server-1',
+        hash,
+        'old.txt',
+        'new.txt',
+      );
+    });
+
+    it('should apply non-default file priorities using the path-to-index map from torrentContents', async () => {
+      (component as any).savedFileState = {
+        files: [
+          { path: 'file.mkv', length: 100, priority: 7 },
+          { path: 'subtitle.srt', length: 10, priority: 0 },
+          { path: 'readme.txt', length: 5, priority: 1 },
+        ],
+        renames: [],
+      };
+
+      mockQbService.torrentContents
+        .mockResolvedValueOnce([{ name: 'file.mkv', index: 0 }])
+        .mockResolvedValueOnce([
+          { name: 'file.mkv', index: 0 },
+          { name: 'subtitle.srt', index: 1 },
+        ]);
+
+      await (component as any).tryRenameContentAfterAdd('server-1', null);
+
+      expect(mockQbService.setFilePriority).toHaveBeenCalledWith('server-1', hash, [0], 7);
+      expect(mockQbService.setFilePriority).toHaveBeenCalledWith('server-1', hash, [1], 0);
+      expect(mockQbService.setFilePriority).toHaveBeenCalledTimes(2);
+    });
+
+    it('should skip files that are not found in the torrent contents response', async () => {
+      (component as any).savedFileState = {
+        files: [{ path: 'missing.mkv', length: 100, priority: 7 }],
+        renames: [],
+      };
+
+      mockQbService.torrentContents
+        .mockResolvedValueOnce([{ name: 'file.mkv', index: 0 }])
+        .mockResolvedValueOnce([{ name: 'file.mkv', index: 0 }]);
+
+      await (component as any).tryRenameContentAfterAdd('server-1', null);
+
+      expect(mockQbService.setFilePriority).not.toHaveBeenCalled();
+    });
+
+    it('should log and swallow errors instead of throwing', async () => {
+      (component as any).savedFileState = {
+        files: [],
+        renames: [{ oldPath: 'old.txt', newPath: 'new.txt' }],
+      };
+      mockQbService.renameTorrentFile.mockRejectedValueOnce(new Error('rename failed'));
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      await (component as any).tryRenameContentAfterAdd('server-1', null);
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        AddTorrent.name,
+        'tryRenameContentAfterAdd',
+        expect.any(Error),
+      );
+    });
   });
 
   describe('handleSubmit category creation', () => {
@@ -366,6 +514,140 @@ describe('AddTorrent', () => {
       expect(mockQbService.addCategory).toHaveBeenCalledWith('server-1', 'bad-category', '');
       expect(torrentsAddSpy).not.toHaveBeenCalled();
       expect(component.isSubmitting()).toBe(false);
+    });
+  });
+
+  describe('handleSubmit', () => {
+    it('should set noServerSelected and not submit when no server is selected', async () => {
+      const serverStoreService = TestBed.inject(ServerStoreService) as any;
+      serverStoreService.currentServerId.set(null);
+
+      const torrentsAddSpy = vi.spyOn(window.bitbutler.qb, 'torrentsAdd').mockClear();
+
+      component.switchInputMode('link');
+      component.addForm.controls.linkGroup.controls.magnetLinks.setValue('magnet:?xt=urn:btih:abc');
+      fixture.detectChanges();
+
+      await component.handleSubmit({ preventDefault: () => {} } as unknown as SubmitEvent);
+
+      expect(component.addForm.errors).toEqual({ noServerSelected: true });
+      expect(torrentsAddSpy).not.toHaveBeenCalled();
+    });
+
+    it('should add via link mode, save settings, and close the modal on success', async () => {
+      const torrentsAddSpy = vi.spyOn(window.bitbutler.qb, 'torrentsAdd').mockClear();
+      const addTorrentSettingsService = TestBed.inject(AddTorrentSettingsService) as any;
+
+      component.switchInputMode('link');
+      component.addForm.controls.linkGroup.controls.magnetLinks.setValue('magnet:?xt=urn:btih:abc');
+      fixture.detectChanges();
+
+      await component.handleSubmit({ preventDefault: () => {} } as unknown as SubmitEvent);
+
+      expect(torrentsAddSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'server-1',
+          urls: ['magnet:?xt=urn:btih:abc'],
+          torrents: [],
+        }),
+      );
+      expect(addTorrentSettingsService.save).toHaveBeenCalled();
+      expect(mockActiveModal.close).toHaveBeenCalledWith(true);
+    });
+
+    it('should delete the source file and consume the draft when deleteTorrentFile is enabled', async () => {
+      const torrentsAddSpy = vi.spyOn(window.bitbutler.qb, 'torrentsAdd').mockClear();
+      const deleteFileSpy = vi.spyOn(window.bitbutler.torrent, 'deleteFile').mockClear();
+      const generalSettingsService = TestBed.inject(GeneralSettingsService) as any;
+      generalSettingsService.load.mockResolvedValue({ behavior: { deleteTorrentFile: true } });
+
+      (component as any).selectedTorrentFile.set({
+        name: 'test.torrent',
+        path: '/tmp/test.torrent',
+      });
+      component.manualDraft.set({
+        source: 'manual',
+        receivedAt: Date.now(),
+        originalPath: '/tmp/test.torrent',
+        torrent: { name: 'test-torrent', totalSize: 100, files: [] },
+      });
+      component.addForm.controls.fileGroup.controls.rename.setValue('test-torrent');
+      fixture.detectChanges();
+
+      await component.handleSubmit({ preventDefault: () => {} } as unknown as SubmitEvent);
+
+      expect(torrentsAddSpy).toHaveBeenCalled();
+      expect(deleteFileSpy).toHaveBeenCalledWith({ path: '/tmp/test.torrent' });
+      expect(mockOpenFilesService.consumeCurrentDraft).toHaveBeenCalled();
+    });
+
+    it('should not delete the source file when deleteTorrentFile is disabled', async () => {
+      vi.spyOn(window.bitbutler.qb, 'torrentsAdd').mockClear();
+      const deleteFileSpy = vi.spyOn(window.bitbutler.torrent, 'deleteFile').mockClear();
+
+      (component as any).selectedTorrentFile.set({
+        name: 'test.torrent',
+        path: '/tmp/test.torrent',
+      });
+      component.manualDraft.set({
+        source: 'manual',
+        receivedAt: Date.now(),
+        originalPath: '/tmp/test.torrent',
+        torrent: { name: 'test-torrent', totalSize: 100, files: [] },
+      });
+      component.addForm.controls.fileGroup.controls.rename.setValue('test-torrent');
+      fixture.detectChanges();
+
+      await component.handleSubmit({ preventDefault: () => {} } as unknown as SubmitEvent);
+
+      expect(deleteFileSpy).not.toHaveBeenCalled();
+      expect(mockOpenFilesService.consumeCurrentDraft).toHaveBeenCalled();
+    });
+
+    it('should open the TorrentExists modal and consume the draft on a 409 conflict', async () => {
+      vi.spyOn(window.bitbutler.qb, 'torrentsAdd')
+        .mockClear()
+        .mockRejectedValue(new Error('Request failed: 409 {"name":"QbHttpError","status":409}'));
+      const modalService = TestBed.inject(NgbModal) as any;
+      modalService.open.mockReturnValue({ _contentRef: { componentRef: { setInput: vi.fn() } } });
+
+      (component as any).selectedTorrentFile.set({
+        name: 'test.torrent',
+        path: '/tmp/test.torrent',
+      });
+      component.manualDraft.set({
+        source: 'manual',
+        receivedAt: Date.now(),
+        torrent: { name: 'test-torrent', totalSize: 100, infoHashV1: 'ABC123', files: [] },
+      });
+      component.addForm.controls.fileGroup.controls.rename.setValue('test-torrent');
+      fixture.detectChanges();
+
+      await component.handleSubmit({ preventDefault: () => {} } as unknown as SubmitEvent);
+
+      expect(modalService.open).toHaveBeenCalledWith(TorrentExists, { centered: true });
+      expect(mockOpenFilesService.consumeCurrentDraft).toHaveBeenCalled();
+      expect(component.addForm.errors).toBeNull();
+    });
+
+    it('should set addFailed when torrentsAdd throws a non-conflict error', async () => {
+      vi.spyOn(window.bitbutler.qb, 'torrentsAdd')
+        .mockClear()
+        .mockRejectedValue(new Error('network error'));
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      (component as any).selectedTorrentFile.set({
+        name: 'test.torrent',
+        path: '/tmp/test.torrent',
+      });
+      component.addForm.controls.fileGroup.controls.rename.setValue('test-torrent');
+      fixture.detectChanges();
+
+      await component.handleSubmit({ preventDefault: () => {} } as unknown as SubmitEvent);
+
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(component.addForm.errors).toEqual({ addFailed: true });
+      expect(mockOpenFilesService.consumeCurrentDraft).not.toHaveBeenCalled();
     });
   });
 
@@ -450,6 +732,201 @@ describe('AddTorrent', () => {
 
       expect(component.treeInEditMode()).toBe(false);
       expect(component.tabIssues().files).toBeUndefined();
+    });
+  });
+
+  describe('loading pending drafts', () => {
+    it('should populate fileGroup.file, suggest a rename, and show the tree for a pending draft with files', () => {
+      const draft: TorrentDraft = {
+        source: 'manual',
+        receivedAt: Date.now(),
+        originalPath: '/tmp/movie.torrent',
+        torrent: {
+          name: 'Movie Name',
+          totalSize: 100,
+          infoHashV1: 'abc123',
+          files: [{ path: 'file1.txt', length: 100 }],
+        },
+      };
+
+      mockOpenFilesService.pendingDrafts.set([
+        { draft, selected: { name: 'movie.torrent', path: '/tmp/movie.torrent' } },
+      ]);
+      fixture.detectChanges();
+
+      expect(component.addForm.controls.fileGroup.controls.file.value).toBe('movie.torrent');
+      expect(component.addForm.controls.fileGroup.controls.rename.value).toBe('Movie Name');
+      expect(component.showTree()).toBe(true);
+      expect(component.initialQueueCount()).toBe(1);
+    });
+
+    it('should suggest a rename from originalName stripped of .torrent when there is no torrent metadata', () => {
+      const draft: TorrentDraft = {
+        source: 'manual',
+        receivedAt: Date.now(),
+        originalPath: '/tmp/movie.torrent',
+        originalName: 'My Movie.torrent',
+      };
+
+      mockOpenFilesService.pendingDrafts.set([
+        { draft, selected: { name: 'movie.torrent', path: '/tmp/movie.torrent' } },
+      ]);
+      fixture.detectChanges();
+
+      expect(component.addForm.controls.fileGroup.controls.rename.value).toBe('My Movie');
+      expect(component.showTree()).toBe(false);
+    });
+
+    it('should open the TorrentExists modal and consume the draft when the torrent is already in the list', () => {
+      const torrentStoreService = TestBed.inject(TorrentStoreService) as any;
+      torrentStoreService.torrentsArray.set([{ hash: 'ABC123' }]);
+
+      const modalService = TestBed.inject(NgbModal) as any;
+      modalService.open.mockReturnValue({ _contentRef: { componentRef: { setInput: vi.fn() } } });
+
+      const draft: TorrentDraft = {
+        source: 'manual',
+        receivedAt: Date.now(),
+        originalPath: '/tmp/movie.torrent',
+        torrent: { name: 'Movie', totalSize: 100, infoHashV1: 'abc123', files: [] },
+      };
+
+      mockOpenFilesService.pendingDrafts.set([
+        { draft, selected: { name: 'movie.torrent', path: '/tmp/movie.torrent' } },
+      ]);
+      fixture.detectChanges();
+
+      expect(modalService.open).toHaveBeenCalledWith(TorrentExists, { centered: true });
+      expect(mockOpenFilesService.consumeCurrentDraft).toHaveBeenCalled();
+    });
+
+    it('should track the queue size and close the modal once all pending drafts are consumed', () => {
+      const draft1: TorrentDraft = {
+        source: 'manual',
+        receivedAt: Date.now(),
+        originalPath: '/tmp/a.torrent',
+        torrent: { name: 'A', totalSize: 100, files: [] },
+      };
+      const draft2: TorrentDraft = {
+        source: 'manual',
+        receivedAt: Date.now(),
+        originalPath: '/tmp/b.torrent',
+        torrent: { name: 'B', totalSize: 100, files: [] },
+      };
+
+      mockOpenFilesService.pendingDrafts.set([
+        { draft: draft1, selected: { name: 'a.torrent', path: '/tmp/a.torrent' } },
+        { draft: draft2, selected: { name: 'b.torrent', path: '/tmp/b.torrent' } },
+      ]);
+      fixture.detectChanges();
+
+      expect(component.initialQueueCount()).toBe(2);
+
+      mockOpenFilesService.pendingDrafts.set([]);
+      fixture.detectChanges();
+
+      expect(mockActiveModal.close).toHaveBeenCalledWith(true);
+    });
+
+    it('should not reset a dirty rename when the same pending draft is re-evaluated', () => {
+      const draft: TorrentDraft = {
+        source: 'manual',
+        receivedAt: Date.now(),
+        originalPath: '/tmp/movie.torrent',
+        torrent: { name: 'Movie Name', totalSize: 100, infoHashV1: 'abc123', files: [] },
+      };
+
+      mockOpenFilesService.pendingDrafts.set([
+        { draft, selected: { name: 'movie.torrent', path: '/tmp/movie.torrent' } },
+      ]);
+      fixture.detectChanges();
+
+      component.addForm.controls.fileGroup.controls.rename.setValue('custom-name');
+
+      mockOpenFilesService.pendingDrafts.set([
+        { draft, selected: { name: 'movie.torrent', path: '/tmp/movie.torrent' } },
+      ]);
+      fixture.detectChanges();
+
+      expect(component.addForm.controls.fileGroup.controls.rename.value).toBe('custom-name');
+    });
+  });
+
+  describe('handleFileSelected', () => {
+    it('should do nothing when no file is selected', async () => {
+      const parseSpy = vi.spyOn(window.bitbutler.torrent, 'parse').mockClear();
+
+      const event = { target: { files: [], value: '' } } as unknown as Event;
+      await component.handleFileSelected(event);
+
+      expect(parseSpy).not.toHaveBeenCalled();
+    });
+
+    it('should parse a selected file by path and set it as the pending draft', async () => {
+      const file = new File(['dummy'], 'movie.torrent');
+      (file as any).path = '/tmp/movie.torrent';
+
+      const draft: TorrentDraft = {
+        source: 'manual',
+        receivedAt: Date.now(),
+        torrent: { name: 'movie', totalSize: 100, files: [] },
+      };
+      const parseSpy = vi
+        .spyOn(window.bitbutler.torrent, 'parse')
+        .mockClear()
+        .mockResolvedValue(draft);
+
+      const event = { target: { files: [file], value: 'movie.torrent' } } as unknown as Event;
+      await component.handleFileSelected(event);
+
+      expect(parseSpy).toHaveBeenCalledWith({ source: 'manual', path: '/tmp/movie.torrent' });
+      expect(mockOpenFilesService.pendingDrafts()).toEqual([
+        { draft, selected: { name: 'movie.torrent', path: '/tmp/movie.torrent' } },
+      ]);
+      expect((event.target as HTMLInputElement).value).toBe('');
+    });
+
+    it('should parse a selected file by bytes when the File has no path property', async () => {
+      const file = new File([new Uint8Array([1, 2, 3])], 'movie.torrent');
+
+      const draft: TorrentDraft = {
+        source: 'manual',
+        receivedAt: Date.now(),
+        torrent: { name: 'movie', totalSize: 100, files: [] },
+      };
+      const parseSpy = vi
+        .spyOn(window.bitbutler.torrent, 'parse')
+        .mockClear()
+        .mockResolvedValue(draft);
+
+      const event = { target: { files: [file], value: 'movie.torrent' } } as unknown as Event;
+      await component.handleFileSelected(event);
+
+      expect(parseSpy).toHaveBeenCalledWith({
+        source: 'manual',
+        originalName: 'movie.torrent',
+        bytes: [1, 2, 3],
+      });
+      expect(mockOpenFilesService.pendingDrafts()).toEqual([
+        { draft, selected: { name: 'movie.torrent', bytes: [1, 2, 3] } },
+      ]);
+    });
+
+    it('should log an error and reset the input when parsing fails', async () => {
+      const file = new File(['dummy'], 'movie.torrent');
+      (file as any).path = '/tmp/movie.torrent';
+
+      vi.spyOn(window.bitbutler.torrent, 'parse')
+        .mockClear()
+        .mockRejectedValue(new Error('parse failed'));
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      const event = { target: { files: [file], value: 'movie.torrent' } } as unknown as Event;
+      await component.handleFileSelected(event);
+
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(mockOpenFilesService.pendingDrafts()).toEqual([]);
+      expect((event.target as HTMLInputElement).value).toBe('');
     });
   });
 });
