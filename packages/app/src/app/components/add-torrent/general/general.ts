@@ -20,6 +20,7 @@ import { TagSelect } from '../../tag-select/tag-select';
     TagSelect,
   ],
   templateUrl: './general.html',
+  styleUrl: './general.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddTorrentGeneral {

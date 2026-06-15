@@ -6,6 +6,7 @@ import { BbFileTree, FileTreeSaveEvent } from '../../bb-file-tree/bb-file-tree';
   selector: 'app-add-torrent-files',
   imports: [BbFileTree],
   templateUrl: './files.html',
+  styleUrl: './files.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddTorrentFiles {

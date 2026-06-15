@@ -11,6 +11,7 @@ import { BbPopover } from '../../bb-popover/bb-popover';
   selector: 'app-add-torrent-options',
   imports: [ReactiveFormsModule, FontAwesomeModule, BbPopover, TranslatePipe, NgSelectModule],
   templateUrl: './options.html',
+  styleUrl: './options.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddTorrentOptions {

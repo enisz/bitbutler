@@ -9,6 +9,7 @@ import { TransferLimit } from '../../transfer-limit/transfer-limit';
   selector: 'app-add-torrent-limits',
   imports: [ReactiveFormsModule, TranslatePipe, TransferLimit, ShareLimit],
   templateUrl: './limits.html',
+  styleUrl: './limits.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddTorrentLimits {
