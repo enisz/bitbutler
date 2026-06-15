@@ -47,6 +47,11 @@ html {
   overflow: hidden;
 }
 
+::selection {
+  background-color: var(--bb-accent);
+  color: var(--bb-secondary-ink);
+}
+
 @font-face {
   font-family: 'Montserrat';
   src: url('assets/fonts/montserrat/static/Montserrat-Regular.ttf') format('truetype');
