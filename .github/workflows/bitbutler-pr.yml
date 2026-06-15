@@ -113,7 +113,14 @@ jobs:
       - run: npm ci
         env:
           ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
-      - run: npm run test --workspace=packages/app
+      - run: npm run test:coverage:app
+      - name: Upload coverage report (App)
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-app
+          path: packages/app/coverage
+          retention-days: 7
 
   test-electron:
     name: '[4/5] Unit Tests - Electron'
@@ -130,7 +137,14 @@ jobs:
       - run: npm ci
         env:
           ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
-      - run: npm run test --workspace=packages/electron
+      - run: npm run test:coverage:electron
+      - name: Upload coverage report (Electron)
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-electron
+          path: packages/electron/coverage
+          retention-days: 7
 
   build:
     name: '[5/5] Build & Package (${{ matrix.job_name }})'
