@@ -11,6 +11,7 @@
             bindLabel="label"
             [clearable]="false"
             [searchable]="false"
+            appendTo="body"
           ></ng-select>
           <label for="root_folder">{{
             'components.add-torrent.add-form.root-folder.title' | translate
@@ -26,7 +27,9 @@
           placement="left"
         ></bb-popover>
       </div>
+    </div>
 
+    <div class="row">
       <div class="col-12">
         <div class="form-check form-switch mb-3">
           <input
@@ -130,21 +133,6 @@
   </div>
 </div>
 
-<ng-template #rootFolder>
-  <p>{{ 'components.add-torrent.popover.root-folder.description.line1' | translate }}</p>
-  <ul class="mb-0">
-    <li
-      [innerHTML]="'components.add-torrent.popover.root-folder.description.line2' | translate"
-    ></li>
-    <li
-      [innerHTML]="'components.add-torrent.popover.root-folder.description.line3' | translate"
-    ></li>
-    <li
-      [innerHTML]="'components.add-torrent.popover.root-folder.description.line4' | translate"
-    ></li>
-  </ul>
-</ng-template>
-
 <ng-template #skipChecking>
   <p>{{ 'components.add-torrent.popover.skip-hash-checking.description.line1' | translate }}</p>
   <p class="text-warning">
@@ -171,4 +159,19 @@
 <ng-template #firstLastPiece>
   <p>{{ 'components.add-torrent.popover.first-last-piece-prio.description.line1' | translate }}</p>
   <p>{{ 'components.add-torrent.popover.first-last-piece-prio.description.line2' | translate }}</p>
+</ng-template>
+
+<ng-template #rootFolder>
+  <p>{{ 'components.add-torrent.popover.root-folder.description.line1' | translate }}</p>
+  <ul class="mb-0">
+    <li
+      [innerHTML]="'components.add-torrent.popover.root-folder.description.line2' | translate"
+    ></li>
+    <li
+      [innerHTML]="'components.add-torrent.popover.root-folder.description.line3' | translate"
+    ></li>
+    <li
+      [innerHTML]="'components.add-torrent.popover.root-folder.description.line4' | translate"
+    ></li>
+  </ul>
 </ng-template>

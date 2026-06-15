@@ -119,14 +119,14 @@ describe('AddTorrentGeneral', () => {
   });
 
   describe('fieldset layout', () => {
-    it('should render the Input and Storage fieldsets with their legends', () => {
+    it('should render the Input and Torrent fieldsets with their legends', () => {
       const legends: NodeListOf<HTMLElement> = fixture.nativeElement.querySelectorAll(
         'fieldset.bb-fieldset > legend',
       );
 
       expect(legends.length).toBe(2);
       expect(legends[0].textContent).toContain('components.add-torrent.label.input');
-      expect(legends[1].textContent).toContain('components.add-torrent.label.storage');
+      expect(legends[1].textContent).toContain('components.add-torrent.label.torrent');
     });
 
     it('should make the input-mode toggle full width and show a popover beside it', () => {
@@ -134,8 +134,8 @@ describe('AddTorrentGeneral', () => {
 
       expect(toggle.classList.contains('w-100')).toBe(true);
 
-      // 3 popovers defined directly in general.html (input-mode, file/links, name)
-      // plus 1 each from the nested save-path/category/tag select components.
+      // 3 popovers defined directly in general.html (input-mode, file/links, name) plus 1 each
+      // from the nested save-path/category/tag select components.
       expect(fixture.nativeElement.querySelectorAll('bb-popover').length).toBe(6);
     });
   });

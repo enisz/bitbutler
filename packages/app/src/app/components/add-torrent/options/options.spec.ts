@@ -43,12 +43,31 @@ describe('AddTorrentOptions', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should expose three root folder options', () => {
-    expect(component.rootFolderOptions.map((option) => option.value)).toEqual([
-      'unset',
-      'true',
-      'false',
-    ]);
+  it('should not wrap the switches in a fieldset', () => {
+    expect(fixture.nativeElement.querySelector('fieldset')).toBeNull();
+  });
+
+  it('should show a popover for each option switch plus the root folder field', () => {
+    expect(fixture.nativeElement.querySelectorAll('bb-popover').length).toBe(6);
+  });
+
+  describe('root folder field', () => {
+    it('should render the ng-select with a floating label and a popover beside it', () => {
+      const select: HTMLElement = fixture.nativeElement.querySelector('#root_folder');
+      const floatingGroup = select.closest('.form-floating');
+
+      expect(floatingGroup?.querySelector('label[for="root_folder"]')).toBeTruthy();
+      expect(floatingGroup?.closest('.col-11')).toBeTruthy();
+      expect(fixture.nativeElement.querySelector('.col-1 bb-popover')).toBeTruthy();
+    });
+
+    it('should expose three root folder options', () => {
+      expect(component.rootFolderOptions.map((option) => option.value)).toEqual([
+        'unset',
+        'true',
+        'false',
+      ]);
+    });
   });
 
   it('should toggle skip_checking via the form', () => {

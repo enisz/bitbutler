@@ -64,7 +64,7 @@
         "transfer-rate-limits": "Transfer Rate Limits",
         "share-limits": "Share Limits",
         "input": "Input",
-        "storage": "Storage"
+        "torrent": "Torrent"
       },
       "popover": {
         "root-folder": {
@@ -1517,8 +1517,7 @@
       "update": "Update",
       "show": "Show",
       "open-details": "Open Details",
-      "edit": "Edit",
-      "reset": "Reset"
+      "edit": "Edit"
     },
     "form": {
       "feedback": {

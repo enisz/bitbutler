@@ -20,22 +20,23 @@
             {{ tab.label | translate }}
             @if (tab.id === 'files' && filesTabDisabled()) {
               <fa-icon
-                [icon]="icons.faCircleQuestion"
+                [icon]="icons.faCircleInfo"
                 class="ms-2 text-secondary"
-                [ngbPopover]="filesTabDisabledReason()"
+                [ngbTooltip]="filesTabDisabledReason()"
+                tooltipClass="single-line-tooltip"
                 triggers="mouseenter:mouseleave"
                 container="body"
-                placement="bottom"
+                placement="top"
               ></fa-icon>
-            } @else if ((tabIssues()[tab.id] ?? []).length > 0) {
+            } @else if (tabIssues()[tab.id]) {
               <fa-icon
                 [icon]="icons.faTriangleExclamation"
                 class="ms-2 text-warning"
-                [ngbPopover]="tabIssuesPopover"
-                [popoverContext]="{ $implicit: tabIssues()[tab.id] }"
+                [ngbTooltip]="tabIssues()[tab.id]"
+                tooltipClass="single-line-tooltip warning"
                 triggers="mouseenter:mouseleave"
                 container="body"
-                placement="bottom"
+                placement="top"
               ></fa-icon>
             }
           </button>
@@ -92,23 +93,7 @@
   >
     {{ 'general.button.add' | translate }}
   </button>
-  <button
-    type="button"
-    class="btn btn-dashed-secondary"
-    (click)="resetToSavedSettings()"
-    [disabled]="!formDirty()"
-  >
-    {{ 'general.button.reset' | translate }}
-  </button>
   <button type="button" class="btn btn-link" (click)="handleCancel()">
     {{ 'general.button.cancel' | translate }}
   </button>
 </div>
-
-<ng-template #tabIssuesPopover let-issues>
-  <ul class="mb-0 ps-3">
-    @for (issue of issues; track issue) {
-      <li>{{ issue }}</li>
-    }
-  </ul>
-</ng-template>

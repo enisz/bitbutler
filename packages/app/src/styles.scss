@@ -146,6 +146,17 @@ ngb-modal-window {
   box-shadow: 0 0 0 0.2rem var(--bb-control-focus-ring) !important;
 }
 
+.form-control.is-invalid,
+.form-select.is-invalid {
+  border-color: var(--bs-danger) !important;
+}
+
+.form-control.is-invalid:focus,
+.form-select.is-invalid:focus {
+  border-color: var(--bs-danger) !important;
+  box-shadow: 0 0 0 0.2rem rgba(var(--bs-danger-rgb), 0.25) !important;
+}
+
 .form-control:disabled,
 .form-select:disabled {
   opacity: 0.75;

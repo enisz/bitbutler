@@ -13,8 +13,12 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TorrentDraft } from '@bitbutler/shared';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faCircleQuestion, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
-import { NgbActiveModal, NgbModal, NgbPopover } from '@ng-bootstrap/ng-bootstrap';
+import {
+  faCircleInfo,
+  faCircleQuestion,
+  faTriangleExclamation,
+} from '@fortawesome/free-solid-svg-icons';
+import { NgbActiveModal, NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { merge, scan } from 'rxjs';
 import { INVALID_FILENAME_CHARS } from '../../app.const';
@@ -52,7 +56,7 @@ interface AddTorrentTab {
     ReactiveFormsModule,
     AutofocusDirective,
     FontAwesomeModule,
-    NgbPopover,
+    NgbTooltip,
     TranslatePipe,
     AddTorrentFiles,
     AddTorrentGeneral,
@@ -97,7 +101,7 @@ export class AddTorrent implements OnInit {
   public isSubmitting = signal(false);
   private loadedDraftIdentifier = signal<string | null>(null);
 
-  public icons = { faTriangleExclamation, faCircleQuestion };
+  public icons = { faTriangleExclamation, faCircleQuestion, faCircleInfo };
 
   public activeTabId = signal<AddTorrentTabId>('general');
 
@@ -138,47 +142,37 @@ export class AddTorrent implements OnInit {
     { initialValue: 0 },
   );
 
-  public readonly formDirty = computed(() => {
-    this.formStatus(); // re-run when addForm dirty/value state changes
-    return this.addForm.dirty;
-  });
-
   public effectiveDraft = computed(() => this.manualDraft() ?? this.pending()?.[0]?.draft);
 
-  public readonly tabIssues = computed<Partial<Record<AddTorrentTabId, string[]>>>(() => {
+  public readonly tabIssues = computed<Partial<Record<AddTorrentTabId, string>>>(() => {
     this.formStatus(); // re-run when addForm validity changes
-    const issues: Partial<Record<AddTorrentTabId, string[]>> = {};
+    const issues: Partial<Record<AddTorrentTabId, string>> = {};
 
-    const general: string[] = [];
     const renameErrors = this.addForm.controls.rename.errors;
-    if (renameErrors?.['required'] || renameErrors?.['pattern']) {
-      general.push(
-        this.translateService.instant('components.add-torrent.tab.general.issue.invalid-fields'),
-      );
-    }
-
     const formErrors = this.addForm.errors;
-    if (formErrors?.['noServerSelected']) {
-      general.push(
-        this.translateService.instant('components.add-torrent.feedback.no-server-selected'),
+    if (renameErrors?.['required'] || renameErrors?.['pattern']) {
+      issues.general = this.translateService.instant(
+        'components.add-torrent.tab.general.issue.invalid-fields',
       );
+    } else if (formErrors?.['noServerSelected']) {
+      issues.general = this.translateService.instant(
+        'components.add-torrent.feedback.no-server-selected',
+      );
+    } else if (formErrors?.['addFailed']) {
+      issues.general = this.translateService.instant('components.add-torrent.feedback.add-failed');
     }
-    if (formErrors?.['addFailed']) {
-      general.push(this.translateService.instant('components.add-torrent.feedback.add-failed'));
-    }
-    if (general.length) issues.general = general;
 
     if (this.treeInEditMode()) {
-      issues.files = [
-        this.translateService.instant('components.add-torrent.tab.files.issue.edit-in-progress'),
-      ];
+      issues.files = this.translateService.instant(
+        'components.add-torrent.tab.files.issue.edit-in-progress',
+      );
     }
 
     return issues;
   });
 
   public readonly hasActiveWarnings = computed(() =>
-    Object.values(this.tabIssues()).some((list) => (list?.length ?? 0) > 0),
+    Object.values(this.tabIssues()).some((issue) => !!issue),
   );
 
   public readonly filesTabDisabledReason = computed<string | null>(() => {

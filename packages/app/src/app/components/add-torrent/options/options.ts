@@ -9,7 +9,7 @@ import { BbPopover } from '../../bb-popover/bb-popover';
 
 @Component({
   selector: 'app-add-torrent-options',
-  imports: [ReactiveFormsModule, NgSelectModule, FontAwesomeModule, BbPopover, TranslatePipe],
+  imports: [ReactiveFormsModule, FontAwesomeModule, BbPopover, TranslatePipe, NgSelectModule],
   templateUrl: './options.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

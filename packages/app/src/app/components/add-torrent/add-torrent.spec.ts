@@ -145,7 +145,7 @@ describe('AddTorrent', () => {
 
   describe('tabIssues / hasActiveWarnings', () => {
     it('should report an invalid-fields issue on the general tab by default', () => {
-      expect(component.tabIssues().general).toContain(
+      expect(component.tabIssues().general).toBe(
         'components.add-torrent.tab.general.issue.invalid-fields',
       );
       expect(component.hasActiveWarnings()).toBe(true);
@@ -161,7 +161,7 @@ describe('AddTorrent', () => {
     it('should report an invalid-fields issue on the general tab for invalid characters', () => {
       component.addForm.controls.rename.setValue('bad<name>');
 
-      expect(component.tabIssues().general).toContain(
+      expect(component.tabIssues().general).toBe(
         'components.add-torrent.tab.general.issue.invalid-fields',
       );
     });
@@ -170,7 +170,7 @@ describe('AddTorrent', () => {
       component.addForm.controls.rename.setValue('valid-name');
       component.addForm.setErrors({ noServerSelected: true });
 
-      expect(component.tabIssues().general).toContain(
+      expect(component.tabIssues().general).toBe(
         'components.add-torrent.feedback.no-server-selected',
       );
     });
@@ -179,13 +179,13 @@ describe('AddTorrent', () => {
       component.addForm.controls.rename.setValue('valid-name');
       component.addForm.setErrors({ addFailed: true });
 
-      expect(component.tabIssues().general).toContain('components.add-torrent.feedback.add-failed');
+      expect(component.tabIssues().general).toBe('components.add-torrent.feedback.add-failed');
     });
 
     it('should report a files tab issue while the file tree is in edit mode', () => {
       component.treeInEditMode.set(true);
 
-      expect(component.tabIssues().files).toContain(
+      expect(component.tabIssues().files).toBe(
         'components.add-torrent.tab.files.issue.edit-in-progress',
       );
       expect(component.hasActiveWarnings()).toBe(true);
@@ -224,8 +224,8 @@ describe('AddTorrent', () => {
     });
 
     it('should switch tabs via selectTab', () => {
-      component.selectTab('options');
-      expect(component.activeTabId()).toBe('options');
+      component.selectTab('limits');
+      expect(component.activeTabId()).toBe('limits');
     });
 
     it('should switch away from the files tab once it becomes disabled', () => {
@@ -356,19 +356,6 @@ describe('AddTorrent', () => {
     });
   });
 
-  describe('formDirty', () => {
-    it('should be false initially', () => {
-      expect(component.formDirty()).toBe(false);
-    });
-
-    it('should become true once a control is marked dirty', () => {
-      component.addForm.controls.savepath.markAsDirty();
-      component.addForm.controls.savepath.setValue('/changed');
-
-      expect(component.formDirty()).toBe(true);
-    });
-  });
-
   describe('handleInputModeChange', () => {
     let confirmService: { confirm: ReturnType<typeof vi.fn> };
 
@@ -423,7 +410,7 @@ describe('AddTorrent', () => {
   });
 
   describe('resetToSavedSettings', () => {
-    it('should reapply saved AddTorrentSettings fields, mark them pristine, and clear formDirty', async () => {
+    it('should reapply saved AddTorrentSettings fields, mark them pristine, and clear the dirty state', async () => {
       const addTorrentSettings = TestBed.inject(AddTorrentSettingsService) as any;
       addTorrentSettings.load.mockResolvedValue({
         savepath: '/downloads',
@@ -441,14 +428,14 @@ describe('AddTorrent', () => {
 
       component.addForm.controls.savepath.markAsDirty();
       component.addForm.controls.savepath.setValue('/changed');
-      expect(component.formDirty()).toBe(true);
+      expect(component.addForm.dirty).toBe(true);
 
       await component.resetToSavedSettings();
 
       expect(component.addForm.controls.savepath.value).toBe('/downloads');
       expect(component.addForm.controls.tags.value).toEqual(['a', 'b']);
       expect(component.addForm.controls.savepath.dirty).toBe(false);
-      expect(component.formDirty()).toBe(false);
+      expect(component.addForm.dirty).toBe(false);
     });
 
     it('should leave rename dirty (and the form dirty) when only rename was edited', async () => {
@@ -457,13 +444,13 @@ describe('AddTorrent', () => {
 
       component.addForm.controls.rename.markAsDirty();
       component.addForm.controls.rename.setValue('my-name');
-      expect(component.formDirty()).toBe(true);
+      expect(component.addForm.dirty).toBe(true);
 
       await component.resetToSavedSettings();
 
       expect(component.addForm.controls.rename.value).toBe('my-name');
       expect(component.addForm.controls.rename.dirty).toBe(true);
-      expect(component.formDirty()).toBe(true);
+      expect(component.addForm.dirty).toBe(true);
     });
   });
 });

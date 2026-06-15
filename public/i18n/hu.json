@@ -64,7 +64,7 @@
         "transfer-rate-limits": "Átviteli sebesség korlátok",
         "share-limits": "Megosztási korlátok",
         "input": "Bemenet",
-        "storage": "Tárhely"
+        "torrent": "Torrent"
       },
       "popover": {
         "root-folder": {
@@ -1517,8 +1517,7 @@
       "update": "Frissítés",
       "show": "Megjelenítés",
       "open-details": "Részletek megnyitása",
-      "edit": "Szerkesztés",
-      "reset": "Visszaállítás"
+      "edit": "Szerkesztés"
     },
     "form": {
       "feedback": {
