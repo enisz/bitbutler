@@ -33,6 +33,10 @@ describe('HumanizeDurationPipe', () => {
     expect(pipe.transform(NaN)).toBe('');
   });
 
+  it('returns "" for 0', () => {
+    expect(pipe.transform(0)).toBe('');
+  });
+
   it('returns a non-empty string for a valid millisecond duration', () => {
     const result = pipe.transform(90000);
     expect(result).toBeTruthy();
