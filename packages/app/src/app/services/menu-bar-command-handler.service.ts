@@ -26,12 +26,8 @@ export class MenuBarCommandHandlerService {
       const { action } = payload;
 
       switch (action) {
-        case 'file.addTorrent.file':
+        case 'file.addTorrent':
           this.commandBusService.emit({ type: 'UI_ADD_TORRENT' });
-          break;
-
-        case 'file.addTorrent.link':
-          this.commandBusService.emit({ type: 'UI_ADD_TORRENT', mode: 'link' });
           break;
 
         case 'settings.app':

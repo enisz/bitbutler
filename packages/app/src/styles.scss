@@ -47,6 +47,11 @@ html {
   overflow: hidden;
 }
 
+::selection {
+  background-color: var(--bb-accent);
+  color: var(--bb-secondary-ink);
+}
+
 @font-face {
   font-family: 'Montserrat';
   src: url('assets/fonts/montserrat/static/Montserrat-Regular.ttf') format('truetype');
@@ -146,6 +151,17 @@ ngb-modal-window {
   box-shadow: 0 0 0 0.2rem var(--bb-control-focus-ring) !important;
 }
 
+.form-control.is-invalid,
+.form-select.is-invalid {
+  border-color: var(--bs-danger) !important;
+}
+
+.form-control.is-invalid:focus,
+.form-select.is-invalid:focus {
+  border-color: var(--bs-danger) !important;
+  box-shadow: 0 0 0 0.2rem rgba(var(--bs-danger-rgb), 0.25) !important;
+}
+
 .form-control:disabled,
 .form-select:disabled {
   opacity: 0.75;
@@ -191,6 +207,12 @@ ngb-modal-window {
   ng-select.ng-select.ng-select-focused ~ label {
     color: var(--bb-control-focus-border) !important;
     opacity: 1 !important;
+  }
+
+  > textarea:focus ~ label::after,
+  > textarea:not(:placeholder-shown) ~ label::after,
+  > textarea:disabled ~ label::after {
+    background-color: transparent !important;
   }
 
   ng-select.ng-select {
@@ -620,6 +642,27 @@ ngb-typeahead-window.dropdown-menu {
   margin-top: 15px;
   margin-bottom: -17px;
   font-size: 0.8rem;
+}
+
+.bb-tab-panels {
+  position: relative;
+  min-height: 200px;
+}
+
+.bb-tab-panel {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+  transition: opacity 0.2s ease;
+
+  &--active {
+    position: relative;
+    overflow: visible;
+    opacity: 1;
+    pointer-events: auto;
+  }
 }
 
 .bb-modal-header {

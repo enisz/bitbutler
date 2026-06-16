@@ -150,16 +150,7 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
         {
           label: t('electron.menu.add-torrent'),
           enabled: loggedIn,
-          submenu: [
-            {
-              label: t('electron.menu.add-torrent-from-file'),
-              click: () => sendMenuAction(mainWindow, 'file.addTorrent.file'),
-            },
-            {
-              label: t('electron.menu.add-torrent-from-link'),
-              click: () => sendMenuAction(mainWindow, 'file.addTorrent.link'),
-            },
-          ],
+          click: () => sendMenuAction(mainWindow, 'file.addTorrent'),
         },
         { type: 'separator' },
         {

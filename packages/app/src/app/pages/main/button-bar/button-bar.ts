@@ -21,9 +21,7 @@ import {
   faArrowsUpToLine,
   faAtom,
   faChevronDown,
-  faFile,
   faFolderTree,
-  faLink,
   faPause,
   faPlay,
   faPlayCircle,
@@ -85,27 +83,11 @@ export class ButtonBar implements OnInit {
   readonly entries = computed<ToolbarEntry[]>(() => {
     return [
       {
-        kind: 'group',
-        id: 'new',
+        kind: 'action',
+        id: 'new.addTorrent',
         label: 'pages.main.button-bar.button.add',
         icon: faPlus,
         variant: 'default',
-        items: [
-          {
-            kind: 'action',
-            id: 'new.addTorrentFile',
-            label: 'pages.main.button-bar.button.add-file',
-            icon: faFile,
-            variant: 'default',
-          },
-          {
-            kind: 'action',
-            id: 'new.addTorrentLink',
-            label: 'pages.main.button-bar.button.add-link',
-            icon: faLink,
-            variant: 'default',
-          },
-        ],
       },
       { kind: 'divider' },
       {
@@ -322,11 +304,8 @@ export class ButtonBar implements OnInit {
       case 'manage.categories':
         this.commandBusService.emit({ type: 'UI_MANAGE_CATEGORIES' });
         break;
-      case 'new.addTorrentFile':
+      case 'new.addTorrent':
         this.commandBusService.emit({ type: 'UI_ADD_TORRENT' });
-        break;
-      case 'new.addTorrentLink':
-        this.commandBusService.emit({ type: 'UI_ADD_TORRENT', mode: 'link' });
         break;
       case 'queue.moveTop':
         this.commandBusService.emit({ type: 'QUEUE_MOVE_TOP' });

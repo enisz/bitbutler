@@ -61,11 +61,10 @@
         "seeding-time-limit-unit": "minute"
       },
       "label": {
+        "transfer-rate-limits": "Transfer Rate Limits",
+        "share-limits": "Share Limits",
         "input": "Input",
-        "general": "General",
-        "settings": "Settings",
-        "limits": "Limits",
-        "files": "Files"
+        "torrent": "Torrent"
       },
       "popover": {
         "root-folder": {
@@ -123,7 +122,7 @@
           "title": "Torrent File",
           "description": {
             "line1": "Select a .torrent file from your computer. The file will be parsed locally - no data is sent anywhere until you click Add.",
-            "line2": "Once a file is loaded, a file tree will appear below so you can review and toggle individual files before adding."
+            "line2": "Once a file is loaded, switch to the Files tab to review and toggle individual files before adding."
           }
         },
         "links": {
@@ -132,7 +131,46 @@
             "line1": "Paste one or more magnet links or direct .torrent URLs here, one per line.",
             "line2": "Magnet links start with magnet:?xt=urn:btih:… - direct .torrent URLs point to a remote file that qBittorrent will fetch automatically."
           }
+        },
+        "input-mode": {
+          "title": "Input Mode",
+          "description": {
+            "line1": "Choose whether you're adding this torrent from a local .torrent file or from a magnet link / URL.",
+            "line2": "Switching modes resets save path, category, tags, and other options back to your saved defaults."
+          }
         }
+      },
+      "tab": {
+        "general": {
+          "title": "General",
+          "issue": {
+            "invalid-fields": "Some fields need attention."
+          }
+        },
+        "options": {
+          "title": "Options"
+        },
+        "limits": {
+          "title": "Limits"
+        },
+        "files": {
+          "title": "Files",
+          "disabled": {
+            "link-mode": "Not available when adding by link.",
+            "no-files": "No file list available yet."
+          },
+          "issue": {
+            "edit-in-progress": "Finish editing the file list before adding the torrent."
+          }
+        }
+      },
+      "input-mode": {
+        "file": "File",
+        "link": "Link"
+      },
+      "feedback": {
+        "no-server-selected": "No server is selected. Choose a server before adding this torrent.",
+        "add-failed": "Adding the torrent failed. Please try again."
       }
     },
     "app-loader": {
@@ -892,8 +930,6 @@
       "button-bar": {
         "button": {
           "add": "Add Torrent",
-          "add-file": "From File",
-          "add-link": "From Link",
           "delete": "Delete",
           "start": "Start",
           "stop": "Stop",
@@ -1479,8 +1515,7 @@
     },
     "form": {
       "feedback": {
-        "required": "This field is required.",
-        "no-slash": "The name must not contain slashes."
+        "pattern": "Name contains invalid characters (< > : \" / \\ | ? *)"
       },
       "ng-select": {
         "add-tag": "Add item",
@@ -1557,8 +1592,6 @@
     "menu": {
       "file": "File",
       "add-torrent": "Add Torrent",
-      "add-torrent-from-file": "From File…",
-      "add-torrent-from-link": "From Link…",
       "disconnect": "Disconnect",
       "servers": "Servers",
       "add-new": "Add new…",

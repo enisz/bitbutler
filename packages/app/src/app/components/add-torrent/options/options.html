@@ -1,0 +1,177 @@
+<div [formGroup]="form()">
+  <div class="container-fluid px-0">
+    <div class="row">
+      <div class="col-11">
+        <div class="form-floating mb-3">
+          <ng-select
+            id="root_folder"
+            formControlName="root_folder"
+            [items]="rootFolderOptions"
+            bindValue="value"
+            bindLabel="label"
+            [clearable]="false"
+            [searchable]="false"
+            appendTo="body"
+          ></ng-select>
+          <label for="root_folder">{{
+            'components.add-torrent.add-form.root-folder.title' | translate
+          }}</label>
+        </div>
+      </div>
+
+      <div class="col-1 d-flex align-items-center mb-3">
+        <bb-popover
+          class="mt-2"
+          [subject]="'components.add-torrent.popover.root-folder.title' | translate"
+          [description]="rootFolder"
+          placement="left"
+        ></bb-popover>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <div class="form-check form-switch mb-3">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            role="switch"
+            id="skip_checking"
+            formControlName="skip_checking"
+          />
+          <label class="form-check-label" for="skip_checking">{{
+            'components.add-torrent.add-form.skip-hash-checking' | translate
+          }}</label>
+          <bb-popover
+            [subject]="'components.add-torrent.popover.skip-hash-checking.title' | translate"
+            [description]="skipChecking"
+            placement="right"
+          ></bb-popover>
+        </div>
+      </div>
+
+      <div class="col-12">
+        <div class="form-check form-switch mb-3">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            role="switch"
+            id="paused"
+            formControlName="paused"
+          />
+          <label class="form-check-label" for="paused">{{
+            'components.add-torrent.add-form.paused' | translate
+          }}</label>
+          <bb-popover
+            [subject]="'components.add-torrent.popover.paused-state.title' | translate"
+            [description]="pausedState"
+            placement="right"
+          ></bb-popover>
+        </div>
+      </div>
+
+      <div class="col-12">
+        <div class="form-check form-switch mb-3">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            role="switch"
+            id="autoTMM"
+            formControlName="autoTMM"
+          />
+          <label class="form-check-label" for="autoTMM">{{
+            'components.add-torrent.add-form.auto-tmm' | translate
+          }}</label>
+          <bb-popover
+            [subject]="'components.add-torrent.popover.auto-tmm.title' | translate"
+            [description]="autoTMM"
+            placement="right"
+          ></bb-popover>
+        </div>
+      </div>
+
+      <div class="col-12">
+        <div class="form-check form-switch mb-3">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            role="switch"
+            id="sequentialDownload"
+            formControlName="sequentialDownload"
+          />
+          <label class="form-check-label" for="sequentialDownload">{{
+            'components.add-torrent.add-form.sequential-download' | translate
+          }}</label>
+          <bb-popover
+            [subject]="'components.add-torrent.popover.sequential-download.title' | translate"
+            [description]="sequentialDownload"
+            placement="right"
+          ></bb-popover>
+        </div>
+      </div>
+
+      <div class="col-12">
+        <div class="form-check form-switch mb-3">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            role="switch"
+            id="firstLastPiecePrio"
+            formControlName="firstLastPiecePrio"
+          />
+          <label class="form-check-label" for="firstLastPiecePrio">{{
+            'components.add-torrent.add-form.first-last-piece-prio' | translate
+          }}</label>
+          <bb-popover
+            [subject]="'components.add-torrent.popover.first-last-piece-prio.title' | translate"
+            [description]="firstLastPiece"
+            placement="right"
+          ></bb-popover>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #skipChecking>
+  <p>{{ 'components.add-torrent.popover.skip-hash-checking.description.line1' | translate }}</p>
+  <p class="text-warning">
+    <fa-icon [icon]="faExclamationTriangle" class="me-1"></fa-icon>
+    {{ 'components.add-torrent.popover.skip-hash-checking.description.line2' | translate }}
+  </p>
+</ng-template>
+
+<ng-template #pausedState>
+  <p>{{ 'components.add-torrent.popover.paused-state.description.line1' | translate }}</p>
+  <p>{{ 'components.add-torrent.popover.paused-state.description.line2' | translate }}</p>
+</ng-template>
+
+<ng-template #autoTMM>
+  <p>{{ 'components.add-torrent.popover.auto-tmm.description.line1' | translate }}</p>
+  <p>{{ 'components.add-torrent.popover.auto-tmm.description.line2' | translate }}</p>
+</ng-template>
+
+<ng-template #sequentialDownload>
+  <p>{{ 'components.add-torrent.popover.sequential-download.description.line1' | translate }}</p>
+  <p>{{ 'components.add-torrent.popover.sequential-download.description.line2' | translate }}</p>
+</ng-template>
+
+<ng-template #firstLastPiece>
+  <p>{{ 'components.add-torrent.popover.first-last-piece-prio.description.line1' | translate }}</p>
+  <p>{{ 'components.add-torrent.popover.first-last-piece-prio.description.line2' | translate }}</p>
+</ng-template>
+
+<ng-template #rootFolder>
+  <p>{{ 'components.add-torrent.popover.root-folder.description.line1' | translate }}</p>
+  <ul class="mb-0">
+    <li
+      [innerHTML]="'components.add-torrent.popover.root-folder.description.line2' | translate"
+    ></li>
+    <li
+      [innerHTML]="'components.add-torrent.popover.root-folder.description.line3' | translate"
+    ></li>
+    <li
+      [innerHTML]="'components.add-torrent.popover.root-folder.description.line4' | translate"
+    ></li>
+  </ul>
+</ng-template>

@@ -99,7 +99,11 @@
       "Bash(npx --no-install sass --version)",
       "Bash(command -v chromium-cli)",
       "Read(//usr/local/**)",
-      "Bash(npm ls *)"
+      "Bash(npm ls *)",
+      "Bash(grep -rln \"window.bitbutler\\\\s*=\" packages/app/src)",
+      "Bash(find packages/app/src -iname \"*setup*\")",
+      "Bash(find packages/app -maxdepth 2 -iname \"*vitest*\")",
+      "Bash(npx sass *)"
     ]
   }
 }
