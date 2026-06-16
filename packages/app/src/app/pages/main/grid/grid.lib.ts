@@ -10,9 +10,11 @@ import {
   GridOptions,
   GridReadyEvent,
   IOverlayParams,
+  ITooltipParams,
   RowClassParams,
   RowDoubleClickedEvent,
   SelectionChangedEvent,
+  TooltipValueGetterFunc,
   ValueFormatterParams,
 } from 'ag-grid-community';
 import { GRID_SHARED_OPTIONS } from '../../../app.const';
@@ -401,6 +403,8 @@ export function getGridColDefs(
       hide: true,
       valueFormatter: (params: ValueFormatterParams<Torrent, TorrentState>): string =>
         params.value ? translateService.instant('torrent.state.' + params.value) : '',
+      tooltipValueGetter: (params: ITooltipParams<Torrent, any, any>): string =>
+        translateService.instant(`torrent.state.${params.value}`),
     },
     {
       colId: 'category',
@@ -704,6 +708,7 @@ export function getGridColDefs(
       minWidth: 50,
       width: 150,
       cellRenderer: 'agCheckboxCellRenderer',
+      filter: 'agBooleanColumnFilter',
       editable: false,
       hide: true,
     },
@@ -715,6 +720,7 @@ export function getGridColDefs(
       minWidth: 50,
       width: 225,
       cellRenderer: 'agCheckboxCellRenderer',
+      filter: 'agBooleanColumnFilter',
       editable: false,
       hide: true,
     },
@@ -726,6 +732,7 @@ export function getGridColDefs(
       minWidth: 50,
       width: 155,
       cellRenderer: 'agCheckboxCellRenderer',
+      filter: 'agBooleanColumnFilter',
       editable: false,
       hide: true,
     },
@@ -737,6 +744,7 @@ export function getGridColDefs(
       minWidth: 50,
       width: 180,
       cellRenderer: 'agCheckboxCellRenderer',
+      filter: 'agBooleanColumnFilter',
       editable: false,
       hide: true,
     },
@@ -748,6 +756,7 @@ export function getGridColDefs(
       minWidth: 50,
       width: 255,
       cellRenderer: 'agCheckboxCellRenderer',
+      filter: 'agBooleanColumnFilter',
       editable: false,
       hide: true,
     },
