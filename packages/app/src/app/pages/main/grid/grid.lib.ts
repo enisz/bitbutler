@@ -17,7 +17,7 @@ import {
 } from 'ag-grid-community';
 import { GRID_SHARED_OPTIONS } from '../../../app.const';
 import { DatepickerRangeFilter } from '../../../components/datepicker-range-filter/datepicker-range-filter';
-import { Torrent } from '../../../models/torrent.model';
+import { Torrent, TorrentState } from '../../../models/torrent.model';
 import { ContextMenuService } from '../../../services/context-menu.service';
 import { FilterService, GRID_FILTER_INITIAL } from '../../../services/filter.service';
 import { GridStateService } from '../../../services/grid-state.service';
@@ -65,6 +65,32 @@ export function getGridColDefs(
       cellRenderer: ProgressCellRenderer,
     },
     {
+      colId: 'progress_percentage',
+      field: 'progress',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.progress_percentage'),
+      headerTooltip: translateService.instant(
+        'pages.main.grid.grid-lib.col-def.progress_percentage',
+      ),
+      minWidth: 50,
+      width: 110,
+      cellClass: 'tabular-nums',
+      filter: 'agNumberColumnFilter',
+      hide: true,
+      valueFormatter: (params: ValueFormatterParams<Torrent, number>): string =>
+        params.value != null ? (params.value * 100).toFixed(1) + '%' : '',
+    },
+    {
+      colId: 'progress_raw',
+      field: 'progress',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.progress_raw'),
+      headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.progress_raw'),
+      minWidth: 50,
+      width: 100,
+      cellClass: 'tabular-nums',
+      filter: 'agNumberColumnFilter',
+      hide: true,
+    },
+    {
       colId: 'size',
       field: 'size',
       tooltipField: 'size',
@@ -76,6 +102,17 @@ export function getGridColDefs(
       cellClass: 'tabular-nums',
     },
     {
+      colId: 'size_raw',
+      field: 'size',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.size_raw'),
+      headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.size_raw'),
+      minWidth: 50,
+      width: 135,
+      cellClass: 'tabular-nums',
+      filter: 'agNumberColumnFilter',
+      hide: true,
+    },
+    {
       colId: 'total_size',
       field: 'total_size',
       tooltipField: 'total_size',
@@ -85,6 +122,17 @@ export function getGridColDefs(
       width: 135,
       valueFormatter: uiFormatService.fileSize,
       cellClass: 'tabular-nums',
+      hide: true,
+    },
+    {
+      colId: 'total_size_raw',
+      field: 'total_size',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.total_size_raw'),
+      headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.total_size_raw'),
+      minWidth: 50,
+      width: 135,
+      cellClass: 'tabular-nums',
+      filter: 'agNumberColumnFilter',
       hide: true,
     },
     {
@@ -100,6 +148,17 @@ export function getGridColDefs(
       hide: true,
     },
     {
+      colId: 'completed_raw',
+      field: 'completed',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.completed_raw'),
+      headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.completed_raw'),
+      minWidth: 50,
+      width: 135,
+      cellClass: 'tabular-nums',
+      filter: 'agNumberColumnFilter',
+      hide: true,
+    },
+    {
       colId: 'amount_left',
       field: 'amount_left',
       tooltipField: 'amount_left',
@@ -112,6 +171,17 @@ export function getGridColDefs(
       hide: true,
     },
     {
+      colId: 'amount_left_raw',
+      field: 'amount_left',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.amount_left_raw'),
+      headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.amount_left_raw'),
+      minWidth: 50,
+      width: 130,
+      cellClass: 'tabular-nums',
+      filter: 'agNumberColumnFilter',
+      hide: true,
+    },
+    {
       colId: 'downloaded',
       field: 'downloaded',
       tooltipField: 'downloaded',
@@ -121,6 +191,17 @@ export function getGridColDefs(
       width: 150,
       valueFormatter: uiFormatService.fileSize,
       cellClass: 'tabular-nums',
+    },
+    {
+      colId: 'downloaded_raw',
+      field: 'downloaded',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.downloaded_raw'),
+      headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.downloaded_raw'),
+      minWidth: 50,
+      width: 150,
+      cellClass: 'tabular-nums',
+      filter: 'agNumberColumnFilter',
+      hide: true,
     },
     {
       colId: 'downloaded_session',
@@ -137,6 +218,21 @@ export function getGridColDefs(
       hide: true,
     },
     {
+      colId: 'downloaded_session_raw',
+      field: 'downloaded_session',
+      headerName: translateService.instant(
+        'pages.main.grid.grid-lib.col-def.downloaded_session_raw',
+      ),
+      headerTooltip: translateService.instant(
+        'pages.main.grid.grid-lib.col-def.downloaded_session_raw',
+      ),
+      minWidth: 50,
+      width: 195,
+      cellClass: 'tabular-nums',
+      filter: 'agNumberColumnFilter',
+      hide: true,
+    },
+    {
       colId: 'uploaded',
       field: 'uploaded',
       tooltipField: 'uploaded',
@@ -146,6 +242,17 @@ export function getGridColDefs(
       width: 150,
       valueFormatter: uiFormatService.fileSize,
       cellClass: 'tabular-nums',
+    },
+    {
+      colId: 'uploaded_raw',
+      field: 'uploaded',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.uploaded_raw'),
+      headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.uploaded_raw'),
+      minWidth: 50,
+      width: 150,
+      cellClass: 'tabular-nums',
+      filter: 'agNumberColumnFilter',
+      hide: true,
     },
     {
       colId: 'uploaded_session',
@@ -160,6 +267,19 @@ export function getGridColDefs(
       hide: true,
     },
     {
+      colId: 'uploaded_session_raw',
+      field: 'uploaded_session',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.uploaded_session_raw'),
+      headerTooltip: translateService.instant(
+        'pages.main.grid.grid-lib.col-def.uploaded_session_raw',
+      ),
+      minWidth: 50,
+      width: 175,
+      cellClass: 'tabular-nums',
+      filter: 'agNumberColumnFilter',
+      hide: true,
+    },
+    {
       colId: 'dlspeed',
       field: 'dlspeed',
       tooltipField: 'dlspeed',
@@ -171,6 +291,17 @@ export function getGridColDefs(
       cellClass: 'tabular-nums',
     },
     {
+      colId: 'dlspeed_raw',
+      field: 'dlspeed',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.dlspeed_raw'),
+      headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.dlspeed_raw'),
+      minWidth: 50,
+      width: 165,
+      cellClass: 'tabular-nums',
+      filter: 'agNumberColumnFilter',
+      hide: true,
+    },
+    {
       colId: 'upspeed',
       field: 'upspeed',
       tooltipField: 'upspeed',
@@ -180,6 +311,17 @@ export function getGridColDefs(
       width: 165,
       valueFormatter: uiFormatService.fileSizePerSecond,
       cellClass: 'tabular-nums',
+    },
+    {
+      colId: 'upspeed_raw',
+      field: 'upspeed',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.upspeed_raw'),
+      headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.upspeed_raw'),
+      minWidth: 50,
+      width: 165,
+      cellClass: 'tabular-nums',
+      filter: 'agNumberColumnFilter',
+      hide: true,
     },
     {
       colId: 'ratio',
@@ -213,6 +355,17 @@ export function getGridColDefs(
           : uiFormatService.durationSeconds(params, 2),
     },
     {
+      colId: 'eta_raw',
+      field: 'eta',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.eta_raw'),
+      headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.eta_raw'),
+      minWidth: 50,
+      width: 100,
+      cellClass: 'tabular-nums',
+      filter: 'agNumberColumnFilter',
+      hide: true,
+    },
+    {
       colId: 'added_on',
       field: 'added_on',
       tooltipField: 'added_on',
@@ -236,6 +389,18 @@ export function getGridColDefs(
       tooltipField: 'state',
       filter: 'agTextColumnFilter',
       hide: true,
+    },
+    {
+      colId: 'state_hr',
+      field: 'state',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.state_hr'),
+      headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.state_hr'),
+      minWidth: 50,
+      width: 220,
+      filter: 'agTextColumnFilter',
+      hide: true,
+      valueFormatter: (params: ValueFormatterParams<Torrent, TorrentState>): string =>
+        params.value ? translateService.instant('torrent.state.' + params.value) : '',
     },
     {
       colId: 'category',
@@ -295,6 +460,17 @@ export function getGridColDefs(
       hide: true,
     },
     {
+      colId: 'dl_limit_raw',
+      field: 'dl_limit',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.dl_limit_raw'),
+      headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.dl_limit_raw'),
+      minWidth: 50,
+      width: 150,
+      cellClass: 'tabular-nums',
+      filter: 'agNumberColumnFilter',
+      hide: true,
+    },
+    {
       colId: 'up_limit',
       field: 'up_limit',
       tooltipField: 'up_limit',
@@ -304,6 +480,17 @@ export function getGridColDefs(
       width: 130,
       valueFormatter: uiFormatService.fileSizePerSecond,
       cellClass: 'tabular-nums',
+      hide: true,
+    },
+    {
+      colId: 'up_limit_raw',
+      field: 'up_limit',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.up_limit_raw'),
+      headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.up_limit_raw'),
+      minWidth: 50,
+      width: 130,
+      cellClass: 'tabular-nums',
+      filter: 'agNumberColumnFilter',
       hide: true,
     },
     {
@@ -340,7 +527,19 @@ export function getGridColDefs(
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.seeding_time'),
       minWidth: 50,
       width: 250,
-      valueFormatter: uiFormatService.durationSeconds,
+      valueFormatter: (params: ValueFormatterParams<Torrent, number>) =>
+        uiFormatService.durationSeconds(params, 2),
+      hide: true,
+    },
+    {
+      colId: 'seeding_time_raw',
+      field: 'seeding_time',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.seeding_time_raw'),
+      headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.seeding_time_raw'),
+      minWidth: 50,
+      width: 150,
+      cellClass: 'tabular-nums',
+      filter: 'agNumberColumnFilter',
       hide: true,
     },
     {
@@ -358,6 +557,21 @@ export function getGridColDefs(
       hide: true,
     },
     {
+      colId: 'seeding_time_limit_raw',
+      field: 'seeding_time_limit',
+      headerName: translateService.instant(
+        'pages.main.grid.grid-lib.col-def.seeding_time_limit_raw',
+      ),
+      headerTooltip: translateService.instant(
+        'pages.main.grid.grid-lib.col-def.seeding_time_limit_raw',
+      ),
+      minWidth: 50,
+      width: 155,
+      cellClass: 'tabular-nums',
+      filter: 'agNumberColumnFilter',
+      hide: true,
+    },
+    {
       colId: 'time_active',
       field: 'time_active',
       tooltipField: 'time_active',
@@ -365,7 +579,19 @@ export function getGridColDefs(
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.time_active'),
       minWidth: 50,
       width: 200,
-      valueFormatter: uiFormatService.durationSeconds,
+      valueFormatter: (params: ValueFormatterParams<Torrent, number>) =>
+        uiFormatService.durationSeconds(params, 2),
+      hide: true,
+    },
+    {
+      colId: 'time_active_raw',
+      field: 'time_active',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.time_active_raw'),
+      headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.time_active_raw'),
+      minWidth: 50,
+      width: 150,
+      cellClass: 'tabular-nums',
+      filter: 'agNumberColumnFilter',
       hide: true,
     },
     {
@@ -547,6 +773,19 @@ export function getGridColDefs(
       hide: true,
     },
     {
+      colId: 'max_seeding_time_raw',
+      field: 'max_seeding_time',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.max_seeding_time_raw'),
+      headerTooltip: translateService.instant(
+        'pages.main.grid.grid-lib.col-def.max_seeding_time_raw',
+      ),
+      minWidth: 50,
+      width: 150,
+      cellClass: 'tabular-nums',
+      filter: 'agNumberColumnFilter',
+      hide: true,
+    },
+    {
       colId: 'max_inactive_seeding_time',
       field: 'max_inactive_seeding_time',
       tooltipField: 'max_inactive_seeding_time',
@@ -563,6 +802,21 @@ export function getGridColDefs(
       hide: true,
     },
     {
+      colId: 'max_inactive_seeding_time_raw',
+      field: 'max_inactive_seeding_time',
+      headerName: translateService.instant(
+        'pages.main.grid.grid-lib.col-def.max_inactive_seeding_time_raw',
+      ),
+      headerTooltip: translateService.instant(
+        'pages.main.grid.grid-lib.col-def.max_inactive_seeding_time_raw',
+      ),
+      minWidth: 50,
+      width: 180,
+      cellClass: 'tabular-nums',
+      filter: 'agNumberColumnFilter',
+      hide: true,
+    },
+    {
       colId: 'inactive_seeding_time_limit',
       field: 'inactive_seeding_time_limit',
       tooltipField: 'inactive_seeding_time_limit',
@@ -576,6 +830,21 @@ export function getGridColDefs(
       width: 255,
       cellClass: 'tabular-nums',
       valueFormatter: uiFormatService.timeLimit,
+      hide: true,
+    },
+    {
+      colId: 'inactive_seeding_time_limit_raw',
+      field: 'inactive_seeding_time_limit',
+      headerName: translateService.instant(
+        'pages.main.grid.grid-lib.col-def.inactive_seeding_time_limit_raw',
+      ),
+      headerTooltip: translateService.instant(
+        'pages.main.grid.grid-lib.col-def.inactive_seeding_time_limit_raw',
+      ),
+      minWidth: 50,
+      width: 180,
+      cellClass: 'tabular-nums',
+      filter: 'agNumberColumnFilter',
       hide: true,
     },
     {
