@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import type { ValueFormatterParams } from 'ag-grid-community';
 import { FilesizePipe } from '../pipes/filesize-pipe';
+import { formatBytesPerSec } from '../pipes/format-bytes';
 import { HumanizeDurationPipe } from '../pipes/humanize-duration-pipe';
 import { LocalTimestampPipe } from '../pipes/local-timestamp-pipe';
 import { RatioLimitPipe } from '../pipes/ratio-limit-pipe';
@@ -42,11 +43,15 @@ export class UiFormatService {
   public readonly localTimestamp = (params: ValueFormatterParams): string =>
     this.localTimestampPipe.transform(params.value);
 
-  public readonly fileSize = (params: ValueFormatterParams): string =>
-    this.fileSizePipe.transform(params.value);
+  public readonly fileSize = (params: ValueFormatterParams): string => {
+    if (!params.value) return '';
+    return this.fileSizePipe.transform(params.value);
+  };
 
-  public readonly fileSizePerSecond = (params: ValueFormatterParams): string =>
-    `${this.fileSizePipe.transform(params.value)}/s`;
+  public readonly fileSizePerSecond = (params: ValueFormatterParams): string => {
+    if (!params.value) return '';
+    return formatBytesPerSec(params.value);
+  };
 
   public readonly duration = (params: ValueFormatterParams): string =>
     this.humanizeDurationPipe.transform(params.value);
