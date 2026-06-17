@@ -418,7 +418,7 @@ export function getGridColDefs(
       valueFormatter: (params: ValueFormatterParams<Torrent, TorrentState>): string =>
         params.value ? translateService.instant('torrent.state.' + params.value) : '',
       tooltipValueGetter: (params: ITooltipParams<Torrent, any, any>): string =>
-        translateService.instant(`torrent.state.${params.value}`),
+        params.value ? translateService.instant(`torrent.state.${params.value}`) : '',
     },
     {
       colId: 'category',
