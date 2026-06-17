@@ -442,7 +442,8 @@ export class GridContextMenuService {
     const fields: ContextMenuEntry[] = columns.map(({ id, label, visible }) => ({
       kind: 'item',
       id: `toggle.${id}`,
-      label: `${label} (${id})`,
+      label,
+      hint: id,
       icon: visible ? faCheck : undefined,
       action: () => {
         const col = api.getColumn(id);
