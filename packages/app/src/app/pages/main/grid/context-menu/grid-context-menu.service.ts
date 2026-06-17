@@ -1,6 +1,5 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { Injectable, inject } from '@angular/core';
-import { faSquare, faSquareCheck, faSquareMinus } from '@fortawesome/free-regular-svg-icons';
 import {
   faArrowDown,
   faArrowDownUpAcrossLine,
@@ -66,10 +65,7 @@ export class GridContextMenuService {
     const hashes = data.selected.map((torrent) => torrent.hash);
 
     const allSuperSeeding = data.selected.every((torrent) => torrent.super_seeding);
-    const noneSuperSeeding = data.selected.every((torrent) => !torrent.super_seeding);
-
     const allAutoTmm = data.selected.every((torrent) => torrent.auto_tmm);
-    const noneAutoTmm = data.selected.every((torrent) => !torrent.auto_tmm);
 
     return [
       {
@@ -275,7 +271,7 @@ export class GridContextMenuService {
             label: allSuperSeeding
               ? 'pages.main.grid.context-menu.item.disable-super-seeding'
               : 'pages.main.grid.context-menu.item.enable-super-seeding',
-            icon: allSuperSeeding ? faSquareCheck : noneSuperSeeding ? faSquare : faSquareMinus,
+            icon: allSuperSeeding ? faCheck : undefined,
             action: () =>
               this.commandBusService.emit({
                 type: 'TORRENT_SUPER_SEEDING',
@@ -311,7 +307,7 @@ export class GridContextMenuService {
             label: allAutoTmm
               ? 'pages.main.grid.context-menu.item.disable-auto-tmm'
               : 'pages.main.grid.context-menu.item.enable-auto-tmm',
-            icon: allAutoTmm ? faSquareCheck : noneAutoTmm ? faSquare : faSquareMinus,
+            icon: allAutoTmm ? faCheck : undefined,
             action: () =>
               this.commandBusService.emit({ type: 'TORRENT_AUTO_TMM', status: allAutoTmm }),
           },
