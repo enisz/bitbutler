@@ -1113,7 +1113,7 @@
             "inactive_seeding_time_limit_raw": "Inactive Seeding Time Limit (raw)",
             "progress_percentage": "Progress (%)",
             "progress_raw": "Progress (raw)",
-            "state_hr": "State"
+            "state_hr": "State (translated)"
           },
           "grid-options": {
             "overlay": {

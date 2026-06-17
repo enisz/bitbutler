@@ -1113,7 +1113,7 @@
             "inactive_seeding_time_limit_raw": "Inaktív seedelési időkorlát (nyers)",
             "progress_percentage": "Haladás (%)",
             "progress_raw": "Haladás (nyers)",
-            "state_hr": "Állapot"
+            "state_hr": "Állapot (lefordítva)"
           },
           "grid-options": {
             "overlay": {
