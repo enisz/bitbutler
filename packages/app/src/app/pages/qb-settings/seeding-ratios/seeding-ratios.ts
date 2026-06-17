@@ -93,7 +93,7 @@ export class SeedingRatios implements QbSettingsTabComponent, OnInit {
 
   private async save(): Promise<void> {
     const v = this.form.getRawValue();
-    await this.qbService.setAppPreferences(this.serverStoreService.currentServerId()!, {
+    await this.qbService.app.setPreferences(this.serverStoreService.currentServerId()!, {
       max_ratio_enabled: v.max_ratio_enabled,
       max_ratio: v.max_ratio,
       max_ratio_act: v.max_ratio_act,

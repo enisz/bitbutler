@@ -25,7 +25,7 @@ describe('RenameTorrent', () => {
         { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
         {
           provide: QbService,
-          useValue: { renameTorrent: vi.fn(), torrentContents: vi.fn().mockResolvedValue([]) },
+          useValue: { torrents: { rename: vi.fn(), files: vi.fn().mockResolvedValue([]) } },
         },
         { provide: ToastService, useValue: { danger: vi.fn() } },
       ],

@@ -11,8 +11,10 @@ describe('CategorySelect', () => {
 
   beforeEach(async () => {
     mockQbService = {
-      getAllCategories: vi.fn().mockResolvedValue({ movies: {}, tv: {} }),
-      addCategory: vi.fn().mockResolvedValue(undefined),
+      torrents: {
+        categories: vi.fn().mockResolvedValue({ movies: {}, tv: {} }),
+        createCategory: vi.fn().mockResolvedValue(undefined),
+      },
     };
 
     await TestBed.configureTestingModule({
@@ -83,24 +85,28 @@ describe('CategorySelect', () => {
     it('should return true and not call addCategory for an empty value', async () => {
       component.selectControl.setValue('');
       expect(await component.ensureCategoryExists()).toBe(true);
-      expect(mockQbService.addCategory).not.toHaveBeenCalled();
+      expect(mockQbService.torrents.createCategory).not.toHaveBeenCalled();
     });
 
-    it('should return true and not call addCategory for an existing category', async () => {
+    it('should return true and not call createCategory for an existing category', async () => {
       component.selectControl.setValue('movies');
       expect(await component.ensureCategoryExists()).toBe(true);
-      expect(mockQbService.addCategory).not.toHaveBeenCalled();
+      expect(mockQbService.torrents.createCategory).not.toHaveBeenCalled();
     });
 
     it('should create a new category and add it to the known list', async () => {
       component.selectControl.setValue('new-category');
       expect(await component.ensureCategoryExists()).toBe(true);
-      expect(mockQbService.addCategory).toHaveBeenCalledWith('server-1', 'new-category', '');
+      expect(mockQbService.torrents.createCategory).toHaveBeenCalledWith(
+        'server-1',
+        'new-category',
+        '',
+      );
       expect(component.categories()).toContain('new-category');
     });
 
-    it('should return false when addCategory fails', async () => {
-      mockQbService.addCategory.mockRejectedValueOnce(new Error('failed'));
+    it('should return false when createCategory fails', async () => {
+      mockQbService.torrents.createCategory.mockRejectedValueOnce(new Error('failed'));
       component.selectControl.setValue('bad-category');
       expect(await component.ensureCategoryExists()).toBe(false);
       expect(component.categories()).not.toContain('bad-category');
@@ -110,7 +116,7 @@ describe('CategorySelect', () => {
   describe('initialization', () => {
     it('should load categories on init', async () => {
       await vi.waitUntil(() => component.categories().length > 0);
-      expect(mockQbService.getAllCategories).toHaveBeenCalled();
+      expect(mockQbService.torrents.categories).toHaveBeenCalled();
       expect(component.categories()).toContain('movies');
       expect(component.categories()).toContain('tv');
     });

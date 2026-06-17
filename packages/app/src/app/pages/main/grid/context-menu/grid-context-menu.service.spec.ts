@@ -88,14 +88,14 @@ describe('GridContextMenuService', () => {
   let service: GridContextMenuService;
   let commandBusService: { emit: ReturnType<typeof vi.fn> };
   let clipboard: { copy: ReturnType<typeof vi.fn> };
-  let qbService: { torrentContents: ReturnType<typeof vi.fn> };
+  let qbService: { torrents: { files: ReturnType<typeof vi.fn> } };
   let pathService: { resolveLocalPath: ReturnType<typeof vi.fn> };
   let filterService: { clearColumnFilter: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     commandBusService = { emit: vi.fn() };
     clipboard = { copy: vi.fn() };
-    qbService = { torrentContents: vi.fn().mockResolvedValue([{}, {}]) };
+    qbService = { torrents: { files: vi.fn().mockResolvedValue([{}, {}]) } };
     pathService = { resolveLocalPath: vi.fn().mockResolvedValue('/local/path') };
     filterService = { clearColumnFilter: vi.fn() };
 
@@ -218,13 +218,13 @@ describe('GridContextMenuService', () => {
 
     describe('files.openDestination', () => {
       it('uses "show-in-folder" label when torrent has exactly one content file', async () => {
-        qbService.torrentContents.mockResolvedValue([{}]);
+        qbService.torrents.files.mockResolvedValue([{}]);
         const entries = await service.buildTorrentMenu(makeData());
         expect(findItem(entries, 'files.openDestination')?.label).toContain('show-in-folder');
       });
 
       it('uses "open-destination" label when torrent has multiple content files', async () => {
-        qbService.torrentContents.mockResolvedValue([{}, {}]);
+        qbService.torrents.files.mockResolvedValue([{}, {}]);
         const entries = await service.buildTorrentMenu(makeData());
         expect(findItem(entries, 'files.openDestination')?.label).toContain('open-destination');
       });

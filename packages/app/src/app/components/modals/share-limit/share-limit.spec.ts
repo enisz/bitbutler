@@ -29,16 +29,20 @@ describe('ShareLimit', () => {
   beforeEach(async () => {
     mockActiveModal = { close: vi.fn(), dismiss: vi.fn() };
     mockQbService = {
-      getAppPreferences: vi.fn().mockResolvedValue({
-        max_ratio_enabled: true,
-        max_ratio: 2.0,
-        max_seeding_time_enabled: false,
-        max_seeding_time: 0,
-        max_inactive_seeding_time_enabled: false,
-        max_inactive_seeding_time: null,
-      }),
-      setShareLimits: vi.fn().mockResolvedValue(undefined),
-      setAppPreferences: vi.fn().mockResolvedValue(undefined),
+      app: {
+        preferences: vi.fn().mockResolvedValue({
+          max_ratio_enabled: true,
+          max_ratio: 2.0,
+          max_seeding_time_enabled: false,
+          max_seeding_time: 0,
+          max_inactive_seeding_time_enabled: false,
+          max_inactive_seeding_time: null,
+        }),
+        setPreferences: vi.fn().mockResolvedValue(undefined),
+      },
+      torrents: {
+        setShareLimits: vi.fn().mockResolvedValue(undefined),
+      },
     };
 
     torrentsMap = makeStore([makeTorrent()]);
@@ -80,7 +84,7 @@ describe('ShareLimit', () => {
     });
 
     it('does not call getAppPreferences', () => {
-      expect(mockQbService.getAppPreferences).not.toHaveBeenCalled();
+      expect(mockQbService.app.preferences).not.toHaveBeenCalled();
     });
 
     it('loading stays false', () => {
@@ -137,7 +141,7 @@ describe('ShareLimit', () => {
     });
 
     it('does not call getAppPreferences', () => {
-      expect(mockQbService.getAppPreferences).not.toHaveBeenCalled();
+      expect(mockQbService.app.preferences).not.toHaveBeenCalled();
     });
   });
 
@@ -150,7 +154,7 @@ describe('ShareLimit', () => {
     });
 
     it('calls getAppPreferences', () => {
-      expect(mockQbService.getAppPreferences).toHaveBeenCalledWith('server-1');
+      expect(mockQbService.app.preferences).toHaveBeenCalledWith('server-1');
     });
 
     it('populates ratioLimit when max_ratio_enabled is true', () => {
@@ -242,7 +246,7 @@ describe('ShareLimit', () => {
         inactiveSeedingTimeLimit: null,
       });
       await component.handleSubmit();
-      expect(mockQbService.setShareLimits).toHaveBeenCalledWith(
+      expect(mockQbService.torrents.setShareLimits).toHaveBeenCalledWith(
         'server-1',
         ['abc123'],
         1.5,
@@ -262,7 +266,7 @@ describe('ShareLimit', () => {
         inactiveSeedingTimeLimit: null,
       });
       await component.handleSubmit();
-      expect(mockQbService.setAppPreferences).toHaveBeenCalledWith('server-1', {
+      expect(mockQbService.app.setPreferences).toHaveBeenCalledWith('server-1', {
         max_ratio_enabled: true,
         max_ratio: 2.0,
         max_seeding_time_enabled: false,

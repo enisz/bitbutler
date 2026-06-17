@@ -89,9 +89,9 @@ export class ManageServers {
     if (this.busy()) return;
     this.connectingId.set(server.id);
     try {
-      const hasSession = await this.qbService.hasCookie(server.id);
+      const hasSession = await this.qbService.auth.hasCookie(server.id);
       if (!hasSession) {
-        const loginRes = await this.qbService.login(server.id);
+        const loginRes = await this.qbService.auth.login(server.id);
         if (!loginRes.loggedIn) throw new Error('Login failed');
       }
       this.serverStoreService.select(server.id);

@@ -64,7 +64,7 @@ export class SetTorrentCategory implements OnInit {
     const serverId = this.serverStoreService.currentServerId() ?? '';
 
     try {
-      await this.qbService.setTorrentCategory(serverId, this.hashes(), category);
+      await this.qbService.torrents.setCategory(serverId, this.hashes(), category);
       this.activeModal.close();
     } catch (error) {
       console.error(

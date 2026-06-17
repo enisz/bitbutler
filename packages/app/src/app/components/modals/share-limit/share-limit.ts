@@ -68,7 +68,7 @@ export class ShareLimit implements OnInit {
     if (this.target() === 'global') {
       this.loading.set(true);
       const serverId = this.serverStoreService.currentServerId() ?? '';
-      const prefs = await this.qbService.getAppPreferences(serverId);
+      const prefs = await this.qbService.app.preferences(serverId);
       this.form.controls.shareLimits.setValue(
         {
           ratioLimit: prefs.max_ratio_enabled ? prefs.max_ratio : null,
@@ -118,7 +118,7 @@ export class ShareLimit implements OnInit {
 
     try {
       if (this.target() === 'global') {
-        await this.qbService.setAppPreferences(serverId, {
+        await this.qbService.app.setPreferences(serverId, {
           max_ratio_enabled: value?.ratioLimit != null,
           max_ratio: value?.ratioLimit ?? 0,
           max_seeding_time_enabled: value?.seedingTimeLimit != null,
@@ -127,7 +127,7 @@ export class ShareLimit implements OnInit {
           max_inactive_seeding_time: value?.inactiveSeedingTimeLimit ?? undefined,
         });
       } else {
-        await this.qbService.setShareLimits(
+        await this.qbService.torrents.setShareLimits(
           serverId,
           this.hashes(),
           value?.ratioLimit ?? -1,

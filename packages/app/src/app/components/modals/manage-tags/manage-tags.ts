@@ -81,7 +81,7 @@ export class ManageTags implements OnInit, GuardableModal {
 
   public async ngOnInit(): Promise<void> {
     try {
-      const tags = await this.qbService.getAllTags(
+      const tags = await this.qbService.torrents.tags(
         this.serverStoreService.currentServerId() as string,
       );
       this.tags.set([...tags].sort((a, b) => a.localeCompare(b)));
@@ -103,7 +103,7 @@ export class ManageTags implements OnInit, GuardableModal {
     const serverId = this.serverStoreService.currentServerId() as string;
     try {
       this.adding.set(true);
-      await this.qbService.createTags(serverId, names);
+      await this.qbService.torrents.createTags(serverId, names);
       const newNames = names.filter((n) => !this.tags().includes(n));
       this.tags.set([...this.tags(), ...newNames].sort((a, b) => a.localeCompare(b)));
       this.nameControl.reset();
@@ -148,7 +148,7 @@ export class ManageTags implements OnInit, GuardableModal {
 
     const serverId = this.serverStoreService.currentServerId() as string;
     try {
-      await this.qbService.deleteTags(serverId, [tag]);
+      await this.qbService.torrents.deleteTags(serverId, [tag]);
       this.tags.set(this.tags().filter((t) => t !== tag));
       this.toastService.success(
         this.translateService.instant('components.modals.manage-tags.toast.deleted', { name: tag }),

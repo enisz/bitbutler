@@ -84,11 +84,11 @@ export class SetTorrentTags implements OnInit {
 
     try {
       if (tagsToAdd.length > 0) {
-        await this.qbService.addTorrentTags(serverId, hashes, tagsToAdd);
+        await this.qbService.torrents.addTags(serverId, hashes, tagsToAdd);
       }
 
       if (tagsToRemove.length > 0) {
-        await this.qbService.removeTorrentTags(serverId, hashes, tagsToRemove);
+        await this.qbService.torrents.removeTags(serverId, hashes, tagsToRemove);
       }
 
       this.activeModal.close();

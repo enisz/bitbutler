@@ -91,14 +91,14 @@ export class Content implements TorrentDetailTabComponent, OnInit {
 
     try {
       for (const item of event.renames) {
-        await this.qbService.renameTorrentFile(serverId, this.hash(), item.oldPath, item.newPath);
+        await this.qbService.torrents.renameFile(serverId, this.hash(), item.oldPath, item.newPath);
       }
 
       for (const file of event.files) {
         if (file.index === undefined) continue;
         const original = originalContent.find((f) => f.index === file.index);
         if (original && original.priority !== file.priority) {
-          await this.qbService.setFilePriority(
+          await this.qbService.torrents.filePrio(
             serverId,
             this.hash(),
             [file.index],
@@ -127,7 +127,7 @@ export class Content implements TorrentDetailTabComponent, OnInit {
     if (!serverId) throw new Error('ServerId is missing!');
     if (!hash) throw new Error('Torrent hash is missing!');
 
-    return (await this.qbService.torrentContents(serverId, hash)).map(
+    return (await this.qbService.torrents.files(serverId, hash)).map(
       (content: QbTorrentContent) => ({
         length: content.size,
         path: content.name,

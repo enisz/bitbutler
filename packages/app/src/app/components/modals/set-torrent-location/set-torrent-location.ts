@@ -46,7 +46,7 @@ export class SetTorrentLocation implements OnInit {
     const serverId = this.serverStoreService.currentServerId();
     if (serverId) {
       try {
-        const prefs = await this.qbService.getAppPreferences(serverId);
+        const prefs = await this.qbService.app.preferences(serverId);
         if (prefs.save_path) this.defaultPath.set(prefs.save_path);
       } catch {}
     }
@@ -68,7 +68,7 @@ export class SetTorrentLocation implements OnInit {
     }
 
     try {
-      await this.qbService.setTorrentLocation(serverId, this.hashes(), newPath);
+      await this.qbService.torrents.setLocation(serverId, this.hashes(), newPath);
       this.activeModal.close();
     } catch (error: any) {
       console.error(

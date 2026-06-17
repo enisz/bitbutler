@@ -176,7 +176,7 @@ export class MenuBarCommandHandlerService {
       await window.bitbutler.window.setOpenFilesEnabled(false);
 
       if (serverId) {
-        await this.qbService.logout(serverId);
+        await this.qbService.auth.logout(serverId);
       }
 
       this.serverStoreService.suppressAutoLoginUntilManualConnect();

@@ -73,7 +73,7 @@ export class TorrentCommandHandlerService {
   }
 
   private handleAutoTmm(status: boolean): void {
-    this.qbService.setAutoManagement(
+    this.qbService.torrents.setAutoManagement(
       this.serverStore.currentServerId() ?? '',
       this.selectionStore.selectedHashes(),
       !status,
@@ -81,7 +81,7 @@ export class TorrentCommandHandlerService {
   }
 
   private handleForceResume(): void {
-    this.qbService.setForceStart(
+    this.qbService.torrents.setForceStart(
       this.serverStore.currentServerId() ?? '',
       this.selectionStore.selectedHashes(),
       true,
@@ -89,7 +89,7 @@ export class TorrentCommandHandlerService {
   }
 
   private handleSuperSeeding(status: boolean): void {
-    this.qbService.setSuperSeeding(
+    this.qbService.torrents.setSuperSeeding(
       this.serverStore.currentServerId() ?? '',
       this.selectionStore.selectedHashes(),
       !status,
@@ -97,14 +97,14 @@ export class TorrentCommandHandlerService {
   }
 
   private handleReannounce(): void {
-    this.qbService.reannounceTorrents(
+    this.qbService.torrents.reannounce(
       this.serverStore.currentServerId() ?? '',
       this.selectionStore.selectedHashes(),
     );
   }
 
   private handleRecheck(): void {
-    this.qbService.recheckTorrents(
+    this.qbService.torrents.recheck(
       this.serverStore.currentServerId() ?? '',
       this.selectionStore.selectedHashes(),
     );
@@ -122,7 +122,7 @@ export class TorrentCommandHandlerService {
     if (hashes.length === 0) return;
 
     try {
-      await this.qbService.deleteTorrents(serverId, hashes, removeFiles);
+      await this.qbService.torrents.delete(serverId, hashes, removeFiles);
       for (const hash of hashes) {
         this.commandBusService.emit({ type: 'TORRENT_DELETED', hash });
       }
@@ -148,7 +148,7 @@ export class TorrentCommandHandlerService {
     if (!ctx) return;
 
     try {
-      await this.qbService.pauseTorrents(ctx.serverId, ctx.hashes);
+      await this.qbService.torrents.pause(ctx.serverId, ctx.hashes);
     } catch (e) {
       console.error(TorrentCommandHandlerService.name, 'handlePause', 'Pause failed!', e);
     }
@@ -159,7 +159,7 @@ export class TorrentCommandHandlerService {
     if (!ctx) return;
 
     try {
-      await this.qbService.resumeTorrents(ctx.serverId, ctx.hashes);
+      await this.qbService.torrents.resume(ctx.serverId, ctx.hashes);
     } catch (e) {
       console.error(TorrentCommandHandlerService.name, 'handleResume', 'Resume failed!', e);
     }
@@ -173,7 +173,7 @@ export class TorrentCommandHandlerService {
     if (hashes.length === 0) return;
 
     try {
-      await this.qbService.resumeTorrents(serverId, hashes);
+      await this.qbService.torrents.resume(serverId, hashes);
     } catch (e) {
       console.error(TorrentCommandHandlerService.name, 'handleResumeAll', 'Resume all failed!', e);
     }
@@ -187,7 +187,7 @@ export class TorrentCommandHandlerService {
     if (hashes.length === 0) return;
 
     try {
-      await this.qbService.pauseTorrents(serverId, hashes);
+      await this.qbService.torrents.pause(serverId, hashes);
     } catch (e) {
       console.error(TorrentCommandHandlerService.name, 'handlePauseAll', 'Pause all failed', e);
     }
@@ -198,7 +198,7 @@ export class TorrentCommandHandlerService {
     if (!ctx) return;
 
     try {
-      await this.qbService.topPrio(ctx.serverId, ctx.hashes);
+      await this.qbService.torrents.topPrio(ctx.serverId, ctx.hashes);
     } catch (e) {
       console.error(
         TorrentCommandHandlerService.name,
@@ -214,7 +214,7 @@ export class TorrentCommandHandlerService {
     if (!ctx) return;
 
     try {
-      await this.qbService.increasePrio(ctx.serverId, ctx.hashes);
+      await this.qbService.torrents.increasePrio(ctx.serverId, ctx.hashes);
     } catch (e) {
       console.error(
         TorrentCommandHandlerService.name,
@@ -230,7 +230,7 @@ export class TorrentCommandHandlerService {
     if (!ctx) return;
 
     try {
-      await this.qbService.decreasePrio(ctx.serverId, ctx.hashes);
+      await this.qbService.torrents.decreasePrio(ctx.serverId, ctx.hashes);
     } catch (e) {
       console.error(
         TorrentCommandHandlerService.name,
@@ -246,7 +246,7 @@ export class TorrentCommandHandlerService {
     if (!ctx) return;
 
     try {
-      await this.qbService.bottomPrio(ctx.serverId, ctx.hashes);
+      await this.qbService.torrents.bottomPrio(ctx.serverId, ctx.hashes);
     } catch (e) {
       console.error(
         TorrentCommandHandlerService.name,

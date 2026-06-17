@@ -22,9 +22,11 @@ describe('SetTorrentCategory', () => {
         {
           provide: QbService,
           useValue: {
-            getAllCategories: vi.fn().mockResolvedValue({}),
-            addCategory: vi.fn().mockResolvedValue(undefined),
-            setTorrentCategory: vi.fn().mockResolvedValue(undefined),
+            torrents: {
+              categories: vi.fn().mockResolvedValue({}),
+              createCategory: vi.fn().mockResolvedValue(undefined),
+              setCategory: vi.fn().mockResolvedValue(undefined),
+            },
           },
         },
       ],
@@ -67,22 +69,28 @@ describe('SetTorrentCategory', () => {
   describe('handleSubmit', () => {
     it('should apply the category to the hashes provided via the input, not the selection store', async () => {
       const mockQbService = TestBed.inject(QbService) as unknown as {
-        setTorrentCategory: ReturnType<typeof vi.fn>;
+        torrents: { setCategory: ReturnType<typeof vi.fn> };
       };
       component.setTorrentCategoryForm.get('category')?.setValue('tv');
       await component.handleSubmit();
-      expect(mockQbService.setTorrentCategory).toHaveBeenCalledWith('server-1', ['hash-1'], 'tv');
+      expect(mockQbService.torrents.setCategory).toHaveBeenCalledWith('server-1', ['hash-1'], 'tv');
     });
 
     it('should create the category if it does not exist yet before saving', async () => {
       const mockQbService = TestBed.inject(QbService) as unknown as {
-        addCategory: ReturnType<typeof vi.fn>;
-        setTorrentCategory: ReturnType<typeof vi.fn>;
+        torrents: {
+          createCategory: ReturnType<typeof vi.fn>;
+          setCategory: ReturnType<typeof vi.fn>;
+        };
       };
       component.setTorrentCategoryForm.get('category')?.setValue('new-category');
       await component.handleSubmit();
-      expect(mockQbService.addCategory).toHaveBeenCalledWith('server-1', 'new-category', '');
-      expect(mockQbService.setTorrentCategory).toHaveBeenCalledWith(
+      expect(mockQbService.torrents.createCategory).toHaveBeenCalledWith(
+        'server-1',
+        'new-category',
+        '',
+      );
+      expect(mockQbService.torrents.setCategory).toHaveBeenCalledWith(
         'server-1',
         ['hash-1'],
         'new-category',
@@ -91,13 +99,15 @@ describe('SetTorrentCategory', () => {
 
     it('should abort the submit if the category cannot be created', async () => {
       const mockQbService = TestBed.inject(QbService) as unknown as {
-        addCategory: ReturnType<typeof vi.fn>;
-        setTorrentCategory: ReturnType<typeof vi.fn>;
+        torrents: {
+          createCategory: ReturnType<typeof vi.fn>;
+          setCategory: ReturnType<typeof vi.fn>;
+        };
       };
-      mockQbService.addCategory.mockRejectedValueOnce(new Error('failed'));
+      mockQbService.torrents.createCategory.mockRejectedValueOnce(new Error('failed'));
       component.setTorrentCategoryForm.get('category')?.setValue('bad-category');
       await component.handleSubmit();
-      expect(mockQbService.setTorrentCategory).not.toHaveBeenCalled();
+      expect(mockQbService.torrents.setCategory).not.toHaveBeenCalled();
       expect(component.saving).toBe(false);
     });
   });

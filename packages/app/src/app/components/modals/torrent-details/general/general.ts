@@ -176,7 +176,7 @@ export class General implements TorrentDetailTabComponent, OnInit {
     }
 
     try {
-      this.properties.set(await this.qbService.torrentProperties(serverId, hash));
+      this.properties.set(await this.qbService.torrents.properties(serverId, hash));
     } catch (e: any) {
       const error = e?.message ?? String(e);
       console.error(General.name, 'load', 'Failed to fetch torrent properties!', error);
@@ -206,21 +206,21 @@ export class General implements TorrentDetailTabComponent, OnInit {
 
   public resume(): void {
     this.toastService.info('Resuming.');
-    this.qbService.resumeTorrents(this.serverStoreService.currentServerId() as string, [
+    this.qbService.torrents.resume(this.serverStoreService.currentServerId() as string, [
       this.hash(),
     ]);
   }
 
   public pause(): void {
     this.toastService.info('Pausing.');
-    this.qbService.pauseTorrents(this.serverStoreService.currentServerId() as string, [
+    this.qbService.torrents.pause(this.serverStoreService.currentServerId() as string, [
       this.hash(),
     ]);
   }
 
   public forceResume(): void {
     this.toastService.info('Forcing resume.');
-    this.qbService.setForceStart(
+    this.qbService.torrents.setForceStart(
       this.serverStoreService.currentServerId() as string,
       [this.hash()],
       true,
@@ -229,13 +229,15 @@ export class General implements TorrentDetailTabComponent, OnInit {
 
   public clearDownloadLimit(): void {
     this.toastService.info('Clearing download limit.');
-    this.qbService.setDownloadLimit(this.serverStoreService.currentServerId() as string, 0, [
-      this.hash(),
-    ]);
+    this.qbService.torrents.setDownloadLimit(
+      this.serverStoreService.currentServerId() as string,
+      0,
+      [this.hash()],
+    );
   }
   public clearUploadLimit(): void {
     this.toastService.info('Clearing upload limit.');
-    this.qbService.setUploadLimit(this.serverStoreService.currentServerId() as string, 0, [
+    this.qbService.torrents.setUploadLimit(this.serverStoreService.currentServerId() as string, 0, [
       this.hash(),
     ]);
   }
@@ -250,7 +252,7 @@ export class General implements TorrentDetailTabComponent, OnInit {
 
   public clearRatioLimit(): void {
     const t = this.torrent()!.data;
-    this.qbService.setShareLimits(
+    this.qbService.torrents.setShareLimits(
       this.serverStoreService.currentServerId() as string,
       [this.hash()],
       -1,
@@ -261,7 +263,7 @@ export class General implements TorrentDetailTabComponent, OnInit {
 
   public clearSeedingTimeLimit(): void {
     const t = this.torrent()!.data;
-    this.qbService.setShareLimits(
+    this.qbService.torrents.setShareLimits(
       this.serverStoreService.currentServerId() as string,
       [this.hash()],
       t.ratio_limit,
@@ -272,7 +274,7 @@ export class General implements TorrentDetailTabComponent, OnInit {
 
   public clearInactiveSeedingTimeLimit(): void {
     const t = this.torrent()!.data;
-    this.qbService.setShareLimits(
+    this.qbService.torrents.setShareLimits(
       this.serverStoreService.currentServerId() as string,
       [this.hash()],
       t.ratio_limit,
@@ -283,7 +285,7 @@ export class General implements TorrentDetailTabComponent, OnInit {
 
   public forceReannounce(): void {
     this.toastService.info('Reannouncing.');
-    this.qbService.reannounceTorrents(this.serverStoreService.currentServerId() as string, [
+    this.qbService.torrents.reannounce(this.serverStoreService.currentServerId() as string, [
       this.hash(),
     ]);
   }
@@ -298,7 +300,7 @@ export class General implements TorrentDetailTabComponent, OnInit {
 
   public removeCategory(): void {
     this.toastService.info('Removing category.');
-    this.qbService.clearTorrentsCategory(this.serverStoreService.currentServerId() as string, [
+    this.qbService.torrents.clearCategory(this.serverStoreService.currentServerId() as string, [
       this.hash(),
     ]);
   }
@@ -313,7 +315,7 @@ export class General implements TorrentDetailTabComponent, OnInit {
 
   public removeAllTags(): void {
     this.toastService.info('Removing all tags.');
-    this.qbService.removeTorrentTags(
+    this.qbService.torrents.removeTags(
       this.serverStoreService.currentServerId() as string,
       [this.hash()],
       this.torrent()!

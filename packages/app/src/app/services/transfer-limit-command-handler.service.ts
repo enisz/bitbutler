@@ -49,9 +49,9 @@ export class TransferLimitCommandHandlerService {
 
   private async handleToggle(): Promise<void> {
     const serverId = this.serverStoreService.currentServerId() as string;
-    const state = await this.qbService.getAlternativeSpeedLimitState(serverId);
+    const state = await this.qbService.transfer.speedLimitsMode(serverId);
     this.toastService.info('Turning alternative speed limit ' + (state ? 'OFF' : 'ON'));
-    await this.qbService.toggleAlternativeSpeedLimit(serverId);
+    await this.qbService.transfer.toggleSpeedLimitsMode(serverId);
   }
 
   private transferLimitCommandGuard(cmd: AppCommand): cmd is TransferLimitCommand {

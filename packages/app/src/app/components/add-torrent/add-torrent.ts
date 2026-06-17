@@ -519,7 +519,7 @@ export class AddTorrent implements OnInit {
       const delay = 500;
       for (let i = 0; i < maxRetries; i++) {
         try {
-          const contents = await this.qbService.torrentContents(serverId, hash, {
+          const contents = await this.qbService.torrents.files(serverId, hash, {
             suppressErrors: true,
           });
           if (contents && contents.length > 0) return;
@@ -535,19 +535,19 @@ export class AddTorrent implements OnInit {
       await pollForTorrent();
 
       for (const item of this.savedFileState?.renames ?? []) {
-        await this.qbService.renameTorrentFile(serverId, hash, item.oldPath, item.newPath);
+        await this.qbService.torrents.renameFile(serverId, hash, item.oldPath, item.newPath);
       }
 
       const savedFiles = this.savedFileState?.files ?? null;
       if (savedFiles) {
         const nonDefault = savedFiles.filter((f) => (f.priority ?? 1) !== 1);
         if (nonDefault.length > 0) {
-          const contents = await this.qbService.torrentContents(serverId, hash);
+          const contents = await this.qbService.torrents.files(serverId, hash);
           const pathToIndex = new Map(contents.map((c) => [c.name, c.index]));
           for (const f of nonDefault) {
             const index = pathToIndex.get(f.path);
             if (index !== undefined) {
-              await this.qbService.setFilePriority(serverId, hash, [index], f.priority ?? 0);
+              await this.qbService.torrents.filePrio(serverId, hash, [index], f.priority ?? 0);
             }
           }
         }
@@ -556,7 +556,7 @@ export class AddTorrent implements OnInit {
       if (shareLimits != null) {
         const inactiveLimit = shareLimits.inactiveSeedingTimeLimit;
         if (inactiveLimit !== null && inactiveLimit !== -2) {
-          await this.qbService.setShareLimits(
+          await this.qbService.torrents.setShareLimits(
             serverId,
             [hash],
             shareLimits.ratioLimit ?? -2,

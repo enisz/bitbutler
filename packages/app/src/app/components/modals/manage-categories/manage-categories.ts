@@ -94,7 +94,7 @@ export class ManageCategories implements OnInit, GuardableModal {
 
   public async ngOnInit(): Promise<void> {
     try {
-      const raw = await this.qbService.getAllCategories(
+      const raw = await this.qbService.torrents.categories(
         this.serverStoreService.currentServerId() as string,
       );
       this.categories.set(
@@ -120,7 +120,7 @@ export class ManageCategories implements OnInit, GuardableModal {
     const serverId = this.serverStoreService.currentServerId() as string;
     try {
       this.adding.set(true);
-      await this.qbService.addCategory(serverId, name, savePath);
+      await this.qbService.torrents.createCategory(serverId, name, savePath);
       this.categories.set(
         [...this.categories(), { name, savePath, editing: false }].sort((a, b) =>
           a.name.localeCompare(b.name),
@@ -157,7 +157,7 @@ export class ManageCategories implements OnInit, GuardableModal {
     const newPath = (this.editSavePathControl.value ?? '').trim();
     const serverId = this.serverStoreService.currentServerId() as string;
     try {
-      await this.qbService.editCategory(serverId, item.name, newPath);
+      await this.qbService.torrents.editCategory(serverId, item.name, newPath);
       this.categories.set(
         this.categories().map((c) =>
           c.name === item.name ? { ...c, savePath: newPath, editing: false } : c,
@@ -197,7 +197,7 @@ export class ManageCategories implements OnInit, GuardableModal {
 
     const serverId = this.serverStoreService.currentServerId() as string;
     try {
-      await this.qbService.removeCategories(serverId, [item.name]);
+      await this.qbService.torrents.removeCategories(serverId, [item.name]);
       this.categories.set(this.categories().filter((c) => c.name !== item.name));
       this.toastService.success(
         this.translateService.instant('components.modals.manage-categories.toast.deleted', {
