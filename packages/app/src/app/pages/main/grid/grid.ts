@@ -314,9 +314,11 @@ export class Grid implements AfterViewInit {
   private refreshColumnHeaders(): void {
     if (!this.api) return;
 
+    const columnState = this.api.getColumnState();
     this.api.setGridOption(
       'columnDefs',
       getGridColDefs(this.uiFormatService, this.translateService),
     );
+    this.api.applyColumnState({ state: columnState, applyOrder: true });
   }
 }

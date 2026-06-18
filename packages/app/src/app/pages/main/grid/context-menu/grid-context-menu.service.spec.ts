@@ -1,7 +1,7 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { faSquare, faSquareCheck, faSquareMinus } from '@fortawesome/free-regular-svg-icons';
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { of } from 'rxjs';
 import type { Torrent } from '../../../../models/torrent.model';
 import { CommandBusService } from '../../../../services/command-bus.service';
@@ -545,8 +545,8 @@ describe('GridContextMenuService', () => {
       });
     });
 
-    describe('super seeding tri-state', () => {
-      it('shows the checked icon, "disable" label and forces status true (toggling off) when every selected torrent has it on', async () => {
+    describe('super seeding icon', () => {
+      it('shows the check icon and "disable" label when every selected torrent has it on', async () => {
         const rowA = makeRow({ hash: 'hash-a', super_seeding: true });
         const rowB = makeRow({ hash: 'hash-b', super_seeding: true });
         const entries = await service.buildTorrentMenu(
@@ -555,7 +555,7 @@ describe('GridContextMenuService', () => {
         const item = findItem(entries, 'speed.superSeeding')!;
 
         expect(item.label).toContain('disable-super-seeding');
-        expect(item.icon).toBe(faSquareCheck);
+        expect(item.icon).toBe(faCheck);
         (item.action as () => void)();
         expect(commandBusService.emit).toHaveBeenCalledWith({
           type: 'TORRENT_SUPER_SEEDING',
@@ -563,7 +563,7 @@ describe('GridContextMenuService', () => {
         });
       });
 
-      it('shows the empty icon, "enable" label and status false when every selected torrent has it off', async () => {
+      it('shows no icon and "enable" label when every selected torrent has it off', async () => {
         const rowA = makeRow({ hash: 'hash-a', super_seeding: false });
         const rowB = makeRow({ hash: 'hash-b', super_seeding: false });
         const entries = await service.buildTorrentMenu(
@@ -572,7 +572,7 @@ describe('GridContextMenuService', () => {
         const item = findItem(entries, 'speed.superSeeding')!;
 
         expect(item.label).toContain('enable-super-seeding');
-        expect(item.icon).toBe(faSquare);
+        expect(item.icon).toBeUndefined();
         (item.action as () => void)();
         expect(commandBusService.emit).toHaveBeenCalledWith({
           type: 'TORRENT_SUPER_SEEDING',
@@ -580,7 +580,7 @@ describe('GridContextMenuService', () => {
         });
       });
 
-      it('shows the indeterminate icon, "enable" label and forces status false (enabling for all) when the selection is mixed', async () => {
+      it('shows no icon and "enable" label when the selection is mixed', async () => {
         const rowA = makeRow({ hash: 'hash-a', super_seeding: true });
         const rowB = makeRow({ hash: 'hash-b', super_seeding: false });
         const entries = await service.buildTorrentMenu(
@@ -589,7 +589,7 @@ describe('GridContextMenuService', () => {
         const item = findItem(entries, 'speed.superSeeding')!;
 
         expect(item.label).toContain('enable-super-seeding');
-        expect(item.icon).toBe(faSquareMinus);
+        expect(item.icon).toBeUndefined();
         (item.action as () => void)();
         expect(commandBusService.emit).toHaveBeenCalledWith({
           type: 'TORRENT_SUPER_SEEDING',
@@ -598,8 +598,8 @@ describe('GridContextMenuService', () => {
       });
     });
 
-    describe('auto TMM tri-state', () => {
-      it('shows the checked icon, "disable" label and forces status true (toggling off) when every selected torrent has it on', async () => {
+    describe('auto TMM icon', () => {
+      it('shows the check icon and "disable" label when every selected torrent has it on', async () => {
         const rowA = makeRow({ hash: 'hash-a', auto_tmm: true });
         const rowB = makeRow({ hash: 'hash-b', auto_tmm: true });
         const entries = await service.buildTorrentMenu(
@@ -608,7 +608,7 @@ describe('GridContextMenuService', () => {
         const item = findItem(entries, 'maintenance.autoTmm')!;
 
         expect(item.label).toContain('disable-auto-tmm');
-        expect(item.icon).toBe(faSquareCheck);
+        expect(item.icon).toBe(faCheck);
         (item.action as () => void)();
         expect(commandBusService.emit).toHaveBeenCalledWith({
           type: 'TORRENT_AUTO_TMM',
@@ -616,7 +616,7 @@ describe('GridContextMenuService', () => {
         });
       });
 
-      it('shows the empty icon, "enable" label and status false when every selected torrent has it off', async () => {
+      it('shows no icon and "enable" label when every selected torrent has it off', async () => {
         const rowA = makeRow({ hash: 'hash-a', auto_tmm: false });
         const rowB = makeRow({ hash: 'hash-b', auto_tmm: false });
         const entries = await service.buildTorrentMenu(
@@ -625,7 +625,7 @@ describe('GridContextMenuService', () => {
         const item = findItem(entries, 'maintenance.autoTmm')!;
 
         expect(item.label).toContain('enable-auto-tmm');
-        expect(item.icon).toBe(faSquare);
+        expect(item.icon).toBeUndefined();
         (item.action as () => void)();
         expect(commandBusService.emit).toHaveBeenCalledWith({
           type: 'TORRENT_AUTO_TMM',
@@ -633,7 +633,7 @@ describe('GridContextMenuService', () => {
         });
       });
 
-      it('shows the indeterminate icon, "enable" label and forces status false (enabling for all) when the selection is mixed', async () => {
+      it('shows no icon and "enable" label when the selection is mixed', async () => {
         const rowA = makeRow({ hash: 'hash-a', auto_tmm: true });
         const rowB = makeRow({ hash: 'hash-b', auto_tmm: false });
         const entries = await service.buildTorrentMenu(
@@ -642,7 +642,7 @@ describe('GridContextMenuService', () => {
         const item = findItem(entries, 'maintenance.autoTmm')!;
 
         expect(item.label).toContain('enable-auto-tmm');
-        expect(item.icon).toBe(faSquareMinus);
+        expect(item.icon).toBeUndefined();
         (item.action as () => void)();
         expect(commandBusService.emit).toHaveBeenCalledWith({
           type: 'TORRENT_AUTO_TMM',

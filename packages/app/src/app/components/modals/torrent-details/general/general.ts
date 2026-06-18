@@ -34,6 +34,7 @@ import { TooltipOverflow } from '../../../../directives/tooltip-overflow';
 import { GeneralSettings } from '../../../../models/general-settings.model';
 import { QbTorrentProperties } from '../../../../models/qbittorrent.model';
 import { QbTorrentContent, Torrent } from '../../../../models/torrent.model';
+import { FileSizePerSecPipe } from '../../../../pipes/filesize-per-sec-pipe';
 import { FilesizePipe } from '../../../../pipes/filesize-pipe';
 import { HumanizeDurationPipe } from '../../../../pipes/humanize-duration-pipe';
 import { RatioLimitPipe } from '../../../../pipes/ratio-limit-pipe';
@@ -64,6 +65,7 @@ interface MergedData {
     DatePipe,
     TimeagoPipe,
     FilesizePipe,
+    FileSizePerSecPipe,
     HumanizeDurationPipe,
     SpeedLimitPipe,
     BbProgress,

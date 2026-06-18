@@ -13,7 +13,7 @@ export class HumanizeDurationPipe implements PipeTransform {
   transform(ms: number, style: 'long' | 'short' | 'narrow' = 'long', precision = Infinity): string {
     const locale = this.translate.getCurrentLang() || this.translate.getFallbackLang() || 'en-US';
 
-    if (ms === null || ms === undefined || isNaN(ms)) {
+    if (ms === null || ms === undefined || isNaN(ms) || ms === 0) {
       return '';
     }
 

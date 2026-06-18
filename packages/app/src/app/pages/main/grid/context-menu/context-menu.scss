@@ -116,6 +116,16 @@
   color: inherit;
 }
 
+.bb-hint {
+  font-family: var(--bs-font-monospace);
+  font-size: 10px;
+  opacity: 0.6;
+  background: color-mix(in srgb, var(--bs-body-color) 10%, transparent);
+  padding: 1px 5px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
 .bb-chevron {
   width: 14px;
   min-width: 14px;
