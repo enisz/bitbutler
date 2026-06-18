@@ -4,6 +4,8 @@ import { Observable, Subscriber } from 'rxjs';
 import { HttpError } from '../models/http.model';
 import {
   QbAppPreferences,
+  QbLogEntry,
+  QbLogPeerEntry,
   QbResponse,
   QbSetAppPreferences,
   QbTorrentProperties,
@@ -81,6 +83,40 @@ export class QbService {
       });
       if (!res.ok)
         throw new HttpError(res.status, res.statusText, `Failed to set application preferences`);
+    },
+  };
+
+  readonly log = {
+    main: async (
+      serverId: string,
+      options: {
+        normal?: boolean;
+        info?: boolean;
+        warning?: boolean;
+        critical?: boolean;
+        last_known_id?: number;
+      } = {},
+    ): Promise<QbLogEntry[]> => {
+      const res = await this.request<QbLogEntry[]>(serverId, {
+        path: '/api/v2/log/main',
+        method: 'GET',
+        query: { ...options },
+      });
+      if (res.ok) return res.body;
+      throw new HttpError(res.status, res.statusText, `Failed to get main log`);
+    },
+
+    peers: async (
+      serverId: string,
+      options: { last_known_id?: number } = {},
+    ): Promise<QbLogPeerEntry[]> => {
+      const res = await this.request<QbLogPeerEntry[]>(serverId, {
+        path: '/api/v2/log/peers',
+        method: 'GET',
+        query: { ...options },
+      });
+      if (res.ok) return res.body;
+      throw new HttpError(res.status, res.statusText, `Failed to get peer log`);
     },
   };
 

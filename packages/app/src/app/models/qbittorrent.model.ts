@@ -307,3 +307,25 @@ export interface QbAppPreferences {
 }
 
 export type QbSetAppPreferences = Partial<QbAppPreferences>;
+
+export enum QbLogMessageType {
+  Normal = 1,
+  Info = 2,
+  Warning = 4,
+  Critical = 8,
+}
+
+export interface QbLogEntry {
+  id: number;
+  message: string;
+  timestamp: number;
+  type: QbLogMessageType;
+}
+
+export interface QbLogPeerEntry {
+  id: number;
+  ip: string;
+  timestamp: number;
+  blocked: boolean;
+  reason: string;
+}
