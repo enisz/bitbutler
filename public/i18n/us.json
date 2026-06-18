@@ -6,7 +6,7 @@
   },
   "torrent": {
     "state": {
-      "error": "An error occurred. Applies to paused torrents.",
+      "error": "An error occurred.",
       "missingFiles": "Torrent data files are missing.",
       "uploading": "Torrent is seeding and data is being uploaded.",
       "pausedUP": "Torrent is paused and has finished downloading.",
@@ -366,6 +366,7 @@
           "info-hash-v1": "Info Hash v1",
           "info-hash-v2": "Info Hash v2",
           "comment": "Comment",
+          "error": "Error",
           "labels": {
             "title": "Torrent",
             "transfer": "Transfer",
@@ -480,9 +481,7 @@
               "title": "Comment",
               "description": "Optional text added by the torrent creator, often containing source info or credits."
             }
-          },
-          "info": {},
-          "error": {}
+          }
         },
         "peers": {
           "grid-options": {

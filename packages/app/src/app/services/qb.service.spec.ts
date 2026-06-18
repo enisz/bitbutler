@@ -79,4 +79,47 @@ describe('QbService', () => {
       expect.objectContaining({ id: 'server-1', path: '/api/v2/sync/maindata' }),
     );
   });
+
+  it('should call log.main with the normal/info/warning/critical query params', async () => {
+    const spy = vi.spyOn(window.bitbutler.qb, 'request').mockResolvedValue({
+      ok: true,
+      status: 200,
+      statusText: 'OK',
+      body: [],
+    } as any);
+
+    await service.log.main('server-1', {
+      normal: false,
+      info: false,
+      warning: true,
+      critical: true,
+    });
+
+    expect(spy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'server-1',
+        path: '/api/v2/log/main',
+        query: { normal: false, info: false, warning: true, critical: true },
+      }),
+    );
+  });
+
+  it('should call log.peers with a last_known_id query param', async () => {
+    const spy = vi.spyOn(window.bitbutler.qb, 'request').mockResolvedValue({
+      ok: true,
+      status: 200,
+      statusText: 'OK',
+      body: [],
+    } as any);
+
+    await service.log.peers('server-1', { last_known_id: 5 });
+
+    expect(spy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'server-1',
+        path: '/api/v2/log/peers',
+        query: { last_known_id: 5 },
+      }),
+    );
+  });
 });

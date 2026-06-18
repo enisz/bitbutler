@@ -26,13 +26,17 @@ import {
   faTrashCan,
   faX,
 } from '@fortawesome/free-solid-svg-icons';
-import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
+import { NgbCollapse, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { TimeagoPipe } from 'ngx-timeago';
 import { take, timer } from 'rxjs';
 import { TooltipOverflow } from '../../../../directives/tooltip-overflow';
 import { GeneralSettings } from '../../../../models/general-settings.model';
-import { QbTorrentProperties } from '../../../../models/qbittorrent.model';
+import {
+  QbLogEntry,
+  QbLogMessageType,
+  QbTorrentProperties,
+} from '../../../../models/qbittorrent.model';
 import { QbTorrentContent, Torrent } from '../../../../models/torrent.model';
 import { FileSizePerSecPipe } from '../../../../pipes/filesize-per-sec-pipe';
 import { FilesizePipe } from '../../../../pipes/filesize-pipe';
@@ -70,6 +74,7 @@ interface MergedData {
     SpeedLimitPipe,
     BbProgress,
     FontAwesomeModule,
+    NgbCollapse,
     NgbTooltip,
     RatioLimitPipe,
     RatioPipe,
@@ -119,6 +124,8 @@ export class General implements TorrentDetailTabComponent, OnInit {
 
   public properties: WritableSignal<QbTorrentProperties | null> = signal(null);
   public localPath: WritableSignal<string | null> = signal(null);
+  public errorLog: WritableSignal<QbLogEntry | null> = signal(null);
+  public errorLogExpanded = signal(false);
 
   constructor() {
     let isResolving = false;
@@ -138,6 +145,45 @@ export class General implements TorrentDetailTabComponent, OnInit {
       this.localPath.set(await this.pathService.resolveLocalPath(remotePath));
       isResolved = true;
       effectRef.destroy();
+    });
+
+    let hasAttemptedErrorLogFetch = false;
+
+    effect(async () => {
+      const entry = this.torrentStoreService.torrentsMap().get(this.hash());
+      const state = entry?.state;
+      const name = entry?.name;
+      const serverId = this.serverStoreService.currentServerId();
+
+      if (state !== 'error') {
+        hasAttemptedErrorLogFetch = false;
+        this.errorLog.set(null);
+        return;
+      }
+
+      if (hasAttemptedErrorLogFetch || !serverId || !name) return;
+      hasAttemptedErrorLogFetch = true;
+
+      try {
+        const entries = await this.qbService.log.main(serverId, {
+          normal: false,
+          info: false,
+          warning: true,
+          critical: true,
+        });
+
+        const matches = entries.filter(
+          (e) =>
+            (e.type === QbLogMessageType.Warning || e.type === QbLogMessageType.Critical) &&
+            e.message.includes(name),
+        );
+
+        if (matches.length > 0) {
+          this.errorLog.set(matches.reduce((a, b) => (b.id > a.id ? b : a)));
+        }
+      } catch (error: any) {
+        console.error(General.name, 'errorLog effect', 'Failed to fetch log entries', error);
+      }
     });
   }
 
@@ -363,5 +409,21 @@ export class General implements TorrentDetailTabComponent, OnInit {
       this.torrent()?.data.state === 'checkingDL' ||
       this.torrent()?.data.state === 'forcedDL'
     );
+  }
+
+  public parseFileErrorReason(message: string): { reason: string; short: string } {
+    const match = message.match(/Reason:\s*"(.*)"\s*$/);
+    const reason = match ? match[1] : message;
+    const errorMatch = reason.match(/error:\s*(.+)$/i);
+    const short = errorMatch ? errorMatch[1] : reason;
+    return { reason, short };
+  }
+
+  public rawLogJson(entry: QbLogEntry): string {
+    return JSON.stringify(entry, null, 4);
+  }
+
+  public toggleErrorLog(): void {
+    this.errorLogExpanded.update((v) => !v);
   }
 }

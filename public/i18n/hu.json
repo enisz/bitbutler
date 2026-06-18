@@ -6,7 +6,7 @@
   },
   "torrent": {
     "state": {
-      "error": "Hiba történt. Szüneteltetett torrentekre vonatkozik.",
+      "error": "Hiba történt.",
       "missingFiles": "A torrent adatfájljai hiányoznak.",
       "uploading": "Feltöltés folyamatban.",
       "pausedUP": "Feltöltés szüneteltetve (letöltés befejezve).",
@@ -366,6 +366,7 @@
           "info-hash-v1": "Info Hash v1",
           "info-hash-v2": "Info Hash v2",
           "comment": "Megjegyzés",
+          "error": "Hiba",
           "labels": {
             "title": "Torrent",
             "transfer": "Átvitel",
@@ -480,9 +481,7 @@
               "title": "Megjegyzés",
               "description": "A készítő által megadott opcionális szöveg (pl. forrásinfó)."
             }
-          },
-          "info": {},
-          "error": {}
+          }
         },
         "peers": {
           "grid-options": {
