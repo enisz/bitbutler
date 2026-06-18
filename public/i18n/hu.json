@@ -620,6 +620,9 @@
           "save-path": "Mentési útvonal",
           "category": "Kategória",
           "tags": "Címkék"
+        },
+        "button": {
+          "delete-file": "Torrent fájl törlése"
         }
       },
       "update-available": {
