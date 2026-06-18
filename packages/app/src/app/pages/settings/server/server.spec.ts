@@ -24,7 +24,7 @@ describe('Server', () => {
     save: ReturnType<typeof vi.fn>;
   };
   let qbMock: {
-    getAppPreferences: ReturnType<typeof vi.fn>;
+    app: { preferences: ReturnType<typeof vi.fn> };
   };
 
   beforeEach(async () => {
@@ -41,7 +41,7 @@ describe('Server', () => {
       save: vi.fn().mockResolvedValue(undefined),
     };
     qbMock = {
-      getAppPreferences: vi.fn().mockResolvedValue({ save_path: '/default/downloads' }),
+      app: { preferences: vi.fn().mockResolvedValue({ save_path: '/default/downloads' }) },
     };
 
     await TestBed.configureTestingModule({

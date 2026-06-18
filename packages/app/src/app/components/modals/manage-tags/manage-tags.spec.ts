@@ -13,16 +13,18 @@ import { ManageTags } from './manage-tags';
 describe('ManageTags', () => {
   let component: ManageTags;
   let fixture: ComponentFixture<ManageTags>;
-  let mockQbService: Partial<QbService>;
+  let mockQbService: any;
   let mockActiveModal: Partial<NgbActiveModal>;
   let mockConfirmService: Partial<ConfirmService>;
 
   beforeEach(async () => {
     mockActiveModal = { dismiss: vi.fn() };
     mockQbService = {
-      getAllTags: vi.fn().mockResolvedValue(['movies', 'linux']),
-      createTags: vi.fn().mockResolvedValue(undefined),
-      deleteTags: vi.fn().mockResolvedValue(undefined),
+      torrents: {
+        tags: vi.fn().mockResolvedValue(['movies', 'linux']),
+        createTags: vi.fn().mockResolvedValue(undefined),
+        deleteTags: vi.fn().mockResolvedValue(undefined),
+      },
     };
     mockConfirmService = { confirm: vi.fn().mockResolvedValue(true) };
 
@@ -63,7 +65,7 @@ describe('ManageTags', () => {
   });
 
   it('should load tags sorted alphabetically', () => {
-    expect(mockQbService.getAllTags).toHaveBeenCalledWith('server-1');
+    expect(mockQbService.torrents.tags).toHaveBeenCalledWith('server-1');
     expect(component.tags()).toEqual(['linux', 'movies']);
   });
 
@@ -71,7 +73,7 @@ describe('ManageTags', () => {
     it('should call createTags and append the new tag', async () => {
       component.nameControl.setValue('software');
       await component.add();
-      expect(mockQbService.createTags).toHaveBeenCalledWith('server-1', ['software']);
+      expect(mockQbService.torrents.createTags).toHaveBeenCalledWith('server-1', ['software']);
       expect(component.tags()).toContain('software');
       expect(component.nameControl.value).toBeNull();
     });
@@ -85,19 +87,23 @@ describe('ManageTags', () => {
     it('should not add when name is empty', async () => {
       component.nameControl.setValue('');
       await component.add();
-      expect(mockQbService.createTags).not.toHaveBeenCalled();
+      expect(mockQbService.torrents.createTags).not.toHaveBeenCalled();
     });
 
     it('should not add when name is whitespace only', async () => {
       component.nameControl.setValue('   ');
       await component.add();
-      expect(mockQbService.createTags).not.toHaveBeenCalled();
+      expect(mockQbService.torrents.createTags).not.toHaveBeenCalled();
     });
 
     it('should split comma-separated input and add each tag', async () => {
       component.nameControl.setValue('alpha, beta, gamma');
       await component.add();
-      expect(mockQbService.createTags).toHaveBeenCalledWith('server-1', ['alpha', 'beta', 'gamma']);
+      expect(mockQbService.torrents.createTags).toHaveBeenCalledWith('server-1', [
+        'alpha',
+        'beta',
+        'gamma',
+      ]);
       expect(component.tags()).toContain('alpha');
       expect(component.tags()).toContain('beta');
       expect(component.tags()).toContain('gamma');
@@ -106,13 +112,17 @@ describe('ManageTags', () => {
     it('should trim whitespace from each comma-separated segment', async () => {
       component.nameControl.setValue('  alpha  ,  beta  ');
       await component.add();
-      expect(mockQbService.createTags).toHaveBeenCalledWith('server-1', ['alpha', 'beta']);
+      expect(mockQbService.torrents.createTags).toHaveBeenCalledWith('server-1', ['alpha', 'beta']);
     });
 
     it('should skip empty segments in comma-separated input', async () => {
       component.nameControl.setValue('tag1,,tag2,  ,tag3');
       await component.add();
-      expect(mockQbService.createTags).toHaveBeenCalledWith('server-1', ['tag1', 'tag2', 'tag3']);
+      expect(mockQbService.torrents.createTags).toHaveBeenCalledWith('server-1', [
+        'tag1',
+        'tag2',
+        'tag3',
+      ]);
     });
 
     it('should not add duplicate tags to local state when input contains existing tag', async () => {
@@ -142,7 +152,7 @@ describe('ManageTags', () => {
     it('should delete when the user confirms', async () => {
       (mockConfirmService.confirm as ReturnType<typeof vi.fn>).mockResolvedValue(true);
       await component.delete('linux');
-      expect(mockQbService.deleteTags).toHaveBeenCalledWith('server-1', ['linux']);
+      expect(mockQbService.torrents.deleteTags).toHaveBeenCalledWith('server-1', ['linux']);
       expect(component.tags()).not.toContain('linux');
       expect(component.tags()).toContain('movies');
     });
@@ -150,7 +160,7 @@ describe('ManageTags', () => {
     it('should not delete when the user cancels', async () => {
       (mockConfirmService.confirm as ReturnType<typeof vi.fn>).mockResolvedValue(false);
       await component.delete('linux');
-      expect(mockQbService.deleteTags).not.toHaveBeenCalled();
+      expect(mockQbService.torrents.deleteTags).not.toHaveBeenCalled();
       expect(component.tags()).toContain('linux');
     });
   });

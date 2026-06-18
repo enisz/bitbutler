@@ -20,9 +20,11 @@ describe('Content', () => {
         {
           provide: QbService,
           useValue: {
-            torrentContents: vi.fn().mockResolvedValue([]),
-            renameTorrentFile: vi.fn(),
-            setFilePriority: vi.fn(),
+            torrents: {
+              files: vi.fn().mockResolvedValue([]),
+              renameFile: vi.fn(),
+              filePrio: vi.fn(),
+            },
           },
         },
         { provide: ToastService, useValue: { danger: vi.fn() } },

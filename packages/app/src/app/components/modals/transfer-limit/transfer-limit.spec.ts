@@ -22,10 +22,16 @@ describe('TransferLimit', () => {
   beforeEach(async () => {
     mockActiveModal = { close: vi.fn(), dismiss: vi.fn() };
     mockQbService = {
-      getUploadLimit: vi.fn().mockResolvedValue(0),
-      getDownloadLimit: vi.fn().mockResolvedValue(0),
-      setUploadLimit: vi.fn().mockResolvedValue(undefined),
-      setDownloadLimit: vi.fn().mockResolvedValue(undefined),
+      transfer: {
+        uploadLimit: vi.fn().mockResolvedValue(0),
+        downloadLimit: vi.fn().mockResolvedValue(0),
+        setUploadLimit: vi.fn().mockResolvedValue(undefined),
+        setDownloadLimit: vi.fn().mockResolvedValue(undefined),
+      },
+      torrents: {
+        setUploadLimit: vi.fn().mockResolvedValue(undefined),
+        setDownloadLimit: vi.fn().mockResolvedValue(undefined),
+      },
     };
 
     torrentsMap = makeStore([makeTorrent()]);
@@ -66,8 +72,8 @@ describe('TransferLimit', () => {
     });
 
     it('does not call getUploadLimit or getDownloadLimit', () => {
-      expect(mockQbService.getUploadLimit).not.toHaveBeenCalled();
-      expect(mockQbService.getDownloadLimit).not.toHaveBeenCalled();
+      expect(mockQbService.transfer.uploadLimit).not.toHaveBeenCalled();
+      expect(mockQbService.transfer.downloadLimit).not.toHaveBeenCalled();
     });
   });
 
@@ -152,10 +158,14 @@ describe('TransferLimit', () => {
         downloadLimit: 1024,
       });
       await component.handleSubmit();
-      expect(mockQbService.setUploadLimit).toHaveBeenCalledWith('server-1', 512 * 1024, ['abc123']);
-      expect(mockQbService.setDownloadLimit).toHaveBeenCalledWith('server-1', 1024 * 1024, [
+      expect(mockQbService.torrents.setUploadLimit).toHaveBeenCalledWith('server-1', 512 * 1024, [
         'abc123',
       ]);
+      expect(mockQbService.torrents.setDownloadLimit).toHaveBeenCalledWith(
+        'server-1',
+        1024 * 1024,
+        ['abc123'],
+      );
     });
   });
 });

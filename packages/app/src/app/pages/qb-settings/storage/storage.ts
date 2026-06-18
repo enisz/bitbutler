@@ -140,7 +140,7 @@ export class Storage implements QbSettingsTabComponent, OnInit {
 
   private async save(): Promise<void> {
     const v = this.form.getRawValue();
-    await this.qbService.setAppPreferences(this.serverStoreService.currentServerId()!, {
+    await this.qbService.app.setPreferences(this.serverStoreService.currentServerId()!, {
       save_path: v.save_path,
       temp_path_enabled: v.temp_path_enabled,
       temp_path: v.temp_path,

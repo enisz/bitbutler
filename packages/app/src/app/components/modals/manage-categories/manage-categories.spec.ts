@@ -13,21 +13,25 @@ import { ManageCategories } from './manage-categories';
 describe('ManageCategories', () => {
   let component: ManageCategories;
   let fixture: ComponentFixture<ManageCategories>;
-  let mockQbService: Partial<QbService>;
+  let mockQbService: any;
   let mockActiveModal: Partial<NgbActiveModal>;
   let mockConfirmService: Partial<ConfirmService>;
 
   beforeEach(async () => {
     mockActiveModal = { dismiss: vi.fn() };
     mockQbService = {
-      getAllCategories: vi.fn().mockResolvedValue({
-        movies: { name: 'movies', savePath: '' },
-        linux: { name: 'linux', savePath: '/downloads/linux' },
-      }),
-      addCategory: vi.fn().mockResolvedValue(undefined),
-      editCategory: vi.fn().mockResolvedValue(undefined),
-      removeCategories: vi.fn().mockResolvedValue(undefined),
-      getAppPreferences: vi.fn().mockResolvedValue({ save_path: '/downloads' }),
+      torrents: {
+        categories: vi.fn().mockResolvedValue({
+          movies: { name: 'movies', savePath: '' },
+          linux: { name: 'linux', savePath: '/downloads/linux' },
+        }),
+        createCategory: vi.fn().mockResolvedValue(undefined),
+        editCategory: vi.fn().mockResolvedValue(undefined),
+        removeCategories: vi.fn().mockResolvedValue(undefined),
+      },
+      app: {
+        preferences: vi.fn().mockResolvedValue({ save_path: '/downloads' }),
+      },
     };
     mockConfirmService = { confirm: vi.fn().mockResolvedValue(true) };
 
@@ -68,7 +72,7 @@ describe('ManageCategories', () => {
   });
 
   it('should load categories sorted alphabetically', () => {
-    expect(mockQbService.getAllCategories).toHaveBeenCalledWith('server-1');
+    expect(mockQbService.torrents.categories).toHaveBeenCalledWith('server-1');
     expect(component.categories()).toHaveLength(2);
     expect(component.categories()[0]).toEqual({
       name: 'linux',
@@ -83,7 +87,7 @@ describe('ManageCategories', () => {
       component.addForm.get('name')?.setValue('software');
       component.addForm.get('savePath')?.setValue('/downloads/software');
       await component.add();
-      expect(mockQbService.addCategory).toHaveBeenCalledWith(
+      expect(mockQbService.torrents.createCategory).toHaveBeenCalledWith(
         'server-1',
         'software',
         '/downloads/software',
@@ -105,13 +109,13 @@ describe('ManageCategories', () => {
     it('should not add when name is empty', async () => {
       component.addForm.get('name')?.setValue('');
       await component.add();
-      expect(mockQbService.addCategory).not.toHaveBeenCalled();
+      expect(mockQbService.torrents.createCategory).not.toHaveBeenCalled();
     });
 
     it('should not add when name is whitespace only', async () => {
       component.addForm.get('name')?.setValue('   ');
       await component.add();
-      expect(mockQbService.addCategory).not.toHaveBeenCalled();
+      expect(mockQbService.torrents.createCategory).not.toHaveBeenCalled();
     });
   });
 
@@ -147,7 +151,11 @@ describe('ManageCategories', () => {
       component.startEdit(component.categories()[0]);
       component.editSavePathControl.setValue('/new/path');
       await component.saveEdit(component.categories()[0]);
-      expect(mockQbService.editCategory).toHaveBeenCalledWith('server-1', 'linux', '/new/path');
+      expect(mockQbService.torrents.editCategory).toHaveBeenCalledWith(
+        'server-1',
+        'linux',
+        '/new/path',
+      );
       expect(component.categories()[0].savePath).toBe('/new/path');
       expect(component.categories()[0].editing).toBe(false);
     });
@@ -173,7 +181,7 @@ describe('ManageCategories', () => {
       (mockConfirmService.confirm as ReturnType<typeof vi.fn>).mockResolvedValue(true);
       const linux = component.categories()[0];
       await component.delete(linux);
-      expect(mockQbService.removeCategories).toHaveBeenCalledWith('server-1', ['linux']);
+      expect(mockQbService.torrents.removeCategories).toHaveBeenCalledWith('server-1', ['linux']);
       expect(component.categories().find((c) => c.name === 'linux')).toBeUndefined();
       expect(component.categories()).toHaveLength(1);
     });
@@ -182,7 +190,7 @@ describe('ManageCategories', () => {
       (mockConfirmService.confirm as ReturnType<typeof vi.fn>).mockResolvedValue(false);
       const linux = component.categories()[0];
       await component.delete(linux);
-      expect(mockQbService.removeCategories).not.toHaveBeenCalled();
+      expect(mockQbService.torrents.removeCategories).not.toHaveBeenCalled();
       expect(component.categories().find((c) => c.name === 'linux')).toBeDefined();
     });
   });

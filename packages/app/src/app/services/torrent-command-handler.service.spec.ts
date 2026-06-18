@@ -15,18 +15,20 @@ describe('TorrentCommandHandlerService', () => {
   let service: TorrentCommandHandlerService;
   let commands$: Subject<any>;
   let qbService: {
-    deleteTorrents: ReturnType<typeof vi.fn>;
-    pauseTorrents: ReturnType<typeof vi.fn>;
-    resumeTorrents: ReturnType<typeof vi.fn>;
-    topPrio: ReturnType<typeof vi.fn>;
-    increasePrio: ReturnType<typeof vi.fn>;
-    decreasePrio: ReturnType<typeof vi.fn>;
-    bottomPrio: ReturnType<typeof vi.fn>;
-    reannounceTorrents: ReturnType<typeof vi.fn>;
-    recheckTorrents: ReturnType<typeof vi.fn>;
-    setSuperSeeding: ReturnType<typeof vi.fn>;
-    setForceStart: ReturnType<typeof vi.fn>;
-    setAutoManagement: ReturnType<typeof vi.fn>;
+    torrents: {
+      delete: ReturnType<typeof vi.fn>;
+      pause: ReturnType<typeof vi.fn>;
+      resume: ReturnType<typeof vi.fn>;
+      topPrio: ReturnType<typeof vi.fn>;
+      increasePrio: ReturnType<typeof vi.fn>;
+      decreasePrio: ReturnType<typeof vi.fn>;
+      bottomPrio: ReturnType<typeof vi.fn>;
+      reannounce: ReturnType<typeof vi.fn>;
+      recheck: ReturnType<typeof vi.fn>;
+      setSuperSeeding: ReturnType<typeof vi.fn>;
+      setForceStart: ReturnType<typeof vi.fn>;
+      setAutoManagement: ReturnType<typeof vi.fn>;
+    };
   };
   let selectionStore: {
     selectedHashes: ReturnType<typeof signal<string[]>>;
@@ -43,18 +45,20 @@ describe('TorrentCommandHandlerService', () => {
     toastDanger = vi.fn();
 
     qbService = {
-      deleteTorrents: vi.fn().mockResolvedValue(undefined),
-      pauseTorrents: vi.fn().mockResolvedValue(undefined),
-      resumeTorrents: vi.fn().mockResolvedValue(undefined),
-      topPrio: vi.fn().mockResolvedValue(undefined),
-      increasePrio: vi.fn().mockResolvedValue(undefined),
-      decreasePrio: vi.fn().mockResolvedValue(undefined),
-      bottomPrio: vi.fn().mockResolvedValue(undefined),
-      reannounceTorrents: vi.fn(),
-      recheckTorrents: vi.fn().mockResolvedValue(undefined),
-      setSuperSeeding: vi.fn(),
-      setForceStart: vi.fn(),
-      setAutoManagement: vi.fn(),
+      torrents: {
+        delete: vi.fn().mockResolvedValue(undefined),
+        pause: vi.fn().mockResolvedValue(undefined),
+        resume: vi.fn().mockResolvedValue(undefined),
+        topPrio: vi.fn().mockResolvedValue(undefined),
+        increasePrio: vi.fn().mockResolvedValue(undefined),
+        decreasePrio: vi.fn().mockResolvedValue(undefined),
+        bottomPrio: vi.fn().mockResolvedValue(undefined),
+        reannounce: vi.fn(),
+        recheck: vi.fn().mockResolvedValue(undefined),
+        setSuperSeeding: vi.fn(),
+        setForceStart: vi.fn(),
+        setAutoManagement: vi.fn(),
+      },
     };
 
     selectionStore = {
@@ -87,7 +91,7 @@ describe('TorrentCommandHandlerService', () => {
   it('should call deleteTorrents on TORRENT_DELETE_CONFIRM', async () => {
     commands$.next({ type: 'TORRENT_DELETE_CONFIRM', removeFiles: true });
     await flushPromises();
-    expect(qbService.deleteTorrents).toHaveBeenCalledWith('server-1', ['hash1', 'hash2'], true);
+    expect(qbService.torrents.delete).toHaveBeenCalledWith('server-1', ['hash1', 'hash2'], true);
   });
 
   it('should clear selection after successful delete', async () => {
@@ -104,7 +108,7 @@ describe('TorrentCommandHandlerService', () => {
   });
 
   it('should show danger toast when delete fails', async () => {
-    qbService.deleteTorrents.mockRejectedValueOnce(new Error('network error'));
+    qbService.torrents.delete.mockRejectedValueOnce(new Error('network error'));
     commands$.next({ type: 'TORRENT_DELETE_CONFIRM', removeFiles: false });
     await flushPromises();
     expect(toastDanger).toHaveBeenCalled();
@@ -114,97 +118,109 @@ describe('TorrentCommandHandlerService', () => {
     serverStore.currentServerId.set(null);
     commands$.next({ type: 'TORRENT_DELETE_CONFIRM', removeFiles: false });
     await flushPromises();
-    expect(qbService.deleteTorrents).not.toHaveBeenCalled();
+    expect(qbService.torrents.delete).not.toHaveBeenCalled();
   });
 
   it('should not delete when no torrents are selected', async () => {
     selectionStore.selectedHashes.set([]);
     commands$.next({ type: 'TORRENT_DELETE_CONFIRM', removeFiles: false });
     await flushPromises();
-    expect(qbService.deleteTorrents).not.toHaveBeenCalled();
+    expect(qbService.torrents.delete).not.toHaveBeenCalled();
   });
 
   it('should call pauseTorrents on TORRENT_PAUSE', async () => {
     commands$.next({ type: 'TORRENT_PAUSE' });
     await flushPromises();
-    expect(qbService.pauseTorrents).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
+    expect(qbService.torrents.pause).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
   });
 
   it('should call resumeTorrents on TORRENT_RESUME', async () => {
     commands$.next({ type: 'TORRENT_RESUME' });
     await flushPromises();
-    expect(qbService.resumeTorrents).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
+    expect(qbService.torrents.resume).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
   });
 
   it('should call pauseTorrents on TORRENT_PAUSE_ALL with all hashes', async () => {
     commands$.next({ type: 'TORRENT_PAUSE_ALL' });
     await flushPromises();
-    expect(qbService.pauseTorrents).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
+    expect(qbService.torrents.pause).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
   });
 
   it('should call resumeTorrents on TORRENT_RESUME_ALL with all hashes', async () => {
     commands$.next({ type: 'TORRENT_RESUME_ALL' });
     await flushPromises();
-    expect(qbService.resumeTorrents).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
+    expect(qbService.torrents.resume).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
   });
 
   it('should call topPrio on QUEUE_MOVE_TOP', async () => {
     commands$.next({ type: 'QUEUE_MOVE_TOP' });
     await flushPromises();
-    expect(qbService.topPrio).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
+    expect(qbService.torrents.topPrio).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
   });
 
   it('should call increasePrio on QUEUE_MOVE_UP', async () => {
     commands$.next({ type: 'QUEUE_MOVE_UP' });
     await flushPromises();
-    expect(qbService.increasePrio).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
+    expect(qbService.torrents.increasePrio).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
   });
 
   it('should call decreasePrio on QUEUE_MOVE_DOWN', async () => {
     commands$.next({ type: 'QUEUE_MOVE_DOWN' });
     await flushPromises();
-    expect(qbService.decreasePrio).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
+    expect(qbService.torrents.decreasePrio).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
   });
 
   it('should call bottomPrio on QUEUE_MOVE_BOTTOM', async () => {
     commands$.next({ type: 'QUEUE_MOVE_BOTTOM' });
     await flushPromises();
-    expect(qbService.bottomPrio).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
+    expect(qbService.torrents.bottomPrio).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
   });
 
   it('should call reannounceTorrents on TORRENT_REANNOUNCE', async () => {
     commands$.next({ type: 'TORRENT_REANNOUNCE' });
     await flushPromises();
-    expect(qbService.reannounceTorrents).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
+    expect(qbService.torrents.reannounce).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
   });
 
   it('should call recheckTorrents on TORRENT_RECHECK', async () => {
     commands$.next({ type: 'TORRENT_RECHECK' });
     await flushPromises();
-    expect(qbService.recheckTorrents).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
+    expect(qbService.torrents.recheck).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
   });
 
   it('should call setSuperSeeding with inverted status on TORRENT_SUPER_SEEDING', async () => {
     commands$.next({ type: 'TORRENT_SUPER_SEEDING', status: false });
     await flushPromises();
-    expect(qbService.setSuperSeeding).toHaveBeenCalledWith('server-1', ['hash1', 'hash2'], true);
+    expect(qbService.torrents.setSuperSeeding).toHaveBeenCalledWith(
+      'server-1',
+      ['hash1', 'hash2'],
+      true,
+    );
   });
 
   it('should call setForceStart on TORRENT_FORCE_RESUME', async () => {
     commands$.next({ type: 'TORRENT_FORCE_RESUME' });
     await flushPromises();
-    expect(qbService.setForceStart).toHaveBeenCalledWith('server-1', ['hash1', 'hash2'], true);
+    expect(qbService.torrents.setForceStart).toHaveBeenCalledWith(
+      'server-1',
+      ['hash1', 'hash2'],
+      true,
+    );
   });
 
   it('should call setAutoManagement with inverted status on TORRENT_AUTO_TMM', async () => {
     commands$.next({ type: 'TORRENT_AUTO_TMM', status: true });
     await flushPromises();
-    expect(qbService.setAutoManagement).toHaveBeenCalledWith('server-1', ['hash1', 'hash2'], false);
+    expect(qbService.torrents.setAutoManagement).toHaveBeenCalledWith(
+      'server-1',
+      ['hash1', 'hash2'],
+      false,
+    );
   });
 
   it('should ignore non-torrent/queue commands', async () => {
     commands$.next({ type: 'SERVER_ADDED', id: '1' });
     await flushPromises();
-    expect(qbService.pauseTorrents).not.toHaveBeenCalled();
+    expect(qbService.torrents.pause).not.toHaveBeenCalled();
   });
 });

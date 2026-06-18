@@ -80,7 +80,7 @@ export class QueueLimits implements QbSettingsTabComponent, OnInit {
 
   private async save(): Promise<void> {
     const v = this.form.getRawValue();
-    await this.qbService.setAppPreferences(this.serverStoreService.currentServerId()!, {
+    await this.qbService.app.setPreferences(this.serverStoreService.currentServerId()!, {
       queueing_enabled: v.queueing_enabled,
       max_active_downloads: v.max_active_downloads,
       max_active_uploads: v.max_active_uploads,

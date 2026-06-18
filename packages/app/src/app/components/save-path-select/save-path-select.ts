@@ -113,8 +113,8 @@ export class SavePathSelect implements ControlValueAccessor {
 
     const serverId = this.serverStoreService.currentServerId();
     if (serverId) {
-      this.qbService
-        .getAppPreferences(serverId)
+      this.qbService.app
+        .preferences(serverId)
         .then((prefs) => {
           if (prefs.save_path) {
             this.defaultPath.set(prefs.save_path);

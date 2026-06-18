@@ -124,7 +124,7 @@ export class GridContextMenuService {
                   id: 'files.openDestination',
                   label:
                     (
-                      await this.qbService.torrentContents(
+                      await this.qbService.torrents.files(
                         this.serverStoreService.currentServerId() as string,
                         data.row.hash,
                       )

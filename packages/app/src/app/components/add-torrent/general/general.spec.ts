@@ -56,11 +56,15 @@ describe('AddTorrentGeneral', () => {
         {
           provide: QbService,
           useValue: {
-            getAppPreferences: vi.fn().mockResolvedValue({ save_path: '/downloads' }),
-            getAllCategories: vi.fn().mockResolvedValue({}),
-            addCategory: vi.fn().mockResolvedValue(undefined),
-            getAllTags: vi.fn().mockResolvedValue([]),
-            createTags: vi.fn().mockResolvedValue(undefined),
+            app: {
+              preferences: vi.fn().mockResolvedValue({ save_path: '/downloads' }),
+            },
+            torrents: {
+              categories: vi.fn().mockResolvedValue({}),
+              createCategory: vi.fn().mockResolvedValue(undefined),
+              tags: vi.fn().mockResolvedValue([]),
+              createTags: vi.fn().mockResolvedValue(undefined),
+            },
           },
         },
       ],

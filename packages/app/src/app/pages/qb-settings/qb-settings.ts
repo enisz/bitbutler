@@ -82,7 +82,7 @@ export class QbSettings implements OnInit, GuardableModal {
 
     const serverId = this.serverStoreService.currentServerId();
     if (serverId) {
-      const prefs = await this.qbService.getAppPreferences(serverId);
+      const prefs = await this.qbService.app.preferences(serverId);
       this.stateService.setPreferences(prefs);
     }
 

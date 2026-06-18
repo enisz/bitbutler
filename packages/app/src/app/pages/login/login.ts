@@ -226,7 +226,7 @@ export class Login implements OnInit {
       `${currentServer.protocol}://${currentServer.host}:${currentServer.port}`,
     );
 
-    this.qbittorrentService
+    this.qbittorrentService.auth
       .login(currentServer.id, runtimeUsername, runtimePassword)
       .then(async (response) => {
         if (!response.loggedIn) return;

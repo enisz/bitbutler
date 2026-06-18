@@ -75,8 +75,8 @@ export class TransferLimit implements OnInit {
     if (this.target() === 'global') {
       this.loading.set(true);
       [uploadBytes, downloadBytes] = await Promise.all([
-        this.qbService.getUploadLimit(serverId) as Promise<number>,
-        this.qbService.getDownloadLimit(serverId) as Promise<number>,
+        this.qbService.transfer.uploadLimit(serverId),
+        this.qbService.transfer.downloadLimit(serverId),
       ]);
       this.loading.set(false);
     } else if (this.hashes().length > 0) {
@@ -102,12 +102,17 @@ export class TransferLimit implements OnInit {
     const value = this.form.controls.transferRateLimits.value;
     const uploadBytes = (value?.uploadLimit ?? 0) * 1024;
     const downloadBytes = (value?.downloadLimit ?? 0) * 1024;
-    const hashes = this.target() === 'torrent' ? this.hashes() : undefined;
+    const hashes = this.hashes();
+    const isGlobal = this.target() === 'global';
 
     try {
       await Promise.all([
-        this.qbService.setUploadLimit(serverId, uploadBytes, hashes),
-        this.qbService.setDownloadLimit(serverId, downloadBytes, hashes),
+        isGlobal
+          ? this.qbService.transfer.setUploadLimit(serverId, uploadBytes)
+          : this.qbService.torrents.setUploadLimit(serverId, uploadBytes, hashes),
+        isGlobal
+          ? this.qbService.transfer.setDownloadLimit(serverId, downloadBytes)
+          : this.qbService.torrents.setDownloadLimit(serverId, downloadBytes, hashes),
       ]);
     } catch (error: any) {
       console.error(TransferLimit.name, 'handleSubmit', 'Failed to update limits!');

@@ -64,17 +64,20 @@ describe('AddTorrent', () => {
         {
           provide: QbService,
           useValue: {
-            getAppPreferences: vi.fn().mockResolvedValue({ save_path: '/downloads' }),
-            torrentsAdd: vi.fn().mockResolvedValue(undefined),
-            torrentContents: vi.fn().mockResolvedValue([]),
-            renameTorrentFile: vi.fn(),
-            renameTorrentFolder: vi.fn(),
-            setFilePriority: vi.fn(),
-            setShareLimits: vi.fn().mockResolvedValue(undefined),
-            getAllCategories: vi.fn().mockResolvedValue({}),
-            addCategory: vi.fn().mockResolvedValue(undefined),
-            getAllTags: vi.fn().mockResolvedValue([]),
-            createTags: vi.fn().mockResolvedValue(undefined),
+            app: {
+              preferences: vi.fn().mockResolvedValue({ save_path: '/downloads' }),
+            },
+            torrents: {
+              files: vi.fn().mockResolvedValue([]),
+              renameFile: vi.fn(),
+              renameFolder: vi.fn(),
+              filePrio: vi.fn(),
+              setShareLimits: vi.fn().mockResolvedValue(undefined),
+              categories: vi.fn().mockResolvedValue({}),
+              createCategory: vi.fn().mockResolvedValue(undefined),
+              tags: vi.fn().mockResolvedValue([]),
+              createTags: vi.fn().mockResolvedValue(undefined),
+            },
           },
         },
       ],
@@ -362,7 +365,7 @@ describe('AddTorrent', () => {
     beforeEach(() => {
       mockQbService = TestBed.inject(QbService) as any;
       component.manualDraft.set(draft as TorrentDraft);
-      mockQbService.torrentContents.mockResolvedValue([{ name: 'file.mkv', index: 0 }]);
+      mockQbService.torrents.files.mockResolvedValue([{ name: 'file.mkv', index: 0 }]);
     });
 
     it('should call setShareLimits when inactiveSeedingTimeLimit is no-limit (-1)', async () => {
@@ -371,7 +374,13 @@ describe('AddTorrent', () => {
         seedingTimeLimit: -2,
         inactiveSeedingTimeLimit: -1,
       });
-      expect(mockQbService.setShareLimits).toHaveBeenCalledWith('server-1', [hash], -2, -2, -1);
+      expect(mockQbService.torrents.setShareLimits).toHaveBeenCalledWith(
+        'server-1',
+        [hash],
+        -2,
+        -2,
+        -1,
+      );
     });
 
     it('should call setShareLimits when inactiveSeedingTimeLimit is a custom value', async () => {
@@ -380,7 +389,13 @@ describe('AddTorrent', () => {
         seedingTimeLimit: 120,
         inactiveSeedingTimeLimit: 60,
       });
-      expect(mockQbService.setShareLimits).toHaveBeenCalledWith('server-1', [hash], 2, 120, 60);
+      expect(mockQbService.torrents.setShareLimits).toHaveBeenCalledWith(
+        'server-1',
+        [hash],
+        2,
+        120,
+        60,
+      );
     });
 
     it('should not call setShareLimits when inactiveSeedingTimeLimit is global (-2)', async () => {
@@ -389,12 +404,12 @@ describe('AddTorrent', () => {
         seedingTimeLimit: -2,
         inactiveSeedingTimeLimit: -2,
       });
-      expect(mockQbService.setShareLimits).not.toHaveBeenCalled();
+      expect(mockQbService.torrents.setShareLimits).not.toHaveBeenCalled();
     });
 
     it('should not call setShareLimits when shareLimits is null', async () => {
       await (component as any).tryRenameContentAfterAdd('server-1', null);
-      expect(mockQbService.setShareLimits).not.toHaveBeenCalled();
+      expect(mockQbService.torrents.setShareLimits).not.toHaveBeenCalled();
     });
 
     it('should do nothing when the effective draft has no infoHashV1', async () => {
@@ -406,7 +421,7 @@ describe('AddTorrent', () => {
 
       await (component as any).tryRenameContentAfterAdd('server-1', null);
 
-      expect(mockQbService.torrentContents).not.toHaveBeenCalled();
+      expect(mockQbService.torrents.files).not.toHaveBeenCalled();
     });
 
     it('should apply saved file renames via renameTorrentFile', async () => {
@@ -417,7 +432,7 @@ describe('AddTorrent', () => {
 
       await (component as any).tryRenameContentAfterAdd('server-1', null);
 
-      expect(mockQbService.renameTorrentFile).toHaveBeenCalledWith(
+      expect(mockQbService.torrents.renameFile).toHaveBeenCalledWith(
         'server-1',
         hash,
         'old.txt',
@@ -435,7 +450,7 @@ describe('AddTorrent', () => {
         renames: [],
       };
 
-      mockQbService.torrentContents
+      mockQbService.torrents.files
         .mockResolvedValueOnce([{ name: 'file.mkv', index: 0 }])
         .mockResolvedValueOnce([
           { name: 'file.mkv', index: 0 },
@@ -444,9 +459,9 @@ describe('AddTorrent', () => {
 
       await (component as any).tryRenameContentAfterAdd('server-1', null);
 
-      expect(mockQbService.setFilePriority).toHaveBeenCalledWith('server-1', hash, [0], 7);
-      expect(mockQbService.setFilePriority).toHaveBeenCalledWith('server-1', hash, [1], 0);
-      expect(mockQbService.setFilePriority).toHaveBeenCalledTimes(2);
+      expect(mockQbService.torrents.filePrio).toHaveBeenCalledWith('server-1', hash, [0], 7);
+      expect(mockQbService.torrents.filePrio).toHaveBeenCalledWith('server-1', hash, [1], 0);
+      expect(mockQbService.torrents.filePrio).toHaveBeenCalledTimes(2);
     });
 
     it('should skip files that are not found in the torrent contents response', async () => {
@@ -455,13 +470,13 @@ describe('AddTorrent', () => {
         renames: [],
       };
 
-      mockQbService.torrentContents
+      mockQbService.torrents.files
         .mockResolvedValueOnce([{ name: 'file.mkv', index: 0 }])
         .mockResolvedValueOnce([{ name: 'file.mkv', index: 0 }]);
 
       await (component as any).tryRenameContentAfterAdd('server-1', null);
 
-      expect(mockQbService.setFilePriority).not.toHaveBeenCalled();
+      expect(mockQbService.torrents.filePrio).not.toHaveBeenCalled();
     });
 
     it('should log and swallow errors instead of throwing', async () => {
@@ -469,7 +484,7 @@ describe('AddTorrent', () => {
         files: [],
         renames: [{ oldPath: 'old.txt', newPath: 'new.txt' }],
       };
-      mockQbService.renameTorrentFile.mockRejectedValueOnce(new Error('rename failed'));
+      mockQbService.torrents.renameFile.mockRejectedValueOnce(new Error('rename failed'));
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       await (component as any).tryRenameContentAfterAdd('server-1', null);
@@ -501,17 +516,25 @@ describe('AddTorrent', () => {
 
       await component.handleSubmit({ preventDefault: () => {} } as unknown as SubmitEvent);
 
-      expect(mockQbService.addCategory).toHaveBeenCalledWith('server-1', 'new-category', '');
+      expect(mockQbService.torrents.createCategory).toHaveBeenCalledWith(
+        'server-1',
+        'new-category',
+        '',
+      );
       expect(torrentsAddSpy).toHaveBeenCalled();
     });
 
     it('should abort without adding the torrent when category creation fails', async () => {
-      mockQbService.addCategory.mockRejectedValueOnce(new Error('failed'));
+      mockQbService.torrents.createCategory.mockRejectedValueOnce(new Error('failed'));
       component.addForm.controls.category.setValue('bad-category');
 
       await component.handleSubmit({ preventDefault: () => {} } as unknown as SubmitEvent);
 
-      expect(mockQbService.addCategory).toHaveBeenCalledWith('server-1', 'bad-category', '');
+      expect(mockQbService.torrents.createCategory).toHaveBeenCalledWith(
+        'server-1',
+        'bad-category',
+        '',
+      );
       expect(torrentsAddSpy).not.toHaveBeenCalled();
       expect(component.isSubmitting()).toBe(false);
     });

@@ -160,7 +160,7 @@ export class Bandwidth implements QbSettingsTabComponent, OnInit {
 
   private async save(): Promise<void> {
     const v = this.form.getRawValue();
-    await this.qbService.setAppPreferences(this.serverStoreService.currentServerId()!, {
+    await this.qbService.app.setPreferences(this.serverStoreService.currentServerId()!, {
       dl_limit: v.dl_limit * 1024,
       up_limit: v.up_limit * 1024,
       alt_dl_limit: v.alt_dl_limit * 1024,

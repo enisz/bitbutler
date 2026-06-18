@@ -78,8 +78,8 @@ export class CategorySelect implements ControlValueAccessor {
   }
 
   private loadCategories(): void {
-    this.qbService
-      .getAllCategories(this.serverStoreService.currentServerId() as string)
+    this.qbService.torrents
+      .categories(this.serverStoreService.currentServerId() as string)
       .then((categories) => {
         this.categories.set(Object.keys(categories));
       })
@@ -123,7 +123,7 @@ export class CategorySelect implements ControlValueAccessor {
     }
 
     try {
-      await this.qbService.addCategory(
+      await this.qbService.torrents.createCategory(
         this.serverStoreService.currentServerId() as string,
         value,
         '',

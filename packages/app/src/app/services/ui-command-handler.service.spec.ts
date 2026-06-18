@@ -51,7 +51,7 @@ describe('UiCommandHandlerService', () => {
         { provide: ElectronService, useValue: { showItemInFolder: vi.fn(), openPath: vi.fn() } },
         {
           provide: QbService,
-          useValue: { torrentContents: vi.fn().mockResolvedValue([{ name: 'file.mkv' }]) },
+          useValue: { torrents: { files: vi.fn().mockResolvedValue([{ name: 'file.mkv' }]) } },
         },
         { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
       ],

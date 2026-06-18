@@ -29,8 +29,10 @@ describe('TransferLimitCommandHandlerService', () => {
         {
           provide: QbService,
           useValue: {
-            getAlternativeSpeedLimitState: getAltState,
-            toggleAlternativeSpeedLimit: toggleAlt,
+            transfer: {
+              speedLimitsMode: getAltState,
+              toggleSpeedLimitsMode: toggleAlt,
+            },
           },
         },
         { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },

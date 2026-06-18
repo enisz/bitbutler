@@ -61,7 +61,7 @@ export class QbPollingService {
     this._isInitialLoading$.next(true);
     void this.serverSettingsService.load();
 
-    return this.qb.streamMaindata(serverId, 0, sortBy, sortDesc).pipe(
+    return this.qb.sync.streamMaindata(serverId, 0, sortBy, sortDesc).pipe(
       takeUntil(this.stopPolling$),
       switchMap((state: StreamMaindataState) => {
         if (state.maindata && !state.done) {
@@ -107,7 +107,7 @@ export class QbPollingService {
           startWith(0),
           tap(() => this._onPoll$.next()),
           exhaustMap(() =>
-            from(this.qb.maindata(serverId, this.maindataRid$.value)).pipe(
+            from(this.qb.sync.maindata(serverId, this.maindataRid$.value)).pipe(
               tap((res: any) => {
                 if (typeof res?.rid === 'number') this.maindataRid$.next(res.rid);
               }),
@@ -133,7 +133,7 @@ export class QbPollingService {
       takeUntil(this.stopPolling$),
       switchMap((ms) => interval(ms)),
       startWith(0),
-      exhaustMap(() => from(this.qb.torrentPeers(serverId, hash, rid$.value))),
+      exhaustMap(() => from(this.qb.sync.torrentPeers(serverId, hash, rid$.value))),
       tap((res) => {
         if (typeof res?.rid === 'number') rid$.next(res.rid);
       }),

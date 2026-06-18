@@ -21,7 +21,7 @@ describe('QbService', () => {
 
   it('should delegate login() to window.bitbutler.qb.login', async () => {
     const spy = vi.spyOn(window.bitbutler.qb, 'login').mockResolvedValue({ loggedIn: true } as any);
-    const result = await service.login('server-1');
+    const result = await service.auth.login('server-1');
     expect(spy).toHaveBeenCalledWith({ id: 'server-1' });
     expect(result).toEqual({ loggedIn: true });
   });
@@ -30,7 +30,7 @@ describe('QbService', () => {
     const spy = vi
       .spyOn(window.bitbutler.qb, 'logout')
       .mockResolvedValue({ loggedOut: true } as any);
-    const result = await service.logout('server-1');
+    const result = await service.auth.logout('server-1');
     expect(spy).toHaveBeenCalledWith({ id: 'server-1' });
     expect(result).toEqual({ loggedOut: true });
   });
@@ -39,7 +39,7 @@ describe('QbService', () => {
     const spy = vi
       .spyOn(window.bitbutler.qb, 'hasCookie')
       .mockResolvedValue({ hasCookie: true } as any);
-    const result = await service.hasCookie('server-1');
+    const result = await service.auth.hasCookie('server-1');
     expect(spy).toHaveBeenCalledWith({ id: 'server-1' });
     expect(result).toBe(true);
   });
@@ -47,7 +47,7 @@ describe('QbService', () => {
   it('should expose streamMaindata() as an observable', () => {
     vi.spyOn(window.bitbutler.qb, 'onSyncChunk').mockReturnValue(() => {});
     vi.spyOn(window.bitbutler.qb, 'startSyncStream').mockReturnValue(undefined as any);
-    const obs = service.streamMaindata('server-1', 0);
+    const obs = service.sync.streamMaindata('server-1', 0);
     expect(typeof obs.subscribe).toBe('function');
   });
 
@@ -57,7 +57,7 @@ describe('QbService', () => {
       .mockReturnValue(undefined as any);
     vi.spyOn(window.bitbutler.qb, 'onSyncChunk').mockReturnValue(() => {});
 
-    const sub = service.streamMaindata('server-1', 5, 'name', true).subscribe();
+    const sub = service.sync.streamMaindata('server-1', 5, 'name', true).subscribe();
     expect(startSpy).toHaveBeenCalledWith({
       id: 'server-1',
       rid: 5,
@@ -74,7 +74,7 @@ describe('QbService', () => {
       statusText: 'OK',
       body: { rid: 1 },
     } as any);
-    await service.maindata('server-1', 0);
+    await service.sync.maindata('server-1', 0);
     expect(spy).toHaveBeenCalledWith(
       expect.objectContaining({ id: 'server-1', path: '/api/v2/sync/maindata' }),
     );

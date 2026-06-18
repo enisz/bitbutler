@@ -52,7 +52,7 @@ export class RenameTorrent implements OnInit {
     try {
       this.processing.set(true);
       await this.renameTorrentContent(serverId, this.torrent().hash, desiredRaw);
-      await this.qbService.renameTorrent(serverId, this.torrent().hash, desiredRaw);
+      await this.qbService.torrents.rename(serverId, this.torrent().hash, desiredRaw);
     } catch (error: any) {
       console.error(RenameTorrent.name, 'handleSubmit', 'Failed to rename the torrent!');
       this.toastService.danger(
@@ -79,7 +79,7 @@ export class RenameTorrent implements OnInit {
     hash: string,
     desiredRaw: string,
   ): Promise<void> {
-    const contents = await this.qbService.torrentContents(serverId, hash);
+    const contents = await this.qbService.torrents.files(serverId, hash);
     if (!contents || contents.length === 0) {
       return;
     }
@@ -92,7 +92,7 @@ export class RenameTorrent implements OnInit {
       const newName = this.buildSingleFileName(oldName, desiredRaw);
       if (!newName || newName === oldName) return;
 
-      await this.qbService.renameTorrentFile(serverId, hash, oldName, newName);
+      await this.qbService.torrents.renameFile(serverId, hash, oldName, newName);
       return;
     }
 
@@ -102,7 +102,7 @@ export class RenameTorrent implements OnInit {
     const newRoot = this.sanitizeFolderName(desiredRaw);
     if (!newRoot || newRoot === root) return;
 
-    await this.qbService.renameTorrentFolder(serverId, hash, root, newRoot);
+    await this.qbService.torrents.renameFolder(serverId, hash, root, newRoot);
   }
 
   private hasFolderPrefix(path: string): boolean {

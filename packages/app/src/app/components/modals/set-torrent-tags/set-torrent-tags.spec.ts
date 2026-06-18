@@ -22,9 +22,11 @@ describe('SetTorrentTags', () => {
         {
           provide: QbService,
           useValue: {
-            getAllTags: vi.fn().mockResolvedValue([]),
-            addTorrentTags: vi.fn().mockResolvedValue(undefined),
-            removeTorrentTags: vi.fn().mockResolvedValue(undefined),
+            torrents: {
+              tags: vi.fn().mockResolvedValue([]),
+              addTags: vi.fn().mockResolvedValue(undefined),
+              removeTags: vi.fn().mockResolvedValue(undefined),
+            },
           },
         },
       ],
@@ -71,14 +73,17 @@ describe('SetTorrentTags', () => {
   describe('handleSubmit', () => {
     it('should apply tag changes to the hashes provided via the input, not the selection store', async () => {
       const mockQbService = TestBed.inject(QbService) as unknown as {
-        addTorrentTags: ReturnType<typeof vi.fn>;
-        removeTorrentTags: ReturnType<typeof vi.fn>;
+        torrents: { addTags: ReturnType<typeof vi.fn>; removeTags: ReturnType<typeof vi.fn> };
       };
       await component.ngOnInit();
       component.setTorrentTagsForm.get('tags')?.setValue(['action', 'drama']);
       await component.handleSubmit();
-      expect(mockQbService.addTorrentTags).toHaveBeenCalledWith('server-1', ['hash-1'], ['drama']);
-      expect(mockQbService.removeTorrentTags).toHaveBeenCalledWith(
+      expect(mockQbService.torrents.addTags).toHaveBeenCalledWith(
+        'server-1',
+        ['hash-1'],
+        ['drama'],
+      );
+      expect(mockQbService.torrents.removeTags).toHaveBeenCalledWith(
         'server-1',
         ['hash-1'],
         ['comedy'],

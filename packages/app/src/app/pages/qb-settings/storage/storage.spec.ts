@@ -20,7 +20,7 @@ const MOCK_PREFS: any = {
 describe('Storage', () => {
   let component: Storage;
   let fixture: ComponentFixture<Storage>;
-  let qbServiceMock: { setAppPreferences: ReturnType<typeof vi.fn> };
+  let qbServiceMock: { app: { setPreferences: ReturnType<typeof vi.fn> } };
   let stateServiceMock: {
     preferences: ReturnType<typeof signal<any>>;
     registerSave: ReturnType<typeof vi.fn>;
@@ -34,7 +34,7 @@ describe('Storage', () => {
       markDirty: vi.fn(),
     };
 
-    qbServiceMock = { setAppPreferences: vi.fn().mockResolvedValue(undefined) };
+    qbServiceMock = { app: { setPreferences: vi.fn().mockResolvedValue(undefined) } };
 
     await TestBed.configureTestingModule({
       imports: [Storage],
@@ -79,7 +79,7 @@ describe('Storage', () => {
   it('should include the TMM preferences when saving', async () => {
     component.form.controls.auto_tmm_enabled.setValue(true);
     await (component as any).save();
-    expect(qbServiceMock.setAppPreferences).toHaveBeenCalledWith(
+    expect(qbServiceMock.app.setPreferences).toHaveBeenCalledWith(
       'server-1',
       expect.objectContaining({
         auto_tmm_enabled: true,

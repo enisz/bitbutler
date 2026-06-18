@@ -11,7 +11,7 @@ describe('TagSelect', () => {
 
   beforeEach(async () => {
     mockQbService = {
-      getAllTags: vi.fn().mockResolvedValue(['action', 'comedy']),
+      torrents: { tags: vi.fn().mockResolvedValue(['action', 'comedy']) },
     };
 
     await TestBed.configureTestingModule({

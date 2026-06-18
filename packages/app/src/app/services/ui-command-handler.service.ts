@@ -243,7 +243,7 @@ export class UiCommandHandlerService {
             }
 
             Promise.all([
-              this.qbService.torrentContents(
+              this.qbService.torrents.files(
                 this.serverStoreService.currentServerId() as string,
                 command.hash,
               ),
@@ -389,10 +389,10 @@ export class UiCommandHandlerService {
     );
 
     try {
-      const hasSession = await this.qbService.hasCookie(serverId);
+      const hasSession = await this.qbService.auth.hasCookie(serverId);
 
       if (!hasSession) {
-        const loginRes = await this.qbService.login(serverId);
+        const loginRes = await this.qbService.auth.login(serverId);
         if (!loginRes.loggedIn) {
           throw new Error('Login failed');
         }

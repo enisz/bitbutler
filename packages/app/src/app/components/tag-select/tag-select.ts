@@ -98,7 +98,7 @@ export class TagSelect implements ControlValueAccessor {
 
   private async loadAllTags(): Promise<void> {
     try {
-      const tags = await this.qbService.getAllTags(
+      const tags = await this.qbService.torrents.tags(
         this.serverStoreService.currentServerId() as string,
       );
       this.tags.set(tags);
