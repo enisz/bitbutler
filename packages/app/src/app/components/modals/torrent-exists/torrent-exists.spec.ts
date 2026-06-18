@@ -139,3 +139,45 @@ describe('TorrentExists', () => {
     });
   });
 });
+
+describe('TorrentExists - showDeleteButton with deleteTorrentFile disabled', () => {
+  let comp: TorrentExists;
+  let fixture: ComponentFixture<TorrentExists>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [TorrentExists],
+      providers: [
+        { provide: NgbActiveModal, useValue: { close: vi.fn(), dismiss: vi.fn() } },
+        { provide: TorrentStoreService, useValue: { torrentsMap: signal(new Map()) as any } },
+        { provide: SelectionStoreService, useValue: { setByHashes: vi.fn() } },
+        { provide: FilterService, useValue: { resetAll: vi.fn() } },
+        {
+          provide: CommandBusService,
+          useValue: { commands$: new Subject<any>().asObservable(), emit: vi.fn() },
+        },
+        {
+          provide: GeneralSettingsService,
+          useValue: {
+            asObservable: vi.fn().mockReturnValue(
+              of({
+                ...DEFAULT_GENERAL_SETTINGS,
+                behavior: { ...DEFAULT_GENERAL_SETTINGS.behavior, deleteTorrentFile: false },
+              }),
+            ),
+          },
+        },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(TorrentExists);
+    comp = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should be false when originalPath is set but deleteTorrentFile is disabled', () => {
+    fixture.componentRef.setInput('originalPath', '/tmp/test.torrent');
+    fixture.detectChanges();
+    expect(comp.showDeleteButton()).toBe(false);
+  });
+});
