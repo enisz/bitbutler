@@ -653,6 +653,35 @@ describe('AddTorrent', () => {
       expect(component.addForm.errors).toBeNull();
     });
 
+    it('should pass the draft originalPath to TorrentExists on a 409 conflict', async () => {
+      vi.spyOn(window.bitbutler.qb, 'torrentsAdd')
+        .mockClear()
+        .mockRejectedValue(new Error('Request failed: 409 {"name":"QbHttpError","status":409}'));
+
+      const setInputMock = vi.fn();
+      const modalService = TestBed.inject(NgbModal) as any;
+      modalService.open.mockReturnValue({
+        _contentRef: { componentRef: { setInput: setInputMock } },
+      });
+
+      (component as any).selectedTorrentFile.set({
+        name: 'test.torrent',
+        path: '/tmp/test.torrent',
+      });
+      component.manualDraft.set({
+        source: 'manual',
+        receivedAt: Date.now(),
+        originalPath: '/tmp/test.torrent',
+        torrent: { name: 'test-torrent', totalSize: 100, infoHashV1: 'ABC123', files: [] },
+      });
+      component.addForm.controls.fileGroup.controls.rename.setValue('test-torrent');
+      fixture.detectChanges();
+
+      await component.handleSubmit({ preventDefault: () => {} } as unknown as SubmitEvent);
+
+      expect(setInputMock).toHaveBeenCalledWith('originalPath', '/tmp/test.torrent');
+    });
+
     it('should set addFailed when torrentsAdd throws a non-conflict error', async () => {
       vi.spyOn(window.bitbutler.qb, 'torrentsAdd')
         .mockClear()
@@ -821,6 +850,31 @@ describe('AddTorrent', () => {
 
       expect(modalService.open).toHaveBeenCalledWith(TorrentExists, { centered: true });
       expect(mockOpenFilesService.consumeCurrentDraft).toHaveBeenCalled();
+    });
+
+    it('should pass the draft originalPath to TorrentExists when the torrent is already in the list', () => {
+      const torrentStoreService = TestBed.inject(TorrentStoreService) as any;
+      torrentStoreService.torrentsArray.set([{ hash: 'abc123' }]);
+
+      const setInputMock = vi.fn();
+      const modalService = TestBed.inject(NgbModal) as any;
+      modalService.open.mockReturnValue({
+        _contentRef: { componentRef: { setInput: setInputMock } },
+      });
+
+      const draft: TorrentDraft = {
+        source: 'manual',
+        receivedAt: Date.now(),
+        originalPath: '/tmp/movie.torrent',
+        torrent: { name: 'Movie', totalSize: 100, infoHashV1: 'abc123', files: [] },
+      };
+
+      mockOpenFilesService.pendingDrafts.set([
+        { draft, selected: { name: 'movie.torrent', path: '/tmp/movie.torrent' } },
+      ]);
+      fixture.detectChanges();
+
+      expect(setInputMock).toHaveBeenCalledWith('originalPath', '/tmp/movie.torrent');
     });
 
     it('should track the queue size and close the modal once all pending drafts are consumed', () => {

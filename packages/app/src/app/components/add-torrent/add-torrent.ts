@@ -374,6 +374,7 @@ export class AddTorrent implements OnInit {
         const hash = this.effectiveDraft()?.torrent?.infoHashV1?.toLowerCase() ?? null;
         const modalRef = this.modalService.open(TorrentExists, { centered: true });
         setModalInput(modalRef, 'hash', hash);
+        setModalInput(modalRef, 'originalPath', this.effectiveDraft()?.originalPath ?? null);
         this.openFilesService.consumeCurrentDraft();
       } else {
         console.error(AddTorrent.name, 'handleSubmit', '[AddTorrent] qb add failed', e);
@@ -492,6 +493,7 @@ export class AddTorrent implements OnInit {
     if (this.isAlreadyInList(draft)) {
       const modalRef = this.modalService.open(TorrentExists, { centered: true });
       setModalInput(modalRef, 'hash', draft.torrent?.infoHashV1?.toLowerCase() ?? null);
+      setModalInput(modalRef, 'originalPath', draft.originalPath ?? null);
       this.openFilesService.consumeCurrentDraft();
       return;
     }
