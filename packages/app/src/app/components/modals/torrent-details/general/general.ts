@@ -32,7 +32,7 @@ import { TimeagoPipe } from 'ngx-timeago';
 import { take, timer } from 'rxjs';
 import { TooltipOverflow } from '../../../../directives/tooltip-overflow';
 import { GeneralSettings } from '../../../../models/general-settings.model';
-import { QbTorrentProperties } from '../../../../models/qbittorrent.model';
+import { QbLogEntry, QbTorrentProperties } from '../../../../models/qbittorrent.model';
 import { QbTorrentContent, Torrent } from '../../../../models/torrent.model';
 import { FileSizePerSecPipe } from '../../../../pipes/filesize-per-sec-pipe';
 import { FilesizePipe } from '../../../../pipes/filesize-pipe';
@@ -363,5 +363,17 @@ export class General implements TorrentDetailTabComponent, OnInit {
       this.torrent()?.data.state === 'checkingDL' ||
       this.torrent()?.data.state === 'forcedDL'
     );
+  }
+
+  public parseFileErrorReason(message: string): { reason: string; short: string } {
+    const match = message.match(/Reason:\s*"(.*)"\s*$/);
+    const reason = match ? match[1] : message;
+    const errorMatch = reason.match(/error:\s*(.+)$/i);
+    const short = errorMatch ? errorMatch[1] : reason;
+    return { reason, short };
+  }
+
+  public rawLogJson(entry: QbLogEntry): string {
+    return JSON.stringify(entry, null, 4);
   }
 }

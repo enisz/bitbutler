@@ -2,6 +2,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Subject, of } from 'rxjs';
+import { QbLogEntry, QbLogMessageType } from '../../../../models/qbittorrent.model';
 import { CommandBusService } from '../../../../services/command-bus.service';
 import { GeneralSettingsService } from '../../../../services/general-settings.service';
 import { PathService } from '../../../../services/path.service';
@@ -79,5 +80,50 @@ describe('General', () => {
 
   it('should start with singleFile = false', () => {
     expect(component.singleFile()).toBe(false);
+  });
+
+  describe('parseFileErrorReason', () => {
+    it('extracts the short error and full reason from a file error alert message', () => {
+      const message =
+        'File error alert. Torrent: "ubuntu-26.04-desktop-amd64.iso". File: "/mnt/storage/filmek/test/ubuntu-26.04-desktop-amd64.iso.!qB". Reason: "ubuntu-26.04-desktop-amd64.iso file_open (/mnt/storage/filmek/test/ubuntu-26.04-desktop-amd64.iso.!qB) error: Permission denied"';
+
+      const result = component.parseFileErrorReason(message);
+
+      expect(result.short).toBe('Permission denied');
+      expect(result.reason).toBe(
+        'ubuntu-26.04-desktop-amd64.iso file_open (/mnt/storage/filmek/test/ubuntu-26.04-desktop-amd64.iso.!qB) error: Permission denied',
+      );
+    });
+
+    it('falls back to the full reason when there is no "error:" segment', () => {
+      const message = 'Some alert. Torrent: "My Torrent". Reason: "disk is full"';
+
+      const result = component.parseFileErrorReason(message);
+
+      expect(result.reason).toBe('disk is full');
+      expect(result.short).toBe('disk is full');
+    });
+
+    it('falls back to the raw message when there is no Reason section', () => {
+      const message = 'Added new torrent. Torrent: "My Torrent"';
+
+      const result = component.parseFileErrorReason(message);
+
+      expect(result.reason).toBe(message);
+      expect(result.short).toBe(message);
+    });
+  });
+
+  describe('rawLogJson', () => {
+    it('formats the log entry as 4-space-indented JSON', () => {
+      const entry: QbLogEntry = {
+        id: 10672,
+        message: 'File error alert.',
+        timestamp: 1781772596,
+        type: QbLogMessageType.Warning,
+      };
+
+      expect(component.rawLogJson(entry)).toBe(JSON.stringify(entry, null, 4));
+    });
   });
 });
