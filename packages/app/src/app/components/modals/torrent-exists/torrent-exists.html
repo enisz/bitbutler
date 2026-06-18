@@ -101,7 +101,12 @@
 
   <div class="modal-footer">
     @if (showDeleteButton()) {
-      <button type="button" class="btn btn-danger" (click)="deleteTorrentFile()">
+      <button
+        type="button"
+        class="btn btn-danger"
+        [disabled]="fileDeleted()"
+        (click)="deleteTorrentFile()"
+      >
         {{ 'components.modals.torrent-exists.button.delete-file' | translate }}
       </button>
     }

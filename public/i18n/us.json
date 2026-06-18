@@ -623,6 +623,9 @@
         },
         "button": {
           "delete-file": "Delete Torrent File"
+        },
+        "toast": {
+          "deleted": "Torrent file has been deleted."
         }
       },
       "update-available": {

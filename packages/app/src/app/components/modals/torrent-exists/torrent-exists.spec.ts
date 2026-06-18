@@ -7,6 +7,7 @@ import { CommandBusService } from '../../../services/command-bus.service';
 import { FilterService } from '../../../services/filter.service';
 import { GeneralSettingsService } from '../../../services/general-settings.service';
 import { SelectionStoreService } from '../../../services/selection-store.service';
+import { ToastService } from '../../../services/toast.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { TorrentExists } from './torrent-exists';
 
@@ -15,12 +16,14 @@ describe('TorrentExists', () => {
   let fixture: ComponentFixture<TorrentExists>;
   let mockActiveModal: Partial<NgbActiveModal>;
   let mockTorrentStore: Partial<TorrentStoreService>;
+  let mockToastService: Partial<ToastService>;
 
   beforeEach(async () => {
     mockActiveModal = { close: vi.fn(), dismiss: vi.fn() };
     mockTorrentStore = {
       torrentsMap: signal(new Map()) as any,
     };
+    mockToastService = { success: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [TorrentExists],
@@ -44,6 +47,7 @@ describe('TorrentExists', () => {
             ),
           },
         },
+        { provide: ToastService, useValue: mockToastService },
       ],
     }).compileComponents();
 
@@ -100,7 +104,7 @@ describe('TorrentExists', () => {
   });
 
   describe('deleteTorrentFile', () => {
-    it('should call deleteFile IPC with the originalPath and close the modal', async () => {
+    it('should call deleteFile IPC with the originalPath and not close the modal', async () => {
       const deleteFileSpy = vi
         .spyOn(window.bitbutler.torrent, 'deleteFile')
         .mockResolvedValue({ ok: true });
@@ -110,7 +114,20 @@ describe('TorrentExists', () => {
       await component.deleteTorrentFile();
 
       expect(deleteFileSpy).toHaveBeenCalledWith({ path: '/tmp/test.torrent' });
-      expect(mockActiveModal.close).toHaveBeenCalled();
+      expect(mockActiveModal.close).not.toHaveBeenCalled();
+    });
+
+    it('should disable the delete button and show a success toast after deleting', async () => {
+      vi.spyOn(window.bitbutler.torrent, 'deleteFile').mockResolvedValue({ ok: true });
+      fixture.componentRef.setInput('originalPath', '/tmp/test.torrent');
+      fixture.detectChanges();
+
+      expect(component.fileDeleted()).toBe(false);
+
+      await component.deleteTorrentFile();
+
+      expect(component.fileDeleted()).toBe(true);
+      expect(mockToastService.success).toHaveBeenCalled();
     });
 
     it('should not call deleteFile when originalPath is null', async () => {
@@ -167,6 +184,7 @@ describe('TorrentExists - showDeleteButton with deleteTorrentFile disabled', () 
             ),
           },
         },
+        { provide: ToastService, useValue: { success: vi.fn() } },
       ],
     }).compileComponents();
 
