@@ -1,9 +1,11 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { Subject } from 'rxjs';
+import { Subject, of } from 'rxjs';
+import { DEFAULT_GENERAL_SETTINGS } from '../../../models/general-settings.model';
 import { CommandBusService } from '../../../services/command-bus.service';
 import { FilterService } from '../../../services/filter.service';
+import { GeneralSettingsService } from '../../../services/general-settings.service';
 import { SelectionStoreService } from '../../../services/selection-store.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { TorrentExists } from './torrent-exists';
@@ -30,6 +32,17 @@ describe('TorrentExists', () => {
         {
           provide: CommandBusService,
           useValue: { commands$: new Subject<any>().asObservable(), emit: vi.fn() },
+        },
+        {
+          provide: GeneralSettingsService,
+          useValue: {
+            asObservable: vi.fn().mockReturnValue(
+              of({
+                ...DEFAULT_GENERAL_SETTINGS,
+                behavior: { ...DEFAULT_GENERAL_SETTINGS.behavior, deleteTorrentFile: true },
+              }),
+            ),
+          },
         },
       ],
     }).compileComponents();
@@ -67,6 +80,62 @@ describe('TorrentExists', () => {
     it('should close the active modal', () => {
       component.closeModal();
       expect(mockActiveModal.close).toHaveBeenCalled();
+    });
+  });
+
+  it('should expose originalPath as a signal input defaulting to null', () => {
+    expect(component.originalPath()).toBeNull();
+  });
+
+  describe('showDeleteButton', () => {
+    it('should be false when originalPath is null', () => {
+      expect(component.showDeleteButton()).toBe(false);
+    });
+
+    it('should be true when originalPath is set and deleteTorrentFile setting is enabled', () => {
+      fixture.componentRef.setInput('originalPath', '/tmp/test.torrent');
+      fixture.detectChanges();
+      expect(component.showDeleteButton()).toBe(true);
+    });
+  });
+
+  describe('deleteTorrentFile', () => {
+    it('should call deleteFile IPC with the originalPath and close the modal', async () => {
+      const deleteFileSpy = vi
+        .spyOn(window.bitbutler.torrent, 'deleteFile')
+        .mockResolvedValue({ ok: true });
+      fixture.componentRef.setInput('originalPath', '/tmp/test.torrent');
+      fixture.detectChanges();
+
+      await component.deleteTorrentFile();
+
+      expect(deleteFileSpy).toHaveBeenCalledWith({ path: '/tmp/test.torrent' });
+      expect(mockActiveModal.close).toHaveBeenCalled();
+    });
+
+    it('should not call deleteFile when originalPath is null', async () => {
+      const deleteFileSpy = vi.spyOn(window.bitbutler.torrent, 'deleteFile');
+      await component.deleteTorrentFile();
+      expect(deleteFileSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('openDetails', () => {
+    it('should emit UI_SCROLL_TO_TORRENT before UI_OPEN_TORRENT_DETAILS', () => {
+      const mockCommandBus = TestBed.inject(CommandBusService) as any;
+      fixture.componentRef.setInput('hash', 'abc123');
+      fixture.detectChanges();
+
+      component.openDetails();
+
+      expect(mockCommandBus.emit.mock.calls[0][0]).toEqual({
+        type: 'UI_SCROLL_TO_TORRENT',
+        hash: 'abc123',
+      });
+      expect(mockCommandBus.emit.mock.calls[1][0]).toEqual({
+        type: 'UI_OPEN_TORRENT_DETAILS',
+        hash: 'abc123',
+      });
     });
   });
 });
