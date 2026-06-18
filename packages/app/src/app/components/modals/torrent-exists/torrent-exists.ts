@@ -75,6 +75,7 @@ export class TorrentExists {
       if (!h) return;
       this.filterService.resetAll();
       this.selectionStoreService.setByHashes([h]);
+      this.commandBusService.emit({ type: 'UI_SCROLL_TO_TORRENT', hash: h });
     });
   }
 
@@ -92,7 +93,6 @@ export class TorrentExists {
   public openDetails(): void {
     const h = this.hash();
     if (h) {
-      this.commandBusService.emit({ type: 'UI_SCROLL_TO_TORRENT', hash: h });
       this.commandBusService.emit({ type: 'UI_OPEN_TORRENT_DETAILS', hash: h });
     }
     this.closeModal();

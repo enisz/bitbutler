@@ -137,19 +137,32 @@ describe('TorrentExists', () => {
     });
   });
 
-  describe('openDetails', () => {
-    it('should emit UI_SCROLL_TO_TORRENT before UI_OPEN_TORRENT_DETAILS', () => {
+  describe('row selection on open', () => {
+    it('should select and scroll to the torrent in the grid as soon as hash is set, before openDetails is called', () => {
+      const mockSelectionStore = TestBed.inject(SelectionStoreService) as any;
       const mockCommandBus = TestBed.inject(CommandBusService) as any;
+
       fixture.componentRef.setInput('hash', 'abc123');
       fixture.detectChanges();
 
-      component.openDetails();
-
-      expect(mockCommandBus.emit.mock.calls[0][0]).toEqual({
+      expect(mockSelectionStore.setByHashes).toHaveBeenCalledWith(['abc123']);
+      expect(mockCommandBus.emit).toHaveBeenCalledWith({
         type: 'UI_SCROLL_TO_TORRENT',
         hash: 'abc123',
       });
-      expect(mockCommandBus.emit.mock.calls[1][0]).toEqual({
+    });
+  });
+
+  describe('openDetails', () => {
+    it('should emit UI_OPEN_TORRENT_DETAILS', () => {
+      const mockCommandBus = TestBed.inject(CommandBusService) as any;
+      fixture.componentRef.setInput('hash', 'abc123');
+      fixture.detectChanges();
+      mockCommandBus.emit.mockClear();
+
+      component.openDetails();
+
+      expect(mockCommandBus.emit).toHaveBeenCalledWith({
         type: 'UI_OPEN_TORRENT_DETAILS',
         hash: 'abc123',
       });
