@@ -1,8 +1,9 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { signal } from '@angular/core';
+import { WritableSignal, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Subject, of } from 'rxjs';
 import { QbLogEntry, QbLogMessageType } from '../../../../models/qbittorrent.model';
+import { Torrent } from '../../../../models/torrent.model';
 import { CommandBusService } from '../../../../services/command-bus.service';
 import { GeneralSettingsService } from '../../../../services/general-settings.service';
 import { PathService } from '../../../../services/path.service';
@@ -12,18 +13,40 @@ import { ToastService } from '../../../../services/toast.service';
 import { TorrentStoreService } from '../../../../services/torrent-store.service';
 import { General } from './general';
 
+const makeTorrent = (overrides: Partial<Torrent> = {}): Torrent =>
+  ({
+    name: 'My Torrent',
+    hash: 'abc123',
+    state: 'downloading',
+    ...overrides,
+  }) as Torrent;
+
+const makeLogEntry = (overrides: Partial<QbLogEntry> = {}): QbLogEntry => ({
+  id: 1,
+  message:
+    'File error alert. Torrent: "My Torrent". File: "/path". Reason: "x error: Permission denied"',
+  timestamp: 1700000000,
+  type: QbLogMessageType.Warning,
+  ...overrides,
+});
+
 describe('General', () => {
   let component: General;
   let fixture: ComponentFixture<General>;
+  let torrentsMap: WritableSignal<Map<string, Torrent>>;
+  let mockLogMain: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
+    torrentsMap = signal(new Map());
+    mockLogMain = vi.fn().mockResolvedValue([]);
+
     await TestBed.configureTestingModule({
       imports: [General],
       providers: [
         { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
         {
           provide: TorrentStoreService,
-          useValue: { torrentsMap: signal(new Map()) },
+          useValue: { torrentsMap },
         },
         {
           provide: QbService,
@@ -41,6 +64,9 @@ describe('General', () => {
               addTags: vi.fn(),
               removeTags: vi.fn(),
               reannounce: vi.fn(),
+            },
+            log: {
+              main: mockLogMain,
             },
           },
         },
@@ -63,6 +89,7 @@ describe('General', () => {
 
     fixture = TestBed.createComponent(General);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('hash', 'abc123');
     fixture.detectChanges();
   });
 
@@ -124,6 +151,103 @@ describe('General', () => {
       };
 
       expect(component.rawLogJson(entry)).toBe(JSON.stringify(entry, null, 4));
+    });
+  });
+
+  describe('errorLog effect', () => {
+    it('does nothing when the torrent is not in the error state', async () => {
+      torrentsMap.set(new Map([['abc123', makeTorrent({ state: 'downloading' })]]));
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockLogMain).not.toHaveBeenCalled();
+      expect(component.errorLog()).toBeNull();
+    });
+
+    it('fetches the main log and stores the matching warning/critical entry when the torrent errors', async () => {
+      const matching = makeLogEntry({ id: 5, type: QbLogMessageType.Critical });
+      const unrelated = makeLogEntry({
+        id: 6,
+        type: QbLogMessageType.Normal,
+        message: 'Added new torrent. Torrent: "My Torrent"',
+      });
+      mockLogMain.mockResolvedValue([unrelated, matching]);
+
+      torrentsMap.set(new Map([['abc123', makeTorrent({ state: 'error' })]]));
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockLogMain).toHaveBeenCalledWith('server-1', {
+        normal: false,
+        info: false,
+        warning: true,
+        critical: true,
+      });
+      expect(component.errorLog()?.id).toBe(5);
+    });
+
+    it('picks the entry with the highest id when multiple entries match', async () => {
+      mockLogMain.mockResolvedValue([
+        makeLogEntry({ id: 5, type: QbLogMessageType.Warning }),
+        makeLogEntry({ id: 9, type: QbLogMessageType.Critical }),
+        makeLogEntry({ id: 7, type: QbLogMessageType.Warning }),
+      ]);
+
+      torrentsMap.set(new Map([['abc123', makeTorrent({ state: 'error' })]]));
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(component.errorLog()?.id).toBe(9);
+    });
+
+    it('does not refetch while the torrent stays in the error state with no match', async () => {
+      mockLogMain.mockResolvedValue([
+        makeLogEntry({ message: 'Unrelated torrent message', type: QbLogMessageType.Critical }),
+      ]);
+
+      torrentsMap.set(new Map([['abc123', makeTorrent({ state: 'error' })]]));
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockLogMain).toHaveBeenCalledTimes(1);
+      expect(component.errorLog()).toBeNull();
+
+      torrentsMap.set(new Map([['abc123', makeTorrent({ state: 'error' })]]));
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockLogMain).toHaveBeenCalledTimes(1);
+    });
+
+    it('clears errorLog and refetches on the next error episode after leaving the error state', async () => {
+      mockLogMain.mockResolvedValue([makeLogEntry({ id: 1, type: QbLogMessageType.Critical })]);
+      torrentsMap.set(new Map([['abc123', makeTorrent({ state: 'error' })]]));
+      fixture.detectChanges();
+      await fixture.whenStable();
+      expect(component.errorLog()?.id).toBe(1);
+
+      torrentsMap.set(new Map([['abc123', makeTorrent({ state: 'downloading' })]]));
+      fixture.detectChanges();
+      await fixture.whenStable();
+      expect(component.errorLog()).toBeNull();
+
+      mockLogMain.mockResolvedValue([makeLogEntry({ id: 2, type: QbLogMessageType.Critical })]);
+      torrentsMap.set(new Map([['abc123', makeTorrent({ state: 'error' })]]));
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockLogMain).toHaveBeenCalledTimes(2);
+      expect(component.errorLog()?.id).toBe(2);
+    });
+  });
+
+  describe('toggleErrorLog', () => {
+    it('flips errorLogExpanded', () => {
+      expect(component.errorLogExpanded()).toBe(false);
+      component.toggleErrorLog();
+      expect(component.errorLogExpanded()).toBe(true);
+      component.toggleErrorLog();
+      expect(component.errorLogExpanded()).toBe(false);
     });
   });
 });
