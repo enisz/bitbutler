@@ -82,8 +82,8 @@ export class Server implements SettingsTabComponent {
 
       const serverId = this.serverStoreService.currentServerId();
       if (serverId) {
-        this.qbService
-          .getAppPreferences(serverId)
+        this.qbService.app
+          .preferences(serverId)
           .then((prefs) => {
             if (prefs.save_path) this.defaultRemotePath = prefs.save_path;
           })

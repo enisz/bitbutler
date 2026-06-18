@@ -35,7 +35,7 @@ describe('QueueLimits', () => {
         { provide: QbSettingsStateService, useValue: stateServiceMock },
         {
           provide: QbService,
-          useValue: { setAppPreferences: vi.fn().mockResolvedValue(undefined) },
+          useValue: { app: { setPreferences: vi.fn().mockResolvedValue(undefined) } },
         },
         { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
       ],

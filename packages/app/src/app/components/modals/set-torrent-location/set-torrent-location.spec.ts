@@ -24,8 +24,8 @@ describe('SetTorrentLocation', () => {
         {
           provide: QbService,
           useValue: {
-            setTorrentLocation: vi.fn().mockResolvedValue(undefined),
-            getAppPreferences: vi.fn().mockResolvedValue({}),
+            torrents: { setLocation: vi.fn().mockResolvedValue(undefined) },
+            app: { preferences: vi.fn().mockResolvedValue({}) },
           },
         },
         { provide: ToastService, useValue: { danger: vi.fn() } },
@@ -61,8 +61,8 @@ describe('SetTorrentLocation', () => {
 
   describe('handleSubmit fallback', () => {
     let mockQbService: {
-      setTorrentLocation: ReturnType<typeof vi.fn>;
-      getAppPreferences: ReturnType<typeof vi.fn>;
+      torrents: { setLocation: ReturnType<typeof vi.fn> };
+      app: { preferences: ReturnType<typeof vi.fn> };
     };
 
     beforeEach(() => {
@@ -72,7 +72,7 @@ describe('SetTorrentLocation', () => {
     it('should use the form path when it has a value', async () => {
       component.setLocationForm.get('path')?.setValue('/custom/path');
       await component.handleSubmit();
-      expect(mockQbService.setTorrentLocation).toHaveBeenCalledWith(
+      expect(mockQbService.torrents.setLocation).toHaveBeenCalledWith(
         'server-1',
         ['hash-1'],
         '/custom/path',
@@ -82,7 +82,7 @@ describe('SetTorrentLocation', () => {
     it('should fall back to torrent.save_path when form path is cleared and no default', async () => {
       component.setLocationForm.get('path')?.setValue(null);
       await component.handleSubmit();
-      expect(mockQbService.setTorrentLocation).toHaveBeenCalledWith(
+      expect(mockQbService.torrents.setLocation).toHaveBeenCalledWith(
         'server-1',
         ['hash-1'],
         '/downloads',

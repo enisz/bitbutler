@@ -26,7 +26,7 @@ describe('Bandwidth', () => {
     registerSave: ReturnType<typeof vi.fn>;
     markDirty: ReturnType<typeof vi.fn>;
   };
-  let qbMock: { setAppPreferences: ReturnType<typeof vi.fn> };
+  let qbMock: { app: { setPreferences: ReturnType<typeof vi.fn> } };
   let serverStoreMock: { currentServerId: ReturnType<typeof signal<string>> };
 
   beforeEach(async () => {
@@ -35,7 +35,7 @@ describe('Bandwidth', () => {
       registerSave: vi.fn(),
       markDirty: vi.fn(),
     };
-    qbMock = { setAppPreferences: vi.fn().mockResolvedValue(undefined) };
+    qbMock = { app: { setPreferences: vi.fn().mockResolvedValue(undefined) } };
     serverStoreMock = { currentServerId: signal('server-1') };
 
     await TestBed.configureTestingModule({

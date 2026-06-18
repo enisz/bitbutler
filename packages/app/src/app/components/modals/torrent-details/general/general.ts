@@ -155,8 +155,8 @@ export class General implements TorrentDetailTabComponent, OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.load());
 
-    this.qbService
-      .torrentContents(this.serverStoreService.currentServerId() as string, this.hash())
+    this.qbService.torrents
+      .files(this.serverStoreService.currentServerId() as string, this.hash())
       .then((content: QbTorrentContent[]) => this.singleFile.set(content.length === 1))
       .catch((error: any) => this.toastService.danger(error));
   }

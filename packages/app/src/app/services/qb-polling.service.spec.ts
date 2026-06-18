@@ -14,8 +14,10 @@ describe('QbPollingService', () => {
 
   beforeEach(() => {
     mockQbService = {
-      streamMaindata: vi.fn().mockReturnValue(new Subject()),
-      maindata: vi.fn().mockResolvedValue({ rid: 1 }),
+      sync: {
+        streamMaindata: vi.fn().mockReturnValue(new Subject()),
+        maindata: vi.fn().mockResolvedValue({ rid: 1 }),
+      },
     };
 
     mockWindowService = {
@@ -71,12 +73,17 @@ describe('QbPollingService', () => {
 
   it('should call streamMaindata when startMaindataPolling() is called', () => {
     service.startMaindataPolling('server-1');
-    expect(mockQbService.streamMaindata).toHaveBeenCalledWith('server-1', 0, undefined, undefined);
+    expect(mockQbService.sync.streamMaindata).toHaveBeenCalledWith(
+      'server-1',
+      0,
+      undefined,
+      undefined,
+    );
   });
 
   it('should stop any previous polling when startMaindataPolling() is called again', () => {
     service.startMaindataPolling('server-1');
     service.startMaindataPolling('server-1');
-    expect(mockQbService.streamMaindata).toHaveBeenCalledTimes(2);
+    expect(mockQbService.sync.streamMaindata).toHaveBeenCalledTimes(2);
   });
 });
