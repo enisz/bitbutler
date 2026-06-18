@@ -367,7 +367,6 @@
           "info-hash-v2": "Info Hash v2",
           "comment": "Megjegyzés",
           "error": "Hiba",
-          "reason": "Indok",
           "labels": {
             "title": "Torrent",
             "transfer": "Átvitel",
@@ -482,9 +481,7 @@
               "title": "Megjegyzés",
               "description": "A készítő által megadott opcionális szöveg (pl. forrásinfó)."
             }
-          },
-          "info": {},
-          "error": {}
+          }
         },
         "peers": {
           "grid-options": {

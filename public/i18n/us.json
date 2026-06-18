@@ -367,7 +367,6 @@
           "info-hash-v2": "Info Hash v2",
           "comment": "Comment",
           "error": "Error",
-          "reason": "Reason",
           "labels": {
             "title": "Torrent",
             "transfer": "Transfer",
@@ -482,9 +481,7 @@
               "title": "Comment",
               "description": "Optional text added by the torrent creator, often containing source info or credits."
             }
-          },
-          "info": {},
-          "error": {}
+          }
         },
         "peers": {
           "grid-options": {

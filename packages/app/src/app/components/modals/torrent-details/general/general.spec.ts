@@ -1,8 +1,13 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { WritableSignal, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TimeagoIntl, provideTimeago } from 'ngx-timeago';
 import { Subject, of } from 'rxjs';
-import { QbLogEntry, QbLogMessageType } from '../../../../models/qbittorrent.model';
+import {
+  QbLogEntry,
+  QbLogMessageType,
+  QbTorrentProperties,
+} from '../../../../models/qbittorrent.model';
 import { Torrent } from '../../../../models/torrent.model';
 import { CommandBusService } from '../../../../services/command-bus.service';
 import { GeneralSettingsService } from '../../../../services/general-settings.service';
@@ -13,13 +18,100 @@ import { ToastService } from '../../../../services/toast.service';
 import { TorrentStoreService } from '../../../../services/torrent-store.service';
 import { General } from './general';
 
-const makeTorrent = (overrides: Partial<Torrent> = {}): Torrent =>
-  ({
-    name: 'My Torrent',
-    hash: 'abc123',
-    state: 'downloading',
-    ...overrides,
-  }) as Torrent;
+const makeTorrent = (overrides: Partial<Torrent> = {}): Torrent => ({
+  added_on: 1700000000,
+  amount_left: 0,
+  auto_tmm: false,
+  availability: 0,
+  category: '',
+  completed: 0,
+  completion_on: 0,
+  content_path: '',
+  dl_limit: 0,
+  dlspeed: 0,
+  download_path: '',
+  downloaded: 0,
+  downloaded_session: 0,
+  eta: 0,
+  f_l_piece_prio: false,
+  force_start: false,
+  hash: 'abc123',
+  inactive_seeding_time_limit: 0,
+  infohash_v1: '',
+  infohash_v2: '',
+  last_activity: 0,
+  magnet_uri: '',
+  max_inactive_seeding_time: 0,
+  max_ratio: 0,
+  max_seeding_time: 0,
+  name: 'My Torrent',
+  num_complete: 0,
+  num_incomplete: 0,
+  num_leechs: 0,
+  num_seeds: 0,
+  priority: 0,
+  progress: 0,
+  ratio: 0,
+  ratio_limit: 0,
+  save_path: '',
+  seeding_time: 0,
+  seeding_time_limit: 0,
+  seen_complete: 0,
+  seq_dl: false,
+  size: 0,
+  state: 'downloading',
+  super_seeding: false,
+  tags: '',
+  time_active: 0,
+  total_size: 0,
+  tracker: '',
+  trackers_count: 0,
+  up_limit: 0,
+  uploaded: 0,
+  uploaded_session: 0,
+  upspeed: 0,
+  ...overrides,
+});
+
+const makeProperties = (overrides: Partial<QbTorrentProperties> = {}): QbTorrentProperties => ({
+  save_path: '',
+  creation_date: 1700000000,
+  piece_size: 0,
+  comment: '',
+  total_wasted: 0,
+  total_uploaded: 0,
+  total_uploaded_session: 0,
+  total_downloaded: 0,
+  total_downloaded_session: 0,
+  up_limit: 0,
+  dl_limit: 0,
+  time_elapsed: 0,
+  seeding_time: 0,
+  nb_connections: 0,
+  nb_connections_limit: 0,
+  share_ratio: 0,
+  addition_date: 0,
+  completion_date: 0,
+  created_by: '',
+  dl_speed_avg: 0,
+  dl_speed: 0,
+  eta: 0,
+  last_seen: 0,
+  peers: 0,
+  peers_total: 0,
+  pieces_have: 0,
+  pieces_num: 0,
+  reannounce: 0,
+  seeds: 0,
+  seeds_total: 0,
+  total_size: 0,
+  up_speed_avg: 0,
+  up_speed: 0,
+  isPrivate: false,
+  infohash_v1: '',
+  infohash_v2: '',
+  ...overrides,
+});
 
 const makeLogEntry = (overrides: Partial<QbLogEntry> = {}): QbLogEntry => ({
   id: 1,
@@ -84,6 +176,7 @@ describe('General', () => {
         { provide: PathService, useValue: { resolveLocalPath: vi.fn().mockResolvedValue(null) } },
         { provide: Clipboard, useValue: { copy: vi.fn() } },
         { provide: ToastService, useValue: { success: vi.fn(), danger: vi.fn() } },
+        provideTimeago({ intl: { provide: TimeagoIntl, useClass: TimeagoIntl } }),
       ],
     }).compileComponents();
 
@@ -252,6 +345,12 @@ describe('General', () => {
   });
 
   describe('error row rendering', () => {
+    beforeEach(() => {
+      torrentsMap.set(new Map([['abc123', makeTorrent({ state: 'downloading' })]]));
+      component.properties.set(makeProperties());
+      fixture.detectChanges();
+    });
+
     it('does not render the error row when there is no errorLog', () => {
       expect(fixture.nativeElement.querySelector('.bb-section--danger')).toBeNull();
     });
@@ -262,6 +361,7 @@ describe('General', () => {
 
       const row = fixture.nativeElement.querySelector('.bb-section--danger');
       expect(row).not.toBeNull();
+      expect(row.querySelector('.section-header').textContent).not.toContain('[object Object]');
       expect(row.querySelector('.section-value').textContent).toContain('Permission denied');
 
       const icon = row.querySelector('.error-toggle__icon');
@@ -271,6 +371,11 @@ describe('General', () => {
       fixture.detectChanges();
 
       expect(icon.classList.contains('error-toggle__icon--expanded')).toBe(true);
+
+      const detail = row.querySelector('.error-toggle__detail');
+      expect(detail.querySelector('hr')).toBeNull();
+      expect(detail.querySelector('.section-header')).toBeNull();
+      expect(detail.querySelector('pre').textContent).toContain('Permission denied');
     });
   });
 });
