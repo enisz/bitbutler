@@ -231,5 +231,29 @@ describe('Grid', () => {
 
       expect(mockApi.getRowNode).not.toHaveBeenCalled();
     });
+
+    it('should call ensureIndexVisible with index 0 when the torrent is the first row', () => {
+      const mockApi = {
+        getRowNode: vi.fn().mockReturnValue({ rowIndex: 0 }),
+        ensureIndexVisible: vi.fn(),
+      };
+      (component as any).api = mockApi;
+
+      commandsSubject.next({ type: 'UI_SCROLL_TO_TORRENT', hash: 'first' });
+
+      expect(mockApi.ensureIndexVisible).toHaveBeenCalledWith(0, 'middle');
+    });
+
+    it('should not call ensureIndexVisible when the grid api is not yet initialised', () => {
+      // component.api is null by default (grid not yet ready)
+      const mockApi = {
+        getRowNode: vi.fn(),
+        ensureIndexVisible: vi.fn(),
+      };
+
+      commandsSubject.next({ type: 'UI_SCROLL_TO_TORRENT', hash: 'abc123' });
+
+      expect(mockApi.ensureIndexVisible).not.toHaveBeenCalled();
+    });
   });
 });
