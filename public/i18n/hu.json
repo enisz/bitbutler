@@ -6,7 +6,7 @@
   },
   "torrent": {
     "state": {
-      "error": "Hiba történt. Szüneteltetett torrentekre vonatkozik.",
+      "error": "Hiba történt.",
       "missingFiles": "A torrent adatfájljai hiányoznak.",
       "uploading": "Feltöltés folyamatban.",
       "pausedUP": "Feltöltés szüneteltetve (letöltés befejezve).",
