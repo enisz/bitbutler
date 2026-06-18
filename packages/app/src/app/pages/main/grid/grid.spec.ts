@@ -21,6 +21,7 @@ import { GridPinService } from './grid-pin.service';
 describe('Grid', () => {
   let component: Grid;
   let fixture: ComponentFixture<Grid>;
+  let commandsSubject: Subject<any>;
 
   let keyboardNavServiceMock: {
     onKeyUp: ReturnType<typeof vi.fn>;
@@ -39,6 +40,8 @@ describe('Grid', () => {
   };
 
   beforeEach(async () => {
+    commandsSubject = new Subject<any>();
+
     keyboardNavServiceMock = {
       onKeyUp: vi.fn(),
       onKeyDown: vi.fn(),
@@ -94,7 +97,7 @@ describe('Grid', () => {
         { provide: GridViewStoreService, useValue: { filteredCount: signal(0) } },
         {
           provide: CommandBusService,
-          useValue: { emit: vi.fn(), commands$: new Subject().asObservable() },
+          useValue: { emit: vi.fn(), commands$: commandsSubject.asObservable() },
         },
         {
           provide: TorrentListGridSettingsService,
@@ -188,6 +191,45 @@ describe('Grid', () => {
   describe('deselectRows', () => {
     it('should not throw when api is not yet initialized', () => {
       expect(() => component.deselectRows()).not.toThrow();
+    });
+  });
+
+  describe('UI_SCROLL_TO_TORRENT command', () => {
+    it('should call ensureIndexVisible with middle alignment when a known hash is emitted', () => {
+      const mockApi = {
+        getRowNode: vi.fn().mockReturnValue({ rowIndex: 5 }),
+        ensureIndexVisible: vi.fn(),
+      };
+      (component as any).api = mockApi;
+
+      commandsSubject.next({ type: 'UI_SCROLL_TO_TORRENT', hash: 'abc123' });
+
+      expect(mockApi.getRowNode).toHaveBeenCalledWith('abc123');
+      expect(mockApi.ensureIndexVisible).toHaveBeenCalledWith(5, 'middle');
+    });
+
+    it('should not call ensureIndexVisible when the row node is not found', () => {
+      const mockApi = {
+        getRowNode: vi.fn().mockReturnValue(null),
+        ensureIndexVisible: vi.fn(),
+      };
+      (component as any).api = mockApi;
+
+      commandsSubject.next({ type: 'UI_SCROLL_TO_TORRENT', hash: 'unknown' });
+
+      expect(mockApi.ensureIndexVisible).not.toHaveBeenCalled();
+    });
+
+    it('should not react to unrelated commands', () => {
+      const mockApi = {
+        getRowNode: vi.fn(),
+        ensureIndexVisible: vi.fn(),
+      };
+      (component as any).api = mockApi;
+
+      commandsSubject.next({ type: 'UI_OPEN_TORRENT_DETAILS', hash: 'abc123' });
+
+      expect(mockApi.getRowNode).not.toHaveBeenCalled();
     });
   });
 });

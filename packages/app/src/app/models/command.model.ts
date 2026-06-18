@@ -35,7 +35,8 @@ export type UiCommand =
   | { type: 'UI_MANAGE_SERVERS' }
   | { type: 'UI_SERVER_SWITCH'; id: string }
   | { type: 'UI_EXPORT_TORRENTS' }
-  | { type: 'UI_IMPORT_TORRENTS'; bbePath?: string };
+  | { type: 'UI_IMPORT_TORRENTS'; bbePath?: string }
+  | { type: 'UI_SCROLL_TO_TORRENT'; hash: string };
 
 export type TorrentCommand =
   | { type: 'TORRENT_DELETE_CONFIRM'; removeFiles: boolean }
