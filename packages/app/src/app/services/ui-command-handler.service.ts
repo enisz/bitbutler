@@ -358,6 +358,9 @@ export class UiCommandHandlerService {
             break;
           }
 
+          case 'UI_SCROLL_TO_TORRENT':
+            break;
+
           default:
             console.warn(UiCommandHandlerService.name, 'start', 'Unhandled UI command', command);
         }
