@@ -1,3 +1,27 @@
+@if (errorLog(); as entry) {
+  <div class="col-12 bb-section bb-section--danger">
+    <button type="button" class="error-toggle" (click)="toggleErrorLog()">
+      <span class="section-header">{{
+        'components.modals.torrent-details.general.error' | translate
+      }}</span>
+      <span class="section-value">{{ parseFileErrorReason(entry.message).short }}</span>
+      <span
+        class="error-toggle__icon"
+        [class.error-toggle__icon--expanded]="errorLogExpanded()"
+      ></span>
+    </button>
+
+    <div [ngbCollapse]="!errorLogExpanded()">
+      <div class="error-toggle__detail">
+        <span class="section-header">{{
+          'components.modals.torrent-details.general.reason' | translate
+        }}</span>
+        <span class="section-value">{{ parseFileErrorReason(entry.message).reason }}</span>
+        <pre>{{ rawLogJson(entry) }}</pre>
+      </div>
+    </div>
+  </div>
+}
 @if (!torrent()) {
   <div class="w-100 text-center">
     <app-bb-spinner></app-bb-spinner>

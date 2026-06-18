@@ -26,7 +26,7 @@ import {
   faTrashCan,
   faX,
 } from '@fortawesome/free-solid-svg-icons';
-import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
+import { NgbCollapse, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { TimeagoPipe } from 'ngx-timeago';
 import { take, timer } from 'rxjs';
@@ -74,6 +74,7 @@ interface MergedData {
     SpeedLimitPipe,
     BbProgress,
     FontAwesomeModule,
+    NgbCollapse,
     NgbTooltip,
     RatioLimitPipe,
     RatioPipe,

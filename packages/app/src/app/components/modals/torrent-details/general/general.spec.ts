@@ -250,4 +250,27 @@ describe('General', () => {
       expect(component.errorLogExpanded()).toBe(false);
     });
   });
+
+  describe('error row rendering', () => {
+    it('does not render the error row when there is no errorLog', () => {
+      expect(fixture.nativeElement.querySelector('.bb-section--danger')).toBeNull();
+    });
+
+    it('renders the error row with the short reason and reflects errorLogExpanded on the icon', () => {
+      component.errorLog.set(makeLogEntry());
+      fixture.detectChanges();
+
+      const row = fixture.nativeElement.querySelector('.bb-section--danger');
+      expect(row).not.toBeNull();
+      expect(row.querySelector('.section-value').textContent).toContain('Permission denied');
+
+      const icon = row.querySelector('.error-toggle__icon');
+      expect(icon.classList.contains('error-toggle__icon--expanded')).toBe(false);
+
+      component.toggleErrorLog();
+      fixture.detectChanges();
+
+      expect(icon.classList.contains('error-toggle__icon--expanded')).toBe(true);
+    });
+  });
 });

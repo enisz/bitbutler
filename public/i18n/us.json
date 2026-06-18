@@ -366,6 +366,8 @@
           "info-hash-v1": "Info Hash v1",
           "info-hash-v2": "Info Hash v2",
           "comment": "Comment",
+          "error": "Error",
+          "reason": "Reason",
           "labels": {
             "title": "Torrent",
             "transfer": "Transfer",
