@@ -3,11 +3,11 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
+  faArrowsSpin,
   faCircleCheck,
   faCircleDown,
   faCircleExclamation,
   faCircleMinus,
-  faCircleNotch,
   faCirclePlay,
   faCircleStop,
   faFolderOpen,
@@ -19,7 +19,7 @@ import {
   faUpload,
 } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { Torrent, TorrentState } from '../../../models/torrent.model';
+import { TorrentState } from '../../../models/torrent.model';
 import { FilterService } from '../../../services/filter.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { getTrackers, normalizeTracker } from '../tracker.utils';
@@ -77,12 +77,12 @@ export class Status {
     faCirclePlay,
     faCircleMinus,
     faHourglassHalf,
-    faCircleNotch,
     faCircleExclamation,
     faLink,
     faFolderOpen,
     faFolderTree,
     faTags,
+    faArrowsSpin,
   };
 
   private readonly groups: Record<StatusKey, TorrentState[]> = {
@@ -164,7 +164,7 @@ export class Status {
         key: 'checking',
         label: this.translateService.instant('pages.main.status.checking'),
         count: sumStates('checkingDL', 'checkingUP', 'checkingResumeData'),
-        icon: this.icon.faCircleNotch,
+        icon: this.icon.faArrowsSpin,
       },
       {
         key: 'errored',
