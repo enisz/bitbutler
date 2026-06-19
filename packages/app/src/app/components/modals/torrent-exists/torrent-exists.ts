@@ -1,6 +1,15 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TimeagoPipe } from 'ngx-timeago';
 import { AutofocusDirective } from '../../../directives/autofocus';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
@@ -9,7 +18,9 @@ import { LocalTimestampPipe } from '../../../pipes/local-timestamp-pipe';
 import { RatioPipe } from '../../../pipes/ratio-pipe';
 import { CommandBusService } from '../../../services/command-bus.service';
 import { FilterService } from '../../../services/filter.service';
+import { GeneralSettingsService } from '../../../services/general-settings.service';
 import { SelectionStoreService } from '../../../services/selection-store.service';
+import { ToastService } from '../../../services/toast.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { BbProgress } from '../../bb-progress/bb-progress';
 
@@ -33,12 +44,25 @@ import { BbProgress } from '../../bb-progress/bb-progress';
 })
 export class TorrentExists {
   readonly hash = input<string | null>(null);
+  readonly originalPath = input<string | null>(null);
 
   private readonly torrentStoreService = inject(TorrentStoreService);
   private readonly activeModal = inject(NgbActiveModal);
   private readonly selectionStoreService = inject(SelectionStoreService);
   private readonly filterService = inject(FilterService);
   private readonly commandBusService = inject(CommandBusService);
+  private readonly generalSettingsService = inject(GeneralSettingsService);
+  private readonly toastService = inject(ToastService);
+  private readonly translateService = inject(TranslateService);
+  private readonly generalSettings = toSignal(this.generalSettingsService.asObservable(), {
+    initialValue: null,
+  });
+
+  public readonly fileDeleted = signal(false);
+
+  public readonly showDeleteButton = computed(
+    () => !!(this.generalSettings()?.behavior.deleteTorrentFile && this.originalPath()),
+  );
 
   public readonly torrent = computed(() => {
     const h = this.hash();
@@ -51,7 +75,19 @@ export class TorrentExists {
       if (!h) return;
       this.filterService.resetAll();
       this.selectionStoreService.setByHashes([h]);
+      this.commandBusService.emit({ type: 'UI_SCROLL_TO_TORRENT', hash: h });
     });
+  }
+
+  public async deleteTorrentFile(): Promise<void> {
+    const path = this.originalPath();
+    if (!path) return;
+    await window.bitbutler.torrent.deleteFile({ path });
+    this.fileDeleted.set(true);
+    this.toastService.success(
+      this.translateService.instant('components.modals.torrent-exists.toast.deleted'),
+      this.translateService.instant('components.modals.torrent-exists.title'),
+    );
   }
 
   public openDetails(): void {

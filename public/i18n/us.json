@@ -620,6 +620,12 @@
           "save-path": "Save Path",
           "category": "Category",
           "tags": "Tags"
+        },
+        "button": {
+          "delete-file": "Delete Torrent File"
+        },
+        "toast": {
+          "deleted": "Torrent file has been deleted."
         }
       },
       "update-available": {

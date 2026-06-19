@@ -21,7 +21,7 @@ import {
   type GridOptions,
   type RowDoubleClickedEvent,
 } from 'ag-grid-community';
-import { Subject, firstValueFrom, skip, throttleTime } from 'rxjs';
+import { Subject, filter, firstValueFrom, skip, throttleTime } from 'rxjs';
 import { GRID_DARK_THEME, GRID_LIGHT_THEME } from '../../../app.const';
 import { TorrentListGridSettings } from '../../../models/torrent-list-grid.model';
 import { Torrent } from '../../../models/torrent.model';
@@ -202,6 +202,21 @@ export class Grid implements AfterViewInit {
     toObservable(this.filterService.columns)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(this.onColumnFilterChange);
+
+    this.commandBusService.commands$
+      .pipe(
+        filter(
+          (cmd): cmd is { type: 'UI_SCROLL_TO_TORRENT'; hash: string } =>
+            cmd.type === 'UI_SCROLL_TO_TORRENT',
+        ),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(({ hash }) => {
+        const rowNode = this.api?.getRowNode(hash);
+        if (rowNode?.rowIndex != null) {
+          this.api!.ensureIndexVisible(rowNode.rowIndex, 'middle');
+        }
+      });
   }
 
   private areSelectionsEqual(a: Torrent[], b: Torrent[]): boolean {
