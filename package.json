@@ -2,7 +2,7 @@
   "name": "bitbutler",
   "version": "1.2.0",
   "productName": "BitButler",
-  "description": "BitButler - qBittorrent-nox remote client",
+  "description": "BitButler - qBittorrent-nox remote client (scenario test)",
   "author": {
     "name": "Enisz Abdalla",
     "email": "enisz87@gmail.com",
