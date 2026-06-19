@@ -59,6 +59,7 @@ jobs:
     outputs:
       app: ${{ steps.filter.outputs.app }}
       electron: ${{ steps.filter.outputs.electron }}
+      packaging: ${{ steps.filter.outputs.packaging }}
       any-source: ${{ steps.filter.outputs.any-source }}
     steps:
       - uses: dorny/paths-filter@v4
@@ -69,10 +70,20 @@ jobs:
               - 'packages/app/**'
               - 'packages/shared/**'
               - 'public/**'
+              - 'package.json'
+              - 'package-lock.json'
             electron:
               - 'packages/electron/**'
               - 'packages/shared/**'
               - 'public/**'
+              - 'package.json'
+              - 'package-lock.json'
+            packaging:
+              - 'package.json'
+              - 'package-lock.json'
+              - 'packages/app/src/assets/icons/**'
+              - 'build/**'
+              - 'public/i18n/**'
             any-source:
               - 'packages/**'
               - 'public/**'
