@@ -103,7 +103,8 @@
       "Bash(grep -rln \"window.bitbutler\\\\s*=\" packages/app/src)",
       "Bash(find packages/app/src -iname \"*setup*\")",
       "Bash(find packages/app -maxdepth 2 -iname \"*vitest*\")",
-      "Bash(npx sass *)"
+      "Bash(npx sass *)",
+      "Bash(command -v actionlint)"
     ]
   }
 }
