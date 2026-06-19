@@ -108,3 +108,10 @@ Three lazy-loaded routes: `login`, `main` (torrent grid), `settings`. The router
 - **Feature branches:** Use the pattern `<issue-id>-<dash-separated-summary>` (e.g. `100-manage-labels-and-categories`).
 - **Issue templates:** When opening new issues, use the appropriate template from `.github/ISSUE_TEMPLATE/`. `gh issue create` does NOT auto-apply a template's `labels:` field in non-interactive mode - pass `--label <label>` explicitly matching the chosen template (e.g. `--label maintenance` for `04_maintenance.yml`, `--label bug` for `01_bug_report.yml`, etc.).
 - **PR template:** ALWAYS read `.github/pull_request_template.md` before running `gh pr create` and use it as the exact structure for `--body`. Do not invent a different format.
+
+## Specs & plans (docs folder)
+
+- `superpowers` skill specs/plans live under `docs/superpowers/specs/` and `docs/superpowers/plans/` on the feature branch.
+- Committing them to the remote feature branch is fine - it allows resuming implementation from a different machine.
+- They must not be merged to main: remove the `docs` folder in its own commit (e.g. `#<id>: removed spec and plan`) once implementation is done, before opening or merging the PR.
+- Do not reference or link spec/plan files or paths in PR or issue descriptions.
