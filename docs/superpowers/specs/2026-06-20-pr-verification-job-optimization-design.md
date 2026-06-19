@@ -113,6 +113,15 @@ ci`, `npm run build:ui`, `npm run build:electron`, RPM tooling install
    `needs.detect-changes.outputs.packaging == 'true'`. Depends on `[5/6]
 Compile Check` succeeding.
 
+Note: a `build/**`-only change (packaging assets/installer config, not app or
+electron source) matches the `packaging` filter but neither `app` nor
+`electron`, so `[5/6] Compile Check` is skipped while `[6a/6]`/`[6b/6]` still
+run - this is intentional. Both packaging jobs gate on `always()` rather than
+requiring `Compile Check` to have succeeded, and they re-run `build:ui`/
+`build:electron` internally before invoking `electron-builder`, so packaging
+still gets a real compile pass even when the dedicated Compile Check job
+didn't run.
+
 ### Stage naming convention
 
 Apply a letter suffix whenever multiple jobs occupy the same stage number, so
