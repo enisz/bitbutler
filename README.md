@@ -138,3 +138,5 @@ npm run dist:linux
 BitButler is an open-source project. If you have an idea for a feature or found something that isn't working quite right, feel free to open an issue or submit a pull request. I would love to hear how people use the "Butler."
 
 _Built with ❤️ for the community._
+
+<!-- scenario test -->
