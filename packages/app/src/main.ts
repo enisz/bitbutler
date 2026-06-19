@@ -6,3 +6,4 @@ import { appConfig } from './app/app.config';
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 bootstrapApplication(App, appConfig).catch((err) => console.error(err));
+// scenario test: no-op
