@@ -8,6 +8,8 @@
 
 **Tech Stack:** GitHub Actions YAML, `dorny/paths-filter@v4`.
 
+> Note for whoever edits this plan file later: code fences below that show fragments of `.github/workflows/bitbutler-pr.yml` are intentionally left **untagged** (no `yaml` after the triple backtick), not tagged `text`/`bash`. Tagging them `yaml` causes Prettier (via this repo's lint-staged hook) to reformat the embedded snippet as a standalone document, which strips the leading indentation that shows nesting — silently breaking exact-match fidelity against the real file. Keep them untagged.
+
 ## Global Constraints
 
 - Touch only `.github/workflows/bitbutler-pr.yml`. Do not modify `release.yml` (per spec non-goals).
@@ -32,77 +34,77 @@
 
 - [ ] **Step 1: Edit the `outputs:` block to add `packaging`**
 
-In `.github/workflows/bitbutler-pr.yml`, find:
+In `.github/workflows/bitbutler-pr.yml`, find this exact text (note the indentation — these lines sit inside the `detect-changes` job):
 
-```yaml
-outputs:
-  app: ${{ steps.filter.outputs.app }}
-  electron: ${{ steps.filter.outputs.electron }}
-  any-source: ${{ steps.filter.outputs.any-source }}
+```
+    outputs:
+      app: ${{ steps.filter.outputs.app }}
+      electron: ${{ steps.filter.outputs.electron }}
+      any-source: ${{ steps.filter.outputs.any-source }}
 ```
 
 Replace with:
 
-```yaml
-outputs:
-  app: ${{ steps.filter.outputs.app }}
-  electron: ${{ steps.filter.outputs.electron }}
-  packaging: ${{ steps.filter.outputs.packaging }}
-  any-source: ${{ steps.filter.outputs.any-source }}
+```
+    outputs:
+      app: ${{ steps.filter.outputs.app }}
+      electron: ${{ steps.filter.outputs.electron }}
+      packaging: ${{ steps.filter.outputs.packaging }}
+      any-source: ${{ steps.filter.outputs.any-source }}
 ```
 
 - [ ] **Step 2: Edit the `filters:` block — add `package.json`/`package-lock.json` to `app` and `electron`, add the new `packaging` block**
 
-Find:
+Find this exact text:
 
-```yaml
-filters: |
-  app:
-    - 'packages/app/**'
-    - 'packages/shared/**'
-    - 'public/**'
-  electron:
-    - 'packages/electron/**'
-    - 'packages/shared/**'
-    - 'public/**'
-  any-source:
-    - 'packages/**'
-    - 'public/**'
-    - '.eslint*'
-    - 'tsconfig*'
-    - 'package.json'
-    - 'package-lock.json'
+```
+          filters: |
+            app:
+              - 'packages/app/**'
+              - 'packages/shared/**'
+              - 'public/**'
+            electron:
+              - 'packages/electron/**'
+              - 'packages/shared/**'
+              - 'public/**'
+            any-source:
+              - 'packages/**'
+              - 'public/**'
+              - '.eslint*'
+              - 'tsconfig*'
+              - 'package.json'
+              - 'package-lock.json'
 ```
 
 Replace with:
 
-```yaml
-filters: |
-  app:
-    - 'packages/app/**'
-    - 'packages/shared/**'
-    - 'public/**'
-    - 'package.json'
-    - 'package-lock.json'
-  electron:
-    - 'packages/electron/**'
-    - 'packages/shared/**'
-    - 'public/**'
-    - 'package.json'
-    - 'package-lock.json'
-  packaging:
-    - 'package.json'
-    - 'package-lock.json'
-    - 'packages/app/src/assets/icons/**'
-    - 'build/**'
-    - 'public/i18n/**'
-  any-source:
-    - 'packages/**'
-    - 'public/**'
-    - '.eslint*'
-    - 'tsconfig*'
-    - 'package.json'
-    - 'package-lock.json'
+```
+          filters: |
+            app:
+              - 'packages/app/**'
+              - 'packages/shared/**'
+              - 'public/**'
+              - 'package.json'
+              - 'package-lock.json'
+            electron:
+              - 'packages/electron/**'
+              - 'packages/shared/**'
+              - 'public/**'
+              - 'package.json'
+              - 'package-lock.json'
+            packaging:
+              - 'package.json'
+              - 'package-lock.json'
+              - 'packages/app/src/assets/icons/**'
+              - 'build/**'
+              - 'public/i18n/**'
+            any-source:
+              - 'packages/**'
+              - 'public/**'
+              - '.eslint*'
+              - 'tsconfig*'
+              - 'package.json'
+              - 'package-lock.json'
 ```
 
 - [ ] **Step 3: Validate YAML syntax and the new filter content**
@@ -147,170 +149,195 @@ git commit -m "#171: Add packaging path filter; include package.json/lockfile in
 
 - [ ] **Step 1: Rename existing stage labels to the `/6` scheme**
 
-Five separate one-line edits in `.github/workflows/bitbutler-pr.yml`:
+Five separate one-line edits in `.github/workflows/bitbutler-pr.yml`. Each `name:` line below is indented 4 spaces in the real file (inside its job block) — match on the full line including indentation:
 
-```yaml
-# Before
+Before:
+
+```
     name: '[1/5] PR Format & Issue Sync'
-# After
+```
+
+After:
+
+```
     name: '[1/6] PR Format & Issue Sync'
 ```
 
-```yaml
-# Before
+Before:
+
+```
     name: '[2/5] Detect Changes'
-# After
+```
+
+After:
+
+```
     name: '[2/6] Detect Changes'
 ```
 
-```yaml
-# Before
+Before:
+
+```
     name: '[3/5] Code Quality (Lint)'
-# After
+```
+
+After:
+
+```
     name: '[3/6] Code Quality (Lint)'
 ```
 
-```yaml
-# Before
+Before:
+
+```
     name: '[4/5] Unit Tests - Angular'
-# After
+```
+
+After:
+
+```
     name: '[4a/6] Unit Tests - Angular'
 ```
 
-```yaml
-# Before
+Before:
+
+```
     name: '[4/5] Unit Tests - Electron'
-# After
+```
+
+After:
+
+```
     name: '[4b/6] Unit Tests - Electron'
 ```
 
 - [ ] **Step 2: Replace the entire `build:` job block with `compile-check:` and `package:`**
 
-Find (the entire job, from `build:` through the final `electron-builder` step):
+Find this exact text (the entire job, indented 2 spaces at the `build:` key since it's a direct child of `jobs:`, matching its current position between `test-electron:` and the end of the file):
 
-```yaml
-build:
-  name: '[5/5] Build & Package (${{ matrix.job_name }})'
-  runs-on: ${{ matrix.os }}
-  needs: [detect-changes, test-app, test-electron]
-  if: >-
-    always() &&
-    (needs.detect-changes.outputs.app == 'true' || needs.detect-changes.outputs.electron == 'true') &&
-    !contains(needs.*.result, 'failure') &&
-    !contains(needs.*.result, 'cancelled')
-  env:
-    ELECTRON_MIRROR: 'https://npmmirror.com/mirrors/electron/'
-  strategy:
-    fail-fast: true
-    matrix:
-      os: [ubuntu-latest, windows-latest]
-      include:
-        - os: ubuntu-latest
-          target: --linux
-          job_name: 'Linux'
-        - os: windows-latest
-          target: --win
-          job_name: 'Windows'
-  steps:
-    - uses: actions/checkout@v6
-    - uses: actions/setup-node@v6
-      with:
-        node-version: '24'
-        cache: 'npm'
-    - run: npm install -g npm@11
-    - run: npm ci
-      env:
-        ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+```
+  build:
+    name: '[5/5] Build & Package (${{ matrix.job_name }})'
+    runs-on: ${{ matrix.os }}
+    needs: [detect-changes, test-app, test-electron]
+    if: >-
+      always() &&
+      (needs.detect-changes.outputs.app == 'true' || needs.detect-changes.outputs.electron == 'true') &&
+      !contains(needs.*.result, 'failure') &&
+      !contains(needs.*.result, 'cancelled')
+    env:
+      ELECTRON_MIRROR: 'https://npmmirror.com/mirrors/electron/'
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            target: --linux
+            job_name: 'Linux'
+          - os: windows-latest
+            target: --win
+            job_name: 'Windows'
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: 'npm'
+      - run: npm install -g npm@11
+      - run: npm ci
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
 
-    - name: Install Linux Build Dependencies (RPM)
-      if: matrix.os == 'ubuntu-latest'
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y rpm
+      - name: Install Linux Build Dependencies (RPM)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rpm
 
-    - run: npm run build:ui
+      - run: npm run build:ui
 
-    - name: Compile Electron TypeScript
-      run: npm run build:electron
+      - name: Compile Electron TypeScript
+        run: npm run build:electron
 
-    - name: Build Electron App
-      run: npx electron-builder ${{ matrix.target }}
+      - name: Build Electron App
+        run: npx electron-builder ${{ matrix.target }}
 ```
 
 Replace with:
 
-```yaml
-compile-check:
-  name: '[5/6] Compile Check'
-  runs-on: ubuntu-latest
-  needs: [detect-changes, test-app, test-electron]
-  if: >-
-    always() &&
-    (needs.detect-changes.outputs.app == 'true' || needs.detect-changes.outputs.electron == 'true') &&
-    !contains(needs.*.result, 'failure') &&
-    !contains(needs.*.result, 'cancelled')
-  steps:
-    - uses: actions/checkout@v6
-    - uses: actions/setup-node@v6
-      with:
-        node-version: '24'
-        cache: 'npm'
-    - run: npm install -g npm@11
-    - run: npm ci
-      env:
-        ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
-    - run: npm run build:ui
-    - name: Compile Electron TypeScript
-      run: npm run build:electron
+```
+  compile-check:
+    name: '[5/6] Compile Check'
+    runs-on: ubuntu-latest
+    needs: [detect-changes, test-app, test-electron]
+    if: >-
+      always() &&
+      (needs.detect-changes.outputs.app == 'true' || needs.detect-changes.outputs.electron == 'true') &&
+      !contains(needs.*.result, 'failure') &&
+      !contains(needs.*.result, 'cancelled')
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: 'npm'
+      - run: npm install -g npm@11
+      - run: npm ci
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+      - run: npm run build:ui
+      - name: Compile Electron TypeScript
+        run: npm run build:electron
 
-package:
-  name: '[6${{ matrix.leg }}/6] Package & Distribute (${{ matrix.job_name }})'
-  runs-on: ${{ matrix.os }}
-  needs: [detect-changes, compile-check]
-  if: >-
-    always() &&
-    needs.detect-changes.outputs.packaging == 'true' &&
-    !contains(needs.*.result, 'failure') &&
-    !contains(needs.*.result, 'cancelled')
-  env:
-    ELECTRON_MIRROR: 'https://npmmirror.com/mirrors/electron/'
-  strategy:
-    fail-fast: true
-    matrix:
-      os: [ubuntu-latest, windows-latest]
-      include:
-        - os: ubuntu-latest
-          target: --linux
-          job_name: 'Linux'
-          leg: 'a'
-        - os: windows-latest
-          target: --win
-          job_name: 'Windows'
-          leg: 'b'
-  steps:
-    - uses: actions/checkout@v6
-    - uses: actions/setup-node@v6
-      with:
-        node-version: '24'
-        cache: 'npm'
-    - run: npm install -g npm@11
-    - run: npm ci
-      env:
-        ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+  package:
+    name: '[6${{ matrix.leg }}/6] Package & Distribute (${{ matrix.job_name }})'
+    runs-on: ${{ matrix.os }}
+    needs: [detect-changes, compile-check]
+    if: >-
+      always() &&
+      needs.detect-changes.outputs.packaging == 'true' &&
+      !contains(needs.*.result, 'failure') &&
+      !contains(needs.*.result, 'cancelled')
+    env:
+      ELECTRON_MIRROR: 'https://npmmirror.com/mirrors/electron/'
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            target: --linux
+            job_name: 'Linux'
+            leg: 'a'
+          - os: windows-latest
+            target: --win
+            job_name: 'Windows'
+            leg: 'b'
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: 'npm'
+      - run: npm install -g npm@11
+      - run: npm ci
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
 
-    - name: Install Linux Build Dependencies (RPM)
-      if: matrix.os == 'ubuntu-latest'
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y rpm
+      - name: Install Linux Build Dependencies (RPM)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rpm
 
-    - run: npm run build:ui
+      - run: npm run build:ui
 
-    - name: Compile Electron TypeScript
-      run: npm run build:electron
+      - name: Compile Electron TypeScript
+        run: npm run build:electron
 
-    - name: Build Electron App
-      run: npx electron-builder ${{ matrix.target }}
+      - name: Build Electron App
+        run: npx electron-builder ${{ matrix.target }}
 ```
 
 - [ ] **Step 3: Validate YAML syntax and job-id structure**
@@ -475,6 +502,7 @@ If all three scenarios matched expectations, the feature PR (`$FEATURE_PR` from 
 
 ## Self-Review Notes
 
-- **Spec coverage:** `packaging` filter (Task 1) ✓, `app`/`electron` filter fix (Task 1) ✓, job split (Task 2) ✓, stage letter-suffix naming (Task 2) ✓, behavior-comparison table validated live (Task 3, covers 3 of 5 rows directly; the remaining two rows — translation edit and packaging-config edit — are the same code path as the validated rows: translation edits use the `app` source path matched in Step 2's scenario logic since `public/i18n/**` is also a subset of the `app`/`electron` filters' `public/**` entry, and packaging-config edits use the same `package.json` path validated in Step 3, so they are not re-tested separately).
+- **Spec coverage:** `packaging` filter (Task 1) checked, `app`/`electron` filter fix (Task 1) checked, job split (Task 2) checked, stage letter-suffix naming (Task 2) checked, behavior-comparison table validated live (Task 3, covers 3 of 5 rows directly; the remaining two rows — translation edit and packaging-config edit — exercise the same code paths as the validated rows: translation edits use the `app` source path matched in Step 2's scenario logic since `public/i18n/**` is also a subset of the `app`/`electron` filters' `public/**` entry, and packaging-config edits use the same `package.json` path validated in Step 3, so they are not re-tested separately).
 - **Placeholder scan:** none found — every step has literal commands/YAML.
 - **Type/naming consistency:** job id `package` is referenced consistently; `compile-check` id matches between Task 2's YAML and its own validation script in Step 3.
+- **Fence-tagging fix:** all snippets representing fragments of `.github/workflows/bitbutler-pr.yml` are untagged code fences (not `yaml`) specifically to survive this repo's Prettier pre-commit hook without having their indentation silently rewritten.
