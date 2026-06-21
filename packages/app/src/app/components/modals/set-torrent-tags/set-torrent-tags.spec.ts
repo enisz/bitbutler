@@ -4,6 +4,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Torrent } from '../../../models/torrent.model';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
+import { ToastService } from '../../../services/toast.service';
 import { SetTorrentTags } from './set-torrent-tags';
 
 describe('SetTorrentTags', () => {
@@ -29,6 +30,7 @@ describe('SetTorrentTags', () => {
             },
           },
         },
+        { provide: ToastService, useValue: { danger: vi.fn() } },
       ],
     }).compileComponents();
 
@@ -87,6 +89,25 @@ describe('SetTorrentTags', () => {
         'server-1',
         ['hash-1'],
         ['comedy'],
+      );
+    });
+
+    it('should show a danger toast with the raw error when addTags fails', async () => {
+      const mockQbService = TestBed.inject(QbService) as unknown as {
+        torrents: { addTags: ReturnType<typeof vi.fn>; removeTags: ReturnType<typeof vi.fn> };
+      };
+      const mockToastService = TestBed.inject(ToastService) as unknown as {
+        danger: ReturnType<typeof vi.fn>;
+      };
+      mockQbService.torrents.addTags.mockRejectedValueOnce(new Error('disk full'));
+      await component.ngOnInit();
+      component.setTorrentTagsForm.get('tags')?.setValue(['action', 'drama']);
+
+      await component.handleSubmit();
+
+      expect(mockToastService.danger).toHaveBeenCalledWith(
+        'disk full',
+        'components.modals.set-torrent-tags.toast.set-failed-title',
       );
     });
   });

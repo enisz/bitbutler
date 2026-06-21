@@ -293,7 +293,10 @@
         }
       },
       "set-torrent-tags": {
-        "title": "Set Torrent Tags"
+        "title": "Set Torrent Tags",
+        "toast": {
+          "set-failed-title": "Failed to Set Torrent Tags"
+        }
       },
       "torrent-details": {
         "content": {
