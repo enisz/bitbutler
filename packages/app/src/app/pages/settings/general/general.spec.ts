@@ -81,6 +81,7 @@ describe('General', () => {
           username: '',
           created_at: '',
           has_password: false,
+          export_available: null,
         },
       ]);
       fixture.detectChanges();
@@ -125,6 +126,7 @@ describe('General', () => {
           username: '',
           created_at: '',
           has_password: false,
+          export_available: null,
         },
       ]);
       fixture.detectChanges();
@@ -143,6 +145,7 @@ describe('General', () => {
           username: '',
           created_at: '',
           has_password: false,
+          export_available: null,
         },
       ]);
       fixture.detectChanges();
@@ -177,6 +180,7 @@ describe('General', () => {
           username: '',
           created_at: '',
           has_password: false,
+          export_available: null,
         },
       ]);
       component.generalSettingsForm.controls.startup.controls.openAtLogin.setValue(true);

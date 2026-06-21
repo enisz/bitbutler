@@ -34,6 +34,8 @@ export type {
   ExportScope,
   ExportStartPayload,
   ExportTagScope,
+  ExportTorrentFileItem,
+  ExportTorrentFilesResult,
   ImportRestoreField,
   ImportStartMode,
   ImportStartPayload,

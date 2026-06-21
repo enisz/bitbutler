@@ -19,6 +19,9 @@ export function registerServerIpcHandlers(): void {
   ipcMain.handle('server:delete', async (_event, payload: unknown) => serverDelete(payload));
   ipcMain.handle('server:getById', async (_event, payload: unknown) => serverGetById(payload));
   ipcMain.handle('server:getByHost', async (_event, payload: unknown) => serverGetByHost(payload));
+  ipcMain.handle('server:set-export-available', async (_event, payload: unknown) =>
+    serverSetExportAvailable(payload),
+  );
 
   ipcMain.on('server:set-active', (_event, id: string | null) => {
     if (activeServerId === id) return;
@@ -39,12 +42,14 @@ interface ServerRow {
   auto_login: number;
   created_at: string;
   has_password: number;
+  export_available: number | null;
 }
 
 const stmtList = db.prepare<[], ServerRow>(`
   SELECT
     id, name, host, protocol, port, username,
     auto_login,
+    export_available,
     created_at,
     CASE WHEN password IS NOT NULL THEN 1 ELSE 0 END as has_password
   FROM servers
@@ -55,6 +60,7 @@ const stmtGetById = db.prepare<[string], ServerRow>(`
   SELECT
     id, name, host, protocol, port, username,
     auto_login,
+    export_available,
     created_at,
     CASE WHEN password IS NOT NULL THEN 1 ELSE 0 END as has_password
   FROM servers
@@ -65,6 +71,7 @@ const stmtGetByHost = db.prepare<[string], ServerRow>(`
   SELECT
     id, name, host, protocol, port, username,
     auto_login,
+    export_available,
     created_at,
     CASE WHEN password IS NOT NULL THEN 1 ELSE 0 END as has_password
   FROM servers
@@ -106,6 +113,9 @@ const stmtUpdateWithPassword = db.prepare(`
 const stmtDelete = db.prepare<[string]>(`DELETE FROM servers WHERE id = ?`);
 const stmtUnsetAutoLogin = db.prepare(`UPDATE servers SET auto_login = 0 WHERE auto_login = 1`);
 const stmtSetAutoLogin = db.prepare<[string]>(`UPDATE servers SET auto_login = 1 WHERE id = ?`);
+const stmtSetExportAvailable = db.prepare<[number, string]>(`
+  UPDATE servers SET export_available = ? WHERE id = ?
+`);
 
 const txInsertWithAutoLogin = db.transaction((row: Record<string, unknown>) => {
   if (row['auto_login'] === 1) stmtUnsetAutoLogin.run();
@@ -123,6 +133,7 @@ function rowToRecord(row: ServerRow): ServerRecord {
     auto_login: row.auto_login === 1,
     created_at: row.created_at,
     has_password: row.has_password === 1,
+    export_available: row.export_available as 0 | 1 | null,
   };
 }
 
@@ -140,6 +151,26 @@ function serverGetByHost(payload: unknown): ServerRecord | null {
   const host = requireNonEmptyHost((payload as Record<string, unknown>)?.host, 'host');
   const row = stmtGetByHost.get(host);
   return row ? rowToRecord(row) : null;
+}
+
+export function getExportAvailable(id: string): 0 | 1 | null {
+  const row = stmtGetById.get(id);
+  return row ? (row.export_available as 0 | 1 | null) : null;
+}
+
+export function setExportAvailable(id: string, value: 0 | 1): void {
+  stmtSetExportAvailable.run(value, id);
+}
+
+function serverSetExportAvailable(payload: unknown): { updated: boolean } {
+  const p = payload as Record<string, unknown>;
+  const id = requireString(p?.id, 'id');
+  const value = p?.value;
+  if (value !== 0 && value !== 1) {
+    throw new Error("Field 'value' must be 0 or 1.");
+  }
+  setExportAvailable(id, value);
+  return { updated: true };
 }
 
 function serverDelete(payload: unknown): { deleted: boolean } {

@@ -95,6 +95,17 @@ export interface ExportDoneEvent {
   skipped: number;
 }
 
+export interface ExportTorrentFileItem {
+  hash: string;
+  name: string;
+}
+
+export interface ExportTorrentFilesResult {
+  cancelled: boolean;
+  savedPaths: string[];
+  failed: { hash: string; name: string; error: string }[];
+}
+
 export interface BbeTorrentFile {
   index: number;
   name: string;
@@ -177,6 +188,7 @@ export interface BitButlerAPI {
     delete(payload: { id: string }): Promise<{ deleted: boolean }>;
     getById(payload: { id: string }): Promise<ServerRecord | null>;
     getByHost(payload: { host: string }): Promise<ServerRecord | null>;
+    setExportAvailable(payload: { id: string; value: 0 | 1 }): Promise<{ updated: boolean }>;
     setActive(id: string | null): void;
   };
 
@@ -241,6 +253,11 @@ export interface BitButlerAPI {
     openBbePicker(): Promise<string | undefined>;
     readBbe(payload: { path: string }): Promise<BbeMetadata>;
     getServerInfo(serverId: string): Promise<BbeServerInfo>;
+    checkAvailability(serverId: string): Promise<{ available: boolean }>;
+    saveTorrentFiles(payload: {
+      serverId: string;
+      items: ExportTorrentFileItem[];
+    }): Promise<ExportTorrentFilesResult>;
     importStart(payload: ImportStartPayload): void;
     importCancel(): void;
     onProgress(cb: (e: ExportProgressEvent) => void): () => void;

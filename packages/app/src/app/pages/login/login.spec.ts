@@ -98,7 +98,7 @@ describe('Login', () => {
         { provide: NgbModal, useValue: modalMock },
         {
           provide: QbService,
-          useValue: { login: vi.fn().mockResolvedValue({ loggedIn: false }) },
+          useValue: { auth: { login: vi.fn().mockResolvedValue({ loggedIn: false }) } },
         },
         {
           provide: WindowService,
@@ -281,6 +281,92 @@ describe('Login', () => {
       modalMock.open.mockReturnValue(mockRef);
       component.openManageServers();
       expect(componentInstance['hideConnect']).toBe(true);
+    });
+  });
+
+  describe('connect', () => {
+    let qbServiceMock: { login: ReturnType<typeof vi.fn> };
+
+    beforeEach(() => {
+      qbServiceMock = (TestBed.inject(QbService) as any).auth;
+    });
+
+    function setCurrentServer(overrides: Record<string, unknown> = {}) {
+      serverStoreMock.currentServer.set({
+        id: 'srv-1',
+        name: 'Local',
+        host: 'localhost',
+        protocol: 'http',
+        port: 8080,
+        username: 'admin',
+        has_password: true,
+        export_available: null,
+        ...overrides,
+      });
+    }
+
+    it('probes availability and persists the result when export_available is null', async () => {
+      setCurrentServer({ export_available: null });
+      qbServiceMock.login.mockResolvedValue({ loggedIn: true });
+      const checkAvailability = vi
+        .spyOn(window.bitbutler.export, 'checkAvailability')
+        .mockResolvedValue({ available: true });
+      const setExportAvailable = vi
+        .spyOn(window.bitbutler.server, 'setExportAvailable')
+        .mockResolvedValue({ updated: true });
+
+      await component.connect();
+
+      expect(checkAvailability).toHaveBeenCalledWith('srv-1');
+      expect(setExportAvailable).toHaveBeenCalledWith({ id: 'srv-1', value: 1 });
+    });
+
+    it('persists 0 when the probe reports unavailable', async () => {
+      setCurrentServer({ export_available: null });
+      qbServiceMock.login.mockResolvedValue({ loggedIn: true });
+      vi.spyOn(window.bitbutler.export, 'checkAvailability').mockResolvedValue({
+        available: false,
+      });
+      const setExportAvailable = vi
+        .spyOn(window.bitbutler.server, 'setExportAvailable')
+        .mockResolvedValue({ updated: true });
+
+      await component.connect();
+
+      expect(setExportAvailable).toHaveBeenCalledWith({ id: 'srv-1', value: 0 });
+    });
+
+    it('does not probe when export_available is already resolved', async () => {
+      setCurrentServer({ export_available: 1 });
+      qbServiceMock.login.mockResolvedValue({ loggedIn: true });
+      const checkAvailability = vi.spyOn(window.bitbutler.export, 'checkAvailability');
+
+      await component.connect();
+
+      expect(checkAvailability).not.toHaveBeenCalled();
+    });
+
+    it('does not block login when the probe throws', async () => {
+      setCurrentServer({ export_available: null });
+      qbServiceMock.login.mockResolvedValue({ loggedIn: true });
+      vi.spyOn(window.bitbutler.export, 'checkAvailability').mockRejectedValue(
+        new Error('network error'),
+      );
+      const router = TestBed.inject(Router) as any;
+
+      await component.connect();
+
+      expect(router.navigate).toHaveBeenCalledWith(['/pages/main']);
+    });
+
+    it('does not probe when login did not succeed', async () => {
+      setCurrentServer({ export_available: null });
+      qbServiceMock.login.mockResolvedValue({ loggedIn: false });
+      const checkAvailability = vi.spyOn(window.bitbutler.export, 'checkAvailability');
+
+      await component.connect();
+
+      expect(checkAvailability).not.toHaveBeenCalled();
     });
   });
 });

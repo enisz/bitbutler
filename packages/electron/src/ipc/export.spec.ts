@@ -136,6 +136,261 @@ describe('applyPathMappings', () => {
   });
 });
 
+describe('resolveFullMode', () => {
+  const mockGetExportAvailable = vi.hoisted(() => vi.fn());
+  const mockQbRequestProbe = vi.hoisted(() => vi.fn());
+
+  beforeEach(() => {
+    vi.resetModules();
+    vi.doMock('./server.js', () => ({ getExportAvailable: mockGetExportAvailable }));
+    vi.doMock('./qbittorrent.js', () => ({ qbRequest: mockQbRequestProbe }));
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.doUnmock('./server.js');
+    vi.doUnmock('./qbittorrent.js');
+  });
+
+  async function setup() {
+    return import('./export.js');
+  }
+
+  it('returns true without probing when cached value is 1', async () => {
+    mockGetExportAvailable.mockReturnValue(1);
+    const { resolveFullMode } = await setup();
+    expect(await resolveFullMode('server-1')).toBe(true);
+    expect(mockQbRequestProbe).not.toHaveBeenCalled();
+  });
+
+  it('returns false without probing when cached value is 0', async () => {
+    mockGetExportAvailable.mockReturnValue(0);
+    const { resolveFullMode } = await setup();
+    expect(await resolveFullMode('server-1')).toBe(false);
+    expect(mockQbRequestProbe).not.toHaveBeenCalled();
+  });
+
+  it('probes live when cached value is null', async () => {
+    mockGetExportAvailable.mockReturnValue(null);
+    mockQbRequestProbe.mockResolvedValue(Buffer.from(''));
+    const { resolveFullMode } = await setup();
+    expect(await resolveFullMode('server-1')).toBe(true);
+    expect(mockQbRequestProbe).toHaveBeenCalled();
+  });
+});
+
+describe('export:check-availability IPC handler', () => {
+  const ipcHandlersCheck = vi.hoisted(() => new Map<string, (...args: unknown[]) => unknown>());
+  const mockQbRequestAvail = vi.hoisted(() => vi.fn());
+
+  beforeEach(() => {
+    vi.resetModules();
+    ipcHandlersCheck.clear();
+    vi.doMock('electron', () => ({
+      ipcMain: {
+        handle: vi.fn((channel: string, handler: (...args: unknown[]) => unknown) => {
+          ipcHandlersCheck.set(channel, handler);
+        }),
+        on: vi.fn(),
+      },
+      dialog: { showSaveDialog: vi.fn(), showOpenDialog: vi.fn() },
+    }));
+    vi.doMock('./qbittorrent.js', () => ({ qbRequest: mockQbRequestAvail }));
+    vi.doMock('./server.js', () => ({ getExportAvailable: vi.fn() }));
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.doUnmock('./qbittorrent.js');
+    vi.doUnmock('./server.js');
+  });
+
+  it('returns { available: true } when the probe succeeds', async () => {
+    mockQbRequestAvail.mockResolvedValue(Buffer.from(''));
+    const { registerExportIpcHandlers } = await import('./export.js');
+    registerExportIpcHandlers();
+    const handler = ipcHandlersCheck.get('export:check-availability')!;
+    expect(await handler(null, { serverId: 'server-1' })).toEqual({ available: true });
+  });
+
+  it('returns { available: false } when the probe gets a 404', async () => {
+    mockQbRequestAvail.mockRejectedValue(JSON.stringify({ status: 404 }));
+    const { registerExportIpcHandlers } = await import('./export.js');
+    registerExportIpcHandlers();
+    const handler = ipcHandlersCheck.get('export:check-availability')!;
+    expect(await handler(null, { serverId: 'server-1' })).toEqual({ available: false });
+  });
+});
+
+describe('export:save-torrent-files IPC handler', () => {
+  const ipcHandlersSave = vi.hoisted(() => new Map<string, (...args: unknown[]) => unknown>());
+  const mockShowSaveDialog = vi.hoisted(() => vi.fn());
+  const mockShowOpenDialog = vi.hoisted(() => vi.fn());
+  const mockQbRequestSave = vi.hoisted(() => vi.fn());
+  const mockWriteFile = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
+
+  beforeEach(() => {
+    vi.resetModules();
+    ipcHandlersSave.clear();
+    vi.doMock('electron', () => ({
+      ipcMain: {
+        handle: vi.fn((channel: string, handler: (...args: unknown[]) => unknown) => {
+          ipcHandlersSave.set(channel, handler);
+        }),
+        on: vi.fn(),
+      },
+      dialog: { showSaveDialog: mockShowSaveDialog, showOpenDialog: mockShowOpenDialog },
+    }));
+    vi.doMock('./qbittorrent.js', () => ({ qbRequest: mockQbRequestSave }));
+    vi.doMock('./server.js', () => ({ getExportAvailable: vi.fn() }));
+    vi.doMock('node:fs', () => ({
+      default: { promises: { writeFile: mockWriteFile } },
+      promises: { writeFile: mockWriteFile },
+    }));
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.doUnmock('./qbittorrent.js');
+    vi.doUnmock('./server.js');
+    vi.doUnmock('node:fs');
+  });
+
+  async function getHandler() {
+    const { registerExportIpcHandlers } = await import('./export.js');
+    registerExportIpcHandlers();
+    return ipcHandlersSave.get('export:save-torrent-files')!;
+  }
+
+  it('returns cancelled when there are no items', async () => {
+    const handler = await getHandler();
+    const result = await handler(null, { serverId: 'server-1', items: [] });
+    expect(result).toEqual({ cancelled: true, savedPaths: [], failed: [] });
+  });
+
+  it('shows a save dialog for a single item and writes the buffer', async () => {
+    mockShowSaveDialog.mockResolvedValue({ canceled: false, filePath: '/tmp/My Torrent.torrent' });
+    mockQbRequestSave.mockResolvedValue(Buffer.from('torrent-bytes'));
+    const handler = await getHandler();
+    const result = await handler(null, {
+      serverId: 'server-1',
+      items: [{ hash: 'abc', name: 'My Torrent' }],
+    });
+    expect(mockShowSaveDialog).toHaveBeenCalledWith(
+      expect.objectContaining({ defaultPath: 'My Torrent.torrent' }),
+    );
+    expect(mockWriteFile).toHaveBeenCalledWith(
+      '/tmp/My Torrent.torrent',
+      Buffer.from('torrent-bytes'),
+    );
+    expect(result).toEqual({
+      cancelled: false,
+      savedPaths: ['/tmp/My Torrent.torrent'],
+      failed: [],
+    });
+  });
+
+  it('returns cancelled when the single-item save dialog is cancelled', async () => {
+    mockShowSaveDialog.mockResolvedValue({ canceled: true, filePath: undefined });
+    const handler = await getHandler();
+    const result = await handler(null, {
+      serverId: 'server-1',
+      items: [{ hash: 'abc', name: 'My Torrent' }],
+    });
+    expect(result).toEqual({ cancelled: true, savedPaths: [], failed: [] });
+    expect(mockQbRequestSave).not.toHaveBeenCalled();
+  });
+
+  it('shows a directory picker for multiple items and writes one file per item', async () => {
+    mockShowOpenDialog.mockResolvedValue({ canceled: false, filePaths: ['/tmp/out'] });
+    mockQbRequestSave.mockResolvedValue(Buffer.from('bytes'));
+    const handler = await getHandler();
+    const result = await handler(null, {
+      serverId: 'server-1',
+      items: [
+        { hash: 'aaa', name: 'First' },
+        { hash: 'bbb', name: 'Second' },
+      ],
+    });
+    expect(mockWriteFile).toHaveBeenCalledWith(
+      expect.stringContaining('First.torrent'),
+      Buffer.from('bytes'),
+    );
+    expect(mockWriteFile).toHaveBeenCalledWith(
+      expect.stringContaining('Second.torrent'),
+      Buffer.from('bytes'),
+    );
+    expect(result.cancelled).toBe(false);
+    expect(result.savedPaths).toHaveLength(2);
+  });
+
+  it('disambiguates a filename collision by appending the hash', async () => {
+    mockShowOpenDialog.mockResolvedValue({ canceled: false, filePaths: ['/tmp/out'] });
+    mockQbRequestSave.mockResolvedValue(Buffer.from('bytes'));
+    const handler = await getHandler();
+    const result = await handler(null, {
+      serverId: 'server-1',
+      items: [
+        { hash: 'aaaaaaaa11', name: 'Same Name' },
+        { hash: 'bbbbbbbb22', name: 'Same Name' },
+      ],
+    });
+    expect(result.savedPaths.some((p: string) => p.includes('bbbbbbbb'))).toBe(true);
+  });
+
+  it('collects per-item failures without aborting the batch', async () => {
+    mockShowOpenDialog.mockResolvedValue({ canceled: false, filePaths: ['/tmp/out'] });
+    mockQbRequestSave
+      .mockRejectedValueOnce(new Error('network error'))
+      .mockResolvedValueOnce(Buffer.from('bytes'));
+    const handler = await getHandler();
+    const result = await handler(null, {
+      serverId: 'server-1',
+      items: [
+        { hash: 'aaa', name: 'Fails' },
+        { hash: 'bbb', name: 'Succeeds' },
+      ],
+    });
+    expect(result.failed).toEqual([{ hash: 'aaa', name: 'Fails', error: 'network error' }]);
+    expect(result.savedPaths).toHaveLength(1);
+  });
+
+  it('returns cancelled when the directory picker is cancelled', async () => {
+    mockShowOpenDialog.mockResolvedValue({ canceled: true, filePaths: [] });
+    const handler = await getHandler();
+    const result = await handler(null, {
+      serverId: 'server-1',
+      items: [
+        { hash: 'aaa', name: 'A' },
+        { hash: 'bbb', name: 'B' },
+      ],
+    });
+    expect(result).toEqual({ cancelled: true, savedPaths: [], failed: [] });
+  });
+
+  it('produces a friendly error message for a qBittorrent HTTP failure', async () => {
+    mockShowOpenDialog.mockResolvedValue({ canceled: false, filePaths: ['/tmp/out'] });
+    mockQbRequestSave.mockRejectedValueOnce(
+      JSON.stringify({
+        name: 'QbHttpError',
+        status: 404,
+        statusText: 'Not Found',
+        body: '...',
+        path: '/api/v2/torrents/export',
+      }),
+    );
+    const handler = await getHandler();
+    const result = await handler(null, {
+      serverId: 'server-1',
+      items: [
+        { hash: 'aaa', name: 'Fails' },
+        { hash: 'bbb', name: 'Succeeds' },
+      ],
+    });
+    expect(result.failed).toEqual([{ hash: 'aaa', name: 'Fails', error: '404 Not Found' }]);
+  });
+});
+
 describe('collectCategoriesAndTags', () => {
   const mockQbRequest = vi.hoisted(() => vi.fn());
 

@@ -16,8 +16,11 @@
         [class.bb-warning]="entry.variant === 'warning'"
         [class.bb-success]="entry.variant === 'success'"
         [class.bb-info]="entry.variant === 'info'"
-        [disabled]="entry.disabled"
+        [class.bb-item--disabled]="entry.disabled"
+        [attr.aria-disabled]="entry.disabled ? 'true' : null"
         (click)="onEntryClick(entry)"
+        (mouseenter)="onItemMouseEnter(entry, asHtmlElement($event.currentTarget))"
+        (mouseleave)="onItemMouseLeave()"
         role="menuitem"
       >
         <span class="bb-icon" aria-hidden="true">
@@ -63,4 +66,8 @@
       </button>
     }
   }
+
+  <div #tooltipEl popover="manual" class="bb-tooltip-popover">
+    {{ tooltipText() | translate }}
+  </div>
 </div>

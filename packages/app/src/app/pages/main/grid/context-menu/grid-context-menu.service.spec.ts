@@ -2,6 +2,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import { TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import type { Torrent } from '../../../../models/torrent.model';
 import { CommandBusService } from '../../../../services/command-bus.service';
@@ -9,6 +10,7 @@ import { FilterService } from '../../../../services/filter.service';
 import { PathService } from '../../../../services/path.service';
 import { QbService } from '../../../../services/qb.service';
 import { ServerStoreService } from '../../../../services/server-store.service';
+import { ToastService } from '../../../../services/toast.service';
 import { TorrentListGridSettingsService } from '../../../../services/torrent-list-grid.settings.service';
 import type { ContextMenuEntry, GridContextMenuData } from './context-menu.types';
 import { GridContextMenuService } from './grid-context-menu.service';
@@ -45,7 +47,6 @@ function makeData(overrides: Partial<GridContextMenuData> = {}): GridContextMenu
 
   return {
     row,
-    cell: { colId: 'name', rowId: 'abc123', value: 'My Torrent' },
     selected: [row],
     rowPinned: null,
     ...overrides,
@@ -91,6 +92,8 @@ describe('GridContextMenuService', () => {
   let qbService: { torrents: { files: ReturnType<typeof vi.fn> } };
   let pathService: { resolveLocalPath: ReturnType<typeof vi.fn> };
   let filterService: { clearColumnFilter: ReturnType<typeof vi.fn> };
+  let toastService: { danger: ReturnType<typeof vi.fn> };
+  let translateService: { instant: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     commandBusService = { emit: vi.fn() };
@@ -98,6 +101,16 @@ describe('GridContextMenuService', () => {
     qbService = { torrents: { files: vi.fn().mockResolvedValue([{}, {}]) } };
     pathService = { resolveLocalPath: vi.fn().mockResolvedValue('/local/path') };
     filterService = { clearColumnFilter: vi.fn() };
+    toastService = { danger: vi.fn() };
+    translateService = { instant: vi.fn((key: string) => key) };
+
+    (window as any).bitbutler = {
+      export: {
+        saveTorrentFiles: vi
+          .fn()
+          .mockResolvedValue({ cancelled: false, savedPaths: ['/tmp/x.torrent'], failed: [] }),
+      },
+    };
 
     TestBed.configureTestingModule({
       providers: [
@@ -109,12 +122,17 @@ describe('GridContextMenuService', () => {
         { provide: FilterService, useValue: filterService },
         {
           provide: ServerStoreService,
-          useValue: { currentServerId: signal('server-1') },
+          useValue: {
+            currentServerId: signal('server-1'),
+            currentServer: signal({ id: 'server-1', export_available: 1 } as any),
+          },
         },
+        { provide: ToastService, useValue: toastService },
         {
           provide: TorrentListGridSettingsService,
           useValue: { asObservable: vi.fn(), save: vi.fn() },
         },
+        { provide: TranslateService, useValue: translateService },
       ],
     });
 
@@ -140,11 +158,13 @@ describe('GridContextMenuService', () => {
         expect(findItem(entries, 'files.remove')).toBeDefined();
       });
 
-      it('should include copy submenu with expected children', async () => {
+      it('should include the reworked copy submenu children', async () => {
         const entries = await service.buildTorrentMenu(makeData());
-        expect(findItem(entries, 'cell.copyValue')).toBeDefined();
-        expect(findItem(entries, 'torrent.copyInfoHash')).toBeDefined();
+        expect(findItem(entries, 'cell.copyValue')).toBeUndefined();
+        expect(findItem(entries, 'torrent.copyName')).toBeDefined();
         expect(findItem(entries, 'torrent.copyMagnet')).toBeDefined();
+        expect(findItem(entries, 'torrent.copyInfoHash')).toBeDefined();
+        expect(findItem(entries, 'torrent.copySavePath')).toBeDefined();
         expect(findItem(entries, 'torrent.copyJson')).toBeDefined();
       });
 
@@ -158,29 +178,40 @@ describe('GridContextMenuService', () => {
     });
 
     describe('pin disabled state', () => {
-      it('pinToTop is disabled when row is already pinned to top', async () => {
+      it('pinToTop is disabled with a tooltip when row is already pinned to top', async () => {
         const entries = await service.buildTorrentMenu(makeData({ rowPinned: 'top' }));
         expect(findItem(entries, 'row.pinToTop')?.disabled).toBe(true);
+        expect(findItem(entries, 'row.pinToTop')?.tooltip).toBe(
+          'pages.main.grid.context-menu.tooltip.already-pinned-top',
+        );
       });
 
-      it('pinToTop is enabled when row is not pinned to top', async () => {
+      it('pinToTop is enabled with no tooltip when row is not pinned to top', async () => {
         const entries = await service.buildTorrentMenu(makeData({ rowPinned: null }));
         expect(findItem(entries, 'row.pinToTop')?.disabled).toBeFalsy();
+        expect(findItem(entries, 'row.pinToTop')?.tooltip).toBeUndefined();
       });
 
-      it('pinToBottom is disabled when row is already pinned to bottom', async () => {
+      it('pinToBottom is disabled with a tooltip when row is already pinned to bottom', async () => {
         const entries = await service.buildTorrentMenu(makeData({ rowPinned: 'bottom' }));
         expect(findItem(entries, 'row.pinToBottom')?.disabled).toBe(true);
+        expect(findItem(entries, 'row.pinToBottom')?.tooltip).toBe(
+          'pages.main.grid.context-menu.tooltip.already-pinned-bottom',
+        );
       });
 
-      it('unpin is disabled when row is not pinned', async () => {
+      it('unpin is disabled with a tooltip when row is not pinned', async () => {
         const entries = await service.buildTorrentMenu(makeData({ rowPinned: null }));
         expect(findItem(entries, 'row.unpin')?.disabled).toBe(true);
+        expect(findItem(entries, 'row.unpin')?.tooltip).toBe(
+          'pages.main.grid.context-menu.tooltip.not-pinned',
+        );
       });
 
-      it('unpin is enabled when row is pinned', async () => {
+      it('unpin is enabled with no tooltip when row is pinned', async () => {
         const entries = await service.buildTorrentMenu(makeData({ rowPinned: 'top' }));
         expect(findItem(entries, 'row.unpin')?.disabled).toBeFalsy();
+        expect(findItem(entries, 'row.unpin')?.tooltip).toBeUndefined();
       });
     });
 
@@ -229,16 +260,138 @@ describe('GridContextMenuService', () => {
         expect(findItem(entries, 'files.openDestination')?.label).toContain('open-destination');
       });
 
-      it('is disabled when local path cannot be resolved', async () => {
+      it('is disabled with a tooltip when local path cannot be resolved', async () => {
         pathService.resolveLocalPath.mockResolvedValue(null);
         const entries = await service.buildTorrentMenu(makeData());
         expect(findItem(entries, 'files.openDestination')?.disabled).toBe(true);
+        expect(findItem(entries, 'files.openDestination')?.tooltip).toBe(
+          'pages.main.grid.context-menu.tooltip.open-destination-unresolved',
+        );
       });
 
       it('is enabled when local path is resolved', async () => {
         pathService.resolveLocalPath.mockResolvedValue('/local/downloads');
         const entries = await service.buildTorrentMenu(makeData());
         expect(findItem(entries, 'files.openDestination')?.disabled).toBeFalsy();
+      });
+    });
+
+    describe('torrent.exportFile', () => {
+      it('is enabled when export_available is 1', async () => {
+        const entries = await service.buildTorrentMenu(makeData());
+        expect(findItem(entries, 'torrent.exportFile')?.disabled).toBeFalsy();
+      });
+
+      it('is disabled with a tooltip when export_available is 0', async () => {
+        (TestBed.inject(ServerStoreService) as any).currentServer.set({
+          id: 'server-1',
+          export_available: 0,
+        });
+        const entries = await service.buildTorrentMenu(makeData());
+        expect(findItem(entries, 'torrent.exportFile')?.disabled).toBe(true);
+        expect(findItem(entries, 'torrent.exportFile')?.tooltip).toBe(
+          'pages.main.grid.context-menu.tooltip.export-unavailable',
+        );
+      });
+
+      it('is disabled when export_available is null', async () => {
+        (TestBed.inject(ServerStoreService) as any).currentServer.set({
+          id: 'server-1',
+          export_available: null,
+        });
+        const entries = await service.buildTorrentMenu(makeData());
+        expect(findItem(entries, 'torrent.exportFile')?.disabled).toBe(true);
+      });
+
+      it('uses the singular label for a single selection', async () => {
+        const row = makeRow();
+        const entries = await service.buildTorrentMenu(makeData({ row, selected: [row] }));
+        expect(findItem(entries, 'torrent.exportFile')?.label).toBe(
+          'pages.main.grid.context-menu.item.export-torrent-file',
+        );
+      });
+
+      it('uses the plural label for a multi-selection', async () => {
+        const rowA = makeRow({ hash: 'a' });
+        const rowB = makeRow({ hash: 'b' });
+        const entries = await service.buildTorrentMenu(
+          makeData({ row: rowA, selected: [rowA, rowB] }),
+        );
+        expect(findItem(entries, 'torrent.exportFile')?.label).toBe(
+          'pages.main.grid.context-menu.item.export-torrent-files',
+        );
+      });
+
+      it('calls saveTorrentFiles with hash/name pairs for the selection', async () => {
+        const rowA = makeRow({ hash: 'a', name: 'Film A' });
+        const rowB = makeRow({ hash: 'b', name: 'Film B' });
+        const entries = await service.buildTorrentMenu(
+          makeData({ row: rowA, selected: [rowA, rowB] }),
+        );
+        await (findItem(entries, 'torrent.exportFile')!.action as () => Promise<void>)();
+        expect(window.bitbutler.export.saveTorrentFiles).toHaveBeenCalledWith({
+          serverId: 'server-1',
+          items: [
+            { hash: 'a', name: 'Film A' },
+            { hash: 'b', name: 'Film B' },
+          ],
+        });
+      });
+
+      it('shows a danger toast summarizing failures', async () => {
+        (window.bitbutler.export.saveTorrentFiles as ReturnType<typeof vi.fn>).mockResolvedValue({
+          cancelled: false,
+          savedPaths: [],
+          failed: [{ hash: 'a', name: 'Film A', error: 'boom' }],
+        });
+        const row = makeRow();
+        const entries = await service.buildTorrentMenu(makeData({ row, selected: [row] }));
+        await (findItem(entries, 'torrent.exportFile')!.action as () => Promise<void>)();
+        expect(toastService.danger).toHaveBeenCalled();
+      });
+
+      it('does not toast when nothing failed', async () => {
+        const row = makeRow();
+        const entries = await service.buildTorrentMenu(makeData({ row, selected: [row] }));
+        await (findItem(entries, 'torrent.exportFile')!.action as () => Promise<void>)();
+        expect(toastService.danger).not.toHaveBeenCalled();
+      });
+
+      it('translates the failure count and title before toasting', async () => {
+        (window.bitbutler.export.saveTorrentFiles as ReturnType<typeof vi.fn>).mockResolvedValue({
+          cancelled: false,
+          savedPaths: [],
+          failed: [{ hash: 'a', name: 'Film A', error: 'boom' }],
+        });
+        const row = makeRow();
+        const entries = await service.buildTorrentMenu(makeData({ row, selected: [row] }));
+        await (findItem(entries, 'torrent.exportFile')!.action as () => Promise<void>)();
+        expect(translateService.instant).toHaveBeenCalledWith(
+          'pages.main.grid.context-menu.toast.export-failed-title',
+        );
+        expect(translateService.instant).toHaveBeenCalledWith(
+          'pages.main.grid.context-menu.toast.export-failed-count',
+          { failed: 1, total: 1 },
+        );
+      });
+
+      it('shows a friendly error message when saveTorrentFiles rejects with a QbHttpError', async () => {
+        (window.bitbutler.export.saveTorrentFiles as ReturnType<typeof vi.fn>).mockRejectedValue(
+          JSON.stringify({
+            name: 'QbHttpError',
+            status: 404,
+            statusText: 'Not Found',
+            body: '...',
+            path: '/api/v2/torrents/export',
+          }),
+        );
+        const row = makeRow();
+        const entries = await service.buildTorrentMenu(makeData({ row, selected: [row] }));
+        await (findItem(entries, 'torrent.exportFile')!.action as () => Promise<void>)();
+        expect(toastService.danger).toHaveBeenCalledWith(
+          '404 Not Found',
+          'pages.main.grid.context-menu.toast.export-failed-title',
+        );
       });
     });
 
@@ -273,11 +426,45 @@ describe('GridContextMenuService', () => {
         });
       });
 
-      it('cell.copyValue action copies the cell value to clipboard', async () => {
-        const data = makeData({ cell: { colId: 'name', rowId: 'abc123', value: 'My Film' } });
-        const entries = await service.buildTorrentMenu(data);
-        (findItem(entries, 'cell.copyValue')!.action as () => void)();
+      it('torrent.copyName action copies the torrent name for a single selection', async () => {
+        const row = makeRow({ name: 'My Film' });
+        const entries = await service.buildTorrentMenu(makeData({ row, selected: [row] }));
+        (findItem(entries, 'torrent.copyName')!.action as () => void)();
         expect(clipboard.copy).toHaveBeenCalledWith('My Film');
+      });
+
+      it('torrent.copyName action joins names with a newline for multi-selection', async () => {
+        const rowA = makeRow({ hash: 'a', name: 'Film A' });
+        const rowB = makeRow({ hash: 'b', name: 'Film B' });
+        const entries = await service.buildTorrentMenu(
+          makeData({ row: rowA, selected: [rowA, rowB] }),
+        );
+        (findItem(entries, 'torrent.copyName')!.action as () => void)();
+        expect(clipboard.copy).toHaveBeenCalledWith('Film A\nFilm B');
+      });
+
+      it('torrent.copySavePath action copies the save path for a single selection', async () => {
+        const row = makeRow({ save_path: '/downloads/movies' });
+        const entries = await service.buildTorrentMenu(makeData({ row, selected: [row] }));
+        (findItem(entries, 'torrent.copySavePath')!.action as () => void)();
+        expect(clipboard.copy).toHaveBeenCalledWith('/downloads/movies');
+      });
+
+      it('torrent.copySavePath action joins save paths with a newline for multi-selection', async () => {
+        const rowA = makeRow({ hash: 'a', save_path: '/downloads/a' });
+        const rowB = makeRow({ hash: 'b', save_path: '/downloads/b' });
+        const entries = await service.buildTorrentMenu(
+          makeData({ row: rowA, selected: [rowA, rowB] }),
+        );
+        (findItem(entries, 'torrent.copySavePath')!.action as () => void)();
+        expect(clipboard.copy).toHaveBeenCalledWith('/downloads/a\n/downloads/b');
+      });
+
+      it('torrent.copyJson action always copies an array, even for a single torrent', async () => {
+        const row = makeRow();
+        const entries = await service.buildTorrentMenu(makeData({ row, selected: [row] }));
+        (findItem(entries, 'torrent.copyJson')!.action as () => void)();
+        expect(clipboard.copy).toHaveBeenCalledWith(JSON.stringify([row], null, 2));
       });
 
       it('torrent.copyInfoHash action copies the torrent hash', async () => {
@@ -501,7 +688,6 @@ describe('GridContextMenuService', () => {
         expect(findItem(entries, 'files.openDestination')).toBeUndefined();
         expect(findItem(entries, 'files.renameTorrent')).toBeUndefined();
         expect(findItem(entries, 'files.renameFiles')).toBeUndefined();
-        expect(findItem(entries, 'cell.copyValue')).toBeUndefined();
       });
 
       it('keeps single-target-only items when a single torrent is selected', async () => {
@@ -511,7 +697,6 @@ describe('GridContextMenuService', () => {
         expect(findItem(entries, 'files.openDestination')).toBeDefined();
         expect(findItem(entries, 'files.renameTorrent')).toBeDefined();
         expect(findItem(entries, 'files.renameFiles')).toBeDefined();
-        expect(findItem(entries, 'cell.copyValue')).toBeDefined();
       });
 
       it('pluralizes copy labels and joins clipboard content with newlines for multi-selection', async () => {
@@ -670,51 +855,70 @@ describe('GridContextMenuService', () => {
     });
 
     describe('sort items', () => {
-      it('sort ascending is disabled when column is already sorted asc', () => {
+      it('sort ascending is disabled with a tooltip when already sorted ascending', () => {
         const { entries } = build({ getSort: vi.fn().mockReturnValue('asc') });
         expect(findItem(entries, 'sort.asc.name')?.disabled).toBe(true);
+        expect(findItem(entries, 'sort.asc.name')?.tooltip).toBe(
+          'pages.main.grid.context-menu.tooltip.already-sorted-ascending',
+        );
       });
 
-      it('sort ascending is enabled when column is not sorted asc', () => {
+      it('sort ascending is enabled with no tooltip when not sorted asc', () => {
         const { entries } = build({ getSort: vi.fn().mockReturnValue(null) });
         expect(findItem(entries, 'sort.asc.name')?.disabled).toBeFalsy();
+        expect(findItem(entries, 'sort.asc.name')?.tooltip).toBeUndefined();
       });
 
-      it('sort descending is disabled when column is already sorted desc', () => {
+      it('sort descending is disabled with a tooltip when already sorted descending', () => {
         const { entries } = build({ getSort: vi.fn().mockReturnValue('desc') });
         expect(findItem(entries, 'sort.desc.name')?.disabled).toBe(true);
+        expect(findItem(entries, 'sort.desc.name')?.tooltip).toBe(
+          'pages.main.grid.context-menu.tooltip.already-sorted-descending',
+        );
       });
 
-      it('clear sort is disabled when no sort is active', () => {
+      it('clear sort is disabled with a tooltip when no sort is applied', () => {
         const { entries } = build({ getSort: vi.fn().mockReturnValue(null) });
         expect(findItem(entries, 'sort.clear.name')?.disabled).toBeTruthy();
+        expect(findItem(entries, 'sort.clear.name')?.tooltip).toBe(
+          'pages.main.grid.context-menu.tooltip.no-sort-applied',
+        );
       });
 
-      it('clear sort is enabled when sort is active', () => {
+      it('clear sort is enabled with no tooltip when sort is active', () => {
         const { entries } = build({ getSort: vi.fn().mockReturnValue('asc') });
         expect(findItem(entries, 'sort.clear.name')?.disabled).toBeFalsy();
+        expect(findItem(entries, 'sort.clear.name')?.tooltip).toBeUndefined();
       });
     });
 
     describe('filter items', () => {
-      it('open filter is disabled when column has no filter defined', () => {
-        const { entries } = build({ getColDef: vi.fn().mockReturnValue({ filter: false }) });
+      it('open filter is disabled with a tooltip when the column has no filter', () => {
+        const { entries } = build({ getColDef: vi.fn().mockReturnValue({ colId: 'name' }) });
         expect(findItem(entries, 'filter.open.name')?.disabled).toBe(true);
+        expect(findItem(entries, 'filter.open.name')?.tooltip).toBe(
+          'pages.main.grid.context-menu.tooltip.filter-not-supported',
+        );
       });
 
-      it('open filter is enabled when column has a filter', () => {
+      it('open filter is enabled with no tooltip when column has a filter', () => {
         const { entries } = build({ getColDef: vi.fn().mockReturnValue({ filter: true }) });
         expect(findItem(entries, 'filter.open.name')?.disabled).toBeFalsy();
+        expect(findItem(entries, 'filter.open.name')?.tooltip).toBeUndefined();
       });
 
-      it('clear filter is disabled when column filter is not active', () => {
+      it('clear filter is disabled with a tooltip when no filter is active', () => {
         const { entries } = build({ isFilterActive: vi.fn().mockReturnValue(false) });
         expect(findItem(entries, 'filter.clear.name')?.disabled).toBe(true);
+        expect(findItem(entries, 'filter.clear.name')?.tooltip).toBe(
+          'pages.main.grid.context-menu.tooltip.no-filter-active',
+        );
       });
 
-      it('clear filter is enabled when column filter is active', () => {
+      it('clear filter is enabled with no tooltip when column filter is active', () => {
         const { entries } = build({ isFilterActive: vi.fn().mockReturnValue(true) });
         expect(findItem(entries, 'filter.clear.name')?.disabled).toBeFalsy();
+        expect(findItem(entries, 'filter.clear.name')?.tooltip).toBeUndefined();
       });
 
       it('toggle floating filter shows "show" label when floating filters are inactive', () => {
@@ -739,24 +943,46 @@ describe('GridContextMenuService', () => {
     });
 
     describe('pin column items', () => {
-      it('pin left is disabled when column is already pinned left', () => {
+      it('pin left is disabled with a tooltip when already pinned left', () => {
         const { entries } = build({ isPinnedLeft: vi.fn().mockReturnValue(true) });
         expect(findItem(entries, 'pinLeft.name')?.disabled).toBe(true);
+        expect(findItem(entries, 'pinLeft.name')?.tooltip).toBe(
+          'pages.main.grid.context-menu.tooltip.already-pinned-left',
+        );
       });
 
-      it('pin right is disabled when column is already pinned right', () => {
+      it('pin left is enabled with no tooltip when not pinned left', () => {
+        const { entries } = build({ isPinnedLeft: vi.fn().mockReturnValue(false) });
+        expect(findItem(entries, 'pinLeft.name')?.disabled).toBeFalsy();
+        expect(findItem(entries, 'pinLeft.name')?.tooltip).toBeUndefined();
+      });
+
+      it('pin right is disabled with a tooltip when already pinned right', () => {
         const { entries } = build({ isPinnedRight: vi.fn().mockReturnValue(true) });
         expect(findItem(entries, 'pinRight.name')?.disabled).toBe(true);
+        expect(findItem(entries, 'pinRight.name')?.tooltip).toBe(
+          'pages.main.grid.context-menu.tooltip.already-pinned-right',
+        );
       });
 
-      it('unpin column is disabled when column has no pin', () => {
+      it('pin right is enabled with no tooltip when not pinned right', () => {
+        const { entries } = build({ isPinnedRight: vi.fn().mockReturnValue(false) });
+        expect(findItem(entries, 'pinRight.name')?.disabled).toBeFalsy();
+        expect(findItem(entries, 'pinRight.name')?.tooltip).toBeUndefined();
+      });
+
+      it('unpin column is disabled with a tooltip when not pinned', () => {
         const { entries } = build({ getPinned: vi.fn().mockReturnValue(null) });
         expect(findItem(entries, 'unpinColumn.name')?.disabled).toBeTruthy();
+        expect(findItem(entries, 'unpinColumn.name')?.tooltip).toBe(
+          'pages.main.grid.context-menu.tooltip.column-not-pinned',
+        );
       });
 
-      it('unpin column is enabled when column is pinned', () => {
+      it('unpin column is enabled with no tooltip when column is pinned', () => {
         const { entries } = build({ getPinned: vi.fn().mockReturnValue('left') });
         expect(findItem(entries, 'unpinColumn.name')?.disabled).toBeFalsy();
+        expect(findItem(entries, 'unpinColumn.name')?.tooltip).toBeUndefined();
       });
     });
 

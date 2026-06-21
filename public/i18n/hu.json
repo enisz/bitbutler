@@ -984,12 +984,17 @@
             "columns": "Oszlopok"
           },
           "item": {
-            "copy-cell-value": "Cella értékének másolása",
+            "copy-name": "Név másolása",
+            "copy-names": "Nevek másolása",
             "copy-info-hash": "Info hash másolása",
             "copy-info-hashes": "Info hash-ek másolása",
             "copy-magnet-link": "Magnet link másolása",
             "copy-magnet-links": "Magnet linkek másolása",
+            "copy-save-path": "Mentési útvonal másolása",
+            "copy-save-paths": "Mentési útvonalak másolása",
             "copy-as-json": "Másolás JSON-ként",
+            "export-torrent-file": "Exportálás .torrent fájlba",
+            "export-torrent-files": "Exportálás .torrent fájlokba",
             "torrent-details": "Torrent részletei",
             "start": "Indítás",
             "stop": "Leállítás",
@@ -1032,6 +1037,25 @@
             "hide-floating-filters": "Lebegő szűrők elrejtése",
             "autosize-column": "Oszlop automatikus méretezése",
             "autosize-all-columns": "Összes oszlop automatikus méretezése"
+          },
+          "tooltip": {
+            "open-destination-unresolved": "A torrent mentési útvonala nem feloldható ezen a gépen.",
+            "already-pinned-top": "Ez a sor már a tetejére van rögzítve.",
+            "already-pinned-bottom": "Ez a sor már az aljára van rögzítve.",
+            "not-pinned": "Ez a sor nincs rögzítve.",
+            "already-sorted-ascending": "Ez az oszlop már növekvő sorrendben van rendezve.",
+            "already-sorted-descending": "Ez az oszlop már csökkenő sorrendben van rendezve.",
+            "no-sort-applied": "Ehhez az oszlophoz nincs rendezés beállítva.",
+            "filter-not-supported": "Ez az oszlop nem támogatja a szűrést.",
+            "no-filter-active": "Ehhez az oszlophoz nincs aktív szűrő.",
+            "already-pinned-left": "Ez az oszlop már balra van rögzítve.",
+            "already-pinned-right": "Ez az oszlop már jobbra van rögzítve.",
+            "column-not-pinned": "Ez az oszlop nincs rögzítve.",
+            "export-unavailable": "A /api/v2/torrents/export végpont nem elérhető ezen a szerveren."
+          },
+          "toast": {
+            "export-failed-title": "Exportálás sikertelen",
+            "export-failed-count": "{{total}} torrentből {{failed}} exportálása sikertelen."
           }
         },
         "overlays": {

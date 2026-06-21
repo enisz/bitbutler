@@ -2,6 +2,17 @@ const noop = () => {};
 const noopAsync = () => Promise.resolve(null);
 const noopSubscription = () => noop;
 
+// jsdom does not implement the Popover API (https://github.com/jsdom/jsdom/issues/3294).
+// Stub it on the prototype so tests can `vi.spyOn` these methods.
+const htmlElementProto = HTMLElement.prototype as {
+  showPopover?: () => void;
+  hidePopover?: () => void;
+};
+if (!htmlElementProto.showPopover) {
+  htmlElementProto.showPopover = noop;
+  htmlElementProto.hidePopover = noop;
+}
+
 (window as any).bitbutler = {
   electron: {
     isDev: () => Promise.resolve(false),
@@ -20,6 +31,7 @@ const noopSubscription = () => noop;
     delete: noopAsync,
     getById: noopAsync,
     getByHost: noopAsync,
+    setExportAvailable: noopAsync,
     setActive: noop,
   },
   qb: {
@@ -69,6 +81,9 @@ const noopSubscription = () => noop;
     cancel: noop,
     openBbePicker: () => Promise.resolve(undefined),
     readBbe: noopAsync,
+    getServerInfo: noopAsync,
+    checkAvailability: () => Promise.resolve({ available: false }),
+    saveTorrentFiles: () => Promise.resolve({ cancelled: true, savedPaths: [], failed: [] }),
     importStart: noop,
     importCancel: noop,
     onProgress: noopSubscription,
