@@ -115,8 +115,23 @@ export class GridContextMenuService {
                   hash: data.row.hash,
                 }),
             },
-            { kind: 'divider' as const },
           ]),
+      {
+        kind: 'item',
+        id: 'torrent.exportFile',
+        label: isMulti
+          ? 'pages.main.grid.context-menu.item.export-torrent-files'
+          : 'pages.main.grid.context-menu.item.export-torrent-file',
+        icon: faFloppyDisk,
+        variant: 'info',
+        disabled: this.serverStoreService.currentServer()?.export_available !== 1,
+        tooltip:
+          this.serverStoreService.currentServer()?.export_available !== 1
+            ? 'pages.main.grid.context-menu.tooltip.export-unavailable'
+            : undefined,
+        action: () => this.exportTorrentFiles(data.selected),
+      },
+      { kind: 'divider' },
 
       {
         kind: 'submenu',
@@ -210,21 +225,6 @@ export class GridContextMenuService {
               }),
           },
         ],
-      },
-
-      {
-        kind: 'item',
-        id: 'torrent.exportFile',
-        label: isMulti
-          ? 'pages.main.grid.context-menu.item.export-torrent-files'
-          : 'pages.main.grid.context-menu.item.export-torrent-file',
-        icon: faFloppyDisk,
-        disabled: this.serverStoreService.currentServer()?.export_available !== 1,
-        tooltip:
-          this.serverStoreService.currentServer()?.export_available !== 1
-            ? 'pages.main.grid.context-menu.tooltip.export-unavailable'
-            : undefined,
-        action: () => this.exportTorrentFiles(data.selected),
       },
 
       {
