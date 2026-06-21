@@ -2,6 +2,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import { TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import type { Torrent } from '../../../../models/torrent.model';
 import { CommandBusService } from '../../../../services/command-bus.service';
@@ -46,7 +47,6 @@ function makeData(overrides: Partial<GridContextMenuData> = {}): GridContextMenu
 
   return {
     row,
-    cell: { colId: 'name', rowId: 'abc123', value: 'My Torrent' },
     selected: [row],
     rowPinned: null,
     ...overrides,
@@ -93,6 +93,7 @@ describe('GridContextMenuService', () => {
   let pathService: { resolveLocalPath: ReturnType<typeof vi.fn> };
   let filterService: { clearColumnFilter: ReturnType<typeof vi.fn> };
   let toastService: { danger: ReturnType<typeof vi.fn> };
+  let translateService: { instant: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     commandBusService = { emit: vi.fn() };
@@ -101,6 +102,7 @@ describe('GridContextMenuService', () => {
     pathService = { resolveLocalPath: vi.fn().mockResolvedValue('/local/path') };
     filterService = { clearColumnFilter: vi.fn() };
     toastService = { danger: vi.fn() };
+    translateService = { instant: vi.fn((key: string) => key) };
 
     (window as any).bitbutler = {
       export: {
@@ -130,6 +132,7 @@ describe('GridContextMenuService', () => {
           provide: TorrentListGridSettingsService,
           useValue: { asObservable: vi.fn(), save: vi.fn() },
         },
+        { provide: TranslateService, useValue: translateService },
       ],
     });
 
@@ -352,6 +355,43 @@ describe('GridContextMenuService', () => {
         const entries = await service.buildTorrentMenu(makeData({ row, selected: [row] }));
         await (findItem(entries, 'torrent.exportFile')!.action as () => Promise<void>)();
         expect(toastService.danger).not.toHaveBeenCalled();
+      });
+
+      it('translates the failure count and title before toasting', async () => {
+        (window.bitbutler.export.saveTorrentFiles as ReturnType<typeof vi.fn>).mockResolvedValue({
+          cancelled: false,
+          savedPaths: [],
+          failed: [{ hash: 'a', name: 'Film A', error: 'boom' }],
+        });
+        const row = makeRow();
+        const entries = await service.buildTorrentMenu(makeData({ row, selected: [row] }));
+        await (findItem(entries, 'torrent.exportFile')!.action as () => Promise<void>)();
+        expect(translateService.instant).toHaveBeenCalledWith(
+          'pages.main.grid.context-menu.toast.export-failed-title',
+        );
+        expect(translateService.instant).toHaveBeenCalledWith(
+          'pages.main.grid.context-menu.toast.export-failed-count',
+          { failed: 1, total: 1 },
+        );
+      });
+
+      it('shows a friendly error message when saveTorrentFiles rejects with a QbHttpError', async () => {
+        (window.bitbutler.export.saveTorrentFiles as ReturnType<typeof vi.fn>).mockRejectedValue(
+          JSON.stringify({
+            name: 'QbHttpError',
+            status: 404,
+            statusText: 'Not Found',
+            body: '...',
+            path: '/api/v2/torrents/export',
+          }),
+        );
+        const row = makeRow();
+        const entries = await service.buildTorrentMenu(makeData({ row, selected: [row] }));
+        await (findItem(entries, 'torrent.exportFile')!.action as () => Promise<void>)();
+        expect(toastService.danger).toHaveBeenCalledWith(
+          '404 Not Found',
+          'pages.main.grid.context-menu.toast.export-failed-title',
+        );
       });
     });
 

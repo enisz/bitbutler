@@ -369,6 +369,28 @@ describe('export:save-torrent-files IPC handler', () => {
     });
     expect(result).toEqual({ cancelled: true, savedPaths: [], failed: [] });
   });
+
+  it('produces a friendly error message for a qBittorrent HTTP failure', async () => {
+    mockShowOpenDialog.mockResolvedValue({ canceled: false, filePaths: ['/tmp/out'] });
+    mockQbRequestSave.mockRejectedValueOnce(
+      JSON.stringify({
+        name: 'QbHttpError',
+        status: 404,
+        statusText: 'Not Found',
+        body: '...',
+        path: '/api/v2/torrents/export',
+      }),
+    );
+    const handler = await getHandler();
+    const result = await handler(null, {
+      serverId: 'server-1',
+      items: [
+        { hash: 'aaa', name: 'Fails' },
+        { hash: 'bbb', name: 'Succeeds' },
+      ],
+    });
+    expect(result.failed).toEqual([{ hash: 'aaa', name: 'Fails', error: '404 Not Found' }]);
+  });
 });
 
 describe('collectCategoriesAndTags', () => {

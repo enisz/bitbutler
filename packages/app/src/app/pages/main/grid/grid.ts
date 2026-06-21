@@ -309,7 +309,6 @@ export class Grid implements AfterViewInit {
     this.contextMenuService.open({
       items: await this.gridContextMenuService.buildTorrentMenu({
         row: event.data,
-        cell: { value: event.value, colId: event.column.getColId(), rowId: event.data.hash },
         selected: this.selectionStore.selected(),
         rowPinned: event.node.rowPinned,
       }),

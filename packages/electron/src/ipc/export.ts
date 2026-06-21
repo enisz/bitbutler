@@ -286,6 +286,22 @@ function sanitizeFilename(name: string): string {
   return (name || 'torrent').replace(/[\\/:*?"<>|]/g, '_').trim() || 'torrent';
 }
 
+function describeExportError(err: unknown): string {
+  if (err instanceof Error) return err.message;
+  if (typeof err === 'string') {
+    try {
+      const parsed = JSON.parse(err) as { status?: number; statusText?: string };
+      if (parsed?.statusText) {
+        return parsed.status ? `${parsed.status} ${parsed.statusText}` : parsed.statusText;
+      }
+    } catch {
+      // not JSON — fall through to returning the raw string
+    }
+    return err;
+  }
+  return String(err);
+}
+
 async function saveTorrentFiles(payload: {
   serverId: string;
   items: ExportTorrentFileItem[];
@@ -314,7 +330,7 @@ async function saveTorrentFiles(payload: {
       return {
         cancelled: false,
         savedPaths: [],
-        failed: [{ hash, name, error: (err as Error)?.message ?? String(err) }],
+        failed: [{ hash, name, error: describeExportError(err) }],
       };
     }
   }
@@ -344,7 +360,7 @@ async function saveTorrentFiles(payload: {
       await fs.promises.writeFile(fullPath, buffer);
       savedPaths.push(fullPath);
     } catch (err) {
-      failed.push({ hash, name, error: (err as Error)?.message ?? String(err) });
+      failed.push({ hash, name, error: describeExportError(err) });
     }
   }
 

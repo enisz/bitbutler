@@ -1052,6 +1052,10 @@
             "already-pinned-right": "Ez az oszlop már jobbra van rögzítve.",
             "column-not-pinned": "Ez az oszlop nincs rögzítve.",
             "export-unavailable": "A /api/v2/torrents/export végpont nem elérhető ezen a szerveren."
+          },
+          "toast": {
+            "export-failed-title": "Exportálás sikertelen",
+            "export-failed-count": "{{total}} torrentből {{failed}} exportálása sikertelen."
           }
         },
         "overlays": {

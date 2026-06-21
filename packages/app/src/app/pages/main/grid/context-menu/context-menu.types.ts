@@ -3,13 +3,6 @@ import { AppCommand } from '../../../../models/command.model';
 import { Torrent } from '../../../../models/torrent.model';
 
 export interface GridContextMenuData {
-  cell: {
-    colId: string;
-    field?: string;
-    rowId: string;
-    value: unknown;
-  };
-
   row: Torrent;
   selected: Torrent[];
   rowPinned: 'top' | 'bottom' | null | undefined;

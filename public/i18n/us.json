@@ -1052,6 +1052,10 @@
             "already-pinned-right": "This column is already pinned to the right.",
             "column-not-pinned": "This column is not pinned.",
             "export-unavailable": "The /api/v2/torrents/export endpoint is not available on this server."
+          },
+          "toast": {
+            "export-failed-title": "Export failed",
+            "export-failed-count": "Failed to export {{failed}} of {{total}} torrent(s)."
           }
         },
         "overlays": {
