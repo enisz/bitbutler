@@ -481,6 +481,18 @@
               "title": "Megjegyzés",
               "description": "A készítő által megadott opcionális szöveg (pl. forrásinfó)."
             }
+          },
+          "toast": {
+            "resuming": "Folytatás.",
+            "pausing": "Felfüggesztés.",
+            "force-resuming": "Kényszerített folytatás.",
+            "clearing-download-limit": "Letöltési korlát törlése.",
+            "clearing-upload-limit": "Feltöltési korlát törlése.",
+            "reannouncing": "Újrajelentkezés.",
+            "removing-category": "Kategória eltávolítása.",
+            "removing-all-tags": "Összes címke eltávolítása.",
+            "local-path-failed": "A helyi elérési út feloldása sikertelen!",
+            "copied-to-clipboard": "{{field}} a vágólapra másolva."
           }
         },
         "peers": {

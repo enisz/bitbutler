@@ -27,7 +27,7 @@ import {
   faX,
 } from '@fortawesome/free-solid-svg-icons';
 import { NgbCollapse, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TimeagoPipe } from 'ngx-timeago';
 import { take, timer } from 'rxjs';
 import { TooltipOverflow } from '../../../../directives/tooltip-overflow';
@@ -99,6 +99,7 @@ export class General implements TorrentDetailTabComponent, OnInit {
   private readonly pathService = inject(PathService);
   private readonly clipboard = inject(Clipboard);
   private readonly toastService = inject(ToastService);
+  private readonly translateService = inject(TranslateService);
   private readonly destroyRef = inject(DestroyRef);
 
   private settings: WritableSignal<GeneralSettings | null> = signal(null);
@@ -251,21 +252,29 @@ export class General implements TorrentDetailTabComponent, OnInit {
   }
 
   public resume(): void {
-    this.toastService.info('Resuming.');
+    this.toastService.info(
+      this.translateService.instant('components.modals.torrent-details.general.toast.resuming'),
+    );
     this.qbService.torrents.resume(this.serverStoreService.currentServerId() as string, [
       this.hash(),
     ]);
   }
 
   public pause(): void {
-    this.toastService.info('Pausing.');
+    this.toastService.info(
+      this.translateService.instant('components.modals.torrent-details.general.toast.pausing'),
+    );
     this.qbService.torrents.pause(this.serverStoreService.currentServerId() as string, [
       this.hash(),
     ]);
   }
 
   public forceResume(): void {
-    this.toastService.info('Forcing resume.');
+    this.toastService.info(
+      this.translateService.instant(
+        'components.modals.torrent-details.general.toast.force-resuming',
+      ),
+    );
     this.qbService.torrents.setForceStart(
       this.serverStoreService.currentServerId() as string,
       [this.hash()],
@@ -274,7 +283,11 @@ export class General implements TorrentDetailTabComponent, OnInit {
   }
 
   public clearDownloadLimit(): void {
-    this.toastService.info('Clearing download limit.');
+    this.toastService.info(
+      this.translateService.instant(
+        'components.modals.torrent-details.general.toast.clearing-download-limit',
+      ),
+    );
     this.qbService.torrents.setDownloadLimit(
       this.serverStoreService.currentServerId() as string,
       0,
@@ -282,7 +295,11 @@ export class General implements TorrentDetailTabComponent, OnInit {
     );
   }
   public clearUploadLimit(): void {
-    this.toastService.info('Clearing upload limit.');
+    this.toastService.info(
+      this.translateService.instant(
+        'components.modals.torrent-details.general.toast.clearing-upload-limit',
+      ),
+    );
     this.qbService.torrents.setUploadLimit(this.serverStoreService.currentServerId() as string, 0, [
       this.hash(),
     ]);
@@ -330,7 +347,9 @@ export class General implements TorrentDetailTabComponent, OnInit {
   }
 
   public forceReannounce(): void {
-    this.toastService.info('Reannouncing.');
+    this.toastService.info(
+      this.translateService.instant('components.modals.torrent-details.general.toast.reannouncing'),
+    );
     this.qbService.torrents.reannounce(this.serverStoreService.currentServerId() as string, [
       this.hash(),
     ]);
@@ -345,7 +364,11 @@ export class General implements TorrentDetailTabComponent, OnInit {
   }
 
   public removeCategory(): void {
-    this.toastService.info('Removing category.');
+    this.toastService.info(
+      this.translateService.instant(
+        'components.modals.torrent-details.general.toast.removing-category',
+      ),
+    );
     this.qbService.torrents.clearCategory(this.serverStoreService.currentServerId() as string, [
       this.hash(),
     ]);
@@ -360,7 +383,11 @@ export class General implements TorrentDetailTabComponent, OnInit {
   }
 
   public removeAllTags(): void {
-    this.toastService.info('Removing all tags.');
+    this.toastService.info(
+      this.translateService.instant(
+        'components.modals.torrent-details.general.toast.removing-all-tags',
+      ),
+    );
     this.qbService.torrents.removeTags(
       this.serverStoreService.currentServerId() as string,
       [this.hash()],
@@ -383,7 +410,11 @@ export class General implements TorrentDetailTabComponent, OnInit {
     const hash = this.hash();
 
     if (!remotePath) {
-      this.toastService.danger('Failed to resolve local path!');
+      this.toastService.danger(
+        this.translateService.instant(
+          'components.modals.torrent-details.general.toast.local-path-failed',
+        ),
+      );
       return;
     }
 
@@ -394,8 +425,16 @@ export class General implements TorrentDetailTabComponent, OnInit {
     this.commandBusService.emit({ type: 'UI_TORRENT_DELETE_REQUEST' });
   }
 
-  public toClipboard(field: string, value: string): void {
-    this.toastService.info(`Copied ${field} to clipboard.`);
+  public toClipboard(fieldKey: string, value: string): void {
+    const field = this.translateService.instant(
+      `components.modals.torrent-details.general.${fieldKey}`,
+    );
+    this.toastService.info(
+      this.translateService.instant(
+        'components.modals.torrent-details.general.toast.copied-to-clipboard',
+        { field },
+      ),
+    );
     this.clipboard.copy(value);
   }
 

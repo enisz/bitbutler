@@ -481,6 +481,18 @@
               "title": "Comment",
               "description": "Optional text added by the torrent creator, often containing source info or credits."
             }
+          },
+          "toast": {
+            "resuming": "Resuming.",
+            "pausing": "Pausing.",
+            "force-resuming": "Forcing resume.",
+            "clearing-download-limit": "Clearing download limit.",
+            "clearing-upload-limit": "Clearing upload limit.",
+            "reannouncing": "Reannouncing.",
+            "removing-category": "Removing category.",
+            "removing-all-tags": "Removing all tags.",
+            "local-path-failed": "Failed to resolve local path!",
+            "copied-to-clipboard": "Copied {{field}} to clipboard."
           }
         },
         "peers": {

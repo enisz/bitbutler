@@ -73,7 +73,7 @@
               [ngbTooltip]="
                 'components.modals.torrent-details.general.copy-to-clipboard' | translate
               "
-              (click)="toClipboard('save path', torrent()!.data.save_path)"
+              (click)="toClipboard('save-path', torrent()!.data.save_path)"
             >
               <fa-icon [icon]="icons['faClipboard']" />
             </button>
@@ -106,7 +106,7 @@
               [ngbTooltip]="
                 'components.modals.torrent-details.general.copy-to-clipboard' | translate
               "
-              (click)="toClipboard('remote path', torrent()!.data.content_path)"
+              (click)="toClipboard('remote-path', torrent()!.data.content_path)"
             >
               <fa-icon [icon]="icons['faClipboard']" />
             </button>
@@ -131,7 +131,7 @@
                 [ngbTooltip]="
                   'components.modals.torrent-details.general.copy-to-clipboard' | translate
                 "
-                (click)="toClipboard('local path', torrent()!.data.save_path)"
+                (click)="toClipboard('local-path', torrent()!.data.save_path)"
               >
                 <fa-icon [icon]="icons['faClipboard']" />
               </button>
@@ -1034,7 +1034,7 @@
                 [ngbTooltip]="
                   'components.modals.torrent-details.general.copy-to-clipboard' | translate
                 "
-                (click)="toClipboard('info hash v1', torrent()!.data.infohash_v1)"
+                (click)="toClipboard('info-hash-v1', torrent()!.data.infohash_v1)"
               >
                 <fa-icon [icon]="icons['faClipboard']" />
               </button>
@@ -1076,7 +1076,7 @@
                 [ngbTooltip]="
                   'components.modals.torrent-details.general.copy-to-clipboard' | translate
                 "
-                (click)="toClipboard('info hash v2', torrent()!.data.infohash_v2)"
+                (click)="toClipboard('info-hash-v2', torrent()!.data.infohash_v2)"
               >
                 <fa-icon [icon]="icons['faClipboard']" />
               </button>
