@@ -1,5 +1,6 @@
 import { DestroyRef, Injectable, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TranslateService } from '@ngx-translate/core';
 import { filter } from 'rxjs';
 import { AppCommand, TorrentCommand } from '../models/command.model';
 import { CommandBusService } from './command-bus.service';
@@ -18,6 +19,7 @@ export class TorrentCommandHandlerService {
   private readonly serverStore = inject(ServerStoreService);
   private readonly torrentStore = inject(TorrentStoreService);
   private readonly toastService = inject(ToastService);
+  private readonly translateService = inject(TranslateService);
 
   public start(): void {
     this.commandBusService.commands$
@@ -129,7 +131,10 @@ export class TorrentCommandHandlerService {
       this.selectionStore.clear();
     } catch (error: any) {
       console.error('Delete failed', error);
-      this.toastService.danger(error.message, 'Failed to delete torrent(s)');
+      this.toastService.danger(
+        error.message,
+        this.translateService.instant('services.torrent-command-handler.error.delete-failed-title'),
+      );
     }
   }
 

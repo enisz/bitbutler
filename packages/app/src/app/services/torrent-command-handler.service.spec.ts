@@ -1,5 +1,6 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { CommandBusService } from './command-bus.service';
 import { QbService } from './qb.service';
@@ -38,11 +39,13 @@ describe('TorrentCommandHandlerService', () => {
   let torrentStore: { torrentsArray: ReturnType<typeof signal<any[]>> };
   let toastDanger: ReturnType<typeof vi.fn>;
   let commandBusEmit: ReturnType<typeof vi.fn>;
+  let translateService: { instant: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     commands$ = new Subject();
     commandBusEmit = vi.fn();
     toastDanger = vi.fn();
+    translateService = { instant: vi.fn((key: string) => key) };
 
     qbService = {
       torrents: {
@@ -81,6 +84,7 @@ describe('TorrentCommandHandlerService', () => {
         { provide: ServerStoreService, useValue: serverStore },
         { provide: TorrentStoreService, useValue: torrentStore },
         { provide: ToastService, useValue: { danger: toastDanger } },
+        { provide: TranslateService, useValue: translateService },
       ],
     });
 
@@ -111,7 +115,10 @@ describe('TorrentCommandHandlerService', () => {
     qbService.torrents.delete.mockRejectedValueOnce(new Error('network error'));
     commands$.next({ type: 'TORRENT_DELETE_CONFIRM', removeFiles: false });
     await flushPromises();
-    expect(toastDanger).toHaveBeenCalled();
+    expect(toastDanger).toHaveBeenCalledWith(
+      'network error',
+      'services.torrent-command-handler.error.delete-failed-title',
+    );
   });
 
   it('should not delete when no server is selected', async () => {

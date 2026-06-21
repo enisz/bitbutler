@@ -1571,6 +1571,11 @@
       "success": {
         "up-to-date": "You are on the latest version!"
       }
+    },
+    "torrent-command-handler": {
+      "error": {
+        "delete-failed-title": "Failed to delete torrent(s)"
+      }
     }
   },
   "utils": {},

@@ -1571,6 +1571,11 @@
       "success": {
         "up-to-date": "A legújabb verziót használod!"
       }
+    },
+    "torrent-command-handler": {
+      "error": {
+        "delete-failed-title": "Nem sikerült törölni a torrentet/torrenteket"
+      }
     }
   },
   "utils": {},
