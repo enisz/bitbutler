@@ -18,7 +18,8 @@ db.exec(`
     username     TEXT NOT NULL,
     password     BLOB NOT NULL,
     auto_login   INTEGER NOT NULL DEFAULT 0 CHECK (auto_login IN (0,1)),
-    created_at   TEXT NOT NULL
+    created_at   TEXT NOT NULL,
+    export_available INTEGER CHECK (export_available IN (0,1))
   );
 `);
 
@@ -63,6 +64,14 @@ if (pwCol?.notnull === 1) {
   db.exec(
     `CREATE UNIQUE INDEX IF NOT EXISTS uq_servers_auto_login ON servers(auto_login) WHERE auto_login = 1`,
   );
+}
+
+// Migrate: add export_available column (nullable - NULL means "not yet checked").
+const colsAfterPasswordMigration = db.pragma('table_info(servers)') as ColInfo[];
+if (!colsAfterPasswordMigration.find((c) => c.name === 'export_available')) {
+  db.exec(`
+    ALTER TABLE servers ADD COLUMN export_available INTEGER CHECK (export_available IN (0,1))
+  `);
 }
 
 db.exec(`

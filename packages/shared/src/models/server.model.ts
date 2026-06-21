@@ -10,6 +10,7 @@ export interface ServerRecord {
   auto_login: boolean;
   created_at: string;
   has_password: boolean;
+  export_available: 0 | 1 | null;
 }
 
 export interface NewServer {

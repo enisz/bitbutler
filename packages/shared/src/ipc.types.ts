@@ -177,6 +177,7 @@ export interface BitButlerAPI {
     delete(payload: { id: string }): Promise<{ deleted: boolean }>;
     getById(payload: { id: string }): Promise<ServerRecord | null>;
     getByHost(payload: { host: string }): Promise<ServerRecord | null>;
+    setExportAvailable(payload: { id: string; value: 0 | 1 }): Promise<{ updated: boolean }>;
     setActive(id: string | null): void;
   };
 

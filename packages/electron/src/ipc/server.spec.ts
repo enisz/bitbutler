@@ -621,3 +621,137 @@ describe('server:set-active IPC event handler', () => {
     expect(mockRebuildTrayMenu).not.toHaveBeenCalled();
   });
 });
+
+describe('serverList export_available mapping', () => {
+  beforeEach(() => {
+    vi.resetModules();
+    ipcHandlers.clear();
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('passes through export_available = 1 unchanged', async () => {
+    mockAll.mockReturnValue([
+      {
+        id: 'abc',
+        name: 'Local',
+        host: 'localhost',
+        protocol: 'http',
+        port: 8080,
+        username: 'admin',
+        auto_login: 1,
+        created_at: '2024-01-01T00:00:00.000Z',
+        has_password: 1,
+        export_available: 1,
+      },
+    ]);
+    const { serverList } = await import('./server.js');
+    expect(serverList()[0].export_available).toBe(1);
+  });
+
+  it('passes through export_available = null unchanged', async () => {
+    mockAll.mockReturnValue([
+      {
+        id: 'abc',
+        name: 'Local',
+        host: 'localhost',
+        protocol: 'http',
+        port: 8080,
+        username: 'admin',
+        auto_login: 1,
+        created_at: '2024-01-01T00:00:00.000Z',
+        has_password: 1,
+        export_available: null,
+      },
+    ]);
+    const { serverList } = await import('./server.js');
+    expect(serverList()[0].export_available).toBeNull();
+  });
+});
+
+describe('getExportAvailable', () => {
+  beforeEach(() => {
+    vi.resetModules();
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('returns the cached value for a known server', async () => {
+    mockGet.mockReturnValue({
+      id: 'srv-1',
+      name: 'Test',
+      host: 'localhost',
+      protocol: 'http',
+      port: 8080,
+      username: 'admin',
+      auto_login: 0,
+      created_at: '',
+      has_password: 1,
+      export_available: 1,
+    });
+    const { getExportAvailable } = await import('./server.js');
+    expect(getExportAvailable('srv-1')).toBe(1);
+  });
+
+  it('returns null when the server is not found', async () => {
+    mockGet.mockReturnValue(undefined);
+    const { getExportAvailable } = await import('./server.js');
+    expect(getExportAvailable('missing')).toBeNull();
+  });
+});
+
+describe('setExportAvailable', () => {
+  beforeEach(() => {
+    vi.resetModules();
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('runs an UPDATE with the given id and value', async () => {
+    const { setExportAvailable } = await import('./server.js');
+    setExportAvailable('srv-1', 1);
+    expect(mockRun).toHaveBeenCalledWith(1, 'srv-1');
+  });
+});
+
+describe('server:set-export-available IPC handler', () => {
+  beforeEach(() => {
+    vi.resetModules();
+    ipcHandlers.clear();
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  async function getHandler() {
+    const { registerServerIpcHandlers } = await import('./server.js');
+    registerServerIpcHandlers();
+    return ipcHandlers.get('server:set-export-available')!;
+  }
+
+  it('returns { updated: true } and writes the value', async () => {
+    const handler = await getHandler();
+    const result = await handler(null, { id: 'srv-1', value: 1 });
+    expect(result).toEqual({ updated: true });
+    expect(mockRun).toHaveBeenCalledWith(1, 'srv-1');
+  });
+
+  it('throws when value is not 0 or 1', async () => {
+    const handler = await getHandler();
+    await expect(handler(null, { id: 'srv-1', value: 2 })).rejects.toThrow(
+      "Field 'value' must be 0 or 1.",
+    );
+  });
+
+  it('throws when id is missing', async () => {
+    const handler = await getHandler();
+    await expect(handler(null, { value: 1 })).rejects.toThrow("Field 'id' is required.");
+  });
+});

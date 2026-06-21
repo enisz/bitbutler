@@ -57,6 +57,8 @@ const api: BitButlerAPI = {
     delete: ({ id }) => ipcRenderer.invoke('server:delete', { id }),
     getById: ({ id }) => ipcRenderer.invoke('server:getById', { id }),
     getByHost: ({ host }) => ipcRenderer.invoke('server:getByHost', { host }),
+    setExportAvailable: ({ id, value }) =>
+      ipcRenderer.invoke('server:set-export-available', { id, value }),
     setActive: (id) => ipcRenderer.send('server:set-active', id),
   },
 
