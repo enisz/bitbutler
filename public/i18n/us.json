@@ -1,7 +1,7 @@
 {
   "app": {
     "success": {
-      "finished-downloading": "Download Finished!"
+      "finished-downloading": "Download Finished"
     }
   },
   "torrent": {
@@ -253,7 +253,7 @@
           "name": "Name"
         },
         "error": {
-          "failed-to-rename": "Failed to rename torrent"
+          "failed-to-rename": "Failed to Rename Torrent"
         }
       },
       "server-editor": {
@@ -289,7 +289,7 @@
           "path": "Path"
         },
         "error": {
-          "failed-to-relocate": "Failed to relocate torrent!"
+          "failed-to-relocate": "Failed to Relocate Torrent"
         }
       },
       "set-torrent-tags": {
@@ -949,7 +949,7 @@
         "make-default": "Make Default"
       },
       "error": {
-        "connection-failed": "Connection failed.",
+        "connection-failed": "Connection Failed",
         "update-server-failed": "Failed to update the host {{name}}!"
       },
       "delete-confirm": {
@@ -1080,7 +1080,7 @@
             "export-unavailable": "The /api/v2/torrents/export endpoint is not available on this server."
           },
           "toast": {
-            "export-failed-title": "Export failed",
+            "export-failed-title": "Export Failed",
             "export-failed-count": "Failed to export {{failed}} of {{total}} torrent(s)."
           }
         },
@@ -1600,7 +1600,7 @@
     },
     "torrent-command-handler": {
       "error": {
-        "delete-failed-title": "Failed to delete torrent(s)"
+        "delete-failed-title": "Failed to Delete Torrent(s)"
       }
     },
     "qb": {
