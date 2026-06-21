@@ -534,11 +534,12 @@ export class QbService {
     clearCategory: async (serverId: string, hashes: string[]): Promise<void> => {
       const cleanHashes = this.cleanHashList(hashes);
       if (cleanHashes.length === 0) return;
-      await this.request<void>(serverId, {
+      const res = await this.request<void>(serverId, {
         path: '/api/v2/torrents/setCategory',
         method: 'POST',
         form: { hashes: cleanHashes.join('|'), category: '' },
       });
+      if (!res.ok) throw new HttpError(res.status, res.statusText, `Failed to clear category`);
     },
 
     categories: async (serverId: string): Promise<Record<string, QbCategory>> => {
