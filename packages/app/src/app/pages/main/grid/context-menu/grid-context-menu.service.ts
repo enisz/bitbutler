@@ -18,8 +18,10 @@ import {
   faFilePen,
   faFilter,
   faFilterCircleXmark,
+  faFloppyDisk,
   faFolderOpen,
   faFolderTree,
+  faFont,
   faForwardFast,
   faHashtag,
   faInfoCircle,
@@ -42,11 +44,13 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import type { ColDef, Column, ColumnHeaderContextMenuEvent } from 'ag-grid-community';
 import { filter, firstValueFrom } from 'rxjs';
+import { Torrent } from '../../../../models/torrent.model';
 import { CommandBusService } from '../../../../services/command-bus.service';
 import { FilterService } from '../../../../services/filter.service';
 import { PathService } from '../../../../services/path.service';
 import { QbService } from '../../../../services/qb.service';
 import { ServerStoreService } from '../../../../services/server-store.service';
+import { ToastService } from '../../../../services/toast.service';
 import { TorrentListGridSettingsService } from '../../../../services/torrent-list-grid.settings.service';
 import { ContextMenuEntry, GridContextMenuData } from './context-menu.types';
 
@@ -58,6 +62,7 @@ export class GridContextMenuService {
   private readonly pathService = inject(PathService);
   private readonly qbService = inject(QbService);
   private readonly serverStoreService = inject(ServerStoreService);
+  private readonly toastService = inject(ToastService);
   private readonly torrentListGridSettingsService = inject(TorrentListGridSettingsService);
 
   public async buildTorrentMenu(data: GridContextMenuData): Promise<ContextMenuEntry[]> {
@@ -133,6 +138,10 @@ export class GridContextMenuService {
                       : 'pages.main.grid.context-menu.item.open-destination',
                   icon: faFolderOpen,
                   disabled: (await this.pathService.resolveLocalPath(data.row.save_path)) === null,
+                  tooltip:
+                    (await this.pathService.resolveLocalPath(data.row.save_path)) === null
+                      ? 'pages.main.grid.context-menu.tooltip.open-destination-unresolved'
+                      : undefined,
                   action: () =>
                     this.commandBusService.emit({
                       type: 'UI_OPEN_DESTINATION',
@@ -198,6 +207,21 @@ export class GridContextMenuService {
               }),
           },
         ],
+      },
+
+      {
+        kind: 'item',
+        id: 'torrent.exportFile',
+        label: isMulti
+          ? 'pages.main.grid.context-menu.item.export-torrent-files'
+          : 'pages.main.grid.context-menu.item.export-torrent-file',
+        icon: faFloppyDisk,
+        disabled: this.serverStoreService.currentServer()?.export_available !== 1,
+        tooltip:
+          this.serverStoreService.currentServer()?.export_available !== 1
+            ? 'pages.main.grid.context-menu.tooltip.export-unavailable'
+            : undefined,
+        action: () => this.exportTorrentFiles(data.selected),
       },
 
       {
@@ -320,25 +344,19 @@ export class GridContextMenuService {
         label: 'pages.main.grid.context-menu.submenu.copy',
         icon: faCopy,
         children: [
-          ...(isMulti
-            ? []
-            : [
-                {
-                  kind: 'item' as const,
-                  id: 'cell.copyValue',
-                  label: 'pages.main.grid.context-menu.item.copy-cell-value',
-                  icon: faCopy,
-                  action: () => this.clipboard.copy(String(data.cell.value)),
-                },
-              ]),
           {
             kind: 'item',
-            id: 'torrent.copyInfoHash',
+            id: 'torrent.copyName',
             label: isMulti
-              ? 'pages.main.grid.context-menu.item.copy-info-hashes'
-              : 'pages.main.grid.context-menu.item.copy-info-hash',
-            icon: faHashtag,
-            action: () => this.clipboard.copy(isMulti ? hashes.join('\n') : String(data.row.hash)),
+              ? 'pages.main.grid.context-menu.item.copy-names'
+              : 'pages.main.grid.context-menu.item.copy-name',
+            icon: faFont,
+            action: () =>
+              this.clipboard.copy(
+                isMulti
+                  ? data.selected.map((torrent) => torrent.name).join('\n')
+                  : String(data.row.name),
+              ),
           },
           {
             kind: 'item',
@@ -352,6 +370,29 @@ export class GridContextMenuService {
                 isMulti
                   ? data.selected.map((torrent) => torrent.magnet_uri).join('\n')
                   : String(data.row.magnet_uri),
+              ),
+          },
+          {
+            kind: 'item',
+            id: 'torrent.copyInfoHash',
+            label: isMulti
+              ? 'pages.main.grid.context-menu.item.copy-info-hashes'
+              : 'pages.main.grid.context-menu.item.copy-info-hash',
+            icon: faHashtag,
+            action: () => this.clipboard.copy(isMulti ? hashes.join('\n') : String(data.row.hash)),
+          },
+          {
+            kind: 'item',
+            id: 'torrent.copySavePath',
+            label: isMulti
+              ? 'pages.main.grid.context-menu.item.copy-save-paths'
+              : 'pages.main.grid.context-menu.item.copy-save-path',
+            icon: faFolderOpen,
+            action: () =>
+              this.clipboard.copy(
+                isMulti
+                  ? data.selected.map((torrent) => torrent.save_path).join('\n')
+                  : String(data.row.save_path),
               ),
           },
           {
@@ -376,6 +417,10 @@ export class GridContextMenuService {
             icon: faArrowUp,
             label: 'pages.main.grid.context-menu.item.pin-to-top',
             disabled: data.rowPinned === 'top',
+            tooltip:
+              data.rowPinned === 'top'
+                ? 'pages.main.grid.context-menu.tooltip.already-pinned-top'
+                : undefined,
             action: () => this.commandBusService.emit({ type: 'UI_TORRENT_PIN_TOP' }),
           },
           {
@@ -384,6 +429,10 @@ export class GridContextMenuService {
             icon: faArrowDown,
             label: 'pages.main.grid.context-menu.item.pin-to-bottom',
             disabled: data.rowPinned === 'bottom',
+            tooltip:
+              data.rowPinned === 'bottom'
+                ? 'pages.main.grid.context-menu.tooltip.already-pinned-bottom'
+                : undefined,
             action: () => this.commandBusService.emit({ type: 'UI_TORRENT_PIN_BOTTOM' }),
           },
           {
@@ -392,6 +441,9 @@ export class GridContextMenuService {
             icon: faThumbTackSlash,
             label: 'pages.main.grid.context-menu.item.unpin',
             disabled: !data.rowPinned,
+            tooltip: !data.rowPinned
+              ? 'pages.main.grid.context-menu.tooltip.not-pinned'
+              : undefined,
             action: () => this.commandBusService.emit({ type: 'UI_TORRENT_UNPIN' }),
           },
         ],
@@ -659,5 +711,24 @@ export class GridContextMenuService {
     ];
 
     return items;
+  }
+
+  private async exportTorrentFiles(selected: Torrent[]): Promise<void> {
+    const serverId = this.serverStoreService.currentServerId();
+    if (!serverId) return;
+
+    const items = selected.map((t) => ({ hash: t.hash, name: t.name }));
+
+    try {
+      const result = await window.bitbutler.export.saveTorrentFiles({ serverId, items });
+      if (result.failed.length > 0) {
+        this.toastService.danger(
+          `Failed to export ${result.failed.length} of ${items.length} torrent(s).`,
+          'Export failed',
+        );
+      }
+    } catch (err: any) {
+      this.toastService.danger(err?.message ?? String(err), 'Export failed');
+    }
   }
 }
