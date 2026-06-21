@@ -815,51 +815,70 @@ describe('GridContextMenuService', () => {
     });
 
     describe('sort items', () => {
-      it('sort ascending is disabled when column is already sorted asc', () => {
+      it('sort ascending is disabled with a tooltip when already sorted ascending', () => {
         const { entries } = build({ getSort: vi.fn().mockReturnValue('asc') });
         expect(findItem(entries, 'sort.asc.name')?.disabled).toBe(true);
+        expect(findItem(entries, 'sort.asc.name')?.tooltip).toBe(
+          'pages.main.grid.context-menu.tooltip.already-sorted-ascending',
+        );
       });
 
-      it('sort ascending is enabled when column is not sorted asc', () => {
+      it('sort ascending is enabled with no tooltip when not sorted asc', () => {
         const { entries } = build({ getSort: vi.fn().mockReturnValue(null) });
         expect(findItem(entries, 'sort.asc.name')?.disabled).toBeFalsy();
+        expect(findItem(entries, 'sort.asc.name')?.tooltip).toBeUndefined();
       });
 
-      it('sort descending is disabled when column is already sorted desc', () => {
+      it('sort descending is disabled with a tooltip when already sorted descending', () => {
         const { entries } = build({ getSort: vi.fn().mockReturnValue('desc') });
         expect(findItem(entries, 'sort.desc.name')?.disabled).toBe(true);
+        expect(findItem(entries, 'sort.desc.name')?.tooltip).toBe(
+          'pages.main.grid.context-menu.tooltip.already-sorted-descending',
+        );
       });
 
-      it('clear sort is disabled when no sort is active', () => {
+      it('clear sort is disabled with a tooltip when no sort is applied', () => {
         const { entries } = build({ getSort: vi.fn().mockReturnValue(null) });
         expect(findItem(entries, 'sort.clear.name')?.disabled).toBeTruthy();
+        expect(findItem(entries, 'sort.clear.name')?.tooltip).toBe(
+          'pages.main.grid.context-menu.tooltip.no-sort-applied',
+        );
       });
 
-      it('clear sort is enabled when sort is active', () => {
+      it('clear sort is enabled with no tooltip when sort is active', () => {
         const { entries } = build({ getSort: vi.fn().mockReturnValue('asc') });
         expect(findItem(entries, 'sort.clear.name')?.disabled).toBeFalsy();
+        expect(findItem(entries, 'sort.clear.name')?.tooltip).toBeUndefined();
       });
     });
 
     describe('filter items', () => {
-      it('open filter is disabled when column has no filter defined', () => {
-        const { entries } = build({ getColDef: vi.fn().mockReturnValue({ filter: false }) });
+      it('open filter is disabled with a tooltip when the column has no filter', () => {
+        const { entries } = build({ getColDef: vi.fn().mockReturnValue({ colId: 'name' }) });
         expect(findItem(entries, 'filter.open.name')?.disabled).toBe(true);
+        expect(findItem(entries, 'filter.open.name')?.tooltip).toBe(
+          'pages.main.grid.context-menu.tooltip.filter-not-supported',
+        );
       });
 
-      it('open filter is enabled when column has a filter', () => {
+      it('open filter is enabled with no tooltip when column has a filter', () => {
         const { entries } = build({ getColDef: vi.fn().mockReturnValue({ filter: true }) });
         expect(findItem(entries, 'filter.open.name')?.disabled).toBeFalsy();
+        expect(findItem(entries, 'filter.open.name')?.tooltip).toBeUndefined();
       });
 
-      it('clear filter is disabled when column filter is not active', () => {
+      it('clear filter is disabled with a tooltip when no filter is active', () => {
         const { entries } = build({ isFilterActive: vi.fn().mockReturnValue(false) });
         expect(findItem(entries, 'filter.clear.name')?.disabled).toBe(true);
+        expect(findItem(entries, 'filter.clear.name')?.tooltip).toBe(
+          'pages.main.grid.context-menu.tooltip.no-filter-active',
+        );
       });
 
-      it('clear filter is enabled when column filter is active', () => {
+      it('clear filter is enabled with no tooltip when column filter is active', () => {
         const { entries } = build({ isFilterActive: vi.fn().mockReturnValue(true) });
         expect(findItem(entries, 'filter.clear.name')?.disabled).toBeFalsy();
+        expect(findItem(entries, 'filter.clear.name')?.tooltip).toBeUndefined();
       });
 
       it('toggle floating filter shows "show" label when floating filters are inactive', () => {
@@ -884,24 +903,46 @@ describe('GridContextMenuService', () => {
     });
 
     describe('pin column items', () => {
-      it('pin left is disabled when column is already pinned left', () => {
+      it('pin left is disabled with a tooltip when already pinned left', () => {
         const { entries } = build({ isPinnedLeft: vi.fn().mockReturnValue(true) });
         expect(findItem(entries, 'pinLeft.name')?.disabled).toBe(true);
+        expect(findItem(entries, 'pinLeft.name')?.tooltip).toBe(
+          'pages.main.grid.context-menu.tooltip.already-pinned-left',
+        );
       });
 
-      it('pin right is disabled when column is already pinned right', () => {
+      it('pin left is enabled with no tooltip when not pinned left', () => {
+        const { entries } = build({ isPinnedLeft: vi.fn().mockReturnValue(false) });
+        expect(findItem(entries, 'pinLeft.name')?.disabled).toBeFalsy();
+        expect(findItem(entries, 'pinLeft.name')?.tooltip).toBeUndefined();
+      });
+
+      it('pin right is disabled with a tooltip when already pinned right', () => {
         const { entries } = build({ isPinnedRight: vi.fn().mockReturnValue(true) });
         expect(findItem(entries, 'pinRight.name')?.disabled).toBe(true);
+        expect(findItem(entries, 'pinRight.name')?.tooltip).toBe(
+          'pages.main.grid.context-menu.tooltip.already-pinned-right',
+        );
       });
 
-      it('unpin column is disabled when column has no pin', () => {
+      it('pin right is enabled with no tooltip when not pinned right', () => {
+        const { entries } = build({ isPinnedRight: vi.fn().mockReturnValue(false) });
+        expect(findItem(entries, 'pinRight.name')?.disabled).toBeFalsy();
+        expect(findItem(entries, 'pinRight.name')?.tooltip).toBeUndefined();
+      });
+
+      it('unpin column is disabled with a tooltip when not pinned', () => {
         const { entries } = build({ getPinned: vi.fn().mockReturnValue(null) });
         expect(findItem(entries, 'unpinColumn.name')?.disabled).toBeTruthy();
+        expect(findItem(entries, 'unpinColumn.name')?.tooltip).toBe(
+          'pages.main.grid.context-menu.tooltip.column-not-pinned',
+        );
       });
 
-      it('unpin column is enabled when column is pinned', () => {
+      it('unpin column is enabled with no tooltip when column is pinned', () => {
         const { entries } = build({ getPinned: vi.fn().mockReturnValue('left') });
         expect(findItem(entries, 'unpinColumn.name')?.disabled).toBeFalsy();
+        expect(findItem(entries, 'unpinColumn.name')?.tooltip).toBeUndefined();
       });
     });
 

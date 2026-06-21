@@ -520,6 +520,10 @@ export class GridContextMenuService {
             label: 'pages.main.grid.context-menu.item.sort-ascending',
             icon: faSortUp,
             disabled: column.getSort() === 'asc',
+            tooltip:
+              column.getSort() === 'asc'
+                ? 'pages.main.grid.context-menu.tooltip.already-sorted-ascending'
+                : undefined,
             action: () => api.applyColumnState({ state: [{ colId: payload.colId, sort: 'asc' }] }),
           },
           {
@@ -528,6 +532,10 @@ export class GridContextMenuService {
             label: 'pages.main.grid.context-menu.item.sort-descending',
             icon: faSortDown,
             disabled: column.getSort() === 'desc',
+            tooltip:
+              column.getSort() === 'desc'
+                ? 'pages.main.grid.context-menu.tooltip.already-sorted-descending'
+                : undefined,
             action: () => api.applyColumnState({ state: [{ colId: payload.colId, sort: 'desc' }] }),
           },
           {
@@ -536,6 +544,9 @@ export class GridContextMenuService {
             label: 'pages.main.grid.context-menu.item.clear-sort',
             icon: faXmark,
             disabled: !column.getSort(),
+            tooltip: !column.getSort()
+              ? 'pages.main.grid.context-menu.tooltip.no-sort-applied'
+              : undefined,
             action: () => api.applyColumnState({ state: [{ colId: payload.colId, sort: null }] }),
           },
         ],
@@ -553,6 +564,9 @@ export class GridContextMenuService {
             label: 'pages.main.grid.context-menu.item.open-filter',
             icon: faFilter,
             disabled: !column.getColDef().filter,
+            tooltip: !column.getColDef().filter
+              ? 'pages.main.grid.context-menu.tooltip.filter-not-supported'
+              : undefined,
             action: () => api.showColumnFilter(payload.colId),
           },
           {
@@ -561,6 +575,9 @@ export class GridContextMenuService {
             label: 'pages.main.grid.context-menu.item.clear-filter',
             icon: faFilterCircleXmark,
             disabled: !column.isFilterActive(),
+            tooltip: !column.isFilterActive()
+              ? 'pages.main.grid.context-menu.tooltip.no-filter-active'
+              : undefined,
             action: () => this.filterService.clearColumnFilter(payload.colId),
           },
           ...(opts.enableFloatingFiltersToggle !== false
@@ -615,6 +632,9 @@ export class GridContextMenuService {
             label: 'pages.main.grid.context-menu.item.pin-left',
             icon: faArrowLeft,
             disabled: column.isPinnedLeft(),
+            tooltip: column.isPinnedLeft()
+              ? 'pages.main.grid.context-menu.tooltip.already-pinned-left'
+              : undefined,
             action: () => api.setColumnsPinned([payload.colId], 'left'),
           },
           {
@@ -623,6 +643,9 @@ export class GridContextMenuService {
             label: 'pages.main.grid.context-menu.item.pin-right',
             icon: faArrowRight,
             disabled: column.isPinnedRight(),
+            tooltip: column.isPinnedRight()
+              ? 'pages.main.grid.context-menu.tooltip.already-pinned-right'
+              : undefined,
             action: () => api.setColumnsPinned([payload.colId], 'right'),
           },
           {
@@ -631,6 +654,9 @@ export class GridContextMenuService {
             label: 'pages.main.grid.context-menu.item.unpin-column',
             icon: faThumbTackSlash,
             disabled: !column.getPinned(),
+            tooltip: !column.getPinned()
+              ? 'pages.main.grid.context-menu.tooltip.column-not-pinned'
+              : undefined,
             action: () => api.setColumnsPinned([payload.colId], null),
           },
         ],
