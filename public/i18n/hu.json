@@ -1563,6 +1563,14 @@
         "updated": "A \"{{name}}\" szerver frissítve!",
         "deleted": "A \"{{name}}\" szerver törölve."
       }
+    },
+    "update-command-handler": {
+      "error": {
+        "check-failed-title": "Frissítés ellenőrzése sikertelen"
+      },
+      "success": {
+        "up-to-date": "A legújabb verziót használod!"
+      }
     }
   },
   "utils": {},

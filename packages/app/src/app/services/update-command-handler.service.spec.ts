@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { CommandBusService } from './command-bus.service';
 import { ElectronService } from './electron.service';
@@ -14,6 +15,7 @@ describe('UpdateCommandHandlerService', () => {
   let toastSuccess: ReturnType<typeof vi.fn>;
   let toastDanger: ReturnType<typeof vi.fn>;
   let commandBusEmit: ReturnType<typeof vi.fn>;
+  let translateService: { instant: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     commands$ = new Subject();
@@ -21,6 +23,7 @@ describe('UpdateCommandHandlerService', () => {
     toastSuccess = vi.fn();
     toastDanger = vi.fn();
     commandBusEmit = vi.fn();
+    translateService = { instant: vi.fn((key: string) => key) };
 
     TestBed.configureTestingModule({
       providers: [
@@ -31,6 +34,7 @@ describe('UpdateCommandHandlerService', () => {
         },
         { provide: ElectronService, useValue: { checkForUpdate } },
         { provide: ToastService, useValue: { success: toastSuccess, danger: toastDanger } },
+        { provide: TranslateService, useValue: translateService },
       ],
     });
 
@@ -41,7 +45,7 @@ describe('UpdateCommandHandlerService', () => {
   it('should show success toast when no update available', async () => {
     commands$.next({ type: 'UPDATE_CHECK_FOR_UPDATE' });
     await flushPromises();
-    expect(toastSuccess).toHaveBeenCalledWith('Your are on the latest version!');
+    expect(toastSuccess).toHaveBeenCalledWith('services.update-command-handler.success.up-to-date');
   });
 
   it('should emit UI_UPDATE_AVAILABLE when update is found', async () => {
@@ -63,6 +67,9 @@ describe('UpdateCommandHandlerService', () => {
     checkForUpdate.mockResolvedValueOnce({ updateAvailable: false, error: 'Network unreachable' });
     commands$.next({ type: 'UPDATE_CHECK_FOR_UPDATE' });
     await flushPromises();
-    expect(toastDanger).toHaveBeenCalledWith('Network unreachable', 'Update Check Failed');
+    expect(toastDanger).toHaveBeenCalledWith(
+      'Network unreachable',
+      'services.update-command-handler.error.check-failed-title',
+    );
   });
 });

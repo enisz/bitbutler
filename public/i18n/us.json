@@ -1563,6 +1563,14 @@
         "updated": "Server \"{{name}}\" updated!",
         "deleted": "Server \"{{name}}\" deleted."
       }
+    },
+    "update-command-handler": {
+      "error": {
+        "check-failed-title": "Update Check Failed"
+      },
+      "success": {
+        "up-to-date": "You are on the latest version!"
+      }
     }
   },
   "utils": {},
