@@ -1623,6 +1623,13 @@
     "limit": {
       "global": "Globális korlát",
       "no-limit": "Nincs korlát"
+    },
+    "toast": {
+      "success": "Siker",
+      "error": "Hiba",
+      "warning": "Figyelmeztetés",
+      "info": "Infó",
+      "notification": "Értesítés"
     }
   },
   "language": {

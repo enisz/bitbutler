@@ -1623,6 +1623,13 @@
     "limit": {
       "global": "Global Limit",
       "no-limit": "No Limit"
+    },
+    "toast": {
+      "success": "Success",
+      "error": "Error",
+      "warning": "Warning",
+      "info": "Info",
+      "notification": "Notification"
     }
   },
   "language": {
