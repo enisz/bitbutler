@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { Observable, Subscriber } from 'rxjs';
 import { HttpError } from '../models/http.model';
 import {
@@ -46,6 +47,7 @@ export class QbService {
   private readonly toastService = inject(ToastService);
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly router = inject(Router);
+  private readonly translateService = inject(TranslateService);
   private readonly runApiCache = new Map<string, TorrentRunApi>();
 
   readonly auth = {
@@ -748,7 +750,10 @@ export class QbService {
             }
           } else {
             if (!options?.suppressErrors) {
-              this.toastService.danger('Failed to connect. Retrying...', `[QbService] WARNING`);
+              this.toastService.danger(
+                this.translateService.instant('services.qb.warning.connection-retry-message'),
+                this.translateService.instant('services.qb.warning.connection-retry-title'),
+              );
             }
             console.error(
               QbService.name,
@@ -770,7 +775,10 @@ export class QbService {
 
         if (!options?.suppressErrors) {
           const message = errJson?.body ? String(errJson.body) : err?.message || String(err);
-          this.toastService.danger(message, `[QbService] ERROR`);
+          this.toastService.danger(
+            message,
+            this.translateService.instant('services.qb.error.request-failed-title'),
+          );
           console.error('[QbService] ERROR', fullReq.method, fullReq.path, {
             serverId,
             status: ipcStatus,

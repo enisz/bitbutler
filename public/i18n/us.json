@@ -1576,6 +1576,15 @@
       "error": {
         "delete-failed-title": "Failed to delete torrent(s)"
       }
+    },
+    "qb": {
+      "warning": {
+        "connection-retry-title": "Connection Issue",
+        "connection-retry-message": "Failed to connect. Retrying..."
+      },
+      "error": {
+        "request-failed-title": "Request Failed"
+      }
     }
   },
   "utils": {},

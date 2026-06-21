@@ -1576,6 +1576,15 @@
       "error": {
         "delete-failed-title": "Nem sikerült törölni a torrentet/torrenteket"
       }
+    },
+    "qb": {
+      "warning": {
+        "connection-retry-title": "Kapcsolódási probléma",
+        "connection-retry-message": "Nem sikerült csatlakozni. Újrapróbálkozás..."
+      },
+      "error": {
+        "request-failed-title": "Sikertelen kérés"
+      }
     }
   },
   "utils": {},
