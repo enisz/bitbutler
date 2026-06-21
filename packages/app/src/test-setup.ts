@@ -20,6 +20,7 @@ const noopSubscription = () => noop;
     delete: noopAsync,
     getById: noopAsync,
     getByHost: noopAsync,
+    setExportAvailable: noopAsync,
     setActive: noop,
   },
   qb: {
@@ -69,6 +70,9 @@ const noopSubscription = () => noop;
     cancel: noop,
     openBbePicker: () => Promise.resolve(undefined),
     readBbe: noopAsync,
+    getServerInfo: noopAsync,
+    checkAvailability: () => Promise.resolve({ available: false }),
+    saveTorrentFiles: () => Promise.resolve({ cancelled: true, savedPaths: [], failed: [] }),
     importStart: noop,
     importCancel: noop,
     onProgress: noopSubscription,

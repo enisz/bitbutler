@@ -226,11 +226,25 @@ export class Login implements OnInit {
       `${currentServer.protocol}://${currentServer.host}:${currentServer.port}`,
     );
 
-    this.qbittorrentService.auth
+    await this.qbittorrentService.auth
       .login(currentServer.id, runtimeUsername, runtimePassword)
       .then(async (response) => {
         if (!response.loggedIn) return;
         this.serverStoreService.clearAutoLoginSuppression();
+
+        if (currentServer.export_available === null) {
+          try {
+            const { available } = await window.bitbutler.export.checkAvailability(currentServer.id);
+            await window.bitbutler.server.setExportAvailable({
+              id: currentServer.id,
+              value: available ? 1 : 0,
+            });
+            await this.serverStoreService.refresh();
+          } catch (e) {
+            console.error(Login.name, 'connect', 'export_available probe failed', e);
+          }
+        }
+
         await this.windowService.setOpenFilesEnabled(true);
         loadingModalRef.close();
         this.router.navigate(['/pages/main']);
