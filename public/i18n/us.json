@@ -1537,6 +1537,16 @@
       "info": {
         "switching-server": "Switching to {{name}}"
       }
+    },
+    "ui-command-handler": {
+      "error": {
+        "remote-path-missing": "Remote path not provided.",
+        "local-path-unresolved": "Could not resolve local path."
+      },
+      "info": {
+        "showing-file": "Showing file in folder {{path}}",
+        "opening-folder": "Opening folder {{path}}"
+      }
     }
   },
   "utils": {},

@@ -238,7 +238,11 @@ export class UiCommandHandlerService {
 
           case 'UI_OPEN_DESTINATION':
             if (!command.remotePath) {
-              this.toastService.danger('Remote Path not provided!');
+              this.toastService.danger(
+                this.translateService.instant(
+                  'services.ui-command-handler.error.remote-path-missing',
+                ),
+              );
               break;
             }
 
@@ -253,16 +257,31 @@ export class UiCommandHandlerService {
                 const singleFile = contents.length === 1;
 
                 if (!path) {
-                  this.toastService.danger('Could not resolve local path!');
+                  this.toastService.danger(
+                    this.translateService.instant(
+                      'services.ui-command-handler.error.local-path-unresolved',
+                    ),
+                  );
                   return;
                 }
 
                 if (singleFile) {
                   this.electronService.showItemInFolder(path);
-                  this.toastService.info('Showing file in folder ' + path);
+                  this.toastService.info(
+                    this.translateService.instant('services.ui-command-handler.info.showing-file', {
+                      path,
+                    }),
+                  );
                 } else {
                   this.electronService.openPath(path);
-                  this.toastService.info('Opening folder ' + path);
+                  this.toastService.info(
+                    this.translateService.instant(
+                      'services.ui-command-handler.info.opening-folder',
+                      {
+                        path,
+                      },
+                    ),
+                  );
                 }
               })
               .catch((error: any) => {

@@ -1537,6 +1537,16 @@
       "info": {
         "switching-server": "Váltás a(z) {{name}} szerverre"
       }
+    },
+    "ui-command-handler": {
+      "error": {
+        "remote-path-missing": "Nincs megadva távoli elérési út.",
+        "local-path-unresolved": "A helyi elérési út nem feloldható."
+      },
+      "info": {
+        "showing-file": "Fájl megjelenítése a mappában: {{path}}",
+        "opening-folder": "Mappa megnyitása: {{path}}"
+      }
     }
   },
   "utils": {},
