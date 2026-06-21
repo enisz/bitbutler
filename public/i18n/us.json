@@ -984,12 +984,17 @@
             "columns": "Columns"
           },
           "item": {
-            "copy-cell-value": "Copy cell value",
+            "copy-name": "Copy name",
+            "copy-names": "Copy names",
             "copy-info-hash": "Copy info hash",
             "copy-info-hashes": "Copy info hashes",
             "copy-magnet-link": "Copy magnet link",
             "copy-magnet-links": "Copy magnet links",
+            "copy-save-path": "Copy save path",
+            "copy-save-paths": "Copy save paths",
             "copy-as-json": "Copy as JSON",
+            "export-torrent-file": "Export .torrent",
+            "export-torrent-files": "Export .torrent Files",
             "torrent-details": "Torrent details",
             "start": "Start",
             "stop": "Stop",
@@ -1032,6 +1037,21 @@
             "hide-floating-filters": "Hide Floating Filters",
             "autosize-column": "Auto-size This Column",
             "autosize-all-columns": "Auto-size All Columns"
+          },
+          "tooltip": {
+            "open-destination-unresolved": "This torrent's save path could not be resolved on this machine.",
+            "already-pinned-top": "This row is already pinned to the top.",
+            "already-pinned-bottom": "This row is already pinned to the bottom.",
+            "not-pinned": "This row is not pinned.",
+            "already-sorted-ascending": "This column is already sorted ascending.",
+            "already-sorted-descending": "This column is already sorted descending.",
+            "no-sort-applied": "No sort is applied to this column.",
+            "filter-not-supported": "This column does not support filtering.",
+            "no-filter-active": "No filter is active on this column.",
+            "already-pinned-left": "This column is already pinned to the left.",
+            "already-pinned-right": "This column is already pinned to the right.",
+            "column-not-pinned": "This column is not pinned.",
+            "export-unavailable": "The /api/v2/torrents/export endpoint is not available on this server."
           }
         },
         "overlays": {
