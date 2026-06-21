@@ -1547,6 +1547,12 @@
         "showing-file": "Fájl megjelenítése a mappában: {{path}}",
         "opening-folder": "Mappa megnyitása: {{path}}"
       }
+    },
+    "transfer-limit-command-handler": {
+      "info": {
+        "alternative-limit-on": "Alternatív sebességkorlát bekapcsolása.",
+        "alternative-limit-off": "Alternatív sebességkorlát kikapcsolása."
+      }
     }
   },
   "utils": {},

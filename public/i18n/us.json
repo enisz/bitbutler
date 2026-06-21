@@ -1547,6 +1547,12 @@
         "showing-file": "Showing file in folder {{path}}",
         "opening-folder": "Opening folder {{path}}"
       }
+    },
+    "transfer-limit-command-handler": {
+      "info": {
+        "alternative-limit-on": "Turning alternative speed limit on.",
+        "alternative-limit-off": "Turning alternative speed limit off."
+      }
     }
   },
   "utils": {},
