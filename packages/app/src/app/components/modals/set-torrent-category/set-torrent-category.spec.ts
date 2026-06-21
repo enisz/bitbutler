@@ -4,6 +4,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Torrent } from '../../../models/torrent.model';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
+import { ToastService } from '../../../services/toast.service';
 import { SetTorrentCategory } from './set-torrent-category';
 
 describe('SetTorrentCategory', () => {
@@ -29,6 +30,7 @@ describe('SetTorrentCategory', () => {
             },
           },
         },
+        { provide: ToastService, useValue: { danger: vi.fn() } },
       ],
     }).compileComponents();
 
@@ -109,6 +111,24 @@ describe('SetTorrentCategory', () => {
       await component.handleSubmit();
       expect(mockQbService.torrents.setCategory).not.toHaveBeenCalled();
       expect(component.saving).toBe(false);
+    });
+
+    it('should show a danger toast with the raw error when setCategory fails', async () => {
+      const mockQbService = TestBed.inject(QbService) as unknown as {
+        torrents: { setCategory: ReturnType<typeof vi.fn> };
+      };
+      const mockToastService = TestBed.inject(ToastService) as unknown as {
+        danger: ReturnType<typeof vi.fn>;
+      };
+      mockQbService.torrents.setCategory.mockRejectedValueOnce(new Error('disk full'));
+      component.setTorrentCategoryForm.get('category')?.setValue('tv');
+
+      await component.handleSubmit();
+
+      expect(mockToastService.danger).toHaveBeenCalledWith(
+        'disk full',
+        'components.modals.set-torrent-category.toast.set-failed-title',
+      );
     });
   });
 });

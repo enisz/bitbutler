@@ -281,7 +281,10 @@
         "save-credentials": "Save credentials for this server"
       },
       "set-torrent-category": {
-        "title": "Set Torrent Category"
+        "title": "Set Torrent Category",
+        "toast": {
+          "set-failed-title": "Failed to Set Category"
+        }
       },
       "set-torrent-location": {
         "title": "Set Torrent Location",
