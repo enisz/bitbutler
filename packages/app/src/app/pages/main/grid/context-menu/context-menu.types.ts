@@ -27,6 +27,7 @@ export type ContextMenuEntry =
       icon?: IconDefinition;
       variant?: ContextMenuVariant;
       disabled?: boolean;
+      tooltip?: string;
       action?: AppCommand | (() => void);
       hint?: string;
     }

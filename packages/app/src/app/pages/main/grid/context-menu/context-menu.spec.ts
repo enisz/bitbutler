@@ -103,4 +103,82 @@ describe('ContextMenu', () => {
       expect(action).not.toHaveBeenCalled();
     });
   });
+
+  describe('tooltip popover', () => {
+    let showPopoverSpy: ReturnType<typeof vi.spyOn>;
+    let hidePopoverSpy: ReturnType<typeof vi.spyOn>;
+
+    beforeEach(() => {
+      showPopoverSpy = vi.spyOn(HTMLElement.prototype, 'showPopover').mockImplementation(() => {});
+      hidePopoverSpy = vi.spyOn(HTMLElement.prototype, 'hidePopover').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      showPopoverSpy.mockRestore();
+      hidePopoverSpy.mockRestore();
+    });
+
+    function makeTarget(): HTMLElement {
+      const el = document.createElement('button');
+      vi.spyOn(el, 'getBoundingClientRect').mockReturnValue({
+        top: 10,
+        left: 20,
+        right: 80,
+        bottom: 30,
+        width: 60,
+        height: 20,
+        x: 20,
+        y: 10,
+        toJSON: () => ({}),
+      } as DOMRect);
+      return el;
+    }
+
+    it('shows the popover with the tooltip text for a disabled item with a tooltip', () => {
+      const entry: ContextMenuEntry = {
+        kind: 'item',
+        id: 'x',
+        label: 'X',
+        disabled: true,
+        tooltip: 'Not available right now',
+      };
+      component.onItemMouseEnter(entry, makeTarget());
+      expect(component.tooltipText()).toBe('Not available right now');
+      expect(showPopoverSpy).toHaveBeenCalled();
+    });
+
+    it('does nothing for an enabled item even if it has a tooltip', () => {
+      const entry: ContextMenuEntry = {
+        kind: 'item',
+        id: 'x',
+        label: 'X',
+        disabled: false,
+        tooltip: 'Should not show',
+      };
+      component.onItemMouseEnter(entry, makeTarget());
+      expect(component.tooltipText()).toBeNull();
+      expect(showPopoverSpy).not.toHaveBeenCalled();
+    });
+
+    it('does nothing for a disabled item with no tooltip text', () => {
+      const entry: ContextMenuEntry = { kind: 'item', id: 'x', label: 'X', disabled: true };
+      component.onItemMouseEnter(entry, makeTarget());
+      expect(component.tooltipText()).toBeNull();
+      expect(showPopoverSpy).not.toHaveBeenCalled();
+    });
+
+    it('hides the popover and clears the text on mouse leave', () => {
+      const entry: ContextMenuEntry = {
+        kind: 'item',
+        id: 'x',
+        label: 'X',
+        disabled: true,
+        tooltip: 'Hint',
+      };
+      component.onItemMouseEnter(entry, makeTarget());
+      component.onItemMouseLeave();
+      expect(component.tooltipText()).toBeNull();
+      expect(hidePopoverSpy).toHaveBeenCalled();
+    });
+  });
 });

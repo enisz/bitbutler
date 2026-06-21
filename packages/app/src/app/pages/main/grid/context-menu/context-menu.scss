@@ -48,11 +48,6 @@
   &:hover {
     background: color-mix(in srgb, var(--bs-body-color) 8%, transparent);
   }
-
-  &:disabled {
-    opacity: 0.42;
-    cursor: not-allowed;
-  }
 }
 
 .bb-icon {
@@ -112,8 +107,14 @@
   }
 }
 
-.bb-item:disabled {
+.bb-item.bb-item--disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
   color: inherit;
+
+  &:hover {
+    background: transparent;
+  }
 }
 
 .bb-hint {
@@ -143,4 +144,18 @@
 
 .bb-item.bb-item--submenu-open {
   background: color-mix(in srgb, var(--bs-body-color) 8%, transparent);
+}
+
+.bb-tooltip-popover {
+  position: fixed;
+  inset: unset;
+  margin: 0;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  max-width: 260px;
+  background: var(--bs-tooltip-bg, #000);
+  color: var(--bs-tooltip-color, #fff);
+  border: 1px solid var(--bs-border-color);
+  pointer-events: none;
 }

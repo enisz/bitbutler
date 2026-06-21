@@ -5,8 +5,10 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   Injector,
   OnDestroy,
+  ViewChild,
   inject,
   signal,
 } from '@angular/core';
@@ -40,8 +42,12 @@ export class ContextMenu implements OnDestroy {
 
   private readonly closeRoot = inject(CLOSE_ROOT, { optional: true });
 
+  @ViewChild('tooltipEl', { static: true })
+  private tooltipElRef!: ElementRef<HTMLElement>;
+
   readonly faChevronRight = faChevronRight;
   readonly activeSubmenuId = signal<string | null>(null);
+  readonly tooltipText = signal<string | null>(null);
 
   private childOverlayRef?: OverlayRef;
   private openTimer?: ReturnType<typeof setTimeout>;
@@ -139,6 +145,23 @@ export class ContextMenu implements OnDestroy {
   onSubmenuLeave(): void {
     clearTimeout(this.openTimer);
     this.closeTimer = setTimeout(() => this.disposeChild(), 150);
+  }
+
+  onItemMouseEnter(entry: ContextMenuEntry, target: HTMLElement): void {
+    if (entry.kind !== 'item' || !entry.disabled || !entry.tooltip) return;
+
+    this.tooltipText.set(entry.tooltip);
+
+    const tooltipEl = this.tooltipElRef.nativeElement;
+    const rect = target.getBoundingClientRect();
+    tooltipEl.style.top = `${rect.top}px`;
+    tooltipEl.style.left = `${rect.right + 6}px`;
+    tooltipEl.showPopover();
+  }
+
+  onItemMouseLeave(): void {
+    this.tooltipText.set(null);
+    this.tooltipElRef.nativeElement.hidePopover();
   }
 
   private disposeChild(): void {
