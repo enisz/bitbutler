@@ -6,6 +6,8 @@ import type {
   ExportDoneEvent,
   ExportProgressEvent,
   ExportStartPayload,
+  ExportTorrentFileItem,
+  ExportTorrentFilesResult,
   ImportStartPayload,
   MenuClickPayload,
   TorrentDraft,
@@ -165,6 +167,12 @@ const api: BitButlerAPI = {
       ipcRenderer.invoke('export:read-bbe', payload) as Promise<BbeMetadata>,
     getServerInfo: (serverId: string) =>
       ipcRenderer.invoke('export:get-server-info', { serverId }) as Promise<BbeServerInfo>,
+    checkAvailability: (serverId: string) =>
+      ipcRenderer.invoke('export:check-availability', { serverId }) as Promise<{
+        available: boolean;
+      }>,
+    saveTorrentFiles: (payload: { serverId: string; items: ExportTorrentFileItem[] }) =>
+      ipcRenderer.invoke('export:save-torrent-files', payload) as Promise<ExportTorrentFilesResult>,
     importStart: (payload: ImportStartPayload) => ipcRenderer.send('import:start', payload),
     importCancel: () => ipcRenderer.send('import:cancel'),
     onProgress: (cb: (e: ExportProgressEvent) => void) =>

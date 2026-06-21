@@ -6,6 +6,8 @@ import type {
   ExportDoneEvent,
   ExportProgressEvent,
   ExportStartPayload,
+  ExportTorrentFileItem,
+  ExportTorrentFilesResult,
   ImportRestoreField,
   ImportStartPayload,
 } from '@bitbutler/shared';
@@ -17,6 +19,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { qbRequest } from './qbittorrent.js';
+import { getExportAvailable } from './server.js';
 
 interface QbTorrentInfo {
   hash: string;
@@ -159,10 +162,23 @@ export function registerExportIpcHandlers(): void {
     const [webapiVersion, qbVersion, isFullMode] = await Promise.all([
       qbRequest({ id: serverId, path: '/api/v2/app/webapiVersion' }) as Promise<string>,
       qbRequest({ id: serverId, path: '/api/v2/app/version' }) as Promise<string>,
-      probeFullMode(serverId),
+      resolveFullMode(serverId),
     ]);
     return { webapiVersion: webapiVersion.trim(), qbVersion: qbVersion.trim(), isFullMode };
   });
+
+  ipcMain.handle(
+    'export:check-availability',
+    async (_event, { serverId }: { serverId: string }) => ({
+      available: await probeFullMode(serverId),
+    }),
+  );
+
+  ipcMain.handle(
+    'export:save-torrent-files',
+    async (_event, payload: { serverId: string; items: ExportTorrentFileItem[] }) =>
+      saveTorrentFiles(payload),
+  );
 
   ipcMain.handle('export:read-bbe', async (_event, { path: bbePath }: { path: string }) => {
     const zip = new AdmZip(bbePath);
@@ -194,7 +210,7 @@ async function runExport(event: Electron.IpcMainEvent, payload: ExportStartPaylo
 
   let tmpPath = '';
   try {
-    const isFullMode = await probeFullMode(serverId);
+    const isFullMode = await resolveFullMode(serverId);
 
     tmpPath = path.join(os.tmpdir(), `bbe-${Date.now()}.zip`);
     const output = fs.createWriteStream(tmpPath);
@@ -264,6 +280,75 @@ async function runExport(event: Electron.IpcMainEvent, payload: ExportStartPaylo
     if (tmpPath) await fs.promises.unlink(tmpPath).catch(() => {});
     send('export:error', { message: (err as Error)?.message ?? String(err) });
   }
+}
+
+function sanitizeFilename(name: string): string {
+  return (name || 'torrent').replace(/[\\/:*?"<>|]/g, '_').trim() || 'torrent';
+}
+
+async function saveTorrentFiles(payload: {
+  serverId: string;
+  items: ExportTorrentFileItem[];
+}): Promise<ExportTorrentFilesResult> {
+  const { serverId, items } = payload;
+  if (items.length === 0) return { cancelled: true, savedPaths: [], failed: [] };
+
+  if (items.length === 1) {
+    const { hash, name } = items[0];
+    const { canceled, filePath } = await dialog.showSaveDialog({
+      defaultPath: `${sanitizeFilename(name)}.torrent`,
+      filters: [{ name: 'Torrent files', extensions: ['torrent'] }],
+    });
+    if (canceled || !filePath) return { cancelled: true, savedPaths: [], failed: [] };
+
+    try {
+      const buffer = (await qbRequest({
+        id: serverId,
+        path: '/api/v2/torrents/export',
+        query: { hash },
+        responseType: 'buffer',
+      })) as Buffer;
+      await fs.promises.writeFile(filePath, buffer);
+      return { cancelled: false, savedPaths: [filePath], failed: [] };
+    } catch (err) {
+      return {
+        cancelled: false,
+        savedPaths: [],
+        failed: [{ hash, name, error: (err as Error)?.message ?? String(err) }],
+      };
+    }
+  }
+
+  const { canceled, filePaths } = await dialog.showOpenDialog({ properties: ['openDirectory'] });
+  if (canceled || !filePaths[0]) return { cancelled: true, savedPaths: [], failed: [] };
+  const dir = filePaths[0];
+
+  const usedNames = new Set<string>();
+  const savedPaths: string[] = [];
+  const failed: { hash: string; name: string; error: string }[] = [];
+
+  for (const { hash, name } of items) {
+    const base = sanitizeFilename(name);
+    let filename = `${base}.torrent`;
+    if (usedNames.has(filename)) filename = `${base}-${hash.slice(0, 8)}.torrent`;
+    usedNames.add(filename);
+
+    try {
+      const buffer = (await qbRequest({
+        id: serverId,
+        path: '/api/v2/torrents/export',
+        query: { hash },
+        responseType: 'buffer',
+      })) as Buffer;
+      const fullPath = path.join(dir, filename);
+      await fs.promises.writeFile(fullPath, buffer);
+      savedPaths.push(fullPath);
+    } catch (err) {
+      failed.push({ hash, name, error: (err as Error)?.message ?? String(err) });
+    }
+  }
+
+  return { cancelled: false, savedPaths, failed };
 }
 
 async function buildExportEntry(
@@ -602,6 +687,11 @@ async function probeFullMode(serverId: string): Promise<boolean> {
       return false;
     }
   }
+}
+
+export async function resolveFullMode(serverId: string): Promise<boolean> {
+  const cached = getExportAvailable(serverId);
+  return cached === null ? probeFullMode(serverId) : cached === 1;
 }
 
 function sleep(ms: number): Promise<void> {
