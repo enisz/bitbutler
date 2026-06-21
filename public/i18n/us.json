@@ -245,7 +245,10 @@
       "transfer-limit": {
         "title": "Transfer Limit",
         "global": "Global Transfer Limit",
-        "loading": "Loading Transfer Limits..."
+        "loading": "Loading Transfer Limits...",
+        "toast": {
+          "set-failed-title": "Failed to Set Transfer Limits"
+        }
       },
       "rename-torrent": {
         "title": "Rename Torrent",
