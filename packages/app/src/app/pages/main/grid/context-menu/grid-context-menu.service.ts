@@ -19,13 +19,14 @@ import {
   faFilter,
   faFilterCircleXmark,
   faFloppyDisk,
+  faFolder,
   faFolderOpen,
   faFolderTree,
   faFont,
   faForwardFast,
   faHashtag,
   faInfoCircle,
-  faLink,
+  faMagnet,
   faPause,
   faPenToSquare,
   faPlaneDeparture,
@@ -156,7 +157,7 @@ export class GridContextMenuService {
             kind: 'item',
             id: 'files.setLocation',
             label: 'pages.main.grid.context-menu.item.set-location',
-            icon: faFolderOpen,
+            icon: faFolder,
             action: () =>
               this.commandBusService.emit({
                 type: 'UI_SET_TORRENT_LOCATION',
@@ -366,7 +367,7 @@ export class GridContextMenuService {
             label: isMulti
               ? 'pages.main.grid.context-menu.item.copy-magnet-links'
               : 'pages.main.grid.context-menu.item.copy-magnet-link',
-            icon: faLink,
+            icon: faMagnet,
             action: () =>
               this.clipboard.copy(
                 isMulti
