@@ -201,7 +201,6 @@ describe('export:check-availability IPC handler', () => {
 
   afterEach(() => {
     vi.clearAllMocks();
-    vi.doUnmock('electron');
     vi.doUnmock('./qbittorrent.js');
     vi.doUnmock('./server.js');
   });
@@ -252,7 +251,6 @@ describe('export:save-torrent-files IPC handler', () => {
 
   afterEach(() => {
     vi.clearAllMocks();
-    vi.doUnmock('electron');
     vi.doUnmock('./qbittorrent.js');
     vi.doUnmock('./server.js');
     vi.doUnmock('node:fs');
