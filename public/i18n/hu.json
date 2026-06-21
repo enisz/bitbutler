@@ -1553,6 +1553,16 @@
         "alternative-limit-on": "Alternatív sebességkorlát bekapcsolása.",
         "alternative-limit-off": "Alternatív sebességkorlát kikapcsolása."
       }
+    },
+    "server-command-handler": {
+      "success": {
+        "added": "A \"{{name}}\" szerver hozzáadva!",
+        "added-fallback": "Szerver hozzáadva!"
+      },
+      "info": {
+        "updated": "A \"{{name}}\" szerver frissítve!",
+        "deleted": "A \"{{name}}\" szerver törölve."
+      }
     }
   },
   "utils": {},

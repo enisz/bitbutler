@@ -1,5 +1,6 @@
 import { DestroyRef, Injectable, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TranslateService } from '@ngx-translate/core';
 import { EMPTY, catchError, concatMap, filter, from } from 'rxjs';
 import { AppCommand, ServerCommand } from '../models/command.model';
 import { CommandBusService } from './command-bus.service';
@@ -13,6 +14,7 @@ export class ServerCommandHandlerService {
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly serverService = inject(ServerService);
   private readonly toastService = inject(ToastService);
+  private readonly translateService = inject(TranslateService);
   private readonly destroyRef = inject(DestroyRef);
 
   public start(): void {
@@ -49,7 +51,12 @@ export class ServerCommandHandlerService {
   private async handleServerAdded(id: string): Promise<void> {
     await this.serverStoreService.refresh();
     const server = this.serverStoreService.servers().find((s) => s.id === id);
-    this.toastService.success(`Server ${server?.name || 'New Host'} added!`);
+    const message = server?.name
+      ? this.translateService.instant('services.server-command-handler.success.added', {
+          name: server.name,
+        })
+      : this.translateService.instant('services.server-command-handler.success.added-fallback');
+    this.toastService.success(message);
     if (!this.serverStoreService.currentServerId()) {
       this.serverStoreService.select(id);
     }
@@ -58,13 +65,21 @@ export class ServerCommandHandlerService {
   private async handleServerUpdated(id: string): Promise<void> {
     await this.serverStoreService.refresh();
     const server = this.serverStoreService.servers().find((s) => s.id === id);
-    this.toastService.info(`Server ${server?.name} updated!`);
+    this.toastService.info(
+      this.translateService.instant('services.server-command-handler.info.updated', {
+        name: server?.name,
+      }),
+    );
   }
 
   private async handleServerDeleted(id: string): Promise<void> {
     const server = this.serverStoreService.servers().find((s) => s.id === id);
     await this.serverService.delete(id);
     await this.serverStoreService.refresh();
-    this.toastService.info(`Server ${server?.name} deleted.`);
+    this.toastService.info(
+      this.translateService.instant('services.server-command-handler.info.deleted', {
+        name: server?.name,
+      }),
+    );
   }
 }

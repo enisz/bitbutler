@@ -1553,6 +1553,16 @@
         "alternative-limit-on": "Turning alternative speed limit on.",
         "alternative-limit-off": "Turning alternative speed limit off."
       }
+    },
+    "server-command-handler": {
+      "success": {
+        "added": "Server \"{{name}}\" added!",
+        "added-fallback": "Server added!"
+      },
+      "info": {
+        "updated": "Server \"{{name}}\" updated!",
+        "deleted": "Server \"{{name}}\" deleted."
+      }
     }
   },
   "utils": {},
