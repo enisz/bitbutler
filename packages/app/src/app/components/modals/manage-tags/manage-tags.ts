@@ -10,7 +10,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faTrashCan } from '@fortawesome/free-regular-svg-icons';
-import { faTrashCan as faTrashCanSolid, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTrashCan as faTrashCanSolid, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AutofocusDirective } from '../../../directives/autofocus';
@@ -21,6 +21,7 @@ import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { ToastService } from '../../../services/toast.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
+import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
 import { BbSpinner } from '../../bb-spinner/bb-spinner';
 
 @Component({
@@ -34,6 +35,7 @@ import { BbSpinner } from '../../bb-spinner/bb-spinner';
     BbSpinner,
     AutofocusDirective,
     TooltipOverflow,
+    BbBtnContent,
   ],
   templateUrl: './manage-tags.html',
   styleUrl: './manage-tags.scss',
@@ -48,7 +50,7 @@ export class ManageTags implements OnInit, GuardableModal {
   private readonly translateService = inject(TranslateService);
   public readonly activeModal = inject(NgbActiveModal);
 
-  public readonly icon = { faTrashCan, faXmark };
+  public readonly icon = { faTrashCan, faXmark, faPlus };
 
   public tags = signal<string[]>([]);
   public nameControl = new FormControl('', [Validators.required]);
