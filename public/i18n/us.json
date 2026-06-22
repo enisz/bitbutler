@@ -1096,7 +1096,19 @@
           },
           "toast": {
             "export-failed-title": "Export Failed",
-            "export-failed-count": "Failed to export {{failed}} of {{total}} torrent(s)."
+            "export-failed-count": "Failed to export {{failed}} of {{total}} torrent(s).",
+            "copied-to-clipboard": "Copied {{field}} to clipboard."
+          },
+          "field": {
+            "name": "Name",
+            "names": "Names",
+            "magnet-link": "Magnet Link",
+            "magnet-links": "Magnet Links",
+            "info-hash": "Info Hash",
+            "info-hashes": "Info Hashes",
+            "save-path": "Save Path",
+            "save-paths": "Save Paths",
+            "json": "JSON"
           }
         },
         "overlays": {

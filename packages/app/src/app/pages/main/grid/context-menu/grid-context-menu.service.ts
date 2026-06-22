@@ -354,12 +354,25 @@ export class GridContextMenuService {
               ? 'pages.main.grid.context-menu.item.copy-names'
               : 'pages.main.grid.context-menu.item.copy-name',
             icon: faFont,
-            action: () =>
+            action: () => {
               this.clipboard.copy(
                 isMulti
                   ? data.selected.map((torrent) => torrent.name).join('\n')
                   : String(data.row.name),
-              ),
+              );
+              this.toastService.info(
+                this.translateService.instant(
+                  'pages.main.grid.context-menu.toast.copied-to-clipboard',
+                  {
+                    field: this.translateService.instant(
+                      isMulti
+                        ? 'pages.main.grid.context-menu.field.names'
+                        : 'pages.main.grid.context-menu.field.name',
+                    ),
+                  },
+                ),
+              );
+            },
           },
           {
             kind: 'item',
@@ -368,12 +381,25 @@ export class GridContextMenuService {
               ? 'pages.main.grid.context-menu.item.copy-magnet-links'
               : 'pages.main.grid.context-menu.item.copy-magnet-link',
             icon: faMagnet,
-            action: () =>
+            action: () => {
               this.clipboard.copy(
                 isMulti
                   ? data.selected.map((torrent) => torrent.magnet_uri).join('\n')
                   : String(data.row.magnet_uri),
-              ),
+              );
+              this.toastService.info(
+                this.translateService.instant(
+                  'pages.main.grid.context-menu.toast.copied-to-clipboard',
+                  {
+                    field: this.translateService.instant(
+                      isMulti
+                        ? 'pages.main.grid.context-menu.field.magnet-links'
+                        : 'pages.main.grid.context-menu.field.magnet-link',
+                    ),
+                  },
+                ),
+              );
+            },
           },
           {
             kind: 'item',
@@ -382,7 +408,21 @@ export class GridContextMenuService {
               ? 'pages.main.grid.context-menu.item.copy-info-hashes'
               : 'pages.main.grid.context-menu.item.copy-info-hash',
             icon: faHashtag,
-            action: () => this.clipboard.copy(isMulti ? hashes.join('\n') : String(data.row.hash)),
+            action: () => {
+              this.clipboard.copy(isMulti ? hashes.join('\n') : String(data.row.hash));
+              this.toastService.info(
+                this.translateService.instant(
+                  'pages.main.grid.context-menu.toast.copied-to-clipboard',
+                  {
+                    field: this.translateService.instant(
+                      isMulti
+                        ? 'pages.main.grid.context-menu.field.info-hashes'
+                        : 'pages.main.grid.context-menu.field.info-hash',
+                    ),
+                  },
+                ),
+              );
+            },
           },
           {
             kind: 'item',
@@ -391,19 +431,42 @@ export class GridContextMenuService {
               ? 'pages.main.grid.context-menu.item.copy-save-paths'
               : 'pages.main.grid.context-menu.item.copy-save-path',
             icon: faFolderOpen,
-            action: () =>
+            action: () => {
               this.clipboard.copy(
                 isMulti
                   ? data.selected.map((torrent) => torrent.save_path).join('\n')
                   : String(data.row.save_path),
-              ),
+              );
+              this.toastService.info(
+                this.translateService.instant(
+                  'pages.main.grid.context-menu.toast.copied-to-clipboard',
+                  {
+                    field: this.translateService.instant(
+                      isMulti
+                        ? 'pages.main.grid.context-menu.field.save-paths'
+                        : 'pages.main.grid.context-menu.field.save-path',
+                    ),
+                  },
+                ),
+              );
+            },
           },
           {
             kind: 'item',
             id: 'torrent.copyJson',
             label: 'pages.main.grid.context-menu.item.copy-as-json',
             icon: faCode,
-            action: () => this.clipboard.copy(String(JSON.stringify(data.selected, null, 2))),
+            action: () => {
+              this.clipboard.copy(String(JSON.stringify(data.selected, null, 2)));
+              this.toastService.info(
+                this.translateService.instant(
+                  'pages.main.grid.context-menu.toast.copied-to-clipboard',
+                  {
+                    field: this.translateService.instant('pages.main.grid.context-menu.field.json'),
+                  },
+                ),
+              );
+            },
           },
         ],
       },

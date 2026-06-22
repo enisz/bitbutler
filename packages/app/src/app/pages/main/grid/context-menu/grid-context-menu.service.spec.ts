@@ -92,7 +92,7 @@ describe('GridContextMenuService', () => {
   let qbService: { torrents: { files: ReturnType<typeof vi.fn> } };
   let pathService: { resolveLocalPath: ReturnType<typeof vi.fn> };
   let filterService: { clearColumnFilter: ReturnType<typeof vi.fn> };
-  let toastService: { danger: ReturnType<typeof vi.fn> };
+  let toastService: { danger: ReturnType<typeof vi.fn>; info: ReturnType<typeof vi.fn> };
   let translateService: { instant: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
@@ -101,7 +101,7 @@ describe('GridContextMenuService', () => {
     qbService = { torrents: { files: vi.fn().mockResolvedValue([{}, {}]) } };
     pathService = { resolveLocalPath: vi.fn().mockResolvedValue('/local/path') };
     filterService = { clearColumnFilter: vi.fn() };
-    toastService = { danger: vi.fn() };
+    toastService = { danger: vi.fn(), info: vi.fn() };
     translateService = { instant: vi.fn((key: string) => key) };
 
     (window as any).bitbutler = {
@@ -431,6 +431,9 @@ describe('GridContextMenuService', () => {
         const entries = await service.buildTorrentMenu(makeData({ row, selected: [row] }));
         (findItem(entries, 'torrent.copyName')!.action as () => void)();
         expect(clipboard.copy).toHaveBeenCalledWith('My Film');
+        expect(toastService.info).toHaveBeenCalledWith(
+          'pages.main.grid.context-menu.toast.copied-to-clipboard',
+        );
       });
 
       it('torrent.copyName action joins names with a newline for multi-selection', async () => {
@@ -441,6 +444,9 @@ describe('GridContextMenuService', () => {
         );
         (findItem(entries, 'torrent.copyName')!.action as () => void)();
         expect(clipboard.copy).toHaveBeenCalledWith('Film A\nFilm B');
+        expect(toastService.info).toHaveBeenCalledWith(
+          'pages.main.grid.context-menu.toast.copied-to-clipboard',
+        );
       });
 
       it('torrent.copySavePath action copies the save path for a single selection', async () => {
@@ -448,6 +454,9 @@ describe('GridContextMenuService', () => {
         const entries = await service.buildTorrentMenu(makeData({ row, selected: [row] }));
         (findItem(entries, 'torrent.copySavePath')!.action as () => void)();
         expect(clipboard.copy).toHaveBeenCalledWith('/downloads/movies');
+        expect(toastService.info).toHaveBeenCalledWith(
+          'pages.main.grid.context-menu.toast.copied-to-clipboard',
+        );
       });
 
       it('torrent.copySavePath action joins save paths with a newline for multi-selection', async () => {
@@ -458,6 +467,9 @@ describe('GridContextMenuService', () => {
         );
         (findItem(entries, 'torrent.copySavePath')!.action as () => void)();
         expect(clipboard.copy).toHaveBeenCalledWith('/downloads/a\n/downloads/b');
+        expect(toastService.info).toHaveBeenCalledWith(
+          'pages.main.grid.context-menu.toast.copied-to-clipboard',
+        );
       });
 
       it('torrent.copyJson action always copies an array, even for a single torrent', async () => {
@@ -465,18 +477,27 @@ describe('GridContextMenuService', () => {
         const entries = await service.buildTorrentMenu(makeData({ row, selected: [row] }));
         (findItem(entries, 'torrent.copyJson')!.action as () => void)();
         expect(clipboard.copy).toHaveBeenCalledWith(JSON.stringify([row], null, 2));
+        expect(toastService.info).toHaveBeenCalledWith(
+          'pages.main.grid.context-menu.toast.copied-to-clipboard',
+        );
       });
 
       it('torrent.copyInfoHash action copies the torrent hash', async () => {
         const entries = await service.buildTorrentMenu(makeData());
         (findItem(entries, 'torrent.copyInfoHash')!.action as () => void)();
         expect(clipboard.copy).toHaveBeenCalledWith('abc123');
+        expect(toastService.info).toHaveBeenCalledWith(
+          'pages.main.grid.context-menu.toast.copied-to-clipboard',
+        );
       });
 
       it('torrent.copyMagnet action copies the magnet URI', async () => {
         const entries = await service.buildTorrentMenu(makeData());
         (findItem(entries, 'torrent.copyMagnet')!.action as () => void)();
         expect(clipboard.copy).toHaveBeenCalledWith('magnet:?xt=abc123');
+        expect(toastService.info).toHaveBeenCalledWith(
+          'pages.main.grid.context-menu.toast.copied-to-clipboard',
+        );
       });
 
       it('torrent.copyJson action copies the selection as formatted JSON', async () => {
@@ -484,6 +505,21 @@ describe('GridContextMenuService', () => {
         const entries = await service.buildTorrentMenu(makeData({ row }));
         (findItem(entries, 'torrent.copyJson')!.action as () => void)();
         expect(clipboard.copy).toHaveBeenCalledWith(JSON.stringify([row], null, 2));
+        expect(toastService.info).toHaveBeenCalledWith(
+          'pages.main.grid.context-menu.toast.copied-to-clipboard',
+        );
+      });
+
+      it('torrent.copyName action requests the plural field label for multi-selection', async () => {
+        const rowA = makeRow({ hash: 'a' });
+        const rowB = makeRow({ hash: 'b' });
+        const entries = await service.buildTorrentMenu(
+          makeData({ row: rowA, selected: [rowA, rowB] }),
+        );
+        (findItem(entries, 'torrent.copyName')!.action as () => void)();
+        expect(translateService.instant).toHaveBeenCalledWith(
+          'pages.main.grid.context-menu.field.names',
+        );
       });
 
       it('row.pinToTop action emits UI_TORRENT_PIN_TOP', async () => {
