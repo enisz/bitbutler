@@ -751,7 +751,7 @@ export class QbService {
             }
           } else {
             if (!options?.suppressErrors) {
-              this.toastService.danger(
+              this.toastService.warning(
                 this.translateService.instant('services.qb.warning.connection-retry-message'),
                 this.translateService.instant('services.qb.warning.connection-retry-title'),
               );
