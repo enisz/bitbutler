@@ -9,10 +9,15 @@
 </div>
 <div class="modal-body" [innerHTML]="message() | translate: messageParams()"></div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-danger" (click)="activeModal.close(true)" autofocus>
-    {{ btnOkText() | translate }}
+  <button
+    type="button"
+    class="btn btn-danger btn-split"
+    (click)="activeModal.close(true)"
+    autofocus
+  >
+    <bb-btn-content [icon]="okIcon()" [text]="btnOkText() | translate"></bb-btn-content>
   </button>
-  <button type="button" class="btn btn-link" (click)="activeModal.close(false)">
-    {{ btnCancelText() | translate }}
+  <button type="button" class="btn btn-link btn-split" (click)="activeModal.close(false)">
+    <bb-btn-content [icon]="cancelIcon()" [text]="btnCancelText() | translate"></bb-btn-content>
   </button>
 </div>

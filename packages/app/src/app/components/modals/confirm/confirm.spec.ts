@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { faCheck, faTrashCan, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Confirm } from './confirm';
 
@@ -48,5 +49,18 @@ describe('Confirm', () => {
   it('should accept custom title params', () => {
     fixture.componentRef.setInput('titleParams', { name: 'test' });
     expect(component.titleParams()).toEqual({ name: 'test' });
+  });
+
+  it('should have default ok icon', () => {
+    expect(component.okIcon()).toBe(faCheck);
+  });
+
+  it('should have default cancel icon', () => {
+    expect(component.cancelIcon()).toBe(faXmark);
+  });
+
+  it('should accept custom okIcon input', () => {
+    fixture.componentRef.setInput('okIcon', faTrashCan);
+    expect(component.okIcon()).toBe(faTrashCan);
   });
 });
