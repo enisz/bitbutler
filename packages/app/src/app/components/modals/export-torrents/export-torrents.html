@@ -91,8 +91,16 @@
             id="scope-all"
             value="all"
           />
-          <label class="btn btn-outline-secondary" for="scope-all">
-            {{ 'components.modals.export-torrents.scope.all' | translate }} ({{ allCount() }})
+          <label class="btn btn-outline-secondary btn-split" for="scope-all">
+            <bb-btn-content
+              [icon]="icons.faLayerGroup"
+              [text]="
+                ('components.modals.export-torrents.scope.all' | translate) +
+                ' (' +
+                allCount() +
+                ')'
+              "
+            ></bb-btn-content>
           </label>
           <input
             type="radio"
@@ -102,10 +110,16 @@
             value="filtered"
             [attr.disabled]="!hasFiltered() || null"
           />
-          <label class="btn btn-outline-secondary" for="scope-filtered">
-            {{ 'components.modals.export-torrents.scope.filtered' | translate }} ({{
-              filteredCount()
-            }})
+          <label class="btn btn-outline-secondary btn-split" for="scope-filtered">
+            <bb-btn-content
+              [icon]="icons.faFilter"
+              [text]="
+                ('components.modals.export-torrents.scope.filtered' | translate) +
+                ' (' +
+                filteredCount() +
+                ')'
+              "
+            ></bb-btn-content>
           </label>
           <input
             type="radio"
@@ -115,10 +129,16 @@
             value="selected"
             [attr.disabled]="!hasSelection() || null"
           />
-          <label class="btn btn-outline-secondary" for="scope-selected">
-            {{ 'components.modals.export-torrents.scope.selected' | translate }} ({{
-              selectedCount()
-            }})
+          <label class="btn btn-outline-secondary btn-split" for="scope-selected">
+            <bb-btn-content
+              [icon]="icons.faSquareCheck"
+              [text]="
+                ('components.modals.export-torrents.scope.selected' | translate) +
+                ' (' +
+                selectedCount() +
+                ')'
+              "
+            ></bb-btn-content>
           </label>
         </div>
 
@@ -133,10 +153,16 @@
             id="category-scope-all"
             value="all"
           />
-          <label class="btn btn-outline-secondary" for="category-scope-all">
-            {{ 'components.modals.export-torrents.category-scope.all' | translate }} ({{
-              allCategoriesCount()
-            }})
+          <label class="btn btn-outline-secondary btn-split" for="category-scope-all">
+            <bb-btn-content
+              [icon]="icons.faFolderTree"
+              [text]="
+                ('components.modals.export-torrents.category-scope.all' | translate) +
+                ' (' +
+                allCategoriesCount() +
+                ')'
+              "
+            ></bb-btn-content>
           </label>
           <input
             type="radio"
@@ -145,10 +171,16 @@
             id="category-scope-assigned"
             value="assigned"
           />
-          <label class="btn btn-outline-secondary" for="category-scope-assigned">
-            {{ 'components.modals.export-torrents.category-scope.assigned' | translate }} ({{
-              assignedCategoriesCount()
-            }})
+          <label class="btn btn-outline-secondary btn-split" for="category-scope-assigned">
+            <bb-btn-content
+              [icon]="icons.faLink"
+              [text]="
+                ('components.modals.export-torrents.category-scope.assigned' | translate) +
+                ' (' +
+                assignedCategoriesCount() +
+                ')'
+              "
+            ></bb-btn-content>
           </label>
         </div>
         <div class="small text-body-secondary mb-3">{{ categoryScopeHint() | translate }}</div>
@@ -164,10 +196,16 @@
             id="tag-scope-all"
             value="all"
           />
-          <label class="btn btn-outline-secondary" for="tag-scope-all">
-            {{ 'components.modals.export-torrents.tag-scope.all' | translate }} ({{
-              allTagsCount()
-            }})
+          <label class="btn btn-outline-secondary btn-split" for="tag-scope-all">
+            <bb-btn-content
+              [icon]="icons.faTags"
+              [text]="
+                ('components.modals.export-torrents.tag-scope.all' | translate) +
+                ' (' +
+                allTagsCount() +
+                ')'
+              "
+            ></bb-btn-content>
           </label>
           <input
             type="radio"
@@ -176,10 +214,16 @@
             id="tag-scope-assigned"
             value="assigned"
           />
-          <label class="btn btn-outline-secondary" for="tag-scope-assigned">
-            {{ 'components.modals.export-torrents.tag-scope.assigned' | translate }} ({{
-              assignedTagsCount()
-            }})
+          <label class="btn btn-outline-secondary btn-split" for="tag-scope-assigned">
+            <bb-btn-content
+              [icon]="icons.faLink"
+              [text]="
+                ('components.modals.export-torrents.tag-scope.assigned' | translate) +
+                ' (' +
+                assignedTagsCount() +
+                ')'
+              "
+            ></bb-btn-content>
           </label>
         </div>
         <div class="small text-body-secondary">{{ tagScopeHint() | translate }}</div>
@@ -202,8 +246,11 @@
               'components.modals.export-torrents.label.dest-dir' | translate
             }}</label>
           </div>
-          <button type="button" class="btn btn-outline-primary" (click)="browseDestDir()">
-            {{ 'general.button.browse' | translate }}
+          <button type="button" class="btn btn-outline-primary btn-split" (click)="browseDestDir()">
+            <bb-btn-content
+              [icon]="icons.faFolderOpen"
+              [text]="'general.button.browse' | translate"
+            ></bb-btn-content>
           </button>
         </div>
         <div class="input-group">
@@ -253,8 +300,11 @@
                 {{ 'components.modals.export-torrents.progress.skipped' | translate }}
               }
             </span>
-            <button type="button" class="btn btn-sm btn-success" (click)="showInFolder()">
-              {{ 'components.modals.export-torrents.button.show-in-folder' | translate }}
+            <button type="button" class="btn btn-sm btn-success btn-split" (click)="showInFolder()">
+              <bb-btn-content
+                [icon]="icons.faFolderOpen"
+                [text]="'components.modals.export-torrents.button.show-in-folder' | translate"
+              ></bb-btn-content>
             </button>
           </div>
         }
@@ -268,24 +318,36 @@
 
 <div class="modal-footer">
   @if (isRunning()) {
-    <button type="button" class="btn btn-link" (click)="cancelExport()">
-      {{ 'general.button.cancel' | translate }}
+    <button type="button" class="btn btn-link btn-split" (click)="cancelExport()">
+      <bb-btn-content
+        [icon]="icons.faXmark"
+        [text]="'general.button.cancel' | translate"
+      ></bb-btn-content>
     </button>
   } @else if (isDone() || isError()) {
-    <button type="button" class="btn btn-link" (click)="close()">
-      {{ 'general.button.close' | translate }}
+    <button type="button" class="btn btn-link btn-split" (click)="close()">
+      <bb-btn-content
+        [icon]="icons.faXmark"
+        [text]="'general.button.close' | translate"
+      ></bb-btn-content>
     </button>
   } @else {
     <button
       type="button"
-      class="btn btn-primary"
+      class="btn btn-primary btn-split"
       (click)="startExport()"
       [disabled]="exportForm.invalid"
     >
-      {{ 'components.modals.export-torrents.button.export' | translate }}
+      <bb-btn-content
+        [icon]="icons.faFileExport"
+        [text]="'components.modals.export-torrents.button.export' | translate"
+      ></bb-btn-content>
     </button>
-    <button type="button" class="btn btn-link" (click)="close()">
-      {{ 'general.button.cancel' | translate }}
+    <button type="button" class="btn btn-link btn-split" (click)="close()">
+      <bb-btn-content
+        [icon]="icons.faXmark"
+        [text]="'general.button.cancel' | translate"
+      ></bb-btn-content>
     </button>
   }
 </div>

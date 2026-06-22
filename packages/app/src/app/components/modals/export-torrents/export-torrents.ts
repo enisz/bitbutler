@@ -17,6 +17,17 @@ import type {
   ExportStartPayload,
   ExportTagScope,
 } from '@bitbutler/shared';
+import {
+  faFileExport,
+  faFilter,
+  faFolderOpen,
+  faFolderTree,
+  faLayerGroup,
+  faLink,
+  faSquareCheck,
+  faTags,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ExportService } from '../../../services/export.service';
@@ -24,6 +35,7 @@ import { FilterService } from '../../../services/filter.service';
 import { SelectionStoreService } from '../../../services/selection-store.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
+import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
 import { BbPopover } from '../../bb-popover/bb-popover';
 import { BbProgress } from '../../bb-progress/bb-progress';
 import { BbSpinner } from '../../bb-spinner/bb-spinner';
@@ -31,7 +43,7 @@ import { BbSpinner } from '../../bb-spinner/bb-spinner';
 @Component({
   selector: 'app-export-torrents',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe, BbProgress, BbPopover, BbSpinner],
+  imports: [ReactiveFormsModule, TranslatePipe, BbProgress, BbPopover, BbSpinner, BbBtnContent],
   templateUrl: './export-torrents.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -43,6 +55,18 @@ export class ExportTorrents implements OnInit {
   private readonly torrentStore = inject(TorrentStoreService);
   private readonly serverStore = inject(ServerStoreService);
   private readonly injector = inject(Injector);
+
+  public readonly icons = {
+    faLayerGroup,
+    faFilter,
+    faSquareCheck,
+    faFolderTree,
+    faLink,
+    faTags,
+    faFolderOpen,
+    faFileExport,
+    faXmark,
+  };
 
   exportForm!: FormGroup;
 
