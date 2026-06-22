@@ -1460,7 +1460,12 @@
     "qb-settings": {
       "title": "qBittorrent Settings",
       "success": {
-        "saved": "qBittorrent Settings Saved"
+        "saved-title": "qBittorrent Settings Saved",
+        "saved": "Your changes have been saved."
+      },
+      "error": {
+        "save-failed-title": "Failed to Save Settings",
+        "save-failed": "Your changes could not be saved."
       },
       "tab": {
         "bandwidth": {
@@ -1635,9 +1640,7 @@
   },
   "utils": {},
   "general": {
-    "error": {
-      "save-failed": "Failed to save settings."
-    },
+    "error": {},
     "button": {
       "close": "Close",
       "browse": "Browse",

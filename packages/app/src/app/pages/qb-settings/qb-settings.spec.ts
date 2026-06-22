@@ -20,7 +20,7 @@ describe('QbSettings', () => {
     setPreferences: ReturnType<typeof vi.fn>;
   };
   let confirmMock: { confirm: ReturnType<typeof vi.fn> };
-  let toastMock: { success: ReturnType<typeof vi.fn> };
+  let toastMock: { success: ReturnType<typeof vi.fn>; danger: ReturnType<typeof vi.fn> };
   let qbMock: { app: { preferences: ReturnType<typeof vi.fn> } };
   let serverStoreMock: { currentServerId: ReturnType<typeof signal<string | null>> };
 
@@ -38,7 +38,7 @@ describe('QbSettings', () => {
       setPreferences: vi.fn(),
     };
     confirmMock = { confirm: vi.fn().mockResolvedValue(false) };
-    toastMock = { success: vi.fn() };
+    toastMock = { success: vi.fn(), danger: vi.fn() };
     qbMock = { app: { preferences: vi.fn().mockResolvedValue({ dl_limit: 0 }) } };
     serverStoreMock = { currentServerId: signal('server-1') };
 
@@ -149,6 +149,22 @@ describe('QbSettings', () => {
     it('should show a success toast', async () => {
       await component.onSave();
       expect(toastMock.success).toHaveBeenCalled();
+    });
+
+    it('should show a danger toast with the raw error message when saveAll fails', async () => {
+      stateServiceMock.saveAll.mockRejectedValueOnce(new Error('connection refused'));
+      await component.onSave();
+      expect(toastMock.danger).toHaveBeenCalledWith(
+        'connection refused',
+        'pages.qb-settings.error.save-failed-title',
+      );
+    });
+
+    it('should not close the modal when saveAll fails', async () => {
+      const activeModal = TestBed.inject(NgbActiveModal);
+      stateServiceMock.saveAll.mockRejectedValueOnce(new Error('connection refused'));
+      await component.onSave();
+      expect(activeModal.close).not.toHaveBeenCalled();
     });
   });
 });

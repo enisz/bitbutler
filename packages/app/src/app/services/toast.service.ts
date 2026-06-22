@@ -212,14 +212,6 @@ export class ToastService {
     });
   }
 
-  error(html: string, title?: string, duration = 6000): string {
-    return this.showHtml(html, {
-      type: 'danger',
-      title: title ?? this.translateService.instant('general.toast.error'),
-      duration,
-    });
-  }
-
   danger(html: string, title?: string, duration = 6000): string {
     return this.showHtml(html, {
       type: 'danger',
