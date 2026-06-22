@@ -1,0 +1,7 @@
+@if (position() !== 'end') {
+  <span class="btn-icon" aria-hidden="true"><fa-icon [icon]="icon()" /></span>
+}
+<span class="btn-text">{{ text() }}</span>
+@if (position() === 'end') {
+  <span class="btn-icon" aria-hidden="true"><fa-icon [icon]="icon()" /></span>
+}
