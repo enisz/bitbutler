@@ -263,13 +263,34 @@ describe('TorrentCommandHandlerService', () => {
     );
   });
 
-  it('should call setSuperSeeding with inverted status on TORRENT_SUPER_SEEDING', async () => {
+  it('should call setSuperSeeding with inverted status and no info toast on TORRENT_SUPER_SEEDING', async () => {
     commands$.next({ type: 'TORRENT_SUPER_SEEDING', status: false });
     await flushPromises();
     expect(qbService.torrents.setSuperSeeding).toHaveBeenCalledWith(
       'server-1',
       ['hash1', 'hash2'],
       true,
+    );
+    expect(toastInfo).not.toHaveBeenCalled();
+  });
+
+  it('should show "failed to enable" when enabling super seeding fails', async () => {
+    qbService.torrents.setSuperSeeding.mockRejectedValueOnce(new Error('super seeding boom'));
+    commands$.next({ type: 'TORRENT_SUPER_SEEDING', status: false });
+    await flushPromises();
+    expect(toastDanger).toHaveBeenCalledWith(
+      'super seeding boom',
+      'services.torrent-command-handler.toast.enable-super-seeding-failed-title',
+    );
+  });
+
+  it('should show "failed to disable" when disabling super seeding fails', async () => {
+    qbService.torrents.setSuperSeeding.mockRejectedValueOnce(new Error('super seeding boom'));
+    commands$.next({ type: 'TORRENT_SUPER_SEEDING', status: true });
+    await flushPromises();
+    expect(toastDanger).toHaveBeenCalledWith(
+      'super seeding boom',
+      'services.torrent-command-handler.toast.disable-super-seeding-failed-title',
     );
   });
 
@@ -294,13 +315,34 @@ describe('TorrentCommandHandlerService', () => {
     );
   });
 
-  it('should call setAutoManagement with inverted status on TORRENT_AUTO_TMM', async () => {
+  it('should call setAutoManagement with inverted status and no info toast on TORRENT_AUTO_TMM', async () => {
     commands$.next({ type: 'TORRENT_AUTO_TMM', status: true });
     await flushPromises();
     expect(qbService.torrents.setAutoManagement).toHaveBeenCalledWith(
       'server-1',
       ['hash1', 'hash2'],
       false,
+    );
+    expect(toastInfo).not.toHaveBeenCalled();
+  });
+
+  it('should show "failed to enable" when enabling auto-tmm fails', async () => {
+    qbService.torrents.setAutoManagement.mockRejectedValueOnce(new Error('auto tmm boom'));
+    commands$.next({ type: 'TORRENT_AUTO_TMM', status: false });
+    await flushPromises();
+    expect(toastDanger).toHaveBeenCalledWith(
+      'auto tmm boom',
+      'services.torrent-command-handler.toast.enable-auto-tmm-failed-title',
+    );
+  });
+
+  it('should show "failed to disable" when disabling auto-tmm fails', async () => {
+    qbService.torrents.setAutoManagement.mockRejectedValueOnce(new Error('auto tmm boom'));
+    commands$.next({ type: 'TORRENT_AUTO_TMM', status: true });
+    await flushPromises();
+    expect(toastDanger).toHaveBeenCalledWith(
+      'auto tmm boom',
+      'services.torrent-command-handler.toast.disable-auto-tmm-failed-title',
     );
   });
 

@@ -1644,7 +1644,11 @@
         "reannouncing": "Reannouncing to trackers for {{count}} torrent(s)…",
         "reannounce-failed-title": "Failed to Reannounce Torrent(s)",
         "rechecking": "Rechecking {{count}} torrent(s)…",
-        "recheck-failed-title": "Failed to Recheck Torrent(s)"
+        "recheck-failed-title": "Failed to Recheck Torrent(s)",
+        "enable-super-seeding-failed-title": "Failed to Enable Super Seeding",
+        "disable-super-seeding-failed-title": "Failed to Disable Super Seeding",
+        "enable-auto-tmm-failed-title": "Failed to Enable Automatic Torrent Management",
+        "disable-auto-tmm-failed-title": "Failed to Disable Automatic Torrent Management"
       }
     },
     "qb": {

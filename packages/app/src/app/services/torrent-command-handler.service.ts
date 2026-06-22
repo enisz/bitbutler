@@ -60,13 +60,13 @@ export class TorrentCommandHandlerService {
             void this.handleRecheck();
             break;
           case 'TORRENT_SUPER_SEEDING':
-            this.handleSuperSeeding(cmd.status);
+            void this.handleSuperSeeding(cmd.status);
             break;
           case 'TORRENT_FORCE_RESUME':
             void this.handleForceResume();
             break;
           case 'TORRENT_AUTO_TMM':
-            this.handleAutoTmm(cmd.status);
+            void this.handleAutoTmm(cmd.status);
             break;
           default:
             console.error(TorrentCommandHandlerService.name, 'start', 'Unhandled command', cmd);
@@ -74,12 +74,30 @@ export class TorrentCommandHandlerService {
       });
   }
 
-  private handleAutoTmm(status: boolean): void {
-    this.qbService.torrents.setAutoManagement(
-      this.serverStore.currentServerId() ?? '',
-      this.selectionStore.selectedHashes(),
-      !status,
-    );
+  private async handleAutoTmm(status: boolean): Promise<void> {
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    const enabling = !status;
+
+    try {
+      await this.qbService.torrents.setAutoManagement(ctx.serverId, ctx.hashes, enabling);
+    } catch (e: any) {
+      console.error(
+        TorrentCommandHandlerService.name,
+        'handleAutoTmm',
+        'Auto TMM toggle failed!',
+        e,
+      );
+      this.toastService.danger(
+        e?.message ?? String(e),
+        this.translateService.instant(
+          enabling
+            ? 'services.torrent-command-handler.toast.enable-auto-tmm-failed-title'
+            : 'services.torrent-command-handler.toast.disable-auto-tmm-failed-title',
+        ),
+      );
+    }
   }
 
   private async handleForceResume(): Promise<void> {
@@ -110,12 +128,30 @@ export class TorrentCommandHandlerService {
     }
   }
 
-  private handleSuperSeeding(status: boolean): void {
-    this.qbService.torrents.setSuperSeeding(
-      this.serverStore.currentServerId() ?? '',
-      this.selectionStore.selectedHashes(),
-      !status,
-    );
+  private async handleSuperSeeding(status: boolean): Promise<void> {
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    const enabling = !status;
+
+    try {
+      await this.qbService.torrents.setSuperSeeding(ctx.serverId, ctx.hashes, enabling);
+    } catch (e: any) {
+      console.error(
+        TorrentCommandHandlerService.name,
+        'handleSuperSeeding',
+        'Super seeding toggle failed!',
+        e,
+      );
+      this.toastService.danger(
+        e?.message ?? String(e),
+        this.translateService.instant(
+          enabling
+            ? 'services.torrent-command-handler.toast.enable-super-seeding-failed-title'
+            : 'services.torrent-command-handler.toast.disable-super-seeding-failed-title',
+        ),
+      );
+    }
   }
 
   private async handleReannounce(): Promise<void> {
