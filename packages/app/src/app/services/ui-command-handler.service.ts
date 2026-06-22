@@ -268,18 +268,17 @@ export class UiCommandHandlerService {
                 if (singleFile) {
                   this.electronService.showItemInFolder(path);
                   this.toastService.info(
-                    this.translateService.instant('services.ui-command-handler.info.showing-file', {
-                      path,
-                    }),
+                    `"${path}"`,
+                    this.translateService.instant(
+                      'services.ui-command-handler.info.showing-file-title',
+                    ),
                   );
                 } else {
                   this.electronService.openPath(path);
                   this.toastService.info(
+                    `"${path}"`,
                     this.translateService.instant(
-                      'services.ui-command-handler.info.opening-folder',
-                      {
-                        path,
-                      },
+                      'services.ui-command-handler.info.opening-folder-title',
                     ),
                   );
                 }
@@ -429,9 +428,10 @@ export class UiCommandHandlerService {
         err,
       );
       this.toastService.danger(
-        this.translateService.instant('services.menu-bar-command-handler.error.failed-to-connect', {
-          name,
-        }),
+        `"${name}"`,
+        this.translateService.instant(
+          'services.menu-bar-command-handler.error.failed-to-connect-title',
+        ),
       );
       this.serverService.setActive(this.serverStoreService.currentServerId());
     } finally {

@@ -1583,7 +1583,7 @@
         "message": "Connecting to {{name}}..."
       },
       "error": {
-        "failed-to-connect": "Failed to connect to {{name}}!"
+        "failed-to-connect-title": "Failed to Connect"
       },
       "info": {
         "switching-server": "Switching to {{name}}"
@@ -1595,8 +1595,8 @@
         "local-path-unresolved": "Could not resolve local path."
       },
       "info": {
-        "showing-file": "Showing file in folder {{path}}",
-        "opening-folder": "Opening folder {{path}}"
+        "showing-file-title": "Showing File",
+        "opening-folder-title": "Opening Folder"
       }
     },
     "transfer-limit-command-handler": {
