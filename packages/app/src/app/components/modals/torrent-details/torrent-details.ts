@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faAsterisk } from '@fortawesome/free-solid-svg-icons';
+import { faAsterisk, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { filter } from 'rxjs/operators';
@@ -23,6 +23,7 @@ import { CommandBusService } from '../../../services/command-bus.service';
 import { ConfirmService } from '../../../services/confirm.service';
 import { ModalGuardService } from '../../../services/modal-guard.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
+import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
 import { BbSpinner } from '../../bb-spinner/bb-spinner';
 import { Tab, TorrentDetailTabComponent, TorrentDetailTabId } from './torrent-details.interface';
 
@@ -37,6 +38,7 @@ import { Tab, TorrentDetailTabComponent, TorrentDetailTabId } from './torrent-de
     NgbTooltip,
     TranslatePipe,
     FontAwesomeModule,
+    BbBtnContent,
   ],
   providers: [ModalGuardService],
   templateUrl: './torrent-details.html',
@@ -54,7 +56,7 @@ export class TorrentDetails implements OnInit, GuardableModal {
   private readonly torrentStoreService = inject(TorrentStoreService);
   private readonly confirmService = inject(ConfirmService);
 
-  public readonly icon = { faAsterisk };
+  public readonly icon = { faAsterisk, faXmark };
 
   public activeTabId = signal<TorrentDetailTabId>('general');
   public loadedComponents = signal<Map<TorrentDetailTabId, Type<TorrentDetailTabComponent>>>(

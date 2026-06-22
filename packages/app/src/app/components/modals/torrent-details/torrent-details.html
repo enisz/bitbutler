@@ -67,7 +67,10 @@
 </div>
 
 <div class="modal-footer">
-  <button type="button" class="btn btn-link" (click)="activeModal.dismiss()" autofocus>
-    {{ 'general.button.close' | translate }}
+  <button type="button" class="btn btn-link btn-split" (click)="activeModal.dismiss()" autofocus>
+    <bb-btn-content
+      [icon]="icon.faXmark"
+      [text]="'general.button.close' | translate"
+    ></bb-btn-content>
   </button>
 </div>
