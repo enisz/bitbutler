@@ -1638,7 +1638,13 @@
         "resuming": "Resuming {{count}} torrent(s)…",
         "resume-failed-title": "Failed to Resume Torrent(s)",
         "resuming-all": "Resuming all torrents…",
-        "resume-all-failed-title": "Failed to Resume All Torrents"
+        "resume-all-failed-title": "Failed to Resume All Torrents",
+        "force-resuming": "Force resuming {{count}} torrent(s)…",
+        "force-resume-failed-title": "Failed to Force Resume Torrent(s)",
+        "reannouncing": "Reannouncing to trackers for {{count}} torrent(s)…",
+        "reannounce-failed-title": "Failed to Reannounce Torrent(s)",
+        "rechecking": "Rechecking {{count}} torrent(s)…",
+        "recheck-failed-title": "Failed to Recheck Torrent(s)"
       }
     },
     "qb": {

@@ -54,7 +54,7 @@ export class TorrentCommandHandlerService {
             void this.handleQueueMoveBottom();
             break;
           case 'TORRENT_REANNOUNCE':
-            this.handleReannounce();
+            void this.handleReannounce();
             break;
           case 'TORRENT_RECHECK':
             void this.handleRecheck();
@@ -63,7 +63,7 @@ export class TorrentCommandHandlerService {
             this.handleSuperSeeding(cmd.status);
             break;
           case 'TORRENT_FORCE_RESUME':
-            this.handleForceResume();
+            void this.handleForceResume();
             break;
           case 'TORRENT_AUTO_TMM':
             this.handleAutoTmm(cmd.status);
@@ -82,12 +82,32 @@ export class TorrentCommandHandlerService {
     );
   }
 
-  private handleForceResume(): void {
-    this.qbService.torrents.setForceStart(
-      this.serverStore.currentServerId() ?? '',
-      this.selectionStore.selectedHashes(),
-      true,
+  private async handleForceResume(): Promise<void> {
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    this.toastService.info(
+      this.translateService.instant('services.torrent-command-handler.toast.force-resuming', {
+        count: ctx.hashes.length,
+      }),
     );
+
+    try {
+      await this.qbService.torrents.setForceStart(ctx.serverId, ctx.hashes, true);
+    } catch (e: any) {
+      console.error(
+        TorrentCommandHandlerService.name,
+        'handleForceResume',
+        'Force resume failed!',
+        e,
+      );
+      this.toastService.danger(
+        e?.message ?? String(e),
+        this.translateService.instant(
+          'services.torrent-command-handler.toast.force-resume-failed-title',
+        ),
+      );
+    }
   }
 
   private handleSuperSeeding(status: boolean): void {
@@ -98,18 +118,50 @@ export class TorrentCommandHandlerService {
     );
   }
 
-  private handleReannounce(): void {
-    this.qbService.torrents.reannounce(
-      this.serverStore.currentServerId() ?? '',
-      this.selectionStore.selectedHashes(),
+  private async handleReannounce(): Promise<void> {
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    this.toastService.info(
+      this.translateService.instant('services.torrent-command-handler.toast.reannouncing', {
+        count: ctx.hashes.length,
+      }),
     );
+
+    try {
+      await this.qbService.torrents.reannounce(ctx.serverId, ctx.hashes);
+    } catch (e: any) {
+      console.error(TorrentCommandHandlerService.name, 'handleReannounce', 'Reannounce failed!', e);
+      this.toastService.danger(
+        e?.message ?? String(e),
+        this.translateService.instant(
+          'services.torrent-command-handler.toast.reannounce-failed-title',
+        ),
+      );
+    }
   }
 
-  private handleRecheck(): void {
-    this.qbService.torrents.recheck(
-      this.serverStore.currentServerId() ?? '',
-      this.selectionStore.selectedHashes(),
+  private async handleRecheck(): Promise<void> {
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    this.toastService.info(
+      this.translateService.instant('services.torrent-command-handler.toast.rechecking', {
+        count: ctx.hashes.length,
+      }),
     );
+
+    try {
+      await this.qbService.torrents.recheck(ctx.serverId, ctx.hashes);
+    } catch (e: any) {
+      console.error(TorrentCommandHandlerService.name, 'handleRecheck', 'Recheck failed!', e);
+      this.toastService.danger(
+        e?.message ?? String(e),
+        this.translateService.instant(
+          'services.torrent-command-handler.toast.recheck-failed-title',
+        ),
+      );
+    }
   }
 
   private torrentCommandGuard(command: AppCommand): command is TorrentCommand {
