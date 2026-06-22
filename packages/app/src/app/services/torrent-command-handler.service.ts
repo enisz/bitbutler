@@ -152,10 +152,20 @@ export class TorrentCommandHandlerService {
     const ctx = this.getContext();
     if (!ctx) return;
 
+    this.toastService.info(
+      this.translateService.instant('services.torrent-command-handler.toast.pausing', {
+        count: ctx.hashes.length,
+      }),
+    );
+
     try {
       await this.qbService.torrents.pause(ctx.serverId, ctx.hashes);
-    } catch (e) {
+    } catch (e: any) {
       console.error(TorrentCommandHandlerService.name, 'handlePause', 'Pause failed!', e);
+      this.toastService.danger(
+        e?.message ?? String(e),
+        this.translateService.instant('services.torrent-command-handler.toast.pause-failed-title'),
+      );
     }
   }
 
@@ -163,10 +173,20 @@ export class TorrentCommandHandlerService {
     const ctx = this.getContext();
     if (!ctx) return;
 
+    this.toastService.info(
+      this.translateService.instant('services.torrent-command-handler.toast.resuming', {
+        count: ctx.hashes.length,
+      }),
+    );
+
     try {
       await this.qbService.torrents.resume(ctx.serverId, ctx.hashes);
-    } catch (e) {
+    } catch (e: any) {
       console.error(TorrentCommandHandlerService.name, 'handleResume', 'Resume failed!', e);
+      this.toastService.danger(
+        e?.message ?? String(e),
+        this.translateService.instant('services.torrent-command-handler.toast.resume-failed-title'),
+      );
     }
   }
 

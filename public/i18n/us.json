@@ -1629,6 +1629,12 @@
     "torrent-command-handler": {
       "error": {
         "delete-failed-title": "Failed to Delete Torrent(s)"
+      },
+      "toast": {
+        "pausing": "Pausing {{count}} torrent(s)…",
+        "pause-failed-title": "Failed to Pause Torrent(s)",
+        "resuming": "Resuming {{count}} torrent(s)…",
+        "resume-failed-title": "Failed to Resume Torrent(s)"
       }
     },
     "qb": {

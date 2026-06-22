@@ -38,6 +38,7 @@ describe('TorrentCommandHandlerService', () => {
   let serverStore: { currentServerId: ReturnType<typeof signal<string | null>> };
   let torrentStore: { torrentsArray: ReturnType<typeof signal<any[]>> };
   let toastDanger: ReturnType<typeof vi.fn>;
+  let toastInfo: ReturnType<typeof vi.fn>;
   let commandBusEmit: ReturnType<typeof vi.fn>;
   let translateService: { instant: ReturnType<typeof vi.fn> };
 
@@ -45,6 +46,7 @@ describe('TorrentCommandHandlerService', () => {
     commands$ = new Subject();
     commandBusEmit = vi.fn();
     toastDanger = vi.fn();
+    toastInfo = vi.fn();
     translateService = { instant: vi.fn((key: string) => key) };
 
     qbService = {
@@ -83,7 +85,7 @@ describe('TorrentCommandHandlerService', () => {
         { provide: SelectionStoreService, useValue: selectionStore },
         { provide: ServerStoreService, useValue: serverStore },
         { provide: TorrentStoreService, useValue: torrentStore },
-        { provide: ToastService, useValue: { danger: toastDanger } },
+        { provide: ToastService, useValue: { danger: toastDanger, info: toastInfo } },
         { provide: TranslateService, useValue: translateService },
       ],
     });
@@ -135,16 +137,38 @@ describe('TorrentCommandHandlerService', () => {
     expect(qbService.torrents.delete).not.toHaveBeenCalled();
   });
 
-  it('should call pauseTorrents on TORRENT_PAUSE', async () => {
+  it('should call pauseTorrents and show an info toast on TORRENT_PAUSE', async () => {
     commands$.next({ type: 'TORRENT_PAUSE' });
     await flushPromises();
     expect(qbService.torrents.pause).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
+    expect(toastInfo).toHaveBeenCalledWith('services.torrent-command-handler.toast.pausing');
   });
 
-  it('should call resumeTorrents on TORRENT_RESUME', async () => {
+  it('should show a danger toast with the raw error when pause fails', async () => {
+    qbService.torrents.pause.mockRejectedValueOnce(new Error('pause boom'));
+    commands$.next({ type: 'TORRENT_PAUSE' });
+    await flushPromises();
+    expect(toastDanger).toHaveBeenCalledWith(
+      'pause boom',
+      'services.torrent-command-handler.toast.pause-failed-title',
+    );
+  });
+
+  it('should call resumeTorrents and show an info toast on TORRENT_RESUME', async () => {
     commands$.next({ type: 'TORRENT_RESUME' });
     await flushPromises();
     expect(qbService.torrents.resume).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
+    expect(toastInfo).toHaveBeenCalledWith('services.torrent-command-handler.toast.resuming');
+  });
+
+  it('should show a danger toast with the raw error when resume fails', async () => {
+    qbService.torrents.resume.mockRejectedValueOnce(new Error('resume boom'));
+    commands$.next({ type: 'TORRENT_RESUME' });
+    await flushPromises();
+    expect(toastDanger).toHaveBeenCalledWith(
+      'resume boom',
+      'services.torrent-command-handler.toast.resume-failed-title',
+    );
   });
 
   it('should call pauseTorrents on TORRENT_PAUSE_ALL with all hashes', async () => {
