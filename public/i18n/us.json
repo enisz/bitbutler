@@ -1620,7 +1620,8 @@
         "check-failed-title": "Update Check Failed"
       },
       "success": {
-        "up-to-date": "You are on the latest version!"
+        "up-to-date-title": "Up to Date",
+        "up-to-date": "You're running the latest version."
       }
     },
     "torrent-command-handler": {

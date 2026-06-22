@@ -48,6 +48,7 @@ export class UpdateCommandHandlerService {
     } else {
       this.toastService.success(
         this.translateService.instant('services.update-command-handler.success.up-to-date'),
+        this.translateService.instant('services.update-command-handler.success.up-to-date-title'),
       );
     }
   }

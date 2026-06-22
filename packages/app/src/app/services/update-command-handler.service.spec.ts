@@ -45,7 +45,10 @@ describe('UpdateCommandHandlerService', () => {
   it('should show success toast when no update available', async () => {
     commands$.next({ type: 'UPDATE_CHECK_FOR_UPDATE' });
     await flushPromises();
-    expect(toastSuccess).toHaveBeenCalledWith('services.update-command-handler.success.up-to-date');
+    expect(toastSuccess).toHaveBeenCalledWith(
+      'services.update-command-handler.success.up-to-date',
+      'services.update-command-handler.success.up-to-date-title',
+    );
   });
 
   it('should emit UI_UPDATE_AVAILABLE when update is found', async () => {
