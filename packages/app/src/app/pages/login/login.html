@@ -63,14 +63,24 @@
       <div class="d-flex flex-column gap-3">
         <button
           type="button"
-          class="btn btn-lg btn-primary"
+          class="btn btn-lg btn-primary btn-split"
           (click)="connect()"
           [disabled]="!canConnect()"
         >
-          {{ 'general.button.connect' | translate }}
+          <bb-btn-content
+            [icon]="icons.faPlug"
+            [text]="'general.button.connect' | translate"
+          ></bb-btn-content>
         </button>
-        <button type="button" class="btn btn-lg btn-dashed-secondary" (click)="openManageServers()">
-          {{ 'general.button.manage-servers' | translate }}
+        <button
+          type="button"
+          class="btn btn-lg btn-dashed-secondary btn-split"
+          (click)="openManageServers()"
+        >
+          <bb-btn-content
+            [icon]="icons.faServer"
+            [text]="'general.button.manage-servers' | translate"
+          ></bb-btn-content>
         </button>
       </div>
 

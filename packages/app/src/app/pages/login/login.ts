@@ -13,12 +13,19 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ServerRecord } from '@bitbutler/shared';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faCircleHalfStroke, faLanguage, faPalette } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCircleHalfStroke,
+  faLanguage,
+  faPalette,
+  faPlug,
+  faServer,
+} from '@fortawesome/free-solid-svg-icons';
 import { NgbDropdownModule, NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgLabelTemplateDirective, NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { debounceTime, firstValueFrom, fromEvent } from 'rxjs';
 import { AppLoader } from '../../components/app-loader/app-loader';
+import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { CredentialPrompt } from '../../components/modals/credential-prompt/credential-prompt';
 import { ManageServers } from '../../components/modals/manage-servers/manage-servers';
 import { CommandBusService } from '../../services/command-bus.service';
@@ -51,6 +58,7 @@ import { setModalInput } from '../../utils/modal-input';
     NgSelectComponent,
     NgLabelTemplateDirective,
     TranslatePipe,
+    BbBtnContent,
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
@@ -74,7 +82,7 @@ export class Login implements OnInit {
 
   public readonly logoUrl = computed(() => getFamilyLogoUrl(this.themeService.family()));
 
-  public readonly icons = { faLanguage, faPalette, faCircleHalfStroke };
+  public readonly icons = { faLanguage, faPalette, faCircleHalfStroke, faPlug, faServer };
 
   public readonly families = THEME_FAMILIES;
 
