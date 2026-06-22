@@ -9,10 +9,11 @@ import {
   signal,
 } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faAsterisk } from '@fortawesome/free-solid-svg-icons';
+import { faAsterisk, faFloppyDisk, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
+import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { BbSpinner } from '../../components/bb-spinner/bb-spinner';
 import { AutofocusDirective } from '../../directives/autofocus';
 import { GuardableModal } from '../../models/guardable-modal.interface';
@@ -30,6 +31,7 @@ import { SettingsTabComponent, SettingsTabId, Tab } from './settings.interface';
     BbSpinner,
     FontAwesomeModule,
     NgbTooltipModule,
+    BbBtnContent,
   ],
   providers: [SettingsStateService],
   templateUrl: './settings.html',
@@ -48,7 +50,7 @@ export class Settings implements OnInit, GuardableModal {
   public activeTabId = signal<SettingsTabId>('general');
   public loadedComponents = signal<Map<SettingsTabId, Type<SettingsTabComponent>>>(new Map());
 
-  public icon = { faAsterisk };
+  public icon = { faAsterisk, faFloppyDisk, faXmark };
 
   public tabs: Tab[] = [
     {
