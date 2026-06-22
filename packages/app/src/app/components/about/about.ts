@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import {
   faCalendarAlt,
   faCodeBranch,
   faExternalLinkAlt,
   faUser,
+  faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -13,10 +13,11 @@ import { AutofocusDirective } from '../../directives/autofocus';
 import { LocalTimestampPipe } from '../../pipes/local-timestamp-pipe';
 import { ElectronService } from '../../services/electron.service';
 import { ThemeService } from '../../services/theme.service';
+import { BbBtnContent } from '../bb-btn-content/bb-btn-content';
 
 @Component({
   selector: 'app-about',
-  imports: [LocalTimestampPipe, AutofocusDirective, FontAwesomeModule, TranslatePipe],
+  imports: [LocalTimestampPipe, AutofocusDirective, BbBtnContent, TranslatePipe],
   templateUrl: './about.html',
   styleUrl: './about.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,6 +34,7 @@ export class About {
     faExternalLinkAlt,
     faCalendarAlt,
     faCodeBranch,
+    faXmark,
   };
 
   public version = this.electronService.getBitButlerVersion();
