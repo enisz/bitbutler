@@ -52,11 +52,12 @@ export class ServerCommandHandlerService {
     await this.serverStoreService.refresh();
     const server = this.serverStoreService.servers().find((s) => s.id === id);
     const message = server?.name
-      ? this.translateService.instant('services.server-command-handler.success.added', {
-          name: server.name,
-        })
+      ? `"${server.name}"`
       : this.translateService.instant('services.server-command-handler.success.added-fallback');
-    this.toastService.success(message);
+    this.toastService.success(
+      message,
+      this.translateService.instant('services.server-command-handler.success.added-title'),
+    );
     if (!this.serverStoreService.currentServerId()) {
       this.serverStoreService.select(id);
     }
@@ -66,9 +67,8 @@ export class ServerCommandHandlerService {
     await this.serverStoreService.refresh();
     const server = this.serverStoreService.servers().find((s) => s.id === id);
     this.toastService.info(
-      this.translateService.instant('services.server-command-handler.info.updated', {
-        name: server?.name,
-      }),
+      `"${server?.name ?? ''}"`,
+      this.translateService.instant('services.server-command-handler.info.updated-title'),
     );
   }
 
@@ -77,9 +77,8 @@ export class ServerCommandHandlerService {
     await this.serverService.delete(id);
     await this.serverStoreService.refresh();
     this.toastService.info(
-      this.translateService.instant('services.server-command-handler.info.deleted', {
-        name: server?.name,
-      }),
+      `"${server?.name ?? ''}"`,
+      this.translateService.instant('services.server-command-handler.info.deleted-title'),
     );
   }
 }

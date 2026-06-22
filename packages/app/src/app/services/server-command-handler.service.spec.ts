@@ -54,11 +54,10 @@ describe('ServerCommandHandlerService', () => {
   it('should show success toast after SERVER_ADDED', async () => {
     commands$.next({ type: 'SERVER_ADDED', id: '1' });
     await flushPromises();
-    expect(translateService.instant).toHaveBeenCalledWith(
-      'services.server-command-handler.success.added',
-      { name: 'Test Server' },
+    expect(toastSuccess).toHaveBeenCalledWith(
+      '"Test Server"',
+      'services.server-command-handler.success.added-title',
     );
-    expect(toastSuccess).toHaveBeenCalledWith('services.server-command-handler.success.added');
   });
 
   it('should call select after SERVER_ADDED', async () => {
@@ -73,27 +72,26 @@ describe('ServerCommandHandlerService', () => {
     await flushPromises();
     expect(toastSuccess).toHaveBeenCalledWith(
       'services.server-command-handler.success.added-fallback',
+      'services.server-command-handler.success.added-title',
     );
   });
 
   it('should show info toast after SERVER_UPDATED', async () => {
     commands$.next({ type: 'SERVER_UPDATED', id: '1' });
     await flushPromises();
-    expect(translateService.instant).toHaveBeenCalledWith(
-      'services.server-command-handler.info.updated',
-      { name: 'Test Server' },
+    expect(toastInfo).toHaveBeenCalledWith(
+      '"Test Server"',
+      'services.server-command-handler.info.updated-title',
     );
-    expect(toastInfo).toHaveBeenCalledWith('services.server-command-handler.info.updated');
   });
 
   it('should show info toast after SERVER_DELETED', async () => {
     commands$.next({ type: 'SERVER_DELETED', id: '1' });
     await flushPromises();
-    expect(translateService.instant).toHaveBeenCalledWith(
-      'services.server-command-handler.info.deleted',
-      { name: 'Test Server' },
+    expect(toastInfo).toHaveBeenCalledWith(
+      '"Test Server"',
+      'services.server-command-handler.info.deleted-title',
     );
-    expect(toastInfo).toHaveBeenCalledWith('services.server-command-handler.info.deleted');
   });
 
   it('should not crash the subscription if a command throws', async () => {

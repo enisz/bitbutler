@@ -1597,12 +1597,12 @@
     },
     "server-command-handler": {
       "success": {
-        "added": "Server \"{{name}}\" added!",
-        "added-fallback": "Server added!"
+        "added-title": "Server Added",
+        "added-fallback": "The server has been added."
       },
       "info": {
-        "updated": "Server \"{{name}}\" updated!",
-        "deleted": "Server \"{{name}}\" deleted."
+        "updated-title": "Server Updated",
+        "deleted-title": "Server Deleted"
       }
     },
     "update-command-handler": {
