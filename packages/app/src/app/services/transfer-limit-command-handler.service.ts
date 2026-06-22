@@ -55,7 +55,10 @@ export class TransferLimitCommandHandlerService {
     const key = state
       ? 'services.transfer-limit-command-handler.info.alternative-limit-off'
       : 'services.transfer-limit-command-handler.info.alternative-limit-on';
-    this.toastService.info(this.translateService.instant(key));
+    this.toastService.info(
+      this.translateService.instant(key),
+      this.translateService.instant(`${key}-title`),
+    );
     await this.qbService.transfer.toggleSpeedLimitsMode(serverId);
   }
 

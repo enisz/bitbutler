@@ -53,6 +53,7 @@ describe('TransferLimitCommandHandlerService', () => {
     await flushPromises();
     expect(toastInfo).toHaveBeenCalledWith(
       'services.transfer-limit-command-handler.info.alternative-limit-on',
+      'services.transfer-limit-command-handler.info.alternative-limit-on-title',
     );
   });
 
@@ -62,6 +63,7 @@ describe('TransferLimitCommandHandlerService', () => {
     await flushPromises();
     expect(toastInfo).toHaveBeenCalledWith(
       'services.transfer-limit-command-handler.info.alternative-limit-off',
+      'services.transfer-limit-command-handler.info.alternative-limit-off-title',
     );
   });
 

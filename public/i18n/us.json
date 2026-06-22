@@ -1601,8 +1601,10 @@
     },
     "transfer-limit-command-handler": {
       "info": {
-        "alternative-limit-on": "Turning alternative speed limit on.",
-        "alternative-limit-off": "Turning alternative speed limit off."
+        "alternative-limit-on-title": "Alternative Speed Limit On",
+        "alternative-limit-on": "Alternative speed limits are now active.",
+        "alternative-limit-off-title": "Alternative Speed Limit Off",
+        "alternative-limit-off": "Alternative speed limits are no longer active."
       }
     },
     "server-command-handler": {
