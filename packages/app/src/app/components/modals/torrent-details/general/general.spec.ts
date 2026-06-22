@@ -127,10 +127,50 @@ describe('General', () => {
   let fixture: ComponentFixture<General>;
   let torrentsMap: WritableSignal<Map<string, Torrent>>;
   let mockLogMain: ReturnType<typeof vi.fn>;
+  let qbTorrents: {
+    properties: ReturnType<typeof vi.fn>;
+    files: ReturnType<typeof vi.fn>;
+    rename: ReturnType<typeof vi.fn>;
+    renameFile: ReturnType<typeof vi.fn>;
+    renameFolder: ReturnType<typeof vi.fn>;
+    resume: ReturnType<typeof vi.fn>;
+    pause: ReturnType<typeof vi.fn>;
+    setForceStart: ReturnType<typeof vi.fn>;
+    setDownloadLimit: ReturnType<typeof vi.fn>;
+    setUploadLimit: ReturnType<typeof vi.fn>;
+    setShareLimits: ReturnType<typeof vi.fn>;
+    setCategory: ReturnType<typeof vi.fn>;
+    clearCategory: ReturnType<typeof vi.fn>;
+    addTags: ReturnType<typeof vi.fn>;
+    removeTags: ReturnType<typeof vi.fn>;
+    reannounce: ReturnType<typeof vi.fn>;
+  };
+  let toastInfo: ReturnType<typeof vi.fn>;
+  let toastDanger: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
     torrentsMap = signal(new Map());
     mockLogMain = vi.fn().mockResolvedValue([]);
+    toastInfo = vi.fn();
+    toastDanger = vi.fn();
+    qbTorrents = {
+      properties: vi.fn().mockResolvedValue({}),
+      files: vi.fn().mockResolvedValue([]),
+      rename: vi.fn(),
+      renameFile: vi.fn(),
+      renameFolder: vi.fn(),
+      resume: vi.fn().mockResolvedValue(undefined),
+      pause: vi.fn().mockResolvedValue(undefined),
+      setForceStart: vi.fn().mockResolvedValue(undefined),
+      setDownloadLimit: vi.fn().mockResolvedValue(undefined),
+      setUploadLimit: vi.fn().mockResolvedValue(undefined),
+      setShareLimits: vi.fn().mockResolvedValue(undefined),
+      setCategory: vi.fn(),
+      clearCategory: vi.fn().mockResolvedValue(undefined),
+      addTags: vi.fn(),
+      removeTags: vi.fn().mockResolvedValue(undefined),
+      reannounce: vi.fn().mockResolvedValue(undefined),
+    };
 
     await TestBed.configureTestingModule({
       imports: [General],
@@ -143,20 +183,7 @@ describe('General', () => {
         {
           provide: QbService,
           useValue: {
-            torrents: {
-              properties: vi.fn().mockResolvedValue({}),
-              files: vi.fn().mockResolvedValue([]),
-              rename: vi.fn(),
-              renameFile: vi.fn(),
-              renameFolder: vi.fn(),
-              setDownloadLimit: vi.fn(),
-              setUploadLimit: vi.fn(),
-              setShareLimits: vi.fn(),
-              setCategory: vi.fn(),
-              addTags: vi.fn(),
-              removeTags: vi.fn(),
-              reannounce: vi.fn(),
-            },
+            torrents: qbTorrents,
             log: {
               main: mockLogMain,
             },
@@ -175,7 +202,10 @@ describe('General', () => {
         },
         { provide: PathService, useValue: { resolveLocalPath: vi.fn().mockResolvedValue(null) } },
         { provide: Clipboard, useValue: { copy: vi.fn() } },
-        { provide: ToastService, useValue: { success: vi.fn(), danger: vi.fn() } },
+        {
+          provide: ToastService,
+          useValue: { success: vi.fn(), info: toastInfo, danger: toastDanger },
+        },
         provideTimeago({ intl: { provide: TimeagoIntl, useClass: TimeagoIntl } }),
       ],
     }).compileComponents();
@@ -331,6 +361,268 @@ describe('General', () => {
 
       expect(mockLogMain).toHaveBeenCalledTimes(2);
       expect(component.errorLog()?.id).toBe(2);
+    });
+  });
+
+  describe('action handlers', () => {
+    beforeEach(() => {
+      torrentsMap.set(
+        new Map([
+          [
+            'abc123',
+            makeTorrent({
+              ratio_limit: 1.5,
+              seeding_time_limit: 60,
+              inactive_seeding_time_limit: 30,
+              tags: 'a, b',
+            }),
+          ],
+        ]),
+      );
+      component.properties.set(makeProperties());
+      fixture.detectChanges();
+    });
+
+    describe('resume', () => {
+      it('shows an info toast and resumes the torrent', async () => {
+        await component.resume();
+
+        expect(toastInfo).toHaveBeenCalledWith(
+          'components.modals.torrent-details.general.toast.resuming',
+        );
+        expect(qbTorrents.resume).toHaveBeenCalledWith('server-1', ['abc123']);
+      });
+
+      it('shows a danger toast when resuming fails', async () => {
+        qbTorrents.resume.mockRejectedValueOnce(new Error('boom'));
+
+        await component.resume();
+
+        expect(toastDanger).toHaveBeenCalledWith(
+          'boom',
+          'components.modals.torrent-details.general.toast.resume-failed',
+        );
+      });
+    });
+
+    describe('pause', () => {
+      it('shows an info toast and pauses the torrent', async () => {
+        await component.pause();
+
+        expect(toastInfo).toHaveBeenCalledWith(
+          'components.modals.torrent-details.general.toast.pausing',
+        );
+        expect(qbTorrents.pause).toHaveBeenCalledWith('server-1', ['abc123']);
+      });
+
+      it('shows a danger toast when pausing fails', async () => {
+        qbTorrents.pause.mockRejectedValueOnce(new Error('boom'));
+
+        await component.pause();
+
+        expect(toastDanger).toHaveBeenCalledWith(
+          'boom',
+          'components.modals.torrent-details.general.toast.pause-failed',
+        );
+      });
+    });
+
+    describe('forceResume', () => {
+      it('shows an info toast and force-resumes the torrent', async () => {
+        await component.forceResume();
+
+        expect(toastInfo).toHaveBeenCalledWith(
+          'components.modals.torrent-details.general.toast.force-resuming',
+        );
+        expect(qbTorrents.setForceStart).toHaveBeenCalledWith('server-1', ['abc123'], true);
+      });
+
+      it('shows a danger toast when force-resuming fails', async () => {
+        qbTorrents.setForceStart.mockRejectedValueOnce(new Error('boom'));
+
+        await component.forceResume();
+
+        expect(toastDanger).toHaveBeenCalledWith(
+          'boom',
+          'components.modals.torrent-details.general.toast.force-resume-failed',
+        );
+      });
+    });
+
+    describe('clearDownloadLimit', () => {
+      it('shows an info toast and clears the download limit', async () => {
+        await component.clearDownloadLimit();
+
+        expect(toastInfo).toHaveBeenCalledWith(
+          'components.modals.torrent-details.general.toast.clearing-download-limit',
+        );
+        expect(qbTorrents.setDownloadLimit).toHaveBeenCalledWith('server-1', 0, ['abc123']);
+      });
+
+      it('shows a danger toast when clearing the download limit fails', async () => {
+        qbTorrents.setDownloadLimit.mockRejectedValueOnce(new Error('boom'));
+
+        await component.clearDownloadLimit();
+
+        expect(toastDanger).toHaveBeenCalledWith(
+          'boom',
+          'components.modals.torrent-details.general.toast.clear-download-limit-failed',
+        );
+      });
+    });
+
+    describe('clearUploadLimit', () => {
+      it('shows an info toast and clears the upload limit', async () => {
+        await component.clearUploadLimit();
+
+        expect(toastInfo).toHaveBeenCalledWith(
+          'components.modals.torrent-details.general.toast.clearing-upload-limit',
+        );
+        expect(qbTorrents.setUploadLimit).toHaveBeenCalledWith('server-1', 0, ['abc123']);
+      });
+
+      it('shows a danger toast when clearing the upload limit fails', async () => {
+        qbTorrents.setUploadLimit.mockRejectedValueOnce(new Error('boom'));
+
+        await component.clearUploadLimit();
+
+        expect(toastDanger).toHaveBeenCalledWith(
+          'boom',
+          'components.modals.torrent-details.general.toast.clear-upload-limit-failed',
+        );
+      });
+    });
+
+    describe('clearRatioLimit', () => {
+      it('shows an info toast and clears the ratio limit, keeping the other share limits', async () => {
+        await component.clearRatioLimit();
+
+        expect(toastInfo).toHaveBeenCalledWith(
+          'components.modals.torrent-details.general.toast.clearing-ratio-limit',
+        );
+        expect(qbTorrents.setShareLimits).toHaveBeenCalledWith('server-1', ['abc123'], -1, 60, 30);
+      });
+
+      it('shows a danger toast when clearing the ratio limit fails', async () => {
+        qbTorrents.setShareLimits.mockRejectedValueOnce(new Error('boom'));
+
+        await component.clearRatioLimit();
+
+        expect(toastDanger).toHaveBeenCalledWith(
+          'boom',
+          'components.modals.torrent-details.general.toast.clear-ratio-limit-failed',
+        );
+      });
+    });
+
+    describe('clearSeedingTimeLimit', () => {
+      it('shows an info toast and clears the seeding time limit, keeping the other share limits', async () => {
+        await component.clearSeedingTimeLimit();
+
+        expect(toastInfo).toHaveBeenCalledWith(
+          'components.modals.torrent-details.general.toast.clearing-seeding-time-limit',
+        );
+        expect(qbTorrents.setShareLimits).toHaveBeenCalledWith('server-1', ['abc123'], 1.5, -1, 30);
+      });
+
+      it('shows a danger toast when clearing the seeding time limit fails', async () => {
+        qbTorrents.setShareLimits.mockRejectedValueOnce(new Error('boom'));
+
+        await component.clearSeedingTimeLimit();
+
+        expect(toastDanger).toHaveBeenCalledWith(
+          'boom',
+          'components.modals.torrent-details.general.toast.clear-seeding-time-limit-failed',
+        );
+      });
+    });
+
+    describe('clearInactiveSeedingTimeLimit', () => {
+      it('shows an info toast and clears the inactive seeding time limit, keeping the other share limits', async () => {
+        await component.clearInactiveSeedingTimeLimit();
+
+        expect(toastInfo).toHaveBeenCalledWith(
+          'components.modals.torrent-details.general.toast.clearing-inactive-seeding-time-limit',
+        );
+        expect(qbTorrents.setShareLimits).toHaveBeenCalledWith('server-1', ['abc123'], 1.5, 60, -1);
+      });
+
+      it('shows a danger toast when clearing the inactive seeding time limit fails', async () => {
+        qbTorrents.setShareLimits.mockRejectedValueOnce(new Error('boom'));
+
+        await component.clearInactiveSeedingTimeLimit();
+
+        expect(toastDanger).toHaveBeenCalledWith(
+          'boom',
+          'components.modals.torrent-details.general.toast.clear-inactive-seeding-time-limit-failed',
+        );
+      });
+    });
+
+    describe('removeCategory', () => {
+      it('shows an info toast and clears the category', async () => {
+        await component.removeCategory();
+
+        expect(toastInfo).toHaveBeenCalledWith(
+          'components.modals.torrent-details.general.toast.removing-category',
+        );
+        expect(qbTorrents.clearCategory).toHaveBeenCalledWith('server-1', ['abc123']);
+      });
+
+      it('shows a danger toast when removing the category fails', async () => {
+        qbTorrents.clearCategory.mockRejectedValueOnce(new Error('boom'));
+
+        await component.removeCategory();
+
+        expect(toastDanger).toHaveBeenCalledWith(
+          'boom',
+          'components.modals.torrent-details.general.toast.remove-category-failed',
+        );
+      });
+    });
+
+    describe('removeAllTags', () => {
+      it('shows an info toast and removes the parsed tag list', async () => {
+        await component.removeAllTags();
+
+        expect(toastInfo).toHaveBeenCalledWith(
+          'components.modals.torrent-details.general.toast.removing-all-tags',
+        );
+        expect(qbTorrents.removeTags).toHaveBeenCalledWith('server-1', ['abc123'], ['a', 'b']);
+      });
+
+      it('shows a danger toast when removing all tags fails', async () => {
+        qbTorrents.removeTags.mockRejectedValueOnce(new Error('boom'));
+
+        await component.removeAllTags();
+
+        expect(toastDanger).toHaveBeenCalledWith(
+          'boom',
+          'components.modals.torrent-details.general.toast.remove-all-tags-failed',
+        );
+      });
+    });
+
+    describe('forceReannounce', () => {
+      it('shows an info toast and reannounces the torrent', async () => {
+        await component.forceReannounce();
+
+        expect(toastInfo).toHaveBeenCalledWith(
+          'components.modals.torrent-details.general.toast.reannouncing',
+        );
+        expect(qbTorrents.reannounce).toHaveBeenCalledWith('server-1', ['abc123']);
+      });
+
+      it('shows a danger toast when reannouncing fails', async () => {
+        qbTorrents.reannounce.mockRejectedValueOnce(new Error('boom'));
+
+        await component.forceReannounce();
+
+        expect(toastDanger).toHaveBeenCalledWith(
+          'boom',
+          'components.modals.torrent-details.general.toast.reannounce-failed',
+        );
+      });
     });
   });
 

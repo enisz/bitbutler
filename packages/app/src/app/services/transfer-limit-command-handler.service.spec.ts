@@ -1,5 +1,6 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { CommandBusService } from './command-bus.service';
 import { QbService } from './qb.service';
@@ -15,12 +16,14 @@ describe('TransferLimitCommandHandlerService', () => {
   let getAltState: ReturnType<typeof vi.fn>;
   let toggleAlt: ReturnType<typeof vi.fn>;
   let toastInfo: ReturnType<typeof vi.fn>;
+  let translateService: { instant: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     commands$ = new Subject();
     getAltState = vi.fn().mockResolvedValue(false);
     toggleAlt = vi.fn().mockResolvedValue(undefined);
     toastInfo = vi.fn();
+    translateService = { instant: vi.fn((key: string) => key) };
 
     TestBed.configureTestingModule({
       providers: [
@@ -37,6 +40,7 @@ describe('TransferLimitCommandHandlerService', () => {
         },
         { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
         { provide: ToastService, useValue: { info: toastInfo } },
+        { provide: TranslateService, useValue: translateService },
       ],
     });
 
@@ -47,14 +51,20 @@ describe('TransferLimitCommandHandlerService', () => {
   it('should show info toast on toggle', async () => {
     commands$.next({ type: 'TRANSFER_LIMIT_ALTERNATIVE_TOGGLE' });
     await flushPromises();
-    expect(toastInfo).toHaveBeenCalledWith('Turning alternative speed limit ON');
+    expect(toastInfo).toHaveBeenCalledWith(
+      'services.transfer-limit-command-handler.info.alternative-limit-on',
+      'services.transfer-limit-command-handler.info.alternative-limit-on-title',
+    );
   });
 
   it('should show "OFF" toast when alt speed is currently enabled', async () => {
     getAltState.mockResolvedValueOnce(true);
     commands$.next({ type: 'TRANSFER_LIMIT_ALTERNATIVE_TOGGLE' });
     await flushPromises();
-    expect(toastInfo).toHaveBeenCalledWith('Turning alternative speed limit OFF');
+    expect(toastInfo).toHaveBeenCalledWith(
+      'services.transfer-limit-command-handler.info.alternative-limit-off',
+      'services.transfer-limit-command-handler.info.alternative-limit-off-title',
+    );
   });
 
   it('should call toggleAlternativeSpeedLimit with the current server id', async () => {

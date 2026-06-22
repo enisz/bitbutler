@@ -17,7 +17,7 @@ describe('Settings', () => {
     resetDirty: ReturnType<typeof vi.fn>;
   };
   let confirmMock: { confirm: ReturnType<typeof vi.fn> };
-  let toastMock: { success: ReturnType<typeof vi.fn> };
+  let toastMock: { success: ReturnType<typeof vi.fn>; danger: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     stateServiceMock = {
@@ -32,7 +32,7 @@ describe('Settings', () => {
       resetDirty: vi.fn(),
     };
     confirmMock = { confirm: vi.fn().mockResolvedValue(false) };
-    toastMock = { success: vi.fn() };
+    toastMock = { success: vi.fn(), danger: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [Settings],
@@ -127,6 +127,22 @@ describe('Settings', () => {
     it('should show a success toast', async () => {
       await component.onSave();
       expect(toastMock.success).toHaveBeenCalled();
+    });
+
+    it('should show a danger toast with the raw error message when saveAll fails', async () => {
+      stateServiceMock.saveAll.mockRejectedValueOnce(new Error('disk full'));
+      await component.onSave();
+      expect(toastMock.danger).toHaveBeenCalledWith(
+        'disk full',
+        'pages.settings.error.save-failed-title',
+      );
+    });
+
+    it('should not close the modal when saveAll fails', async () => {
+      const activeModal = TestBed.inject(NgbActiveModal);
+      stateServiceMock.saveAll.mockRejectedValueOnce(new Error('disk full'));
+      await component.onSave();
+      expect(activeModal.close).not.toHaveBeenCalled();
     });
   });
 });

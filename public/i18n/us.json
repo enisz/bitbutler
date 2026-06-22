@@ -1,7 +1,7 @@
 {
   "app": {
     "success": {
-      "finished-downloading": "Download Finished!"
+      "finished-downloading": "Download Finished"
     }
   },
   "torrent": {
@@ -245,7 +245,10 @@
       "transfer-limit": {
         "title": "Transfer Limit",
         "global": "Global Transfer Limit",
-        "loading": "Loading Transfer Limits..."
+        "loading": "Loading Transfer Limits...",
+        "toast": {
+          "set-failed-title": "Failed to Set Transfer Limits"
+        }
       },
       "rename-torrent": {
         "title": "Rename Torrent",
@@ -253,7 +256,7 @@
           "name": "Name"
         },
         "error": {
-          "failed-to-rename": "Failed to rename torrent"
+          "failed-to-rename": "Failed to Rename Torrent"
         }
       },
       "server-editor": {
@@ -281,7 +284,10 @@
         "save-credentials": "Save credentials for this server"
       },
       "set-torrent-category": {
-        "title": "Set Torrent Category"
+        "title": "Set Torrent Category",
+        "toast": {
+          "set-failed-title": "Failed to Set Category"
+        }
       },
       "set-torrent-location": {
         "title": "Set Torrent Location",
@@ -289,18 +295,21 @@
           "path": "Path"
         },
         "error": {
-          "failed-to-relocate": "Failed to relocate torrent!"
+          "failed-to-relocate": "Failed to Relocate Torrent"
         }
       },
       "set-torrent-tags": {
-        "title": "Set Torrent Tags"
+        "title": "Set Torrent Tags",
+        "toast": {
+          "set-failed-title": "Failed to Set Torrent Tags"
+        }
       },
       "torrent-details": {
         "content": {
           "loading": "Loading Torrent Contents...",
           "error": {
-            "failed-to-load": "Failed to load torrent contents!",
-            "failed-to-save": "Failed to save changes!"
+            "failed-to-load-title": "Failed to Load Torrent Contents",
+            "failed-to-save-title": "Failed to Save Changes"
           }
         },
         "general": {
@@ -481,6 +490,32 @@
               "title": "Comment",
               "description": "Optional text added by the torrent creator, often containing source info or credits."
             }
+          },
+          "toast": {
+            "resuming": "Resuming the torrent…",
+            "resume-failed": "Failed to Resume Torrent",
+            "pausing": "Pausing the torrent…",
+            "pause-failed": "Failed to Pause Torrent",
+            "force-resuming": "Force resuming the torrent…",
+            "force-resume-failed": "Failed to Force Resume Torrent",
+            "clearing-download-limit": "Clearing the download limit…",
+            "clear-download-limit-failed": "Failed to Clear Download Limit",
+            "clearing-upload-limit": "Clearing the upload limit…",
+            "clear-upload-limit-failed": "Failed to Clear Upload Limit",
+            "clearing-ratio-limit": "Clearing the ratio limit…",
+            "clear-ratio-limit-failed": "Failed to Clear Ratio Limit",
+            "clearing-seeding-time-limit": "Clearing the seeding time limit…",
+            "clear-seeding-time-limit-failed": "Failed to Clear Seeding Time Limit",
+            "clearing-inactive-seeding-time-limit": "Clearing the inactive seeding time limit…",
+            "clear-inactive-seeding-time-limit-failed": "Failed to Clear Inactive Seeding Time Limit",
+            "reannouncing": "Reannouncing to trackers…",
+            "reannounce-failed": "Failed to Reannounce Torrent",
+            "removing-category": "Removing the category…",
+            "remove-category-failed": "Failed to Remove Category",
+            "removing-all-tags": "Removing all tags…",
+            "remove-all-tags-failed": "Failed to Remove All Tags",
+            "local-path-failed": "Failed to Resolve Local Path",
+            "copied-to-clipboard": "Copied {{field}} to clipboard."
           }
         },
         "peers": {
@@ -625,7 +660,9 @@
           "delete-file": "Delete Torrent File"
         },
         "toast": {
-          "deleted": "Torrent file has been deleted."
+          "deleted-title": "Torrent File Deleted",
+          "deleted": "The torrent file has been removed from disk.",
+          "delete-failed-title": "Failed to Delete Torrent File"
         }
       },
       "update-available": {
@@ -640,7 +677,10 @@
       "share-limit": {
         "title": "Share Limit",
         "global": "Global Share Limit",
-        "loading": "Loading Share Limits..."
+        "loading": "Loading Share Limits...",
+        "toast": {
+          "set-failed-title": "Failed to Set Share Limits"
+        }
       },
       "guard": {
         "unsaved-title": "Unsaved changes",
@@ -665,11 +705,12 @@
           "message": "Are you sure you want to delete the tag \"{{ name }}\"? It is used by {{ count }} torrent(s)."
         },
         "toast": {
-          "added-one": "Tag \"{{ name }}\" has been added.",
-          "added": "{{ count }} tag(s) added.",
-          "deleted": "Tag \"{{ name }}\" has been deleted.",
-          "add-failed": "Failed to add tag(s).",
-          "delete-failed": "Failed to delete tag \"{{ name }}\"."
+          "added-one-title": "Tag Added",
+          "added-title": "Tags Added",
+          "added": "{{ count }} tag(s)",
+          "deleted-title": "Tag Deleted",
+          "add-failed-title": "Failed to Add Tag(s)",
+          "delete-failed-title": "Failed to Delete Tag"
         }
       },
       "manage-servers": {
@@ -845,12 +886,12 @@
           "message": "Are you sure you want to delete the category \"{{ name }}\"? It is assigned to {{ count }} torrent(s)."
         },
         "toast": {
-          "added": "Category \"{{ name }}\" has been added.",
-          "updated": "Category \"{{ name }}\" has been updated.",
-          "deleted": "Category \"{{ name }}\" has been deleted.",
-          "add-failed": "Failed to add category \"{{ name }}\".",
-          "edit-failed": "Failed to update category \"{{ name }}\".",
-          "delete-failed": "Failed to delete category \"{{ name }}\"."
+          "added-title": "Category Added",
+          "updated-title": "Category Updated",
+          "deleted-title": "Category Deleted",
+          "add-failed-title": "Failed to Add Category",
+          "edit-failed-title": "Failed to Update Category",
+          "delete-failed-title": "Failed to Delete Category"
         }
       }
     },
@@ -923,7 +964,7 @@
         "make-default": "Make Default"
       },
       "error": {
-        "connection-failed": "Connection failed.",
+        "connection-failed": "Connection Failed",
         "update-server-failed": "Failed to update the host {{name}}!"
       },
       "delete-confirm": {
@@ -1054,8 +1095,20 @@
             "export-unavailable": "The /api/v2/torrents/export endpoint is not available on this server."
           },
           "toast": {
-            "export-failed-title": "Export failed",
-            "export-failed-count": "Failed to export {{failed}} of {{total}} torrent(s)."
+            "export-failed-title": "Export Failed",
+            "export-failed-count": "Failed to export {{failed}} of {{total}} torrent(s).",
+            "copied-to-clipboard": "Copied {{field}} to clipboard."
+          },
+          "field": {
+            "name": "Name",
+            "names": "Names",
+            "magnet-link": "Magnet Link",
+            "magnet-links": "Magnet Links",
+            "info-hash": "Info Hash",
+            "info-hashes": "Info Hashes",
+            "save-path": "Save Path",
+            "save-paths": "Save Paths",
+            "json": "JSON"
           }
         },
         "overlays": {
@@ -1201,7 +1254,12 @@
     "settings": {
       "title": "Settings",
       "success": {
-        "saved": "Settings Saved"
+        "saved-title": "Settings Saved",
+        "saved": "Your changes have been saved."
+      },
+      "error": {
+        "save-failed-title": "Failed to Save Settings",
+        "save-failed": "Your changes could not be saved."
       },
       "tab": {
         "general": {
@@ -1414,7 +1472,12 @@
     "qb-settings": {
       "title": "qBittorrent Settings",
       "success": {
-        "saved": "qBittorrent Settings Saved"
+        "saved-title": "qBittorrent Settings Saved",
+        "saved": "Your changes have been saved."
+      },
+      "error": {
+        "save-failed-title": "Failed to Save Settings",
+        "save-failed": "Your changes could not be saved."
       },
       "tab": {
         "bandwidth": {
@@ -1532,18 +1595,91 @@
         "message": "Connecting to {{name}}..."
       },
       "error": {
-        "failed-to-connect": "Failed to connect to {{name}}!"
+        "failed-to-connect-title": "Failed to Connect"
       },
       "info": {
         "switching-server": "Switching to {{name}}"
+      }
+    },
+    "ui-command-handler": {
+      "error": {
+        "remote-path-missing": "Remote path not provided.",
+        "local-path-unresolved": "Could not resolve local path."
+      },
+      "info": {
+        "showing-file-title": "Showing File",
+        "opening-folder-title": "Opening Folder"
+      }
+    },
+    "transfer-limit-command-handler": {
+      "info": {
+        "alternative-limit-on-title": "Alternative Speed Limit On",
+        "alternative-limit-on": "Alternative speed limits are now active.",
+        "alternative-limit-off-title": "Alternative Speed Limit Off",
+        "alternative-limit-off": "Alternative speed limits are no longer active."
+      }
+    },
+    "server-command-handler": {
+      "success": {
+        "added-title": "Server Added",
+        "added-fallback": "The server has been added."
+      },
+      "info": {
+        "updated-title": "Server Updated",
+        "deleted-title": "Server Deleted"
+      }
+    },
+    "update-command-handler": {
+      "error": {
+        "check-failed-title": "Update Check Failed"
+      },
+      "success": {
+        "up-to-date-title": "Up to Date",
+        "up-to-date": "You're running the latest version."
+      }
+    },
+    "torrent-command-handler": {
+      "error": {
+        "delete-failed-title": "Failed to Delete Torrent(s)"
+      },
+      "toast": {
+        "pausing": "Pausing {{count}} torrent(s)…",
+        "pause-failed-title": "Failed to Pause Torrent(s)",
+        "pausing-all": "Pausing all torrents…",
+        "pause-all-failed-title": "Failed to Pause All Torrents",
+        "resuming": "Resuming {{count}} torrent(s)…",
+        "resume-failed-title": "Failed to Resume Torrent(s)",
+        "resuming-all": "Resuming all torrents…",
+        "resume-all-failed-title": "Failed to Resume All Torrents",
+        "force-resuming": "Force resuming {{count}} torrent(s)…",
+        "force-resume-failed-title": "Failed to Force Resume Torrent(s)",
+        "reannouncing": "Reannouncing to trackers for {{count}} torrent(s)…",
+        "reannounce-failed-title": "Failed to Reannounce Torrent(s)",
+        "rechecking": "Rechecking {{count}} torrent(s)…",
+        "recheck-failed-title": "Failed to Recheck Torrent(s)",
+        "enable-super-seeding-failed-title": "Failed to Enable Super Seeding",
+        "disable-super-seeding-failed-title": "Failed to Disable Super Seeding",
+        "enable-auto-tmm-failed-title": "Failed to Enable Automatic Torrent Management",
+        "disable-auto-tmm-failed-title": "Failed to Disable Automatic Torrent Management",
+        "move-top-failed-title": "Failed to Move Torrent(s) to Top of Queue",
+        "move-up-failed-title": "Failed to Move Torrent(s) Up in Queue",
+        "move-down-failed-title": "Failed to Move Torrent(s) Down in Queue",
+        "move-bottom-failed-title": "Failed to Move Torrent(s) to Bottom of Queue"
+      }
+    },
+    "qb": {
+      "warning": {
+        "connection-retry-title": "Connection Issue",
+        "connection-retry-message": "Failed to connect. Retrying..."
+      },
+      "error": {
+        "request-failed-title": "Request Failed"
       }
     }
   },
   "utils": {},
   "general": {
-    "error": {
-      "save-failed": "Failed to save settings."
-    },
+    "error": {},
     "button": {
       "close": "Close",
       "browse": "Browse",
@@ -1623,6 +1759,13 @@
     "limit": {
       "global": "Global Limit",
       "no-limit": "No Limit"
+    },
+    "toast": {
+      "success": "Success",
+      "error": "Error",
+      "warning": "Warning",
+      "info": "Info",
+      "notification": "Notification"
     }
   },
   "language": {

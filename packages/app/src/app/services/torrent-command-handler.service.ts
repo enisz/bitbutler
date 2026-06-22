@@ -1,5 +1,6 @@
 import { DestroyRef, Injectable, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TranslateService } from '@ngx-translate/core';
 import { filter } from 'rxjs';
 import { AppCommand, TorrentCommand } from '../models/command.model';
 import { CommandBusService } from './command-bus.service';
@@ -18,6 +19,7 @@ export class TorrentCommandHandlerService {
   private readonly serverStore = inject(ServerStoreService);
   private readonly torrentStore = inject(TorrentStoreService);
   private readonly toastService = inject(ToastService);
+  private readonly translateService = inject(TranslateService);
 
   public start(): void {
     this.commandBusService.commands$
@@ -52,19 +54,19 @@ export class TorrentCommandHandlerService {
             void this.handleQueueMoveBottom();
             break;
           case 'TORRENT_REANNOUNCE':
-            this.handleReannounce();
+            void this.handleReannounce();
             break;
           case 'TORRENT_RECHECK':
             void this.handleRecheck();
             break;
           case 'TORRENT_SUPER_SEEDING':
-            this.handleSuperSeeding(cmd.status);
+            void this.handleSuperSeeding(cmd.status);
             break;
           case 'TORRENT_FORCE_RESUME':
-            this.handleForceResume();
+            void this.handleForceResume();
             break;
           case 'TORRENT_AUTO_TMM':
-            this.handleAutoTmm(cmd.status);
+            void this.handleAutoTmm(cmd.status);
             break;
           default:
             console.error(TorrentCommandHandlerService.name, 'start', 'Unhandled command', cmd);
@@ -72,42 +74,130 @@ export class TorrentCommandHandlerService {
       });
   }
 
-  private handleAutoTmm(status: boolean): void {
-    this.qbService.torrents.setAutoManagement(
-      this.serverStore.currentServerId() ?? '',
-      this.selectionStore.selectedHashes(),
-      !status,
-    );
+  private async handleAutoTmm(status: boolean): Promise<void> {
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    const enabling = !status;
+
+    try {
+      await this.qbService.torrents.setAutoManagement(ctx.serverId, ctx.hashes, enabling);
+    } catch (e: any) {
+      console.error(
+        TorrentCommandHandlerService.name,
+        'handleAutoTmm',
+        'Auto TMM toggle failed!',
+        e,
+      );
+      this.toastService.danger(
+        e?.message ?? String(e),
+        this.translateService.instant(
+          enabling
+            ? 'services.torrent-command-handler.toast.enable-auto-tmm-failed-title'
+            : 'services.torrent-command-handler.toast.disable-auto-tmm-failed-title',
+        ),
+      );
+    }
   }
 
-  private handleForceResume(): void {
-    this.qbService.torrents.setForceStart(
-      this.serverStore.currentServerId() ?? '',
-      this.selectionStore.selectedHashes(),
-      true,
+  private async handleForceResume(): Promise<void> {
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    this.toastService.info(
+      this.translateService.instant('services.torrent-command-handler.toast.force-resuming', {
+        count: ctx.hashes.length,
+      }),
     );
+
+    try {
+      await this.qbService.torrents.setForceStart(ctx.serverId, ctx.hashes, true);
+    } catch (e: any) {
+      console.error(
+        TorrentCommandHandlerService.name,
+        'handleForceResume',
+        'Force resume failed!',
+        e,
+      );
+      this.toastService.danger(
+        e?.message ?? String(e),
+        this.translateService.instant(
+          'services.torrent-command-handler.toast.force-resume-failed-title',
+        ),
+      );
+    }
   }
 
-  private handleSuperSeeding(status: boolean): void {
-    this.qbService.torrents.setSuperSeeding(
-      this.serverStore.currentServerId() ?? '',
-      this.selectionStore.selectedHashes(),
-      !status,
-    );
+  private async handleSuperSeeding(status: boolean): Promise<void> {
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    const enabling = !status;
+
+    try {
+      await this.qbService.torrents.setSuperSeeding(ctx.serverId, ctx.hashes, enabling);
+    } catch (e: any) {
+      console.error(
+        TorrentCommandHandlerService.name,
+        'handleSuperSeeding',
+        'Super seeding toggle failed!',
+        e,
+      );
+      this.toastService.danger(
+        e?.message ?? String(e),
+        this.translateService.instant(
+          enabling
+            ? 'services.torrent-command-handler.toast.enable-super-seeding-failed-title'
+            : 'services.torrent-command-handler.toast.disable-super-seeding-failed-title',
+        ),
+      );
+    }
   }
 
-  private handleReannounce(): void {
-    this.qbService.torrents.reannounce(
-      this.serverStore.currentServerId() ?? '',
-      this.selectionStore.selectedHashes(),
+  private async handleReannounce(): Promise<void> {
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    this.toastService.info(
+      this.translateService.instant('services.torrent-command-handler.toast.reannouncing', {
+        count: ctx.hashes.length,
+      }),
     );
+
+    try {
+      await this.qbService.torrents.reannounce(ctx.serverId, ctx.hashes);
+    } catch (e: any) {
+      console.error(TorrentCommandHandlerService.name, 'handleReannounce', 'Reannounce failed!', e);
+      this.toastService.danger(
+        e?.message ?? String(e),
+        this.translateService.instant(
+          'services.torrent-command-handler.toast.reannounce-failed-title',
+        ),
+      );
+    }
   }
 
-  private handleRecheck(): void {
-    this.qbService.torrents.recheck(
-      this.serverStore.currentServerId() ?? '',
-      this.selectionStore.selectedHashes(),
+  private async handleRecheck(): Promise<void> {
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    this.toastService.info(
+      this.translateService.instant('services.torrent-command-handler.toast.rechecking', {
+        count: ctx.hashes.length,
+      }),
     );
+
+    try {
+      await this.qbService.torrents.recheck(ctx.serverId, ctx.hashes);
+    } catch (e: any) {
+      console.error(TorrentCommandHandlerService.name, 'handleRecheck', 'Recheck failed!', e);
+      this.toastService.danger(
+        e?.message ?? String(e),
+        this.translateService.instant(
+          'services.torrent-command-handler.toast.recheck-failed-title',
+        ),
+      );
+    }
   }
 
   private torrentCommandGuard(command: AppCommand): command is TorrentCommand {
@@ -129,7 +219,10 @@ export class TorrentCommandHandlerService {
       this.selectionStore.clear();
     } catch (error: any) {
       console.error('Delete failed', error);
-      this.toastService.danger(error.message, 'Failed to delete torrent(s)');
+      this.toastService.danger(
+        error.message,
+        this.translateService.instant('services.torrent-command-handler.error.delete-failed-title'),
+      );
     }
   }
 
@@ -147,10 +240,20 @@ export class TorrentCommandHandlerService {
     const ctx = this.getContext();
     if (!ctx) return;
 
+    this.toastService.info(
+      this.translateService.instant('services.torrent-command-handler.toast.pausing', {
+        count: ctx.hashes.length,
+      }),
+    );
+
     try {
       await this.qbService.torrents.pause(ctx.serverId, ctx.hashes);
-    } catch (e) {
+    } catch (e: any) {
       console.error(TorrentCommandHandlerService.name, 'handlePause', 'Pause failed!', e);
+      this.toastService.danger(
+        e?.message ?? String(e),
+        this.translateService.instant('services.torrent-command-handler.toast.pause-failed-title'),
+      );
     }
   }
 
@@ -158,10 +261,20 @@ export class TorrentCommandHandlerService {
     const ctx = this.getContext();
     if (!ctx) return;
 
+    this.toastService.info(
+      this.translateService.instant('services.torrent-command-handler.toast.resuming', {
+        count: ctx.hashes.length,
+      }),
+    );
+
     try {
       await this.qbService.torrents.resume(ctx.serverId, ctx.hashes);
-    } catch (e) {
+    } catch (e: any) {
       console.error(TorrentCommandHandlerService.name, 'handleResume', 'Resume failed!', e);
+      this.toastService.danger(
+        e?.message ?? String(e),
+        this.translateService.instant('services.torrent-command-handler.toast.resume-failed-title'),
+      );
     }
   }
 
@@ -172,10 +285,20 @@ export class TorrentCommandHandlerService {
     if (!serverId) return;
     if (hashes.length === 0) return;
 
+    this.toastService.info(
+      this.translateService.instant('services.torrent-command-handler.toast.resuming-all'),
+    );
+
     try {
       await this.qbService.torrents.resume(serverId, hashes);
-    } catch (e) {
+    } catch (e: any) {
       console.error(TorrentCommandHandlerService.name, 'handleResumeAll', 'Resume all failed!', e);
+      this.toastService.danger(
+        e?.message ?? String(e),
+        this.translateService.instant(
+          'services.torrent-command-handler.toast.resume-all-failed-title',
+        ),
+      );
     }
   }
 
@@ -186,10 +309,20 @@ export class TorrentCommandHandlerService {
     if (!serverId) return;
     if (hashes.length === 0) return;
 
+    this.toastService.info(
+      this.translateService.instant('services.torrent-command-handler.toast.pausing-all'),
+    );
+
     try {
       await this.qbService.torrents.pause(serverId, hashes);
-    } catch (e) {
+    } catch (e: any) {
       console.error(TorrentCommandHandlerService.name, 'handlePauseAll', 'Pause all failed', e);
+      this.toastService.danger(
+        e?.message ?? String(e),
+        this.translateService.instant(
+          'services.torrent-command-handler.toast.pause-all-failed-title',
+        ),
+      );
     }
   }
 
@@ -199,12 +332,18 @@ export class TorrentCommandHandlerService {
 
     try {
       await this.qbService.torrents.topPrio(ctx.serverId, ctx.hashes);
-    } catch (e) {
+    } catch (e: any) {
       console.error(
         TorrentCommandHandlerService.name,
         'handleQueueMoveTop',
         'Failed to move torrent(s) to top of queue',
         e,
+      );
+      this.toastService.danger(
+        e?.message ?? String(e),
+        this.translateService.instant(
+          'services.torrent-command-handler.toast.move-top-failed-title',
+        ),
       );
     }
   }
@@ -215,12 +354,18 @@ export class TorrentCommandHandlerService {
 
     try {
       await this.qbService.torrents.increasePrio(ctx.serverId, ctx.hashes);
-    } catch (e) {
+    } catch (e: any) {
       console.error(
         TorrentCommandHandlerService.name,
         'handleQueueMoveUp',
         'Failed to move torrent(s) up in queue',
         e,
+      );
+      this.toastService.danger(
+        e?.message ?? String(e),
+        this.translateService.instant(
+          'services.torrent-command-handler.toast.move-up-failed-title',
+        ),
       );
     }
   }
@@ -231,12 +376,18 @@ export class TorrentCommandHandlerService {
 
     try {
       await this.qbService.torrents.decreasePrio(ctx.serverId, ctx.hashes);
-    } catch (e) {
+    } catch (e: any) {
       console.error(
         TorrentCommandHandlerService.name,
         'handleQueueMoveDown',
         'Failed to move torrent(s) down in queue',
         e,
+      );
+      this.toastService.danger(
+        e?.message ?? String(e),
+        this.translateService.instant(
+          'services.torrent-command-handler.toast.move-down-failed-title',
+        ),
       );
     }
   }
@@ -247,12 +398,18 @@ export class TorrentCommandHandlerService {
 
     try {
       await this.qbService.torrents.bottomPrio(ctx.serverId, ctx.hashes);
-    } catch (e) {
+    } catch (e: any) {
       console.error(
         TorrentCommandHandlerService.name,
         'handleQueueMoveBottom',
         'Failed to move torrent(s) to bottom of queue',
         e,
+      );
+      this.toastService.danger(
+        e?.message ?? String(e),
+        this.translateService.instant(
+          'services.torrent-command-handler.toast.move-bottom-failed-title',
+        ),
       );
     }
   }

@@ -88,6 +88,23 @@ Three lazy-loaded routes: `login`, `main` (torrent grid), `settings`. The router
 - Themes live in `packages/app/src/styles/themes/` (multiple SCSS files); `ThemeService` switches them at runtime.
 - Translations in `public/i18n/` (`us.json`, `hu.json`), loaded via `@ngx-translate` in Angular and via `packages/electron/src/i18n.ts` in the Electron main process. Language is persisted in `GeneralSettingsService`; changing it triggers a `bitbutler:language-change` IPC call that rebuilds the tray and application menu labels at runtime.
 
+## Toasts
+
+- Toast title = a short, specific, Title-Case description of the outcome
+  ("Tag Added", "Failed to Resume Torrent") - never the calling component's
+  name, never just the severity level.
+- Toast message = the variable detail only (a quoted name/path, or the raw
+  caught error), or, if there's no detail, one short sentence-case
+  confirmation ending in a period. Never restate what the title already
+  says.
+- Exception: a transient "action in progress" toast (e.g. "Resuming the
+  torrent…") keeps the default level title and a full sentence as its
+  message - this rule applies to terminal success/error toasts only.
+- Skip the toast entirely for actions whose result is already visible
+  in the UI (e.g. a grid row reordering, a checkbox toggling) - add one
+  only when something happened that the user can't otherwise see, or when
+  it can fail.
+
 ## Writing style
 
 - Use `-` (hyphen) instead of `—` (em dash) in all written output: responses, PR descriptions, commit messages, and documentation.

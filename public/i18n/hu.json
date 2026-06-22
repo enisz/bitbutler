@@ -245,7 +245,10 @@
       "transfer-limit": {
         "title": "Átviteli korlát",
         "global": "Globális átviteli korlát",
-        "loading": "Átviteli korlátok betöltése..."
+        "loading": "Átviteli korlátok betöltése...",
+        "toast": {
+          "set-failed-title": "Nem sikerült beállítani az átviteli korlátokat"
+        }
       },
       "rename-torrent": {
         "title": "Torrent átnevezése",
@@ -281,7 +284,10 @@
         "save-credentials": "Hitelesítő adatok mentése ehhez a szerverhez"
       },
       "set-torrent-category": {
-        "title": "Kategória beállítása"
+        "title": "Kategória beállítása",
+        "toast": {
+          "set-failed-title": "Nem sikerült beállítani a kategóriát"
+        }
       },
       "set-torrent-location": {
         "title": "Hely beállítása",
@@ -293,14 +299,17 @@
         }
       },
       "set-torrent-tags": {
-        "title": "Címkék beállítása"
+        "title": "Címkék beállítása",
+        "toast": {
+          "set-failed-title": "Nem sikerült beállítani a torrent cimkéit"
+        }
       },
       "torrent-details": {
         "content": {
           "loading": "Torrent tartalmának a betöltése...",
           "error": {
-            "failed-to-load": "Nem sikerült a torrent tartalmát betölteni!",
-            "failed-to-save": "Nem sikerült a változtatásokat menteni!"
+            "failed-to-load-title": "Nem sikerült betölteni a torrent tartalmát",
+            "failed-to-save-title": "Nem sikerült menteni a változtatásokat"
           }
         },
         "general": {
@@ -481,6 +490,32 @@
               "title": "Megjegyzés",
               "description": "A készítő által megadott opcionális szöveg (pl. forrásinfó)."
             }
+          },
+          "toast": {
+            "resuming": "A torrent folytatása…",
+            "resume-failed": "Nem sikerült folytatni a torrentet",
+            "pausing": "A torrent szüneteltetése…",
+            "pause-failed": "Nem sikerült szüneteltetni a torrentet",
+            "force-resuming": "A torrent kényszerített folytatása…",
+            "force-resume-failed": "Nem sikerült kényszerítve folytatni a torrentet",
+            "clearing-download-limit": "Letöltési korlát törlése…",
+            "clear-download-limit-failed": "Nem sikerült törölni a letöltési korlátot",
+            "clearing-upload-limit": "Feltöltési korlát törlése…",
+            "clear-upload-limit-failed": "Nem sikerült törölni a feltöltési korlátot",
+            "clearing-ratio-limit": "Megosztási arány korlát törlése…",
+            "clear-ratio-limit-failed": "Nem sikerült törölni a megosztási arány korlátot",
+            "clearing-seeding-time-limit": "Seedelési idő korlát törlése…",
+            "clear-seeding-time-limit-failed": "Nem sikerült törölni a seedelési idő korlátot",
+            "clearing-inactive-seeding-time-limit": "Inaktív seedelési idő korlát törlése…",
+            "clear-inactive-seeding-time-limit-failed": "Nem sikerült törölni az inaktív seedelési idő korlátot",
+            "reannouncing": "Újrajelentkezés a trackereknél…",
+            "reannounce-failed": "Nem sikerült újrajelentkezni a trackereknél",
+            "removing-category": "Kategória eltávolítása…",
+            "remove-category-failed": "Nem sikerült eltávolítani a kategóriát",
+            "removing-all-tags": "Az összes címke eltávolítása…",
+            "remove-all-tags-failed": "Nem sikerült eltávolítani az összes címkét",
+            "local-path-failed": "A helyi elérési út feloldása sikertelen!",
+            "copied-to-clipboard": "{{field}} a vágólapra másolva."
           }
         },
         "peers": {
@@ -625,7 +660,9 @@
           "delete-file": "Torrent fájl törlése"
         },
         "toast": {
-          "deleted": "A torrent fájl törölve."
+          "deleted-title": "Torrent fájl törölve",
+          "deleted": "A torrent fájl eltávolítva a lemezről.",
+          "delete-failed-title": "Nem sikerült törölni a torrent fájlt"
         }
       },
       "update-available": {
@@ -640,7 +677,10 @@
       "share-limit": {
         "title": "Megosztási korlát",
         "global": "Globális megosztási korlát",
-        "loading": "Megosztási korlátok betöltése..."
+        "loading": "Megosztási korlátok betöltése...",
+        "toast": {
+          "set-failed-title": "Nem sikerült beállítani a megosztási arány korlátot"
+        }
       },
       "guard": {
         "unsaved-title": "Mentetlen változtatások",
@@ -665,11 +705,12 @@
           "message": "Biztosan törölni szeretnéd a \"{{ name }}\" cimkét? {{ count }} torrent használja."
         },
         "toast": {
-          "added-one": "A \"{{ name }}\" cimke hozzáadva.",
-          "added": "{{ count }} cimke hozzáadva.",
-          "deleted": "A \"{{ name }}\" cimke törölve.",
-          "add-failed": "Nem sikerült hozzáadni a cimké(ke)t.",
-          "delete-failed": "Nem sikerült törölni a \"{{ name }}\" cimkét."
+          "added": "{{ count }} cimke",
+          "added-one-title": "Cimke hozzáadva",
+          "added-title": "Cimkék hozzáadva",
+          "deleted-title": "Cimke törölve",
+          "add-failed-title": "Nem sikerült hozzáadni a cimké(ke)t",
+          "delete-failed-title": "Nem sikerült törölni a cimkét"
         }
       },
       "manage-servers": {
@@ -845,12 +886,12 @@
           "message": "Biztosan törölni szeretnéd a \"{{ name }}\" kategóriát? {{ count }} torrenthez van hozzárendelve."
         },
         "toast": {
-          "added": "A \"{{ name }}\" kategória hozzáadva.",
-          "updated": "A \"{{ name }}\" kategória frissítve.",
-          "deleted": "A \"{{ name }}\" kategória törölve.",
-          "add-failed": "Nem sikerült hozzáadni a \"{{ name }}\" kategóriát.",
-          "edit-failed": "Nem sikerült frissíteni a \"{{ name }}\" kategóriát.",
-          "delete-failed": "Nem sikerült törölni a \"{{ name }}\" kategóriát."
+          "added-title": "Kategória hozzáadva",
+          "updated-title": "Kategória frissítve",
+          "deleted-title": "Kategória törölve",
+          "add-failed-title": "Nem sikerült hozzáadni a kategóriát",
+          "edit-failed-title": "Nem sikerült frissíteni a kategóriát",
+          "delete-failed-title": "Nem sikerült törölni a kategóriát"
         }
       }
     },
@@ -1055,7 +1096,19 @@
           },
           "toast": {
             "export-failed-title": "Exportálás sikertelen",
-            "export-failed-count": "{{total}} torrentből {{failed}} exportálása sikertelen."
+            "export-failed-count": "{{total}} torrentből {{failed}} exportálása sikertelen.",
+            "copied-to-clipboard": "{{field}} a vágólapra másolva."
+          },
+          "field": {
+            "name": "Név",
+            "names": "Nevek",
+            "magnet-link": "Magnet Link",
+            "magnet-links": "Magnet Linkek",
+            "info-hash": "Info Hash",
+            "info-hashes": "Info Hash-ek",
+            "save-path": "Mentési Útvonal",
+            "save-paths": "Mentési Útvonalak",
+            "json": "JSON"
           }
         },
         "overlays": {
@@ -1201,7 +1254,12 @@
     "settings": {
       "title": "Beállítások",
       "success": {
-        "saved": "Beállítások mentve"
+        "saved": "A módosításaid mentve vannak.",
+        "saved-title": "Beállítások mentve"
+      },
+      "error": {
+        "save-failed-title": "Beállítások mentése sikertelen",
+        "save-failed": "A módosításaid nem menthetők."
       },
       "tab": {
         "general": {
@@ -1414,7 +1472,12 @@
     "qb-settings": {
       "title": "qBittorrent Beállítások",
       "success": {
-        "saved": "qBittorrent Beállítások Mentve"
+        "saved": "A módosításaid mentve vannak.",
+        "saved-title": "qBittorrent Beállítások Mentve"
+      },
+      "error": {
+        "save-failed-title": "Beállítások mentése sikertelen",
+        "save-failed": "A módosításaid nem menthetők."
       },
       "tab": {
         "bandwidth": {
@@ -1532,18 +1595,90 @@
         "message": "Csatlakozás a(z) {{name}} szerverhez..."
       },
       "error": {
-        "failed-to-connect": "Sikertelen csatlakozás a(z) {{name}} szerverhez!"
+        "failed-to-connect-title": "Sikertelen csatlakozás"
       },
       "info": {
         "switching-server": "Váltás a(z) {{name}} szerverre"
+      }
+    },
+    "ui-command-handler": {
+      "error": {
+        "remote-path-missing": "Nincs megadva távoli elérési út.",
+        "local-path-unresolved": "A helyi elérési út nem feloldható."
+      },
+      "info": {
+        "showing-file-title": "Fájl megjelenítése",
+        "opening-folder-title": "Mappa megnyitása"
+      }
+    },
+    "transfer-limit-command-handler": {
+      "info": {
+        "alternative-limit-on-title": "Alternatív sebességkorlát bekapcsolva",
+        "alternative-limit-on": "Az alternatív sebességkorlátok most aktívak.",
+        "alternative-limit-off-title": "Alternatív sebességkorlát kikapcsolva",
+        "alternative-limit-off": "Az alternatív sebességkorlátok már nem aktívak."
+      }
+    },
+    "server-command-handler": {
+      "success": {
+        "added-title": "Szerver hozzáadva",
+        "added-fallback": "A szerver hozzáadva lett."
+      },
+      "info": {
+        "updated-title": "Szerver frissítve",
+        "deleted-title": "Szerver törölve"
+      }
+    },
+    "update-command-handler": {
+      "error": {
+        "check-failed-title": "Frissítés ellenőrzése sikertelen"
+      },
+      "success": {
+        "up-to-date": "A legújabb verziót használod!",
+        "up-to-date-title": "Naprakész verzió"
+      }
+    },
+    "torrent-command-handler": {
+      "error": {
+        "delete-failed-title": "Nem sikerült törölni a torrentet/torrenteket"
+      },
+      "toast": {
+        "pausing": "{{count}} torrent(ek) szüneteltetése…",
+        "pause-failed-title": "Nem sikerült szüneteltetni a torrent(ek)et",
+        "pausing-all": "Az összes torrent szüneteltetése…",
+        "pause-all-failed-title": "Nem sikerült szüneteltetni az összes torrentet",
+        "resuming": "{{count}} torrent(ek) folytatása…",
+        "resume-failed-title": "Nem sikerült folytatni a torrent(ek)et",
+        "resuming-all": "Az összes torrent folytatása…",
+        "resume-all-failed-title": "Nem sikerült folytatni az összes torrentet",
+        "force-resuming": "{{count}} torrent(ek) kényszerített folytatása…",
+        "force-resume-failed-title": "Nem sikerült kényszerítve folytatni a torrent(ek)et",
+        "reannouncing": "Újrajelentkezés a trackereknél {{count}} torrent(ek) esetében…",
+        "reannounce-failed-title": "Nem sikerült újrajelentkezni a trackereknél a torrent(ek) esetében",
+        "rechecking": "{{count}} torrent(ek) ellenőrzése…",
+        "recheck-failed-title": "Nem sikerült ellenőrizni a torrent(ek)et",
+        "enable-super-seeding-failed-title": "Nem sikerült engedélyezni a super seedinget",
+        "disable-super-seeding-failed-title": "Nem sikerült letiltani a super seedinget",
+        "enable-auto-tmm-failed-title": "Nem sikerült bekapcsolni az automatikus torrentkezelést",
+        "disable-auto-tmm-failed-title": "Nem sikerült kikapcsolni az automatikus torrentkezelést",
+        "move-top-failed-title": "Nem sikerült a sor elejére mozgatni a torrent(ek)et",
+        "move-up-failed-title": "Nem sikerült feljebb mozgatni a torrent(ek)et a sorban",
+        "move-down-failed-title": "Nem sikerült lejjebb mozgatni a torrent(ek)et a sorban",
+        "move-bottom-failed-title": "Nem sikerült a sor végére mozgatni a torrent(ek)et"
+      }
+    },
+    "qb": {
+      "warning": {
+        "connection-retry-title": "Kapcsolódási probléma",
+        "connection-retry-message": "Nem sikerült csatlakozni. Újrapróbálkozás..."
+      },
+      "error": {
+        "request-failed-title": "Sikertelen kérés"
       }
     }
   },
   "utils": {},
   "general": {
-    "error": {
-      "save-failed": "A beállítások mentése sikertelen."
-    },
     "button": {
       "close": "Bezárás",
       "browse": "Tallózás",
@@ -1623,6 +1758,13 @@
     "limit": {
       "global": "Globális korlát",
       "no-limit": "Nincs korlát"
+    },
+    "toast": {
+      "success": "Siker",
+      "error": "Hiba",
+      "warning": "Figyelmeztetés",
+      "info": "Infó",
+      "notification": "Értesítés"
     }
   },
   "language": {

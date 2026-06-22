@@ -1,5 +1,6 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { CommandBusService } from './command-bus.service';
 import { QbService } from './qb.service';
@@ -37,12 +38,16 @@ describe('TorrentCommandHandlerService', () => {
   let serverStore: { currentServerId: ReturnType<typeof signal<string | null>> };
   let torrentStore: { torrentsArray: ReturnType<typeof signal<any[]>> };
   let toastDanger: ReturnType<typeof vi.fn>;
+  let toastInfo: ReturnType<typeof vi.fn>;
   let commandBusEmit: ReturnType<typeof vi.fn>;
+  let translateService: { instant: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     commands$ = new Subject();
     commandBusEmit = vi.fn();
     toastDanger = vi.fn();
+    toastInfo = vi.fn();
+    translateService = { instant: vi.fn((key: string) => key) };
 
     qbService = {
       torrents: {
@@ -80,7 +85,8 @@ describe('TorrentCommandHandlerService', () => {
         { provide: SelectionStoreService, useValue: selectionStore },
         { provide: ServerStoreService, useValue: serverStore },
         { provide: TorrentStoreService, useValue: torrentStore },
-        { provide: ToastService, useValue: { danger: toastDanger } },
+        { provide: ToastService, useValue: { danger: toastDanger, info: toastInfo } },
+        { provide: TranslateService, useValue: translateService },
       ],
     });
 
@@ -111,7 +117,10 @@ describe('TorrentCommandHandlerService', () => {
     qbService.torrents.delete.mockRejectedValueOnce(new Error('network error'));
     commands$.next({ type: 'TORRENT_DELETE_CONFIRM', removeFiles: false });
     await flushPromises();
-    expect(toastDanger).toHaveBeenCalled();
+    expect(toastDanger).toHaveBeenCalledWith(
+      'network error',
+      'services.torrent-command-handler.error.delete-failed-title',
+    );
   });
 
   it('should not delete when no server is selected', async () => {
@@ -128,67 +137,177 @@ describe('TorrentCommandHandlerService', () => {
     expect(qbService.torrents.delete).not.toHaveBeenCalled();
   });
 
-  it('should call pauseTorrents on TORRENT_PAUSE', async () => {
+  it('should call pauseTorrents and show an info toast on TORRENT_PAUSE', async () => {
     commands$.next({ type: 'TORRENT_PAUSE' });
     await flushPromises();
     expect(qbService.torrents.pause).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
+    expect(toastInfo).toHaveBeenCalledWith('services.torrent-command-handler.toast.pausing');
   });
 
-  it('should call resumeTorrents on TORRENT_RESUME', async () => {
+  it('should show a danger toast with the raw error when pause fails', async () => {
+    qbService.torrents.pause.mockRejectedValueOnce(new Error('pause boom'));
+    commands$.next({ type: 'TORRENT_PAUSE' });
+    await flushPromises();
+    expect(toastDanger).toHaveBeenCalledWith(
+      'pause boom',
+      'services.torrent-command-handler.toast.pause-failed-title',
+    );
+  });
+
+  it('should call resumeTorrents and show an info toast on TORRENT_RESUME', async () => {
     commands$.next({ type: 'TORRENT_RESUME' });
     await flushPromises();
     expect(qbService.torrents.resume).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
+    expect(toastInfo).toHaveBeenCalledWith('services.torrent-command-handler.toast.resuming');
   });
 
-  it('should call pauseTorrents on TORRENT_PAUSE_ALL with all hashes', async () => {
+  it('should show a danger toast with the raw error when resume fails', async () => {
+    qbService.torrents.resume.mockRejectedValueOnce(new Error('resume boom'));
+    commands$.next({ type: 'TORRENT_RESUME' });
+    await flushPromises();
+    expect(toastDanger).toHaveBeenCalledWith(
+      'resume boom',
+      'services.torrent-command-handler.toast.resume-failed-title',
+    );
+  });
+
+  it('should call pauseTorrents and show an info toast on TORRENT_PAUSE_ALL', async () => {
     commands$.next({ type: 'TORRENT_PAUSE_ALL' });
     await flushPromises();
     expect(qbService.torrents.pause).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
+    expect(toastInfo).toHaveBeenCalledWith('services.torrent-command-handler.toast.pausing-all');
   });
 
-  it('should call resumeTorrents on TORRENT_RESUME_ALL with all hashes', async () => {
+  it('should show a danger toast with the raw error when pause-all fails', async () => {
+    qbService.torrents.pause.mockRejectedValueOnce(new Error('pause all boom'));
+    commands$.next({ type: 'TORRENT_PAUSE_ALL' });
+    await flushPromises();
+    expect(toastDanger).toHaveBeenCalledWith(
+      'pause all boom',
+      'services.torrent-command-handler.toast.pause-all-failed-title',
+    );
+  });
+
+  it('should call resumeTorrents and show an info toast on TORRENT_RESUME_ALL', async () => {
     commands$.next({ type: 'TORRENT_RESUME_ALL' });
     await flushPromises();
     expect(qbService.torrents.resume).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
+    expect(toastInfo).toHaveBeenCalledWith('services.torrent-command-handler.toast.resuming-all');
   });
 
-  it('should call topPrio on QUEUE_MOVE_TOP', async () => {
+  it('should show a danger toast with the raw error when resume-all fails', async () => {
+    qbService.torrents.resume.mockRejectedValueOnce(new Error('resume all boom'));
+    commands$.next({ type: 'TORRENT_RESUME_ALL' });
+    await flushPromises();
+    expect(toastDanger).toHaveBeenCalledWith(
+      'resume all boom',
+      'services.torrent-command-handler.toast.resume-all-failed-title',
+    );
+  });
+
+  it('should call topPrio and show no info toast on QUEUE_MOVE_TOP', async () => {
     commands$.next({ type: 'QUEUE_MOVE_TOP' });
     await flushPromises();
     expect(qbService.torrents.topPrio).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
+    expect(toastInfo).not.toHaveBeenCalled();
   });
 
-  it('should call increasePrio on QUEUE_MOVE_UP', async () => {
+  it('should show a danger toast when moving to top of queue fails', async () => {
+    qbService.torrents.topPrio.mockRejectedValueOnce(new Error('top boom'));
+    commands$.next({ type: 'QUEUE_MOVE_TOP' });
+    await flushPromises();
+    expect(toastDanger).toHaveBeenCalledWith(
+      'top boom',
+      'services.torrent-command-handler.toast.move-top-failed-title',
+    );
+  });
+
+  it('should call increasePrio and show no info toast on QUEUE_MOVE_UP', async () => {
     commands$.next({ type: 'QUEUE_MOVE_UP' });
     await flushPromises();
     expect(qbService.torrents.increasePrio).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
+    expect(toastInfo).not.toHaveBeenCalled();
   });
 
-  it('should call decreasePrio on QUEUE_MOVE_DOWN', async () => {
+  it('should show a danger toast when moving up in queue fails', async () => {
+    qbService.torrents.increasePrio.mockRejectedValueOnce(new Error('up boom'));
+    commands$.next({ type: 'QUEUE_MOVE_UP' });
+    await flushPromises();
+    expect(toastDanger).toHaveBeenCalledWith(
+      'up boom',
+      'services.torrent-command-handler.toast.move-up-failed-title',
+    );
+  });
+
+  it('should call decreasePrio and show no info toast on QUEUE_MOVE_DOWN', async () => {
     commands$.next({ type: 'QUEUE_MOVE_DOWN' });
     await flushPromises();
     expect(qbService.torrents.decreasePrio).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
+    expect(toastInfo).not.toHaveBeenCalled();
   });
 
-  it('should call bottomPrio on QUEUE_MOVE_BOTTOM', async () => {
+  it('should show a danger toast when moving down in queue fails', async () => {
+    qbService.torrents.decreasePrio.mockRejectedValueOnce(new Error('down boom'));
+    commands$.next({ type: 'QUEUE_MOVE_DOWN' });
+    await flushPromises();
+    expect(toastDanger).toHaveBeenCalledWith(
+      'down boom',
+      'services.torrent-command-handler.toast.move-down-failed-title',
+    );
+  });
+
+  it('should call bottomPrio and show no info toast on QUEUE_MOVE_BOTTOM', async () => {
     commands$.next({ type: 'QUEUE_MOVE_BOTTOM' });
     await flushPromises();
     expect(qbService.torrents.bottomPrio).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
+    expect(toastInfo).not.toHaveBeenCalled();
   });
 
-  it('should call reannounceTorrents on TORRENT_REANNOUNCE', async () => {
+  it('should show a danger toast when moving to bottom of queue fails', async () => {
+    qbService.torrents.bottomPrio.mockRejectedValueOnce(new Error('bottom boom'));
+    commands$.next({ type: 'QUEUE_MOVE_BOTTOM' });
+    await flushPromises();
+    expect(toastDanger).toHaveBeenCalledWith(
+      'bottom boom',
+      'services.torrent-command-handler.toast.move-bottom-failed-title',
+    );
+  });
+
+  it('should call reannounceTorrents and show an info toast on TORRENT_REANNOUNCE', async () => {
     commands$.next({ type: 'TORRENT_REANNOUNCE' });
     await flushPromises();
     expect(qbService.torrents.reannounce).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
+    expect(toastInfo).toHaveBeenCalledWith('services.torrent-command-handler.toast.reannouncing');
   });
 
-  it('should call recheckTorrents on TORRENT_RECHECK', async () => {
+  it('should show a danger toast with the raw error when reannounce fails', async () => {
+    qbService.torrents.reannounce.mockRejectedValueOnce(new Error('reannounce boom'));
+    commands$.next({ type: 'TORRENT_REANNOUNCE' });
+    await flushPromises();
+    expect(toastDanger).toHaveBeenCalledWith(
+      'reannounce boom',
+      'services.torrent-command-handler.toast.reannounce-failed-title',
+    );
+  });
+
+  it('should call recheckTorrents and show an info toast on TORRENT_RECHECK', async () => {
     commands$.next({ type: 'TORRENT_RECHECK' });
     await flushPromises();
     expect(qbService.torrents.recheck).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
+    expect(toastInfo).toHaveBeenCalledWith('services.torrent-command-handler.toast.rechecking');
   });
 
-  it('should call setSuperSeeding with inverted status on TORRENT_SUPER_SEEDING', async () => {
+  it('should show a danger toast with the raw error when recheck fails', async () => {
+    qbService.torrents.recheck.mockRejectedValueOnce(new Error('recheck boom'));
+    commands$.next({ type: 'TORRENT_RECHECK' });
+    await flushPromises();
+    expect(toastDanger).toHaveBeenCalledWith(
+      'recheck boom',
+      'services.torrent-command-handler.toast.recheck-failed-title',
+    );
+  });
+
+  it('should call setSuperSeeding with inverted status and no info toast on TORRENT_SUPER_SEEDING', async () => {
     commands$.next({ type: 'TORRENT_SUPER_SEEDING', status: false });
     await flushPromises();
     expect(qbService.torrents.setSuperSeeding).toHaveBeenCalledWith(
@@ -196,9 +315,30 @@ describe('TorrentCommandHandlerService', () => {
       ['hash1', 'hash2'],
       true,
     );
+    expect(toastInfo).not.toHaveBeenCalled();
   });
 
-  it('should call setForceStart on TORRENT_FORCE_RESUME', async () => {
+  it('should show "failed to enable" when enabling super seeding fails', async () => {
+    qbService.torrents.setSuperSeeding.mockRejectedValueOnce(new Error('super seeding boom'));
+    commands$.next({ type: 'TORRENT_SUPER_SEEDING', status: false });
+    await flushPromises();
+    expect(toastDanger).toHaveBeenCalledWith(
+      'super seeding boom',
+      'services.torrent-command-handler.toast.enable-super-seeding-failed-title',
+    );
+  });
+
+  it('should show "failed to disable" when disabling super seeding fails', async () => {
+    qbService.torrents.setSuperSeeding.mockRejectedValueOnce(new Error('super seeding boom'));
+    commands$.next({ type: 'TORRENT_SUPER_SEEDING', status: true });
+    await flushPromises();
+    expect(toastDanger).toHaveBeenCalledWith(
+      'super seeding boom',
+      'services.torrent-command-handler.toast.disable-super-seeding-failed-title',
+    );
+  });
+
+  it('should call setForceStart and show an info toast on TORRENT_FORCE_RESUME', async () => {
     commands$.next({ type: 'TORRENT_FORCE_RESUME' });
     await flushPromises();
     expect(qbService.torrents.setForceStart).toHaveBeenCalledWith(
@@ -206,15 +346,47 @@ describe('TorrentCommandHandlerService', () => {
       ['hash1', 'hash2'],
       true,
     );
+    expect(toastInfo).toHaveBeenCalledWith('services.torrent-command-handler.toast.force-resuming');
   });
 
-  it('should call setAutoManagement with inverted status on TORRENT_AUTO_TMM', async () => {
+  it('should show a danger toast with the raw error when force resume fails', async () => {
+    qbService.torrents.setForceStart.mockRejectedValueOnce(new Error('force resume boom'));
+    commands$.next({ type: 'TORRENT_FORCE_RESUME' });
+    await flushPromises();
+    expect(toastDanger).toHaveBeenCalledWith(
+      'force resume boom',
+      'services.torrent-command-handler.toast.force-resume-failed-title',
+    );
+  });
+
+  it('should call setAutoManagement with inverted status and no info toast on TORRENT_AUTO_TMM', async () => {
     commands$.next({ type: 'TORRENT_AUTO_TMM', status: true });
     await flushPromises();
     expect(qbService.torrents.setAutoManagement).toHaveBeenCalledWith(
       'server-1',
       ['hash1', 'hash2'],
       false,
+    );
+    expect(toastInfo).not.toHaveBeenCalled();
+  });
+
+  it('should show "failed to enable" when enabling auto-tmm fails', async () => {
+    qbService.torrents.setAutoManagement.mockRejectedValueOnce(new Error('auto tmm boom'));
+    commands$.next({ type: 'TORRENT_AUTO_TMM', status: false });
+    await flushPromises();
+    expect(toastDanger).toHaveBeenCalledWith(
+      'auto tmm boom',
+      'services.torrent-command-handler.toast.enable-auto-tmm-failed-title',
+    );
+  });
+
+  it('should show "failed to disable" when disabling auto-tmm fails', async () => {
+    qbService.torrents.setAutoManagement.mockRejectedValueOnce(new Error('auto tmm boom'));
+    commands$.next({ type: 'TORRENT_AUTO_TMM', status: true });
+    await flushPromises();
+    expect(toastDanger).toHaveBeenCalledWith(
+      'auto tmm boom',
+      'services.torrent-command-handler.toast.disable-auto-tmm-failed-title',
     );
   });
 

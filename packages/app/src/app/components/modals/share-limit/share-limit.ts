@@ -9,12 +9,13 @@ import {
 } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AutofocusDirective } from '../../../directives/autofocus';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
 import { LimitTargetType } from '../../../models/command.model';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
+import { ToastService } from '../../../services/toast.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { BbSpinner } from '../../bb-spinner/bb-spinner';
 import { ShareLimit as ShareLimitForm, ShareLimitValue } from '../../share-limit/share-limit';
@@ -39,6 +40,8 @@ export class ShareLimit implements OnInit {
   private readonly qbService = inject(QbService);
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly torrentStoreService = inject(TorrentStoreService);
+  private readonly toastService = inject(ToastService);
+  private readonly translateService = inject(TranslateService);
 
   readonly target = input<LimitTargetType>('torrent');
   readonly hashes = input<string[]>([]);
@@ -136,8 +139,12 @@ export class ShareLimit implements OnInit {
         );
       }
       this.activeModal.close();
-    } catch (error) {
+    } catch (error: any) {
       console.error(ShareLimit.name, 'handleSubmit', 'Failed to set share limits!', error);
+      this.toastService.danger(
+        error?.message ?? String(error),
+        this.translateService.instant('components.modals.share-limit.toast.set-failed-title'),
+      );
     } finally {
       this.saving.set(false);
     }

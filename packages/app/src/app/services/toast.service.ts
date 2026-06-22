@@ -3,6 +3,7 @@ import { ComponentPortal } from '@angular/cdk/portal';
 import { DestroyRef, Injectable, SecurityContext, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DomSanitizer } from '@angular/platform-browser';
+import { TranslateService } from '@ngx-translate/core';
 import { ToastOverlay } from '../components/toast-overlay/toast-overlay';
 import { GeneralSettings, ToastPosition } from '../models/general-settings.model';
 import { Toast, ToastType } from '../models/toast.model';
@@ -22,6 +23,7 @@ export class ToastService {
   private readonly sanitizer = inject(DomSanitizer);
   private readonly themeService = inject(ThemeService);
   private readonly generalSettingsService = inject(GeneralSettingsService);
+  private readonly translateService = inject(TranslateService);
   private readonly destroyRef = inject(DestroyRef);
 
   private overlayRef?: OverlayRef;
@@ -100,7 +102,7 @@ export class ToastService {
 
     const toast: Toast = {
       id: crypto.randomUUID(),
-      title: opts.title ?? 'Notification',
+      title: opts.title ?? this.translateService.instant('general.toast.notification'),
       html: this.sanitizeHtml(html),
       type: opts.type ?? 'info',
       duration: opts.duration ?? 6000,
@@ -202,24 +204,36 @@ export class ToastService {
     return this.showHtml(html, { type: 'secondary', title, duration });
   }
 
-  success(html: string, title = 'Success', duration = 6000): string {
-    return this.showHtml(html, { type: 'success', title, duration });
+  success(html: string, title?: string, duration = 6000): string {
+    return this.showHtml(html, {
+      type: 'success',
+      title: title ?? this.translateService.instant('general.toast.success'),
+      duration,
+    });
   }
 
-  error(html: string, title = 'Error', duration = 6000): string {
-    return this.showHtml(html, { type: 'danger', title, duration });
+  danger(html: string, title?: string, duration = 6000): string {
+    return this.showHtml(html, {
+      type: 'danger',
+      title: title ?? this.translateService.instant('general.toast.error'),
+      duration,
+    });
   }
 
-  danger(html: string, title = 'Error', duration = 6000): string {
-    return this.showHtml(html, { type: 'danger', title, duration });
+  warning(html: string, title?: string, duration = 6000): string {
+    return this.showHtml(html, {
+      type: 'warning',
+      title: title ?? this.translateService.instant('general.toast.warning'),
+      duration,
+    });
   }
 
-  warning(html: string, title = 'Warning', duration = 6000): string {
-    return this.showHtml(html, { type: 'warning', title, duration });
-  }
-
-  info(html: string, title = 'Info', duration = 6000): string {
-    return this.showHtml(html, { type: 'info', title, duration });
+  info(html: string, title?: string, duration = 6000): string {
+    return this.showHtml(html, {
+      type: 'info',
+      title: title ?? this.translateService.instant('general.toast.info'),
+      duration,
+    });
   }
 
   light(html: string, title: string, duration = 6000): string {

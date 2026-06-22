@@ -27,7 +27,7 @@ import {
   faX,
 } from '@fortawesome/free-solid-svg-icons';
 import { NgbCollapse, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TimeagoPipe } from 'ngx-timeago';
 import { take, timer } from 'rxjs';
 import { TooltipOverflow } from '../../../../directives/tooltip-overflow';
@@ -99,6 +99,7 @@ export class General implements TorrentDetailTabComponent, OnInit {
   private readonly pathService = inject(PathService);
   private readonly clipboard = inject(Clipboard);
   private readonly toastService = inject(ToastService);
+  private readonly translateService = inject(TranslateService);
   private readonly destroyRef = inject(DestroyRef);
 
   private settings: WritableSignal<GeneralSettings | null> = signal(null);
@@ -250,42 +251,106 @@ export class General implements TorrentDetailTabComponent, OnInit {
     this.commandBusService.emit({ type: 'UI_RENAME_TORRENT', torrent: this.torrent()!.data });
   }
 
-  public resume(): void {
-    this.toastService.info('Resuming.');
-    this.qbService.torrents.resume(this.serverStoreService.currentServerId() as string, [
-      this.hash(),
-    ]);
-  }
-
-  public pause(): void {
-    this.toastService.info('Pausing.');
-    this.qbService.torrents.pause(this.serverStoreService.currentServerId() as string, [
-      this.hash(),
-    ]);
-  }
-
-  public forceResume(): void {
-    this.toastService.info('Forcing resume.');
-    this.qbService.torrents.setForceStart(
-      this.serverStoreService.currentServerId() as string,
-      [this.hash()],
-      true,
+  public async resume(): Promise<void> {
+    this.toastService.info(
+      this.translateService.instant('components.modals.torrent-details.general.toast.resuming'),
     );
+    try {
+      await this.qbService.torrents.resume(this.serverStoreService.currentServerId() as string, [
+        this.hash(),
+      ]);
+    } catch (error: any) {
+      this.toastService.danger(
+        error?.message ?? String(error),
+        this.translateService.instant(
+          'components.modals.torrent-details.general.toast.resume-failed',
+        ),
+      );
+    }
   }
 
-  public clearDownloadLimit(): void {
-    this.toastService.info('Clearing download limit.');
-    this.qbService.torrents.setDownloadLimit(
-      this.serverStoreService.currentServerId() as string,
-      0,
-      [this.hash()],
+  public async pause(): Promise<void> {
+    this.toastService.info(
+      this.translateService.instant('components.modals.torrent-details.general.toast.pausing'),
     );
+    try {
+      await this.qbService.torrents.pause(this.serverStoreService.currentServerId() as string, [
+        this.hash(),
+      ]);
+    } catch (error: any) {
+      this.toastService.danger(
+        error?.message ?? String(error),
+        this.translateService.instant(
+          'components.modals.torrent-details.general.toast.pause-failed',
+        ),
+      );
+    }
   }
-  public clearUploadLimit(): void {
-    this.toastService.info('Clearing upload limit.');
-    this.qbService.torrents.setUploadLimit(this.serverStoreService.currentServerId() as string, 0, [
-      this.hash(),
-    ]);
+
+  public async forceResume(): Promise<void> {
+    this.toastService.info(
+      this.translateService.instant(
+        'components.modals.torrent-details.general.toast.force-resuming',
+      ),
+    );
+    try {
+      await this.qbService.torrents.setForceStart(
+        this.serverStoreService.currentServerId() as string,
+        [this.hash()],
+        true,
+      );
+    } catch (error: any) {
+      this.toastService.danger(
+        error?.message ?? String(error),
+        this.translateService.instant(
+          'components.modals.torrent-details.general.toast.force-resume-failed',
+        ),
+      );
+    }
+  }
+
+  public async clearDownloadLimit(): Promise<void> {
+    this.toastService.info(
+      this.translateService.instant(
+        'components.modals.torrent-details.general.toast.clearing-download-limit',
+      ),
+    );
+    try {
+      await this.qbService.torrents.setDownloadLimit(
+        this.serverStoreService.currentServerId() as string,
+        0,
+        [this.hash()],
+      );
+    } catch (error: any) {
+      this.toastService.danger(
+        error?.message ?? String(error),
+        this.translateService.instant(
+          'components.modals.torrent-details.general.toast.clear-download-limit-failed',
+        ),
+      );
+    }
+  }
+
+  public async clearUploadLimit(): Promise<void> {
+    this.toastService.info(
+      this.translateService.instant(
+        'components.modals.torrent-details.general.toast.clearing-upload-limit',
+      ),
+    );
+    try {
+      await this.qbService.torrents.setUploadLimit(
+        this.serverStoreService.currentServerId() as string,
+        0,
+        [this.hash()],
+      );
+    } catch (error: any) {
+      this.toastService.danger(
+        error?.message ?? String(error),
+        this.translateService.instant(
+          'components.modals.torrent-details.general.toast.clear-upload-limit-failed',
+        ),
+      );
+    }
   }
 
   public openShareLimitsModal(): void {
@@ -296,44 +361,98 @@ export class General implements TorrentDetailTabComponent, OnInit {
     });
   }
 
-  public clearRatioLimit(): void {
-    const t = this.torrent()!.data;
-    this.qbService.torrents.setShareLimits(
-      this.serverStoreService.currentServerId() as string,
-      [this.hash()],
-      -1,
-      t.seeding_time_limit,
-      t.inactive_seeding_time_limit,
+  public async clearRatioLimit(): Promise<void> {
+    this.toastService.info(
+      this.translateService.instant(
+        'components.modals.torrent-details.general.toast.clearing-ratio-limit',
+      ),
     );
+    const t = this.torrent()!.data;
+    try {
+      await this.qbService.torrents.setShareLimits(
+        this.serverStoreService.currentServerId() as string,
+        [this.hash()],
+        -1,
+        t.seeding_time_limit,
+        t.inactive_seeding_time_limit,
+      );
+    } catch (error: any) {
+      this.toastService.danger(
+        error?.message ?? String(error),
+        this.translateService.instant(
+          'components.modals.torrent-details.general.toast.clear-ratio-limit-failed',
+        ),
+      );
+    }
   }
 
-  public clearSeedingTimeLimit(): void {
-    const t = this.torrent()!.data;
-    this.qbService.torrents.setShareLimits(
-      this.serverStoreService.currentServerId() as string,
-      [this.hash()],
-      t.ratio_limit,
-      -1,
-      t.inactive_seeding_time_limit,
+  public async clearSeedingTimeLimit(): Promise<void> {
+    this.toastService.info(
+      this.translateService.instant(
+        'components.modals.torrent-details.general.toast.clearing-seeding-time-limit',
+      ),
     );
+    const t = this.torrent()!.data;
+    try {
+      await this.qbService.torrents.setShareLimits(
+        this.serverStoreService.currentServerId() as string,
+        [this.hash()],
+        t.ratio_limit,
+        -1,
+        t.inactive_seeding_time_limit,
+      );
+    } catch (error: any) {
+      this.toastService.danger(
+        error?.message ?? String(error),
+        this.translateService.instant(
+          'components.modals.torrent-details.general.toast.clear-seeding-time-limit-failed',
+        ),
+      );
+    }
   }
 
-  public clearInactiveSeedingTimeLimit(): void {
-    const t = this.torrent()!.data;
-    this.qbService.torrents.setShareLimits(
-      this.serverStoreService.currentServerId() as string,
-      [this.hash()],
-      t.ratio_limit,
-      t.seeding_time_limit,
-      -1,
+  public async clearInactiveSeedingTimeLimit(): Promise<void> {
+    this.toastService.info(
+      this.translateService.instant(
+        'components.modals.torrent-details.general.toast.clearing-inactive-seeding-time-limit',
+      ),
     );
+    const t = this.torrent()!.data;
+    try {
+      await this.qbService.torrents.setShareLimits(
+        this.serverStoreService.currentServerId() as string,
+        [this.hash()],
+        t.ratio_limit,
+        t.seeding_time_limit,
+        -1,
+      );
+    } catch (error: any) {
+      this.toastService.danger(
+        error?.message ?? String(error),
+        this.translateService.instant(
+          'components.modals.torrent-details.general.toast.clear-inactive-seeding-time-limit-failed',
+        ),
+      );
+    }
   }
 
-  public forceReannounce(): void {
-    this.toastService.info('Reannouncing.');
-    this.qbService.torrents.reannounce(this.serverStoreService.currentServerId() as string, [
-      this.hash(),
-    ]);
+  public async forceReannounce(): Promise<void> {
+    this.toastService.info(
+      this.translateService.instant('components.modals.torrent-details.general.toast.reannouncing'),
+    );
+    try {
+      await this.qbService.torrents.reannounce(
+        this.serverStoreService.currentServerId() as string,
+        [this.hash()],
+      );
+    } catch (error: any) {
+      this.toastService.danger(
+        error?.message ?? String(error),
+        this.translateService.instant(
+          'components.modals.torrent-details.general.toast.reannounce-failed',
+        ),
+      );
+    }
   }
 
   public changeCategory(): void {
@@ -344,11 +463,25 @@ export class General implements TorrentDetailTabComponent, OnInit {
     });
   }
 
-  public removeCategory(): void {
-    this.toastService.info('Removing category.');
-    this.qbService.torrents.clearCategory(this.serverStoreService.currentServerId() as string, [
-      this.hash(),
-    ]);
+  public async removeCategory(): Promise<void> {
+    this.toastService.info(
+      this.translateService.instant(
+        'components.modals.torrent-details.general.toast.removing-category',
+      ),
+    );
+    try {
+      await this.qbService.torrents.clearCategory(
+        this.serverStoreService.currentServerId() as string,
+        [this.hash()],
+      );
+    } catch (error: any) {
+      this.toastService.danger(
+        error?.message ?? String(error),
+        this.translateService.instant(
+          'components.modals.torrent-details.general.toast.remove-category-failed',
+        ),
+      );
+    }
   }
 
   public changeTags(): void {
@@ -359,15 +492,28 @@ export class General implements TorrentDetailTabComponent, OnInit {
     });
   }
 
-  public removeAllTags(): void {
-    this.toastService.info('Removing all tags.');
-    this.qbService.torrents.removeTags(
-      this.serverStoreService.currentServerId() as string,
-      [this.hash()],
-      this.torrent()!
-        .data.tags.split(',')
-        .map((t) => t.trim()),
+  public async removeAllTags(): Promise<void> {
+    this.toastService.info(
+      this.translateService.instant(
+        'components.modals.torrent-details.general.toast.removing-all-tags',
+      ),
     );
+    try {
+      await this.qbService.torrents.removeTags(
+        this.serverStoreService.currentServerId() as string,
+        [this.hash()],
+        this.torrent()!
+          .data.tags.split(',')
+          .map((t) => t.trim()),
+      );
+    } catch (error: any) {
+      this.toastService.danger(
+        error?.message ?? String(error),
+        this.translateService.instant(
+          'components.modals.torrent-details.general.toast.remove-all-tags-failed',
+        ),
+      );
+    }
   }
 
   public setLocation(): void {
@@ -383,7 +529,11 @@ export class General implements TorrentDetailTabComponent, OnInit {
     const hash = this.hash();
 
     if (!remotePath) {
-      this.toastService.danger('Failed to resolve local path!');
+      this.toastService.danger(
+        this.translateService.instant(
+          'components.modals.torrent-details.general.toast.local-path-failed',
+        ),
+      );
       return;
     }
 
@@ -394,8 +544,16 @@ export class General implements TorrentDetailTabComponent, OnInit {
     this.commandBusService.emit({ type: 'UI_TORRENT_DELETE_REQUEST' });
   }
 
-  public toClipboard(field: string, value: string): void {
-    this.toastService.info(`Copied ${field} to clipboard.`);
+  public toClipboard(fieldKey: string, value: string): void {
+    const field = this.translateService.instant(
+      `components.modals.torrent-details.general.${fieldKey}`,
+    );
+    this.toastService.info(
+      this.translateService.instant(
+        'components.modals.torrent-details.general.toast.copied-to-clipboard',
+        { field },
+      ),
+    );
     this.clipboard.copy(value);
   }
 

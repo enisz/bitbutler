@@ -82,12 +82,20 @@ export class TorrentExists {
   public async deleteTorrentFile(): Promise<void> {
     const path = this.originalPath();
     if (!path) return;
-    await window.bitbutler.torrent.deleteFile({ path });
-    this.fileDeleted.set(true);
-    this.toastService.success(
-      this.translateService.instant('components.modals.torrent-exists.toast.deleted'),
-      this.translateService.instant('components.modals.torrent-exists.title'),
-    );
+    try {
+      await window.bitbutler.torrent.deleteFile({ path });
+      this.fileDeleted.set(true);
+      this.toastService.success(
+        this.translateService.instant('components.modals.torrent-exists.toast.deleted'),
+        this.translateService.instant('components.modals.torrent-exists.toast.deleted-title'),
+      );
+    } catch (err: any) {
+      console.error(TorrentExists.name, 'deleteTorrentFile', 'Failed to delete torrent file', err);
+      this.toastService.danger(
+        err?.message ?? String(err),
+        this.translateService.instant('components.modals.torrent-exists.toast.delete-failed-title'),
+      );
+    }
   }
 
   public openDetails(): void {

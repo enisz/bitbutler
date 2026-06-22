@@ -4,6 +4,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Torrent } from '../../../models/torrent.model';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
+import { ToastService } from '../../../services/toast.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { TransferLimit } from './transfer-limit';
 
@@ -17,6 +18,7 @@ describe('TransferLimit', () => {
   let fixture: ComponentFixture<TransferLimit>;
   let mockActiveModal: Partial<NgbActiveModal>;
   let mockQbService: any;
+  let mockToastService: { danger: ReturnType<typeof vi.fn> };
   let torrentsMap: ReturnType<typeof makeStore>;
 
   beforeEach(async () => {
@@ -34,6 +36,8 @@ describe('TransferLimit', () => {
       },
     };
 
+    mockToastService = { danger: vi.fn() };
+
     torrentsMap = makeStore([makeTorrent()]);
 
     await TestBed.configureTestingModule({
@@ -46,6 +50,7 @@ describe('TransferLimit', () => {
           useValue: { torrentsMap },
         },
         { provide: QbService, useValue: mockQbService },
+        { provide: ToastService, useValue: mockToastService },
       ],
     }).compileComponents();
 
@@ -166,6 +171,34 @@ describe('TransferLimit', () => {
         1024 * 1024,
         ['abc123'],
       );
+    });
+
+    it('shows a danger toast with the raw error when setUploadLimit fails', async () => {
+      mockQbService.torrents.setUploadLimit.mockRejectedValueOnce(new Error('disk full'));
+      component.form.controls.transferRateLimits.setValue({
+        uploadLimit: 512,
+        downloadLimit: 1024,
+      });
+
+      await component.handleSubmit();
+
+      expect(mockToastService.danger).toHaveBeenCalledWith(
+        'disk full',
+        'components.modals.transfer-limit.toast.set-failed-title',
+      );
+    });
+
+    it('does not close the modal when saving fails', async () => {
+      mockQbService.torrents.setUploadLimit.mockRejectedValueOnce(new Error('disk full'));
+      component.form.controls.transferRateLimits.setValue({
+        uploadLimit: 512,
+        downloadLimit: 1024,
+      });
+
+      await component.handleSubmit();
+
+      expect(mockActiveModal.close).not.toHaveBeenCalled();
+      expect(component.saving()).toBe(false);
     });
   });
 });

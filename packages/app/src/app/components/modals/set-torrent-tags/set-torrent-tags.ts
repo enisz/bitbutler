@@ -10,11 +10,12 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
 import { Torrent } from '../../../models/torrent.model';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
+import { ToastService } from '../../../services/toast.service';
 import { TagSelect } from '../../tag-select/tag-select';
 
 @Component({
@@ -30,6 +31,8 @@ export class SetTorrentTags implements OnInit {
 
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly qbService = inject(QbService);
+  private readonly toastService = inject(ToastService);
+  private readonly translateService = inject(TranslateService);
   public readonly activeModal = inject(NgbActiveModal);
 
   public readonly selected = computed(() => this.hashes().length);
@@ -92,8 +95,12 @@ export class SetTorrentTags implements OnInit {
       }
 
       this.activeModal.close();
-    } catch (error) {
+    } catch (error: any) {
       console.error(SetTorrentTags.name, 'handleSubmit', 'Failed to set torrent tags!', error);
+      this.toastService.danger(
+        error?.message ?? String(error),
+        this.translateService.instant('components.modals.set-torrent-tags.toast.set-failed-title'),
+      );
     } finally {
       this.saving.set(false);
     }

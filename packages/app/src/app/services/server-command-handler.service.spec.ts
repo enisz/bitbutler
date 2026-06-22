@@ -1,5 +1,6 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { CommandBusService } from './command-bus.service';
 import { ServerCommandHandlerService } from './server-command-handler.service';
@@ -15,12 +16,14 @@ describe('ServerCommandHandlerService', () => {
   let serverStoreRefresh: ReturnType<typeof vi.fn>;
   let toastSuccess: ReturnType<typeof vi.fn>;
   let toastInfo: ReturnType<typeof vi.fn>;
+  let translateService: { instant: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     commands$ = new Subject();
     serverStoreRefresh = vi.fn().mockResolvedValue(undefined);
     toastSuccess = vi.fn();
     toastInfo = vi.fn();
+    translateService = { instant: vi.fn((key: string) => key) };
 
     TestBed.configureTestingModule({
       providers: [
@@ -40,6 +43,7 @@ describe('ServerCommandHandlerService', () => {
           useValue: { delete: vi.fn().mockResolvedValue(undefined) },
         },
         { provide: ToastService, useValue: { success: toastSuccess, info: toastInfo } },
+        { provide: TranslateService, useValue: translateService },
       ],
     });
 
@@ -50,7 +54,10 @@ describe('ServerCommandHandlerService', () => {
   it('should show success toast after SERVER_ADDED', async () => {
     commands$.next({ type: 'SERVER_ADDED', id: '1' });
     await flushPromises();
-    expect(toastSuccess).toHaveBeenCalledWith('Server Test Server added!');
+    expect(toastSuccess).toHaveBeenCalledWith(
+      '"Test Server"',
+      'services.server-command-handler.success.added-title',
+    );
   });
 
   it('should call select after SERVER_ADDED', async () => {
@@ -60,22 +67,31 @@ describe('ServerCommandHandlerService', () => {
     expect(select).toHaveBeenCalledWith('1');
   });
 
-  it('should fall back to "New Host" when added server is not found', async () => {
+  it('should fall back to the generic "added" toast when added server is not found', async () => {
     commands$.next({ type: 'SERVER_ADDED', id: 'unknown' });
     await flushPromises();
-    expect(toastSuccess).toHaveBeenCalledWith('Server New Host added!');
+    expect(toastSuccess).toHaveBeenCalledWith(
+      'services.server-command-handler.success.added-fallback',
+      'services.server-command-handler.success.added-title',
+    );
   });
 
   it('should show info toast after SERVER_UPDATED', async () => {
     commands$.next({ type: 'SERVER_UPDATED', id: '1' });
     await flushPromises();
-    expect(toastInfo).toHaveBeenCalledWith('Server Test Server updated!');
+    expect(toastInfo).toHaveBeenCalledWith(
+      '"Test Server"',
+      'services.server-command-handler.info.updated-title',
+    );
   });
 
   it('should show info toast after SERVER_DELETED', async () => {
     commands$.next({ type: 'SERVER_DELETED', id: '1' });
     await flushPromises();
-    expect(toastInfo).toHaveBeenCalledWith('Server Test Server deleted.');
+    expect(toastInfo).toHaveBeenCalledWith(
+      '"Test Server"',
+      'services.server-command-handler.info.deleted-title',
+    );
   });
 
   it('should not crash the subscription if a command throws', async () => {

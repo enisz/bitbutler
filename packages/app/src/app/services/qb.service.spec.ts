@@ -122,4 +122,16 @@ describe('QbService', () => {
       }),
     );
   });
+
+  it('should throw HttpError when clearing the category fails', async () => {
+    vi.spyOn(service, 'request').mockResolvedValue({
+      ok: false,
+      status: 409,
+      statusText: 'Conflict',
+    } as any);
+
+    await expect(service.torrents.clearCategory('server-1', ['hash1'])).rejects.toThrow(
+      'Failed to clear category',
+    );
+  });
 });

@@ -1,6 +1,7 @@
 import { Overlay } from '@angular/cdk/overlay';
 import { TestBed } from '@angular/core/testing';
 import { DomSanitizer } from '@angular/platform-browser';
+import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { GeneralSettingsService } from './general-settings.service';
 import { ThemeService } from './theme.service';
@@ -12,6 +13,7 @@ describe('ToastService - showText()', () => {
   let mockGeneralSettings: any;
   let mockThemeService: any;
   let mockSanitizer: any;
+  let mockTranslate: { instant: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     mockOverlay = {
@@ -52,6 +54,8 @@ describe('ToastService - showText()', () => {
       sanitize: vi.fn().mockImplementation((_ctx: any, html: string) => html),
     };
 
+    mockTranslate = { instant: vi.fn((key: string) => key) };
+
     TestBed.configureTestingModule({
       providers: [
         ToastService,
@@ -59,6 +63,7 @@ describe('ToastService - showText()', () => {
         { provide: DomSanitizer, useValue: mockSanitizer },
         { provide: GeneralSettingsService, useValue: mockGeneralSettings },
         { provide: ThemeService, useValue: mockThemeService },
+        { provide: TranslateService, useValue: mockTranslate },
       ],
     });
 
@@ -122,6 +127,24 @@ describe('ToastService - showText()', () => {
     expect(showHtmlSpy).toHaveBeenCalledWith(
       expect.any(String),
       expect.objectContaining({ type: 'light' }),
+    );
+  });
+
+  it('should use the translated default title for success()', () => {
+    const showHtmlSpy = vi.spyOn(service, 'showHtml');
+    service.success('<b>msg</b>');
+    expect(showHtmlSpy).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ title: 'general.toast.success' }),
+    );
+  });
+
+  it('should use the provided title instead of the translated default', () => {
+    const showHtmlSpy = vi.spyOn(service, 'showHtml');
+    service.success('<b>msg</b>', 'Custom Title');
+    expect(showHtmlSpy).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ title: 'Custom Title' }),
     );
   });
 });

@@ -238,7 +238,11 @@ export class UiCommandHandlerService {
 
           case 'UI_OPEN_DESTINATION':
             if (!command.remotePath) {
-              this.toastService.danger('Remote Path not provided!');
+              this.toastService.danger(
+                this.translateService.instant(
+                  'services.ui-command-handler.error.remote-path-missing',
+                ),
+              );
               break;
             }
 
@@ -253,16 +257,30 @@ export class UiCommandHandlerService {
                 const singleFile = contents.length === 1;
 
                 if (!path) {
-                  this.toastService.danger('Could not resolve local path!');
+                  this.toastService.danger(
+                    this.translateService.instant(
+                      'services.ui-command-handler.error.local-path-unresolved',
+                    ),
+                  );
                   return;
                 }
 
                 if (singleFile) {
                   this.electronService.showItemInFolder(path);
-                  this.toastService.info('Showing file in folder ' + path);
+                  this.toastService.info(
+                    `"${path}"`,
+                    this.translateService.instant(
+                      'services.ui-command-handler.info.showing-file-title',
+                    ),
+                  );
                 } else {
                   this.electronService.openPath(path);
-                  this.toastService.info('Opening folder ' + path);
+                  this.toastService.info(
+                    `"${path}"`,
+                    this.translateService.instant(
+                      'services.ui-command-handler.info.opening-folder-title',
+                    ),
+                  );
                 }
               })
               .catch((error: any) => {
@@ -410,9 +428,10 @@ export class UiCommandHandlerService {
         err,
       );
       this.toastService.danger(
-        this.translateService.instant('services.menu-bar-command-handler.error.failed-to-connect', {
-          name,
-        }),
+        `"${name}"`,
+        this.translateService.instant(
+          'services.menu-bar-command-handler.error.failed-to-connect-title',
+        ),
       );
       this.serverService.setActive(this.serverStoreService.currentServerId());
     } finally {

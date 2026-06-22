@@ -4,6 +4,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Torrent } from '../../../models/torrent.model';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
+import { ToastService } from '../../../services/toast.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { ShareLimit } from './share-limit';
 
@@ -24,6 +25,7 @@ describe('ShareLimit', () => {
   let fixture: ComponentFixture<ShareLimit>;
   let mockActiveModal: Partial<NgbActiveModal>;
   let mockQbService: any;
+  let mockToastService: { danger: ReturnType<typeof vi.fn> };
   let torrentsMap: ReturnType<typeof makeStore>;
 
   beforeEach(async () => {
@@ -44,6 +46,7 @@ describe('ShareLimit', () => {
         setShareLimits: vi.fn().mockResolvedValue(undefined),
       },
     };
+    mockToastService = { danger: vi.fn() };
 
     torrentsMap = makeStore([makeTorrent()]);
 
@@ -57,6 +60,7 @@ describe('ShareLimit', () => {
           useValue: { torrentsMap },
         },
         { provide: QbService, useValue: mockQbService },
+        { provide: ToastService, useValue: mockToastService },
       ],
     }).compileComponents();
 
@@ -252,6 +256,19 @@ describe('ShareLimit', () => {
         1.5,
         -1,
         -1,
+      );
+    });
+
+    it('shows a danger toast with the raw error when setShareLimits fails', async () => {
+      fixture.componentRef.setInput('target', 'torrent');
+      fixture.componentRef.setInput('hashes', ['abc123']);
+      mockQbService.torrents.setShareLimits.mockRejectedValueOnce(new Error('disk full'));
+
+      await component.handleSubmit();
+
+      expect(mockToastService.danger).toHaveBeenCalledWith(
+        'disk full',
+        'components.modals.share-limit.toast.set-failed-title',
       );
     });
   });

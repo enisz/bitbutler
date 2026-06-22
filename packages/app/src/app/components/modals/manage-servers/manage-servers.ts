@@ -98,9 +98,10 @@ export class ManageServers {
       this.activeModal.dismiss();
     } catch (err) {
       this.toastService.danger(
-        this.translateService.instant('services.menu-bar-command-handler.error.failed-to-connect', {
-          name: server.name || server.host,
-        }),
+        `"${server.name || server.host}"`,
+        this.translateService.instant(
+          'services.menu-bar-command-handler.error.failed-to-connect-title',
+        ),
       );
     } finally {
       this.connectingId.set(null);

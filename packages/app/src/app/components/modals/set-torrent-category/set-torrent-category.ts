@@ -10,11 +10,12 @@ import {
 } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
 import { Torrent } from '../../../models/torrent.model';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
+import { ToastService } from '../../../services/toast.service';
 import { CategorySelect } from '../../category-select/category-select';
 
 @Component({
@@ -39,6 +40,8 @@ export class SetTorrentCategory implements OnInit {
   private readonly serverStoreService = inject(ServerStoreService);
   public readonly activeModal = inject(NgbActiveModal);
   public readonly qbService = inject(QbService);
+  private readonly toastService = inject(ToastService);
+  private readonly translateService = inject(TranslateService);
 
   private readonly categorySelect = viewChild(CategorySelect);
 
@@ -66,12 +69,18 @@ export class SetTorrentCategory implements OnInit {
     try {
       await this.qbService.torrents.setCategory(serverId, this.hashes(), category);
       this.activeModal.close();
-    } catch (error) {
+    } catch (error: any) {
       console.error(
         SetTorrentCategory.name,
         'handleSubmit',
         'Failed to set torrent category!',
         error,
+      );
+      this.toastService.danger(
+        error?.message ?? String(error),
+        this.translateService.instant(
+          'components.modals.set-torrent-category.toast.set-failed-title',
+        ),
       );
     } finally {
       this.saving = false;
