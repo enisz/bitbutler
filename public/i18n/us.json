@@ -1633,8 +1633,12 @@
       "toast": {
         "pausing": "Pausing {{count}} torrent(s)…",
         "pause-failed-title": "Failed to Pause Torrent(s)",
+        "pausing-all": "Pausing all torrents…",
+        "pause-all-failed-title": "Failed to Pause All Torrents",
         "resuming": "Resuming {{count}} torrent(s)…",
-        "resume-failed-title": "Failed to Resume Torrent(s)"
+        "resume-failed-title": "Failed to Resume Torrent(s)",
+        "resuming-all": "Resuming all torrents…",
+        "resume-all-failed-title": "Failed to Resume All Torrents"
       }
     },
     "qb": {

@@ -171,16 +171,38 @@ describe('TorrentCommandHandlerService', () => {
     );
   });
 
-  it('should call pauseTorrents on TORRENT_PAUSE_ALL with all hashes', async () => {
+  it('should call pauseTorrents and show an info toast on TORRENT_PAUSE_ALL', async () => {
     commands$.next({ type: 'TORRENT_PAUSE_ALL' });
     await flushPromises();
     expect(qbService.torrents.pause).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
+    expect(toastInfo).toHaveBeenCalledWith('services.torrent-command-handler.toast.pausing-all');
   });
 
-  it('should call resumeTorrents on TORRENT_RESUME_ALL with all hashes', async () => {
+  it('should show a danger toast with the raw error when pause-all fails', async () => {
+    qbService.torrents.pause.mockRejectedValueOnce(new Error('pause all boom'));
+    commands$.next({ type: 'TORRENT_PAUSE_ALL' });
+    await flushPromises();
+    expect(toastDanger).toHaveBeenCalledWith(
+      'pause all boom',
+      'services.torrent-command-handler.toast.pause-all-failed-title',
+    );
+  });
+
+  it('should call resumeTorrents and show an info toast on TORRENT_RESUME_ALL', async () => {
     commands$.next({ type: 'TORRENT_RESUME_ALL' });
     await flushPromises();
     expect(qbService.torrents.resume).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
+    expect(toastInfo).toHaveBeenCalledWith('services.torrent-command-handler.toast.resuming-all');
+  });
+
+  it('should show a danger toast with the raw error when resume-all fails', async () => {
+    qbService.torrents.resume.mockRejectedValueOnce(new Error('resume all boom'));
+    commands$.next({ type: 'TORRENT_RESUME_ALL' });
+    await flushPromises();
+    expect(toastDanger).toHaveBeenCalledWith(
+      'resume all boom',
+      'services.torrent-command-handler.toast.resume-all-failed-title',
+    );
   });
 
   it('should call topPrio on QUEUE_MOVE_TOP', async () => {
