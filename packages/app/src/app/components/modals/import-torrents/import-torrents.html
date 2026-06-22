@@ -306,8 +306,11 @@
               id="sm-paused"
               value="paused"
             />
-            <label class="btn btn-outline-secondary" for="sm-paused">
-              {{ 'components.modals.import-torrents.start-mode.paused' | translate }}
+            <label class="btn btn-outline-secondary btn-split" for="sm-paused">
+              <bb-btn-content
+                [icon]="icons.faPause"
+                [text]="'components.modals.import-torrents.start-mode.paused' | translate"
+              ></bb-btn-content>
             </label>
             <input
               type="radio"
@@ -316,8 +319,11 @@
               id="sm-active"
               value="active"
             />
-            <label class="btn btn-outline-secondary" for="sm-active">
-              {{ 'components.modals.import-torrents.start-mode.active' | translate }}
+            <label class="btn btn-outline-secondary btn-split" for="sm-active">
+              <bb-btn-content
+                [icon]="icons.faPlay"
+                [text]="'components.modals.import-torrents.start-mode.active' | translate"
+              ></bb-btn-content>
             </label>
             <input
               type="radio"
@@ -326,8 +332,11 @@
               id="sm-all"
               value="all"
             />
-            <label class="btn btn-outline-secondary" for="sm-all">
-              {{ 'components.modals.import-torrents.start-mode.all' | translate }}
+            <label class="btn btn-outline-secondary btn-split" for="sm-all">
+              <bb-btn-content
+                [icon]="icons.faAsterisk"
+                [text]="'components.modals.import-torrents.start-mode.all' | translate"
+              ></bb-btn-content>
             </label>
           </div>
           <div class="small text-body-secondary">{{ startModeHint() | translate }}</div>
@@ -371,19 +380,31 @@
 
 <div class="modal-footer">
   @if (isRunning()) {
-    <button type="button" class="btn btn-link" (click)="cancelImport()">
-      {{ 'general.button.cancel' | translate }}
+    <button type="button" class="btn btn-link btn-split" (click)="cancelImport()">
+      <bb-btn-content
+        [icon]="icons.faXmark"
+        [text]="'general.button.cancel' | translate"
+      ></bb-btn-content>
     </button>
   } @else if (isDone() || isError()) {
-    <button type="button" class="btn btn-link" (click)="close()">
-      {{ 'general.button.close' | translate }}
+    <button type="button" class="btn btn-link btn-split" (click)="close()">
+      <bb-btn-content
+        [icon]="icons.faXmark"
+        [text]="'general.button.close' | translate"
+      ></bb-btn-content>
     </button>
   } @else if (isReady()) {
-    <button type="button" class="btn btn-primary" (click)="startImport()">
-      {{ 'components.modals.import-torrents.button.import' | translate }}
+    <button type="button" class="btn btn-primary btn-split" (click)="startImport()">
+      <bb-btn-content
+        [icon]="icons.faFileImport"
+        [text]="'components.modals.import-torrents.button.import' | translate"
+      ></bb-btn-content>
     </button>
-    <button type="button" class="btn btn-link" (click)="close()">
-      {{ 'general.button.cancel' | translate }}
+    <button type="button" class="btn btn-link btn-split" (click)="close()">
+      <bb-btn-content
+        [icon]="icons.faXmark"
+        [text]="'general.button.cancel' | translate"
+      ></bb-btn-content>
     </button>
   }
 </div>
