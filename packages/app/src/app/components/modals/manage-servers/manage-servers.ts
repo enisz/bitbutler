@@ -7,6 +7,7 @@ import { faSquare, faSquareCheck, faTrashCan } from '@fortawesome/free-regular-s
 import {
   faPenToSquare,
   faPlug,
+  faServer,
   faTrashCan as faTrashCanSolid,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
@@ -20,6 +21,7 @@ import { ServerStoreService } from '../../../services/server-store.service';
 import { ServerService } from '../../../services/server.service';
 import { ToastService } from '../../../services/toast.service';
 import { setModalInput } from '../../../utils/modal-input';
+import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
 import { ServerEditor } from '../server-editor/server-editor';
 
 @Component({
@@ -31,6 +33,7 @@ import { ServerEditor } from '../server-editor/server-editor';
     FontAwesomeModule,
     NgbTooltipModule,
     TooltipOverflow,
+    BbBtnContent,
   ],
   templateUrl: './manage-servers.html',
   styleUrl: './manage-servers.scss',
@@ -47,7 +50,15 @@ export class ManageServers {
   private readonly modalService = inject(NgbModal);
   public readonly activeModal = inject(NgbActiveModal);
 
-  public readonly icon = { faPenToSquare, faTrashCan, faXmark, faPlug, faSquare, faSquareCheck };
+  public readonly icon = {
+    faPenToSquare,
+    faTrashCan,
+    faXmark,
+    faPlug,
+    faSquare,
+    faSquareCheck,
+    faServer,
+  };
   readonly hideConnect = input(false);
   public readonly currentServerId = this.serverStoreService.currentServerId;
 
