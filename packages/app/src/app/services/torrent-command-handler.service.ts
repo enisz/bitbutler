@@ -332,12 +332,18 @@ export class TorrentCommandHandlerService {
 
     try {
       await this.qbService.torrents.topPrio(ctx.serverId, ctx.hashes);
-    } catch (e) {
+    } catch (e: any) {
       console.error(
         TorrentCommandHandlerService.name,
         'handleQueueMoveTop',
         'Failed to move torrent(s) to top of queue',
         e,
+      );
+      this.toastService.danger(
+        e?.message ?? String(e),
+        this.translateService.instant(
+          'services.torrent-command-handler.toast.move-top-failed-title',
+        ),
       );
     }
   }
@@ -348,12 +354,18 @@ export class TorrentCommandHandlerService {
 
     try {
       await this.qbService.torrents.increasePrio(ctx.serverId, ctx.hashes);
-    } catch (e) {
+    } catch (e: any) {
       console.error(
         TorrentCommandHandlerService.name,
         'handleQueueMoveUp',
         'Failed to move torrent(s) up in queue',
         e,
+      );
+      this.toastService.danger(
+        e?.message ?? String(e),
+        this.translateService.instant(
+          'services.torrent-command-handler.toast.move-up-failed-title',
+        ),
       );
     }
   }
@@ -364,12 +376,18 @@ export class TorrentCommandHandlerService {
 
     try {
       await this.qbService.torrents.decreasePrio(ctx.serverId, ctx.hashes);
-    } catch (e) {
+    } catch (e: any) {
       console.error(
         TorrentCommandHandlerService.name,
         'handleQueueMoveDown',
         'Failed to move torrent(s) down in queue',
         e,
+      );
+      this.toastService.danger(
+        e?.message ?? String(e),
+        this.translateService.instant(
+          'services.torrent-command-handler.toast.move-down-failed-title',
+        ),
       );
     }
   }
@@ -380,12 +398,18 @@ export class TorrentCommandHandlerService {
 
     try {
       await this.qbService.torrents.bottomPrio(ctx.serverId, ctx.hashes);
-    } catch (e) {
+    } catch (e: any) {
       console.error(
         TorrentCommandHandlerService.name,
         'handleQueueMoveBottom',
         'Failed to move torrent(s) to bottom of queue',
         e,
+      );
+      this.toastService.danger(
+        e?.message ?? String(e),
+        this.translateService.instant(
+          'services.torrent-command-handler.toast.move-bottom-failed-title',
+        ),
       );
     }
   }

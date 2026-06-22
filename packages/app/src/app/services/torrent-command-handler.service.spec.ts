@@ -205,28 +205,72 @@ describe('TorrentCommandHandlerService', () => {
     );
   });
 
-  it('should call topPrio on QUEUE_MOVE_TOP', async () => {
+  it('should call topPrio and show no info toast on QUEUE_MOVE_TOP', async () => {
     commands$.next({ type: 'QUEUE_MOVE_TOP' });
     await flushPromises();
     expect(qbService.torrents.topPrio).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
+    expect(toastInfo).not.toHaveBeenCalled();
   });
 
-  it('should call increasePrio on QUEUE_MOVE_UP', async () => {
+  it('should show a danger toast when moving to top of queue fails', async () => {
+    qbService.torrents.topPrio.mockRejectedValueOnce(new Error('top boom'));
+    commands$.next({ type: 'QUEUE_MOVE_TOP' });
+    await flushPromises();
+    expect(toastDanger).toHaveBeenCalledWith(
+      'top boom',
+      'services.torrent-command-handler.toast.move-top-failed-title',
+    );
+  });
+
+  it('should call increasePrio and show no info toast on QUEUE_MOVE_UP', async () => {
     commands$.next({ type: 'QUEUE_MOVE_UP' });
     await flushPromises();
     expect(qbService.torrents.increasePrio).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
+    expect(toastInfo).not.toHaveBeenCalled();
   });
 
-  it('should call decreasePrio on QUEUE_MOVE_DOWN', async () => {
+  it('should show a danger toast when moving up in queue fails', async () => {
+    qbService.torrents.increasePrio.mockRejectedValueOnce(new Error('up boom'));
+    commands$.next({ type: 'QUEUE_MOVE_UP' });
+    await flushPromises();
+    expect(toastDanger).toHaveBeenCalledWith(
+      'up boom',
+      'services.torrent-command-handler.toast.move-up-failed-title',
+    );
+  });
+
+  it('should call decreasePrio and show no info toast on QUEUE_MOVE_DOWN', async () => {
     commands$.next({ type: 'QUEUE_MOVE_DOWN' });
     await flushPromises();
     expect(qbService.torrents.decreasePrio).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
+    expect(toastInfo).not.toHaveBeenCalled();
   });
 
-  it('should call bottomPrio on QUEUE_MOVE_BOTTOM', async () => {
+  it('should show a danger toast when moving down in queue fails', async () => {
+    qbService.torrents.decreasePrio.mockRejectedValueOnce(new Error('down boom'));
+    commands$.next({ type: 'QUEUE_MOVE_DOWN' });
+    await flushPromises();
+    expect(toastDanger).toHaveBeenCalledWith(
+      'down boom',
+      'services.torrent-command-handler.toast.move-down-failed-title',
+    );
+  });
+
+  it('should call bottomPrio and show no info toast on QUEUE_MOVE_BOTTOM', async () => {
     commands$.next({ type: 'QUEUE_MOVE_BOTTOM' });
     await flushPromises();
     expect(qbService.torrents.bottomPrio).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
+    expect(toastInfo).not.toHaveBeenCalled();
+  });
+
+  it('should show a danger toast when moving to bottom of queue fails', async () => {
+    qbService.torrents.bottomPrio.mockRejectedValueOnce(new Error('bottom boom'));
+    commands$.next({ type: 'QUEUE_MOVE_BOTTOM' });
+    await flushPromises();
+    expect(toastDanger).toHaveBeenCalledWith(
+      'bottom boom',
+      'services.torrent-command-handler.toast.move-bottom-failed-title',
+    );
   });
 
   it('should call reannounceTorrents and show an info toast on TORRENT_REANNOUNCE', async () => {

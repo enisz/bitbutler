@@ -1648,7 +1648,11 @@
         "enable-super-seeding-failed-title": "Failed to Enable Super Seeding",
         "disable-super-seeding-failed-title": "Failed to Disable Super Seeding",
         "enable-auto-tmm-failed-title": "Failed to Enable Automatic Torrent Management",
-        "disable-auto-tmm-failed-title": "Failed to Disable Automatic Torrent Management"
+        "disable-auto-tmm-failed-title": "Failed to Disable Automatic Torrent Management",
+        "move-top-failed-title": "Failed to Move Torrent(s) to Top of Queue",
+        "move-up-failed-title": "Failed to Move Torrent(s) Up in Queue",
+        "move-down-failed-title": "Failed to Move Torrent(s) Down in Queue",
+        "move-bottom-failed-title": "Failed to Move Torrent(s) to Bottom of Queue"
       }
     },
     "qb": {
