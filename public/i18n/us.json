@@ -660,7 +660,9 @@
           "delete-file": "Delete Torrent File"
         },
         "toast": {
-          "deleted": "Torrent file has been deleted."
+          "deleted-title": "Torrent File Deleted",
+          "deleted": "The torrent file has been removed from disk.",
+          "delete-failed-title": "Failed to Delete Torrent File"
         }
       },
       "update-available": {

@@ -23,7 +23,7 @@ describe('TorrentExists', () => {
     mockTorrentStore = {
       torrentsMap: signal(new Map()) as any,
     };
-    mockToastService = { success: vi.fn() };
+    mockToastService = { success: vi.fn(), danger: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [TorrentExists],
@@ -128,6 +128,20 @@ describe('TorrentExists', () => {
 
       expect(component.fileDeleted()).toBe(true);
       expect(mockToastService.success).toHaveBeenCalled();
+    });
+
+    it('should show a danger toast with the raw error and not mark fileDeleted when deleteFile fails', async () => {
+      vi.spyOn(window.bitbutler.torrent, 'deleteFile').mockRejectedValue(new Error('disk error'));
+      fixture.componentRef.setInput('originalPath', '/tmp/test.torrent');
+      fixture.detectChanges();
+
+      await component.deleteTorrentFile();
+
+      expect(component.fileDeleted()).toBe(false);
+      expect(mockToastService.danger).toHaveBeenCalledWith(
+        'disk error',
+        'components.modals.torrent-exists.toast.delete-failed-title',
+      );
     });
 
     it('should not call deleteFile when originalPath is null', async () => {
