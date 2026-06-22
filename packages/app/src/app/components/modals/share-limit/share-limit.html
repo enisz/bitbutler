@@ -46,24 +46,33 @@
 <div class="modal-footer">
   <button
     type="button"
-    class="btn btn-primary"
+    class="btn btn-primary btn-split"
     (click)="handleSubmit()"
     [disabled]="!canSave()"
     autofocus
   >
-    {{ 'general.button.save' | translate }}
+    <bb-btn-content
+      [icon]="icons.faFloppyDisk"
+      [text]="'general.button.save' | translate"
+    ></bb-btn-content>
   </button>
   @if (hasClearableValues()) {
     <button
       type="button"
-      class="btn btn-dashed-danger"
+      class="btn btn-dashed-danger btn-split"
       (click)="clearAll()"
       [disabled]="!canSave()"
     >
-      {{ 'general.button.clear-all' | translate }}
+      <bb-btn-content
+        [icon]="icons.faEraser"
+        [text]="'general.button.clear-all' | translate"
+      ></bb-btn-content>
     </button>
   }
-  <button type="button" class="btn btn-link" (click)="activeModal.dismiss()">
-    {{ 'general.button.cancel' | translate }}
+  <button type="button" class="btn btn-link btn-split" (click)="activeModal.dismiss()">
+    <bb-btn-content
+      [icon]="icons.faXmark"
+      [text]="'general.button.cancel' | translate"
+    ></bb-btn-content>
   </button>
 </div>
