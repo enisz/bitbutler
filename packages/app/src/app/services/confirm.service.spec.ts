@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { faCheck, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { ConfirmService } from './confirm.service';
@@ -84,5 +85,15 @@ describe('ConfirmService', () => {
   it('should use provided dialog size', async () => {
     await service.confirm('T', 'M', undefined, undefined, 'lg').catch(() => {});
     expect(mockModalService.open).toHaveBeenCalledWith(expect.anything(), { size: 'lg' });
+  });
+
+  it('should default okIcon to faCheck', async () => {
+    await service.confirm('T', 'M').catch(() => {});
+    expect(mockModalRef.componentInstance.okIcon).toBe(faCheck);
+  });
+
+  it('should set custom okIcon when provided', async () => {
+    await service.confirm('T', 'M', undefined, undefined, undefined, faTrashCan).catch(() => {});
+    expect(mockModalRef.componentInstance.okIcon).toBe(faTrashCan);
   });
 });

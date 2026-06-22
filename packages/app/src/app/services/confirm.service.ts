@@ -1,4 +1,6 @@
 import { Injectable, inject } from '@angular/core';
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { Confirm } from '../components/modals/confirm/confirm';
@@ -20,6 +22,7 @@ export class ConfirmService {
     btnOkText: string = 'general.button.ok',
     btnCancelText: string = 'general.button.cancel',
     dialogSize: 'sm' | 'md' | 'lg' | 'xl' = 'md',
+    okIcon: IconDefinition = faCheck,
   ): Promise<boolean> {
     const modalRef = this.modalService.open(Confirm, { size: dialogSize });
 
@@ -39,6 +42,7 @@ export class ConfirmService {
 
     setModalInput(modalRef, 'btnOkText', btnOkText);
     setModalInput(modalRef, 'btnCancelText', btnCancelText);
+    setModalInput(modalRef, 'okIcon', okIcon);
 
     return modalRef.result.catch(() => false);
   }
