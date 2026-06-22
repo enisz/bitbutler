@@ -10,7 +10,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faTrashCan } from '@fortawesome/free-regular-svg-icons';
-import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faTrashCan as faTrashCanSolid, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AutofocusDirective } from '../../../directives/autofocus';
@@ -143,6 +143,9 @@ export class ManageTags implements OnInit, GuardableModal {
         data: { name: tag, count },
       },
       'general.button.delete',
+      undefined,
+      undefined,
+      faTrashCanSolid,
     );
     if (!confirmed) return;
 

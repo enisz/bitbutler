@@ -10,7 +10,12 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faEdit, faTrashCan } from '@fortawesome/free-regular-svg-icons';
-import { faCheck, faX, faXmark } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCheck,
+  faTrashCan as faTrashCanSolid,
+  faX,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AutofocusDirective } from '../../../directives/autofocus';
@@ -188,6 +193,9 @@ export class ManageCategories implements OnInit, GuardableModal {
         data: { name: item.name, count },
       },
       'general.button.delete',
+      undefined,
+      undefined,
+      faTrashCanSolid,
     );
     if (!confirmed) return;
 
