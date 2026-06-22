@@ -37,10 +37,16 @@
 </div>
 
 <div class="modal-footer">
-  <button type="button" class="btn btn-danger" (click)="closeModal()" autofocus>
-    {{ 'general.button.delete' | translate }}
+  <button type="button" class="btn btn-danger btn-split" (click)="closeModal()" autofocus>
+    <bb-btn-content
+      [icon]="icons.faTrashCan"
+      [text]="'general.button.delete' | translate"
+    ></bb-btn-content>
   </button>
-  <button type="button" class="btn btn-link" (click)="dismissModal()">
-    {{ 'general.button.cancel' | translate }}
+  <button type="button" class="btn btn-link btn-split" (click)="dismissModal()">
+    <bb-btn-content
+      [icon]="icons.faXmark"
+      [text]="'general.button.cancel' | translate"
+    ></bb-btn-content>
   </button>
 </div>
