@@ -67,11 +67,12 @@ export class Content implements TorrentDetailTabComponent, OnInit {
           this.content.set(data);
           this.loading.set(false);
         }),
-        catchError((e) => {
+        catchError((e: any) => {
           console.error(Content.name, 'load', 'Failed to load torrent contents', e);
           this.toastService.danger(
+            e?.message ?? String(e),
             this.translateService.instant(
-              'components.modals.torrent-details.content.error.failed-to-load',
+              'components.modals.torrent-details.content.error.failed-to-load-title',
             ),
           );
           this.loading.set(false);
@@ -106,11 +107,12 @@ export class Content implements TorrentDetailTabComponent, OnInit {
           );
         }
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(Content.name, 'onSaved', 'Failed to save changes', e);
       this.toastService.danger(
+        e?.message ?? String(e),
         this.translateService.instant(
-          'components.modals.torrent-details.content.error.failed-to-save',
+          'components.modals.torrent-details.content.error.failed-to-save-title',
         ),
       );
     }

@@ -308,8 +308,8 @@
         "content": {
           "loading": "Loading Torrent Contents...",
           "error": {
-            "failed-to-load": "Failed to load torrent contents!",
-            "failed-to-save": "Failed to save changes!"
+            "failed-to-load-title": "Failed to Load Torrent Contents",
+            "failed-to-save-title": "Failed to Save Changes"
           }
         },
         "general": {
