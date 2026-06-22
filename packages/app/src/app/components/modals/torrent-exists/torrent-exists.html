@@ -103,18 +103,32 @@
     @if (showDeleteButton()) {
       <button
         type="button"
-        class="btn btn-danger"
+        class="btn btn-danger btn-split"
         [disabled]="fileDeleted()"
         (click)="deleteTorrentFile()"
       >
-        {{ 'components.modals.torrent-exists.button.delete-file' | translate }}
+        <bb-btn-content
+          [icon]="icons.faTrashCan"
+          [text]="'components.modals.torrent-exists.button.delete-file' | translate"
+        ></bb-btn-content>
       </button>
     }
-    <button type="button" class="btn btn-dashed-secondary" (click)="openDetails()" autofocus>
-      {{ 'general.button.open-details' | translate }}
+    <button
+      type="button"
+      class="btn btn-dashed-secondary btn-split"
+      (click)="openDetails()"
+      autofocus
+    >
+      <bb-btn-content
+        [icon]="icons.faCircleInfo"
+        [text]="'general.button.open-details' | translate"
+      ></bb-btn-content>
     </button>
-    <button type="button" class="btn btn-link" (click)="closeModal()">
-      {{ 'general.button.close' | translate }}
+    <button type="button" class="btn btn-link btn-split" (click)="closeModal()">
+      <bb-btn-content
+        [icon]="icons.faXmark"
+        [text]="'general.button.close' | translate"
+      ></bb-btn-content>
     </button>
   </div>
 }
