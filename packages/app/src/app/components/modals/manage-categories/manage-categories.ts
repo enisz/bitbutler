@@ -12,6 +12,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faEdit, faTrashCan } from '@fortawesome/free-regular-svg-icons';
 import {
   faCheck,
+  faPlus,
   faTrashCan as faTrashCanSolid,
   faX,
   faXmark,
@@ -26,6 +27,7 @@ import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { ToastService } from '../../../services/toast.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
+import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
 import { BbSpinner } from '../../bb-spinner/bb-spinner';
 import { SavePathSelect } from '../../save-path-select/save-path-select';
 
@@ -47,6 +49,7 @@ interface CategoryItem {
     AutofocusDirective,
     TooltipOverflow,
     SavePathSelect,
+    BbBtnContent,
   ],
   templateUrl: './manage-categories.html',
   styleUrl: './manage-categories.scss',
@@ -61,7 +64,7 @@ export class ManageCategories implements OnInit, GuardableModal {
   private readonly translateService = inject(TranslateService);
   public readonly activeModal = inject(NgbActiveModal);
 
-  public readonly icon = { faEdit, faTrashCan, faCheck, faX, faXmark };
+  public readonly icon = { faEdit, faTrashCan, faCheck, faX, faXmark, faPlus };
 
   public categories = signal<CategoryItem[]>([]);
   private readonly isEditing = computed(() => this.categories().some((c) => c.editing));
