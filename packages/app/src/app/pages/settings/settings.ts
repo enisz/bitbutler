@@ -102,9 +102,24 @@ export class Settings implements OnInit, GuardableModal {
   }
 
   public async onSave(): Promise<void> {
-    await this.stateService.saveAll();
-    const message = await firstValueFrom(this.translateService.get('pages.settings.success.saved'));
-    this.toastService.success(message);
-    this.activeModal.close();
+    try {
+      await this.stateService.saveAll();
+      const message = await firstValueFrom(
+        this.translateService.get('pages.settings.success.saved'),
+      );
+      const title = await firstValueFrom(
+        this.translateService.get('pages.settings.success.saved-title'),
+      );
+      this.toastService.success(message, title);
+      this.activeModal.close();
+    } catch (err: any) {
+      const title = await firstValueFrom(
+        this.translateService.get('pages.settings.error.save-failed-title'),
+      );
+      const message =
+        err?.message ??
+        (await firstValueFrom(this.translateService.get('pages.settings.error.save-failed')));
+      this.toastService.danger(message, title);
+    }
   }
 }

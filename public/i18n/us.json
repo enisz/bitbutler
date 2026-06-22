@@ -1242,7 +1242,12 @@
     "settings": {
       "title": "Settings",
       "success": {
-        "saved": "Settings Saved"
+        "saved-title": "Settings Saved",
+        "saved": "Your changes have been saved."
+      },
+      "error": {
+        "save-failed-title": "Failed to Save Settings",
+        "save-failed": "Your changes could not be saved."
       },
       "tab": {
         "general": {
