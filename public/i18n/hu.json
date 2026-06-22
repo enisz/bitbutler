@@ -1081,7 +1081,19 @@
           },
           "toast": {
             "export-failed-title": "Exportálás sikertelen",
-            "export-failed-count": "{{total}} torrentből {{failed}} exportálása sikertelen."
+            "export-failed-count": "{{total}} torrentből {{failed}} exportálása sikertelen.",
+            "copied-to-clipboard": "{{field}} a vágólapra másolva."
+          },
+          "field": {
+            "name": "Név",
+            "names": "Nevek",
+            "magnet-link": "Magnet Link",
+            "magnet-links": "Magnet Linkek",
+            "info-hash": "Info Hash",
+            "info-hashes": "Info Hash-ek",
+            "save-path": "Mentési Útvonal",
+            "save-paths": "Mentési Útvonalak",
+            "json": "JSON"
           }
         },
         "overlays": {
@@ -1601,6 +1613,30 @@
     "torrent-command-handler": {
       "error": {
         "delete-failed-title": "Nem sikerült törölni a torrentet/torrenteket"
+      },
+      "toast": {
+        "pausing": "{{count}} torrent(ek) szüneteltetése…",
+        "pause-failed-title": "Nem sikerült szüneteltetni a torrent(ek)et",
+        "pausing-all": "Az összes torrent szüneteltetése…",
+        "pause-all-failed-title": "Nem sikerült szüneteltetni az összes torrentet",
+        "resuming": "{{count}} torrent(ek) folytatása…",
+        "resume-failed-title": "Nem sikerült folytatni a torrent(ek)et",
+        "resuming-all": "Az összes torrent folytatása…",
+        "resume-all-failed-title": "Nem sikerült folytatni az összes torrentet",
+        "force-resuming": "{{count}} torrent(ek) kényszerített folytatása…",
+        "force-resume-failed-title": "Nem sikerült kényszerítve folytatni a torrent(ek)et",
+        "reannouncing": "Újrajelentkezés a trackereknél {{count}} torrent(ek) esetében…",
+        "reannounce-failed-title": "Nem sikerült újrajelentkezni a trackereknél a torrent(ek) esetében",
+        "rechecking": "{{count}} torrent(ek) ellenőrzése…",
+        "recheck-failed-title": "Nem sikerült ellenőrizni a torrent(ek)et",
+        "enable-super-seeding-failed-title": "Nem sikerült engedélyezni a super seedinget",
+        "disable-super-seeding-failed-title": "Nem sikerült letiltani a super seedinget",
+        "enable-auto-tmm-failed-title": "Nem sikerült bekapcsolni az automatikus torrentkezelést",
+        "disable-auto-tmm-failed-title": "Nem sikerült kikapcsolni az automatikus torrentkezelést",
+        "move-top-failed-title": "Nem sikerült a sor elejére mozgatni a torrent(ek)et",
+        "move-up-failed-title": "Nem sikerült feljebb mozgatni a torrent(ek)et a sorban",
+        "move-down-failed-title": "Nem sikerült lejjebb mozgatni a torrent(ek)et a sorban",
+        "move-bottom-failed-title": "Nem sikerült a sor végére mozgatni a torrent(ek)et"
       }
     },
     "qb": {
