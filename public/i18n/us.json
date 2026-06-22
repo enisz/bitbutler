@@ -884,12 +884,12 @@
           "message": "Are you sure you want to delete the category \"{{ name }}\"? It is assigned to {{ count }} torrent(s)."
         },
         "toast": {
-          "added": "Category \"{{ name }}\" has been added.",
-          "updated": "Category \"{{ name }}\" has been updated.",
-          "deleted": "Category \"{{ name }}\" has been deleted.",
-          "add-failed": "Failed to add category \"{{ name }}\".",
-          "edit-failed": "Failed to update category \"{{ name }}\".",
-          "delete-failed": "Failed to delete category \"{{ name }}\"."
+          "added-title": "Category Added",
+          "updated-title": "Category Updated",
+          "deleted-title": "Category Deleted",
+          "add-failed-title": "Failed to Add Category",
+          "edit-failed-title": "Failed to Update Category",
+          "delete-failed-title": "Failed to Delete Category"
         }
       }
     },

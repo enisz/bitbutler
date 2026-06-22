@@ -128,16 +128,14 @@ export class ManageCategories implements OnInit, GuardableModal {
       );
       this.addForm.reset();
       this.toastService.success(
-        this.translateService.instant('components.modals.manage-categories.toast.added', { name }),
-        this.translateService.instant('components.modals.manage-categories.title'),
+        `"${name}"`,
+        this.translateService.instant('components.modals.manage-categories.toast.added-title'),
       );
-    } catch (err) {
+    } catch (err: any) {
       console.error(ManageCategories.name, 'add', 'Failed to add category', err);
       this.toastService.danger(
-        this.translateService.instant('components.modals.manage-categories.toast.add-failed', {
-          name,
-        }),
-        this.translateService.instant('components.modals.manage-categories.title'),
+        err?.message ?? String(err),
+        this.translateService.instant('components.modals.manage-categories.toast.add-failed-title'),
       );
     } finally {
       this.adding.set(false);
@@ -164,18 +162,16 @@ export class ManageCategories implements OnInit, GuardableModal {
         ),
       );
       this.toastService.success(
-        this.translateService.instant('components.modals.manage-categories.toast.updated', {
-          name: item.name,
-        }),
-        this.translateService.instant('components.modals.manage-categories.title'),
+        `"${item.name}"`,
+        this.translateService.instant('components.modals.manage-categories.toast.updated-title'),
       );
-    } catch (err) {
+    } catch (err: any) {
       console.error(ManageCategories.name, 'saveEdit', 'Failed to edit category', err);
       this.toastService.danger(
-        this.translateService.instant('components.modals.manage-categories.toast.edit-failed', {
-          name: item.name,
-        }),
-        this.translateService.instant('components.modals.manage-categories.title'),
+        err?.message ?? String(err),
+        this.translateService.instant(
+          'components.modals.manage-categories.toast.edit-failed-title',
+        ),
       );
     }
   }
@@ -200,18 +196,16 @@ export class ManageCategories implements OnInit, GuardableModal {
       await this.qbService.torrents.removeCategories(serverId, [item.name]);
       this.categories.set(this.categories().filter((c) => c.name !== item.name));
       this.toastService.success(
-        this.translateService.instant('components.modals.manage-categories.toast.deleted', {
-          name: item.name,
-        }),
-        this.translateService.instant('components.modals.manage-categories.title'),
+        `"${item.name}"`,
+        this.translateService.instant('components.modals.manage-categories.toast.deleted-title'),
       );
-    } catch (err) {
+    } catch (err: any) {
       console.error(ManageCategories.name, 'delete', 'Failed to delete category', err);
       this.toastService.danger(
-        this.translateService.instant('components.modals.manage-categories.toast.delete-failed', {
-          name: item.name,
-        }),
-        this.translateService.instant('components.modals.manage-categories.title'),
+        err?.message ?? String(err),
+        this.translateService.instant(
+          'components.modals.manage-categories.toast.delete-failed-title',
+        ),
       );
     }
   }
