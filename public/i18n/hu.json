@@ -1259,7 +1259,7 @@
       },
       "error": {
         "save-failed-title": "Beállítások mentése sikertelen",
-        "save-failed": "A módosításaid nem menthető."
+        "save-failed": "A módosításaid nem menthetők."
       },
       "tab": {
         "general": {
@@ -1477,7 +1477,7 @@
       },
       "error": {
         "save-failed-title": "Beállítások mentése sikertelen",
-        "save-failed": "A módosításaid nem menthető."
+        "save-failed": "A módosításaid nem menthetők."
       },
       "tab": {
         "bandwidth": {
