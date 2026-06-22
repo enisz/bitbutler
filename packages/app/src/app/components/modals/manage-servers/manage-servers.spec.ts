@@ -27,7 +27,10 @@ describe('ManageServers', () => {
         },
         { provide: CommandBusService, useValue: { emit: vi.fn() } },
         { provide: ConfirmService, useValue: { confirm: vi.fn().mockResolvedValue(false) } },
-        { provide: QbService, useValue: { hasCookie: vi.fn(), login: vi.fn() } },
+        {
+          provide: QbService,
+          useValue: { auth: { hasCookie: vi.fn(), login: vi.fn() } },
+        },
         { provide: ToastService, useValue: { danger: vi.fn() } },
         { provide: TranslateService, useFactory: mockTranslateService },
         { provide: NgbModal, useValue: { open: vi.fn() } },
@@ -72,6 +75,32 @@ describe('ManageServers', () => {
       fixture.detectChanges();
       const connectBtn = fixture.nativeElement.querySelector('.connect-btn');
       expect(connectBtn).not.toBeNull();
+    });
+  });
+
+  describe('switchTo', () => {
+    it('should show a danger toast with the quoted server name and the failed-to-connect-title key when login fails', async () => {
+      const server = {
+        id: 'srv-1',
+        name: 'My Server',
+        host: 'localhost',
+        port: 8080,
+        protocol: 'http',
+      } as any;
+
+      const qbServiceMock = TestBed.inject(QbService) as any;
+      qbServiceMock.auth.hasCookie.mockResolvedValue(false);
+      qbServiceMock.auth.login.mockResolvedValue({ loggedIn: false });
+
+      const toastServiceMock = TestBed.inject(ToastService) as any;
+      const translateServiceMock = TestBed.inject(TranslateService) as any;
+
+      await component.switchTo(server);
+
+      expect(toastServiceMock.danger).toHaveBeenCalledWith('"My Server"', '');
+      expect(translateServiceMock.instant).toHaveBeenCalledWith(
+        'services.menu-bar-command-handler.error.failed-to-connect-title',
+      );
     });
   });
 });
