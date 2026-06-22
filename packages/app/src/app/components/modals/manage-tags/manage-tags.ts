@@ -109,19 +109,19 @@ export class ManageTags implements OnInit, GuardableModal {
       this.nameControl.reset();
       this.toastService.success(
         newNames.length === 1
-          ? this.translateService.instant('components.modals.manage-tags.toast.added-one', {
-              name: newNames[0],
-            })
+          ? `"${newNames[0]}"`
           : this.translateService.instant('components.modals.manage-tags.toast.added', {
               count: newNames.length,
             }),
-        this.translateService.instant('components.modals.manage-tags.title'),
+        newNames.length === 1
+          ? this.translateService.instant('components.modals.manage-tags.toast.added-one-title')
+          : this.translateService.instant('components.modals.manage-tags.toast.added-title'),
       );
-    } catch (err) {
+    } catch (err: any) {
       console.error(ManageTags.name, 'add', 'Failed to add tag', err);
       this.toastService.danger(
-        this.translateService.instant('components.modals.manage-tags.toast.add-failed'),
-        this.translateService.instant('components.modals.manage-tags.title'),
+        err?.message ?? String(err),
+        this.translateService.instant('components.modals.manage-tags.toast.add-failed-title'),
       );
     } finally {
       this.adding.set(false);
@@ -151,16 +151,14 @@ export class ManageTags implements OnInit, GuardableModal {
       await this.qbService.torrents.deleteTags(serverId, [tag]);
       this.tags.set(this.tags().filter((t) => t !== tag));
       this.toastService.success(
-        this.translateService.instant('components.modals.manage-tags.toast.deleted', { name: tag }),
-        this.translateService.instant('components.modals.manage-tags.title'),
+        `"${tag}"`,
+        this.translateService.instant('components.modals.manage-tags.toast.deleted-title'),
       );
-    } catch (err) {
+    } catch (err: any) {
       console.error(ManageTags.name, 'delete', 'Failed to delete tag', err);
       this.toastService.danger(
-        this.translateService.instant('components.modals.manage-tags.toast.delete-failed', {
-          name: tag,
-        }),
-        this.translateService.instant('components.modals.manage-tags.title'),
+        err?.message ?? String(err),
+        this.translateService.instant('components.modals.manage-tags.toast.delete-failed-title'),
       );
     }
   }

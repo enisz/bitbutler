@@ -703,11 +703,12 @@
           "message": "Are you sure you want to delete the tag \"{{ name }}\"? It is used by {{ count }} torrent(s)."
         },
         "toast": {
-          "added-one": "Tag \"{{ name }}\" has been added.",
-          "added": "{{ count }} tag(s) added.",
-          "deleted": "Tag \"{{ name }}\" has been deleted.",
-          "add-failed": "Failed to add tag(s).",
-          "delete-failed": "Failed to delete tag \"{{ name }}\"."
+          "added-one-title": "Tag Added",
+          "added-title": "Tags Added",
+          "added": "{{ count }} tag(s)",
+          "deleted-title": "Tag Deleted",
+          "add-failed-title": "Failed to Add Tag(s)",
+          "delete-failed-title": "Failed to Delete Tag"
         }
       },
       "manage-servers": {
