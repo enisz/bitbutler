@@ -84,14 +84,20 @@
 
     <div class="d-flex gap-2 align-items-center">
       <button
-        class="btn btn-sm btn-outline-secondary px-3"
+        class="btn btn-sm btn-outline-secondary btn-split"
         type="button"
         (click)="dp.navigateTo(today)"
       >
-        {{ 'general.button.today' | translate }}
+        <bb-btn-content
+          [icon]="icons.faCalendarDay"
+          [text]="'general.button.today' | translate"
+        ></bb-btn-content>
       </button>
-      <button class="btn btn-sm btn-outline-secondary px-3" type="button" (click)="clear()">
-        {{ 'general.button.clear' | translate }}
+      <button class="btn btn-sm btn-outline-secondary btn-split" type="button" (click)="clear()">
+        <bb-btn-content
+          [icon]="icons.faEraser"
+          [text]="'general.button.clear' | translate"
+        ></bb-btn-content>
       </button>
     </div>
   </div>

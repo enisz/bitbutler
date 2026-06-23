@@ -1,7 +1,12 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCalendarDay,
+  faChevronLeft,
+  faChevronRight,
+  faEraser,
+} from '@fortawesome/free-solid-svg-icons';
 import {
   NgbCalendar,
   NgbDate,
@@ -13,11 +18,19 @@ import { TranslateModule } from '@ngx-translate/core';
 import { IFilterAngularComp } from 'ag-grid-angular';
 import { IDoesFilterPassParams, IFilterParams } from 'ag-grid-community';
 import { CustomDatepickerI18n } from '../../services/custom-datepicker-i18n.service';
+import { BbBtnContent } from '../bb-btn-content/bb-btn-content';
 
 @Component({
   selector: 'app-datepicker-range-filter',
   standalone: true,
-  imports: [FormsModule, NgbDatepickerModule, TranslateModule, NgSelectModule, FontAwesomeModule],
+  imports: [
+    FormsModule,
+    NgbDatepickerModule,
+    TranslateModule,
+    NgSelectModule,
+    FontAwesomeModule,
+    BbBtnContent,
+  ],
   providers: [{ provide: NgbDatepickerI18n, useClass: CustomDatepickerI18n }],
   templateUrl: './datepicker-range-filter.html',
   styleUrl: './datepicker-range-filter.scss',
@@ -27,7 +40,7 @@ export class DatepickerRangeFilter implements IFilterAngularComp, OnInit {
   readonly calendarService = inject(NgbCalendar);
   private readonly i18n = inject(NgbDatepickerI18n);
   private params!: IFilterParams;
-  public icons = { faChevronLeft, faChevronRight };
+  public icons = { faChevronLeft, faChevronRight, faCalendarDay, faEraser };
   fromDate: NgbDate | null = null;
   toDate: NgbDate | null = null;
   hoveredDate: NgbDate | null = null;
