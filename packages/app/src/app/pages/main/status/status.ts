@@ -10,6 +10,7 @@ import {
   faCircleMinus,
   faCirclePlay,
   faCircleStop,
+  faEraser,
   faFolderOpen,
   faFolderTree,
   faHourglassHalf,
@@ -19,6 +20,7 @@ import {
   faUpload,
 } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content';
 import { TorrentState } from '../../../models/torrent.model';
 import { FilterService } from '../../../services/filter.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
@@ -40,7 +42,7 @@ type StatusKey =
 @Component({
   selector: 'app-status',
   standalone: true,
-  imports: [CommonModule, FontAwesomeModule, FilterGroupComponent, TranslatePipe],
+  imports: [CommonModule, FontAwesomeModule, FilterGroupComponent, TranslatePipe, BbBtnContent],
   templateUrl: './status.html',
   styleUrl: './status.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -83,6 +85,7 @@ export class Status {
     faFolderTree,
     faTags,
     faArrowsSpin,
+    faEraser,
   };
 
   private readonly groups: Record<StatusKey, TorrentState[]> = {
