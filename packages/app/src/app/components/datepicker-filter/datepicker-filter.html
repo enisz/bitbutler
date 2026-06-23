@@ -7,8 +7,11 @@
   </ngb-datepicker>
 
   <div class="d-flex justify-content-end mt-2">
-    <button class="btn btn-sm btn-outline-secondary" (click)="clear()">
-      {{ 'general.button.clear' | translate }}
+    <button class="btn btn-sm btn-outline-secondary btn-split" (click)="clear()">
+      <bb-btn-content
+        [icon]="icons.faEraser"
+        [text]="'general.button.clear' | translate"
+      ></bb-btn-content>
     </button>
   </div>
 </div>

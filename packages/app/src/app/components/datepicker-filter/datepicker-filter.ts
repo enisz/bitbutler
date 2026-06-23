@@ -1,18 +1,21 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { faEraser } from '@fortawesome/free-solid-svg-icons';
 import { NgbDate, NgbDatepicker } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { IFilterAngularComp } from 'ag-grid-angular';
 import { IFilterParams } from 'ag-grid-community';
+import { BbBtnContent } from '../bb-btn-content/bb-btn-content';
 
 @Component({
   selector: 'app-datepicker-filter',
-  imports: [FormsModule, NgbDatepicker, TranslatePipe],
+  imports: [FormsModule, NgbDatepicker, TranslatePipe, BbBtnContent],
   templateUrl: './datepicker-filter.html',
   styleUrl: './datepicker-filter.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DatepickerFilter implements IFilterAngularComp {
+  public readonly icons = { faEraser };
   private params!: IFilterParams;
   selectedDate: NgbDate | null = null;
 
