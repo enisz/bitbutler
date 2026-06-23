@@ -12,6 +12,7 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   IconDefinition,
+  faArrowsRotate,
   faCircleQuestion,
   faTriangleExclamation,
 } from '@fortawesome/free-solid-svg-icons';
@@ -22,6 +23,7 @@ import {
 } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom, from, tap } from 'rxjs';
+import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { SavePathSelect } from '../../../components/save-path-select/save-path-select';
@@ -62,6 +64,7 @@ interface NgSelectItem {
     BbPopover,
     TranslatePipe,
     SavePathSelect,
+    BbBtnContent,
   ],
   templateUrl: './general.html',
   styleUrl: './general.scss',
@@ -149,6 +152,7 @@ export class General implements SettingsTabComponent {
   public icons: Record<string, IconDefinition> = {
     faTriangleExclamation,
     faCircleQuestion,
+    faArrowsRotate,
   };
 
   public getFamilyLogo = getFamilyLogoUrl;

@@ -126,11 +126,14 @@
               </div>
             </div>
             <div class="col-3 d-flex justify-content-end">
-              <button type="button" class="btn btn-sm btn-link" (click)="checkUpdates()">
-                {{
-                  'pages.settings.tab.general.general-settings-form.behavior.check-for-update'
-                    | translate
-                }}
+              <button type="button" class="btn btn-sm btn-link btn-split" (click)="checkUpdates()">
+                <bb-btn-content
+                  [icon]="icons['faArrowsRotate']"
+                  [text]="
+                    'pages.settings.tab.general.general-settings-form.behavior.check-for-update'
+                      | translate
+                  "
+                ></bb-btn-content>
               </button>
             </div>
           </div>
