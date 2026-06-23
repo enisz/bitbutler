@@ -334,7 +334,7 @@
             />
             <label class="btn btn-outline-secondary btn-split" for="sm-all">
               <bb-btn-content
-                [icon]="icons.faAsterisk"
+                [icon]="icons.faForward"
                 [text]="'components.modals.import-torrents.start-mode.all' | translate"
               ></bb-btn-content>
             </label>
@@ -384,6 +384,7 @@
       <bb-btn-content
         [icon]="icons.faXmark"
         [text]="'general.button.cancel' | translate"
+        position="end"
       ></bb-btn-content>
     </button>
   } @else if (isDone() || isError()) {
@@ -391,6 +392,7 @@
       <bb-btn-content
         [icon]="icons.faXmark"
         [text]="'general.button.close' | translate"
+        position="end"
       ></bb-btn-content>
     </button>
   } @else if (isReady()) {
@@ -398,12 +400,14 @@
       <bb-btn-content
         [icon]="icons.faFileImport"
         [text]="'components.modals.import-torrents.button.import' | translate"
+        position="end"
       ></bb-btn-content>
     </button>
     <button type="button" class="btn btn-link btn-split" (click)="close()">
       <bb-btn-content
         [icon]="icons.faXmark"
         [text]="'general.button.cancel' | translate"
+        position="end"
       ></bb-btn-content>
     </button>
   }

@@ -250,6 +250,7 @@
             <bb-btn-content
               [icon]="icons.faFolderOpen"
               [text]="'general.button.browse' | translate"
+              position="end"
             ></bb-btn-content>
           </button>
         </div>
@@ -322,6 +323,7 @@
       <bb-btn-content
         [icon]="icons.faXmark"
         [text]="'general.button.cancel' | translate"
+        position="end"
       ></bb-btn-content>
     </button>
   } @else if (isDone() || isError()) {
@@ -329,6 +331,7 @@
       <bb-btn-content
         [icon]="icons.faXmark"
         [text]="'general.button.close' | translate"
+        position="end"
       ></bb-btn-content>
     </button>
   } @else {
@@ -341,12 +344,14 @@
       <bb-btn-content
         [icon]="icons.faFileExport"
         [text]="'components.modals.export-torrents.button.export' | translate"
+        position="end"
       ></bb-btn-content>
     </button>
     <button type="button" class="btn btn-link btn-split" (click)="close()">
       <bb-btn-content
         [icon]="icons.faXmark"
         [text]="'general.button.cancel' | translate"
+        position="end"
       ></bb-btn-content>
     </button>
   }

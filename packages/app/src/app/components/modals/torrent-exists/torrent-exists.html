@@ -110,6 +110,7 @@
         <bb-btn-content
           [icon]="icons.faTrashCan"
           [text]="'components.modals.torrent-exists.button.delete-file' | translate"
+          position="end"
         ></bb-btn-content>
       </button>
     }
@@ -122,12 +123,14 @@
       <bb-btn-content
         [icon]="icons.faCircleInfo"
         [text]="'general.button.open-details' | translate"
+        position="end"
       ></bb-btn-content>
     </button>
     <button type="button" class="btn btn-link btn-split" (click)="closeModal()">
       <bb-btn-content
         [icon]="icons.faXmark"
         [text]="'general.button.close' | translate"
+        position="end"
       ></bb-btn-content>
     </button>
   </div>

@@ -18,8 +18,8 @@ import type {
 } from '@bitbutler/shared';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
-  faAsterisk,
   faFileImport,
+  faForward,
   faMinus,
   faPause,
   faPlay,
@@ -96,7 +96,7 @@ export class ImportTorrents implements OnInit {
     faTriangleExclamation,
     faPause,
     faPlay,
-    faAsterisk,
+    faForward,
     faFileImport,
     faXmark,
   };
