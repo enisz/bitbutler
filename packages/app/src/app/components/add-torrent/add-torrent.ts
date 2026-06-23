@@ -16,7 +16,9 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faCircleInfo,
   faCircleQuestion,
+  faPlus,
   faTriangleExclamation,
+  faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -33,6 +35,7 @@ import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
 import { setModalInput } from '../../utils/modal-input';
+import { BbBtnContent } from '../bb-btn-content/bb-btn-content';
 import { FileTreeSaveEvent } from '../bb-file-tree/bb-file-tree';
 import { TorrentExists } from '../modals/torrent-exists/torrent-exists';
 import { ShareLimitValue } from '../share-limit/share-limit';
@@ -61,6 +64,7 @@ interface AddTorrentTab {
     AddTorrentGeneral,
     AddTorrentLimits,
     AddTorrentOptions,
+    BbBtnContent,
   ],
   templateUrl: './add-torrent.html',
   styleUrl: './add-torrent.scss',
@@ -99,7 +103,7 @@ export class AddTorrent implements OnInit {
   public isSubmitting = signal(false);
   private loadedDraftIdentifier = signal<string | null>(null);
 
-  public icons = { faTriangleExclamation, faCircleQuestion, faCircleInfo };
+  public icons = { faTriangleExclamation, faCircleQuestion, faCircleInfo, faPlus, faXmark };
 
   public activeTabId = signal<AddTorrentTabId>('general');
 
