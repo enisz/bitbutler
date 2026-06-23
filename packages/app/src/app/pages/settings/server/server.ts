@@ -13,6 +13,7 @@ import {
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { from, switchMap, tap } from 'rxjs';
+import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { SavePathSelect } from '../../../components/save-path-select/save-path-select';
@@ -35,6 +36,7 @@ import { SettingsTabComponent } from '../settings.interface';
     BbPopover,
     TranslatePipe,
     SavePathSelect,
+    BbBtnContent,
   ],
   templateUrl: './server.html',
   styleUrl: './server.scss',

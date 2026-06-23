@@ -184,11 +184,14 @@
 
                     <button
                       type="button"
-                      class="btn btn-outline-primary"
+                      class="btn btn-outline-primary btn-split"
                       (click)="onBrowse(i)"
                       [disabled]="group.disabled"
                     >
-                      {{ 'general.button.browse' | translate }}
+                      <bb-btn-content
+                        [icon]="icons['faFolderOpen']"
+                        [text]="'general.button.browse' | translate"
+                      ></bb-btn-content>
                     </button>
                   </div>
                 </div>
