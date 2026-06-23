@@ -15,8 +15,11 @@
               [checked]="inputMode() === 'file'"
               (change)="inputModeChange.emit('file')"
             />
-            <label class="btn btn-outline-secondary" for="inputMode_file">
-              {{ 'components.add-torrent.input-mode.file' | translate }}
+            <label class="btn btn-outline-secondary btn-split" for="inputMode_file">
+              <bb-btn-content
+                [icon]="icons.faFile"
+                [text]="'components.add-torrent.input-mode.file' | translate"
+              ></bb-btn-content>
             </label>
 
             <input
@@ -28,8 +31,11 @@
               [checked]="inputMode() === 'link'"
               (change)="inputModeChange.emit('link')"
             />
-            <label class="btn btn-outline-secondary" for="inputMode_link">
-              {{ 'components.add-torrent.input-mode.link' | translate }}
+            <label class="btn btn-outline-secondary btn-split" for="inputMode_link">
+              <bb-btn-content
+                [icon]="icons.faLink"
+                [text]="'components.add-torrent.input-mode.link' | translate"
+              ></bb-btn-content>
             </label>
           </div>
         </div>
@@ -67,8 +73,15 @@
                     }}</label>
                   </div>
 
-                  <button type="button" class="btn btn-outline-primary" (click)="fileInput.click()">
-                    {{ 'general.button.browse' | translate }}
+                  <button
+                    type="button"
+                    class="btn btn-outline-primary btn-split"
+                    (click)="fileInput.click()"
+                  >
+                    <bb-btn-content
+                      [icon]="icons.faFolderOpen"
+                      [text]="'general.button.browse' | translate"
+                    ></bb-btn-content>
                   </button>
                 </div>
                 <input
