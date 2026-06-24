@@ -4,7 +4,13 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ServerRecord } from '@bitbutler/shared';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faSquare, faSquareCheck, faTrashCan } from '@fortawesome/free-regular-svg-icons';
-import { faPenToSquare, faPlug, faXmark } from '@fortawesome/free-solid-svg-icons';
+import {
+  faPenToSquare,
+  faPlug,
+  faServer,
+  faTrashCan as faTrashCanSolid,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
@@ -15,6 +21,7 @@ import { ServerStoreService } from '../../../services/server-store.service';
 import { ServerService } from '../../../services/server.service';
 import { ToastService } from '../../../services/toast.service';
 import { setModalInput } from '../../../utils/modal-input';
+import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
 import { ServerEditor } from '../server-editor/server-editor';
 
 @Component({
@@ -26,6 +33,7 @@ import { ServerEditor } from '../server-editor/server-editor';
     FontAwesomeModule,
     NgbTooltipModule,
     TooltipOverflow,
+    BbBtnContent,
   ],
   templateUrl: './manage-servers.html',
   styleUrl: './manage-servers.scss',
@@ -42,7 +50,15 @@ export class ManageServers {
   private readonly modalService = inject(NgbModal);
   public readonly activeModal = inject(NgbActiveModal);
 
-  public readonly icon = { faPenToSquare, faTrashCan, faXmark, faPlug, faSquare, faSquareCheck };
+  public readonly icon = {
+    faPenToSquare,
+    faTrashCan,
+    faXmark,
+    faPlug,
+    faSquare,
+    faSquareCheck,
+    faServer,
+  };
   readonly hideConnect = input(false);
   public readonly currentServerId = this.serverStoreService.currentServerId;
 
@@ -121,6 +137,9 @@ export class ManageServers {
         data: { name: server.name || server.host },
       },
       'general.button.delete',
+      undefined,
+      undefined,
+      faTrashCanSolid,
     );
     if (!confirmed) return;
 

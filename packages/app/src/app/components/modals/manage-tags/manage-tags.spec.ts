@@ -1,5 +1,6 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { ConfirmService } from '../../../services/confirm.service';
@@ -146,6 +147,9 @@ describe('ManageTags', () => {
         expect.any(String),
         expect.objectContaining({ data: { name: 'linux', count: 2 } }),
         expect.any(String),
+        undefined,
+        undefined,
+        faTrashCan,
       );
     });
 

@@ -44,10 +44,23 @@
   </form>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-primary" (click)="handleSubmit()" [disabled]="!canSave()">
-    {{ 'general.button.save' | translate }}
+  <button
+    type="button"
+    class="btn btn-primary btn-sm btn-split"
+    (click)="handleSubmit()"
+    [disabled]="!canSave()"
+  >
+    <bb-btn-content
+      [icon]="icons.faFloppyDisk"
+      [text]="'general.button.save' | translate"
+      position="end"
+    ></bb-btn-content>
   </button>
-  <button type="button" class="btn btn-link" (click)="activeModal.close()">
-    {{ 'general.button.cancel' | translate }}
+  <button type="button" class="btn btn-link btn-sm btn-split" (click)="activeModal.close()">
+    <bb-btn-content
+      [icon]="icons.faXmark"
+      [text]="'general.button.cancel' | translate"
+      position="end"
+    ></bb-btn-content>
   </button>
 </div>

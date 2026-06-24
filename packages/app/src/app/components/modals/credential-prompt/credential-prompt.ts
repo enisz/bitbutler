@@ -1,18 +1,22 @@
 import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { faPlug, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AutofocusDirective } from '../../../directives/autofocus';
+import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
 
 @Component({
   selector: 'app-credential-prompt',
-  imports: [ReactiveFormsModule, TranslatePipe, AutofocusDirective],
+  imports: [ReactiveFormsModule, TranslatePipe, AutofocusDirective, BbBtnContent],
   templateUrl: './credential-prompt.html',
   styleUrl: './credential-prompt.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CredentialPrompt {
   private readonly activeModal = inject(NgbActiveModal);
+
+  public icons = { faPlug, faXmark };
 
   readonly serverName = input.required<string>();
   readonly prefillUsername = input<string>('');

@@ -6,9 +6,11 @@ import { NewServer, ServerRecord } from '@bitbutler/shared';
 import {
   faCheck,
   faCircleNotch,
+  faFloppyDisk,
   faThumbsDown,
   faThumbsUp,
   faX,
+  faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -18,6 +20,7 @@ import { AutofocusDirective } from '../../../directives/autofocus';
 import { CommandBusService } from '../../../services/command-bus.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { ServerService } from '../../../services/server.service';
+import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
 import { BbPopover } from '../../bb-popover/bb-popover';
 import { ServerProtocol } from './server-editor.interface';
 
@@ -31,6 +34,7 @@ import { ServerProtocol } from './server-editor.interface';
     NgSelectModule,
     BbPopover,
     TranslatePipe,
+    BbBtnContent,
   ],
   templateUrl: './server-editor.html',
   styleUrl: './server-editor.scss',
@@ -50,6 +54,8 @@ export class ServerEditor implements OnInit {
     faCircleNotch,
     faCheck,
     faX,
+    faFloppyDisk,
+    faXmark,
   };
 
   public protocols = [

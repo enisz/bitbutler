@@ -9,6 +9,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { faFloppyDisk, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
@@ -16,6 +17,7 @@ import { Torrent } from '../../../models/torrent.model';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { ToastService } from '../../../services/toast.service';
+import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
 import { CategorySelect } from '../../category-select/category-select';
 
 @Component({
@@ -28,6 +30,7 @@ import { CategorySelect } from '../../category-select/category-select';
     NgbTooltip,
     TranslatePipe,
     TooltipOverflow,
+    BbBtnContent,
   ],
   templateUrl: './set-torrent-category.html',
   styleUrl: './set-torrent-category.scss',
@@ -44,6 +47,8 @@ export class SetTorrentCategory implements OnInit {
   private readonly translateService = inject(TranslateService);
 
   private readonly categorySelect = viewChild(CategorySelect);
+
+  public icons = { faFloppyDisk, faXmark };
 
   public readonly selected = computed(() => this.hashes().length);
   public saving = false;

@@ -131,10 +131,23 @@
 </div>
 
 <div class="modal-footer justify-content-end">
-  <button type="button" class="btn btn-primary" (click)="openEditor()" [disabled]="busy()">
-    {{ 'general.button.add-server' | translate }}
+  <button
+    type="button"
+    class="btn btn-primary btn-sm btn-split"
+    (click)="openEditor()"
+    [disabled]="busy()"
+  >
+    <bb-btn-content
+      [icon]="icon.faServer"
+      [text]="'general.button.add-server' | translate"
+      position="end"
+    ></bb-btn-content>
   </button>
-  <button type="button" class="btn btn-link" (click)="activeModal.dismiss()">
-    {{ 'general.button.close' | translate }}
+  <button type="button" class="btn btn-link btn-sm btn-split" (click)="activeModal.dismiss()">
+    <bb-btn-content
+      [icon]="icon.faXmark"
+      [text]="'general.button.close' | translate"
+      position="end"
+    ></bb-btn-content>
   </button>
 </div>

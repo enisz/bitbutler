@@ -47,8 +47,11 @@
 
   @if (hasAnyFilter()) {
     <div class="clear-all-bar">
-      <button class="btn btn-clear-all w-100" type="button" (click)="clearAll()">
-        {{ 'pages.main.status.clear-all' | translate }}
+      <button class="btn btn-clear-all w-100 btn-split" type="button" (click)="clearAll()">
+        <bb-btn-content
+          [icon]="icon.faEraser"
+          [text]="'pages.main.status.clear-all' | translate"
+        ></bb-btn-content>
       </button>
     </div>
   }

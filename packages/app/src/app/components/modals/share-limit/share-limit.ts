@@ -8,6 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { faEraser, faFloppyDisk, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AutofocusDirective } from '../../../directives/autofocus';
@@ -17,6 +18,7 @@ import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { ToastService } from '../../../services/toast.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
+import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
 import { BbSpinner } from '../../bb-spinner/bb-spinner';
 import { ShareLimit as ShareLimitForm, ShareLimitValue } from '../../share-limit/share-limit';
 
@@ -30,6 +32,7 @@ import { ShareLimit as ShareLimitForm, ShareLimitValue } from '../../share-limit
     TooltipOverflow,
     BbSpinner,
     AutofocusDirective,
+    BbBtnContent,
   ],
   templateUrl: './share-limit.html',
   styleUrl: './share-limit.scss',
@@ -42,6 +45,8 @@ export class ShareLimit implements OnInit {
   private readonly torrentStoreService = inject(TorrentStoreService);
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
+
+  public readonly icons = { faFloppyDisk, faEraser, faXmark };
 
   readonly target = input<LimitTargetType>('torrent');
   readonly hashes = input<string[]>([]);

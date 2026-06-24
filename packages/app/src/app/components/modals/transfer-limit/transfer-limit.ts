@@ -8,6 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { faEraser, faFloppyDisk, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AutofocusDirective } from '../../../directives/autofocus';
@@ -17,6 +18,7 @@ import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { ToastService } from '../../../services/toast.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
+import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
 import { BbSpinner } from '../../bb-spinner/bb-spinner';
 import {
   TransferLimit as TransferLimitForm,
@@ -33,6 +35,7 @@ import {
     TooltipOverflow,
     BbSpinner,
     AutofocusDirective,
+    BbBtnContent,
   ],
   templateUrl: './transfer-limit.html',
   styleUrl: './transfer-limit.scss',
@@ -48,6 +51,8 @@ export class TransferLimit implements OnInit {
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
   public activeModal = inject(NgbActiveModal);
+
+  public readonly icons = { faFloppyDisk, faEraser, faXmark };
 
   public form = new FormGroup({
     transferRateLimits: new FormControl<TransferLimitValue | null>(null),

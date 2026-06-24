@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, input, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { faFloppyDisk, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AutofocusDirective } from '../../../directives/autofocus';
@@ -8,16 +9,26 @@ import { Torrent } from '../../../models/torrent.model';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { ToastService } from '../../../services/toast.service';
+import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
 
 @Component({
   selector: 'app-rename-torrent',
-  imports: [ReactiveFormsModule, AutofocusDirective, NgbTooltip, TranslatePipe, TooltipOverflow],
+  imports: [
+    ReactiveFormsModule,
+    AutofocusDirective,
+    NgbTooltip,
+    TranslatePipe,
+    TooltipOverflow,
+    BbBtnContent,
+  ],
   templateUrl: './rename-torrent.html',
   styleUrl: './rename-torrent.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RenameTorrent implements OnInit {
   readonly torrent = input.required<Torrent>();
+
+  public icons = { faFloppyDisk, faXmark };
 
   private readonly qbService = inject(QbService);
   private readonly serverStoreService = inject(ServerStoreService);

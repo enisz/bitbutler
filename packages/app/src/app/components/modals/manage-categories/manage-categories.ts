@@ -10,7 +10,13 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faEdit, faTrashCan } from '@fortawesome/free-regular-svg-icons';
-import { faCheck, faX, faXmark } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCheck,
+  faPlus,
+  faTrashCan as faTrashCanSolid,
+  faX,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AutofocusDirective } from '../../../directives/autofocus';
@@ -21,6 +27,7 @@ import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { ToastService } from '../../../services/toast.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
+import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
 import { BbSpinner } from '../../bb-spinner/bb-spinner';
 import { SavePathSelect } from '../../save-path-select/save-path-select';
 
@@ -42,6 +49,7 @@ interface CategoryItem {
     AutofocusDirective,
     TooltipOverflow,
     SavePathSelect,
+    BbBtnContent,
   ],
   templateUrl: './manage-categories.html',
   styleUrl: './manage-categories.scss',
@@ -56,7 +64,7 @@ export class ManageCategories implements OnInit, GuardableModal {
   private readonly translateService = inject(TranslateService);
   public readonly activeModal = inject(NgbActiveModal);
 
-  public readonly icon = { faEdit, faTrashCan, faCheck, faX, faXmark };
+  public readonly icon = { faEdit, faTrashCan, faCheck, faX, faXmark, faPlus };
 
   public categories = signal<CategoryItem[]>([]);
   private readonly isEditing = computed(() => this.categories().some((c) => c.editing));
@@ -188,6 +196,9 @@ export class ManageCategories implements OnInit, GuardableModal {
         data: { name: item.name, count },
       },
       'general.button.delete',
+      undefined,
+      undefined,
+      faTrashCanSolid,
     );
     if (!confirmed) return;
 

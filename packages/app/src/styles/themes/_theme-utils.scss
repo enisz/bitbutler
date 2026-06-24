@@ -21,6 +21,7 @@
     --bs-btn-color: var(--bb-#{$variant}-ink);
     --bs-btn-bg: #{$c};
     --bs-btn-border-color: #{$c};
+    --bs-btn-split-icon-bg: color-mix(in srgb, #{$c} 85%, var(--bb-black) 15%);
 
     --bs-btn-hover-color: var(--bs-btn-color);
     --bs-btn-hover-bg: color-mix(in srgb, #{$c} 88%, var(--bb-black) 12%);
@@ -42,6 +43,7 @@
   .btn-outline-#{$variant} {
     --bs-btn-color: #{$c};
     --bs-btn-border-color: #{$c};
+    --bs-btn-split-icon-bg: color-mix(in srgb, #{$c} 12%, transparent);
 
     --bs-btn-hover-color: var(--bb-#{$variant}-ink);
     --bs-btn-hover-bg: #{$c};
@@ -63,6 +65,7 @@
     --bs-btn-color: #{$c};
     --bs-btn-bg: transparent;
     --bs-btn-border-color: #{$c};
+    --bs-btn-split-icon-bg: color-mix(in srgb, #{$c} 12%, transparent);
 
     --bs-btn-hover-color: #{$c};
     --bs-btn-hover-bg: color-mix(in srgb, #{$c} 10%, transparent);

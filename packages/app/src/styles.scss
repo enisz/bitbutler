@@ -21,6 +21,30 @@
   }
 }
 
+.btn-split {
+  display: inline-flex;
+  align-items: stretch;
+  padding: 0 !important;
+  overflow: hidden;
+
+  .btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--bs-btn-padding-y) calc(var(--bs-btn-padding-x) * 0.75);
+    background-color: var(
+      --bs-btn-split-icon-bg,
+      color-mix(in srgb, currentColor 10%, transparent)
+    );
+  }
+
+  .btn-text {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--bs-btn-padding-y) var(--bs-btn-padding-x);
+  }
+}
+
 .card {
   box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
   border-radius: 0.75rem;

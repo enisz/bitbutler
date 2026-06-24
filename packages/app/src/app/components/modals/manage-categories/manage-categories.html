@@ -26,12 +26,16 @@
         </label>
       </div>
       <button
-        class="btn btn-outline-primary"
+        class="btn btn-outline-primary btn-split"
         type="button"
         (click)="add()"
         [disabled]="!(addForm.get('name')?.value ?? '').trim() || adding()"
       >
-        {{ 'general.button.add' | translate }}
+        <bb-btn-content
+          [icon]="icon.faPlus"
+          [text]="'general.button.add' | translate"
+          position="end"
+        ></bb-btn-content>
       </button>
     </div>
     <div class="mb-3">
@@ -163,7 +167,11 @@
 </div>
 
 <div class="modal-footer">
-  <button type="button" class="btn btn-link" (click)="activeModal.dismiss()">
-    {{ 'general.button.close' | translate }}
+  <button type="button" class="btn btn-link btn-sm btn-split" (click)="activeModal.dismiss()">
+    <bb-btn-content
+      [icon]="icon.faXmark"
+      [text]="'general.button.close' | translate"
+      position="end"
+    ></bb-btn-content>
   </button>
 </div>

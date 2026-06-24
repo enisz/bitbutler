@@ -17,7 +17,16 @@ import type {
   ImportStartPayload,
 } from '@bitbutler/shared';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { faMinus, faPlus, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
+import {
+  faFileImport,
+  faForward,
+  faMinus,
+  faPause,
+  faPlay,
+  faPlus,
+  faTriangleExclamation,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { QbSettings } from '../../../pages/qb-settings/qb-settings';
@@ -25,6 +34,7 @@ import { LocalTimestampPipe } from '../../../pipes/local-timestamp-pipe';
 import { ExportService } from '../../../services/export.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { setModalInput } from '../../../utils/modal-input';
+import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
 import { BbPopover } from '../../bb-popover/bb-popover';
 import { BbProgress } from '../../bb-progress/bb-progress';
 
@@ -39,6 +49,7 @@ import { BbProgress } from '../../bb-progress/bb-progress';
     BbPopover,
     LocalTimestampPipe,
     NgbTooltip,
+    BbBtnContent,
   ],
   templateUrl: './import-torrents.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -79,7 +90,16 @@ export class ImportTorrents implements OnInit {
     return this.legacyUnsupportedFields.includes(field);
   }
 
-  readonly icons = { faMinus, faPlus, faTriangleExclamation };
+  readonly icons = {
+    faMinus,
+    faPlus,
+    faTriangleExclamation,
+    faPause,
+    faPlay,
+    faForward,
+    faFileImport,
+    faXmark,
+  };
 
   readonly phase = this.exportService.importPhase;
   readonly state = this.exportService.importState;

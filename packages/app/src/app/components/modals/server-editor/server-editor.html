@@ -144,13 +144,21 @@
 <div class="modal-footer">
   <button
     type="button"
-    class="btn btn-primary"
+    class="btn btn-primary btn-sm btn-split"
     (click)="handleSave()"
     [disabled]="!canSave() || processing()"
   >
-    {{ (editMode() ? 'general.button.update' : 'general.button.save') | translate }}
+    <bb-btn-content
+      [icon]="icons.faFloppyDisk"
+      [text]="(editMode() ? 'general.button.update' : 'general.button.save') | translate"
+      position="end"
+    ></bb-btn-content>
   </button>
-  <button type="button" class="btn btn-link" (click)="close()">
-    {{ 'general.button.cancel' | translate }}
+  <button type="button" class="btn btn-link btn-sm btn-split" (click)="close()">
+    <bb-btn-content
+      [icon]="icons.faXmark"
+      [text]="'general.button.cancel' | translate"
+      position="end"
+    ></bb-btn-content>
   </button>
 </div>

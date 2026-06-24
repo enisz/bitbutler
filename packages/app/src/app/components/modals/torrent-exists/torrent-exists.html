@@ -99,22 +99,39 @@
     </dl>
   </div>
 
-  <div class="modal-footer">
+  <div class="modal-footer d-flex flex-row">
     @if (showDeleteButton()) {
       <button
         type="button"
-        class="btn btn-danger"
+        class="btn btn-danger btn-sm me-auto"
         [disabled]="fileDeleted()"
+        [ngbTooltip]="'components.modals.torrent-exists.button.delete-file' | translate"
+        [attr.aria-label]="'components.modals.torrent-exists.button.delete-file' | translate"
+        placement="top"
+        tooltipClass="single-line-tooltip"
         (click)="deleteTorrentFile()"
       >
-        {{ 'components.modals.torrent-exists.button.delete-file' | translate }}
+        <fa-icon [icon]="icons.faTrashCan" aria-hidden="true"></fa-icon>
       </button>
     }
-    <button type="button" class="btn btn-dashed-secondary" (click)="openDetails()" autofocus>
-      {{ 'general.button.open-details' | translate }}
+    <button
+      type="button"
+      class="btn btn-dashed-info btn-sm btn-split ms-auto"
+      (click)="openDetails()"
+      autofocus
+    >
+      <bb-btn-content
+        [icon]="icons.faCircleInfo"
+        [text]="'general.button.open-details' | translate"
+        position="end"
+      ></bb-btn-content>
     </button>
-    <button type="button" class="btn btn-link" (click)="closeModal()">
-      {{ 'general.button.close' | translate }}
+    <button type="button" class="btn btn-link btn-sm btn-split" (click)="closeModal()">
+      <bb-btn-content
+        [icon]="icons.faXmark"
+        [text]="'general.button.close' | translate"
+        position="end"
+      ></bb-btn-content>
     </button>
   </div>
 }

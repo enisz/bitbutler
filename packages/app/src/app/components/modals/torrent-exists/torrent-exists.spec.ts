@@ -1,8 +1,10 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { TimeagoIntl, provideTimeago } from 'ngx-timeago';
 import { Subject, of } from 'rxjs';
 import { DEFAULT_GENERAL_SETTINGS } from '../../../models/general-settings.model';
+import { Torrent } from '../../../models/torrent.model';
 import { CommandBusService } from '../../../services/command-bus.service';
 import { FilterService } from '../../../services/filter.service';
 import { GeneralSettingsService } from '../../../services/general-settings.service';
@@ -10,6 +12,61 @@ import { SelectionStoreService } from '../../../services/selection-store.service
 import { ToastService } from '../../../services/toast.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { TorrentExists } from './torrent-exists';
+
+const makeTorrent = (overrides: Partial<Torrent> = {}): Torrent => ({
+  added_on: 1700000000,
+  amount_left: 0,
+  auto_tmm: false,
+  availability: 0,
+  category: '',
+  completed: 0,
+  completion_on: 0,
+  content_path: '',
+  dl_limit: 0,
+  dlspeed: 0,
+  download_path: '',
+  downloaded: 0,
+  downloaded_session: 0,
+  eta: 0,
+  f_l_piece_prio: false,
+  force_start: false,
+  hash: 'abc123',
+  inactive_seeding_time_limit: 0,
+  infohash_v1: '',
+  infohash_v2: '',
+  last_activity: 0,
+  magnet_uri: '',
+  max_inactive_seeding_time: 0,
+  max_ratio: 0,
+  max_seeding_time: 0,
+  name: 'My Torrent',
+  num_complete: 0,
+  num_incomplete: 0,
+  num_leechs: 0,
+  num_seeds: 0,
+  priority: 0,
+  progress: 0,
+  ratio: 0,
+  ratio_limit: 0,
+  save_path: '',
+  seeding_time: 0,
+  seeding_time_limit: 0,
+  seen_complete: 0,
+  seq_dl: false,
+  size: 0,
+  state: 'downloading',
+  super_seeding: false,
+  tags: '',
+  time_active: 0,
+  total_size: 0,
+  tracker: '',
+  trackers_count: 0,
+  up_limit: 0,
+  uploaded: 0,
+  uploaded_session: 0,
+  upspeed: 0,
+  ...overrides,
+});
 
 describe('TorrentExists', () => {
   let component: TorrentExists;
@@ -180,6 +237,72 @@ describe('TorrentExists', () => {
         type: 'UI_OPEN_TORRENT_DETAILS',
         hash: 'abc123',
       });
+    });
+  });
+
+  describe('delete button rendering', () => {
+    let renderFixture: ComponentFixture<TorrentExists>;
+
+    beforeEach(async () => {
+      const torrentMap = new Map([['abc123', makeTorrent({ hash: 'abc123' })]]);
+
+      const mockTorrentStoreLocal: Partial<TorrentStoreService> = {
+        torrentsMap: signal(torrentMap) as any,
+      };
+
+      await TestBed.resetTestingModule();
+      await TestBed.configureTestingModule({
+        imports: [TorrentExists],
+        providers: [
+          { provide: NgbActiveModal, useValue: { close: vi.fn(), dismiss: vi.fn() } },
+          { provide: TorrentStoreService, useValue: mockTorrentStoreLocal },
+          { provide: SelectionStoreService, useValue: { setByHashes: vi.fn() } },
+          { provide: FilterService, useValue: { resetAll: vi.fn() } },
+          {
+            provide: CommandBusService,
+            useValue: { commands$: new Subject<any>().asObservable(), emit: vi.fn() },
+          },
+          {
+            provide: GeneralSettingsService,
+            useValue: {
+              asObservable: vi.fn().mockReturnValue(
+                of({
+                  ...DEFAULT_GENERAL_SETTINGS,
+                  behavior: { ...DEFAULT_GENERAL_SETTINGS.behavior, deleteTorrentFile: true },
+                }),
+              ),
+            },
+          },
+          { provide: ToastService, useValue: { success: vi.fn(), danger: vi.fn() } },
+          provideTimeago({ intl: { provide: TimeagoIntl, useClass: TimeagoIntl } }),
+        ],
+      }).compileComponents();
+
+      renderFixture = TestBed.createComponent(TorrentExists);
+      renderFixture.componentRef.setInput('hash', 'abc123');
+      renderFixture.componentRef.setInput('originalPath', '/tmp/test.torrent');
+      renderFixture.detectChanges();
+    });
+
+    it('should render the delete button icon-only with an aria-label and no visible text', () => {
+      const deleteButton: HTMLButtonElement = renderFixture.nativeElement.querySelector(
+        '.modal-footer .btn-danger',
+      );
+
+      expect(deleteButton.textContent?.trim()).toBe('');
+      expect(deleteButton.getAttribute('aria-label')).toBe(
+        'components.modals.torrent-exists.button.delete-file',
+      );
+      expect(deleteButton.querySelector('fa-icon')).toBeTruthy();
+    });
+
+    it('should pin the delete button to the left with me-auto and drop btn-split', () => {
+      const deleteButton: HTMLButtonElement = renderFixture.nativeElement.querySelector(
+        '.modal-footer .btn-danger',
+      );
+
+      expect(deleteButton.classList.contains('me-auto')).toBe(true);
+      expect(deleteButton.classList.contains('btn-split')).toBe(false);
     });
   });
 });

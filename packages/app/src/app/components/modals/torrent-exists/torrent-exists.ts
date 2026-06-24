@@ -8,6 +8,8 @@ import {
   signal,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faCircleInfo, faTrashCan, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TimeagoPipe } from 'ngx-timeago';
@@ -22,6 +24,7 @@ import { GeneralSettingsService } from '../../../services/general-settings.servi
 import { SelectionStoreService } from '../../../services/selection-store.service';
 import { ToastService } from '../../../services/toast.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
+import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
 import { BbProgress } from '../../bb-progress/bb-progress';
 
 @Component({
@@ -37,6 +40,8 @@ import { BbProgress } from '../../bb-progress/bb-progress';
     NgbTooltip,
     TranslatePipe,
     BbProgress,
+    BbBtnContent,
+    FontAwesomeModule,
   ],
   styleUrls: ['./torrent-exists.scss'],
   templateUrl: './torrent-exists.html',
@@ -57,6 +62,8 @@ export class TorrentExists {
   private readonly generalSettings = toSignal(this.generalSettingsService.asObservable(), {
     initialValue: null,
   });
+
+  public icons = { faCircleInfo, faTrashCan, faXmark };
 
   public readonly fileDeleted = signal(false);
 

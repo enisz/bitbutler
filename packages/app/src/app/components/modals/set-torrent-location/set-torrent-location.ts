@@ -8,6 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { faFloppyDisk, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
@@ -15,11 +16,19 @@ import { Torrent } from '../../../models/torrent.model';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { ToastService } from '../../../services/toast.service';
+import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
 import { SavePathSelect } from '../../save-path-select/save-path-select';
 
 @Component({
   selector: 'app-set-torrent-location',
-  imports: [ReactiveFormsModule, SavePathSelect, NgbTooltip, TranslatePipe, TooltipOverflow],
+  imports: [
+    ReactiveFormsModule,
+    SavePathSelect,
+    NgbTooltip,
+    TranslatePipe,
+    TooltipOverflow,
+    BbBtnContent,
+  ],
   templateUrl: './set-torrent-location.html',
   styleUrl: './set-torrent-location.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,6 +42,9 @@ export class SetTorrentLocation implements OnInit {
   private readonly qbService = inject(QbService);
   public readonly activeModal = inject(NgbActiveModal);
   private readonly translateService = inject(TranslateService);
+
+  public icons = { faFloppyDisk, faXmark };
+
   public setLocationForm = new FormGroup({
     path: new FormControl<string | null>(null),
   });

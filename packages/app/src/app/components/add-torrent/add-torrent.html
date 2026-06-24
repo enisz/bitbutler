@@ -86,14 +86,22 @@
 <div class="modal-footer">
   <button
     type="button"
-    class="btn btn-primary"
+    class="btn btn-primary btn-sm btn-split"
     (click)="handleSubmit($event)"
     [disabled]="!canSubmit()"
     [autofocus]="addForm.controls.fileGroup.controls.file.value.length === 0"
   >
-    {{ 'general.button.add' | translate }}
+    <bb-btn-content
+      [icon]="icons.faPlus"
+      [text]="'general.button.add' | translate"
+      position="end"
+    ></bb-btn-content>
   </button>
-  <button type="button" class="btn btn-link" (click)="handleCancel()">
-    {{ 'general.button.cancel' | translate }}
+  <button type="button" class="btn btn-link btn-sm btn-split" (click)="handleCancel()">
+    <bb-btn-content
+      [icon]="icons.faXmark"
+      [text]="'general.button.cancel' | translate"
+      position="end"
+    ></bb-btn-content>
   </button>
 </div>

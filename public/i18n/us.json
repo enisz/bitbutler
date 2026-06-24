@@ -1268,7 +1268,7 @@
           "general-settings-form": {
             "behavior": {
               "delete-torrent-after-added": "Delete torrent files after adding them to the list.",
-              "automatic-update": "Check for updates automatically on every application start.",
+              "automatic-update": "Automatic updates",
               "check-for-update": "Check for Updates now",
               "notification-position": "In-application notification position"
             },
@@ -1323,6 +1323,10 @@
             "start-minimized": {
               "title": "Start Minimized",
               "description": "Hide the application window on startup. The app will be accessible from the system tray. Requires \"Start with system\" to be enabled."
+            },
+            "automatic-update": {
+              "title": "Automatic Updates",
+              "description": "Check for updates automatically on every application start."
             }
           }
         },
