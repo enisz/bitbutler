@@ -44,36 +44,39 @@
         </div>
       </div>
     </div>
-
-    <hr class="my-4 opacity-10" />
-
-    <div class="d-flex justify-content-between align-items-center">
-      <div class="d-flex gap-2">
-        <button
-          class="btn btn-sm btn-dashed-secondary btn-split"
-          (click)="openExternalUrl('https://github.com/enisz/bitbutler')"
-        >
-          <bb-btn-content [icon]="icons.faGithub" text="github@bitbutler"></bb-btn-content>
-        </button>
-        <button
-          class="btn btn-sm btn-dashed-secondary btn-split"
-          (click)="openExternalUrl('https://github.com/enisz')"
-        >
-          <bb-btn-content [icon]="icons.faUser" text="@enisz"></bb-btn-content>
-        </button>
-      </div>
-
-      <button
-        type="button"
-        class="btn btn-sm btn-link btn-split"
-        (click)="activeModal.close()"
-        autofocus
-      >
-        <bb-btn-content
-          [icon]="icons.faXmark"
-          [text]="'general.button.close' | translate"
-        ></bb-btn-content>
-      </button>
-    </div>
   </div>
+</div>
+
+<div class="modal-footer justify-content-between">
+  <div class="d-flex gap-2">
+    <button
+      class="btn btn-sm btn-dashed-secondary btn-split"
+      (click)="openExternalUrl('https://github.com/enisz/bitbutler')"
+    >
+      <bb-btn-content
+        [icon]="icons.faGithub"
+        text="github@bitbutler"
+        position="end"
+      ></bb-btn-content>
+    </button>
+    <button
+      class="btn btn-sm btn-dashed-secondary btn-split"
+      (click)="openExternalUrl('https://github.com/enisz')"
+    >
+      <bb-btn-content [icon]="icons.faUser" text="@enisz" position="end"></bb-btn-content>
+    </button>
+  </div>
+
+  <button
+    type="button"
+    class="btn btn-sm btn-link btn-split"
+    (click)="activeModal.close()"
+    autofocus
+  >
+    <bb-btn-content
+      [icon]="icons.faXmark"
+      [text]="'general.button.close' | translate"
+      position="end"
+    ></bb-btn-content>
+  </button>
 </div>

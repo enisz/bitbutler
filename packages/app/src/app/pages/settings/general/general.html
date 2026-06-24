@@ -110,7 +110,7 @@
             </div>
           </div>
           <div class="row mt-2 mb-3">
-            <div class="col-9">
+            <div class="col-6">
               <div class="form-check form-switch">
                 <input
                   class="form-check-input"
@@ -119,13 +119,23 @@
                   id="automatic-update"
                   formControlName="automaticUpdate"
                 />
-                <label class="form-check-label" for="automatic-update">{{
-                  'pages.settings.tab.general.general-settings-form.behavior.automatic-update'
-                    | translate
-                }}</label>
+                <label class="form-check-label" for="automatic-update">
+                  {{
+                    'pages.settings.tab.general.general-settings-form.behavior.automatic-update'
+                      | translate
+                  }}
+                  <bb-popover
+                    [subject]="
+                      'pages.settings.tab.general.popover.automatic-update.title' | translate
+                    "
+                    [description]="
+                      'pages.settings.tab.general.popover.automatic-update.description' | translate
+                    "
+                  ></bb-popover>
+                </label>
               </div>
             </div>
-            <div class="col-3 d-flex justify-content-end">
+            <div class="col-6 d-flex justify-content-end">
               <button type="button" class="btn btn-sm btn-link btn-split" (click)="checkUpdates()">
                 <bb-btn-content
                   [icon]="icons['faArrowsRotate']"

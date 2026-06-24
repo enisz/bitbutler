@@ -1268,7 +1268,7 @@
           "general-settings-form": {
             "behavior": {
               "delete-torrent-after-added": "Torrent fájlok törlése a listához adás után.",
-              "automatic-update": "Frissítések automatikus keresése minden indításkor.",
+              "automatic-update": "Automatikus frissítés",
               "check-for-update": "Frissítések keresése most",
               "notification-position": "Alkalmazáson belüli értesítések helye"
             },
@@ -1323,6 +1323,10 @@
             "start-minimized": {
               "title": "Indítás minimalizálva",
               "description": "Az alkalmazás ablaka el van rejtve indításkor. Az alkalmazás a rendszertálcáról érhető el. A \"Rendszerrel való indítás\" beállítást igényli."
+            },
+            "automatic-update": {
+              "title": "Automatikus frissítés",
+              "description": "Frissítések automatikus keresése minden indításkor."
             }
           }
         },
