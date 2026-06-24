@@ -137,6 +137,24 @@ describe('TorrentCommandHandlerService', () => {
     expect(qbService.torrents.delete).not.toHaveBeenCalled();
   });
 
+  it('should delete exactly the overridden hashes when TORRENT_DELETE_CONFIRM includes hashes', async () => {
+    commands$.next({ type: 'TORRENT_DELETE_CONFIRM', removeFiles: true, hashes: ['only-this'] });
+    await flushPromises();
+    expect(qbService.torrents.delete).toHaveBeenCalledWith('server-1', ['only-this'], true);
+  });
+
+  it('should not clear the grid selection when deleting an overridden hash set', async () => {
+    commands$.next({ type: 'TORRENT_DELETE_CONFIRM', removeFiles: true, hashes: ['only-this'] });
+    await flushPromises();
+    expect(selectionStore.clear).not.toHaveBeenCalled();
+  });
+
+  it('should emit TORRENT_DELETED for each overridden hash', async () => {
+    commands$.next({ type: 'TORRENT_DELETE_CONFIRM', removeFiles: true, hashes: ['only-this'] });
+    await flushPromises();
+    expect(commandBusEmit).toHaveBeenCalledWith({ type: 'TORRENT_DELETED', hash: 'only-this' });
+  });
+
   it('should call pauseTorrents and show an info toast on TORRENT_PAUSE', async () => {
     commands$.next({ type: 'TORRENT_PAUSE' });
     await flushPromises();

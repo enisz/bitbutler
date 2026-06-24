@@ -27,7 +27,7 @@ export class TorrentCommandHandlerService {
       .subscribe((cmd) => {
         switch (cmd.type) {
           case 'TORRENT_DELETE_CONFIRM':
-            void this.handleDelete(cmd.removeFiles);
+            void this.handleDelete(cmd.removeFiles, cmd.hashes);
             break;
           case 'TORRENT_PAUSE':
             void this.handlePause();
@@ -204,9 +204,9 @@ export class TorrentCommandHandlerService {
     return command.type.startsWith('TORRENT_') || command.type.startsWith('QUEUE_');
   }
 
-  private async handleDelete(removeFiles: boolean): Promise<void> {
+  private async handleDelete(removeFiles: boolean, hashesOverride?: string[]): Promise<void> {
     const serverId = this.serverStore.currentServerId();
-    const hashes = this.selectionStore.selectedHashes();
+    const hashes = hashesOverride ?? this.selectionStore.selectedHashes();
 
     if (!serverId) return;
     if (hashes.length === 0) return;
@@ -216,7 +216,7 @@ export class TorrentCommandHandlerService {
       for (const hash of hashes) {
         this.commandBusService.emit({ type: 'TORRENT_DELETED', hash });
       }
-      this.selectionStore.clear();
+      if (!hashesOverride) this.selectionStore.clear();
     } catch (error: any) {
       console.error('Delete failed', error);
       this.toastService.danger(
