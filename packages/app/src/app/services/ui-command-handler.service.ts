@@ -70,19 +70,26 @@ export class UiCommandHandlerService {
       .pipe(filter(this.uiCommandGuard), takeUntilDestroyed(this.destroyRef))
       .subscribe((command: AppCommand) => {
         switch (command.type) {
-          case 'UI_TORRENT_DELETE_REQUEST':
-            if (this.selectionStoreService.selected().length === 0) return;
+          case 'UI_TORRENT_DELETE_REQUEST': {
+            const deleteHashes = command.hashes ?? this.selectionStoreService.selectedHashes();
+            if (deleteHashes.length === 0) return;
             if (this.isModalOpen(DeleteTorrent)) break;
 
             const deleteModalRef = this.modalService.open(DeleteTorrent);
             setModalInput(deleteModalRef, 'defaultRemoveFiles', command.defaultRemoveFiles);
+            setModalInput(deleteModalRef, 'hashes', command.hashes);
 
             deleteModalRef.result
               .then(({ removeFiles }) =>
-                this.commandBusService.emit({ type: 'TORRENT_DELETE_CONFIRM', removeFiles }),
+                this.commandBusService.emit({
+                  type: 'TORRENT_DELETE_CONFIRM',
+                  removeFiles,
+                  hashes: command.hashes,
+                }),
               )
               .catch(() => {});
             break;
+          }
 
           case 'UI_OPEN_SETTINGS': {
             if (this.isModalOpen(Settings)) break;

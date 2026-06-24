@@ -8,7 +8,7 @@ export type LimitTargetType = 'global' | 'torrent';
 
 export type UiCommand =
   | { type: 'UI_SERVER_EDITOR_OPEN'; id?: string }
-  | { type: 'UI_TORRENT_DELETE_REQUEST'; defaultRemoveFiles?: boolean }
+  | { type: 'UI_TORRENT_DELETE_REQUEST'; defaultRemoveFiles?: boolean; hashes?: string[] }
   | { type: 'UI_OPEN_SETTINGS'; tabToOpen?: SettingsTabId }
   | { type: 'UI_OPEN_QB_SETTINGS' }
   | { type: 'UI_OPEN_TORRENT_DETAILS'; hash: string }
@@ -39,7 +39,7 @@ export type UiCommand =
   | { type: 'UI_SCROLL_TO_TORRENT'; hash: string };
 
 export type TorrentCommand =
-  | { type: 'TORRENT_DELETE_CONFIRM'; removeFiles: boolean }
+  | { type: 'TORRENT_DELETE_CONFIRM'; removeFiles: boolean; hashes?: string[] }
   | { type: 'TORRENT_DELETED'; hash: string }
   | { type: 'TORRENT_PAUSE' }
   | { type: 'TORRENT_RESUME' }

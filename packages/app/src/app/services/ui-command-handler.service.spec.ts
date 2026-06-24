@@ -11,6 +11,8 @@ import { ServerStoreService } from './server-store.service';
 import { ToastService } from './toast.service';
 import { UiCommandHandlerService } from './ui-command-handler.service';
 
+const flushPromises = () => new Promise<void>((resolve) => setTimeout(resolve));
+
 describe('UiCommandHandlerService', () => {
   let service: UiCommandHandlerService;
   let commands$: Subject<any>;
@@ -32,6 +34,7 @@ describe('UiCommandHandlerService', () => {
 
     selectionStore = {
       selected: signal([{ hash: 'abc' }]),
+      selectedHashes: signal(['abc']),
     };
 
     TestBed.configureTestingModule({
@@ -71,10 +74,48 @@ describe('UiCommandHandlerService', () => {
     expect(mockModalService.open).toHaveBeenCalled();
   });
 
-  it('should not open DeleteTorrent modal when selection is empty', () => {
-    selectionStore.selected.set([]);
+  it('should not open DeleteTorrent modal when selection is empty and no hashes override is given', () => {
+    selectionStore.selectedHashes.set([]);
     commands$.next({ type: 'UI_TORRENT_DELETE_REQUEST', defaultRemoveFiles: false });
     expect(mockModalService.open).not.toHaveBeenCalled();
+  });
+
+  it('should open DeleteTorrent modal when hashes are provided even if selection is empty', () => {
+    selectionStore.selectedHashes.set([]);
+    commands$.next({ type: 'UI_TORRENT_DELETE_REQUEST', hashes: ['xyz'] });
+    expect(mockModalService.open).toHaveBeenCalled();
+  });
+
+  it('should forward the hashes override into the emitted TORRENT_DELETE_CONFIRM command', async () => {
+    mockModalService.open.mockReturnValueOnce({
+      componentInstance: {},
+      result: Promise.resolve({ removeFiles: true }),
+    });
+
+    commands$.next({ type: 'UI_TORRENT_DELETE_REQUEST', hashes: ['xyz'] });
+    await flushPromises();
+
+    expect(commandBusEmit).toHaveBeenCalledWith({
+      type: 'TORRENT_DELETE_CONFIRM',
+      removeFiles: true,
+      hashes: ['xyz'],
+    });
+  });
+
+  it('should forward undefined hashes into TORRENT_DELETE_CONFIRM when no override is given', async () => {
+    mockModalService.open.mockReturnValueOnce({
+      componentInstance: {},
+      result: Promise.resolve({ removeFiles: false }),
+    });
+
+    commands$.next({ type: 'UI_TORRENT_DELETE_REQUEST' });
+    await flushPromises();
+
+    expect(commandBusEmit).toHaveBeenCalledWith({
+      type: 'TORRENT_DELETE_CONFIRM',
+      removeFiles: false,
+      hashes: undefined,
+    });
   });
 
   it('should open Settings modal for UI_OPEN_SETTINGS', () => {
