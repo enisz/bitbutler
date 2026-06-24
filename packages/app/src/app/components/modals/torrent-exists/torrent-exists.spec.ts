@@ -1,7 +1,7 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { TimeagoCustomFormatter, TimeagoFormatter, TimeagoIntl, provideTimeago } from 'ngx-timeago';
+import { TimeagoIntl, provideTimeago } from 'ngx-timeago';
 import { Subject, of } from 'rxjs';
 import { DEFAULT_GENERAL_SETTINGS } from '../../../models/general-settings.model';
 import { Torrent } from '../../../models/torrent.model';
@@ -274,10 +274,7 @@ describe('TorrentExists', () => {
             },
           },
           { provide: ToastService, useValue: { success: vi.fn(), danger: vi.fn() } },
-          provideTimeago({
-            intl: { provide: TimeagoIntl, useClass: TimeagoIntl },
-            formatter: { provide: TimeagoFormatter, useClass: TimeagoCustomFormatter },
-          }),
+          provideTimeago({ intl: { provide: TimeagoIntl, useClass: TimeagoIntl } }),
         ],
       }).compileComponents();
 
