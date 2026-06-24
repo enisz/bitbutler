@@ -23,11 +23,11 @@ The "Delete Torrent File" button is the longest label and the only conditional o
 
 "Open Details" and "Close" are unchanged - they keep their full icon+text `btn-split` styling.
 
-No new CSS is introduced; this relies entirely on the existing `.btn-split` styles (now unused by the Delete button), the existing `ngbTooltip` directive already used elsewhere in this same template (the hash and save-path tooltips), and Bootstrap's built-in `me-auto` utility.
+No new CSS is introduced; this relies on the existing `.btn-split` styles (still used by "Open Details" and "Close"; no longer applied to Delete), the existing `ngbTooltip` directive already used elsewhere in this same template (the hash and save-path tooltips), and Bootstrap's built-in `me-auto` utility.
 
 ### Modal size revert (`add-torrent.ts`)
 
-Both call sites that open `TorrentExists` (around line 380 and line 499) currently pass `{ centered: true, size: 'lg' }`. Revert to `{ centered: true }` now that the footer fits at the default width.
+Both call sites that open `TorrentExists` (line 380 and line 499) currently pass `{ centered: true, size: 'lg' }`. Revert to `{ centered: true }` now that the footer fits at the default width.
 
 ## Testing
 
