@@ -77,7 +77,9 @@ export class UiCommandHandlerService {
 
             const deleteModalRef = this.modalService.open(DeleteTorrent);
             setModalInput(deleteModalRef, 'defaultRemoveFiles', command.defaultRemoveFiles);
-            setModalInput(deleteModalRef, 'hashes', command.hashes);
+            if (command.hashes) {
+              setModalInput(deleteModalRef, 'hashes', command.hashes);
+            }
 
             deleteModalRef.result
               .then(({ removeFiles }) =>
