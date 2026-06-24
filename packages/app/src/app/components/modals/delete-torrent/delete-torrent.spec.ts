@@ -2,6 +2,7 @@ import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { SelectionStoreService } from '../../../services/selection-store.service';
+import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { DeleteTorrent } from './delete-torrent';
 
 describe('DeleteTorrent', () => {
@@ -9,6 +10,7 @@ describe('DeleteTorrent', () => {
   let fixture: ComponentFixture<DeleteTorrent>;
   let mockActiveModal: Partial<NgbActiveModal>;
   let mockSelectionStore: Partial<SelectionStoreService>;
+  let mockTorrentStore: { torrentsMap: ReturnType<typeof signal<Map<string, any>>> };
 
   beforeEach(async () => {
     mockActiveModal = { close: vi.fn(), dismiss: vi.fn() };
@@ -16,12 +18,14 @@ describe('DeleteTorrent', () => {
       selected: signal([]) as any,
       selectedHashes: vi.fn().mockReturnValue([]) as any,
     };
+    mockTorrentStore = { torrentsMap: signal(new Map()) };
 
     await TestBed.configureTestingModule({
       imports: [DeleteTorrent],
       providers: [
         { provide: NgbActiveModal, useValue: mockActiveModal },
         { provide: SelectionStoreService, useValue: mockSelectionStore },
+        { provide: TorrentStoreService, useValue: mockTorrentStore },
       ],
     }).compileComponents();
 
@@ -56,6 +60,30 @@ describe('DeleteTorrent', () => {
     it('should dismiss the modal', () => {
       component.dismissModal();
       expect(mockActiveModal.dismiss).toHaveBeenCalled();
+    });
+  });
+
+  describe('selected', () => {
+    it('falls back to the selection store when no hashes override is set', () => {
+      const torrent = { hash: 'abc', size: 100 } as any;
+      (mockSelectionStore.selected as any).set([torrent]);
+
+      expect(component.selected()).toEqual([torrent]);
+    });
+
+    it('resolves torrents from the store when a hashes override is set', () => {
+      const torrent = { hash: 'xyz', size: 500 } as any;
+      mockTorrentStore.torrentsMap.set(new Map([['xyz', torrent]]));
+      fixture.componentRef.setInput('hashes', ['xyz']);
+
+      expect(component.selected()).toEqual([torrent]);
+    });
+
+    it('ignores hashes that are missing from the torrent store', () => {
+      mockTorrentStore.torrentsMap.set(new Map());
+      fixture.componentRef.setInput('hashes', ['missing']);
+
+      expect(component.selected()).toEqual([]);
     });
   });
 });
