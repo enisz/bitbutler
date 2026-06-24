@@ -31,8 +31,8 @@ Both call sites that open `TorrentExists` (line 380 and line 499) currently pass
 
 ## Testing
 
-- `torrent-exists.spec.ts` only exercises component logic (`deleteTorrentFile()`, `showDeleteButton`), not footer DOM/text - no changes needed.
-- `add-torrent.spec.ts` (lines ~651 and ~851) already asserts `modalService.open` was called with `{ centered: true }` (no `size`). Reverting the size bump brings the source back in line with these existing expectations - no spec changes needed.
+- `torrent-exists.spec.ts` currently only exercises component logic (`deleteTorrentFile()`, `showDeleteButton`), never rendering the footer DOM. New tests are added to render the footer (via a `torrentsMap` entry and `hash`/`originalPath` inputs) and assert the delete button is icon-only, has an `aria-label`, and carries `me-auto` instead of `btn-split`.
+- `add-torrent.spec.ts` (lines ~651 and ~851) already asserts `modalService.open` was called with `{ centered: true }` (no `size`). Reverting the size bump brings the source back in line with these existing expectations - no spec changes needed there.
 - Manual verification: open the modal with the Hungarian locale active, with and without the delete-file setting enabled, and confirm the footer renders on a single row at the default modal width.
 
 ## Out of scope
