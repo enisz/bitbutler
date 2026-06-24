@@ -319,7 +319,7 @@
 
 <div class="modal-footer">
   @if (isRunning()) {
-    <button type="button" class="btn btn-link btn-split" (click)="cancelExport()">
+    <button type="button" class="btn btn-link btn-sm btn-split" (click)="cancelExport()">
       <bb-btn-content
         [icon]="icons.faXmark"
         [text]="'general.button.cancel' | translate"
@@ -327,7 +327,7 @@
       ></bb-btn-content>
     </button>
   } @else if (isDone() || isError()) {
-    <button type="button" class="btn btn-link btn-split" (click)="close()">
+    <button type="button" class="btn btn-link btn-sm btn-split" (click)="close()">
       <bb-btn-content
         [icon]="icons.faXmark"
         [text]="'general.button.close' | translate"
@@ -337,7 +337,7 @@
   } @else {
     <button
       type="button"
-      class="btn btn-primary btn-split"
+      class="btn btn-primary btn-sm btn-split"
       (click)="startExport()"
       [disabled]="exportForm.invalid"
     >
@@ -347,7 +347,7 @@
         position="end"
       ></bb-btn-content>
     </button>
-    <button type="button" class="btn btn-link btn-split" (click)="close()">
+    <button type="button" class="btn btn-link btn-sm btn-split" (click)="close()">
       <bb-btn-content
         [icon]="icons.faXmark"
         [text]="'general.button.cancel' | translate"

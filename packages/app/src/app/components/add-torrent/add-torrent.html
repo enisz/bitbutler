@@ -86,7 +86,7 @@
 <div class="modal-footer">
   <button
     type="button"
-    class="btn btn-primary btn-split"
+    class="btn btn-primary btn-sm btn-split"
     (click)="handleSubmit($event)"
     [disabled]="!canSubmit()"
     [autofocus]="addForm.controls.fileGroup.controls.file.value.length === 0"
@@ -97,7 +97,7 @@
       position="end"
     ></bb-btn-content>
   </button>
-  <button type="button" class="btn btn-link btn-split" (click)="handleCancel()">
+  <button type="button" class="btn btn-link btn-sm btn-split" (click)="handleCancel()">
     <bb-btn-content
       [icon]="icons.faXmark"
       [text]="'general.button.cancel' | translate"

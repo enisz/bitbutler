@@ -31,6 +31,7 @@
       <bb-btn-content
         [icon]="icon.faPlus"
         [text]="'general.button.add' | translate"
+        position="end"
       ></bb-btn-content>
     </button>
   </div>
@@ -93,7 +94,7 @@
 </div>
 
 <div class="modal-footer">
-  <button type="button" class="btn btn-link btn-split" (click)="activeModal.dismiss()">
+  <button type="button" class="btn btn-link btn-sm btn-split" (click)="activeModal.dismiss()">
     <bb-btn-content
       [icon]="icon.faXmark"
       [text]="'general.button.close' | translate"

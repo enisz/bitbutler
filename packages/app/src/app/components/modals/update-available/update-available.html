@@ -85,7 +85,7 @@
     @if (latestRelease; as release) {
       <button
         type="button"
-        class="btn btn-dashed-secondary btn-split"
+        class="btn btn-dashed-secondary btn-sm btn-split"
         (click)="downloadAsset(release.html_url)"
       >
         <bb-btn-content
@@ -95,7 +95,11 @@
         ></bb-btn-content>
       </button>
     }
-    <button type="button" class="btn btn-link btn-split" (click)="activeModal.close('ignore')">
+    <button
+      type="button"
+      class="btn btn-link btn-sm btn-split"
+      (click)="activeModal.close('ignore')"
+    >
       <bb-btn-content
         [icon]="icons.faXmark"
         [text]="'general.button.close' | translate"

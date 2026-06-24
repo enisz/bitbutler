@@ -46,7 +46,7 @@
 <div class="modal-footer">
   <button
     type="button"
-    class="btn btn-primary btn-split"
+    class="btn btn-primary btn-sm btn-split"
     (click)="handleSubmit()"
     [disabled]="!canSave()"
     autofocus
@@ -60,7 +60,7 @@
   @if (hasClearableValues()) {
     <button
       type="button"
-      class="btn btn-dashed-danger btn-split"
+      class="btn btn-dashed-danger btn-sm btn-split"
       (click)="clearAll()"
       [disabled]="!canSave()"
     >
@@ -71,7 +71,7 @@
       ></bb-btn-content>
     </button>
   }
-  <button type="button" class="btn btn-link btn-split" (click)="activeModal.dismiss()">
+  <button type="button" class="btn btn-link btn-sm btn-split" (click)="activeModal.dismiss()">
     <bb-btn-content
       [icon]="icons.faXmark"
       [text]="'general.button.cancel' | translate"

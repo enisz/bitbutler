@@ -103,7 +103,7 @@
     @if (showDeleteButton()) {
       <button
         type="button"
-        class="btn btn-danger btn-split"
+        class="btn btn-danger btn-sm btn-split"
         [disabled]="fileDeleted()"
         (click)="deleteTorrentFile()"
       >
@@ -116,7 +116,7 @@
     }
     <button
       type="button"
-      class="btn btn-dashed-secondary btn-split"
+      class="btn btn-dashed-secondary btn-sm btn-split"
       (click)="openDetails()"
       autofocus
     >
@@ -126,7 +126,7 @@
         position="end"
       ></bb-btn-content>
     </button>
-    <button type="button" class="btn btn-link btn-split" (click)="closeModal()">
+    <button type="button" class="btn btn-link btn-sm btn-split" (click)="closeModal()">
       <bb-btn-content
         [icon]="icons.faXmark"
         [text]="'general.button.close' | translate"

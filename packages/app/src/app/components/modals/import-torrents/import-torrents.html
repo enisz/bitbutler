@@ -380,7 +380,7 @@
 
 <div class="modal-footer">
   @if (isRunning()) {
-    <button type="button" class="btn btn-link btn-split" (click)="cancelImport()">
+    <button type="button" class="btn btn-link btn-sm btn-split" (click)="cancelImport()">
       <bb-btn-content
         [icon]="icons.faXmark"
         [text]="'general.button.cancel' | translate"
@@ -388,7 +388,7 @@
       ></bb-btn-content>
     </button>
   } @else if (isDone() || isError()) {
-    <button type="button" class="btn btn-link btn-split" (click)="close()">
+    <button type="button" class="btn btn-link btn-sm btn-split" (click)="close()">
       <bb-btn-content
         [icon]="icons.faXmark"
         [text]="'general.button.close' | translate"
@@ -396,14 +396,14 @@
       ></bb-btn-content>
     </button>
   } @else if (isReady()) {
-    <button type="button" class="btn btn-primary btn-split" (click)="startImport()">
+    <button type="button" class="btn btn-primary btn-sm btn-split" (click)="startImport()">
       <bb-btn-content
         [icon]="icons.faFileImport"
         [text]="'components.modals.import-torrents.button.import' | translate"
         position="end"
       ></bb-btn-content>
     </button>
-    <button type="button" class="btn btn-link btn-split" (click)="close()">
+    <button type="button" class="btn btn-link btn-sm btn-split" (click)="close()">
       <bb-btn-content
         [icon]="icons.faXmark"
         [text]="'general.button.cancel' | translate"

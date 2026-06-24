@@ -50,7 +50,7 @@
 <div class="modal-footer">
   <button
     type="button"
-    class="btn btn-primary btn-split"
+    class="btn btn-primary btn-sm btn-split"
     [disabled]="!stateService.isDirty()"
     (click)="onSave()"
   >
@@ -60,7 +60,12 @@
       position="end"
     ></bb-btn-content>
   </button>
-  <button type="button" class="btn btn-link btn-split" (click)="activeModal.dismiss()" autofocus>
+  <button
+    type="button"
+    class="btn btn-link btn-sm btn-split"
+    (click)="activeModal.dismiss()"
+    autofocus
+  >
     <bb-btn-content
       [icon]="icon.faXmark"
       [text]="'general.button.close' | translate"

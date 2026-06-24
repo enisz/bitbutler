@@ -133,7 +133,7 @@
 <div class="modal-footer justify-content-end">
   <button
     type="button"
-    class="btn btn-primary btn-split"
+    class="btn btn-primary btn-sm btn-split"
     (click)="openEditor()"
     [disabled]="busy()"
   >
@@ -143,7 +143,7 @@
       position="end"
     ></bb-btn-content>
   </button>
-  <button type="button" class="btn btn-link btn-split" (click)="activeModal.dismiss()">
+  <button type="button" class="btn btn-link btn-sm btn-split" (click)="activeModal.dismiss()">
     <bb-btn-content
       [icon]="icon.faXmark"
       [text]="'general.button.close' | translate"
