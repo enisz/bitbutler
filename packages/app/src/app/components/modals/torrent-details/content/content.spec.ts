@@ -1,39 +1,37 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TorrentFileEntry } from '@bitbutler/shared';
 import { ModalGuardService } from '../../../../services/modal-guard.service';
-import { QbService } from '../../../../services/qb.service';
-import { ServerSettingsService } from '../../../../services/server-settings.service';
-import { ServerStoreService } from '../../../../services/server-store.service';
-import { ToastService } from '../../../../services/toast.service';
+import { TorrentDetailsActionsService } from '../torrent-details-actions.service';
+import { TorrentDetailsDataService } from '../torrent-details-data.service';
 import { Content } from './content';
 
 describe('Content', () => {
   let component: Content;
   let fixture: ComponentFixture<Content>;
+  let mockDataService: {
+    content: ReturnType<typeof signal<TorrentFileEntry[]>>;
+    contentLoading: ReturnType<typeof signal<boolean>>;
+    context: ReturnType<typeof signal<Record<string, any>>>;
+    setContent: ReturnType<typeof vi.fn>;
+  };
+  let mockActionsService: { saveFileChanges: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
+    mockDataService = {
+      content: signal([]),
+      contentLoading: signal(true),
+      context: signal({}),
+      setContent: vi.fn(),
+    };
+    mockActionsService = { saveFileChanges: vi.fn().mockResolvedValue(undefined) };
+
     await TestBed.configureTestingModule({
       imports: [Content],
       providers: [
         ModalGuardService,
-        { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
-        {
-          provide: QbService,
-          useValue: {
-            torrents: {
-              files: vi.fn().mockResolvedValue([]),
-              renameFile: vi.fn(),
-              filePrio: vi.fn(),
-            },
-          },
-        },
-        { provide: ToastService, useValue: { danger: vi.fn() } },
-        {
-          provide: ServerSettingsService,
-          useValue: {
-            load: vi.fn().mockResolvedValue({ polling: { foreground: 5000 } }),
-          },
-        },
+        { provide: TorrentDetailsDataService, useValue: mockDataService },
+        { provide: TorrentDetailsActionsService, useValue: mockActionsService },
       ],
     }).compileComponents();
 
@@ -56,17 +54,40 @@ describe('Content', () => {
 
   describe('context effect', () => {
     it('should not set startInEditMode when context has no editMode flag', () => {
-      fixture.componentRef.setInput('context', {});
+      mockDataService.context.set({});
       fixture.detectChanges();
       expect(component.startInEditMode()).toBe(false);
     });
 
     it('should set startInEditMode and clear the flag when context.editMode is true', () => {
       const ctx: Record<string, any> = { editMode: true };
-      fixture.componentRef.setInput('context', ctx);
+      mockDataService.context.set(ctx);
       fixture.detectChanges();
       expect(component.startInEditMode()).toBe(true);
       expect(ctx['editMode']).toBe(false);
+    });
+  });
+
+  describe('onSaved', () => {
+    it('optimistically sets content and delegates the mutation to the actions service', async () => {
+      const originalContent: TorrentFileEntry[] = [{ path: 'a.txt', length: 1, index: 0 }];
+      mockDataService.content.set(originalContent);
+      const event = {
+        files: [{ path: 'b.txt', length: 1, index: 0 }],
+        renames: [{ oldPath: 'a.txt', newPath: 'b.txt' }],
+      };
+
+      await component.onSaved(event);
+
+      expect(mockDataService.setContent).toHaveBeenCalledWith(event.files);
+      expect(mockActionsService.saveFileChanges).toHaveBeenCalledWith(event, originalContent);
+    });
+  });
+
+  describe('onEditModeChange', () => {
+    it('marks the modal guard dirty when editing starts', () => {
+      component.onEditModeChange(true);
+      expect(TestBed.inject(ModalGuardService).isDirty()).toBe(true);
     });
   });
 });
