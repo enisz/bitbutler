@@ -5,8 +5,8 @@ import {
   Component,
   DestroyRef,
   OnInit,
+  effect,
   inject,
-  input,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { faCode, faCopy, faLink } from '@fortawesome/free-solid-svg-icons';
@@ -32,10 +32,9 @@ import { GridContextMenuService } from '../../../../pages/main/grid/context-menu
 import { LoadingOverlay } from '../../../../pages/main/grid/overlays/loading-overlay/loading-overlay';
 import { NoRowOverlay } from '../../../../pages/main/grid/overlays/no-row-overlay/no-row-overlay';
 import { ContextMenuService } from '../../../../services/context-menu.service';
-import { QbService } from '../../../../services/qb.service';
-import { ServerStoreService } from '../../../../services/server-store.service';
 import { ThemeService } from '../../../../services/theme.service';
 import { TrackersGridSettingsService } from '../../../../services/trackers-grid.settings.service';
+import { TorrentDetailsDataService } from '../torrent-details-data.service';
 import { TorrentDetailTabComponent } from '../torrent-details.interface';
 
 @Component({
@@ -46,11 +45,7 @@ import { TorrentDetailTabComponent } from '../torrent-details.interface';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Trackers implements TorrentDetailTabComponent, OnInit {
-  readonly hash = input<string>('');
-  readonly context = input<Record<string, any>>({});
-
-  private readonly qbService = inject(QbService);
-  private readonly serverStoreService = inject(ServerStoreService);
+  private readonly dataService = inject(TorrentDetailsDataService);
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
   private readonly themeService = inject(ThemeService);
   private readonly translateService = inject(TranslateService);
@@ -72,11 +67,18 @@ export class Trackers implements TorrentDetailTabComponent, OnInit {
   public gridOptions: GridOptions<QbTorrentTracker> = this.getGridOptions();
   public colDefs: ColDef<QbTorrentTracker>[] = this.getColDefs();
 
+  constructor() {
+    effect(() => {
+      this.trackers = this.dataService.trackers();
+      this.loading = this.dataService.trackersLoading();
+      this.changeDetectorRef.detectChanges();
+    });
+  }
+
   public ngOnInit(): void {
     this.saveState$.pipe(debounceTime(500), takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       void this.persistColumnState();
     });
-    void this.load();
   }
 
   public onGridReady(e: GridReadyEvent<QbTorrentTracker>): void {
@@ -126,34 +128,6 @@ export class Trackers implements TorrentDetailTabComponent, OnInit {
       [QbTrackerStatus.NotWorking]: 'components.modals.torrent-details.trackers.status.not-working',
     };
     return this.translateService.instant(keyMap[status] ?? String(status));
-  }
-
-  private async load(): Promise<void> {
-    const serverId = this.serverStoreService.currentServerId();
-    const hash = this.hash();
-
-    if (!serverId) {
-      console.error(Trackers.name, 'load', 'ServerId is missing!');
-      throw new Error('ServerId is missing!');
-    }
-
-    if (!hash) {
-      console.error(Trackers.name, 'load', 'Torrent hash is missing!');
-      throw new Error('Torrent hash is missing!');
-    }
-
-    this.loading = true;
-
-    try {
-      this.trackers = await this.qbService.torrents.trackers(serverId, hash);
-    } catch (e: any) {
-      const error = e?.message ?? String(e);
-      console.error(Trackers.name, 'load', 'Failed to fetch torrent trackers!', error);
-      throw new Error(error);
-    } finally {
-      this.loading = false;
-      this.changeDetectorRef.detectChanges();
-    }
   }
 
   private buildRowMenu(e: CellContextMenuEvent<QbTorrentTracker>): ContextMenuEntry[] {
