@@ -1,5 +1,6 @@
 import { DestroyRef, Injectable, Signal, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TorrentFileEntry } from '@bitbutler/shared';
 import {
   BehaviorSubject,
   EMPTY,
@@ -12,9 +13,15 @@ import {
   timer,
 } from 'rxjs';
 import { QbTorrentProperties, QbTorrentTracker } from '../../../models/qbittorrent.model';
-import { QbTorrentPeer, QbTorrentPeersResponse, Torrent } from '../../../models/torrent.model';
+import {
+  QbTorrentContent,
+  QbTorrentPeer,
+  QbTorrentPeersResponse,
+  Torrent,
+} from '../../../models/torrent.model';
 import { QbPollingService } from '../../../services/qb-polling.service';
 import { QbService } from '../../../services/qb.service';
+import { ServerSettingsService } from '../../../services/server-settings.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { TorrentDetailTabId } from './torrent-details.interface';
@@ -29,6 +36,7 @@ export class TorrentDetailsDataService {
   private readonly torrentStoreService = inject(TorrentStoreService);
   private readonly qbService = inject(QbService);
   private readonly serverStoreService = inject(ServerStoreService);
+  private readonly serverSettingsService = inject(ServerSettingsService);
   private readonly polling = inject(QbPollingService);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -41,6 +49,8 @@ export class TorrentDetailsDataService {
   public readonly trackersLoading = signal(true);
   public readonly peers = signal<QbTorrentPeer[]>([]);
   public readonly peersLoading = signal(true);
+  public readonly content = signal<TorrentFileEntry[]>([]);
+  public readonly contentLoading = signal(true);
   private readonly peerMap = new Map<string, QbTorrentPeer>();
 
   private readonly destroyed$ = new Subject<void>();
@@ -73,6 +83,14 @@ export class TorrentDetailsDataService {
     this.activeTabId$
       .pipe(
         switchMap((id) => (id === 'peers' ? this.peersPoll$() : EMPTY)),
+        takeUntil(this.destroyed$),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe();
+
+    this.activeTabId$
+      .pipe(
+        switchMap((id) => (id === 'content' ? this.contentPoll$() : EMPTY)),
         takeUntil(this.destroyed$),
         takeUntilDestroyed(this.destroyRef),
       )
@@ -198,5 +216,44 @@ export class TorrentDetailsDataService {
         ...(port != null ? { port } : {}),
       } as QbTorrentPeer);
     }
+  }
+
+  private contentPoll$() {
+    return from(this.serverSettingsService.load()).pipe(
+      switchMap((settings) => timer(0, settings.polling.foreground)),
+      switchMap(() => from(this.fetchContent())),
+    );
+  }
+
+  private async fetchContent(): Promise<void> {
+    const serverId = this.serverStoreService.currentServerId();
+    const hash = this.hashSignal();
+    if (!serverId || !hash) return;
+
+    try {
+      const files = await this.qbService.torrents.files(serverId, hash);
+      this.content.set(
+        files.map((c: QbTorrentContent) => ({
+          length: c.size,
+          path: c.name,
+          priority: c.priority,
+          progress: c.progress,
+          index: c.index,
+        })),
+      );
+    } catch (e: any) {
+      console.error(
+        TorrentDetailsDataService.name,
+        'fetchContent',
+        'Failed to load torrent contents',
+        e?.message ?? String(e),
+      );
+    } finally {
+      this.contentLoading.set(false);
+    }
+  }
+
+  public setContent(files: TorrentFileEntry[]): void {
+    this.content.set(files);
   }
 }

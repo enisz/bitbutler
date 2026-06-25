@@ -1,5 +1,6 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { TorrentFileEntry } from '@bitbutler/shared';
 import { Subject } from 'rxjs';
 import { vi } from 'vitest';
 import {
@@ -7,9 +8,16 @@ import {
   QbTorrentTracker,
   QbTrackerStatus,
 } from '../../../models/qbittorrent.model';
-import { QbTorrentPeer, QbTorrentPeersResponse, Torrent } from '../../../models/torrent.model';
+import {
+  QbTorrentContent,
+  QbTorrentContentPriority,
+  QbTorrentPeer,
+  QbTorrentPeersResponse,
+  Torrent,
+} from '../../../models/torrent.model';
 import { QbPollingService } from '../../../services/qb-polling.service';
 import { QbService } from '../../../services/qb.service';
+import { ServerSettingsService } from '../../../services/server-settings.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { TorrentDetailsDataService } from './torrent-details-data.service';
@@ -114,16 +122,20 @@ describe('TorrentDetailsDataService', () => {
   let torrentsMap: ReturnType<typeof signal<Map<string, Torrent>>>;
   let qbTorrentsProperties: ReturnType<typeof vi.fn>;
   let qbTorrentsTrackers: ReturnType<typeof vi.fn>;
+  let qbTorrentsFiles: ReturnType<typeof vi.fn>;
   let peersPolling$: Subject<QbTorrentPeersResponse>;
   let startPeersPolling: ReturnType<typeof vi.fn>;
+  let serverSettingsLoad: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     vi.useFakeTimers();
     torrentsMap = signal(new Map());
     qbTorrentsProperties = vi.fn().mockResolvedValue(makeProperties());
     qbTorrentsTrackers = vi.fn().mockResolvedValue([]);
+    qbTorrentsFiles = vi.fn().mockResolvedValue([]);
     peersPolling$ = new Subject<QbTorrentPeersResponse>();
     startPeersPolling = vi.fn().mockReturnValue(peersPolling$);
+    serverSettingsLoad = vi.fn().mockResolvedValue({ polling: { foreground: 5000 } });
 
     TestBed.configureTestingModule({
       providers: [
@@ -133,10 +145,15 @@ describe('TorrentDetailsDataService', () => {
         {
           provide: QbService,
           useValue: {
-            torrents: { properties: qbTorrentsProperties, trackers: qbTorrentsTrackers },
+            torrents: {
+              properties: qbTorrentsProperties,
+              trackers: qbTorrentsTrackers,
+              files: qbTorrentsFiles,
+            },
           },
         },
         { provide: QbPollingService, useValue: { startPeersPolling } },
+        { provide: ServerSettingsService, useValue: { load: serverSettingsLoad } },
       ],
     });
 
@@ -374,6 +391,85 @@ describe('TorrentDetailsDataService', () => {
       peersPolling$.next({ rid: 2, full_update: false, peers_removed: ['10.0.0.1:51413'] });
 
       expect(service.peers()).toEqual([]);
+    });
+  });
+
+  describe('content polling', () => {
+    const file: QbTorrentContent = {
+      index: 0,
+      name: 'movie.mkv',
+      size: 1000,
+      progress: 0.25,
+      priority: QbTorrentContentPriority.NORMAL_PRIORTY,
+      is_seed: false,
+      piece_range: [0, 1],
+      availability: 1,
+    };
+
+    it('does nothing while the content tab is not active', async () => {
+      service.init('abc123', {});
+      await vi.advanceTimersByTimeAsync(0);
+      expect(qbTorrentsFiles).not.toHaveBeenCalled();
+    });
+
+    it('fetches and maps files immediately when the content tab becomes active', async () => {
+      qbTorrentsFiles.mockResolvedValue([file]);
+      service.init('abc123', {});
+      service.selectTab('content');
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(qbTorrentsFiles).toHaveBeenCalledWith('server-1', 'abc123');
+      expect(service.content()).toEqual([
+        {
+          length: 1000,
+          path: 'movie.mkv',
+          priority: QbTorrentContentPriority.NORMAL_PRIORTY,
+          progress: 0.25,
+          index: 0,
+        },
+      ]);
+      expect(service.contentLoading()).toBe(false);
+    });
+
+    it('polls again after the configured foreground interval while active', async () => {
+      service.init('abc123', {});
+      service.selectTab('content');
+      await vi.advanceTimersByTimeAsync(0);
+      expect(qbTorrentsFiles).toHaveBeenCalledTimes(1);
+
+      await vi.advanceTimersByTimeAsync(5000);
+      expect(qbTorrentsFiles).toHaveBeenCalledTimes(2);
+    });
+
+    it('stops polling once the content tab is no longer active', async () => {
+      service.init('abc123', {});
+      service.selectTab('content');
+      await vi.advanceTimersByTimeAsync(0);
+      service.selectTab('general');
+
+      await vi.advanceTimersByTimeAsync(5000);
+      expect(qbTorrentsFiles).toHaveBeenCalledTimes(1);
+    });
+
+    it('logs and does not toast when the fetch fails', async () => {
+      qbTorrentsFiles.mockRejectedValueOnce(new Error('boom'));
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      service.init('abc123', {});
+      service.selectTab('content');
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(consoleError).toHaveBeenCalled();
+      expect(service.contentLoading()).toBe(false);
+    });
+
+    describe('setContent', () => {
+      it('overwrites the content signal optimistically', () => {
+        service.init('abc123', {});
+        const files: TorrentFileEntry[] = [{ path: 'a.txt', length: 1, index: 0 }];
+        service.setContent(files);
+        expect(service.content()).toEqual(files);
+      });
     });
   });
 });
