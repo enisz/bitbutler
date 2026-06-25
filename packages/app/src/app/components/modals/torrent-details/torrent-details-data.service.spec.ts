@@ -1,6 +1,10 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { vi } from 'vitest';
+import { QbTorrentProperties } from '../../../models/qbittorrent.model';
 import { Torrent } from '../../../models/torrent.model';
+import { QbService } from '../../../services/qb.service';
+import { ServerStoreService } from '../../../services/server-store.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { TorrentDetailsDataService } from './torrent-details-data.service';
 
@@ -59,21 +63,70 @@ const makeTorrent = (overrides: Partial<Torrent> = {}): Torrent => ({
   ...overrides,
 });
 
+const makeProperties = (overrides: Partial<QbTorrentProperties> = {}): QbTorrentProperties => ({
+  save_path: '',
+  creation_date: 1700000000,
+  piece_size: 0,
+  comment: '',
+  total_wasted: 0,
+  total_uploaded: 0,
+  total_uploaded_session: 0,
+  total_downloaded: 0,
+  total_downloaded_session: 0,
+  up_limit: 0,
+  dl_limit: 0,
+  time_elapsed: 0,
+  seeding_time: 0,
+  nb_connections: 0,
+  nb_connections_limit: 0,
+  share_ratio: 0,
+  addition_date: 0,
+  completion_date: 0,
+  created_by: '',
+  dl_speed_avg: 0,
+  dl_speed: 0,
+  eta: 0,
+  last_seen: 0,
+  peers: 0,
+  peers_total: 0,
+  pieces_have: 0,
+  pieces_num: 0,
+  reannounce: 0,
+  seeds: 0,
+  seeds_total: 0,
+  total_size: 0,
+  up_speed_avg: 0,
+  up_speed: 0,
+  isPrivate: false,
+  infohash_v1: '',
+  infohash_v2: '',
+  ...overrides,
+});
+
 describe('TorrentDetailsDataService', () => {
   let service: TorrentDetailsDataService;
   let torrentsMap: ReturnType<typeof signal<Map<string, Torrent>>>;
+  let qbTorrentsProperties: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
+    vi.useFakeTimers();
     torrentsMap = signal(new Map());
+    qbTorrentsProperties = vi.fn().mockResolvedValue(makeProperties());
 
     TestBed.configureTestingModule({
       providers: [
         TorrentDetailsDataService,
         { provide: TorrentStoreService, useValue: { torrentsMap } },
+        { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
+        { provide: QbService, useValue: { torrents: { properties: qbTorrentsProperties } } },
       ],
     });
 
     service = TestBed.inject(TorrentDetailsDataService);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('should be created', () => {
@@ -115,6 +168,65 @@ describe('TorrentDetailsDataService', () => {
   describe('stopAll', () => {
     it('does not throw when called with no active subscriptions', () => {
       expect(() => service.stopAll()).not.toThrow();
+    });
+  });
+
+  describe('properties polling', () => {
+    it('fetches properties immediately once the general tab is active', async () => {
+      service.init('abc123', {});
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(qbTorrentsProperties).toHaveBeenCalledWith('server-1', 'abc123');
+      expect(service.properties()).toEqual(makeProperties());
+    });
+
+    it('polls again after 2 seconds while the general tab stays active', async () => {
+      service.init('abc123', {});
+      await vi.advanceTimersByTimeAsync(0);
+      expect(qbTorrentsProperties).toHaveBeenCalledTimes(1);
+
+      await vi.advanceTimersByTimeAsync(2000);
+      expect(qbTorrentsProperties).toHaveBeenCalledTimes(2);
+    });
+
+    it('stops polling once the general tab is no longer active', async () => {
+      service.init('abc123', {});
+      await vi.advanceTimersByTimeAsync(0);
+      expect(qbTorrentsProperties).toHaveBeenCalledTimes(1);
+
+      service.selectTab('trackers');
+      await vi.advanceTimersByTimeAsync(4000);
+      expect(qbTorrentsProperties).toHaveBeenCalledTimes(1);
+    });
+
+    it('fetches again immediately when switching back to the general tab', async () => {
+      service.init('abc123', {});
+      await vi.advanceTimersByTimeAsync(0);
+      service.selectTab('trackers');
+      service.selectTab('general');
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(qbTorrentsProperties).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not throw and stops polling after stopAll is called', async () => {
+      service.init('abc123', {});
+      await vi.advanceTimersByTimeAsync(0);
+      service.stopAll();
+
+      await vi.advanceTimersByTimeAsync(4000);
+      expect(qbTorrentsProperties).toHaveBeenCalledTimes(1);
+    });
+
+    it('logs and does not throw when the fetch fails', async () => {
+      qbTorrentsProperties.mockRejectedValueOnce(new Error('boom'));
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      service.init('abc123', {});
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(consoleError).toHaveBeenCalled();
+      expect(service.properties()).toBeNull();
     });
   });
 });
