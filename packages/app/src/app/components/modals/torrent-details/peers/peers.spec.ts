@@ -1,14 +1,13 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Subject } from 'rxjs';
+import { QbTorrentPeer } from '../../../../models/torrent.model';
 import type { ContextMenuEntry } from '../../../../pages/main/grid/context-menu/context-menu.types';
 import { GridContextMenuService } from '../../../../pages/main/grid/context-menu/grid-context-menu.service';
 import { ContextMenuService } from '../../../../services/context-menu.service';
 import { PeersGridSettingsService } from '../../../../services/peers-grid.settings.service';
-import { QbPollingService } from '../../../../services/qb-polling.service';
-import { ServerStoreService } from '../../../../services/server-store.service';
 import { ThemeService } from '../../../../services/theme.service';
+import { TorrentDetailsDataService } from '../torrent-details-data.service';
 import { Peers } from './peers';
 
 function findItem(
@@ -59,12 +58,11 @@ describe('Peers', () => {
     await TestBed.configureTestingModule({
       imports: [Peers],
       providers: [
-        { provide: ServerStoreService, useValue: { currentServerId: signal(null) } },
-        { provide: ThemeService, useValue: { effectiveMode: signal('light') } },
         {
-          provide: QbPollingService,
-          useValue: { startPeersPolling: vi.fn().mockReturnValue(new Subject()) },
+          provide: TorrentDetailsDataService,
+          useValue: { peers: signal<QbTorrentPeer[]>([]), peersLoading: signal(true) },
         },
+        { provide: ThemeService, useValue: { effectiveMode: signal('light') } },
         { provide: PeersGridSettingsService, useValue: mockSettingsService },
         { provide: ContextMenuService, useValue: mockContextMenuService },
         {
@@ -97,6 +95,37 @@ describe('Peers', () => {
 
   it('should have grid options defined', () => {
     expect(component.gridOptions).toBeDefined();
+  });
+
+  describe('data service sync', () => {
+    it('reflects updates to the data service peers and loading signals', () => {
+      const dataService = TestBed.inject(TorrentDetailsDataService) as unknown as {
+        peers: ReturnType<typeof signal<QbTorrentPeer[]>>;
+        peersLoading: ReturnType<typeof signal<boolean>>;
+      };
+      const peer: QbTorrentPeer = {
+        ip: '10.0.0.1',
+        port: 51413,
+        client: 'qBittorrent',
+        dl_speed: 0,
+        up_speed: 0,
+        progress: 0,
+        downloaded: 0,
+        uploaded: 0,
+        relevance: 0,
+        flags: '',
+        flags_desc: '',
+        connection: 'BT',
+        files: '',
+      };
+
+      dataService.peers.set([peer]);
+      dataService.peersLoading.set(false);
+      fixture.detectChanges();
+
+      expect(component.peers).toEqual([peer]);
+      expect(component.loading).toBe(false);
+    });
   });
 
   describe('column definitions', () => {

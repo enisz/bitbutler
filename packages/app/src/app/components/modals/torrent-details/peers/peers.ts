@@ -5,8 +5,8 @@ import {
   Component,
   DestroyRef,
   OnInit,
+  effect,
   inject,
-  input,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { faCode, faCopy, faNetworkWired } from '@fortawesome/free-solid-svg-icons';
@@ -27,7 +27,7 @@ import {
 } from 'ag-grid-community';
 import { Subject, debounceTime } from 'rxjs';
 import { GRID_DARK_THEME, GRID_LIGHT_THEME, GRID_SHARED_OPTIONS } from '../../../../app.const';
-import { QbTorrentPeer, QbTorrentPeersResponse } from '../../../../models/torrent.model';
+import { QbTorrentPeer } from '../../../../models/torrent.model';
 import { ContextMenuEntry } from '../../../../pages/main/grid/context-menu/context-menu.types';
 import { GridContextMenuService } from '../../../../pages/main/grid/context-menu/grid-context-menu.service';
 import { LoadingOverlay } from '../../../../pages/main/grid/overlays/loading-overlay/loading-overlay';
@@ -36,9 +36,8 @@ import { ProgressCellRenderer } from '../../../../pages/main/grid/renderers/prog
 import { FilesizePipe } from '../../../../pipes/filesize-pipe';
 import { ContextMenuService } from '../../../../services/context-menu.service';
 import { PeersGridSettingsService } from '../../../../services/peers-grid.settings.service';
-import { QbPollingService } from '../../../../services/qb-polling.service';
-import { ServerStoreService } from '../../../../services/server-store.service';
 import { ThemeService } from '../../../../services/theme.service';
+import { TorrentDetailsDataService } from '../torrent-details-data.service';
 import { TorrentDetailTabComponent } from '../torrent-details.interface';
 import { FlagCellRenderer } from './flag-cell-renderer/flag-cell-renderer';
 import { FlagsTooltipComponent } from './flags-tooltip/flags-tooltip';
@@ -52,8 +51,7 @@ import { FlagsTooltipComponent } from './flags-tooltip/flags-tooltip';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Peers implements TorrentDetailTabComponent, OnInit {
-  private readonly polling = inject(QbPollingService);
-  private readonly serverStoreService = inject(ServerStoreService);
+  private readonly dataService = inject(TorrentDetailsDataService);
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
   private readonly themeService = inject(ThemeService);
   private readonly fileSizePipe = inject(FilesizePipe);
@@ -65,12 +63,8 @@ export class Peers implements TorrentDetailTabComponent, OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   private readonly saveState$ = new Subject<void>();
-  private peerMap = new Map<string, QbTorrentPeer>();
   private gridApi: GridApi | null = null;
   private isRestoringState = false;
-
-  readonly hash = input<string>('');
-  readonly context = input<Record<string, any>>({});
 
   public theme = this.themeService.effectiveMode;
   public peers: QbTorrentPeer[] = [];
@@ -80,11 +74,18 @@ export class Peers implements TorrentDetailTabComponent, OnInit {
   public gridOptions: GridOptions<QbTorrentPeer> = this.getGridOptions();
   public colDefs: ColDef<QbTorrentPeer>[] = this.getColDefs();
 
+  constructor() {
+    effect(() => {
+      this.peers = this.dataService.peers();
+      this.loading = this.dataService.peersLoading();
+      this.changeDetectorRef.detectChanges();
+    });
+  }
+
   public ngOnInit(): void {
     this.saveState$.pipe(debounceTime(500), takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       void this.persistColumnState();
     });
-    this.startPolling();
   }
 
   public onGridReady(e: GridReadyEvent<QbTorrentPeer>): void {
@@ -122,73 +123,6 @@ export class Peers implements TorrentDetailTabComponent, OnInit {
   private queueSave(): void {
     if (this.isRestoringState) return;
     this.saveState$.next();
-  }
-
-  private startPolling(): void {
-    this.peerMap.clear();
-    this.peers = [];
-    this.loading = true;
-    this.changeDetectorRef.detectChanges();
-
-    const serverId = this.serverStoreService.currentServerId();
-    const hash = this.hash();
-
-    if (!serverId || !hash) {
-      this.loading = false;
-      this.changeDetectorRef.detectChanges();
-      return;
-    }
-
-    this.polling
-      .startPeersPolling(serverId, hash)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (patch: QbTorrentPeersResponse) => {
-          this.applyPatch(patch);
-
-          this.peers = Array.from(this.peerMap.values());
-
-          this.loading = false;
-          this.changeDetectorRef.detectChanges();
-        },
-        error: () => {
-          this.loading = false;
-          this.changeDetectorRef.detectChanges();
-        },
-      });
-  }
-
-  private applyPatch(patch: QbTorrentPeersResponse): void {
-    if (patch.full_update) this.peerMap.clear();
-
-    if (patch.peers_removed?.length) {
-      for (const id of patch.peers_removed) this.peerMap.delete(id);
-    }
-
-    if (!patch.peers) return;
-
-    for (const [id, update] of Object.entries(patch.peers)) {
-      const prev = this.peerMap.get(id);
-
-      let ip = (update as any).ip ?? prev?.ip;
-      let port = (update as any).port ?? prev?.port;
-
-      if (!ip || port == null) {
-        const lastColon = id.lastIndexOf(':');
-        if (lastColon > 0) {
-          ip ??= id.slice(0, lastColon);
-          const p = Number(id.slice(lastColon + 1));
-          if (Number.isFinite(p)) port ??= p;
-        }
-      }
-
-      this.peerMap.set(id, {
-        ...(prev ?? {}),
-        ...(update as any),
-        ...(ip ? { ip } : {}),
-        ...(port != null ? { port } : {}),
-      } as QbTorrentPeer);
-    }
   }
 
   private buildRowMenu(e: CellContextMenuEvent<QbTorrentPeer>): ContextMenuEntry[] {
