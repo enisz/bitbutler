@@ -499,6 +499,15 @@
             "remove-all-tags-failed": "Failed to Remove All Tags",
             "local-path-failed": "Failed to Resolve Local Path",
             "copied-to-clipboard": "Copied {{field}} to clipboard."
+          },
+          "footer": {
+            "playback": "Playback",
+            "limits": "Limits",
+            "manage": "Manage",
+            "manage-header-path": "Path",
+            "manage-header-category": "Category",
+            "manage-header-tags": "Tags",
+            "transfer-limits": "Transfer Limits"
           }
         },
         "peers": {

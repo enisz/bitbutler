@@ -499,6 +499,15 @@
             "remove-all-tags-failed": "Nem sikerült eltávolítani az összes címkét",
             "local-path-failed": "A helyi elérési út feloldása sikertelen!",
             "copied-to-clipboard": "{{field}} a vágólapra másolva."
+          },
+          "footer": {
+            "playback": "Vezérlés",
+            "limits": "Korlátok",
+            "manage": "Kezelés",
+            "manage-header-path": "Útvonal",
+            "manage-header-category": "Kategória",
+            "manage-header-tags": "Címkék",
+            "transfer-limits": "Átviteli korlátok"
           }
         },
         "peers": {

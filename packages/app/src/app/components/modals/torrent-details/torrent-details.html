@@ -64,6 +64,129 @@
 <div class="modal-footer">
   <button
     type="button"
+    class="btn btn-danger btn-sm me-auto"
+    [ngbTooltip]="'components.modals.torrent-details.general.delete' | translate"
+    tooltipClass="danger"
+    (click)="actionsService.deleteTorrent()"
+  >
+    <fa-icon [icon]="icon.faTrashCan" aria-hidden="true"></fa-icon>
+  </button>
+
+  <div ngbDropdown container="body" placement="top-start">
+    <button type="button" class="btn btn-outline-secondary btn-sm btn-split" ngbDropdownToggle>
+      <bb-btn-content
+        [icon]="icon.faPlay"
+        [text]="'components.modals.torrent-details.general.footer.playback' | translate"
+        position="end"
+      ></bb-btn-content>
+    </button>
+    <div ngbDropdownMenu class="bb-toolbar-dropdown">
+      <button ngbDropdownItem type="button" (click)="actionsService.resume()">
+        {{ 'components.modals.torrent-details.general.resume' | translate }}
+      </button>
+      <button ngbDropdownItem type="button" (click)="actionsService.pause()">
+        {{ 'components.modals.torrent-details.general.pause' | translate }}
+      </button>
+      <button ngbDropdownItem type="button" (click)="actionsService.forceResume()">
+        {{ 'components.modals.torrent-details.general.force-resume' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div ngbDropdown container="body" placement="top-start">
+    <button type="button" class="btn btn-outline-secondary btn-sm btn-split" ngbDropdownToggle>
+      <bb-btn-content
+        [icon]="icon.faGauge"
+        [text]="'components.modals.torrent-details.general.footer.limits' | translate"
+        position="end"
+      ></bb-btn-content>
+    </button>
+    <div ngbDropdownMenu class="bb-toolbar-dropdown">
+      <button ngbDropdownItem type="button" (click)="actionsService.openTransferLimitsModal()">
+        {{ 'components.modals.torrent-details.general.footer.transfer-limits' | translate }}
+      </button>
+      <button ngbDropdownItem type="button" (click)="actionsService.openShareLimitsModal()">
+        {{ 'components.modals.torrent-details.general.edit-share-limits' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div ngbDropdown container="body" placement="top-start">
+    <button type="button" class="btn btn-outline-secondary btn-sm btn-split" ngbDropdownToggle>
+      <bb-btn-content
+        [icon]="icon.faPenToSquare"
+        [text]="'components.modals.torrent-details.general.footer.manage' | translate"
+        position="end"
+      ></bb-btn-content>
+    </button>
+    <div ngbDropdownMenu class="bb-toolbar-dropdown">
+      <button ngbDropdownItem type="button" (click)="actionsService.rename()">
+        {{ 'components.modals.torrent-details.general.rename' | translate }}
+      </button>
+      <div class="dropdown-divider"></div>
+      <h6 class="dropdown-header">
+        {{ 'components.modals.torrent-details.general.footer.manage-header-path' | translate }}
+      </h6>
+      <button ngbDropdownItem type="button" (click)="actionsService.setLocation()">
+        {{ 'components.modals.torrent-details.general.relocate' | translate }}
+      </button>
+      @if (dataService.localPath()) {
+        <button ngbDropdownItem type="button" (click)="actionsService.openPath()">
+          {{
+            (dataService.singleFile()
+              ? 'components.modals.torrent-details.general.show-file'
+              : 'components.modals.torrent-details.general.open-destination'
+            ) | translate
+          }}
+        </button>
+      }
+      <div class="dropdown-divider"></div>
+      <h6 class="dropdown-header">
+        {{ 'components.modals.torrent-details.general.footer.manage-header-category' | translate }}
+      </h6>
+      <button ngbDropdownItem type="button" (click)="actionsService.changeCategory()">
+        {{ 'components.modals.torrent-details.general.change-category' | translate }}
+      </button>
+      <button
+        ngbDropdownItem
+        type="button"
+        [disabled]="!torrent()?.category"
+        (click)="actionsService.removeCategory()"
+      >
+        {{ 'components.modals.torrent-details.general.remove-category' | translate }}
+      </button>
+      <div class="dropdown-divider"></div>
+      <h6 class="dropdown-header">
+        {{ 'components.modals.torrent-details.general.footer.manage-header-tags' | translate }}
+      </h6>
+      <button ngbDropdownItem type="button" (click)="actionsService.changeTags()">
+        {{ 'components.modals.torrent-details.general.change-tags' | translate }}
+      </button>
+      <button
+        ngbDropdownItem
+        type="button"
+        [disabled]="!torrent()?.tags"
+        (click)="actionsService.removeAllTags()"
+      >
+        {{ 'components.modals.torrent-details.general.remove-all-tags' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <button
+    type="button"
+    class="btn btn-outline-secondary btn-sm btn-split"
+    (click)="actionsService.forceReannounce()"
+  >
+    <bb-btn-content
+      [icon]="icon.faBullhorn"
+      [text]="'components.modals.torrent-details.general.force-reannounce' | translate"
+      position="end"
+    ></bb-btn-content>
+  </button>
+
+  <button
+    type="button"
     class="btn btn-link btn-sm btn-split"
     (click)="activeModal.dismiss()"
     autofocus

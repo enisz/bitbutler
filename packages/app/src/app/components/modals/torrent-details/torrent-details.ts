@@ -11,8 +11,16 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faAsterisk, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
+import {
+  faAsterisk,
+  faBullhorn,
+  faGauge,
+  faPenToSquare,
+  faPlay,
+  faTrashCan,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
+import { NgbActiveModal, NgbDropdownModule, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { filter } from 'rxjs/operators';
 import { AutofocusDirective } from '../../../directives/autofocus';
@@ -38,6 +46,7 @@ import { Tab, TorrentDetailTabComponent, TorrentDetailTabId } from './torrent-de
     NgComponentOutlet,
     AutofocusDirective,
     NgbTooltip,
+    NgbDropdownModule,
     TranslatePipe,
     FontAwesomeModule,
     BbBtnContent,
@@ -60,7 +69,15 @@ export class TorrentDetails implements OnInit, GuardableModal {
   private readonly torrentStoreService = inject(TorrentStoreService);
   private readonly confirmService = inject(ConfirmService);
 
-  public readonly icon = { faAsterisk, faXmark };
+  public readonly icon = {
+    faAsterisk,
+    faBullhorn,
+    faGauge,
+    faPenToSquare,
+    faPlay,
+    faTrashCan,
+    faXmark,
+  };
 
   public readonly activeTabId = this.dataService.activeTabId;
   public loadedComponents = signal<Map<TorrentDetailTabId, Type<TorrentDetailTabComponent>>>(

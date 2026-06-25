@@ -17,10 +17,13 @@ describe('TorrentDetails', () => {
   let commands$: Subject<any>;
   let mockDataService: {
     activeTabId: ReturnType<typeof signal<any>>;
+    localPath: ReturnType<typeof signal<string | null>>;
+    singleFile: ReturnType<typeof signal<boolean>>;
     selectTab: ReturnType<typeof vi.fn>;
     init: ReturnType<typeof vi.fn>;
     stopAll: ReturnType<typeof vi.fn>;
   };
+  let mockActionsService: Record<string, ReturnType<typeof vi.fn>>;
 
   beforeEach(async () => {
     mockActiveModal = { close: vi.fn(), dismiss: vi.fn() };
@@ -28,9 +31,27 @@ describe('TorrentDetails', () => {
     const activeTabIdSignal = signal<any>('general');
     mockDataService = {
       activeTabId: activeTabIdSignal,
+      localPath: signal<string | null>(null),
+      singleFile: signal(false),
       selectTab: vi.fn((id: any) => activeTabIdSignal.set(id)),
       init: vi.fn(),
       stopAll: vi.fn(),
+    };
+    mockActionsService = {
+      deleteTorrent: vi.fn(),
+      resume: vi.fn(),
+      pause: vi.fn(),
+      forceResume: vi.fn(),
+      openTransferLimitsModal: vi.fn(),
+      openShareLimitsModal: vi.fn(),
+      rename: vi.fn(),
+      setLocation: vi.fn(),
+      openPath: vi.fn(),
+      changeCategory: vi.fn(),
+      removeCategory: vi.fn(),
+      changeTags: vi.fn(),
+      removeAllTags: vi.fn(),
+      forceReannounce: vi.fn(),
     };
 
     await TestBed.configureTestingModule({
@@ -50,7 +71,7 @@ describe('TorrentDetails', () => {
           providers: [
             ModalGuardService,
             { provide: TorrentDetailsDataService, useValue: mockDataService },
-            { provide: TorrentDetailsActionsService, useValue: {} },
+            { provide: TorrentDetailsActionsService, useValue: mockActionsService },
           ],
         },
       })
@@ -130,6 +151,48 @@ describe('TorrentDetails', () => {
 
       expect(mockDataService.stopAll).not.toHaveBeenCalled();
       expect(mockActiveModal.close).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('footer actions', () => {
+    it('delete button calls actionsService.deleteTorrent', () => {
+      const button: HTMLButtonElement = fixture.nativeElement.querySelector(
+        '.modal-footer .btn-danger',
+      );
+      button.click();
+      expect(mockActionsService['deleteTorrent']).toHaveBeenCalled();
+    });
+
+    it('reannounce button calls actionsService.forceReannounce', () => {
+      const buttons: HTMLButtonElement[] = Array.from(
+        fixture.nativeElement.querySelectorAll('.modal-footer > button'),
+      );
+      const reannounceButton = buttons.find((b) => b.textContent?.includes('force-reannounce'));
+      reannounceButton?.click();
+      expect(mockActionsService['forceReannounce']).toHaveBeenCalled();
+    });
+
+    describe('manage dropdown open-destination item', () => {
+      it('is absent when there is no localPath', () => {
+        mockDataService.localPath.set(null);
+        fixture.detectChanges();
+        const items: HTMLButtonElement[] = Array.from(
+          fixture.nativeElement.querySelectorAll('[ngbDropdownItem]'),
+        );
+        expect(items.some((i) => i.textContent?.includes('open-destination'))).toBe(false);
+      });
+
+      it('is present when there is a localPath', () => {
+        mockDataService.localPath.set('/local/path');
+        fixture.detectChanges();
+        const items: HTMLButtonElement[] = Array.from(
+          fixture.nativeElement.querySelectorAll('[ngbDropdownItem]'),
+        );
+        const openDestinationItem = items.find((i) => i.textContent?.includes('open-destination'));
+        expect(openDestinationItem).toBeDefined();
+        openDestinationItem?.click();
+        expect(mockActionsService['openPath']).toHaveBeenCalled();
+      });
     });
   });
 });
