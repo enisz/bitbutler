@@ -25,6 +25,8 @@ import { ModalGuardService } from '../../../services/modal-guard.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
 import { BbSpinner } from '../../bb-spinner/bb-spinner';
+import { TorrentDetailsActionsService } from './torrent-details-actions.service';
+import { TorrentDetailsDataService } from './torrent-details-data.service';
 import { Tab, TorrentDetailTabComponent, TorrentDetailTabId } from './torrent-details.interface';
 
 @Component({
@@ -40,7 +42,7 @@ import { Tab, TorrentDetailTabComponent, TorrentDetailTabId } from './torrent-de
     FontAwesomeModule,
     BbBtnContent,
   ],
-  providers: [ModalGuardService],
+  providers: [ModalGuardService, TorrentDetailsDataService, TorrentDetailsActionsService],
   templateUrl: './torrent-details.html',
   styleUrl: './torrent-details.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -52,13 +54,15 @@ export class TorrentDetails implements OnInit, GuardableModal {
 
   public readonly activeModal = inject(NgbActiveModal);
   public readonly guardService = inject(ModalGuardService);
+  public readonly dataService = inject(TorrentDetailsDataService);
+  public readonly actionsService = inject(TorrentDetailsActionsService);
   private readonly commandBusService = inject(CommandBusService);
   private readonly torrentStoreService = inject(TorrentStoreService);
   private readonly confirmService = inject(ConfirmService);
 
   public readonly icon = { faAsterisk, faXmark };
 
-  public activeTabId = signal<TorrentDetailTabId>('general');
+  public readonly activeTabId = this.dataService.activeTabId;
   public loadedComponents = signal<Map<TorrentDetailTabId, Type<TorrentDetailTabComponent>>>(
     new Map(),
   );
@@ -105,13 +109,15 @@ export class TorrentDetails implements OnInit, GuardableModal {
         takeUntilDestroyed(),
       )
       .subscribe(() => {
-        this.loadedComponents.set(new Map());
+        this.dataService.stopAll();
         this.activeModal.close();
       });
   }
 
   public async ngOnInit(): Promise<void> {
-    this.activeTabId.set(this.tabToOpen());
+    this.dataService.init(this.hash() ?? '', this.context());
+    this.dataService.selectTab(this.tabToOpen());
+
     const results = await Promise.all(
       this.tabs.map((t) => t.loadComponent().then((c) => [t.id, c] as const)),
     );
@@ -121,7 +127,7 @@ export class TorrentDetails implements OnInit, GuardableModal {
   }
 
   public selectTab(tabId: TorrentDetailTabId): void {
-    this.activeTabId.set(tabId);
+    this.dataService.selectTab(tabId);
   }
 
   public async canDeactivate(): Promise<boolean> {

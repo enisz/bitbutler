@@ -4,34 +4,57 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject } from 'rxjs';
 import { CommandBusService } from '../../../services/command-bus.service';
 import { ConfirmService } from '../../../services/confirm.service';
+import { ModalGuardService } from '../../../services/modal-guard.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { TorrentDetails } from './torrent-details';
+import { TorrentDetailsActionsService } from './torrent-details-actions.service';
+import { TorrentDetailsDataService } from './torrent-details-data.service';
 
 describe('TorrentDetails', () => {
   let component: TorrentDetails;
   let fixture: ComponentFixture<TorrentDetails>;
   let mockActiveModal: Partial<NgbActiveModal>;
   let commands$: Subject<any>;
+  let mockDataService: {
+    activeTabId: ReturnType<typeof signal<any>>;
+    selectTab: ReturnType<typeof vi.fn>;
+    init: ReturnType<typeof vi.fn>;
+    stopAll: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(async () => {
     mockActiveModal = { close: vi.fn(), dismiss: vi.fn() };
     commands$ = new Subject();
+    const activeTabIdSignal = signal<any>('general');
+    mockDataService = {
+      activeTabId: activeTabIdSignal,
+      selectTab: vi.fn((id: any) => activeTabIdSignal.set(id)),
+      init: vi.fn(),
+      stopAll: vi.fn(),
+    };
 
     await TestBed.configureTestingModule({
       imports: [TorrentDetails],
       providers: [
         { provide: NgbActiveModal, useValue: mockActiveModal },
-        {
-          provide: TorrentStoreService,
-          useValue: { torrentsMap: signal(new Map()) },
-        },
+        { provide: TorrentStoreService, useValue: { torrentsMap: signal(new Map()) } },
         {
           provide: CommandBusService,
           useValue: { commands$: commands$.asObservable(), emit: vi.fn() },
         },
         { provide: ConfirmService, useValue: { confirm: vi.fn().mockResolvedValue(true) } },
       ],
-    }).compileComponents();
+    })
+      .overrideComponent(TorrentDetails, {
+        set: {
+          providers: [
+            ModalGuardService,
+            { provide: TorrentDetailsDataService, useValue: mockDataService },
+            { provide: TorrentDetailsActionsService, useValue: {} },
+          ],
+        },
+      })
+      .compileComponents();
 
     fixture = TestBed.createComponent(TorrentDetails);
     component = fixture.componentInstance;
@@ -51,14 +74,10 @@ describe('TorrentDetails', () => {
   });
 
   describe('selectTab', () => {
-    it('should update the active tab id', () => {
+    it('delegates to the data service and reflects the change', () => {
       component.selectTab('trackers');
+      expect(mockDataService.selectTab).toHaveBeenCalledWith('trackers');
       expect(component.activeTabId()).toBe('trackers');
-    });
-
-    it('should switch to the peers tab', () => {
-      component.selectTab('peers');
-      expect(component.activeTabId()).toBe('peers');
     });
   });
 
@@ -66,6 +85,21 @@ describe('TorrentDetails', () => {
     it('should return null when no hash is set', () => {
       fixture.componentRef.setInput('hash', null);
       expect(component.torrent()).toBeNull();
+    });
+  });
+
+  describe('ngOnInit', () => {
+    it('initializes the data service with the hash and context inputs', async () => {
+      fixture.componentRef.setInput('hash', 'abc123');
+      fixture.componentRef.setInput('context', { editMode: true });
+      await component.ngOnInit();
+      expect(mockDataService.init).toHaveBeenCalledWith('abc123', { editMode: true });
+    });
+
+    it('selects the tabToOpen input on the data service', async () => {
+      fixture.componentRef.setInput('tabToOpen', 'content');
+      await component.ngOnInit();
+      expect(mockDataService.selectTab).toHaveBeenCalledWith('content');
     });
   });
 
@@ -78,26 +112,23 @@ describe('TorrentDetails', () => {
   });
 
   describe('TORRENT_DELETED handling', () => {
-    it('clears loadedComponents and closes the modal when this torrent is deleted', async () => {
+    it('stops the data service and closes the modal when this torrent is deleted', async () => {
       fixture.componentRef.setInput('hash', 'abc123');
       await component.ngOnInit();
-      expect(component.loadedComponents().size).toBeGreaterThan(0);
 
       commands$.next({ type: 'TORRENT_DELETED', hash: 'abc123' });
 
-      expect(component.loadedComponents().size).toBe(0);
+      expect(mockDataService.stopAll).toHaveBeenCalled();
       expect(mockActiveModal.close).toHaveBeenCalled();
     });
 
     it('ignores TORRENT_DELETED events for a different hash', async () => {
       fixture.componentRef.setInput('hash', 'abc123');
       await component.ngOnInit();
-      const sizeBefore = component.loadedComponents().size;
-      expect(sizeBefore).toBeGreaterThan(0);
 
       commands$.next({ type: 'TORRENT_DELETED', hash: 'other-hash' });
 
-      expect(component.loadedComponents().size).toBe(sizeBefore);
+      expect(mockDataService.stopAll).not.toHaveBeenCalled();
       expect(mockActiveModal.close).not.toHaveBeenCalled();
     });
   });

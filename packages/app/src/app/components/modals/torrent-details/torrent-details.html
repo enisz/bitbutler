@@ -51,12 +51,7 @@
       @for (tab of tabs; track tab.id) {
         @if (loadedComponents().has(tab.id)) {
           <div class="bb-tab-panel" [class.bb-tab-panel--active]="activeTabId() === tab.id">
-            <ng-container
-              *ngComponentOutlet="
-                loadedComponents().get(tab.id)!;
-                inputs: { hash: torrent()?.hash, context: context() }
-              "
-            ></ng-container>
+            <ng-container *ngComponentOutlet="loadedComponents().get(tab.id)!"></ng-container>
           </div>
         }
       }
