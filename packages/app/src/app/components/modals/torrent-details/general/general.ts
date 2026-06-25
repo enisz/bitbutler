@@ -541,7 +541,7 @@ export class General implements TorrentDetailTabComponent, OnInit {
   }
 
   public deleteTorrent(): void {
-    this.commandBusService.emit({ type: 'UI_TORRENT_DELETE_REQUEST' });
+    this.commandBusService.emit({ type: 'UI_TORRENT_DELETE_REQUEST', hashes: [this.hash()] });
   }
 
   public toClipboard(fieldKey: string, value: string): void {

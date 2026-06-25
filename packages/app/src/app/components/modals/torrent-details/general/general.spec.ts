@@ -147,12 +147,14 @@ describe('General', () => {
   };
   let toastInfo: ReturnType<typeof vi.fn>;
   let toastDanger: ReturnType<typeof vi.fn>;
+  let commandBusEmit: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
     torrentsMap = signal(new Map());
     mockLogMain = vi.fn().mockResolvedValue([]);
     toastInfo = vi.fn();
     toastDanger = vi.fn();
+    commandBusEmit = vi.fn();
     qbTorrents = {
       properties: vi.fn().mockResolvedValue({}),
       files: vi.fn().mockResolvedValue([]),
@@ -191,7 +193,7 @@ describe('General', () => {
         },
         {
           provide: CommandBusService,
-          useValue: { commands$: new Subject<any>().asObservable(), emit: vi.fn() },
+          useValue: { commands$: new Subject<any>().asObservable(), emit: commandBusEmit },
         },
         {
           provide: GeneralSettingsService,
@@ -622,6 +624,17 @@ describe('General', () => {
           'boom',
           'components.modals.torrent-details.general.toast.reannounce-failed',
         );
+      });
+    });
+
+    describe('deleteTorrent', () => {
+      it('emits UI_TORRENT_DELETE_REQUEST with the hash of the torrent being viewed', () => {
+        component.deleteTorrent();
+
+        expect(commandBusEmit).toHaveBeenCalledWith({
+          type: 'UI_TORRENT_DELETE_REQUEST',
+          hashes: ['abc123'],
+        });
       });
     });
   });
