@@ -11,9 +11,11 @@ describe('TorrentDetails', () => {
   let component: TorrentDetails;
   let fixture: ComponentFixture<TorrentDetails>;
   let mockActiveModal: Partial<NgbActiveModal>;
+  let commands$: Subject<any>;
 
   beforeEach(async () => {
     mockActiveModal = { close: vi.fn(), dismiss: vi.fn() };
+    commands$ = new Subject();
 
     await TestBed.configureTestingModule({
       imports: [TorrentDetails],
@@ -25,7 +27,7 @@ describe('TorrentDetails', () => {
         },
         {
           provide: CommandBusService,
-          useValue: { commands$: new Subject<any>().asObservable(), emit: vi.fn() },
+          useValue: { commands$: commands$.asObservable(), emit: vi.fn() },
         },
         { provide: ConfirmService, useValue: { confirm: vi.fn().mockResolvedValue(true) } },
       ],
@@ -72,6 +74,31 @@ describe('TorrentDetails', () => {
       component.guardService.isDirty.set(false);
       const result = await component.canDeactivate();
       expect(result).toBe(true);
+    });
+  });
+
+  describe('TORRENT_DELETED handling', () => {
+    it('clears loadedComponents and closes the modal when this torrent is deleted', async () => {
+      fixture.componentRef.setInput('hash', 'abc123');
+      await component.ngOnInit();
+      expect(component.loadedComponents().size).toBeGreaterThan(0);
+
+      commands$.next({ type: 'TORRENT_DELETED', hash: 'abc123' });
+
+      expect(component.loadedComponents().size).toBe(0);
+      expect(mockActiveModal.close).toHaveBeenCalled();
+    });
+
+    it('ignores TORRENT_DELETED events for a different hash', async () => {
+      fixture.componentRef.setInput('hash', 'abc123');
+      await component.ngOnInit();
+      const sizeBefore = component.loadedComponents().size;
+      expect(sizeBefore).toBeGreaterThan(0);
+
+      commands$.next({ type: 'TORRENT_DELETED', hash: 'other-hash' });
+
+      expect(component.loadedComponents().size).toBe(sizeBefore);
+      expect(mockActiveModal.close).not.toHaveBeenCalled();
     });
   });
 });

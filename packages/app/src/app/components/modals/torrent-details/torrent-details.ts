@@ -104,7 +104,10 @@ export class TorrentDetails implements OnInit, GuardableModal {
         ),
         takeUntilDestroyed(),
       )
-      .subscribe(() => this.activeModal.close());
+      .subscribe(() => {
+        this.loadedComponents.set(new Map());
+        this.activeModal.close();
+      });
   }
 
   public async ngOnInit(): Promise<void> {
