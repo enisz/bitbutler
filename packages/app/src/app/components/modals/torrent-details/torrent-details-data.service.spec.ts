@@ -1,12 +1,14 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { Subject } from 'rxjs';
 import { vi } from 'vitest';
 import {
   QbTorrentProperties,
   QbTorrentTracker,
   QbTrackerStatus,
 } from '../../../models/qbittorrent.model';
-import { Torrent } from '../../../models/torrent.model';
+import { QbTorrentPeer, QbTorrentPeersResponse, Torrent } from '../../../models/torrent.model';
+import { QbPollingService } from '../../../services/qb-polling.service';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
@@ -112,12 +114,16 @@ describe('TorrentDetailsDataService', () => {
   let torrentsMap: ReturnType<typeof signal<Map<string, Torrent>>>;
   let qbTorrentsProperties: ReturnType<typeof vi.fn>;
   let qbTorrentsTrackers: ReturnType<typeof vi.fn>;
+  let peersPolling$: Subject<QbTorrentPeersResponse>;
+  let startPeersPolling: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     vi.useFakeTimers();
     torrentsMap = signal(new Map());
     qbTorrentsProperties = vi.fn().mockResolvedValue(makeProperties());
     qbTorrentsTrackers = vi.fn().mockResolvedValue([]);
+    peersPolling$ = new Subject<QbTorrentPeersResponse>();
+    startPeersPolling = vi.fn().mockReturnValue(peersPolling$);
 
     TestBed.configureTestingModule({
       providers: [
@@ -130,6 +136,7 @@ describe('TorrentDetailsDataService', () => {
             torrents: { properties: qbTorrentsProperties, trackers: qbTorrentsTrackers },
           },
         },
+        { provide: QbPollingService, useValue: { startPeersPolling } },
       ],
     });
 
@@ -300,6 +307,73 @@ describe('TorrentDetailsDataService', () => {
 
       expect(consoleError).toHaveBeenCalled();
       expect(service.trackersLoading()).toBe(false);
+    });
+  });
+
+  describe('peers polling', () => {
+    const peer: QbTorrentPeer = {
+      ip: '10.0.0.1',
+      port: 51413,
+      client: 'qBittorrent',
+      dl_speed: 0,
+      up_speed: 0,
+      progress: 0.5,
+      downloaded: 0,
+      uploaded: 0,
+      relevance: 0,
+      flags: '',
+      flags_desc: '',
+      connection: 'BT',
+      files: '',
+    };
+
+    it('does not poll while the peers tab is not active', () => {
+      service.init('abc123', {});
+      expect(startPeersPolling).not.toHaveBeenCalled();
+    });
+
+    it('starts polling and applies a full_update patch when the peers tab becomes active', () => {
+      service.init('abc123', {});
+      service.selectTab('peers');
+
+      expect(startPeersPolling).toHaveBeenCalledWith('server-1', 'abc123');
+
+      peersPolling$.next({ rid: 1, full_update: true, peers: { '10.0.0.1:51413': peer } });
+
+      expect(service.peers()).toEqual([peer]);
+      expect(service.peersLoading()).toBe(false);
+    });
+
+    it('stops listening once the peers tab is no longer active', () => {
+      service.init('abc123', {});
+      service.selectTab('peers');
+      service.selectTab('general');
+
+      peersPolling$.next({ rid: 1, full_update: true, peers: { '10.0.0.1:51413': peer } });
+
+      expect(service.peers()).toEqual([]);
+    });
+
+    it('restarts polling with a fresh peer list when reactivated', () => {
+      service.init('abc123', {});
+      service.selectTab('peers');
+      peersPolling$.next({ rid: 1, full_update: true, peers: { '10.0.0.1:51413': peer } });
+      expect(service.peers()).toEqual([peer]);
+
+      service.selectTab('general');
+      service.selectTab('peers');
+
+      expect(service.peers()).toEqual([]);
+      expect(startPeersPolling).toHaveBeenCalledTimes(2);
+    });
+
+    it('removes peers listed in peers_removed', () => {
+      service.init('abc123', {});
+      service.selectTab('peers');
+      peersPolling$.next({ rid: 1, full_update: true, peers: { '10.0.0.1:51413': peer } });
+      peersPolling$.next({ rid: 2, full_update: false, peers_removed: ['10.0.0.1:51413'] });
+
+      expect(service.peers()).toEqual([]);
     });
   });
 });
