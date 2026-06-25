@@ -4,6 +4,8 @@ import { TorrentFileEntry } from '@bitbutler/shared';
 import { Subject } from 'rxjs';
 import { vi } from 'vitest';
 import {
+  QbLogEntry,
+  QbLogMessageType,
   QbTorrentProperties,
   QbTorrentTracker,
   QbTrackerStatus,
@@ -15,6 +17,7 @@ import {
   QbTorrentPeersResponse,
   Torrent,
 } from '../../../models/torrent.model';
+import { PathService } from '../../../services/path.service';
 import { QbPollingService } from '../../../services/qb-polling.service';
 import { QbService } from '../../../services/qb.service';
 import { ServerSettingsService } from '../../../services/server-settings.service';
@@ -117,12 +120,23 @@ const makeProperties = (overrides: Partial<QbTorrentProperties> = {}): QbTorrent
   ...overrides,
 });
 
+const makeLogEntry = (overrides: Partial<QbLogEntry> = {}): QbLogEntry => ({
+  id: 1,
+  message:
+    'File error alert. Torrent: "My Torrent". File: "/path". Reason: "x error: Permission denied"',
+  timestamp: 1700000000,
+  type: QbLogMessageType.Warning,
+  ...overrides,
+});
+
 describe('TorrentDetailsDataService', () => {
   let service: TorrentDetailsDataService;
   let torrentsMap: ReturnType<typeof signal<Map<string, Torrent>>>;
   let qbTorrentsProperties: ReturnType<typeof vi.fn>;
   let qbTorrentsTrackers: ReturnType<typeof vi.fn>;
   let qbTorrentsFiles: ReturnType<typeof vi.fn>;
+  let qbLogMain: ReturnType<typeof vi.fn>;
+  let resolveLocalPath: ReturnType<typeof vi.fn>;
   let peersPolling$: Subject<QbTorrentPeersResponse>;
   let startPeersPolling: ReturnType<typeof vi.fn>;
   let serverSettingsLoad: ReturnType<typeof vi.fn>;
@@ -133,6 +147,8 @@ describe('TorrentDetailsDataService', () => {
     qbTorrentsProperties = vi.fn().mockResolvedValue(makeProperties());
     qbTorrentsTrackers = vi.fn().mockResolvedValue([]);
     qbTorrentsFiles = vi.fn().mockResolvedValue([]);
+    qbLogMain = vi.fn().mockResolvedValue([]);
+    resolveLocalPath = vi.fn().mockResolvedValue(null);
     peersPolling$ = new Subject<QbTorrentPeersResponse>();
     startPeersPolling = vi.fn().mockReturnValue(peersPolling$);
     serverSettingsLoad = vi.fn().mockResolvedValue({ polling: { foreground: 5000 } });
@@ -150,10 +166,12 @@ describe('TorrentDetailsDataService', () => {
               trackers: qbTorrentsTrackers,
               files: qbTorrentsFiles,
             },
+            log: { main: qbLogMain },
           },
         },
         { provide: QbPollingService, useValue: { startPeersPolling } },
         { provide: ServerSettingsService, useValue: { load: serverSettingsLoad } },
+        { provide: PathService, useValue: { resolveLocalPath } },
       ],
     });
 
@@ -406,10 +424,14 @@ describe('TorrentDetailsDataService', () => {
       availability: 1,
     };
 
-    it('does nothing while the content tab is not active', async () => {
+    it('does not poll while the content tab is not active', async () => {
       service.init('abc123', {});
       await vi.advanceTimersByTimeAsync(0);
-      expect(qbTorrentsFiles).not.toHaveBeenCalled();
+      // init() triggers its own one-off files() fetch for singleFile, separate from content polling.
+      expect(qbTorrentsFiles).toHaveBeenCalledTimes(1);
+
+      await vi.advanceTimersByTimeAsync(5000);
+      expect(qbTorrentsFiles).toHaveBeenCalledTimes(1);
     });
 
     it('fetches and maps files immediately when the content tab becomes active', async () => {
@@ -435,10 +457,11 @@ describe('TorrentDetailsDataService', () => {
       service.init('abc123', {});
       service.selectTab('content');
       await vi.advanceTimersByTimeAsync(0);
-      expect(qbTorrentsFiles).toHaveBeenCalledTimes(1);
+      // 1 call from init()'s singleFile fetch + 1 from the first content-tab poll.
+      expect(qbTorrentsFiles).toHaveBeenCalledTimes(2);
 
       await vi.advanceTimersByTimeAsync(5000);
-      expect(qbTorrentsFiles).toHaveBeenCalledTimes(2);
+      expect(qbTorrentsFiles).toHaveBeenCalledTimes(3);
     });
 
     it('stops polling once the content tab is no longer active', async () => {
@@ -448,7 +471,8 @@ describe('TorrentDetailsDataService', () => {
       service.selectTab('general');
 
       await vi.advanceTimersByTimeAsync(5000);
-      expect(qbTorrentsFiles).toHaveBeenCalledTimes(1);
+      // 1 call from init()'s singleFile fetch + 1 from the single content-tab poll before switching away.
+      expect(qbTorrentsFiles).toHaveBeenCalledTimes(2);
     });
 
     it('logs and does not toast when the fetch fails', async () => {
@@ -470,6 +494,152 @@ describe('TorrentDetailsDataService', () => {
         service.setContent(files);
         expect(service.content()).toEqual(files);
       });
+    });
+  });
+
+  describe('singleFile', () => {
+    it('starts as false', () => {
+      expect(service.singleFile()).toBe(false);
+    });
+
+    it('becomes true when the torrent has exactly one file', async () => {
+      qbTorrentsFiles.mockResolvedValue([
+        {
+          index: 0,
+          name: 'a.iso',
+          size: 1,
+          progress: 1,
+          priority: 1,
+          is_seed: true,
+          piece_range: [0, 0],
+          availability: 1,
+        },
+      ]);
+      service.init('abc123', {});
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(service.singleFile()).toBe(true);
+    });
+
+    it('stays false when the torrent has multiple files', async () => {
+      qbTorrentsFiles.mockResolvedValue([
+        {
+          index: 0,
+          name: 'a.iso',
+          size: 1,
+          progress: 1,
+          priority: 1,
+          is_seed: true,
+          piece_range: [0, 0],
+          availability: 1,
+        },
+        {
+          index: 1,
+          name: 'b.iso',
+          size: 1,
+          progress: 1,
+          priority: 1,
+          is_seed: true,
+          piece_range: [0, 0],
+          availability: 1,
+        },
+      ]);
+      service.init('abc123', {});
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(service.singleFile()).toBe(false);
+    });
+
+    it('logs and does not throw when the files fetch fails', async () => {
+      qbTorrentsFiles.mockRejectedValueOnce(new Error('boom'));
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      service.init('abc123', {});
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(consoleError).toHaveBeenCalled();
+      expect(service.singleFile()).toBe(false);
+    });
+  });
+
+  describe('localPath', () => {
+    it('resolves the local path once the torrent has a content_path', async () => {
+      resolveLocalPath.mockResolvedValue('/local/path');
+      service.init('abc123', {});
+      torrentsMap.set(new Map([['abc123', makeTorrent({ content_path: '/remote/path' })]]));
+      qbTorrentsProperties.mockResolvedValue(makeProperties());
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(resolveLocalPath).toHaveBeenCalledWith('/remote/path');
+      expect(service.localPath()).toBe('/local/path');
+    });
+
+    it('stays null when there is no content_path yet', () => {
+      service.init('abc123', {});
+      expect(service.localPath()).toBeNull();
+      expect(resolveLocalPath).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('errorLog', () => {
+    it('does nothing when the torrent is not in the error state', async () => {
+      service.init('abc123', {});
+      torrentsMap.set(new Map([['abc123', makeTorrent({ state: 'downloading' })]]));
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(qbLogMain).not.toHaveBeenCalled();
+      expect(service.errorLog()).toBeNull();
+    });
+
+    it('fetches the main log and stores the matching warning/critical entry when the torrent errors', async () => {
+      const matching = makeLogEntry({ id: 5, type: QbLogMessageType.Critical });
+      qbLogMain.mockResolvedValue([matching]);
+
+      service.init('abc123', {});
+      torrentsMap.set(new Map([['abc123', makeTorrent({ state: 'error', name: 'My Torrent' })]]));
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(qbLogMain).toHaveBeenCalledWith('server-1', {
+        normal: false,
+        info: false,
+        warning: true,
+        critical: true,
+      });
+      expect(service.errorLog()?.id).toBe(5);
+    });
+
+    it('does not refetch while the torrent stays in the error state with no match', async () => {
+      qbLogMain.mockResolvedValue([
+        makeLogEntry({ message: 'Unrelated torrent message', type: QbLogMessageType.Critical }),
+      ]);
+
+      service.init('abc123', {});
+      torrentsMap.set(new Map([['abc123', makeTorrent({ state: 'error', name: 'My Torrent' })]]));
+      await vi.advanceTimersByTimeAsync(0);
+      expect(qbLogMain).toHaveBeenCalledTimes(1);
+
+      torrentsMap.set(new Map([['abc123', makeTorrent({ state: 'error', name: 'My Torrent' })]]));
+      await vi.advanceTimersByTimeAsync(0);
+      expect(qbLogMain).toHaveBeenCalledTimes(1);
+    });
+
+    it('clears errorLog and refetches on the next error episode after leaving the error state', async () => {
+      qbLogMain.mockResolvedValue([makeLogEntry({ id: 1, type: QbLogMessageType.Critical })]);
+      service.init('abc123', {});
+      torrentsMap.set(new Map([['abc123', makeTorrent({ state: 'error', name: 'My Torrent' })]]));
+      await vi.advanceTimersByTimeAsync(0);
+      expect(service.errorLog()?.id).toBe(1);
+
+      torrentsMap.set(new Map([['abc123', makeTorrent({ state: 'downloading' })]]));
+      await vi.advanceTimersByTimeAsync(0);
+      expect(service.errorLog()).toBeNull();
+
+      qbLogMain.mockResolvedValue([makeLogEntry({ id: 2, type: QbLogMessageType.Critical })]);
+      torrentsMap.set(new Map([['abc123', makeTorrent({ state: 'error', name: 'My Torrent' })]]));
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(qbLogMain).toHaveBeenCalledTimes(2);
+      expect(service.errorLog()?.id).toBe(2);
     });
   });
 });

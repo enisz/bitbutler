@@ -1,4 +1,4 @@
-import { DestroyRef, Injectable, Signal, computed, inject, signal } from '@angular/core';
+import { DestroyRef, Injectable, Signal, computed, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TorrentFileEntry } from '@bitbutler/shared';
 import {
@@ -12,13 +12,19 @@ import {
   tap,
   timer,
 } from 'rxjs';
-import { QbTorrentProperties, QbTorrentTracker } from '../../../models/qbittorrent.model';
+import {
+  QbLogEntry,
+  QbLogMessageType,
+  QbTorrentProperties,
+  QbTorrentTracker,
+} from '../../../models/qbittorrent.model';
 import {
   QbTorrentContent,
   QbTorrentPeer,
   QbTorrentPeersResponse,
   Torrent,
 } from '../../../models/torrent.model';
+import { PathService } from '../../../services/path.service';
 import { QbPollingService } from '../../../services/qb-polling.service';
 import { QbService } from '../../../services/qb.service';
 import { ServerSettingsService } from '../../../services/server-settings.service';
@@ -38,6 +44,7 @@ export class TorrentDetailsDataService {
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly serverSettingsService = inject(ServerSettingsService);
   private readonly polling = inject(QbPollingService);
+  private readonly pathService = inject(PathService);
   private readonly destroyRef = inject(DestroyRef);
 
   private readonly hashSignal = signal('');
@@ -51,6 +58,9 @@ export class TorrentDetailsDataService {
   public readonly peersLoading = signal(true);
   public readonly content = signal<TorrentFileEntry[]>([]);
   public readonly contentLoading = signal(true);
+  public readonly localPath = signal<string | null>(null);
+  public readonly singleFile = signal(false);
+  public readonly errorLog = signal<QbLogEntry | null>(null);
   private readonly peerMap = new Map<string, QbTorrentPeer>();
 
   private readonly destroyed$ = new Subject<void>();
@@ -95,6 +105,67 @@ export class TorrentDetailsDataService {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe();
+
+    let isResolvingLocalPath = false;
+    let isLocalPathResolved = false;
+    const localPathEffectRef = effect(async () => {
+      const remotePath = this.torrent()?.data?.content_path;
+
+      if (isLocalPathResolved) {
+        localPathEffectRef.destroy();
+        return;
+      }
+
+      if (!remotePath || isResolvingLocalPath) return;
+
+      isResolvingLocalPath = true;
+      this.localPath.set(await this.pathService.resolveLocalPath(remotePath));
+      isLocalPathResolved = true;
+      localPathEffectRef.destroy();
+    });
+
+    let hasAttemptedErrorLogFetch = false;
+    effect(async () => {
+      const entry = this.torrentStoreService.torrentsMap().get(this.hashSignal());
+      const state = entry?.state;
+      const name = entry?.name;
+      const serverId = this.serverStoreService.currentServerId();
+
+      if (state !== 'error') {
+        hasAttemptedErrorLogFetch = false;
+        this.errorLog.set(null);
+        return;
+      }
+
+      if (hasAttemptedErrorLogFetch || !serverId || !name) return;
+      hasAttemptedErrorLogFetch = true;
+
+      try {
+        const entries = await this.qbService.log.main(serverId, {
+          normal: false,
+          info: false,
+          warning: true,
+          critical: true,
+        });
+
+        const matches = entries.filter(
+          (e) =>
+            (e.type === QbLogMessageType.Warning || e.type === QbLogMessageType.Critical) &&
+            e.message.includes(name),
+        );
+
+        if (matches.length > 0) {
+          this.errorLog.set(matches.reduce((a, b) => (b.id > a.id ? b : a)));
+        }
+      } catch (error: any) {
+        console.error(
+          TorrentDetailsDataService.name,
+          'errorLog effect',
+          'Failed to fetch log entries',
+          error,
+        );
+      }
+    });
   }
 
   private propertiesPoll$() {
@@ -141,6 +212,21 @@ export class TorrentDetailsDataService {
   public init(hash: string, context: Record<string, any>): void {
     this.hashSignal.set(hash);
     this.contextSignal.set(context);
+
+    const serverId = this.serverStoreService.currentServerId();
+    if (!serverId) return;
+
+    this.qbService.torrents
+      .files(serverId, hash)
+      .then((content) => this.singleFile.set(content.length === 1))
+      .catch((e: any) =>
+        console.error(
+          TorrentDetailsDataService.name,
+          'init',
+          'Failed to fetch torrent files for singleFile',
+          e?.message ?? String(e),
+        ),
+      );
   }
 
   public hash(): string {
