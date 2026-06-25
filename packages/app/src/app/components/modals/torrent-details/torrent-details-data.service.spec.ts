@@ -1,7 +1,11 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
-import { QbTorrentProperties } from '../../../models/qbittorrent.model';
+import {
+  QbTorrentProperties,
+  QbTorrentTracker,
+  QbTrackerStatus,
+} from '../../../models/qbittorrent.model';
 import { Torrent } from '../../../models/torrent.model';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
@@ -107,18 +111,25 @@ describe('TorrentDetailsDataService', () => {
   let service: TorrentDetailsDataService;
   let torrentsMap: ReturnType<typeof signal<Map<string, Torrent>>>;
   let qbTorrentsProperties: ReturnType<typeof vi.fn>;
+  let qbTorrentsTrackers: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     vi.useFakeTimers();
     torrentsMap = signal(new Map());
     qbTorrentsProperties = vi.fn().mockResolvedValue(makeProperties());
+    qbTorrentsTrackers = vi.fn().mockResolvedValue([]);
 
     TestBed.configureTestingModule({
       providers: [
         TorrentDetailsDataService,
         { provide: TorrentStoreService, useValue: { torrentsMap } },
         { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
-        { provide: QbService, useValue: { torrents: { properties: qbTorrentsProperties } } },
+        {
+          provide: QbService,
+          useValue: {
+            torrents: { properties: qbTorrentsProperties, trackers: qbTorrentsTrackers },
+          },
+        },
       ],
     });
 
@@ -227,6 +238,68 @@ describe('TorrentDetailsDataService', () => {
 
       expect(consoleError).toHaveBeenCalled();
       expect(service.properties()).toBeNull();
+    });
+  });
+
+  describe('trackers fetching', () => {
+    const tracker: QbTorrentTracker = {
+      url: 'http://tracker.example.com',
+      status: QbTrackerStatus.Working,
+      tier: 0,
+      num_peers: 1,
+      num_seeds: 2,
+      num_leeches: 3,
+      num_downloaded: 4,
+      msg: '',
+    };
+
+    it('does nothing while the trackers tab is not active', async () => {
+      service.init('abc123', {});
+      await vi.advanceTimersByTimeAsync(0);
+      expect(qbTorrentsTrackers).not.toHaveBeenCalled();
+    });
+
+    it('fetches once when the trackers tab becomes active', async () => {
+      qbTorrentsTrackers.mockResolvedValue([tracker]);
+      service.init('abc123', {});
+      service.selectTab('trackers');
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(qbTorrentsTrackers).toHaveBeenCalledWith('server-1', 'abc123');
+      expect(service.trackers()).toEqual([tracker]);
+      expect(service.trackersLoading()).toBe(false);
+    });
+
+    it('does not refetch while the trackers tab stays active', async () => {
+      service.init('abc123', {});
+      service.selectTab('trackers');
+      await vi.advanceTimersByTimeAsync(0);
+      await vi.advanceTimersByTimeAsync(5000);
+
+      expect(qbTorrentsTrackers).toHaveBeenCalledTimes(1);
+    });
+
+    it('refetches every time the trackers tab is reactivated', async () => {
+      service.init('abc123', {});
+      service.selectTab('trackers');
+      await vi.advanceTimersByTimeAsync(0);
+      service.selectTab('general');
+      service.selectTab('trackers');
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(qbTorrentsTrackers).toHaveBeenCalledTimes(2);
+    });
+
+    it('logs and does not throw when the fetch fails', async () => {
+      qbTorrentsTrackers.mockRejectedValueOnce(new Error('boom'));
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      service.init('abc123', {});
+      service.selectTab('trackers');
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(consoleError).toHaveBeenCalled();
+      expect(service.trackersLoading()).toBe(false);
     });
   });
 });

@@ -1,7 +1,7 @@
 import { DestroyRef, Injectable, Signal, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BehaviorSubject, EMPTY, Subject, from, switchMap, takeUntil, timer } from 'rxjs';
-import { QbTorrentProperties } from '../../../models/qbittorrent.model';
+import { QbTorrentProperties, QbTorrentTracker } from '../../../models/qbittorrent.model';
 import { Torrent } from '../../../models/torrent.model';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
@@ -25,6 +25,8 @@ export class TorrentDetailsDataService {
 
   public readonly activeTabId = signal<TorrentDetailTabId>('general');
   public readonly properties = signal<QbTorrentProperties | null>(null);
+  public readonly trackers = signal<QbTorrentTracker[]>([]);
+  public readonly trackersLoading = signal(true);
 
   private readonly destroyed$ = new Subject<void>();
 
@@ -40,6 +42,14 @@ export class TorrentDetailsDataService {
     this.activeTabId$
       .pipe(
         switchMap((id) => (id === 'general' ? this.propertiesPoll$() : EMPTY)),
+        takeUntil(this.destroyed$),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe();
+
+    this.activeTabId$
+      .pipe(
+        switchMap((id) => (id === 'trackers' ? from(this.fetchTrackers()) : EMPTY)),
         takeUntil(this.destroyed$),
         takeUntilDestroyed(this.destroyRef),
       )
@@ -64,6 +74,26 @@ export class TorrentDetailsDataService {
         'Failed to fetch torrent properties!',
         e?.message ?? String(e),
       );
+    }
+  }
+
+  private async fetchTrackers(): Promise<void> {
+    const serverId = this.serverStoreService.currentServerId();
+    const hash = this.hashSignal();
+    if (!serverId || !hash) return;
+
+    this.trackersLoading.set(true);
+    try {
+      this.trackers.set(await this.qbService.torrents.trackers(serverId, hash));
+    } catch (e: any) {
+      console.error(
+        TorrentDetailsDataService.name,
+        'fetchTrackers',
+        'Failed to fetch torrent trackers!',
+        e?.message ?? String(e),
+      );
+    } finally {
+      this.trackersLoading.set(false);
     }
   }
 
