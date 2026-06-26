@@ -3,7 +3,6 @@ import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-import { Confirm } from '../components/modals/confirm/confirm';
 import { setModalInput } from '../utils/modal-input';
 
 export interface ParamWithData {
@@ -16,7 +15,7 @@ export class ConfirmService {
   private readonly modalService = inject(NgbModal);
   private readonly translateService = inject(TranslateService);
 
-  public confirm(
+  public async confirm(
     title: string | ParamWithData,
     message: string | ParamWithData,
     btnOkText: string = 'general.button.ok',
@@ -24,6 +23,7 @@ export class ConfirmService {
     dialogSize: 'sm' | 'md' | 'lg' | 'xl' = 'md',
     okIcon: IconDefinition = faCheck,
   ): Promise<boolean> {
+    const { Confirm } = await import('../components/modals/confirm/confirm');
     const modalRef = this.modalService.open(Confirm, { size: dialogSize });
 
     if (typeof title !== 'string') {
