@@ -11,6 +11,7 @@ const DEFAULT_SETTINGS = {
   animateRows: true,
   rowDoubleClickAction: 'DETAILS' as const,
   floatingFilters: false,
+  pausePollingOnModal: false,
 };
 
 describe('TorrentListGrid', () => {
@@ -49,6 +50,10 @@ describe('TorrentListGrid', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should initialise pausePollingOnModal form control to false from settings', () => {
+    expect(component.torrentListGridForm.get('pausePollingOnModal')?.value).toBe(false);
   });
 
   describe('drop', () => {

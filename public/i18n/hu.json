@@ -1411,6 +1411,7 @@
             "pagination": "Oldalszámozás",
             "compact-rows": "Kompakt sorok",
             "floating-filters": "Lebegő szűrők",
+            "pause-on-modal": "Szüneteltetés modál esetén",
             "row-double-click": {
               "title": "Dupla kattintás viselkedése",
               "value": {
@@ -1442,6 +1443,10 @@
             "floating-filters": {
               "title": "Lebegő szűrők",
               "description": "Egy szűrősor jelenik meg az oszlopfejlécek alatt. Ez az oszlopfejléc helyi menüjéből is kapcsolható oszloponként."
+            },
+            "pause-on-modal": {
+              "title": "Lekérdezés szüneteltetése modál esetén",
+              "description": "Ha engedélyezve van, a háttérlekérdezés szünetel, amikor bármely modál ablak meg van nyitva. A lekérdezés automatikusan folytatódik, amikor a modál bezáródik."
             },
             "double-click-behavior": {
               "title": "Dupla kattintás viselkedése",

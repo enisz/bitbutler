@@ -1411,6 +1411,7 @@
             "pagination": "Pagination",
             "compact-rows": "Compact Rows",
             "floating-filters": "Floating Filters",
+            "pause-on-modal": "Pause on Modal",
             "row-double-click": {
               "title": "Row double click behavior",
               "value": {
@@ -1442,6 +1443,10 @@
             "floating-filters": {
               "title": "Floating Filters",
               "description": "Shows an inline filter row beneath the column headers. This can also be toggled per-column from the column header context menu."
+            },
+            "pause-on-modal": {
+              "title": "Pause Polling on Modal",
+              "description": "When enabled, background polling is paused whenever any modal is open. Polling resumes automatically when the modal is closed."
             },
             "double-click-behavior": {
               "title": "Double Click Behavior",
