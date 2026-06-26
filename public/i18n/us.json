@@ -501,7 +501,7 @@
             "copied-to-clipboard": "Copied {{field}} to clipboard."
           },
           "footer": {
-            "playback": "Playback",
+            "playback": "Transfer",
             "limits": "Limits",
             "manage": "Manage",
             "manage-header-path": "Path",
