@@ -1,6 +1,6 @@
 import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { BehaviorSubject, Subject, firstValueFrom } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { CommandBusService } from '../../../services/command-bus.service';
 import { GridViewStoreService } from '../../../services/grid-view-store.service';
 import { QbPollingService } from '../../../services/qb-polling.service';
