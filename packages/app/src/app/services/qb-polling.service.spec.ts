@@ -86,4 +86,48 @@ describe('QbPollingService', () => {
     service.startMaindataPolling('server-1');
     expect(mockQbService.sync.streamMaindata).toHaveBeenCalledTimes(2);
   });
+
+  describe('pause / resume', () => {
+    it('should expose isPaused$ starting as false', async () => {
+      const paused = await firstValueFrom(service.isPaused$);
+      expect(paused).toBe(false);
+    });
+
+    it('pause() should return a symbol', () => {
+      const token = service.pause();
+      expect(typeof token).toBe('symbol');
+      service.resume(token);
+    });
+
+    it('isPaused$ should emit true after pause()', async () => {
+      const token = service.pause();
+      const paused = await firstValueFrom(service.isPaused$);
+      expect(paused).toBe(true);
+      service.resume(token);
+    });
+
+    it('isPaused$ should emit false after resume() of the only token', async () => {
+      const token = service.pause();
+      service.resume(token);
+      const paused = await firstValueFrom(service.isPaused$);
+      expect(paused).toBe(false);
+    });
+
+    it('isPaused$ should stay true when one of two tokens is returned', async () => {
+      const t1 = service.pause();
+      const t2 = service.pause();
+      service.resume(t1);
+      const paused = await firstValueFrom(service.isPaused$);
+      expect(paused).toBe(true);
+      service.resume(t2);
+    });
+
+    it('stopPolling() should clear all tokens and set isPaused$ to false', async () => {
+      service.pause();
+      service.pause();
+      service.stopPolling();
+      const paused = await firstValueFrom(service.isPaused$);
+      expect(paused).toBe(false);
+    });
+  });
 });

@@ -1,6 +1,6 @@
 import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { CommandBusService } from '../../../services/command-bus.service';
 import { GridViewStoreService } from '../../../services/grid-view-store.service';
 import { QbPollingService } from '../../../services/qb-polling.service';
@@ -15,6 +15,10 @@ describe('ServerState', () => {
   let selectedSignal: ReturnType<typeof signal<any[]>>;
   let filteredCountSignal: ReturnType<typeof signal<number>>;
   let onPoll$: Subject<void>;
+  let isPaused$: BehaviorSubject<boolean>;
+  let mockPauseToken: symbol;
+  let mockPause: ReturnType<typeof vi.fn>;
+  let mockResume: ReturnType<typeof vi.fn>;
 
   function setState(value: any): void {
     fixture.componentRef.setInput('state', value);
@@ -26,6 +30,10 @@ describe('ServerState', () => {
     selectedSignal = signal<any[]>([]);
     filteredCountSignal = signal<number>(0);
     onPoll$ = new Subject<void>();
+    isPaused$ = new BehaviorSubject<boolean>(false);
+    mockPauseToken = Symbol('test-pause-token');
+    mockPause = vi.fn().mockReturnValue(mockPauseToken);
+    mockResume = vi.fn();
 
     await TestBed.configureTestingModule({
       imports: [ServerState],
@@ -38,7 +46,13 @@ describe('ServerState', () => {
         },
         {
           provide: QbPollingService,
-          useValue: { onPoll$: onPoll$.asObservable(), getPollingInterval: () => 2000 },
+          useValue: {
+            onPoll$: onPoll$.asObservable(),
+            getPollingInterval: () => 2000,
+            isPaused$: isPaused$.asObservable(),
+            pause: mockPause,
+            resume: mockResume,
+          },
         },
         { provide: CommandBusService, useValue: { emit: commandBusEmit } },
       ],
@@ -325,6 +339,40 @@ describe('ServerState', () => {
       filteredCountSignal.set(42);
       fixture.detectChanges();
       expect(component.filteredCount()).toBe(42);
+    });
+  });
+
+  describe('isPaused', () => {
+    it('should start as false', () => {
+      expect(component.isPaused()).toBe(false);
+    });
+
+    it('should reflect true when isPaused$ emits true', () => {
+      isPaused$.next(true);
+      fixture.detectChanges();
+      expect(component.isPaused()).toBe(true);
+    });
+  });
+
+  describe('togglePolling', () => {
+    it('should call pollingService.pause() when not paused', () => {
+      component.togglePolling();
+      expect(mockPause).toHaveBeenCalledOnce();
+    });
+
+    it('should call pollingService.resume() with the stored token when paused', () => {
+      component.togglePolling(); // pause — stores token
+      isPaused$.next(true);
+      fixture.detectChanges();
+      component.togglePolling(); // resume
+      expect(mockResume).toHaveBeenCalledWith(mockPauseToken);
+    });
+
+    it('should not call resume() if there is no stored token', () => {
+      isPaused$.next(true); // force paused state without calling pause()
+      fixture.detectChanges();
+      component.togglePolling();
+      expect(mockResume).not.toHaveBeenCalled();
     });
   });
 });
