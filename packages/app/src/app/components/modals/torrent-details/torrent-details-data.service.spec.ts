@@ -356,6 +356,7 @@ describe('TorrentDetailsDataService', () => {
       isPaused$.next(false);
       await vi.advanceTimersByTimeAsync(2000);
       expect(qbTorrentsInfo).toHaveBeenCalledTimes(1);
+      expect(service.localTorrentData()).toBeNull();
     });
 
     it('logs and does not throw when fetchTorrentInfo fails', async () => {

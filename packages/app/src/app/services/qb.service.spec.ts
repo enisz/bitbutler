@@ -162,5 +162,17 @@ describe('QbService', () => {
     it('rejects when hash is empty', async () => {
       await expect(service.torrents.info('server-1', '')).rejects.toThrow('hash is required');
     });
+
+    it('throws HttpError when the response is not ok', async () => {
+      vi.spyOn(service, 'request').mockResolvedValue({
+        ok: false,
+        status: 404,
+        statusText: 'Not Found',
+        body: null,
+      } as any);
+      await expect(service.torrents.info('server-1', 'abc123')).rejects.toThrow(
+        'Failed to get torrent info',
+      );
+    });
   });
 });

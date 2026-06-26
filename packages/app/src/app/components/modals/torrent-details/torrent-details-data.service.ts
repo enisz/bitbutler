@@ -176,14 +176,15 @@ export class TorrentDetailsDataService {
       switchMap(() =>
         this.polling.isPaused$.pipe(
           take(1),
-          switchMap((isPaused) =>
-            from(
+          switchMap((isPaused) => {
+            if (!isPaused) this.localTorrentData.set(null);
+            return from(
               Promise.all([
                 this.fetchProperties(),
                 isPaused ? this.fetchTorrentInfo() : Promise.resolve(),
               ]),
-            ),
-          ),
+            );
+          }),
         ),
       ),
     );

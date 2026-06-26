@@ -256,5 +256,16 @@ describe('UiCommandHandlerService', () => {
       mockModalService.activeInstances.next([{} as any, {} as any]);
       expect(mockPollingService.pause).toHaveBeenCalledTimes(1);
     });
+
+    it('should resume polling when the service is destroyed while a modal is open', async () => {
+      gridSettings$.next({ pausePollingOnModal: true });
+      mockModalService.activeInstances.next([{} as any]);
+      expect(mockPollingService.pause).toHaveBeenCalledTimes(1);
+      expect(mockPollingService.resume).not.toHaveBeenCalled();
+
+      await TestBed.resetTestingModule();
+
+      expect(mockPollingService.resume).toHaveBeenCalledTimes(1);
+    });
   });
 });
