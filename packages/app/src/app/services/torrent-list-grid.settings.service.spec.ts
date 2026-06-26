@@ -68,4 +68,9 @@ describe('TorrentListGridSettingsService', () => {
     const settings = await service.load();
     expect(settings.columnState).toBeNull();
   });
+
+  it('should default pausePollingOnModal to false when nothing is stored', async () => {
+    const settings = await service.load();
+    expect(settings.pausePollingOnModal).toBe(false);
+  });
 });

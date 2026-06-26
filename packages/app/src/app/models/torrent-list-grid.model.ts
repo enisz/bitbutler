@@ -12,6 +12,7 @@ export interface TorrentListGridSettings {
   pinnedTopHashes: string[];
   pinnedBottomHashes: string[];
   floatingFilters: boolean;
+  pausePollingOnModal: boolean;
 }
 
 export const DEFAULT_TORRENT_LIST_GRID_SETTINGS: TorrentListGridSettings = {
@@ -36,4 +37,5 @@ export const DEFAULT_TORRENT_LIST_GRID_SETTINGS: TorrentListGridSettings = {
   pinnedTopHashes: [],
   pinnedBottomHashes: [],
   floatingFilters: false,
+  pausePollingOnModal: false,
 };
