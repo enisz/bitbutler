@@ -121,12 +121,10 @@
   }
 }
 
-.poll-dot {
-  width: 4px;
-  height: 4px;
-  background-color: var(--bs-primary);
-  border-radius: 50%;
-  opacity: 0.5;
+.poll-icon {
+  font-size: 0.45rem;
+  color: var(--bs-primary);
+  opacity: 0.7;
 }
 
 .speed-limit-stack {

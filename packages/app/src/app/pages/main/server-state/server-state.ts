@@ -20,6 +20,8 @@ import {
   faDownload,
   faHdd,
   faNetworkWired,
+  faPause,
+  faPlay,
   faShareAlt,
   faTachometerAlt,
   faUpload,
@@ -84,6 +86,9 @@ export class ServerState {
     (this.pollingService.getPollingInterval() / 1000).toString(),
   );
 
+  public isPaused = toSignal(this.pollingService.isPaused$, { initialValue: false });
+  private _pauseToken: symbol | null = null;
+
   public icons = {
     faDownload,
     faHdd,
@@ -95,6 +100,8 @@ export class ServerState {
     faCircle,
     faTachometerAlt,
     faClock,
+    faPlay,
+    faPause,
   };
 
   constructor() {
@@ -124,6 +131,10 @@ export class ServerState {
       this.sessionRatio.set(sDl > 0 ? (sUl / sDl).toFixed(2) : '0.00');
     });
 
+    effect(() => {
+      if (this.isPaused()) this.pollProgress.set(0);
+    });
+
     this.pollingService.onPoll$
       .pipe(
         takeUntilDestroyed(),
@@ -136,6 +147,15 @@ export class ServerState {
         }),
       )
       .subscribe((progress) => this.pollProgress.set(progress));
+  }
+
+  public togglePolling(): void {
+    if (this.isPaused()) {
+      if (this._pauseToken) this.pollingService.resume(this._pauseToken);
+      this._pauseToken = null;
+    } else {
+      this._pauseToken = this.pollingService.pause();
+    }
   }
 
   public toggleAlternativeSpeedLimit(): void {

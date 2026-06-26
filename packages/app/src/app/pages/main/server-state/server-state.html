@@ -155,15 +155,19 @@
     }
     @case ('polling-indicator') {
       <div
-        class="bb-widget"
+        class="bb-widget cursor-pointer"
         [ngbTooltip]="
-          'pages.main.server-state.server-polling' | translate: { interval: pollingInterval() }
+          isPaused()
+            ? ('pages.main.server-state.polling-paused' | translate)
+            : ('pages.main.server-state.server-polling'
+              | translate: { interval: pollingInterval() })
         "
         placement="top"
         container="body"
+        (click)="togglePolling()"
       >
         <div class="poll-container" [style.--p]="pollProgress()">
-          <div class="poll-dot"></div>
+          <fa-icon class="poll-icon" [icon]="isPaused() ? icons.faPause : icons.faPlay"></fa-icon>
         </div>
       </div>
     }
