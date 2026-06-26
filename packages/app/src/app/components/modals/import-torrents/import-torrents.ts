@@ -29,7 +29,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
-import { QbSettings } from '../../../pages/qb-settings/qb-settings';
 import { LocalTimestampPipe } from '../../../pipes/local-timestamp-pipe';
 import { ExportService } from '../../../services/export.service';
 import { ServerStoreService } from '../../../services/server-store.service';
@@ -209,7 +208,8 @@ export class ImportTorrents implements OnInit {
     }
   }
 
-  openQbSettings(): void {
+  async openQbSettings(): Promise<void> {
+    const { QbSettings } = await import('../../../pages/qb-settings/qb-settings');
     const ref = this.modalService.open(QbSettings, {
       size: 'xl',
       centered: false,

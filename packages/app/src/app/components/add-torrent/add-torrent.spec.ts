@@ -15,6 +15,8 @@ import { FileTreeSaveEvent } from '../bb-file-tree/bb-file-tree';
 import { TorrentExists } from '../modals/torrent-exists/torrent-exists';
 import { AddTorrent } from './add-torrent';
 
+const flushPromises = () => new Promise<void>((resolve) => setTimeout(resolve));
+
 const draftWithFiles: TorrentDraft = {
   source: 'manual',
   receivedAt: Date.now(),
@@ -829,7 +831,7 @@ describe('AddTorrent', () => {
       expect(component.showTree()).toBe(false);
     });
 
-    it('should open the TorrentExists modal and consume the draft when the torrent is already in the list', () => {
+    it('should open the TorrentExists modal and consume the draft when the torrent is already in the list', async () => {
       const torrentStoreService = TestBed.inject(TorrentStoreService) as any;
       torrentStoreService.torrentsArray.set([{ hash: 'ABC123' }]);
 
@@ -847,12 +849,13 @@ describe('AddTorrent', () => {
         { draft, selected: { name: 'movie.torrent', path: '/tmp/movie.torrent' } },
       ]);
       fixture.detectChanges();
+      await flushPromises();
 
       expect(modalService.open).toHaveBeenCalledWith(TorrentExists, { centered: true });
       expect(mockOpenFilesService.consumeCurrentDraft).toHaveBeenCalled();
     });
 
-    it('should pass the draft originalPath to TorrentExists when the torrent is already in the list', () => {
+    it('should pass the draft originalPath to TorrentExists when the torrent is already in the list', async () => {
       const torrentStoreService = TestBed.inject(TorrentStoreService) as any;
       torrentStoreService.torrentsArray.set([{ hash: 'abc123' }]);
 
@@ -873,6 +876,7 @@ describe('AddTorrent', () => {
         { draft, selected: { name: 'movie.torrent', path: '/tmp/movie.torrent' } },
       ]);
       fixture.detectChanges();
+      await flushPromises();
 
       expect(setInputMock).toHaveBeenCalledWith('originalPath', '/tmp/movie.torrent');
     });

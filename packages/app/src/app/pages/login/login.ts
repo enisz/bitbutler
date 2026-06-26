@@ -26,8 +26,6 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { debounceTime, firstValueFrom, fromEvent } from 'rxjs';
 import { AppLoader } from '../../components/app-loader/app-loader';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
-import { CredentialPrompt } from '../../components/modals/credential-prompt/credential-prompt';
-import { ManageServers } from '../../components/modals/manage-servers/manage-servers';
 import { CommandBusService } from '../../services/command-bus.service';
 import { ElectronService } from '../../services/electron.service';
 import { GeneralSettingsService } from '../../services/general-settings.service';
@@ -191,6 +189,8 @@ export class Login implements OnInit {
     let runtimePassword: string | undefined;
 
     if (!currentServer.username || !currentServer.has_password) {
+      const { CredentialPrompt } =
+        await import('../../components/modals/credential-prompt/credential-prompt');
       const credModalRef = this.modalService.open(CredentialPrompt);
       setModalInput(credModalRef, 'serverName', currentServer.name);
       setModalInput(credModalRef, 'prefillUsername', currentServer.username);
@@ -267,7 +267,8 @@ export class Login implements OnInit {
       .finally(() => this.loading.set(false));
   }
 
-  public openManageServers(): void {
+  public async openManageServers(): Promise<void> {
+    const { ManageServers } = await import('../../components/modals/manage-servers/manage-servers');
     const ref = this.modalService.open(ManageServers);
     setModalInput(ref, 'hideConnect', true);
   }
