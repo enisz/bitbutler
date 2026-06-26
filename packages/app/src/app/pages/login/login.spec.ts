@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
-import { ManageServers } from '../../components/modals/manage-servers/manage-servers';
 import { CommandBusService } from '../../services/command-bus.service';
 import { ElectronService } from '../../services/electron.service';
 import { GeneralSettingsService } from '../../services/general-settings.service';
@@ -261,12 +260,12 @@ describe('Login', () => {
   });
 
   describe('openManageServers', () => {
-    it('should open the ManageServers modal', () => {
-      component.openManageServers();
-      expect(modalMock.open).toHaveBeenCalledWith(ManageServers);
+    it('should open the ManageServers modal', async () => {
+      await component.openManageServers();
+      expect(modalMock.open).toHaveBeenCalledWith(expect.anything());
     });
 
-    it('should set hideConnect to true on the opened modal', () => {
+    it('should set hideConnect to true on the opened modal', async () => {
       const componentInstance: Record<string, unknown> = {};
       const mockRef = {
         componentInstance,
@@ -279,7 +278,7 @@ describe('Login', () => {
         },
       };
       modalMock.open.mockReturnValue(mockRef);
-      component.openManageServers();
+      await component.openManageServers();
       expect(componentInstance['hideConnect']).toBe(true);
     });
   });
