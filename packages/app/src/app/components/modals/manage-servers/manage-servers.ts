@@ -22,7 +22,6 @@ import { ServerService } from '../../../services/server.service';
 import { ToastService } from '../../../services/toast.service';
 import { setModalInput } from '../../../utils/modal-input';
 import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
-import { ServerEditor } from '../server-editor/server-editor';
 
 @Component({
   selector: 'app-manage-servers',
@@ -88,6 +87,7 @@ export class ManageServers {
   public async openEditor(id?: string): Promise<void> {
     if (this.busy()) return;
     this.editing.set(true);
+    const { ServerEditor } = await import('../server-editor/server-editor');
     const ref = this.modalService.open(ServerEditor, { size: 'lg' });
     if (id) setModalInput(ref, 'id', id);
     try {
