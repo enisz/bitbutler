@@ -3,29 +3,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { filter } from 'rxjs';
-import { About } from '../components/about/about';
-import { AddTorrent } from '../components/add-torrent/add-torrent';
 import { AppLoader } from '../components/app-loader/app-loader';
-import { DeleteTorrent } from '../components/modals/delete-torrent/delete-torrent';
-import { ExportTorrents } from '../components/modals/export-torrents/export-torrents';
-import { ImportTorrents } from '../components/modals/import-torrents/import-torrents';
-import { ManageCategories } from '../components/modals/manage-categories/manage-categories';
-import { ManageServers } from '../components/modals/manage-servers/manage-servers';
-import { ManageTags } from '../components/modals/manage-tags/manage-tags';
-import { RenameTorrent } from '../components/modals/rename-torrent/rename-torrent';
-import { ServerEditor } from '../components/modals/server-editor/server-editor';
-import { SetTorrentCategory } from '../components/modals/set-torrent-category/set-torrent-category';
-import { SetTorrentLocation } from '../components/modals/set-torrent-location/set-torrent-location';
-import { SetTorrentTags } from '../components/modals/set-torrent-tags/set-torrent-tags';
-import { ShareLimit } from '../components/modals/share-limit/share-limit';
-import { TorrentDetails } from '../components/modals/torrent-details/torrent-details';
-import { TransferLimit } from '../components/modals/transfer-limit/transfer-limit';
-import { UpdateAvailable } from '../components/modals/update-available/update-available';
 import { AppCommand, UiCommand } from '../models/command.model';
 import { GuardableModal } from '../models/guardable-modal.interface';
 import { QbTorrentContent } from '../models/torrent.model';
-import { QbSettings } from '../pages/qb-settings/qb-settings';
-import { Settings } from '../pages/settings/settings';
 import { setModalInput } from '../utils/modal-input';
 import { CommandBusService } from './command-bus.service';
 import { ElectronService } from './electron.service';
@@ -68,11 +49,13 @@ export class UiCommandHandlerService {
 
     this.commandBusService.commands$
       .pipe(filter(this.uiCommandGuard), takeUntilDestroyed(this.destroyRef))
-      .subscribe((command: AppCommand) => {
+      .subscribe(async (command: AppCommand) => {
         switch (command.type) {
           case 'UI_TORRENT_DELETE_REQUEST': {
             const deleteHashes = command.hashes ?? this.selectionStoreService.selectedHashes();
             if (deleteHashes.length === 0) return;
+            const { DeleteTorrent } =
+              await import('../components/modals/delete-torrent/delete-torrent');
             if (this.isModalOpen(DeleteTorrent)) break;
 
             const deleteModalRef = this.modalService.open(DeleteTorrent);
@@ -94,6 +77,7 @@ export class UiCommandHandlerService {
           }
 
           case 'UI_OPEN_SETTINGS': {
+            const { Settings } = await import('../pages/settings/settings');
             if (this.isModalOpen(Settings)) break;
             const settingsModalRef = this.modalService.open(Settings, {
               size: 'xl',
@@ -111,6 +95,7 @@ export class UiCommandHandlerService {
           }
 
           case 'UI_OPEN_QB_SETTINGS': {
+            const { QbSettings } = await import('../pages/qb-settings/qb-settings');
             if (this.isModalOpen(QbSettings)) break;
             const qbSettingsModalRef = this.modalService.open(QbSettings, {
               size: 'xl',
@@ -124,6 +109,8 @@ export class UiCommandHandlerService {
 
           case 'UI_OPEN_TORRENT_DETAILS': {
             if (!command.hash) return;
+            const { TorrentDetails } =
+              await import('../components/modals/torrent-details/torrent-details');
             if (this.isModalOpen(TorrentDetails)) break;
 
             const torrentDetailsModalRef = this.modalService.open(TorrentDetails, {
@@ -139,6 +126,7 @@ export class UiCommandHandlerService {
           }
 
           case 'UI_ADD_TORRENT': {
+            const { AddTorrent } = await import('../components/add-torrent/add-torrent');
             if (this.isModalOpen(AddTorrent)) break;
             const addTorrentModalRef = this.modalService.open(AddTorrent, {
               size: 'lg',
@@ -152,6 +140,7 @@ export class UiCommandHandlerService {
           }
 
           case 'UI_OPEN_ABOUT': {
+            const { About } = await import('../components/about/about');
             if (this.isModalOpen(About)) break;
             const aboutModalRef = this.modalService.open(About);
             aboutModalRef.result.catch(() => {});
@@ -160,6 +149,8 @@ export class UiCommandHandlerService {
 
           case 'UI_RENAME_TORRENT': {
             if (!command.torrent) return;
+            const { RenameTorrent } =
+              await import('../components/modals/rename-torrent/rename-torrent');
             if (this.isModalOpen(RenameTorrent)) break;
 
             const renameModalRef = this.modalService.open(RenameTorrent, {
@@ -174,6 +165,8 @@ export class UiCommandHandlerService {
 
           case 'UI_SET_TORRENT_LOCATION': {
             if (!command.torrent) return;
+            const { SetTorrentLocation } =
+              await import('../components/modals/set-torrent-location/set-torrent-location');
             if (this.isModalOpen(SetTorrentLocation)) break;
 
             const setLocationModalRef = this.modalService.open(SetTorrentLocation, {
@@ -192,6 +185,8 @@ export class UiCommandHandlerService {
           }
 
           case 'UI_LIMIT_TRANSFER': {
+            const { TransferLimit } =
+              await import('../components/modals/transfer-limit/transfer-limit');
             if (this.isModalOpen(TransferLimit)) break;
             const transferHashes =
               command.hashes ??
@@ -207,6 +202,7 @@ export class UiCommandHandlerService {
           }
 
           case 'UI_LIMIT_SHARE': {
+            const { ShareLimit } = await import('../components/modals/share-limit/share-limit');
             if (this.isModalOpen(ShareLimit)) break;
             const shareLimitTarget = command.target ?? 'torrent';
             const shareLimitHashes =
@@ -220,6 +216,8 @@ export class UiCommandHandlerService {
           }
 
           case 'UI_SET_TORRENT_TAGS': {
+            const { SetTorrentTags } =
+              await import('../components/modals/set-torrent-tags/set-torrent-tags');
             if (this.isModalOpen(SetTorrentTags)) break;
             const setTagsModalRef = this.modalService.open(SetTorrentTags, { size: 'lg' });
             setModalInput(setTagsModalRef, 'torrent', command.torrent);
@@ -233,6 +231,8 @@ export class UiCommandHandlerService {
           }
 
           case 'UI_SET_TORRENT_CATEGORY': {
+            const { SetTorrentCategory } =
+              await import('../components/modals/set-torrent-category/set-torrent-category');
             if (this.isModalOpen(SetTorrentCategory)) break;
             const setCategoryModalRef = this.modalService.open(SetTorrentCategory, { size: 'lg' });
             setModalInput(setCategoryModalRef, 'torrent', command.torrent);
@@ -298,6 +298,8 @@ export class UiCommandHandlerService {
             break;
 
           case 'UI_SERVER_EDITOR_OPEN': {
+            const { ServerEditor } =
+              await import('../components/modals/server-editor/server-editor');
             if (this.isModalOpen(ServerEditor)) break;
             const serverEditorModalRef = this.modalService.open(ServerEditor, { size: 'lg' });
             setModalInput(serverEditorModalRef, 'id', command.id);
@@ -310,6 +312,8 @@ export class UiCommandHandlerService {
           }
 
           case 'UI_UPDATE_AVAILABLE': {
+            const { UpdateAvailable } =
+              await import('../components/modals/update-available/update-available');
             if (this.isModalOpen(UpdateAvailable)) break;
             const updateAvailableModalRef = this.modalService.open(UpdateAvailable, {
               size: 'lg',
@@ -323,6 +327,8 @@ export class UiCommandHandlerService {
 
           case 'UI_RENAME_FILES': {
             if (!command.hash) return;
+            const { TorrentDetails } =
+              await import('../components/modals/torrent-details/torrent-details');
             if (this.isModalOpen(TorrentDetails)) break;
 
             const contentModalRef = this.modalService.open(TorrentDetails, {
@@ -340,6 +346,7 @@ export class UiCommandHandlerService {
           }
 
           case 'UI_MANAGE_TAGS': {
+            const { ManageTags } = await import('../components/modals/manage-tags/manage-tags');
             if (this.isModalOpen(ManageTags)) break;
             const manageTagsModalRef = this.modalService.open(ManageTags, {
               beforeDismiss: () => manageTagsModalRef.componentInstance.canDeactivate(),
@@ -349,6 +356,8 @@ export class UiCommandHandlerService {
           }
 
           case 'UI_MANAGE_CATEGORIES': {
+            const { ManageCategories } =
+              await import('../components/modals/manage-categories/manage-categories');
             if (this.isModalOpen(ManageCategories)) break;
             const manageCategoriesModalRef = this.modalService.open(ManageCategories, {
               beforeDismiss: () => manageCategoriesModalRef.componentInstance.canDeactivate(),
@@ -358,6 +367,8 @@ export class UiCommandHandlerService {
           }
 
           case 'UI_MANAGE_SERVERS': {
+            const { ManageServers } =
+              await import('../components/modals/manage-servers/manage-servers');
             if (this.isModalOpen(ManageServers)) break;
             const manageServersModalRef = this.modalService.open(ManageServers);
             manageServersModalRef.result.catch(() => {});
@@ -369,6 +380,8 @@ export class UiCommandHandlerService {
             break;
 
           case 'UI_EXPORT_TORRENTS': {
+            const { ExportTorrents } =
+              await import('../components/modals/export-torrents/export-torrents');
             if (this.isModalOpen(ExportTorrents)) break;
             const exportRef = this.modalService.open(ExportTorrents, { size: 'lg' });
             exportRef.result.catch(() => {});
@@ -376,6 +389,8 @@ export class UiCommandHandlerService {
           }
 
           case 'UI_IMPORT_TORRENTS': {
+            const { ImportTorrents } =
+              await import('../components/modals/import-torrents/import-torrents');
             if (this.isModalOpen(ImportTorrents)) break;
             const importRef = this.modalService.open(ImportTorrents, { size: 'lg' });
             if (command.bbePath) {
