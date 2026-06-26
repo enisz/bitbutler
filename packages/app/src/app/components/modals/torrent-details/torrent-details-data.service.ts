@@ -8,6 +8,7 @@ import {
   Subject,
   from,
   switchMap,
+  take,
   takeUntil,
   tap,
   timer,
@@ -61,12 +62,14 @@ export class TorrentDetailsDataService {
   public readonly localPath = signal<string | null>(null);
   public readonly singleFile = signal(false);
   public readonly errorLog = signal<QbLogEntry | null>(null);
+  public readonly localTorrentData = signal<Torrent | null>(null);
   private readonly peerMap = new Map<string, QbTorrentPeer>();
 
   private readonly destroyed$ = new Subject<void>();
 
   public readonly torrent: Signal<MergedTorrent | null> = computed(() => {
-    const data = this.torrentStoreService.torrentsMap().get(this.hashSignal());
+    const data =
+      this.localTorrentData() ?? this.torrentStoreService.torrentsMap().get(this.hashSignal());
     const properties = this.properties();
     return !data || !properties ? null : { data, properties };
   });
@@ -169,7 +172,21 @@ export class TorrentDetailsDataService {
   }
 
   private propertiesPoll$() {
-    return timer(0, 2000).pipe(switchMap(() => from(this.fetchProperties())));
+    return timer(0, 2000).pipe(
+      switchMap(() =>
+        this.polling.isPaused$.pipe(
+          take(1),
+          switchMap((isPaused) =>
+            from(
+              Promise.all([
+                this.fetchProperties(),
+                isPaused ? this.fetchTorrentInfo() : Promise.resolve(),
+              ]),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   private async fetchProperties(): Promise<void> {
@@ -184,6 +201,24 @@ export class TorrentDetailsDataService {
         TorrentDetailsDataService.name,
         'fetchProperties',
         'Failed to fetch torrent properties!',
+        e?.message ?? String(e),
+      );
+    }
+  }
+
+  private async fetchTorrentInfo(): Promise<void> {
+    const serverId = this.serverStoreService.currentServerId();
+    const hash = this.hashSignal();
+    if (!serverId || !hash) return;
+
+    try {
+      const torrent = await this.qbService.torrents.info(serverId, hash);
+      if (torrent) this.localTorrentData.set(torrent);
+    } catch (e: any) {
+      console.error(
+        TorrentDetailsDataService.name,
+        'fetchTorrentInfo',
+        'Failed to fetch torrent info!',
         e?.message ?? String(e),
       );
     }
@@ -244,6 +279,7 @@ export class TorrentDetailsDataService {
 
   public stopAll(): void {
     this.destroyed$.next();
+    this.localTorrentData.set(null);
   }
 
   private peersPoll$(): Observable<QbTorrentPeersResponse> {

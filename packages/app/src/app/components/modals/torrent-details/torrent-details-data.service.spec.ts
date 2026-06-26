@@ -1,7 +1,7 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { TorrentFileEntry } from '@bitbutler/shared';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { vi } from 'vitest';
 import {
   QbLogEntry,
@@ -135,11 +135,13 @@ describe('TorrentDetailsDataService', () => {
   let qbTorrentsProperties: ReturnType<typeof vi.fn>;
   let qbTorrentsTrackers: ReturnType<typeof vi.fn>;
   let qbTorrentsFiles: ReturnType<typeof vi.fn>;
+  let qbTorrentsInfo: ReturnType<typeof vi.fn>;
   let qbLogMain: ReturnType<typeof vi.fn>;
   let resolveLocalPath: ReturnType<typeof vi.fn>;
   let peersPolling$: Subject<QbTorrentPeersResponse>;
   let startPeersPolling: ReturnType<typeof vi.fn>;
   let serverSettingsLoad: ReturnType<typeof vi.fn>;
+  let isPaused$: BehaviorSubject<boolean>;
 
   beforeEach(() => {
     vi.useFakeTimers();
@@ -147,6 +149,8 @@ describe('TorrentDetailsDataService', () => {
     qbTorrentsProperties = vi.fn().mockResolvedValue(makeProperties());
     qbTorrentsTrackers = vi.fn().mockResolvedValue([]);
     qbTorrentsFiles = vi.fn().mockResolvedValue([]);
+    qbTorrentsInfo = vi.fn().mockResolvedValue(null);
+    isPaused$ = new BehaviorSubject<boolean>(false);
     qbLogMain = vi.fn().mockResolvedValue([]);
     resolveLocalPath = vi.fn().mockResolvedValue(null);
     peersPolling$ = new Subject<QbTorrentPeersResponse>();
@@ -165,11 +169,12 @@ describe('TorrentDetailsDataService', () => {
               properties: qbTorrentsProperties,
               trackers: qbTorrentsTrackers,
               files: qbTorrentsFiles,
+              info: qbTorrentsInfo,
             },
             log: { main: qbLogMain },
           },
         },
-        { provide: QbPollingService, useValue: { startPeersPolling } },
+        { provide: QbPollingService, useValue: { startPeersPolling, isPaused$ } },
         { provide: ServerSettingsService, useValue: { load: serverSettingsLoad } },
         { provide: PathService, useValue: { resolveLocalPath } },
       ],
@@ -215,6 +220,28 @@ describe('TorrentDetailsDataService', () => {
     it('is null when the hash is not in the torrent store', () => {
       service.init('missing-hash', {});
       expect(service.torrent()).toBeNull();
+    });
+
+    it('uses localTorrentData over the store when localTorrentData is non-null', async () => {
+      const storeTorrent = makeTorrent({ hash: 'abc123', dlspeed: 100 });
+      const localTorrent = makeTorrent({ hash: 'abc123', dlspeed: 9999 });
+      torrentsMap.set(new Map([['abc123', storeTorrent]]));
+      qbTorrentsInfo.mockResolvedValue(localTorrent);
+      isPaused$.next(true);
+      service.init('abc123', {});
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(service.torrent()?.data.dlspeed).toBe(9999);
+    });
+
+    it('falls back to store data when localTorrentData is null', async () => {
+      const storeTorrent = makeTorrent({ hash: 'abc123', dlspeed: 100 });
+      torrentsMap.set(new Map([['abc123', storeTorrent]]));
+      isPaused$.next(false);
+      service.init('abc123', {});
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(service.torrent()?.data.dlspeed).toBe(100);
     });
   });
 
@@ -280,6 +307,78 @@ describe('TorrentDetailsDataService', () => {
 
       expect(consoleError).toHaveBeenCalled();
       expect(service.properties()).toBeNull();
+    });
+  });
+
+  describe('torrent info polling (when paused)', () => {
+    it('does not call torrents.info when polling is not paused', async () => {
+      isPaused$.next(false);
+      service.init('abc123', {});
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(qbTorrentsInfo).not.toHaveBeenCalled();
+    });
+
+    it('calls torrents.info when polling is paused', async () => {
+      isPaused$.next(true);
+      service.init('abc123', {});
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(qbTorrentsInfo).toHaveBeenCalledWith('server-1', 'abc123');
+    });
+
+    it('sets localTorrentData when polling is paused and info returns a torrent', async () => {
+      const torrent = makeTorrent({ hash: 'abc123', dlspeed: 9999 });
+      qbTorrentsInfo.mockResolvedValue(torrent);
+      isPaused$.next(true);
+      service.init('abc123', {});
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(service.localTorrentData()).toEqual(torrent);
+    });
+
+    it('calls torrents.info again on the next poll tick when still paused', async () => {
+      isPaused$.next(true);
+      service.init('abc123', {});
+      await vi.advanceTimersByTimeAsync(0);
+      expect(qbTorrentsInfo).toHaveBeenCalledTimes(1);
+
+      await vi.advanceTimersByTimeAsync(2000);
+      expect(qbTorrentsInfo).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not call torrents.info on subsequent ticks after polling resumes', async () => {
+      isPaused$.next(true);
+      service.init('abc123', {});
+      await vi.advanceTimersByTimeAsync(0);
+      expect(qbTorrentsInfo).toHaveBeenCalledTimes(1);
+
+      isPaused$.next(false);
+      await vi.advanceTimersByTimeAsync(2000);
+      expect(qbTorrentsInfo).toHaveBeenCalledTimes(1);
+    });
+
+    it('logs and does not throw when fetchTorrentInfo fails', async () => {
+      qbTorrentsInfo.mockRejectedValueOnce(new Error('network error'));
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+      isPaused$.next(true);
+      service.init('abc123', {});
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(consoleError).toHaveBeenCalled();
+      expect(service.localTorrentData()).toBeNull();
+    });
+
+    it('resets localTorrentData to null when stopAll is called', async () => {
+      const torrent = makeTorrent({ hash: 'abc123' });
+      qbTorrentsInfo.mockResolvedValue(torrent);
+      isPaused$.next(true);
+      service.init('abc123', {});
+      await vi.advanceTimersByTimeAsync(0);
+      expect(service.localTorrentData()).toEqual(torrent);
+
+      service.stopAll();
+      expect(service.localTorrentData()).toBeNull();
     });
   });
 
