@@ -17,6 +17,7 @@ import {
   QbCategory,
   QbTorrentContent,
   QbTorrentPeersResponse,
+  Torrent,
 } from '../models/torrent.model';
 import { ServerStoreService } from './server-store.service';
 import { ToastService } from './toast.service';
@@ -211,6 +212,18 @@ export class QbService {
       });
       if (res.ok) return res.body;
       throw new HttpError(res.status, res.statusText, `Failed to get torrent properties`);
+    },
+
+    info: async (serverId: string, hash: string): Promise<Torrent | null> => {
+      const cleanHash = (hash ?? '').trim();
+      if (!cleanHash) return Promise.reject(new Error('hash is required'));
+      const res = await this.request<Torrent[]>(serverId, {
+        path: '/api/v2/torrents/info',
+        method: 'GET',
+        query: { hashes: cleanHash },
+      });
+      if (res.ok) return res.body[0] ?? null;
+      throw new HttpError(res.status, res.statusText, `Failed to get torrent info`);
     },
 
     trackers: async (serverId: string, hash: string): Promise<QbTorrentTracker[]> => {

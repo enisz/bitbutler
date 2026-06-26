@@ -2,7 +2,7 @@ import { DestroyRef, Injectable, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-import { filter } from 'rxjs';
+import { combineLatest, filter, startWith } from 'rxjs';
 import { AppLoader } from '../components/app-loader/app-loader';
 import { AppCommand, UiCommand } from '../models/command.model';
 import { GuardableModal } from '../models/guardable-modal.interface';
@@ -11,11 +11,13 @@ import { setModalInput } from '../utils/modal-input';
 import { CommandBusService } from './command-bus.service';
 import { ElectronService } from './electron.service';
 import { PathService } from './path.service';
+import { QbPollingService } from './qb-polling.service';
 import { QbService } from './qb.service';
 import { SelectionStoreService } from './selection-store.service';
 import { ServerStoreService } from './server-store.service';
 import { ServerService } from './server.service';
 import { ToastService } from './toast.service';
+import { TorrentListGridSettingsService } from './torrent-list-grid.settings.service';
 
 @Injectable({ providedIn: 'root' })
 export class UiCommandHandlerService {
@@ -30,6 +32,9 @@ export class UiCommandHandlerService {
   private readonly qbService = inject(QbService);
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly torrentListGridSettingsService = inject(TorrentListGridSettingsService);
+  private readonly qbPollingService = inject(QbPollingService);
+  private pauseToken: symbol | null = null;
 
   private activeModals: NgbModalRef[] = [];
 
@@ -37,6 +42,28 @@ export class UiCommandHandlerService {
     this.modalService.activeInstances
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((modals) => (this.activeModals = modals));
+
+    combineLatest([
+      this.modalService.activeInstances.pipe(startWith([] as NgbModalRef[])),
+      this.torrentListGridSettingsService.asObservable(),
+    ])
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(([modals, settings]) => {
+        const shouldPause = modals.length > 0 && settings.pausePollingOnModal;
+        if (shouldPause && this.pauseToken === null) {
+          this.pauseToken = this.qbPollingService.pause();
+        } else if (!shouldPause && this.pauseToken !== null) {
+          this.qbPollingService.resume(this.pauseToken);
+          this.pauseToken = null;
+        }
+      });
+
+    this.destroyRef.onDestroy(() => {
+      if (this.pauseToken !== null) {
+        this.qbPollingService.resume(this.pauseToken);
+        this.pauseToken = null;
+      }
+    });
 
     const unsubBbe = window.bitbutler.window.onOpenBbe((bbePath) => {
       this.commandBusService.emit({ type: 'UI_IMPORT_TORRENTS', bbePath });

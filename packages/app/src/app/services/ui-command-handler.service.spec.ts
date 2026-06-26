@@ -1,14 +1,16 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { CommandBusService } from './command-bus.service';
 import { ElectronService } from './electron.service';
 import { PathService } from './path.service';
+import { QbPollingService } from './qb-polling.service';
 import { QbService } from './qb.service';
 import { SelectionStoreService } from './selection-store.service';
 import { ServerStoreService } from './server-store.service';
 import { ToastService } from './toast.service';
+import { TorrentListGridSettingsService } from './torrent-list-grid.settings.service';
 import { UiCommandHandlerService } from './ui-command-handler.service';
 
 // The module cache is pre-warmed in beforeAll so dynamic import() calls in the service
@@ -22,6 +24,8 @@ describe('UiCommandHandlerService', () => {
   let commandBusEmit: ReturnType<typeof vi.fn>;
   let selectionStore: any;
   let setInputSpy: ReturnType<typeof vi.fn>;
+  let mockPollingService: { pause: ReturnType<typeof vi.fn>; resume: ReturnType<typeof vi.fn> };
+  let gridSettings$: BehaviorSubject<{ pausePollingOnModal: boolean }>;
 
   beforeAll(async () => {
     // Load all modal chunks into the Node.js ESM cache once before any test runs.
@@ -54,6 +58,14 @@ describe('UiCommandHandlerService', () => {
     commands$ = new Subject();
     commandBusEmit = vi.fn();
     setInputSpy = vi.fn();
+
+    mockPollingService = {
+      pause: vi.fn().mockReturnValue(Symbol('pause-token')),
+      resume: vi.fn(),
+    };
+    gridSettings$ = new BehaviorSubject<{ pausePollingOnModal: boolean }>({
+      pausePollingOnModal: false,
+    });
 
     mockModalService = {
       activeInstances: new Subject(),
@@ -89,6 +101,14 @@ describe('UiCommandHandlerService', () => {
           useValue: { torrents: { files: vi.fn().mockResolvedValue([{ name: 'file.mkv' }]) } },
         },
         { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
+        {
+          provide: TorrentListGridSettingsService,
+          useValue: { asObservable: vi.fn().mockReturnValue(gridSettings$.asObservable()) },
+        },
+        {
+          provide: QbPollingService,
+          useValue: mockPollingService,
+        },
       ],
     });
 
@@ -206,5 +226,46 @@ describe('UiCommandHandlerService', () => {
     commands$.next({ type: 'UI_SERVER_EDITOR_OPEN' });
     await flushPromises();
     expect(mockModalService.open).toHaveBeenCalled();
+  });
+
+  describe('pausePollingOnModal', () => {
+    it('should not pause polling when setting is disabled and a modal opens', () => {
+      gridSettings$.next({ pausePollingOnModal: false });
+      mockModalService.activeInstances.next([{} as any]);
+      expect(mockPollingService.pause).not.toHaveBeenCalled();
+    });
+
+    it('should pause polling when setting is enabled and a modal opens', () => {
+      gridSettings$.next({ pausePollingOnModal: true });
+      mockModalService.activeInstances.next([{} as any]);
+      expect(mockPollingService.pause).toHaveBeenCalledTimes(1);
+    });
+
+    it('should resume polling with the correct token when the last modal closes', () => {
+      const token = Symbol('test-token');
+      mockPollingService.pause.mockReturnValueOnce(token);
+      gridSettings$.next({ pausePollingOnModal: true });
+      mockModalService.activeInstances.next([{} as any]);
+      mockModalService.activeInstances.next([]);
+      expect(mockPollingService.resume).toHaveBeenCalledWith(token);
+    });
+
+    it('should not call pause a second time when an additional modal opens while already paused', () => {
+      gridSettings$.next({ pausePollingOnModal: true });
+      mockModalService.activeInstances.next([{} as any]);
+      mockModalService.activeInstances.next([{} as any, {} as any]);
+      expect(mockPollingService.pause).toHaveBeenCalledTimes(1);
+    });
+
+    it('should resume polling when the service is destroyed while a modal is open', async () => {
+      gridSettings$.next({ pausePollingOnModal: true });
+      mockModalService.activeInstances.next([{} as any]);
+      expect(mockPollingService.pause).toHaveBeenCalledTimes(1);
+      expect(mockPollingService.resume).not.toHaveBeenCalled();
+
+      await TestBed.resetTestingModule();
+
+      expect(mockPollingService.resume).toHaveBeenCalledTimes(1);
+    });
   });
 });

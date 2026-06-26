@@ -134,4 +134,45 @@ describe('QbService', () => {
       'Failed to clear category',
     );
   });
+
+  describe('torrents.info()', () => {
+    it('calls /api/v2/torrents/info with the correct hash and returns the first torrent', async () => {
+      const torrent = { hash: 'abc123', name: 'My Torrent' };
+      vi.spyOn(window.bitbutler.qb, 'request').mockResolvedValue([torrent] as any);
+
+      const result = await service.torrents.info('server-1', 'abc123');
+
+      expect(window.bitbutler.qb.request).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'server-1',
+          path: '/api/v2/torrents/info',
+          method: 'GET',
+          query: { hashes: 'abc123' },
+        }),
+      );
+      expect(result).toEqual(torrent);
+    });
+
+    it('returns null when the response array is empty', async () => {
+      vi.spyOn(window.bitbutler.qb, 'request').mockResolvedValue([] as any);
+      const result = await service.torrents.info('server-1', 'abc123');
+      expect(result).toBeNull();
+    });
+
+    it('rejects when hash is empty', async () => {
+      await expect(service.torrents.info('server-1', '')).rejects.toThrow('hash is required');
+    });
+
+    it('throws HttpError when the response is not ok', async () => {
+      vi.spyOn(service, 'request').mockResolvedValue({
+        ok: false,
+        status: 404,
+        statusText: 'Not Found',
+        body: null,
+      } as any);
+      await expect(service.torrents.info('server-1', 'abc123')).rejects.toThrow(
+        'Failed to get torrent info',
+      );
+    });
+  });
 });
