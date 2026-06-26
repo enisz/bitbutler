@@ -146,21 +146,8 @@
         ></span>
         {{ 'components.modals.torrent-details.general.relocate' | translate }}
       </button>
-      <span
-        [ngbTooltip]="
-          !dataService.localPath()
-            ? ('pages.main.grid.context-menu.tooltip.open-destination-unresolved' | translate)
-            : null
-        "
-        container="body"
-        placement="right"
-      >
-        <button
-          ngbDropdownItem
-          type="button"
-          [disabled]="!dataService.localPath()"
-          (click)="actionsService.openPath()"
-        >
+      @if (dataService.localPath()) {
+        <button ngbDropdownItem type="button" (click)="actionsService.openPath()">
           <span class="bb-dropdown-icon" aria-hidden="true"
             ><fa-icon [icon]="icon.faFolderOpen"></fa-icon
           ></span>
@@ -171,7 +158,7 @@
             ) | translate
           }}
         </button>
-      </span>
+      }
       <button ngbDropdownItem type="button" (click)="actionsService.changeCategory()">
         <span class="bb-dropdown-icon" aria-hidden="true"
           ><fa-icon [icon]="icon.faFolderTree"></fa-icon
