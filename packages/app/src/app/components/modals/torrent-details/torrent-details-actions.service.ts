@@ -1,0 +1,249 @@
+import { Injectable, inject } from '@angular/core';
+import { TorrentFileEntry } from '@bitbutler/shared';
+import { TranslateService } from '@ngx-translate/core';
+import { CommandBusService } from '../../../services/command-bus.service';
+import { QbService } from '../../../services/qb.service';
+import { ServerStoreService } from '../../../services/server-store.service';
+import { ToastService } from '../../../services/toast.service';
+import { FileTreeSaveEvent } from '../../bb-file-tree/bb-file-tree';
+import { TorrentDetailsDataService } from './torrent-details-data.service';
+
+@Injectable()
+export class TorrentDetailsActionsService {
+  private readonly dataService = inject(TorrentDetailsDataService);
+  private readonly qbService = inject(QbService);
+  private readonly serverStoreService = inject(ServerStoreService);
+  private readonly commandBusService = inject(CommandBusService);
+  private readonly toastService = inject(ToastService);
+  private readonly translateService = inject(TranslateService);
+
+  public rename(): void {
+    this.commandBusService.emit({
+      type: 'UI_RENAME_TORRENT',
+      torrent: this.dataService.torrent()!.data,
+    });
+  }
+
+  public setLocation(): void {
+    this.commandBusService.emit({
+      type: 'UI_SET_TORRENT_LOCATION',
+      torrent: this.dataService.torrent()!.data,
+      hashes: [this.dataService.hash()],
+    });
+  }
+
+  public openPath(): void {
+    const remotePath = this.dataService.torrent()?.data.content_path;
+    const hash = this.dataService.hash();
+
+    if (!remotePath) {
+      this.toastService.danger(
+        this.translateService.instant(
+          'components.modals.torrent-details.general.toast.local-path-failed',
+        ),
+      );
+      return;
+    }
+
+    this.commandBusService.emit({ type: 'UI_OPEN_DESTINATION', remotePath, hash });
+  }
+
+  public changeCategory(): void {
+    this.commandBusService.emit({
+      type: 'UI_SET_TORRENT_CATEGORY',
+      torrent: this.dataService.torrent()!.data,
+      hashes: [this.dataService.hash()],
+    });
+  }
+
+  public async removeCategory(): Promise<void> {
+    this.toastService.info(
+      this.translateService.instant(
+        'components.modals.torrent-details.general.toast.removing-category',
+      ),
+    );
+    try {
+      await this.qbService.torrents.clearCategory(
+        this.serverStoreService.currentServerId() as string,
+        [this.dataService.hash()],
+      );
+    } catch (error: any) {
+      this.toastService.danger(
+        error?.message ?? String(error),
+        this.translateService.instant(
+          'components.modals.torrent-details.general.toast.remove-category-failed',
+        ),
+      );
+    }
+  }
+
+  public changeTags(): void {
+    this.commandBusService.emit({
+      type: 'UI_SET_TORRENT_TAGS',
+      torrent: this.dataService.torrent()!.data,
+      hashes: [this.dataService.hash()],
+    });
+  }
+
+  public async removeAllTags(): Promise<void> {
+    this.toastService.info(
+      this.translateService.instant(
+        'components.modals.torrent-details.general.toast.removing-all-tags',
+      ),
+    );
+    try {
+      await this.qbService.torrents.removeTags(
+        this.serverStoreService.currentServerId() as string,
+        [this.dataService.hash()],
+        this.dataService
+          .torrent()!
+          .data.tags.split(',')
+          .map((t) => t.trim()),
+      );
+    } catch (error: any) {
+      this.toastService.danger(
+        error?.message ?? String(error),
+        this.translateService.instant(
+          'components.modals.torrent-details.general.toast.remove-all-tags-failed',
+        ),
+      );
+    }
+  }
+
+  public async resume(): Promise<void> {
+    this.toastService.info(
+      this.translateService.instant('components.modals.torrent-details.general.toast.resuming'),
+    );
+    try {
+      await this.qbService.torrents.resume(this.serverStoreService.currentServerId() as string, [
+        this.dataService.hash(),
+      ]);
+    } catch (error: any) {
+      this.toastService.danger(
+        error?.message ?? String(error),
+        this.translateService.instant(
+          'components.modals.torrent-details.general.toast.resume-failed',
+        ),
+      );
+    }
+  }
+
+  public async pause(): Promise<void> {
+    this.toastService.info(
+      this.translateService.instant('components.modals.torrent-details.general.toast.pausing'),
+    );
+    try {
+      await this.qbService.torrents.pause(this.serverStoreService.currentServerId() as string, [
+        this.dataService.hash(),
+      ]);
+    } catch (error: any) {
+      this.toastService.danger(
+        error?.message ?? String(error),
+        this.translateService.instant(
+          'components.modals.torrent-details.general.toast.pause-failed',
+        ),
+      );
+    }
+  }
+
+  public async forceResume(): Promise<void> {
+    this.toastService.info(
+      this.translateService.instant(
+        'components.modals.torrent-details.general.toast.force-resuming',
+      ),
+    );
+    try {
+      await this.qbService.torrents.setForceStart(
+        this.serverStoreService.currentServerId() as string,
+        [this.dataService.hash()],
+        true,
+      );
+    } catch (error: any) {
+      this.toastService.danger(
+        error?.message ?? String(error),
+        this.translateService.instant(
+          'components.modals.torrent-details.general.toast.force-resume-failed',
+        ),
+      );
+    }
+  }
+
+  public openTransferLimitsModal(): void {
+    this.commandBusService.emit({
+      type: 'UI_LIMIT_TRANSFER',
+      target: 'torrent',
+      hashes: [this.dataService.hash()],
+    });
+  }
+
+  public openShareLimitsModal(): void {
+    this.commandBusService.emit({
+      type: 'UI_LIMIT_SHARE',
+      target: 'torrent',
+      hashes: [this.dataService.hash()],
+    });
+  }
+
+  public async forceReannounce(): Promise<void> {
+    this.toastService.info(
+      this.translateService.instant('components.modals.torrent-details.general.toast.reannouncing'),
+    );
+    try {
+      await this.qbService.torrents.reannounce(
+        this.serverStoreService.currentServerId() as string,
+        [this.dataService.hash()],
+      );
+    } catch (error: any) {
+      this.toastService.danger(
+        error?.message ?? String(error),
+        this.translateService.instant(
+          'components.modals.torrent-details.general.toast.reannounce-failed',
+        ),
+      );
+    }
+  }
+
+  public deleteTorrent(): void {
+    this.commandBusService.emit({
+      type: 'UI_TORRENT_DELETE_REQUEST',
+      hashes: [this.dataService.hash()],
+    });
+  }
+
+  public async saveFileChanges(
+    event: FileTreeSaveEvent,
+    originalContent: TorrentFileEntry[],
+  ): Promise<void> {
+    const serverId = this.serverStoreService.currentServerId();
+    if (!serverId) return;
+
+    const hash = this.dataService.hash();
+
+    try {
+      for (const item of event.renames) {
+        await this.qbService.torrents.renameFile(serverId, hash, item.oldPath, item.newPath);
+      }
+
+      for (const file of event.files) {
+        if (file.index === undefined) continue;
+        const original = originalContent.find((f) => f.index === file.index);
+        if (original && original.priority !== file.priority) {
+          await this.qbService.torrents.filePrio(serverId, hash, [file.index], file.priority ?? 0);
+        }
+      }
+    } catch (e: any) {
+      console.error(
+        TorrentDetailsActionsService.name,
+        'saveFileChanges',
+        'Failed to save changes',
+        e,
+      );
+      this.toastService.danger(
+        e?.message ?? String(e),
+        this.translateService.instant(
+          'components.modals.torrent-details.content.error.failed-to-save-title',
+        ),
+      );
+    }
+  }
+}

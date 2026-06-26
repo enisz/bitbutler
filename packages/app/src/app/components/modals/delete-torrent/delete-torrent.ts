@@ -5,8 +5,10 @@ import { faTrashCan, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AutofocusDirective } from '../../../directives/autofocus';
+import { Torrent } from '../../../models/torrent.model';
 import { FilesizePipe } from '../../../pipes/filesize-pipe';
 import { SelectionStoreService } from '../../../services/selection-store.service';
+import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
 
 @Component({
@@ -26,13 +28,21 @@ import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
 })
 export class DeleteTorrent implements OnInit {
   readonly defaultRemoveFiles = input(false);
+  readonly hashes = input<string[] | undefined>(undefined);
   private readonly activeModal = inject(NgbActiveModal);
 
   private readonly selectionStore = inject(SelectionStoreService);
+  private readonly torrentStore = inject(TorrentStoreService);
 
   public icons = { faTrashCan, faXmark };
 
-  readonly selected = this.selectionStore.selected;
+  readonly selected = computed<Torrent[]>(() => {
+    const override = this.hashes();
+    if (!override) return this.selectionStore.selected();
+
+    const torrentsMap = this.torrentStore.torrentsMap();
+    return override.map((hash) => torrentsMap.get(hash)).filter((t): t is Torrent => !!t);
+  });
   readonly totalSize = computed(() => this.selected().reduce((sum, t) => sum + t.size, 0));
 
   public deleteForm!: FormGroup;

@@ -51,12 +51,7 @@
       @for (tab of tabs; track tab.id) {
         @if (loadedComponents().has(tab.id)) {
           <div class="bb-tab-panel" [class.bb-tab-panel--active]="activeTabId() === tab.id">
-            <ng-container
-              *ngComponentOutlet="
-                loadedComponents().get(tab.id)!;
-                inputs: { hash: torrent()?.hash, context: context() }
-              "
-            ></ng-container>
+            <ng-container *ngComponentOutlet="loadedComponents().get(tab.id)!"></ng-container>
           </div>
         }
       }
@@ -67,6 +62,130 @@
 </div>
 
 <div class="modal-footer">
+  <button
+    type="button"
+    class="btn btn-danger btn-sm me-auto"
+    [ngbTooltip]="'components.modals.torrent-details.general.delete' | translate"
+    (click)="actionsService.deleteTorrent()"
+  >
+    <fa-icon [icon]="icon.faTrashCan" aria-hidden="true"></fa-icon>
+  </button>
+
+  <div ngbDropdown container="body" placement="top-start">
+    <button type="button" class="btn btn-secondary btn-sm btn-split" ngbDropdownToggle>
+      <bb-btn-content
+        [icon]="icon.faPlay"
+        [text]="'components.modals.torrent-details.general.footer.playback' | translate"
+        position="end"
+      ></bb-btn-content>
+    </button>
+    <div ngbDropdownMenu class="bb-toolbar-dropdown">
+      <button ngbDropdownItem type="button" (click)="actionsService.resume()">
+        <span class="bb-dropdown-icon" aria-hidden="true"
+          ><fa-icon [icon]="icon.faPlay"></fa-icon
+        ></span>
+        {{ 'components.modals.torrent-details.general.resume' | translate }}
+      </button>
+      <button ngbDropdownItem type="button" (click)="actionsService.pause()">
+        <span class="bb-dropdown-icon" aria-hidden="true"
+          ><fa-icon [icon]="icon.faPause"></fa-icon
+        ></span>
+        {{ 'components.modals.torrent-details.general.pause' | translate }}
+      </button>
+      <button ngbDropdownItem type="button" (click)="actionsService.forceResume()">
+        <span class="bb-dropdown-icon" aria-hidden="true"
+          ><fa-icon [icon]="icon.faForwardFast"></fa-icon
+        ></span>
+        {{ 'components.modals.torrent-details.general.force-resume' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div ngbDropdown container="body" placement="top-start">
+    <button type="button" class="btn btn-secondary btn-sm btn-split" ngbDropdownToggle>
+      <bb-btn-content
+        [icon]="icon.faGauge"
+        [text]="'components.modals.torrent-details.general.footer.limits' | translate"
+        position="end"
+      ></bb-btn-content>
+    </button>
+    <div ngbDropdownMenu class="bb-toolbar-dropdown">
+      <button ngbDropdownItem type="button" (click)="actionsService.openTransferLimitsModal()">
+        <span class="bb-dropdown-icon" aria-hidden="true"
+          ><fa-icon [icon]="icon.faArrowDownUpAcrossLine"></fa-icon
+        ></span>
+        {{ 'components.modals.torrent-details.general.footer.transfer-limits' | translate }}
+      </button>
+      <button ngbDropdownItem type="button" (click)="actionsService.openShareLimitsModal()">
+        <span class="bb-dropdown-icon" aria-hidden="true"
+          ><fa-icon [icon]="icon.faShare"></fa-icon
+        ></span>
+        {{ 'components.modals.torrent-details.general.edit-share-limits' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div ngbDropdown container="body" placement="top-start">
+    <button type="button" class="btn btn-secondary btn-sm btn-split" ngbDropdownToggle>
+      <bb-btn-content
+        [icon]="icon.faPenToSquare"
+        [text]="'components.modals.torrent-details.general.footer.manage' | translate"
+        position="end"
+      ></bb-btn-content>
+    </button>
+    <div ngbDropdownMenu class="bb-toolbar-dropdown">
+      <button ngbDropdownItem type="button" (click)="actionsService.rename()">
+        <span class="bb-dropdown-icon" aria-hidden="true"
+          ><fa-icon [icon]="icon.faPenToSquare"></fa-icon
+        ></span>
+        {{ 'components.modals.torrent-details.general.rename' | translate }}
+      </button>
+      <button ngbDropdownItem type="button" (click)="actionsService.setLocation()">
+        <span class="bb-dropdown-icon" aria-hidden="true"
+          ><fa-icon [icon]="icon.faFolder"></fa-icon
+        ></span>
+        {{ 'components.modals.torrent-details.general.relocate' | translate }}
+      </button>
+      @if (dataService.localPath()) {
+        <button ngbDropdownItem type="button" (click)="actionsService.openPath()">
+          <span class="bb-dropdown-icon" aria-hidden="true"
+            ><fa-icon [icon]="icon.faFolderOpen"></fa-icon
+          ></span>
+          {{
+            (dataService.singleFile()
+              ? 'components.modals.torrent-details.general.show-file'
+              : 'components.modals.torrent-details.general.open-destination'
+            ) | translate
+          }}
+        </button>
+      }
+      <button ngbDropdownItem type="button" (click)="actionsService.changeCategory()">
+        <span class="bb-dropdown-icon" aria-hidden="true"
+          ><fa-icon [icon]="icon.faFolderTree"></fa-icon
+        ></span>
+        {{ 'components.modals.torrent-details.general.change-category' | translate }}
+      </button>
+      <button ngbDropdownItem type="button" (click)="actionsService.changeTags()">
+        <span class="bb-dropdown-icon" aria-hidden="true"
+          ><fa-icon [icon]="icon.faTags"></fa-icon
+        ></span>
+        {{ 'components.modals.torrent-details.general.change-tags' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <button
+    type="button"
+    class="btn btn-secondary btn-sm btn-split"
+    (click)="actionsService.forceReannounce()"
+  >
+    <bb-btn-content
+      [icon]="icon.faBullhorn"
+      [text]="'components.modals.torrent-details.general.force-reannounce' | translate"
+      position="end"
+    ></bb-btn-content>
+  </button>
+
   <button
     type="button"
     class="btn btn-link btn-sm btn-split"

@@ -23,36 +23,18 @@
           >
 
           <div class="button-container">
-            <button
-              class="btn btn-sm btn-link"
-              placement="top"
-              [ngbTooltip]="
-                'components.modals.torrent-details.general.copy-to-clipboard' | translate
-              "
-              (click)="toClipboard('name', torrent()!.data.name)"
-            >
-              <fa-icon [icon]="icons['faClipboard']" />
-            </button>
-
-            <button
-              class="btn btn-sm btn-link"
-              placement="top"
-              [ngbTooltip]="'components.modals.torrent-details.general.rename' | translate"
-              (click)="rename()"
-            >
-              <fa-icon [icon]="icons['faPenToSquare']" />
-            </button>
-
-            <button
-              class="btn btn-sm btn-link text-danger"
-              placement="top"
-              container="body"
-              [ngbTooltip]="'components.modals.torrent-details.general.delete' | translate"
-              tooltipClass="danger"
-              (click)="deleteTorrent()"
-            >
-              <fa-icon [icon]="icons['faTrashCan']" />
-            </button>
+            @if (torrent()!.data.name) {
+              <button
+                class="btn btn-sm btn-link"
+                placement="top"
+                [ngbTooltip]="
+                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
+                "
+                (click)="toClipboard('name', torrent()!.data.name)"
+              >
+                <fa-icon [icon]="icons['faCopy']" />
+              </button>
+            }
           </div>
         </div>
         <div class="col-12 bb-section">
@@ -67,25 +49,18 @@
             >{{ torrent()!.data.save_path }}</span
           >
           <div class="button-container">
-            <button
-              class="btn btn-sm btn-link"
-              placement="top"
-              [ngbTooltip]="
-                'components.modals.torrent-details.general.copy-to-clipboard' | translate
-              "
-              (click)="toClipboard('save-path', torrent()!.data.save_path)"
-            >
-              <fa-icon [icon]="icons['faClipboard']" />
-            </button>
-
-            <button
-              class="btn btn-sm btn-link"
-              placement="top"
-              [ngbTooltip]="'components.modals.torrent-details.general.relocate' | translate"
-              (click)="setLocation()"
-            >
-              <fa-icon [icon]="icons['faPenToSquare']" />
-            </button>
+            @if (torrent()!.data.save_path) {
+              <button
+                class="btn btn-sm btn-link"
+                placement="top"
+                [ngbTooltip]="
+                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
+                "
+                (click)="toClipboard('save-path', torrent()!.data.save_path)"
+              >
+                <fa-icon [icon]="icons['faCopy']" />
+              </button>
+            }
           </div>
         </div>
         <div class="col-12 bb-section">
@@ -100,16 +75,18 @@
             >{{ torrent()!.data.content_path }}</span
           >
           <div class="button-container">
-            <button
-              class="btn btn-sm btn-link"
-              placement="top"
-              [ngbTooltip]="
-                'components.modals.torrent-details.general.copy-to-clipboard' | translate
-              "
-              (click)="toClipboard('remote-path', torrent()!.data.content_path)"
-            >
-              <fa-icon [icon]="icons['faClipboard']" />
-            </button>
+            @if (torrent()!.data.content_path) {
+              <button
+                class="btn btn-sm btn-link"
+                placement="top"
+                [ngbTooltip]="
+                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
+                "
+                (click)="toClipboard('remote-path', torrent()!.data.content_path)"
+              >
+                <fa-icon [icon]="icons['faCopy']" />
+              </button>
+            }
           </div>
         </div>
         @if (localPath()) {
@@ -125,31 +102,18 @@
               >{{ localPath() }}</span
             >
             <div class="button-container">
-              <button
-                class="btn btn-sm btn-link"
-                placement="top"
-                [ngbTooltip]="
-                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
-                "
-                (click)="toClipboard('local-path', torrent()!.data.save_path)"
-              >
-                <fa-icon [icon]="icons['faClipboard']" />
-              </button>
-
-              <button
-                class="btn btn-sm btn-link"
-                placement="top"
-                [ngbTooltip]="
-                  (singleFile()
-                    ? 'components.modals.torrent-details.general.show-file'
-                    : 'components.modals.torrent-details.general.open-destination'
-                  ) | translate
-                "
-                (click)="openPath()"
-                [disabled]="!localPath()"
-              >
-                <fa-icon [icon]="icons['faFolderOpen']" />
-              </button>
+              @if (torrent()!.data.save_path) {
+                <button
+                  class="btn btn-sm btn-link"
+                  placement="top"
+                  [ngbTooltip]="
+                    'components.modals.torrent-details.general.copy-to-clipboard' | translate
+                  "
+                  (click)="toClipboard('local-path', torrent()!.data.save_path)"
+                >
+                  <fa-icon [icon]="icons['faCopy']" />
+                </button>
+              }
             </div>
           </div>
         }
@@ -173,34 +137,6 @@
             placement="bottom"
             >{{ 'torrent.state.' + torrent()!.data.state | translate }}
           </span>
-          <div class="button-container">
-            <button
-              class="btn btn-sm btn-link"
-              placement="top"
-              [ngbTooltip]="'components.modals.torrent-details.general.resume' | translate"
-              (click)="resume()"
-            >
-              <fa-icon [icon]="icons['faPlay']" />
-            </button>
-
-            <button
-              class="btn btn-sm btn-link"
-              placement="top"
-              [ngbTooltip]="'components.modals.torrent-details.general.pause' | translate"
-              (click)="pause()"
-            >
-              <fa-icon [icon]="icons['faPause']" />
-            </button>
-
-            <button
-              class="btn btn-sm btn-link"
-              placement="top"
-              [ngbTooltip]="'components.modals.torrent-details.general.force-resume' | translate"
-              (click)="forceResume()"
-            >
-              <fa-icon [icon]="icons['faForwardFast']" />
-            </button>
-          </div>
         </div>
         @if (errorLog(); as entry) {
           <div class="col-12 bb-section bb-section--danger">
@@ -234,24 +170,18 @@
             >{{ torrent()!.data.category || '-' }}</span
           >
           <div class="button-container">
-            <button
-              class="btn btn-sm btn-link"
-              placement="top"
-              [ngbTooltip]="'components.modals.torrent-details.general.change-category' | translate"
-              (click)="changeCategory()"
-            >
-              <fa-icon [icon]="icons['faPenToSquare']" />
-            </button>
-
-            <button
-              class="btn btn-sm btn-link"
-              placement="top"
-              [ngbTooltip]="'components.modals.torrent-details.general.remove-category' | translate"
-              (click)="removeCategory()"
-              [disabled]="!torrent()!.data.category"
-            >
-              <fa-icon [icon]="icons['faX']" />
-            </button>
+            @if (torrent()!.data.category) {
+              <button
+                class="btn btn-sm btn-link"
+                placement="top"
+                [ngbTooltip]="
+                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
+                "
+                (click)="toClipboard('category', torrent()!.data.category)"
+              >
+                <fa-icon [icon]="icons['faCopy']" />
+              </button>
+            }
           </div>
         </div>
         <div class="col-12 bb-section">
@@ -266,24 +196,18 @@
             >{{ torrent()!.data.tags || '-' }}</span
           >
           <div class="button-container">
-            <button
-              class="btn btn-sm btn-link"
-              placement="top"
-              [ngbTooltip]="'components.modals.torrent-details.general.change-tags' | translate"
-              (click)="changeTags()"
-            >
-              <fa-icon [icon]="icons['faPenToSquare']" />
-            </button>
-
-            <button
-              class="btn btn-sm btn-link"
-              placement-="top"
-              [ngbTooltip]="'components.modals.torrent-details.general.remove-all-tags' | translate"
-              (click)="removeAllTags()"
-              [disabled]="!torrent()!.data.tags"
-            >
-              <fa-icon [icon]="icons['faX']" />
-            </button>
+            @if (torrent()!.data.tags) {
+              <button
+                class="btn btn-sm btn-link"
+                placement="top"
+                [ngbTooltip]="
+                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
+                "
+                (click)="toClipboard('tags', torrent()!.data.tags)"
+              >
+                <fa-icon [icon]="icons['faCopy']" />
+              </button>
+            }
           </div>
         </div>
       </div>
@@ -516,30 +440,6 @@
             placement="bottom"
             >{{ torrent()!.data.dl_limit | speedLimit }}</span
           >
-          <div class="button-container">
-            <button
-              class="btn btn-sm btn-link"
-              placement="top"
-              [ngbTooltip]="
-                'components.modals.torrent-details.general.change-download-limit' | translate
-              "
-              (click)="changeDownloadLimit()"
-            >
-              <fa-icon [icon]="icons['faPenToSquare']" />
-            </button>
-
-            <button
-              class="btn btn-sm btn-link"
-              placement="top"
-              [ngbTooltip]="
-                'components.modals.torrent-details.general.clear-download-limit' | translate
-              "
-              (click)="clearDownloadLimit()"
-              [disabled]="torrent()!.data.dl_limit === 0"
-            >
-              <fa-icon [icon]="icons['faX']" />
-            </button>
-          </div>
         </div>
         <div class="col-12 col-lg-6 col-xl-4 bb-section">
           <span class="section-header">
@@ -562,30 +462,6 @@
             placement="bottom"
             >{{ torrent()!.data.up_limit | speedLimit }}</span
           >
-          <div class="button-container">
-            <button
-              class="btn btn-sm btn-link"
-              placement="top"
-              [ngbTooltip]="
-                'components.modals.torrent-details.general.change-upload-limit' | translate
-              "
-              (click)="changeUploadLimit()"
-            >
-              <fa-icon [icon]="icons['faPenToSquare']" />
-            </button>
-
-            <button
-              class="btn btn-sm btn-link"
-              placement="top"
-              [ngbTooltip]="
-                'components.modals.torrent-details.general.clear-upload-limit' | translate
-              "
-              (click)="clearUploadLimit()"
-              [disabled]="torrent()!.data.up_limit === 0"
-            >
-              <fa-icon [icon]="icons['faX']" />
-            </button>
-          </div>
         </div>
         <div class="col-12 col-lg-6 col-xl-4 bb-section">
           <span class="section-header">
@@ -668,18 +544,6 @@
                 : '-'
             }}</span
           >
-          <div class="button-container">
-            <button
-              class="btn btn-sm btn-link"
-              placement="top"
-              [ngbTooltip]="
-                'components.modals.torrent-details.general.force-reannounce' | translate
-              "
-              (click)="forceReannounce()"
-            >
-              <fa-icon [icon]="icons['faBullhorn']" />
-            </button>
-          </div>
         </div>
         <div class="col-12 col-lg-6 col-xl-4 bb-section">
           <span class="section-header">
@@ -725,29 +589,6 @@
             placement="bottom"
             >{{ torrent()!.data.ratio_limit | ratioLimit }}</span
           >
-          <div class="button-container">
-            <button
-              class="btn btn-sm btn-link"
-              placement="top"
-              [ngbTooltip]="
-                'components.modals.torrent-details.general.edit-share-limits' | translate
-              "
-              (click)="openShareLimitsModal()"
-            >
-              <fa-icon [icon]="icons['faPenToSquare']" />
-            </button>
-            <button
-              class="btn btn-sm btn-link"
-              placement="top"
-              [ngbTooltip]="
-                'components.modals.torrent-details.general.clear-ratio-limit' | translate
-              "
-              [disabled]="torrent()!.data.ratio_limit === -1"
-              (click)="clearRatioLimit()"
-            >
-              <fa-icon [icon]="icons['faX']" />
-            </button>
-          </div>
         </div>
         <div class="col-12 col-lg-6 col-xl-4 bb-section">
           <span class="section-header">
@@ -771,29 +612,6 @@
             placement="bottom"
             >{{ (torrent()!.data.seeding_time_limit | timeLimit) || '-' }}</span
           >
-          <div class="button-container">
-            <button
-              class="btn btn-sm btn-link"
-              placement="top"
-              [ngbTooltip]="
-                'components.modals.torrent-details.general.edit-share-limits' | translate
-              "
-              (click)="openShareLimitsModal()"
-            >
-              <fa-icon [icon]="icons['faPenToSquare']" />
-            </button>
-            <button
-              class="btn btn-sm btn-link"
-              placement="top"
-              [ngbTooltip]="
-                'components.modals.torrent-details.general.clear-seeding-time-limit' | translate
-              "
-              [disabled]="torrent()!.data.seeding_time_limit === -1"
-              (click)="clearSeedingTimeLimit()"
-            >
-              <fa-icon [icon]="icons['faX']" />
-            </button>
-          </div>
         </div>
         <div class="col-12 col-lg-6 col-xl-4 bb-section">
           <span class="section-header">
@@ -819,30 +637,6 @@
             placement="bottom"
             >{{ (torrent()!.data.inactive_seeding_time_limit | timeLimit) || '-' }}</span
           >
-          <div class="button-container">
-            <button
-              class="btn btn-sm btn-link"
-              placement="top"
-              [ngbTooltip]="
-                'components.modals.torrent-details.general.edit-share-limits' | translate
-              "
-              (click)="openShareLimitsModal()"
-            >
-              <fa-icon [icon]="icons['faPenToSquare']" />
-            </button>
-            <button
-              class="btn btn-sm btn-link"
-              placement="top"
-              [ngbTooltip]="
-                'components.modals.torrent-details.general.clear-inactive-seeding-time-limit'
-                  | translate
-              "
-              [disabled]="torrent()!.data.inactive_seeding_time_limit === -1"
-              (click)="clearInactiveSeedingTimeLimit()"
-            >
-              <fa-icon [icon]="icons['faX']" />
-            </button>
-          </div>
         </div>
       </div>
     </fieldset>
@@ -942,7 +736,7 @@
             >{{ torrent()!.data.added_on * 1000 | date: 'yyyy-MM-dd HH:mm:ss' }}</span
           >
           <span class="section-value"
-            ><small class="text-secondary">{{
+            ><small class="text-body-secondary">{{
               torrent()!.data.added_on * 1000 | timeago
             }}</small></span
           >
@@ -964,7 +758,7 @@
           <span class="section-value">
             @if (torrent()!.data.completion_on > 0) {
               {{ torrent()!.data.completion_on * 1000 | date: 'yyyy-MM-dd HH:mm:ss' }}
-              <small class="text-secondary">{{
+              <small class="text-body-secondary">{{
                 torrent()!.data.completion_on * 1000 | timeago
               }}</small>
             } @else {
@@ -994,7 +788,7 @@
             >{{ torrent()!.properties.creation_date * 1000 | date: 'yyyy-MM-dd HH:mm:ss' }}</span
           >
           <span class="section-value"
-            ><small class="text-secondary">{{
+            ><small class="text-body-secondary">{{
               torrent()!.properties.creation_date * 1000 | timeago
             }}</small></span
           >
@@ -1036,7 +830,7 @@
                 "
                 (click)="toClipboard('info-hash-v1', torrent()!.data.infohash_v1)"
               >
-                <fa-icon [icon]="icons['faClipboard']" />
+                <fa-icon [icon]="icons['faCopy']" />
               </button>
             }
           </div>
@@ -1078,7 +872,7 @@
                 "
                 (click)="toClipboard('info-hash-v2', torrent()!.data.infohash_v2)"
               >
-                <fa-icon [icon]="icons['faClipboard']" />
+                <fa-icon [icon]="icons['faCopy']" />
               </button>
             }
           </div>
@@ -1119,7 +913,7 @@
                 "
                 (click)="toClipboard('comment', torrent()!.properties.comment)"
               >
-                <fa-icon [icon]="icons['faClipboard']" />
+                <fa-icon [icon]="icons['faCopy']" />
               </button>
             }
           </div>

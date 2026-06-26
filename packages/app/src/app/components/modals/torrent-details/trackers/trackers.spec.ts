@@ -1,13 +1,13 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { QbTorrentTracker } from '../../../../models/qbittorrent.model';
 import type { ContextMenuEntry } from '../../../../pages/main/grid/context-menu/context-menu.types';
 import { GridContextMenuService } from '../../../../pages/main/grid/context-menu/grid-context-menu.service';
 import { ContextMenuService } from '../../../../services/context-menu.service';
-import { QbService } from '../../../../services/qb.service';
-import { ServerStoreService } from '../../../../services/server-store.service';
 import { ThemeService } from '../../../../services/theme.service';
 import { TrackersGridSettingsService } from '../../../../services/trackers-grid.settings.service';
+import { TorrentDetailsDataService } from '../torrent-details-data.service';
 import { Trackers } from './trackers';
 
 function findItem(
@@ -58,9 +58,11 @@ describe('Trackers', () => {
     await TestBed.configureTestingModule({
       imports: [Trackers],
       providers: [
-        { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
+        {
+          provide: TorrentDetailsDataService,
+          useValue: { trackers: signal<QbTorrentTracker[]>([]), trackersLoading: signal(true) },
+        },
         { provide: ThemeService, useValue: { effectiveMode: signal('light') } },
-        { provide: QbService, useValue: { torrentTrackers: vi.fn().mockResolvedValue([]) } },
         { provide: TrackersGridSettingsService, useValue: mockSettingsService },
         { provide: ContextMenuService, useValue: mockContextMenuService },
         {
@@ -93,6 +95,32 @@ describe('Trackers', () => {
 
   it('should have gridOptions defined', () => {
     expect(component.gridOptions).toBeDefined();
+  });
+
+  describe('data service sync', () => {
+    it('reflects updates to the data service trackers and loading signals', () => {
+      const dataService = TestBed.inject(TorrentDetailsDataService) as unknown as {
+        trackers: ReturnType<typeof signal<QbTorrentTracker[]>>;
+        trackersLoading: ReturnType<typeof signal<boolean>>;
+      };
+      const tracker: QbTorrentTracker = {
+        url: 'http://tracker.example.com',
+        status: 0,
+        tier: 0,
+        num_peers: 0,
+        num_seeds: 0,
+        num_leeches: 0,
+        num_downloaded: 0,
+        msg: '',
+      };
+
+      dataService.trackers.set([tracker]);
+      dataService.trackersLoading.set(false);
+      fixture.detectChanges();
+
+      expect(component.trackers).toEqual([tracker]);
+      expect(component.loading).toBe(false);
+    });
   });
 
   describe('column definitions', () => {

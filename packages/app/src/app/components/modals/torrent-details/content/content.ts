@@ -1,25 +1,10 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  OnInit,
-  effect,
-  inject,
-  input,
-  signal,
-} from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TorrentFileEntry } from '@bitbutler/shared';
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { EMPTY, catchError, from, switchMap, tap, timer } from 'rxjs';
-import { QbTorrentContent } from '../../../../models/torrent.model';
+import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { ModalGuardService } from '../../../../services/modal-guard.service';
-import { QbService } from '../../../../services/qb.service';
-import { ServerSettingsService } from '../../../../services/server-settings.service';
-import { ServerStoreService } from '../../../../services/server-store.service';
-import { ToastService } from '../../../../services/toast.service';
 import { BbFileTree, FileTreeSaveEvent } from '../../../bb-file-tree/bb-file-tree';
 import { BbSpinner } from '../../../bb-spinner/bb-spinner';
+import { TorrentDetailsActionsService } from '../torrent-details-actions.service';
+import { TorrentDetailsDataService } from '../torrent-details-data.service';
 import { TorrentDetailTabComponent } from '../torrent-details.interface';
 
 @Component({
@@ -30,25 +15,18 @@ import { TorrentDetailTabComponent } from '../torrent-details.interface';
   styleUrl: './content.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Content implements TorrentDetailTabComponent, OnInit {
-  readonly hash = input<string>('');
-  readonly context = input<Record<string, any>>({});
-
-  private readonly qbService = inject(QbService);
-  private readonly serverStoreService = inject(ServerStoreService);
-  private readonly toastService = inject(ToastService);
-  private readonly translateService = inject(TranslateService);
-  private readonly serverSettingsService = inject(ServerSettingsService);
-  private readonly destroyRef = inject(DestroyRef);
+export class Content implements TorrentDetailTabComponent {
+  private readonly dataService = inject(TorrentDetailsDataService);
+  private readonly actionsService = inject(TorrentDetailsActionsService);
   private readonly guardService = inject(ModalGuardService);
 
-  public loading = signal(true);
-  public content = signal<TorrentFileEntry[]>([]);
+  public readonly content = this.dataService.content;
+  public readonly loading = this.dataService.contentLoading;
   public readonly startInEditMode = signal(false);
 
   constructor() {
     effect(() => {
-      const ctx = this.context();
+      const ctx = this.dataService.context();
       if (ctx?.['editMode']) {
         this.startInEditMode.set(true);
         ctx['editMode'] = false;
@@ -56,87 +34,13 @@ export class Content implements TorrentDetailTabComponent, OnInit {
     });
   }
 
-  public async ngOnInit(): Promise<void> {
-    const serverSettings = await this.serverSettingsService.load();
-    const pollingInterval = serverSettings.polling.foreground;
-
-    timer(0, pollingInterval)
-      .pipe(
-        switchMap(() => from(this.load())),
-        tap((data: TorrentFileEntry[]) => {
-          this.content.set(data);
-          this.loading.set(false);
-        }),
-        catchError((e: any) => {
-          console.error(Content.name, 'load', 'Failed to load torrent contents', e);
-          this.toastService.danger(
-            e?.message ?? String(e),
-            this.translateService.instant(
-              'components.modals.torrent-details.content.error.failed-to-load-title',
-            ),
-          );
-          this.loading.set(false);
-          return EMPTY;
-        }),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe();
-  }
-
   public async onSaved(event: FileTreeSaveEvent): Promise<void> {
-    const serverId = this.serverStoreService.currentServerId();
-    if (!serverId) return;
-
-    const originalContent = this.content();
-    this.content.set(event.files);
-
-    try {
-      for (const item of event.renames) {
-        await this.qbService.torrents.renameFile(serverId, this.hash(), item.oldPath, item.newPath);
-      }
-
-      for (const file of event.files) {
-        if (file.index === undefined) continue;
-        const original = originalContent.find((f) => f.index === file.index);
-        if (original && original.priority !== file.priority) {
-          await this.qbService.torrents.filePrio(
-            serverId,
-            this.hash(),
-            [file.index],
-            file.priority ?? 0,
-          );
-        }
-      }
-    } catch (e: any) {
-      console.error(Content.name, 'onSaved', 'Failed to save changes', e);
-      this.toastService.danger(
-        e?.message ?? String(e),
-        this.translateService.instant(
-          'components.modals.torrent-details.content.error.failed-to-save-title',
-        ),
-      );
-    }
+    const originalContent = this.dataService.content();
+    this.dataService.setContent(event.files);
+    await this.actionsService.saveFileChanges(event, originalContent);
   }
 
   public onEditModeChange(isEditing: boolean): void {
     this.guardService.isDirty.set(isEditing);
-  }
-
-  private async load(): Promise<TorrentFileEntry[]> {
-    const serverId = this.serverStoreService.currentServerId();
-    const hash = this.hash();
-
-    if (!serverId) throw new Error('ServerId is missing!');
-    if (!hash) throw new Error('Torrent hash is missing!');
-
-    return (await this.qbService.torrents.files(serverId, hash)).map(
-      (content: QbTorrentContent) => ({
-        length: content.size,
-        path: content.name,
-        priority: content.priority,
-        progress: content.progress,
-        index: content.index,
-      }),
-    );
   }
 }
