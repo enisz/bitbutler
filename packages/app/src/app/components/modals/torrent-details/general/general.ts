@@ -2,7 +2,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FontAwesomeModule, IconDefinition } from '@fortawesome/angular-fontawesome';
-import { faClipboard } from '@fortawesome/free-regular-svg-icons';
+import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { NgbCollapse, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TimeagoPipe } from 'ngx-timeago';
@@ -53,7 +53,7 @@ export class General implements TorrentDetailTabComponent {
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
 
-  public icons: Record<string, IconDefinition> = { faClipboard };
+  public icons: Record<string, IconDefinition> = { faCopy };
 
   public readonly torrent = this.dataService.torrent;
   public readonly localPath = this.dataService.localPath;

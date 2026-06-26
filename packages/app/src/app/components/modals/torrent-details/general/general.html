@@ -23,16 +23,18 @@
           >
 
           <div class="button-container">
-            <button
-              class="btn btn-sm btn-link"
-              placement="top"
-              [ngbTooltip]="
-                'components.modals.torrent-details.general.copy-to-clipboard' | translate
-              "
-              (click)="toClipboard('name', torrent()!.data.name)"
-            >
-              <fa-icon [icon]="icons['faClipboard']" />
-            </button>
+            @if (torrent()!.data.name) {
+              <button
+                class="btn btn-sm btn-link"
+                placement="top"
+                [ngbTooltip]="
+                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
+                "
+                (click)="toClipboard('name', torrent()!.data.name)"
+              >
+                <fa-icon [icon]="icons['faCopy']" />
+              </button>
+            }
           </div>
         </div>
         <div class="col-12 bb-section">
@@ -47,16 +49,18 @@
             >{{ torrent()!.data.save_path }}</span
           >
           <div class="button-container">
-            <button
-              class="btn btn-sm btn-link"
-              placement="top"
-              [ngbTooltip]="
-                'components.modals.torrent-details.general.copy-to-clipboard' | translate
-              "
-              (click)="toClipboard('save-path', torrent()!.data.save_path)"
-            >
-              <fa-icon [icon]="icons['faClipboard']" />
-            </button>
+            @if (torrent()!.data.save_path) {
+              <button
+                class="btn btn-sm btn-link"
+                placement="top"
+                [ngbTooltip]="
+                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
+                "
+                (click)="toClipboard('save-path', torrent()!.data.save_path)"
+              >
+                <fa-icon [icon]="icons['faCopy']" />
+              </button>
+            }
           </div>
         </div>
         <div class="col-12 bb-section">
@@ -71,16 +75,18 @@
             >{{ torrent()!.data.content_path }}</span
           >
           <div class="button-container">
-            <button
-              class="btn btn-sm btn-link"
-              placement="top"
-              [ngbTooltip]="
-                'components.modals.torrent-details.general.copy-to-clipboard' | translate
-              "
-              (click)="toClipboard('remote-path', torrent()!.data.content_path)"
-            >
-              <fa-icon [icon]="icons['faClipboard']" />
-            </button>
+            @if (torrent()!.data.content_path) {
+              <button
+                class="btn btn-sm btn-link"
+                placement="top"
+                [ngbTooltip]="
+                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
+                "
+                (click)="toClipboard('remote-path', torrent()!.data.content_path)"
+              >
+                <fa-icon [icon]="icons['faCopy']" />
+              </button>
+            }
           </div>
         </div>
         @if (localPath()) {
@@ -96,16 +102,18 @@
               >{{ localPath() }}</span
             >
             <div class="button-container">
-              <button
-                class="btn btn-sm btn-link"
-                placement="top"
-                [ngbTooltip]="
-                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
-                "
-                (click)="toClipboard('local-path', torrent()!.data.save_path)"
-              >
-                <fa-icon [icon]="icons['faClipboard']" />
-              </button>
+              @if (torrent()!.data.save_path) {
+                <button
+                  class="btn btn-sm btn-link"
+                  placement="top"
+                  [ngbTooltip]="
+                    'components.modals.torrent-details.general.copy-to-clipboard' | translate
+                  "
+                  (click)="toClipboard('local-path', torrent()!.data.save_path)"
+                >
+                  <fa-icon [icon]="icons['faCopy']" />
+                </button>
+              }
             </div>
           </div>
         }
@@ -161,6 +169,20 @@
             placement="bottom"
             >{{ torrent()!.data.category || '-' }}</span
           >
+          <div class="button-container">
+            @if (torrent()!.data.category) {
+              <button
+                class="btn btn-sm btn-link"
+                placement="top"
+                [ngbTooltip]="
+                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
+                "
+                (click)="toClipboard('category', torrent()!.data.category)"
+              >
+                <fa-icon [icon]="icons['faCopy']" />
+              </button>
+            }
+          </div>
         </div>
         <div class="col-12 bb-section">
           <span class="section-header">{{
@@ -173,6 +195,20 @@
             placement="bottom"
             >{{ torrent()!.data.tags || '-' }}</span
           >
+          <div class="button-container">
+            @if (torrent()!.data.tags) {
+              <button
+                class="btn btn-sm btn-link"
+                placement="top"
+                [ngbTooltip]="
+                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
+                "
+                (click)="toClipboard('tags', torrent()!.data.tags)"
+              >
+                <fa-icon [icon]="icons['faCopy']" />
+              </button>
+            }
+          </div>
         </div>
       </div>
     </fieldset>
@@ -700,7 +736,7 @@
             >{{ torrent()!.data.added_on * 1000 | date: 'yyyy-MM-dd HH:mm:ss' }}</span
           >
           <span class="section-value"
-            ><small class="text-secondary">{{
+            ><small class="text-body-secondary">{{
               torrent()!.data.added_on * 1000 | timeago
             }}</small></span
           >
@@ -722,7 +758,7 @@
           <span class="section-value">
             @if (torrent()!.data.completion_on > 0) {
               {{ torrent()!.data.completion_on * 1000 | date: 'yyyy-MM-dd HH:mm:ss' }}
-              <small class="text-secondary">{{
+              <small class="text-body-secondary">{{
                 torrent()!.data.completion_on * 1000 | timeago
               }}</small>
             } @else {
@@ -752,7 +788,7 @@
             >{{ torrent()!.properties.creation_date * 1000 | date: 'yyyy-MM-dd HH:mm:ss' }}</span
           >
           <span class="section-value"
-            ><small class="text-secondary">{{
+            ><small class="text-body-secondary">{{
               torrent()!.properties.creation_date * 1000 | timeago
             }}</small></span
           >
@@ -794,7 +830,7 @@
                 "
                 (click)="toClipboard('info-hash-v1', torrent()!.data.infohash_v1)"
               >
-                <fa-icon [icon]="icons['faClipboard']" />
+                <fa-icon [icon]="icons['faCopy']" />
               </button>
             }
           </div>
@@ -836,7 +872,7 @@
                 "
                 (click)="toClipboard('info-hash-v2', torrent()!.data.infohash_v2)"
               >
-                <fa-icon [icon]="icons['faClipboard']" />
+                <fa-icon [icon]="icons['faCopy']" />
               </button>
             }
           </div>
@@ -877,7 +913,7 @@
                 "
                 (click)="toClipboard('comment', torrent()!.properties.comment)"
               >
-                <fa-icon [icon]="icons['faClipboard']" />
+                <fa-icon [icon]="icons['faCopy']" />
               </button>
             }
           </div>

@@ -12,11 +12,19 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
+  faArrowDownUpAcrossLine,
   faAsterisk,
   faBullhorn,
+  faFolder,
+  faFolderOpen,
+  faFolderTree,
+  faForwardFast,
   faGauge,
+  faPause,
   faPenToSquare,
   faPlay,
+  faShare,
+  faTags,
   faTrashCan,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
@@ -70,11 +78,19 @@ export class TorrentDetails implements OnInit, GuardableModal {
   private readonly confirmService = inject(ConfirmService);
 
   public readonly icon = {
+    faArrowDownUpAcrossLine,
     faAsterisk,
     faBullhorn,
+    faFolder,
+    faFolderOpen,
+    faFolderTree,
+    faForwardFast,
     faGauge,
+    faPause,
     faPenToSquare,
     faPlay,
+    faShare,
+    faTags,
     faTrashCan,
     faXmark,
   };

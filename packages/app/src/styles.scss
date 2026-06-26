@@ -677,15 +677,22 @@ ngb-typeahead-window.dropdown-menu {
   position: absolute;
   inset: 0;
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
   overflow: hidden;
-  transition: opacity 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    visibility 0s linear 0.2s;
 
   &--active {
     position: relative;
     overflow: visible;
     opacity: 1;
+    visibility: visible;
     pointer-events: auto;
+    transition:
+      opacity 0.2s ease,
+      visibility 0s linear 0s;
   }
 }
 
