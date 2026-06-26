@@ -46,9 +46,30 @@ export class QbPollingService {
 
   private readonly stopPolling$ = new Subject<void>();
 
+  private readonly _pauseTokens$ = new BehaviorSubject<Set<symbol>>(new Set());
+  public readonly isPaused$: Observable<boolean> = this._pauseTokens$.pipe(
+    map((tokens) => tokens.size > 0),
+    distinctUntilChanged(),
+  );
+
+  public pause(): symbol {
+    const token = Symbol();
+    const next = new Set(this._pauseTokens$.value);
+    next.add(token);
+    this._pauseTokens$.next(next);
+    return token;
+  }
+
+  public resume(token: symbol): void {
+    const next = new Set(this._pauseTokens$.value);
+    next.delete(token);
+    this._pauseTokens$.next(next);
+  }
+
   public stopPolling(): void {
     this.stopPolling$.next();
     this._isInitialLoading$.next(false);
+    this._pauseTokens$.next(new Set());
   }
 
   startMaindataPolling(
@@ -91,19 +112,22 @@ export class QbPollingService {
     const settings$ = this.serverSettingsService.asObservable().pipe(startWith(null));
     const windowState$ = this.windowState$.pipe(startWith(null));
 
-    return combineLatest([settings$, windowState$]).pipe(
+    return combineLatest([settings$, windowState$, this.isPaused$]).pipe(
       takeUntil(this.stopPolling$),
-      map(([settings, windowState]) => {
+      map(([settings, windowState, isPaused]) => {
         const isMinimized = windowState?.isMinimized ?? false;
         const foreground = settings?.polling?.foreground ?? 2000;
         const background = settings?.polling?.background ?? 5000;
 
-        return isMinimized ? background : foreground;
+        return { pollMs: isMinimized ? background : foreground, isPaused };
       }),
-      distinctUntilChanged(),
-      tap((poll) => this._pollingInterval$.next(poll)),
-      switchMap((poll) =>
-        interval(poll).pipe(
+      distinctUntilChanged((a, b) => a.pollMs === b.pollMs && a.isPaused === b.isPaused),
+      tap(({ pollMs, isPaused }) => {
+        if (!isPaused) this._pollingInterval$.next(pollMs);
+      }),
+      switchMap(({ pollMs, isPaused }) => {
+        if (isPaused) return EMPTY;
+        return interval(pollMs).pipe(
           startWith(0),
           tap(() => this._onPoll$.next()),
           exhaustMap(() =>
@@ -120,8 +144,8 @@ export class QbPollingService {
               }),
             ),
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 
