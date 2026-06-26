@@ -37,7 +37,6 @@ import { TorrentStoreService } from '../../services/torrent-store.service';
 import { setModalInput } from '../../utils/modal-input';
 import { BbBtnContent } from '../bb-btn-content/bb-btn-content';
 import { FileTreeSaveEvent } from '../bb-file-tree/bb-file-tree';
-import { TorrentExists } from '../modals/torrent-exists/torrent-exists';
 import { ShareLimitValue } from '../share-limit/share-limit';
 import { TransferLimitValue } from '../transfer-limit/transfer-limit';
 import { AddTorrentFiles } from './files/files';
@@ -377,6 +376,7 @@ export class AddTorrent implements OnInit {
       if (parsed.name === 'QbHttpError' && parsed.status === 409) {
         const draft = this.effectiveDraft();
         const hash = draft?.torrent?.infoHashV1?.toLowerCase() ?? null;
+        const { TorrentExists } = await import('../modals/torrent-exists/torrent-exists');
         const modalRef = this.modalService.open(TorrentExists, { centered: true });
         setModalInput(modalRef, 'hash', hash);
         setModalInput(modalRef, 'originalPath', draft?.originalPath ?? null);
@@ -462,7 +462,7 @@ export class AddTorrent implements OnInit {
     return this.torrentStoreService.torrentsArray().some((t) => t.hash?.toLowerCase() === hash);
   }
 
-  private loadDraft(pending: PendingAddTorrent, _source: 'input' | 'manual'): void {
+  private async loadDraft(pending: PendingAddTorrent, _source: 'input' | 'manual'): Promise<void> {
     const draft = pending.draft;
     const identifier = draft.torrent?.infoHashV1 ?? draft.originalPath;
 
@@ -496,6 +496,7 @@ export class AddTorrent implements OnInit {
     }
 
     if (this.isAlreadyInList(draft)) {
+      const { TorrentExists } = await import('../modals/torrent-exists/torrent-exists');
       const modalRef = this.modalService.open(TorrentExists, { centered: true });
       setModalInput(modalRef, 'hash', draft.torrent?.infoHashV1?.toLowerCase() ?? null);
       setModalInput(modalRef, 'originalPath', draft.originalPath ?? null);
