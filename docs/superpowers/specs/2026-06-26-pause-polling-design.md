@@ -4,49 +4,46 @@
 
 ## Summary
 
-Allow the user to manually pause and resume background maindata polling by clicking the polling-indicator widget in the status bar. When paused, no network requests are made, the ring animation stops, and the center icon switches from play to pause. The rid (revision id) is preserved across pause/resume so no incremental updates are lost. The pause mechanism is designed to support multiple independent pause sources (user action, future modal auto-pause, etc.).
+Allow the user to manually pause and resume background maindata polling by clicking the polling-indicator widget in the status bar. When paused, no network requests are made, the ring animation stops, and the center icon switches from play to pause. The rid (revision id) is preserved across pause/resume so no incremental updates are lost. The pause mechanism uses opaque tokens so any number of independent consumers can pause/resume without coordinating or naming anything.
 
 ---
 
 ## 1. `QbPollingService` changes
 
-### Reason-set based pause state
+### Token-set based pause state
 
-Replace a hypothetical boolean toggle with a `Set<string>` of active pause reasons. Polling is paused whenever the set is non-empty. This allows multiple independent consumers to pause/resume without interfering with each other.
+`pause()` returns a unique `symbol` token. `resume(token)` removes it. Polling is paused whenever any token is held. Callers need no knowledge of each other - they just hold their token and return it when done.
 
 ```typescript
-private readonly _pauseReasons$ = new BehaviorSubject<Set<string>>(new Set());
-public readonly isPaused$: Observable<boolean> = this._pauseReasons$.pipe(
-  map(reasons => reasons.size > 0),
+private readonly _pauseTokens$ = new BehaviorSubject<Set<symbol>>(new Set());
+public readonly isPaused$: Observable<boolean> = this._pauseTokens$.pipe(
+  map(tokens => tokens.size > 0),
   distinctUntilChanged(),
 );
 
-public pause(reason: string): void {
-  const next = new Set(this._pauseReasons$.value);
-  next.add(reason);
-  this._pauseReasons$.next(next);
+public pause(): symbol {
+  const token = Symbol();
+  const next = new Set(this._pauseTokens$.value);
+  next.add(token);
+  this._pauseTokens$.next(next);
+  return token;
 }
 
-public resume(reason: string): void {
-  const next = new Set(this._pauseReasons$.value);
-  next.delete(reason);
-  this._pauseReasons$.next(next);
+public resume(token: symbol): void {
+  const next = new Set(this._pauseTokens$.value);
+  next.delete(token);
+  this._pauseTokens$.next(next);
 }
 ```
 
-Known pause reasons (string constants to avoid typos):
-
-- `'user'` - manual toggle from the status bar widget
-- Future: `'modal'` - automatic pause while any modal is open (separate issue)
+`stopPolling()` calls `this._pauseTokens$.next(new Set())` to clear all tokens, so navigating away or logging out never leaves stale pause state.
 
 ### `createBackgroundPoll` changes
 
 Add `isPaused$` to the existing `combineLatest`. When paused, `switchMap` returns `EMPTY` - the interval stops, no network calls are made, and `maindataRid$` retains its last value. On resume, `combineLatest` emits again; `startWith(0)` inside the new interval causes an immediate fetch using the preserved rid, so the server sends only the delta since the last response.
 
 ```typescript
-const isPaused$ = this.isPaused$;
-
-return combineLatest([settings$, windowState$, isPaused$]).pipe(
+return combineLatest([settings$, windowState$, this.isPaused$]).pipe(
   takeUntil(this.stopPolling$),
   map(([settings, windowState, isPaused]) => ({
     pollMs: (windowState?.isMinimized ? settings?.polling?.background : settings?.polling?.foreground) ?? 2000,
@@ -65,7 +62,7 @@ return combineLatest([settings$, windowState$, isPaused$]).pipe(
 );
 ```
 
-`stopPolling()` calls `this._pauseReasons$.next(new Set())` to clear all pause reasons, in addition to its existing behavior - so navigating away or logging out never leaves stale pause state.
+The `tap` only updates `_pollingInterval$` when not paused to avoid spuriously restarting peers polling on toggle (the interval value hasn't changed, only `isPaused` did).
 
 ### Peers polling
 
@@ -75,16 +72,21 @@ return combineLatest([settings$, windowState$, isPaused$]).pipe(
 
 ## 2. `ServerState` component changes
 
-### New signal and method
+### New signal and toggle method
+
+The component holds a `_pauseToken` field. On pause it stores the token returned by `pollingService.pause()`; on resume it passes it back.
 
 ```typescript
 public isPaused = toSignal(this.pollingService.isPaused$, { initialValue: false });
 
+private _pauseToken: symbol | null = null;
+
 public togglePolling(): void {
   if (this.isPaused()) {
-    this.pollingService.resume('user');
+    if (this._pauseToken) this.pollingService.resume(this._pauseToken);
+    this._pauseToken = null;
   } else {
-    this.pollingService.pause('user');
+    this._pauseToken = this.pollingService.pause();
   }
 }
 ```
@@ -160,12 +162,13 @@ Add to both `us.json` and `hu.json` under the `pages.main.server-state` namespac
 
 ## 6. Future extensibility
 
-Any service can pause/resume polling independently using named reasons:
+Any code can pause polling without coordinating with other consumers:
 
 ```typescript
-// In a modal service or command handler:
-pollingService.pause('modal'); // on open
-pollingService.resume('modal'); // on close
+// anywhere in the app:
+const token = pollingService.pause(); // polling pauses
+// ... do work ...
+pollingService.resume(token); // polling resumes (if no other token is held)
 ```
 
-Polling resumes only when all reasons are cleared. The `isPaused$` observable (boolean) remains the public contract - consumers do not need to know about the internal set.
+Polling resumes only when all tokens are returned. The `isPaused$` observable (boolean) remains the public contract - consumers do not interact with the internal set.
