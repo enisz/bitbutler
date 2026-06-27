@@ -638,6 +638,71 @@
             >{{ (torrent()!.data.inactive_seeding_time_limit | timeLimit) || '-' }}</span
           >
         </div>
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.sequential-download' | translate }}
+          </span>
+          <span class="section-value">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              disabled
+              [checked]="torrent()!.data.seq_dl"
+            />
+          </span>
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.first-last-piece-prio' | translate }}
+          </span>
+          <span class="section-value">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              disabled
+              [checked]="torrent()!.data.f_l_piece_prio"
+            />
+          </span>
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.auto-tmm' | translate }}
+          </span>
+          <span class="section-value">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              disabled
+              [checked]="torrent()!.data.auto_tmm"
+            />
+          </span>
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.super-seeding' | translate }}
+          </span>
+          <span class="section-value">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              disabled
+              [checked]="torrent()!.data.super_seeding"
+            />
+          </span>
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.force-start' | translate }}
+          </span>
+          <span class="section-value">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              disabled
+              [checked]="torrent()!.data.force_start"
+            />
+          </span>
+        </div>
       </div>
     </fieldset>
 
