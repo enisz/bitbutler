@@ -211,6 +211,96 @@ export class TorrentDetailsActionsService {
     }
   }
 
+  public renameFiles(): void {
+    this.commandBusService.emit({ type: 'UI_RENAME_FILES', hash: this.dataService.hash() });
+  }
+
+  public async toggleSequentialDownload(): Promise<void> {
+    try {
+      await this.qbService.torrents.toggleSequentialDownload(
+        this.serverStoreService.currentServerId() as string,
+        [this.dataService.hash()],
+      );
+    } catch (error: any) {
+      this.toastService.danger(
+        error?.message ?? String(error),
+        this.translateService.instant(
+          'components.modals.torrent-details.general.toast.toggle-sequential-download-failed',
+        ),
+      );
+    }
+  }
+
+  public async toggleFirstLastPiecePrio(): Promise<void> {
+    try {
+      await this.qbService.torrents.toggleFirstLastPiecePrio(
+        this.serverStoreService.currentServerId() as string,
+        [this.dataService.hash()],
+      );
+    } catch (error: any) {
+      this.toastService.danger(
+        error?.message ?? String(error),
+        this.translateService.instant(
+          'components.modals.torrent-details.general.toast.toggle-first-last-piece-prio-failed',
+        ),
+      );
+    }
+  }
+
+  public async forceRecheck(): Promise<void> {
+    this.toastService.info(
+      this.translateService.instant('components.modals.torrent-details.general.toast.rechecking'),
+    );
+    try {
+      await this.qbService.torrents.recheck(this.serverStoreService.currentServerId() as string, [
+        this.dataService.hash(),
+      ]);
+    } catch (error: any) {
+      this.toastService.danger(
+        error?.message ?? String(error),
+        this.translateService.instant(
+          'components.modals.torrent-details.general.toast.recheck-failed',
+        ),
+      );
+    }
+  }
+
+  public async toggleAutoTmm(): Promise<void> {
+    const current = this.dataService.torrent()!.data.auto_tmm;
+    try {
+      await this.qbService.torrents.setAutoManagement(
+        this.serverStoreService.currentServerId() as string,
+        [this.dataService.hash()],
+        !current,
+      );
+    } catch (error: any) {
+      this.toastService.danger(
+        error?.message ?? String(error),
+        this.translateService.instant(
+          'components.modals.torrent-details.general.toast.toggle-auto-tmm-failed',
+        ),
+      );
+    }
+  }
+
+  public async toggleSuperSeeding(): Promise<void> {
+    const current = this.dataService.torrent()!.data.super_seeding;
+    try {
+      await this.qbService.torrents.setSuperSeeding(
+        this.serverStoreService.currentServerId() as string,
+        [this.dataService.hash()],
+        !current,
+      );
+    } catch (error: any) {
+      this.toastService.danger(
+        error?.message ?? String(error),
+        this.translateService.instant(
+          'components.modals.torrent-details.general.toast.toggle-super-seeding-failed',
+        ),
+      );
+    }
+  }
+
   public deleteTorrent(): void {
     this.commandBusService.emit({
       type: 'UI_TORRENT_DELETE_REQUEST',
