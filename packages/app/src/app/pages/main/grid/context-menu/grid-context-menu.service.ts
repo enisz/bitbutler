@@ -74,6 +74,8 @@ export class GridContextMenuService {
 
     const allSuperSeeding = data.selected.every((torrent) => torrent.super_seeding);
     const allAutoTmm = data.selected.every((torrent) => torrent.auto_tmm);
+    const allSeqDl = data.selected.every((torrent) => torrent.seq_dl);
+    const allFirstLastPiecePrio = data.selected.every((torrent) => torrent.f_l_piece_prio);
 
     return [
       {
@@ -316,6 +318,26 @@ export class GridContextMenuService {
                 type: 'TORRENT_SUPER_SEEDING',
                 status: allSuperSeeding,
               }),
+          },
+          {
+            kind: 'item',
+            id: 'transfer.sequentialDownload',
+            label: allSeqDl
+              ? 'pages.main.grid.context-menu.item.disable-sequential-download'
+              : 'pages.main.grid.context-menu.item.enable-sequential-download',
+            icon: allSeqDl ? faCheck : undefined,
+            action: () =>
+              this.commandBusService.emit({ type: 'TORRENT_TOGGLE_SEQUENTIAL_DOWNLOAD' }),
+          },
+          {
+            kind: 'item',
+            id: 'transfer.firstLastPiecePrio',
+            label: allFirstLastPiecePrio
+              ? 'pages.main.grid.context-menu.item.disable-first-last-piece-prio'
+              : 'pages.main.grid.context-menu.item.enable-first-last-piece-prio',
+            icon: allFirstLastPiecePrio ? faCheck : undefined,
+            action: () =>
+              this.commandBusService.emit({ type: 'TORRENT_TOGGLE_FIRST_LAST_PIECE_PRIO' }),
           },
         ],
       },

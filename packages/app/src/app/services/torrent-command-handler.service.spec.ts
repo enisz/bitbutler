@@ -29,6 +29,8 @@ describe('TorrentCommandHandlerService', () => {
       setSuperSeeding: ReturnType<typeof vi.fn>;
       setForceStart: ReturnType<typeof vi.fn>;
       setAutoManagement: ReturnType<typeof vi.fn>;
+      toggleSequentialDownload: ReturnType<typeof vi.fn>;
+      toggleFirstLastPiecePrio: ReturnType<typeof vi.fn>;
     };
   };
   let selectionStore: {
@@ -63,6 +65,8 @@ describe('TorrentCommandHandlerService', () => {
         setSuperSeeding: vi.fn(),
         setForceStart: vi.fn(),
         setAutoManagement: vi.fn(),
+        toggleSequentialDownload: vi.fn().mockResolvedValue(undefined),
+        toggleFirstLastPiecePrio: vi.fn().mockResolvedValue(undefined),
       },
     };
 
@@ -412,5 +416,47 @@ describe('TorrentCommandHandlerService', () => {
     commands$.next({ type: 'SERVER_ADDED', id: '1' });
     await flushPromises();
     expect(qbService.torrents.pause).not.toHaveBeenCalled();
+  });
+
+  describe('TORRENT_TOGGLE_SEQUENTIAL_DOWNLOAD', () => {
+    it('calls toggleSequentialDownload with server id and selected hashes', async () => {
+      commands$.next({ type: 'TORRENT_TOGGLE_SEQUENTIAL_DOWNLOAD' });
+      await flushPromises();
+      expect(qbService.torrents.toggleSequentialDownload).toHaveBeenCalledWith('server-1', [
+        'hash1',
+        'hash2',
+      ]);
+    });
+
+    it('shows danger toast when toggleSequentialDownload fails', async () => {
+      qbService.torrents.toggleSequentialDownload.mockRejectedValueOnce(new Error('network error'));
+      commands$.next({ type: 'TORRENT_TOGGLE_SEQUENTIAL_DOWNLOAD' });
+      await flushPromises();
+      expect(toastDanger).toHaveBeenCalledWith(
+        'network error',
+        'services.torrent-command-handler.toast.toggle-sequential-download-failed-title',
+      );
+    });
+  });
+
+  describe('TORRENT_TOGGLE_FIRST_LAST_PIECE_PRIO', () => {
+    it('calls toggleFirstLastPiecePrio with server id and selected hashes', async () => {
+      commands$.next({ type: 'TORRENT_TOGGLE_FIRST_LAST_PIECE_PRIO' });
+      await flushPromises();
+      expect(qbService.torrents.toggleFirstLastPiecePrio).toHaveBeenCalledWith('server-1', [
+        'hash1',
+        'hash2',
+      ]);
+    });
+
+    it('shows danger toast when toggleFirstLastPiecePrio fails', async () => {
+      qbService.torrents.toggleFirstLastPiecePrio.mockRejectedValueOnce(new Error('network error'));
+      commands$.next({ type: 'TORRENT_TOGGLE_FIRST_LAST_PIECE_PRIO' });
+      await flushPromises();
+      expect(toastDanger).toHaveBeenCalledWith(
+        'network error',
+        'services.torrent-command-handler.toast.toggle-first-last-piece-prio-failed-title',
+      );
+    });
   });
 });

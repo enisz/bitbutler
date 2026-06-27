@@ -836,6 +836,49 @@ describe('GridContextMenuService', () => {
       });
     });
 
+    describe('transfer submenu toggles', () => {
+      it('shows enable-sequential-download when seq_dl is false', async () => {
+        const entries = await service.buildTorrentMenu(
+          makeData({ row: makeRow({ seq_dl: false }) }),
+        );
+        const item = findItem(entries, 'transfer.sequentialDownload');
+        expect(item?.label).toBe('pages.main.grid.context-menu.item.enable-sequential-download');
+        expect(item?.icon).toBeUndefined();
+      });
+
+      it('shows disable-sequential-download with check icon when all seq_dl is true', async () => {
+        const row = makeRow({ seq_dl: true });
+        const entries = await service.buildTorrentMenu(makeData({ row, selected: [row] }));
+        const item = findItem(entries, 'transfer.sequentialDownload');
+        expect(item?.label).toBe('pages.main.grid.context-menu.item.disable-sequential-download');
+        expect(item?.icon).toBeDefined();
+      });
+
+      it('emits TORRENT_TOGGLE_SEQUENTIAL_DOWNLOAD when clicked', async () => {
+        const emit = vi.spyOn(TestBed.inject(CommandBusService), 'emit');
+        const entries = await service.buildTorrentMenu(makeData());
+        const item = findItem(entries, 'transfer.sequentialDownload');
+        if (item?.kind === 'item' && typeof item.action === 'function') item.action();
+        expect(emit).toHaveBeenCalledWith({ type: 'TORRENT_TOGGLE_SEQUENTIAL_DOWNLOAD' });
+      });
+
+      it('shows enable-first-last-piece-prio when f_l_piece_prio is false', async () => {
+        const entries = await service.buildTorrentMenu(
+          makeData({ row: makeRow({ f_l_piece_prio: false }) }),
+        );
+        const item = findItem(entries, 'transfer.firstLastPiecePrio');
+        expect(item?.label).toBe('pages.main.grid.context-menu.item.enable-first-last-piece-prio');
+      });
+
+      it('emits TORRENT_TOGGLE_FIRST_LAST_PIECE_PRIO when clicked', async () => {
+        const emit = vi.spyOn(TestBed.inject(CommandBusService), 'emit');
+        const entries = await service.buildTorrentMenu(makeData());
+        const item = findItem(entries, 'transfer.firstLastPiecePrio');
+        if (item?.kind === 'item' && typeof item.action === 'function') item.action();
+        expect(emit).toHaveBeenCalledWith({ type: 'TORRENT_TOGGLE_FIRST_LAST_PIECE_PRIO' });
+      });
+    });
+
     describe('auto TMM icon', () => {
       it('shows the check icon and "disable" label when every selected torrent has it on', async () => {
         const rowA = makeRow({ hash: 'hash-a', auto_tmm: true });
