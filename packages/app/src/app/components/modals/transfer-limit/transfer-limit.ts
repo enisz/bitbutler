@@ -136,7 +136,6 @@ export class TransferLimit implements OnInit {
 
   public clearAll(): void {
     this.form.controls.transferRateLimits.setValue({ uploadLimit: null, downloadLimit: null });
-    this.handleSubmit();
   }
 
   public hasClearableValues(): boolean {

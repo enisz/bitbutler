@@ -169,7 +169,6 @@ export class ShareLimit implements OnInit {
       seedingTimeLimit: null,
       inactiveSeedingTimeLimit: null,
     });
-    this.handleSubmit();
   }
 
   public canSave(): boolean {
