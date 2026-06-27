@@ -495,6 +495,26 @@
             "comment": {
               "title": "Megjegyzés",
               "description": "A készítő által megadott opcionális szöveg (pl. forrásinfó)."
+            },
+            "auto-tmm": {
+              "title": "Automatikus Torrent Kezelés",
+              "description": "Ha engedélyezve van, a qBittorrent automatikusan áthelyezi ezt a torrentet a hozzárendelt kategória mentési útvonalára."
+            },
+            "force-start": {
+              "title": "Kényszerített Indítás",
+              "description": "Megkerüli az aktív torrentek globális korlátját, és azonnal elindítja ezt a torrentet, függetlenül a sor pozíciójától."
+            },
+            "sequential-download": {
+              "title": "Szekvenciális Letöltés",
+              "description": "A szeleteket az első-től az utolsóig sorban tölti le a legritkábbak-először módszer helyett. Hasznos médiafájlok előnézetéhez letöltés közben."
+            },
+            "first-last-piece-prio": {
+              "title": "Első/Utolsó Szelet Prioritás",
+              "description": "Az első és utolsó szeletek letöltését helyezi előtérbe, hogy a médialejátszók hamarabb meg tudják nyitni és keresni a fájlban."
+            },
+            "super-seeding": {
+              "title": "Super Seedelés",
+              "description": "Egy kezdeti seedelési mód, amely egyszerre csak egy peernek küld egy szeletet, maximalizálva az elosztási sebességet egy új torrent indulásakor."
             }
           },
           "toast": {

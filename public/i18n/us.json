@@ -495,6 +495,26 @@
             "comment": {
               "title": "Comment",
               "description": "Optional text added by the torrent creator, often containing source info or credits."
+            },
+            "auto-tmm": {
+              "title": "Automatic Torrent Management",
+              "description": "When enabled, qBittorrent automatically moves this torrent to the save path defined by its assigned category."
+            },
+            "force-start": {
+              "title": "Force Start",
+              "description": "Bypasses the global active torrent limit and starts this torrent immediately, regardless of queue position."
+            },
+            "sequential-download": {
+              "title": "Sequential Download",
+              "description": "Downloads pieces in order from first to last instead of rarest-first. Useful for previewing media files before the download is complete."
+            },
+            "first-last-piece-prio": {
+              "title": "First/Last Piece Priority",
+              "description": "Prioritises downloading the first and last pieces first, allowing media players to open and seek the file sooner."
+            },
+            "super-seeding": {
+              "title": "Super Seeding",
+              "description": "An initial seeding mode that sends each piece to only one peer at a time to maximise distribution speed when starting a new torrent."
             }
           },
           "toast": {
