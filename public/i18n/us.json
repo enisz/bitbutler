@@ -1417,7 +1417,8 @@
               "value": {
                 "show": "Show in Folder / Open Destination",
                 "details": "Open Torrent Details",
-                "nothing": "Do nothing"
+                "nothing": "Do nothing",
+                "inline-edit": "Inline Edit"
               }
             }
           },
@@ -1453,7 +1454,8 @@
               "description": "The rows in the torrent list can be double clicked. The action taken by BitButler can be:",
               "list-item-1": "<strong>Show in Folder / Open Destination</strong>: For single-file torrents: Opens the destination folder and selects the file. For multi-file torrents: Opens the destination folder. <div class=\"text-warning\"><fa-icon [icon]=\"faTriangleExclamation\" class=\"me-1\"></fa-icon>This feature requires Path Mappings to be configured in your server settings.</div>",
               "list-item-2": "<strong>Open Torrent Details</strong>: opening the torrent details view",
-              "list-item-3": "<strong>Do nothing</strong>: well, do nothing"
+              "list-item-3": "<strong>Do nothing</strong>: well, do nothing",
+              "list-item-4": "<strong>Inline Edit</strong>: Makes eligible cells editable directly in the grid - double-click a cell to edit, Enter to confirm, Escape to cancel. Only columns with a direct qBittorrent API endpoint and no value formatter are editable."
             },
             "column-order": {
               "title": "Ordering Columns",

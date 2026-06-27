@@ -1417,7 +1417,8 @@
               "value": {
                 "show": "Megjelenítés mappában / Célmappa megnyitása",
                 "details": "Torrent részleteinek megnyitása",
-                "nothing": "Nincs művelet"
+                "nothing": "Nincs művelet",
+                "inline-edit": "Helyszíni szerkesztés"
               }
             }
           },
@@ -1453,7 +1454,8 @@
               "description": "A torrent lista soraira duplán kattintva a következő műveletek történhetnek:",
               "list-item-1": "<strong>Megjelenítés mappában / Célmappa megnyitása</strong>: Egyfájlos torrenteknél: Megnyitja a célmappát és kijelöli a fájlt. Többfájlos torrenteknél: Megnyitja a célmappát. <div class=\"text-warning\">Ehhez a funkcióhoz beállított Útvonal-hozzárendelés szükséges a szerverbeállításokban.</div>",
               "list-item-2": "<strong>Torrent részleteinek megnyitása</strong>: megnyitja a részletes nézetet",
-              "list-item-3": "<strong>Nincs művelet</strong>: nos, nem történik semmi"
+              "list-item-3": "<strong>Nincs művelet</strong>: nos, nem történik semmi",
+              "list-item-4": "<strong>Helyszíni szerkesztés</strong>: Lehetővé teszi a megfelelő cellák közvetlen szerkesztését a rácsban - dupla kattintással szerkeszthető a cella, Enter-rel menthető, Escape-pel megszakítható. Csak azok az oszlopok szerkeszthetők, amelyekhez van közvetlen qBittorrent API végpont és nincs értékformázó."
             },
             "column-order": {
               "title": "Oszlopok sorrendje",
