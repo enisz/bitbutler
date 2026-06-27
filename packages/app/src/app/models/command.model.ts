@@ -19,6 +19,7 @@ export type UiCommand =
     }
   | { type: 'UI_OPEN_ABOUT' }
   | { type: 'UI_SET_TORRENT_LOCATION'; torrent: Torrent; hashes?: string[] }
+  | { type: 'UI_SET_DOWNLOAD_PATH'; torrent: Torrent; hashes?: string[] }
   | { type: 'UI_RENAME_TORRENT'; torrent: Torrent }
   | { type: 'UI_LIMIT_TRANSFER'; target: LimitTargetType; hashes?: string[] }
   | { type: 'UI_LIMIT_SHARE'; target?: LimitTargetType; hashes?: string[] }
@@ -53,7 +54,9 @@ export type TorrentCommand =
   | { type: 'QUEUE_MOVE_TOP' }
   | { type: 'QUEUE_MOVE_UP' }
   | { type: 'QUEUE_MOVE_DOWN' }
-  | { type: 'QUEUE_MOVE_BOTTOM' };
+  | { type: 'QUEUE_MOVE_BOTTOM' }
+  | { type: 'TORRENT_TOGGLE_SEQUENTIAL_DOWNLOAD' }
+  | { type: 'TORRENT_TOGGLE_FIRST_LAST_PIECE_PRIO' };
 
 export type MenuCommand = { type: 'MENU_FILE_LOGOUT' };
 

@@ -1,7 +1,7 @@
 <div class="modal-header bb-modal-header">
   <div class="bb-modal-header__text">
     <h5 class="modal-title bb-title-clamp">
-      {{ 'components.modals.set-torrent-tags.title' | translate }}
+      {{ 'components.modals.set-download-path.title' | translate }}
     </h5>
 
     <div
@@ -9,8 +9,8 @@
       class="small text-body-secondary mt-1 bb-hash-clamp"
       [ngbTooltip]="selected() === 1 ? torrent().name : null"
       bbTooltipOverflow
-      placement="bottom"
       tooltipClass="single-line-tooltip"
+      placement="bottom"
     >
       @if (selected() > 1) {
         {{ 'general.label.torrent-selected' | translate: { count: selected() } }}
@@ -28,11 +28,15 @@
   ></button>
 </div>
 <div class="modal-body">
-  <form [formGroup]="setTorrentTagsForm" (submit)="handleSubmit()">
+  <form [formGroup]="form" (submit)="handleSubmit()">
     <div class="container-fluid">
       <div class="row">
         <div class="col-12">
-          <app-tag-select formControlName="tags" [autofocus]="true"></app-tag-select>
+          <app-save-path-select
+            formControlName="path"
+            [autofocus]="true"
+            [clearable]="true"
+          ></app-save-path-select>
         </div>
       </div>
     </div>
@@ -52,20 +56,6 @@
       position="end"
     ></bb-btn-content>
   </button>
-  @if (hasClearableValue()) {
-    <button
-      type="button"
-      class="btn btn-dashed-danger btn-sm btn-split"
-      (click)="clear()"
-      [disabled]="saving()"
-    >
-      <bb-btn-content
-        [icon]="icons.faEraser"
-        [text]="'general.button.clear' | translate"
-        position="end"
-      ></bb-btn-content>
-    </button>
-  }
   <button type="button" class="btn btn-link btn-sm btn-split" (click)="activeModal.close()">
     <bb-btn-content
       [icon]="icons.faXmark"

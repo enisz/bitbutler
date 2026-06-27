@@ -68,6 +68,12 @@ export class TorrentCommandHandlerService {
           case 'TORRENT_AUTO_TMM':
             void this.handleAutoTmm(cmd.status);
             break;
+          case 'TORRENT_TOGGLE_SEQUENTIAL_DOWNLOAD':
+            void this.handleToggleSequentialDownload();
+            break;
+          case 'TORRENT_TOGGLE_FIRST_LAST_PIECE_PRIO':
+            void this.handleToggleFirstLastPiecePrio();
+            break;
           default:
             console.error(TorrentCommandHandlerService.name, 'start', 'Unhandled command', cmd);
         }
@@ -95,6 +101,36 @@ export class TorrentCommandHandlerService {
           enabling
             ? 'services.torrent-command-handler.toast.enable-auto-tmm-failed-title'
             : 'services.torrent-command-handler.toast.disable-auto-tmm-failed-title',
+        ),
+      );
+    }
+  }
+
+  private async handleToggleSequentialDownload(): Promise<void> {
+    const ctx = this.getContext();
+    if (!ctx) return;
+    try {
+      await this.qbService.torrents.toggleSequentialDownload(ctx.serverId, ctx.hashes);
+    } catch (e: any) {
+      this.toastService.danger(
+        e?.message ?? String(e),
+        this.translateService.instant(
+          'services.torrent-command-handler.toast.toggle-sequential-download-failed-title',
+        ),
+      );
+    }
+  }
+
+  private async handleToggleFirstLastPiecePrio(): Promise<void> {
+    const ctx = this.getContext();
+    if (!ctx) return;
+    try {
+      await this.qbService.torrents.toggleFirstLastPiecePrio(ctx.serverId, ctx.hashes);
+    } catch (e: any) {
+      this.toastService.danger(
+        e?.message ?? String(e),
+        this.translateService.instant(
+          'services.torrent-command-handler.toast.toggle-first-last-piece-prio-failed-title',
         ),
       );
     }

@@ -304,6 +304,12 @@
           "set-failed-title": "Failed to Set Torrent Tags"
         }
       },
+      "set-download-path": {
+        "title": "Set Download Path",
+        "error": {
+          "failed-to-set": "Failed to Set Download Path"
+        }
+      },
       "torrent-details": {
         "content": {
           "loading": "Loading Torrent Contents...",
@@ -319,7 +325,7 @@
           "rename": "Rename Torrent",
           "delete": "Delete Torrent",
           "save-path": "Save Path",
-          "relocate": "Relocate Torrent",
+          "relocate": "Set Save Path",
           "remote-path": "Remote Path",
           "local-path": "Local Path",
           "show-file": "Show File",
@@ -369,6 +375,13 @@
           "info-hash-v2": "Info Hash v2",
           "comment": "Comment",
           "error": "Error",
+          "set-download-path": "Set Download Path",
+          "rename-files": "Rename Files",
+          "sequential-download": "Sequential Download",
+          "first-last-piece-prio": "First/Last Piece Priority",
+          "auto-tmm": "Auto TMM",
+          "super-seeding": "Super Seeding",
+          "force-start": "Force Start",
           "labels": {
             "title": "Torrent",
             "transfer": "Transfer",
@@ -482,6 +495,26 @@
             "comment": {
               "title": "Comment",
               "description": "Optional text added by the torrent creator, often containing source info or credits."
+            },
+            "auto-tmm": {
+              "title": "Automatic Torrent Management",
+              "description": "When enabled, qBittorrent automatically moves this torrent to the save path defined by its assigned category."
+            },
+            "force-start": {
+              "title": "Force Start",
+              "description": "Bypasses the global active torrent limit and starts this torrent immediately, regardless of queue position."
+            },
+            "sequential-download": {
+              "title": "Sequential Download",
+              "description": "Downloads pieces in order from first to last instead of rarest-first. Useful for previewing media files before the download is complete."
+            },
+            "first-last-piece-prio": {
+              "title": "First/Last Piece Priority",
+              "description": "Prioritises downloading the first and last pieces first, allowing media players to open and seek the file sooner."
+            },
+            "super-seeding": {
+              "title": "Super Seeding",
+              "description": "An initial seeding mode that sends each piece to only one peer at a time to maximise distribution speed when starting a new torrent."
             }
           },
           "toast": {
@@ -498,16 +531,29 @@
             "removing-all-tags": "Removing all tags…",
             "remove-all-tags-failed": "Failed to Remove All Tags",
             "local-path-failed": "Failed to Resolve Local Path",
-            "copied-to-clipboard": "Copied {{field}} to clipboard."
+            "copied-to-clipboard": "Copied {{field}} to clipboard.",
+            "rechecking": "Rechecking torrent…",
+            "recheck-failed": "Failed to Recheck Torrent",
+            "toggle-sequential-download-failed": "Failed to Toggle Sequential Download",
+            "toggle-first-last-piece-prio-failed": "Failed to Toggle First/Last Piece Priority",
+            "toggle-auto-tmm-failed": "Failed to Toggle Auto TMM",
+            "toggle-super-seeding-failed": "Failed to Toggle Super Seeding"
           },
           "footer": {
-            "playback": "Transfer",
-            "limits": "Limits",
-            "manage": "Manage",
             "manage-header-path": "Path",
             "manage-header-category": "Category",
             "manage-header-tags": "Tags",
-            "transfer-limits": "Transfer Limits"
+            "transfer-limits": "Transfer Limits",
+            "control": "Control",
+            "files": "Files",
+            "transfer": "Transfer",
+            "maintenance": "Maintenance",
+            "sequential-download": "Sequential Download",
+            "first-last-piece-prio": "First/Last Piece Priority",
+            "super-seeding": "Super Seeding",
+            "force-recheck": "Force Recheck",
+            "auto-tmm": "Auto TMM",
+            "rename-files": "Rename Files"
           }
         },
         "peers": {
@@ -1032,7 +1078,12 @@
             "start": "Start",
             "stop": "Stop",
             "force-resume": "Force Resume",
-            "set-location": "Set location",
+            "set-location": "Set Save Path",
+            "set-download-path": "Set Download Path",
+            "enable-sequential-download": "Enable Sequential Download",
+            "disable-sequential-download": "Disable Sequential Download",
+            "enable-first-last-piece-prio": "Enable First/Last Piece Priority",
+            "disable-first-last-piece-prio": "Disable First/Last Piece Priority",
             "show-in-folder": "Show in Folder",
             "open-destination": "Open Destination",
             "rename-torrent": "Rename Torrent",
@@ -1417,7 +1468,8 @@
               "value": {
                 "show": "Show in Folder / Open Destination",
                 "details": "Open Torrent Details",
-                "nothing": "Do nothing"
+                "nothing": "Do nothing",
+                "inline-edit": "Inline Edit"
               }
             }
           },
@@ -1453,7 +1505,8 @@
               "description": "The rows in the torrent list can be double clicked. The action taken by BitButler can be:",
               "list-item-1": "<strong>Show in Folder / Open Destination</strong>: For single-file torrents: Opens the destination folder and selects the file. For multi-file torrents: Opens the destination folder. <div class=\"text-warning\"><fa-icon [icon]=\"faTriangleExclamation\" class=\"me-1\"></fa-icon>This feature requires Path Mappings to be configured in your server settings.</div>",
               "list-item-2": "<strong>Open Torrent Details</strong>: opening the torrent details view",
-              "list-item-3": "<strong>Do nothing</strong>: well, do nothing"
+              "list-item-3": "<strong>Do nothing</strong>: well, do nothing",
+              "list-item-4": "<strong>Inline Edit</strong>: Makes eligible cells editable directly in the grid - double-click a cell to edit, Enter to confirm, Escape to cancel. Only columns with a direct qBittorrent API endpoint and no value formatter are editable."
             },
             "column-order": {
               "title": "Ordering Columns",
@@ -1666,7 +1719,9 @@
         "move-top-failed-title": "Failed to Move Torrent(s) to Top of Queue",
         "move-up-failed-title": "Failed to Move Torrent(s) Up in Queue",
         "move-down-failed-title": "Failed to Move Torrent(s) Down in Queue",
-        "move-bottom-failed-title": "Failed to Move Torrent(s) to Bottom of Queue"
+        "move-bottom-failed-title": "Failed to Move Torrent(s) to Bottom of Queue",
+        "toggle-sequential-download-failed-title": "Failed to Toggle Sequential Download",
+        "toggle-first-last-piece-prio-failed-title": "Failed to Toggle First/Last Piece Priority"
       }
     },
     "qb": {

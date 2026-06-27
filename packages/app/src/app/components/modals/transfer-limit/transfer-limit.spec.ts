@@ -201,4 +201,23 @@ describe('TransferLimit', () => {
       expect(component.saving()).toBe(false);
     });
   });
+
+  describe('clearAll', () => {
+    it('resets upload and download limits to null', () => {
+      component.form.controls.transferRateLimits.setValue({
+        uploadLimit: 512,
+        downloadLimit: 1024,
+      });
+      component.clearAll();
+      expect(component.form.controls.transferRateLimits.value).toEqual({
+        uploadLimit: null,
+        downloadLimit: null,
+      });
+    });
+
+    it('does not close the modal', () => {
+      component.clearAll();
+      expect(mockActiveModal.close).not.toHaveBeenCalled();
+    });
+  });
 });

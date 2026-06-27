@@ -569,6 +569,23 @@ describe('GridContextMenuService', () => {
         });
       });
 
+      it('includes files.setDownloadPath item in files submenu', async () => {
+        const entries = await service.buildTorrentMenu(makeData());
+        const item = findItem(entries, 'files.setDownloadPath');
+        expect(item).toBeDefined();
+        expect(item?.kind).toBe('item');
+      });
+
+      it('emits UI_SET_DOWNLOAD_PATH when files.setDownloadPath is clicked', async () => {
+        const emit = vi.spyOn(TestBed.inject(CommandBusService), 'emit');
+        const entries = await service.buildTorrentMenu(makeData());
+        const item = findItem(entries, 'files.setDownloadPath');
+        if (item?.kind === 'item' && typeof item.action === 'function') item.action();
+        expect(emit).toHaveBeenCalledWith(
+          expect.objectContaining({ type: 'UI_SET_DOWNLOAD_PATH' }),
+        );
+      });
+
       it('files.openDestination action emits UI_OPEN_DESTINATION with hash and content path', async () => {
         const row = makeRow();
         const entries = await service.buildTorrentMenu(makeData({ row }));
@@ -816,6 +833,49 @@ describe('GridContextMenuService', () => {
           type: 'TORRENT_SUPER_SEEDING',
           status: false,
         });
+      });
+    });
+
+    describe('transfer submenu toggles', () => {
+      it('shows enable-sequential-download when seq_dl is false', async () => {
+        const entries = await service.buildTorrentMenu(
+          makeData({ row: makeRow({ seq_dl: false }) }),
+        );
+        const item = findItem(entries, 'transfer.sequentialDownload');
+        expect(item?.label).toBe('pages.main.grid.context-menu.item.enable-sequential-download');
+        expect(item?.icon).toBeUndefined();
+      });
+
+      it('shows disable-sequential-download with check icon when all seq_dl is true', async () => {
+        const row = makeRow({ seq_dl: true });
+        const entries = await service.buildTorrentMenu(makeData({ row, selected: [row] }));
+        const item = findItem(entries, 'transfer.sequentialDownload');
+        expect(item?.label).toBe('pages.main.grid.context-menu.item.disable-sequential-download');
+        expect(item?.icon).toBeDefined();
+      });
+
+      it('emits TORRENT_TOGGLE_SEQUENTIAL_DOWNLOAD when clicked', async () => {
+        const emit = vi.spyOn(TestBed.inject(CommandBusService), 'emit');
+        const entries = await service.buildTorrentMenu(makeData());
+        const item = findItem(entries, 'transfer.sequentialDownload');
+        if (item?.kind === 'item' && typeof item.action === 'function') item.action();
+        expect(emit).toHaveBeenCalledWith({ type: 'TORRENT_TOGGLE_SEQUENTIAL_DOWNLOAD' });
+      });
+
+      it('shows enable-first-last-piece-prio when f_l_piece_prio is false', async () => {
+        const entries = await service.buildTorrentMenu(
+          makeData({ row: makeRow({ f_l_piece_prio: false }) }),
+        );
+        const item = findItem(entries, 'transfer.firstLastPiecePrio');
+        expect(item?.label).toBe('pages.main.grid.context-menu.item.enable-first-last-piece-prio');
+      });
+
+      it('emits TORRENT_TOGGLE_FIRST_LAST_PIECE_PRIO when clicked', async () => {
+        const emit = vi.spyOn(TestBed.inject(CommandBusService), 'emit');
+        const entries = await service.buildTorrentMenu(makeData());
+        const item = findItem(entries, 'transfer.firstLastPiecePrio');
+        if (item?.kind === 'item' && typeof item.action === 'function') item.action();
+        expect(emit).toHaveBeenCalledWith({ type: 'TORRENT_TOGGLE_FIRST_LAST_PIECE_PRIO' });
       });
     });
 

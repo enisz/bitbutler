@@ -117,6 +117,51 @@
             </div>
           </div>
         }
+        <div class="col-12 col-lg-6 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.auto-tmm' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.auto-tmm.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.auto-tmm.description' | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              disabled
+              [checked]="torrent()!.data.auto_tmm"
+            />
+          </span>
+        </div>
+        <div class="col-12 col-lg-6 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.force-start' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.force-start.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.force-start.description'
+                  | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              disabled
+              [checked]="torrent()!.data.force_start"
+            />
+          </span>
+        </div>
         <div class="col-12 bb-section">
           <span class="section-header">{{
             'components.modals.torrent-details.general.progress' | translate
@@ -637,6 +682,77 @@
             placement="bottom"
             >{{ (torrent()!.data.inactive_seeding_time_limit | timeLimit) || '-' }}</span
           >
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.sequential-download' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.sequential-download.title'
+                  | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.sequential-download.description'
+                  | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              disabled
+              [checked]="torrent()!.data.seq_dl"
+            />
+          </span>
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.first-last-piece-prio' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.first-last-piece-prio.title'
+                  | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.first-last-piece-prio.description'
+                  | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              disabled
+              [checked]="torrent()!.data.f_l_piece_prio"
+            />
+          </span>
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.super-seeding' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.super-seeding.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.super-seeding.description'
+                  | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="section-value">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              disabled
+              [checked]="torrent()!.data.super_seeding"
+            />
+          </span>
         </div>
       </div>
     </fieldset>

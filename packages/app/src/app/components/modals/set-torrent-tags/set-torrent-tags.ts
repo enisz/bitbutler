@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { faFloppyDisk, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faEraser, faFloppyDisk, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
@@ -44,7 +44,7 @@ export class SetTorrentTags implements OnInit {
   private readonly translateService = inject(TranslateService);
   public readonly activeModal = inject(NgbActiveModal);
 
-  public icons = { faFloppyDisk, faXmark };
+  public icons = { faEraser, faFloppyDisk, faXmark };
 
   public readonly selected = computed(() => this.hashes().length);
   public saving = signal(false);
@@ -79,6 +79,16 @@ export class SetTorrentTags implements OnInit {
     } catch (err: any) {
       console.error(SetTorrentTags.name, 'ngOnInit', 'Failed to get torrent tags!', err);
     }
+  }
+
+  public hasClearableValue(): boolean {
+    return (this.setTorrentTagsForm.controls.tags.value ?? []).length > 0;
+  }
+
+  public clear(): void {
+    const control = this.setTorrentTagsForm.controls.tags;
+    control.markAsDirty();
+    control.setValue([]);
   }
 
   public async handleSubmit(): Promise<void> {

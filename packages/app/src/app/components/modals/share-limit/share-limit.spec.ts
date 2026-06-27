@@ -293,4 +293,26 @@ describe('ShareLimit', () => {
       });
     });
   });
+
+  describe('clearAll', () => {
+    it('resets all share limits to null', () => {
+      component.form.controls.shareLimits.setValue({
+        ratioLimit: 1.5,
+        seedingTimeLimit: 60,
+        inactiveSeedingTimeLimit: 30,
+      });
+      component.clearAll();
+      expect(component.form.controls.shareLimits.value).toEqual({
+        ratioLimit: null,
+        seedingTimeLimit: null,
+        inactiveSeedingTimeLimit: null,
+      });
+    });
+
+    it('does not close the modal', () => {
+      component.clearAll();
+      expect(mockActiveModal.close).not.toHaveBeenCalled();
+      expect(mockActiveModal.dismiss).not.toHaveBeenCalled();
+    });
+  });
 });

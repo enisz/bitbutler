@@ -18,7 +18,6 @@ import {
   faFilePen,
   faFilter,
   faFilterCircleXmark,
-  faFloppyDisk,
   faFolder,
   faFolderOpen,
   faFolderTree,
@@ -74,6 +73,8 @@ export class GridContextMenuService {
 
     const allSuperSeeding = data.selected.every((torrent) => torrent.super_seeding);
     const allAutoTmm = data.selected.every((torrent) => torrent.auto_tmm);
+    const allSeqDl = data.selected.every((torrent) => torrent.seq_dl);
+    const allFirstLastPiecePrio = data.selected.every((torrent) => torrent.f_l_piece_prio);
 
     return [
       {
@@ -122,8 +123,8 @@ export class GridContextMenuService {
         label: isMulti
           ? 'pages.main.grid.context-menu.item.export-torrent-files'
           : 'pages.main.grid.context-menu.item.export-torrent-file',
-        icon: faFloppyDisk,
-        variant: 'info',
+        icon: faArrowDown,
+        variant: 'success',
         disabled: this.serverStoreService.currentServer()?.export_available !== 1,
         tooltip:
           this.serverStoreService.currentServer()?.export_available !== 1
@@ -176,6 +177,18 @@ export class GridContextMenuService {
             action: () =>
               this.commandBusService.emit({
                 type: 'UI_SET_TORRENT_LOCATION',
+                torrent: data.row,
+                hashes,
+              }),
+          },
+          {
+            kind: 'item',
+            id: 'files.setDownloadPath',
+            label: 'pages.main.grid.context-menu.item.set-download-path',
+            icon: faFolder,
+            action: () =>
+              this.commandBusService.emit({
+                type: 'UI_SET_DOWNLOAD_PATH',
                 torrent: data.row,
                 hashes,
               }),
@@ -304,6 +317,26 @@ export class GridContextMenuService {
                 type: 'TORRENT_SUPER_SEEDING',
                 status: allSuperSeeding,
               }),
+          },
+          {
+            kind: 'item',
+            id: 'transfer.sequentialDownload',
+            label: allSeqDl
+              ? 'pages.main.grid.context-menu.item.disable-sequential-download'
+              : 'pages.main.grid.context-menu.item.enable-sequential-download',
+            icon: allSeqDl ? faCheck : undefined,
+            action: () =>
+              this.commandBusService.emit({ type: 'TORRENT_TOGGLE_SEQUENTIAL_DOWNLOAD' }),
+          },
+          {
+            kind: 'item',
+            id: 'transfer.firstLastPiecePrio',
+            label: allFirstLastPiecePrio
+              ? 'pages.main.grid.context-menu.item.disable-first-last-piece-prio'
+              : 'pages.main.grid.context-menu.item.enable-first-last-piece-prio',
+            icon: allFirstLastPiecePrio ? faCheck : undefined,
+            action: () =>
+              this.commandBusService.emit({ type: 'TORRENT_TOGGLE_FIRST_LAST_PIECE_PRIO' }),
           },
         ],
       },

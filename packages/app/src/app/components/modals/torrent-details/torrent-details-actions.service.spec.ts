@@ -78,6 +78,12 @@ describe('TorrentDetailsActionsService', () => {
     reannounce: ReturnType<typeof vi.fn>;
     renameFile: ReturnType<typeof vi.fn>;
     filePrio: ReturnType<typeof vi.fn>;
+    setDownloadPath: ReturnType<typeof vi.fn>;
+    toggleSequentialDownload: ReturnType<typeof vi.fn>;
+    toggleFirstLastPiecePrio: ReturnType<typeof vi.fn>;
+    recheck: ReturnType<typeof vi.fn>;
+    setAutoManagement: ReturnType<typeof vi.fn>;
+    setSuperSeeding: ReturnType<typeof vi.fn>;
   };
   let commandBusEmit: ReturnType<typeof vi.fn>;
   let toastInfo: ReturnType<typeof vi.fn>;
@@ -103,6 +109,12 @@ describe('TorrentDetailsActionsService', () => {
       reannounce: vi.fn().mockResolvedValue(undefined),
       renameFile: vi.fn().mockResolvedValue(undefined),
       filePrio: vi.fn().mockResolvedValue(undefined),
+      setDownloadPath: vi.fn().mockResolvedValue(undefined),
+      toggleSequentialDownload: vi.fn().mockResolvedValue(undefined),
+      toggleFirstLastPiecePrio: vi.fn().mockResolvedValue(undefined),
+      recheck: vi.fn().mockResolvedValue(undefined),
+      setAutoManagement: vi.fn().mockResolvedValue(undefined),
+      setSuperSeeding: vi.fn().mockResolvedValue(undefined),
     };
 
     commandBusEmit = vi.fn();
@@ -139,6 +151,18 @@ describe('TorrentDetailsActionsService', () => {
       expect(commandBusEmit).toHaveBeenCalledWith({
         type: 'UI_SET_TORRENT_LOCATION',
         torrent: mockDataService.torrent()!.data,
+        hashes: ['abc123'],
+      });
+    });
+  });
+
+  describe('setDownloadPath', () => {
+    it('emits UI_SET_DOWNLOAD_PATH with torrent data and hash', () => {
+      const emit = vi.spyOn(TestBed.inject(CommandBusService), 'emit');
+      service.setDownloadPath();
+      expect(emit).toHaveBeenCalledWith({
+        type: 'UI_SET_DOWNLOAD_PATH',
+        torrent: expect.objectContaining({ hash: 'abc123' }),
         hashes: ['abc123'],
       });
     });
@@ -291,6 +315,67 @@ describe('TorrentDetailsActionsService', () => {
         type: 'UI_TORRENT_DELETE_REQUEST',
         hashes: ['abc123'],
       });
+    });
+  });
+
+  describe('renameFiles', () => {
+    it('emits UI_RENAME_FILES with the torrent hash', () => {
+      const emit = vi.spyOn(TestBed.inject(CommandBusService), 'emit');
+      service.renameFiles();
+      expect(emit).toHaveBeenCalledWith({ type: 'UI_RENAME_FILES', hash: 'abc123' });
+    });
+  });
+
+  describe('toggleSequentialDownload', () => {
+    it('calls toggleSequentialDownload with server id and hash', async () => {
+      await service.toggleSequentialDownload();
+      expect(qbTorrents.toggleSequentialDownload).toHaveBeenCalledWith('server-1', ['abc123']);
+    });
+
+    it('shows danger toast on failure', async () => {
+      qbTorrents.toggleSequentialDownload.mockRejectedValueOnce(new Error('fail'));
+      const danger = vi.spyOn(TestBed.inject(ToastService), 'danger');
+      await service.toggleSequentialDownload();
+      expect(danger).toHaveBeenCalledWith('fail', expect.any(String));
+    });
+  });
+
+  describe('toggleFirstLastPiecePrio', () => {
+    it('calls toggleFirstLastPiecePrio with server id and hash', async () => {
+      await service.toggleFirstLastPiecePrio();
+      expect(qbTorrents.toggleFirstLastPiecePrio).toHaveBeenCalledWith('server-1', ['abc123']);
+    });
+  });
+
+  describe('forceRecheck', () => {
+    it('calls recheck with server id and hash', async () => {
+      await service.forceRecheck();
+      expect(qbTorrents.recheck).toHaveBeenCalledWith('server-1', ['abc123']);
+    });
+  });
+
+  describe('toggleAutoTmm', () => {
+    it('calls setAutoManagement with inverted auto_tmm value', async () => {
+      // makeTorrent sets auto_tmm: false, so enabling = true
+      await service.toggleAutoTmm();
+      expect(qbTorrents.setAutoManagement).toHaveBeenCalledWith('server-1', ['abc123'], true);
+    });
+
+    it('disables when auto_tmm is currently true', async () => {
+      mockDataService.torrent.set({
+        data: makeTorrent({ auto_tmm: true }),
+        properties: {} as any,
+      });
+      await service.toggleAutoTmm();
+      expect(qbTorrents.setAutoManagement).toHaveBeenCalledWith('server-1', ['abc123'], false);
+    });
+  });
+
+  describe('toggleSuperSeeding', () => {
+    it('calls setSuperSeeding with inverted super_seeding value', async () => {
+      // makeTorrent sets super_seeding: false, so enabling = true
+      await service.toggleSuperSeeding();
+      expect(qbTorrents.setSuperSeeding).toHaveBeenCalledWith('server-1', ['abc123'], true);
     });
   });
 

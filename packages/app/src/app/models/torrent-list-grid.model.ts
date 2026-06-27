@@ -1,6 +1,6 @@
 import type { ColumnState } from 'ag-grid-community';
 
-export type RowDoubleClickAction = 'SAVE_PATH' | 'DETAILS' | 'NONE';
+export type RowDoubleClickAction = 'SAVE_PATH' | 'DETAILS' | 'NONE' | 'INLINE_EDIT';
 
 export interface TorrentListGridSettings {
   columnState: (ColumnState[] | string[]) | null;

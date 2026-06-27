@@ -9,12 +9,14 @@ import { ElectronService } from '../../../services/electron.service';
 import { FilterService, GRID_FILTER_INITIAL } from '../../../services/filter.service';
 import { GridStateService } from '../../../services/grid-state.service';
 import { GridViewStoreService } from '../../../services/grid-view-store.service';
+import { QbPollingService } from '../../../services/qb-polling.service';
 import { SelectionStoreService } from '../../../services/selection-store.service';
 import { ThemeService } from '../../../services/theme.service';
 import { TorrentListGridSettingsService } from '../../../services/torrent-list-grid.settings.service';
 import { UiFormatService } from '../../../services/ui-format.service';
 import { GridContextMenuService } from './context-menu/grid-context-menu.service';
 import { Grid } from './grid';
+import { GridInlineEditService } from './grid-inline-edit.service';
 import { GridKeyboardNavService } from './grid-keyboard-nav.service';
 import { GridPinService } from './grid-pin.service';
 
@@ -105,6 +107,10 @@ describe('Grid', () => {
         },
         { provide: ElectronService, useValue: { openPath: vi.fn() } },
         {
+          provide: QbPollingService,
+          useValue: { pause: vi.fn().mockReturnValue(Symbol()), resume: vi.fn() },
+        },
+        {
           provide: TranslateService,
           useValue: {
             instant: vi.fn().mockReturnValue(''),
@@ -128,6 +134,10 @@ describe('Grid', () => {
             },
             { provide: GridKeyboardNavService, useValue: keyboardNavServiceMock },
             { provide: GridPinService, useValue: gridPinServiceMock },
+            {
+              provide: GridInlineEditService,
+              useValue: { applyEditableState: vi.fn(), handleCellValueChanged: vi.fn() },
+            },
           ],
         },
       })
@@ -191,6 +201,62 @@ describe('Grid', () => {
   describe('deselectRows', () => {
     it('should not throw when api is not yet initialized', () => {
       expect(() => component.deselectRows()).not.toThrow();
+    });
+  });
+
+  describe('onCellEditingStarted / onCellEditingStopped', () => {
+    it('should call qbPollingService.pause() when onCellEditingStarted fires', () => {
+      const qbPollingService = TestBed.inject(QbPollingService);
+      (component.gridOptions.onCellEditingStarted as () => void)();
+      expect(qbPollingService.pause).toHaveBeenCalled();
+    });
+
+    it('should call qbPollingService.resume() with the token from pause() when onCellEditingStopped fires', () => {
+      const qbPollingService = TestBed.inject(QbPollingService);
+      const token = Symbol('test-token');
+      (qbPollingService.pause as ReturnType<typeof vi.fn>).mockReturnValue(token);
+
+      (component.gridOptions.onCellEditingStarted as () => void)();
+      (component.gridOptions.onCellEditingStopped as () => void)();
+
+      expect(qbPollingService.resume).toHaveBeenCalledWith(token);
+    });
+  });
+
+  describe('applyGridSettings', () => {
+    let mockApi: {
+      applyColumnState: ReturnType<typeof vi.fn>;
+      setGridOption: ReturnType<typeof vi.fn>;
+      getColumnDefs: ReturnType<typeof vi.fn>;
+      updateGridOptions: ReturnType<typeof vi.fn>;
+    };
+
+    beforeEach(() => {
+      mockApi = {
+        applyColumnState: vi.fn(),
+        setGridOption: vi.fn(),
+        getColumnDefs: vi.fn().mockReturnValue([]),
+        updateGridOptions: vi.fn(),
+      };
+      (component as any).api = mockApi;
+    });
+
+    it('should call gridInlineEditService.applyEditableState(api, true) when rowDoubleClickAction is INLINE_EDIT', () => {
+      const gridInlineEditService = fixture.debugElement.injector.get(GridInlineEditService);
+      (component as any).applyGridSettings({ rowDoubleClickAction: 'INLINE_EDIT' });
+      expect(gridInlineEditService.applyEditableState).toHaveBeenCalledWith(mockApi, true);
+    });
+
+    it('should call gridInlineEditService.applyEditableState(api, false) when rowDoubleClickAction is DETAILS', () => {
+      const gridInlineEditService = fixture.debugElement.injector.get(GridInlineEditService);
+      (component as any).applyGridSettings({ rowDoubleClickAction: 'DETAILS' });
+      expect(gridInlineEditService.applyEditableState).toHaveBeenCalledWith(mockApi, false);
+    });
+
+    it('should call gridInlineEditService.applyEditableState(api, false) when rowDoubleClickAction is SAVE_PATH', () => {
+      const gridInlineEditService = fixture.debugElement.injector.get(GridInlineEditService);
+      (component as any).applyGridSettings({ rowDoubleClickAction: 'SAVE_PATH' });
+      expect(gridInlineEditService.applyEditableState).toHaveBeenCalledWith(mockApi, false);
     });
   });
 

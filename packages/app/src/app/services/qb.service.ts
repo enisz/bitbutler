@@ -656,6 +656,58 @@ export class QbService {
       });
       if (!res.ok) throw new HttpError(res.status, res.statusText, `Failed to set upload limit`);
     },
+
+    setDownloadPath: async (serverId: string, hashes: string[], path: string): Promise<void> => {
+      const clean = this.cleanHashList(hashes);
+      const p = (path ?? '').trim();
+      if (clean.length === 0) return Promise.reject(new Error('No hashes provided'));
+      if (!p) return Promise.reject(new Error('path is required'));
+      const res = await this.request<void>(serverId, {
+        path: '/api/v2/torrents/setDownloadPath',
+        method: 'POST',
+        form: { hashes: clean.join('|'), path: p },
+      });
+      if (!res.ok) throw new HttpError(res.status, res.statusText, `Failed to set download path`);
+    },
+
+    toggleSequentialDownload: async (serverId: string, hashes: string[]): Promise<void> => {
+      const clean = this.cleanHashList(hashes);
+      if (clean.length === 0) return;
+      const res = await this.request<void>(serverId, {
+        path: '/api/v2/torrents/toggleSequentialDownload',
+        method: 'POST',
+        form: { hashes: clean.join('|') },
+      });
+      if (!res.ok)
+        throw new HttpError(res.status, res.statusText, `Failed to toggle sequential download`);
+    },
+
+    toggleFirstLastPiecePrio: async (serverId: string, hashes: string[]): Promise<void> => {
+      const clean = this.cleanHashList(hashes);
+      if (clean.length === 0) return;
+      const res = await this.request<void>(serverId, {
+        path: '/api/v2/torrents/toggleFirstLastPiecePrio',
+        method: 'POST',
+        form: { hashes: clean.join('|') },
+      });
+      if (!res.ok)
+        throw new HttpError(
+          res.status,
+          res.statusText,
+          `Failed to toggle first/last piece priority`,
+        );
+    },
+
+    removeAllTags: async (serverId: string, hashes: string[]): Promise<void> => {
+      const clean = this.cleanHashList(hashes);
+      if (clean.length === 0) return;
+      const res = await this.request<void>(serverId, {
+        path: '/api/v2/torrents/removeTags',
+        method: 'POST',
+        form: { hashes: clean.join('|') },
+      });
+      if (!res.ok) throw new HttpError(res.status, res.statusText, `Failed to remove all tags`);
+    },
   };
 
   readonly transfer = {

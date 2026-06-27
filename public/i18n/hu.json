@@ -304,6 +304,12 @@
           "set-failed-title": "Nem sikerült beállítani a torrent cimkéit"
         }
       },
+      "set-download-path": {
+        "title": "Letöltési útvonal beállítása",
+        "error": {
+          "failed-to-set": "Nem sikerült beállítani a letöltési útvonalat"
+        }
+      },
       "torrent-details": {
         "content": {
           "loading": "Torrent tartalmának a betöltése...",
@@ -319,7 +325,7 @@
           "rename": "Torrent átnevezése",
           "delete": "Torrent törlése",
           "save-path": "Mentési útvonal",
-          "relocate": "Torrent áthelyezése",
+          "relocate": "Mentési útvonal beállítása",
           "remote-path": "Távoli útvonal",
           "local-path": "Helyi útvonal",
           "show-file": "Fájl megjelenítése",
@@ -369,6 +375,13 @@
           "info-hash-v2": "Info Hash v2",
           "comment": "Megjegyzés",
           "error": "Hiba",
+          "set-download-path": "Letöltési útvonal beállítása",
+          "rename-files": "Fájlok átnevezése",
+          "sequential-download": "Szekvenciális letöltés",
+          "first-last-piece-prio": "Első/utolsó szelet prioritása",
+          "auto-tmm": "Auto TMM",
+          "super-seeding": "Super Seeding",
+          "force-start": "Kényszerített indítás",
           "labels": {
             "title": "Torrent",
             "transfer": "Átvitel",
@@ -482,6 +495,26 @@
             "comment": {
               "title": "Megjegyzés",
               "description": "A készítő által megadott opcionális szöveg (pl. forrásinfó)."
+            },
+            "auto-tmm": {
+              "title": "Automatikus Torrent Kezelés",
+              "description": "Ha engedélyezve van, a qBittorrent automatikusan áthelyezi ezt a torrentet a hozzárendelt kategória mentési útvonalára."
+            },
+            "force-start": {
+              "title": "Kényszerített Indítás",
+              "description": "Megkerüli az aktív torrentek globális korlátját, és azonnal elindítja ezt a torrentet, függetlenül a sor pozíciójától."
+            },
+            "sequential-download": {
+              "title": "Szekvenciális Letöltés",
+              "description": "A szeleteket az első-től az utolsóig sorban tölti le a legritkábbak-először módszer helyett. Hasznos médiafájlok előnézetéhez letöltés közben."
+            },
+            "first-last-piece-prio": {
+              "title": "Első/Utolsó Szelet Prioritás",
+              "description": "Az első és utolsó szeletek letöltését helyezi előtérbe, hogy a médialejátszók hamarabb meg tudják nyitni és keresni a fájlban."
+            },
+            "super-seeding": {
+              "title": "Super Seedelés",
+              "description": "Egy kezdeti seedelési mód, amely egyszerre csak egy peernek küld egy szeletet, maximalizálva az elosztási sebességet egy új torrent indulásakor."
             }
           },
           "toast": {
@@ -498,16 +531,29 @@
             "removing-all-tags": "Az összes címke eltávolítása…",
             "remove-all-tags-failed": "Nem sikerült eltávolítani az összes címkét",
             "local-path-failed": "A helyi elérési út feloldása sikertelen!",
-            "copied-to-clipboard": "{{field}} a vágólapra másolva."
+            "copied-to-clipboard": "{{field}} a vágólapra másolva.",
+            "rechecking": "Torrent ellenőrzése…",
+            "recheck-failed": "Nem sikerült ellenőrizni a torrentet",
+            "toggle-sequential-download-failed": "Nem sikerült átváltani a szekvenciális letöltést",
+            "toggle-first-last-piece-prio-failed": "Nem sikerült átváltani az első/utolsó szelet prioritást",
+            "toggle-auto-tmm-failed": "Nem sikerült átváltani az Auto TMM-et",
+            "toggle-super-seeding-failed": "Nem sikerült átváltani a super seedinget"
           },
           "footer": {
-            "playback": "Vezérlés",
-            "limits": "Korlátok",
-            "manage": "Kezelés",
             "manage-header-path": "Útvonal",
             "manage-header-category": "Kategória",
             "manage-header-tags": "Címkék",
-            "transfer-limits": "Átviteli korlátok"
+            "transfer-limits": "Átviteli korlátok",
+            "control": "Vezérlés",
+            "files": "Fájlok",
+            "transfer": "Átvitel",
+            "maintenance": "Karbantartás",
+            "sequential-download": "Szekvenciális letöltés",
+            "first-last-piece-prio": "Első/utolsó szelet prioritása",
+            "super-seeding": "Super Seeding",
+            "force-recheck": "Kényszerített ellenőrzés",
+            "auto-tmm": "Auto TMM",
+            "rename-files": "Fájlok átnevezése"
           }
         },
         "peers": {
@@ -1032,7 +1078,12 @@
             "start": "Indítás",
             "stop": "Leállítás",
             "force-resume": "Kényszerített folytatás",
-            "set-location": "Hely beállítása",
+            "set-location": "Mentési útvonal beállítása",
+            "set-download-path": "Letöltési útvonal beállítása",
+            "enable-sequential-download": "Szekvenciális letöltés engedélyezése",
+            "disable-sequential-download": "Szekvenciális letöltés letiltása",
+            "enable-first-last-piece-prio": "Első/utolsó szelet prioritás engedélyezése",
+            "disable-first-last-piece-prio": "Első/utolsó szelet prioritás letiltása",
             "show-in-folder": "Megjelenítés mappában",
             "open-destination": "Célmappa megnyitása",
             "rename-torrent": "Torrent átnevezése",
@@ -1417,7 +1468,8 @@
               "value": {
                 "show": "Megjelenítés mappában / Célmappa megnyitása",
                 "details": "Torrent részleteinek megnyitása",
-                "nothing": "Nincs művelet"
+                "nothing": "Nincs művelet",
+                "inline-edit": "Helyszíni szerkesztés"
               }
             }
           },
@@ -1453,7 +1505,8 @@
               "description": "A torrent lista soraira duplán kattintva a következő műveletek történhetnek:",
               "list-item-1": "<strong>Megjelenítés mappában / Célmappa megnyitása</strong>: Egyfájlos torrenteknél: Megnyitja a célmappát és kijelöli a fájlt. Többfájlos torrenteknél: Megnyitja a célmappát. <div class=\"text-warning\">Ehhez a funkcióhoz beállított Útvonal-hozzárendelés szükséges a szerverbeállításokban.</div>",
               "list-item-2": "<strong>Torrent részleteinek megnyitása</strong>: megnyitja a részletes nézetet",
-              "list-item-3": "<strong>Nincs művelet</strong>: nos, nem történik semmi"
+              "list-item-3": "<strong>Nincs művelet</strong>: nos, nem történik semmi",
+              "list-item-4": "<strong>Helyszíni szerkesztés</strong>: Lehetővé teszi a megfelelő cellák közvetlen szerkesztését a rácsban - dupla kattintással szerkeszthető a cella, Enter-rel menthető, Escape-pel megszakítható. Csak azok az oszlopok szerkeszthetők, amelyekhez van közvetlen qBittorrent API végpont és nincs értékformázó."
             },
             "column-order": {
               "title": "Oszlopok sorrendje",
@@ -1666,7 +1719,9 @@
         "move-top-failed-title": "Nem sikerült a sor elejére mozgatni a torrent(ek)et",
         "move-up-failed-title": "Nem sikerült feljebb mozgatni a torrent(ek)et a sorban",
         "move-down-failed-title": "Nem sikerült lejjebb mozgatni a torrent(ek)et a sorban",
-        "move-bottom-failed-title": "Nem sikerült a sor végére mozgatni a torrent(ek)et"
+        "move-bottom-failed-title": "Nem sikerült a sor végére mozgatni a torrent(ek)et",
+        "toggle-sequential-download-failed-title": "Nem sikerült átváltani a szekvenciális letöltést",
+        "toggle-first-last-piece-prio-failed-title": "Nem sikerült átváltani az első/utolsó szelet prioritást"
       }
     },
     "qb": {
