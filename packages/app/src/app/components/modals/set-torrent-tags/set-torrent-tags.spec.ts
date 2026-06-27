@@ -72,6 +72,41 @@ describe('SetTorrentTags', () => {
     });
   });
 
+  describe('hasClearableValue', () => {
+    it('returns false when no tags are selected', async () => {
+      await component.ngOnInit();
+      component.setTorrentTagsForm.controls.tags.setValue([]);
+      expect(component.hasClearableValue()).toBe(false);
+    });
+
+    it('returns true when tags are selected', async () => {
+      await component.ngOnInit();
+      // torrent was set up with 'action,comedy' so form has two tags after init
+      expect(component.hasClearableValue()).toBe(true);
+    });
+  });
+
+  describe('clear', () => {
+    it('sets tags to empty array', async () => {
+      await component.ngOnInit();
+      component.clear();
+      expect(component.setTorrentTagsForm.controls.tags.value).toEqual([]);
+    });
+
+    it('marks the form as dirty so Save becomes enabled', async () => {
+      await component.ngOnInit();
+      component.clear();
+      expect(component.setTorrentTagsForm.dirty).toBe(true);
+    });
+
+    it('does not close the modal', async () => {
+      await component.ngOnInit();
+      component.clear();
+      expect(mockActiveModal.close).not.toHaveBeenCalled();
+      expect(mockActiveModal.dismiss).not.toHaveBeenCalled();
+    });
+  });
+
   describe('handleSubmit', () => {
     it('should apply tag changes to the hashes provided via the input, not the selection store', async () => {
       const mockQbService = TestBed.inject(QbService) as unknown as {
