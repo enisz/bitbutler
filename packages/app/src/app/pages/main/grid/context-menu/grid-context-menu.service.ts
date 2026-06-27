@@ -180,6 +180,18 @@ export class GridContextMenuService {
                 hashes,
               }),
           },
+          {
+            kind: 'item',
+            id: 'files.setDownloadPath',
+            label: 'pages.main.grid.context-menu.item.set-download-path',
+            icon: faFolder,
+            action: () =>
+              this.commandBusService.emit({
+                type: 'UI_SET_DOWNLOAD_PATH',
+                torrent: data.row,
+                hashes,
+              }),
+          },
           ...(isMulti
             ? []
             : [

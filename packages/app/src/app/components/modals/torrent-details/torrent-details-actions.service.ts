@@ -32,6 +32,14 @@ export class TorrentDetailsActionsService {
     });
   }
 
+  public setDownloadPath(): void {
+    this.commandBusService.emit({
+      type: 'UI_SET_DOWNLOAD_PATH',
+      torrent: this.dataService.torrent()!.data,
+      hashes: [this.dataService.hash()],
+    });
+  }
+
   public openPath(): void {
     const remotePath = this.dataService.torrent()?.data.content_path;
     const hash = this.dataService.hash();

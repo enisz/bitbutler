@@ -569,6 +569,23 @@ describe('GridContextMenuService', () => {
         });
       });
 
+      it('includes files.setDownloadPath item in files submenu', async () => {
+        const entries = await service.buildTorrentMenu(makeData());
+        const item = findItem(entries, 'files.setDownloadPath');
+        expect(item).toBeDefined();
+        expect(item?.kind).toBe('item');
+      });
+
+      it('emits UI_SET_DOWNLOAD_PATH when files.setDownloadPath is clicked', async () => {
+        const emit = vi.spyOn(TestBed.inject(CommandBusService), 'emit');
+        const entries = await service.buildTorrentMenu(makeData());
+        const item = findItem(entries, 'files.setDownloadPath');
+        if (item?.kind === 'item' && typeof item.action === 'function') item.action();
+        expect(emit).toHaveBeenCalledWith(
+          expect.objectContaining({ type: 'UI_SET_DOWNLOAD_PATH' }),
+        );
+      });
+
       it('files.openDestination action emits UI_OPEN_DESTINATION with hash and content path', async () => {
         const row = makeRow();
         const entries = await service.buildTorrentMenu(makeData({ row }));

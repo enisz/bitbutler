@@ -211,6 +211,22 @@ export class UiCommandHandlerService {
             break;
           }
 
+          case 'UI_SET_DOWNLOAD_PATH': {
+            const setDownloadPathModalRef = this.modalService.open(
+              (await import('../components/modals/set-download-path/set-download-path'))
+                .SetDownloadPath,
+              { size: 'md' },
+            );
+            setModalInput(setDownloadPathModalRef, 'torrent', command.torrent);
+            setModalInput(
+              setDownloadPathModalRef,
+              'hashes',
+              command.hashes ?? [command.torrent.hash],
+            );
+            setDownloadPathModalRef.result.catch(() => {});
+            break;
+          }
+
           case 'UI_LIMIT_TRANSFER': {
             const { TransferLimit } =
               await import('../components/modals/transfer-limit/transfer-limit');

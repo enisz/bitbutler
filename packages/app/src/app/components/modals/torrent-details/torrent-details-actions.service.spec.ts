@@ -78,6 +78,7 @@ describe('TorrentDetailsActionsService', () => {
     reannounce: ReturnType<typeof vi.fn>;
     renameFile: ReturnType<typeof vi.fn>;
     filePrio: ReturnType<typeof vi.fn>;
+    setDownloadPath: ReturnType<typeof vi.fn>;
   };
   let commandBusEmit: ReturnType<typeof vi.fn>;
   let toastInfo: ReturnType<typeof vi.fn>;
@@ -103,6 +104,7 @@ describe('TorrentDetailsActionsService', () => {
       reannounce: vi.fn().mockResolvedValue(undefined),
       renameFile: vi.fn().mockResolvedValue(undefined),
       filePrio: vi.fn().mockResolvedValue(undefined),
+      setDownloadPath: vi.fn().mockResolvedValue(undefined),
     };
 
     commandBusEmit = vi.fn();
@@ -139,6 +141,18 @@ describe('TorrentDetailsActionsService', () => {
       expect(commandBusEmit).toHaveBeenCalledWith({
         type: 'UI_SET_TORRENT_LOCATION',
         torrent: mockDataService.torrent()!.data,
+        hashes: ['abc123'],
+      });
+    });
+  });
+
+  describe('setDownloadPath', () => {
+    it('emits UI_SET_DOWNLOAD_PATH with torrent data and hash', () => {
+      const emit = vi.spyOn(TestBed.inject(CommandBusService), 'emit');
+      service.setDownloadPath();
+      expect(emit).toHaveBeenCalledWith({
+        type: 'UI_SET_DOWNLOAD_PATH',
+        torrent: expect.objectContaining({ hash: 'abc123' }),
         hashes: ['abc123'],
       });
     });
