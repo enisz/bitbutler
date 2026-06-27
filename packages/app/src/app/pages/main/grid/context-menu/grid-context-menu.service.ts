@@ -18,7 +18,6 @@ import {
   faFilePen,
   faFilter,
   faFilterCircleXmark,
-  faFloppyDisk,
   faFolder,
   faFolderOpen,
   faFolderTree,
@@ -124,8 +123,8 @@ export class GridContextMenuService {
         label: isMulti
           ? 'pages.main.grid.context-menu.item.export-torrent-files'
           : 'pages.main.grid.context-menu.item.export-torrent-file',
-        icon: faFloppyDisk,
-        variant: 'info',
+        icon: faArrowDown,
+        variant: 'success',
         disabled: this.serverStoreService.currentServer()?.export_available !== 1,
         tooltip:
           this.serverStoreService.currentServer()?.export_available !== 1
