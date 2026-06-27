@@ -1,8 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import { CellValueChangedEvent, ColDef, GridApi } from 'ag-grid-community';
+import { HttpError } from '../../../models/http.model';
 import { Torrent } from '../../../models/torrent.model';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
+import { ToastService } from '../../../services/toast.service';
 
 const INLINE_EDITABLE_COL_IDS = new Set([
   'name',
@@ -33,6 +35,7 @@ const BOOLEAN_COL_IDS = new Set([
 export class GridInlineEditService {
   private readonly qb = inject(QbService);
   private readonly serverStore = inject(ServerStoreService);
+  private readonly toastService = inject(ToastService);
 
   applyEditableState(api: GridApi<Torrent>, isInlineEdit: boolean): void {
     const currentDefs = api.getColumnDefs() ?? [];
@@ -127,8 +130,12 @@ export class GridInlineEditService {
           await this.qb.torrents.toggleFirstLastPiecePrio(serverId, [hash]);
           break;
       }
-    } catch {
-      // QbService.request already shows the error toast before re-throwing
+    } catch (err) {
+      // HttpError instances are already handled: QbService.request shows their toast before re-throwing.
+      // For plain errors (e.g. validation failures before the request), show an error toast here.
+      if (!(err instanceof HttpError)) {
+        this.toastService.danger(err instanceof Error ? err.message : String(err), 'Edit Failed');
+      }
     }
   }
 }

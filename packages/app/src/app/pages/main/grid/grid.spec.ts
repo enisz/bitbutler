@@ -204,6 +204,62 @@ describe('Grid', () => {
     });
   });
 
+  describe('onCellEditingStarted / onCellEditingStopped', () => {
+    it('should call qbPollingService.pause() when onCellEditingStarted fires', () => {
+      const qbPollingService = TestBed.inject(QbPollingService);
+      (component.gridOptions.onCellEditingStarted as () => void)();
+      expect(qbPollingService.pause).toHaveBeenCalled();
+    });
+
+    it('should call qbPollingService.resume() with the token from pause() when onCellEditingStopped fires', () => {
+      const qbPollingService = TestBed.inject(QbPollingService);
+      const token = Symbol('test-token');
+      (qbPollingService.pause as ReturnType<typeof vi.fn>).mockReturnValue(token);
+
+      (component.gridOptions.onCellEditingStarted as () => void)();
+      (component.gridOptions.onCellEditingStopped as () => void)();
+
+      expect(qbPollingService.resume).toHaveBeenCalledWith(token);
+    });
+  });
+
+  describe('applyGridSettings', () => {
+    let mockApi: {
+      applyColumnState: ReturnType<typeof vi.fn>;
+      setGridOption: ReturnType<typeof vi.fn>;
+      getColumnDefs: ReturnType<typeof vi.fn>;
+      updateGridOptions: ReturnType<typeof vi.fn>;
+    };
+
+    beforeEach(() => {
+      mockApi = {
+        applyColumnState: vi.fn(),
+        setGridOption: vi.fn(),
+        getColumnDefs: vi.fn().mockReturnValue([]),
+        updateGridOptions: vi.fn(),
+      };
+      (component as any).api = mockApi;
+    });
+
+    it('should call gridInlineEditService.applyEditableState(api, true) when rowDoubleClickAction is INLINE_EDIT', () => {
+      const gridInlineEditService = fixture.debugElement.injector.get(GridInlineEditService);
+      (component as any).applyGridSettings({ rowDoubleClickAction: 'INLINE_EDIT' });
+      expect(gridInlineEditService.applyEditableState).toHaveBeenCalledWith(mockApi, true);
+    });
+
+    it('should call gridInlineEditService.applyEditableState(api, false) when rowDoubleClickAction is DETAILS', () => {
+      const gridInlineEditService = fixture.debugElement.injector.get(GridInlineEditService);
+      (component as any).applyGridSettings({ rowDoubleClickAction: 'DETAILS' });
+      expect(gridInlineEditService.applyEditableState).toHaveBeenCalledWith(mockApi, false);
+    });
+
+    it('should call gridInlineEditService.applyEditableState(api, false) when rowDoubleClickAction is SAVE_PATH', () => {
+      const gridInlineEditService = fixture.debugElement.injector.get(GridInlineEditService);
+      (component as any).applyGridSettings({ rowDoubleClickAction: 'SAVE_PATH' });
+      expect(gridInlineEditService.applyEditableState).toHaveBeenCalledWith(mockApi, false);
+    });
+  });
+
   describe('UI_SCROLL_TO_TORRENT command', () => {
     it('should call ensureIndexVisible with middle alignment when a known hash is emitted', () => {
       const mockApi = {
