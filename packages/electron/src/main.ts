@@ -13,6 +13,7 @@ import {
 } from './ipc/settings.js';
 import { registerTorrentIpcHandlers } from './ipc/torrent.js';
 import { handleSecondInstanceArgv, registerWindowIpcHandlers } from './ipc/window.js';
+import { hookRenderer, initLogger } from './logger.js';
 import { createMainWindow } from './main-window.js';
 import { installMenu } from './menu.js';
 import { notify } from './notification.js';
@@ -77,12 +78,15 @@ if (!gotLock) {
   });
 
   app.whenReady().then(() => {
+    initLogger();
+
     loadTranslations(getInitialLanguage());
     registerI18nIpcHandlers();
 
     const { openAtLogin, startMinimized } = getStartupSettings();
     app.setLoginItemSettings({ openAtLogin });
     const mainWindow = createOrRestoreMainWindow(startMinimized);
+    hookRenderer(mainWindow);
     if (!startMinimized) {
       mainWindow.once('ready-to-show', () => {
         mainWindow.maximize();
