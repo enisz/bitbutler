@@ -175,4 +175,138 @@ describe('QbService', () => {
       );
     });
   });
+
+  describe('torrents.setDownloadPath()', () => {
+    it('sends hashes and path to /api/v2/torrents/setDownloadPath', async () => {
+      vi.spyOn(service, 'request').mockResolvedValue({ ok: true } as any);
+      await service.torrents.setDownloadPath('server-1', ['abc', 'def'], '/mnt/data');
+      expect(service.request).toHaveBeenCalledWith(
+        'server-1',
+        expect.objectContaining({
+          path: '/api/v2/torrents/setDownloadPath',
+          method: 'POST',
+          form: { hashes: 'abc|def', path: '/mnt/data' },
+        }),
+      );
+    });
+
+    it('throws HttpError when request fails', async () => {
+      vi.spyOn(service, 'request').mockResolvedValue({
+        ok: false,
+        status: 400,
+        statusText: 'Bad Request',
+      } as any);
+      await expect(
+        service.torrents.setDownloadPath('server-1', ['abc'], '/mnt/data'),
+      ).rejects.toThrow('Failed to set download path');
+    });
+
+    it('rejects when no hashes are provided', async () => {
+      await expect(service.torrents.setDownloadPath('server-1', [], '/mnt/data')).rejects.toThrow(
+        'No hashes provided',
+      );
+    });
+
+    it('rejects when path is empty', async () => {
+      await expect(service.torrents.setDownloadPath('server-1', ['abc'], '  ')).rejects.toThrow(
+        'path is required',
+      );
+    });
+  });
+
+  describe('torrents.toggleSequentialDownload()', () => {
+    it('sends hashes to /api/v2/torrents/toggleSequentialDownload', async () => {
+      vi.spyOn(service, 'request').mockResolvedValue({ ok: true } as any);
+      await service.torrents.toggleSequentialDownload('server-1', ['abc']);
+      expect(service.request).toHaveBeenCalledWith(
+        'server-1',
+        expect.objectContaining({
+          path: '/api/v2/torrents/toggleSequentialDownload',
+          method: 'POST',
+          form: { hashes: 'abc' },
+        }),
+      );
+    });
+
+    it('throws HttpError when request fails', async () => {
+      vi.spyOn(service, 'request').mockResolvedValue({
+        ok: false,
+        status: 500,
+        statusText: 'Server Error',
+      } as any);
+      await expect(service.torrents.toggleSequentialDownload('server-1', ['abc'])).rejects.toThrow(
+        'Failed to toggle sequential download',
+      );
+    });
+
+    it('returns early when hashes list is empty', async () => {
+      const spy = vi.spyOn(service, 'request');
+      await service.torrents.toggleSequentialDownload('server-1', []);
+      expect(spy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('torrents.toggleFirstLastPiecePrio()', () => {
+    it('sends hashes to /api/v2/torrents/toggleFirstLastPiecePrio', async () => {
+      vi.spyOn(service, 'request').mockResolvedValue({ ok: true } as any);
+      await service.torrents.toggleFirstLastPiecePrio('server-1', ['abc']);
+      expect(service.request).toHaveBeenCalledWith(
+        'server-1',
+        expect.objectContaining({
+          path: '/api/v2/torrents/toggleFirstLastPiecePrio',
+          method: 'POST',
+          form: { hashes: 'abc' },
+        }),
+      );
+    });
+
+    it('throws HttpError when request fails', async () => {
+      vi.spyOn(service, 'request').mockResolvedValue({
+        ok: false,
+        status: 500,
+        statusText: 'Server Error',
+      } as any);
+      await expect(service.torrents.toggleFirstLastPiecePrio('server-1', ['abc'])).rejects.toThrow(
+        'Failed to toggle first/last piece priority',
+      );
+    });
+
+    it('returns early when hashes list is empty', async () => {
+      const spy = vi.spyOn(service, 'request');
+      await service.torrents.toggleFirstLastPiecePrio('server-1', []);
+      expect(spy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('torrents.removeAllTags()', () => {
+    it('sends hashes with no tags field to /api/v2/torrents/removeTags', async () => {
+      vi.spyOn(service, 'request').mockResolvedValue({ ok: true } as any);
+      await service.torrents.removeAllTags('server-1', ['abc', 'def']);
+      expect(service.request).toHaveBeenCalledWith(
+        'server-1',
+        expect.objectContaining({
+          path: '/api/v2/torrents/removeTags',
+          method: 'POST',
+          form: { hashes: 'abc|def' },
+        }),
+      );
+    });
+
+    it('throws HttpError when request fails', async () => {
+      vi.spyOn(service, 'request').mockResolvedValue({
+        ok: false,
+        status: 500,
+        statusText: 'Server Error',
+      } as any);
+      await expect(service.torrents.removeAllTags('server-1', ['abc'])).rejects.toThrow(
+        'Failed to remove all tags',
+      );
+    });
+
+    it('returns early when hashes list is empty', async () => {
+      const spy = vi.spyOn(service, 'request');
+      await service.torrents.removeAllTags('server-1', []);
+      expect(spy).not.toHaveBeenCalled();
+    });
+  });
 });
