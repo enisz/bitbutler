@@ -304,6 +304,12 @@
           "set-failed-title": "Nem sikerült beállítani a torrent cimkéit"
         }
       },
+      "set-download-path": {
+        "title": "Letöltési útvonal beállítása",
+        "error": {
+          "failed-to-set": "Nem sikerült beállítani a letöltési útvonalat"
+        }
+      },
       "torrent-details": {
         "content": {
           "loading": "Torrent tartalmának a betöltése...",
@@ -319,7 +325,7 @@
           "rename": "Torrent átnevezése",
           "delete": "Torrent törlése",
           "save-path": "Mentési útvonal",
-          "relocate": "Torrent áthelyezése",
+          "relocate": "Mentési útvonal beállítása",
           "remote-path": "Távoli útvonal",
           "local-path": "Helyi útvonal",
           "show-file": "Fájl megjelenítése",
@@ -369,6 +375,13 @@
           "info-hash-v2": "Info Hash v2",
           "comment": "Megjegyzés",
           "error": "Hiba",
+          "set-download-path": "Letöltési útvonal beállítása",
+          "rename-files": "Fájlok átnevezése",
+          "sequential-download": "Szekvenciális letöltés",
+          "first-last-piece-prio": "Első/utolsó szelet prioritása",
+          "auto-tmm": "Auto TMM",
+          "super-seeding": "Super Seeding",
+          "force-start": "Kényszerített indítás",
           "labels": {
             "title": "Torrent",
             "transfer": "Átvitel",
@@ -498,16 +511,29 @@
             "removing-all-tags": "Az összes címke eltávolítása…",
             "remove-all-tags-failed": "Nem sikerült eltávolítani az összes címkét",
             "local-path-failed": "A helyi elérési út feloldása sikertelen!",
-            "copied-to-clipboard": "{{field}} a vágólapra másolva."
+            "copied-to-clipboard": "{{field}} a vágólapra másolva.",
+            "rechecking": "Torrent ellenőrzése…",
+            "recheck-failed": "Nem sikerült ellenőrizni a torrentet",
+            "toggle-sequential-download-failed": "Nem sikerült átváltani a szekvenciális letöltést",
+            "toggle-first-last-piece-prio-failed": "Nem sikerült átváltani az első/utolsó szelet prioritást",
+            "toggle-auto-tmm-failed": "Nem sikerült átváltani az Auto TMM-et",
+            "toggle-super-seeding-failed": "Nem sikerült átváltani a super seedinget"
           },
           "footer": {
-            "playback": "Vezérlés",
-            "limits": "Korlátok",
-            "manage": "Kezelés",
             "manage-header-path": "Útvonal",
             "manage-header-category": "Kategória",
             "manage-header-tags": "Címkék",
-            "transfer-limits": "Átviteli korlátok"
+            "transfer-limits": "Átviteli korlátok",
+            "control": "Vezérlés",
+            "files": "Fájlok",
+            "transfer": "Átvitel",
+            "maintenance": "Karbantartás",
+            "sequential-download": "Szekvenciális letöltés",
+            "first-last-piece-prio": "Első/utolsó szelet prioritása",
+            "super-seeding": "Super Seeding",
+            "force-recheck": "Kényszerített ellenőrzés",
+            "auto-tmm": "Auto TMM",
+            "rename-files": "Fájlok átnevezése"
           }
         },
         "peers": {
@@ -1032,7 +1058,12 @@
             "start": "Indítás",
             "stop": "Leállítás",
             "force-resume": "Kényszerített folytatás",
-            "set-location": "Hely beállítása",
+            "set-location": "Mentési útvonal beállítása",
+            "set-download-path": "Letöltési útvonal beállítása",
+            "enable-sequential-download": "Szekvenciális letöltés engedélyezése",
+            "disable-sequential-download": "Szekvenciális letöltés letiltása",
+            "enable-first-last-piece-prio": "Első/utolsó szelet prioritás engedélyezése",
+            "disable-first-last-piece-prio": "Első/utolsó szelet prioritás letiltása",
             "show-in-folder": "Megjelenítés mappában",
             "open-destination": "Célmappa megnyitása",
             "rename-torrent": "Torrent átnevezése",
@@ -1668,7 +1699,9 @@
         "move-top-failed-title": "Nem sikerült a sor elejére mozgatni a torrent(ek)et",
         "move-up-failed-title": "Nem sikerült feljebb mozgatni a torrent(ek)et a sorban",
         "move-down-failed-title": "Nem sikerült lejjebb mozgatni a torrent(ek)et a sorban",
-        "move-bottom-failed-title": "Nem sikerült a sor végére mozgatni a torrent(ek)et"
+        "move-bottom-failed-title": "Nem sikerült a sor végére mozgatni a torrent(ek)et",
+        "toggle-sequential-download-failed-title": "Nem sikerült átváltani a szekvenciális letöltést",
+        "toggle-first-last-piece-prio-failed-title": "Nem sikerült átváltani az első/utolsó szelet prioritást"
       }
     },
     "qb": {
