@@ -1,12 +1,10 @@
 import { type BrowserWindow, app } from 'electron';
-import type { LogMessage } from 'electron-log';
 import log from 'electron-log/main';
 import { existsSync, renameSync, statSync, unlinkSync } from 'node:fs';
 import { basename, dirname, join } from 'node:path';
 import { format as utilFormat } from 'node:util';
 
-const NUMERIC_TO_LEVEL = ['debug', 'info', 'warn', 'error'] as const;
-type LevelStr = (typeof NUMERIC_TO_LEVEL)[number];
+type LevelStr = 'debug' | 'info' | 'warn' | 'error';
 
 const CONSOLE_TO_LEVEL: Record<string, LevelStr> = {
   log: 'debug',
@@ -56,12 +54,15 @@ export function initLogger(): void {
   log.transports.file.resolvePathFn = () => logPath;
   log.transports.file.maxSize = MAX_SIZE;
   log.transports.file.archiveLog = (file) => archiveLog(file.toString());
-  log.transports.file.format = (message: LogMessage) =>
-    `[${formatTimestamp(message.date)}] ${utilFormat(...(message.data as unknown[]))}`;
+  log.transports.file.format = ({ message }) => [
+    `[${formatTimestamp(message.date)}] ${utilFormat(...message.data)}`,
+  ];
 
   for (const [method, levelStr] of Object.entries(CONSOLE_TO_LEVEL)) {
-    const original = (console as Record<string, unknown>)[method] as (...args: unknown[]) => void;
-    (console as Record<string, unknown>)[method] = (...args: unknown[]): void => {
+    const original = (console as unknown as Record<string, unknown>)[method] as (
+      ...args: unknown[]
+    ) => void;
+    (console as unknown as Record<string, unknown>)[method] = (...args: unknown[]): void => {
       original.call(console, ...args);
       log.info(`[main] [${levelStr}]`, ...args);
     };
@@ -79,9 +80,11 @@ export function initLogger(): void {
 }
 
 export function hookRenderer(window: BrowserWindow): void {
-  window.webContents.on('console-message', (_e, level, message, line, sourceId) => {
-    const levelStr: LevelStr = NUMERIC_TO_LEVEL[level] ?? 'debug';
-    log.info(`[renderer] [${levelStr}] ${message} (${sourceId}:${line})`);
+  window.webContents.on('console-message', (details) => {
+    const levelStr: LevelStr = (details.level === 'warning' ? 'warn' : details.level) as LevelStr;
+    log.info(
+      `[renderer] [${levelStr}] ${details.message} (${details.sourceId}:${details.lineNumber})`,
+    );
   });
 }
 

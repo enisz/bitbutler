@@ -7,6 +7,9 @@ const mockStatSync = vi.hoisted(() => vi.fn<() => { size: number }>(() => ({ siz
 const mockRenameSync = vi.hoisted(() => vi.fn());
 const mockUnlinkSync = vi.hoisted(() => vi.fn());
 
+let capturedFormat: ((params: { message: { date: Date; data: unknown[] } }) => unknown[]) | null =
+  null;
+
 vi.mock('electron', () => ({
   app: { getPath: vi.fn(() => '/fake/logs') },
 }));
@@ -15,7 +18,17 @@ vi.mock('electron-log/main', () => ({
   default: {
     transports: {
       console: { level: false as false },
-      file: { resolvePathFn: null, maxSize: 0, archiveLog: null, format: null },
+      file: {
+        resolvePathFn: null,
+        maxSize: 0,
+        archiveLog: null,
+        get format() {
+          return capturedFormat;
+        },
+        set format(fn) {
+          capturedFormat = fn;
+        },
+      },
     },
     info: mockLogInfo,
   },
@@ -120,23 +133,37 @@ describe('hookRenderer', () => {
   });
 
   it.each([
-    [0, 'debug'],
-    [1, 'info'],
-    [2, 'warn'],
-    [3, 'error'],
-  ])('maps numeric level %i to string "%s"', async (level, expectedLevel) => {
+    ['debug', 'debug'],
+    ['info', 'info'],
+    ['warning', 'warn'],
+    ['error', 'error'],
+  ])('maps string level "%s" to log level "%s"', async (level, expectedLevel) => {
     const { hookRenderer } = await import('./logger.js');
     hookRenderer(mockWindow as unknown as BrowserWindow);
-    consoleMessageHandler({}, level, 'test message', 10, 'app.js');
+    consoleMessageHandler({ level, message: 'test message', lineNumber: 10, sourceId: 'app.js' });
     expect(mockLogInfo).toHaveBeenCalledWith(
       `[renderer] [${expectedLevel}] test message (app.js:10)`,
     );
   });
+});
 
-  it('falls back to "debug" for an unrecognised numeric level', async () => {
-    const { hookRenderer } = await import('./logger.js');
-    hookRenderer(mockWindow as unknown as BrowserWindow);
-    consoleMessageHandler({}, 99, 'unknown', 1, 'x.js');
-    expect(mockLogInfo).toHaveBeenCalledWith('[renderer] [debug] unknown (x.js:1)');
+describe('initLogger format callback', () => {
+  beforeEach(() => {
+    vi.resetModules();
+    capturedFormat = null;
+    mockExistsSync.mockReturnValue(false);
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('produces a correctly formatted log line', async () => {
+    const { initLogger } = await import('./logger.js');
+    initLogger();
+    expect(capturedFormat).not.toBeNull();
+    const date = new Date(2026, 5, 27, 10, 23, 45, 123);
+    const result = capturedFormat!({ message: { date, data: ['[main] [info] hello'] } });
+    expect(result).toEqual(['[2026-06-27 10:23:45.123] [main] [info] hello']);
   });
 });
