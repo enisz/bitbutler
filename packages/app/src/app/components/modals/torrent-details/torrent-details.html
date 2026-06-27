@@ -186,7 +186,7 @@
       <div class="dropdown-divider"></div>
       <button ngbDropdownItem type="button" (click)="actionsService.toggleSuperSeeding()">
         <span class="bb-dropdown-icon" aria-hidden="true">
-          @if (dataService.torrent()?.data.super_seeding) {
+          @if (dataService.torrent()?.data?.super_seeding) {
             <fa-icon [icon]="icon.faCheck"></fa-icon>
           }
         </span>
@@ -194,7 +194,7 @@
       </button>
       <button ngbDropdownItem type="button" (click)="actionsService.toggleSequentialDownload()">
         <span class="bb-dropdown-icon" aria-hidden="true">
-          @if (dataService.torrent()?.data.seq_dl) {
+          @if (dataService.torrent()?.data?.seq_dl) {
             <fa-icon [icon]="icon.faCheck"></fa-icon>
           }
         </span>
@@ -202,7 +202,7 @@
       </button>
       <button ngbDropdownItem type="button" (click)="actionsService.toggleFirstLastPiecePrio()">
         <span class="bb-dropdown-icon" aria-hidden="true">
-          @if (dataService.torrent()?.data.f_l_piece_prio) {
+          @if (dataService.torrent()?.data?.f_l_piece_prio) {
             <fa-icon [icon]="icon.faCheck"></fa-icon>
           }
         </span>
@@ -235,7 +235,7 @@
       <div class="dropdown-divider"></div>
       <button ngbDropdownItem type="button" (click)="actionsService.toggleAutoTmm()">
         <span class="bb-dropdown-icon" aria-hidden="true">
-          @if (dataService.torrent()?.data.auto_tmm) {
+          @if (dataService.torrent()?.data?.auto_tmm) {
             <fa-icon [icon]="icon.faCheck"></fa-icon>
           }
         </span>

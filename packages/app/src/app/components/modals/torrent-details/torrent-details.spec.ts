@@ -19,6 +19,7 @@ describe('TorrentDetails', () => {
     activeTabId: ReturnType<typeof signal<any>>;
     localPath: ReturnType<typeof signal<string | null>>;
     singleFile: ReturnType<typeof signal<boolean>>;
+    torrent: ReturnType<typeof signal<any>>;
     selectTab: ReturnType<typeof vi.fn>;
     init: ReturnType<typeof vi.fn>;
     stopAll: ReturnType<typeof vi.fn>;
@@ -33,6 +34,7 @@ describe('TorrentDetails', () => {
       activeTabId: activeTabIdSignal,
       localPath: signal<string | null>(null),
       singleFile: signal(false),
+      torrent: signal<any>(null),
       selectTab: vi.fn((id: any) => activeTabIdSignal.set(id)),
       init: vi.fn(),
       stopAll: vi.fn(),
@@ -164,10 +166,10 @@ describe('TorrentDetails', () => {
     });
 
     it('reannounce button calls actionsService.forceReannounce', () => {
-      const buttons: HTMLButtonElement[] = Array.from(
-        fixture.nativeElement.querySelectorAll('.modal-footer > button'),
+      const items: HTMLButtonElement[] = Array.from(
+        fixture.nativeElement.querySelectorAll('[ngbDropdownItem]'),
       );
-      const reannounceButton = buttons.find((b) => b.textContent?.includes('force-reannounce'));
+      const reannounceButton = items.find((b) => b.textContent?.includes('force-reannounce'));
       reannounceButton?.click();
       expect(mockActionsService['forceReannounce']).toHaveBeenCalled();
     });
