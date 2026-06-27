@@ -9,12 +9,14 @@ import { ElectronService } from '../../../services/electron.service';
 import { FilterService, GRID_FILTER_INITIAL } from '../../../services/filter.service';
 import { GridStateService } from '../../../services/grid-state.service';
 import { GridViewStoreService } from '../../../services/grid-view-store.service';
+import { QbPollingService } from '../../../services/qb-polling.service';
 import { SelectionStoreService } from '../../../services/selection-store.service';
 import { ThemeService } from '../../../services/theme.service';
 import { TorrentListGridSettingsService } from '../../../services/torrent-list-grid.settings.service';
 import { UiFormatService } from '../../../services/ui-format.service';
 import { GridContextMenuService } from './context-menu/grid-context-menu.service';
 import { Grid } from './grid';
+import { GridInlineEditService } from './grid-inline-edit.service';
 import { GridKeyboardNavService } from './grid-keyboard-nav.service';
 import { GridPinService } from './grid-pin.service';
 
@@ -105,6 +107,10 @@ describe('Grid', () => {
         },
         { provide: ElectronService, useValue: { openPath: vi.fn() } },
         {
+          provide: QbPollingService,
+          useValue: { pause: vi.fn().mockReturnValue(Symbol()), resume: vi.fn() },
+        },
+        {
           provide: TranslateService,
           useValue: {
             instant: vi.fn().mockReturnValue(''),
@@ -128,6 +134,10 @@ describe('Grid', () => {
             },
             { provide: GridKeyboardNavService, useValue: keyboardNavServiceMock },
             { provide: GridPinService, useValue: gridPinServiceMock },
+            {
+              provide: GridInlineEditService,
+              useValue: { applyEditableState: vi.fn(), handleCellValueChanged: vi.fn() },
+            },
           ],
         },
       })

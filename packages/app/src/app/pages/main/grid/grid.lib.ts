@@ -2,6 +2,7 @@ import { AG_GRID_LOCALE_EN, AG_GRID_LOCALE_HU } from '@ag-grid-community/locale'
 import { TranslateService } from '@ngx-translate/core';
 import {
   CellContextMenuEvent,
+  CellValueChangedEvent,
   ColDef,
   Column,
   ColumnHeaderContextMenuEvent,
@@ -982,6 +983,9 @@ export function getGridOptions(
     onApiReady: (api: GridApi<Torrent>) => void;
     getIsProgrammaticSelection: () => boolean;
     applyDbSettings: () => Promise<void>;
+    handleCellValueChanged: (e: CellValueChangedEvent<Torrent>) => void;
+    onCellEditingStarted: () => void;
+    onCellEditingStopped: () => void;
   },
 ): GridOptions<Torrent> {
   return {
@@ -1173,6 +1177,9 @@ export function getGridOptions(
 
     onCellContextMenu: (e: CellContextMenuEvent<Torrent>) => opts.handleCellRightClick(e),
     onRowDoubleClicked: (e: RowDoubleClickedEvent<Torrent, any>) => opts.handleRowDoubleClick(e),
+    onCellValueChanged: (e: CellValueChangedEvent<Torrent, any>) => opts.handleCellValueChanged(e),
+    onCellEditingStarted: () => opts.onCellEditingStarted(),
+    onCellEditingStopped: () => opts.onCellEditingStopped(),
     onSelectionChanged: (ev: SelectionChangedEvent<Torrent>) => {
       if (opts.getIsProgrammaticSelection()) {
         return;

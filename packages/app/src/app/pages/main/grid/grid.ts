@@ -31,12 +31,14 @@ import { ElectronService } from '../../../services/electron.service';
 import { FilterService } from '../../../services/filter.service';
 import { GridStateService } from '../../../services/grid-state.service';
 import { GridViewStoreService } from '../../../services/grid-view-store.service';
+import { QbPollingService } from '../../../services/qb-polling.service';
 import { SelectionStoreService } from '../../../services/selection-store.service';
 import { ThemeService } from '../../../services/theme.service';
 import { TorrentListGridSettingsService } from '../../../services/torrent-list-grid.settings.service';
 import { UiFormatService } from '../../../services/ui-format.service';
 import { getTrackers, normalizeTracker } from '../tracker.utils';
 import { GridContextMenuService } from './context-menu/grid-context-menu.service';
+import { GridInlineEditService } from './grid-inline-edit.service';
 import { GridKeyboardNavService } from './grid-keyboard-nav.service';
 import { GridPinService } from './grid-pin.service';
 import { getGridColDefs, getGridOptions } from './grid.lib';
@@ -45,7 +47,13 @@ import { getGridColDefs, getGridOptions } from './grid.lib';
   selector: 'app-grid',
   standalone: true,
   imports: [AgGridAngular],
-  providers: [GridStateService, GridContextMenuService, GridKeyboardNavService, GridPinService],
+  providers: [
+    GridStateService,
+    GridContextMenuService,
+    GridKeyboardNavService,
+    GridPinService,
+    GridInlineEditService,
+  ],
   templateUrl: './grid.html',
   styleUrls: ['./grid.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -68,10 +76,13 @@ export class Grid implements AfterViewInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly keyboardNavService = inject(GridKeyboardNavService);
   private readonly gridPinService = inject(GridPinService);
+  private readonly qbPollingService = inject(QbPollingService);
+  private readonly gridInlineEditService = inject(GridInlineEditService);
 
   private readonly saveGridState$ = new Subject<void>();
 
   private api: GridApi<Torrent> | null = null;
+  private editPauseToken: symbol | null = null;
   private isProgrammaticSelection = false;
   private isApplyingFilterFromService = false;
   private hasLoadedInitialState = false;
@@ -157,6 +168,16 @@ export class Grid implements AfterViewInit {
         applyDbSettings: async () => {
           const settings = await firstValueFrom(this.torrentListGridSettingsService.asObservable());
           if (settings) this.applyGridSettings(settings);
+        },
+        handleCellValueChanged: (e) => void this.gridInlineEditService.handleCellValueChanged(e),
+        onCellEditingStarted: () => {
+          this.editPauseToken = this.qbPollingService.pause();
+        },
+        onCellEditingStopped: () => {
+          if (this.editPauseToken !== null) {
+            this.qbPollingService.resume(this.editPauseToken);
+            this.editPauseToken = null;
+          }
         },
       },
     );
@@ -250,6 +271,11 @@ export class Grid implements AfterViewInit {
       return colDef;
     });
     this.api.updateGridOptions({ columnDefs: newDefs as ColDef<any>[] });
+
+    this.gridInlineEditService.applyEditableState(
+      this.api,
+      settings.rowDoubleClickAction === 'INLINE_EDIT',
+    );
   }
 
   ngAfterViewInit(): void {
@@ -319,6 +345,7 @@ export class Grid implements AfterViewInit {
     if (!event.data) return;
     const settings = await firstValueFrom(this.torrentListGridSettingsService.asObservable());
     const action = settings?.rowDoubleClickAction ?? 'DETAILS';
+    if (action === 'INLINE_EDIT') return;
     if (action === 'DETAILS')
       this.commandBusService.emit({ type: 'UI_OPEN_TORRENT_DETAILS', hash: event.data.hash });
     else if (action === 'SAVE_PATH' && event.data.save_path)
