@@ -101,7 +101,7 @@ export class TagSelect implements ControlValueAccessor {
       const tags = await this.qbService.torrents.tags(
         this.serverStoreService.currentServerId() as string,
       );
-      this.tags.set(tags);
+      this.tags.set([...tags].sort((a, b) => a.localeCompare(b)));
     } catch (err) {
       console.error(TagSelect.name, 'loadAllTags', 'Failed to get torrent tags!', err);
     }
