@@ -10,6 +10,7 @@ import { AutofocusDirective } from '../../directives/autofocus';
   standalone: true,
   imports: [TranslatePipe, AutofocusDirective, BbBtnContent],
   templateUrl: './confirm.html',
+  styleUrl: './confirm.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Confirm {

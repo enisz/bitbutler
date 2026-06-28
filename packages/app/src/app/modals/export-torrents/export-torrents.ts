@@ -45,6 +45,7 @@ import { TorrentStoreService } from '../../services/torrent-store.service';
   standalone: true,
   imports: [ReactiveFormsModule, TranslatePipe, BbProgress, BbPopover, BbSpinner, BbBtnContent],
   templateUrl: './export-torrents.html',
+  styleUrl: './export-torrents.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExportTorrents implements OnInit {

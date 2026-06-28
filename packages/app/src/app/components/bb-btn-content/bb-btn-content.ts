@@ -6,6 +6,7 @@ import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
   selector: 'bb-btn-content',
   imports: [FontAwesomeModule],
   templateUrl: './bb-btn-content.html',
+  styleUrl: './bb-btn-content.scss',
   host: { style: 'display: contents' },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

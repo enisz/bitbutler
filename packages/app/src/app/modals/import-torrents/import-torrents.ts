@@ -51,6 +51,7 @@ import { setModalInput } from '../../utils/modal-input';
     BbBtnContent,
   ],
   templateUrl: './import-torrents.html',
+  styleUrl: './import-torrents.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImportTorrents implements OnInit {
