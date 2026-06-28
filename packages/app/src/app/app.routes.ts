@@ -16,8 +16,7 @@ export const routes: Routes = [
   },
   {
     path: 'add-torrent',
-    loadComponent: () =>
-      import('./components/add-torrent/add-torrent').then((mod) => mod.AddTorrent),
+    loadComponent: () => import('./modals/add-torrent/add-torrent').then((mod) => mod.AddTorrent),
   },
   {
     path: '**',

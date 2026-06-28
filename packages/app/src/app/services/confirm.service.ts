@@ -23,7 +23,7 @@ export class ConfirmService {
     dialogSize: 'sm' | 'md' | 'lg' | 'xl' = 'md',
     okIcon: IconDefinition = faCheck,
   ): Promise<boolean> {
-    const { Confirm } = await import('../components/modals/confirm/confirm');
+    const { Confirm } = await import('../modals/confirm/confirm');
     const modalRef = this.modalService.open(Confirm, { size: dialogSize });
 
     if (typeof title !== 'string') {

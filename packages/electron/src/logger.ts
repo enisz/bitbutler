@@ -53,7 +53,7 @@ export function initLogger(): void {
   log.transports.console.level = false;
   log.transports.file.resolvePathFn = () => logPath;
   log.transports.file.maxSize = MAX_SIZE;
-  log.transports.file.archiveLog = (file) => archiveLog(file.toString());
+  log.transports.file.archiveLogFn = (file) => archiveLog(file.toString());
   log.transports.file.format = ({ message }) => [
     `[${formatTimestamp(message.date)}] ${utilFormat(...message.data)}`,
   ];
