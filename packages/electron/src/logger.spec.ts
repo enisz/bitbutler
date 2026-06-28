@@ -1,4 +1,5 @@
 import { type BrowserWindow } from 'electron';
+import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mockLogInfo = vi.hoisted(() => vi.fn());
@@ -77,32 +78,34 @@ describe('archiveLog', () => {
 
   it('moves the current log to .old.0.log when no archives exist', async () => {
     const { archiveLog } = await import('./logger.js');
-    archiveLog('/fake/logs/bitbutler.log');
+    archiveLog(join('/fake/logs', 'bitbutler.log'));
     expect(mockRenameSync).toHaveBeenCalledWith(
-      '/fake/logs/bitbutler.log',
-      '/fake/logs/bitbutler.old.0.log',
+      join('/fake/logs', 'bitbutler.log'),
+      join('/fake/logs', 'bitbutler.old.0.log'),
     );
   });
 
   it('shifts .old.0 to .old.1 before writing new .old.0', async () => {
-    mockExistsSync.mockImplementation((p: string) => p === '/fake/logs/bitbutler.old.0.log');
+    mockExistsSync.mockImplementation(
+      (p: string) => p === join('/fake/logs', 'bitbutler.old.0.log'),
+    );
     const { archiveLog } = await import('./logger.js');
-    archiveLog('/fake/logs/bitbutler.log');
+    archiveLog(join('/fake/logs', 'bitbutler.log'));
     expect(mockRenameSync).toHaveBeenCalledWith(
-      '/fake/logs/bitbutler.old.0.log',
-      '/fake/logs/bitbutler.old.1.log',
+      join('/fake/logs', 'bitbutler.old.0.log'),
+      join('/fake/logs', 'bitbutler.old.1.log'),
     );
     expect(mockRenameSync).toHaveBeenCalledWith(
-      '/fake/logs/bitbutler.log',
-      '/fake/logs/bitbutler.old.0.log',
+      join('/fake/logs', 'bitbutler.log'),
+      join('/fake/logs', 'bitbutler.old.0.log'),
     );
   });
 
   it('deletes .old.2.log when all 3 archive slots are full', async () => {
     mockExistsSync.mockReturnValue(true);
     const { archiveLog } = await import('./logger.js');
-    archiveLog('/fake/logs/bitbutler.log');
-    expect(mockUnlinkSync).toHaveBeenCalledWith('/fake/logs/bitbutler.old.2.log');
+    archiveLog(join('/fake/logs', 'bitbutler.log'));
+    expect(mockUnlinkSync).toHaveBeenCalledWith(join('/fake/logs', 'bitbutler.old.2.log'));
   });
 });
 
