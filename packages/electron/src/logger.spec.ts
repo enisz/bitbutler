@@ -22,7 +22,7 @@ vi.mock('electron-log/main', () => ({
       file: {
         resolvePathFn: null,
         maxSize: 0,
-        archiveLog: null,
+        archiveLogFn: null,
         get format() {
           return capturedFormat;
         },
