@@ -189,8 +189,7 @@ export class Login implements OnInit {
     let runtimePassword: string | undefined;
 
     if (!currentServer.username || !currentServer.has_password) {
-      const { CredentialPrompt } =
-        await import('../../components/modals/credential-prompt/credential-prompt');
+      const { CredentialPrompt } = await import('../../modals/credential-prompt/credential-prompt');
       const credModalRef = this.modalService.open(CredentialPrompt);
       setModalInput(credModalRef, 'serverName', currentServer.name);
       setModalInput(credModalRef, 'prefillUsername', currentServer.username);
@@ -268,7 +267,7 @@ export class Login implements OnInit {
   }
 
   public async openManageServers(): Promise<void> {
-    const { ManageServers } = await import('../../components/modals/manage-servers/manage-servers');
+    const { ManageServers } = await import('../../modals/manage-servers/manage-servers');
     const ref = this.modalService.open(ManageServers);
     setModalInput(ref, 'hideConnect', true);
   }
