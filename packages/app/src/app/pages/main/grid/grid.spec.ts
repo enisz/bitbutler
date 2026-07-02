@@ -1,7 +1,7 @@
 import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateService } from '@ngx-translate/core';
-import { Subject } from 'rxjs';
+import { Subject, of } from 'rxjs';
 import { GRID_DARK_THEME, GRID_LIGHT_THEME } from '../../../app.const';
 import { CommandBusService } from '../../../services/command-bus.service';
 import { ContextMenuService } from '../../../services/context-menu.service';
@@ -257,6 +257,40 @@ describe('Grid', () => {
       const gridInlineEditService = fixture.debugElement.injector.get(GridInlineEditService);
       (component as any).applyGridSettings({ rowDoubleClickAction: 'SAVE_PATH' });
       expect(gridInlineEditService.applyEditableState).toHaveBeenCalledWith(mockApi, false);
+    });
+  });
+
+  describe('handleRowDoubleClick', () => {
+    it('emits UI_OPEN_DESTINATION with content_path and hash when rowDoubleClickAction is SAVE_PATH', async () => {
+      const settingsService = TestBed.inject(TorrentListGridSettingsService);
+      (settingsService.asObservable as ReturnType<typeof vi.fn>).mockReturnValue(
+        of({ rowDoubleClickAction: 'SAVE_PATH' }),
+      );
+      const commandBusService = TestBed.inject(CommandBusService);
+
+      await (component as any).handleRowDoubleClick({
+        data: { hash: 'abc123', content_path: '/remote/content/path', save_path: '/remote/save' },
+      });
+
+      expect(commandBusService.emit).toHaveBeenCalledWith({
+        type: 'UI_OPEN_DESTINATION',
+        remotePath: '/remote/content/path',
+        hash: 'abc123',
+      });
+    });
+
+    it('does not emit anything when content_path is missing', async () => {
+      const settingsService = TestBed.inject(TorrentListGridSettingsService);
+      (settingsService.asObservable as ReturnType<typeof vi.fn>).mockReturnValue(
+        of({ rowDoubleClickAction: 'SAVE_PATH' }),
+      );
+      const commandBusService = TestBed.inject(CommandBusService);
+
+      await (component as any).handleRowDoubleClick({
+        data: { hash: 'abc123', content_path: '', save_path: '/remote/save' },
+      });
+
+      expect(commandBusService.emit).not.toHaveBeenCalled();
     });
   });
 
