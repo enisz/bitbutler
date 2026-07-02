@@ -22,13 +22,13 @@ import {
   faAtom,
   faChevronDown,
   faFolderTree,
+  faGear,
   faPause,
   faPlay,
   faPlayCircle,
   faPlus,
   faSearch,
   faServer,
-  faSliders,
   faStopCircle,
   faTags,
   faTrashCan,
@@ -169,7 +169,7 @@ export class ButtonBar implements OnInit {
         kind: 'group',
         id: 'settings',
         label: 'pages.main.button-bar.button.settings-group',
-        icon: faSliders,
+        icon: faGear,
         variant: 'default',
         items: [
           {
