@@ -54,6 +54,7 @@ describe('TorrentDetails', () => {
       changeTags: vi.fn(),
       removeAllTags: vi.fn(),
       forceReannounce: vi.fn(),
+      exportTorrentFile: vi.fn(),
     };
 
     await TestBed.configureTestingModule({
@@ -172,6 +173,26 @@ describe('TorrentDetails', () => {
       const reannounceButton = items.find((b) => b.textContent?.includes('force-reannounce'));
       reannounceButton?.click();
       expect(mockActionsService['forceReannounce']).toHaveBeenCalled();
+    });
+
+    it('export torrent file button calls actionsService.exportTorrentFile', () => {
+      const items: HTMLButtonElement[] = Array.from(
+        fixture.nativeElement.querySelectorAll('[ngbDropdownItem]'),
+      );
+      const exportButton = items.find((b) => b.textContent?.includes('export-torrent-file'));
+      exportButton?.click();
+      expect(mockActionsService['exportTorrentFile']).toHaveBeenCalled();
+    });
+
+    it('rename torrent button in the Manage dropdown calls actionsService.rename', () => {
+      const items: HTMLButtonElement[] = Array.from(
+        fixture.nativeElement.querySelectorAll('[ngbDropdownItem]'),
+      );
+      const renameButton = items.find(
+        (b) => b.textContent?.trim() === 'components.modals.torrent-details.general.rename',
+      );
+      renameButton?.click();
+      expect(mockActionsService['rename']).toHaveBeenCalled();
     });
 
     describe('manage dropdown open-destination item', () => {
