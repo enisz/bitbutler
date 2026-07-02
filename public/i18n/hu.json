@@ -553,8 +553,7 @@
             "first-last-piece-prio": "Első/utolsó szelet prioritása",
             "super-seeding": "Super Seeding",
             "force-recheck": "Kényszerített ellenőrzés",
-            "auto-tmm": "Auto TMM",
-            "rename-files": "Fájlok átnevezése"
+            "auto-tmm": "Auto TMM"
           }
         },
         "peers": {

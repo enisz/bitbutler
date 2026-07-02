@@ -553,8 +553,7 @@
             "first-last-piece-prio": "First/Last Piece Priority",
             "super-seeding": "Super Seeding",
             "force-recheck": "Force Recheck",
-            "auto-tmm": "Auto TMM",
-            "rename-files": "Rename Files"
+            "auto-tmm": "Auto TMM"
           }
         },
         "peers": {

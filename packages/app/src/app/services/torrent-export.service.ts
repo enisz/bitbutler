@@ -43,7 +43,7 @@ export class TorrentExportService {
           return parsed.status ? `${parsed.status} ${parsed.statusText}` : parsed.statusText;
         }
       } catch {
-        // not JSON — fall through to returning the raw string
+        // not JSON - fall through to returning the raw string
       }
       return err;
     }
