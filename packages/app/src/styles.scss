@@ -931,6 +931,13 @@ ngb-typeahead-window.dropdown-menu {
   z-index: 11000 !important;
 }
 
+// ngbTooltip appends to <body> with Bootstrap's default z-index (1080), which
+// sits below .cdk-overlay-container - without this, a tooltip triggered from
+// inside a CDK-overlay panel (e.g. the grid context menu) renders behind it.
+.tooltip {
+  z-index: 11100 !important;
+}
+
 .bb-center-cell {
   display: flex;
   align-items: center;
