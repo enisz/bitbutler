@@ -18,14 +18,18 @@
 
 File: `packages/app/src/app/modals/torrent-details/torrent-details.html`
 
-Change the `@if (dataService.localPath())` guard around the "Open Destination"/"Show File" `ngbDropdownItem` button so the button always renders. Add:
+Change the `@if (dataService.localPath())` guard around the "Open Destination"/"Show File" `ngbDropdownItem` button so the button always renders.
 
-- `[disabled]="!dataService.localPath()"` on the button.
+**Do not use the native `[disabled]` input.** `ngbDropdownItem`'s `disabled` input toggles a `.disabled` class (via `NgbDropdownButtonItem`, it also sets the native `disabled` property on `button[ngbDropdownItem]`), and Bootstrap's own CSS (`.dropdown-item.disabled, .dropdown-item:disabled { pointer-events: none; }`, reinforced by this app's own `.bb-toolbar-dropdown .dropdown-item:disabled, &.disabled { pointer-events: none; }` in `styles.scss:437-441`) sets `pointer-events: none` on it. A `pointer-events: none` element never fires `mouseenter`, so `ngbTooltip` would never open on hover - the tooltip would be silently dead. This mirrors why the context menu (part 2) also avoids the native disabled state on its items.
+
+Instead, add:
+
+- `[class.bb-dropdown-item--disabled]="!dataService.localPath()"` on the button, with a new SCSS rule in `styles.scss` (inside the existing `.bb-toolbar-dropdown` block) styled like the context menu's `.bb-item--disabled` (dimmed, `cursor: not-allowed`) but explicitly **without** `pointer-events: none`.
+- `[attr.aria-disabled]="!dataService.localPath() ? 'true' : null"` for accessibility.
+- `(click)="dataService.localPath() && actionsService.openPath()"` so the click is a no-op when unresolved (same effect as the context menu's `onEntryClick` guard, just inline since there's only one action here).
 - `[ngbTooltip]="'components.modals.torrent-details.general.tooltip.open-destination-unresolved' | translate"`, `[disableTooltip]="!!dataService.localPath()"`, `placement="right"`, `container="body"`.
 
 Add the new key to both `public/i18n/us.json` and `public/i18n/hu.json` under `components.modals.torrent-details.general.tooltip.open-destination-unresolved`, with the same message as the existing context-menu key (`pages.main.grid.context-menu.tooltip.open-destination-unresolved`): "This torrent's save path could not be resolved on this machine." Each feature keeps its own translation namespace rather than reaching into another feature's keys, matching the existing convention (e.g. `local-path-failed` toast text is also duplicated per-feature rather than shared).
-
-`ngbDropdownItem` buttons support a native `disabled` attribute like any `<button>`; clicking a disabled button won't fire `(click)`, so `actionsService.openPath()` is naturally not invoked.
 
 ### 2. Context menu tooltip mechanism
 
@@ -40,6 +44,7 @@ Files: `packages/app/src/app/pages/main/grid/context-menu/context-menu.html`, `c
   - Component: `tooltipElRef` (`@ViewChild`), `tooltipText` signal, `onItemMouseEnter()`, `onItemMouseLeave()`, and their `(mouseenter)`/`(mouseleave)` bindings on the item button.
   - SCSS: the `.bb-tooltip-popover` rule.
 - No changes to `grid-context-menu.service.ts` - it already sets `disabled`/`tooltip` correctly for every relevant entry (open destination, pin/unpin, sort, filter, export-unavailable), and those all flow through the same generic template binding.
+- The `kind === 'item'` button already avoids the native `disabled` attribute (it only toggles `.bb-item--disabled` and `aria-disabled`, guarding the actual click in `onEntryClick()`), which is exactly what makes `ngbTooltip` viable here: the element stays hoverable. No change needed to that part of the existing behavior.
 
 Placement rationale: `files.openDestination` is the first item in the "Files" submenu, so a top-placed tooltip has nothing above it to overlap. Every other disabled item with a tooltip keeps the existing "right" placement convention used elsewhere in the app (e.g. modal footer dropdowns, `add-torrent` options).
 
@@ -77,6 +82,6 @@ If `electronService` becomes unused elsewhere in `grid.ts` after this change, re
 
 ## Testing
 
-- `torrent-details.spec.ts`: update/add cases so the "Open Destination"/"Show File" button is always present, and asserts `disabled` state + tooltip text based on `localPath()`.
+- `torrent-details.spec.ts`: update/add cases so the "Open Destination"/"Show File" button is always present, and asserts the `bb-dropdown-item--disabled` class + `aria-disabled` attribute + click no-op, all keyed off `localPath()`.
 - `context-menu.spec.ts`: replace tests of the manual popover mechanism (`onItemMouseEnter`/`onItemMouseLeave`, popover show/hide) with assertions that `ngbTooltip`/`disableTooltip` inputs are bound correctly for disabled items with a `tooltip`.
 - `grid.spec.ts`: update the `SAVE_PATH` double-click test to assert a `UI_OPEN_DESTINATION` command is emitted with `content_path`/`hash` instead of asserting a direct `electronService.openPath()` call.
