@@ -1,5 +1,7 @@
 import { OverlayModule, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { EMPTY } from 'rxjs';
 import { ContextMenu } from './context-menu';
 import { CONTEXT_MENU_CONFIG } from './context-menu.tokens';
@@ -104,81 +106,66 @@ describe('ContextMenu', () => {
     });
   });
 
-  describe('tooltip popover', () => {
-    let showPopoverSpy: ReturnType<typeof vi.spyOn>;
-    let hidePopoverSpy: ReturnType<typeof vi.spyOn>;
-
-    beforeEach(() => {
-      showPopoverSpy = vi.spyOn(HTMLElement.prototype, 'showPopover').mockImplementation(() => {});
-      hidePopoverSpy = vi.spyOn(HTMLElement.prototype, 'hidePopover').mockImplementation(() => {});
-    });
-
-    afterEach(() => {
-      showPopoverSpy.mockRestore();
-      hidePopoverSpy.mockRestore();
-    });
-
-    function makeTarget(): HTMLElement {
-      const el = document.createElement('button');
-      vi.spyOn(el, 'getBoundingClientRect').mockReturnValue({
-        top: 10,
-        left: 20,
-        right: 80,
-        bottom: 30,
-        width: 60,
-        height: 20,
-        x: 20,
-        y: 10,
-        toJSON: () => ({}),
-      } as DOMRect);
-      return el;
+  describe('disabled item tooltip', () => {
+    async function renderMenu(
+      menuItems: ContextMenuEntry[],
+    ): Promise<ComponentFixture<ContextMenu>> {
+      await TestBed.resetTestingModule();
+      await TestBed.configureTestingModule({
+        imports: [ContextMenu, OverlayModule],
+        providers: [
+          { provide: OverlayRef, useValue: makeOverlayRefMock() },
+          { provide: CONTEXT_MENU_CONFIG, useValue: { items: menuItems } },
+        ],
+      }).compileComponents();
+      const f = TestBed.createComponent(ContextMenu);
+      f.detectChanges();
+      return f;
     }
 
-    it('shows the popover with the tooltip text for a disabled item with a tooltip', () => {
-      const entry: ContextMenuEntry = {
-        kind: 'item',
-        id: 'x',
-        label: 'X',
-        disabled: true,
-        tooltip: 'Not available right now',
-      };
-      component.onItemMouseEnter(entry, makeTarget());
-      expect(component.tooltipText()).toBe('Not available right now');
-      expect(showPopoverSpy).toHaveBeenCalled();
+    it('binds the translated tooltip text for a disabled item with a tooltip', async () => {
+      const f = await renderMenu([
+        { kind: 'item', id: 'x', label: 'X', disabled: true, tooltip: 'Not available right now' },
+      ]);
+      const tooltip = f.debugElement.query(By.css('.bb-item')).injector.get(NgbTooltip);
+      expect(tooltip.ngbTooltip).toBe('Not available right now');
+      expect(tooltip.disableTooltip).toBeFalsy();
     });
 
-    it('does nothing for an enabled item even if it has a tooltip', () => {
-      const entry: ContextMenuEntry = {
-        kind: 'item',
-        id: 'x',
-        label: 'X',
-        disabled: false,
-        tooltip: 'Should not show',
-      };
-      component.onItemMouseEnter(entry, makeTarget());
-      expect(component.tooltipText()).toBeNull();
-      expect(showPopoverSpy).not.toHaveBeenCalled();
+    it('disables the tooltip for an enabled item even if it has a tooltip', async () => {
+      const f = await renderMenu([
+        { kind: 'item', id: 'x', label: 'X', disabled: false, tooltip: 'Should not show' },
+      ]);
+      const tooltip = f.debugElement.query(By.css('.bb-item')).injector.get(NgbTooltip);
+      expect(tooltip.disableTooltip).toBeTruthy();
     });
 
-    it('does nothing for a disabled item with no tooltip text', () => {
-      const entry: ContextMenuEntry = { kind: 'item', id: 'x', label: 'X', disabled: true };
-      component.onItemMouseEnter(entry, makeTarget());
-      expect(component.tooltipText()).toBeNull();
-      expect(showPopoverSpy).not.toHaveBeenCalled();
+    it('disables the tooltip for a disabled item with no tooltip text', async () => {
+      const f = await renderMenu([{ kind: 'item', id: 'x', label: 'X', disabled: true }]);
+      const tooltip = f.debugElement.query(By.css('.bb-item')).injector.get(NgbTooltip);
+      expect(tooltip.disableTooltip).toBeTruthy();
     });
 
-    it('hides the popover and clears the text on mouse leave', () => {
-      const entry: ContextMenuEntry = {
-        kind: 'item',
-        id: 'x',
-        label: 'X',
-        disabled: true,
-        tooltip: 'Hint',
-      };
-      component.onItemMouseEnter(entry, makeTarget());
-      component.onItemMouseLeave();
-      expect(component.tooltipText()).toBeNull();
-      expect(hidePopoverSpy).toHaveBeenCalled();
+    it('uses top placement for the open-destination item', async () => {
+      const f = await renderMenu([
+        {
+          kind: 'item',
+          id: 'files.openDestination',
+          label: 'X',
+          disabled: true,
+          tooltip: 'Hint',
+        },
+      ]);
+      const tooltip = f.debugElement.query(By.css('.bb-item')).injector.get(NgbTooltip);
+      expect(tooltip.placement).toBe('top');
+    });
+
+    it('uses right placement for every other item', async () => {
+      const f = await renderMenu([
+        { kind: 'item', id: 'row.pinToTop', label: 'X', disabled: true, tooltip: 'Hint' },
+      ]);
+      const tooltip = f.debugElement.query(By.css('.bb-item')).injector.get(NgbTooltip);
+      expect(tooltip.placement).toBe('right');
     });
   });
 });
