@@ -5,6 +5,7 @@ import { CommandBusService } from '../../services/command-bus.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { ToastService } from '../../services/toast.service';
+import { TorrentExportService } from '../../services/torrent-export.service';
 import { TorrentDetailsActionsService } from './torrent-details-actions.service';
 import { MergedTorrent, TorrentDetailsDataService } from './torrent-details-data.service';
 
@@ -88,6 +89,7 @@ describe('TorrentDetailsActionsService', () => {
   let commandBusEmit: ReturnType<typeof vi.fn>;
   let toastInfo: ReturnType<typeof vi.fn>;
   let toastDanger: ReturnType<typeof vi.fn>;
+  let torrentExportService: { exportTorrentFiles: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     const torrentSignal = signal<MergedTorrent | null>({
@@ -120,6 +122,7 @@ describe('TorrentDetailsActionsService', () => {
     commandBusEmit = vi.fn();
     toastInfo = vi.fn();
     toastDanger = vi.fn();
+    torrentExportService = { exportTorrentFiles: vi.fn().mockResolvedValue(undefined) };
 
     TestBed.configureTestingModule({
       providers: [
@@ -129,6 +132,7 @@ describe('TorrentDetailsActionsService', () => {
         { provide: QbService, useValue: { torrents: qbTorrents } },
         { provide: CommandBusService, useValue: { emit: commandBusEmit } },
         { provide: ToastService, useValue: { info: toastInfo, danger: toastDanger } },
+        { provide: TorrentExportService, useValue: torrentExportService },
       ],
     });
 
@@ -318,11 +322,16 @@ describe('TorrentDetailsActionsService', () => {
     });
   });
 
-  describe('renameFiles', () => {
-    it('emits UI_RENAME_FILES with the torrent hash', () => {
-      const emit = vi.spyOn(TestBed.inject(CommandBusService), 'emit');
-      service.renameFiles();
-      expect(emit).toHaveBeenCalledWith({ type: 'UI_RENAME_FILES', hash: 'abc123' });
+  describe('exportTorrentFile', () => {
+    it('delegates to TorrentExportService with the current torrent hash and name', async () => {
+      mockDataService.torrent.set({
+        data: makeTorrent({ hash: 'abc123', name: 'My Torrent' }),
+        properties: {} as any,
+      });
+      await service.exportTorrentFile();
+      expect(torrentExportService.exportTorrentFiles).toHaveBeenCalledWith([
+        { hash: 'abc123', name: 'My Torrent' },
+      ]);
     });
   });
 
