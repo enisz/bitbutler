@@ -381,6 +381,9 @@
           "auto-tmm": "Auto TMM",
           "super-seeding": "Super Seeding",
           "force-start": "Kényszerített indítás",
+          "tooltip": {
+            "open-destination-unresolved": "A torrent mentési útvonala nem feloldható ezen a gépen."
+          },
           "labels": {
             "title": "Torrent",
             "transfer": "Átvitel",

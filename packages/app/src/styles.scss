@@ -439,6 +439,15 @@ ngb-modal-window {
       opacity: 0.45;
       pointer-events: none;
     }
+
+    &.bb-dropdown-item--disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+
+      &:hover {
+        background: transparent;
+      }
+    }
   }
 
   .bb-dropdown-icon {

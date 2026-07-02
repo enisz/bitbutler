@@ -195,17 +195,31 @@ describe('TorrentDetails', () => {
       expect(mockActionsService['rename']).toHaveBeenCalled();
     });
 
-    describe('manage dropdown open-destination item', () => {
-      it('is absent when there is no localPath', () => {
+    describe('files dropdown open-destination item', () => {
+      it('is always present, even when there is no localPath', () => {
         mockDataService.localPath.set(null);
         fixture.detectChanges();
         const items: HTMLButtonElement[] = Array.from(
           fixture.nativeElement.querySelectorAll('[ngbDropdownItem]'),
         );
-        expect(items.some((i) => i.textContent?.includes('open-destination'))).toBe(false);
+        expect(items.some((i) => i.textContent?.includes('open-destination'))).toBe(true);
       });
 
-      it('is present when there is a localPath', () => {
+      it('is visually disabled and does not call openPath when there is no localPath', () => {
+        mockDataService.localPath.set(null);
+        fixture.detectChanges();
+        const items: HTMLButtonElement[] = Array.from(
+          fixture.nativeElement.querySelectorAll('[ngbDropdownItem]'),
+        );
+        const openDestinationItem = items.find((i) => i.textContent?.includes('open-destination'));
+        expect(openDestinationItem).toBeDefined();
+        expect(openDestinationItem?.classList.contains('bb-dropdown-item--disabled')).toBe(true);
+        expect(openDestinationItem?.getAttribute('aria-disabled')).toBe('true');
+        openDestinationItem?.click();
+        expect(mockActionsService['openPath']).not.toHaveBeenCalled();
+      });
+
+      it('is enabled and calls openPath when there is a localPath', () => {
         mockDataService.localPath.set('/local/path');
         fixture.detectChanges();
         const items: HTMLButtonElement[] = Array.from(
@@ -213,6 +227,8 @@ describe('TorrentDetails', () => {
         );
         const openDestinationItem = items.find((i) => i.textContent?.includes('open-destination'));
         expect(openDestinationItem).toBeDefined();
+        expect(openDestinationItem?.classList.contains('bb-dropdown-item--disabled')).toBe(false);
+        expect(openDestinationItem?.getAttribute('aria-disabled')).toBeNull();
         openDestinationItem?.click();
         expect(mockActionsService['openPath']).toHaveBeenCalled();
       });

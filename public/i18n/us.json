@@ -381,6 +381,9 @@
           "auto-tmm": "Auto TMM",
           "super-seeding": "Super Seeding",
           "force-start": "Force Start",
+          "tooltip": {
+            "open-destination-unresolved": "This torrent's save path could not be resolved on this machine."
+          },
           "labels": {
             "title": "Torrent",
             "transfer": "Transfer",
