@@ -127,24 +127,6 @@ export class GridContextMenuService {
         label: 'pages.main.grid.context-menu.submenu.files',
         icon: faFolderOpen,
         children: [
-          {
-            kind: 'item',
-            id: 'files.exportFile',
-            label: isMulti
-              ? 'pages.main.grid.context-menu.item.export-torrent-files'
-              : 'pages.main.grid.context-menu.item.export-torrent-file',
-            icon: faArrowDown,
-            variant: 'success',
-            disabled: this.serverStoreService.currentServer()?.export_available !== 1,
-            tooltip:
-              this.serverStoreService.currentServer()?.export_available !== 1
-                ? 'pages.main.grid.context-menu.tooltip.export-unavailable'
-                : undefined,
-            action: () =>
-              this.torrentExportService.exportTorrentFiles(
-                data.selected.map((t) => ({ hash: t.hash, name: t.name })),
-              ),
-          },
           ...(isMulti
             ? []
             : [
@@ -210,6 +192,24 @@ export class GridContextMenuService {
                     this.commandBusService.emit({ type: 'UI_RENAME_FILES', hash: data.row.hash }),
                 },
               ]),
+          {
+            kind: 'item',
+            id: 'files.exportFile',
+            label: isMulti
+              ? 'pages.main.grid.context-menu.item.export-torrent-files'
+              : 'pages.main.grid.context-menu.item.export-torrent-file',
+            icon: faArrowDown,
+            variant: 'success',
+            disabled: this.serverStoreService.currentServer()?.export_available !== 1,
+            tooltip:
+              this.serverStoreService.currentServer()?.export_available !== 1
+                ? 'pages.main.grid.context-menu.tooltip.export-unavailable'
+                : undefined,
+            action: () =>
+              this.torrentExportService.exportTorrentFiles(
+                data.selected.map((t) => ({ hash: t.hash, name: t.name })),
+              ),
+          },
         ],
       },
 
