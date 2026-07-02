@@ -32,6 +32,7 @@ import {
   faPlay,
   faRotate,
   faShare,
+  faSliders,
   faSort,
   faSortDown,
   faSortUp,
@@ -45,13 +46,13 @@ import {
 import { TranslateService } from '@ngx-translate/core';
 import type { ColDef, Column, ColumnHeaderContextMenuEvent } from 'ag-grid-community';
 import { filter, firstValueFrom } from 'rxjs';
-import { Torrent } from '../../../../models/torrent.model';
 import { CommandBusService } from '../../../../services/command-bus.service';
 import { FilterService } from '../../../../services/filter.service';
 import { PathService } from '../../../../services/path.service';
 import { QbService } from '../../../../services/qb.service';
 import { ServerStoreService } from '../../../../services/server-store.service';
 import { ToastService } from '../../../../services/toast.service';
+import { TorrentExportService } from '../../../../services/torrent-export.service';
 import { TorrentListGridSettingsService } from '../../../../services/torrent-list-grid.settings.service';
 import { ContextMenuEntry, GridContextMenuData } from './context-menu.types';
 
@@ -65,6 +66,7 @@ export class GridContextMenuService {
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly toastService = inject(ToastService);
   private readonly torrentListGridSettingsService = inject(TorrentListGridSettingsService);
+  private readonly torrentExportService = inject(TorrentExportService);
   private readonly translateService = inject(TranslateService);
 
   public async buildTorrentMenu(data: GridContextMenuData): Promise<ContextMenuEntry[]> {
@@ -117,21 +119,6 @@ export class GridContextMenuService {
                 }),
             },
           ]),
-      {
-        kind: 'item',
-        id: 'torrent.exportFile',
-        label: isMulti
-          ? 'pages.main.grid.context-menu.item.export-torrent-files'
-          : 'pages.main.grid.context-menu.item.export-torrent-file',
-        icon: faArrowDown,
-        variant: 'success',
-        disabled: this.serverStoreService.currentServer()?.export_available !== 1,
-        tooltip:
-          this.serverStoreService.currentServer()?.export_available !== 1
-            ? 'pages.main.grid.context-menu.tooltip.export-unavailable'
-            : undefined,
-        action: () => this.exportTorrentFiles(data.selected),
-      },
       { kind: 'divider' },
 
       {
@@ -140,6 +127,24 @@ export class GridContextMenuService {
         label: 'pages.main.grid.context-menu.submenu.files',
         icon: faFolderOpen,
         children: [
+          {
+            kind: 'item',
+            id: 'files.exportFile',
+            label: isMulti
+              ? 'pages.main.grid.context-menu.item.export-torrent-files'
+              : 'pages.main.grid.context-menu.item.export-torrent-file',
+            icon: faArrowDown,
+            variant: 'success',
+            disabled: this.serverStoreService.currentServer()?.export_available !== 1,
+            tooltip:
+              this.serverStoreService.currentServer()?.export_available !== 1
+                ? 'pages.main.grid.context-menu.tooltip.export-unavailable'
+                : undefined,
+            action: () =>
+              this.torrentExportService.exportTorrentFiles(
+                data.selected.map((t) => ({ hash: t.hash, name: t.name })),
+              ),
+          },
           ...(isMulti
             ? []
             : [
@@ -198,14 +203,6 @@ export class GridContextMenuService {
             : [
                 {
                   kind: 'item' as const,
-                  id: 'files.renameTorrent',
-                  label: 'pages.main.grid.context-menu.item.rename-torrent',
-                  icon: faPenToSquare,
-                  action: () =>
-                    this.commandBusService.emit({ type: 'UI_RENAME_TORRENT', torrent: data.row }),
-                },
-                {
-                  kind: 'item' as const,
                   id: 'files.renameFiles',
                   label: 'pages.main.grid.context-menu.item.rename-files',
                   icon: faFilePen,
@@ -213,9 +210,30 @@ export class GridContextMenuService {
                     this.commandBusService.emit({ type: 'UI_RENAME_FILES', hash: data.row.hash }),
                 },
               ]),
+        ],
+      },
+
+      {
+        kind: 'submenu',
+        id: 'manage',
+        label: 'pages.main.grid.context-menu.submenu.manage',
+        icon: faSliders,
+        children: [
+          ...(isMulti
+            ? []
+            : [
+                {
+                  kind: 'item' as const,
+                  id: 'manage.renameTorrent',
+                  label: 'pages.main.grid.context-menu.item.rename-torrent',
+                  icon: faPenToSquare,
+                  action: () =>
+                    this.commandBusService.emit({ type: 'UI_RENAME_TORRENT', torrent: data.row }),
+                },
+              ]),
           {
             kind: 'item',
-            id: 'files.category',
+            id: 'manage.category',
             label: 'pages.main.grid.context-menu.item.set-category',
             icon: faFolderTree,
             action: () =>
@@ -227,7 +245,7 @@ export class GridContextMenuService {
           },
           {
             kind: 'item',
-            id: 'files.tags',
+            id: 'manage.tags',
             label: 'pages.main.grid.context-menu.item.set-tags',
             icon: faTags,
             action: () =>
@@ -836,46 +854,5 @@ export class GridContextMenuService {
     ];
 
     return items;
-  }
-
-  private async exportTorrentFiles(selected: Torrent[]): Promise<void> {
-    const serverId = this.serverStoreService.currentServerId();
-    if (!serverId) return;
-
-    const items = selected.map((t) => ({ hash: t.hash, name: t.name }));
-    const title = this.translateService.instant(
-      'pages.main.grid.context-menu.toast.export-failed-title',
-    );
-
-    try {
-      const result = await window.bitbutler.export.saveTorrentFiles({ serverId, items });
-      if (result.failed.length > 0) {
-        this.toastService.danger(
-          this.translateService.instant('pages.main.grid.context-menu.toast.export-failed-count', {
-            failed: result.failed.length,
-            total: items.length,
-          }),
-          title,
-        );
-      }
-    } catch (err: any) {
-      this.toastService.danger(this.describeExportError(err), title);
-    }
-  }
-
-  private describeExportError(err: unknown): string {
-    if (err instanceof Error) return err.message;
-    if (typeof err === 'string') {
-      try {
-        const parsed = JSON.parse(err) as { status?: number; statusText?: string };
-        if (parsed?.statusText) {
-          return parsed.status ? `${parsed.status} ${parsed.statusText}` : parsed.statusText;
-        }
-      } catch {
-        // not JSON — fall through to returning the raw string
-      }
-      return err;
-    }
-    return String(err);
   }
 }
