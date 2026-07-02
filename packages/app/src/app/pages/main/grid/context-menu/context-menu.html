@@ -18,9 +18,11 @@
         [class.bb-info]="entry.variant === 'info'"
         [class.bb-item--disabled]="entry.disabled"
         [attr.aria-disabled]="entry.disabled ? 'true' : null"
+        [ngbTooltip]="entry.tooltip ? (entry.tooltip | translate) : null"
+        [disableTooltip]="!(entry.disabled && entry.tooltip)"
+        [placement]="entry.id === 'files.openDestination' ? 'top' : 'right'"
+        container="body"
         (click)="onEntryClick(entry)"
-        (mouseenter)="onItemMouseEnter(entry, asHtmlElement($event.currentTarget))"
-        (mouseleave)="onItemMouseLeave()"
         role="menuitem"
       >
         <span class="bb-icon" aria-hidden="true">
@@ -66,8 +68,4 @@
       </button>
     }
   }
-
-  <div #tooltipEl popover="manual" class="bb-tooltip-popover">
-    {{ tooltipText() | translate }}
-  </div>
 </div>

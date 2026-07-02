@@ -439,6 +439,15 @@ ngb-modal-window {
       opacity: 0.45;
       pointer-events: none;
     }
+
+    &.bb-dropdown-item--disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+
+      &:hover {
+        background: transparent;
+      }
+    }
   }
 
   .bb-dropdown-icon {
@@ -920,6 +929,13 @@ ngb-typeahead-window.dropdown-menu {
 .cdk-overlay-container,
 .cdk-global-overlay-wrapper {
   z-index: 11000 !important;
+}
+
+// ngbTooltip appends to <body> with Bootstrap's default z-index (1080), which
+// sits below .cdk-overlay-container - without this, a tooltip triggered from
+// inside a CDK-overlay panel (e.g. the grid context menu) renders behind it.
+.tooltip {
+  z-index: 11100 !important;
 }
 
 .bb-center-cell {

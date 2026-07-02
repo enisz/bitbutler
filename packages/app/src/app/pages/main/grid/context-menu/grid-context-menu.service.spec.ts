@@ -11,6 +11,7 @@ import { PathService } from '../../../../services/path.service';
 import { QbService } from '../../../../services/qb.service';
 import { ServerStoreService } from '../../../../services/server-store.service';
 import { ToastService } from '../../../../services/toast.service';
+import { TorrentExportService } from '../../../../services/torrent-export.service';
 import { TorrentListGridSettingsService } from '../../../../services/torrent-list-grid.settings.service';
 import type { ContextMenuEntry, GridContextMenuData } from './context-menu.types';
 import { GridContextMenuService } from './grid-context-menu.service';
@@ -94,6 +95,7 @@ describe('GridContextMenuService', () => {
   let filterService: { clearColumnFilter: ReturnType<typeof vi.fn> };
   let toastService: { danger: ReturnType<typeof vi.fn>; info: ReturnType<typeof vi.fn> };
   let translateService: { instant: ReturnType<typeof vi.fn> };
+  let torrentExportService: { exportTorrentFiles: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     commandBusService = { emit: vi.fn() };
@@ -103,14 +105,7 @@ describe('GridContextMenuService', () => {
     filterService = { clearColumnFilter: vi.fn() };
     toastService = { danger: vi.fn(), info: vi.fn() };
     translateService = { instant: vi.fn((key: string) => key) };
-
-    (window as any).bitbutler = {
-      export: {
-        saveTorrentFiles: vi
-          .fn()
-          .mockResolvedValue({ cancelled: false, savedPaths: ['/tmp/x.torrent'], failed: [] }),
-      },
-    };
+    torrentExportService = { exportTorrentFiles: vi.fn().mockResolvedValue(undefined) };
 
     TestBed.configureTestingModule({
       providers: [
@@ -128,6 +123,7 @@ describe('GridContextMenuService', () => {
           },
         },
         { provide: ToastService, useValue: toastService },
+        { provide: TorrentExportService, useValue: torrentExportService },
         {
           provide: TorrentListGridSettingsService,
           useValue: { asObservable: vi.fn(), save: vi.fn() },
@@ -276,10 +272,10 @@ describe('GridContextMenuService', () => {
       });
     });
 
-    describe('torrent.exportFile', () => {
+    describe('files.exportFile', () => {
       it('is enabled when export_available is 1', async () => {
         const entries = await service.buildTorrentMenu(makeData());
-        expect(findItem(entries, 'torrent.exportFile')?.disabled).toBeFalsy();
+        expect(findItem(entries, 'files.exportFile')?.disabled).toBeFalsy();
       });
 
       it('is disabled with a tooltip when export_available is 0', async () => {
@@ -288,8 +284,8 @@ describe('GridContextMenuService', () => {
           export_available: 0,
         });
         const entries = await service.buildTorrentMenu(makeData());
-        expect(findItem(entries, 'torrent.exportFile')?.disabled).toBe(true);
-        expect(findItem(entries, 'torrent.exportFile')?.tooltip).toBe(
+        expect(findItem(entries, 'files.exportFile')?.disabled).toBe(true);
+        expect(findItem(entries, 'files.exportFile')?.tooltip).toBe(
           'pages.main.grid.context-menu.tooltip.export-unavailable',
         );
       });
@@ -300,13 +296,13 @@ describe('GridContextMenuService', () => {
           export_available: null,
         });
         const entries = await service.buildTorrentMenu(makeData());
-        expect(findItem(entries, 'torrent.exportFile')?.disabled).toBe(true);
+        expect(findItem(entries, 'files.exportFile')?.disabled).toBe(true);
       });
 
       it('uses the singular label for a single selection', async () => {
         const row = makeRow();
         const entries = await service.buildTorrentMenu(makeData({ row, selected: [row] }));
-        expect(findItem(entries, 'torrent.exportFile')?.label).toBe(
+        expect(findItem(entries, 'files.exportFile')?.label).toBe(
           'pages.main.grid.context-menu.item.export-torrent-file',
         );
       });
@@ -317,81 +313,22 @@ describe('GridContextMenuService', () => {
         const entries = await service.buildTorrentMenu(
           makeData({ row: rowA, selected: [rowA, rowB] }),
         );
-        expect(findItem(entries, 'torrent.exportFile')?.label).toBe(
+        expect(findItem(entries, 'files.exportFile')?.label).toBe(
           'pages.main.grid.context-menu.item.export-torrent-files',
         );
       });
 
-      it('calls saveTorrentFiles with hash/name pairs for the selection', async () => {
+      it('delegates to TorrentExportService with hash/name pairs for the selection', async () => {
         const rowA = makeRow({ hash: 'a', name: 'Film A' });
         const rowB = makeRow({ hash: 'b', name: 'Film B' });
         const entries = await service.buildTorrentMenu(
           makeData({ row: rowA, selected: [rowA, rowB] }),
         );
-        await (findItem(entries, 'torrent.exportFile')!.action as () => Promise<void>)();
-        expect(window.bitbutler.export.saveTorrentFiles).toHaveBeenCalledWith({
-          serverId: 'server-1',
-          items: [
-            { hash: 'a', name: 'Film A' },
-            { hash: 'b', name: 'Film B' },
-          ],
-        });
-      });
-
-      it('shows a danger toast summarizing failures', async () => {
-        (window.bitbutler.export.saveTorrentFiles as ReturnType<typeof vi.fn>).mockResolvedValue({
-          cancelled: false,
-          savedPaths: [],
-          failed: [{ hash: 'a', name: 'Film A', error: 'boom' }],
-        });
-        const row = makeRow();
-        const entries = await service.buildTorrentMenu(makeData({ row, selected: [row] }));
-        await (findItem(entries, 'torrent.exportFile')!.action as () => Promise<void>)();
-        expect(toastService.danger).toHaveBeenCalled();
-      });
-
-      it('does not toast when nothing failed', async () => {
-        const row = makeRow();
-        const entries = await service.buildTorrentMenu(makeData({ row, selected: [row] }));
-        await (findItem(entries, 'torrent.exportFile')!.action as () => Promise<void>)();
-        expect(toastService.danger).not.toHaveBeenCalled();
-      });
-
-      it('translates the failure count and title before toasting', async () => {
-        (window.bitbutler.export.saveTorrentFiles as ReturnType<typeof vi.fn>).mockResolvedValue({
-          cancelled: false,
-          savedPaths: [],
-          failed: [{ hash: 'a', name: 'Film A', error: 'boom' }],
-        });
-        const row = makeRow();
-        const entries = await service.buildTorrentMenu(makeData({ row, selected: [row] }));
-        await (findItem(entries, 'torrent.exportFile')!.action as () => Promise<void>)();
-        expect(translateService.instant).toHaveBeenCalledWith(
-          'pages.main.grid.context-menu.toast.export-failed-title',
-        );
-        expect(translateService.instant).toHaveBeenCalledWith(
-          'pages.main.grid.context-menu.toast.export-failed-count',
-          { failed: 1, total: 1 },
-        );
-      });
-
-      it('shows a friendly error message when saveTorrentFiles rejects with a QbHttpError', async () => {
-        (window.bitbutler.export.saveTorrentFiles as ReturnType<typeof vi.fn>).mockRejectedValue(
-          JSON.stringify({
-            name: 'QbHttpError',
-            status: 404,
-            statusText: 'Not Found',
-            body: '...',
-            path: '/api/v2/torrents/export',
-          }),
-        );
-        const row = makeRow();
-        const entries = await service.buildTorrentMenu(makeData({ row, selected: [row] }));
-        await (findItem(entries, 'torrent.exportFile')!.action as () => Promise<void>)();
-        expect(toastService.danger).toHaveBeenCalledWith(
-          '404 Not Found',
-          'pages.main.grid.context-menu.toast.export-failed-title',
-        );
+        await (findItem(entries, 'files.exportFile')!.action as () => Promise<void>)();
+        expect(torrentExportService.exportTorrentFiles).toHaveBeenCalledWith([
+          { hash: 'a', name: 'Film A' },
+          { hash: 'b', name: 'Film B' },
+        ]);
       });
     });
 
@@ -597,10 +534,10 @@ describe('GridContextMenuService', () => {
         });
       });
 
-      it('files.renameTorrent action emits UI_RENAME_TORRENT with the torrent', async () => {
+      it('manage.renameTorrent action emits UI_RENAME_TORRENT with the torrent', async () => {
         const row = makeRow();
         const entries = await service.buildTorrentMenu(makeData({ row }));
-        (findItem(entries, 'files.renameTorrent')!.action as () => void)();
+        (findItem(entries, 'manage.renameTorrent')!.action as () => void)();
         expect(commandBusService.emit).toHaveBeenCalledWith({
           type: 'UI_RENAME_TORRENT',
           torrent: row,
@@ -616,10 +553,10 @@ describe('GridContextMenuService', () => {
         });
       });
 
-      it('files.category action emits UI_SET_TORRENT_CATEGORY with the torrent and selected hashes', async () => {
+      it('manage.category action emits UI_SET_TORRENT_CATEGORY with the torrent and selected hashes', async () => {
         const row = makeRow();
         const entries = await service.buildTorrentMenu(makeData({ row }));
-        (findItem(entries, 'files.category')!.action as () => void)();
+        (findItem(entries, 'manage.category')!.action as () => void)();
         expect(commandBusService.emit).toHaveBeenCalledWith({
           type: 'UI_SET_TORRENT_CATEGORY',
           torrent: row,
@@ -627,10 +564,10 @@ describe('GridContextMenuService', () => {
         });
       });
 
-      it('files.tags action emits UI_SET_TORRENT_TAGS with the torrent and selected hashes', async () => {
+      it('manage.tags action emits UI_SET_TORRENT_TAGS with the torrent and selected hashes', async () => {
         const row = makeRow();
         const entries = await service.buildTorrentMenu(makeData({ row }));
-        (findItem(entries, 'files.tags')!.action as () => void)();
+        (findItem(entries, 'manage.tags')!.action as () => void)();
         expect(commandBusService.emit).toHaveBeenCalledWith({
           type: 'UI_SET_TORRENT_TAGS',
           torrent: row,
@@ -652,14 +589,14 @@ describe('GridContextMenuService', () => {
           hashes: ['hash-a', 'hash-b'],
         });
 
-        (findItem(entries, 'files.category')!.action as () => void)();
+        (findItem(entries, 'manage.category')!.action as () => void)();
         expect(commandBusService.emit).toHaveBeenCalledWith({
           type: 'UI_SET_TORRENT_CATEGORY',
           torrent: rowA,
           hashes: ['hash-a', 'hash-b'],
         });
 
-        (findItem(entries, 'files.tags')!.action as () => void)();
+        (findItem(entries, 'manage.tags')!.action as () => void)();
         expect(commandBusService.emit).toHaveBeenCalledWith({
           type: 'UI_SET_TORRENT_TAGS',
           torrent: rowA,
@@ -739,7 +676,7 @@ describe('GridContextMenuService', () => {
 
         expect(findItem(entries, 'torrent.details')).toBeUndefined();
         expect(findItem(entries, 'files.openDestination')).toBeUndefined();
-        expect(findItem(entries, 'files.renameTorrent')).toBeUndefined();
+        expect(findItem(entries, 'manage.renameTorrent')).toBeUndefined();
         expect(findItem(entries, 'files.renameFiles')).toBeUndefined();
       });
 
@@ -748,7 +685,7 @@ describe('GridContextMenuService', () => {
 
         expect(findItem(entries, 'torrent.details')).toBeDefined();
         expect(findItem(entries, 'files.openDestination')).toBeDefined();
-        expect(findItem(entries, 'files.renameTorrent')).toBeDefined();
+        expect(findItem(entries, 'manage.renameTorrent')).toBeDefined();
         expect(findItem(entries, 'files.renameFiles')).toBeDefined();
       });
 

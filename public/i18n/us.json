@@ -376,12 +376,14 @@
           "comment": "Comment",
           "error": "Error",
           "set-download-path": "Set Download Path",
-          "rename-files": "Rename Files",
           "sequential-download": "Sequential Download",
           "first-last-piece-prio": "First/Last Piece Priority",
           "auto-tmm": "Auto TMM",
           "super-seeding": "Super Seeding",
           "force-start": "Force Start",
+          "tooltip": {
+            "open-destination-unresolved": "This torrent's save path could not be resolved on this machine."
+          },
           "labels": {
             "title": "Torrent",
             "transfer": "Transfer",
@@ -546,14 +548,15 @@
             "transfer-limits": "Transfer Limits",
             "control": "Control",
             "files": "Files",
+            "manage": "Manage",
+            "export-torrent-file": "Export .torrent File",
             "transfer": "Transfer",
             "maintenance": "Maintenance",
             "sequential-download": "Sequential Download",
             "first-last-piece-prio": "First/Last Piece Priority",
             "super-seeding": "Super Seeding",
             "force-recheck": "Force Recheck",
-            "auto-tmm": "Auto TMM",
-            "rename-files": "Rename Files"
+            "auto-tmm": "Auto TMM"
           }
         },
         "peers": {
@@ -1053,6 +1056,7 @@
             "copy": "Copy",
             "pin-row": "Pin Row",
             "files": "Files",
+            "manage": "Manage",
             "transfer": "Transfer",
             "maintenance": "Maintenance",
             "queue": "Queue",

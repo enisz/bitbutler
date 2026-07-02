@@ -6,6 +6,7 @@ import { CommandBusService } from '../../services/command-bus.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { ToastService } from '../../services/toast.service';
+import { TorrentExportService } from '../../services/torrent-export.service';
 import { TorrentDetailsDataService } from './torrent-details-data.service';
 
 @Injectable()
@@ -16,6 +17,7 @@ export class TorrentDetailsActionsService {
   private readonly commandBusService = inject(CommandBusService);
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
+  private readonly torrentExportService = inject(TorrentExportService);
 
   public rename(): void {
     this.commandBusService.emit({
@@ -211,8 +213,10 @@ export class TorrentDetailsActionsService {
     }
   }
 
-  public renameFiles(): void {
-    this.commandBusService.emit({ type: 'UI_RENAME_FILES', hash: this.dataService.hash() });
+  public async exportTorrentFile(): Promise<void> {
+    await this.torrentExportService.exportTorrentFiles([
+      { hash: this.dataService.hash(), name: this.dataService.torrent()!.data.name },
+    ]);
   }
 
   public async toggleSequentialDownload(): Promise<void> {

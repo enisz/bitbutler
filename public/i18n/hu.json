@@ -376,12 +376,14 @@
           "comment": "Megjegyzés",
           "error": "Hiba",
           "set-download-path": "Letöltési útvonal beállítása",
-          "rename-files": "Fájlok átnevezése",
           "sequential-download": "Szekvenciális letöltés",
           "first-last-piece-prio": "Első/utolsó szelet prioritása",
           "auto-tmm": "Auto TMM",
           "super-seeding": "Super Seeding",
           "force-start": "Kényszerített indítás",
+          "tooltip": {
+            "open-destination-unresolved": "A torrent mentési útvonala nem feloldható ezen a gépen."
+          },
           "labels": {
             "title": "Torrent",
             "transfer": "Átvitel",
@@ -546,14 +548,15 @@
             "transfer-limits": "Átviteli korlátok",
             "control": "Vezérlés",
             "files": "Fájlok",
+            "manage": "Kezelés",
+            "export-torrent-file": "Torrent fájl exportálása",
             "transfer": "Átvitel",
             "maintenance": "Karbantartás",
             "sequential-download": "Szekvenciális letöltés",
             "first-last-piece-prio": "Első/utolsó szelet prioritása",
             "super-seeding": "Super Seeding",
             "force-recheck": "Kényszerített ellenőrzés",
-            "auto-tmm": "Auto TMM",
-            "rename-files": "Fájlok átnevezése"
+            "auto-tmm": "Auto TMM"
           }
         },
         "peers": {
@@ -1053,6 +1056,7 @@
             "copy": "Másolás",
             "pin-row": "Sor rögzítése",
             "files": "Fájlok",
+            "manage": "Kezelés",
             "transfer": "Átvitel",
             "maintenance": "Karbantartás",
             "queue": "Sor",

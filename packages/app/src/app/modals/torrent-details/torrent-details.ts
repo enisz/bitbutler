@@ -12,11 +12,11 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
+  faArrowDown,
   faArrowDownUpAcrossLine,
   faAsterisk,
   faBullhorn,
   faCheck,
-  faFilePen,
   faFolder,
   faFolderOpen,
   faFolderTree,
@@ -27,6 +27,7 @@ import {
   faPlay,
   faRotate,
   faShare,
+  faSliders,
   faTags,
   faTrashCan,
   faXmark,
@@ -82,10 +83,10 @@ export class TorrentDetails implements OnInit, GuardableModal {
 
   public readonly icon = {
     faArrowDownUpAcrossLine,
+    faArrowDown,
     faAsterisk,
     faBullhorn,
     faCheck,
-    faFilePen,
     faFolder,
     faFolderOpen,
     faFolderTree,
@@ -96,6 +97,7 @@ export class TorrentDetails implements OnInit, GuardableModal {
     faPlay,
     faRotate,
     faShare,
+    faSliders,
     faTags,
     faTrashCan,
     faXmark,

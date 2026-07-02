@@ -27,7 +27,6 @@ import { TorrentListGridSettings } from '../../../models/torrent-list-grid.model
 import { Torrent } from '../../../models/torrent.model';
 import { CommandBusService } from '../../../services/command-bus.service';
 import { ContextMenuService } from '../../../services/context-menu.service';
-import { ElectronService } from '../../../services/electron.service';
 import { FilterService } from '../../../services/filter.service';
 import { GridStateService } from '../../../services/grid-state.service';
 import { GridViewStoreService } from '../../../services/grid-view-store.service';
@@ -71,7 +70,6 @@ export class Grid implements AfterViewInit {
   private readonly gridViewStoreService = inject(GridViewStoreService);
   private readonly commandBusService = inject(CommandBusService);
   private readonly torrentListGridSettingsService = inject(TorrentListGridSettingsService);
-  private readonly electronService = inject(ElectronService);
   private readonly translateService = inject(TranslateService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly keyboardNavService = inject(GridKeyboardNavService);
@@ -348,8 +346,12 @@ export class Grid implements AfterViewInit {
     if (action === 'INLINE_EDIT') return;
     if (action === 'DETAILS')
       this.commandBusService.emit({ type: 'UI_OPEN_TORRENT_DETAILS', hash: event.data.hash });
-    else if (action === 'SAVE_PATH' && event.data.save_path)
-      this.electronService.openPath(event.data.save_path);
+    else if (action === 'SAVE_PATH' && event.data.content_path)
+      this.commandBusService.emit({
+        type: 'UI_OPEN_DESTINATION',
+        remotePath: event.data.content_path,
+        hash: event.data.hash,
+      });
   };
 
   private refreshColumnHeaders(): void {
