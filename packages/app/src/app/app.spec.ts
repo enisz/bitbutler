@@ -9,6 +9,7 @@ import { Maindata } from './models/torrent.model';
 import { CommandBusService } from './services/command-bus.service';
 import { OpenFilesService, PendingAddTorrent } from './services/open-files.service';
 import { TorrentStoreService } from './services/torrent-store.service';
+import { UiCommandHandlerService } from './services/ui-command-handler.service';
 
 const makeMaindata = (opts: Partial<Maindata>): Maindata =>
   ({
@@ -42,6 +43,11 @@ describe('App', () => {
         provideZonelessChangeDetection(),
         provideRouter([]),
         provideTimeago({ intl: { provide: TimeagoIntl, useClass: TimeagoIntl } }),
+        // Real UiCommandHandlerService would act on the commands emitted below (e.g. actually
+        // opening NgbModal), which doesn't work once the test environment tears down. App's own
+        // command-emitting logic is what these tests cover; modal-opening behavior for
+        // UI_ADD_TORRENT/UI_TORRENT_EXISTS is covered in ui-command-handler.service.spec.ts.
+        { provide: UiCommandHandlerService, useValue: { start: vi.fn() } },
       ],
     }).compileComponents();
   });
