@@ -1,5 +1,5 @@
 <div class="d-flex flex-column">
-  <div class="d-flex align-items-center justify-content-between">
+  <div class="d-flex align-items-center justify-content-between pb-2">
     <div class="small text-uppercase fw-semibold opacity-75 user-select-none">
       {{ label() }} ({{ (items() ?? []).length }})
     </div>
@@ -10,7 +10,7 @@
     }
   </div>
   @if (showFilter()) {
-    <div class="p-2">
+    <div class="px-2 pb-2 pt-0">
       <div class="bb-filter-input">
         <input
           type="text"
