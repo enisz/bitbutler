@@ -62,7 +62,7 @@ export class Status {
   readonly categoriesAction = computed<FilterGroupAction>(() => {
     this.languageChanged();
     return {
-      label: this.translateService.instant('pages.main.status.manage-categories'),
+      label: this.translateService.instant('general.button.manage'),
       action: () => this.commandBusService.emit({ type: 'UI_MANAGE_CATEGORIES' }),
     };
   });
@@ -70,7 +70,7 @@ export class Status {
   readonly tagsAction = computed<FilterGroupAction>(() => {
     this.languageChanged();
     return {
-      label: this.translateService.instant('pages.main.status.manage-tags'),
+      label: this.translateService.instant('general.button.manage'),
       action: () => this.commandBusService.emit({ type: 'UI_MANAGE_TAGS' }),
     };
   });

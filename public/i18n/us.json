@@ -1290,8 +1290,6 @@
           "all": "All"
         },
         "clear-all": "Clear all filters",
-        "manage-categories": "Manage Categories",
-        "manage-tags": "Manage Tags",
         "label": {
           "status": "Status",
           "trackers": "Trackers",
@@ -1753,6 +1751,7 @@
       "today": "Today",
       "connect": "Connect",
       "add-server": "Add Server",
+      "manage": "Manage",
       "manage-servers": "Manage Servers",
       "delete": "Delete",
       "ok": "OK",
