@@ -1,5 +1,6 @@
 import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { CommandBusService } from '../../../services/command-bus.service';
 import { FilterService, GRID_FILTER_INITIAL } from '../../../services/filter.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { Status } from './status';
@@ -29,6 +30,7 @@ describe('Status', () => {
     categoriesMap: ReturnType<typeof signal<Map<string, any>>>;
     tagsSet: ReturnType<typeof signal<Set<string>>>;
   };
+  let commandBusMock: { emit: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     filterMock = {
@@ -52,12 +54,14 @@ describe('Status', () => {
       categoriesMap: signal(new Map()),
       tagsSet: signal(new Set()),
     };
+    commandBusMock = { emit: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [Status],
       providers: [
         { provide: FilterService, useValue: filterMock },
         { provide: TorrentStoreService, useValue: torrentStoreMock },
+        { provide: CommandBusService, useValue: commandBusMock },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
@@ -172,6 +176,38 @@ describe('Status', () => {
         states: new Set(['downloading', 'uploading']),
       });
       expect(component.activeKey()).toBe('all');
+    });
+  });
+
+  describe('categoriesAction', () => {
+    it('should emit UI_MANAGE_CATEGORIES when invoked', () => {
+      component.categoriesAction().action();
+      expect(commandBusMock.emit).toHaveBeenCalledWith({ type: 'UI_MANAGE_CATEGORIES' });
+    });
+  });
+
+  describe('tagsAction', () => {
+    it('should emit UI_MANAGE_TAGS when invoked', () => {
+      component.tagsAction().action();
+      expect(commandBusMock.emit).toHaveBeenCalledWith({ type: 'UI_MANAGE_TAGS' });
+    });
+  });
+
+  describe('statusItems variant', () => {
+    it('should assign the expected Bootstrap variant per status key', () => {
+      const expected: Record<string, string> = {
+        downloading: 'info',
+        completed: 'success',
+        active: 'success',
+        inactive: 'secondary',
+        stopped: 'secondary',
+        checking: 'primary',
+        errored: 'danger',
+      };
+
+      for (const item of component.statusItems()) {
+        expect(item.variant).toBe(expected[item.key]);
+      }
     });
   });
 });

@@ -1290,6 +1290,8 @@
           "all": "All"
         },
         "clear-all": "Clear all filters",
+        "manage-categories": "Manage Categories",
+        "manage-tags": "Manage Tags",
         "label": {
           "status": "Status",
           "trackers": "Trackers",

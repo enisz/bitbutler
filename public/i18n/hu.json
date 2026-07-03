@@ -1290,6 +1290,8 @@
           "all": "Összes"
         },
         "clear-all": "Összes szűrő törlése",
+        "manage-categories": "Kategóriák kezelése",
+        "manage-tags": "Címkék kezelése",
         "label": {
           "status": "Állapot",
           "trackers": "Trackerek",

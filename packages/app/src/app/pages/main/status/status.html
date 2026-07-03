@@ -14,6 +14,7 @@
       [items]="trackersWithCounts()"
       [activeKey]="activeTrackerKey()"
       [showAllCount]="totalCount()"
+      [showFilter]="true"
       (itemSelected)="setTrackerGroup($event)"
     ></app-filter-group>
 
@@ -23,6 +24,8 @@
       [items]="categoriesWithCounts()"
       [activeKey]="activeCategoryKey()"
       [showAllCount]="totalCount()"
+      [showFilter]="true"
+      [action]="categoriesAction()"
       (itemSelected)="setCategoryGroup($event)"
     ></app-filter-group>
 
@@ -32,6 +35,8 @@
       [items]="tagsWithCounts()"
       [activeKey]="activeTagKey()"
       [showAllCount]="totalCount()"
+      [showFilter]="true"
+      [action]="tagsAction()"
       (itemSelected)="setTagGroup($event)"
     ></app-filter-group>
 
@@ -41,6 +46,7 @@
       [items]="savePathsWithCounts()"
       [activeKey]="activeSavePathKey()"
       [showAllCount]="totalCount()"
+      [showFilter]="true"
       (itemSelected)="setSavePathGroup($event)"
     ></app-filter-group>
   </div>
