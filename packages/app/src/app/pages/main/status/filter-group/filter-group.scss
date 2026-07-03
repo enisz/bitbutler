@@ -12,14 +12,14 @@
     color: var(--bs-body-color);
     border-color: var(--bb-active-list-item-bg) !important;
 
-    .bb-status-badge {
+    .bb-status-badge.bb-status-badge--neutral {
       background-color: var(--bb-accent);
       color: var(--bb-primary-ink);
     }
   }
 
   &:not(.active) {
-    .bb-status-badge {
+    .bb-status-badge.bb-status-badge--neutral {
       background-color: var(--bs-tertiary-bg);
       color: var(--bs-emphasis-color);
     }
@@ -47,4 +47,34 @@
     box-shadow: none;
     border-bottom-color: var(--bb-accent);
   }
+}
+
+@keyframes bb-filter-item-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bb-filter-item-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+.bb-filter-item-enter {
+  animation: bb-filter-item-in 0.15s ease-out;
+}
+
+.bb-filter-item-leave {
+  animation: bb-filter-item-out 0.15s ease-in;
 }

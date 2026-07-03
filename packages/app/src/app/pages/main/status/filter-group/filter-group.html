@@ -45,7 +45,7 @@
         <span #allLabel class="bb-status-label flex-grow-1 text-truncate">{{
           'pages.main.status.filter-group.all' | translate
         }}</span>
-        <span class="badge bb-status-badge">{{ showAllCount() }}</span>
+        <span class="badge bb-status-badge bb-status-badge--neutral">{{ showAllCount() }}</span>
       </button>
     }
     @for (item of filteredItems(); track item.key) {
@@ -58,6 +58,8 @@
         tooltipClass="single-line-tooltip"
         [bbTooltipOverflow]="itemLabel"
         placement="end"
+        animate.enter="bb-filter-item-enter"
+        animate.leave="bb-filter-item-leave"
       >
         @if (item.icon) {
           @if (isIconArray(item.icon)) {
@@ -74,7 +76,11 @@
           }
         }
         <span #itemLabel class="bb-status-label flex-grow-1 text-truncate">{{ item.label }}</span>
-        <span class="badge bb-status-badge">{{ item.count }}</span>
+        <span
+          class="badge bb-status-badge"
+          [ngClass]="item.variant ? 'text-bg-' + item.variant : 'bb-status-badge--neutral'"
+          >{{ item.count }}</span
+        >
       </button>
     }
   </div>

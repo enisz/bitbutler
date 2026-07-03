@@ -105,6 +105,26 @@ describe('FilterGroupComponent', () => {
     });
   });
 
+  describe('item badge variant', () => {
+    it('should apply the neutral badge class when an item has no variant', () => {
+      fixture.componentRef.setInput('items', [{ key: 'a', label: 'A', count: 1 }]);
+      fixture.detectChanges();
+      const badge: HTMLElement = fixture.nativeElement.querySelector('.bb-status-badge');
+      expect(badge.classList.contains('bb-status-badge--neutral')).toBe(true);
+      expect(badge.classList.contains('text-bg-success')).toBe(false);
+    });
+
+    it('should apply a text-bg-{variant} class when an item has a variant', () => {
+      fixture.componentRef.setInput('items', [
+        { key: 'a', label: 'A', count: 1, variant: 'success' },
+      ]);
+      fixture.detectChanges();
+      const badge: HTMLElement = fixture.nativeElement.querySelector('.bb-status-badge');
+      expect(badge.classList.contains('text-bg-success')).toBe(true);
+      expect(badge.classList.contains('bb-status-badge--neutral')).toBe(false);
+    });
+  });
+
   describe('filteredItems', () => {
     it('should return all items when filter is empty', () => {
       expect(component.filteredItems().length).toBe(sampleItems.length);

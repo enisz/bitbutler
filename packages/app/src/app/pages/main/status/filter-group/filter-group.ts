@@ -7,6 +7,7 @@ import { IconDefinition, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { startWith } from 'rxjs/operators';
+import { BbProgressVariant } from '../../../../components/bb-progress/bb-progress.types';
 import { TooltipOverflow } from '../../../../directives/tooltip-overflow';
 
 export interface FilterGroupAction {
@@ -19,6 +20,7 @@ export interface FilterItem {
   label: string;
   count: number;
   icon?: IconDefinition | IconDefinition[];
+  variant?: BbProgressVariant;
 }
 
 @Component({
@@ -41,7 +43,7 @@ export class FilterGroupComponent {
   readonly label = input.required<string>();
   readonly items = input<FilterItem[] | null>(null);
   readonly activeKey = input.required<string>();
-  readonly showAll = input(true);
+  readonly showAll = input(false);
   readonly showAllCount = input.required<number>();
   readonly showFilter = input(false);
   readonly action = input<FilterGroupAction | null>(null);
