@@ -51,6 +51,7 @@ describe('UiCommandHandlerService', () => {
       import('../modals/manage-servers/manage-servers'),
       import('../modals/export-torrents/export-torrents'),
       import('../modals/import-torrents/import-torrents'),
+      import('../modals/torrent-exists/torrent-exists'),
     ]);
   });
 
@@ -219,6 +220,25 @@ describe('UiCommandHandlerService', () => {
   it('should open TorrentDetails when hash is provided for UI_OPEN_TORRENT_DETAILS', async () => {
     commands$.next({ type: 'UI_OPEN_TORRENT_DETAILS', hash: 'abc123' });
     await flushPromises();
+    expect(mockModalService.open).toHaveBeenCalled();
+  });
+
+  it('should open TorrentExists modal for UI_TORRENT_EXISTS', async () => {
+    commands$.next({ type: 'UI_TORRENT_EXISTS', hash: 'abc123', originalPath: '/tmp/a.torrent' });
+    await flushPromises();
+    expect(mockModalService.open).toHaveBeenCalled();
+    expect(setInputSpy).toHaveBeenCalledWith('hash', 'abc123');
+    expect(setInputSpy).toHaveBeenCalledWith('originalPath', '/tmp/a.torrent');
+  });
+
+  it('should open a new TorrentExists modal even if one is already open (no isModalOpen guard)', async () => {
+    commands$.next({ type: 'UI_TORRENT_EXISTS', hash: 'abc123', originalPath: null });
+    await flushPromises();
+    mockModalService.open.mockClear();
+
+    commands$.next({ type: 'UI_TORRENT_EXISTS', hash: 'def456', originalPath: null });
+    await flushPromises();
+
     expect(mockModalService.open).toHaveBeenCalled();
   });
 

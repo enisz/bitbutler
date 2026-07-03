@@ -58,8 +58,20 @@ export class App {
 
   private readonly _openDraftsEffect = effect(() => {
     const items = this.openFilesService.pendingDrafts();
-    if (!items.length) return;
+    const first = items[0];
+    if (!first) return;
     if (!this.torrentStoreService.isPrimed()) return;
+
+    const hash = first.draft.torrent?.infoHashV1?.toLowerCase();
+    if (hash && this.torrentStoreService.torrentsMap().has(hash)) {
+      this.commandBusService.emit({
+        type: 'UI_TORRENT_EXISTS',
+        hash,
+        originalPath: first.draft.originalPath ?? null,
+      });
+      this.openFilesService.consumeCurrentDraft();
+      return;
+    }
 
     this.commandBusService.emit({ type: 'UI_ADD_TORRENT' });
   });

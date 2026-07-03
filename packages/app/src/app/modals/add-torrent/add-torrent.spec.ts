@@ -1,21 +1,18 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import type { TorrentDraft } from '@bitbutler/shared';
-import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { of } from 'rxjs';
 import { FileTreeSaveEvent } from '../../components/bb-file-tree/bb-file-tree';
 import { DEFAULT_GENERAL_SETTINGS } from '../../models/general-settings.model';
 import { AddTorrentSettingsService } from '../../services/add-torrent-settings.service';
+import { CommandBusService } from '../../services/command-bus.service';
 import { ConfirmService } from '../../services/confirm.service';
 import { GeneralSettingsService } from '../../services/general-settings.service';
 import { OpenFilesService } from '../../services/open-files.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
-import { TorrentStoreService } from '../../services/torrent-store.service';
-import { TorrentExists } from '../torrent-exists/torrent-exists';
 import { AddTorrent } from './add-torrent';
-
-const flushPromises = () => new Promise<void>((resolve) => setTimeout(resolve));
 
 const draftWithFiles: TorrentDraft = {
   source: 'manual',
@@ -32,6 +29,7 @@ describe('AddTorrent', () => {
   let fixture: ComponentFixture<AddTorrent>;
   let mockActiveModal: Partial<NgbActiveModal>;
   let mockOpenFilesService: any;
+  let mockCommandBusService: any;
 
   beforeEach(async () => {
     mockActiveModal = { close: vi.fn(), dismiss: vi.fn() };
@@ -39,15 +37,15 @@ describe('AddTorrent', () => {
       pendingDrafts: signal([]),
       consumeCurrentDraft: vi.fn(),
     };
+    mockCommandBusService = { emit: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [AddTorrent],
       providers: [
         { provide: NgbActiveModal, useValue: mockActiveModal },
-        { provide: NgbModal, useValue: { open: vi.fn() } },
         { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
-        { provide: TorrentStoreService, useValue: { torrentsArray: signal([]) } },
         { provide: OpenFilesService, useValue: mockOpenFilesService },
+        { provide: CommandBusService, useValue: mockCommandBusService },
         {
           provide: AddTorrentSettingsService,
           useValue: {
@@ -629,12 +627,10 @@ describe('AddTorrent', () => {
       expect(mockOpenFilesService.consumeCurrentDraft).toHaveBeenCalled();
     });
 
-    it('should open the TorrentExists modal and consume the draft on a 409 conflict', async () => {
+    it('should emit UI_TORRENT_EXISTS and consume the draft on a 409 conflict', async () => {
       vi.spyOn(window.bitbutler.qb, 'torrentsAdd')
         .mockClear()
         .mockRejectedValue(new Error('Request failed: 409 {"name":"QbHttpError","status":409}'));
-      const modalService = TestBed.inject(NgbModal) as any;
-      modalService.open.mockReturnValue({ _contentRef: { componentRef: { setInput: vi.fn() } } });
 
       (component as any).selectedTorrentFile.set({
         name: 'test.torrent',
@@ -650,21 +646,19 @@ describe('AddTorrent', () => {
 
       await component.handleSubmit({ preventDefault: () => {} } as unknown as SubmitEvent);
 
-      expect(modalService.open).toHaveBeenCalledWith(TorrentExists, { centered: true });
+      expect(mockCommandBusService.emit).toHaveBeenCalledWith({
+        type: 'UI_TORRENT_EXISTS',
+        hash: 'abc123',
+        originalPath: null,
+      });
       expect(mockOpenFilesService.consumeCurrentDraft).toHaveBeenCalled();
       expect(component.addForm.errors).toBeNull();
     });
 
-    it('should pass the draft originalPath to TorrentExists on a 409 conflict', async () => {
+    it('should pass the draft originalPath in the UI_TORRENT_EXISTS command on a 409 conflict', async () => {
       vi.spyOn(window.bitbutler.qb, 'torrentsAdd')
         .mockClear()
         .mockRejectedValue(new Error('Request failed: 409 {"name":"QbHttpError","status":409}'));
-
-      const setInputMock = vi.fn();
-      const modalService = TestBed.inject(NgbModal) as any;
-      modalService.open.mockReturnValue({
-        _contentRef: { componentRef: { setInput: setInputMock } },
-      });
 
       (component as any).selectedTorrentFile.set({
         name: 'test.torrent',
@@ -681,7 +675,9 @@ describe('AddTorrent', () => {
 
       await component.handleSubmit({ preventDefault: () => {} } as unknown as SubmitEvent);
 
-      expect(setInputMock).toHaveBeenCalledWith('originalPath', '/tmp/test.torrent');
+      expect(mockCommandBusService.emit).toHaveBeenCalledWith(
+        expect.objectContaining({ originalPath: '/tmp/test.torrent' }),
+      );
     });
 
     it('should set addFailed when torrentsAdd throws a non-conflict error', async () => {
@@ -829,56 +825,6 @@ describe('AddTorrent', () => {
 
       expect(component.addForm.controls.fileGroup.controls.rename.value).toBe('My Movie');
       expect(component.showTree()).toBe(false);
-    });
-
-    it('should open the TorrentExists modal and consume the draft when the torrent is already in the list', async () => {
-      const torrentStoreService = TestBed.inject(TorrentStoreService) as any;
-      torrentStoreService.torrentsArray.set([{ hash: 'ABC123' }]);
-
-      const modalService = TestBed.inject(NgbModal) as any;
-      modalService.open.mockReturnValue({ _contentRef: { componentRef: { setInput: vi.fn() } } });
-
-      const draft: TorrentDraft = {
-        source: 'manual',
-        receivedAt: Date.now(),
-        originalPath: '/tmp/movie.torrent',
-        torrent: { name: 'Movie', totalSize: 100, infoHashV1: 'abc123', files: [] },
-      };
-
-      mockOpenFilesService.pendingDrafts.set([
-        { draft, selected: { name: 'movie.torrent', path: '/tmp/movie.torrent' } },
-      ]);
-      fixture.detectChanges();
-      await flushPromises();
-
-      expect(modalService.open).toHaveBeenCalledWith(TorrentExists, { centered: true });
-      expect(mockOpenFilesService.consumeCurrentDraft).toHaveBeenCalled();
-    });
-
-    it('should pass the draft originalPath to TorrentExists when the torrent is already in the list', async () => {
-      const torrentStoreService = TestBed.inject(TorrentStoreService) as any;
-      torrentStoreService.torrentsArray.set([{ hash: 'abc123' }]);
-
-      const setInputMock = vi.fn();
-      const modalService = TestBed.inject(NgbModal) as any;
-      modalService.open.mockReturnValue({
-        _contentRef: { componentRef: { setInput: setInputMock } },
-      });
-
-      const draft: TorrentDraft = {
-        source: 'manual',
-        receivedAt: Date.now(),
-        originalPath: '/tmp/movie.torrent',
-        torrent: { name: 'Movie', totalSize: 100, infoHashV1: 'abc123', files: [] },
-      };
-
-      mockOpenFilesService.pendingDrafts.set([
-        { draft, selected: { name: 'movie.torrent', path: '/tmp/movie.torrent' } },
-      ]);
-      fixture.detectChanges();
-      await flushPromises();
-
-      expect(setInputMock).toHaveBeenCalledWith('originalPath', '/tmp/movie.torrent');
     });
 
     it('should track the queue size and close the modal once all pending drafts are consumed', () => {

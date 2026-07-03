@@ -20,7 +20,7 @@ import {
   faTriangleExclamation,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
-import { NgbActiveModal, NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { merge, scan } from 'rxjs';
 import { INVALID_FILENAME_CHARS } from '../../app.const';
@@ -32,12 +32,11 @@ import { AutofocusDirective } from '../../directives/autofocus';
 import { AddTorrentFormGroup, RootFolderMode } from '../../models/add-torrent.model';
 import { HttpError } from '../../models/http.model';
 import { AddTorrentSettingsService } from '../../services/add-torrent-settings.service';
+import { CommandBusService } from '../../services/command-bus.service';
 import { GeneralSettingsService } from '../../services/general-settings.service';
 import { OpenFilesService, PendingAddTorrent } from '../../services/open-files.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
-import { TorrentStoreService } from '../../services/torrent-store.service';
-import { setModalInput } from '../../utils/modal-input';
 import { AddTorrentFiles } from './files/files';
 import { AddTorrentGeneral } from './general/general';
 import { AddTorrentLimits } from './limits/limits';
@@ -74,14 +73,13 @@ export class AddTorrent implements OnInit {
     this.handleCancel();
   }
   public readonly activeModal = inject(NgbActiveModal);
-  private readonly modalService = inject(NgbModal);
 
-  private readonly torrentStoreService = inject(TorrentStoreService);
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly addTorrentSettings = inject(AddTorrentSettingsService);
   private readonly generalSettingsService = inject(GeneralSettingsService);
   private readonly qbService = inject(QbService);
   private readonly openFilesService = inject(OpenFilesService);
+  private readonly commandBusService = inject(CommandBusService);
   private readonly translateService = inject(TranslateService);
 
   private readonly generalTab = viewChild(AddTorrentGeneral);
@@ -375,10 +373,11 @@ export class AddTorrent implements OnInit {
       if (parsed.name === 'QbHttpError' && parsed.status === 409) {
         const draft = this.effectiveDraft();
         const hash = draft?.torrent?.infoHashV1?.toLowerCase() ?? null;
-        const { TorrentExists } = await import('../torrent-exists/torrent-exists');
-        const modalRef = this.modalService.open(TorrentExists, { centered: true });
-        setModalInput(modalRef, 'hash', hash);
-        setModalInput(modalRef, 'originalPath', draft?.originalPath ?? null);
+        this.commandBusService.emit({
+          type: 'UI_TORRENT_EXISTS',
+          hash,
+          originalPath: draft?.originalPath ?? null,
+        });
         this.openFilesService.consumeCurrentDraft();
       } else {
         console.error(AddTorrent.name, 'handleSubmit', '[AddTorrent] qb add failed', e);
@@ -454,14 +453,7 @@ export class AddTorrent implements OnInit {
     }
   }
 
-  private isAlreadyInList(draft: TorrentDraft): boolean {
-    const hash = draft?.torrent?.infoHashV1?.toLowerCase();
-    if (!hash) return false;
-
-    return this.torrentStoreService.torrentsArray().some((t) => t.hash?.toLowerCase() === hash);
-  }
-
-  private async loadDraft(pending: PendingAddTorrent, _source: 'input' | 'manual'): Promise<void> {
+  private loadDraft(pending: PendingAddTorrent, _source: 'input' | 'manual'): void {
     const draft = pending.draft;
     const identifier = draft.torrent?.infoHashV1 ?? draft.originalPath;
 
@@ -492,15 +484,6 @@ export class AddTorrent implements OnInit {
       this.addForm.controls.fileGroup.controls.file.setValue(draft.originalName, {
         emitEvent: false,
       });
-    }
-
-    if (this.isAlreadyInList(draft)) {
-      const { TorrentExists } = await import('../torrent-exists/torrent-exists');
-      const modalRef = this.modalService.open(TorrentExists, { centered: true });
-      setModalInput(modalRef, 'hash', draft.torrent?.infoHashV1?.toLowerCase() ?? null);
-      setModalInput(modalRef, 'originalPath', draft.originalPath ?? null);
-      this.openFilesService.consumeCurrentDraft();
-      return;
     }
 
     const suggested =
