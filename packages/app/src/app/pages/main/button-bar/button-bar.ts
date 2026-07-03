@@ -29,10 +29,10 @@ import {
   faPlus,
   faSearch,
   faServer,
+  faSliders,
   faStopCircle,
   faTags,
   faTrashCan,
-  faUserTie,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { NgbDropdownModule, NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
@@ -193,7 +193,7 @@ export class ButtonBar implements OnInit {
         kind: 'group',
         id: 'manage',
         label: 'pages.main.button-bar.button.manage-group',
-        icon: faUserTie,
+        icon: faSliders,
         variant: 'default',
         items: [
           {
