@@ -53,6 +53,7 @@
         type="button"
         class="list-group-item list-group-item-action d-flex align-items-center gap-2"
         [class.active]="activeKey() === item.key"
+        [ngClass]="item.variant ? 'bb-variant-' + item.variant : null"
         (click)="onItemSelected(item.key)"
         [ngbTooltip]="item.label"
         tooltipClass="single-line-tooltip"

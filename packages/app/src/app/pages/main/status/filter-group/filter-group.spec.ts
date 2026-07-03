@@ -127,6 +127,39 @@ describe('FilterGroupComponent', () => {
     });
   });
 
+  describe('item variant coloring', () => {
+    it('should not apply a bb-variant class when an item has no variant', () => {
+      fixture.componentRef.setInput('showAll', false);
+      fixture.componentRef.setInput('items', [{ key: 'a', label: 'A', count: 1 }]);
+      fixture.detectChanges();
+      const item: HTMLElement = fixture.nativeElement.querySelector('.list-group-item');
+      expect(item.className).not.toContain('bb-variant-');
+    });
+
+    it('should apply a bb-variant-{variant} class to the item when a variant is set', () => {
+      fixture.componentRef.setInput('showAll', false);
+      fixture.componentRef.setInput('items', [
+        { key: 'a', label: 'A', count: 1, variant: 'danger' },
+      ]);
+      fixture.detectChanges();
+      const item: HTMLElement = fixture.nativeElement.querySelector('.list-group-item');
+      expect(item.classList.contains('bb-variant-danger')).toBe(true);
+    });
+
+    it('should not apply the class to the "All" item, which never has a variant', () => {
+      fixture.componentRef.setInput('showAll', true);
+      fixture.componentRef.setInput('items', [
+        { key: 'a', label: 'A', count: 1, variant: 'success' },
+      ]);
+      fixture.detectChanges();
+      const items: HTMLElement[] = Array.from(
+        fixture.nativeElement.querySelectorAll('.list-group-item'),
+      );
+      const allItem = items.find((el) => el.textContent?.includes('all'));
+      expect(allItem?.className).not.toContain('bb-variant-');
+    });
+  });
+
   describe('filteredItems', () => {
     const waitForDebounce = () => new Promise((resolve) => setTimeout(resolve, 200));
 
