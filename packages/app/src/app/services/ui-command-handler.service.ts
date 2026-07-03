@@ -434,6 +434,17 @@ export class UiCommandHandlerService {
           case 'UI_SCROLL_TO_TORRENT':
             break;
 
+          case 'UI_TORRENT_EXISTS': {
+            const { TorrentExists } = await import('../modals/torrent-exists/torrent-exists');
+            const torrentExistsModalRef = this.modalService.open(TorrentExists, {
+              centered: true,
+            });
+            setModalInput(torrentExistsModalRef, 'hash', command.hash);
+            setModalInput(torrentExistsModalRef, 'originalPath', command.originalPath);
+            torrentExistsModalRef.result.catch(() => {});
+            break;
+          }
+
           default:
             console.warn(UiCommandHandlerService.name, 'start', 'Unhandled UI command', command);
         }
