@@ -43,7 +43,7 @@ export class FilterGroupComponent {
   readonly label = input.required<string>();
   readonly items = input<FilterItem[] | null>(null);
   readonly activeKey = input.required<string>();
-  readonly showAll = input(false);
+  readonly showAll = input(true);
   readonly showAllCount = input.required<number>();
   readonly showFilter = input(false);
   readonly action = input<FilterGroupAction | null>(null);

@@ -107,6 +107,7 @@ describe('FilterGroupComponent', () => {
 
   describe('item badge variant', () => {
     it('should apply the neutral badge class when an item has no variant', () => {
+      fixture.componentRef.setInput('showAll', false);
       fixture.componentRef.setInput('items', [{ key: 'a', label: 'A', count: 1 }]);
       fixture.detectChanges();
       const badge: HTMLElement = fixture.nativeElement.querySelector('.bb-status-badge');
@@ -115,6 +116,7 @@ describe('FilterGroupComponent', () => {
     });
 
     it('should apply a text-bg-{variant} class when an item has a variant', () => {
+      fixture.componentRef.setInput('showAll', false);
       fixture.componentRef.setInput('items', [
         { key: 'a', label: 'A', count: 1, variant: 'success' },
       ]);
