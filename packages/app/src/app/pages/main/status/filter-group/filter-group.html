@@ -1,27 +1,36 @@
 <div class="d-flex flex-column">
-  <div class="small text-uppercase fw-semibold opacity-75 user-select-none">
-    {{ label() }} ({{ (items() ?? []).length }})
-  </div>
-  <div class="p-2">
-    <div class="bb-filter-input">
-      <input
-        type="text"
-        class="form-control form-control-sm"
-        placeholder="Filter..."
-        [formControl]="filterCtrl"
-      />
-      @if (filterCtrl.value) {
-        <button
-          type="button"
-          class="bb-filter-clear"
-          (click)="clearFilter()"
-          aria-label="Clear filter"
-        >
-          <fa-icon [icon]="icons.faXmark"></fa-icon>
-        </button>
-      }
+  <div class="d-flex align-items-center justify-content-between">
+    <div class="small text-uppercase fw-semibold opacity-75 user-select-none">
+      {{ label() }} ({{ (items() ?? []).length }})
     </div>
+    @if (action(); as act) {
+      <button type="button" class="btn btn-sm btn-link p-0" (click)="act.action()">
+        {{ act.label }}
+      </button>
+    }
   </div>
+  @if (showFilter()) {
+    <div class="p-2">
+      <div class="bb-filter-input">
+        <input
+          type="text"
+          class="form-control form-control-sm"
+          placeholder="Filter..."
+          [formControl]="filterCtrl"
+        />
+        @if (filterCtrl.value) {
+          <button
+            type="button"
+            class="bb-filter-clear"
+            (click)="clearFilter()"
+            aria-label="Clear filter"
+          >
+            <fa-icon [icon]="icons.faXmark"></fa-icon>
+          </button>
+        }
+      </div>
+    </div>
+  }
   <div class="list-group list-group-flush">
     @if (showAll()) {
       <button

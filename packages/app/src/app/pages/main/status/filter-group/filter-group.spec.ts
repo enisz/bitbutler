@@ -122,4 +122,42 @@ describe('FilterGroupComponent', () => {
       expect(component.filteredItems()).toHaveLength(0);
     });
   });
+
+  describe('showFilter input', () => {
+    it('should hide the filter box by default', () => {
+      const input = fixture.nativeElement.querySelector('.bb-filter-input');
+      expect(input).toBeNull();
+    });
+
+    it('should render the filter box when showFilter is true', () => {
+      fixture.componentRef.setInput('showFilter', true);
+      fixture.detectChanges();
+      const input = fixture.nativeElement.querySelector('.bb-filter-input');
+      expect(input).not.toBeNull();
+    });
+  });
+
+  describe('action input', () => {
+    it('should not render a header button by default', () => {
+      const button = fixture.nativeElement.querySelector('.btn-link');
+      expect(button).toBeNull();
+    });
+
+    it('should render a header button with the action label when set', () => {
+      fixture.componentRef.setInput('action', { label: 'Manage', action: vi.fn() });
+      fixture.detectChanges();
+      const button: HTMLButtonElement = fixture.nativeElement.querySelector('.btn-link');
+      expect(button).not.toBeNull();
+      expect(button.textContent?.trim()).toBe('Manage');
+    });
+
+    it('should invoke the action callback when the header button is clicked', () => {
+      const actionFn = vi.fn();
+      fixture.componentRef.setInput('action', { label: 'Manage', action: actionFn });
+      fixture.detectChanges();
+      const button: HTMLButtonElement = fixture.nativeElement.querySelector('.btn-link');
+      button.click();
+      expect(actionFn).toHaveBeenCalledTimes(1);
+    });
+  });
 });

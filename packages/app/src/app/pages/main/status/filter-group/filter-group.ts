@@ -9,6 +9,11 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { startWith } from 'rxjs/operators';
 import { TooltipOverflow } from '../../../../directives/tooltip-overflow';
 
+export interface FilterGroupAction {
+  label: string;
+  action: () => void;
+}
+
 export interface FilterItem {
   key: string;
   label: string;
@@ -38,6 +43,8 @@ export class FilterGroupComponent {
   readonly activeKey = input.required<string>();
   readonly showAll = input(true);
   readonly showAllCount = input.required<number>();
+  readonly showFilter = input(false);
+  readonly action = input<FilterGroupAction | null>(null);
 
   readonly itemSelected = output<string>();
 
