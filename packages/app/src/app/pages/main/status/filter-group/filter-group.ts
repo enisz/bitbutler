@@ -6,9 +6,11 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IconDefinition, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
-import { startWith } from 'rxjs/operators';
+import { debounceTime, startWith } from 'rxjs/operators';
 import { BbProgressVariant } from '../../../../components/bb-progress/bb-progress.types';
 import { TooltipOverflow } from '../../../../directives/tooltip-overflow';
+
+const FILTER_DEBOUNCE_MS = 150;
 
 export interface FilterGroupAction {
   label: string;
@@ -53,9 +55,10 @@ export class FilterGroupComponent {
   public readonly icons = { faXmark };
   public filterCtrl = new FormControl('', { nonNullable: true });
 
-  private readonly filterText = toSignal(this.filterCtrl.valueChanges.pipe(startWith('')), {
-    initialValue: '',
-  });
+  private readonly filterText = toSignal(
+    this.filterCtrl.valueChanges.pipe(startWith(''), debounceTime(FILTER_DEBOUNCE_MS)),
+    { initialValue: '' },
+  );
 
   public readonly filteredItems = computed(() => {
     const text = this.filterText().toLowerCase();

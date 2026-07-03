@@ -128,20 +128,46 @@ describe('FilterGroupComponent', () => {
   });
 
   describe('filteredItems', () => {
+    const waitForDebounce = () => new Promise((resolve) => setTimeout(resolve, 200));
+
     it('should return all items when filter is empty', () => {
       expect(component.filteredItems().length).toBe(sampleItems.length);
     });
 
-    it('should filter items by label (case-insensitive)', () => {
+    it('should filter items by label (case-insensitive)', async () => {
       component.filterCtrl.setValue('seed');
+      await waitForDebounce();
       expect(component.filteredItems().every((i) => i.label.toLowerCase().includes('seed'))).toBe(
         true,
       );
     });
 
-    it('should return empty array when no items match filter', () => {
+    it('should return empty array when no items match filter', async () => {
       component.filterCtrl.setValue('zzznomatch');
+      await waitForDebounce();
       expect(component.filteredItems()).toHaveLength(0);
+    });
+
+    it('should not duplicate items when the filter is cleared after narrowing', async () => {
+      fixture.componentRef.setInput('showFilter', true);
+      fixture.detectChanges();
+
+      component.filterCtrl.setValue('seed');
+      await waitForDebounce();
+      fixture.detectChanges();
+
+      component.filterCtrl.setValue('');
+      await waitForDebounce();
+      fixture.detectChanges();
+
+      const keys = component.filteredItems().map((i) => i.key);
+      expect(new Set(keys).size).toBe(keys.length);
+
+      const labelElements: NodeListOf<HTMLElement> = (
+        fixture.nativeElement as HTMLElement
+      ).querySelectorAll('.bb-status-label');
+      const renderedLabels = Array.from(labelElements).map((el) => el.textContent?.trim());
+      expect(new Set(renderedLabels).size).toBe(renderedLabels.length);
     });
   });
 
