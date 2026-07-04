@@ -194,19 +194,9 @@ describe('Status', () => {
   });
 
   describe('statusItems variant', () => {
-    it('should assign the expected Bootstrap variant per status key', () => {
-      const expected: Record<string, string> = {
-        downloading: 'info',
-        completed: 'success',
-        active: 'success',
-        inactive: 'secondary',
-        stopped: 'secondary',
-        checking: 'primary',
-        errored: 'danger',
-      };
-
+    it('should not assign a variant to any status item', () => {
       for (const item of component.statusItems()) {
-        expect(item.variant).toBe(expected[item.key]);
+        expect(item.variant).toBeUndefined();
       }
     });
   });

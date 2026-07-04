@@ -140,7 +140,6 @@ export class Status {
         label: this.translateService.instant('pages.main.status.downloading'),
         count: sumStates('downloading', 'forcedDL', 'queuedDL', 'metaDL', 'stalledDL'),
         icon: this.icon.faCircleDown,
-        variant: 'info',
       },
       {
         key: 'completed',
@@ -155,7 +154,6 @@ export class Status {
           'forcedUP',
         ),
         icon: this.icon.faCircleCheck,
-        variant: 'success',
       },
       {
         key: 'active',
@@ -170,35 +168,30 @@ export class Status {
           'allocating',
         ),
         icon: this.icon.faCirclePlay,
-        variant: 'success',
       },
       {
         key: 'inactive',
         label: this.translateService.instant('pages.main.status.inactive'),
         count: sumStates('queuedDL', 'queuedUP', 'stalledDL', 'stalledUP'),
         icon: this.icon.faCircleMinus,
-        variant: 'secondary',
       },
       {
         key: 'stopped',
         label: this.translateService.instant('pages.main.status.stopped'),
         count: sumStates('pausedDL', 'pausedUP', 'stoppedDL', 'stoppedUP'),
         icon: this.icon.faCircleStop,
-        variant: 'secondary',
       },
       {
         key: 'checking',
         label: this.translateService.instant('pages.main.status.checking'),
         count: sumStates('checkingDL', 'checkingUP', 'checkingResumeData'),
         icon: this.icon.faArrowsSpin,
-        variant: 'primary',
       },
       {
         key: 'errored',
         label: this.translateService.instant('pages.main.status.errored'),
         count: sumStates('error', 'missingFiles'),
         icon: this.icon.faCircleExclamation,
-        variant: 'danger',
       },
     ];
   });
