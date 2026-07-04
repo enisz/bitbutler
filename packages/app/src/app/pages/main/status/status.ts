@@ -22,10 +22,11 @@ import {
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content';
 import { TorrentState } from '../../../models/torrent.model';
+import { CommandBusService } from '../../../services/command-bus.service';
 import { FilterService } from '../../../services/filter.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { getTrackers, normalizeTracker } from '../tracker.utils';
-import { FilterGroupComponent, FilterItem } from './filter-group/filter-group';
+import { FilterGroupAction, FilterGroupComponent, FilterItem } from './filter-group/filter-group';
 
 type CountItem = { key: string; label: string; count: number };
 
@@ -50,12 +51,29 @@ type StatusKey =
 export class Status {
   private readonly store = inject(TorrentStoreService);
   private readonly filterService = inject(FilterService);
+  private readonly commandBusService = inject(CommandBusService);
   private readonly translateService = inject(TranslateService);
   private readonly filtersSig = this.filterService.external;
   private readonly languageChanged = toSignal(this.translateService.onLangChange);
 
   readonly totalCount = this.store.totalCount;
   readonly countsByState = this.store.countsByState;
+
+  readonly categoriesAction = computed<FilterGroupAction>(() => {
+    this.languageChanged();
+    return {
+      label: this.translateService.instant('general.button.manage'),
+      action: () => this.commandBusService.emit({ type: 'UI_MANAGE_CATEGORIES' }),
+    };
+  });
+
+  readonly tagsAction = computed<FilterGroupAction>(() => {
+    this.languageChanged();
+    return {
+      label: this.translateService.instant('general.button.manage'),
+      action: () => this.commandBusService.emit({ type: 'UI_MANAGE_TAGS' }),
+    };
+  });
 
   readonly hasNoTrackerFilters = computed(() => this.filtersSig().trackers.size === 0);
   readonly hasNoSavePathFilters = computed(() => this.filtersSig().savePaths.size === 0);

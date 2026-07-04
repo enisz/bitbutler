@@ -12,16 +12,41 @@
     color: var(--bs-body-color);
     border-color: var(--bb-active-list-item-bg) !important;
 
-    .bb-status-badge {
+    .bb-status-badge.bb-status-badge--neutral {
       background-color: var(--bb-accent);
       color: var(--bb-primary-ink);
     }
   }
 
   &:not(.active) {
-    .bb-status-badge {
+    .bb-status-badge.bb-status-badge--neutral {
       background-color: var(--bs-tertiary-bg);
       color: var(--bs-emphasis-color);
+    }
+
+    &.bb-variant-primary {
+      color: var(--bs-primary);
+      --bs-list-group-action-hover-bg: color-mix(in srgb, var(--bs-primary) 16%, transparent);
+    }
+
+    &.bb-variant-secondary {
+      color: var(--bs-secondary);
+      --bs-list-group-action-hover-bg: color-mix(in srgb, var(--bs-secondary) 16%, transparent);
+    }
+
+    &.bb-variant-success {
+      color: var(--bs-success);
+      --bs-list-group-action-hover-bg: color-mix(in srgb, var(--bs-success) 16%, transparent);
+    }
+
+    &.bb-variant-info {
+      color: var(--bs-info);
+      --bs-list-group-action-hover-bg: color-mix(in srgb, var(--bs-info) 16%, transparent);
+    }
+
+    &.bb-variant-danger {
+      color: var(--bs-danger);
+      --bs-list-group-action-hover-bg: color-mix(in srgb, var(--bs-danger) 16%, transparent);
     }
   }
 
