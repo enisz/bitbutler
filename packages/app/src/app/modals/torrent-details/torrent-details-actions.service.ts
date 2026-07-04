@@ -26,9 +26,9 @@ export class TorrentDetailsActionsService {
     });
   }
 
-  public setLocation(): void {
+  public setSavePath(): void {
     this.commandBusService.emit({
-      type: 'UI_SET_TORRENT_LOCATION',
+      type: 'UI_SET_SAVE_PATH',
       torrent: this.dataService.torrent()!.data,
       hashes: [this.dataService.hash()],
     });

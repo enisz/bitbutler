@@ -47,7 +47,7 @@ describe('TorrentDetails', () => {
       openTransferLimitsModal: vi.fn(),
       openShareLimitsModal: vi.fn(),
       rename: vi.fn(),
-      setLocation: vi.fn(),
+      setSavePath: vi.fn(),
       openPath: vi.fn(),
       changeCategory: vi.fn(),
       removeCategory: vi.fn(),
