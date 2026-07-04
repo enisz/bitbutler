@@ -115,7 +115,7 @@ describe('Server', () => {
 
   describe('save', () => {
     it('should replace empty remote with defaultRemotePath', async () => {
-      (component as any).defaultRemotePath = '/default/downloads';
+      (component as any).defaultRemotePath.set('/default/downloads');
       component.pathMappings.at(0).patchValue({ remote: '', local: '/local/path' });
 
       await (component as any).save();
@@ -128,7 +128,7 @@ describe('Server', () => {
     });
 
     it('should keep a non-empty remote unchanged', async () => {
-      (component as any).defaultRemotePath = '/default/downloads';
+      (component as any).defaultRemotePath.set('/default/downloads');
       component.pathMappings.at(0).patchValue({ remote: '/custom/remote', local: '/local/path' });
 
       await (component as any).save();

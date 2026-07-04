@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, DestroyRef, NgZone, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  NgZone,
+  inject,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -51,7 +58,7 @@ export class Server implements SettingsTabComponent {
   private readonly stateService = inject(SettingsStateService);
   private readonly qbService = inject(QbService);
 
-  private defaultRemotePath = '';
+  public readonly defaultRemotePath = signal('');
 
   public icons: Record<string, IconDefinition> = {
     faPlus,
@@ -87,7 +94,7 @@ export class Server implements SettingsTabComponent {
         this.qbService.app
           .preferences(serverId)
           .then((prefs) => {
-            if (prefs.save_path) this.defaultRemotePath = prefs.save_path;
+            if (prefs.save_path) this.defaultRemotePath.set(prefs.save_path);
           })
           .catch(() => {});
       }
@@ -122,7 +129,7 @@ export class Server implements SettingsTabComponent {
     const settings: ServerSettings = {
       ...raw,
       pathMappings: raw.pathMappings.map((m) => ({
-        remote: m.remote || this.defaultRemotePath,
+        remote: m.remote || this.defaultRemotePath(),
         local: m.local,
       })),
     };
