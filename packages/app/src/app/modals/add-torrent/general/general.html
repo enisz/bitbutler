@@ -201,15 +201,25 @@
           ></bb-popover>
         </div>
 
-        <div class="col-12">
+        <div class="col-11">
           <div class="mb-3">
             <app-save-path-select
               formControlName="savepath"
               appendTo="body"
               [autofocus]="true"
               [clearable]="true"
+              [placeholder]="defaultSavePath()"
             ></app-save-path-select>
           </div>
+        </div>
+
+        <div class="col-1 d-flex align-items-center mb-3">
+          <bb-popover
+            class="mt-2"
+            [subject]="'components.save-path-select.popover.title' | translate"
+            [description]="savePathPopover"
+            placement="left"
+          ></bb-popover>
         </div>
 
         <div class="col-12">
@@ -246,4 +256,9 @@
 <ng-template #inputModePopover>
   <p>{{ 'components.add-torrent.popover.input-mode.description.line1' | translate }}</p>
   <p>{{ 'components.add-torrent.popover.input-mode.description.line2' | translate }}</p>
+</ng-template>
+
+<ng-template #savePathPopover>
+  <p>{{ 'components.save-path-select.popover.description.line1' | translate }}</p>
+  <p>{{ 'components.save-path-select.popover.description.line2' | translate }}</p>
 </ng-template>
