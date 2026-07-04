@@ -187,39 +187,40 @@ export class UiCommandHandlerService {
             break;
           }
 
-          case 'UI_SET_TORRENT_LOCATION': {
+          case 'UI_SET_SAVE_PATH': {
             if (!command.torrent) return;
-            const { SetTorrentLocation } =
-              await import('../modals/set-torrent-location/set-torrent-location');
-            if (this.isModalOpen(SetTorrentLocation)) break;
+            const { SetPath } = await import('../modals/set-path/set-path');
+            if (this.isModalOpen(SetPath)) break;
 
-            const setLocationModalRef = this.modalService.open(SetTorrentLocation, {
+            const setPathModalRef = this.modalService.open(SetPath, {
               size: 'lg',
               centered: true,
             });
 
-            setModalInput(setLocationModalRef, 'torrent', command.torrent);
+            setModalInput(setPathModalRef, 'torrent', command.torrent);
             setModalInput(
-              setLocationModalRef,
+              setPathModalRef,
               'hashes',
               command.hashes ?? this.selectionStoreService.selectedHashes(),
             );
-            setLocationModalRef.result.catch(() => {});
+            setModalInput(setPathModalRef, 'pathType', 'save');
+            setPathModalRef.result.catch(() => {});
             break;
           }
 
           case 'UI_SET_DOWNLOAD_PATH': {
-            const setDownloadPathModalRef = this.modalService.open(
-              (await import('../modals/set-download-path/set-download-path')).SetDownloadPath,
-              { size: 'md' },
-            );
-            setModalInput(setDownloadPathModalRef, 'torrent', command.torrent);
-            setModalInput(
-              setDownloadPathModalRef,
-              'hashes',
-              command.hashes ?? [command.torrent.hash],
-            );
-            setDownloadPathModalRef.result.catch(() => {});
+            const { SetPath } = await import('../modals/set-path/set-path');
+            if (this.isModalOpen(SetPath)) break;
+
+            const setPathModalRef = this.modalService.open(SetPath, {
+              size: 'lg',
+              centered: true,
+            });
+
+            setModalInput(setPathModalRef, 'torrent', command.torrent);
+            setModalInput(setPathModalRef, 'hashes', command.hashes ?? [command.torrent.hash]);
+            setModalInput(setPathModalRef, 'pathType', 'download');
+            setPathModalRef.result.catch(() => {});
             break;
           }
 

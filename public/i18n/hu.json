@@ -289,25 +289,29 @@
           "set-failed-title": "Nem sikerült beállítani a kategóriát"
         }
       },
-      "set-torrent-location": {
-        "title": "Hely beállítása",
-        "set-location-form": {
-          "path": "Útvonal"
+      "set-path": {
+        "title": {
+          "save": "Mentési útvonal beállítása",
+          "download": "Letöltési útvonal beállítása"
         },
         "error": {
-          "failed-to-relocate": "Nem sikerült áthelyezni a torrentet!"
+          "save-failed": "Nem sikerült beállítani a mentési útvonalat",
+          "download-failed": "Nem sikerült beállítani a letöltési útvonalat"
+        },
+        "popover": {
+          "download-path": {
+            "title": "Letöltési útvonal",
+            "description": {
+              "line1": "Egy ideiglenes hely, amelyet csak a torrent letöltése közben használ a rendszer.",
+              "line2": "Hagyja üresen, ha nem szeretné felülírni ennél a torrentnél az alapértelmezett letöltési helyet."
+            }
+          }
         }
       },
       "set-torrent-tags": {
         "title": "Címkék beállítása",
         "toast": {
           "set-failed-title": "Nem sikerült beállítani a torrent cimkéit"
-        }
-      },
-      "set-download-path": {
-        "title": "Letöltési útvonal beállítása",
-        "error": {
-          "failed-to-set": "Nem sikerült beállítani a letöltési útvonalat"
         }
       },
       "torrent-details": {
