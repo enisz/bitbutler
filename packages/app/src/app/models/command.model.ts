@@ -18,7 +18,7 @@ export type UiCommand =
       selected?: SelectedTorrentInput;
     }
   | { type: 'UI_OPEN_ABOUT' }
-  | { type: 'UI_SET_TORRENT_LOCATION'; torrent: Torrent; hashes?: string[] }
+  | { type: 'UI_SET_SAVE_PATH'; torrent: Torrent; hashes?: string[] }
   | { type: 'UI_SET_DOWNLOAD_PATH'; torrent: Torrent; hashes?: string[] }
   | { type: 'UI_RENAME_TORRENT'; torrent: Torrent }
   | { type: 'UI_LIMIT_TRANSFER'; target: LimitTargetType; hashes?: string[] }

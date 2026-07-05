@@ -8,7 +8,6 @@ import {
   forwardRef,
   inject,
   input,
-  signal,
   viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
@@ -25,10 +24,7 @@ import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe } from '@ngx-translate/core';
 import { DEFAULT_GENERAL_SETTINGS, SavePathInputType } from '../../models/general-settings.model';
 import { GeneralSettingsService } from '../../services/general-settings.service';
-import { QbService } from '../../services/qb.service';
-import { ServerStoreService } from '../../services/server-store.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
-import { BbPopover } from '../bb-popover/bb-popover';
 import { SavePathTypeaheadService } from './save-path-typeahead.service';
 
 @Component({
@@ -41,7 +37,6 @@ import { SavePathTypeaheadService } from './save-path-typeahead.service';
     NgbTypeahead,
     FontAwesomeModule,
     TranslatePipe,
-    BbPopover,
   ],
   templateUrl: './save-path-select.html',
   styleUrls: ['./save-path-select.scss'],
@@ -58,7 +53,6 @@ import { SavePathTypeaheadService } from './save-path-typeahead.service';
 export class SavePathSelect implements ControlValueAccessor {
   readonly autofocus = input(false);
   readonly clearable = input(false);
-  readonly showPopover = input(true);
   readonly label = input<string | null>(null);
   readonly placeholder = input<string | null>(null);
   readonly appendTo = input('');
@@ -68,8 +62,6 @@ export class SavePathSelect implements ControlValueAccessor {
   private readonly typeaheadInput = viewChild<ElementRef<HTMLInputElement>>('typeaheadInput');
 
   private readonly torrentStoreService = inject(TorrentStoreService);
-  private readonly qbService = inject(QbService);
-  private readonly serverStoreService = inject(ServerStoreService);
   private readonly generalSettingsService = inject(GeneralSettingsService);
   public readonly typeaheadService = inject(SavePathTypeaheadService);
 
@@ -95,7 +87,6 @@ export class SavePathSelect implements ControlValueAccessor {
     { equal: (a, b) => a.length === b.length && a.every((v, i) => v === b[i]) },
   );
 
-  public defaultPath = signal<string>('');
   public selectControl = new FormControl<string | null>(null);
 
   public readonly controlValue = toSignal(this.selectControl.valueChanges, {
@@ -110,18 +101,6 @@ export class SavePathSelect implements ControlValueAccessor {
       this.onChange(value);
       this.onTouched();
     });
-
-    const serverId = this.serverStoreService.currentServerId();
-    if (serverId) {
-      this.qbService.app
-        .preferences(serverId)
-        .then((prefs) => {
-          if (prefs.save_path) {
-            this.defaultPath.set(prefs.save_path);
-          }
-        })
-        .catch(() => {});
-    }
 
     afterNextRender(() => {
       if (this.autofocus()) {

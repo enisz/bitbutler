@@ -39,7 +39,7 @@ describe('UiCommandHandlerService', () => {
       import('../modals/add-torrent/add-torrent'),
       import('../components/about/about'),
       import('../modals/rename-torrent/rename-torrent'),
-      import('../modals/set-torrent-location/set-torrent-location'),
+      import('../modals/set-path/set-path'),
       import('../modals/transfer-limit/transfer-limit'),
       import('../modals/share-limit/share-limit'),
       import('../modals/set-torrent-tags/set-torrent-tags'),
@@ -246,6 +246,20 @@ describe('UiCommandHandlerService', () => {
     commands$.next({ type: 'UI_SERVER_EDITOR_OPEN' });
     await flushPromises();
     expect(mockModalService.open).toHaveBeenCalled();
+  });
+
+  it('should open SetPath modal with pathType "save" for UI_SET_SAVE_PATH', async () => {
+    commands$.next({ type: 'UI_SET_SAVE_PATH', torrent: { hash: 'abc' } });
+    await flushPromises();
+    expect(mockModalService.open).toHaveBeenCalled();
+    expect(setInputSpy).toHaveBeenCalledWith('pathType', 'save');
+  });
+
+  it('should open SetPath modal with pathType "download" for UI_SET_DOWNLOAD_PATH', async () => {
+    commands$.next({ type: 'UI_SET_DOWNLOAD_PATH', torrent: { hash: 'abc' } });
+    await flushPromises();
+    expect(mockModalService.open).toHaveBeenCalled();
+    expect(setInputSpy).toHaveBeenCalledWith('pathType', 'download');
   });
 
   describe('pausePollingOnModal', () => {

@@ -495,12 +495,12 @@ describe('GridContextMenuService', () => {
         expect(commandBusService.emit).toHaveBeenCalledWith({ type: 'TORRENT_FORCE_RESUME' });
       });
 
-      it('files.setLocation action emits UI_SET_TORRENT_LOCATION with the torrent and selected hashes', async () => {
+      it('files.setSavePath action emits UI_SET_SAVE_PATH with the torrent and selected hashes', async () => {
         const row = makeRow();
         const entries = await service.buildTorrentMenu(makeData({ row }));
-        (findItem(entries, 'files.setLocation')!.action as () => void)();
+        (findItem(entries, 'files.setSavePath')!.action as () => void)();
         expect(commandBusService.emit).toHaveBeenCalledWith({
-          type: 'UI_SET_TORRENT_LOCATION',
+          type: 'UI_SET_SAVE_PATH',
           torrent: row,
           hashes: [row.hash],
         });
@@ -575,16 +575,16 @@ describe('GridContextMenuService', () => {
         });
       });
 
-      it('UI_SET_TORRENT_LOCATION/CATEGORY/TAGS carry the full selection hashes for a multi-selection', async () => {
+      it('UI_SET_SAVE_PATH/CATEGORY/TAGS carry the full selection hashes for a multi-selection', async () => {
         const rowA = makeRow({ hash: 'hash-a' });
         const rowB = makeRow({ hash: 'hash-b' });
         const entries = await service.buildTorrentMenu(
           makeData({ row: rowA, selected: [rowA, rowB] }),
         );
 
-        (findItem(entries, 'files.setLocation')!.action as () => void)();
+        (findItem(entries, 'files.setSavePath')!.action as () => void)();
         expect(commandBusService.emit).toHaveBeenCalledWith({
-          type: 'UI_SET_TORRENT_LOCATION',
+          type: 'UI_SET_SAVE_PATH',
           torrent: rowA,
           hashes: ['hash-a', 'hash-b'],
         });

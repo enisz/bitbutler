@@ -289,25 +289,29 @@
           "set-failed-title": "Failed to Set Category"
         }
       },
-      "set-torrent-location": {
-        "title": "Set Torrent Location",
-        "set-location-form": {
-          "path": "Path"
+      "set-path": {
+        "title": {
+          "save": "Set Save Path",
+          "download": "Set Download Path"
         },
         "error": {
-          "failed-to-relocate": "Failed to Relocate Torrent"
+          "save-failed": "Failed to Set Save Path",
+          "download-failed": "Failed to Set Download Path"
+        },
+        "popover": {
+          "download-path": {
+            "title": "Download Path",
+            "description": {
+              "line1": "A temporary location used only while the torrent is downloading.",
+              "line2": "Leave blank if you don't want to override the default download location for this torrent."
+            }
+          }
         }
       },
       "set-torrent-tags": {
         "title": "Set Torrent Tags",
         "toast": {
           "set-failed-title": "Failed to Set Torrent Tags"
-        }
-      },
-      "set-download-path": {
-        "title": "Set Download Path",
-        "error": {
-          "failed-to-set": "Failed to Set Download Path"
         }
       },
       "torrent-details": {
@@ -325,7 +329,7 @@
           "rename": "Rename Torrent",
           "delete": "Delete Torrent",
           "save-path": "Save Path",
-          "relocate": "Set Save Path",
+          "set-save-path": "Set Save Path",
           "remote-path": "Remote Path",
           "local-path": "Local Path",
           "show-file": "Show File",
@@ -1082,7 +1086,7 @@
             "start": "Start",
             "stop": "Stop",
             "force-resume": "Force Resume",
-            "set-location": "Set Save Path",
+            "set-save-path": "Set Save Path",
             "set-download-path": "Set Download Path",
             "enable-sequential-download": "Enable Sequential Download",
             "disable-sequential-download": "Disable Sequential Download",

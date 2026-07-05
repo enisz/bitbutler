@@ -97,38 +97,12 @@ describe('SavePathSelect', () => {
       expect(component.clearable()).toBe(false);
     });
 
-    it('should have showPopover true by default', () => {
-      expect(component.showPopover()).toBe(true);
-    });
-
     it('should have label null by default', () => {
       expect(component.label()).toBeNull();
     });
 
     it('should have appendTo empty string by default', () => {
       expect(component.appendTo()).toBe('');
-    });
-
-    it('should render bb-popover when showPopover is true (default)', () => {
-      fixture.detectChanges();
-      expect(fixture.nativeElement.querySelector('bb-popover')).not.toBeNull();
-    });
-
-    it('should not render bb-popover when showPopover is false', () => {
-      fixture.componentRef.setInput('showPopover', false);
-      fixture.detectChanges();
-      expect(fixture.nativeElement.querySelector('bb-popover')).toBeNull();
-    });
-
-    it('should render container-fluid wrapper when showPopover is true (default)', () => {
-      fixture.detectChanges();
-      expect(fixture.nativeElement.querySelector('.container-fluid')).not.toBeNull();
-    });
-
-    it('should not render container-fluid wrapper when showPopover is false', () => {
-      fixture.componentRef.setInput('showPopover', false);
-      fixture.detectChanges();
-      expect(fixture.nativeElement.querySelector('.container-fluid')).toBeNull();
     });
   });
 });

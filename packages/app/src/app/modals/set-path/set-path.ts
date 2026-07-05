@@ -12,6 +12,7 @@ import { faFloppyDisk, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
+import { BbPopover } from '../../components/bb-popover/bb-popover';
 import { SavePathSelect } from '../../components/save-path-select/save-path-select';
 import { TooltipOverflow } from '../../directives/tooltip-overflow';
 import { Torrent } from '../../models/torrent.model';
@@ -19,8 +20,10 @@ import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { ToastService } from '../../services/toast.service';
 
+export type SetPathType = 'save' | 'download';
+
 @Component({
-  selector: 'app-set-torrent-location',
+  selector: 'app-set-path',
   imports: [
     ReactiveFormsModule,
     SavePathSelect,
@@ -28,14 +31,16 @@ import { ToastService } from '../../services/toast.service';
     TranslatePipe,
     TooltipOverflow,
     BbBtnContent,
+    BbPopover,
   ],
-  templateUrl: './set-torrent-location.html',
-  styleUrl: './set-torrent-location.scss',
+  templateUrl: './set-path.html',
+  styleUrl: './set-path.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SetTorrentLocation implements OnInit {
+export class SetPath implements OnInit {
   readonly torrent = input.required<Torrent>();
   readonly hashes = input<string[]>([]);
+  readonly pathType = input.required<SetPathType>();
 
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly toastService = inject(ToastService);
@@ -45,55 +50,74 @@ export class SetTorrentLocation implements OnInit {
 
   public icons = { faFloppyDisk, faXmark };
 
-  public setLocationForm = new FormGroup({
+  public form = new FormGroup({
     path: new FormControl<string | null>(null),
   });
 
   public readonly selected = computed(() => this.hashes().length);
-  private defaultPath = signal<string>('');
+  public readonly defaultSavePath = signal<string>('');
 
   public async ngOnInit(): Promise<void> {
-    this.setLocationForm.get('path')?.patchValue(this.torrent().save_path ?? null);
+    const initialPath =
+      this.pathType() === 'save' ? this.torrent().save_path : this.torrent().download_path;
+    this.form.get('path')?.patchValue(initialPath || null);
 
-    const serverId = this.serverStoreService.currentServerId();
-    if (serverId) {
-      try {
-        const prefs = await this.qbService.app.preferences(serverId);
-        if (prefs.save_path) this.defaultPath.set(prefs.save_path);
-      } catch {}
+    if (this.pathType() === 'save') {
+      const serverId = this.serverStoreService.currentServerId();
+      if (serverId) {
+        try {
+          const prefs = await this.qbService.app.preferences(serverId);
+          if (prefs.save_path) this.defaultSavePath.set(prefs.save_path);
+        } catch {}
+      }
     }
   }
 
   public async handleSubmit(): Promise<void> {
     const serverId = this.serverStoreService.currentServerId() ?? '';
-    const newPath =
-      this.setLocationForm.get('path')?.value || this.defaultPath() || this.torrent().save_path;
 
     if (!serverId) {
-      console.error(SetTorrentLocation.name, 'handleSubmit', 'Failed to get server id');
+      console.error(SetPath.name, 'handleSubmit', 'Failed to get server id');
       return;
     }
 
+    if (this.pathType() === 'save') {
+      const newPath =
+        this.form.get('path')?.value || this.defaultSavePath() || this.torrent().save_path;
+
+      if (!newPath) {
+        console.error(SetPath.name, 'handleSubmit', 'New path is invalid!');
+        return;
+      }
+
+      try {
+        await this.qbService.torrents.setLocation(serverId, this.hashes(), newPath);
+        this.activeModal.close();
+      } catch (error: any) {
+        console.error(SetPath.name, 'handleSubmit', 'Failed to set save path!', error);
+        this.toastService.danger(
+          error.message,
+          this.translateService.instant('components.modals.set-path.error.save-failed'),
+        );
+      }
+      return;
+    }
+
+    const newPath = this.form.get('path')?.value;
+
     if (!newPath) {
-      console.error(SetTorrentLocation.name, 'handleSubmit', 'New path is invalid!');
+      this.activeModal.close();
       return;
     }
 
     try {
-      await this.qbService.torrents.setLocation(serverId, this.hashes(), newPath);
+      await this.qbService.torrents.setDownloadPath(serverId, this.hashes(), newPath);
       this.activeModal.close();
     } catch (error: any) {
-      console.error(
-        SetTorrentLocation.name,
-        'handleSubmit',
-        'Failed to set torrent location!',
-        error,
-      );
+      console.error(SetPath.name, 'handleSubmit', 'Failed to set download path!', error);
       this.toastService.danger(
         error.message,
-        this.translateService.instant(
-          'components.modals.set-torrent-location.error.failed-to-relocate',
-        ),
+        this.translateService.instant('components.modals.set-path.error.download-failed'),
       );
     }
   }

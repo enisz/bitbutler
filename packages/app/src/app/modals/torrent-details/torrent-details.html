@@ -134,11 +134,11 @@
           ) | translate
         }}
       </button>
-      <button ngbDropdownItem type="button" (click)="actionsService.setLocation()">
+      <button ngbDropdownItem type="button" (click)="actionsService.setSavePath()">
         <span class="bb-dropdown-icon" aria-hidden="true"
           ><fa-icon [icon]="icon.faFolder"></fa-icon
         ></span>
-        {{ 'components.modals.torrent-details.general.relocate' | translate }}
+        {{ 'components.modals.torrent-details.general.set-save-path' | translate }}
       </button>
       <button ngbDropdownItem type="button" (click)="actionsService.setDownloadPath()">
         <span class="bb-dropdown-icon" aria-hidden="true"

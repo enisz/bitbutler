@@ -1,7 +1,12 @@
 <div class="modal-header bb-modal-header">
   <div class="bb-modal-header__text">
     <h5 class="modal-title bb-title-clamp">
-      {{ 'components.modals.set-download-path.title' | translate }}
+      {{
+        (pathType() === 'save'
+          ? 'components.modals.set-path.title.save'
+          : 'components.modals.set-path.title.download'
+        ) | translate
+      }}
     </h5>
 
     <div
@@ -31,12 +36,29 @@
   <form [formGroup]="form" (submit)="handleSubmit()">
     <div class="container-fluid">
       <div class="row">
-        <div class="col-12">
+        <div class="col-11">
           <app-save-path-select
             formControlName="path"
             [autofocus]="true"
             [clearable]="true"
+            [placeholder]="pathType() === 'save' ? defaultSavePath() : ''"
           ></app-save-path-select>
+        </div>
+
+        <div class="col-1 d-flex align-items-center">
+          @if (pathType() === 'save') {
+            <bb-popover
+              [subject]="'components.save-path-select.popover.title' | translate"
+              [description]="savePathPopover"
+              placement="left"
+            ></bb-popover>
+          } @else {
+            <bb-popover
+              [subject]="'components.modals.set-path.popover.download-path.title' | translate"
+              [description]="downloadPathPopover"
+              placement="left"
+            ></bb-popover>
+          }
         </div>
       </div>
     </div>
@@ -64,3 +86,13 @@
     ></bb-btn-content>
   </button>
 </div>
+
+<ng-template #savePathPopover>
+  <p>{{ 'components.save-path-select.popover.description.line1' | translate }}</p>
+  <p>{{ 'components.save-path-select.popover.description.line2' | translate }}</p>
+</ng-template>
+
+<ng-template #downloadPathPopover>
+  <p>{{ 'components.modals.set-path.popover.download-path.description.line1' | translate }}</p>
+  <p>{{ 'components.modals.set-path.popover.download-path.description.line2' | translate }}</p>
+</ng-template>

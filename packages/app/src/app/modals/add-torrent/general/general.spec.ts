@@ -127,6 +127,13 @@ describe('AddTorrentGeneral', () => {
     });
   });
 
+  describe('defaultSavePath', () => {
+    it('should resolve to the preferences save_path after construction', async () => {
+      await fixture.whenStable();
+      expect(component.defaultSavePath()).toBe('/downloads');
+    });
+  });
+
   describe('fieldset layout', () => {
     it('should render the Input and Torrent fieldsets with their legends', () => {
       const legends: NodeListOf<HTMLElement> = fixture.nativeElement.querySelectorAll(
@@ -143,8 +150,8 @@ describe('AddTorrentGeneral', () => {
 
       expect(toggle.classList.contains('w-100')).toBe(true);
 
-      // 3 popovers defined directly in general.html (input-mode, file/links, name) plus 1 each
-      // from the nested save-path/category/tag select components.
+      // 4 popovers defined directly in general.html (input-mode, file/links, name, save-path)
+      // plus 1 each from the nested category/tag select components.
       expect(fixture.nativeElement.querySelectorAll('bb-popover').length).toBe(6);
     });
   });

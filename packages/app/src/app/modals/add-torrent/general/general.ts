@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, input, output, viewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  input,
+  output,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { faFile, faFolderOpen, faLink } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -9,6 +17,8 @@ import { SavePathSelect } from '../../../components/save-path-select/save-path-s
 import { TagSelect } from '../../../components/tag-select/tag-select';
 import { AutofocusDirective } from '../../../directives/autofocus';
 import { AddTorrentFormGroup } from '../../../models/add-torrent.model';
+import { QbService } from '../../../services/qb.service';
+import { ServerStoreService } from '../../../services/server-store.service';
 
 @Component({
   selector: 'app-add-torrent-general',
@@ -34,7 +44,23 @@ export class AddTorrentGeneral {
   public inputModeChange = output<'file' | 'link'>();
   public fileSelected = output<Event>();
 
+  private readonly qbService = inject(QbService);
+  private readonly serverStoreService = inject(ServerStoreService);
   private readonly categorySelect = viewChild(CategorySelect);
+
+  public readonly defaultSavePath = signal<string>('');
+
+  constructor() {
+    const serverId = this.serverStoreService.currentServerId();
+    if (serverId) {
+      this.qbService.app
+        .preferences(serverId)
+        .then((prefs) => {
+          if (prefs.save_path) this.defaultSavePath.set(prefs.save_path);
+        })
+        .catch(() => {});
+    }
+  }
 
   public ensureCategoryExists(): Promise<boolean> | undefined {
     return this.categorySelect()?.ensureCategoryExists();

@@ -158,12 +158,12 @@ export class GridContextMenuService {
               ]),
           {
             kind: 'item',
-            id: 'files.setLocation',
-            label: 'pages.main.grid.context-menu.item.set-location',
+            id: 'files.setSavePath',
+            label: 'pages.main.grid.context-menu.item.set-save-path',
             icon: faFolder,
             action: () =>
               this.commandBusService.emit({
-                type: 'UI_SET_TORRENT_LOCATION',
+                type: 'UI_SET_SAVE_PATH',
                 torrent: data.row,
                 hashes,
               }),

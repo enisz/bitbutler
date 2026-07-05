@@ -149,11 +149,11 @@ describe('TorrentDetailsActionsService', () => {
     });
   });
 
-  describe('setLocation', () => {
-    it('emits UI_SET_TORRENT_LOCATION with the current torrent and hash', () => {
-      service.setLocation();
+  describe('setSavePath', () => {
+    it('emits UI_SET_SAVE_PATH with the current torrent and hash', () => {
+      service.setSavePath();
       expect(commandBusEmit).toHaveBeenCalledWith({
-        type: 'UI_SET_TORRENT_LOCATION',
+        type: 'UI_SET_SAVE_PATH',
         torrent: mockDataService.torrent()!.data,
         hashes: ['abc123'],
       });
