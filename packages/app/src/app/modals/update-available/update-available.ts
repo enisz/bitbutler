@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { Release, UpdateCheckResponse } from '@bitbutler/shared';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
@@ -32,17 +32,17 @@ export class UpdateAvailable {
   private readonly themeService = inject(ThemeService);
 
   public readonly icons = { faGithub, faXmark };
-  public update = signal<UpdateCheckResponse | null>(null);
+  public readonly update = input.required<UpdateCheckResponse>();
   public readonly activeModal = inject(NgbActiveModal);
   private readonly electronService = inject(ElectronService);
   public readonly logoUrl = computed(
     () => `assets/images/bitbutler-logo-${this.themeService.family()}.png`,
   );
 
-  public readonly isSingleRelease = computed(() => (this.update()?.releases?.length ?? 0) === 1);
+  public readonly isSingleRelease = computed(() => (this.update().releases?.length ?? 0) === 1);
 
   get latestRelease(): Release | undefined {
-    return this.update()?.releases?.[0];
+    return this.update().releases?.[0];
   }
 
   public cleanedBody(release: Release): string {

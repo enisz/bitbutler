@@ -242,6 +242,14 @@ describe('UiCommandHandlerService', () => {
     expect(mockModalService.open).toHaveBeenCalled();
   });
 
+  it('should open UpdateAvailable modal with the update input for UI_UPDATE_AVAILABLE', async () => {
+    const update = { releases: [], updateAvailable: true } as any;
+    commands$.next({ type: 'UI_UPDATE_AVAILABLE', update });
+    await flushPromises();
+    expect(mockModalService.open).toHaveBeenCalled();
+    expect(setInputSpy).toHaveBeenCalledWith('update', update);
+  });
+
   it('should open ServerEditor modal for UI_SERVER_EDITOR_OPEN', async () => {
     commands$.next({ type: 'UI_SERVER_EDITOR_OPEN' });
     await flushPromises();

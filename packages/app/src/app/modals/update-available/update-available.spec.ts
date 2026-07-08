@@ -2,6 +2,8 @@ import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Release, UpdateCheckResponse } from '@bitbutler/shared';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { MARKED_OPTIONS, MarkedOptions, MarkedRenderer, provideMarkdown } from 'ngx-markdown';
+import { TimeagoIntl, provideTimeago } from 'ngx-timeago';
 import { ElectronService } from '../../services/electron.service';
 import { ThemeService } from '../../services/theme.service';
 import { UpdateAvailable } from './update-available';
@@ -16,6 +18,21 @@ const makeRelease = (overrides: Partial<Release> = {}): Release =>
     ...overrides,
   }) as Release;
 
+function markedOptionsFactory(): MarkedOptions {
+  const renderer = new MarkedRenderer();
+  renderer.link = (link: any) => {
+    const href = link.href || link;
+    const text = link.text || link;
+    return `<a href="${href}" target="_blank">${text}</a>`;
+  };
+  return {
+    renderer: renderer,
+    gfm: true,
+    breaks: false,
+    pedantic: false,
+  };
+}
+
 describe('UpdateAvailable', () => {
   let component: UpdateAvailable;
   let fixture: ComponentFixture<UpdateAvailable>;
@@ -27,11 +44,22 @@ describe('UpdateAvailable', () => {
         { provide: NgbActiveModal, useValue: { close: vi.fn(), dismiss: vi.fn() } },
         { provide: ThemeService, useValue: { family: signal('bitbutler') } },
         { provide: ElectronService, useValue: { openExternalUrl: vi.fn() } },
+        provideTimeago({ intl: { provide: TimeagoIntl, useClass: TimeagoIntl } }),
+        provideMarkdown({
+          markedOptions: {
+            provide: MARKED_OPTIONS,
+            useFactory: markedOptionsFactory,
+          },
+        }),
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(UpdateAvailable);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('update', {
+      releases: [],
+      updateAvailable: false,
+    } as UpdateCheckResponse);
     fixture.detectChanges();
   });
 
@@ -92,23 +120,29 @@ describe('UpdateAvailable', () => {
 
   describe('isSingleRelease', () => {
     it('should be true when exactly one release is present', () => {
-      component.update.set({
+      fixture.componentRef.setInput('update', {
         releases: [makeRelease()],
         updateAvailable: true,
       } as UpdateCheckResponse);
+      fixture.detectChanges();
       expect(component.isSingleRelease()).toBe(true);
     });
 
     it('should be false when more than one release is present', () => {
-      component.update.set({
+      fixture.componentRef.setInput('update', {
         releases: [makeRelease(), makeRelease()],
         updateAvailable: true,
       } as UpdateCheckResponse);
+      fixture.detectChanges();
       expect(component.isSingleRelease()).toBe(false);
     });
 
     it('should be false when no releases are present', () => {
-      component.update.set({ releases: [], updateAvailable: false } as UpdateCheckResponse);
+      fixture.componentRef.setInput('update', {
+        releases: [],
+        updateAvailable: false,
+      } as UpdateCheckResponse);
+      fixture.detectChanges();
       expect(component.isSingleRelease()).toBe(false);
     });
   });
@@ -116,12 +150,20 @@ describe('UpdateAvailable', () => {
   describe('latestRelease', () => {
     it('should return the first release', () => {
       const r = makeRelease({ tag_name: 'v1.0.0' });
-      component.update.set({ releases: [r], updateAvailable: true } as UpdateCheckResponse);
+      fixture.componentRef.setInput('update', {
+        releases: [r],
+        updateAvailable: true,
+      } as UpdateCheckResponse);
+      fixture.detectChanges();
       expect(component.latestRelease?.tag_name).toBe('v1.0.0');
     });
 
     it('should return undefined when no releases', () => {
-      component.update.set({ releases: [], updateAvailable: false } as UpdateCheckResponse);
+      fixture.componentRef.setInput('update', {
+        releases: [],
+        updateAvailable: false,
+      } as UpdateCheckResponse);
+      fixture.detectChanges();
       expect(component.latestRelease).toBeUndefined();
     });
   });
