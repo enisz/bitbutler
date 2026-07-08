@@ -8,7 +8,7 @@ import {
   input,
   signal,
 } from '@angular/core';
-import { Release, UpdateCheckResponse } from '@bitbutler/shared';
+import { HostPlatform, Release, ReleaseAsset, UpdateCheckResponse } from '@bitbutler/shared';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbAccordionModule, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -48,6 +48,26 @@ export class UpdateAvailable {
   );
 
   public activeReleaseId = signal<string | null>(null);
+  public readonly platform = signal<HostPlatform | null>(null);
+
+  private readonly platformExtensions: Partial<Record<HostPlatform, string[]>> = {
+    win32: ['.exe', '.zip'],
+    linux: ['.appimage', '.deb', '.rpm', '.snap', '.tar.gz'],
+  };
+
+  public readonly filteredAssets = computed<ReleaseAsset[]>(() => {
+    const assets = this.latestRelease?.assets ?? [];
+    const platform = this.platform();
+    const extensions = platform ? this.platformExtensions[platform] : undefined;
+    if (!extensions) {
+      return assets;
+    }
+
+    const matched = assets.filter((asset) =>
+      extensions.some((ext) => asset.name.toLowerCase().endsWith(ext)),
+    );
+    return matched.length > 0 ? matched : assets;
+  });
 
   constructor() {
     effect(() => {
@@ -56,6 +76,8 @@ export class UpdateAvailable {
         this.activeReleaseId.set(this.itemId(first));
       }
     });
+
+    this.electronService.getPlatform().then((platform) => this.platform.set(platform));
   }
 
   get latestRelease(): Release | undefined {
