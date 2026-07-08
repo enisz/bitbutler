@@ -48,6 +48,8 @@ export type FileTreeSaveEvent = {
   renames: { oldPath: string; newPath: string }[];
 };
 
+export type FileTreeStats = { totalSize: number; selectedSize: number };
+
 @Component({
   selector: 'app-bb-file-tree',
   standalone: true,
@@ -78,6 +80,7 @@ export class BbFileTree {
 
   readonly saved = output<FileTreeSaveEvent>();
   readonly editModeChange = output<boolean>();
+  readonly statsChange = output<FileTreeStats>();
 
   public editMode = signal(false);
   public nameControls = new Map<string, FormControl<string>>();
@@ -349,6 +352,7 @@ export class BbFileTree {
     this.downloadCount.set(files.filter((f) => f.priority !== 0).length);
     this.allFolders.set(this.countFolders(this.data));
     this.totalFolders.set(this.countActiveFolders(this.data));
+    this.statsChange.emit({ totalSize: this.totalSize(), selectedSize: this.selectedSize() });
   }
 
   private countFolders(nodes: BbFileTreeNode[]): number {

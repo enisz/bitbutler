@@ -67,6 +67,9 @@ describe('AddTorrent', () => {
             app: {
               preferences: vi.fn().mockResolvedValue({ save_path: '/downloads' }),
             },
+            sync: {
+              maindata: vi.fn().mockResolvedValue({ server_state: {} }),
+            },
             torrents: {
               files: vi.fn().mockResolvedValue([]),
               renameFile: vi.fn(),

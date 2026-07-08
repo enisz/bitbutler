@@ -58,7 +58,9 @@
         "first-last-piece-prio": "Első és utolsó szelet priorizálása",
         "ratio-limit": "Arány korlát",
         "seeding-time-limit": "Seedelési időkorlát",
-        "seeding-time-limit-unit": "perc"
+        "seeding-time-limit-unit": "perc",
+        "size": "Méret",
+        "free-space": "Szabad hely"
       },
       "label": {
         "transfer-rate-limits": "Átviteli sebesség korlátok",
@@ -130,6 +132,20 @@
           "description": {
             "line1": "Illessz be egy vagy több mágneslinket vagy közvetlen .torrent URL-t ide, soronként egyet.",
             "line2": "A mágneslinkkek magnet:?xt=urn:btih:… kezdetűek - a közvetlen .torrent URL-ekről a qBittorrent automatikusan letölti a fájlt."
+          }
+        },
+        "size": {
+          "title": "Méret",
+          "description": {
+            "line1": "A letöltésre kijelölt fájlok teljes mérete.",
+            "line2": "A letöltési méret csökkentéséhez töröld a kijelölést egyes fájloknál a Fájlok lapon - ez az érték élőben frissül a változtatások során."
+          }
+        },
+        "free-space": {
+          "title": "Szabad hely",
+          "description": {
+            "line1": "A qBittorrent által a torrent betöltésekor jelentett szabad lemezterület.",
+            "line2": "Hasonlítsd össze a torrent méretével, hogy ellenőrizd, elegendő-e a szabad hely a hozzáadás előtt."
           }
         },
         "input-mode": {

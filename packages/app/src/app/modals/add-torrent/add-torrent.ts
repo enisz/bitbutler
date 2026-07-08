@@ -25,7 +25,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { merge, scan } from 'rxjs';
 import { INVALID_FILENAME_CHARS } from '../../app.const';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
-import { FileTreeSaveEvent } from '../../components/bb-file-tree/bb-file-tree';
+import { FileTreeSaveEvent, FileTreeStats } from '../../components/bb-file-tree/bb-file-tree';
 import { ShareLimitValue } from '../../components/share-limit/share-limit';
 import { TransferLimitValue } from '../../components/transfer-limit/transfer-limit';
 import { AutofocusDirective } from '../../directives/autofocus';
@@ -92,6 +92,8 @@ export class AddTorrent implements OnInit {
   public inputMode = signal<'file' | 'link'>('file');
   public showTree = signal(false);
   public treeInEditMode = signal(false);
+  public fileStats = signal<FileTreeStats | null>(null);
+  public freeSpace = signal<number>(0);
   private savedFileState: FileTreeSaveEvent | null = null;
 
   private selectedTorrentFile = signal<SelectedTorrentInput | null>(null);
@@ -224,6 +226,12 @@ export class AddTorrent implements OnInit {
           : this.addForm.controls.linkGroup.controls.rename;
       if (activeRename.invalid) {
         activeRename.markAsTouched();
+      }
+    });
+
+    effect(() => {
+      if (this.filesTabDisabled()) {
+        this.fileStats.set(null);
       }
     });
   }
@@ -495,6 +503,18 @@ export class AddTorrent implements OnInit {
     }
 
     this.showTree.set(!!draft.torrent?.files?.length);
+
+    const serverId = this.serverStoreService.currentServerId();
+    if (serverId) {
+      this.qbService.sync
+        .maindata(serverId, 0)
+        .then((data) => {
+          if (data.server_state?.free_space_on_disk != null) {
+            this.freeSpace.set(data.server_state.free_space_on_disk);
+          }
+        })
+        .catch(() => {});
+    }
   }
 
   private async tryRenameContentAfterAdd(
