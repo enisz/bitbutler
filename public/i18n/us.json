@@ -58,7 +58,9 @@
         "first-last-piece-prio": "Prioritize download first last piece",
         "ratio-limit": "Ratio Limit",
         "seeding-time-limit": "Seeding Time Limit",
-        "seeding-time-limit-unit": "minute"
+        "seeding-time-limit-unit": "minute",
+        "size": "Size",
+        "free-space": "Free Space"
       },
       "label": {
         "transfer-rate-limits": "Transfer Rate Limits",
@@ -130,6 +132,20 @@
           "description": {
             "line1": "Paste one or more magnet links or direct .torrent URLs here, one per line.",
             "line2": "Magnet links start with magnet:?xt=urn:btih:… - direct .torrent URLs point to a remote file that qBittorrent will fetch automatically."
+          }
+        },
+        "size": {
+          "title": "Size",
+          "description": {
+            "line1": "The total size of the files selected for download.",
+            "line2": "Deselect individual files in the Files tab to reduce the download size - this value updates live as you make changes."
+          }
+        },
+        "free-space": {
+          "title": "Free Space",
+          "description": {
+            "line1": "The free disk space reported by qBittorrent at the time this torrent was loaded.",
+            "line2": "Compare this against the torrent size to make sure you have enough room before adding."
           }
         },
         "input-mode": {

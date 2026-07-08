@@ -55,6 +55,8 @@
         <app-add-torrent-general
           [form]="addForm"
           [inputMode]="inputMode()"
+          [fileStats]="fileStats()"
+          [freeSpace]="freeSpace()"
           (inputModeChange)="handleInputModeChange($event)"
           (fileSelected)="handleFileSelected($event)"
         ></app-add-torrent-general>
@@ -74,6 +76,7 @@
             [draft]="effectiveDraft()"
             (saved)="onTreeSaved($event)"
             (editModeChange)="treeInEditMode.set($event)"
+            (statsChange)="fileStats.set($event)"
           ></app-add-torrent-files>
         }
       </div>

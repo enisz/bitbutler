@@ -1,6 +1,10 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { TorrentDraft } from '@bitbutler/shared';
-import { BbFileTree, FileTreeSaveEvent } from '../../../components/bb-file-tree/bb-file-tree';
+import {
+  BbFileTree,
+  FileTreeSaveEvent,
+  FileTreeStats,
+} from '../../../components/bb-file-tree/bb-file-tree';
 
 @Component({
   selector: 'app-add-torrent-files',
@@ -13,4 +17,5 @@ export class AddTorrentFiles {
   public draft = input<TorrentDraft | null>(null);
   public saved = output<FileTreeSaveEvent>();
   public editModeChange = output<boolean>();
+  public statsChange = output<FileTreeStats>();
 }
