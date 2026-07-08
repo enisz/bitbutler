@@ -55,11 +55,6 @@
   }
 }
 
-.modal-footer {
-  border-top: 1px solid var(--bs-border-color);
-  padding: 1rem;
-}
-
 :host ::ng-deep .accordion-collapse {
   will-change: height;
 }
@@ -140,21 +135,6 @@
   &::-webkit-scrollbar-thumb {
     background: var(--bs-border-color);
     border-radius: 10px;
-  }
-}
-
-:host-context([data-bs-theme='dark']) {
-  .btn-close {
-    filter: invert(1) grayscale(100%) brightness(200%);
-  }
-}
-
-.btn-close {
-  opacity: 0.6;
-  transition: opacity 0.2s;
-
-  &:hover {
-    opacity: 1;
   }
 }
 

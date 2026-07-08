@@ -1,110 +1,102 @@
-@if (update(); as u) {
-  <div class="modal-header border-0 pb-0">
-    <div class="d-flex align-items-center">
-      <div class="me-3 logo-container">
-        <img [src]="logoUrl()" class="bb-about__logo" alt="BitButler logo" />
-      </div>
-      <div>
-        <h4 class="modal-title mb-0">
-          {{ 'components.modals.update-available.title' | translate }}
-        </h4>
-        @if (latestRelease; as release) {
-          <small
-            class="text-muted"
-            [innerHTML]="
-              'components.modals.update-available.new-version-ready'
-                | translate: { tag_name: getVersion(release.tag_name) }
-            "
-          ></small>
-        }
-      </div>
+<div class="modal-body">
+  <div class="d-flex align-items-center mb-4">
+    <div class="me-3 logo-container">
+      <img [src]="logoUrl()" alt="BitButler logo" />
     </div>
-    <button type="button" class="btn-close" (click)="activeModal.dismiss()"></button>
+    <div>
+      <h4 class="modal-title mb-0">{{ 'components.modals.update-available.title' | translate }}</h4>
+      @if (latestRelease; as release) {
+        <small
+          class="text-muted"
+          [innerHTML]="
+            'components.modals.update-available.new-version-ready'
+              | translate: { tag_name: getVersion(release.tag_name) }
+          "
+        ></small>
+      }
+    </div>
   </div>
 
-  <div class="modal-body">
-    <h6 class="text-uppercase fw-bold text-muted small mb-3">
-      {{ 'components.modals.update-available.whats-new' | translate }}
-    </h6>
+  <h6 class="text-uppercase fw-bold text-muted small mb-3">
+    {{ 'components.modals.update-available.whats-new' | translate }}
+  </h6>
 
-    <div ngbAccordion class="mb-4" [closeOthers]="true">
-      @for (release of u.releases ?? []; track release.id; let i = $index) {
-        <div ngbAccordionItem [collapsed]="i !== 0" [disabled]="isSingleRelease()">
-          <h2 ngbAccordionHeader>
-            <button
-              ngbAccordionButton
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#collapseOne"
-            >
-              <div class="d-flex flex-row justify-content-between align-items-center w-100">
-                <strong>v{{ getVersion(release.tag_name) }}</strong>
-                <div class="me-3 d-flex flex-column justify-content-between align-items-center">
-                  <span>{{ release.published_at | date: 'yyyy-MM-dd' }}</span>
-                  <small class="version">{{ release.published_at | timeago }}</small>
-                </div>
+  <div ngbAccordion class="mb-4" [closeOthers]="true">
+    @for (release of update().releases ?? []; track release.id; let i = $index) {
+      <div ngbAccordionItem [collapsed]="i !== 0" [disabled]="isSingleRelease()">
+        <h2 ngbAccordionHeader>
+          <button
+            ngbAccordionButton
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseOne"
+          >
+            <div class="d-flex flex-row justify-content-between align-items-center w-100">
+              <strong>v{{ getVersion(release.tag_name) }}</strong>
+              <div class="me-3 d-flex flex-column justify-content-between align-items-center">
+                <span>{{ release.published_at | date: 'yyyy-MM-dd' }}</span>
+                <small class="version">{{ release.published_at | timeago }}</small>
               </div>
-            </button>
-          </h2>
-          <div ngbAccordionCollapse>
-            <div ngbAccordionBody>
-              <div class="markdown-content">
-                <markdown [data]="cleanedBody(release)"></markdown>
-              </div>
+            </div>
+          </button>
+        </h2>
+        <div ngbAccordionCollapse>
+          <div ngbAccordionBody>
+            <div class="markdown-content">
+              <markdown [data]="cleanedBody(release)"></markdown>
             </div>
           </div>
         </div>
-      }
-    </div>
-
-    @if (latestRelease?.assets; as assets) {
-      <h6 class="text-uppercase fw-bold text-muted small mb-2">
-        {{ 'components.modals.update-available.available-downloads' | translate }}
-      </h6>
-      <div class="list-group list-group-flush border">
-        @for (asset of assets; track asset.id) {
-          <button
-            type="button"
-            (click)="downloadAsset(asset.browser_download_url)"
-            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2"
-          >
-            <div class="d-flex align-items-center text-truncate">
-              <i class="bi bi-file-earmark-arrow-down me-2"></i>
-              <span class="asset-name text-truncate">{{ asset.name }}</span>
-            </div>
-            <span class="badge rounded-pill small ms-2">
-              {{ asset.size | fileSize }}
-            </span>
-          </button>
-        }
       </div>
     }
   </div>
 
-  <div class="modal-footer border-0">
-    @if (latestRelease; as release) {
-      <button
-        type="button"
-        class="btn btn-dashed-secondary btn-sm btn-split"
-        (click)="downloadAsset(release.html_url)"
-      >
-        <bb-btn-content
-          [icon]="icons.faGithub"
-          [text]="'components.modals.update-available.button.view-on-github' | translate"
-          position="end"
-        ></bb-btn-content>
-      </button>
-    }
+  @if (latestRelease?.assets; as assets) {
+    <h6 class="text-uppercase fw-bold text-muted small mb-2">
+      {{ 'components.modals.update-available.available-downloads' | translate }}
+    </h6>
+    <div class="list-group list-group-flush border">
+      @for (asset of assets; track asset.id) {
+        <button
+          type="button"
+          (click)="downloadAsset(asset.browser_download_url)"
+          class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2"
+        >
+          <div class="d-flex align-items-center text-truncate">
+            <i class="bi bi-file-earmark-arrow-down me-2"></i>
+            <span class="asset-name text-truncate">{{ asset.name }}</span>
+          </div>
+          <span class="badge rounded-pill small ms-2"> {{ asset.size | fileSize }} </span>
+        </button>
+      }
+    </div>
+  }
+</div>
+
+<div class="modal-footer justify-content-between">
+  @if (latestRelease; as release) {
     <button
       type="button"
-      class="btn btn-link btn-sm btn-split"
-      (click)="activeModal.close('ignore')"
+      class="btn btn-dashed-secondary btn-sm btn-split"
+      (click)="downloadAsset(release.html_url)"
     >
       <bb-btn-content
-        [icon]="icons.faXmark"
-        [text]="'general.button.close' | translate"
+        [icon]="icons.faGithub"
+        [text]="'components.modals.update-available.button.view-on-github' | translate"
         position="end"
       ></bb-btn-content>
     </button>
-  </div>
-}
+  }
+  <button
+    type="button"
+    class="btn btn-link btn-sm btn-split"
+    (click)="activeModal.close('ignore')"
+    autofocus
+  >
+    <bb-btn-content
+      [icon]="icons.faXmark"
+      [text]="'general.button.close' | translate"
+      position="end"
+    ></bb-btn-content>
+  </button>
+</div>
