@@ -1,5 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { Release, UpdateCheckResponse } from '@bitbutler/shared';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
@@ -39,10 +47,23 @@ export class UpdateAvailable {
     () => `assets/images/bitbutler-logo-${this.themeService.family()}.png`,
   );
 
-  public readonly isSingleRelease = computed(() => (this.update().releases?.length ?? 0) === 1);
+  public activeReleaseId = signal<string | null>(null);
+
+  constructor() {
+    effect(() => {
+      const first = this.update().releases?.[0]?.id;
+      if (first !== undefined && this.activeReleaseId() === null) {
+        this.activeReleaseId.set(this.itemId(first));
+      }
+    });
+  }
 
   get latestRelease(): Release | undefined {
     return this.update().releases?.[0];
+  }
+
+  public itemId(id: number): string {
+    return `release-${id}`;
   }
 
   public cleanedBody(release: Release): string {

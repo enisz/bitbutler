@@ -118,35 +118,6 @@ describe('UpdateAvailable', () => {
     });
   });
 
-  describe('isSingleRelease', () => {
-    it('should be true when exactly one release is present', () => {
-      fixture.componentRef.setInput('update', {
-        releases: [makeRelease()],
-        updateAvailable: true,
-      } as UpdateCheckResponse);
-      fixture.detectChanges();
-      expect(component.isSingleRelease()).toBe(true);
-    });
-
-    it('should be false when more than one release is present', () => {
-      fixture.componentRef.setInput('update', {
-        releases: [makeRelease(), makeRelease()],
-        updateAvailable: true,
-      } as UpdateCheckResponse);
-      fixture.detectChanges();
-      expect(component.isSingleRelease()).toBe(false);
-    });
-
-    it('should be false when no releases are present', () => {
-      fixture.componentRef.setInput('update', {
-        releases: [],
-        updateAvailable: false,
-      } as UpdateCheckResponse);
-      fixture.detectChanges();
-      expect(component.isSingleRelease()).toBe(false);
-    });
-  });
-
   describe('latestRelease', () => {
     it('should return the first release', () => {
       const r = makeRelease({ tag_name: 'v1.0.0' });
@@ -165,6 +136,44 @@ describe('UpdateAvailable', () => {
       } as UpdateCheckResponse);
       fixture.detectChanges();
       expect(component.latestRelease).toBeUndefined();
+    });
+  });
+
+  describe('itemId', () => {
+    it('should prefix the release id', () => {
+      expect(component.itemId(42)).toBe('release-42');
+    });
+  });
+
+  describe('activeReleaseId', () => {
+    it('should be null before any releases are set', () => {
+      expect(component.activeReleaseId()).toBeNull();
+    });
+
+    it('should initialize to the first release id once releases are set', () => {
+      fixture.componentRef.setInput('update', {
+        releases: [makeRelease({ id: 7 }), makeRelease({ id: 8 })],
+        updateAvailable: true,
+      } as UpdateCheckResponse);
+      fixture.detectChanges();
+      expect(component.activeReleaseId()).toBe('release-7');
+    });
+
+    it('should not override a value that was already set', () => {
+      fixture.componentRef.setInput('update', {
+        releases: [makeRelease({ id: 7 })],
+        updateAvailable: true,
+      } as UpdateCheckResponse);
+      fixture.detectChanges();
+      component.activeReleaseId.set('release-8');
+
+      fixture.componentRef.setInput('update', {
+        releases: [makeRelease({ id: 7 }), makeRelease({ id: 9 })],
+        updateAvailable: true,
+      } as UpdateCheckResponse);
+      fixture.detectChanges();
+
+      expect(component.activeReleaseId()).toBe('release-8');
     });
   });
 });

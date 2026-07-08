@@ -21,9 +21,13 @@
     {{ 'components.modals.update-available.whats-new' | translate }}
   </h6>
 
-  <div ngbAccordion class="mb-4" [closeOthers]="true">
+  <div ngbAccordion class="mb-4" [closeOthers]="true" (show)="activeReleaseId.set($event)">
     @for (release of update().releases ?? []; track release.id; let i = $index) {
-      <div ngbAccordionItem [collapsed]="i !== 0" [disabled]="isSingleRelease()">
+      <div
+        [ngbAccordionItem]="itemId(release.id)"
+        [collapsed]="i !== 0"
+        [disabled]="itemId(release.id) === activeReleaseId()"
+      >
         <h2 ngbAccordionHeader>
           <button
             ngbAccordionButton
