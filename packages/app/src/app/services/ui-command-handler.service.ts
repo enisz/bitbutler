@@ -356,7 +356,7 @@ export class UiCommandHandlerService {
               centered: true,
               scrollable: true,
             });
-            updateAvailableModalRef.componentInstance.update.set(command.update);
+            setModalInput(updateAvailableModalRef, 'update', command.update);
             updateAvailableModalRef.result.catch(() => {});
             break;
           }

@@ -1,6 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { Release, UpdateCheckResponse } from '@bitbutler/shared';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
+import { HostPlatform, Release, ReleaseAsset, UpdateCheckResponse } from '@bitbutler/shared';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbAccordionModule, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -32,17 +40,52 @@ export class UpdateAvailable {
   private readonly themeService = inject(ThemeService);
 
   public readonly icons = { faGithub, faXmark };
-  public update = signal<UpdateCheckResponse | null>(null);
+  public readonly update = input.required<UpdateCheckResponse>();
   public readonly activeModal = inject(NgbActiveModal);
   private readonly electronService = inject(ElectronService);
   public readonly logoUrl = computed(
     () => `assets/images/bitbutler-logo-${this.themeService.family()}.png`,
   );
 
-  public readonly isSingleRelease = computed(() => (this.update()?.releases?.length ?? 0) === 1);
+  public activeReleaseId = signal<string | null>(null);
+  public readonly platform = signal<HostPlatform | null>(null);
+
+  private readonly platformExtensions: Partial<Record<HostPlatform, string[]>> = {
+    win32: ['.exe', '.zip'],
+    linux: ['.appimage', '.deb', '.rpm', '.snap', '.tar.gz'],
+  };
+
+  public readonly filteredAssets = computed<ReleaseAsset[]>(() => {
+    const assets = this.latestRelease?.assets ?? [];
+    const platform = this.platform();
+    const extensions = platform ? this.platformExtensions[platform] : undefined;
+    if (!extensions) {
+      return assets;
+    }
+
+    const matched = assets.filter((asset) =>
+      extensions.some((ext) => asset.name.toLowerCase().endsWith(ext)),
+    );
+    return matched.length > 0 ? matched : assets;
+  });
+
+  constructor() {
+    effect(() => {
+      const first = this.update().releases?.[0]?.id;
+      if (first !== undefined && this.activeReleaseId() === null) {
+        this.activeReleaseId.set(this.itemId(first));
+      }
+    });
+
+    this.electronService.getPlatform().then((platform) => this.platform.set(platform));
+  }
 
   get latestRelease(): Release | undefined {
-    return this.update()?.releases?.[0];
+    return this.update().releases?.[0];
+  }
+
+  public itemId(id: number): string {
+    return `release-${id}`;
   }
 
   public cleanedBody(release: Release): string {
