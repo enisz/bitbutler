@@ -1354,6 +1354,31 @@
                 "us": "US",
                 "eu": "European",
                 "custom": "Custom"
+              },
+              "token-guide": {
+                "hint": "Wrap literal text in single quotes, e.g. 'at', to include it as-is.",
+                "column-token": "Token",
+                "column-description": "Description",
+                "column-example": "Example",
+                "token": {
+                  "yyyy": "4-digit year",
+                  "yy": "2-digit year",
+                  "MMMM": "Full month name",
+                  "MMM": "Abbreviated month name",
+                  "MM": "2-digit month",
+                  "M": "Month number",
+                  "EEEE": "Full weekday name",
+                  "EEE": "Abbreviated weekday name",
+                  "dd": "2-digit day of month",
+                  "d": "Day of month",
+                  "HH": "2-digit hour (24h)",
+                  "H": "Hour (24h)",
+                  "hh": "2-digit hour (12h)",
+                  "h": "Hour (12h)",
+                  "mm": "2-digit minute",
+                  "ss": "2-digit second",
+                  "a": "AM/PM marker"
+                }
               }
             },
             "appearance": {

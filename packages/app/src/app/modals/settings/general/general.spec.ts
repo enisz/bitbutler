@@ -255,6 +255,53 @@ describe('General', () => {
     });
   });
 
+  describe('dateFormatTokenGuide', () => {
+    it('includes an entry for every supported token, each with a description and a live example', () => {
+      const rows = component.dateFormatTokenGuide();
+
+      expect(rows.map((r) => r.token)).toEqual([
+        'yyyy',
+        'yy',
+        'MMMM',
+        'MMM',
+        'MM',
+        'M',
+        'EEEE',
+        'EEE',
+        'dd',
+        'd',
+        'HH',
+        'H',
+        'hh',
+        'h',
+        'mm',
+        'ss',
+        'a',
+      ]);
+
+      const yyyyRow = rows.find((r) => r.token === 'yyyy')!;
+      expect(yyyyRow.example).toMatch(/^\d{4}$/);
+      expect(yyyyRow.description).not.toBe('');
+    });
+  });
+
+  describe('date format token guide table', () => {
+    it('is hidden when preset is not custom', () => {
+      component.generalSettingsForm.controls.dateFormat.controls.preset.setValue('iso');
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelector('#date-format-token-guide')).toBeNull();
+    });
+
+    it('shows one row per token when preset is custom', () => {
+      component.generalSettingsForm.controls.dateFormat.controls.preset.setValue('custom');
+      fixture.detectChanges();
+
+      const rows = fixture.nativeElement.querySelectorAll('#date-format-token-guide tbody tr');
+      expect(rows.length).toBe(component.dateFormatTokenGuide().length);
+    });
+  });
+
   describe('date format custom pattern reset button', () => {
     it('is rendered next to the custom pattern input when preset is custom', () => {
       component.generalSettingsForm.controls.dateFormat.controls.preset.setValue('custom');

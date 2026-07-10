@@ -294,6 +294,53 @@
                 }}: {{ customPatternPreview() }}
               </div>
             </div>
+            <div class="row mb-2">
+              <div class="col-12 text-muted small">
+                {{
+                  'pages.settings.tab.general.general-settings-form.date-format.token-guide.hint'
+                    | translate
+                }}
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-12">
+                <table id="date-format-token-guide" class="table table-sm mb-0">
+                  <thead>
+                    <tr>
+                      <th>
+                        {{
+                          'pages.settings.tab.general.general-settings-form.date-format.token-guide.column-token'
+                            | translate
+                        }}
+                      </th>
+                      <th>
+                        {{
+                          'pages.settings.tab.general.general-settings-form.date-format.token-guide.column-description'
+                            | translate
+                        }}
+                      </th>
+                      <th>
+                        {{
+                          'pages.settings.tab.general.general-settings-form.date-format.token-guide.column-example'
+                            | translate
+                        }}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (row of dateFormatTokenGuide(); track row.token) {
+                      <tr>
+                        <td>
+                          <code>{{ row.token }}</code>
+                        </td>
+                        <td>{{ row.description }}</td>
+                        <td>{{ row.example }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
           }
         </div>
       </fieldset>

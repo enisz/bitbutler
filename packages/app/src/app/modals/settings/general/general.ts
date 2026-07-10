@@ -31,8 +31,10 @@ import { SavePathSelect } from '../../../components/save-path-select/save-path-s
 import {
   DATE_FORMAT_PRESETS,
   DEFAULT_GENERAL_SETTINGS,
+  DEFAULT_LOCALE,
   DateFormatPreset,
   GeneralSettings,
+  LANGUAGE_LOCALE_MAP,
   SavePathInputType,
   ToastPosition,
   resolveDateFormat,
@@ -61,6 +63,32 @@ interface DateFormatPresetItem {
   label: string;
   example: string;
 }
+
+interface DateFormatTokenGuideRow {
+  token: string;
+  description: string;
+  example: string;
+}
+
+const DATE_FORMAT_TOKENS = [
+  'yyyy',
+  'yy',
+  'MMMM',
+  'MMM',
+  'MM',
+  'M',
+  'EEEE',
+  'EEE',
+  'dd',
+  'd',
+  'HH',
+  'H',
+  'hh',
+  'h',
+  'mm',
+  'ss',
+  'a',
+] as const;
 
 @Component({
   selector: 'app-general',
@@ -211,6 +239,29 @@ export class General implements SettingsTabComponent {
     this.generalSettingsForm.controls.dateFormat.controls.customPattern.setValue(
       DEFAULT_GENERAL_SETTINGS.dateFormat.customPattern,
     );
+  }
+
+  public dateFormatTokenGuide = computed<DateFormatTokenGuideRow[]>(() => {
+    this.languageChanged();
+    const snapshot = this.formSnapshot();
+    const language = snapshot.language.language;
+
+    return DATE_FORMAT_TOKENS.map((token) => ({
+      token,
+      description: this.translateService.instant(
+        `pages.settings.tab.general.general-settings-form.date-format.token-guide.token.${token}`,
+      ),
+      example: this.formatToken(token, language),
+    }));
+  });
+
+  private formatToken(token: string, language: string): string {
+    const locale = LANGUAGE_LOCALE_MAP[language] ?? DEFAULT_LOCALE;
+    try {
+      return formatDate(new Date(), token, locale);
+    } catch {
+      return '';
+    }
   }
 
   public icons: Record<string, IconDefinition> = {
