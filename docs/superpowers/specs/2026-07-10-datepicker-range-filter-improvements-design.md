@@ -37,21 +37,28 @@ instead of its current manual string building.
 
 ## 3. Popup close behavior
 
-Two related behavior changes to the ag-grid filter popup that hosts this
-component:
+Confirmed (by checking other column filters in the running app) that this
+auto-close-on-select behavior is specific to `DatepickerRangeFilter`, not a
+general grid issue, and that no other filter popup has a dedicated close
+button - so no close button is being added here; the popup should close only
+on a genuine outside click, same as every other filter.
 
-- **Selecting a date must not close the popup.** Currently the popup closes
-  as soon as a date is clicked. The exact trigger wasn't conclusively
-  identified via static code reading (ag-grid's `PopupService` closes modal
-  popups on document `mousedown`/`touchstart` outside the popup's own DOM, or
-  when an anchored popup's anchor element briefly reports a zero bounding
-  rect) - implementation will reproduce the issue live in the dev server and
-  fix whatever is triggering it, then verify manually.
-- **Explicit close control.** Add a `btn-link` "Close" button to the button
-  row that calls `this.params.api.hidePopupMenu()` (a real `GridApi` method).
-- Outside-click-to-close is ag-grid's default modal popup behavior already;
-  confirm it still works once the above fix lands (it should require no
-  additional code).
+Root cause: ag-grid's `PopupService` registers a `document`-level `mousedown`
+(and `touchstart`) listener while a modal popup is open, and closes the popup
+unless it decides the event originated from inside the popup
+(`ag-grid-community/dist/package/main.esm.mjs`, `addEventListenersToPopup` /
+`isEventFromCurrentPopup`). Something about a click on a calendar day cell is
+being misclassified as outside.
+
+Fix (root-cause-agnostic - it prevents the event from ever reaching
+`document` at all, regardless of the exact misclassification mechanism): add
+`(mousedown)` and `(touchstart)` handlers calling `event.stopPropagation()` on
+the popup's root element (`.bb-datefilter` in `datepicker-range-filter.html`).
+This only blocks the bubble to `document`; it does not touch `click` events,
+so it can't interfere with `click`-based behavior elsewhere (e.g. ng-select's
+own outside-click-to-close for the month/year dropdowns nested inside this
+popup), and genuine outside clicks (which never touch this root element)
+still close the popup exactly as before.
 
 ## 4. Selection visuals (pill shape for ranges)
 
@@ -82,8 +89,6 @@ so `.bb-day--to` can unconditionally use the square-left/rounded-right shape.
   already supports this - see `bb-btn-content.ts`/`.html` - and it's already
   used this way in 27 other places in the app, so no new component work is
   needed).
-- Add the "Close" `btn-link` button described in §3, to the right of
-  Today/Clear.
 
 ## 6. First day of week
 
@@ -118,6 +123,6 @@ New setting: `GeneralSettings.dateFormat.firstDayOfWeek: 'auto' | 'sunday' |
 - `DatepickerFilter`'s existing spec file is deleted along with the component.
 - Manual verification in the running app (per project convention for UI
   changes): date chip formatting across presets, pill visuals for single vs.
-  range selection, popup staying open through both date clicks, the new
-  Close button, first-day-of-week auto-detection for both `us`/`hu` languages
-  and manual overrides.
+  range selection, popup staying open through both date clicks and closing on
+  a genuine outside click, first-day-of-week auto-detection for both
+  `us`/`hu` languages and manual overrides.
