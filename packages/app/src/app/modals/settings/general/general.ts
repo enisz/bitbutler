@@ -1,4 +1,4 @@
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { CommonModule, NgOptimizedImage, formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -28,12 +28,15 @@ import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { SavePathSelect } from '../../../components/save-path-select/save-path-select';
 import {
+  DATE_FORMAT_PRESETS,
   DateFormatPreset,
   GeneralSettings,
   SavePathInputType,
   ToastPosition,
+  resolveDateFormat,
 } from '../../../models/general-settings.model';
 import { CommandBusService } from '../../../services/command-bus.service';
+import { DateFormatService } from '../../../services/date-format.service';
 import { GeneralSettingsService } from '../../../services/general-settings.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import {
@@ -79,6 +82,7 @@ export class General implements SettingsTabComponent {
   private readonly translateService = inject(TranslateService);
   private readonly stateService = inject(SettingsStateService);
   private readonly serverStoreService = inject(ServerStoreService);
+  private readonly dateFormatService = inject(DateFormatService);
 
   private languageChanged = toSignal(this.translateService.onLangChange);
 
@@ -150,6 +154,51 @@ export class General implements SettingsTabComponent {
     ];
   });
 
+  private previewDateFormat(
+    preset: DateFormatPreset,
+    language: string,
+    customPattern: string,
+  ): string {
+    const { pattern, locale } = resolveDateFormat({
+      language: { language },
+      dateFormat: { preset, customPattern },
+    });
+
+    try {
+      return formatDate(new Date(), pattern, locale);
+    } catch {
+      return formatDate(new Date(), 'yyyy-MM-dd HH:mm', 'en-US');
+    }
+  }
+
+  public dateFormatPresets = computed<NgSelectItem[]>(() => {
+    this.languageChanged();
+    const snapshot = this.formSnapshot();
+    const language = snapshot.language.language;
+    const customPattern = snapshot.dateFormat.customPattern;
+
+    return DATE_FORMAT_PRESETS.map((preset) => {
+      const label = this.translateService.instant(
+        `pages.settings.tab.general.general-settings-form.date-format.preset.${preset}`,
+      );
+      const example = this.previewDateFormat(preset, language, customPattern);
+      return { value: preset, label: `${label} - ${example}` };
+    });
+  });
+
+  public isCustomDateFormat = computed<boolean>(
+    () => this.formSnapshot().dateFormat.preset === 'custom',
+  );
+
+  public customPatternPreview = computed<string>(() => {
+    const snapshot = this.formSnapshot();
+    return this.previewDateFormat(
+      'custom',
+      snapshot.language.language,
+      snapshot.dateFormat.customPattern,
+    );
+  });
+
   public icons: Record<string, IconDefinition> = {
     faTriangleExclamation,
     faCircleQuestion,
@@ -184,6 +233,8 @@ export class General implements SettingsTabComponent {
     }),
   });
 
+  private readonly formSnapshot = signal(this.generalSettingsForm.getRawValue());
+
   constructor() {
     const startupGroup = this.generalSettingsForm.controls.startup;
 
@@ -204,13 +255,17 @@ export class General implements SettingsTabComponent {
 
     this.generalSettingsForm.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.stateService.markDirty('general', true));
+      .subscribe(() => {
+        this.stateService.markDirty('general', true);
+        this.formSnapshot.set(this.generalSettingsForm.getRawValue());
+      });
   }
 
   public readonly settingsLoaded = toSignal(
     from(this.generalSettingsService.load()).pipe(
       tap((settings: GeneralSettings) => {
         this.generalSettingsForm.patchValue(settings, { emitEvent: false });
+        this.formSnapshot.set(this.generalSettingsForm.getRawValue());
         const openAtLogin = settings.startup?.openAtLogin ?? false;
         this.openAtLoginValue.set(openAtLogin);
         const startupGroup = this.generalSettingsForm.controls.startup;
@@ -238,6 +293,7 @@ export class General implements SettingsTabComponent {
     }
 
     this.themeService.applyFromSettings(settings.appearance.family, settings.appearance.mode);
+    this.dateFormatService.applyFromSettings(settings);
   }
 
   public checkUpdates(): void {
