@@ -1,6 +1,8 @@
 import { OverlayModule } from '@angular/cdk/overlay';
 import { PortalModule } from '@angular/cdk/portal';
+import { registerLocaleData } from '@angular/common';
 import { provideHttpClient } from '@angular/common/http';
+import localeHu from '@angular/common/locales/hu';
 import {
   ApplicationConfig,
   importProvidersFrom,
@@ -21,6 +23,7 @@ import { LocalTimestampPipe } from './pipes/local-timestamp-pipe';
 import { RatioLimitPipe } from './pipes/ratio-limit-pipe';
 import { RatioPipe } from './pipes/ratio-pipe';
 import { TimeLimitPipe } from './pipes/time-limit-pipe';
+import { DateFormatService } from './services/date-format.service';
 import { ThemeService } from './services/theme.service';
 
 export function markedOptionsFactory(): MarkedOptions {
@@ -50,6 +53,8 @@ export function markedOptionsFactory(): MarkedOptions {
     pedantic: false,
   };
 }
+
+registerLocaleData(localeHu);
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -81,6 +86,10 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() => {
       const themeService = inject(ThemeService);
       return themeService.init();
+    }),
+    provideAppInitializer(() => {
+      const dateFormatService = inject(DateFormatService);
+      return dateFormatService.init();
     }),
   ],
 };
