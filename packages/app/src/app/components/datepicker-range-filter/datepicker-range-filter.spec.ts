@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
+import { DEFAULT_GENERAL_SETTINGS } from '../../models/general-settings.model';
+import { DateFormatService } from '../../services/date-format.service';
 import { DatepickerRangeFilter } from './datepicker-range-filter';
 
 describe('DatepickerRangeFilter', () => {
@@ -145,6 +147,52 @@ describe('DatepickerRangeFilter', () => {
       component.onSelect(new NgbDate(2024, 1, 5));
       expect(component.fromDate).toEqual(new NgbDate(2024, 1, 5));
       expect(component.toDate).toBeNull();
+    });
+  });
+
+  describe('fmt with a non-default date format', () => {
+    it('formats using the eu preset date-only pattern from DateFormatService', () => {
+      const dateFormatService = TestBed.inject(DateFormatService);
+      dateFormatService.applyFromSettings({
+        ...DEFAULT_GENERAL_SETTINGS,
+        dateFormat: { preset: 'eu', customPattern: 'yyyy-MM-dd HH:mm', firstDayOfWeek: 'auto' },
+      });
+
+      expect(component.fmt(new NgbDate(2024, 3, 5))).toBe('05.03.2024');
+    });
+  });
+
+  describe('isRangeStart', () => {
+    it('is false when no date is selected', () => {
+      component.fromDate = null;
+      component.toDate = null;
+      expect(component.isRangeStart(new NgbDate(2024, 1, 10))).toBe(false);
+    });
+
+    it('is false for a single selected date with no hover and no toDate', () => {
+      component.fromDate = new NgbDate(2024, 1, 10);
+      component.toDate = null;
+      component.hoveredDate = null;
+      expect(component.isRangeStart(new NgbDate(2024, 1, 10))).toBe(false);
+    });
+
+    it('is true for the fromDate once a toDate is set', () => {
+      component.fromDate = new NgbDate(2024, 1, 10);
+      component.toDate = new NgbDate(2024, 1, 20);
+      expect(component.isRangeStart(new NgbDate(2024, 1, 10))).toBe(true);
+    });
+
+    it('is true for the fromDate while hovering past it with no toDate yet', () => {
+      component.fromDate = new NgbDate(2024, 1, 10);
+      component.toDate = null;
+      component.hoveredDate = new NgbDate(2024, 1, 15);
+      expect(component.isRangeStart(new NgbDate(2024, 1, 10))).toBe(true);
+    });
+
+    it('is false for a date other than fromDate', () => {
+      component.fromDate = new NgbDate(2024, 1, 10);
+      component.toDate = new NgbDate(2024, 1, 20);
+      expect(component.isRangeStart(new NgbDate(2024, 1, 15))).toBe(false);
     });
   });
 });

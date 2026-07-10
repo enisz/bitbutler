@@ -1,4 +1,8 @@
-<div class="bb-datefilter p-2">
+<div
+  class="bb-datefilter p-2"
+  (mousedown)="$event.stopPropagation()"
+  (touchstart)="$event.stopPropagation()"
+>
   <div class="d-flex bb-datepicker-header mb-1">
     <div class="bb-header-side d-flex justify-content-between align-items-center ps-1">
       <button type="button" class="btn btn-link bb-dp-nav-btn" (click)="moveMonth(dp, -1)">
@@ -39,6 +43,7 @@
     [dayTemplate]="t"
     [outsideDays]="'collapsed'"
     [navigation]="'none'"
+    [firstDayOfWeek]="dateFormatService.resolved().firstDayOfWeek"
     (navigate)="onNavigate($event)"
     (dateSelect)="onSelect($event)"
   >
@@ -48,6 +53,7 @@
     <span
       class="bb-day"
       [class.bb-day--from]="isFrom(date)"
+      [class.bb-day--from-range]="isRangeStart(date)"
       [class.bb-day--to]="isTo(date)"
       [class.bb-day--between]="isInside(date) || isHovered(date)"
       [class.bb-day--today]="isToday(date)"
@@ -91,12 +97,14 @@
         <bb-btn-content
           [icon]="icons.faCalendarDay"
           [text]="'general.button.today' | translate"
+          [position]="'end'"
         ></bb-btn-content>
       </button>
       <button class="btn btn-sm btn-outline-secondary btn-split" type="button" (click)="clear()">
         <bb-btn-content
           [icon]="icons.faEraser"
           [text]="'general.button.clear' | translate"
+          [position]="'end'"
         ></bb-btn-content>
       </button>
     </div>

@@ -34,6 +34,14 @@
     z-index: 2;
   }
 
+  &--from.bb-day--from-range {
+    border-radius: 50% 0 0 50% !important;
+  }
+
+  &--to {
+    border-radius: 0 50% 50% 0 !important;
+  }
+
   &--between {
     background-color: var(--bb-dp-range) !important;
     border-radius: 0 !important;

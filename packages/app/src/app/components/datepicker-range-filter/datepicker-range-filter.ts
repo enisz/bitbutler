@@ -1,3 +1,4 @@
+import { formatDate } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -18,6 +19,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { IFilterAngularComp } from 'ag-grid-angular';
 import { IDoesFilterPassParams, IFilterParams } from 'ag-grid-community';
 import { CustomDatepickerI18n } from '../../services/custom-datepicker-i18n.service';
+import { DateFormatService } from '../../services/date-format.service';
 import { BbBtnContent } from '../bb-btn-content/bb-btn-content';
 
 @Component({
@@ -39,6 +41,7 @@ import { BbBtnContent } from '../bb-btn-content/bb-btn-content';
 export class DatepickerRangeFilter implements IFilterAngularComp, OnInit {
   readonly calendarService = inject(NgbCalendar);
   private readonly i18n = inject(NgbDatepickerI18n);
+  readonly dateFormatService = inject(DateFormatService);
   private params!: IFilterParams;
   public icons = { faChevronLeft, faChevronRight, faCalendarDay, faEraser };
   fromDate: NgbDate | null = null;
@@ -142,18 +145,26 @@ export class DatepickerRangeFilter implements IFilterAngularComp, OnInit {
   }
   isHovered(date: NgbDate) {
     return (
+      this.hasActiveHoverRange() && date.after(this.fromDate!) && date.before(this.hoveredDate!)
+    );
+  }
+  isRangeStart(date: NgbDate): boolean {
+    return !!this.isFrom(date) && (!!this.toDate || this.hasActiveHoverRange());
+  }
+  private hasActiveHoverRange(): boolean {
+    return !!(
       this.fromDate &&
       !this.toDate &&
       this.hoveredDate &&
-      date.after(this.fromDate) &&
-      date.before(this.hoveredDate)
+      this.hoveredDate.after(this.fromDate)
     );
   }
   isInRange(date: NgbDate) {
     return this.isFrom(date) || this.isTo(date) || this.isInside(date) || this.isHovered(date);
   }
-  fmt(d: NgbDate) {
-    return `${d.year}-${String(d.month).padStart(2, '0')}-${String(d.day).padStart(2, '0')}`;
+  fmt(d: NgbDate): string {
+    const { datePattern, locale } = this.dateFormatService.resolved();
+    return formatDate(new Date(d.year, d.month - 1, d.day), datePattern, locale);
   }
   private ngbToLocalMidnight(d: NgbDate): number {
     return new Date(d.year, d.month - 1, d.day).getTime();
