@@ -74,6 +74,15 @@ describe('DateFormatService', () => {
     expect(service.format(ts)).toBe('05/01/2024 at 13:07');
   });
 
+  it('formats an ISO datetime string using the resolved pattern', () => {
+    service.applyFromSettings({
+      ...DEFAULT_GENERAL_SETTINGS,
+      dateFormat: { preset: 'us', customPattern: 'yyyy-MM-dd HH:mm' },
+    });
+
+    expect(service.format('2024-01-05T13:07:00')).toBe('01/05/2024 01:07 PM');
+  });
+
   it('resolves the locale-aware "short" format for hu-HU under the follow-language preset', () => {
     service.applyFromSettings({
       ...DEFAULT_GENERAL_SETTINGS,

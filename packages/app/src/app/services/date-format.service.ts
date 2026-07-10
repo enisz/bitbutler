@@ -31,10 +31,21 @@ export class DateFormatService {
 
   public format(value: number | string | undefined): string {
     if (!value) return '';
-    const numeric = Number(value);
-    if (!Number.isFinite(numeric) || numeric <= 0) return '';
 
-    const date = new Date(numeric * 1000);
+    let date: Date;
+    const numeric = Number(value);
+    if (Number.isFinite(numeric)) {
+      // If it's a finite number, use it only if > 0
+      if (numeric <= 0) return '';
+      date = new Date(numeric * 1000);
+    } else if (typeof value === 'string') {
+      // Only try ISO parse if the numeric parse gave NaN
+      const parsed = Date.parse(value);
+      if (Number.isNaN(parsed)) return '';
+      date = new Date(parsed);
+    } else {
+      return '';
+    }
 
     try {
       return formatDate(date, this._pattern(), this._locale());
