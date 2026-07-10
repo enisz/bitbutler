@@ -54,6 +54,12 @@ interface NgSelectItem {
   label: string;
 }
 
+interface DateFormatPresetItem {
+  value: DateFormatPreset;
+  label: string;
+  example: string;
+}
+
 @Component({
   selector: 'app-general',
   imports: [
@@ -171,19 +177,19 @@ export class General implements SettingsTabComponent {
     }
   }
 
-  public dateFormatPresets = computed<NgSelectItem[]>(() => {
+  public dateFormatPresets = computed<DateFormatPresetItem[]>(() => {
     this.languageChanged();
     const snapshot = this.formSnapshot();
     const language = snapshot.language.language;
     const customPattern = snapshot.dateFormat.customPattern;
 
-    return DATE_FORMAT_PRESETS.map((preset) => {
-      const label = this.translateService.instant(
+    return DATE_FORMAT_PRESETS.map((preset) => ({
+      value: preset,
+      label: this.translateService.instant(
         `pages.settings.tab.general.general-settings-form.date-format.preset.${preset}`,
-      );
-      const example = this.previewDateFormat(preset, language, customPattern);
-      return { value: preset, label: `${label} - ${example}` };
-    });
+      ),
+      example: this.previewDateFormat(preset, language, customPattern),
+    }));
   });
 
   public isCustomDateFormat = computed<boolean>(

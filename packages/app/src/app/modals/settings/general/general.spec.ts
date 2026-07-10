@@ -202,11 +202,22 @@ describe('General', () => {
   });
 
   describe('dateFormatPresets', () => {
-    it('includes all 5 presets with a live-formatted example in the label', () => {
+    it('includes all 5 presets, each with a translated label and a separate live-formatted example', () => {
       const items = component.dateFormatPresets();
       expect(items.map((i) => i.value)).toEqual(['follow-language', 'iso', 'us', 'eu', 'custom']);
+
       const iso = items.find((i) => i.value === 'iso')!;
-      expect(iso.label).toMatch(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}/);
+      expect(iso.label).not.toMatch(/\d{4}-\d{2}-\d{2}/);
+      expect(iso.example).toMatch(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}/);
+    });
+
+    it('keeps the custom example in sync with the currently typed custom pattern', () => {
+      component.generalSettingsForm.controls.dateFormat.controls.customPattern.setValue(
+        'dd/MM/yyyy',
+      );
+      const items = component.dateFormatPresets();
+      const custom = items.find((i) => i.value === 'custom')!;
+      expect(custom.example).toMatch(/^\d{2}\/\d{2}\/\d{4}$/);
     });
   });
 
