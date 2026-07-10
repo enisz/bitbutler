@@ -1346,6 +1346,7 @@
             "date-format": {
               "preset-label": "Date format",
               "custom-pattern-label": "Custom pattern",
+              "reset-custom-pattern": "Reset to default",
               "preview": "Preview",
               "preset": {
                 "follow-language": "Follow language",

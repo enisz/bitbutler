@@ -265,12 +265,25 @@
               </div>
 
               <div class="col-6">
-                <input
-                  type="text"
-                  class="form-control"
-                  id="date-format-custom-pattern"
-                  formControlName="customPattern"
-                />
+                <div class="bb-filter-input">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="date-format-custom-pattern"
+                    formControlName="customPattern"
+                  />
+                  <button
+                    type="button"
+                    class="bb-filter-clear"
+                    [attr.aria-label]="
+                      'pages.settings.tab.general.general-settings-form.date-format.reset-custom-pattern'
+                        | translate
+                    "
+                    (click)="resetCustomPattern()"
+                  >
+                    <fa-icon [icon]="icons['faRotateLeft']"></fa-icon>
+                  </button>
+                </div>
               </div>
             </div>
             <div class="row mb-3">

@@ -14,6 +14,7 @@ import {
   IconDefinition,
   faArrowsRotate,
   faCircleQuestion,
+  faRotateLeft,
   faTriangleExclamation,
 } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -29,6 +30,7 @@ import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { SavePathSelect } from '../../../components/save-path-select/save-path-select';
 import {
   DATE_FORMAT_PRESETS,
+  DEFAULT_GENERAL_SETTINGS,
   DateFormatPreset,
   GeneralSettings,
   SavePathInputType,
@@ -205,10 +207,17 @@ export class General implements SettingsTabComponent {
     );
   });
 
+  public resetCustomPattern(): void {
+    this.generalSettingsForm.controls.dateFormat.controls.customPattern.setValue(
+      DEFAULT_GENERAL_SETTINGS.dateFormat.customPattern,
+    );
+  }
+
   public icons: Record<string, IconDefinition> = {
     faTriangleExclamation,
     faCircleQuestion,
     faArrowsRotate,
+    faRotateLeft,
   };
 
   public getFamilyLogo = getFamilyLogoUrl;

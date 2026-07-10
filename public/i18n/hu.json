@@ -1346,6 +1346,7 @@
             "date-format": {
               "preset-label": "Dátumformátum",
               "custom-pattern-label": "Egyéni minta",
+              "reset-custom-pattern": "Visszaállítás alapértelmezettre",
               "preview": "Előnézet",
               "preset": {
                 "follow-language": "Nyelv szerint",

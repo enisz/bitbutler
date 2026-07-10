@@ -243,6 +243,40 @@ describe('General', () => {
     });
   });
 
+  describe('resetCustomPattern', () => {
+    it('restores the default custom pattern into the form control only', () => {
+      const customPatternControl =
+        component.generalSettingsForm.controls.dateFormat.controls.customPattern;
+      customPatternControl.setValue('dd-MM');
+
+      component.resetCustomPattern();
+
+      expect(customPatternControl.value).toBe('yyyy-MM-dd HH:mm');
+    });
+  });
+
+  describe('date format custom pattern reset button', () => {
+    it('is rendered next to the custom pattern input when preset is custom', () => {
+      component.generalSettingsForm.controls.dateFormat.controls.preset.setValue('custom');
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelector('.bb-filter-clear')).not.toBeNull();
+    });
+
+    it('resets the input value when clicked', () => {
+      component.generalSettingsForm.controls.dateFormat.controls.preset.setValue('custom');
+      component.generalSettingsForm.controls.dateFormat.controls.customPattern.setValue('dd-MM');
+      fixture.detectChanges();
+
+      fixture.nativeElement.querySelector('.bb-filter-clear').click();
+      fixture.detectChanges();
+
+      expect(component.generalSettingsForm.controls.dateFormat.controls.customPattern.value).toBe(
+        'yyyy-MM-dd HH:mm',
+      );
+    });
+  });
+
   describe('save', () => {
     it('persists dateFormat and applies it via DateFormatService', async () => {
       component.generalSettingsForm.controls.dateFormat.controls.preset.setValue('custom');
