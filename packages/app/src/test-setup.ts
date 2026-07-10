@@ -23,6 +23,7 @@ if (!htmlElementProto.showPopover) {
     showItemInFolder: noop,
     getPlatform: () => Promise.resolve('linux'),
     checkForUpdate: () => Promise.resolve({ updateAvailable: false, error: null }),
+    setLoginItem: noopAsync,
   },
   server: {
     list: () => Promise.resolve([]),

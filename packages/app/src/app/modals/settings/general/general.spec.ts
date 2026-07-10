@@ -234,8 +234,6 @@ describe('General', () => {
 
   describe('save', () => {
     it('persists dateFormat and applies it via DateFormatService', async () => {
-      window.bitbutler.electron.setLoginItem = vi.fn().mockResolvedValue(undefined);
-
       component.generalSettingsForm.controls.dateFormat.controls.preset.setValue('custom');
       component.generalSettingsForm.controls.dateFormat.controls.customPattern.setValue(
         'dd/MM/yyyy',
