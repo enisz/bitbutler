@@ -11,7 +11,6 @@ import {
   GridOptions,
   GridReadyEvent,
   IOverlayParams,
-  ITooltipParams,
   RowClassParams,
   RowDoubleClickedEvent,
   SelectionChangedEvent,
@@ -31,6 +30,9 @@ import { LoadingOverlay } from './overlays/loading-overlay/loading-overlay';
 import { NoRowOverlay } from './overlays/no-row-overlay/no-row-overlay';
 import { CodeCellRenderer } from './renderers/code-cell-renderer/code-cell-renderer';
 import { ProgressCellRenderer } from './renderers/progress-cell-renderer/progress-cell-renderer';
+
+const tooltipFormattedValue: TooltipValueGetterFunc<Torrent, any> = (params) =>
+  params.valueFormatted ?? '';
 
 export function getGridColDefs(
   uiFormatService: UiFormatService,
@@ -62,7 +64,6 @@ export function getGridColDefs(
     {
       colId: 'progress',
       field: 'progress',
-      tooltipField: 'progress',
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.progress'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.progress'),
       width: 135,
@@ -71,7 +72,7 @@ export function getGridColDefs(
     {
       colId: 'progress_percentage',
       field: 'progress',
-      tooltipField: 'progress',
+      tooltipValueGetter: tooltipFormattedValue,
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.progress_percentage'),
       headerTooltip: translateService.instant(
         'pages.main.grid.grid-lib.col-def.progress_percentage',
@@ -99,7 +100,7 @@ export function getGridColDefs(
     {
       colId: 'size',
       field: 'size',
-      tooltipField: 'size',
+      tooltipValueGetter: tooltipFormattedValue,
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.size'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.size'),
       minWidth: 50,
@@ -122,7 +123,7 @@ export function getGridColDefs(
     {
       colId: 'total_size',
       field: 'total_size',
-      tooltipField: 'total_size',
+      tooltipValueGetter: tooltipFormattedValue,
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.total_size'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.total_size'),
       minWidth: 50,
@@ -146,7 +147,7 @@ export function getGridColDefs(
     {
       colId: 'completed',
       field: 'completed',
-      tooltipField: 'completed',
+      tooltipValueGetter: tooltipFormattedValue,
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.completed'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.completed'),
       minWidth: 50,
@@ -170,7 +171,7 @@ export function getGridColDefs(
     {
       colId: 'amount_left',
       field: 'amount_left',
-      tooltipField: 'amount_left',
+      tooltipValueGetter: tooltipFormattedValue,
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.amount_left'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.amount_left'),
       minWidth: 50,
@@ -194,7 +195,7 @@ export function getGridColDefs(
     {
       colId: 'downloaded',
       field: 'downloaded',
-      tooltipField: 'downloaded',
+      tooltipValueGetter: tooltipFormattedValue,
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.downloaded'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.downloaded'),
       minWidth: 50,
@@ -217,7 +218,7 @@ export function getGridColDefs(
     {
       colId: 'downloaded_session',
       field: 'downloaded_session',
-      tooltipField: 'downloaded_session',
+      tooltipValueGetter: tooltipFormattedValue,
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.downloaded_session'),
       headerTooltip: translateService.instant(
         'pages.main.grid.grid-lib.col-def.downloaded_session',
@@ -247,7 +248,7 @@ export function getGridColDefs(
     {
       colId: 'uploaded',
       field: 'uploaded',
-      tooltipField: 'uploaded',
+      tooltipValueGetter: tooltipFormattedValue,
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.uploaded'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.uploaded'),
       minWidth: 50,
@@ -270,7 +271,7 @@ export function getGridColDefs(
     {
       colId: 'uploaded_session',
       field: 'uploaded_session',
-      tooltipField: 'uploaded_session',
+      tooltipValueGetter: tooltipFormattedValue,
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.uploaded_session'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.uploaded_session'),
       minWidth: 50,
@@ -296,7 +297,7 @@ export function getGridColDefs(
     {
       colId: 'dlspeed',
       field: 'dlspeed',
-      tooltipField: 'dlspeed',
+      tooltipValueGetter: tooltipFormattedValue,
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.dlspeed'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.dlspeed'),
       minWidth: 50,
@@ -319,7 +320,7 @@ export function getGridColDefs(
     {
       colId: 'upspeed',
       field: 'upspeed',
-      tooltipField: 'upspeed',
+      tooltipValueGetter: tooltipFormattedValue,
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.upspeed'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.upspeed'),
       minWidth: 50,
@@ -342,7 +343,7 @@ export function getGridColDefs(
     {
       colId: 'ratio',
       field: 'ratio',
-      tooltipField: 'ratio',
+      tooltipValueGetter: tooltipFormattedValue,
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.ratio'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.ratio'),
       minWidth: 50,
@@ -354,7 +355,7 @@ export function getGridColDefs(
     {
       colId: 'eta',
       field: 'eta',
-      tooltipField: 'eta',
+      tooltipValueGetter: tooltipFormattedValue,
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.eta'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.eta'),
       minWidth: 50,
@@ -385,7 +386,7 @@ export function getGridColDefs(
     {
       colId: 'added_on',
       field: 'added_on',
-      tooltipField: 'added_on',
+      tooltipValueGetter: tooltipFormattedValue,
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.added_on'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.added_on'),
       minWidth: 50,
@@ -418,8 +419,7 @@ export function getGridColDefs(
       hide: true,
       valueFormatter: (params: ValueFormatterParams<Torrent, TorrentState>): string =>
         params.value ? translateService.instant('torrent.state.' + params.value) : '',
-      tooltipValueGetter: (params: ITooltipParams<Torrent, any, any>): string =>
-        params.value ? translateService.instant(`torrent.state.${params.value}`) : '',
+      tooltipValueGetter: tooltipFormattedValue,
     },
     {
       colId: 'category',
@@ -469,7 +469,7 @@ export function getGridColDefs(
     {
       colId: 'dl_limit',
       field: 'dl_limit',
-      tooltipField: 'dl_limit',
+      tooltipValueGetter: tooltipFormattedValue,
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.dl_limit'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.dl_limit'),
       minWidth: 50,
@@ -493,7 +493,7 @@ export function getGridColDefs(
     {
       colId: 'up_limit',
       field: 'up_limit',
-      tooltipField: 'up_limit',
+      tooltipValueGetter: tooltipFormattedValue,
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.up_limit'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.up_limit'),
       minWidth: 50,
@@ -517,7 +517,7 @@ export function getGridColDefs(
     {
       colId: 'max_ratio',
       field: 'max_ratio',
-      tooltipField: 'max_ratio',
+      tooltipValueGetter: tooltipFormattedValue,
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.max_ratio'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.max_ratio'),
       minWidth: 50,
@@ -530,7 +530,7 @@ export function getGridColDefs(
     {
       colId: 'ratio_limit',
       field: 'ratio_limit',
-      tooltipField: 'ratio_limit',
+      tooltipValueGetter: tooltipFormattedValue,
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.ratio_limit'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.ratio_limit'),
       minWidth: 50,
@@ -543,7 +543,7 @@ export function getGridColDefs(
     {
       colId: 'seeding_time',
       field: 'seeding_time',
-      tooltipField: 'seeding_time',
+      tooltipValueGetter: tooltipFormattedValue,
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.seeding_time'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.seeding_time'),
       minWidth: 50,
@@ -567,7 +567,7 @@ export function getGridColDefs(
     {
       colId: 'seeding_time_limit',
       field: 'seeding_time_limit',
-      tooltipField: 'seeding_time_limit',
+      tooltipValueGetter: tooltipFormattedValue,
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.seeding_time_limit'),
       headerTooltip: translateService.instant(
         'pages.main.grid.grid-lib.col-def.seeding_time_limit',
@@ -597,7 +597,7 @@ export function getGridColDefs(
     {
       colId: 'time_active',
       field: 'time_active',
-      tooltipField: 'time_active',
+      tooltipValueGetter: tooltipFormattedValue,
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.time_active'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.time_active'),
       minWidth: 50,
@@ -621,7 +621,7 @@ export function getGridColDefs(
     {
       colId: 'last_activity',
       field: 'last_activity',
-      tooltipField: 'last_activity',
+      tooltipValueGetter: tooltipFormattedValue,
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.last_activity'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.last_activity'),
       minWidth: 50,
@@ -635,7 +635,7 @@ export function getGridColDefs(
     {
       colId: 'seen_complete',
       field: 'seen_complete',
-      tooltipField: 'seen_complete',
+      tooltipValueGetter: tooltipFormattedValue,
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.seen_complete'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.seen_complete'),
       minWidth: 50,
@@ -649,7 +649,7 @@ export function getGridColDefs(
     {
       colId: 'completion_on',
       field: 'completion_on',
-      tooltipField: 'completion_on',
+      tooltipValueGetter: tooltipFormattedValue,
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.completion_on'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.completion_on'),
       minWidth: 50,
@@ -797,7 +797,7 @@ export function getGridColDefs(
     {
       colId: 'max_seeding_time',
       field: 'max_seeding_time',
-      tooltipField: 'max_seeding_time',
+      tooltipValueGetter: tooltipFormattedValue,
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.max_seeding_time'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.max_seeding_time'),
       minWidth: 50,
@@ -823,7 +823,7 @@ export function getGridColDefs(
     {
       colId: 'max_inactive_seeding_time',
       field: 'max_inactive_seeding_time',
-      tooltipField: 'max_inactive_seeding_time',
+      tooltipValueGetter: tooltipFormattedValue,
       headerName: translateService.instant(
         'pages.main.grid.grid-lib.col-def.max_inactive_seeding_time',
       ),
@@ -855,7 +855,7 @@ export function getGridColDefs(
     {
       colId: 'inactive_seeding_time_limit',
       field: 'inactive_seeding_time_limit',
-      tooltipField: 'inactive_seeding_time_limit',
+      tooltipValueGetter: tooltipFormattedValue,
       headerName: translateService.instant(
         'pages.main.grid.grid-lib.col-def.inactive_seeding_time_limit',
       ),
