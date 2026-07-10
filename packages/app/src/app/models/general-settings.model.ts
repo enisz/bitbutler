@@ -32,6 +32,7 @@ export interface GeneralSettings {
   dateFormat: {
     preset: DateFormatPreset;
     customPattern: string;
+    firstDayOfWeek?: string;
   };
   appearance: {
     family: ThemeFamily;
@@ -72,23 +73,42 @@ export const DEFAULT_GENERAL_SETTINGS: GeneralSettings = {
   },
 };
 
-export function resolveDateFormat(settings: Pick<GeneralSettings, 'language' | 'dateFormat'>): {
+const TIME_TOKEN_PATTERN = /HH|hh|H|h|mm|ss|a/g;
+const SEPARATOR_TRIM_PATTERN = /^[\s,./:-]+|[\s,./:-]+$/g;
+
+function toDateOnlyPattern(pattern: string): string {
+  const segments = pattern.match(/'[^']*'|[^']+/g) ?? [];
+  const stripped = segments
+    .map((segment) => (segment.startsWith("'") ? segment : segment.replace(TIME_TOKEN_PATTERN, '')))
+    .join('')
+    .replace(SEPARATOR_TRIM_PATTERN, '');
+
+  return stripped || 'yyyy-MM-dd';
+}
+
+export function resolveDateFormat(settings: {
+  language: Pick<GeneralSettings['language'], 'language'>;
+  dateFormat: Pick<GeneralSettings['dateFormat'], 'preset' | 'customPattern'>;
+}): {
   pattern: string;
+  datePattern: string;
   locale: string;
 } {
   const locale = LANGUAGE_LOCALE_MAP[settings.language.language] ?? DEFAULT_LOCALE;
 
   switch (settings.dateFormat.preset) {
     case 'follow-language':
-      return { pattern: 'short', locale };
+      return { pattern: 'short', datePattern: 'shortDate', locale };
     case 'us':
-      return { pattern: 'MM/dd/yyyy hh:mm a', locale };
+      return { pattern: 'MM/dd/yyyy hh:mm a', datePattern: 'MM/dd/yyyy', locale };
     case 'eu':
-      return { pattern: 'dd.MM.yyyy HH:mm', locale };
-    case 'custom':
-      return { pattern: settings.dateFormat.customPattern || 'yyyy-MM-dd HH:mm', locale };
+      return { pattern: 'dd.MM.yyyy HH:mm', datePattern: 'dd.MM.yyyy', locale };
+    case 'custom': {
+      const pattern = settings.dateFormat.customPattern || 'yyyy-MM-dd HH:mm';
+      return { pattern, datePattern: toDateOnlyPattern(pattern), locale };
+    }
     case 'iso':
     default:
-      return { pattern: 'yyyy-MM-dd HH:mm', locale };
+      return { pattern: 'yyyy-MM-dd HH:mm', datePattern: 'yyyy-MM-dd', locale };
   }
 }
