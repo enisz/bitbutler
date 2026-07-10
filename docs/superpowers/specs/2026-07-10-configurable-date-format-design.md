@@ -33,13 +33,23 @@ codes are app-internal, not real BCP-47 locale tags.
   something else.
 - No new runtime dependency - use Angular's own `formatDate()` /
   `DatePipe` machinery (`@angular/common`), which already supports this exact
-  pattern syntax, accepts a locale parameter, has locale-aware predefined
-  formats (`'short'`, `'medium'`, ...), and throws on an invalid pattern
-  (catchable).
-- An invalid custom pattern must never break the visible app - it degrades
-  to the ISO default everywhere except the Settings preview, where the error
-  is shown so the user can fix it. Saving is never blocked by an invalid
-  pattern.
+  pattern syntax, accepts a locale parameter, and has locale-aware
+  predefined formats (`'short'`, `'medium'`, ...).
+- A custom pattern is never rejected. `formatDate()` was verified empirically
+  (see "Verified `formatDate()` behavior" below) to be extremely permissive
+  about pattern _text_ - it does not throw for unrecognized token letters or
+  malformed-looking strings, it just substitutes whatever those letters mean
+  per Angular's rules (which may look surprising if the literal text happens
+  to contain letters like `y`/`M`/`d`/`a`). This is exactly what was asked
+  for: the user can type anything and see exactly what they get, with no
+  artificial validation in the way.
+- What `formatDate()` _does_ throw on - an unregistered locale (`NG0701`)
+  and an actually-invalid `Date` object (`NG02311`) - must never reach the
+  user. `DateFormatService` guards both: it only ever passes known-registered
+  locales, and it validates the input timestamp before constructing a `Date`.
+  A defensive try/catch around the format call still falls back to the ISO
+  pattern with a hardcoded `en-US` locale, purely as a safety net (e.g. a
+  future language added without registering its Angular locale data).
 
 ## Non-goals
 
@@ -114,6 +124,23 @@ new `i18n/xx.json`, a new entry in `general.ts`'s `languages` list, a flag
 icon class); adding one line to `LANGUAGE_LOCALE_MAP` follows the same
 pattern.
 
+## Verified `formatDate()` behavior
+
+Confirmed by running probes through the project's actual `ng test` builder
+(not just reading docs) against the installed `@angular/common@20.3.22`:
+
+| Input                                                                                                           | Result                                                                                                                                                   |
+| --------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `'not[[a valid pattern'`                                                                                        | `'not[[PM vPMli5 pPMttern'` (no throw - letters that happen to match token codes like `a`/`d` get substituted, everything else passes through literally) |
+| `'yyyyyyyyyy'`, `'xyz123'`, `'{{{}}}'`, unterminated `'quote`, empty string                                     | All format without throwing, producing "weird but deterministic" output                                                                                  |
+| Invalid `Date` object (e.g. `new Date(NaN)`) with any pattern                                                   | Throws `NG02311: Unable to convert "Invalid Date" into a date`                                                                                           |
+| A locale with no registered CLDR data (e.g. `'zz-ZZ'`, or `'hu-HU'` before `registerLocaleData(localeHu)` runs) | Throws `NG0701: Missing locale data for the locale "..."` - for **any** pattern, not just named formats like `'short'`                                   |
+| `'short'` with `hu-HU` once `registerLocaleData(localeHu)` has run                                              | `'2024. 01. 05. 13:07'` (vs. `'1/5/24, 1:07 PM'` for `en-US`) - confirms the `follow-language` preset works as intended                                  |
+
+Practical consequence: `registerLocaleData(localeHu)` at bootstrap is not
+an accuracy nicety, it is required - without it, _every_ date display
+would throw for users on the `hu` language, regardless of preset.
+
 ## Format resolution
 
 A pure function, colocated with the model
@@ -167,18 +194,30 @@ export class DateFormatService {
   }
 
   public format(value: number | string | undefined): string {
-    if (!value || Number(value) <= 0) return '';
-    const date = new Date(Number(value) * 1000);
+    if (!value) return '';
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric) || numeric <= 0) return '';
+
+    const date = new Date(numeric * 1000);
 
     try {
       return formatDate(date, this._pattern(), this._locale());
     } catch (error) {
-      console.warn('[date-format] invalid pattern, falling back to ISO default', error);
-      return formatDate(date, 'yyyy-MM-dd HH:mm', this._locale());
+      console.warn('[date-format] failed to format date, falling back to ISO default', error);
+      return formatDate(date, 'yyyy-MM-dd HH:mm', 'en-US');
     }
   }
 }
 ```
+
+`Number.isFinite(numeric)` (rather than the original `Number(value) <= 0`
+check alone) guards against non-numeric input such as `"banana"`, where
+`Number("banana")` is `NaN` and `NaN <= 0` is `false` - so the old check
+would have let it through to construct an `Invalid Date`, which
+`formatDate()` throws on. The fallback branch hardcodes `'en-US'` rather
+than reusing `this._locale()`, because if the _locale_ is what's broken
+(e.g. missing registration), re-using it in the fallback would throw again,
+uncaught. `en-US` is Angular's built-in default and always available.
 
 `app.config.ts` additions:
 
@@ -248,13 +287,17 @@ dateFormat: new FormGroup({
   in `general.ts`).
 - When `preset === 'custom'`, a text input for `customPattern` appears below
   the dropdown, with a live preview line underneath showing the _current
-  unsaved_ form value formatted against "now". If `formatDate()` throws for
-  that value, the preview line shows a translated "Invalid format" message
-  instead of a date.
-- The Save button is never blocked by an invalid custom pattern - it can be
-  saved as-is. `DateFormatService.format()`'s try/catch fallback means it
-  just won't visibly take effect anywhere until corrected; the live preview
-  in Settings is the only place the error surfaces.
+  unsaved_ form value formatted against "now", via the same `resolveDateFormat`
+  - `formatDate` path `DateFormatService` uses. Per the verified behavior
+    above, this preview will not reject or flag most "unusual" input - typing
+    `'my format'` shows exactly what that produces (letters that happen to
+    collide with tokens get substituted), which is the intended behavior: no
+    artificial validation, what you type is what you get. The preview call is
+    still wrapped in try/catch as defense in depth (falls back to showing the
+    ISO-formatted value with a translated "Preview unavailable" note) for the
+    pathological case of a runtime error unrelated to the pattern text itself.
+- The Save button is never blocked - any `customPattern` string can be saved
+  as-is, since there is no validity concept to block on for pattern text.
 - On save, `general.ts`'s existing `save()` method calls
   `dateFormatService.applyFromSettings(settings)`, the same way it already
   calls `themeService.applyFromSettings(...)`.
@@ -263,20 +306,28 @@ dateFormat: new FormGroup({
 
 New translation keys in `public/i18n/us.json` and `public/i18n/hu.json`
 under `pages.settings.tab.general`: fieldset legend, the 5 preset labels,
-custom-pattern input label/placeholder, and the "Invalid format" message.
+custom-pattern input label/placeholder, and the "Preview unavailable"
+fallback message.
 
 ## Testing
 
 - Unit tests for `resolveDateFormat()`: all 5 presets x both languages,
   plus an unmapped-language fallback case.
-- Unit tests for `DateFormatService.format()`: empty/undefined/zero input
-  (existing behavior preserved), valid custom pattern, invalid custom
-  pattern falls back to ISO, preset switching updates output.
-- Update `local-timestamp-pipe.spec.ts` and `ui-format.service.spec.ts` to
-  provide a fake/mock `DateFormatService`.
+- Unit tests for `DateFormatService.format()`: empty/undefined/zero/non-numeric
+  input all return `''` (existing behavior preserved, plus the
+  `Number.isFinite` fix for non-numeric strings), a custom pattern with
+  ordinary separators formats as typed, a custom pattern whose letters
+  collide with format tokens formats per Angular's substitution rules
+  (locking in the verified behavior so it's not mistaken for a bug later),
+  and a request for an unregistered locale falls back to the ISO pattern
+  in `en-US` instead of throwing.
+- Update `local-timestamp-pipe.spec.ts` to construct the pipe via `TestBed`
+  instead of `new LocalTimestampPipe()`, since it now injects
+  `DateFormatService`. `ui-format.service.spec.ts` already uses `TestBed`
+  and needs no changes - `DateFormatService`'s own dependency chain resolves
+  through the existing global `window.bitbutler.settings.get` test stub.
 - Update `grid.spec.ts` mocks to account for the new service dependency and
   the `refreshCells` call on format change.
 - New `general.spec.ts` cases: selecting "Custom" reveals the pattern input
-  and preview, an invalid pattern shows the error state but does not disable
-  Save, saving persists `dateFormat` and calls
+  and live preview, saving persists `dateFormat` and calls
   `dateFormatService.applyFromSettings`.
