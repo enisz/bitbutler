@@ -359,4 +359,27 @@ describe('General', () => {
       expect(input).not.toBeNull();
     });
   });
+
+  describe('firstDayOfWeekOptions', () => {
+    it('includes auto plus the three explicit weekday choices, each with a translated label', () => {
+      const items = component.firstDayOfWeekOptions();
+      expect(items.map((i) => i.value)).toEqual(['auto', 'sunday', 'monday', 'saturday']);
+      expect(items.every((i) => i.label.length > 0)).toBe(true);
+    });
+  });
+
+  describe('save with firstDayOfWeek', () => {
+    it('persists the selected firstDayOfWeek value', async () => {
+      component.generalSettingsForm.controls.dateFormat.controls.firstDayOfWeek.setValue('sunday');
+
+      const saveCallback = stateServiceMock.registerSave.mock.calls[0][1];
+      await saveCallback();
+
+      expect(dateFormatServiceMock.applyFromSettings).toHaveBeenCalledWith(
+        expect.objectContaining({
+          dateFormat: expect.objectContaining({ firstDayOfWeek: 'sunday' }),
+        }),
+      );
+    });
+  });
 });

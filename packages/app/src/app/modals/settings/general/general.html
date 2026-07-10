@@ -255,6 +255,29 @@
             </div>
           </div>
 
+          <div class="row mb-3">
+            <div class="col-6 d-flex align-items-center">
+              {{
+                'pages.settings.tab.general.general-settings-form.date-format.first-day-of-week-label'
+                  | translate
+              }}
+            </div>
+
+            <div class="col-6">
+              <ng-select
+                [items]="firstDayOfWeekOptions()"
+                [clearable]="false"
+                [openOnEnter]="false"
+                [clearSearchOnAdd]="true"
+                [searchable]="false"
+                bindLabel="label"
+                bindValue="value"
+                formControlName="firstDayOfWeek"
+              >
+              </ng-select>
+            </div>
+          </div>
+
           @if (isCustomDateFormat()) {
             <div class="row mb-3">
               <div class="col-6 d-flex align-items-center">

@@ -33,6 +33,7 @@ import {
   DEFAULT_GENERAL_SETTINGS,
   DEFAULT_LOCALE,
   DateFormatPreset,
+  FIRST_DAY_OF_WEEK_OPTIONS,
   FirstDayOfWeek,
   GeneralSettings,
   LANGUAGE_LOCALE_MAP,
@@ -220,6 +221,17 @@ export class General implements SettingsTabComponent {
         `pages.settings.tab.general.general-settings-form.date-format.preset.${preset}`,
       ),
       example: this.previewDateFormat(preset, language, customPattern),
+    }));
+  });
+
+  public firstDayOfWeekOptions = computed<NgSelectItem[]>(() => {
+    this.languageChanged();
+
+    return FIRST_DAY_OF_WEEK_OPTIONS.map((value) => ({
+      value,
+      label: this.translateService.instant(
+        `pages.settings.tab.general.general-settings-form.date-format.first-day-of-week.${value}`,
+      ),
     }));
   });
 

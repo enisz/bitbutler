@@ -1348,6 +1348,13 @@
               "custom-pattern-label": "Egyéni minta",
               "reset-custom-pattern": "Visszaállítás alapértelmezettre",
               "preview": "Előnézet",
+              "first-day-of-week-label": "A hét első napja",
+              "first-day-of-week": {
+                "auto": "Automatikus",
+                "sunday": "Vasárnap",
+                "monday": "Hétfő",
+                "saturday": "Szombat"
+              },
               "preset": {
                 "follow-language": "Nyelv szerint",
                 "iso": "ISO",
