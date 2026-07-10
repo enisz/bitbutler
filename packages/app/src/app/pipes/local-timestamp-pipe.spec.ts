@@ -1,10 +1,12 @@
+import { TestBed } from '@angular/core/testing';
 import { LocalTimestampPipe } from './local-timestamp-pipe';
 
 describe('LocalTimestampPipe', () => {
   let pipe: LocalTimestampPipe;
 
   beforeEach(() => {
-    pipe = new LocalTimestampPipe();
+    TestBed.configureTestingModule({ providers: [LocalTimestampPipe] });
+    pipe = TestBed.inject(LocalTimestampPipe);
   });
 
   it('creates an instance', () => {
