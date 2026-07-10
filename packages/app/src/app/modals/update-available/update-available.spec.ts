@@ -101,6 +101,21 @@ describe('UpdateAvailable', () => {
     });
   });
 
+  describe('release date rendering', () => {
+    it('renders the release date using the configured date format', () => {
+      fixture.componentRef.setInput('update', {
+        releases: [makeRelease({ published_at: '2024-01-15T10:00:00Z' })],
+        updateAvailable: true,
+      } as UpdateCheckResponse);
+      fixture.detectChanges();
+
+      const dateSpan = fixture.nativeElement.querySelector(
+        '.me-3.d-flex.flex-column.justify-content-between.align-items-center span',
+      );
+      expect(dateSpan.textContent.trim()).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/);
+    });
+  });
+
   describe('getVersion', () => {
     it('should strip leading v from version string', () => {
       expect(component.getVersion('v2.0.0')).toBe('2.0.0');

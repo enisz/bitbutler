@@ -9,7 +9,7 @@ import { DateFormatService } from '../services/date-format.service';
 export class LocalTimestampPipe implements PipeTransform {
   private readonly dateFormatService = inject(DateFormatService);
 
-  transform(value: number | string | undefined): string {
-    return this.dateFormatService.format(value);
+  transform(value: number | string | null | undefined): string {
+    return this.dateFormatService.format(value as number | string | undefined);
   }
 }
