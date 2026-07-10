@@ -28,6 +28,7 @@ import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { SavePathSelect } from '../../../components/save-path-select/save-path-select';
 import {
+  DateFormatPreset,
   GeneralSettings,
   SavePathInputType,
   ToastPosition,
@@ -165,6 +166,10 @@ export class General implements SettingsTabComponent {
     }),
     language: new FormGroup({
       language: new FormControl('us', { nonNullable: true }),
+    }),
+    dateFormat: new FormGroup({
+      preset: new FormControl<DateFormatPreset>('iso', { nonNullable: true }),
+      customPattern: new FormControl('yyyy-MM-dd HH:mm', { nonNullable: true }),
     }),
     appearance: new FormGroup({
       family: new FormControl<ThemeFamily>('bitbutler', { nonNullable: true }),
