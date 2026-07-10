@@ -1,7 +1,9 @@
 import {
   DEFAULT_GENERAL_SETTINGS,
   GeneralSettings,
+  LANGUAGE_LOCALE_MAP,
   resolveDateFormat,
+  resolveFirstDayOfWeek,
 } from './general-settings.model';
 
 describe('resolveDateFormat', () => {
@@ -103,5 +105,76 @@ describe('DEFAULT_GENERAL_SETTINGS', () => {
       customPattern: 'yyyy-MM-dd HH:mm',
       firstDayOfWeek: 'auto',
     });
+  });
+});
+
+describe('resolveFirstDayOfWeek', () => {
+  it('maps an explicit sunday override to 7', () => {
+    expect(
+      resolveFirstDayOfWeek({
+        language: { language: 'us' },
+        dateFormat: { firstDayOfWeek: 'sunday' },
+      }),
+    ).toBe(7);
+  });
+
+  it('maps an explicit monday override to 1', () => {
+    expect(
+      resolveFirstDayOfWeek({
+        language: { language: 'us' },
+        dateFormat: { firstDayOfWeek: 'monday' },
+      }),
+    ).toBe(1);
+  });
+
+  it('maps an explicit saturday override to 6', () => {
+    expect(
+      resolveFirstDayOfWeek({
+        language: { language: 'us' },
+        dateFormat: { firstDayOfWeek: 'saturday' },
+      }),
+    ).toBe(6);
+  });
+
+  it('derives Sunday (7) for the us language under auto', () => {
+    expect(
+      resolveFirstDayOfWeek({
+        language: { language: 'us' },
+        dateFormat: { firstDayOfWeek: 'auto' },
+      }),
+    ).toBe(7);
+  });
+
+  it('derives Monday (1) for the hu language under auto', () => {
+    expect(
+      resolveFirstDayOfWeek({
+        language: { language: 'hu' },
+        dateFormat: { firstDayOfWeek: 'auto' },
+      }),
+    ).toBe(1);
+  });
+
+  it('derives Sunday (7) via the DEFAULT_LOCALE fallback for an unmapped language under auto', () => {
+    expect(
+      resolveFirstDayOfWeek({
+        language: { language: 'zz' },
+        dateFormat: { firstDayOfWeek: 'auto' },
+      }),
+    ).toBe(7);
+  });
+
+  it('falls back to Monday (1) when the resolved locale tag is malformed', () => {
+    LANGUAGE_LOCALE_MAP['bad'] = 'not a locale!!';
+
+    try {
+      expect(
+        resolveFirstDayOfWeek({
+          language: { language: 'bad' },
+          dateFormat: { firstDayOfWeek: 'auto' },
+        }),
+      ).toBe(1);
+    } finally {
+      delete LANGUAGE_LOCALE_MAP['bad'];
+    }
   });
 });

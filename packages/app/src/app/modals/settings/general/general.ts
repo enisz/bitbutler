@@ -33,6 +33,7 @@ import {
   DEFAULT_GENERAL_SETTINGS,
   DEFAULT_LOCALE,
   DateFormatPreset,
+  FirstDayOfWeek,
   GeneralSettings,
   LANGUAGE_LOCALE_MAP,
   SavePathInputType,
@@ -285,6 +286,7 @@ export class General implements SettingsTabComponent {
     dateFormat: new FormGroup({
       preset: new FormControl<DateFormatPreset>('iso', { nonNullable: true }),
       customPattern: new FormControl('yyyy-MM-dd HH:mm', { nonNullable: true }),
+      firstDayOfWeek: new FormControl<FirstDayOfWeek>('auto', { nonNullable: true }),
     }),
     appearance: new FormGroup({
       family: new FormControl<ThemeFamily>('bitbutler', { nonNullable: true }),

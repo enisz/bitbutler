@@ -336,7 +336,7 @@ describe('General', () => {
 
       expect(dateFormatServiceMock.applyFromSettings).toHaveBeenCalledWith(
         expect.objectContaining({
-          dateFormat: { preset: 'custom', customPattern: 'dd/MM/yyyy' },
+          dateFormat: { preset: 'custom', customPattern: 'dd/MM/yyyy', firstDayOfWeek: 'auto' },
         }),
       );
     });

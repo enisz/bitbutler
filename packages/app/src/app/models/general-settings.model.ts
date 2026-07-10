@@ -13,6 +13,10 @@ export const DATE_FORMAT_PRESETS: DateFormatPreset[] = [
   'custom',
 ];
 
+export type FirstDayOfWeek = 'auto' | 'sunday' | 'monday' | 'saturday';
+
+export const FIRST_DAY_OF_WEEK_OPTIONS: FirstDayOfWeek[] = ['auto', 'sunday', 'monday', 'saturday'];
+
 export const LANGUAGE_LOCALE_MAP: Record<string, string> = {
   us: 'en-US',
   hu: 'hu-HU',
@@ -32,7 +36,7 @@ export interface GeneralSettings {
   dateFormat: {
     preset: DateFormatPreset;
     customPattern: string;
-    firstDayOfWeek?: string;
+    firstDayOfWeek: FirstDayOfWeek;
   };
   appearance: {
     family: ThemeFamily;
@@ -59,6 +63,7 @@ export const DEFAULT_GENERAL_SETTINGS: GeneralSettings = {
   dateFormat: {
     preset: 'iso',
     customPattern: 'yyyy-MM-dd HH:mm',
+    firstDayOfWeek: 'auto',
   },
   appearance: {
     family: 'bitbutler',
@@ -111,4 +116,38 @@ export function resolveDateFormat(settings: {
     default:
       return { pattern: 'yyyy-MM-dd HH:mm', datePattern: 'yyyy-MM-dd', locale };
   }
+}
+
+const FIXED_FIRST_DAY_OF_WEEK: Record<Exclude<FirstDayOfWeek, 'auto'>, number> = {
+  sunday: 7,
+  monday: 1,
+  saturday: 6,
+};
+
+export function resolveFirstDayOfWeek(settings: {
+  language: Pick<GeneralSettings['language'], 'language'>;
+  dateFormat: Pick<GeneralSettings['dateFormat'], 'firstDayOfWeek'>;
+}): number {
+  const { firstDayOfWeek } = settings.dateFormat;
+
+  if (firstDayOfWeek !== 'auto') {
+    return FIXED_FIRST_DAY_OF_WEEK[firstDayOfWeek];
+  }
+
+  const locale = LANGUAGE_LOCALE_MAP[settings.language.language] ?? DEFAULT_LOCALE;
+
+  try {
+    // Intl.Locale#getWeekInfo isn't in TS's bundled lib.d.ts yet; the runtime supports it (Electron 39 / Chromium).
+    const localeInfo = new Intl.Locale(locale) as Intl.Locale & {
+      getWeekInfo?: () => { firstDay: number };
+    };
+    const weekInfo = localeInfo.getWeekInfo?.();
+    if (weekInfo && Number.isInteger(weekInfo.firstDay)) {
+      return weekInfo.firstDay;
+    }
+  } catch {
+    // Malformed locale tag - fall through to the Monday default below.
+  }
+
+  return 1;
 }

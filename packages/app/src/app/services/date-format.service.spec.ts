@@ -45,7 +45,7 @@ describe('DateFormatService', () => {
   it('applies the us preset pattern after init()', async () => {
     generalSettingsServiceMock.load.mockResolvedValue({
       ...DEFAULT_GENERAL_SETTINGS,
-      dateFormat: { preset: 'us', customPattern: 'yyyy-MM-dd HH:mm' },
+      dateFormat: { preset: 'us', customPattern: 'yyyy-MM-dd HH:mm', firstDayOfWeek: 'auto' },
     } satisfies GeneralSettings);
 
     await service.init();
@@ -57,7 +57,7 @@ describe('DateFormatService', () => {
   it('applies the eu preset pattern via applyFromSettings()', () => {
     service.applyFromSettings({
       ...DEFAULT_GENERAL_SETTINGS,
-      dateFormat: { preset: 'eu', customPattern: 'yyyy-MM-dd HH:mm' },
+      dateFormat: { preset: 'eu', customPattern: 'yyyy-MM-dd HH:mm', firstDayOfWeek: 'auto' },
     });
 
     const ts = Math.floor(new Date(2024, 0, 5, 13, 7).getTime() / 1000);
@@ -67,7 +67,11 @@ describe('DateFormatService', () => {
   it('applies a custom pattern with literal text', () => {
     service.applyFromSettings({
       ...DEFAULT_GENERAL_SETTINGS,
-      dateFormat: { preset: 'custom', customPattern: "dd/MM/yyyy 'at' HH:mm" },
+      dateFormat: {
+        preset: 'custom',
+        customPattern: "dd/MM/yyyy 'at' HH:mm",
+        firstDayOfWeek: 'auto',
+      },
     });
 
     const ts = Math.floor(new Date(2024, 0, 5, 13, 7).getTime() / 1000);
@@ -77,7 +81,7 @@ describe('DateFormatService', () => {
   it('formats an ISO datetime string using the resolved pattern', () => {
     service.applyFromSettings({
       ...DEFAULT_GENERAL_SETTINGS,
-      dateFormat: { preset: 'us', customPattern: 'yyyy-MM-dd HH:mm' },
+      dateFormat: { preset: 'us', customPattern: 'yyyy-MM-dd HH:mm', firstDayOfWeek: 'auto' },
     });
 
     expect(service.format('2024-01-05T13:07:00')).toBe('01/05/2024 01:07 PM');
@@ -87,7 +91,11 @@ describe('DateFormatService', () => {
     service.applyFromSettings({
       ...DEFAULT_GENERAL_SETTINGS,
       language: { language: 'hu' },
-      dateFormat: { preset: 'follow-language', customPattern: 'yyyy-MM-dd HH:mm' },
+      dateFormat: {
+        preset: 'follow-language',
+        customPattern: 'yyyy-MM-dd HH:mm',
+        firstDayOfWeek: 'auto',
+      },
     });
 
     const ts = Math.floor(new Date(2024, 0, 5, 13, 7).getTime() / 1000);
@@ -101,7 +109,7 @@ describe('DateFormatService', () => {
       service.applyFromSettings({
         ...DEFAULT_GENERAL_SETTINGS,
         language: { language: 'zz' },
-        dateFormat: { preset: 'iso', customPattern: 'yyyy-MM-dd HH:mm' },
+        dateFormat: { preset: 'iso', customPattern: 'yyyy-MM-dd HH:mm', firstDayOfWeek: 'auto' },
       });
 
       const ts = 1700000000;
