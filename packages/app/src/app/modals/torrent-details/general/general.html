@@ -607,10 +607,10 @@
           </span>
           <span
             class="section-value"
-            [ngbTooltip]="torrent()!.data.last_activity * 1000 | date: 'yyyy-MM-dd HH:mm:ss'"
+            [ngbTooltip]="torrent()!.data.last_activity | localTimestamp"
             bbTooltipOverflow
             placement="bottom"
-            >{{ torrent()!.data.last_activity * 1000 | date: 'yyyy-MM-dd HH:mm:ss' }}</span
+            >{{ torrent()!.data.last_activity | localTimestamp }}</span
           >
         </div>
         <div class="col-12 col-lg-6 col-xl-4 bb-section">
@@ -846,10 +846,10 @@
           </span>
           <span
             class="section-value"
-            [ngbTooltip]="torrent()!.data.added_on * 1000 | date: 'yyyy-MM-dd HH:mm:ss'"
+            [ngbTooltip]="torrent()!.data.added_on | localTimestamp"
             bbTooltipOverflow
             placement="bottom"
-            >{{ torrent()!.data.added_on * 1000 | date: 'yyyy-MM-dd HH:mm:ss' }}</span
+            >{{ torrent()!.data.added_on | localTimestamp }}</span
           >
           <span class="section-value"
             ><small class="text-body-secondary">{{
@@ -873,14 +873,18 @@
           </span>
           <span class="section-value">
             @if (torrent()!.data.completion_on > 0) {
-              {{ torrent()!.data.completion_on * 1000 | date: 'yyyy-MM-dd HH:mm:ss' }}
-              <small class="text-body-secondary">{{
-                torrent()!.data.completion_on * 1000 | timeago
-              }}</small>
+              {{ torrent()!.data.completion_on | localTimestamp }}
             } @else {
               -
             }
           </span>
+          @if (torrent()!.data.completion_on > 0) {
+            <span class="section-value"
+              ><small class="text-body-secondary">{{
+                torrent()!.data.completion_on * 1000 | timeago
+              }}</small></span
+            >
+          }
         </div>
         <div class="col-12 col-lg-6 col-xl-4 bb-section">
           <span class="section-header">
@@ -898,10 +902,10 @@
           </span>
           <span
             class="section-value"
-            [ngbTooltip]="torrent()!.properties.creation_date * 1000 | date: 'yyyy-MM-dd HH:mm:ss'"
+            [ngbTooltip]="torrent()!.properties.creation_date | localTimestamp"
             bbTooltipOverflow
             placement="bottom"
-            >{{ torrent()!.properties.creation_date * 1000 | date: 'yyyy-MM-dd HH:mm:ss' }}</span
+            >{{ torrent()!.properties.creation_date | localTimestamp }}</span
           >
           <span class="section-value"
             ><small class="text-body-secondary">{{
