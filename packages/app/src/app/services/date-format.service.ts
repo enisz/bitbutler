@@ -1,5 +1,5 @@
 import { formatDate } from '@angular/common';
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import {
   DEFAULT_LOCALE,
   GeneralSettings,
@@ -15,6 +15,8 @@ export class DateFormatService {
 
   private readonly _pattern = signal(ISO_FALLBACK_PATTERN);
   private readonly _locale = signal(DEFAULT_LOCALE);
+
+  public readonly resolved = computed(() => ({ pattern: this._pattern(), locale: this._locale() }));
 
   public async init(): Promise<void> {
     const settings = await this.generalSettingsService.load();

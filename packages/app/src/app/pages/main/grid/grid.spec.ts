@@ -5,6 +5,7 @@ import { Subject, of } from 'rxjs';
 import { GRID_DARK_THEME, GRID_LIGHT_THEME } from '../../../app.const';
 import { CommandBusService } from '../../../services/command-bus.service';
 import { ContextMenuService } from '../../../services/context-menu.service';
+import { DateFormatService } from '../../../services/date-format.service';
 import { ElectronService } from '../../../services/electron.service';
 import { FilterService, GRID_FILTER_INITIAL } from '../../../services/filter.service';
 import { GridStateService } from '../../../services/grid-state.service';
@@ -33,6 +34,9 @@ describe('Grid', () => {
     init: ReturnType<typeof vi.fn>;
   };
   let themeServiceMock: { effectiveMode: ReturnType<typeof signal<'dark' | 'light'>> };
+  let dateFormatServiceMock: {
+    resolved: ReturnType<typeof signal<{ pattern: string; locale: string }>>;
+  };
   let gridStateServiceMock: { restore: ReturnType<typeof vi.fn>; save: ReturnType<typeof vi.fn> };
   let gridPinServiceMock: {
     init: ReturnType<typeof vi.fn>;
@@ -53,6 +57,8 @@ describe('Grid', () => {
     };
 
     themeServiceMock = { effectiveMode: signal<'dark' | 'light'>('dark') };
+
+    dateFormatServiceMock = { resolved: signal({ pattern: 'yyyy-MM-dd HH:mm', locale: 'en-US' }) };
 
     gridStateServiceMock = {
       restore: vi.fn().mockResolvedValue(undefined),
@@ -83,6 +89,7 @@ describe('Grid', () => {
         },
         { provide: ContextMenuService, useValue: { open: vi.fn() } },
         { provide: ThemeService, useValue: themeServiceMock },
+        { provide: DateFormatService, useValue: dateFormatServiceMock },
         {
           provide: UiFormatService,
           useValue: {
@@ -354,6 +361,21 @@ describe('Grid', () => {
       commandsSubject.next({ type: 'UI_SCROLL_TO_TORRENT', hash: 'abc123' });
 
       expect(mockApi.ensureIndexVisible).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('date format changes', () => {
+    it('force-refreshes grid cells when the resolved date format changes', () => {
+      // The shared beforeEach above already called fixture.detectChanges(), which runs
+      // ngAfterViewInit() once and wires up the subscription under test - reuse that
+      // component/fixture rather than creating a second one.
+      const refreshCellsSpy = vi.fn();
+      (component as any).api = { refreshCells: refreshCellsSpy };
+
+      dateFormatServiceMock.resolved.set({ pattern: 'dd.MM.yyyy HH:mm', locale: 'en-US' });
+      fixture.detectChanges();
+
+      expect(refreshCellsSpy).toHaveBeenCalledWith({ force: true });
     });
   });
 });

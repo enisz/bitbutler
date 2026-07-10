@@ -27,6 +27,7 @@ import { TorrentListGridSettings } from '../../../models/torrent-list-grid.model
 import { Torrent } from '../../../models/torrent.model';
 import { CommandBusService } from '../../../services/command-bus.service';
 import { ContextMenuService } from '../../../services/context-menu.service';
+import { DateFormatService } from '../../../services/date-format.service';
 import { FilterService } from '../../../services/filter.service';
 import { GridStateService } from '../../../services/grid-state.service';
 import { GridViewStoreService } from '../../../services/grid-view-store.service';
@@ -67,6 +68,7 @@ export class Grid implements AfterViewInit {
   private readonly gridContextMenuService = inject(GridContextMenuService);
   private readonly themeService = inject(ThemeService);
   private readonly uiFormatService = inject(UiFormatService);
+  private readonly dateFormatService = inject(DateFormatService);
   private readonly gridViewStoreService = inject(GridViewStoreService);
   private readonly commandBusService = inject(CommandBusService);
   private readonly torrentListGridSettingsService = inject(TorrentListGridSettingsService);
@@ -236,6 +238,10 @@ export class Grid implements AfterViewInit {
           this.api!.ensureIndexVisible(rowNode.rowIndex, 'middle');
         }
       });
+
+    toObservable(this.dateFormatService.resolved)
+      .pipe(skip(1), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.api?.refreshCells({ force: true }));
   }
 
   private areSelectionsEqual(a: Torrent[], b: Torrent[]): boolean {
