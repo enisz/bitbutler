@@ -215,6 +215,63 @@
         </div>
       </fieldset>
 
+      <fieldset class="bb-fieldset" formGroupName="dateFormat">
+        <legend>{{ 'pages.settings.tab.general.label.date-format' | translate }}</legend>
+
+        <div class="container">
+          <div class="row mb-3">
+            <div class="col-6 d-flex align-items-center">
+              {{
+                'pages.settings.tab.general.general-settings-form.date-format.preset-label'
+                  | translate
+              }}
+            </div>
+
+            <div class="col-6">
+              <ng-select
+                [items]="dateFormatPresets()"
+                [clearable]="false"
+                [openOnEnter]="false"
+                [clearSearchOnAdd]="true"
+                [searchable]="false"
+                bindLabel="label"
+                bindValue="value"
+                formControlName="preset"
+              >
+              </ng-select>
+            </div>
+          </div>
+
+          @if (isCustomDateFormat()) {
+            <div class="row mb-3">
+              <div class="col-6 d-flex align-items-center">
+                {{
+                  'pages.settings.tab.general.general-settings-form.date-format.custom-pattern-label'
+                    | translate
+                }}
+              </div>
+
+              <div class="col-6">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="date-format-custom-pattern"
+                  formControlName="customPattern"
+                />
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-12 text-muted">
+                {{
+                  'pages.settings.tab.general.general-settings-form.date-format.preview'
+                    | translate
+                }}: {{ customPatternPreview() }}
+              </div>
+            </div>
+          }
+        </div>
+      </fieldset>
+
       <fieldset class="bb-fieldset" formGroupName="appearance">
         <legend>{{ 'pages.settings.tab.general.label.appearance' | translate }}</legend>
 

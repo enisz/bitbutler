@@ -1343,6 +1343,18 @@
             "language": {
               "language": "Language of the UI"
             },
+            "date-format": {
+              "preset-label": "Date format",
+              "custom-pattern-label": "Custom pattern",
+              "preview": "Preview",
+              "preset": {
+                "follow-language": "Follow language",
+                "iso": "ISO",
+                "us": "US",
+                "eu": "European",
+                "custom": "Custom"
+              }
+            },
             "appearance": {
               "family": "Theme Family",
               "mode": "Theme Mode"
@@ -1361,6 +1373,7 @@
           "label": {
             "behavior": "Behavior",
             "language": "Language",
+            "date-format": "Date & Time",
             "appearance": "Appearance",
             "startup": "Startup",
             "save-path-input": "Save Path Input"

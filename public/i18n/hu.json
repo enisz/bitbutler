@@ -1343,6 +1343,18 @@
             "language": {
               "language": "A felület nyelve"
             },
+            "date-format": {
+              "preset-label": "Dátumformátum",
+              "custom-pattern-label": "Egyéni minta",
+              "preview": "Előnézet",
+              "preset": {
+                "follow-language": "Nyelv szerint",
+                "iso": "ISO",
+                "us": "USA",
+                "eu": "Európai",
+                "custom": "Egyéni"
+              }
+            },
             "appearance": {
               "family": "Témacsalád",
               "mode": "Téma mód"
@@ -1361,6 +1373,7 @@
           "label": {
             "behavior": "Viselkedés",
             "language": "Nyelv",
+            "date-format": "Dátum és idő",
             "appearance": "Megjelenés",
             "startup": "Indítás",
             "save-path-input": "Mentési útvonal bevitel"

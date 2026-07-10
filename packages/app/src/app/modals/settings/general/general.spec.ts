@@ -39,6 +39,7 @@ describe('General', () => {
     fixture = TestBed.createComponent(General);
     component = fixture.componentInstance;
     fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create', () => {
@@ -248,6 +249,24 @@ describe('General', () => {
           dateFormat: { preset: 'custom', customPattern: 'dd/MM/yyyy' },
         }),
       );
+    });
+  });
+
+  describe('date format fieldset', () => {
+    it('hides the custom pattern input when preset is iso', () => {
+      component.generalSettingsForm.controls.dateFormat.controls.preset.setValue('iso');
+      fixture.detectChanges();
+
+      const input = fixture.nativeElement.querySelector('#date-format-custom-pattern');
+      expect(input).toBeNull();
+    });
+
+    it('shows the custom pattern input and preview when preset is custom', () => {
+      component.generalSettingsForm.controls.dateFormat.controls.preset.setValue('custom');
+      fixture.detectChanges();
+
+      const input = fixture.nativeElement.querySelector('#date-format-custom-pattern');
+      expect(input).not.toBeNull();
     });
   });
 });
