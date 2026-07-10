@@ -118,4 +118,37 @@ describe('DateFormatService', () => {
       delete LANGUAGE_LOCALE_MAP['zz'];
     }
   });
+
+  it('defaults firstDayOfWeek to Monday (1) before init() resolves', () => {
+    expect(service.resolved().firstDayOfWeek).toBe(1);
+  });
+
+  it('exposes the derived datePattern alongside pattern and locale via resolved()', () => {
+    service.applyFromSettings({
+      ...DEFAULT_GENERAL_SETTINGS,
+      dateFormat: { preset: 'eu', customPattern: 'yyyy-MM-dd HH:mm', firstDayOfWeek: 'auto' },
+    });
+
+    expect(service.resolved().datePattern).toBe('dd.MM.yyyy');
+  });
+
+  it('exposes firstDayOfWeek resolved from the auto setting and language', () => {
+    service.applyFromSettings({
+      ...DEFAULT_GENERAL_SETTINGS,
+      language: { language: 'hu' },
+      dateFormat: { preset: 'iso', customPattern: 'yyyy-MM-dd HH:mm', firstDayOfWeek: 'auto' },
+    });
+
+    expect(service.resolved().firstDayOfWeek).toBe(1);
+  });
+
+  it('exposes an explicit firstDayOfWeek override regardless of language', () => {
+    service.applyFromSettings({
+      ...DEFAULT_GENERAL_SETTINGS,
+      language: { language: 'hu' },
+      dateFormat: { preset: 'iso', customPattern: 'yyyy-MM-dd HH:mm', firstDayOfWeek: 'sunday' },
+    });
+
+    expect(service.resolved().firstDayOfWeek).toBe(7);
+  });
 });

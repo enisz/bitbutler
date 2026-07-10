@@ -4,19 +4,28 @@ import {
   DEFAULT_LOCALE,
   GeneralSettings,
   resolveDateFormat,
+  resolveFirstDayOfWeek,
 } from '../models/general-settings.model';
 import { GeneralSettingsService } from './general-settings.service';
 
 const ISO_FALLBACK_PATTERN = 'yyyy-MM-dd HH:mm';
+const ISO_FALLBACK_DATE_PATTERN = 'yyyy-MM-dd';
 
 @Injectable({ providedIn: 'root' })
 export class DateFormatService {
   private readonly generalSettingsService = inject(GeneralSettingsService);
 
   private readonly _pattern = signal(ISO_FALLBACK_PATTERN);
+  private readonly _datePattern = signal(ISO_FALLBACK_DATE_PATTERN);
   private readonly _locale = signal(DEFAULT_LOCALE);
+  private readonly _firstDayOfWeek = signal(1);
 
-  public readonly resolved = computed(() => ({ pattern: this._pattern(), locale: this._locale() }));
+  public readonly resolved = computed(() => ({
+    pattern: this._pattern(),
+    datePattern: this._datePattern(),
+    locale: this._locale(),
+    firstDayOfWeek: this._firstDayOfWeek(),
+  }));
 
   public async init(): Promise<void> {
     const settings = await this.generalSettingsService.load();
@@ -24,9 +33,11 @@ export class DateFormatService {
   }
 
   public applyFromSettings(settings: GeneralSettings): void {
-    const { pattern, locale } = resolveDateFormat(settings);
+    const { pattern, datePattern, locale } = resolveDateFormat(settings);
     this._pattern.set(pattern);
+    this._datePattern.set(datePattern);
     this._locale.set(locale);
+    this._firstDayOfWeek.set(resolveFirstDayOfWeek(settings));
   }
 
   public format(value: number | string | undefined): string {
