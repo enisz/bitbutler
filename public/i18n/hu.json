@@ -1009,7 +1009,33 @@
         }
       }
     },
-    "toast-overlay": {}
+    "toast-overlay": {},
+    "column-filters": {
+      "operator": {
+        "contains": "Tartalmazza",
+        "not-contains": "Nem tartalmazza",
+        "equals": "Egyenlő",
+        "not-equal": "Nem egyenlő",
+        "starts-with": "Ezzel kezdődik",
+        "ends-with": "Ezzel végződik",
+        "gt": "Nagyobb, mint",
+        "gte": "Nagyobb vagy egyenlő, mint",
+        "lt": "Kisebb, mint",
+        "lte": "Kisebb vagy egyenlő, mint",
+        "between": "Között",
+        "blank": "Üres",
+        "not-blank": "Nem üres"
+      },
+      "label": {
+        "value": "Érték",
+        "from": "Ettől",
+        "to": "Eddig"
+      },
+      "set": {
+        "filter-placeholder": "Szűrés...",
+        "no-matches": "Nincs egyező érték"
+      }
+    }
   },
   "pages": {
     "login": {

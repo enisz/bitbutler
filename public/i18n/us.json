@@ -1009,7 +1009,33 @@
         }
       }
     },
-    "toast-overlay": {}
+    "toast-overlay": {},
+    "column-filters": {
+      "operator": {
+        "contains": "Contains",
+        "not-contains": "Does not contain",
+        "equals": "Equals",
+        "not-equal": "Does not equal",
+        "starts-with": "Begins with",
+        "ends-with": "Ends with",
+        "gt": "Greater than",
+        "gte": "Greater than or equal to",
+        "lt": "Less than",
+        "lte": "Less than or equal to",
+        "between": "Between",
+        "blank": "Blank",
+        "not-blank": "Not blank"
+      },
+      "label": {
+        "value": "Value",
+        "from": "From",
+        "to": "To"
+      },
+      "set": {
+        "filter-placeholder": "Filter...",
+        "no-matches": "No matching values"
+      }
+    }
   },
   "pages": {
     "login": {
