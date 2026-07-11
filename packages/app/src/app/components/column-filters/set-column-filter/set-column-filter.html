@@ -27,16 +27,16 @@
   </div>
 
   <div class="bb-set-filter-list list-group list-group-flush mb-2">
-    @for (item of filteredItems(); track item.key) {
+    @for (item of filteredItems(); track item.key; let i = $index) {
       <label
         class="list-group-item list-group-item-action d-flex align-items-center gap-2"
         [class.active]="draftValues.has(item.key)"
-        [for]="instanceId + '-' + item.key"
+        [for]="instanceId + '-' + i"
       >
         <input
           class="form-check-input mt-0 flex-shrink-0"
           type="checkbox"
-          [id]="instanceId + '-' + item.key"
+          [id]="instanceId + '-' + i"
           [checked]="draftValues.has(item.key)"
           (change)="toggle(item.key)"
         />

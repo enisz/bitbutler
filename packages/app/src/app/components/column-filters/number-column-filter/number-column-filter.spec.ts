@@ -104,6 +104,20 @@ describe('NumberColumnFilter', () => {
       component.setModel(null);
       expect(component.applied).toEqual({ operator: 'equals', from: null, to: null });
     });
+
+    it('falls back to an empty value for a shape-invalid (stale) model instead of throwing', () => {
+      component.applied = { operator: 'gt', from: 1, to: null };
+      expect(() =>
+        component.setModel({ filterType: 'number', type: 'equals', filter: 5 } as any),
+      ).not.toThrow();
+      expect(component.applied).toEqual({ operator: 'equals', from: null, to: null });
+      expect(component.draft).toEqual({ operator: 'equals', from: null, to: null });
+    });
+
+    it('falls back to an empty value when from/to are not number | null', () => {
+      component.setModel({ operator: 'equals', from: '5', to: null } as any);
+      expect(component.applied).toEqual({ operator: 'equals', from: null, to: null });
+    });
   });
 
   describe('apply / clear', () => {
@@ -120,6 +134,26 @@ describe('NumberColumnFilter', () => {
       component.clear();
       expect(component.applied).toEqual({ operator: 'equals', from: null, to: null });
       expect(mockParams.filterChangedCallback).toHaveBeenCalled();
+    });
+  });
+
+  describe('isApplyDisabled', () => {
+    it('is disabled for an incomplete "between" (only "from" filled) with nothing applied', () => {
+      component.applied = { operator: 'equals', from: null, to: null };
+      component.draft = { operator: 'between', from: 1, to: null };
+      expect(component.isApplyDisabled()).toBe(true);
+    });
+
+    it('is enabled once both "from" and "to" are filled for "between"', () => {
+      component.applied = { operator: 'equals', from: null, to: null };
+      component.draft = { operator: 'between', from: 1, to: 2 };
+      expect(component.isApplyDisabled()).toBe(false);
+    });
+
+    it('is enabled when clearing a real applied filter down to an empty draft', () => {
+      component.applied = { operator: 'gt', from: 5, to: null };
+      component.draft = { operator: 'equals', from: null, to: null };
+      expect(component.isApplyDisabled()).toBe(false);
     });
   });
 });

@@ -95,6 +95,20 @@ describe('TextColumnFilter', () => {
       expect(component.applied).toEqual({ operator: 'contains', value: '' });
       expect(component.draft).toEqual({ operator: 'contains', value: '' });
     });
+
+    it('falls back to an empty value for a shape-invalid (stale) model instead of throwing', () => {
+      component.applied = { operator: 'equals', value: 'x' };
+      expect(() =>
+        component.setModel({ filterType: 'text', type: 'contains', filter: 'x' } as any),
+      ).not.toThrow();
+      expect(component.applied).toEqual({ operator: 'contains', value: '' });
+      expect(component.draft).toEqual({ operator: 'contains', value: '' });
+    });
+
+    it('falls back to an empty value when the operator is not a known string operator', () => {
+      component.setModel({ operator: 'bogus', value: 'x' } as any);
+      expect(component.applied).toEqual({ operator: 'contains', value: '' });
+    });
   });
 
   describe('apply / clear', () => {

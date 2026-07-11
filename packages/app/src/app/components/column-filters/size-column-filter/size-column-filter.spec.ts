@@ -74,6 +74,19 @@ describe('SizeColumnFilter', () => {
       component.setModel(null);
       expect(component.applied.unit).toBe('MB');
     });
+
+    it('falls back to an empty value for a shape-invalid (stale) model instead of throwing', () => {
+      component.applied = { operator: 'lte', from: 5, to: null, unit: 'TB' };
+      expect(() =>
+        component.setModel({ filterType: 'number', type: 'equals', filter: 5 } as any),
+      ).not.toThrow();
+      expect(component.applied).toEqual({ operator: 'equals', from: null, to: null, unit: 'MB' });
+    });
+
+    it('falls back to an empty value when unit is not a known size unit', () => {
+      component.setModel({ operator: 'equals', from: 5, to: null, unit: 'PB' } as any);
+      expect(component.applied).toEqual({ operator: 'equals', from: null, to: null, unit: 'MB' });
+    });
   });
 
   describe('apply / clear', () => {
@@ -82,6 +95,26 @@ describe('SizeColumnFilter', () => {
       component.apply();
       expect(component.applied).toEqual({ operator: 'gt', from: 5, to: null, unit: 'GB' });
       expect(mockParams.filterChangedCallback).toHaveBeenCalled();
+    });
+  });
+
+  describe('isApplyDisabled', () => {
+    it('is disabled for an incomplete "between" (only "from" filled) with nothing applied', () => {
+      component.applied = { operator: 'equals', from: null, to: null, unit: 'MB' };
+      component.draft = { operator: 'between', from: 1, to: null, unit: 'MB' };
+      expect(component.isApplyDisabled()).toBe(true);
+    });
+
+    it('is enabled once both "from" and "to" are filled for "between"', () => {
+      component.applied = { operator: 'equals', from: null, to: null, unit: 'MB' };
+      component.draft = { operator: 'between', from: 1, to: 2, unit: 'MB' };
+      expect(component.isApplyDisabled()).toBe(false);
+    });
+
+    it('is enabled when clearing a real applied filter down to an empty draft', () => {
+      component.applied = { operator: 'gt', from: 5, to: null, unit: 'GB' };
+      component.draft = { operator: 'equals', from: null, to: null, unit: 'MB' };
+      expect(component.isApplyDisabled()).toBe(false);
     });
   });
 });

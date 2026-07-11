@@ -74,6 +74,22 @@ export class NumberColumnFilter
     return this.draft.operator === 'blank' || this.draft.operator === 'notBlank';
   }
 
+  override isApplyDisabled(): boolean {
+    if (this.valuesEqual(this.draft, this.applied)) return true;
+    return !this.isActive(this.draft) && !this.isFilterActive();
+  }
+
+  isValidModel(model: unknown): model is NumberFilterValue {
+    if (model == null || typeof model !== 'object') return false;
+    const candidate = model as Partial<NumberFilterValue>;
+    return (
+      typeof candidate.operator === 'string' &&
+      (NUMBER_FILTER_OPERATORS as string[]).includes(candidate.operator) &&
+      (candidate.from === null || typeof candidate.from === 'number') &&
+      (candidate.to === null || typeof candidate.to === 'number')
+    );
+  }
+
   doesFilterPass(params: IDoesFilterPassParams): boolean {
     if (!this.isFilterActive()) return true;
     const cellValue = this.params.getValue(params.node) as number | null | undefined;

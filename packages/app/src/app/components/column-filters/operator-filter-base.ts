@@ -11,6 +11,7 @@ export abstract class OperatorFilterBase<TValue> implements IFilterAngularComp {
   abstract valuesEqual(a: TValue, b: TValue): boolean;
   abstract isActive(value: TValue): boolean;
   abstract doesFilterPass(params: IDoesFilterPassParams): boolean;
+  abstract isValidModel(model: unknown): model is TValue;
 
   agInit(params: IFilterParams): void {
     this.params = params;
@@ -25,7 +26,7 @@ export abstract class OperatorFilterBase<TValue> implements IFilterAngularComp {
   }
 
   setModel(model: TValue | null): void {
-    this.applied = model ?? this.createEmptyValue();
+    this.applied = model != null && this.isValidModel(model) ? model : this.createEmptyValue();
     this.draft = { ...this.applied };
   }
 

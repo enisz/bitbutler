@@ -67,6 +67,16 @@ export class TextColumnFilter
     return value.operator === 'blank' || value.operator === 'notBlank' || value.value.trim() !== '';
   }
 
+  isValidModel(model: unknown): model is TextFilterValue {
+    if (model == null || typeof model !== 'object') return false;
+    const candidate = model as Partial<TextFilterValue>;
+    return (
+      typeof candidate.operator === 'string' &&
+      (STRING_FILTER_OPERATORS as string[]).includes(candidate.operator) &&
+      typeof candidate.value === 'string'
+    );
+  }
+
   isValueDisabled(): boolean {
     return this.draft.operator === 'blank' || this.draft.operator === 'notBlank';
   }

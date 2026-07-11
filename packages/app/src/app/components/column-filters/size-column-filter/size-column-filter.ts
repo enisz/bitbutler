@@ -34,6 +34,8 @@ const UNIT_MULTIPLIERS: Record<SizeUnit, number> = {
   TB: 1024 ** 4,
 };
 
+const SIZE_UNITS: SizeUnit[] = ['B', 'KB', 'MB', 'GB', 'TB'];
+
 function createEmptySizeValue(): SizeFilterValue {
   return { operator: 'equals', from: null, to: null, unit: 'MB' };
 }
@@ -90,6 +92,24 @@ export class SizeColumnFilter
 
   isInputDisabled(): boolean {
     return this.draft.operator === 'blank' || this.draft.operator === 'notBlank';
+  }
+
+  override isApplyDisabled(): boolean {
+    if (this.valuesEqual(this.draft, this.applied)) return true;
+    return !this.isActive(this.draft) && !this.isFilterActive();
+  }
+
+  isValidModel(model: unknown): model is SizeFilterValue {
+    if (model == null || typeof model !== 'object') return false;
+    const candidate = model as Partial<SizeFilterValue>;
+    return (
+      typeof candidate.operator === 'string' &&
+      (NUMBER_FILTER_OPERATORS as string[]).includes(candidate.operator) &&
+      (candidate.from === null || typeof candidate.from === 'number') &&
+      (candidate.to === null || typeof candidate.to === 'number') &&
+      typeof candidate.unit === 'string' &&
+      (SIZE_UNITS as string[]).includes(candidate.unit)
+    );
   }
 
   doesFilterPass(params: IDoesFilterPassParams): boolean {
