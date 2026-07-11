@@ -303,4 +303,36 @@ describe('DatepickerRangeFilter', () => {
       expect(component.isRangeStart(new NgbDate(2024, 1, 15))).toBe(false);
     });
   });
+
+  describe('date label rendering', () => {
+    function getDateChips(): NodeListOf<Element> {
+      return fixture.nativeElement.querySelectorAll('.bb-date-chip');
+    }
+
+    it('renders no date chips when nothing is selected', () => {
+      component.fromDate = null;
+      component.toDate = null;
+      fixture.detectChanges();
+      expect(getDateChips().length).toBe(0);
+    });
+
+    it('renders a single date chip when only fromDate is set', () => {
+      component.fromDate = new NgbDate(2024, 3, 5);
+      component.toDate = null;
+      fixture.detectChanges();
+      const chips = getDateChips();
+      expect(chips.length).toBe(1);
+      expect(chips[0].textContent).toBe('2024-03-05');
+    });
+
+    it('renders two date chips (from and to) when a range is set', () => {
+      component.fromDate = new NgbDate(2024, 3, 5);
+      component.toDate = new NgbDate(2024, 3, 20);
+      fixture.detectChanges();
+      const chips = getDateChips();
+      expect(chips.length).toBe(2);
+      expect(chips[0].textContent).toBe('2024-03-05');
+      expect(chips[1].textContent).toBe('2024-03-20');
+    });
+  });
 });
