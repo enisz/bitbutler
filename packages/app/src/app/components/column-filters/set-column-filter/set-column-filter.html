@@ -1,0 +1,75 @@
+<div
+  class="bb-set-filter p-2"
+  (mousedown)="$event.stopPropagation()"
+  (touchstart)="$event.stopPropagation()"
+>
+  <div class="bb-filter-input mb-2">
+    <input
+      type="text"
+      class="form-control form-control-sm"
+      [placeholder]="'components.column-filters.set.filter-placeholder' | translate"
+      [formControl]="filterCtrl"
+    />
+    @if (filterCtrl.value) {
+      <button
+        type="button"
+        class="bb-filter-clear"
+        (click)="filterCtrl.reset('')"
+        [attr.aria-label]="'general.button.clear' | translate"
+      >
+        <fa-icon [icon]="icons.faXmark"></fa-icon>
+      </button>
+    }
+  </div>
+
+  <div class="bb-set-filter-list mb-2">
+    @for (item of filteredItems(); track item.key) {
+      <div class="form-check">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          [id]="'bb-set-filter-' + item.key"
+          [checked]="draftValues.has(item.key)"
+          (change)="toggle(item.key)"
+        />
+        <label
+          class="form-check-label d-flex justify-content-between align-items-center gap-2"
+          [for]="'bb-set-filter-' + item.key"
+        >
+          <span class="text-truncate">{{ item.label }}</span>
+          <span class="badge text-bg-secondary">{{ item.count }}</span>
+        </label>
+      </div>
+    } @empty {
+      <div class="text-body-secondary small px-1 py-2">
+        {{ 'components.column-filters.set.no-matches' | translate }}
+      </div>
+    }
+  </div>
+
+  <div class="d-flex gap-2">
+    <button
+      class="btn btn-sm btn-outline-secondary btn-split flex-fill"
+      type="button"
+      (click)="clear()"
+    >
+      <bb-btn-content
+        [icon]="icons.faEraser"
+        [text]="'general.button.clear' | translate"
+        [position]="'end'"
+      ></bb-btn-content>
+    </button>
+    <button
+      class="btn btn-sm btn-outline-primary btn-split flex-fill"
+      type="button"
+      [disabled]="isApplyDisabled()"
+      (click)="apply()"
+    >
+      <bb-btn-content
+        [icon]="icons.faCheck"
+        [text]="'general.button.apply' | translate"
+        [position]="'end'"
+      ></bb-btn-content>
+    </button>
+  </div>
+</div>
