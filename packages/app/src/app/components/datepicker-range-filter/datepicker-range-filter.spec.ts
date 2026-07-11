@@ -27,89 +27,189 @@ describe('DatepickerRangeFilter', () => {
   });
 
   describe('isFilterActive', () => {
-    it('should return false when no from-date is set', () => {
-      component.fromDate = null;
+    it('should return false when no applied from-date is set', () => {
+      component.appliedFrom = null;
       expect(component.isFilterActive()).toBe(false);
     });
 
-    it('should return true when a from-date is set', () => {
-      component.fromDate = new NgbDate(2024, 1, 1);
+    it('should return true when an applied from-date is set', () => {
+      component.appliedFrom = new NgbDate(2024, 1, 1);
       expect(component.isFilterActive()).toBe(true);
+    });
+
+    it('should ignore a staged (unapplied) from-date', () => {
+      component.fromDate = new NgbDate(2024, 1, 1);
+      component.appliedFrom = null;
+      expect(component.isFilterActive()).toBe(false);
     });
   });
 
   describe('doesFilterPass', () => {
-    it('should pass all rows when no filter is active', () => {
-      component.fromDate = null;
+    it('should pass all rows when no filter is applied', () => {
+      component.appliedFrom = null;
       expect(component.doesFilterPass({ data: { added_on: 1700000000 } } as any)).toBe(true);
     });
 
-    it('should reject rows with no added_on when filter is active', () => {
-      component.fromDate = new NgbDate(2024, 1, 1);
+    it('should reject rows with no added_on when filter is applied', () => {
+      component.appliedFrom = new NgbDate(2024, 1, 1);
       expect(component.doesFilterPass({ data: {} } as any)).toBe(false);
     });
 
-    it('should match exact date when only fromDate is set', () => {
+    it('should match exact date when only appliedFrom is set', () => {
       const localMidnight = new Date(2024, 0, 15).getTime() / 1000;
-      component.fromDate = new NgbDate(2024, 1, 15);
-      component.toDate = null;
+      component.appliedFrom = new NgbDate(2024, 1, 15);
+      component.appliedTo = null;
       expect(component.doesFilterPass({ data: { added_on: localMidnight } } as any)).toBe(true);
     });
 
-    it('should accept dates within the from-to range', () => {
-      component.fromDate = new NgbDate(2024, 1, 1);
-      component.toDate = new NgbDate(2024, 1, 31);
+    it('should accept dates within the appliedFrom-appliedTo range', () => {
+      component.appliedFrom = new NgbDate(2024, 1, 1);
+      component.appliedTo = new NgbDate(2024, 1, 31);
       const midJan = new Date(2024, 0, 15).getTime() / 1000;
       expect(component.doesFilterPass({ data: { added_on: midJan } } as any)).toBe(true);
     });
 
-    it('should reject dates outside the range', () => {
-      component.fromDate = new NgbDate(2024, 1, 1);
-      component.toDate = new NgbDate(2024, 1, 31);
+    it('should reject dates outside the applied range', () => {
+      component.appliedFrom = new NgbDate(2024, 1, 1);
+      component.appliedTo = new NgbDate(2024, 1, 31);
       const beforeRange = new Date(2023, 11, 31).getTime() / 1000;
       expect(component.doesFilterPass({ data: { added_on: beforeRange } } as any)).toBe(false);
+    });
+
+    it('should ignore a staged (unapplied) range', () => {
+      component.fromDate = new NgbDate(2024, 1, 1);
+      component.toDate = new NgbDate(2024, 1, 31);
+      component.appliedFrom = null;
+      component.appliedTo = null;
+      const midJan = new Date(2024, 0, 15).getTime() / 1000;
+      expect(component.doesFilterPass({ data: { added_on: midJan } } as any)).toBe(true);
     });
   });
 
   describe('getModel / setModel', () => {
     it('should return null when filter is inactive', () => {
-      component.fromDate = null;
+      component.appliedFrom = null;
       expect(component.getModel()).toBeNull();
     });
 
-    it('should return model when fromDate is set', () => {
-      component.fromDate = new NgbDate(2024, 1, 1);
-      component.toDate = new NgbDate(2024, 1, 31);
+    it('should return model when appliedFrom is set', () => {
+      component.appliedFrom = new NgbDate(2024, 1, 1);
+      component.appliedTo = new NgbDate(2024, 1, 31);
       expect(component.getModel()).toEqual({
         from: new NgbDate(2024, 1, 1),
         to: new NgbDate(2024, 1, 31),
       });
     });
 
-    it('should restore fromDate and toDate from model', () => {
+    it('should restore both staged and applied dates from model', () => {
       component.setModel({ from: new NgbDate(2024, 3, 1), to: new NgbDate(2024, 3, 15) });
+      expect(component.appliedFrom).toEqual(new NgbDate(2024, 3, 1));
+      expect(component.appliedTo).toEqual(new NgbDate(2024, 3, 15));
       expect(component.fromDate).toEqual(new NgbDate(2024, 3, 1));
       expect(component.toDate).toEqual(new NgbDate(2024, 3, 15));
     });
 
-    it('should clear dates when model is null', () => {
+    it('should clear both staged and applied dates when model is null', () => {
+      component.appliedFrom = new NgbDate(2024, 1, 1);
+      component.appliedTo = new NgbDate(2024, 1, 31);
       component.fromDate = new NgbDate(2024, 1, 1);
       component.toDate = new NgbDate(2024, 1, 31);
       component.setModel(null);
+      expect(component.appliedFrom).toBeNull();
+      expect(component.appliedTo).toBeNull();
+      expect(component.fromDate).toBeNull();
+      expect(component.toDate).toBeNull();
+    });
+  });
+
+  describe('apply', () => {
+    it('should copy staged dates into applied and call filterChangedCallback', () => {
+      component.fromDate = new NgbDate(2024, 2, 1);
+      component.toDate = new NgbDate(2024, 2, 10);
+      component.appliedFrom = null;
+      component.appliedTo = null;
+      component.apply();
+      expect(component.appliedFrom).toEqual(new NgbDate(2024, 2, 1));
+      expect(component.appliedTo).toEqual(new NgbDate(2024, 2, 10));
+      expect(mockParams.filterChangedCallback).toHaveBeenCalled();
+    });
+  });
+
+  describe('isApplyDisabled', () => {
+    it('is true when staged and applied are both empty', () => {
+      component.fromDate = null;
+      component.toDate = null;
+      component.appliedFrom = null;
+      component.appliedTo = null;
+      expect(component.isApplyDisabled()).toBe(true);
+    });
+
+    it('is true when staged matches applied exactly', () => {
+      component.fromDate = new NgbDate(2024, 1, 1);
+      component.toDate = new NgbDate(2024, 1, 31);
+      component.appliedFrom = new NgbDate(2024, 1, 1);
+      component.appliedTo = new NgbDate(2024, 1, 31);
+      expect(component.isApplyDisabled()).toBe(true);
+    });
+
+    it('is false when a staged fromDate has no applied counterpart yet', () => {
+      component.fromDate = new NgbDate(2024, 1, 1);
+      component.toDate = null;
+      component.appliedFrom = null;
+      component.appliedTo = null;
+      expect(component.isApplyDisabled()).toBe(false);
+    });
+
+    it('is false when staged range differs from applied range', () => {
+      component.fromDate = new NgbDate(2024, 1, 1);
+      component.toDate = new NgbDate(2024, 1, 20);
+      component.appliedFrom = new NgbDate(2024, 1, 1);
+      component.appliedTo = new NgbDate(2024, 1, 31);
+      expect(component.isApplyDisabled()).toBe(false);
+    });
+  });
+
+  describe('afterGuiAttached', () => {
+    it('resets staged dates from applied dates', () => {
+      component.appliedFrom = new NgbDate(2024, 1, 1);
+      component.appliedTo = new NgbDate(2024, 1, 31);
+      component.fromDate = new NgbDate(2024, 5, 5);
+      component.toDate = null;
+      component.hoveredDate = new NgbDate(2024, 5, 6);
+
+      component.afterGuiAttached();
+
+      expect(component.fromDate).toEqual(new NgbDate(2024, 1, 1));
+      expect(component.toDate).toEqual(new NgbDate(2024, 1, 31));
+      expect(component.hoveredDate).toBeNull();
+    });
+
+    it('resets staged dates to null when nothing is applied', () => {
+      component.appliedFrom = null;
+      component.appliedTo = null;
+      component.fromDate = new NgbDate(2024, 5, 5);
+      component.toDate = new NgbDate(2024, 5, 10);
+
+      component.afterGuiAttached();
+
       expect(component.fromDate).toBeNull();
       expect(component.toDate).toBeNull();
     });
   });
 
   describe('clear', () => {
-    it('should reset all date selections and call filterChangedCallback', () => {
+    it('should reset all staged and applied date selections and call filterChangedCallback', () => {
       component.fromDate = new NgbDate(2024, 1, 1);
       component.toDate = new NgbDate(2024, 1, 31);
       component.hoveredDate = new NgbDate(2024, 1, 10);
+      component.appliedFrom = new NgbDate(2024, 1, 1);
+      component.appliedTo = new NgbDate(2024, 1, 31);
       component.clear();
       expect(component.fromDate).toBeNull();
       expect(component.toDate).toBeNull();
       expect(component.hoveredDate).toBeNull();
+      expect(component.appliedFrom).toBeNull();
+      expect(component.appliedTo).toBeNull();
       expect(mockParams.filterChangedCallback).toHaveBeenCalled();
     });
   });
@@ -147,6 +247,14 @@ describe('DatepickerRangeFilter', () => {
       component.onSelect(new NgbDate(2024, 1, 5));
       expect(component.fromDate).toEqual(new NgbDate(2024, 1, 5));
       expect(component.toDate).toBeNull();
+    });
+
+    it('should not call filterChangedCallback - picking dates only stages them', () => {
+      component.fromDate = null;
+      component.toDate = null;
+      component.onSelect(new NgbDate(2024, 1, 10));
+      component.onSelect(new NgbDate(2024, 1, 20));
+      expect(mockParams.filterChangedCallback).not.toHaveBeenCalled();
     });
   });
 

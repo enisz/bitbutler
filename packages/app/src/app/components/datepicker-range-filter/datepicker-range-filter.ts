@@ -17,7 +17,7 @@ import {
 import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslateModule } from '@ngx-translate/core';
 import { IFilterAngularComp } from 'ag-grid-angular';
-import { IDoesFilterPassParams, IFilterParams } from 'ag-grid-community';
+import { IAfterGuiAttachedParams, IDoesFilterPassParams, IFilterParams } from 'ag-grid-community';
 import { CustomDatepickerI18n } from '../../services/custom-datepicker-i18n.service';
 import { DateFormatService } from '../../services/date-format.service';
 import { BbBtnContent } from '../bb-btn-content/bb-btn-content';
@@ -46,6 +46,8 @@ export class DatepickerRangeFilter implements IFilterAngularComp, OnInit {
   public icons = { faChevronLeft, faChevronRight, faCalendarDay, faEraser };
   fromDate: NgbDate | null = null;
   toDate: NgbDate | null = null;
+  appliedFrom: NgbDate | null = null;
+  appliedTo: NgbDate | null = null;
   hoveredDate: NgbDate | null = null;
   today: NgbDate;
   viewDate: { month: number; year: number };
@@ -72,10 +74,10 @@ export class DatepickerRangeFilter implements IFilterAngularComp, OnInit {
     this.params = params;
   }
   isFilterActive(): boolean {
-    return this.fromDate !== null;
+    return this.appliedFrom !== null;
   }
   doesFilterPass(params: IDoesFilterPassParams): boolean {
-    if (!this.fromDate) return true;
+    if (!this.appliedFrom) return true;
     const rawValue = params.data?.added_on;
     if (rawValue == null) return false;
     const cellDate = new Date(Number(rawValue) * 1000);
@@ -84,19 +86,26 @@ export class DatepickerRangeFilter implements IFilterAngularComp, OnInit {
       cellDate.getMonth(),
       cellDate.getDate(),
     ).getTime();
-    const from = this.ngbToLocalMidnight(this.fromDate);
-    if (this.toDate) {
-      const to = this.ngbToLocalMidnight(this.toDate);
+    const from = this.ngbToLocalMidnight(this.appliedFrom);
+    if (this.appliedTo) {
+      const to = this.ngbToLocalMidnight(this.appliedTo);
       return cellLocalMidnight >= from && cellLocalMidnight <= to;
     }
     return cellLocalMidnight === from;
   }
   getModel(): any {
-    return this.isFilterActive() ? { from: this.fromDate, to: this.toDate } : null;
+    return this.isFilterActive() ? { from: this.appliedFrom, to: this.appliedTo } : null;
   }
   setModel(model: any): void {
-    this.fromDate = model?.from ?? null;
-    this.toDate = model?.to ?? null;
+    this.appliedFrom = model?.from ?? null;
+    this.appliedTo = model?.to ?? null;
+    this.fromDate = this.appliedFrom;
+    this.toDate = this.appliedTo;
+  }
+  afterGuiAttached(_params?: IAfterGuiAttachedParams): void {
+    this.fromDate = this.appliedFrom;
+    this.toDate = this.appliedTo;
+    this.hoveredDate = null;
   }
   updateView(dp: any) {
     dp.navigateTo(this.viewDate);
@@ -123,12 +132,24 @@ export class DatepickerRangeFilter implements IFilterAngularComp, OnInit {
       this.toDate = null;
       this.fromDate = date;
     }
+  }
+  apply() {
+    this.appliedFrom = this.fromDate;
+    this.appliedTo = this.toDate;
     this.params.filterChangedCallback();
+  }
+  isApplyDisabled(): boolean {
+    return (
+      this.datesEqual(this.fromDate, this.appliedFrom) &&
+      this.datesEqual(this.toDate, this.appliedTo)
+    );
   }
   clear() {
     this.fromDate = null;
     this.toDate = null;
     this.hoveredDate = null;
+    this.appliedFrom = null;
+    this.appliedTo = null;
     this.params.filterChangedCallback();
   }
   isToday(date: NgbDate) {
@@ -165,6 +186,11 @@ export class DatepickerRangeFilter implements IFilterAngularComp, OnInit {
   fmt(d: NgbDate): string {
     const { datePattern, locale } = this.dateFormatService.resolved();
     return formatDate(new Date(d.year, d.month - 1, d.day), datePattern, locale);
+  }
+  private datesEqual(a: NgbDate | null, b: NgbDate | null): boolean {
+    if (!a && !b) return true;
+    if (!a || !b) return false;
+    return a.equals(b);
   }
   private ngbToLocalMidnight(d: NgbDate): number {
     return new Date(d.year, d.month - 1, d.day).getTime();
