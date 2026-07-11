@@ -117,11 +117,11 @@ its `grid.spec.ts` tests) added a dedupe check comparing the incoming filter
 model against `api.getFilterModel()` before re-applying it, to avoid a
 needless `setFilterModel()`/`onFilterChanged()` round trip on every
 filter-service echo. That workaround was compensating for the per-click
-`filterChangedCallback()` storm this design removes at the source (Section
-
-1. - once picking dates no longer touches the grid filter model at all, the
-     echo loop it was guarding against can't happen for this filter, so the
-     workaround is reverted (`git checkout --` on both files) rather than kept.
+`filterChangedCallback()` storm this design removes at the source (see
+Section 1 above) - once picking dates no longer touches the grid filter
+model at all, the echo loop it was guarding against can't happen for this
+filter, so the workaround is reverted (`git checkout --` on both files)
+rather than kept.
 
 ## Testing
 
