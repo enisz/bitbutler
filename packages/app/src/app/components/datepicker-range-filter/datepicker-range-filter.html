@@ -107,6 +107,18 @@
           [position]="'end'"
         ></bb-btn-content>
       </button>
+      <button
+        class="btn btn-sm btn-outline-primary btn-split"
+        type="button"
+        [disabled]="isApplyDisabled()"
+        (click)="apply()"
+      >
+        <bb-btn-content
+          [icon]="icons.faCheck"
+          [text]="'general.button.apply' | translate"
+          [position]="'end'"
+        ></bb-btn-content>
+      </button>
     </div>
   </div>
 </div>

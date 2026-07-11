@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faCalendarDay,
+  faCheck,
   faChevronLeft,
   faChevronRight,
   faEraser,
@@ -43,7 +44,7 @@ export class DatepickerRangeFilter implements IFilterAngularComp, OnInit {
   private readonly i18n = inject(NgbDatepickerI18n);
   readonly dateFormatService = inject(DateFormatService);
   private params!: IFilterParams;
-  public icons = { faChevronLeft, faChevronRight, faCalendarDay, faEraser };
+  public icons = { faChevronLeft, faChevronRight, faCalendarDay, faEraser, faCheck };
   fromDate: NgbDate | null = null;
   toDate: NgbDate | null = null;
   appliedFrom: NgbDate | null = null;
