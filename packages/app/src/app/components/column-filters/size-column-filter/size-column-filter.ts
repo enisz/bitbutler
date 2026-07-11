@@ -8,6 +8,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { IFilterAngularComp } from 'ag-grid-angular';
 import { IDoesFilterPassParams } from 'ag-grid-community';
 import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
+import { createFilterInstanceId } from '../filter-instance-id.utils';
 import { OperatorFilterBase } from '../operator-filter-base';
 import {
   NUMBER_FILTER_OPERATORS,
@@ -60,6 +61,7 @@ export class SizeColumnFilter
     { value: 'GB', label: 'GB' },
     { value: 'TB', label: 'TB' },
   ];
+  public readonly instanceId = createFilterInstanceId('size-filter');
 
   draft: SizeFilterValue = createEmptySizeValue();
   applied: SizeFilterValue = createEmptySizeValue();
