@@ -27,8 +27,10 @@ describe('Status', () => {
     totalCount: ReturnType<typeof signal<number>>;
     countsByState: ReturnType<typeof signal<Record<string, number>>>;
     torrentsArray: ReturnType<typeof signal<any[]>>;
-    categoriesMap: ReturnType<typeof signal<Map<string, any>>>;
-    tagsSet: ReturnType<typeof signal<Set<string>>>;
+    categoriesWithCounts: ReturnType<
+      typeof signal<{ key: string; label: string; count: number }[]>
+    >;
+    tagsWithCounts: ReturnType<typeof signal<{ key: string; label: string; count: number }[]>>;
   };
   let commandBusMock: { emit: ReturnType<typeof vi.fn> };
 
@@ -51,8 +53,8 @@ describe('Status', () => {
       totalCount: signal(0),
       countsByState: signal({}),
       torrentsArray: signal([]),
-      categoriesMap: signal(new Map()),
-      tagsSet: signal(new Set()),
+      categoriesWithCounts: signal([]),
+      tagsWithCounts: signal([]),
     };
     commandBusMock = { emit: vi.fn() };
 

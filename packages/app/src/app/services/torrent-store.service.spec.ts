@@ -225,4 +225,85 @@ describe('TorrentStoreService', () => {
     expect(delta.update).toHaveLength(0);
     expect(delta.remove).toHaveLength(0);
   });
+
+  describe('categoriesWithCounts', () => {
+    it('includes known categories with zero torrents', () => {
+      service.applyMaindata(
+        makeMaindata({
+          full_update: true,
+          categories: { Movies: { name: 'Movies', savePath: '/movies' } },
+        }),
+      );
+
+      const result = service.categoriesWithCounts();
+      expect(result).toEqual([{ key: 'Movies', label: 'Movies', count: 0 }]);
+    });
+
+    it('counts torrents per category and sorts by label', () => {
+      service.applyMaindata(
+        makeMaindata({
+          full_update: true,
+          torrents: {
+            a: { category: 'Movies' } as TorrentDelta,
+            b: { category: 'Movies' } as TorrentDelta,
+            c: { category: 'Books' } as TorrentDelta,
+          },
+        }),
+      );
+
+      expect(service.categoriesWithCounts()).toEqual([
+        { key: 'Books', label: 'Books', count: 1 },
+        { key: 'Movies', label: 'Movies', count: 2 },
+      ]);
+    });
+  });
+
+  describe('tagsWithCounts', () => {
+    it('includes known tags with zero torrents', () => {
+      service.applyMaindata(makeMaindata({ full_update: true, tags: ['hd'] }));
+
+      expect(service.tagsWithCounts()).toEqual([{ key: 'hd', label: 'hd', count: 0 }]);
+    });
+
+    it('counts torrents per comma-separated tag and sorts by label', () => {
+      service.applyMaindata(
+        makeMaindata({
+          full_update: true,
+          torrents: {
+            a: { tags: 'hd, 4k' } as TorrentDelta,
+            b: { tags: 'hd' } as TorrentDelta,
+          },
+        }),
+      );
+
+      expect(service.tagsWithCounts()).toEqual([
+        { key: '4k', label: '4k', count: 1 },
+        { key: 'hd', label: 'hd', count: 2 },
+      ]);
+    });
+  });
+
+  describe('statesWithCounts', () => {
+    it('is empty with no torrents', () => {
+      expect(service.statesWithCounts()).toEqual([]);
+    });
+
+    it('counts torrents per raw state and sorts alphabetically', () => {
+      service.applyMaindata(
+        makeMaindata({
+          full_update: true,
+          torrents: {
+            a: { state: 'downloading' } as TorrentDelta,
+            b: { state: 'downloading' } as TorrentDelta,
+            c: { state: 'uploading' } as TorrentDelta,
+          },
+        }),
+      );
+
+      expect(service.statesWithCounts()).toEqual([
+        { key: 'downloading', label: 'downloading', count: 2 },
+        { key: 'uploading', label: 'uploading', count: 1 },
+      ]);
+    });
+  });
 });

@@ -311,63 +311,13 @@ export class Status {
       .map((item) => ({ ...item, icon: this.icon.faFolderOpen }));
   });
 
-  readonly categoriesWithCounts = computed<FilterItem[]>(() => {
-    const torrents = this.store.torrentsArray();
-    const categories = this.store.categoriesMap();
-    const counts = new Map<string, number>();
+  readonly categoriesWithCounts = computed<FilterItem[]>(() =>
+    this.store.categoriesWithCounts().map((item) => ({ ...item, icon: this.icon.faFolderTree })),
+  );
 
-    for (const t of torrents) {
-      if (t.category) {
-        counts.set(t.category, (counts.get(t.category) ?? 0) + 1);
-      }
-    }
-
-    const allCategoryNames = new Set([...categories.keys(), ...counts.keys()]);
-    const result: FilterItem[] = [];
-
-    allCategoryNames.forEach((name) => {
-      result.push({
-        key: name,
-        label: name,
-        count: counts.get(name) ?? 0,
-        icon: this.icon.faFolderTree,
-      });
-    });
-
-    return result.sort((a, b) => a.label.localeCompare(b.label));
-  });
-
-  readonly tagsWithCounts = computed<FilterItem[]>(() => {
-    const torrents = this.store.torrentsArray();
-    const allTags = this.store.tagsSet();
-    const counts = new Map<string, number>();
-
-    for (const t of torrents) {
-      if (t.tags) {
-        const tags = t.tags
-          .split(',')
-          .map((tag) => tag.trim())
-          .filter(Boolean);
-        for (const tag of tags) {
-          counts.set(tag, (counts.get(tag) ?? 0) + 1);
-        }
-      }
-    }
-
-    const allTagNames = new Set([...allTags, ...counts.keys()]);
-    const result: FilterItem[] = [];
-
-    allTagNames.forEach((name) => {
-      result.push({
-        key: name,
-        label: name,
-        count: counts.get(name) ?? 0,
-        icon: this.icon.faTags,
-      });
-    });
-
-    return result.sort((a, b) => a.label.localeCompare(b.label));
-  });
+  readonly tagsWithCounts = computed<FilterItem[]>(() =>
+    this.store.tagsWithCounts().map((item) => ({ ...item, icon: this.icon.faTags })),
+  );
 
   readonly activeCategoryKey = computed(() => {
     const set = this.filtersSig().categories;
