@@ -1363,6 +1363,7 @@
                 "custom": "Egyéni"
               },
               "token-guide": {
+                "toggle": "Jelölőútmutató",
                 "hint": "A szó szerinti szöveget aposztrófok közé zárva (pl. 'at') változatlanul jelenítheted meg.",
                 "column-token": "Jelölő",
                 "column-description": "Leírás",
