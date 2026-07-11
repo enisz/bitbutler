@@ -8,6 +8,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { IFilterAngularComp } from 'ag-grid-angular';
 import { IDoesFilterPassParams } from 'ag-grid-community';
 import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
+import { createFilterInstanceId } from '../filter-instance-id.utils';
 import { OperatorFilterBase } from '../operator-filter-base';
 import {
   STRING_FILTER_OPERATORS,
@@ -41,6 +42,7 @@ export class TextColumnFilter
   private readonly languageChanged = toSignal(this.translateService.onLangChange);
 
   public readonly icons = { faCheck, faEraser };
+  public readonly instanceId = createFilterInstanceId('text-filter');
 
   draft: TextFilterValue = createEmptyTextValue();
   applied: TextFilterValue = createEmptyTextValue();

@@ -3,47 +3,57 @@
   (mousedown)="$event.stopPropagation()"
   (touchstart)="$event.stopPropagation()"
 >
-  <ng-select
-    [items]="operatorItems()"
-    bindLabel="label"
-    bindValue="value"
-    [clearable]="false"
-    [searchable]="false"
-    [(ngModel)]="draft.operator"
-    class="mb-2"
-  ></ng-select>
-
-  <input
-    type="text"
-    class="form-control form-control-sm mb-2"
-    [(ngModel)]="draft.value"
-    [disabled]="isValueDisabled()"
-    [placeholder]="'components.column-filters.label.value' | translate"
-  />
-
-  <div class="d-flex gap-2">
-    <button
-      class="btn btn-sm btn-outline-secondary btn-split flex-fill"
-      type="button"
-      (click)="clear()"
-    >
-      <bb-btn-content
-        [icon]="icons.faEraser"
-        [text]="'general.button.clear' | translate"
-        [position]="'end'"
-      ></bb-btn-content>
-    </button>
-    <button
-      class="btn btn-sm btn-outline-primary btn-split flex-fill"
-      type="button"
-      [disabled]="isApplyDisabled()"
-      (click)="apply()"
-    >
-      <bb-btn-content
-        [icon]="icons.faCheck"
-        [text]="'general.button.apply' | translate"
-        [position]="'end'"
-      ></bb-btn-content>
-    </button>
+  <div class="form-floating mb-2">
+    <ng-select
+      [id]="instanceId + '-operator'"
+      [items]="operatorItems()"
+      bindLabel="label"
+      bindValue="value"
+      [clearable]="false"
+      [searchable]="false"
+      [(ngModel)]="draft.operator"
+      appendTo="body"
+    ></ng-select>
+    <label [for]="instanceId + '-operator'">{{
+      'components.column-filters.label.operator' | translate
+    }}</label>
   </div>
+
+  <div class="form-floating mb-2">
+    <input
+      type="text"
+      class="form-control"
+      [id]="instanceId + '-value'"
+      [(ngModel)]="draft.value"
+      [disabled]="isValueDisabled()"
+      [placeholder]="'components.column-filters.label.value' | translate"
+    />
+    <label [for]="instanceId + '-value'">{{
+      'components.column-filters.label.value' | translate
+    }}</label>
+  </div>
+
+  <button
+    class="btn btn-sm btn-outline-secondary btn-split w-100 mb-2"
+    type="button"
+    (click)="clear()"
+  >
+    <bb-btn-content
+      [icon]="icons.faEraser"
+      [text]="'general.button.clear' | translate"
+      [position]="'end'"
+    ></bb-btn-content>
+  </button>
+  <button
+    class="btn btn-sm btn-outline-primary btn-split w-100"
+    type="button"
+    [disabled]="isApplyDisabled()"
+    (click)="apply()"
+  >
+    <bb-btn-content
+      [icon]="icons.faCheck"
+      [text]="'general.button.apply' | translate"
+      [position]="'end'"
+    ></bb-btn-content>
+  </button>
 </div>
