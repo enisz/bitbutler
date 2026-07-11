@@ -335,4 +335,58 @@ describe('DatepickerRangeFilter', () => {
       expect(chips[1].textContent).toBe('2024-03-20');
     });
   });
+
+  describe('selectToday', () => {
+    it('sets fromDate to today and clears toDate and hoveredDate', () => {
+      component.fromDate = new NgbDate(2024, 1, 1);
+      component.toDate = new NgbDate(2024, 1, 20);
+      component.hoveredDate = new NgbDate(2024, 1, 15);
+      const dp = { navigateTo: vi.fn() };
+
+      component.selectToday(dp);
+
+      expect(component.fromDate).toEqual(component.today);
+      expect(component.toDate).toBeNull();
+      expect(component.hoveredDate).toBeNull();
+    });
+
+    it('always resets to today even when nothing was previously selected', () => {
+      component.fromDate = null;
+      component.toDate = null;
+      const dp = { navigateTo: vi.fn() };
+
+      component.selectToday(dp);
+
+      expect(component.fromDate).toEqual(component.today);
+      expect(component.toDate).toBeNull();
+    });
+
+    it('updates viewDate to match today', () => {
+      component.viewDate = { month: 1, year: 2020 };
+      const dp = { navigateTo: vi.fn() };
+
+      component.selectToday(dp);
+
+      expect(component.viewDate).toEqual({
+        month: component.today.month,
+        year: component.today.year,
+      });
+    });
+
+    it('navigates the calendar view to today', () => {
+      const dp = { navigateTo: vi.fn() };
+
+      component.selectToday(dp);
+
+      expect(dp.navigateTo).toHaveBeenCalledWith(component.today);
+    });
+
+    it('does not call filterChangedCallback - selecting today only stages it', () => {
+      const dp = { navigateTo: vi.fn() };
+
+      component.selectToday(dp);
+
+      expect(mockParams.filterChangedCallback).not.toHaveBeenCalled();
+    });
+  });
 });

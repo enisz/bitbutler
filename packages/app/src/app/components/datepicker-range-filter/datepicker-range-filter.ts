@@ -120,6 +120,13 @@ export class DatepickerRangeFilter implements IFilterAngularComp, OnInit {
     this.viewDate = { month: nextDate.month, year: nextDate.year };
     dp.navigateTo(this.viewDate);
   }
+  selectToday(dp: any) {
+    this.fromDate = this.today;
+    this.toDate = null;
+    this.hoveredDate = null;
+    this.viewDate = { month: this.today.month, year: this.today.year };
+    dp.navigateTo(this.today);
+  }
   onNavigate(event: any) {
     this.viewDate = { month: event.next.month, year: event.next.year };
   }
