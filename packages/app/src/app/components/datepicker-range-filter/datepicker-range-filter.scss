@@ -198,16 +198,4 @@
     font-size: 0.75rem;
     font-weight: 600;
   }
-  .btn-outline-secondary {
-    border: 1px solid var(--bb-dp-border) !important;
-    border-radius: 10px !important;
-    &:hover {
-      background-color: var(--bb-dp-hover) !important;
-      border-color: var(--bs-primary) !important;
-      color: var(--bs-primary) !important;
-    }
-  }
-  .btn-outline-primary {
-    border-radius: 10px !important;
-  }
 }
