@@ -19,6 +19,13 @@ import {
 } from 'ag-grid-community';
 import { GRID_SHARED_OPTIONS } from '../../../app.const';
 import { DatepickerRangeFilter } from '../../../components/column-filters/datepicker-range-filter/datepicker-range-filter';
+import { NumberColumnFilter } from '../../../components/column-filters/number-column-filter/number-column-filter';
+import {
+  SetColumnFilter,
+  SetColumnFilterParams,
+} from '../../../components/column-filters/set-column-filter/set-column-filter';
+import { SizeColumnFilter } from '../../../components/column-filters/size-column-filter/size-column-filter';
+import { TextColumnFilter } from '../../../components/column-filters/text-column-filter/text-column-filter';
 import { Torrent, TorrentState } from '../../../models/torrent.model';
 import { ContextMenuService } from '../../../services/context-menu.service';
 import { FilterService, GRID_FILTER_INITIAL } from '../../../services/filter.service';
@@ -47,7 +54,8 @@ export function getGridColDefs(
       minWidth: 50,
       width: 590,
       tooltipField: 'name',
-      filter: 'agTextColumnFilter',
+      filter: TextColumnFilter,
+      floatingFilter: false,
     },
     {
       colId: 'hash',
@@ -58,7 +66,8 @@ export function getGridColDefs(
       minWidth: 50,
       width: 340,
       cellRenderer: CodeCellRenderer,
-      filter: 'agTextColumnFilter',
+      filter: TextColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -80,7 +89,8 @@ export function getGridColDefs(
       minWidth: 50,
       width: 110,
       cellClass: 'tabular-nums',
-      filter: 'agNumberColumnFilter',
+      filter: NumberColumnFilter,
+      floatingFilter: false,
       hide: true,
       valueFormatter: (params: ValueFormatterParams<Torrent, number>): string =>
         params.value != null ? (params.value * 100).toFixed(1) + '%' : '',
@@ -94,7 +104,8 @@ export function getGridColDefs(
       minWidth: 50,
       width: 100,
       cellClass: 'tabular-nums',
-      filter: 'agNumberColumnFilter',
+      filter: NumberColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -107,6 +118,8 @@ export function getGridColDefs(
       width: 135,
       valueFormatter: uiFormatService.fileSize,
       cellClass: 'tabular-nums',
+      filter: SizeColumnFilter,
+      floatingFilter: false,
     },
     {
       colId: 'size_raw',
@@ -117,7 +130,8 @@ export function getGridColDefs(
       minWidth: 50,
       width: 135,
       cellClass: 'tabular-nums',
-      filter: 'agNumberColumnFilter',
+      filter: NumberColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -130,6 +144,8 @@ export function getGridColDefs(
       width: 135,
       valueFormatter: uiFormatService.fileSize,
       cellClass: 'tabular-nums',
+      filter: SizeColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -141,7 +157,8 @@ export function getGridColDefs(
       minWidth: 50,
       width: 135,
       cellClass: 'tabular-nums',
-      filter: 'agNumberColumnFilter',
+      filter: NumberColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -154,6 +171,8 @@ export function getGridColDefs(
       width: 135,
       valueFormatter: uiFormatService.fileSize,
       cellClass: 'tabular-nums',
+      filter: SizeColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -165,7 +184,8 @@ export function getGridColDefs(
       minWidth: 50,
       width: 135,
       cellClass: 'tabular-nums',
-      filter: 'agNumberColumnFilter',
+      filter: NumberColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -178,6 +198,8 @@ export function getGridColDefs(
       width: 130,
       valueFormatter: uiFormatService.fileSize,
       cellClass: 'tabular-nums',
+      filter: SizeColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -189,7 +211,8 @@ export function getGridColDefs(
       minWidth: 50,
       width: 130,
       cellClass: 'tabular-nums',
-      filter: 'agNumberColumnFilter',
+      filter: NumberColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -202,6 +225,8 @@ export function getGridColDefs(
       width: 150,
       valueFormatter: uiFormatService.fileSize,
       cellClass: 'tabular-nums',
+      filter: SizeColumnFilter,
+      floatingFilter: false,
     },
     {
       colId: 'downloaded_raw',
@@ -212,7 +237,8 @@ export function getGridColDefs(
       minWidth: 50,
       width: 150,
       cellClass: 'tabular-nums',
-      filter: 'agNumberColumnFilter',
+      filter: NumberColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -227,6 +253,8 @@ export function getGridColDefs(
       width: 195,
       valueFormatter: uiFormatService.fileSize,
       cellClass: 'tabular-nums',
+      filter: SizeColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -242,7 +270,8 @@ export function getGridColDefs(
       minWidth: 50,
       width: 195,
       cellClass: 'tabular-nums',
-      filter: 'agNumberColumnFilter',
+      filter: NumberColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -255,6 +284,8 @@ export function getGridColDefs(
       width: 150,
       valueFormatter: uiFormatService.fileSize,
       cellClass: 'tabular-nums',
+      filter: SizeColumnFilter,
+      floatingFilter: false,
     },
     {
       colId: 'uploaded_raw',
@@ -265,7 +296,8 @@ export function getGridColDefs(
       minWidth: 50,
       width: 150,
       cellClass: 'tabular-nums',
-      filter: 'agNumberColumnFilter',
+      filter: NumberColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -278,6 +310,8 @@ export function getGridColDefs(
       width: 175,
       valueFormatter: uiFormatService.fileSize,
       cellClass: 'tabular-nums',
+      filter: SizeColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -291,7 +325,8 @@ export function getGridColDefs(
       minWidth: 50,
       width: 175,
       cellClass: 'tabular-nums',
-      filter: 'agNumberColumnFilter',
+      filter: NumberColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -304,6 +339,8 @@ export function getGridColDefs(
       width: 165,
       valueFormatter: uiFormatService.fileSizePerSecond,
       cellClass: 'tabular-nums',
+      filter: SizeColumnFilter,
+      floatingFilter: false,
     },
     {
       colId: 'dlspeed_raw',
@@ -314,7 +351,8 @@ export function getGridColDefs(
       minWidth: 50,
       width: 165,
       cellClass: 'tabular-nums',
-      filter: 'agNumberColumnFilter',
+      filter: NumberColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -327,6 +365,8 @@ export function getGridColDefs(
       width: 165,
       valueFormatter: uiFormatService.fileSizePerSecond,
       cellClass: 'tabular-nums',
+      filter: SizeColumnFilter,
+      floatingFilter: false,
     },
     {
       colId: 'upspeed_raw',
@@ -337,7 +377,8 @@ export function getGridColDefs(
       minWidth: 50,
       width: 165,
       cellClass: 'tabular-nums',
-      filter: 'agNumberColumnFilter',
+      filter: NumberColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -350,7 +391,8 @@ export function getGridColDefs(
       width: 105,
       valueFormatter: uiFormatService.ratio,
       cellClass: 'tabular-nums',
-      filter: 'agNumberColumnFilter',
+      filter: NumberColumnFilter,
+      floatingFilter: false,
     },
     {
       colId: 'eta',
@@ -380,7 +422,8 @@ export function getGridColDefs(
       minWidth: 50,
       width: 100,
       cellClass: 'tabular-nums',
-      filter: 'agNumberColumnFilter',
+      filter: NumberColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -405,7 +448,9 @@ export function getGridColDefs(
       minWidth: 50,
       width: 140,
       tooltipField: 'state',
-      filter: 'agTextColumnFilter',
+      filter: SetColumnFilter,
+      filterParams: { source: 'state' } satisfies Partial<SetColumnFilterParams>,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -415,7 +460,9 @@ export function getGridColDefs(
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.state_hr'),
       minWidth: 50,
       width: 220,
-      filter: 'agTextColumnFilter',
+      filter: SetColumnFilter,
+      filterParams: { source: 'state' } satisfies Partial<SetColumnFilterParams>,
+      floatingFilter: false,
       hide: true,
       valueFormatter: (params: ValueFormatterParams<Torrent, TorrentState>): string =>
         params.value ? translateService.instant('torrent.state.' + params.value) : '',
@@ -429,7 +476,9 @@ export function getGridColDefs(
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.category'),
       minWidth: 50,
       width: 180,
-      filter: 'agTextColumnFilter',
+      filter: SetColumnFilter,
+      filterParams: { source: 'category' } satisfies Partial<SetColumnFilterParams>,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -440,7 +489,9 @@ export function getGridColDefs(
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.tags'),
       minWidth: 50,
       width: 180,
-      filter: 'agTextColumnFilter',
+      filter: SetColumnFilter,
+      filterParams: { source: 'tags' } satisfies Partial<SetColumnFilterParams>,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -451,7 +502,8 @@ export function getGridColDefs(
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.tracker'),
       minWidth: 50,
       width: 590,
-      filter: 'agTextColumnFilter',
+      filter: TextColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -463,7 +515,8 @@ export function getGridColDefs(
       minWidth: 50,
       width: 115,
       cellClass: 'tabular-nums',
-      filter: 'agNumberColumnFilter',
+      filter: NumberColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -476,6 +529,8 @@ export function getGridColDefs(
       width: 150,
       valueFormatter: uiFormatService.fileSizePerSecond,
       cellClass: 'tabular-nums',
+      filter: SizeColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -487,7 +542,8 @@ export function getGridColDefs(
       minWidth: 50,
       width: 150,
       cellClass: 'tabular-nums',
-      filter: 'agNumberColumnFilter',
+      filter: NumberColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -500,6 +556,8 @@ export function getGridColDefs(
       width: 130,
       valueFormatter: uiFormatService.fileSizePerSecond,
       cellClass: 'tabular-nums',
+      filter: SizeColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -511,7 +569,8 @@ export function getGridColDefs(
       minWidth: 50,
       width: 130,
       cellClass: 'tabular-nums',
-      filter: 'agNumberColumnFilter',
+      filter: NumberColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -524,7 +583,8 @@ export function getGridColDefs(
       width: 125,
       cellClass: 'tabular-nums',
       valueFormatter: uiFormatService.ratioLimit,
-      filter: 'agNumberColumnFilter',
+      filter: NumberColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -537,7 +597,8 @@ export function getGridColDefs(
       width: 135,
       cellClass: 'tabular-nums',
       valueFormatter: uiFormatService.ratioLimit,
-      filter: 'agNumberColumnFilter',
+      filter: NumberColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -561,7 +622,8 @@ export function getGridColDefs(
       minWidth: 50,
       width: 150,
       cellClass: 'tabular-nums',
-      filter: 'agNumberColumnFilter',
+      filter: NumberColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -615,7 +677,8 @@ export function getGridColDefs(
       minWidth: 50,
       width: 150,
       cellClass: 'tabular-nums',
-      filter: 'agNumberColumnFilter',
+      filter: NumberColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -669,7 +732,8 @@ export function getGridColDefs(
       minWidth: 50,
       width: 100,
       cellClass: 'tabular-nums',
-      filter: 'agNumberColumnFilter',
+      filter: NumberColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -681,7 +745,8 @@ export function getGridColDefs(
       minWidth: 50,
       width: 120,
       cellClass: 'tabular-nums',
-      filter: 'agNumberColumnFilter',
+      filter: NumberColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -693,7 +758,8 @@ export function getGridColDefs(
       minWidth: 50,
       width: 125,
       cellClass: 'tabular-nums',
-      filter: 'agNumberColumnFilter',
+      filter: NumberColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -705,7 +771,8 @@ export function getGridColDefs(
       minWidth: 50,
       width: 140,
       cellClass: 'tabular-nums',
-      filter: 'agNumberColumnFilter',
+      filter: NumberColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -717,7 +784,8 @@ export function getGridColDefs(
       minWidth: 50,
       width: 130,
       cellClass: 'tabular-nums',
-      filter: 'agNumberColumnFilter',
+      filter: NumberColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -817,7 +885,8 @@ export function getGridColDefs(
       minWidth: 50,
       width: 150,
       cellClass: 'tabular-nums',
-      filter: 'agNumberColumnFilter',
+      filter: NumberColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -849,7 +918,8 @@ export function getGridColDefs(
       minWidth: 50,
       width: 180,
       cellClass: 'tabular-nums',
-      filter: 'agNumberColumnFilter',
+      filter: NumberColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -881,7 +951,8 @@ export function getGridColDefs(
       minWidth: 50,
       width: 180,
       cellClass: 'tabular-nums',
-      filter: 'agNumberColumnFilter',
+      filter: NumberColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -892,7 +963,8 @@ export function getGridColDefs(
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.content_path'),
       minWidth: 50,
       width: 1070,
-      filter: 'agTextColumnFilter',
+      filter: TextColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -903,7 +975,8 @@ export function getGridColDefs(
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.save_path'),
       minWidth: 50,
       width: 365,
-      filter: 'agTextColumnFilter',
+      filter: TextColumnFilter,
+      floatingFilter: false,
     },
     {
       colId: 'download_path',
@@ -913,7 +986,8 @@ export function getGridColDefs(
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.download_path'),
       minWidth: 50,
       width: 360,
-      filter: 'agTextColumnFilter',
+      filter: TextColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -924,7 +998,8 @@ export function getGridColDefs(
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.magnet_uri'),
       minWidth: 50,
       width: 1010,
-      filter: 'agTextColumnFilter',
+      filter: TextColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -936,7 +1011,8 @@ export function getGridColDefs(
       minWidth: 50,
       width: 340,
       cellRenderer: CodeCellRenderer,
-      filter: 'agTextColumnFilter',
+      filter: TextColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
     {
@@ -948,7 +1024,8 @@ export function getGridColDefs(
       minWidth: 50,
       width: 340,
       cellRenderer: CodeCellRenderer,
-      filter: 'agTextColumnFilter',
+      filter: TextColumnFilter,
+      floatingFilter: false,
       hide: true,
     },
   ];
