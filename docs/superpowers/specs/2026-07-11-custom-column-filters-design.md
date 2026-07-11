@@ -129,7 +129,7 @@ Model: `{ values: string[] }` (a `Set` serialized to an array so it round-trips 
 
 - `categoriesWithCounts` - moved from `status.ts`, unioning known category names (`categoriesMap`) with counts from current torrent data, so a category with zero torrents still shows up (needed for the "manage categories" flow).
 - `tagsWithCounts` - moved from `status.ts`, same union pattern with `tagsSet`.
-- `statesWithCounts` (new) - built from the existing `countsByState`, using the `torrent.state.<value>` translation keys (same ones `state_hr`'s `valueFormatter` already uses) for checkbox labels, so raw enum keys get friendly labels.
+- `statesWithCounts` (new) - built from the existing `countsByState`. Checkbox labels are the raw `TorrentState` string itself (e.g. `downloading`, `pausedUP`) - **not** the `torrent.state.<value>` translation keys, which turn out to be full descriptive sentences ("Torrent is downloading and data is being transferred.") used as tooltip text elsewhere, not short labels. Using the raw value matches what the `state` column already displays and avoids introducing new translation keys for this.
 
 Both `Status` and `SetColumnFilter` consume these from `TorrentStoreService` instead of computing them separately. This mirrors AG Grid's own Set Filter convention: the list reflects values currently present in the loaded data, not a hardcoded enum, and grows/shrinks as torrents are added or removed - the same behavior the sidebar already has today.
 
