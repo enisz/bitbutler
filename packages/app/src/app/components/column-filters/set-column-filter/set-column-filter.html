@@ -3,13 +3,17 @@
   (mousedown)="$event.stopPropagation()"
   (touchstart)="$event.stopPropagation()"
 >
-  <div class="bb-filter-input mb-2">
+  <div class="form-floating bb-filter-input mb-2">
     <input
       type="text"
-      class="form-control form-control-sm"
+      class="form-control"
+      [id]="instanceId + '-search'"
       [placeholder]="'components.column-filters.set.filter-placeholder' | translate"
       [formControl]="filterCtrl"
     />
+    <label [for]="instanceId + '-search'">{{
+      'components.column-filters.set.filter-placeholder' | translate
+    }}</label>
     @if (filterCtrl.value) {
       <button
         type="button"
@@ -22,24 +26,23 @@
     }
   </div>
 
-  <div class="bb-set-filter-list mb-2">
+  <div class="bb-set-filter-list list-group list-group-flush mb-2">
     @for (item of filteredItems(); track item.key) {
-      <div class="form-check">
+      <label
+        class="list-group-item list-group-item-action d-flex align-items-center gap-2"
+        [class.active]="draftValues.has(item.key)"
+        [for]="instanceId + '-' + item.key"
+      >
         <input
-          class="form-check-input"
+          class="form-check-input mt-0 flex-shrink-0"
           type="checkbox"
-          [id]="'bb-set-filter-' + item.key"
+          [id]="instanceId + '-' + item.key"
           [checked]="draftValues.has(item.key)"
           (change)="toggle(item.key)"
         />
-        <label
-          class="form-check-label d-flex justify-content-between align-items-center gap-2"
-          [for]="'bb-set-filter-' + item.key"
-        >
-          <span class="text-truncate">{{ item.label }}</span>
-          <span class="badge text-bg-secondary">{{ item.count }}</span>
-        </label>
-      </div>
+        <span class="text-truncate flex-grow-1">{{ item.label }}</span>
+        <span class="badge bb-status-badge bb-status-badge--neutral">{{ item.count }}</span>
+      </label>
     } @empty {
       <div class="text-body-secondary small px-1 py-2">
         {{ 'components.column-filters.set.no-matches' | translate }}
@@ -47,29 +50,27 @@
     }
   </div>
 
-  <div class="d-flex gap-2">
-    <button
-      class="btn btn-sm btn-outline-secondary btn-split flex-fill"
-      type="button"
-      (click)="clear()"
-    >
-      <bb-btn-content
-        [icon]="icons.faEraser"
-        [text]="'general.button.clear' | translate"
-        [position]="'end'"
-      ></bb-btn-content>
-    </button>
-    <button
-      class="btn btn-sm btn-outline-primary btn-split flex-fill"
-      type="button"
-      [disabled]="isApplyDisabled()"
-      (click)="apply()"
-    >
-      <bb-btn-content
-        [icon]="icons.faCheck"
-        [text]="'general.button.apply' | translate"
-        [position]="'end'"
-      ></bb-btn-content>
-    </button>
-  </div>
+  <button
+    class="btn btn-sm btn-outline-secondary btn-split w-100 mb-2"
+    type="button"
+    (click)="clear()"
+  >
+    <bb-btn-content
+      [icon]="icons.faEraser"
+      [text]="'general.button.clear' | translate"
+      [position]="'end'"
+    ></bb-btn-content>
+  </button>
+  <button
+    class="btn btn-sm btn-outline-primary btn-split w-100"
+    type="button"
+    [disabled]="isApplyDisabled()"
+    (click)="apply()"
+  >
+    <bb-btn-content
+      [icon]="icons.faCheck"
+      [text]="'general.button.apply' | translate"
+      [position]="'end'"
+    ></bb-btn-content>
+  </button>
 </div>

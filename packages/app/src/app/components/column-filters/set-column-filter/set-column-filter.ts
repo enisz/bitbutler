@@ -9,6 +9,7 @@ import { IAfterGuiAttachedParams, IDoesFilterPassParams, IFilterParams } from 'a
 import { debounceTime, startWith } from 'rxjs/operators';
 import { TorrentStoreService, ValueCount } from '../../../services/torrent-store.service';
 import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
+import { createFilterInstanceId } from '../filter-instance-id.utils';
 
 const FILTER_DEBOUNCE_MS = 150;
 
@@ -36,6 +37,7 @@ export class SetColumnFilter implements IFilterAngularComp {
 
   public readonly icons = { faCheck, faEraser, faXmark };
   public filterCtrl = new FormControl('', { nonNullable: true });
+  public readonly instanceId = createFilterInstanceId('set-filter');
 
   draftValues = new Set<string>();
   appliedValues = new Set<string>();
