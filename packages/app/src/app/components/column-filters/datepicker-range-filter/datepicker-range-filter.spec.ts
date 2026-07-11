@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
-import { DEFAULT_GENERAL_SETTINGS } from '../../models/general-settings.model';
-import { DateFormatService } from '../../services/date-format.service';
+import { DEFAULT_GENERAL_SETTINGS } from '../../../models/general-settings.model';
+import { DateFormatService } from '../../../services/date-format.service';
 import { DatepickerRangeFilter } from './datepicker-range-filter';
 
 describe('DatepickerRangeFilter', () => {

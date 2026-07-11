@@ -19,9 +19,9 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslateModule } from '@ngx-translate/core';
 import { IFilterAngularComp } from 'ag-grid-angular';
 import { IAfterGuiAttachedParams, IDoesFilterPassParams, IFilterParams } from 'ag-grid-community';
-import { CustomDatepickerI18n } from '../../services/custom-datepicker-i18n.service';
-import { DateFormatService } from '../../services/date-format.service';
-import { BbBtnContent } from '../bb-btn-content/bb-btn-content';
+import { CustomDatepickerI18n } from '../../../services/custom-datepicker-i18n.service';
+import { DateFormatService } from '../../../services/date-format.service';
+import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
 
 @Component({
   selector: 'app-datepicker-range-filter',

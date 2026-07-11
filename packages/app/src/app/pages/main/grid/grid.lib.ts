@@ -18,7 +18,7 @@ import {
   ValueFormatterParams,
 } from 'ag-grid-community';
 import { GRID_SHARED_OPTIONS } from '../../../app.const';
-import { DatepickerRangeFilter } from '../../../components/datepicker-range-filter/datepicker-range-filter';
+import { DatepickerRangeFilter } from '../../../components/column-filters/datepicker-range-filter/datepicker-range-filter';
 import { Torrent, TorrentState } from '../../../models/torrent.model';
 import { ContextMenuService } from '../../../services/context-menu.service';
 import { FilterService, GRID_FILTER_INITIAL } from '../../../services/filter.service';
