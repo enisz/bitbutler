@@ -1363,6 +1363,7 @@
                 "custom": "Custom"
               },
               "token-guide": {
+                "toggle": "Token guide",
                 "hint": "Wrap literal text in single quotes, e.g. 'at', to include it as-is.",
                 "column-token": "Token",
                 "column-description": "Description",

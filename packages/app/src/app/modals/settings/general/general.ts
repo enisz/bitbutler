@@ -13,10 +13,13 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   IconDefinition,
   faArrowsRotate,
+  faChevronDown,
+  faChevronUp,
   faCircleQuestion,
   faRotateLeft,
   faTriangleExclamation,
 } from '@fortawesome/free-solid-svg-icons';
+import { NgbCollapse } from '@ng-bootstrap/ng-bootstrap';
 import {
   NgLabelTemplateDirective,
   NgOptionTemplateDirective,
@@ -107,6 +110,7 @@ const DATE_FORMAT_TOKENS = [
     TranslatePipe,
     SavePathSelect,
     BbBtnContent,
+    NgbCollapse,
   ],
   templateUrl: './general.html',
   styleUrl: './general.scss',
@@ -282,7 +286,15 @@ export class General implements SettingsTabComponent {
     faCircleQuestion,
     faArrowsRotate,
     faRotateLeft,
+    faChevronDown,
+    faChevronUp,
   };
+
+  public tokenGuideExpanded = signal(false);
+
+  public toggleTokenGuide(): void {
+    this.tokenGuideExpanded.update((v) => !v);
+  }
 
   public getFamilyLogo = getFamilyLogoUrl;
 
