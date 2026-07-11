@@ -12,7 +12,7 @@
       [clearable]="false"
       [searchable]="false"
       [(ngModel)]="draft.operator"
-      appendTo="body"
+      [appendTo]="popupPortalSelector"
     ></ng-select>
     <label [for]="instanceId + '-operator'">{{
       'components.column-filters.label.operator' | translate

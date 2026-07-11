@@ -1,8 +1,27 @@
+import { Injectable, OnDestroy } from '@angular/core';
 import { IFilterAngularComp } from 'ag-grid-angular';
 import { IAfterGuiAttachedParams, IDoesFilterPassParams, IFilterParams } from 'ag-grid-community';
 
-export abstract class OperatorFilterBase<TValue> implements IFilterAngularComp {
+/**
+ * ag-grid closes a filter popup on any mousedown outside its DOM subtree, unless the click
+ * target is inside an element carrying this class (see ag-grid's PopupService). ng-select's
+ * `appendTo` moves its dropdown panel out of the filter's DOM (to avoid being clipped by the
+ * popup's bounds), so the panel must be appended into an element tagged with this class instead
+ * of directly into `body`.
+ */
+const AG_GRID_CUSTOM_POPUP_CLASS = 'ag-custom-component-popup';
+
+@Injectable()
+export abstract class OperatorFilterBase<TValue> implements IFilterAngularComp, OnDestroy {
   protected params!: IFilterParams;
+
+  protected abstract readonly instanceId: string;
+
+  private popupPortal?: HTMLElement;
+
+  get popupPortalSelector(): string {
+    return `#${this.instanceId}-popup-portal`;
+  }
 
   abstract draft: TValue;
   abstract applied: TValue;
@@ -15,6 +34,19 @@ export abstract class OperatorFilterBase<TValue> implements IFilterAngularComp {
 
   agInit(params: IFilterParams): void {
     this.params = params;
+    this.popupPortal = document.createElement('div');
+    this.popupPortal.id = `${this.instanceId}-popup-portal`;
+    this.popupPortal.className = AG_GRID_CUSTOM_POPUP_CLASS;
+    // ng-select positions its appended dropdown relative to the appendTo target's own
+    // getBoundingClientRect(), so the target must be the dropdown's actual CSS containing
+    // block (position !== static) or the two reference frames diverge and the panel renders
+    // off-screen.
+    this.popupPortal.style.position = 'relative';
+    document.body.appendChild(this.popupPortal);
+  }
+
+  ngOnDestroy(): void {
+    this.popupPortal?.remove();
   }
 
   isFilterActive(): boolean {
