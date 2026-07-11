@@ -33,27 +33,29 @@
     }}</label>
   </div>
 
-  <button
-    class="btn btn-sm btn-outline-secondary btn-split w-100 mb-2"
-    type="button"
-    (click)="clear()"
-  >
-    <bb-btn-content
-      [icon]="icons.faEraser"
-      [text]="'general.button.clear' | translate"
-      [position]="'end'"
-    ></bb-btn-content>
-  </button>
-  <button
-    class="btn btn-sm btn-outline-primary btn-split w-100"
-    type="button"
-    [disabled]="isApplyDisabled()"
-    (click)="apply()"
-  >
-    <bb-btn-content
-      [icon]="icons.faCheck"
-      [text]="'general.button.apply' | translate"
-      [position]="'end'"
-    ></bb-btn-content>
-  </button>
+  <div class="d-flex gap-2">
+    <button
+      class="btn btn-sm btn-outline-secondary btn-split flex-fill"
+      type="button"
+      (click)="clear()"
+    >
+      <bb-btn-content
+        [icon]="icons.faEraser"
+        [text]="'general.button.clear' | translate"
+        [position]="'end'"
+      ></bb-btn-content>
+    </button>
+    <button
+      class="btn btn-sm btn-outline-primary btn-split flex-fill"
+      type="button"
+      [disabled]="isApplyDisabled()"
+      (click)="apply()"
+    >
+      <bb-btn-content
+        [icon]="icons.faCheck"
+        [text]="'general.button.apply' | translate"
+        [position]="'end'"
+      ></bb-btn-content>
+    </button>
+  </div>
 </div>
