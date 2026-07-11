@@ -1,4 +1,8 @@
-<div class="bb-datefilter p-2">
+<div
+  class="bb-datefilter p-2"
+  (mousedown)="$event.stopPropagation()"
+  (touchstart)="$event.stopPropagation()"
+>
   <div class="d-flex bb-datepicker-header mb-1">
     <div class="bb-header-side d-flex justify-content-between align-items-center ps-1">
       <button type="button" class="btn btn-link bb-dp-nav-btn" (click)="moveMonth(dp, -1)">
@@ -39,6 +43,7 @@
     [dayTemplate]="t"
     [outsideDays]="'collapsed'"
     [navigation]="'none'"
+    [firstDayOfWeek]="dateFormatService.resolved().firstDayOfWeek"
     (navigate)="onNavigate($event)"
     (dateSelect)="onSelect($event)"
   >
@@ -48,6 +53,7 @@
     <span
       class="bb-day"
       [class.bb-day--from]="isFrom(date)"
+      [class.bb-day--from-range]="isRangeStart(date)"
       [class.bb-day--to]="isTo(date)"
       [class.bb-day--between]="isInside(date) || isHovered(date)"
       [class.bb-day--today]="isToday(date)"
@@ -58,45 +64,60 @@
     </span>
   </ng-template>
 
-  <div class="d-flex justify-content-between align-items-center mt-3 gap-2 px-1">
-    <div class="d-flex flex-column gap-1">
-      <div class="small text-body-secondary d-flex align-items-center gap-2">
-        <span style="width: 42px; opacity: 0.7">
-          {{
-            (fromDate && !toDate
-              ? 'components.datepicker-range-filter.label.date'
-              : 'components.datepicker-range-filter.label.from'
-            ) | translate
-          }}:
-        </span>
-        <span class="bb-date-chip">{{ fromDate ? fmt(fromDate) : '---- / -- / --' }}</span>
+  <div class="d-flex align-items-center mt-3 gap-2 px-1">
+    @if (fromDate) {
+      <div class="d-flex flex-column gap-1">
+        <div class="small text-body-secondary d-flex align-items-center gap-2">
+          <span style="width: 42px; opacity: 0.7">
+            {{
+              (toDate
+                ? 'components.datepicker-range-filter.label.from'
+                : 'components.datepicker-range-filter.label.date'
+              ) | translate
+            }}:
+          </span>
+          <span class="bb-date-chip">{{ fmt(fromDate) }}</span>
+        </div>
+        @if (toDate) {
+          <div class="small text-body-secondary d-flex align-items-center gap-2">
+            <span style="width: 42px; opacity: 0.7">
+              {{ 'components.datepicker-range-filter.label.to' | translate }}:
+            </span>
+            <span class="bb-date-chip">{{ fmt(toDate) }}</span>
+          </div>
+        }
       </div>
-      <div
-        class="small text-body-secondary d-flex align-items-center gap-2"
-        [style.opacity]="toDate ? 1 : 0.4"
-      >
-        <span style="width: 42px; opacity: 0.7">
-          {{ 'components.datepicker-range-filter.label.to' | translate }}:
-        </span>
-        <span class="bb-date-chip">{{ toDate ? fmt(toDate) : '---- / -- / --' }}</span>
-      </div>
-    </div>
+    }
 
-    <div class="d-flex gap-2 align-items-center">
+    <div class="d-flex gap-2 align-items-center ms-auto">
       <button
         class="btn btn-sm btn-outline-secondary btn-split"
         type="button"
-        (click)="dp.navigateTo(today)"
+        (click)="selectToday(dp)"
       >
         <bb-btn-content
           [icon]="icons.faCalendarDay"
           [text]="'general.button.today' | translate"
+          [position]="'end'"
         ></bb-btn-content>
       </button>
       <button class="btn btn-sm btn-outline-secondary btn-split" type="button" (click)="clear()">
         <bb-btn-content
           [icon]="icons.faEraser"
           [text]="'general.button.clear' | translate"
+          [position]="'end'"
+        ></bb-btn-content>
+      </button>
+      <button
+        class="btn btn-sm btn-outline-primary btn-split"
+        type="button"
+        [disabled]="isApplyDisabled()"
+        (click)="apply()"
+      >
+        <bb-btn-content
+          [icon]="icons.faCheck"
+          [text]="'general.button.apply' | translate"
+          [position]="'end'"
         ></bb-btn-content>
       </button>
     </div>

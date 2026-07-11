@@ -1343,6 +1343,51 @@
             "language": {
               "language": "Language of the UI"
             },
+            "date-format": {
+              "preset-label": "Date format",
+              "custom-pattern-label": "Custom pattern",
+              "reset-custom-pattern": "Reset to default",
+              "preview": "Preview",
+              "first-day-of-week-label": "First day of week",
+              "first-day-of-week": {
+                "auto": "Auto",
+                "sunday": "Sunday",
+                "monday": "Monday",
+                "saturday": "Saturday"
+              },
+              "preset": {
+                "follow-language": "Follow language",
+                "iso": "ISO",
+                "us": "US",
+                "eu": "European",
+                "custom": "Custom"
+              },
+              "token-guide": {
+                "hint": "Wrap literal text in single quotes, e.g. 'at', to include it as-is.",
+                "column-token": "Token",
+                "column-description": "Description",
+                "column-example": "Example",
+                "token": {
+                  "yyyy": "4-digit year",
+                  "yy": "2-digit year",
+                  "MMMM": "Full month name",
+                  "MMM": "Abbreviated month name",
+                  "MM": "2-digit month",
+                  "M": "Month number",
+                  "EEEE": "Full weekday name",
+                  "EEE": "Abbreviated weekday name",
+                  "dd": "2-digit day of month",
+                  "d": "Day of month",
+                  "HH": "2-digit hour (24h)",
+                  "H": "Hour (24h)",
+                  "hh": "2-digit hour (12h)",
+                  "h": "Hour (12h)",
+                  "mm": "2-digit minute",
+                  "ss": "2-digit second",
+                  "a": "AM/PM marker"
+                }
+              }
+            },
             "appearance": {
               "family": "Theme Family",
               "mode": "Theme Mode"
@@ -1361,6 +1406,7 @@
           "label": {
             "behavior": "Behavior",
             "language": "Language",
+            "date-format": "Date & Time",
             "appearance": "Appearance",
             "startup": "Startup",
             "save-path-input": "Save Path Input"
@@ -1768,6 +1814,7 @@
       "cancel": "Cancel",
       "clear": "Clear",
       "clear-all": "Clear",
+      "apply": "Apply",
       "today": "Today",
       "connect": "Connect",
       "add-server": "Add Server",

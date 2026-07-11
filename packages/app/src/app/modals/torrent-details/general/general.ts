@@ -1,5 +1,4 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FontAwesomeModule, IconDefinition } from '@fortawesome/angular-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
@@ -14,6 +13,7 @@ import { QbLogEntry } from '../../../models/qbittorrent.model';
 import { FileSizePerSecPipe } from '../../../pipes/filesize-per-sec-pipe';
 import { FilesizePipe } from '../../../pipes/filesize-pipe';
 import { HumanizeDurationPipe } from '../../../pipes/humanize-duration-pipe';
+import { LocalTimestampPipe } from '../../../pipes/local-timestamp-pipe';
 import { RatioLimitPipe } from '../../../pipes/ratio-limit-pipe';
 import { RatioPipe } from '../../../pipes/ratio-pipe';
 import { SpeedLimitPipe } from '../../../pipes/speed-limit-pipe';
@@ -26,7 +26,7 @@ import { TorrentDetailTabComponent } from '../torrent-details.interface';
   selector: 'app-general',
   imports: [
     BbSpinner,
-    DatePipe,
+    LocalTimestampPipe,
     TimeagoPipe,
     FilesizePipe,
     FileSizePerSecPipe,

@@ -17,6 +17,7 @@ import { MarkdownComponent } from 'ngx-markdown';
 import { TimeagoPipe } from 'ngx-timeago';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { FilesizePipe } from '../../pipes/filesize-pipe';
+import { LocalTimestampPipe } from '../../pipes/local-timestamp-pipe';
 import { ElectronService } from '../../services/electron.service';
 import { ThemeService } from '../../services/theme.service';
 
@@ -28,6 +29,7 @@ import { ThemeService } from '../../services/theme.service';
     NgbAccordionModule,
     MarkdownComponent,
     FilesizePipe,
+    LocalTimestampPipe,
     TimeagoPipe,
     TranslatePipe,
     BbBtnContent,

@@ -1,4 +1,4 @@
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { CommonModule, NgOptimizedImage, formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -14,6 +14,7 @@ import {
   IconDefinition,
   faArrowsRotate,
   faCircleQuestion,
+  faRotateLeft,
   faTriangleExclamation,
 } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -28,11 +29,20 @@ import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { SavePathSelect } from '../../../components/save-path-select/save-path-select';
 import {
+  DATE_FORMAT_PRESETS,
+  DEFAULT_GENERAL_SETTINGS,
+  DEFAULT_LOCALE,
+  DateFormatPreset,
+  FIRST_DAY_OF_WEEK_OPTIONS,
+  FirstDayOfWeek,
   GeneralSettings,
+  LANGUAGE_LOCALE_MAP,
   SavePathInputType,
   ToastPosition,
+  resolveDateFormat,
 } from '../../../models/general-settings.model';
 import { CommandBusService } from '../../../services/command-bus.service';
+import { DateFormatService } from '../../../services/date-format.service';
 import { GeneralSettingsService } from '../../../services/general-settings.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import {
@@ -49,6 +59,38 @@ interface NgSelectItem {
   value: string;
   label: string;
 }
+
+interface DateFormatPresetItem {
+  value: DateFormatPreset;
+  label: string;
+  example: string;
+}
+
+interface DateFormatTokenGuideRow {
+  token: string;
+  description: string;
+  example: string;
+}
+
+const DATE_FORMAT_TOKENS = [
+  'yyyy',
+  'yy',
+  'MMMM',
+  'MMM',
+  'MM',
+  'M',
+  'EEEE',
+  'EEE',
+  'dd',
+  'd',
+  'HH',
+  'H',
+  'hh',
+  'h',
+  'mm',
+  'ss',
+  'a',
+] as const;
 
 @Component({
   selector: 'app-general',
@@ -78,6 +120,7 @@ export class General implements SettingsTabComponent {
   private readonly translateService = inject(TranslateService);
   private readonly stateService = inject(SettingsStateService);
   private readonly serverStoreService = inject(ServerStoreService);
+  private readonly dateFormatService = inject(DateFormatService);
 
   private languageChanged = toSignal(this.translateService.onLangChange);
 
@@ -149,10 +192,96 @@ export class General implements SettingsTabComponent {
     ];
   });
 
+  private previewDateFormat(
+    preset: DateFormatPreset,
+    language: string,
+    customPattern: string,
+  ): string {
+    const { pattern, locale } = resolveDateFormat({
+      language: { language },
+      dateFormat: { preset, customPattern },
+    });
+
+    try {
+      return formatDate(new Date(), pattern, locale);
+    } catch {
+      return formatDate(new Date(), 'yyyy-MM-dd HH:mm', 'en-US');
+    }
+  }
+
+  public dateFormatPresets = computed<DateFormatPresetItem[]>(() => {
+    this.languageChanged();
+    const snapshot = this.formSnapshot();
+    const language = snapshot.language.language;
+    const customPattern = snapshot.dateFormat.customPattern;
+
+    return DATE_FORMAT_PRESETS.map((preset) => ({
+      value: preset,
+      label: this.translateService.instant(
+        `pages.settings.tab.general.general-settings-form.date-format.preset.${preset}`,
+      ),
+      example: this.previewDateFormat(preset, language, customPattern),
+    }));
+  });
+
+  public firstDayOfWeekOptions = computed<NgSelectItem[]>(() => {
+    this.languageChanged();
+
+    return FIRST_DAY_OF_WEEK_OPTIONS.map((value) => ({
+      value,
+      label: this.translateService.instant(
+        `pages.settings.tab.general.general-settings-form.date-format.first-day-of-week.${value}`,
+      ),
+    }));
+  });
+
+  public isCustomDateFormat = computed<boolean>(
+    () => this.formSnapshot().dateFormat.preset === 'custom',
+  );
+
+  public customPatternPreview = computed<string>(() => {
+    const snapshot = this.formSnapshot();
+    return this.previewDateFormat(
+      'custom',
+      snapshot.language.language,
+      snapshot.dateFormat.customPattern,
+    );
+  });
+
+  public resetCustomPattern(): void {
+    this.generalSettingsForm.controls.dateFormat.controls.customPattern.setValue(
+      DEFAULT_GENERAL_SETTINGS.dateFormat.customPattern,
+    );
+  }
+
+  public dateFormatTokenGuide = computed<DateFormatTokenGuideRow[]>(() => {
+    this.languageChanged();
+    const snapshot = this.formSnapshot();
+    const language = snapshot.language.language;
+
+    return DATE_FORMAT_TOKENS.map((token) => ({
+      token,
+      description: this.translateService.instant(
+        `pages.settings.tab.general.general-settings-form.date-format.token-guide.token.${token}`,
+      ),
+      example: this.formatToken(token, language),
+    }));
+  });
+
+  private formatToken(token: string, language: string): string {
+    const locale = LANGUAGE_LOCALE_MAP[language] ?? DEFAULT_LOCALE;
+    try {
+      return formatDate(new Date(), token, locale);
+    } catch {
+      return '';
+    }
+  }
+
   public icons: Record<string, IconDefinition> = {
     faTriangleExclamation,
     faCircleQuestion,
     faArrowsRotate,
+    faRotateLeft,
   };
 
   public getFamilyLogo = getFamilyLogoUrl;
@@ -166,6 +295,11 @@ export class General implements SettingsTabComponent {
     language: new FormGroup({
       language: new FormControl('us', { nonNullable: true }),
     }),
+    dateFormat: new FormGroup({
+      preset: new FormControl<DateFormatPreset>('iso', { nonNullable: true }),
+      customPattern: new FormControl('yyyy-MM-dd HH:mm', { nonNullable: true }),
+      firstDayOfWeek: new FormControl<FirstDayOfWeek>('auto', { nonNullable: true }),
+    }),
     appearance: new FormGroup({
       family: new FormControl<ThemeFamily>('bitbutler', { nonNullable: true }),
       mode: new FormControl<ThemeMode>('system', { nonNullable: true }),
@@ -178,6 +312,8 @@ export class General implements SettingsTabComponent {
       inputType: new FormControl<SavePathInputType>('select', { nonNullable: true }),
     }),
   });
+
+  private readonly formSnapshot = signal(this.generalSettingsForm.getRawValue());
 
   constructor() {
     const startupGroup = this.generalSettingsForm.controls.startup;
@@ -199,13 +335,17 @@ export class General implements SettingsTabComponent {
 
     this.generalSettingsForm.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.stateService.markDirty('general', true));
+      .subscribe(() => {
+        this.stateService.markDirty('general', true);
+        this.formSnapshot.set(this.generalSettingsForm.getRawValue());
+      });
   }
 
   public readonly settingsLoaded = toSignal(
     from(this.generalSettingsService.load()).pipe(
       tap((settings: GeneralSettings) => {
         this.generalSettingsForm.patchValue(settings, { emitEvent: false });
+        this.formSnapshot.set(this.generalSettingsForm.getRawValue());
         const openAtLogin = settings.startup?.openAtLogin ?? false;
         this.openAtLoginValue.set(openAtLogin);
         const startupGroup = this.generalSettingsForm.controls.startup;
@@ -233,6 +373,7 @@ export class General implements SettingsTabComponent {
     }
 
     this.themeService.applyFromSettings(settings.appearance.family, settings.appearance.mode);
+    this.dateFormatService.applyFromSettings(settings);
   }
 
   public checkUpdates(): void {

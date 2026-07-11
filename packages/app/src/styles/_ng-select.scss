@@ -54,6 +54,11 @@
   color: color-mix(in srgb, var(--bb-ng-text) 60%, transparent) !important;
 }
 
+.ng-select.ng-select-single .ng-select-container .ng-value-container .ng-value {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+}
+
 .ng-select.ng-select-focused .ng-select-container {
   border-color: var(--bb-ng-accent) !important;
   box-shadow: 0 0 0 0.2rem var(--bb-ng-focus-ring) !important;

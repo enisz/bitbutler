@@ -34,6 +34,14 @@
     z-index: 2;
   }
 
+  &--from.bb-day--from-range {
+    border-radius: 50% 0 0 50% !important;
+  }
+
+  &--to {
+    border-radius: 0 50% 50% 0 !important;
+  }
+
   &--between {
     background-color: var(--bb-dp-range) !important;
     border-radius: 0 !important;
@@ -189,14 +197,5 @@
     font-family: monospace;
     font-size: 0.75rem;
     font-weight: 600;
-  }
-  .btn-outline-secondary {
-    border: 1px solid var(--bb-dp-border) !important;
-    border-radius: 10px !important;
-    &:hover {
-      background-color: var(--bb-dp-hover) !important;
-      border-color: var(--bs-primary) !important;
-      color: var(--bs-primary) !important;
-    }
   }
 }

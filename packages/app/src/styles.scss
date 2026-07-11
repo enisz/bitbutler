@@ -1138,6 +1138,7 @@ ngb-typeahead-window.dropdown-menu {
 }
 
 @include bb.bb-install-range-variants(primary, secondary, success, danger, warning, info);
+@include bb.bb-install-table-theming();
 
 .bb-datefilter {
   background: var(--bb-dp-bg);

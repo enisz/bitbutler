@@ -1,19 +1,15 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform, inject } from '@angular/core';
+import { DateFormatService } from '../services/date-format.service';
 
 @Pipe({
   name: 'localTimestamp',
   standalone: true,
+  pure: false,
 })
 export class LocalTimestampPipe implements PipeTransform {
-  transform(value: number | string | undefined): string {
-    if (!value || Number(value) <= 0) return '';
+  private readonly dateFormatService = inject(DateFormatService);
 
-    const date = new Date(Number(value) * 1000);
-    const pad = (num: number) => String(num).padStart(2, '0');
-
-    return (
-      `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ` +
-      `${pad(date.getHours())}:${pad(date.getMinutes())}`
-    );
+  transform(value: number | string | null | undefined): string {
+    return this.dateFormatService.format(value as number | string | undefined);
   }
 }

@@ -1343,6 +1343,51 @@
             "language": {
               "language": "A felület nyelve"
             },
+            "date-format": {
+              "preset-label": "Dátumformátum",
+              "custom-pattern-label": "Egyéni minta",
+              "reset-custom-pattern": "Visszaállítás alapértelmezettre",
+              "preview": "Előnézet",
+              "first-day-of-week-label": "A hét első napja",
+              "first-day-of-week": {
+                "auto": "Automatikus",
+                "sunday": "Vasárnap",
+                "monday": "Hétfő",
+                "saturday": "Szombat"
+              },
+              "preset": {
+                "follow-language": "Nyelv szerint",
+                "iso": "ISO",
+                "us": "USA",
+                "eu": "Európai",
+                "custom": "Egyéni"
+              },
+              "token-guide": {
+                "hint": "A szó szerinti szöveget aposztrófok közé zárva (pl. 'at') változatlanul jelenítheted meg.",
+                "column-token": "Jelölő",
+                "column-description": "Leírás",
+                "column-example": "Példa",
+                "token": {
+                  "yyyy": "4 jegyű év",
+                  "yy": "2 jegyű év",
+                  "MMMM": "Hónap neve (teljes)",
+                  "MMM": "Hónap neve (rövid)",
+                  "MM": "2 jegyű hónap",
+                  "M": "Hónap száma",
+                  "EEEE": "Hét napja (teljes)",
+                  "EEE": "Hét napja (rövid)",
+                  "dd": "2 jegyű nap",
+                  "d": "Nap száma",
+                  "HH": "2 jegyű óra (24 órás)",
+                  "H": "Óra (24 órás)",
+                  "hh": "2 jegyű óra (12 órás)",
+                  "h": "Óra (12 órás)",
+                  "mm": "2 jegyű perc",
+                  "ss": "2 jegyű másodperc",
+                  "a": "DE/DU jelölő"
+                }
+              }
+            },
             "appearance": {
               "family": "Témacsalád",
               "mode": "Téma mód"
@@ -1361,6 +1406,7 @@
           "label": {
             "behavior": "Viselkedés",
             "language": "Nyelv",
+            "date-format": "Dátum és idő",
             "appearance": "Megjelenés",
             "startup": "Indítás",
             "save-path-input": "Mentési útvonal bevitel"
@@ -1767,6 +1813,7 @@
       "cancel": "Mégse",
       "clear": "Törlés",
       "clear-all": "Összes törlése",
+      "apply": "Alkalmaz",
       "today": "Ma",
       "connect": "Csatlakozás",
       "add-server": "Szerver hozzáadása",

@@ -246,4 +246,40 @@ describe('General', () => {
       expect(detail.querySelector('pre').textContent).toContain('Permission denied');
     });
   });
+
+  describe('date fields use the configured date format', () => {
+    function sectionValueFor(headerFragment: string): string {
+      const sections = Array.from(
+        fixture.nativeElement.querySelectorAll('.bb-section'),
+      ) as HTMLElement[];
+      const section = sections.find((el) =>
+        el.querySelector('.section-header')?.textContent?.includes(headerFragment),
+      );
+      return section?.querySelector('.section-value')?.textContent?.trim() ?? '';
+    }
+
+    beforeEach(() => {
+      mockDataService.torrent.set({
+        data: makeTorrent({ last_activity: 0, added_on: 1700000000, completion_on: 1700000000 }),
+        properties: makeProperties({ creation_date: 1700000000 }),
+      });
+      fixture.detectChanges();
+    });
+
+    it('renders blank for last-seen-complete when last_activity is 0', () => {
+      expect(sectionValueFor('last-seen-complete')).toBe('');
+    });
+
+    it('renders a configured-format date for added-on', () => {
+      expect(sectionValueFor('added-on')).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/);
+    });
+
+    it('renders a configured-format date for completed-on', () => {
+      expect(sectionValueFor('completed-on')).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/);
+    });
+
+    it('renders a configured-format date for created-on', () => {
+      expect(sectionValueFor('created-on')).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/);
+    });
+  });
 });

@@ -173,6 +173,26 @@
   }
 }
 
+@mixin bb-install-table-theming() {
+  .table {
+    --bs-table-color: var(--bs-body-color);
+    --bs-table-bg: transparent;
+    --bs-table-border-color: var(--bs-border-color);
+    --bs-table-striped-color: var(--bs-body-color);
+    --bs-table-striped-bg: color-mix(in srgb, var(--bb-accent) 6%, transparent);
+    --bs-table-active-color: var(--bs-body-color);
+    --bs-table-active-bg: color-mix(in srgb, var(--bb-accent) 18%, transparent);
+    --bs-table-hover-color: var(--bs-body-color);
+    --bs-table-hover-bg: color-mix(in srgb, var(--bb-accent) 10%, transparent);
+
+    color: var(--bs-table-color);
+  }
+
+  thead {
+    color: var(--bb-accent);
+  }
+}
+
 @mixin bb-install-range-variants($variants...) {
   .form-range {
     &::-webkit-slider-runnable-track {

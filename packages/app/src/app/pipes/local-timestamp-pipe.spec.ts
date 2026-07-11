@@ -1,10 +1,12 @@
+import { TestBed } from '@angular/core/testing';
 import { LocalTimestampPipe } from './local-timestamp-pipe';
 
 describe('LocalTimestampPipe', () => {
   let pipe: LocalTimestampPipe;
 
   beforeEach(() => {
-    pipe = new LocalTimestampPipe();
+    TestBed.configureTestingModule({ providers: [LocalTimestampPipe] });
+    pipe = TestBed.inject(LocalTimestampPipe);
   });
 
   it('creates an instance', () => {
@@ -43,5 +45,10 @@ describe('LocalTimestampPipe', () => {
   it('formats a numeric string timestamp the same as a number', () => {
     const ts = 1700000000;
     expect(pipe.transform(String(ts))).toBe(pipe.transform(ts));
+  });
+
+  it('formats an ISO datetime string', () => {
+    const result = pipe.transform('2024-01-05T13:07:00');
+    expect(result).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/);
   });
 });
