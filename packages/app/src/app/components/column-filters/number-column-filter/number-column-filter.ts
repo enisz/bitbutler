@@ -8,6 +8,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { IFilterAngularComp } from 'ag-grid-angular';
 import { IDoesFilterPassParams } from 'ag-grid-community';
 import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
+import { createFilterInstanceId } from '../filter-instance-id.utils';
 import { OperatorFilterBase } from '../operator-filter-base';
 import {
   NUMBER_FILTER_OPERATORS,
@@ -42,6 +43,7 @@ export class NumberColumnFilter
   private readonly languageChanged = toSignal(this.translateService.onLangChange);
 
   public readonly icons = { faCheck, faEraser };
+  public readonly instanceId = createFilterInstanceId('number-filter');
 
   draft: NumberFilterValue = createEmptyNumberValue();
   applied: NumberFilterValue = createEmptyNumberValue();
