@@ -1029,7 +1029,9 @@
       "label": {
         "value": "Value",
         "from": "From",
-        "to": "To"
+        "to": "To",
+        "operator": "Operator",
+        "unit": "Unit"
       },
       "set": {
         "filter-placeholder": "Filter...",

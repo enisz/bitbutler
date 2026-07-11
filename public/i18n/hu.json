@@ -1029,7 +1029,9 @@
       "label": {
         "value": "Érték",
         "from": "Ettől",
-        "to": "Eddig"
+        "to": "Eddig",
+        "operator": "Operátor",
+        "unit": "Mértékegység"
       },
       "set": {
         "filter-placeholder": "Szűrés...",
