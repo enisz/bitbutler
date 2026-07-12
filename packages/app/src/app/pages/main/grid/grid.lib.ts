@@ -18,6 +18,7 @@ import {
   ValueFormatterParams,
 } from 'ag-grid-community';
 import { GRID_SHARED_OPTIONS } from '../../../app.const';
+import { BooleanColumnFilter } from '../../../components/column-filters/boolean-column-filter/boolean-column-filter';
 import { DatepickerRangeFilter } from '../../../components/column-filters/datepicker-range-filter/datepicker-range-filter';
 import { NumberColumnFilter } from '../../../components/column-filters/number-column-filter/number-column-filter';
 import {
@@ -797,7 +798,7 @@ export function getGridColDefs(
       minWidth: 50,
       width: 150,
       cellRenderer: 'agCheckboxCellRenderer',
-      filter: 'agBooleanColumnFilter',
+      filter: BooleanColumnFilter,
       editable: false,
       hide: true,
     },
@@ -810,7 +811,7 @@ export function getGridColDefs(
       minWidth: 50,
       width: 225,
       cellRenderer: 'agCheckboxCellRenderer',
-      filter: 'agBooleanColumnFilter',
+      filter: BooleanColumnFilter,
       editable: false,
       hide: true,
     },
@@ -823,7 +824,7 @@ export function getGridColDefs(
       minWidth: 50,
       width: 155,
       cellRenderer: 'agCheckboxCellRenderer',
-      filter: 'agBooleanColumnFilter',
+      filter: BooleanColumnFilter,
       editable: false,
       hide: true,
     },
@@ -836,7 +837,7 @@ export function getGridColDefs(
       minWidth: 50,
       width: 180,
       cellRenderer: 'agCheckboxCellRenderer',
-      filter: 'agBooleanColumnFilter',
+      filter: BooleanColumnFilter,
       editable: false,
       hide: true,
     },
@@ -849,7 +850,7 @@ export function getGridColDefs(
       minWidth: 50,
       width: 255,
       cellRenderer: 'agCheckboxCellRenderer',
-      filter: 'agBooleanColumnFilter',
+      filter: BooleanColumnFilter,
       editable: false,
       hide: true,
     },
