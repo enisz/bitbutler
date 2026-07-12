@@ -1,6 +1,9 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NumberColumnFilter } from '../../../components/column-filters/number-column-filter/number-column-filter';
+import { SetColumnFilter } from '../../../components/column-filters/set-column-filter/set-column-filter';
+import { TextColumnFilter } from '../../../components/column-filters/text-column-filter/text-column-filter';
 import { QbTorrentTracker } from '../../../models/qbittorrent.model';
 import { ContextMenuEntry } from '../../../pages/main/grid/context-menu/context-menu.types';
 import { GridContextMenuService } from '../../../pages/main/grid/context-menu/grid-context-menu.service';
@@ -170,6 +173,25 @@ describe('Trackers', () => {
           'msg',
         ]),
       );
+    });
+
+    it('assigns NumberColumnFilter to tier, num_peers, num_seeds, num_leeches, and num_downloaded', () => {
+      const numberFilterCols = ['tier', 'num_peers', 'num_seeds', 'num_leeches', 'num_downloaded'];
+      for (const colId of numberFilterCols) {
+        expect(component.colDefs.find((c) => c.colId === colId)?.filter).toBe(NumberColumnFilter);
+      }
+    });
+
+    it('assigns TextColumnFilter to url', () => {
+      expect(component.colDefs.find((c) => c.colId === 'url')?.filter).toBe(TextColumnFilter);
+    });
+
+    it('assigns SetColumnFilter to status', () => {
+      expect(component.colDefs.find((c) => c.colId === 'status')?.filter).toBe(SetColumnFilter);
+    });
+
+    it('has no filter on msg', () => {
+      expect(component.colDefs.find((c) => c.colId === 'msg')?.filter).toBe(false);
     });
   });
 
