@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -7,20 +7,38 @@ import { TranslateModule } from '@ngx-translate/core';
 import { IFilterAngularComp } from 'ag-grid-angular';
 import { IAfterGuiAttachedParams, IDoesFilterPassParams, IFilterParams } from 'ag-grid-community';
 import { debounceTime, startWith } from 'rxjs/operators';
-import { TorrentStoreService, ValueCount } from '../../../services/torrent-store.service';
 import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
 import { createFilterInstanceId } from '../filter-instance-id.utils';
 
 const FILTER_DEBOUNCE_MS = 150;
 
-export type SetColumnFilterSource = 'state' | 'category' | 'tags';
+export interface ValueCount {
+  key: string;
+  label: string;
+  count: number;
+}
 
 export interface SetColumnFilterParams extends IFilterParams {
-  source: SetColumnFilterSource;
+  getItems: () => ValueCount[];
+  getValues?: (cellValue: unknown) => string[];
 }
 
 export interface SetFilterValue {
   values: string[];
+}
+
+export function buildValueCounts<T>(
+  rows: readonly T[],
+  getValue: (row: T) => string | null | undefined,
+): ValueCount[] {
+  const counts = new Map<string, number>();
+  for (const row of rows) {
+    const v = getValue(row);
+    if (v) counts.set(v, (counts.get(v) ?? 0) + 1);
+  }
+  return [...counts.entries()]
+    .map(([key, count]) => ({ key, label: key, count }))
+    .sort((a, b) => a.label.localeCompare(b.label));
 }
 
 @Component({
@@ -32,7 +50,6 @@ export interface SetFilterValue {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SetColumnFilter implements IFilterAngularComp {
-  private readonly store = inject(TorrentStoreService);
   private params!: SetColumnFilterParams;
 
   public readonly icons = { faCheck, faEraser, faXmark };
@@ -47,16 +64,7 @@ export class SetColumnFilter implements IFilterAngularComp {
     { initialValue: '' },
   );
 
-  readonly items = computed<ValueCount[]>(() => {
-    switch (this.params?.source) {
-      case 'category':
-        return this.store.categoriesWithCounts();
-      case 'tags':
-        return this.store.tagsWithCounts();
-      default:
-        return this.store.statesWithCounts();
-    }
-  });
+  readonly items = computed<ValueCount[]>(() => this.params?.getItems() ?? []);
 
   readonly filteredItems = computed<ValueCount[]>(() => {
     const text = this.searchText().toLowerCase();
@@ -73,15 +81,13 @@ export class SetColumnFilter implements IFilterAngularComp {
 
   doesFilterPass(params: IDoesFilterPassParams): boolean {
     if (this.appliedValues.size === 0) return true;
-    const cellValue = this.params.getValue(params.node) as string | null | undefined;
-    if (this.params.source === 'tags') {
-      const tags = (cellValue ?? '')
-        .split(',')
-        .map((t) => t.trim())
-        .filter(Boolean);
-      return tags.some((t) => this.appliedValues.has(t));
-    }
-    return cellValue != null && this.appliedValues.has(cellValue);
+    const cellValue = this.params.getValue(params.node);
+    const values = this.params.getValues
+      ? this.params.getValues(cellValue)
+      : cellValue != null
+        ? [String(cellValue)]
+        : [];
+    return values.some((v) => this.appliedValues.has(v));
   }
 
   getModel(): SetFilterValue | null {

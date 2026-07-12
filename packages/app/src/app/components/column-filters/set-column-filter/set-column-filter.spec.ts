@@ -1,39 +1,23 @@
-import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TorrentStoreService } from '../../../services/torrent-store.service';
-import { SetColumnFilter } from './set-column-filter';
+import { SetColumnFilter, buildValueCounts } from './set-column-filter';
 
 describe('SetColumnFilter', () => {
   let component: SetColumnFilter;
   let fixture: ComponentFixture<SetColumnFilter>;
   let mockParams: any;
-  let storeMock: {
-    categoriesWithCounts: ReturnType<
-      typeof signal<{ key: string; label: string; count: number }[]>
-    >;
-    tagsWithCounts: ReturnType<typeof signal<{ key: string; label: string; count: number }[]>>;
-    statesWithCounts: ReturnType<typeof signal<{ key: string; label: string; count: number }[]>>;
-  };
 
   beforeEach(async () => {
-    storeMock = {
-      categoriesWithCounts: signal([
+    mockParams = {
+      getItems: vi.fn().mockReturnValue([
         { key: 'Movies', label: 'Movies', count: 3 },
         { key: 'Books', label: 'Books', count: 1 },
       ]),
-      tagsWithCounts: signal([{ key: 'hd', label: 'hd', count: 2 }]),
-      statesWithCounts: signal([{ key: 'downloading', label: 'downloading', count: 5 }]),
-    };
-
-    mockParams = {
-      source: 'category',
       filterChangedCallback: vi.fn(),
       getValue: vi.fn((node: { data: any }) => node.data?.category),
     };
 
     await TestBed.configureTestingModule({
       imports: [SetColumnFilter],
-      providers: [{ provide: TorrentStoreService, useValue: storeMock }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SetColumnFilter);
@@ -47,7 +31,7 @@ describe('SetColumnFilter', () => {
     expect(component.isFilterActive()).toBe(false);
   });
 
-  it('reads its item list from the source given in filterParams', () => {
+  it('reads its item list from getItems', () => {
     expect(component.items()).toEqual([
       { key: 'Movies', label: 'Movies', count: 3 },
       { key: 'Books', label: 'Books', count: 1 },
@@ -70,7 +54,7 @@ describe('SetColumnFilter', () => {
       );
     });
 
-    it('matches an exact selected category using getValue', () => {
+    it('matches an exact selected value using getValue', () => {
       component.appliedValues = new Set(['Movies']);
       expect(component.doesFilterPass({ node: { data: { category: 'Movies' } } } as any)).toBe(
         true,
@@ -81,8 +65,12 @@ describe('SetColumnFilter', () => {
       );
     });
 
-    it('matches tags by overlap when source is tags', () => {
-      mockParams.source = 'tags';
+    it('matches multi-value cells by overlap when getValues is provided', () => {
+      mockParams.getValues = (cellValue: unknown) =>
+        String(cellValue ?? '')
+          .split(',')
+          .map((t) => t.trim())
+          .filter(Boolean);
       mockParams.getValue = vi.fn((node: { data: any }) => node.data?.tags);
       component.agInit(mockParams);
       component.appliedValues = new Set(['hd']);
@@ -134,5 +122,20 @@ describe('SetColumnFilter', () => {
       component.appliedValues = new Set(['Movies']);
       expect(component.isApplyDisabled()).toBe(false);
     });
+  });
+});
+
+describe('buildValueCounts', () => {
+  it('tallies and sorts distinct values by label', () => {
+    const rows = [{ country: 'US' }, { country: 'DE' }, { country: 'US' }, { country: undefined }];
+    expect(buildValueCounts(rows, (r) => r.country)).toEqual([
+      { key: 'DE', label: 'DE', count: 1 },
+      { key: 'US', label: 'US', count: 2 },
+    ]);
+  });
+
+  it('excludes null/undefined/empty values', () => {
+    const rows = [{ v: '' }, { v: null }, { v: undefined }];
+    expect(buildValueCounts(rows, (r: any) => r.v)).toEqual([]);
   });
 });
