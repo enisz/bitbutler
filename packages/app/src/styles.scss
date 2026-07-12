@@ -24,7 +24,6 @@
 .btn-split {
   display: inline-flex;
   align-items: stretch;
-  justify-content: space-between;
   padding: 0 !important;
   overflow: hidden;
 
@@ -42,6 +41,7 @@
   .btn-text {
     display: inline-flex;
     align-items: center;
+    flex: 1 1 auto;
     padding: var(--bs-btn-padding-y) var(--bs-btn-padding-x);
   }
 }
