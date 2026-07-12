@@ -35,6 +35,7 @@ import { ContextMenuService } from '../../../services/context-menu.service';
 import { FilterService, GRID_FILTER_INITIAL } from '../../../services/filter.service';
 import { GridStateService } from '../../../services/grid-state.service';
 import { SelectionStoreService } from '../../../services/selection-store.service';
+import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { UiFormatService } from '../../../services/ui-format.service';
 import { GridContextMenuService } from './context-menu/grid-context-menu.service';
 import { LoadingOverlay } from './overlays/loading-overlay/loading-overlay';
@@ -48,6 +49,7 @@ const tooltipFormattedValue: TooltipValueGetterFunc<Torrent, any> = (params) =>
 export function getGridColDefs(
   uiFormatService: UiFormatService,
   translateService: TranslateService,
+  torrentStoreService: TorrentStoreService,
 ): ColDef<Torrent>[] {
   return [
     {
@@ -439,7 +441,9 @@ export function getGridColDefs(
       width: 140,
       tooltipField: 'state',
       filter: SetColumnFilter,
-      filterParams: { source: 'state' } satisfies Partial<SetColumnFilterParams>,
+      filterParams: {
+        getItems: () => torrentStoreService.statesWithCounts(),
+      } satisfies Partial<SetColumnFilterParams>,
       hide: true,
     },
     {
@@ -463,7 +467,9 @@ export function getGridColDefs(
       minWidth: 50,
       width: 180,
       filter: SetColumnFilter,
-      filterParams: { source: 'category' } satisfies Partial<SetColumnFilterParams>,
+      filterParams: {
+        getItems: () => torrentStoreService.categoriesWithCounts(),
+      } satisfies Partial<SetColumnFilterParams>,
       hide: true,
     },
     {
@@ -475,7 +481,14 @@ export function getGridColDefs(
       minWidth: 50,
       width: 180,
       filter: SetColumnFilter,
-      filterParams: { source: 'tags' } satisfies Partial<SetColumnFilterParams>,
+      filterParams: {
+        getItems: () => torrentStoreService.tagsWithCounts(),
+        getValues: (v) =>
+          String(v ?? '')
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean),
+      } satisfies Partial<SetColumnFilterParams>,
       hide: true,
     },
     {
@@ -1023,6 +1036,7 @@ export function getGridOptions(
   gridContextMenuService: GridContextMenuService,
   uiFormatService: UiFormatService,
   translateService: TranslateService,
+  torrentStoreService: TorrentStoreService,
   opts: {
     getHasLoadedInitialState: () => boolean;
     getIsRestoringGridState: () => boolean;
@@ -1060,7 +1074,7 @@ export function getGridOptions(
     paginationPageSizeSelector: [50, 100, 500, 1000],
     paginationPageSize: 50,
     gridId: 'torrent-list',
-    columnDefs: getGridColDefs(uiFormatService, translateService),
+    columnDefs: getGridColDefs(uiFormatService, translateService, torrentStoreService),
     getRowId: (params: GetRowIdParams<Torrent, any>) => params.data.hash,
     rowClassRules: {
       'text-secondary bg-secondary-subtle bb-row-paused': (

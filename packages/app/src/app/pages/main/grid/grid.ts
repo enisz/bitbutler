@@ -34,6 +34,7 @@ import { QbPollingService } from '../../../services/qb-polling.service';
 import { SelectionStoreService } from '../../../services/selection-store.service';
 import { ThemeService } from '../../../services/theme.service';
 import { TorrentListGridSettingsService } from '../../../services/torrent-list-grid.settings.service';
+import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { UiFormatService } from '../../../services/ui-format.service';
 import { getTrackers, normalizeTracker } from '../tracker.utils';
 import { GridContextMenuService } from './context-menu/grid-context-menu.service';
@@ -77,6 +78,7 @@ export class Grid implements AfterViewInit {
   private readonly gridPinService = inject(GridPinService);
   private readonly qbPollingService = inject(QbPollingService);
   private readonly gridInlineEditService = inject(GridInlineEditService);
+  private readonly torrentStoreService = inject(TorrentStoreService);
 
   private readonly saveGridState$ = new Subject<void>();
 
@@ -115,6 +117,7 @@ export class Grid implements AfterViewInit {
       this.gridContextMenuService,
       this.uiFormatService,
       this.translateService,
+      this.torrentStoreService,
       {
         getHasLoadedInitialState: () => this.hasLoadedInitialState,
         getIsRestoringGridState: () => this.isRestoringGridState,
@@ -355,7 +358,7 @@ export class Grid implements AfterViewInit {
     const columnState = this.api.getColumnState();
     this.api.setGridOption(
       'columnDefs',
-      getGridColDefs(this.uiFormatService, this.translateService),
+      getGridColDefs(this.uiFormatService, this.translateService, this.torrentStoreService),
     );
     this.api.applyColumnState({ state: columnState, applyOrder: true });
   }

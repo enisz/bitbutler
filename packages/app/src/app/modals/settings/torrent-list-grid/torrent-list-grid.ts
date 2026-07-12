@@ -16,6 +16,7 @@ import {
 } from '../../../models/torrent-list-grid.model';
 import { getGridColDefs } from '../../../pages/main/grid/grid.lib';
 import { TorrentListGridSettingsService } from '../../../services/torrent-list-grid.settings.service';
+import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { UiFormatService } from '../../../services/ui-format.service';
 import { SettingsStateService } from '../settings-state.service';
 import { SettingsTabComponent } from '../settings.interface';
@@ -48,13 +49,18 @@ export class TorrentListGrid implements SettingsTabComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly translateService = inject(TranslateService);
   private readonly stateService = inject(SettingsStateService);
+  private readonly torrentStoreService = inject(TorrentStoreService);
 
   faTriangleExclamation = faTriangleExclamation;
 
   public settings$ = this.torrentListGridSettingsService.asObservable().pipe(
     take(1),
     tap((settings: TorrentListGridSettings) => {
-      const allDefs = getGridColDefs(this.uiFormatService, this.translateService);
+      const allDefs = getGridColDefs(
+        this.uiFormatService,
+        this.translateService,
+        this.torrentStoreService,
+      );
       this.initializeForm(settings, allDefs);
       this.loaded.set(true);
     }),
@@ -75,7 +81,11 @@ export class TorrentListGrid implements SettingsTabComponent {
   public loaded = signal(false);
 
   constructor() {
-    const allDefs: ColDef[] = getGridColDefs(this.uiFormatService, this.translateService);
+    const allDefs: ColDef[] = getGridColDefs(
+      this.uiFormatService,
+      this.translateService,
+      this.torrentStoreService,
+    );
     this.columns.set(
       allDefs
         .map((c) => ({ value: c.colId!, label: c.headerName ?? c.colId! }))
@@ -149,7 +159,11 @@ export class TorrentListGrid implements SettingsTabComponent {
   private async save(): Promise<void> {
     const settings = await firstValueFrom(this.torrentListGridSettingsService.asObservable());
     const formValue = this.torrentListGridForm.getRawValue();
-    const allDefs = getGridColDefs(this.uiFormatService, this.translateService);
+    const allDefs = getGridColDefs(
+      this.uiFormatService,
+      this.translateService,
+      this.torrentStoreService,
+    );
 
     const resolvedColumnState = (settings.columnState || []) as ColumnState[];
     const existingStateMap = new Map(resolvedColumnState.map((c) => [c.colId!, c]));

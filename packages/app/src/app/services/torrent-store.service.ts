@@ -1,5 +1,6 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { Subject } from 'rxjs';
+import { ValueCount } from '../components/column-filters/set-column-filter/set-column-filter';
 import { Maindata, QbCategory, Torrent, TorrentMap, TorrentState } from '../models/torrent.model';
 
 export interface TorrentTxnDelta {
@@ -15,11 +16,7 @@ export type TorrentFinishedEvent = {
   ts: number;
 };
 
-export interface ValueCount {
-  key: string;
-  label: string;
-  count: number;
-}
+export type { ValueCount };
 
 @Injectable({ providedIn: 'root' })
 export class TorrentStoreService {

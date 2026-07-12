@@ -7,6 +7,7 @@ import {
 } from '../models/torrent-list-grid.model';
 import { getGridColDefs } from '../pages/main/grid/grid.lib';
 import { BaseSettingsService } from './base-settings.service';
+import { TorrentStoreService } from './torrent-store.service';
 import { UiFormatService } from './ui-format.service';
 
 @Injectable({ providedIn: 'root' })
@@ -16,12 +17,17 @@ export class TorrentListGridSettingsService extends BaseSettingsService<TorrentL
 
   private readonly uiFormatService = inject(UiFormatService);
   private readonly translateService = inject(TranslateService);
+  private readonly torrentStoreService = inject(TorrentStoreService);
 
   protected override normalize(settings: TorrentListGridSettings): TorrentListGridSettings {
     const normalized = { ...settings };
 
     if (this.isColumnStateStrings(normalized.columnState)) {
-      const allDefs = getGridColDefs(this.uiFormatService, this.translateService);
+      const allDefs = getGridColDefs(
+        this.uiFormatService,
+        this.translateService,
+        this.torrentStoreService,
+      );
       const visibleIds = normalized.columnState as string[];
       const defsMap = new Map(allDefs.map((d) => [d.colId!, d]));
       const currentState: ColumnState[] = [];
