@@ -2,11 +2,9 @@ import type { ColumnState } from 'ag-grid-community';
 
 export interface PeersGridSettings {
   columnState: ColumnState[];
-  floatingFilters: boolean;
 }
 
 export const DEFAULT_PEERS_GRID_SETTINGS: PeersGridSettings = {
-  floatingFilters: false,
   columnState: [
     { colId: 'country_code', hide: false, width: 30 },
     { colId: 'country', hide: false },

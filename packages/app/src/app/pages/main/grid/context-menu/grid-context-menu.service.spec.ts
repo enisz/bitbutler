@@ -5,7 +5,6 @@ import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { TranslateService } from '@ngx-translate/core';
 import type { Torrent } from '../../../../models/torrent.model';
 import { CommandBusService } from '../../../../services/command-bus.service';
-import { FilterService } from '../../../../services/filter.service';
 import { PathService } from '../../../../services/path.service';
 import { QbService } from '../../../../services/qb.service';
 import { ServerStoreService } from '../../../../services/server-store.service';
@@ -69,7 +68,6 @@ function makeColumn(overrides: Record<string, any> = {}) {
 
 function makeApi(column: any, overrides: Record<string, any> = {}) {
   return {
-    getColumnDefs: vi.fn().mockReturnValue([{ colId: 'name', floatingFilter: false }]),
     getColumns: vi.fn().mockReturnValue([column]),
     getDisplayNameForColumn: vi.fn().mockReturnValue('Name'),
     applyColumnState: vi.fn(),
@@ -78,7 +76,6 @@ function makeApi(column: any, overrides: Record<string, any> = {}) {
     setColumnsPinned: vi.fn(),
     autoSizeColumns: vi.fn(),
     autoSizeAllColumns: vi.fn(),
-    updateGridOptions: vi.fn(),
     getColumn: vi.fn().mockReturnValue(column),
     ...overrides,
   };
@@ -90,7 +87,6 @@ describe('GridContextMenuService', () => {
   let clipboard: { copy: ReturnType<typeof vi.fn> };
   let qbService: { torrents: { files: ReturnType<typeof vi.fn> } };
   let pathService: { resolveLocalPath: ReturnType<typeof vi.fn> };
-  let filterService: { clearColumnFilter: ReturnType<typeof vi.fn> };
   let toastService: { danger: ReturnType<typeof vi.fn>; info: ReturnType<typeof vi.fn> };
   let translateService: { instant: ReturnType<typeof vi.fn> };
   let torrentExportService: { exportTorrentFiles: ReturnType<typeof vi.fn> };
@@ -100,7 +96,6 @@ describe('GridContextMenuService', () => {
     clipboard = { copy: vi.fn() };
     qbService = { torrents: { files: vi.fn().mockResolvedValue([{}, {}]) } };
     pathService = { resolveLocalPath: vi.fn().mockResolvedValue('/local/path') };
-    filterService = { clearColumnFilter: vi.fn() };
     toastService = { danger: vi.fn(), info: vi.fn() };
     translateService = { instant: vi.fn((key: string) => key) };
     torrentExportService = { exportTorrentFiles: vi.fn().mockResolvedValue(undefined) };
@@ -112,7 +107,6 @@ describe('GridContextMenuService', () => {
         { provide: Clipboard, useValue: clipboard },
         { provide: QbService, useValue: qbService },
         { provide: PathService, useValue: pathService },
-        { provide: FilterService, useValue: filterService },
         {
           provide: ServerStoreService,
           useValue: {
@@ -919,56 +913,6 @@ describe('GridContextMenuService', () => {
       });
     });
 
-    describe('filter items', () => {
-      it('open filter is disabled with a tooltip when the column has no filter', () => {
-        const { entries } = build({ getColDef: vi.fn().mockReturnValue({ colId: 'name' }) });
-        expect(findItem(entries, 'filter.open.name')?.disabled).toBe(true);
-        expect(findItem(entries, 'filter.open.name')?.tooltip).toBe(
-          'pages.main.grid.context-menu.tooltip.filter-not-supported',
-        );
-      });
-
-      it('open filter is enabled with no tooltip when column has a filter', () => {
-        const { entries } = build({ getColDef: vi.fn().mockReturnValue({ filter: true }) });
-        expect(findItem(entries, 'filter.open.name')?.disabled).toBeFalsy();
-        expect(findItem(entries, 'filter.open.name')?.tooltip).toBeUndefined();
-      });
-
-      it('clear filter is disabled with a tooltip when no filter is active', () => {
-        const { entries } = build({ isFilterActive: vi.fn().mockReturnValue(false) });
-        expect(findItem(entries, 'filter.clear.name')?.disabled).toBe(true);
-        expect(findItem(entries, 'filter.clear.name')?.tooltip).toBe(
-          'pages.main.grid.context-menu.tooltip.no-filter-active',
-        );
-      });
-
-      it('clear filter is enabled with no tooltip when column filter is active', () => {
-        const { entries } = build({ isFilterActive: vi.fn().mockReturnValue(true) });
-        expect(findItem(entries, 'filter.clear.name')?.disabled).toBeFalsy();
-        expect(findItem(entries, 'filter.clear.name')?.tooltip).toBeUndefined();
-      });
-
-      it('toggle floating filter shows "show" label when floating filters are inactive', () => {
-        const { entries } = build(
-          {},
-          { getColumnDefs: vi.fn().mockReturnValue([{ floatingFilter: false }]) },
-        );
-        expect(findItem(entries, 'filter.toggleFloating.name')?.label).toContain(
-          'show-floating-filters',
-        );
-      });
-
-      it('toggle floating filter shows "hide" label when floating filters are active', () => {
-        const { entries } = build(
-          {},
-          { getColumnDefs: vi.fn().mockReturnValue([{ floatingFilter: true }]) },
-        );
-        expect(findItem(entries, 'filter.toggleFloating.name')?.label).toContain(
-          'hide-floating-filters',
-        );
-      });
-    });
-
     describe('pin column items', () => {
       it('pin left is disabled with a tooltip when already pinned left', () => {
         const { entries } = build({ isPinnedLeft: vi.fn().mockReturnValue(true) });
@@ -1013,35 +957,6 @@ describe('GridContextMenuService', () => {
       });
     });
 
-    describe('floating filters toggle visibility', () => {
-      function buildWithOpts(opts: { enableFloatingFiltersToggle?: boolean }) {
-        const column = makeColumn();
-        const api = makeApi(column);
-        return service.buildHeaderMenu({ api, column } as any, opts);
-      }
-
-      it('is included when no opts are passed (default)', () => {
-        const { entries } = build();
-        expect(findItem(entries, 'filter.toggleFloating.name')).toBeDefined();
-      });
-
-      it('is included when enableFloatingFiltersToggle is true', () => {
-        const entries = buildWithOpts({ enableFloatingFiltersToggle: true });
-        expect(findItem(entries, 'filter.toggleFloating.name')).toBeDefined();
-      });
-
-      it('is excluded when enableFloatingFiltersToggle is false', () => {
-        const entries = buildWithOpts({ enableFloatingFiltersToggle: false });
-        expect(findItem(entries, 'filter.toggleFloating.name')).toBeUndefined();
-      });
-
-      it('other filter items remain present when toggle is disabled', () => {
-        const entries = buildWithOpts({ enableFloatingFiltersToggle: false });
-        expect(findItem(entries, 'filter.open.name')).toBeDefined();
-        expect(findItem(entries, 'filter.clear.name')).toBeDefined();
-      });
-    });
-
     describe('column toggle items', () => {
       it('visible columns have a checkmark icon', () => {
         const { entries } = build({ isVisible: vi.fn().mockReturnValue(true) });
@@ -1079,18 +994,6 @@ describe('GridContextMenuService', () => {
         expect(api.applyColumnState).toHaveBeenCalledWith({
           state: [{ colId: 'name', sort: null }],
         });
-      });
-
-      it('open filter action calls showColumnFilter', () => {
-        const { entries, api } = build();
-        (findItem(entries, 'filter.open.name')!.action as () => void)();
-        expect(api.showColumnFilter).toHaveBeenCalledWith('name');
-      });
-
-      it('clear filter action calls filterService.clearColumnFilter', () => {
-        const { entries } = build();
-        (findItem(entries, 'filter.clear.name')!.action as () => void)();
-        expect(filterService.clearColumnFilter).toHaveBeenCalledWith('name');
       });
 
       it('pin left action calls setColumnsPinned with left', () => {
@@ -1145,29 +1048,6 @@ describe('GridContextMenuService', () => {
         const { entries, api } = build();
         (findItem(entries, 'all.hide')!.action as () => void)();
         expect(api.setColumnsVisible).toHaveBeenCalledWith(['name'], false);
-      });
-
-      it('toggle floating filter action calls updateGridOptions and invokes the onFloatingFiltersToggle callback', async () => {
-        const onFloatingFiltersToggle = vi.fn().mockResolvedValue(undefined);
-        const column = makeColumn();
-        const api = makeApi(column, {
-          getColumnDefs: vi.fn().mockReturnValue([{ floatingFilter: false }]),
-        });
-        const entries = service.buildHeaderMenu({ api, column } as any, {
-          onFloatingFiltersToggle,
-        });
-        await (findItem(entries, 'filter.toggleFloating.name')!.action as () => Promise<void>)();
-        expect(api.updateGridOptions).toHaveBeenCalled();
-        expect(onFloatingFiltersToggle).toHaveBeenCalledWith(true);
-      });
-
-      it('toggle floating filter action calls updateGridOptions without a callback when none is provided', async () => {
-        const { entries, api } = build(
-          {},
-          { getColumnDefs: vi.fn().mockReturnValue([{ floatingFilter: false }]) },
-        );
-        await (findItem(entries, 'filter.toggleFloating.name')!.action as () => Promise<void>)();
-        expect(api.updateGridOptions).toHaveBeenCalled();
       });
     });
   });

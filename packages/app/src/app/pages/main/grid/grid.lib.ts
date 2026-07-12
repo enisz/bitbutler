@@ -1267,7 +1267,7 @@ export function getGridOptions(
         return;
       }
       contextMenuService.open({
-        items: gridContextMenuService.buildHeaderMenu(e, { enableFloatingFiltersToggle: false }),
+        items: gridContextMenuService.buildHeaderMenu(e),
         payload: {
           colId: e.column?.getId(),
           displayName: e.api.getDisplayNameForColumn(e.column as Column, 'header'),

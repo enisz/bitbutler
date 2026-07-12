@@ -73,10 +73,9 @@ describe('TrackersGridSettingsService', () => {
 
   it('should save column state under the service settings ID', async () => {
     const columnState = [{ colId: 'url', hide: false }];
-    await service.save({ columnState, floatingFilters: false });
+    await service.save({ columnState });
     expect(mockSettingsService.set).toHaveBeenCalledWith((service as any).SETTINGS_ID, {
       columnState,
-      floatingFilters: false,
     });
   });
 

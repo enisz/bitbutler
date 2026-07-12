@@ -99,15 +99,6 @@ export class Peers implements TorrentDetailTabComponent, OnInit {
     try {
       const settings = await this.peersGridSettingsService.load();
       this.gridApi.applyColumnState({ state: settings.columnState, applyOrder: true });
-      const floatingFilters = settings.floatingFilters ?? false;
-      const currentDefs = this.gridApi.getColumnDefs() ?? [];
-      const newDefs = currentDefs.map((d) => {
-        const colDef = { ...(d as ColDef<QbTorrentPeer>) };
-        if (colDef.floatingFilter === false) return colDef;
-        colDef.floatingFilter = floatingFilters ? true : undefined;
-        return colDef;
-      });
-      this.gridApi.updateGridOptions({ columnDefs: newDefs });
     } finally {
       this.isRestoringState = false;
     }
@@ -210,12 +201,7 @@ export class Peers implements TorrentDetailTabComponent, OnInit {
       onColumnHeaderContextMenu: (e: ColumnHeaderContextMenuEvent<QbTorrentPeer>) => {
         if (!e.column) return;
         this.contextMenuService.open({
-          items: this.gridContextMenuService.buildHeaderMenu(e, {
-            onFloatingFiltersToggle: async (newState: boolean) => {
-              const settings = await this.peersGridSettingsService.load();
-              await this.peersGridSettingsService.save({ ...settings, floatingFilters: newState });
-            },
-          }),
+          items: this.gridContextMenuService.buildHeaderMenu(e),
           payload: {
             colId: e.column.getId(),
             displayName: e.api.getDisplayNameForColumn(e.column as Column, 'header'),

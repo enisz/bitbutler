@@ -185,10 +185,6 @@ export class FilterService {
     });
   }
 
-  public clearColumnFilter(colId: string): void {
-    this.setColumnFilter(colId, null);
-  }
-
   public clearAllColumnFilters(): void {
     this._columns.set({});
   }

@@ -176,12 +176,10 @@ describe('Trackers', () => {
   describe('column state management', () => {
     it('restoreColumnState loads settings and applies column state', async () => {
       const state = [{ colId: 'tier', hide: false, width: 70 }];
-      mockSettingsService.load.mockResolvedValue({ columnState: state, floatingFilters: false });
+      mockSettingsService.load.mockResolvedValue({ columnState: state });
       const mockApi = {
         applyColumnState: vi.fn(),
         getColumnState: vi.fn().mockReturnValue([]),
-        getColumnDefs: vi.fn().mockReturnValue([]),
-        updateGridOptions: vi.fn(),
       };
       (component as any).gridApi = mockApi;
 
