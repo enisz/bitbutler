@@ -28,6 +28,7 @@ import {
 } from '../../../components/column-filters/set-column-filter/set-column-filter';
 import { SizeColumnFilter } from '../../../components/column-filters/size-column-filter/size-column-filter';
 import { TextColumnFilter } from '../../../components/column-filters/text-column-filter/text-column-filter';
+import { TimeLimitColumnFilter } from '../../../components/column-filters/time-limit-column-filter/time-limit-column-filter';
 import { Torrent, TorrentState } from '../../../models/torrent.model';
 import { ContextMenuService } from '../../../services/context-menu.service';
 import { FilterService, GRID_FILTER_INITIAL } from '../../../services/filter.service';
@@ -600,6 +601,7 @@ export function getGridColDefs(
       width: 155,
       cellClass: 'tabular-nums',
       valueFormatter: uiFormatService.timeLimit,
+      filter: TimeLimitColumnFilter,
       hide: true,
     },
     {
@@ -823,6 +825,7 @@ export function getGridColDefs(
       width: 230,
       cellClass: 'tabular-nums',
       valueFormatter: uiFormatService.timeLimit,
+      filter: TimeLimitColumnFilter,
       hide: true,
     },
     {
@@ -853,6 +856,7 @@ export function getGridColDefs(
       width: 285,
       cellClass: 'tabular-nums',
       valueFormatter: uiFormatService.timeLimit,
+      filter: TimeLimitColumnFilter,
       hide: true,
     },
     {
@@ -885,6 +889,7 @@ export function getGridColDefs(
       width: 255,
       cellClass: 'tabular-nums',
       valueFormatter: uiFormatService.timeLimit,
+      filter: TimeLimitColumnFilter,
       hide: true,
     },
     {
