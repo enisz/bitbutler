@@ -20,6 +20,7 @@ import {
 import { GRID_SHARED_OPTIONS } from '../../../app.const';
 import { BooleanColumnFilter } from '../../../components/column-filters/boolean-column-filter/boolean-column-filter';
 import { DatepickerRangeFilter } from '../../../components/column-filters/datepicker-range-filter/datepicker-range-filter';
+import { DurationColumnFilter } from '../../../components/column-filters/duration-column-filter/duration-column-filter';
 import { NumberColumnFilter } from '../../../components/column-filters/number-column-filter/number-column-filter';
 import {
   SetColumnFilter,
@@ -388,6 +389,7 @@ export function getGridColDefs(
         params.data?.state === 'forcedUP'
           ? ''
           : uiFormatService.durationSeconds(params, 2),
+      filter: DurationColumnFilter,
     },
     {
       colId: 'eta_raw',
@@ -571,6 +573,7 @@ export function getGridColDefs(
       width: 250,
       valueFormatter: (params: ValueFormatterParams<Torrent, number>) =>
         uiFormatService.durationSeconds(params, 2),
+      filter: DurationColumnFilter,
       hide: true,
     },
     {
@@ -625,6 +628,7 @@ export function getGridColDefs(
       width: 200,
       valueFormatter: (params: ValueFormatterParams<Torrent, number>) =>
         uiFormatService.durationSeconds(params, 2),
+      filter: DurationColumnFilter,
       hide: true,
     },
     {
