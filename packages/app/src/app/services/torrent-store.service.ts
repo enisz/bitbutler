@@ -1,6 +1,4 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { TranslateService } from '@ngx-translate/core';
+import { Injectable, computed, signal } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Maindata, QbCategory, Torrent, TorrentMap, TorrentState } from '../models/torrent.model';
 
@@ -25,9 +23,6 @@ export interface ValueCount {
 
 @Injectable({ providedIn: 'root' })
 export class TorrentStoreService {
-  private readonly translateService = inject(TranslateService);
-  private readonly languageChanged = toSignal(this.translateService.onLangChange);
-
   private readonly _torrents = signal<TorrentMap>(new Map());
   private readonly _categories = signal<Map<string, QbCategory>>(new Map());
   private readonly _tags = signal<Set<string>>(new Set());
@@ -82,12 +77,11 @@ export class TorrentStoreService {
   });
 
   readonly statesWithCounts = computed<ValueCount[]>(() => {
-    this.languageChanged();
     const counts = this.countsByState();
     return Object.entries(counts)
       .map(([key, count]) => ({
         key,
-        label: this.translateService.instant('torrent.state.' + key),
+        label: key,
         count: count ?? 0,
       }))
       .sort((a, b) => a.label.localeCompare(b.label));

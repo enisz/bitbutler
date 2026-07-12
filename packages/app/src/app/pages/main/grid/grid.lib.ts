@@ -433,8 +433,6 @@ export function getGridColDefs(
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.state_hr'),
       minWidth: 50,
       width: 220,
-      filter: SetColumnFilter,
-      filterParams: { source: 'state' } satisfies Partial<SetColumnFilterParams>,
       hide: true,
       valueFormatter: (params: ValueFormatterParams<Torrent, TorrentState>): string =>
         params.value ? translateService.instant('torrent.state.' + params.value) : '',

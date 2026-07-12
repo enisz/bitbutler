@@ -301,8 +301,8 @@ describe('TorrentStoreService', () => {
       );
 
       expect(service.statesWithCounts()).toEqual([
-        { key: 'downloading', label: 'torrent.state.downloading', count: 2 },
-        { key: 'uploading', label: 'torrent.state.uploading', count: 1 },
+        { key: 'downloading', label: 'downloading', count: 2 },
+        { key: 'uploading', label: 'uploading', count: 1 },
       ]);
     });
   });
