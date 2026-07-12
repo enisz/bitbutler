@@ -56,7 +56,6 @@ export function getGridColDefs(
       width: 590,
       tooltipField: 'name',
       filter: TextColumnFilter,
-      floatingFilter: false,
     },
     {
       colId: 'hash',
@@ -68,7 +67,6 @@ export function getGridColDefs(
       width: 340,
       cellRenderer: CodeCellRenderer,
       filter: TextColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -91,7 +89,6 @@ export function getGridColDefs(
       width: 110,
       cellClass: 'tabular-nums',
       filter: NumberColumnFilter,
-      floatingFilter: false,
       hide: true,
       valueFormatter: (params: ValueFormatterParams<Torrent, number>): string =>
         params.value != null ? (params.value * 100).toFixed(1) + '%' : '',
@@ -106,7 +103,6 @@ export function getGridColDefs(
       width: 100,
       cellClass: 'tabular-nums',
       filter: NumberColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -120,7 +116,6 @@ export function getGridColDefs(
       valueFormatter: uiFormatService.fileSize,
       cellClass: 'tabular-nums',
       filter: SizeColumnFilter,
-      floatingFilter: false,
     },
     {
       colId: 'size_raw',
@@ -132,7 +127,6 @@ export function getGridColDefs(
       width: 135,
       cellClass: 'tabular-nums',
       filter: NumberColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -146,7 +140,6 @@ export function getGridColDefs(
       valueFormatter: uiFormatService.fileSize,
       cellClass: 'tabular-nums',
       filter: SizeColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -159,7 +152,6 @@ export function getGridColDefs(
       width: 135,
       cellClass: 'tabular-nums',
       filter: NumberColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -173,7 +165,6 @@ export function getGridColDefs(
       valueFormatter: uiFormatService.fileSize,
       cellClass: 'tabular-nums',
       filter: SizeColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -186,7 +177,6 @@ export function getGridColDefs(
       width: 135,
       cellClass: 'tabular-nums',
       filter: NumberColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -200,7 +190,6 @@ export function getGridColDefs(
       valueFormatter: uiFormatService.fileSize,
       cellClass: 'tabular-nums',
       filter: SizeColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -213,7 +202,6 @@ export function getGridColDefs(
       width: 130,
       cellClass: 'tabular-nums',
       filter: NumberColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -227,7 +215,6 @@ export function getGridColDefs(
       valueFormatter: uiFormatService.fileSize,
       cellClass: 'tabular-nums',
       filter: SizeColumnFilter,
-      floatingFilter: false,
     },
     {
       colId: 'downloaded_raw',
@@ -239,7 +226,6 @@ export function getGridColDefs(
       width: 150,
       cellClass: 'tabular-nums',
       filter: NumberColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -255,7 +241,6 @@ export function getGridColDefs(
       valueFormatter: uiFormatService.fileSize,
       cellClass: 'tabular-nums',
       filter: SizeColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -272,7 +257,6 @@ export function getGridColDefs(
       width: 195,
       cellClass: 'tabular-nums',
       filter: NumberColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -286,7 +270,6 @@ export function getGridColDefs(
       valueFormatter: uiFormatService.fileSize,
       cellClass: 'tabular-nums',
       filter: SizeColumnFilter,
-      floatingFilter: false,
     },
     {
       colId: 'uploaded_raw',
@@ -298,7 +281,6 @@ export function getGridColDefs(
       width: 150,
       cellClass: 'tabular-nums',
       filter: NumberColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -312,7 +294,6 @@ export function getGridColDefs(
       valueFormatter: uiFormatService.fileSize,
       cellClass: 'tabular-nums',
       filter: SizeColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -327,7 +308,6 @@ export function getGridColDefs(
       width: 175,
       cellClass: 'tabular-nums',
       filter: NumberColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -341,7 +321,6 @@ export function getGridColDefs(
       valueFormatter: uiFormatService.fileSizePerSecond,
       cellClass: 'tabular-nums',
       filter: SizeColumnFilter,
-      floatingFilter: false,
     },
     {
       colId: 'dlspeed_raw',
@@ -353,7 +332,6 @@ export function getGridColDefs(
       width: 165,
       cellClass: 'tabular-nums',
       filter: NumberColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -367,7 +345,6 @@ export function getGridColDefs(
       valueFormatter: uiFormatService.fileSizePerSecond,
       cellClass: 'tabular-nums',
       filter: SizeColumnFilter,
-      floatingFilter: false,
     },
     {
       colId: 'upspeed_raw',
@@ -379,7 +356,6 @@ export function getGridColDefs(
       width: 165,
       cellClass: 'tabular-nums',
       filter: NumberColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -393,7 +369,6 @@ export function getGridColDefs(
       valueFormatter: uiFormatService.ratio,
       cellClass: 'tabular-nums',
       filter: NumberColumnFilter,
-      floatingFilter: false,
     },
     {
       colId: 'eta',
@@ -424,7 +399,6 @@ export function getGridColDefs(
       width: 100,
       cellClass: 'tabular-nums',
       filter: NumberColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -437,7 +411,6 @@ export function getGridColDefs(
       width: 170,
       valueFormatter: uiFormatService.localTimestamp,
       filter: DatepickerRangeFilter,
-      floatingFilter: false,
       sort: 'desc',
       cellClass: 'tabular-nums',
     },
@@ -451,7 +424,6 @@ export function getGridColDefs(
       tooltipField: 'state',
       filter: SetColumnFilter,
       filterParams: { source: 'state' } satisfies Partial<SetColumnFilterParams>,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -463,7 +435,6 @@ export function getGridColDefs(
       width: 220,
       filter: SetColumnFilter,
       filterParams: { source: 'state' } satisfies Partial<SetColumnFilterParams>,
-      floatingFilter: false,
       hide: true,
       valueFormatter: (params: ValueFormatterParams<Torrent, TorrentState>): string =>
         params.value ? translateService.instant('torrent.state.' + params.value) : '',
@@ -479,7 +450,6 @@ export function getGridColDefs(
       width: 180,
       filter: SetColumnFilter,
       filterParams: { source: 'category' } satisfies Partial<SetColumnFilterParams>,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -492,7 +462,6 @@ export function getGridColDefs(
       width: 180,
       filter: SetColumnFilter,
       filterParams: { source: 'tags' } satisfies Partial<SetColumnFilterParams>,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -504,7 +473,6 @@ export function getGridColDefs(
       minWidth: 50,
       width: 590,
       filter: TextColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -517,7 +485,6 @@ export function getGridColDefs(
       width: 115,
       cellClass: 'tabular-nums',
       filter: NumberColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -531,7 +498,6 @@ export function getGridColDefs(
       valueFormatter: uiFormatService.fileSizePerSecond,
       cellClass: 'tabular-nums',
       filter: SizeColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -544,7 +510,6 @@ export function getGridColDefs(
       width: 150,
       cellClass: 'tabular-nums',
       filter: NumberColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -558,7 +523,6 @@ export function getGridColDefs(
       valueFormatter: uiFormatService.fileSizePerSecond,
       cellClass: 'tabular-nums',
       filter: SizeColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -571,7 +535,6 @@ export function getGridColDefs(
       width: 130,
       cellClass: 'tabular-nums',
       filter: NumberColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -585,7 +548,6 @@ export function getGridColDefs(
       cellClass: 'tabular-nums',
       valueFormatter: uiFormatService.ratioLimit,
       filter: NumberColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -599,7 +561,6 @@ export function getGridColDefs(
       cellClass: 'tabular-nums',
       valueFormatter: uiFormatService.ratioLimit,
       filter: NumberColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -624,7 +585,6 @@ export function getGridColDefs(
       width: 150,
       cellClass: 'tabular-nums',
       filter: NumberColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -679,7 +639,6 @@ export function getGridColDefs(
       width: 150,
       cellClass: 'tabular-nums',
       filter: NumberColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -692,7 +651,6 @@ export function getGridColDefs(
       width: 185,
       valueFormatter: uiFormatService.localTimestamp,
       filter: DatepickerRangeFilter,
-      floatingFilter: false,
       cellClass: 'tabular-nums',
       hide: true,
     },
@@ -706,7 +664,6 @@ export function getGridColDefs(
       width: 185,
       valueFormatter: uiFormatService.localTimestamp,
       filter: DatepickerRangeFilter,
-      floatingFilter: false,
       cellClass: 'tabular-nums',
       hide: true,
     },
@@ -720,7 +677,6 @@ export function getGridColDefs(
       width: 165,
       valueFormatter: uiFormatService.localTimestamp,
       filter: DatepickerRangeFilter,
-      floatingFilter: false,
       cellClass: 'tabular-nums',
       hide: true,
     },
@@ -734,7 +690,6 @@ export function getGridColDefs(
       width: 100,
       cellClass: 'tabular-nums',
       filter: NumberColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -747,7 +702,6 @@ export function getGridColDefs(
       width: 120,
       cellClass: 'tabular-nums',
       filter: NumberColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -760,7 +714,6 @@ export function getGridColDefs(
       width: 125,
       cellClass: 'tabular-nums',
       filter: NumberColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -773,7 +726,6 @@ export function getGridColDefs(
       width: 140,
       cellClass: 'tabular-nums',
       filter: NumberColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -786,7 +738,6 @@ export function getGridColDefs(
       width: 130,
       cellClass: 'tabular-nums',
       filter: NumberColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -887,7 +838,6 @@ export function getGridColDefs(
       width: 150,
       cellClass: 'tabular-nums',
       filter: NumberColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -920,7 +870,6 @@ export function getGridColDefs(
       width: 180,
       cellClass: 'tabular-nums',
       filter: NumberColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -953,7 +902,6 @@ export function getGridColDefs(
       width: 180,
       cellClass: 'tabular-nums',
       filter: NumberColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -965,7 +913,6 @@ export function getGridColDefs(
       minWidth: 50,
       width: 1070,
       filter: TextColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -977,7 +924,6 @@ export function getGridColDefs(
       minWidth: 50,
       width: 365,
       filter: TextColumnFilter,
-      floatingFilter: false,
     },
     {
       colId: 'download_path',
@@ -988,7 +934,6 @@ export function getGridColDefs(
       minWidth: 50,
       width: 360,
       filter: TextColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -1000,7 +945,6 @@ export function getGridColDefs(
       minWidth: 50,
       width: 1010,
       filter: TextColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -1013,7 +957,6 @@ export function getGridColDefs(
       width: 340,
       cellRenderer: CodeCellRenderer,
       filter: TextColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
     {
@@ -1026,7 +969,6 @@ export function getGridColDefs(
       width: 340,
       cellRenderer: CodeCellRenderer,
       filter: TextColumnFilter,
-      floatingFilter: false,
       hide: true,
     },
   ];
@@ -1270,7 +1212,7 @@ export function getGridOptions(
         return;
       }
       contextMenuService.open({
-        items: gridContextMenuService.buildHeaderMenu(e),
+        items: gridContextMenuService.buildHeaderMenu(e, { enableFloatingFiltersToggle: false }),
         payload: {
           colId: e.column?.getId(),
           displayName: e.api.getDisplayNameForColumn(e.column as Column, 'header'),
