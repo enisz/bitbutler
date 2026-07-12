@@ -1036,6 +1036,10 @@
       "set": {
         "filter-placeholder": "Szűrés...",
         "no-matches": "Nincs egyező érték"
+      },
+      "boolean": {
+        "true": "Igaz",
+        "false": "Hamis"
       }
     }
   },

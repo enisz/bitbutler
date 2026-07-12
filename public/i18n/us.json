@@ -1036,6 +1036,10 @@
       "set": {
         "filter-placeholder": "Filter...",
         "no-matches": "No matching values"
+      },
+      "boolean": {
+        "true": "True",
+        "false": "False"
       }
     }
   },
