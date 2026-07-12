@@ -1564,7 +1564,6 @@
             "animate-rows": "Sorok animálása",
             "pagination": "Oldalszámozás",
             "compact-rows": "Kompakt sorok",
-            "floating-filters": "Lebegő szűrők",
             "pause-on-modal": "Szüneteltetés modál esetén",
             "row-double-click": {
               "title": "Dupla kattintás viselkedése",
@@ -1594,10 +1593,6 @@
             "compact-rows": {
               "title": "Kompakt sorok",
               "description": "Csökkenti a sorok magasságát és a cellák belső margóját a torrent listában, hogy több adat férjen el egyszerre."
-            },
-            "floating-filters": {
-              "title": "Lebegő szűrők",
-              "description": "Egy szűrősor jelenik meg az oszlopfejlécek alatt. Ez az oszlopfejléc helyi menüjéből is kapcsolható oszloponként."
             },
             "pause-on-modal": {
               "title": "Lekérdezés szüneteltetése modál esetén",

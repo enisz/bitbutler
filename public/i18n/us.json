@@ -1564,7 +1564,6 @@
             "animate-rows": "Animate Rows",
             "pagination": "Pagination",
             "compact-rows": "Compact Rows",
-            "floating-filters": "Floating Filters",
             "pause-on-modal": "Pause on Modal",
             "row-double-click": {
               "title": "Row double click behavior",
@@ -1594,10 +1593,6 @@
             "compact-rows": {
               "title": "Compact Rows",
               "description": "Reduces the row height and cell padding in the torrent list for a denser view."
-            },
-            "floating-filters": {
-              "title": "Floating Filters",
-              "description": "Shows an inline filter row beneath the column headers. This can also be toggled per-column from the column header context menu."
             },
             "pause-on-modal": {
               "title": "Pause Polling on Modal",
