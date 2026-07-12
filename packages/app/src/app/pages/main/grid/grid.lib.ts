@@ -614,7 +614,7 @@ export function getGridColDefs(
       minWidth: 50,
       width: 155,
       cellClass: 'tabular-nums',
-      filter: 'agNumberColumnFilter',
+      filter: NumberColumnFilter,
       hide: true,
     },
     {
@@ -743,7 +743,6 @@ export function getGridColDefs(
     {
       colId: 'auto_tmm',
       field: 'auto_tmm',
-      tooltipField: 'auto_tmm',
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.auto_tmm'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.auto_tmm'),
       minWidth: 50,
@@ -756,7 +755,6 @@ export function getGridColDefs(
     {
       colId: 'seq_dl',
       field: 'seq_dl',
-      tooltipField: 'seq_dl',
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.seq_dl'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.seq_dl'),
       minWidth: 50,
@@ -769,7 +767,6 @@ export function getGridColDefs(
     {
       colId: 'force_start',
       field: 'force_start',
-      tooltipField: 'force_start',
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.force_start'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.force_start'),
       minWidth: 50,
@@ -782,7 +779,6 @@ export function getGridColDefs(
     {
       colId: 'super_seeding',
       field: 'super_seeding',
-      tooltipField: 'super_seeding',
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.super_seeding'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.super_seeding'),
       minWidth: 50,
@@ -795,7 +791,6 @@ export function getGridColDefs(
     {
       colId: 'f_l_piece_prio',
       field: 'f_l_piece_prio',
-      tooltipField: 'f_l_piece_prio',
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.f_l_piece_prio'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.f_l_piece_prio'),
       minWidth: 50,
@@ -812,6 +807,8 @@ export function getGridColDefs(
       headerName: translateService.instant('pages.main.grid.grid-lib.col-def.availability'),
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.availability'),
       width: 200,
+      cellClass: 'tabular-nums',
+      filter: NumberColumnFilter,
       hide: true,
     },
     {
