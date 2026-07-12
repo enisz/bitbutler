@@ -45,7 +45,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { TranslateService } from '@ngx-translate/core';
 import type { ColDef, Column, ColumnHeaderContextMenuEvent } from 'ag-grid-community';
-import { filter, firstValueFrom } from 'rxjs';
 import { CommandBusService } from '../../../../services/command-bus.service';
 import { FilterService } from '../../../../services/filter.service';
 import { PathService } from '../../../../services/path.service';
@@ -53,7 +52,6 @@ import { QbService } from '../../../../services/qb.service';
 import { ServerStoreService } from '../../../../services/server-store.service';
 import { ToastService } from '../../../../services/toast.service';
 import { TorrentExportService } from '../../../../services/torrent-export.service';
-import { TorrentListGridSettingsService } from '../../../../services/torrent-list-grid.settings.service';
 import { ContextMenuEntry, GridContextMenuData } from './context-menu.types';
 
 @Injectable({ providedIn: 'root' })
@@ -65,7 +63,6 @@ export class GridContextMenuService {
   private readonly qbService = inject(QbService);
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly toastService = inject(ToastService);
-  private readonly torrentListGridSettingsService = inject(TorrentListGridSettingsService);
   private readonly torrentExportService = inject(TorrentExportService);
   private readonly translateService = inject(TranslateService);
 
@@ -718,19 +715,7 @@ export class GridContextMenuService {
                       return colDef;
                     });
                     api.updateGridOptions({ columnDefs: newDefs });
-                    if (opts.onFloatingFiltersToggle) {
-                      await opts.onFloatingFiltersToggle(!isActive);
-                    } else {
-                      const settings = await firstValueFrom(
-                        this.torrentListGridSettingsService
-                          .asObservable()
-                          .pipe(filter((s): s is NonNullable<typeof s> => s !== null)),
-                      );
-                      await this.torrentListGridSettingsService.save({
-                        ...settings,
-                        floatingFilters: !isActive,
-                      });
-                    }
+                    await opts.onFloatingFiltersToggle?.(!isActive);
                   },
                 },
               ]

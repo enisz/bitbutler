@@ -3,7 +3,6 @@ import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { TranslateService } from '@ngx-translate/core';
-import { of } from 'rxjs';
 import type { Torrent } from '../../../../models/torrent.model';
 import { CommandBusService } from '../../../../services/command-bus.service';
 import { FilterService } from '../../../../services/filter.service';
@@ -12,7 +11,6 @@ import { QbService } from '../../../../services/qb.service';
 import { ServerStoreService } from '../../../../services/server-store.service';
 import { ToastService } from '../../../../services/toast.service';
 import { TorrentExportService } from '../../../../services/torrent-export.service';
-import { TorrentListGridSettingsService } from '../../../../services/torrent-list-grid.settings.service';
 import type { ContextMenuEntry, GridContextMenuData } from './context-menu.types';
 import { GridContextMenuService } from './grid-context-menu.service';
 
@@ -124,10 +122,6 @@ describe('GridContextMenuService', () => {
         },
         { provide: ToastService, useValue: toastService },
         { provide: TorrentExportService, useValue: torrentExportService },
-        {
-          provide: TorrentListGridSettingsService,
-          useValue: { asObservable: vi.fn(), save: vi.fn() },
-        },
         { provide: TranslateService, useValue: translateService },
       ],
     });
@@ -1153,18 +1147,27 @@ describe('GridContextMenuService', () => {
         expect(api.setColumnsVisible).toHaveBeenCalledWith(['name'], false);
       });
 
-      it('toggle floating filter action calls updateGridOptions and saves floatingFilters state', async () => {
-        const gridSettings = TestBed.inject(TorrentListGridSettingsService) as any;
-        gridSettings.asObservable.mockReturnValue(of({ floatingFilters: false }));
+      it('toggle floating filter action calls updateGridOptions and invokes the onFloatingFiltersToggle callback', async () => {
+        const onFloatingFiltersToggle = vi.fn().mockResolvedValue(undefined);
+        const column = makeColumn();
+        const api = makeApi(column, {
+          getColumnDefs: vi.fn().mockReturnValue([{ floatingFilter: false }]),
+        });
+        const entries = service.buildHeaderMenu({ api, column } as any, {
+          onFloatingFiltersToggle,
+        });
+        await (findItem(entries, 'filter.toggleFloating.name')!.action as () => Promise<void>)();
+        expect(api.updateGridOptions).toHaveBeenCalled();
+        expect(onFloatingFiltersToggle).toHaveBeenCalledWith(true);
+      });
+
+      it('toggle floating filter action calls updateGridOptions without a callback when none is provided', async () => {
         const { entries, api } = build(
           {},
           { getColumnDefs: vi.fn().mockReturnValue([{ floatingFilter: false }]) },
         );
         await (findItem(entries, 'filter.toggleFloating.name')!.action as () => Promise<void>)();
         expect(api.updateGridOptions).toHaveBeenCalled();
-        expect(gridSettings.save).toHaveBeenCalledWith(
-          expect.objectContaining({ floatingFilters: true }),
-        );
       });
     });
   });
