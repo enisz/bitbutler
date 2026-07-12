@@ -22,6 +22,7 @@ import { BooleanColumnFilter } from '../../../components/column-filters/boolean-
 import { DatepickerRangeFilter } from '../../../components/column-filters/datepicker-range-filter/datepicker-range-filter';
 import { DurationColumnFilter } from '../../../components/column-filters/duration-column-filter/duration-column-filter';
 import { NumberColumnFilter } from '../../../components/column-filters/number-column-filter/number-column-filter';
+import { RatioLimitColumnFilter } from '../../../components/column-filters/ratio-limit-column-filter/ratio-limit-column-filter';
 import {
   SetColumnFilter,
   SetColumnFilterParams,
@@ -373,6 +374,18 @@ export function getGridColDefs(
       filter: NumberColumnFilter,
     },
     {
+      colId: 'ratio_raw',
+      field: 'ratio',
+      tooltipField: 'ratio',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.ratio_raw'),
+      headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.ratio_raw'),
+      minWidth: 50,
+      width: 105,
+      cellClass: 'tabular-nums',
+      filter: NumberColumnFilter,
+      hide: true,
+    },
+    {
       colId: 'eta',
       field: 'eta',
       tooltipValueGetter: tooltipFormattedValue,
@@ -548,6 +561,18 @@ export function getGridColDefs(
       width: 125,
       cellClass: 'tabular-nums',
       valueFormatter: uiFormatService.ratioLimit,
+      filter: RatioLimitColumnFilter,
+      hide: true,
+    },
+    {
+      colId: 'max_ratio_raw',
+      field: 'max_ratio',
+      tooltipField: 'max_ratio',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.max_ratio_raw'),
+      headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.max_ratio_raw'),
+      minWidth: 50,
+      width: 125,
+      cellClass: 'tabular-nums',
       filter: NumberColumnFilter,
       hide: true,
     },
@@ -561,6 +586,18 @@ export function getGridColDefs(
       width: 135,
       cellClass: 'tabular-nums',
       valueFormatter: uiFormatService.ratioLimit,
+      filter: RatioLimitColumnFilter,
+      hide: true,
+    },
+    {
+      colId: 'ratio_limit_raw',
+      field: 'ratio_limit',
+      tooltipField: 'ratio_limit',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.ratio_limit_raw'),
+      headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.ratio_limit_raw'),
+      minWidth: 50,
+      width: 135,
+      cellClass: 'tabular-nums',
       filter: NumberColumnFilter,
       hide: true,
     },
