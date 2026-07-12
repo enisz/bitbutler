@@ -1031,7 +1031,8 @@
         "from": "Ettől",
         "to": "Eddig",
         "operator": "Operátor",
-        "unit": "Mértékegység"
+        "unit": "Mértékegység",
+        "mode": "Mód"
       },
       "set": {
         "filter-placeholder": "Szűrés...",
@@ -1040,6 +1041,15 @@
       "boolean": {
         "true": "Igaz",
         "false": "Hamis"
+      },
+      "time-unit": {
+        "seconds": "Másodperc",
+        "minutes": "Perc",
+        "hours": "Óra",
+        "days": "Nap",
+        "weeks": "Hét",
+        "months": "Hónap",
+        "years": "Év"
       }
     }
   },
@@ -1914,7 +1924,8 @@
     },
     "limit": {
       "global": "Globális korlát",
-      "no-limit": "Nincs korlát"
+      "no-limit": "Nincs korlát",
+      "custom": "Egyéni"
     },
     "toast": {
       "success": "Siker",

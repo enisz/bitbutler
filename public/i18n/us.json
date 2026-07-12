@@ -1031,7 +1031,8 @@
         "from": "From",
         "to": "To",
         "operator": "Operator",
-        "unit": "Unit"
+        "unit": "Unit",
+        "mode": "Mode"
       },
       "set": {
         "filter-placeholder": "Filter...",
@@ -1040,6 +1041,15 @@
       "boolean": {
         "true": "True",
         "false": "False"
+      },
+      "time-unit": {
+        "seconds": "Seconds",
+        "minutes": "Minutes",
+        "hours": "Hours",
+        "days": "Days",
+        "weeks": "Weeks",
+        "months": "Months",
+        "years": "Years"
       }
     }
   },
@@ -1915,7 +1925,8 @@
     },
     "limit": {
       "global": "Global Limit",
-      "no-limit": "No Limit"
+      "no-limit": "No Limit",
+      "custom": "Custom"
     },
     "toast": {
       "success": "Success",
