@@ -37,9 +37,9 @@ describe('PeersGridSettingsService', () => {
     expect(settings).toEqual(DEFAULT_PEERS_GRID_SETTINGS);
   });
 
-  it('default column state has 14 entries', async () => {
+  it('default column state has 20 entries', async () => {
     const settings = await service.load();
-    expect(settings.columnState).toHaveLength(14);
+    expect(settings.columnState).toHaveLength(20);
   });
 
   it('every default column has a colId', async () => {
@@ -60,10 +60,16 @@ describe('PeersGridSettingsService', () => {
         'flags',
         'client',
         'progress',
+        'progress_percentage',
+        'progress_raw',
         'dl_speed',
+        'dl_speed_raw',
         'up_speed',
+        'up_speed_raw',
         'downloaded',
+        'downloaded_raw',
         'uploaded',
+        'uploaded_raw',
         'relevance',
         'files',
       ]),
