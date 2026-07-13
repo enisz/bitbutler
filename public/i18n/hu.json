@@ -928,7 +928,9 @@
         "progress": {
           "importing": "Torrentek importálása...",
           "done": "Import kész",
-          "skipped": "kihagyva"
+          "skipped": "kihagyva",
+          "failed": "sikertelen",
+          "alreadyExisted": "már létezett"
         },
         "button": {
           "import": "Importálás"

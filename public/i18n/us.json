@@ -928,7 +928,9 @@
         "progress": {
           "importing": "Importing torrents...",
           "done": "Import complete",
-          "skipped": "skipped"
+          "skipped": "skipped",
+          "failed": "failed",
+          "alreadyExisted": "already existed"
         },
         "button": {
           "import": "Import"

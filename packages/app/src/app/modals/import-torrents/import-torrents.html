@@ -363,9 +363,13 @@
           @if (isDone()) {
             <span class="text-success">
               {{ 'components.modals.import-torrents.progress.done' | translate }}
-              @if (state().skipped > 0) {
-                - {{ state().skipped }}
-                {{ 'components.modals.import-torrents.progress.skipped' | translate }}
+              @if (state().failed > 0) {
+                - {{ state().failed }}
+                {{ 'components.modals.import-torrents.progress.failed' | translate }}
+              }
+              @if (state().alreadyExisted > 0) {
+                - {{ state().alreadyExisted }}
+                {{ 'components.modals.import-torrents.progress.alreadyExisted' | translate }}
               }
             </span>
           }

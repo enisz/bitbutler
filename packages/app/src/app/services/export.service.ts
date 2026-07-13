@@ -20,12 +20,20 @@ export interface ImportState {
   current: number;
   total: number;
   name: string;
-  skipped: number;
+  failed: number;
+  alreadyExisted: number;
   error?: string;
 }
 
 const EXPORT_IDLE: ExportState = { phase: 'idle', current: 0, total: 0, name: '', skipped: 0 };
-const IMPORT_IDLE: ImportState = { phase: 'idle', current: 0, total: 0, name: '', skipped: 0 };
+const IMPORT_IDLE: ImportState = {
+  phase: 'idle',
+  current: 0,
+  total: 0,
+  name: '',
+  failed: 0,
+  alreadyExisted: 0,
+};
 
 @Injectable({ providedIn: 'root' })
 export class ExportService implements OnDestroy {
@@ -60,10 +68,22 @@ export class ExportService implements OnDestroy {
         this._export.update((s) => ({ ...s, phase: 'error', error: e.message })),
       ),
       api.onImportProgress((e: ExportProgressEvent) =>
-        this._import.update((s) => ({ ...s, phase: 'running', ...e })),
+        this._import.update((s) => ({
+          ...s,
+          phase: 'running',
+          current: e.current,
+          total: e.total,
+          name: e.name,
+        })),
       ),
-      api.onImportDone((e: { total: number; skipped: number }) =>
-        this._import.update((s) => ({ ...s, phase: 'done', skipped: e.skipped, current: e.total })),
+      api.onImportDone((e: { total: number; failed: number; alreadyExisted: number }) =>
+        this._import.update((s) => ({
+          ...s,
+          phase: 'done',
+          current: e.total,
+          failed: e.failed,
+          alreadyExisted: e.alreadyExisted,
+        })),
       ),
       api.onImportError((e: { message: string }) =>
         this._import.update((s) => ({ ...s, phase: 'error', error: e.message })),

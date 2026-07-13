@@ -271,6 +271,7 @@ export class ImportTorrents implements OnInit {
       restoreTags: raw.restoreFields.tags,
       categoryPathMappings,
       overwriteCategories: raw.overwriteCategories,
+      skipHashes: [],
     };
 
     this.exportService.startImport();
