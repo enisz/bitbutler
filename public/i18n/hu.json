@@ -597,10 +597,16 @@
             "flags": "Zászlók",
             "client": "Kliens",
             "progress": "Állapot",
+            "progress_percentage": "Haladás (%)",
+            "progress_raw": "Haladás (nyers)",
             "dl_speed": "Letöltés sebesség",
+            "dl_speed_raw": "Letöltés sebesség (nyers)",
             "up_speed": "Feltöltés sebesség",
+            "up_speed_raw": "Feltöltés sebesség (nyers)",
             "downloaded": "Letöltve",
+            "downloaded_raw": "Letöltve (nyers)",
             "uploaded": "Feltöltve",
+            "uploaded_raw": "Feltöltve (nyers)",
             "relevance": "Relevancia",
             "files": "Fájlok"
           },
@@ -1009,7 +1015,49 @@
         }
       }
     },
-    "toast-overlay": {}
+    "toast-overlay": {},
+    "column-filters": {
+      "operator": {
+        "contains": "Tartalmazza",
+        "not-contains": "Nem tartalmazza",
+        "equals": "Egyenlő",
+        "not-equal": "Nem egyenlő",
+        "starts-with": "Ezzel kezdődik",
+        "ends-with": "Ezzel végződik",
+        "gt": "Nagyobb, mint",
+        "gte": "Nagyobb vagy egyenlő, mint",
+        "lt": "Kisebb, mint",
+        "lte": "Kisebb vagy egyenlő, mint",
+        "between": "Között",
+        "blank": "Üres",
+        "not-blank": "Nem üres"
+      },
+      "label": {
+        "value": "Érték",
+        "from": "Ettől",
+        "to": "Eddig",
+        "operator": "Operátor",
+        "unit": "Mértékegység",
+        "mode": "Mód"
+      },
+      "set": {
+        "filter-placeholder": "Szűrés...",
+        "no-matches": "Nincs egyező érték"
+      },
+      "boolean": {
+        "true": "Igaz",
+        "false": "Hamis"
+      },
+      "time-unit": {
+        "seconds": "Másodperc",
+        "minutes": "Perc",
+        "hours": "Óra",
+        "days": "Nap",
+        "weeks": "Hét",
+        "months": "Hónap",
+        "years": "Év"
+      }
+    }
   },
   "pages": {
     "login": {
@@ -1082,7 +1130,6 @@
             "queue": "Sor",
             "pin-column": "Oszlop rögzítése",
             "sort": "Rendezés",
-            "filter": "Szűrő",
             "resize": "Átméretezés",
             "columns": "Oszlopok"
           },
@@ -1128,7 +1175,6 @@
             "move-down": "Mozgatás lejjebb",
             "move-to-bottom": "Mozgatás legalulra",
             "hide-column": "Oszlop elrejtése",
-            "clear-filter": "Szűrő törlése",
             "show-all": "Összes megjelenítése",
             "hide-all": "Összes elrejtése",
             "pin-to-top": "Rögzítés felülre",
@@ -1140,9 +1186,6 @@
             "sort-ascending": "Növekvő rendezés",
             "sort-descending": "Csökkenő rendezés",
             "clear-sort": "Rendezés törlése",
-            "open-filter": "Szűrő megnyitása",
-            "show-floating-filters": "Lebegő szűrők megjelenítése",
-            "hide-floating-filters": "Lebegő szűrők elrejtése",
             "autosize-column": "Oszlop automatikus méretezése",
             "autosize-all-columns": "Összes oszlop automatikus méretezése"
           },
@@ -1154,8 +1197,6 @@
             "already-sorted-ascending": "Ez az oszlop már növekvő sorrendben van rendezve.",
             "already-sorted-descending": "Ez az oszlop már csökkenő sorrendben van rendezve.",
             "no-sort-applied": "Ehhez az oszlophoz nincs rendezés beállítva.",
-            "filter-not-supported": "Ez az oszlop nem támogatja a szűrést.",
-            "no-filter-active": "Ehhez az oszlophoz nincs aktív szűrő.",
             "already-pinned-left": "Ez az oszlop már balra van rögzítve.",
             "already-pinned-right": "Ez az oszlop már jobbra van rögzítve.",
             "column-not-pinned": "Ez az oszlop nincs rögzítve.",
@@ -1253,6 +1294,9 @@
             "upspeed_raw": "Feltöltési sebesség (nyers)",
             "dl_limit_raw": "Letöltési korlát (nyers)",
             "up_limit_raw": "Feltöltési korlát (nyers)",
+            "ratio_raw": "Arány (nyers)",
+            "max_ratio_raw": "Maximális arány (nyers)",
+            "ratio_limit_raw": "Aránykorlát (nyers)",
             "eta_raw": "Hátralévő idő (nyers)",
             "seeding_time_raw": "Seedelési idő (nyers)",
             "seeding_time_limit_raw": "Seedelési időkorlát (nyers)",
@@ -1532,7 +1576,6 @@
             "animate-rows": "Sorok animálása",
             "pagination": "Oldalszámozás",
             "compact-rows": "Kompakt sorok",
-            "floating-filters": "Lebegő szűrők",
             "pause-on-modal": "Szüneteltetés modál esetén",
             "row-double-click": {
               "title": "Dupla kattintás viselkedése",
@@ -1562,10 +1605,6 @@
             "compact-rows": {
               "title": "Kompakt sorok",
               "description": "Csökkenti a sorok magasságát és a cellák belső margóját a torrent listában, hogy több adat férjen el egyszerre."
-            },
-            "floating-filters": {
-              "title": "Lebegő szűrők",
-              "description": "Egy szűrősor jelenik meg az oszlopfejlécek alatt. Ez az oszlopfejléc helyi menüjéből is kapcsolható oszloponként."
             },
             "pause-on-modal": {
               "title": "Lekérdezés szüneteltetése modál esetén",
@@ -1887,7 +1926,8 @@
     },
     "limit": {
       "global": "Globális korlát",
-      "no-limit": "Nincs korlát"
+      "no-limit": "Nincs korlát",
+      "custom": "Egyéni"
     },
     "toast": {
       "success": "Siker",

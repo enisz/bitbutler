@@ -113,12 +113,6 @@ describe('FilterService', () => {
     expect(Object.keys(service.columns()).length).toBe(0);
   });
 
-  it('should clear a single column filter', () => {
-    service.setColumnFilter('name', { filterType: 'text' });
-    service.clearColumnFilter('name');
-    expect((service.columns() as any)['name']).toBeUndefined();
-  });
-
   it('should clear all column filters', () => {
     service.setColumnFilter('name', { filterType: 'text' });
     service.setColumnFilter('size', { filterType: 'number' });

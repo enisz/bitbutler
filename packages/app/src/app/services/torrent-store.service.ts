@@ -1,5 +1,6 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { Subject } from 'rxjs';
+import { ValueCount } from '../components/column-filters/set-column-filter/set-column-filter';
 import { Maindata, QbCategory, Torrent, TorrentMap, TorrentState } from '../models/torrent.model';
 
 export interface TorrentTxnDelta {
@@ -14,6 +15,8 @@ export type TorrentFinishedEvent = {
   torrent: Torrent;
   ts: number;
 };
+
+export type { ValueCount };
 
 @Injectable({ providedIn: 'root' })
 export class TorrentStoreService {
@@ -35,6 +38,50 @@ export class TorrentStoreService {
       result[t.state] = (result[t.state] ?? 0) + 1;
     }
     return result;
+  });
+
+  readonly categoriesWithCounts = computed<ValueCount[]>(() => {
+    const counts = new Map<string, number>();
+    for (const t of this._torrents().values()) {
+      if (t.category) {
+        counts.set(t.category, (counts.get(t.category) ?? 0) + 1);
+      }
+    }
+
+    const names = new Set([...this._categories().keys(), ...counts.keys()]);
+    return [...names]
+      .map((name) => ({ key: name, label: name, count: counts.get(name) ?? 0 }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  });
+
+  readonly tagsWithCounts = computed<ValueCount[]>(() => {
+    const counts = new Map<string, number>();
+    for (const t of this._torrents().values()) {
+      if (t.tags) {
+        for (const tag of t.tags
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean)) {
+          counts.set(tag, (counts.get(tag) ?? 0) + 1);
+        }
+      }
+    }
+
+    const names = new Set([...this._tags(), ...counts.keys()]);
+    return [...names]
+      .map((name) => ({ key: name, label: name, count: counts.get(name) ?? 0 }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  });
+
+  readonly statesWithCounts = computed<ValueCount[]>(() => {
+    const counts = this.countsByState();
+    return Object.entries(counts)
+      .map(([key, count]) => ({
+        key,
+        label: key,
+        count: count ?? 0,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
   });
 
   private readonly _finished$ = new Subject<TorrentFinishedEvent>();

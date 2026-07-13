@@ -1,0 +1,101 @@
+<div
+  class="bb-column-filter p-2"
+  (mousedown)="$event.stopPropagation()"
+  (touchstart)="$event.stopPropagation()"
+>
+  <div class="form-floating mb-2">
+    <ng-select
+      [id]="instanceId + '-operator'"
+      [items]="operatorItems()"
+      bindLabel="label"
+      bindValue="value"
+      [clearable]="false"
+      [searchable]="false"
+      [(ngModel)]="draft.operator"
+      [appendTo]="popupPortalSelector"
+    ></ng-select>
+    <label [for]="instanceId + '-operator'">{{
+      'components.column-filters.label.operator' | translate
+    }}</label>
+  </div>
+
+  <div class="form-floating mb-2">
+    <ng-select
+      [id]="instanceId + '-unit'"
+      [items]="unitItems"
+      bindLabel="label"
+      bindValue="value"
+      [clearable]="false"
+      [searchable]="false"
+      [(ngModel)]="draft.unit"
+      [appendTo]="popupPortalSelector"
+    ></ng-select>
+    <label [for]="instanceId + '-unit'">{{
+      'components.column-filters.label.unit' | translate
+    }}</label>
+  </div>
+
+  <div class="d-flex gap-2 mb-2">
+    <div class="form-floating flex-fill">
+      <input
+        type="number"
+        class="form-control"
+        [id]="instanceId + '-from'"
+        [(ngModel)]="draft.from"
+        [disabled]="isInputDisabled()"
+        [placeholder]="
+          draft.operator === 'between'
+            ? ('components.column-filters.label.from' | translate)
+            : ('components.column-filters.label.value' | translate)
+        "
+      />
+      <label [for]="instanceId + '-from'">{{
+        (draft.operator === 'between'
+          ? 'components.column-filters.label.from'
+          : 'components.column-filters.label.value'
+        ) | translate
+      }}</label>
+    </div>
+    @if (draft.operator === 'between') {
+      <div class="form-floating flex-fill">
+        <input
+          type="number"
+          class="form-control"
+          [id]="instanceId + '-to'"
+          [(ngModel)]="draft.to"
+          [disabled]="isInputDisabled()"
+          [placeholder]="'components.column-filters.label.to' | translate"
+        />
+        <label [for]="instanceId + '-to'">{{
+          'components.column-filters.label.to' | translate
+        }}</label>
+      </div>
+    }
+  </div>
+
+  <div class="d-flex gap-2">
+    <button
+      class="btn btn-sm btn-outline-secondary btn-split flex-fill"
+      type="button"
+      (click)="clear()"
+    >
+      <bb-btn-content
+        [icon]="icons.faEraser"
+        [text]="'general.button.clear' | translate"
+        [position]="'end'"
+      ></bb-btn-content>
+    </button>
+    <button
+      class="btn btn-sm btn-outline-primary btn-split flex-fill"
+      type="button"
+      [disabled]="isApplyDisabled()"
+      (click)="apply()"
+    >
+      <bb-btn-content
+        [icon]="icons.faCheck"
+        [text]="'general.button.apply' | translate"
+        [position]="'end'"
+      ></bb-btn-content>
+    </button>
+  </div>
+</div>

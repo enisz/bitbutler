@@ -1,0 +1,61 @@
+<div
+  class="bb-column-filter p-2"
+  (mousedown)="$event.stopPropagation()"
+  (touchstart)="$event.stopPropagation()"
+>
+  <div class="form-floating mb-2">
+    <ng-select
+      [id]="instanceId + '-operator'"
+      [items]="operatorItems()"
+      bindLabel="label"
+      bindValue="value"
+      [clearable]="false"
+      [searchable]="false"
+      [(ngModel)]="draft.operator"
+      [appendTo]="popupPortalSelector"
+    ></ng-select>
+    <label [for]="instanceId + '-operator'">{{
+      'components.column-filters.label.operator' | translate
+    }}</label>
+  </div>
+
+  <div class="form-floating mb-2">
+    <input
+      type="text"
+      class="form-control"
+      [id]="instanceId + '-value'"
+      [(ngModel)]="draft.value"
+      [disabled]="isValueDisabled()"
+      [placeholder]="'components.column-filters.label.value' | translate"
+    />
+    <label [for]="instanceId + '-value'">{{
+      'components.column-filters.label.value' | translate
+    }}</label>
+  </div>
+
+  <div class="d-flex gap-2">
+    <button
+      class="btn btn-sm btn-outline-secondary btn-split flex-fill"
+      type="button"
+      (click)="clear()"
+    >
+      <bb-btn-content
+        [icon]="icons.faEraser"
+        [text]="'general.button.clear' | translate"
+        [position]="'end'"
+      ></bb-btn-content>
+    </button>
+    <button
+      class="btn btn-sm btn-outline-primary btn-split flex-fill"
+      type="button"
+      [disabled]="isApplyDisabled()"
+      (click)="apply()"
+    >
+      <bb-btn-content
+        [icon]="icons.faCheck"
+        [text]="'general.button.apply' | translate"
+        [position]="'end'"
+      ></bb-btn-content>
+    </button>
+  </div>
+</div>

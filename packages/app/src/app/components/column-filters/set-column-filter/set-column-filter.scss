@@ -1,0 +1,44 @@
+:host {
+  display: block;
+}
+
+.bb-set-filter {
+  min-width: 360px;
+}
+
+.bb-set-filter-list {
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.list-group-item-action {
+  border-color: var(--bs-border-color);
+  cursor: pointer;
+
+  &.active {
+    background-color: var(--bb-active-list-item-bg);
+    color: var(--bs-body-color);
+    border-color: var(--bb-active-list-item-bg) !important;
+
+    .bb-status-badge.bb-status-badge--neutral {
+      background-color: var(--bb-accent);
+      color: var(--bb-primary-ink);
+    }
+  }
+
+  &:not(.active) {
+    .bb-status-badge.bb-status-badge--neutral {
+      background-color: var(--bs-tertiary-bg);
+      color: var(--bs-emphasis-color);
+    }
+  }
+
+  .bb-status-badge {
+    --bs-badge-font-weight: 600;
+    padding: 0.35rem 0.5rem;
+  }
+}
+
+.list-group {
+  --bs-list-group-action-hover-bg: var(--bb-hover-list-item-bg);
+}

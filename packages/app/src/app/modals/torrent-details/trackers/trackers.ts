@@ -5,6 +5,7 @@ import {
   Component,
   DestroyRef,
   OnInit,
+  computed,
   effect,
   inject,
 } from '@angular/core';
@@ -26,6 +27,13 @@ import {
 } from 'ag-grid-community';
 import { Subject, debounceTime } from 'rxjs';
 import { GRID_DARK_THEME, GRID_LIGHT_THEME, GRID_SHARED_OPTIONS } from '../../../app.const';
+import { NumberColumnFilter } from '../../../components/column-filters/number-column-filter/number-column-filter';
+import {
+  SetColumnFilter,
+  SetColumnFilterParams,
+  buildValueCounts,
+} from '../../../components/column-filters/set-column-filter/set-column-filter';
+import { TextColumnFilter } from '../../../components/column-filters/text-column-filter/text-column-filter';
 import { QbTorrentTracker, QbTrackerStatus } from '../../../models/qbittorrent.model';
 import { ContextMenuEntry } from '../../../pages/main/grid/context-menu/context-menu.types';
 import { GridContextMenuService } from '../../../pages/main/grid/context-menu/grid-context-menu.service';
@@ -58,6 +66,10 @@ export class Trackers implements TorrentDetailTabComponent, OnInit {
   private readonly saveState$ = new Subject<void>();
   private gridApi: GridApi | null = null;
   private isRestoringState = false;
+
+  private readonly statusItems = computed(() =>
+    buildValueCounts(this.dataService.trackers(), (t) => this.trackerStatusLabel(t.status)),
+  );
 
   public theme = this.themeService.effectiveMode;
   public trackers: QbTorrentTracker[] = [];
@@ -92,15 +104,6 @@ export class Trackers implements TorrentDetailTabComponent, OnInit {
     try {
       const settings = await this.trackersGridSettingsService.load();
       this.gridApi.applyColumnState({ state: settings.columnState, applyOrder: true });
-      const floatingFilters = settings.floatingFilters ?? false;
-      const currentDefs = this.gridApi.getColumnDefs() ?? [];
-      const newDefs = currentDefs.map((d) => {
-        const colDef = { ...(d as ColDef<QbTorrentTracker>) };
-        if (colDef.floatingFilter === false) return colDef;
-        colDef.floatingFilter = floatingFilters ? true : undefined;
-        return colDef;
-      });
-      this.gridApi.updateGridOptions({ columnDefs: newDefs });
     } finally {
       this.isRestoringState = false;
     }
@@ -221,15 +224,7 @@ export class Trackers implements TorrentDetailTabComponent, OnInit {
       onColumnHeaderContextMenu: (e: ColumnHeaderContextMenuEvent<QbTorrentTracker>) => {
         if (!e.column) return;
         this.contextMenuService.open({
-          items: this.gridContextMenuService.buildHeaderMenu(e, {
-            onFloatingFiltersToggle: async (newState: boolean) => {
-              const settings = await this.trackersGridSettingsService.load();
-              await this.trackersGridSettingsService.save({
-                ...settings,
-                floatingFilters: newState,
-              });
-            },
-          }),
+          items: this.gridContextMenuService.buildHeaderMenu(e),
           payload: {
             colId: e.column.getId(),
             displayName: e.api.getDisplayNameForColumn(e.column as Column, 'header'),
@@ -254,7 +249,7 @@ export class Trackers implements TorrentDetailTabComponent, OnInit {
         tooltipField: 'tier',
         sortable: true,
         resizable: true,
-        filter: 'agNumberColumnFilter',
+        filter: NumberColumnFilter,
       },
       {
         colId: 'url',
@@ -269,7 +264,7 @@ export class Trackers implements TorrentDetailTabComponent, OnInit {
         tooltipField: 'url',
         sortable: true,
         resizable: true,
-        filter: 'agTextColumnFilter',
+        filter: TextColumnFilter,
       },
       {
         colId: 'status',
@@ -288,7 +283,10 @@ export class Trackers implements TorrentDetailTabComponent, OnInit {
         tooltipValueGetter: (params) => this.trackerStatusLabel(params.value as QbTrackerStatus),
         sortable: true,
         resizable: true,
-        filter: 'agTextColumnFilter',
+        filter: SetColumnFilter,
+        filterParams: {
+          getItems: () => this.statusItems(),
+        } satisfies Partial<SetColumnFilterParams>,
       },
       {
         colId: 'num_peers',
@@ -303,7 +301,7 @@ export class Trackers implements TorrentDetailTabComponent, OnInit {
         tooltipField: 'num_peers',
         sortable: true,
         resizable: true,
-        filter: 'agNumberColumnFilter',
+        filter: NumberColumnFilter,
       },
       {
         colId: 'num_seeds',
@@ -318,7 +316,7 @@ export class Trackers implements TorrentDetailTabComponent, OnInit {
         tooltipField: 'num_seeds',
         sortable: true,
         resizable: true,
-        filter: 'agNumberColumnFilter',
+        filter: NumberColumnFilter,
       },
       {
         colId: 'num_leeches',
@@ -333,7 +331,7 @@ export class Trackers implements TorrentDetailTabComponent, OnInit {
         tooltipField: 'num_leeches',
         sortable: true,
         resizable: true,
-        filter: 'agNumberColumnFilter',
+        filter: NumberColumnFilter,
       },
       {
         colId: 'num_downloaded',
@@ -348,7 +346,7 @@ export class Trackers implements TorrentDetailTabComponent, OnInit {
         tooltipField: 'num_downloaded',
         sortable: true,
         resizable: true,
-        filter: 'agNumberColumnFilter',
+        filter: NumberColumnFilter,
       },
       {
         colId: 'msg',
@@ -363,7 +361,7 @@ export class Trackers implements TorrentDetailTabComponent, OnInit {
         tooltipField: 'msg',
         sortable: true,
         resizable: true,
-        filter: 'agTextColumnFilter',
+        filter: false,
       },
     ];
   }

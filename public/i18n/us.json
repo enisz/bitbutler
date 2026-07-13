@@ -597,10 +597,16 @@
             "flags": "Flags",
             "client": "Client",
             "progress": "Progress",
+            "progress_percentage": "Progress (%)",
+            "progress_raw": "Progress (raw)",
             "dl_speed": "Download Speed",
+            "dl_speed_raw": "Download Speed (raw)",
             "up_speed": "Upload Speed",
+            "up_speed_raw": "Upload Speed (raw)",
             "downloaded": "Downloaded",
+            "downloaded_raw": "Downloaded (raw)",
             "uploaded": "Uploaded",
+            "uploaded_raw": "Uploaded (raw)",
             "relevance": "Relevance",
             "files": "Files"
           },
@@ -1009,7 +1015,49 @@
         }
       }
     },
-    "toast-overlay": {}
+    "toast-overlay": {},
+    "column-filters": {
+      "operator": {
+        "contains": "Contains",
+        "not-contains": "Does not contain",
+        "equals": "Equals",
+        "not-equal": "Does not equal",
+        "starts-with": "Begins with",
+        "ends-with": "Ends with",
+        "gt": "Greater than",
+        "gte": "Greater than or equal to",
+        "lt": "Less than",
+        "lte": "Less than or equal to",
+        "between": "Between",
+        "blank": "Blank",
+        "not-blank": "Not blank"
+      },
+      "label": {
+        "value": "Value",
+        "from": "From",
+        "to": "To",
+        "operator": "Operator",
+        "unit": "Unit",
+        "mode": "Mode"
+      },
+      "set": {
+        "filter-placeholder": "Filter...",
+        "no-matches": "No matching values"
+      },
+      "boolean": {
+        "true": "True",
+        "false": "False"
+      },
+      "time-unit": {
+        "seconds": "Seconds",
+        "minutes": "Minutes",
+        "hours": "Hours",
+        "days": "Days",
+        "weeks": "Weeks",
+        "months": "Months",
+        "years": "Years"
+      }
+    }
   },
   "pages": {
     "login": {
@@ -1082,7 +1130,6 @@
             "queue": "Queue",
             "pin-column": "Pin Column",
             "sort": "Sort",
-            "filter": "Filter",
             "resize": "Resize",
             "columns": "Columns"
           },
@@ -1128,7 +1175,6 @@
             "move-down": "Move down",
             "move-to-bottom": "Move to bottom",
             "hide-column": "Hide Column",
-            "clear-filter": "Clear Filter",
             "show-all": "Show All",
             "hide-all": "Hide All",
             "pin-to-top": "Pin to top",
@@ -1140,9 +1186,6 @@
             "sort-ascending": "Sort Ascending",
             "sort-descending": "Sort Descending",
             "clear-sort": "Clear Sort",
-            "open-filter": "Open Filter",
-            "show-floating-filters": "Show Floating Filters",
-            "hide-floating-filters": "Hide Floating Filters",
             "autosize-column": "Auto-size This Column",
             "autosize-all-columns": "Auto-size All Columns"
           },
@@ -1154,8 +1197,6 @@
             "already-sorted-ascending": "This column is already sorted ascending.",
             "already-sorted-descending": "This column is already sorted descending.",
             "no-sort-applied": "No sort is applied to this column.",
-            "filter-not-supported": "This column does not support filtering.",
-            "no-filter-active": "No filter is active on this column.",
             "already-pinned-left": "This column is already pinned to the left.",
             "already-pinned-right": "This column is already pinned to the right.",
             "column-not-pinned": "This column is not pinned.",
@@ -1253,6 +1294,9 @@
             "upspeed_raw": "Upload Speed (raw)",
             "dl_limit_raw": "Download Limit (raw)",
             "up_limit_raw": "Upload Limit (raw)",
+            "ratio_raw": "Ratio (raw)",
+            "max_ratio_raw": "Max Ratio (raw)",
+            "ratio_limit_raw": "Ratio Limit (raw)",
             "eta_raw": "ETA (raw)",
             "seeding_time_raw": "Seeding Time (raw)",
             "seeding_time_limit_raw": "Seed Time Limit (raw)",
@@ -1532,7 +1576,6 @@
             "animate-rows": "Animate Rows",
             "pagination": "Pagination",
             "compact-rows": "Compact Rows",
-            "floating-filters": "Floating Filters",
             "pause-on-modal": "Pause on Modal",
             "row-double-click": {
               "title": "Row double click behavior",
@@ -1562,10 +1605,6 @@
             "compact-rows": {
               "title": "Compact Rows",
               "description": "Reduces the row height and cell padding in the torrent list for a denser view."
-            },
-            "floating-filters": {
-              "title": "Floating Filters",
-              "description": "Shows an inline filter row beneath the column headers. This can also be toggled per-column from the column header context menu."
             },
             "pause-on-modal": {
               "title": "Pause Polling on Modal",
@@ -1888,7 +1927,8 @@
     },
     "limit": {
       "global": "Global Limit",
-      "no-limit": "No Limit"
+      "no-limit": "No Limit",
+      "custom": "Custom"
     },
     "toast": {
       "success": "Success",

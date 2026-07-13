@@ -1,6 +1,10 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NumberColumnFilter } from '../../../components/column-filters/number-column-filter/number-column-filter';
+import { SetColumnFilter } from '../../../components/column-filters/set-column-filter/set-column-filter';
+import { SizeColumnFilter } from '../../../components/column-filters/size-column-filter/size-column-filter';
+import { TextColumnFilter } from '../../../components/column-filters/text-column-filter/text-column-filter';
 import { QbTorrentPeer } from '../../../models/torrent.model';
 import { ContextMenuEntry } from '../../../pages/main/grid/context-menu/context-menu.types';
 import { GridContextMenuService } from '../../../pages/main/grid/context-menu/grid-context-menu.service';
@@ -140,7 +144,11 @@ describe('Peers', () => {
 
     it('text-based columns have a tooltipField', () => {
       const textCols = component.colDefs.filter(
-        (c) => c.colId !== 'country_code' && c.colId !== 'progress' && c.colId !== 'flags',
+        (c) =>
+          c.colId !== 'country_code' &&
+          c.colId !== 'progress' &&
+          c.colId !== 'progress_percentage' &&
+          c.colId !== 'flags',
       );
       expect(textCols.every((c) => !!c.tooltipField)).toBe(true);
     });
@@ -157,26 +165,84 @@ describe('Peers', () => {
           'flags',
           'client',
           'progress',
+          'progress_percentage',
+          'progress_raw',
           'dl_speed',
+          'dl_speed_raw',
           'up_speed',
+          'up_speed_raw',
           'downloaded',
+          'downloaded_raw',
           'uploaded',
+          'uploaded_raw',
           'relevance',
           'files',
         ]),
       );
+    });
+
+    it('assigns TextColumnFilter to ip and flags', () => {
+      for (const colId of ['ip', 'flags']) {
+        expect(component.colDefs.find((c) => c.colId === colId)?.filter).toBe(TextColumnFilter);
+      }
+    });
+
+    it('assigns NumberColumnFilter to port, relevance, and the percentage/raw columns', () => {
+      const numberFilterCols = [
+        'port',
+        'relevance',
+        'progress_percentage',
+        'progress_raw',
+        'dl_speed_raw',
+        'up_speed_raw',
+        'downloaded_raw',
+        'uploaded_raw',
+      ];
+      for (const colId of numberFilterCols) {
+        expect(component.colDefs.find((c) => c.colId === colId)?.filter).toBe(NumberColumnFilter);
+      }
+    });
+
+    it('assigns SizeColumnFilter to dl_speed, up_speed, downloaded, and uploaded', () => {
+      for (const colId of ['dl_speed', 'up_speed', 'downloaded', 'uploaded']) {
+        expect(component.colDefs.find((c) => c.colId === colId)?.filter).toBe(SizeColumnFilter);
+      }
+    });
+
+    it('assigns SetColumnFilter to country, connection, and client', () => {
+      for (const colId of ['country', 'connection', 'client']) {
+        expect(component.colDefs.find((c) => c.colId === colId)?.filter).toBe(SetColumnFilter);
+      }
+    });
+
+    it('has no filter on country_code, progress, and files', () => {
+      for (const colId of ['country_code', 'progress', 'files']) {
+        expect(component.colDefs.find((c) => c.colId === colId)?.filter).toBe(false);
+      }
+    });
+
+    it('the new percentage/raw columns start hidden', () => {
+      const hiddenCols = [
+        'progress_percentage',
+        'progress_raw',
+        'dl_speed_raw',
+        'up_speed_raw',
+        'downloaded_raw',
+        'uploaded_raw',
+      ];
+      for (const colId of hiddenCols) {
+        expect(component.colDefs.find((c) => c.colId === colId)?.hide).toBe(true);
+      }
     });
   });
 
   describe('column state management', () => {
     it('restoreColumnState loads settings and applies column state', async () => {
       const state = [{ colId: 'ip', hide: false }];
-      mockSettingsService.load.mockResolvedValue({ columnState: state, floatingFilters: false });
+      mockSettingsService.load.mockResolvedValue({ columnState: state });
       const mockApi = {
         applyColumnState: vi.fn(),
         getColumnState: vi.fn().mockReturnValue([]),
-        getColumnDefs: vi.fn().mockReturnValue([]),
-        updateGridOptions: vi.fn(),
       };
       (component as any).gridApi = mockApi;
 

@@ -16,8 +16,6 @@ import {
   faEye,
   faEyeSlash,
   faFilePen,
-  faFilter,
-  faFilterCircleXmark,
   faFolder,
   faFolderOpen,
   faFolderTree,
@@ -44,28 +42,23 @@ import {
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { TranslateService } from '@ngx-translate/core';
-import type { ColDef, Column, ColumnHeaderContextMenuEvent } from 'ag-grid-community';
-import { filter, firstValueFrom } from 'rxjs';
+import type { Column, ColumnHeaderContextMenuEvent } from 'ag-grid-community';
 import { CommandBusService } from '../../../../services/command-bus.service';
-import { FilterService } from '../../../../services/filter.service';
 import { PathService } from '../../../../services/path.service';
 import { QbService } from '../../../../services/qb.service';
 import { ServerStoreService } from '../../../../services/server-store.service';
 import { ToastService } from '../../../../services/toast.service';
 import { TorrentExportService } from '../../../../services/torrent-export.service';
-import { TorrentListGridSettingsService } from '../../../../services/torrent-list-grid.settings.service';
 import { ContextMenuEntry, GridContextMenuData } from './context-menu.types';
 
 @Injectable({ providedIn: 'root' })
 export class GridContextMenuService {
   private readonly commandBusService = inject(CommandBusService);
   private readonly clipboard = inject(Clipboard);
-  private readonly filterService = inject(FilterService);
   private readonly pathService = inject(PathService);
   private readonly qbService = inject(QbService);
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly toastService = inject(ToastService);
-  private readonly torrentListGridSettingsService = inject(TorrentListGridSettingsService);
   private readonly torrentExportService = inject(TorrentExportService);
   private readonly translateService = inject(TranslateService);
 
@@ -582,18 +575,9 @@ export class GridContextMenuService {
     ];
   }
 
-  public buildHeaderMenu(
-    event: ColumnHeaderContextMenuEvent<any, any>,
-    opts: {
-      enableFloatingFiltersToggle?: boolean;
-      onFloatingFiltersToggle?: (newState: boolean) => Promise<void>;
-    } = {},
-  ): ContextMenuEntry[] {
+  public buildHeaderMenu(event: ColumnHeaderContextMenuEvent<any, any>): ContextMenuEntry[] {
     const api = event.api;
     const column = event.column as Column;
-    const floatingFilterActive = (api.getColumnDefs() ?? []).some(
-      (d) => (d as ColDef<any>).floatingFilter === true,
-    );
 
     const columns =
       api
@@ -669,74 +653,6 @@ export class GridContextMenuService {
         ],
       },
 
-      {
-        kind: 'submenu',
-        id: `filter.${payload.colId}`,
-        label: 'pages.main.grid.context-menu.submenu.filter',
-        icon: faFilter,
-        children: [
-          {
-            kind: 'item',
-            id: `filter.open.${payload.colId}`,
-            label: 'pages.main.grid.context-menu.item.open-filter',
-            icon: faFilter,
-            disabled: !column.getColDef().filter,
-            tooltip: !column.getColDef().filter
-              ? 'pages.main.grid.context-menu.tooltip.filter-not-supported'
-              : undefined,
-            action: () => api.showColumnFilter(payload.colId),
-          },
-          {
-            kind: 'item',
-            id: `filter.clear.${payload.colId}`,
-            label: 'pages.main.grid.context-menu.item.clear-filter',
-            icon: faFilterCircleXmark,
-            disabled: !column.isFilterActive(),
-            tooltip: !column.isFilterActive()
-              ? 'pages.main.grid.context-menu.tooltip.no-filter-active'
-              : undefined,
-            action: () => this.filterService.clearColumnFilter(payload.colId),
-          },
-          ...(opts.enableFloatingFiltersToggle !== false
-            ? [
-                {
-                  kind: 'item' as const,
-                  id: `filter.toggleFloating.${payload.colId}`,
-                  label: floatingFilterActive
-                    ? 'pages.main.grid.context-menu.item.hide-floating-filters'
-                    : 'pages.main.grid.context-menu.item.show-floating-filters',
-                  icon: floatingFilterActive ? faEyeSlash : faEye,
-                  action: async () => {
-                    const currentDefs = api.getColumnDefs() ?? [];
-                    const isActive = currentDefs.some(
-                      (d) => (d as ColDef<any>).floatingFilter === true,
-                    );
-                    const newDefs = currentDefs.map((d) => {
-                      const colDef = { ...(d as ColDef<any>) };
-                      if (colDef.floatingFilter === false) return colDef;
-                      colDef.floatingFilter = isActive ? undefined : true;
-                      return colDef;
-                    });
-                    api.updateGridOptions({ columnDefs: newDefs });
-                    if (opts.onFloatingFiltersToggle) {
-                      await opts.onFloatingFiltersToggle(!isActive);
-                    } else {
-                      const settings = await firstValueFrom(
-                        this.torrentListGridSettingsService
-                          .asObservable()
-                          .pipe(filter((s): s is NonNullable<typeof s> => s !== null)),
-                      );
-                      await this.torrentListGridSettingsService.save({
-                        ...settings,
-                        floatingFilters: !isActive,
-                      });
-                    }
-                  },
-                },
-              ]
-            : []),
-        ],
-      },
       {
         kind: 'submenu',
         id: `pin.${payload.colId}`,

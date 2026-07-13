@@ -10,7 +10,6 @@ const DEFAULT_SETTINGS = {
   pagination: true,
   animateRows: true,
   rowDoubleClickAction: 'DETAILS' as const,
-  floatingFilters: false,
   pausePollingOnModal: false,
 };
 

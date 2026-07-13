@@ -15,7 +15,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import {
   type CellContextMenuEvent,
-  type ColDef,
   type ColumnState,
   type GridApi,
   type GridOptions,
@@ -35,6 +34,7 @@ import { QbPollingService } from '../../../services/qb-polling.service';
 import { SelectionStoreService } from '../../../services/selection-store.service';
 import { ThemeService } from '../../../services/theme.service';
 import { TorrentListGridSettingsService } from '../../../services/torrent-list-grid.settings.service';
+import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { UiFormatService } from '../../../services/ui-format.service';
 import { getTrackers, normalizeTracker } from '../tracker.utils';
 import { GridContextMenuService } from './context-menu/grid-context-menu.service';
@@ -78,6 +78,7 @@ export class Grid implements AfterViewInit {
   private readonly gridPinService = inject(GridPinService);
   private readonly qbPollingService = inject(QbPollingService);
   private readonly gridInlineEditService = inject(GridInlineEditService);
+  private readonly torrentStoreService = inject(TorrentStoreService);
 
   private readonly saveGridState$ = new Subject<void>();
 
@@ -116,6 +117,7 @@ export class Grid implements AfterViewInit {
       this.gridContextMenuService,
       this.uiFormatService,
       this.translateService,
+      this.torrentStoreService,
       {
         getHasLoadedInitialState: () => this.hasLoadedInitialState,
         getIsRestoringGridState: () => this.isRestoringGridState,
@@ -266,16 +268,6 @@ export class Grid implements AfterViewInit {
       settings.pinnedBottomHashes ?? [],
     );
 
-    const floatingFilters = settings.floatingFilters ?? false;
-    const currentDefs = this.api.getColumnDefs() ?? [];
-    const newDefs = currentDefs.map((d) => {
-      const colDef = { ...(d as ColDef<any>) };
-      if (colDef.floatingFilter === false) return colDef;
-      colDef.floatingFilter = floatingFilters ? true : undefined;
-      return colDef;
-    });
-    this.api.updateGridOptions({ columnDefs: newDefs as ColDef<any>[] });
-
     this.gridInlineEditService.applyEditableState(
       this.api,
       settings.rowDoubleClickAction === 'INLINE_EDIT',
@@ -366,7 +358,7 @@ export class Grid implements AfterViewInit {
     const columnState = this.api.getColumnState();
     this.api.setGridOption(
       'columnDefs',
-      getGridColDefs(this.uiFormatService, this.translateService),
+      getGridColDefs(this.uiFormatService, this.translateService, this.torrentStoreService),
     );
     this.api.applyColumnState({ state: columnState, applyOrder: true });
   }
