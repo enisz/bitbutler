@@ -1,4 +1,4 @@
-import { Menu, app } from 'electron';
+import { Menu, app, shell } from 'electron';
 import { t } from './i18n.js';
 import { getCookieJar } from './ipc/qbittorrent.js';
 import { getActiveServerId, serverList } from './ipc/server.js';
@@ -45,23 +45,28 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
           submenu: [
             {
               label: t('electron.menu.app-settings'),
+              accelerator: 'CmdOrCtrl+.',
               click: () => sendMenuAction(mainWindow, 'settings.app'),
             },
             {
               label: t('electron.menu.qb-settings'),
+              accelerator: 'CmdOrCtrl+,',
               click: () => sendMenuAction(mainWindow, 'settings.qb'),
             },
             { type: 'separator' },
             {
               label: t('electron.menu.manage-servers'),
+              accelerator: 'CmdOrCtrl+Shift+S',
               click: () => sendMenuAction(mainWindow, 'server.manage'),
             },
             {
               label: t('electron.menu.manage-tags'),
+              accelerator: 'CmdOrCtrl+Shift+T',
               click: () => sendMenuAction(mainWindow, 'settings.manage-tags'),
             },
             {
               label: t('electron.menu.manage-categories'),
+              accelerator: 'CmdOrCtrl+Shift+C',
               click: () => sendMenuAction(mainWindow, 'settings.manage-categories'),
             },
           ],
@@ -76,7 +81,13 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
           submenu: [
             {
               label: 'Open DevTools',
+              accelerator: 'F12',
               click: () => getMainWindow()?.webContents.openDevTools({ mode: 'detach' }),
+            },
+            {
+              label: 'Open Log Path',
+              accelerator: 'CmdOrCtrl+Alt+L',
+              click: () => shell.openPath(app.getPath('logs')),
             },
             { type: 'separator' },
             {
@@ -136,7 +147,8 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
             { type: 'separator' },
             {
               label: 'Reload',
-              click: () => sendMenuAction(mainWindow, 'debug.reload'),
+              accelerator: 'CmdOrCtrl+R',
+              role: 'reload',
             },
           ],
         },
@@ -150,27 +162,31 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
         {
           label: t('electron.menu.add-torrent'),
           enabled: loggedIn,
+          accelerator: 'CmdOrCtrl+N',
           click: () => sendMenuAction(mainWindow, 'file.addTorrent'),
         },
         { type: 'separator' },
         {
           label: t('electron.menu.export-torrents'),
           enabled: loggedIn,
+          accelerator: 'CmdOrCtrl+E',
           click: () => sendMenuAction(mainWindow, 'file.exportTorrents'),
         },
         {
           label: t('electron.menu.import-torrents'),
           enabled: loggedIn,
+          accelerator: 'CmdOrCtrl+I',
           click: () => sendMenuAction(mainWindow, 'file.importTorrents'),
         },
         { type: 'separator' },
         {
           label: t('electron.menu.disconnect'),
           enabled: loggedIn,
+          accelerator: 'CmdOrCtrl+L',
           click: () => sendMenuAction(mainWindow, 'file.disconnect'),
         },
         { type: 'separator' },
-        { role: 'quit' },
+        { role: 'quit', accelerator: 'CmdOrCtrl+Q' },
       ],
     },
     ...loggedInItems,
@@ -179,11 +195,13 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
       submenu: [
         {
           label: t('electron.menu.check-for-updates'),
+          accelerator: 'CmdOrCtrl+U',
           click: () => sendMenuAction(mainWindow, 'help.checkForUpdates'),
         },
         { type: 'separator' },
         {
           label: t('electron.menu.about'),
+          accelerator: 'F1',
           click: () => sendMenuAction(mainWindow, 'help.about'),
         },
       ],
