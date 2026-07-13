@@ -507,6 +507,123 @@ describe('partitionImportEntries', () => {
   });
 });
 
+describe('runImport', () => {
+  const mockQbRequestImport = vi.hoisted(() => vi.fn());
+  const mockZipGetEntry = vi.hoisted(() => vi.fn());
+
+  function fakeEvent() {
+    return { sender: { isDestroyed: () => false, send: vi.fn() } };
+  }
+
+  function metadataEntry(torrents: unknown[]) {
+    const metadata = {
+      version: 1,
+      exported_at: 0,
+      source_server: 'srv',
+      export_mode: 'legacy',
+      torrents,
+    };
+    return { getData: () => ({ toString: () => JSON.stringify(metadata) }) };
+  }
+
+  function basePayload(overrides: Record<string, unknown> = {}) {
+    return {
+      serverId: 'server-1',
+      bbePath: '/tmp/archive.bbe',
+      restoreFields: [],
+      startMode: 'paused',
+      pathMappings: [],
+      restoreCategories: false,
+      restoreTags: false,
+      categoryPathMappings: [],
+      overwriteCategories: false,
+      skipHashes: [],
+      ...overrides,
+    };
+  }
+
+  beforeEach(() => {
+    vi.resetModules();
+    mockZipGetEntry.mockReset();
+    vi.doMock('electron', () => ({
+      ipcMain: { handle: vi.fn(), on: vi.fn() },
+      dialog: { showSaveDialog: vi.fn(), showOpenDialog: vi.fn() },
+    }));
+    vi.doMock('./qbittorrent.js', () => ({ qbRequest: mockQbRequestImport }));
+    vi.doMock('./server.js', () => ({ getExportAvailable: vi.fn() }));
+    vi.doMock('adm-zip', () => ({
+      default: vi.fn().mockImplementation(() => ({ getEntry: mockZipGetEntry })),
+    }));
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.doUnmock('electron');
+    vi.doUnmock('./qbittorrent.js');
+    vi.doUnmock('./server.js');
+    vi.doUnmock('adm-zip');
+  });
+
+  async function setup() {
+    return import('./export.js');
+  }
+
+  it('skips entries whose hash is in skipHashes without calling qBittorrent for them', async () => {
+    const torrents = [
+      { hash: 'aaa', name: 'Already Here', failed: false, magnet_link: 'magnet:?xt=aaa' },
+      { hash: 'bbb', name: 'Already Here Too', failed: false, magnet_link: 'magnet:?xt=bbb' },
+    ];
+    mockZipGetEntry.mockImplementation((name: string) =>
+      name === 'metadata.json' ? metadataEntry(torrents) : undefined,
+    );
+
+    const { runImport } = await setup();
+    const event = fakeEvent();
+    await runImport(event as any, basePayload({ skipHashes: ['aaa', 'bbb'] }) as any);
+
+    expect(mockQbRequestImport).not.toHaveBeenCalled();
+    expect(event.sender.send).toHaveBeenCalledWith('import:done', {
+      total: 0,
+      failed: 0,
+      alreadyExisted: 2,
+    });
+  });
+
+  it('processes non-skipped entries normally while leaving skipped ones untouched', async () => {
+    const torrents = [
+      { hash: 'aaa', name: 'Already Here', failed: false, magnet_link: 'magnet:?xt=aaa' },
+      { hash: 'bbb', name: 'New Torrent', failed: false, magnet_link: 'magnet:?xt=bbb' },
+    ];
+    mockZipGetEntry.mockImplementation((name: string) =>
+      name === 'metadata.json' ? metadataEntry(torrents) : undefined,
+    );
+    mockQbRequestImport.mockResolvedValue('Ok.');
+
+    const { runImport } = await setup();
+    const event = fakeEvent();
+    await runImport(event as any, basePayload({ skipHashes: ['aaa'] }) as any);
+
+    expect(mockQbRequestImport).toHaveBeenCalledTimes(1);
+    expect(mockQbRequestImport).toHaveBeenCalledWith(
+      expect.objectContaining({
+        path: '/api/v2/torrents/add',
+        form: expect.objectContaining({ urls: 'magnet:?xt=bbb' }),
+      }),
+    );
+    expect(event.sender.send).toHaveBeenCalledWith('import:progress', {
+      current: 1,
+      total: 1,
+      name: 'New Torrent',
+      skipped: 0,
+    });
+    expect(event.sender.send).toHaveBeenCalledWith('import:done', {
+      total: 1,
+      failed: 0,
+      alreadyExisted: 1,
+    });
+  });
+});
+
 describe('restoreCategoriesAndTags', () => {
   const mockQbRequestRestore = vi.hoisted(() => vi.fn());
 

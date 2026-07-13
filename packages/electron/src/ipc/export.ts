@@ -451,7 +451,10 @@ async function buildExportEntry(
   }
 }
 
-async function runImport(event: Electron.IpcMainEvent, payload: ImportStartPayload): Promise<void> {
+export async function runImport(
+  event: Electron.IpcMainEvent,
+  payload: ImportStartPayload,
+): Promise<void> {
   importCancelled = false;
   const {
     serverId,
@@ -463,6 +466,7 @@ async function runImport(event: Electron.IpcMainEvent, payload: ImportStartPaylo
     restoreTags,
     categoryPathMappings,
     overwriteCategories,
+    skipHashes,
   } = payload;
 
   const send = (channel: string, data: unknown): void => {
@@ -475,8 +479,11 @@ async function runImport(event: Electron.IpcMainEvent, payload: ImportStartPaylo
     if (!metaEntry) throw new Error('Invalid .bbe: metadata.json not found');
     const metadata = JSON.parse(metaEntry.getData().toString('utf8')) as BbeMetadata;
 
-    const torrents = metadata.torrents.filter((t) => !t.failed);
-    let skipped = 0;
+    const { toProcess, alreadyExisted } = partitionImportEntries(
+      metadata.torrents.filter((t) => !t.failed),
+      skipHashes,
+    );
+    let failed = 0;
 
     if (!importCancelled) {
       await restoreCategoriesAndTags(
@@ -490,22 +497,22 @@ async function runImport(event: Electron.IpcMainEvent, payload: ImportStartPaylo
     }
 
     const addedHashes: string[] = [];
-    for (let i = 0; i < torrents.length; i++) {
+    for (let i = 0; i < toProcess.length; i++) {
       if (importCancelled) break;
 
-      const entry = torrents[i];
+      const entry = toProcess[i];
       try {
         await addTorrent(serverId, entry, metadata.export_mode, zip, restoreFields, pathMappings);
         addedHashes.push(entry.hash);
       } catch {
-        skipped++;
+        failed++;
       }
 
       send('import:progress', {
         current: i + 1,
-        total: torrents.length,
+        total: toProcess.length,
         name: entry.name,
-        skipped,
+        skipped: failed,
       } satisfies ExportProgressEvent);
     }
 
@@ -539,13 +546,13 @@ async function runImport(event: Electron.IpcMainEvent, payload: ImportStartPaylo
       }
     }
 
-    for (const entry of torrents) {
+    for (const entry of toProcess) {
       if (importCancelled) break;
       if (!confirmedHashes.has(entry.hash)) continue;
       await applyTorrentSettings(serverId, entry, restoreFields, startMode).catch(() => {});
     }
 
-    send('import:done', { total: torrents.length, skipped });
+    send('import:done', { total: toProcess.length, failed, alreadyExisted: alreadyExisted.length });
   } catch (err) {
     send('import:error', { message: (err as Error)?.message ?? String(err) });
   }
