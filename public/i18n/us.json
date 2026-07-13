@@ -1064,6 +1064,7 @@
       "tagline": "qBittorrent-nox Remote Client",
       "form-title": "Connect to Server",
       "form-subtitle": "Select a host to connect to.",
+      "form-subtitle-empty": "Add a server to get started.",
       "connecting": "Connecting...",
       "server-form": {
         "host": "Host"

@@ -252,6 +252,49 @@ describe('Login', () => {
     });
   });
 
+  describe('empty state', () => {
+    it('should hide the host form and show the add-server CTA when there are no servers', () => {
+      serverStoreMock.servers.set([]);
+      fixture.detectChanges();
+
+      expect(fixture.debugElement.query(By.css('#server'))).toBeNull();
+      expect(fixture.debugElement.query(By.css('.add-server-cta'))).not.toBeNull();
+    });
+
+    it('should show the host form and hide the add-server CTA when a server exists', () => {
+      serverStoreMock.servers.set([{ id: '1', name: 'Local' }] as any);
+      fixture.detectChanges();
+
+      expect(fixture.debugElement.query(By.css('#server'))).not.toBeNull();
+      expect(fixture.debugElement.query(By.css('.add-server-cta'))).toBeNull();
+    });
+
+    it('should call addNewServer when the add-server CTA is clicked', () => {
+      serverStoreMock.servers.set([]);
+      fixture.detectChanges();
+      const addSpy = vi.spyOn(component, 'addNewServer').mockResolvedValue(undefined);
+
+      fixture.debugElement.query(By.css('.add-server-cta')).nativeElement.click();
+
+      expect(addSpy).toHaveBeenCalled();
+    });
+
+    it('should show the get-started subtitle when there are no servers', () => {
+      serverStoreMock.servers.set([]);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toContain('pages.login.form-subtitle-empty');
+    });
+
+    it('should show the default subtitle when a server exists', () => {
+      serverStoreMock.servers.set([{ id: '1', name: 'Local' }] as any);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toContain('pages.login.form-subtitle');
+      expect(fixture.nativeElement.textContent).not.toContain('pages.login.form-subtitle-empty');
+    });
+  });
+
   describe('goToRelease', () => {
     it('should delegate to electronService.goToRelease', () => {
       component.goToRelease();
@@ -280,6 +323,61 @@ describe('Login', () => {
       modalMock.open.mockReturnValue(mockRef);
       await component.openManageServers();
       expect(componentInstance['hideConnect']).toBe(true);
+    });
+  });
+
+  describe('hasServers', () => {
+    it('should be false when there are no servers', () => {
+      serverStoreMock.servers.set([]);
+      expect(component.hasServers()).toBe(false);
+    });
+
+    it('should be true when at least one server exists', () => {
+      serverStoreMock.servers.set([{ id: '1' }] as any);
+      expect(component.hasServers()).toBe(true);
+    });
+  });
+
+  describe('addNewServer', () => {
+    it('should open the ServerEditor modal in add mode', async () => {
+      await component.addNewServer();
+      expect(modalMock.open).toHaveBeenCalledWith(expect.anything(), { size: 'lg' });
+    });
+
+    it('should emit SERVER_ADDED with the new id when the editor resolves', async () => {
+      const commandBus = TestBed.inject(CommandBusService) as any;
+      modalMock.open.mockReturnValue({ componentInstance: {}, result: Promise.resolve('new-id') });
+
+      await component.addNewServer();
+
+      expect(commandBus.emit).toHaveBeenCalledWith({ type: 'SERVER_ADDED', id: 'new-id' });
+    });
+
+    it('should not emit anything when the editor is dismissed', async () => {
+      const commandBus = TestBed.inject(CommandBusService) as any;
+      const dismissed = Promise.reject<string>(undefined);
+      dismissed.catch(() => {});
+      modalMock.open.mockReturnValue({ componentInstance: {}, result: dismissed });
+
+      await component.addNewServer();
+
+      expect(commandBus.emit).not.toHaveBeenCalled();
+    });
+
+    it('should ignore a second call while a modal is already open', async () => {
+      let resolveResult!: (id: string) => void;
+      const pending = new Promise<string>((resolve) => {
+        resolveResult = resolve;
+      });
+      modalMock.open.mockReturnValue({ componentInstance: {}, result: pending });
+
+      const first = component.addNewServer();
+      const second = component.addNewServer();
+
+      resolveResult('new-id');
+      await Promise.all([first, second]);
+
+      expect(modalMock.open).toHaveBeenCalledTimes(1);
     });
   });
 
