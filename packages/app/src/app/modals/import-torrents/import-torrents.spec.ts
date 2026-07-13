@@ -1,9 +1,12 @@
 ﻿import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { BbeTorrentEntry } from '@bitbutler/shared';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 import { ExportService } from '../../services/export.service';
 import { ServerStoreService } from '../../services/server-store.service';
+import { ThemeService } from '../../services/theme.service';
+import { TorrentStoreService } from '../../services/torrent-store.service';
 import { ImportTorrents } from './import-torrents';
 
 describe('ImportTorrents', () => {
@@ -27,7 +30,14 @@ describe('ImportTorrents', () => {
 
     mockExportService = {
       importPhase: signal('idle'),
-      importState: signal({ phase: 'idle', current: 0, total: 0, name: '', skipped: 0 }),
+      importState: signal({
+        phase: 'idle',
+        current: 0,
+        total: 0,
+        name: '',
+        failed: 0,
+        alreadyExisted: 0,
+      }),
       setImportLoading: vi.fn(),
       setImportReady: vi.fn(),
       setImportError: vi.fn(),
@@ -41,6 +51,8 @@ describe('ImportTorrents', () => {
         { provide: NgbActiveModal, useValue: { dismiss: vi.fn() } },
         { provide: ExportService, useValue: mockExportService },
         { provide: ServerStoreService, useValue: { currentServer: signal(null) } },
+        { provide: ThemeService, useValue: { effectiveMode: signal('light') } },
+        { provide: TorrentStoreService, useValue: { torrentsMap: signal(new Map()) } },
       ],
     }).compileComponents();
 
@@ -72,7 +84,8 @@ describe('ImportTorrents', () => {
       current: 0,
       total: 0,
       name: '',
-      skipped: 0,
+      failed: 0,
+      alreadyExisted: 0,
       metadata: {
         version: 1,
         exported_at: 0,
@@ -122,5 +135,153 @@ describe('ImportTorrents', () => {
         categoryPathMappings: [{ from: '/old', to: '/new' }],
       }),
     );
+  });
+
+  describe('duplicate detection', () => {
+    function setMetadata(torrents: BbeTorrentEntry[]) {
+      mockExportService.importState.set({
+        phase: 'ready',
+        current: 0,
+        total: 0,
+        name: '',
+        failed: 0,
+        alreadyExisted: 0,
+        metadata: {
+          version: 1,
+          exported_at: 0,
+          source_server: 'srv',
+          export_mode: 'full',
+          torrents,
+        },
+      } as any);
+    }
+
+    function torrentStoreMock() {
+      return TestBed.inject(TorrentStoreService) as unknown as {
+        torrentsMap: ReturnType<typeof signal<Map<string, unknown>>>;
+      };
+    }
+
+    it('is empty when no archive torrent hashes are on the target server', () => {
+      setMetadata([{ hash: 'aaa', name: 'A', failed: false }]);
+      expect(component.duplicateEntries()).toEqual([]);
+      expect(component.hasDuplicates()).toBe(false);
+    });
+
+    it('finds entries whose hash already exists on the target server, case-insensitively', () => {
+      torrentStoreMock().torrentsMap.set(new Map([['AAA', {}]]));
+      setMetadata([
+        { hash: 'aaa', name: 'A', failed: false },
+        { hash: 'bbb', name: 'B', failed: false },
+      ]);
+
+      expect(component.duplicateEntries().map((t) => t.hash)).toEqual(['aaa']);
+      expect(component.hasDuplicates()).toBe(true);
+    });
+
+    it('excludes failed entries from duplicate detection', () => {
+      torrentStoreMock().torrentsMap.set(new Map([['aaa', {}]]));
+      setMetadata([{ hash: 'aaa', name: 'A', failed: true } as any]);
+
+      expect(component.duplicateEntries()).toEqual([]);
+    });
+
+    it('startImport sends skipHashes for every duplicate that was not overridden', () => {
+      torrentStoreMock().torrentsMap.set(
+        new Map([
+          ['aaa', {}],
+          ['bbb', {}],
+        ]),
+      );
+      setMetadata([
+        { hash: 'aaa', name: 'A', failed: false },
+        { hash: 'bbb', name: 'B', failed: false },
+        { hash: 'ccc', name: 'C', failed: false },
+      ]);
+
+      component.startImport();
+
+      const call = (window.bitbutler.export.importStart as any).mock.calls[0][0];
+      expect(call.skipHashes.sort()).toEqual(['aaa', 'bbb']);
+    });
+
+    it('startImport excludes an overridden duplicate from skipHashes', () => {
+      torrentStoreMock().torrentsMap.set(
+        new Map([
+          ['aaa', {}],
+          ['bbb', {}],
+        ]),
+      );
+      setMetadata([
+        { hash: 'aaa', name: 'A', failed: false },
+        { hash: 'bbb', name: 'B', failed: false },
+      ]);
+
+      component.onDuplicatesSelectionChanged({
+        api: { getSelectedRows: () => [{ hash: 'aaa', name: 'A', failed: false }] },
+      } as any);
+
+      component.startImport();
+
+      const call = (window.bitbutler.export.importStart as any).mock.calls[0][0];
+      expect(call.skipHashes).toEqual(['bbb']);
+    });
+  });
+
+  describe('duplicates grid column definitions', () => {
+    it('every column has a colId', () => {
+      expect(component.duplicatesColDefs.every((c) => !!c.colId)).toBe(true);
+    });
+
+    it('colIds cover all expected fields', () => {
+      const colIds = component.duplicatesColDefs.map((c) => c.colId);
+      expect(colIds).toEqual(
+        expect.arrayContaining([
+          'name',
+          'save_path',
+          'category',
+          'tags',
+          'dl_limit',
+          'up_limit',
+          'ratio_limit',
+          'seeding_time_limit',
+          'inactive_seeding_time_limit',
+          'auto_tmm',
+          'sequential_download',
+          'super_seeding',
+          'first_last_piece_prio',
+          'state',
+        ]),
+      );
+    });
+
+    it('assigns agCheckboxCellRenderer and BooleanColumnFilter to the boolean columns', () => {
+      const boolCols = [
+        'auto_tmm',
+        'sequential_download',
+        'super_seeding',
+        'first_last_piece_prio',
+      ];
+      for (const colId of boolCols) {
+        const col = component.duplicatesColDefs.find((c) => c.colId === colId);
+        expect(col?.cellRenderer).toBe('agCheckboxCellRenderer');
+      }
+    });
+
+    it('the dl_limit and up_limit columns use a valueFormatter', () => {
+      expect(
+        component.duplicatesColDefs.find((c) => c.colId === 'dl_limit')?.valueFormatter,
+      ).toBeDefined();
+      expect(
+        component.duplicatesColDefs.find((c) => c.colId === 'up_limit')?.valueFormatter,
+      ).toBeDefined();
+    });
+
+    it('the tags column formats an array as a comma-joined string', () => {
+      const col = component.duplicatesColDefs.find((c) => c.colId === 'tags')!;
+      const fmt = col.valueFormatter as (p: any) => string;
+      expect(fmt({ value: ['linux', 'docs'] })).toBe('linux, docs');
+      expect(fmt({ value: undefined })).toBe('');
+    });
   });
 });

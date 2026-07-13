@@ -7,11 +7,13 @@ import {
   inject,
   input,
   runInInjectionContext,
+  signal,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import {
   BbePathMapping,
+  BbeTorrentEntry,
   ImportRestoreField,
   ImportStartMode,
   ImportStartPayload,
@@ -28,13 +30,35 @@ import {
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import {
+  ColDef,
+  GetRowIdParams,
+  GridOptions,
+  SelectionChangedEvent,
+  ValueFormatterParams,
+  ValueGetterParams,
+} from 'ag-grid-community';
+import { GRID_DARK_THEME, GRID_LIGHT_THEME, GRID_SHARED_OPTIONS } from '../../app.const';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { BbPopover } from '../../components/bb-popover/bb-popover';
 import { BbProgress } from '../../components/bb-progress/bb-progress';
+import { BooleanColumnFilter } from '../../components/column-filters/boolean-column-filter/boolean-column-filter';
+import { RatioLimitColumnFilter } from '../../components/column-filters/ratio-limit-column-filter/ratio-limit-column-filter';
+import {
+  SetColumnFilter,
+  SetColumnFilterParams,
+  buildValueCounts,
+} from '../../components/column-filters/set-column-filter/set-column-filter';
+import { SizeColumnFilter } from '../../components/column-filters/size-column-filter/size-column-filter';
+import { TextColumnFilter } from '../../components/column-filters/text-column-filter/text-column-filter';
+import { TimeLimitColumnFilter } from '../../components/column-filters/time-limit-column-filter/time-limit-column-filter';
 import { LocalTimestampPipe } from '../../pipes/local-timestamp-pipe';
 import { ExportService } from '../../services/export.service';
 import { ServerStoreService } from '../../services/server-store.service';
+import { ThemeService } from '../../services/theme.service';
+import { TorrentStoreService } from '../../services/torrent-store.service';
+import { UiFormatService } from '../../services/ui-format.service';
 import { setModalInput } from '../../utils/modal-input';
 
 @Component({
@@ -64,6 +88,10 @@ export class ImportTorrents implements OnInit {
   private readonly exportService = inject(ExportService);
   private readonly injector = inject(Injector);
   readonly serverStore = inject(ServerStoreService);
+  private readonly themeService = inject(ThemeService);
+  private readonly torrentStore = inject(TorrentStoreService);
+  private readonly uiFormatService = inject(UiFormatService);
+  private readonly translateService = inject(TranslateService);
 
   importForm!: FormGroup;
   private startModeValue!: ReturnType<typeof toSignal<ImportStartMode>>;
@@ -137,6 +165,282 @@ export class ImportTorrents implements OnInit {
     const s = this.serverStore.currentServer();
     return s ? `${s.protocol}://${s.host}:${s.port}` : '';
   });
+
+  readonly theme = this.themeService.effectiveMode;
+  readonly bbDark = GRID_DARK_THEME;
+  readonly bbLight = GRID_LIGHT_THEME;
+
+  private readonly overriddenHashes = signal<Set<string>>(new Set());
+
+  readonly duplicateEntries = computed(() => {
+    const currentHashes = new Set(
+      Array.from(this.torrentStore.torrentsMap().keys()).map((h) => h.toLowerCase()),
+    );
+    return (this.metadata()?.torrents ?? []).filter(
+      (t) => !t.failed && currentHashes.has(t.hash.toLowerCase()),
+    );
+  });
+
+  readonly hasDuplicates = computed(() => this.duplicateEntries().length > 0);
+
+  readonly duplicatesGridOptions: GridOptions<BbeTorrentEntry> = {
+    ...GRID_SHARED_OPTIONS,
+    rowSelection: {
+      mode: 'multiRow',
+      checkboxes: true,
+      headerCheckbox: true,
+      enableClickSelection: false,
+    },
+    getRowId: (params: GetRowIdParams<BbeTorrentEntry>) => params.data.hash,
+    onSelectionChanged: (e: SelectionChangedEvent<BbeTorrentEntry>) =>
+      this.onDuplicatesSelectionChanged(e),
+  };
+
+  readonly duplicatesColDefs: ColDef<BbeTorrentEntry>[] = this.getDuplicatesColDefs();
+
+  onDuplicatesSelectionChanged(e: SelectionChangedEvent<BbeTorrentEntry>): void {
+    this.overriddenHashes.set(new Set(e.api.getSelectedRows().map((r) => r.hash.toLowerCase())));
+  }
+
+  private stateLabel(state: string | null | undefined): string {
+    return state ? this.translateService.instant('torrent.state.' + state) : '';
+  }
+
+  private getDuplicatesColDefs(): ColDef<BbeTorrentEntry>[] {
+    const stateItems = computed(() =>
+      buildValueCounts(this.duplicateEntries(), (t) => this.stateLabel(t.state)),
+    );
+
+    return [
+      {
+        colId: 'name',
+        field: 'name',
+        tooltipField: 'name',
+        width: 220,
+        headerName: this.translateService.instant(
+          'components.modals.import-torrents.duplicates.col-def.name',
+        ),
+        headerTooltip: this.translateService.instant(
+          'components.modals.import-torrents.duplicates.col-def.name',
+        ),
+        sortable: true,
+        resizable: true,
+        filter: TextColumnFilter,
+      },
+      {
+        colId: 'save_path',
+        field: 'save_path',
+        tooltipField: 'save_path',
+        width: 260,
+        headerName: this.translateService.instant(
+          'components.modals.import-torrents.duplicates.col-def.save_path',
+        ),
+        headerTooltip: this.translateService.instant(
+          'components.modals.import-torrents.duplicates.col-def.save_path',
+        ),
+        sortable: true,
+        resizable: true,
+        filter: TextColumnFilter,
+      },
+      {
+        colId: 'category',
+        field: 'category',
+        tooltipField: 'category',
+        width: 150,
+        headerName: this.translateService.instant(
+          'components.modals.import-torrents.duplicates.col-def.category',
+        ),
+        headerTooltip: this.translateService.instant(
+          'components.modals.import-torrents.duplicates.col-def.category',
+        ),
+        sortable: true,
+        resizable: true,
+        filter: TextColumnFilter,
+      },
+      {
+        colId: 'tags',
+        field: 'tags',
+        width: 180,
+        headerName: this.translateService.instant(
+          'components.modals.import-torrents.duplicates.col-def.tags',
+        ),
+        headerTooltip: this.translateService.instant(
+          'components.modals.import-torrents.duplicates.col-def.tags',
+        ),
+        valueFormatter: (params: ValueFormatterParams<BbeTorrentEntry, string[]>) =>
+          (params.value ?? []).join(', '),
+        filterValueGetter: (params: ValueGetterParams<BbeTorrentEntry>) =>
+          (params.data?.tags ?? []).join(', '),
+        tooltipValueGetter: (params) => (params.data?.tags ?? []).join(', '),
+        sortable: true,
+        resizable: true,
+        filter: TextColumnFilter,
+      },
+      {
+        colId: 'dl_limit',
+        field: 'dl_limit',
+        width: 130,
+        headerName: this.translateService.instant(
+          'components.modals.import-torrents.duplicates.col-def.dl_limit',
+        ),
+        headerTooltip: this.translateService.instant(
+          'components.modals.import-torrents.duplicates.col-def.dl_limit',
+        ),
+        valueFormatter: this.uiFormatService.fileSizePerSecond,
+        cellClass: 'tabular-nums',
+        sortable: true,
+        resizable: true,
+        filter: SizeColumnFilter,
+      },
+      {
+        colId: 'up_limit',
+        field: 'up_limit',
+        width: 130,
+        headerName: this.translateService.instant(
+          'components.modals.import-torrents.duplicates.col-def.up_limit',
+        ),
+        headerTooltip: this.translateService.instant(
+          'components.modals.import-torrents.duplicates.col-def.up_limit',
+        ),
+        valueFormatter: this.uiFormatService.fileSizePerSecond,
+        cellClass: 'tabular-nums',
+        sortable: true,
+        resizable: true,
+        filter: SizeColumnFilter,
+      },
+      {
+        colId: 'ratio_limit',
+        field: 'ratio_limit',
+        width: 135,
+        headerName: this.translateService.instant(
+          'components.modals.import-torrents.duplicates.col-def.ratio_limit',
+        ),
+        headerTooltip: this.translateService.instant(
+          'components.modals.import-torrents.duplicates.col-def.ratio_limit',
+        ),
+        valueFormatter: this.uiFormatService.ratioLimit,
+        cellClass: 'tabular-nums',
+        sortable: true,
+        resizable: true,
+        filter: RatioLimitColumnFilter,
+      },
+      {
+        colId: 'seeding_time_limit',
+        field: 'seeding_time_limit',
+        width: 165,
+        headerName: this.translateService.instant(
+          'components.modals.import-torrents.duplicates.col-def.seeding_time_limit',
+        ),
+        headerTooltip: this.translateService.instant(
+          'components.modals.import-torrents.duplicates.col-def.seeding_time_limit',
+        ),
+        valueFormatter: this.uiFormatService.timeLimit,
+        cellClass: 'tabular-nums',
+        sortable: true,
+        resizable: true,
+        filter: TimeLimitColumnFilter,
+      },
+      {
+        colId: 'inactive_seeding_time_limit',
+        field: 'inactive_seeding_time_limit',
+        width: 195,
+        headerName: this.translateService.instant(
+          'components.modals.import-torrents.duplicates.col-def.inactive_seeding_time_limit',
+        ),
+        headerTooltip: this.translateService.instant(
+          'components.modals.import-torrents.duplicates.col-def.inactive_seeding_time_limit',
+        ),
+        valueFormatter: this.uiFormatService.timeLimit,
+        cellClass: 'tabular-nums',
+        sortable: true,
+        resizable: true,
+        filter: TimeLimitColumnFilter,
+      },
+      {
+        colId: 'auto_tmm',
+        field: 'auto_tmm',
+        width: 130,
+        headerName: this.translateService.instant(
+          'components.modals.import-torrents.duplicates.col-def.auto_tmm',
+        ),
+        headerTooltip: this.translateService.instant(
+          'components.modals.import-torrents.duplicates.col-def.auto_tmm',
+        ),
+        cellRenderer: 'agCheckboxCellRenderer',
+        editable: false,
+        sortable: true,
+        resizable: true,
+        filter: BooleanColumnFilter,
+      },
+      {
+        colId: 'sequential_download',
+        field: 'sequential_download',
+        width: 170,
+        headerName: this.translateService.instant(
+          'components.modals.import-torrents.duplicates.col-def.sequential_download',
+        ),
+        headerTooltip: this.translateService.instant(
+          'components.modals.import-torrents.duplicates.col-def.sequential_download',
+        ),
+        cellRenderer: 'agCheckboxCellRenderer',
+        editable: false,
+        sortable: true,
+        resizable: true,
+        filter: BooleanColumnFilter,
+      },
+      {
+        colId: 'super_seeding',
+        field: 'super_seeding',
+        width: 140,
+        headerName: this.translateService.instant(
+          'components.modals.import-torrents.duplicates.col-def.super_seeding',
+        ),
+        headerTooltip: this.translateService.instant(
+          'components.modals.import-torrents.duplicates.col-def.super_seeding',
+        ),
+        cellRenderer: 'agCheckboxCellRenderer',
+        editable: false,
+        sortable: true,
+        resizable: true,
+        filter: BooleanColumnFilter,
+      },
+      {
+        colId: 'first_last_piece_prio',
+        field: 'first_last_piece_prio',
+        width: 175,
+        headerName: this.translateService.instant(
+          'components.modals.import-torrents.duplicates.col-def.first_last_piece_prio',
+        ),
+        headerTooltip: this.translateService.instant(
+          'components.modals.import-torrents.duplicates.col-def.first_last_piece_prio',
+        ),
+        cellRenderer: 'agCheckboxCellRenderer',
+        editable: false,
+        sortable: true,
+        resizable: true,
+        filter: BooleanColumnFilter,
+      },
+      {
+        colId: 'state',
+        field: 'state',
+        width: 130,
+        headerName: this.translateService.instant(
+          'components.modals.import-torrents.duplicates.col-def.state',
+        ),
+        headerTooltip: this.translateService.instant(
+          'components.modals.import-torrents.duplicates.col-def.state',
+        ),
+        valueFormatter: (params: ValueFormatterParams<BbeTorrentEntry, string>) =>
+          this.stateLabel(params.value),
+        filterValueGetter: (params: ValueGetterParams<BbeTorrentEntry>) =>
+          this.stateLabel(params.data?.state),
+        sortable: true,
+        resizable: true,
+        filter: SetColumnFilter,
+        filterParams: { getItems: () => stateItems() } satisfies Partial<SetColumnFilterParams>,
+      },
+    ];
+  }
 
   get pathMappings(): FormArray {
     return this.importForm.get('pathMappings') as FormArray;
@@ -261,6 +565,10 @@ export class ImportTorrents implements OnInit {
       raw.categoryPathMappings as Array<{ from: string; to: string }>
     ).filter((r) => r.from.trim());
 
+    const skipHashes = this.duplicateEntries()
+      .map((t) => t.hash.toLowerCase())
+      .filter((h) => !this.overriddenHashes().has(h));
+
     const payload: ImportStartPayload = {
       serverId: this.serverStore.currentServer()?.id ?? '',
       bbePath: this.loadedBbePath || this.initialBbePath() || '',
@@ -271,7 +579,7 @@ export class ImportTorrents implements OnInit {
       restoreTags: raw.restoreFields.tags,
       categoryPathMappings,
       overwriteCategories: raw.overwriteCategories,
-      skipHashes: [],
+      skipHashes,
     };
 
     this.exportService.startImport();
