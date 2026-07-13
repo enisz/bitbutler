@@ -384,6 +384,7 @@ export class UiCommandHandlerService {
             const { ManageTags } = await import('../modals/manage-tags/manage-tags');
             if (this.isModalOpen(ManageTags)) break;
             const manageTagsModalRef = this.modalService.open(ManageTags, {
+              scrollable: true,
               beforeDismiss: () => manageTagsModalRef.componentInstance.canDeactivate(),
             });
             manageTagsModalRef.result.catch(() => {});
@@ -395,6 +396,7 @@ export class UiCommandHandlerService {
               await import('../modals/manage-categories/manage-categories');
             if (this.isModalOpen(ManageCategories)) break;
             const manageCategoriesModalRef = this.modalService.open(ManageCategories, {
+              scrollable: true,
               beforeDismiss: () => manageCategoriesModalRef.componentInstance.canDeactivate(),
             });
             manageCategoriesModalRef.result.catch(() => {});
@@ -404,7 +406,9 @@ export class UiCommandHandlerService {
           case 'UI_MANAGE_SERVERS': {
             const { ManageServers } = await import('../modals/manage-servers/manage-servers');
             if (this.isModalOpen(ManageServers)) break;
-            const manageServersModalRef = this.modalService.open(ManageServers);
+            const manageServersModalRef = this.modalService.open(ManageServers, {
+              scrollable: true,
+            });
             manageServersModalRef.result.catch(() => {});
             break;
           }
