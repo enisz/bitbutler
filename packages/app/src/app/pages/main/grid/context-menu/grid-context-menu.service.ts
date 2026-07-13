@@ -111,8 +111,8 @@ export class GridContextMenuService {
                   hash: data.row.hash,
                 }),
             },
+            { kind: 'divider' as const },
           ]),
-      { kind: 'divider' },
 
       {
         kind: 'submenu',
