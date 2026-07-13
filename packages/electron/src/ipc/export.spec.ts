@@ -474,6 +474,39 @@ describe('filterAssignedTags', () => {
   });
 });
 
+describe('partitionImportEntries', () => {
+  async function setup() {
+    return import('./export.js');
+  }
+
+  it('keeps entries whose hash is not in skipHashes in toProcess', async () => {
+    const { partitionImportEntries } = await setup();
+    const torrents = [
+      { hash: 'aaa', name: 'A', failed: false },
+      { hash: 'bbb', name: 'B', failed: false },
+    ];
+    const result = partitionImportEntries(torrents as any, ['bbb']);
+    expect(result.toProcess).toEqual([{ hash: 'aaa', name: 'A', failed: false }]);
+    expect(result.alreadyExisted).toEqual([{ hash: 'bbb', name: 'B', failed: false }]);
+  });
+
+  it('matches hashes case-insensitively', async () => {
+    const { partitionImportEntries } = await setup();
+    const torrents = [{ hash: 'ABCDEF', name: 'A', failed: false }];
+    const result = partitionImportEntries(torrents as any, ['abcdef']);
+    expect(result.toProcess).toEqual([]);
+    expect(result.alreadyExisted).toEqual(torrents);
+  });
+
+  it('returns everything in toProcess when skipHashes is empty', async () => {
+    const { partitionImportEntries } = await setup();
+    const torrents = [{ hash: 'aaa', name: 'A', failed: false }];
+    const result = partitionImportEntries(torrents as any, []);
+    expect(result.toProcess).toEqual(torrents);
+    expect(result.alreadyExisted).toEqual([]);
+  });
+});
+
 describe('restoreCategoriesAndTags', () => {
   const mockQbRequestRestore = vi.hoisted(() => vi.fn());
 

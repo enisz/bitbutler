@@ -96,6 +96,23 @@ export function filterAssignedTags(tags: string[], entries: BbeTorrentEntry[]): 
   return tags.filter((tag) => assigned.has(tag));
 }
 
+export function partitionImportEntries(
+  torrents: BbeTorrentEntry[],
+  skipHashes: string[],
+): { toProcess: BbeTorrentEntry[]; alreadyExisted: BbeTorrentEntry[] } {
+  const skipSet = new Set(skipHashes.map((h) => h.toLowerCase()));
+  const toProcess: BbeTorrentEntry[] = [];
+  const alreadyExisted: BbeTorrentEntry[] = [];
+  for (const entry of torrents) {
+    if (skipSet.has(entry.hash.toLowerCase())) {
+      alreadyExisted.push(entry);
+    } else {
+      toProcess.push(entry);
+    }
+  }
+  return { toProcess, alreadyExisted };
+}
+
 export async function restoreCategoriesAndTags(
   serverId: string,
   metadata: Pick<BbeMetadata, 'categories' | 'tags'>,

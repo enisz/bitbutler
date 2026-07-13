@@ -166,6 +166,7 @@ export interface ImportStartPayload {
   restoreTags: boolean;
   categoryPathMappings: BbePathMapping[];
   overwriteCategories: boolean;
+  skipHashes: string[];
 }
 
 export interface BitButlerAPI {
@@ -264,7 +265,7 @@ export interface BitButlerAPI {
     onDone(cb: (e: ExportDoneEvent) => void): () => void;
     onError(cb: (e: { message: string }) => void): () => void;
     onImportProgress(cb: (e: ExportProgressEvent) => void): () => void;
-    onImportDone(cb: (e: { total: number; skipped: number }) => void): () => void;
+    onImportDone(cb: (e: { total: number; failed: number; alreadyExisted: number }) => void): () => void;
     onImportError(cb: (e: { message: string }) => void): () => void;
   };
 }
