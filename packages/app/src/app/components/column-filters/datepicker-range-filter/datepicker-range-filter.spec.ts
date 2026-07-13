@@ -10,7 +10,7 @@ describe('DatepickerRangeFilter', () => {
   let mockParams: any;
 
   beforeEach(async () => {
-    mockParams = { filterChangedCallback: vi.fn() };
+    mockParams = { filterChangedCallback: vi.fn(), api: { hidePopupMenu: vi.fn() } };
 
     await TestBed.configureTestingModule({
       imports: [DatepickerRangeFilter],

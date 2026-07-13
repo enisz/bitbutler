@@ -114,12 +114,14 @@ export class SetColumnFilter implements IFilterAngularComp {
   apply(): void {
     this.appliedValues = new Set(this.draftValues);
     this.params.filterChangedCallback();
+    this.params.api.hidePopupMenu();
   }
 
   clear(): void {
     this.draftValues = new Set();
     this.appliedValues = new Set();
     this.params.filterChangedCallback();
+    this.params.api.hidePopupMenu();
   }
 
   isApplyDisabled(): boolean {

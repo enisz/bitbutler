@@ -145,6 +145,7 @@ export class DatepickerRangeFilter implements IFilterAngularComp, OnInit {
     this.appliedFrom = this.fromDate;
     this.appliedTo = this.toDate;
     this.params.filterChangedCallback();
+    this.params.api.hidePopupMenu();
   }
   isApplyDisabled(): boolean {
     return (
@@ -159,6 +160,7 @@ export class DatepickerRangeFilter implements IFilterAngularComp, OnInit {
     this.appliedFrom = null;
     this.appliedTo = null;
     this.params.filterChangedCallback();
+    this.params.api.hidePopupMenu();
   }
   isToday(date: NgbDate) {
     return date.equals(this.today);

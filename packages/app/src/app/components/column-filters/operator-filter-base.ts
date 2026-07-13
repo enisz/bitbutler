@@ -69,12 +69,14 @@ export abstract class OperatorFilterBase<TValue> implements IFilterAngularComp, 
   apply(): void {
     this.applied = { ...this.draft };
     this.params.filterChangedCallback();
+    this.params.api.hidePopupMenu();
   }
 
   clear(): void {
     this.draft = this.createEmptyValue();
     this.applied = this.createEmptyValue();
     this.params.filterChangedCallback();
+    this.params.api.hidePopupMenu();
   }
 
   isApplyDisabled(): boolean {

@@ -9,6 +9,7 @@ describe('SizeColumnFilter', () => {
   beforeEach(async () => {
     mockParams = {
       filterChangedCallback: vi.fn(),
+      api: { hidePopupMenu: vi.fn() },
       getValue: vi.fn((node: { data: any }) => node.data?.size),
     };
 

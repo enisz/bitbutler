@@ -13,6 +13,7 @@ describe('SetColumnFilter', () => {
         { key: 'Books', label: 'Books', count: 1 },
       ]),
       filterChangedCallback: vi.fn(),
+      api: { hidePopupMenu: vi.fn() },
       getValue: vi.fn((node: { data: any }) => node.data?.category),
     };
 
