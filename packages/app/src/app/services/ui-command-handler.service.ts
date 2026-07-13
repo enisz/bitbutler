@@ -420,7 +420,10 @@ export class UiCommandHandlerService {
           case 'UI_EXPORT_TORRENTS': {
             const { ExportTorrents } = await import('../modals/export-torrents/export-torrents');
             if (this.isModalOpen(ExportTorrents)) break;
-            const exportRef = this.modalService.open(ExportTorrents, { size: 'lg' });
+            const exportRef = this.modalService.open(ExportTorrents, {
+              size: 'lg',
+              scrollable: true,
+            });
             exportRef.result.catch(() => {});
             break;
           }
@@ -428,7 +431,10 @@ export class UiCommandHandlerService {
           case 'UI_IMPORT_TORRENTS': {
             const { ImportTorrents } = await import('../modals/import-torrents/import-torrents');
             if (this.isModalOpen(ImportTorrents)) break;
-            const importRef = this.modalService.open(ImportTorrents, { size: 'lg' });
+            const importRef = this.modalService.open(ImportTorrents, {
+              size: 'lg',
+              scrollable: true,
+            });
             if (command.bbePath) {
               setModalInput(importRef, 'initialBbePath', command.bbePath);
             }
