@@ -18,6 +18,7 @@ import {
   faLanguage,
   faPalette,
   faPlug,
+  faPlus,
   faServer,
 } from '@fortawesome/free-solid-svg-icons';
 import { NgbDropdownModule, NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
@@ -80,7 +81,7 @@ export class Login implements OnInit {
 
   public readonly logoUrl = computed(() => getFamilyLogoUrl(this.themeService.family()));
 
-  public readonly icons = { faLanguage, faPalette, faCircleHalfStroke, faPlug, faServer };
+  public readonly icons = { faLanguage, faPalette, faCircleHalfStroke, faPlug, faPlus, faServer };
 
   public readonly families = THEME_FAMILIES;
 
@@ -123,6 +124,7 @@ export class Login implements OnInit {
   public readonly getFamilyLogoUrl = getFamilyLogoUrl;
 
   public servers = this.serverStoreService.servers;
+  public readonly hasServers = computed(() => this.servers().length > 0);
   public loading = this.serverStoreService.loading;
 
   public serverForm: FormGroup = new FormGroup({
@@ -270,6 +272,17 @@ export class Login implements OnInit {
     const { ManageServers } = await import('../../modals/manage-servers/manage-servers');
     const ref = this.modalService.open(ManageServers);
     setModalInput(ref, 'hideConnect', true);
+  }
+
+  public async addNewServer(): Promise<void> {
+    const { ServerEditor } = await import('../../modals/server-editor/server-editor');
+    const ref = this.modalService.open(ServerEditor, { size: 'lg' });
+    try {
+      const newId: string = await ref.result;
+      this.commandBusService.emit({ type: 'SERVER_ADDED', id: newId });
+    } catch {
+      // dismissed - nothing to do
+    }
   }
 
   public canConnect = () => !this.loading() && this.servers().length > 0;

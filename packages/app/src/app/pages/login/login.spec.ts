@@ -283,6 +283,45 @@ describe('Login', () => {
     });
   });
 
+  describe('hasServers', () => {
+    it('should be false when there are no servers', () => {
+      serverStoreMock.servers.set([]);
+      expect(component.hasServers()).toBe(false);
+    });
+
+    it('should be true when at least one server exists', () => {
+      serverStoreMock.servers.set([{ id: '1' }] as any);
+      expect(component.hasServers()).toBe(true);
+    });
+  });
+
+  describe('addNewServer', () => {
+    it('should open the ServerEditor modal in add mode', async () => {
+      await component.addNewServer();
+      expect(modalMock.open).toHaveBeenCalledWith(expect.anything(), { size: 'lg' });
+    });
+
+    it('should emit SERVER_ADDED with the new id when the editor resolves', async () => {
+      const commandBus = TestBed.inject(CommandBusService) as any;
+      modalMock.open.mockReturnValue({ componentInstance: {}, result: Promise.resolve('new-id') });
+
+      await component.addNewServer();
+
+      expect(commandBus.emit).toHaveBeenCalledWith({ type: 'SERVER_ADDED', id: 'new-id' });
+    });
+
+    it('should not emit anything when the editor is dismissed', async () => {
+      const commandBus = TestBed.inject(CommandBusService) as any;
+      const dismissed = Promise.reject<string>(undefined);
+      dismissed.catch(() => {});
+      modalMock.open.mockReturnValue({ componentInstance: {}, result: dismissed });
+
+      await component.addNewServer();
+
+      expect(commandBus.emit).not.toHaveBeenCalled();
+    });
+  });
+
   describe('connect', () => {
     let qbServiceMock: { login: ReturnType<typeof vi.fn> };
 
