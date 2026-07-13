@@ -34,55 +34,73 @@
             {{ 'pages.login.form-title' | translate }}
           </h3>
           <p class="text-body-secondary small mb-0">
-            {{ 'pages.login.form-subtitle' | translate }}
+            {{
+              (hasServers() ? 'pages.login.form-subtitle' : 'pages.login.form-subtitle-empty')
+                | translate
+            }}
           </p>
         </div>
       }
 
-      <form [formGroup]="serverForm" class="mb-4">
-        <div class="form-floating">
-          <ng-select
-            id="server"
-            bindLabel="name"
-            bindValue="id"
-            formControlName="server"
-            placeholder="No hosts"
-            [searchable]="false"
-            [clearable]="false"
-            [items]="servers()"
-            [fixedPlaceholder]="false"
-            [readonly]="servers().length === 0"
-            [trackByFn]="trackByFn"
-          >
-            <ng-template ng-label-tmp let-item="item">{{ item.name }}</ng-template>
-          </ng-select>
-          <label for="server">{{ 'pages.login.server-form.host' | translate }}</label>
-        </div>
-      </form>
+      @if (hasServers()) {
+        <form [formGroup]="serverForm" class="mb-4">
+          <div class="form-floating">
+            <ng-select
+              id="server"
+              bindLabel="name"
+              bindValue="id"
+              formControlName="server"
+              placeholder="No hosts"
+              [searchable]="false"
+              [clearable]="false"
+              [items]="servers()"
+              [fixedPlaceholder]="false"
+              [readonly]="servers().length === 0"
+              [trackByFn]="trackByFn"
+            >
+              <ng-template ng-label-tmp let-item="item">{{ item.name }}</ng-template>
+            </ng-select>
+            <label for="server">{{ 'pages.login.server-form.host' | translate }}</label>
+          </div>
+        </form>
 
-      <div class="d-flex flex-column gap-3">
-        <button
-          type="button"
-          class="btn btn-lg btn-primary btn-split"
-          (click)="connect()"
-          [disabled]="!canConnect()"
-        >
-          <bb-btn-content
-            [icon]="icons.faPlug"
-            [text]="'general.button.connect' | translate"
-          ></bb-btn-content>
-        </button>
-        <button
-          type="button"
-          class="btn btn-lg btn-dashed-secondary btn-split"
-          (click)="openManageServers()"
-        >
-          <bb-btn-content
-            [icon]="icons.faServer"
-            [text]="'general.button.manage-servers' | translate"
-          ></bb-btn-content>
-        </button>
-      </div>
+        <div class="d-flex flex-column gap-3">
+          <button
+            type="button"
+            class="btn btn-lg btn-primary btn-split"
+            (click)="connect()"
+            [disabled]="!canConnect()"
+          >
+            <bb-btn-content
+              [icon]="icons.faPlug"
+              [text]="'general.button.connect' | translate"
+            ></bb-btn-content>
+          </button>
+          <button
+            type="button"
+            class="btn btn-lg btn-dashed-secondary btn-split"
+            (click)="openManageServers()"
+          >
+            <bb-btn-content
+              [icon]="icons.faServer"
+              [text]="'general.button.manage-servers' | translate"
+            ></bb-btn-content>
+          </button>
+        </div>
+      } @else {
+        <div class="d-flex flex-column gap-3 mb-4">
+          <button
+            type="button"
+            class="btn btn-lg btn-primary btn-split add-server-cta"
+            (click)="addNewServer()"
+          >
+            <bb-btn-content
+              [icon]="icons.faPlus"
+              [text]="'general.button.add-server' | translate"
+            ></bb-btn-content>
+          </button>
+        </div>
+      }
 
       <div class="d-flex justify-content-between align-items-center mt-3">
         <button type="button" class="btn btn-link" (click)="goToRelease()">v{{ version }}</button>

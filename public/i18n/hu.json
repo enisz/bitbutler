@@ -1064,6 +1064,7 @@
       "tagline": "qBittorrent-nox távoli kliens",
       "form-title": "Csatlakozás",
       "form-subtitle": "Válassz gazdagépet a csatlakozáshoz.",
+      "form-subtitle-empty": "Adj hozzá egy szervert a kezdéshez.",
       "connecting": "Csatlakozás...",
       "server-form": {
         "host": "Gép (Host)"

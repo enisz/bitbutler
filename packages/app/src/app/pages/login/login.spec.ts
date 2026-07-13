@@ -252,6 +252,49 @@ describe('Login', () => {
     });
   });
 
+  describe('empty state', () => {
+    it('should hide the host form and show the add-server CTA when there are no servers', () => {
+      serverStoreMock.servers.set([]);
+      fixture.detectChanges();
+
+      expect(fixture.debugElement.query(By.css('#server'))).toBeNull();
+      expect(fixture.debugElement.query(By.css('.add-server-cta'))).not.toBeNull();
+    });
+
+    it('should show the host form and hide the add-server CTA when a server exists', () => {
+      serverStoreMock.servers.set([{ id: '1', name: 'Local' }] as any);
+      fixture.detectChanges();
+
+      expect(fixture.debugElement.query(By.css('#server'))).not.toBeNull();
+      expect(fixture.debugElement.query(By.css('.add-server-cta'))).toBeNull();
+    });
+
+    it('should call addNewServer when the add-server CTA is clicked', () => {
+      serverStoreMock.servers.set([]);
+      fixture.detectChanges();
+      const addSpy = vi.spyOn(component, 'addNewServer').mockResolvedValue(undefined);
+
+      fixture.debugElement.query(By.css('.add-server-cta')).nativeElement.click();
+
+      expect(addSpy).toHaveBeenCalled();
+    });
+
+    it('should show the get-started subtitle when there are no servers', () => {
+      serverStoreMock.servers.set([]);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toContain('pages.login.form-subtitle-empty');
+    });
+
+    it('should show the default subtitle when a server exists', () => {
+      serverStoreMock.servers.set([{ id: '1', name: 'Local' }] as any);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toContain('pages.login.form-subtitle');
+      expect(fixture.nativeElement.textContent).not.toContain('pages.login.form-subtitle-empty');
+    });
+  });
+
   describe('goToRelease', () => {
     it('should delegate to electronService.goToRelease', () => {
       component.goToRelease();
