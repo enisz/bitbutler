@@ -126,6 +126,7 @@ export class Login implements OnInit {
   public servers = this.serverStoreService.servers;
   public readonly hasServers = computed(() => this.servers().length > 0);
   public loading = this.serverStoreService.loading;
+  public readonly addingServer = signal(false);
 
   public serverForm: FormGroup = new FormGroup({
     server: new FormControl<string | null>(this.serverStoreService.currentServerId()),
@@ -275,13 +276,17 @@ export class Login implements OnInit {
   }
 
   public async addNewServer(): Promise<void> {
-    const { ServerEditor } = await import('../../modals/server-editor/server-editor');
-    const ref = this.modalService.open(ServerEditor, { size: 'lg' });
+    if (this.addingServer()) return;
+    this.addingServer.set(true);
     try {
+      const { ServerEditor } = await import('../../modals/server-editor/server-editor');
+      const ref = this.modalService.open(ServerEditor, { size: 'lg' });
       const newId: string = await ref.result;
       this.commandBusService.emit({ type: 'SERVER_ADDED', id: newId });
     } catch {
       // dismissed - nothing to do
+    } finally {
+      this.addingServer.set(false);
     }
   }
 

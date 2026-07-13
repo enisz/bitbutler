@@ -55,7 +55,6 @@
               [clearable]="false"
               [items]="servers()"
               [fixedPlaceholder]="false"
-              [readonly]="servers().length === 0"
               [trackByFn]="trackByFn"
             >
               <ng-template ng-label-tmp let-item="item">{{ item.name }}</ng-template>
@@ -93,6 +92,7 @@
             type="button"
             class="btn btn-lg btn-primary btn-split add-server-cta"
             (click)="addNewServer()"
+            [disabled]="addingServer()"
           >
             <bb-btn-content
               [icon]="icons.faPlus"

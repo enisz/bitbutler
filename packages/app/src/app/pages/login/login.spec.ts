@@ -363,6 +363,22 @@ describe('Login', () => {
 
       expect(commandBus.emit).not.toHaveBeenCalled();
     });
+
+    it('should ignore a second call while a modal is already open', async () => {
+      let resolveResult!: (id: string) => void;
+      const pending = new Promise<string>((resolve) => {
+        resolveResult = resolve;
+      });
+      modalMock.open.mockReturnValue({ componentInstance: {}, result: pending });
+
+      const first = component.addNewServer();
+      const second = component.addNewServer();
+
+      resolveResult('new-id');
+      await Promise.all([first, second]);
+
+      expect(modalMock.open).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('connect', () => {
