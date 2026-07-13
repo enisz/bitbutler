@@ -56,7 +56,10 @@ if (pwCol?.notnull === 1) {
         created_at   TEXT NOT NULL
       )
     `);
-    db.exec(`INSERT INTO servers_new SELECT * FROM servers`);
+    db.exec(`
+      INSERT INTO servers_new (id, name, host, protocol, port, username, password, auto_login, created_at)
+      SELECT id, name, host, protocol, port, username, password, auto_login, created_at FROM servers
+    `);
     db.exec(`DROP TABLE servers`);
     db.exec(`ALTER TABLE servers_new RENAME TO servers`);
   })();
