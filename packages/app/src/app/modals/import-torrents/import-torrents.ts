@@ -31,6 +31,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { AgGridAngular } from 'ag-grid-angular';
 import {
   ColDef,
   GetRowIdParams,
@@ -73,6 +74,7 @@ import { setModalInput } from '../../utils/modal-input';
     LocalTimestampPipe,
     NgbTooltip,
     BbBtnContent,
+    AgGridAngular,
   ],
   templateUrl: './import-torrents.html',
   styleUrl: './import-torrents.scss',

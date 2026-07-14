@@ -871,6 +871,7 @@
         "title": "Torrentek importálása",
         "label": {
           "archive": "Archívum",
+          "duplicates": "Már a szerveren található",
           "restore-options": "Visszaállítási beállítások",
           "path-remap": "Mentési útvonal hozzárendelés",
           "category-path-mapping": "Kategória útvonal hozzárendelés",
@@ -888,6 +889,25 @@
           "export-type": "Export típusa",
           "full-mode": "Teljes export",
           "legacy-mode": "Örökölt export"
+        },
+        "duplicates": {
+          "description": "Ezek a torrentek már megtalálhatók a cél szerveren, és alapértelmezés szerint kimaradnak az importálásból. Jelöld be azokat, amelyeket felül szeretnél írni az archivált beállításokkal.",
+          "col-def": {
+            "name": "Név",
+            "save_path": "Mentési útvonal",
+            "category": "Kategória",
+            "tags": "Címkék",
+            "dl_limit": "Letöltési korlát",
+            "up_limit": "Feltöltési korlát",
+            "ratio_limit": "Arány korlát",
+            "seeding_time_limit": "Seedelési idő korlát",
+            "inactive_seeding_time_limit": "Inaktív seedelési idő korlát",
+            "auto_tmm": "Auto-TMM",
+            "sequential_download": "Sorrendi letöltés",
+            "super_seeding": "Super seeding",
+            "first_last_piece_prio": "Első/utolsó szelet prioritása",
+            "state": "Állapot"
+          }
         },
         "restore": {
           "save_path": "Mentési útvonal",
@@ -928,9 +948,8 @@
         "progress": {
           "importing": "Torrentek importálása...",
           "done": "Import kész",
-          "skipped": "kihagyva",
-          "failed": "sikertelen",
-          "alreadyExisted": "már létezett"
+          "already-existed": "már létezett",
+          "failed": "sikertelen"
         },
         "button": {
           "import": "Importálás"

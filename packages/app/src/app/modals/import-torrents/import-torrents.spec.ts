@@ -284,4 +284,76 @@ describe('ImportTorrents', () => {
       expect(fmt({ value: undefined })).toBe('');
     });
   });
+
+  describe('duplicates fieldset visibility', () => {
+    it('does not render the duplicates fieldset when there are no duplicates', () => {
+      fixture.detectChanges();
+      const el = fixture.nativeElement as HTMLElement;
+      expect(el.querySelector('.duplicates-fieldset')).toBeNull();
+    });
+
+    it('renders the duplicates fieldset when duplicates exist', () => {
+      (
+        TestBed.inject(TorrentStoreService) as unknown as {
+          torrentsMap: ReturnType<typeof signal<Map<string, unknown>>>;
+        }
+      ).torrentsMap.set(new Map([['aaa', {}]]));
+
+      // `component.phase` captured a direct reference to this exact signal at
+      // construction time (`readonly phase = this.exportService.importPhase;`),
+      // so it must be mutated in place with `.set(...)` for `isReady()` to flip -
+      // see the identical caveat documented in the "done summary" describe block below.
+      mockExportService.importPhase.set('ready');
+      mockExportService.importState.set({
+        phase: 'ready',
+        current: 0,
+        total: 0,
+        name: '',
+        failed: 0,
+        alreadyExisted: 0,
+        metadata: {
+          version: 1,
+          exported_at: 0,
+          source_server: 'srv',
+          export_mode: 'full',
+          torrents: [{ hash: 'aaa', name: 'A', failed: false }],
+        },
+      } as any);
+
+      fixture.detectChanges();
+      const el = fixture.nativeElement as HTMLElement;
+      expect(el.querySelector('.duplicates-fieldset')).not.toBeNull();
+    });
+  });
+
+  describe('done summary', () => {
+    function setDone(failed: number, alreadyExisted: number) {
+      // `component.phase` captured a direct reference to this exact signal at
+      // construction time (`readonly phase = this.exportService.importPhase;`),
+      // so it must be mutated in place with `.set(...)` - reassigning
+      // `mockExportService.importPhase` to a new signal would not be visible
+      // to the already-constructed component.
+      mockExportService.importPhase.set('done');
+      mockExportService.importState.set({
+        phase: 'done',
+        current: 0,
+        total: 0,
+        name: '',
+        failed,
+        alreadyExisted,
+      } as any);
+    }
+
+    it('shows the alreadyExisted count when greater than zero', () => {
+      setDone(0, 2);
+      fixture.detectChanges();
+      expect((fixture.nativeElement as HTMLElement).textContent).toContain('2');
+    });
+
+    it('shows the failed count when greater than zero', () => {
+      setDone(3, 0);
+      fixture.detectChanges();
+      expect((fixture.nativeElement as HTMLElement).textContent).toContain('3');
+    });
+  });
 });

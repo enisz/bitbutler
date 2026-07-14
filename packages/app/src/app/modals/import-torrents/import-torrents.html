@@ -74,6 +74,24 @@
         }
       </fieldset>
 
+      @if (isReady() && hasDuplicates()) {
+        <fieldset class="bb-fieldset duplicates-fieldset">
+          <legend>{{ 'components.modals.import-torrents.label.duplicates' | translate }}</legend>
+          <p class="small mb-3">
+            {{ 'components.modals.import-torrents.duplicates.description' | translate }}
+          </p>
+          <ag-grid-angular
+            class="w-100 d-block mb-2"
+            style="height: 300px"
+            [loading]="false"
+            [rowData]="duplicateEntries()"
+            [columnDefs]="duplicatesColDefs"
+            [gridOptions]="duplicatesGridOptions"
+            [theme]="theme() === 'dark' ? bbDark : bbLight"
+          />
+        </fieldset>
+      }
+
       @if (isReady()) {
         <fieldset class="bb-fieldset" formGroupName="restoreFields">
           <legend>
@@ -363,13 +381,13 @@
           @if (isDone()) {
             <span class="text-success">
               {{ 'components.modals.import-torrents.progress.done' | translate }}
+              @if (state().alreadyExisted > 0) {
+                - {{ state().alreadyExisted }}
+                {{ 'components.modals.import-torrents.progress.already-existed' | translate }}
+              }
               @if (state().failed > 0) {
                 - {{ state().failed }}
                 {{ 'components.modals.import-torrents.progress.failed' | translate }}
-              }
-              @if (state().alreadyExisted > 0) {
-                - {{ state().alreadyExisted }}
-                {{ 'components.modals.import-torrents.progress.alreadyExisted' | translate }}
               }
             </span>
           }

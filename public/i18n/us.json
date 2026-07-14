@@ -871,6 +871,7 @@
         "title": "Import Torrents",
         "label": {
           "archive": "Archive",
+          "duplicates": "Already on server",
           "restore-options": "Restore options",
           "path-remap": "Save path remapping",
           "category-path-mapping": "Category path mapping",
@@ -888,6 +889,25 @@
           "export-type": "Export type",
           "full-mode": "Full export",
           "legacy-mode": "Legacy export"
+        },
+        "duplicates": {
+          "description": "These torrents already exist on the target server and will be skipped by default. Check any you want to override and reapply their archived settings instead.",
+          "col-def": {
+            "name": "Name",
+            "save_path": "Save path",
+            "category": "Category",
+            "tags": "Tags",
+            "dl_limit": "Download limit",
+            "up_limit": "Upload limit",
+            "ratio_limit": "Ratio limit",
+            "seeding_time_limit": "Seeding time limit",
+            "inactive_seeding_time_limit": "Inactive seeding time limit",
+            "auto_tmm": "Auto-TMM",
+            "sequential_download": "Sequential download",
+            "super_seeding": "Super seeding",
+            "first_last_piece_prio": "First/last piece priority",
+            "state": "State"
+          }
         },
         "restore": {
           "save_path": "Save path",
@@ -928,9 +948,8 @@
         "progress": {
           "importing": "Importing torrents...",
           "done": "Import complete",
-          "skipped": "skipped",
-          "failed": "failed",
-          "alreadyExisted": "already existed"
+          "already-existed": "already existed",
+          "failed": "failed"
         },
         "button": {
           "import": "Import"
