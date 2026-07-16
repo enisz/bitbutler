@@ -1,5 +1,10 @@
 import { Injectable, OnDestroy, computed, signal } from '@angular/core';
-import type { BbeMetadata, ExportDoneEvent, ExportProgressEvent } from '@bitbutler/shared';
+import type {
+  BbeMetadata,
+  ExportDoneEvent,
+  ExportProgressEvent,
+  ImportProgressEvent,
+} from '@bitbutler/shared';
 
 export type ExportPhase = 'idle' | 'running' | 'done' | 'error';
 export type ImportPhase = 'idle' | 'loading' | 'ready' | 'running' | 'done' | 'error';
@@ -23,6 +28,7 @@ export interface ImportState {
   failed: number;
   alreadyExisted: number;
   error?: string;
+  results: Map<string, 'imported' | 'failed'>;
 }
 
 const EXPORT_IDLE: ExportState = { phase: 'idle', current: 0, total: 0, name: '', skipped: 0 };
@@ -33,6 +39,7 @@ const IMPORT_IDLE: ImportState = {
   name: '',
   failed: 0,
   alreadyExisted: 0,
+  results: new Map(),
 };
 
 @Injectable({ providedIn: 'root' })
@@ -67,14 +74,19 @@ export class ExportService implements OnDestroy {
       api.onError((e: { message: string }) =>
         this._export.update((s) => ({ ...s, phase: 'error', error: e.message })),
       ),
-      api.onImportProgress((e: ExportProgressEvent) =>
-        this._import.update((s) => ({
-          ...s,
-          phase: 'running',
-          current: e.current,
-          total: e.total,
-          name: e.name,
-        })),
+      api.onImportProgress((e: ImportProgressEvent) =>
+        this._import.update((s) => {
+          const results = new Map(s.results);
+          results.set(e.hash.toLowerCase(), e.success ? 'imported' : 'failed');
+          return {
+            ...s,
+            phase: 'running',
+            current: e.current,
+            total: e.total,
+            name: e.name,
+            results,
+          };
+        }),
       ),
       api.onImportDone((e: { total: number; failed: number; alreadyExisted: number }) =>
         this._import.update((s) => ({
@@ -96,7 +108,7 @@ export class ExportService implements OnDestroy {
   }
 
   setImportLoading(): void {
-    this._import.set({ ...IMPORT_IDLE, phase: 'loading' });
+    this._import.set({ ...IMPORT_IDLE, phase: 'loading', results: new Map() });
   }
 
   setImportReady(metadata: BbeMetadata): void {
@@ -121,7 +133,7 @@ export class ExportService implements OnDestroy {
   }
 
   resetImport(): void {
-    this._import.set(IMPORT_IDLE);
+    this._import.set({ ...IMPORT_IDLE, results: new Map() });
   }
 
   ngOnDestroy(): void {

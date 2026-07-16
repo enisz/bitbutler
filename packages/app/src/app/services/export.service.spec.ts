@@ -7,7 +7,8 @@ describe('ExportService', () => {
     current: number;
     total: number;
     name: string;
-    skipped: number;
+    hash: string;
+    success: boolean;
   }) => void;
   let onImportDoneCb: (e: { total: number; failed: number; alreadyExisted: number }) => void;
 
@@ -47,13 +48,31 @@ describe('ExportService', () => {
     expect(service.importPhase()).toBe('idle');
   });
 
-  it('maps import progress events onto current/total/name without a stray skipped field', () => {
-    onImportProgressCb({ current: 2, total: 5, name: 'Foo', skipped: 1 });
+  it('maps import progress events onto current/total/name and records per-hash results', () => {
+    onImportProgressCb({ current: 2, total: 5, name: 'Foo', hash: 'AAA', success: true });
     const state = service.importState();
     expect(state.phase).toBe('running');
     expect(state.current).toBe(2);
     expect(state.total).toBe(5);
     expect(state.name).toBe('Foo');
+    expect(state.results.get('aaa')).toBe('imported');
+  });
+
+  it('records a failed result for a failed progress event', () => {
+    onImportProgressCb({ current: 1, total: 1, name: 'Bar', hash: 'BBB', success: false });
+    expect(service.importState().results.get('bbb')).toBe('failed');
+  });
+
+  it('setImportLoading clears previous results', () => {
+    onImportProgressCb({ current: 1, total: 1, name: 'Foo', hash: 'aaa', success: true });
+    service.setImportLoading();
+    expect(service.importState().results.size).toBe(0);
+  });
+
+  it('resetImport clears previous results', () => {
+    onImportProgressCb({ current: 1, total: 1, name: 'Foo', hash: 'aaa', success: true });
+    service.resetImport();
+    expect(service.importState().results.size).toBe(0);
   });
 
   it('maps the import done event to failed and alreadyExisted', () => {
