@@ -614,12 +614,40 @@ describe('runImport', () => {
       current: 1,
       total: 1,
       name: 'New Torrent',
-      skipped: 0,
+      hash: 'bbb',
+      success: true,
     });
     expect(event.sender.send).toHaveBeenCalledWith('import:done', {
       total: 1,
       failed: 0,
       alreadyExisted: 1,
+    });
+  });
+
+  it('reports success: false and increments failed when addTorrent throws', async () => {
+    const torrents = [
+      { hash: 'ccc', name: 'Broken', failed: false, magnet_link: 'magnet:?xt=ccc' },
+    ];
+    mockZipGetEntry.mockImplementation((name: string) =>
+      name === 'metadata.json' ? metadataEntry(torrents) : undefined,
+    );
+    mockQbRequestImport.mockRejectedValue(new Error('qb request failed'));
+
+    const { runImport } = await setup();
+    const event = fakeEvent();
+    await runImport(event as any, basePayload() as any);
+
+    expect(event.sender.send).toHaveBeenCalledWith('import:progress', {
+      current: 1,
+      total: 1,
+      name: 'Broken',
+      hash: 'ccc',
+      success: false,
+    });
+    expect(event.sender.send).toHaveBeenCalledWith('import:done', {
+      total: 1,
+      failed: 1,
+      alreadyExisted: 0,
     });
   });
 });

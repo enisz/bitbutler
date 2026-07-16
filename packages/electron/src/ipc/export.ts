@@ -8,6 +8,7 @@ import type {
   ExportStartPayload,
   ExportTorrentFileItem,
   ExportTorrentFilesResult,
+  ImportProgressEvent,
   ImportRestoreField,
   ImportStartPayload,
 } from '@bitbutler/shared';
@@ -501,19 +502,22 @@ export async function runImport(
       if (importCancelled) break;
 
       const entry = toProcess[i];
+      let success = true;
       try {
         await addTorrent(serverId, entry, metadata.export_mode, zip, restoreFields, pathMappings);
         addedHashes.push(entry.hash);
       } catch {
         failed++;
+        success = false;
       }
 
       send('import:progress', {
         current: i + 1,
         total: toProcess.length,
         name: entry.name,
-        skipped: failed,
-      } satisfies ExportProgressEvent);
+        hash: entry.hash,
+        success,
+      } satisfies ImportProgressEvent);
     }
 
     const needsPostProcess =

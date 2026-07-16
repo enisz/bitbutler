@@ -89,6 +89,14 @@ export interface ExportProgressEvent {
   skipped: number;
 }
 
+export interface ImportProgressEvent {
+  current: number;
+  total: number;
+  name: string;
+  hash: string;
+  success: boolean;
+}
+
 export interface ExportDoneEvent {
   path: string;
   total: number;
@@ -264,7 +272,7 @@ export interface BitButlerAPI {
     onProgress(cb: (e: ExportProgressEvent) => void): () => void;
     onDone(cb: (e: ExportDoneEvent) => void): () => void;
     onError(cb: (e: { message: string }) => void): () => void;
-    onImportProgress(cb: (e: ExportProgressEvent) => void): () => void;
+    onImportProgress(cb: (e: ImportProgressEvent) => void): () => void;
     onImportDone(cb: (e: { total: number; failed: number; alreadyExisted: number }) => void): () => void;
     onImportError(cb: (e: { message: string }) => void): () => void;
   };
