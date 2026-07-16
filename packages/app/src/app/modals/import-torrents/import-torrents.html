@@ -381,8 +381,8 @@
           @if (isDone()) {
             <span class="text-success">
               {{ 'components.modals.import-torrents.progress.done' | translate }}
-              @if (state().alreadyExisted > 0) {
-                - {{ state().alreadyExisted }}
+              @if (doneAlreadyExisted() > 0) {
+                - {{ doneAlreadyExisted() }}
                 {{ 'components.modals.import-torrents.progress.already-existed' | translate }}
               }
               @if (state().failed > 0) {

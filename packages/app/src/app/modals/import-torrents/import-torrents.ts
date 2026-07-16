@@ -210,6 +210,15 @@ export class ImportTorrents implements OnInit {
     });
   });
 
+  // The backend's `alreadyExisted` count (import:done) counts every hash in
+  // skipHashes, which now also includes non-duplicate rows the user manually
+  // deselected. Recompute the "already existed" count client-side from rows
+  // still marked 'duplicate' once the import has finished, so a deliberately
+  // skipped new torrent isn't mislabeled as pre-existing.
+  readonly doneAlreadyExisted = computed(
+    () => this.importRows().filter((r) => r.importState === 'duplicate').length,
+  );
+
   readonly defaultSelectedHashes = computed(() => {
     return new Set(
       this.importRows()

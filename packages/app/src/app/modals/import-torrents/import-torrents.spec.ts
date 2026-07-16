@@ -62,6 +62,12 @@ describe('ImportTorrents', () => {
     fixture.detectChanges();
   });
 
+  function torrentStoreMock() {
+    return TestBed.inject(TorrentStoreService) as unknown as {
+      torrentsMap: ReturnType<typeof signal<Map<string, unknown>>>;
+    };
+  }
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });
@@ -160,12 +166,6 @@ describe('ImportTorrents', () => {
           torrents,
         },
       } as any);
-    }
-
-    function torrentStoreMock() {
-      return TestBed.inject(TorrentStoreService) as unknown as {
-        torrentsMap: ReturnType<typeof signal<Map<string, unknown>>>;
-      };
     }
 
     it('duplicateHashes is empty when no archive torrent hashes are on the target server', () => {
@@ -292,6 +292,24 @@ describe('ImportTorrents', () => {
 
       const call = (window.bitbutler.export.importStart as any).mock.calls[0][0];
       expect(call.skipHashes).toEqual(['bbb']);
+    });
+
+    it('doneAlreadyExisted counts only rows still marked duplicate, not manually-deselected pending rows', () => {
+      torrentStoreMock().torrentsMap.set(new Map([['aaa', {}]]));
+      setMetadata([
+        { hash: 'aaa', name: 'A', failed: false }, // real duplicate, left unselected (default)
+        { hash: 'bbb', name: 'B', failed: false }, // pending, manually deselected by the user
+        { hash: 'ccc', name: 'C', failed: false }, // pending, selected/imported normally
+      ]);
+      mockExportService.importPhase.set('ready');
+      fixture.detectChanges();
+
+      // simulate the user deselecting bbb (a non-duplicate row) - only ccc stays selected
+      component.onImportSelectionChanged({
+        api: { getSelectedRows: () => [{ hash: 'ccc', name: 'C', failed: false }] },
+      } as any);
+
+      expect(component.doneAlreadyExisted()).toBe(1); // only aaa (the real duplicate)
     });
   });
 
@@ -425,7 +443,7 @@ describe('ImportTorrents', () => {
   });
 
   describe('done summary', () => {
-    function setDone(failed: number, alreadyExisted: number) {
+    function setDone(failed: number, alreadyExisted: number, torrents: BbeTorrentEntry[] = []) {
       // `component.phase` captured a direct reference to this exact signal at
       // construction time (`readonly phase = this.exportService.importPhase;`),
       // so it must be mutated in place with `.set(...)` - reassigning
@@ -440,11 +458,30 @@ describe('ImportTorrents', () => {
         failed,
         alreadyExisted,
         results: new Map(),
+        metadata: {
+          version: 1,
+          exported_at: 0,
+          source_server: 'srv',
+          export_mode: 'full',
+          torrents,
+        },
       } as any);
     }
 
     it('shows the alreadyExisted count when greater than zero', () => {
-      setDone(0, 2);
+      // doneAlreadyExisted is derived from rows still marked 'duplicate' in
+      // importRows(), not the raw backend alreadyExisted field - so seed two
+      // real duplicates (hashes present in torrentsMap and never attempted).
+      torrentStoreMock().torrentsMap.set(
+        new Map([
+          ['aaa', {}],
+          ['bbb', {}],
+        ]),
+      );
+      setDone(0, 2, [
+        { hash: 'aaa', name: 'A', failed: false },
+        { hash: 'bbb', name: 'B', failed: false },
+      ]);
       fixture.detectChanges();
       expect((fixture.nativeElement as HTMLElement).textContent).toContain('2');
     });
