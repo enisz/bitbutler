@@ -871,7 +871,7 @@
         "title": "Torrentek importálása",
         "label": {
           "archive": "Archívum",
-          "duplicates": "Már a szerveren található",
+          "grid": "Importálandó torrentek",
           "restore-options": "Visszaállítási beállítások",
           "path-remap": "Mentési útvonal hozzárendelés",
           "category-path-mapping": "Kategória útvonal hozzárendelés",
@@ -890,8 +890,8 @@
           "full-mode": "Teljes export",
           "legacy-mode": "Örökölt export"
         },
-        "duplicates": {
-          "description": "Ezek a torrentek már megtalálhatók a cél szerveren, és alapértelmezés szerint kimaradnak az importálásból. Jelöld be azokat, amelyeket felül szeretnél írni az archivált beállításokkal.",
+        "grid": {
+          "description": "Ez felsorolja az archívumban található összes torrentet a visszaállítandó metaadatokkal együtt. Töröld egy sor jelölését, ha ki szeretnéd hagyni az importálásból - a cél szerveren már meglévő torrentek alapértelmezés szerint nincsenek bejelölve, de bejelölheted őket, hogy mindenképp importáld és felülírd a beállításaikat.",
           "col-def": {
             "name": "Név",
             "save_path": "Mentési útvonal",
@@ -906,7 +906,14 @@
             "sequential_download": "Sorrendi letöltés",
             "super_seeding": "Super seeding",
             "first_last_piece_prio": "Első/utolsó szelet prioritása",
-            "state": "Állapot"
+            "state": "Állapot",
+            "import_state": "Import állapot"
+          },
+          "import-state": {
+            "pending": "Függőben",
+            "duplicate": "Duplikátum",
+            "imported": "Importálva",
+            "failed": "Sikertelen"
           }
         },
         "restore": {
