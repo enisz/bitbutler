@@ -273,7 +273,9 @@ export interface BitButlerAPI {
     onDone(cb: (e: ExportDoneEvent) => void): () => void;
     onError(cb: (e: { message: string }) => void): () => void;
     onImportProgress(cb: (e: ImportProgressEvent) => void): () => void;
-    onImportDone(cb: (e: { total: number; failed: number; alreadyExisted: number }) => void): () => void;
+    onImportDone(
+      cb: (e: { total: number; failed: number; alreadyExisted: number }) => void,
+    ): () => void;
     onImportError(cb: (e: { message: string }) => void): () => void;
   };
 }
