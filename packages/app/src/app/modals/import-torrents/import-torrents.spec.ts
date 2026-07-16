@@ -37,6 +37,7 @@ describe('ImportTorrents', () => {
         name: '',
         failed: 0,
         alreadyExisted: 0,
+        results: new Map(),
       }),
       setImportLoading: vi.fn(),
       setImportReady: vi.fn(),
@@ -86,6 +87,7 @@ describe('ImportTorrents', () => {
       name: '',
       failed: 0,
       alreadyExisted: 0,
+      results: new Map(),
       metadata: {
         version: 1,
         exported_at: 0,
@@ -137,8 +139,11 @@ describe('ImportTorrents', () => {
     );
   });
 
-  describe('duplicate detection', () => {
-    function setMetadata(torrents: BbeTorrentEntry[]) {
+  describe('import row state', () => {
+    function setMetadata(
+      torrents: BbeTorrentEntry[],
+      results: Map<string, 'imported' | 'failed'> = new Map(),
+    ) {
       mockExportService.importState.set({
         phase: 'ready',
         current: 0,
@@ -146,6 +151,7 @@ describe('ImportTorrents', () => {
         name: '',
         failed: 0,
         alreadyExisted: 0,
+        results,
         metadata: {
           version: 1,
           exported_at: 0,
@@ -162,31 +168,88 @@ describe('ImportTorrents', () => {
       };
     }
 
-    it('is empty when no archive torrent hashes are on the target server', () => {
+    it('duplicateHashes is empty when no archive torrent hashes are on the target server', () => {
       setMetadata([{ hash: 'aaa', name: 'A', failed: false }]);
-      expect(component.duplicateEntries()).toEqual([]);
-      expect(component.hasDuplicates()).toBe(false);
+      expect(component.duplicateHashes()).toEqual(new Set());
     });
 
-    it('finds entries whose hash already exists on the target server, case-insensitively', () => {
+    it('duplicateHashes finds hashes that already exist on the target server, case-insensitively', () => {
       torrentStoreMock().torrentsMap.set(new Map([['AAA', {}]]));
       setMetadata([
         { hash: 'aaa', name: 'A', failed: false },
         { hash: 'bbb', name: 'B', failed: false },
       ]);
 
-      expect(component.duplicateEntries().map((t) => t.hash)).toEqual(['aaa']);
-      expect(component.hasDuplicates()).toBe(true);
+      expect(component.duplicateHashes()).toEqual(new Set(['aaa']));
     });
 
-    it('excludes failed entries from duplicate detection', () => {
+    it('excludes export-failed entries from duplicateHashes', () => {
       torrentStoreMock().torrentsMap.set(new Map([['aaa', {}]]));
       setMetadata([{ hash: 'aaa', name: 'A', failed: true } as any]);
 
-      expect(component.duplicateEntries()).toEqual([]);
+      expect(component.duplicateHashes()).toEqual(new Set());
     });
 
-    it('startImport sends skipHashes for every duplicate that was not overridden', () => {
+    it('importRows marks export-time failures as failed and non-duplicate/non-result entries as pending', () => {
+      setMetadata([
+        { hash: 'aaa', name: 'A', failed: false },
+        { hash: 'bbb', name: 'B', failed: true, error: 'boom' } as any,
+      ]);
+
+      const rows = component.importRows();
+      expect(rows.find((r) => r.hash === 'aaa')?.importState).toBe('pending');
+      expect(rows.find((r) => r.hash === 'bbb')?.importState).toBe('failed');
+    });
+
+    it('importRows marks a hash present in torrentsMap as duplicate', () => {
+      torrentStoreMock().torrentsMap.set(new Map([['aaa', {}]]));
+      setMetadata([{ hash: 'aaa', name: 'A', failed: false }]);
+
+      expect(component.importRows().find((r) => r.hash === 'aaa')?.importState).toBe('duplicate');
+    });
+
+    it('importRows reflects live results over the duplicate/pending default', () => {
+      torrentStoreMock().torrentsMap.set(new Map([['aaa', {}]]));
+      setMetadata(
+        [
+          { hash: 'aaa', name: 'A', failed: false },
+          { hash: 'bbb', name: 'B', failed: false },
+        ],
+        new Map([
+          ['aaa', 'imported'],
+          ['bbb', 'failed'],
+        ]),
+      );
+
+      const rows = component.importRows();
+      expect(rows.find((r) => r.hash === 'aaa')?.importState).toBe('imported');
+      expect(rows.find((r) => r.hash === 'bbb')?.importState).toBe('failed');
+    });
+
+    it('defaultSelectedHashes includes only pending rows', () => {
+      torrentStoreMock().torrentsMap.set(new Map([['aaa', {}]]));
+      setMetadata([
+        { hash: 'aaa', name: 'A', failed: false },
+        { hash: 'bbb', name: 'B', failed: false },
+        { hash: 'ccc', name: 'C', failed: true } as any,
+      ]);
+
+      expect(component.defaultSelectedHashes()).toEqual(new Set(['bbb']));
+    });
+
+    it('seeds selectedHashes from defaultSelectedHashes once the archive becomes ready', () => {
+      torrentStoreMock().torrentsMap.set(new Map([['aaa', {}]]));
+      setMetadata([
+        { hash: 'aaa', name: 'A', failed: false },
+        { hash: 'bbb', name: 'B', failed: false },
+      ]);
+      mockExportService.importPhase.set('ready');
+      fixture.detectChanges();
+
+      expect(component.selectedHashes()).toEqual(new Set(['bbb']));
+    });
+
+    it('startImport sends skipHashes for every unselected row', () => {
       torrentStoreMock().torrentsMap.set(
         new Map([
           ['aaa', {}],
@@ -198,6 +261,8 @@ describe('ImportTorrents', () => {
         { hash: 'bbb', name: 'B', failed: false },
         { hash: 'ccc', name: 'C', failed: false },
       ]);
+      mockExportService.importPhase.set('ready');
+      fixture.detectChanges();
 
       component.startImport();
 
@@ -205,7 +270,7 @@ describe('ImportTorrents', () => {
       expect(call.skipHashes.sort()).toEqual(['aaa', 'bbb']);
     });
 
-    it('startImport excludes an overridden duplicate from skipHashes', () => {
+    it('startImport excludes a manually-selected duplicate from skipHashes', () => {
       torrentStoreMock().torrentsMap.set(
         new Map([
           ['aaa', {}],
@@ -216,8 +281,10 @@ describe('ImportTorrents', () => {
         { hash: 'aaa', name: 'A', failed: false },
         { hash: 'bbb', name: 'B', failed: false },
       ]);
+      mockExportService.importPhase.set('ready');
+      fixture.detectChanges();
 
-      component.onDuplicatesSelectionChanged({
+      component.onImportSelectionChanged({
         api: { getSelectedRows: () => [{ hash: 'aaa', name: 'A', failed: false }] },
       } as any);
 
@@ -228,13 +295,13 @@ describe('ImportTorrents', () => {
     });
   });
 
-  describe('duplicates grid column definitions', () => {
+  describe('import grid column definitions', () => {
     it('every column has a colId', () => {
-      expect(component.duplicatesColDefs.every((c) => !!c.colId)).toBe(true);
+      expect(component.importColDefs.every((c) => !!c.colId)).toBe(true);
     });
 
-    it('colIds cover all expected fields', () => {
-      const colIds = component.duplicatesColDefs.map((c) => c.colId);
+    it('colIds cover all expected fields plus importState', () => {
+      const colIds = component.importColDefs.map((c) => c.colId);
       expect(colIds).toEqual(
         expect.arrayContaining([
           'name',
@@ -251,6 +318,7 @@ describe('ImportTorrents', () => {
           'super_seeding',
           'first_last_piece_prio',
           'state',
+          'importState',
         ]),
       );
     });
@@ -263,46 +331,50 @@ describe('ImportTorrents', () => {
         'first_last_piece_prio',
       ];
       for (const colId of boolCols) {
-        const col = component.duplicatesColDefs.find((c) => c.colId === colId);
+        const col = component.importColDefs.find((c) => c.colId === colId);
         expect(col?.cellRenderer).toBe('agCheckboxCellRenderer');
       }
     });
 
     it('the dl_limit and up_limit columns use a valueFormatter', () => {
       expect(
-        component.duplicatesColDefs.find((c) => c.colId === 'dl_limit')?.valueFormatter,
+        component.importColDefs.find((c) => c.colId === 'dl_limit')?.valueFormatter,
       ).toBeDefined();
       expect(
-        component.duplicatesColDefs.find((c) => c.colId === 'up_limit')?.valueFormatter,
+        component.importColDefs.find((c) => c.colId === 'up_limit')?.valueFormatter,
       ).toBeDefined();
     });
 
     it('the tags column formats an array as a comma-joined string', () => {
-      const col = component.duplicatesColDefs.find((c) => c.colId === 'tags')!;
+      const col = component.importColDefs.find((c) => c.colId === 'tags')!;
       const fmt = col.valueFormatter as (p: any) => string;
       expect(fmt({ value: ['linux', 'docs'] })).toBe('linux, docs');
       expect(fmt({ value: undefined })).toBe('');
     });
+
+    it('the importState column has a valueFormatter and a set filter', () => {
+      const col = component.importColDefs.find((c) => c.colId === 'importState')!;
+      expect(col.valueFormatter).toBeDefined();
+      expect(col.filter).toBeDefined();
+    });
   });
 
-  describe('duplicates fieldset visibility', () => {
-    it('does not render the duplicates fieldset when there are no duplicates', () => {
+  describe('import grid row selectability', () => {
+    it('marks export-failed rows as non-selectable', () => {
+      const isRowSelectable = component.importGridOptions.isRowSelectable!;
+      expect(isRowSelectable({ data: { hash: 'aaa', failed: true } } as any)).toBe(false);
+      expect(isRowSelectable({ data: { hash: 'bbb', failed: false } } as any)).toBe(true);
+    });
+  });
+
+  describe('import grid fieldset visibility', () => {
+    it('does not render the import grid fieldset when the archive has not loaded', () => {
       fixture.detectChanges();
       const el = fixture.nativeElement as HTMLElement;
-      expect(el.querySelector('.duplicates-fieldset')).toBeNull();
+      expect(el.querySelector('.import-grid-fieldset')).toBeNull();
     });
 
-    it('renders the duplicates fieldset when duplicates exist', () => {
-      (
-        TestBed.inject(TorrentStoreService) as unknown as {
-          torrentsMap: ReturnType<typeof signal<Map<string, unknown>>>;
-        }
-      ).torrentsMap.set(new Map([['aaa', {}]]));
-
-      // `component.phase` captured a direct reference to this exact signal at
-      // construction time (`readonly phase = this.exportService.importPhase;`),
-      // so it must be mutated in place with `.set(...)` for `isReady()` to flip -
-      // see the identical caveat documented in the "done summary" describe block below.
+    it('renders the import grid fieldset once the archive is ready, even with no duplicates', () => {
       mockExportService.importPhase.set('ready');
       mockExportService.importState.set({
         phase: 'ready',
@@ -311,6 +383,7 @@ describe('ImportTorrents', () => {
         name: '',
         failed: 0,
         alreadyExisted: 0,
+        results: new Map(),
         metadata: {
           version: 1,
           exported_at: 0,
@@ -322,7 +395,32 @@ describe('ImportTorrents', () => {
 
       fixture.detectChanges();
       const el = fixture.nativeElement as HTMLElement;
-      expect(el.querySelector('.duplicates-fieldset')).not.toBeNull();
+      expect(el.querySelector('.import-grid-fieldset')).not.toBeNull();
+    });
+
+    it('keeps the import grid fieldset visible while running and once done', () => {
+      mockExportService.importPhase.set('running');
+      mockExportService.importState.set({
+        phase: 'running',
+        current: 1,
+        total: 2,
+        name: 'A',
+        failed: 0,
+        alreadyExisted: 0,
+        results: new Map(),
+        metadata: {
+          version: 1,
+          exported_at: 0,
+          source_server: 'srv',
+          export_mode: 'full',
+          torrents: [{ hash: 'aaa', name: 'A', failed: false }],
+        },
+      } as any);
+
+      fixture.detectChanges();
+      expect(
+        (fixture.nativeElement as HTMLElement).querySelector('.import-grid-fieldset'),
+      ).not.toBeNull();
     });
   });
 
@@ -341,6 +439,7 @@ describe('ImportTorrents', () => {
         name: '',
         failed,
         alreadyExisted,
+        results: new Map(),
       } as any);
     }
 

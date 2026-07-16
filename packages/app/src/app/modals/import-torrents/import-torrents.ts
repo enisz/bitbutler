@@ -4,10 +4,12 @@ import {
   Injector,
   OnInit,
   computed,
+  effect,
   inject,
   input,
   runInInjectionContext,
   signal,
+  untracked,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -34,8 +36,11 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import {
   ColDef,
+  FirstDataRenderedEvent,
   GetRowIdParams,
   GridOptions,
+  GridState,
+  RowClassParams,
   SelectionChangedEvent,
   ValueFormatterParams,
   ValueGetterParams,
@@ -61,6 +66,9 @@ import { ThemeService } from '../../services/theme.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
 import { UiFormatService } from '../../services/ui-format.service';
 import { setModalInput } from '../../utils/modal-input';
+
+export type ImportRowStatus = 'pending' | 'duplicate' | 'imported' | 'failed';
+type ImportGridRow = BbeTorrentEntry & { importState: ImportRowStatus };
 
 @Component({
   selector: 'app-import-torrents',
@@ -172,20 +180,56 @@ export class ImportTorrents implements OnInit {
   readonly bbDark = GRID_DARK_THEME;
   readonly bbLight = GRID_LIGHT_THEME;
 
-  private readonly overriddenHashes = signal<Set<string>>(new Set());
-
-  readonly duplicateEntries = computed(() => {
-    const currentHashes = new Set(
+  readonly duplicateHashes = computed(() => {
+    const current = new Set(
       Array.from(this.torrentStore.torrentsMap().keys()).map((h) => h.toLowerCase()),
     );
-    return (this.metadata()?.torrents ?? []).filter(
-      (t) => !t.failed && currentHashes.has(t.hash.toLowerCase()),
+    return new Set(
+      (this.metadata()?.torrents ?? [])
+        .filter((t) => !t.failed && current.has(t.hash.toLowerCase()))
+        .map((t) => t.hash.toLowerCase()),
     );
   });
 
-  readonly hasDuplicates = computed(() => this.duplicateEntries().length > 0);
+  readonly importRows = computed<ImportGridRow[]>(() => {
+    const dupes = this.duplicateHashes();
+    const results = this.exportService.importState().results;
+    return (this.metadata()?.torrents ?? []).map((entry) => {
+      const hashLower = entry.hash.toLowerCase();
+      let importState: ImportRowStatus;
+      if (entry.failed) {
+        importState = 'failed';
+      } else if (results.has(hashLower)) {
+        importState = results.get(hashLower)!;
+      } else if (dupes.has(hashLower)) {
+        importState = 'duplicate';
+      } else {
+        importState = 'pending';
+      }
+      return { ...entry, importState };
+    });
+  });
 
-  readonly duplicatesGridOptions: GridOptions<BbeTorrentEntry> = {
+  readonly defaultSelectedHashes = computed(() => {
+    return new Set(
+      this.importRows()
+        .filter((r) => r.importState === 'pending')
+        .map((r) => r.hash.toLowerCase()),
+    );
+  });
+
+  readonly selectedHashes = signal<Set<string>>(new Set());
+
+  private hasSeededSelection = false;
+
+  private readonly seedSelectionEffect = effect(() => {
+    if (this.phase() === 'ready' && !this.hasSeededSelection) {
+      this.hasSeededSelection = true;
+      this.selectedHashes.set(untracked(() => this.defaultSelectedHashes()));
+    }
+  });
+
+  readonly importGridOptions: GridOptions<ImportGridRow> = {
     ...GRID_SHARED_OPTIONS,
     rowSelection: {
       mode: 'multiRow',
@@ -193,24 +237,59 @@ export class ImportTorrents implements OnInit {
       headerCheckbox: true,
       enableClickSelection: false,
     },
-    getRowId: (params: GetRowIdParams<BbeTorrentEntry>) => params.data.hash,
-    onSelectionChanged: (e: SelectionChangedEvent<BbeTorrentEntry>) =>
-      this.onDuplicatesSelectionChanged(e),
+    isRowSelectable: (node) => !node.data?.failed,
+    getRowId: (params: GetRowIdParams<ImportGridRow>) => params.data.hash,
+    rowClassRules: {
+      'text-danger bg-danger-subtle': (params: RowClassParams<ImportGridRow>): boolean =>
+        params.data?.importState === 'failed',
+    },
+    initialState: this.getImportGridInitialState(),
+    onSelectionChanged: (e: SelectionChangedEvent<ImportGridRow>) =>
+      this.onImportSelectionChanged(e),
+    onFirstDataRendered: (e: FirstDataRenderedEvent<ImportGridRow>) =>
+      this.onImportFirstDataRendered(e),
   };
 
-  readonly duplicatesColDefs: ColDef<BbeTorrentEntry>[] = this.getDuplicatesColDefs();
+  readonly importColDefs: ColDef<ImportGridRow>[] = this.getImportColDefs();
 
-  onDuplicatesSelectionChanged(e: SelectionChangedEvent<BbeTorrentEntry>): void {
-    this.overriddenHashes.set(new Set(e.api.getSelectedRows().map((r) => r.hash.toLowerCase())));
+  onImportSelectionChanged(e: SelectionChangedEvent<ImportGridRow>): void {
+    this.selectedHashes.set(new Set(e.api.getSelectedRows().map((r) => r.hash.toLowerCase())));
+  }
+
+  onImportFirstDataRendered(e: FirstDataRenderedEvent<ImportGridRow>): void {
+    const selected = this.selectedHashes();
+    e.api.forEachNode((node) => node.setSelected(selected.has(node.data!.hash.toLowerCase())));
   }
 
   private stateLabel(state: string | null | undefined): string {
     return state ? this.translateService.instant('torrent.state.' + state) : '';
   }
 
-  private getDuplicatesColDefs(): ColDef<BbeTorrentEntry>[] {
+  private importStateLabel(state: ImportRowStatus | null | undefined): string {
+    return state
+      ? this.translateService.instant(
+          'components.modals.import-torrents.grid.import-state.' + state,
+        )
+      : '';
+  }
+
+  private getImportGridInitialState(): GridState {
+    const visibleStates: ImportRowStatus[] = ['pending', 'duplicate', 'failed'];
+    return {
+      filter: {
+        filterModel: {
+          importState: { values: visibleStates.map((s) => this.importStateLabel(s)) },
+        },
+      },
+    };
+  }
+
+  private getImportColDefs(): ColDef<ImportGridRow>[] {
     const stateItems = computed(() =>
-      buildValueCounts(this.duplicateEntries(), (t) => this.stateLabel(t.state)),
+      buildValueCounts(this.importRows(), (t) => this.stateLabel(t.state)),
+    );
+    const importStateItems = computed(() =>
+      buildValueCounts(this.importRows(), (t) => this.importStateLabel(t.importState)),
     );
 
     return [
@@ -220,10 +299,10 @@ export class ImportTorrents implements OnInit {
         tooltipField: 'name',
         width: 220,
         headerName: this.translateService.instant(
-          'components.modals.import-torrents.duplicates.col-def.name',
+          'components.modals.import-torrents.grid.col-def.name',
         ),
         headerTooltip: this.translateService.instant(
-          'components.modals.import-torrents.duplicates.col-def.name',
+          'components.modals.import-torrents.grid.col-def.name',
         ),
         sortable: true,
         resizable: true,
@@ -235,10 +314,10 @@ export class ImportTorrents implements OnInit {
         tooltipField: 'save_path',
         width: 260,
         headerName: this.translateService.instant(
-          'components.modals.import-torrents.duplicates.col-def.save_path',
+          'components.modals.import-torrents.grid.col-def.save_path',
         ),
         headerTooltip: this.translateService.instant(
-          'components.modals.import-torrents.duplicates.col-def.save_path',
+          'components.modals.import-torrents.grid.col-def.save_path',
         ),
         sortable: true,
         resizable: true,
@@ -250,10 +329,10 @@ export class ImportTorrents implements OnInit {
         tooltipField: 'category',
         width: 150,
         headerName: this.translateService.instant(
-          'components.modals.import-torrents.duplicates.col-def.category',
+          'components.modals.import-torrents.grid.col-def.category',
         ),
         headerTooltip: this.translateService.instant(
-          'components.modals.import-torrents.duplicates.col-def.category',
+          'components.modals.import-torrents.grid.col-def.category',
         ),
         sortable: true,
         resizable: true,
@@ -264,14 +343,14 @@ export class ImportTorrents implements OnInit {
         field: 'tags',
         width: 180,
         headerName: this.translateService.instant(
-          'components.modals.import-torrents.duplicates.col-def.tags',
+          'components.modals.import-torrents.grid.col-def.tags',
         ),
         headerTooltip: this.translateService.instant(
-          'components.modals.import-torrents.duplicates.col-def.tags',
+          'components.modals.import-torrents.grid.col-def.tags',
         ),
-        valueFormatter: (params: ValueFormatterParams<BbeTorrentEntry, string[]>) =>
+        valueFormatter: (params: ValueFormatterParams<ImportGridRow, string[]>) =>
           (params.value ?? []).join(', '),
-        filterValueGetter: (params: ValueGetterParams<BbeTorrentEntry>) =>
+        filterValueGetter: (params: ValueGetterParams<ImportGridRow>) =>
           (params.data?.tags ?? []).join(', '),
         tooltipValueGetter: (params) => (params.data?.tags ?? []).join(', '),
         sortable: true,
@@ -283,10 +362,10 @@ export class ImportTorrents implements OnInit {
         field: 'dl_limit',
         width: 130,
         headerName: this.translateService.instant(
-          'components.modals.import-torrents.duplicates.col-def.dl_limit',
+          'components.modals.import-torrents.grid.col-def.dl_limit',
         ),
         headerTooltip: this.translateService.instant(
-          'components.modals.import-torrents.duplicates.col-def.dl_limit',
+          'components.modals.import-torrents.grid.col-def.dl_limit',
         ),
         valueFormatter: this.uiFormatService.fileSizePerSecond,
         cellClass: 'tabular-nums',
@@ -299,10 +378,10 @@ export class ImportTorrents implements OnInit {
         field: 'up_limit',
         width: 130,
         headerName: this.translateService.instant(
-          'components.modals.import-torrents.duplicates.col-def.up_limit',
+          'components.modals.import-torrents.grid.col-def.up_limit',
         ),
         headerTooltip: this.translateService.instant(
-          'components.modals.import-torrents.duplicates.col-def.up_limit',
+          'components.modals.import-torrents.grid.col-def.up_limit',
         ),
         valueFormatter: this.uiFormatService.fileSizePerSecond,
         cellClass: 'tabular-nums',
@@ -315,10 +394,10 @@ export class ImportTorrents implements OnInit {
         field: 'ratio_limit',
         width: 135,
         headerName: this.translateService.instant(
-          'components.modals.import-torrents.duplicates.col-def.ratio_limit',
+          'components.modals.import-torrents.grid.col-def.ratio_limit',
         ),
         headerTooltip: this.translateService.instant(
-          'components.modals.import-torrents.duplicates.col-def.ratio_limit',
+          'components.modals.import-torrents.grid.col-def.ratio_limit',
         ),
         valueFormatter: this.uiFormatService.ratioLimit,
         cellClass: 'tabular-nums',
@@ -331,10 +410,10 @@ export class ImportTorrents implements OnInit {
         field: 'seeding_time_limit',
         width: 165,
         headerName: this.translateService.instant(
-          'components.modals.import-torrents.duplicates.col-def.seeding_time_limit',
+          'components.modals.import-torrents.grid.col-def.seeding_time_limit',
         ),
         headerTooltip: this.translateService.instant(
-          'components.modals.import-torrents.duplicates.col-def.seeding_time_limit',
+          'components.modals.import-torrents.grid.col-def.seeding_time_limit',
         ),
         valueFormatter: this.uiFormatService.timeLimit,
         cellClass: 'tabular-nums',
@@ -347,10 +426,10 @@ export class ImportTorrents implements OnInit {
         field: 'inactive_seeding_time_limit',
         width: 195,
         headerName: this.translateService.instant(
-          'components.modals.import-torrents.duplicates.col-def.inactive_seeding_time_limit',
+          'components.modals.import-torrents.grid.col-def.inactive_seeding_time_limit',
         ),
         headerTooltip: this.translateService.instant(
-          'components.modals.import-torrents.duplicates.col-def.inactive_seeding_time_limit',
+          'components.modals.import-torrents.grid.col-def.inactive_seeding_time_limit',
         ),
         valueFormatter: this.uiFormatService.timeLimit,
         cellClass: 'tabular-nums',
@@ -363,10 +442,10 @@ export class ImportTorrents implements OnInit {
         field: 'auto_tmm',
         width: 130,
         headerName: this.translateService.instant(
-          'components.modals.import-torrents.duplicates.col-def.auto_tmm',
+          'components.modals.import-torrents.grid.col-def.auto_tmm',
         ),
         headerTooltip: this.translateService.instant(
-          'components.modals.import-torrents.duplicates.col-def.auto_tmm',
+          'components.modals.import-torrents.grid.col-def.auto_tmm',
         ),
         cellRenderer: 'agCheckboxCellRenderer',
         editable: false,
@@ -379,10 +458,10 @@ export class ImportTorrents implements OnInit {
         field: 'sequential_download',
         width: 170,
         headerName: this.translateService.instant(
-          'components.modals.import-torrents.duplicates.col-def.sequential_download',
+          'components.modals.import-torrents.grid.col-def.sequential_download',
         ),
         headerTooltip: this.translateService.instant(
-          'components.modals.import-torrents.duplicates.col-def.sequential_download',
+          'components.modals.import-torrents.grid.col-def.sequential_download',
         ),
         cellRenderer: 'agCheckboxCellRenderer',
         editable: false,
@@ -395,10 +474,10 @@ export class ImportTorrents implements OnInit {
         field: 'super_seeding',
         width: 140,
         headerName: this.translateService.instant(
-          'components.modals.import-torrents.duplicates.col-def.super_seeding',
+          'components.modals.import-torrents.grid.col-def.super_seeding',
         ),
         headerTooltip: this.translateService.instant(
-          'components.modals.import-torrents.duplicates.col-def.super_seeding',
+          'components.modals.import-torrents.grid.col-def.super_seeding',
         ),
         cellRenderer: 'agCheckboxCellRenderer',
         editable: false,
@@ -411,10 +490,10 @@ export class ImportTorrents implements OnInit {
         field: 'first_last_piece_prio',
         width: 175,
         headerName: this.translateService.instant(
-          'components.modals.import-torrents.duplicates.col-def.first_last_piece_prio',
+          'components.modals.import-torrents.grid.col-def.first_last_piece_prio',
         ),
         headerTooltip: this.translateService.instant(
-          'components.modals.import-torrents.duplicates.col-def.first_last_piece_prio',
+          'components.modals.import-torrents.grid.col-def.first_last_piece_prio',
         ),
         cellRenderer: 'agCheckboxCellRenderer',
         editable: false,
@@ -427,19 +506,40 @@ export class ImportTorrents implements OnInit {
         field: 'state',
         width: 130,
         headerName: this.translateService.instant(
-          'components.modals.import-torrents.duplicates.col-def.state',
+          'components.modals.import-torrents.grid.col-def.state',
         ),
         headerTooltip: this.translateService.instant(
-          'components.modals.import-torrents.duplicates.col-def.state',
+          'components.modals.import-torrents.grid.col-def.state',
         ),
-        valueFormatter: (params: ValueFormatterParams<BbeTorrentEntry, string>) =>
+        valueFormatter: (params: ValueFormatterParams<ImportGridRow, string>) =>
           this.stateLabel(params.value),
-        filterValueGetter: (params: ValueGetterParams<BbeTorrentEntry>) =>
+        filterValueGetter: (params: ValueGetterParams<ImportGridRow>) =>
           this.stateLabel(params.data?.state),
         sortable: true,
         resizable: true,
         filter: SetColumnFilter,
         filterParams: { getItems: () => stateItems() } satisfies Partial<SetColumnFilterParams>,
+      },
+      {
+        colId: 'importState',
+        field: 'importState',
+        width: 140,
+        headerName: this.translateService.instant(
+          'components.modals.import-torrents.grid.col-def.import_state',
+        ),
+        headerTooltip: this.translateService.instant(
+          'components.modals.import-torrents.grid.col-def.import_state',
+        ),
+        valueFormatter: (params: ValueFormatterParams<ImportGridRow, ImportRowStatus>) =>
+          this.importStateLabel(params.value),
+        filterValueGetter: (params: ValueGetterParams<ImportGridRow>) =>
+          this.importStateLabel(params.data?.importState),
+        sortable: true,
+        resizable: true,
+        filter: SetColumnFilter,
+        filterParams: {
+          getItems: () => importStateItems(),
+        } satisfies Partial<SetColumnFilterParams>,
       },
     ];
   }
@@ -567,9 +667,10 @@ export class ImportTorrents implements OnInit {
       raw.categoryPathMappings as Array<{ from: string; to: string }>
     ).filter((r) => r.from.trim());
 
-    const skipHashes = this.duplicateEntries()
-      .map((t) => t.hash.toLowerCase())
-      .filter((h) => !this.overriddenHashes().has(h));
+    const selected = this.selectedHashes();
+    const skipHashes = this.importRows()
+      .filter((r) => !r.failed && !selected.has(r.hash.toLowerCase()))
+      .map((r) => r.hash.toLowerCase());
 
     const payload: ImportStartPayload = {
       serverId: this.serverStore.currentServer()?.id ?? '',

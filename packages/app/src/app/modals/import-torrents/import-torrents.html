@@ -74,19 +74,19 @@
         }
       </fieldset>
 
-      @if (isReady() && hasDuplicates()) {
-        <fieldset class="bb-fieldset duplicates-fieldset">
-          <legend>{{ 'components.modals.import-torrents.label.duplicates' | translate }}</legend>
+      @if (isReady() || isRunning() || isDone()) {
+        <fieldset class="bb-fieldset import-grid-fieldset">
+          <legend>{{ 'components.modals.import-torrents.label.grid' | translate }}</legend>
           <p class="small mb-3">
-            {{ 'components.modals.import-torrents.duplicates.description' | translate }}
+            {{ 'components.modals.import-torrents.grid.description' | translate }}
           </p>
           <ag-grid-angular
             class="w-100 d-block mb-2"
-            style="height: 300px"
+            style="height: 420px"
             [loading]="false"
-            [rowData]="duplicateEntries()"
-            [columnDefs]="duplicatesColDefs"
-            [gridOptions]="duplicatesGridOptions"
+            [rowData]="importRows()"
+            [columnDefs]="importColDefs"
+            [gridOptions]="importGridOptions"
             [theme]="theme() === 'dark' ? bbDark : bbLight"
           />
         </fieldset>
