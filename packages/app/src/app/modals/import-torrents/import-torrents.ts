@@ -40,6 +40,7 @@ import {
   GetRowIdParams,
   GridOptions,
   GridState,
+  IOverlayParams,
   RowClassParams,
   SelectionChangedEvent,
   ValueFormatterParams,
@@ -59,6 +60,7 @@ import {
 import { SizeColumnFilter } from '../../components/column-filters/size-column-filter/size-column-filter';
 import { TextColumnFilter } from '../../components/column-filters/text-column-filter/text-column-filter';
 import { TimeLimitColumnFilter } from '../../components/column-filters/time-limit-column-filter/time-limit-column-filter';
+import { NoRowOverlay } from '../../pages/main/grid/overlays/no-row-overlay/no-row-overlay';
 import { LocalTimestampPipe } from '../../pipes/local-timestamp-pipe';
 import { ExportService } from '../../services/export.service';
 import { ServerStoreService } from '../../services/server-store.service';
@@ -67,7 +69,7 @@ import { TorrentStoreService } from '../../services/torrent-store.service';
 import { UiFormatService } from '../../services/ui-format.service';
 import { setModalInput } from '../../utils/modal-input';
 
-export type ImportRowStatus = 'pending' | 'duplicate' | 'imported' | 'failed';
+export type ImportRowStatus = 'pending' | 'duplicate' | 'imported' | 'failed' | 'skipped';
 type ImportGridRow = BbeTorrentEntry & { importState: ImportRowStatus };
 
 @Component({
@@ -168,6 +170,14 @@ export class ImportTorrents implements OnInit {
 
   readonly metadata = computed(() => this.state().metadata);
 
+  readonly exportTypePopoverDescription = computed(() =>
+    this.translateService.instant(
+      this.metadata()?.export_mode === 'full'
+        ? 'components.modals.import-torrents.archive.popover.export-type.full-description'
+        : 'components.modals.import-torrents.archive.popover.export-type.legacy-description',
+    ),
+  );
+
   readonly tagsCount = computed(() => this.metadata()?.tags?.length ?? 0);
   readonly categoriesCount = computed(() => Object.keys(this.metadata()?.categories ?? {}).length);
 
@@ -191,9 +201,13 @@ export class ImportTorrents implements OnInit {
     );
   });
 
+  private readonly skippedAtStart = signal<Set<string>>(new Set());
+
   readonly importRows = computed<ImportGridRow[]>(() => {
     const dupes = this.duplicateHashes();
     const results = this.exportService.importState().results;
+    const skipped = this.skippedAtStart();
+    const importStarted = this.phase() === 'running' || this.phase() === 'done';
     return (this.metadata()?.torrents ?? []).map((entry) => {
       const hashLower = entry.hash.toLowerCase();
       let importState: ImportRowStatus;
@@ -203,6 +217,8 @@ export class ImportTorrents implements OnInit {
         importState = results.get(hashLower)!;
       } else if (dupes.has(hashLower)) {
         importState = 'duplicate';
+      } else if (importStarted && skipped.has(hashLower)) {
+        importState = 'skipped';
       } else {
         importState = 'pending';
       }
@@ -217,6 +233,14 @@ export class ImportTorrents implements OnInit {
   // skipped new torrent isn't mislabeled as pre-existing.
   readonly doneAlreadyExisted = computed(
     () => this.importRows().filter((r) => r.importState === 'duplicate').length,
+  );
+
+  readonly doneImported = computed(
+    () => this.importRows().filter((r) => r.importState === 'imported').length,
+  );
+
+  readonly doneSkipped = computed(
+    () => this.importRows().filter((r) => r.importState === 'skipped').length,
   );
 
   readonly defaultSelectedHashes = computed(() => {
@@ -252,6 +276,22 @@ export class ImportTorrents implements OnInit {
       'text-danger bg-danger-subtle': (params: RowClassParams<ImportGridRow>): boolean =>
         params.data?.importState === 'failed',
     },
+    overlayComponentSelector: (params: IOverlayParams<ImportGridRow>) => {
+      switch (params.overlayType) {
+        case 'noMatchingRows':
+          return {
+            component: NoRowOverlay,
+            params: {
+              message: this.translateService.instant(
+                'components.modals.import-torrents.grid.no-matching-rows.message',
+              ),
+            },
+          };
+
+        default:
+          return undefined;
+      }
+    },
     initialState: this.getImportGridInitialState(),
     onSelectionChanged: (e: SelectionChangedEvent<ImportGridRow>) =>
       this.onImportSelectionChanged(e),
@@ -268,10 +308,7 @@ export class ImportTorrents implements OnInit {
   onImportFirstDataRendered(e: FirstDataRenderedEvent<ImportGridRow>): void {
     const selected = this.selectedHashes();
     e.api.forEachNode((node) => node.setSelected(selected.has(node.data!.hash.toLowerCase())));
-  }
-
-  private stateLabel(state: string | null | undefined): string {
-    return state ? this.translateService.instant('torrent.state.' + state) : '';
+    e.api.autoSizeAllColumns();
   }
 
   private importStateLabel(state: ImportRowStatus | null | undefined): string {
@@ -283,7 +320,7 @@ export class ImportTorrents implements OnInit {
   }
 
   private getImportGridInitialState(): GridState {
-    const visibleStates: ImportRowStatus[] = ['pending', 'duplicate', 'failed'];
+    const visibleStates: ImportRowStatus[] = ['pending', 'duplicate', 'failed', 'skipped'];
     return {
       filter: {
         filterModel: {
@@ -294,14 +331,33 @@ export class ImportTorrents implements OnInit {
   }
 
   private getImportColDefs(): ColDef<ImportGridRow>[] {
-    const stateItems = computed(() =>
-      buildValueCounts(this.importRows(), (t) => this.stateLabel(t.state)),
-    );
+    const stateItems = computed(() => buildValueCounts(this.importRows(), (t) => t.state));
     const importStateItems = computed(() =>
       buildValueCounts(this.importRows(), (t) => this.importStateLabel(t.importState)),
     );
 
     return [
+      {
+        colId: 'importState',
+        field: 'importState',
+        width: 140,
+        headerName: this.translateService.instant(
+          'components.modals.import-torrents.grid.col-def.import_state',
+        ),
+        headerTooltip: this.translateService.instant(
+          'components.modals.import-torrents.grid.col-def.import_state',
+        ),
+        valueFormatter: (params: ValueFormatterParams<ImportGridRow, ImportRowStatus>) =>
+          this.importStateLabel(params.value),
+        filterValueGetter: (params: ValueGetterParams<ImportGridRow>) =>
+          this.importStateLabel(params.data?.importState),
+        sortable: true,
+        resizable: true,
+        filter: SetColumnFilter,
+        filterParams: {
+          getItems: () => importStateItems(),
+        } satisfies Partial<SetColumnFilterParams>,
+      },
       {
         colId: 'name',
         field: 'name',
@@ -314,6 +370,7 @@ export class ImportTorrents implements OnInit {
           'components.modals.import-torrents.grid.col-def.name',
         ),
         sortable: true,
+        sort: 'asc',
         resizable: true,
         filter: TextColumnFilter,
       },
@@ -520,35 +577,10 @@ export class ImportTorrents implements OnInit {
         headerTooltip: this.translateService.instant(
           'components.modals.import-torrents.grid.col-def.state',
         ),
-        valueFormatter: (params: ValueFormatterParams<ImportGridRow, string>) =>
-          this.stateLabel(params.value),
-        filterValueGetter: (params: ValueGetterParams<ImportGridRow>) =>
-          this.stateLabel(params.data?.state),
         sortable: true,
         resizable: true,
         filter: SetColumnFilter,
         filterParams: { getItems: () => stateItems() } satisfies Partial<SetColumnFilterParams>,
-      },
-      {
-        colId: 'importState',
-        field: 'importState',
-        width: 140,
-        headerName: this.translateService.instant(
-          'components.modals.import-torrents.grid.col-def.import_state',
-        ),
-        headerTooltip: this.translateService.instant(
-          'components.modals.import-torrents.grid.col-def.import_state',
-        ),
-        valueFormatter: (params: ValueFormatterParams<ImportGridRow, ImportRowStatus>) =>
-          this.importStateLabel(params.value),
-        filterValueGetter: (params: ValueGetterParams<ImportGridRow>) =>
-          this.importStateLabel(params.data?.importState),
-        sortable: true,
-        resizable: true,
-        filter: SetColumnFilter,
-        filterParams: {
-          getItems: () => importStateItems(),
-        } satisfies Partial<SetColumnFilterParams>,
       },
     ];
   }
@@ -680,6 +712,7 @@ export class ImportTorrents implements OnInit {
     const skipHashes = this.importRows()
       .filter((r) => !r.failed && !selected.has(r.hash.toLowerCase()))
       .map((r) => r.hash.toLowerCase());
+    this.skippedAtStart.set(new Set(skipHashes));
 
     const payload: ImportStartPayload = {
       serverId: this.serverStore.currentServer()?.id ?? '',

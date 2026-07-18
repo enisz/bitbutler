@@ -294,6 +294,29 @@ describe('ImportTorrents', () => {
       expect(call.skipHashes).toEqual(['bbb']);
     });
 
+    it('marks a manually-deselected pending row as skipped once the import has started, not before', () => {
+      torrentStoreMock().torrentsMap.set(new Map());
+      setMetadata([
+        { hash: 'aaa', name: 'A', failed: false },
+        { hash: 'bbb', name: 'B', failed: false },
+      ]);
+      mockExportService.importPhase.set('ready');
+      fixture.detectChanges();
+
+      component.onImportSelectionChanged({
+        api: { getSelectedRows: () => [{ hash: 'bbb', name: 'B', failed: false }] },
+      } as any);
+
+      // still ready - the deselected row is just pending, not skipped yet
+      expect(component.importRows().find((r) => r.hash === 'aaa')?.importState).toBe('pending');
+
+      component.startImport();
+      mockExportService.importPhase.set('running');
+
+      expect(component.importRows().find((r) => r.hash === 'aaa')?.importState).toBe('skipped');
+      expect(component.importRows().find((r) => r.hash === 'bbb')?.importState).toBe('pending');
+    });
+
     it('doneAlreadyExisted counts only rows still marked duplicate, not manually-deselected pending rows', () => {
       torrentStoreMock().torrentsMap.set(new Map([['aaa', {}]]));
       setMetadata([
@@ -339,6 +362,16 @@ describe('ImportTorrents', () => {
           'importState',
         ]),
       );
+    });
+
+    it('places importState as the first column, right after the selection checkbox', () => {
+      expect(component.importColDefs[0].colId).toBe('importState');
+    });
+
+    it('the state column has no valueFormatter, so it displays the raw state value', () => {
+      const col = component.importColDefs.find((c) => c.colId === 'state')!;
+      expect(col.valueFormatter).toBeUndefined();
+      expect(col.filter).toBeDefined();
     });
 
     it('assigns agCheckboxCellRenderer and BooleanColumnFilter to the boolean columns', () => {
@@ -490,6 +523,70 @@ describe('ImportTorrents', () => {
       setDone(3, 0);
       fixture.detectChanges();
       expect((fixture.nativeElement as HTMLElement).textContent).toContain('3');
+    });
+
+    it('doneImported counts rows the backend reported as imported', () => {
+      mockExportService.importPhase.set('done');
+      mockExportService.importState.set({
+        phase: 'done',
+        current: 2,
+        total: 2,
+        name: '',
+        failed: 0,
+        alreadyExisted: 0,
+        results: new Map([
+          ['aaa', 'imported'],
+          ['bbb', 'imported'],
+        ]),
+        metadata: {
+          version: 1,
+          exported_at: 0,
+          source_server: 'srv',
+          export_mode: 'full',
+          torrents: [
+            { hash: 'aaa', name: 'A', failed: false },
+            { hash: 'bbb', name: 'B', failed: false },
+          ],
+        },
+      } as any);
+
+      expect(component.doneImported()).toBe(2);
+      fixture.detectChanges();
+      expect((fixture.nativeElement as HTMLElement).textContent).toContain('2');
+    });
+
+    it('doneSkipped counts rows the user manually deselected and are not duplicates', () => {
+      torrentStoreMock().torrentsMap.set(new Map());
+      mockExportService.importPhase.set('ready');
+      mockExportService.importState.set({
+        phase: 'ready',
+        current: 0,
+        total: 2,
+        name: '',
+        failed: 0,
+        alreadyExisted: 0,
+        results: new Map(),
+        metadata: {
+          version: 1,
+          exported_at: 0,
+          source_server: 'srv',
+          export_mode: 'full',
+          torrents: [
+            { hash: 'aaa', name: 'A', failed: false },
+            { hash: 'bbb', name: 'B', failed: false },
+          ],
+        },
+      } as any);
+      fixture.detectChanges();
+
+      component.onImportSelectionChanged({
+        api: { getSelectedRows: () => [{ hash: 'bbb', name: 'B', failed: false }] },
+      } as any);
+
+      component.startImport();
+      mockExportService.importPhase.set('done');
+
+      expect(component.doneSkipped()).toBe(1);
     });
   });
 });

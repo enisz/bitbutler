@@ -888,10 +888,19 @@
           "categories": "Kategóriák",
           "export-type": "Export típusa",
           "full-mode": "Teljes export",
-          "legacy-mode": "Örökölt export"
+          "legacy-mode": "Örökölt export",
+          "popover": {
+            "export-type": {
+              "full-description": "A teljes export a torrentek összes metaadatát tartalmazza, beleértve a fájl-átnevezéseket és a fájl prioritásokat is, így minden visszaállítási opció alkalmazható importáláskor.",
+              "legacy-description": "Az örökölt export csak mágneslinkekből épül fel, és nem tartalmaz fájlszerkezeti információt, ezért a fájl-átnevezések és a fájl prioritások nem állíthatók vissza."
+            }
+          }
         },
         "grid": {
           "description": "Ez felsorolja az archívumban található összes torrentet a visszaállítandó metaadatokkal együtt. Töröld egy sor jelölését, ha ki szeretnéd hagyni az importálásból - a cél szerveren már meglévő torrentek alapértelmezés szerint nincsenek bejelölve, de bejelölheted őket, hogy mindenképp importáld és felülírd a beállításaikat.",
+          "no-matching-rows": {
+            "message": "Egyetlen torrent sem felel meg az aktuális szűrőknek"
+          },
           "col-def": {
             "name": "Név",
             "save_path": "Mentési útvonal",
@@ -913,7 +922,8 @@
             "pending": "Függőben",
             "duplicate": "Duplikátum",
             "imported": "Importálva",
-            "failed": "Sikertelen"
+            "failed": "Sikertelen",
+            "skipped": "Kihagyva"
           }
         },
         "restore": {
@@ -955,7 +965,9 @@
         "progress": {
           "importing": "Torrentek importálása...",
           "done": "Import kész",
+          "imported": "importálva",
           "already-existed": "már létezett",
+          "skipped": "kihagyva",
           "failed": "sikertelen"
         },
         "button": {

@@ -888,10 +888,19 @@
           "categories": "Categories",
           "export-type": "Export type",
           "full-mode": "Full export",
-          "legacy-mode": "Legacy export"
+          "legacy-mode": "Legacy export",
+          "popover": {
+            "export-type": {
+              "full-description": "Full export captures complete torrent metadata, including file renames and file priorities, so every restore option can be applied on import.",
+              "legacy-description": "Legacy export is built from magnet links only and does not contain file structure information, so file renames and file priorities cannot be restored."
+            }
+          }
         },
         "grid": {
           "description": "This lists every torrent in the archive along with the metadata that will be restored. Uncheck a row to skip importing it - torrents that already exist on the target server are unchecked by default, but you can check them to import anyway and overwrite their settings.",
+          "no-matching-rows": {
+            "message": "No torrents match the current filters"
+          },
           "col-def": {
             "name": "Name",
             "save_path": "Save Path",
@@ -913,7 +922,8 @@
             "pending": "Pending",
             "duplicate": "Duplicate",
             "imported": "Imported",
-            "failed": "Failed"
+            "failed": "Failed",
+            "skipped": "Skipped"
           }
         },
         "restore": {
@@ -955,7 +965,9 @@
         "progress": {
           "importing": "Importing torrents...",
           "done": "Import complete",
+          "imported": "imported",
           "already-existed": "already existed",
+          "skipped": "skipped",
           "failed": "failed"
         },
         "button": {

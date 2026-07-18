@@ -1,0 +1,25 @@
+div.bb-section {
+  padding: 10px;
+  position: relative;
+  border-radius: 4px;
+  transition: background-color 0.15s ease-in-out;
+
+  &:hover,
+  &:focus-within {
+    background-color: var(--bb-hover-list-item-bg);
+  }
+
+  span.section-header {
+    display: block;
+    text-transform: uppercase;
+    color: var(--bs-secondary);
+    font-size: 0.8rem;
+  }
+
+  span.section-value {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
