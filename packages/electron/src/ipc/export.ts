@@ -525,6 +525,9 @@ export async function runImport(
       (restoreFields.some((f) =>
         (
           [
+            'save_path',
+            'categories',
+            'tags',
             'renames',
             'priorities',
             'speed_limits',
@@ -553,7 +556,9 @@ export async function runImport(
     for (const entry of toProcess) {
       if (importCancelled) break;
       if (!confirmedHashes.has(entry.hash)) continue;
-      await applyTorrentSettings(serverId, entry, restoreFields, startMode).catch(() => {});
+      await applyTorrentSettings(serverId, entry, restoreFields, startMode, pathMappings).catch(
+        () => {},
+      );
     }
 
     send('import:done', { total: toProcess.length, failed, alreadyExisted: alreadyExisted.length });
@@ -614,9 +619,45 @@ async function applyTorrentSettings(
   entry: BbeTorrentEntry,
   restoreFields: ImportStartPayload['restoreFields'],
   startMode: ImportStartPayload['startMode'],
+  pathMappings: ImportStartPayload['pathMappings'],
 ): Promise<void> {
   const has = (field: ImportStartPayload['restoreFields'][number]): boolean =>
     restoreFields.includes(field);
+
+  if (has('save_path') && entry.save_path) {
+    await qbRequest({
+      id: serverId,
+      method: 'POST',
+      path: '/api/v2/torrents/setLocation',
+      form: { hashes: entry.hash, location: applyPathMappings(entry.save_path, pathMappings) },
+    }).catch(() => {});
+  }
+
+  if (has('categories') && entry.category) {
+    await qbRequest({
+      id: serverId,
+      method: 'POST',
+      path: '/api/v2/torrents/setCategory',
+      form: { hashes: entry.hash, category: entry.category },
+    }).catch(() => {});
+  }
+
+  if (has('tags')) {
+    await qbRequest({
+      id: serverId,
+      method: 'POST',
+      path: '/api/v2/torrents/removeTags',
+      form: { hashes: entry.hash },
+    }).catch(() => {});
+    if (entry.tags?.length) {
+      await qbRequest({
+        id: serverId,
+        method: 'POST',
+        path: '/api/v2/torrents/addTags',
+        form: { hashes: entry.hash, tags: entry.tags.join(',') },
+      }).catch(() => {});
+    }
+  }
 
   let baseFiles: QbTorrentFile[] = [];
   if (has('renames') || has('priorities')) {

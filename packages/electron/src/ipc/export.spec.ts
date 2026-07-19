@@ -650,6 +650,136 @@ describe('runImport', () => {
       alreadyExisted: 0,
     });
   });
+
+  it('reapplies save_path via setLocation so overwriting a duplicate updates its path', async () => {
+    const torrents = [
+      {
+        hash: 'aaa',
+        name: 'Existing',
+        failed: false,
+        magnet_link: 'magnet:?xt=aaa',
+        save_path: '/original/path',
+      },
+    ];
+    mockZipGetEntry.mockImplementation((name: string) =>
+      name === 'metadata.json' ? metadataEntry(torrents) : undefined,
+    );
+    mockQbRequestImport.mockImplementation((opts: { path: string }) =>
+      opts.path === '/api/v2/torrents/info'
+        ? Promise.resolve([{ hash: 'aaa' }])
+        : Promise.resolve('Ok.'),
+    );
+
+    const { runImport } = await setup();
+    const event = fakeEvent();
+    await runImport(
+      event as any,
+      basePayload({ restoreFields: ['save_path'], pathMappings: [] }) as any,
+    );
+
+    expect(mockQbRequestImport).toHaveBeenCalledWith(
+      expect.objectContaining({
+        path: '/api/v2/torrents/setLocation',
+        form: { hashes: 'aaa', location: '/original/path' },
+      }),
+    );
+  }, 10000);
+
+  it('reapplies category via setCategory so overwriting a duplicate updates its category', async () => {
+    const torrents = [
+      {
+        hash: 'aaa',
+        name: 'Existing',
+        failed: false,
+        magnet_link: 'magnet:?xt=aaa',
+        category: 'Movies',
+      },
+    ];
+    mockZipGetEntry.mockImplementation((name: string) =>
+      name === 'metadata.json' ? metadataEntry(torrents) : undefined,
+    );
+    mockQbRequestImport.mockImplementation((opts: { path: string }) =>
+      opts.path === '/api/v2/torrents/info'
+        ? Promise.resolve([{ hash: 'aaa' }])
+        : Promise.resolve('Ok.'),
+    );
+
+    const { runImport } = await setup();
+    const event = fakeEvent();
+    await runImport(event as any, basePayload({ restoreFields: ['categories'] }) as any);
+
+    expect(mockQbRequestImport).toHaveBeenCalledWith(
+      expect.objectContaining({
+        path: '/api/v2/torrents/setCategory',
+        form: { hashes: 'aaa', category: 'Movies' },
+      }),
+    );
+  }, 10000);
+
+  it('reapplies tags via removeTags+addTags so overwriting a duplicate updates its tags', async () => {
+    const torrents = [
+      {
+        hash: 'aaa',
+        name: 'Existing',
+        failed: false,
+        magnet_link: 'magnet:?xt=aaa',
+        tags: ['linux', 'documentary'],
+      },
+    ];
+    mockZipGetEntry.mockImplementation((name: string) =>
+      name === 'metadata.json' ? metadataEntry(torrents) : undefined,
+    );
+    mockQbRequestImport.mockImplementation((opts: { path: string }) =>
+      opts.path === '/api/v2/torrents/info'
+        ? Promise.resolve([{ hash: 'aaa' }])
+        : Promise.resolve('Ok.'),
+    );
+
+    const { runImport } = await setup();
+    const event = fakeEvent();
+    await runImport(event as any, basePayload({ restoreFields: ['tags'] }) as any);
+
+    expect(mockQbRequestImport).toHaveBeenCalledWith(
+      expect.objectContaining({
+        path: '/api/v2/torrents/removeTags',
+        form: { hashes: 'aaa' },
+      }),
+    );
+    expect(mockQbRequestImport).toHaveBeenCalledWith(
+      expect.objectContaining({
+        path: '/api/v2/torrents/addTags',
+        form: { hashes: 'aaa', tags: 'linux,documentary' },
+      }),
+    );
+  }, 10000);
+
+  it('removes all tags without calling addTags when the archived entry has no tags', async () => {
+    const torrents = [
+      { hash: 'aaa', name: 'Existing', failed: false, magnet_link: 'magnet:?xt=aaa', tags: [] },
+    ];
+    mockZipGetEntry.mockImplementation((name: string) =>
+      name === 'metadata.json' ? metadataEntry(torrents) : undefined,
+    );
+    mockQbRequestImport.mockImplementation((opts: { path: string }) =>
+      opts.path === '/api/v2/torrents/info'
+        ? Promise.resolve([{ hash: 'aaa' }])
+        : Promise.resolve('Ok.'),
+    );
+
+    const { runImport } = await setup();
+    const event = fakeEvent();
+    await runImport(event as any, basePayload({ restoreFields: ['tags'] }) as any);
+
+    expect(mockQbRequestImport).toHaveBeenCalledWith(
+      expect.objectContaining({
+        path: '/api/v2/torrents/removeTags',
+        form: { hashes: 'aaa' },
+      }),
+    );
+    expect(mockQbRequestImport).not.toHaveBeenCalledWith(
+      expect.objectContaining({ path: '/api/v2/torrents/addTags' }),
+    );
+  }, 10000);
 });
 
 describe('restoreCategoriesAndTags', () => {
