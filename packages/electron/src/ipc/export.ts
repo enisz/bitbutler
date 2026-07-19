@@ -8,6 +8,7 @@ import type {
   ExportStartPayload,
   ExportTorrentFileItem,
   ExportTorrentFilesResult,
+  ImportProgressEvent,
   ImportRestoreField,
   ImportStartPayload,
 } from '@bitbutler/shared';
@@ -94,6 +95,23 @@ export function filterAssignedCategories(
 export function filterAssignedTags(tags: string[], entries: BbeTorrentEntry[]): string[] {
   const assigned = new Set(entries.flatMap((e) => e.tags ?? []));
   return tags.filter((tag) => assigned.has(tag));
+}
+
+export function partitionImportEntries(
+  torrents: BbeTorrentEntry[],
+  skipHashes: string[],
+): { toProcess: BbeTorrentEntry[]; alreadyExisted: BbeTorrentEntry[] } {
+  const skipSet = new Set(skipHashes.map((h) => h.toLowerCase()));
+  const toProcess: BbeTorrentEntry[] = [];
+  const alreadyExisted: BbeTorrentEntry[] = [];
+  for (const entry of torrents) {
+    if (skipSet.has(entry.hash.toLowerCase())) {
+      alreadyExisted.push(entry);
+    } else {
+      toProcess.push(entry);
+    }
+  }
+  return { toProcess, alreadyExisted };
 }
 
 export async function restoreCategoriesAndTags(
@@ -434,7 +452,10 @@ async function buildExportEntry(
   }
 }
 
-async function runImport(event: Electron.IpcMainEvent, payload: ImportStartPayload): Promise<void> {
+export async function runImport(
+  event: Electron.IpcMainEvent,
+  payload: ImportStartPayload,
+): Promise<void> {
   importCancelled = false;
   const {
     serverId,
@@ -446,6 +467,7 @@ async function runImport(event: Electron.IpcMainEvent, payload: ImportStartPaylo
     restoreTags,
     categoryPathMappings,
     overwriteCategories,
+    skipHashes,
   } = payload;
 
   const send = (channel: string, data: unknown): void => {
@@ -458,8 +480,11 @@ async function runImport(event: Electron.IpcMainEvent, payload: ImportStartPaylo
     if (!metaEntry) throw new Error('Invalid .bbe: metadata.json not found');
     const metadata = JSON.parse(metaEntry.getData().toString('utf8')) as BbeMetadata;
 
-    const torrents = metadata.torrents.filter((t) => !t.failed);
-    let skipped = 0;
+    const { toProcess, alreadyExisted } = partitionImportEntries(
+      metadata.torrents.filter((t) => !t.failed),
+      skipHashes,
+    );
+    let failed = 0;
 
     if (!importCancelled) {
       await restoreCategoriesAndTags(
@@ -473,23 +498,26 @@ async function runImport(event: Electron.IpcMainEvent, payload: ImportStartPaylo
     }
 
     const addedHashes: string[] = [];
-    for (let i = 0; i < torrents.length; i++) {
+    for (let i = 0; i < toProcess.length; i++) {
       if (importCancelled) break;
 
-      const entry = torrents[i];
+      const entry = toProcess[i];
+      let success = true;
       try {
         await addTorrent(serverId, entry, metadata.export_mode, zip, restoreFields, pathMappings);
         addedHashes.push(entry.hash);
       } catch {
-        skipped++;
+        failed++;
+        success = false;
       }
 
       send('import:progress', {
         current: i + 1,
-        total: torrents.length,
+        total: toProcess.length,
         name: entry.name,
-        skipped,
-      } satisfies ExportProgressEvent);
+        hash: entry.hash,
+        success,
+      } satisfies ImportProgressEvent);
     }
 
     const needsPostProcess =
@@ -497,6 +525,9 @@ async function runImport(event: Electron.IpcMainEvent, payload: ImportStartPaylo
       (restoreFields.some((f) =>
         (
           [
+            'save_path',
+            'categories',
+            'tags',
             'renames',
             'priorities',
             'speed_limits',
@@ -522,13 +553,15 @@ async function runImport(event: Electron.IpcMainEvent, payload: ImportStartPaylo
       }
     }
 
-    for (const entry of torrents) {
+    for (const entry of toProcess) {
       if (importCancelled) break;
       if (!confirmedHashes.has(entry.hash)) continue;
-      await applyTorrentSettings(serverId, entry, restoreFields, startMode).catch(() => {});
+      await applyTorrentSettings(serverId, entry, restoreFields, startMode, pathMappings).catch(
+        () => {},
+      );
     }
 
-    send('import:done', { total: torrents.length, skipped });
+    send('import:done', { total: toProcess.length, failed, alreadyExisted: alreadyExisted.length });
   } catch (err) {
     send('import:error', { message: (err as Error)?.message ?? String(err) });
   }
@@ -586,9 +619,45 @@ async function applyTorrentSettings(
   entry: BbeTorrentEntry,
   restoreFields: ImportStartPayload['restoreFields'],
   startMode: ImportStartPayload['startMode'],
+  pathMappings: ImportStartPayload['pathMappings'],
 ): Promise<void> {
   const has = (field: ImportStartPayload['restoreFields'][number]): boolean =>
     restoreFields.includes(field);
+
+  if (has('save_path') && entry.save_path) {
+    await qbRequest({
+      id: serverId,
+      method: 'POST',
+      path: '/api/v2/torrents/setLocation',
+      form: { hashes: entry.hash, location: applyPathMappings(entry.save_path, pathMappings) },
+    }).catch(() => {});
+  }
+
+  if (has('categories') && entry.category) {
+    await qbRequest({
+      id: serverId,
+      method: 'POST',
+      path: '/api/v2/torrents/setCategory',
+      form: { hashes: entry.hash, category: entry.category },
+    }).catch(() => {});
+  }
+
+  if (has('tags')) {
+    await qbRequest({
+      id: serverId,
+      method: 'POST',
+      path: '/api/v2/torrents/removeTags',
+      form: { hashes: entry.hash },
+    }).catch(() => {});
+    if (entry.tags?.length) {
+      await qbRequest({
+        id: serverId,
+        method: 'POST',
+        path: '/api/v2/torrents/addTags',
+        form: { hashes: entry.hash, tags: entry.tags.join(',') },
+      }).catch(() => {});
+    }
+  }
 
   let baseFiles: QbTorrentFile[] = [];
   if (has('renames') || has('priorities')) {

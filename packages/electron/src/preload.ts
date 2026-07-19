@@ -8,6 +8,7 @@ import type {
   ExportStartPayload,
   ExportTorrentFileItem,
   ExportTorrentFilesResult,
+  ImportProgressEvent,
   ImportStartPayload,
   MenuClickPayload,
   TorrentDraft,
@@ -181,10 +182,14 @@ const api: BitButlerAPI = {
       makeIpcSubscription('export:done', (e) => e as ExportDoneEvent, cb),
     onError: (cb: (e: { message: string }) => void) =>
       makeIpcSubscription('export:error', (e) => e as { message: string }, cb),
-    onImportProgress: (cb: (e: ExportProgressEvent) => void) =>
-      makeIpcSubscription('import:progress', (e) => e as ExportProgressEvent, cb),
-    onImportDone: (cb: (e: { total: number; skipped: number }) => void) =>
-      makeIpcSubscription('import:done', (e) => e as { total: number; skipped: number }, cb),
+    onImportProgress: (cb: (e: ImportProgressEvent) => void) =>
+      makeIpcSubscription('import:progress', (e) => e as ImportProgressEvent, cb),
+    onImportDone: (cb: (e: { total: number; failed: number; alreadyExisted: number }) => void) =>
+      makeIpcSubscription(
+        'import:done',
+        (e) => e as { total: number; failed: number; alreadyExisted: number },
+        cb,
+      ),
     onImportError: (cb: (e: { message: string }) => void) =>
       makeIpcSubscription('import:error', (e) => e as { message: string }, cb),
   },

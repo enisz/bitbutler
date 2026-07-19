@@ -432,7 +432,7 @@ export class UiCommandHandlerService {
             const { ImportTorrents } = await import('../modals/import-torrents/import-torrents');
             if (this.isModalOpen(ImportTorrents)) break;
             const importRef = this.modalService.open(ImportTorrents, {
-              size: 'lg',
+              size: 'xl',
               scrollable: true,
             });
             if (command.bbePath) {

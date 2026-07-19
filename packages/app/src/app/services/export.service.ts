@@ -1,5 +1,10 @@
 import { Injectable, OnDestroy, computed, signal } from '@angular/core';
-import type { BbeMetadata, ExportDoneEvent, ExportProgressEvent } from '@bitbutler/shared';
+import type {
+  BbeMetadata,
+  ExportDoneEvent,
+  ExportProgressEvent,
+  ImportProgressEvent,
+} from '@bitbutler/shared';
 
 export type ExportPhase = 'idle' | 'running' | 'done' | 'error';
 export type ImportPhase = 'idle' | 'loading' | 'ready' | 'running' | 'done' | 'error';
@@ -20,12 +25,22 @@ export interface ImportState {
   current: number;
   total: number;
   name: string;
-  skipped: number;
+  failed: number;
+  alreadyExisted: number;
   error?: string;
+  results: Map<string, 'imported' | 'failed'>;
 }
 
 const EXPORT_IDLE: ExportState = { phase: 'idle', current: 0, total: 0, name: '', skipped: 0 };
-const IMPORT_IDLE: ImportState = { phase: 'idle', current: 0, total: 0, name: '', skipped: 0 };
+const IMPORT_IDLE: ImportState = {
+  phase: 'idle',
+  current: 0,
+  total: 0,
+  name: '',
+  failed: 0,
+  alreadyExisted: 0,
+  results: new Map(),
+};
 
 @Injectable({ providedIn: 'root' })
 export class ExportService implements OnDestroy {
@@ -59,11 +74,28 @@ export class ExportService implements OnDestroy {
       api.onError((e: { message: string }) =>
         this._export.update((s) => ({ ...s, phase: 'error', error: e.message })),
       ),
-      api.onImportProgress((e: ExportProgressEvent) =>
-        this._import.update((s) => ({ ...s, phase: 'running', ...e })),
+      api.onImportProgress((e: ImportProgressEvent) =>
+        this._import.update((s) => {
+          const results = new Map(s.results);
+          results.set(e.hash.toLowerCase(), e.success ? 'imported' : 'failed');
+          return {
+            ...s,
+            phase: 'running',
+            current: e.current,
+            total: e.total,
+            name: e.name,
+            results,
+          };
+        }),
       ),
-      api.onImportDone((e: { total: number; skipped: number }) =>
-        this._import.update((s) => ({ ...s, phase: 'done', skipped: e.skipped, current: e.total })),
+      api.onImportDone((e: { total: number; failed: number; alreadyExisted: number }) =>
+        this._import.update((s) => ({
+          ...s,
+          phase: 'done',
+          current: e.total,
+          failed: e.failed,
+          alreadyExisted: e.alreadyExisted,
+        })),
       ),
       api.onImportError((e: { message: string }) =>
         this._import.update((s) => ({ ...s, phase: 'error', error: e.message })),
@@ -76,7 +108,7 @@ export class ExportService implements OnDestroy {
   }
 
   setImportLoading(): void {
-    this._import.set({ ...IMPORT_IDLE, phase: 'loading' });
+    this._import.set({ ...IMPORT_IDLE, phase: 'loading', results: new Map() });
   }
 
   setImportReady(metadata: BbeMetadata): void {
@@ -101,7 +133,7 @@ export class ExportService implements OnDestroy {
   }
 
   resetImport(): void {
-    this._import.set(IMPORT_IDLE);
+    this._import.set({ ...IMPORT_IDLE, results: new Map() });
   }
 
   ngOnDestroy(): void {

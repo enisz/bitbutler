@@ -19,60 +19,103 @@
       <fieldset class="bb-fieldset mt-0">
         <legend>{{ 'components.modals.import-torrents.label.archive' | translate }}</legend>
         @if (metadata()) {
-          <dl class="row mb-0 small">
-            <dt class="col-5 fw-normal text-body-secondary">
-              {{ 'components.modals.import-torrents.archive.exported-from' | translate }}
-            </dt>
-            <dd class="col-7">{{ metadata()!.source_server_name ?? metadata()!.source_server }}</dd>
+          <div class="row gy-2">
+            <div class="col-3 bb-section">
+              <span class="section-header">{{
+                'components.modals.import-torrents.archive.exported-from' | translate
+              }}</span>
+              <span class="section-value">
+                {{ metadata()!.source_server_name ?? metadata()!.source_server }}
+              </span>
+            </div>
 
-            <dt class="col-5 fw-normal text-body-secondary">
-              {{ 'components.modals.import-torrents.archive.importing-to' | translate }}
-            </dt>
-            <dd class="col-7">{{ serverStore.currentServer()?.name ?? '' }}</dd>
+            <div class="col-3 bb-section">
+              <span class="section-header">{{
+                'components.modals.import-torrents.archive.importing-to' | translate
+              }}</span>
+              <span class="section-value">{{ serverStore.currentServer()?.name ?? '' }}</span>
+            </div>
 
-            <dt class="col-5 fw-normal text-body-secondary">
-              {{ 'components.modals.import-torrents.archive.server-url' | translate }}
-            </dt>
-            <dd class="col-7">{{ serverUrl() }}</dd>
+            <div class="col-3 bb-section">
+              <span class="section-header">{{
+                'components.modals.import-torrents.archive.server-url' | translate
+              }}</span>
+              <span class="section-value">{{ serverUrl() }}</span>
+            </div>
 
-            <dt class="col-5 fw-normal text-body-secondary">
-              {{ 'components.modals.import-torrents.archive.export-date' | translate }}
-            </dt>
-            <dd class="col-7">{{ metadata()!.exported_at | localTimestamp }}</dd>
+            <div class="col-3 bb-section">
+              <span class="section-header">{{
+                'components.modals.import-torrents.archive.export-date' | translate
+              }}</span>
+              <span class="section-value">{{ metadata()!.exported_at | localTimestamp }}</span>
+            </div>
 
-            <dt class="col-5 fw-normal text-body-secondary">
-              {{ 'components.modals.import-torrents.archive.torrents' | translate }}
-            </dt>
-            <dd class="col-7">{{ metadata()!.torrents.length }}</dd>
+            <div class="col-3 bb-section">
+              <span class="section-header">{{
+                'components.modals.import-torrents.archive.torrents' | translate
+              }}</span>
+              <span class="section-value">{{ metadata()!.torrents.length }}</span>
+            </div>
 
             @if (metadata()?.tags !== undefined) {
-              <dt class="col-5 fw-normal text-body-secondary">
-                {{ 'components.modals.import-torrents.archive.tags' | translate }}
-              </dt>
-              <dd class="col-7">{{ tagsCount() }}</dd>
+              <div class="col-3 bb-section">
+                <span class="section-header">{{
+                  'components.modals.import-torrents.archive.tags' | translate
+                }}</span>
+                <span class="section-value">{{ tagsCount() }}</span>
+              </div>
             }
             @if (metadata()?.categories !== undefined) {
-              <dt class="col-5 fw-normal text-body-secondary">
-                {{ 'components.modals.import-torrents.archive.categories' | translate }}
-              </dt>
-              <dd class="col-7">{{ categoriesCount() }}</dd>
+              <div class="col-3 bb-section">
+                <span class="section-header">{{
+                  'components.modals.import-torrents.archive.categories' | translate
+                }}</span>
+                <span class="section-value">{{ categoriesCount() }}</span>
+              </div>
             }
 
-            <dt class="col-5 fw-normal text-body-secondary">
-              {{ 'components.modals.import-torrents.archive.export-type' | translate }}
-            </dt>
-            <dd class="col-7">
-              <span [class]="metadata()!.export_mode === 'full' ? 'text-success' : 'text-warning'">
-                {{
-                  metadata()!.export_mode === 'full'
-                    ? ('components.modals.import-torrents.archive.full-mode' | translate)
-                    : ('components.modals.import-torrents.archive.legacy-mode' | translate)
-                }}
+            <div class="col-3 bb-section">
+              <span class="section-header">
+                {{ 'components.modals.import-torrents.archive.export-type' | translate }}
+                <bb-popover
+                  placement="top"
+                  [subject]="'components.modals.import-torrents.archive.export-type' | translate"
+                  [description]="exportTypePopoverDescription()"
+                ></bb-popover>
               </span>
-            </dd>
-          </dl>
+              <span class="section-value">
+                <span
+                  [class]="metadata()!.export_mode === 'full' ? 'text-success' : 'text-warning'"
+                >
+                  {{
+                    metadata()!.export_mode === 'full'
+                      ? ('components.modals.import-torrents.archive.full-mode' | translate)
+                      : ('components.modals.import-torrents.archive.legacy-mode' | translate)
+                  }}
+                </span>
+              </span>
+            </div>
+          </div>
         }
       </fieldset>
+
+      @if (isReady() || isRunning() || isDone()) {
+        <fieldset class="bb-fieldset import-grid-fieldset">
+          <legend>{{ 'components.modals.import-torrents.label.grid' | translate }}</legend>
+          <p class="small mb-3">
+            {{ 'components.modals.import-torrents.grid.description' | translate }}
+          </p>
+          <ag-grid-angular
+            class="w-100 d-block mb-2"
+            style="height: 420px"
+            [loading]="false"
+            [rowData]="importRows()"
+            [columnDefs]="importColDefs"
+            [gridOptions]="importGridOptions"
+            [theme]="theme() === 'dark' ? bbDark : bbLight"
+          />
+        </fieldset>
+      }
 
       @if (isReady()) {
         <fieldset class="bb-fieldset" formGroupName="restoreFields">
@@ -183,27 +226,6 @@
             <legend>
               {{ 'components.modals.import-torrents.label.category-path-mapping' | translate }}
             </legend>
-            <div class="alert alert-warning small">
-              <p class="fw-bold mb-1">
-                <fa-icon [icon]="icons.faTriangleExclamation" class="me-1"></fa-icon>
-                {{
-                  'components.modals.import-torrents.category-path-mapping.note-title' | translate
-                }}
-              </p>
-              <span
-                [innerHTML]="
-                  'components.modals.import-torrents.category-path-mapping.note-prefix' | translate
-                "
-              ></span>
-              <button
-                type="button"
-                class="btn btn-link btn-sm p-0 align-baseline"
-                (click)="openQbSettings()"
-              >
-                {{ 'pages.qb-settings.title' | translate }} -
-                {{ 'pages.qb-settings.tab.storage.title' | translate }}</button
-              >.
-            </div>
             <div class="form-check form-switch mb-3">
               <input
                 class="form-check-input"
@@ -233,6 +255,27 @@
                 'components.modals.import-torrents.category-path-mapping.description' | translate
               }}
             </p>
+            <div class="alert alert-warning small">
+              <p class="fw-bold mb-1">
+                <fa-icon [icon]="icons.faTriangleExclamation" class="me-1"></fa-icon>
+                {{
+                  'components.modals.import-torrents.category-path-mapping.note-title' | translate
+                }}
+              </p>
+              <span
+                [innerHTML]="
+                  'components.modals.import-torrents.category-path-mapping.note-prefix' | translate
+                "
+              ></span>
+              <button
+                type="button"
+                class="btn btn-link btn-sm p-0 align-baseline"
+                (click)="openQbSettings()"
+              >
+                {{ 'pages.qb-settings.title' | translate }} -
+                {{ 'pages.qb-settings.tab.storage.title' | translate }}</button
+              >.
+            </div>
             <div formArrayName="categoryPathMappings">
               @for (group of categoryPathMappings.controls; track $index; let i = $index) {
                 <div class="row mb-2" [formGroupName]="i">
@@ -363,9 +406,21 @@
           @if (isDone()) {
             <span class="text-success">
               {{ 'components.modals.import-torrents.progress.done' | translate }}
-              @if (state().skipped > 0) {
-                - {{ state().skipped }}
+              @if (doneImported() > 0) {
+                - {{ doneImported() }}
+                {{ 'components.modals.import-torrents.progress.imported' | translate }}
+              }
+              @if (doneAlreadyExisted() > 0) {
+                - {{ doneAlreadyExisted() }}
+                {{ 'components.modals.import-torrents.progress.already-existed' | translate }}
+              }
+              @if (doneSkipped() > 0) {
+                - {{ doneSkipped() }}
                 {{ 'components.modals.import-torrents.progress.skipped' | translate }}
+              }
+              @if (state().failed > 0) {
+                - {{ state().failed }}
+                {{ 'components.modals.import-torrents.progress.failed' | translate }}
               }
             </span>
           }

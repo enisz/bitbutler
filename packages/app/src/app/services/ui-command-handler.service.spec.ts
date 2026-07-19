@@ -212,6 +212,15 @@ describe('UiCommandHandlerService', () => {
     expect(mockModalService.open).toHaveBeenCalled();
   });
 
+  it('should open ImportTorrents modal at xl size for UI_IMPORT_TORRENTS', async () => {
+    commands$.next({ type: 'UI_IMPORT_TORRENTS' });
+    await flushPromises();
+    expect(mockModalService.open).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ size: 'xl', scrollable: true }),
+    );
+  });
+
   it('should not open TorrentDetails when hash is missing for UI_OPEN_TORRENT_DETAILS', () => {
     commands$.next({ type: 'UI_OPEN_TORRENT_DETAILS', hash: null });
     expect(mockModalService.open).not.toHaveBeenCalled();

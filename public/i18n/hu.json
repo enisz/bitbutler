@@ -871,6 +871,7 @@
         "title": "Torrentek importálása",
         "label": {
           "archive": "Archívum",
+          "grid": "Importálandó torrentek",
           "restore-options": "Visszaállítási beállítások",
           "path-remap": "Mentési útvonal hozzárendelés",
           "category-path-mapping": "Kategória útvonal hozzárendelés",
@@ -887,7 +888,43 @@
           "categories": "Kategóriák",
           "export-type": "Export típusa",
           "full-mode": "Teljes export",
-          "legacy-mode": "Örökölt export"
+          "legacy-mode": "Örökölt export",
+          "popover": {
+            "export-type": {
+              "full-description": "A teljes export a torrentek összes metaadatát tartalmazza, beleértve a fájl-átnevezéseket és a fájl prioritásokat is, így minden visszaállítási opció alkalmazható importáláskor.",
+              "legacy-description": "Az örökölt export csak mágneslinkekből épül fel, és nem tartalmaz fájlszerkezeti információt, ezért a fájl-átnevezések és a fájl prioritások nem állíthatók vissza."
+            }
+          }
+        },
+        "grid": {
+          "description": "Ez felsorolja az archívumban található összes torrentet a visszaállítandó metaadatokkal együtt. Töröld egy sor jelölését, ha ki szeretnéd hagyni az importálásból - a cél szerveren már meglévő torrentek alapértelmezés szerint nincsenek bejelölve, de bejelölheted őket, hogy mindenképp importáld és felülírd a beállításaikat.",
+          "no-matching-rows": {
+            "message": "Egyetlen torrent sem felel meg az aktuális szűrőknek"
+          },
+          "col-def": {
+            "name": "Név",
+            "save_path": "Mentési útvonal",
+            "category": "Kategória",
+            "tags": "Címkék",
+            "dl_limit": "Letöltési korlát",
+            "up_limit": "Feltöltési korlát",
+            "ratio_limit": "Arány korlát",
+            "seeding_time_limit": "Seedelési idő korlát",
+            "inactive_seeding_time_limit": "Inaktív seedelési idő korlát",
+            "auto_tmm": "Auto-TMM",
+            "sequential_download": "Sorrendi letöltés",
+            "super_seeding": "Super seeding",
+            "first_last_piece_prio": "Első/utolsó szelet prioritása",
+            "state": "Állapot",
+            "import_state": "Import állapot"
+          },
+          "import-state": {
+            "pending": "Függőben",
+            "duplicate": "Duplikátum",
+            "imported": "Importálva",
+            "failed": "Sikertelen",
+            "skipped": "Kihagyva"
+          }
         },
         "restore": {
           "save_path": "Mentési útvonal",
@@ -928,7 +965,10 @@
         "progress": {
           "importing": "Torrentek importálása...",
           "done": "Import kész",
-          "skipped": "kihagyva"
+          "imported": "importálva",
+          "already-existed": "már létezett",
+          "skipped": "kihagyva",
+          "failed": "sikertelen"
         },
         "button": {
           "import": "Importálás"
