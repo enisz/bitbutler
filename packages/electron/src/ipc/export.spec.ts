@@ -787,11 +787,16 @@ describe('restoreCategoriesAndTags', () => {
 
   beforeEach(() => {
     vi.resetModules();
+    vi.doMock('electron', () => ({
+      ipcMain: { handle: vi.fn(), on: vi.fn() },
+      dialog: { showSaveDialog: vi.fn(), showOpenDialog: vi.fn() },
+    }));
     vi.doMock('./qbittorrent.js', () => ({ qbRequest: mockQbRequestRestore }));
   });
 
   afterEach(() => {
     vi.clearAllMocks();
+    vi.doUnmock('electron');
     vi.doUnmock('./qbittorrent.js');
   });
 
