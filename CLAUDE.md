@@ -15,6 +15,7 @@ This is an **npm workspaces** monorepo. All packages live under `packages/`:
 | `@bitbutler/app`      | `packages/app/`      | Angular renderer                   |
 | `@bitbutler/electron` | `packages/electron/` | Electron main process (TypeScript) |
 | `@bitbutler/shared`   | `packages/shared/`   | Shared IPC contract & models       |
+| `@bitbutler/docs`     | `packages/docs/`     | VitePress documentation site       |
 
 A single `npm ci` at the root installs all workspace dependencies. Workspace packages that depend on each other are symlinked automatically by npm.
 
@@ -30,6 +31,8 @@ npm test                # Run tests across all workspaces
 npm run build           # Angular production build
 npm run build:electron  # Compile Electron TypeScript
 npm run build:ui        # Full UI build (Angular + Electron, production)
+npm run serve:docs      # VitePress dev server for the docs site
+npm run build:docs      # Build the docs site
 npm run dist:linux      # Build Linux distributions (AppImage, DEB, RPM, Snap, tar.gz)
 npm run dist:win        # Build Windows distributions (NSIS, portable, ZIP)
 ```
