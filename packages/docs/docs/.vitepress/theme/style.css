@@ -71,6 +71,8 @@
 
   --vp-home-hero-name-color: #c7a57a;
   --vp-home-hero-name-background: transparent;
+
+  --bb-c-nav-active: #a8763f;
 }
 
 .dark {
@@ -117,9 +119,47 @@
   --vp-home-hero-name-color: #e1b985;
   --vp-home-hero-name-background: transparent;
 
+  --bb-c-nav-active: #e1b985;
+
   /* brand-1/2/3 are light tones in dark mode, so the brand button needs dark
      ink instead of VitePress's default white button text. */
   --vp-button-brand-text: #000;
   --vp-button-brand-hover-text: #000;
   --vp-button-brand-active-text: #000;
+}
+
+/* VitePress's default active-nav styling relies on --vp-c-brand-1, which in
+   this warm-neutral palette sits too close in tone to --vp-c-text-2/3 to
+   read as "active" at a glance. Use a dedicated accent for active sidebar
+   and outline items instead, and extend the sidebar's active indicator bar
+   to top-level items (VitePress only draws it from level-2 down) so it
+   matches the always-visible border on the right-hand outline panel.
+   See: node_modules/vitepress/dist/client/theme-default/components/VPSidebarItem.vue
+        node_modules/vitepress/dist/client/theme-default/components/VPDocAsideOutline.vue */
+.VPSidebarItem.level-0.is-active > .item > .indicator,
+.VPSidebarItem.level-1.is-active > .item > .indicator,
+.VPSidebarItem.level-2.is-active > .item > .indicator,
+.VPSidebarItem.level-3.is-active > .item > .indicator,
+.VPSidebarItem.level-4.is-active > .item > .indicator,
+.VPSidebarItem.level-5.is-active > .item > .indicator {
+  background-color: var(--bb-c-nav-active);
+}
+
+.VPSidebarItem.level-0.is-active > .item .link > .text,
+.VPSidebarItem.level-1.is-active > .item .link > .text,
+.VPSidebarItem.level-2.is-active > .item .link > .text,
+.VPSidebarItem.level-3.is-active > .item .link > .text,
+.VPSidebarItem.level-4.is-active > .item .link > .text,
+.VPSidebarItem.level-5.is-active > .item .link > .text {
+  color: var(--bb-c-nav-active);
+  font-weight: 700;
+}
+
+.VPDocAsideOutline .outline-marker {
+  background-color: var(--bb-c-nav-active);
+}
+
+.VPDocAsideOutline .outline-link.active {
+  color: var(--bb-c-nav-active);
+  font-weight: 600;
 }
