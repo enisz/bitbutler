@@ -27,4 +27,12 @@ Vel illum qui dolorem eum fugiat quo voluptas nulla pariatur, at vero eos et acc
 
 ## Categories and Tags
 
-Qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.
+Categories and tags help you organize torrents. Both are managed from the toolbar's **Manage** group.
+
+### Categories
+
+Open **Manage > Categories**. Each category has a name and an optional save path - assigning a category to a torrent can automatically relocate it to that path, depending on your qBittorrent [Save Management](./advanced/configuration/qbittorrent-settings#save-management) settings. Use the filter box to search existing categories, the pencil icon to edit a category's save path, and the trash icon to delete one; deleting shows how many torrents currently use that category before you confirm.
+
+### Tags
+
+Open **Manage > Tags**. Unlike categories, a torrent can have multiple tags. Add several at once by entering a comma-separated list in the name field. Use the filter box to search, and the trash icon to delete a tag - the confirmation shows how many torrents currently use it.
