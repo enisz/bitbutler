@@ -18,7 +18,7 @@ Open the dialog from the toolbar: **Settings > BitButler**. The dialog has four 
 | Start app with the system | Automatically launches BitButler when the operating system starts.                                                                            |
 | Start minimized           | Hides the application window on startup; BitButler stays accessible from the system tray. Requires "Start app with the system" to be enabled. |
 
-If no server is marked as the default connection, a warning hint appears here reminding you that the app will start without logging in automatically. See [Setting a Default Server](../../connecting-a-server#setting-a-default-server).
+If "Start app with the system" is enabled but no server is marked as the default connection, a warning hint appears here reminding you that the app will start without logging in automatically. See [Setting a Default Server](../../connecting-a-server#setting-a-default-server).
 
 ### Behavior
 
@@ -73,10 +73,10 @@ Wrap literal text in single quotes (e.g. `'at'`) to include it in the pattern as
 
 ### Save Path Input
 
-Controls how save-path fields behave throughout the app (when adding torrents, moving torrents, editing categories, and so on):
+Controls how save-path fields behave throughout the app when adding or moving torrents:
 
-- **select** - a dropdown populated with folders discovered on the connected server.
-- **typeahead** - a free-text field with autocomplete suggestions as you type.
+- **ng-select** - a dropdown populated with folders discovered on the connected server.
+- **ngb-typeahead** - a free-text field with autocomplete suggestions as you type.
 
 ## Server
 
@@ -99,6 +99,29 @@ If a server's torrent download folders are also mounted locally (for example, a 
 
 Each row maps a **Remote Path** to a **Local Path**. Use **Test mapping** to confirm a mapping resolves to a real local folder, and the add/remove buttons next to each row to manage the list.
 
+## Torrent List Grid
+
+### Grid Options
+
+| Setting        | Description                                                                                                  |
+| -------------- | ------------------------------------------------------------------------------------------------------------ |
+| Animate Rows   | Animates rows when their values change. Turn off if you notice performance issues on large lists.            |
+| Pagination     | Paginates the torrent list instead of rendering every row at once - helps performance with very large lists. |
+| Compact Rows   | Reduces row height and cell padding for a denser view.                                                       |
+| Pause on Modal | Pauses background polling whenever any modal dialog is open; polling resumes automatically when it closes.   |
+
+Row double-click behavior controls what happens when you double-click a torrent row:
+
+- **Show in Folder / Open Destination** - opens the destination folder (and selects the file, for single-file torrents). Requires [Path Mappings](#path-mappings) to be configured for that server.
+- **Open Torrent Details** - opens the Torrent Details view.
+- **Inline Edit** - makes eligible cells directly editable in the grid: double-click a cell to edit, Enter to confirm, Escape to cancel. Only columns backed directly by a qBittorrent API field (no computed/formatted value) are editable.
+- **Do nothing** - disables the double-click action.
+
+### Columns
+
+- **Column Pool** - a searchable multi-select of every available column.
+- **Order** - drag to reorder the columns you've enabled; this is also the left-to-right order shown in the torrent grid.
+
 ## Status Bar
 
 Configure the visibility and order of the widgets shown in the status bar at the bottom of the main window. Drag widgets between the **Widget Pool** (disabled/unused) and the **Left** or **Right** column to enable, disable, or reorder them.
@@ -116,26 +139,3 @@ Available widgets:
 - Session Stats
 - Selection Info
 - Polling Indicator
-
-## Torrent List Grid
-
-### Grid Options
-
-| Setting                | Description                                                                                                  |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------ |
-| Animate Rows           | Animates rows when their values change. Turn off if you notice performance issues on large lists.            |
-| Pagination             | Paginates the torrent list instead of rendering every row at once - helps performance with very large lists. |
-| Compact Rows           | Reduces row height and cell padding for a denser view.                                                       |
-| Pause Polling on Modal | Pauses background polling whenever any modal dialog is open; polling resumes automatically when it closes.   |
-
-Row double-click behavior controls what happens when you double-click a torrent row:
-
-- **Show in Folder / Open Destination** - opens the destination folder (and selects the file, for single-file torrents). Requires [Path Mappings](#path-mappings) to be configured for that server.
-- **Open Torrent Details** - opens the Torrent Details view.
-- **Inline Edit** - makes eligible cells directly editable in the grid: double-click a cell to edit, Enter to confirm, Escape to cancel. Only columns backed directly by a qBittorrent API field (no computed/formatted value) are editable.
-- **Do nothing** - disables the double-click action.
-
-### Columns
-
-- **Column Pool** - a searchable multi-select of every available column.
-- **Order** - drag to reorder the columns you've enabled; this is also the left-to-right order shown in the torrent grid.

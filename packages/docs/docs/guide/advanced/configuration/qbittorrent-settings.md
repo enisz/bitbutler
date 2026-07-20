@@ -39,6 +39,32 @@ Automatically switches to the alternative rate limits during a configured time w
 - **Active on** - Every day, Every weekday, Every weekend, or a specific day of the week.
 - **From / To** - the hour and minute the alternative limits start and stop applying.
 
+## Storage
+
+### Default Paths
+
+- **Default Save Path** - where new torrents are saved unless overridden by a category or a per-torrent choice.
+
+### Temporary Files
+
+_(Only shown if your qBittorrent-nox version supports a separate incomplete-files path.)_
+
+- **Keep incomplete torrents in a separate folder** - toggles a dedicated **Incomplete Save Path** used while a torrent is still downloading; once complete, files move to the default (or category) save path.
+
+### File Management
+
+- **Append `.!qB` extension to incomplete files** - marks in-progress files so other tools can distinguish them from finished downloads.
+- **Torrent content layout** _(only shown if supported by your server)_ - Original, Create subfolder, or Don't create subfolder, controlling whether multi-file torrents get wrapped in an extra folder.
+
+### Save Management
+
+| Field                           | Options                                   | Description                                                                                                                                  |
+| ------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Default torrent management mode | Automatic / Manual                        | Automatic mode lets qBittorrent relocate torrent files when a category's save path changes; Manual leaves file locations entirely up to you. |
+| When torrent category changes   | Relocate torrents / Switch to Manual mode | Behavior applied when a torrent's category is reassigned.                                                                                    |
+| When category save path changes | Relocate torrents / Switch to Manual mode | Behavior applied when a category's own save path is edited.                                                                                  |
+| When default save path changes  | Relocate torrents / Switch to Manual mode | Behavior applied when the server's default save path (above) is edited.                                                                      |
+
 ## Queue & Limits
 
 Control how many torrents can be active at once and how new torrents are queued.
@@ -76,29 +102,3 @@ Automatically stop seeding based on a share ratio target, a time threshold, or b
 | ---------------------------- | -------------------------------------------------- |
 | Enable Seeding Time Limit    | Turns the time limit on.                           |
 | Stop seeding after (minutes) | How long to seed before the action above is taken. |
-
-## Storage
-
-### Default Paths
-
-- **Default Save Path** - where new torrents are saved unless overridden by a category or a per-torrent choice.
-
-### Temporary Files
-
-_(Only shown if your qBittorrent-nox version supports a separate incomplete-files path.)_
-
-- **Keep incomplete torrents in a separate folder** - toggles a dedicated **Incomplete Save Path** used while a torrent is still downloading; once complete, files move to the default (or category) save path.
-
-### File Management
-
-- **Append `.!qB` extension to incomplete files** - marks in-progress files so other tools can distinguish them from finished downloads.
-- **Torrent content layout** _(only shown if supported by your server)_ - Original, Create subfolder, or Don't create subfolder, controlling whether multi-file torrents get wrapped in an extra folder.
-
-### Save Management
-
-| Field                           | Options                                   | Description                                                                                                                                  |
-| ------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| Default torrent management mode | Automatic / Manual                        | Automatic mode lets qBittorrent relocate torrent files when a category's save path changes; Manual leaves file locations entirely up to you. |
-| When torrent category changes   | Relocate torrents / Switch to Manual mode | Behavior applied when a torrent's category is reassigned.                                                                                    |
-| When category save path changes | Relocate torrents / Switch to Manual mode | Behavior applied when a category's own save path is edited.                                                                                  |
-| When default save path changes  | Relocate torrents / Switch to Manual mode | Behavior applied when the server's default save path (above) is edited.                                                                      |
