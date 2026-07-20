@@ -1,4 +1,36 @@
+/* Montserrat (matches packages/app) - keep weights in sync with packages/app/src/styles.scss */
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/montserrat/Montserrat-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/montserrat/Montserrat-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/montserrat/Montserrat-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/montserrat/Montserrat-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
+  --vp-font-family-base:
+    'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --vp-c-bg: #f5ede3;
   --vp-c-bg-alt: #f0e6d8;
   --vp-c-bg-elv: #f0e6d8;
@@ -42,6 +74,8 @@
 }
 
 .dark {
+  --vp-font-family-base:
+    'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --vp-c-bg: #121213;
   --vp-c-bg-alt: #1c1c1e;
   --vp-c-bg-elv: #1c1c1e;
