@@ -25,6 +25,37 @@ export default defineConfig({
             { text: 'Keyboard Shortcuts', link: '/guide/keyboard-shortcuts' },
           ],
         },
+        {
+          text: 'Advanced',
+          items: [
+            {
+              text: 'Configuration',
+              collapsed: false,
+              items: [
+                { text: 'Server Settings', link: '/guide/advanced/configuration/server-settings' },
+                {
+                  text: 'Network Settings',
+                  link: '/guide/advanced/configuration/network-settings',
+                },
+              ],
+            },
+            {
+              text: 'Automation',
+              collapsed: false,
+              items: [
+                { text: 'Scheduled Tasks', link: '/guide/advanced/automation/scheduled-tasks' },
+              ],
+            },
+            { text: 'Troubleshooting', link: '/guide/advanced/troubleshooting' },
+          ],
+        },
+        {
+          text: 'Reference',
+          items: [
+            { text: 'FAQ', link: '/guide/faq' },
+            { text: 'Glossary', link: '/guide/glossary' },
+          ],
+        },
       ],
     },
     outline: {
