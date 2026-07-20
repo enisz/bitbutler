@@ -116,4 +116,10 @@
 
   --vp-home-hero-name-color: #e1b985;
   --vp-home-hero-name-background: transparent;
+
+  /* brand-1/2/3 are light tones in dark mode, so the brand button needs dark
+     ink instead of VitePress's default white button text. */
+  --vp-button-brand-text: #000;
+  --vp-button-brand-hover-text: #000;
+  --vp-button-brand-active-text: #000;
 }
