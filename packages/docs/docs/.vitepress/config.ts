@@ -32,18 +32,14 @@ export default defineConfig({
               text: 'Configuration',
               collapsed: false,
               items: [
-                { text: 'Server Settings', link: '/guide/advanced/configuration/server-settings' },
                 {
-                  text: 'Network Settings',
-                  link: '/guide/advanced/configuration/network-settings',
+                  text: 'BitButler Settings',
+                  link: '/guide/advanced/configuration/bitbutler-settings',
                 },
-              ],
-            },
-            {
-              text: 'Automation',
-              collapsed: false,
-              items: [
-                { text: 'Scheduled Tasks', link: '/guide/advanced/automation/scheduled-tasks' },
+                {
+                  text: 'qBittorrent Settings',
+                  link: '/guide/advanced/configuration/qbittorrent-settings',
+                },
               ],
             },
             { text: 'Troubleshooting', link: '/guide/advanced/troubleshooting' },
