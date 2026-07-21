@@ -163,3 +163,26 @@
   color: var(--bb-c-nav-active);
   font-weight: 600;
 }
+
+/* VitePress's default hero styling gives .name and .text the same font-size
+   at every breakpoint. Shrink .text only so the hero subtitle reads smaller
+   than the "BitButler" title instead of matching it.
+   See: node_modules/vitepress/dist/client/theme-default/components/VPHero.vue */
+.VPHero .text {
+  font-size: 22px;
+  line-height: 28px;
+}
+
+@media (min-width: 640px) {
+  .VPHero .text {
+    font-size: 30px;
+    line-height: 38px;
+  }
+}
+
+@media (min-width: 960px) {
+  .VPHero .text {
+    font-size: 34px;
+    line-height: 42px;
+  }
+}

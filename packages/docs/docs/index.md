@@ -3,7 +3,7 @@ layout: home
 
 hero:
   name: BitButler
-  text: Remote qBittorrent-nox control
+  text: Remote qBittorrent-nox client
   tagline: Manage torrents on your remote qBittorrent-nox servers from a clean, modern desktop app.
   image:
     src: /bitbutler-logo.png
