@@ -6,6 +6,7 @@ export default defineConfig({
   head: [['link', { rel: 'icon', href: '/bitbutler/bitbutler-logo.png' }]],
   themeConfig: {
     logo: '/bitbutler-logo.png',
+    siteTitle: 'BitButler Docs',
     search: {
       provider: 'local',
       options: {
