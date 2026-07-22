@@ -37,4 +37,4 @@ Marking a connection as default (the checkbox icon next to each server in the li
 
 ## Editing and Deleting a Server
 
-From the Manage Servers list, use the pencil icon to reopen a connection in the editor, or the trash icon to delete it. Deleting asks for confirmation first, since the action can't be undone - any [Path Mappings](./advanced/configuration/bitbutler-settings#path-mappings) or polling settings configured for that connection no longer apply once it's gone.
+From the Manage Servers list, use the pencil icon to reopen a connection in the editor, or the trash icon to delete it. Deleting asks for confirmation first, since the action can't be undone - any [Path Mappings](./user-interface/settings/bitbutler-settings#path-mappings) or polling settings configured for that connection no longer apply once it's gone.

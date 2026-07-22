@@ -31,7 +31,7 @@ Categories and tags help you organize torrents. Both are managed from the toolba
 
 ### Categories
 
-Open **Manage > Categories**. Each category has a name and an optional save path - assigning a category to a torrent can automatically relocate it to that path, depending on your qBittorrent [Save Management](./advanced/configuration/qbittorrent-settings#save-management) settings. Use the filter box to search existing categories, the pencil icon to edit a category's save path, and the trash icon to delete one; deleting shows how many torrents currently use that category before you confirm.
+Open **Manage > Categories**. Each category has a name and an optional save path - assigning a category to a torrent can automatically relocate it to that path, depending on your qBittorrent [Save Management](./user-interface/settings/qbittorrent-settings#save-management) settings. Use the filter box to search existing categories, the pencil icon to edit a category's save path, and the trash icon to delete one; deleting shows how many torrents currently use that category before you confirm.
 
 ### Tags
 
