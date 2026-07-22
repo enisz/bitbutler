@@ -96,6 +96,8 @@ Check our [Contributing Guide](.github/CONTRIBUTING.md) for more details on how 
 
 Note: On Windows, you may see a "Windows protected your PC" warning. This is because the app is not signed with an expensive developer certificate. You can click "More info" and then "Run anyway" to start the Butler.
 
+For a full walkthrough of the app, check out the [User Guide](https://enisz.github.io/bitbutler/).
+
 ## For the Developers
 
 If you're a developer and want to play with the code or build a custom version:
