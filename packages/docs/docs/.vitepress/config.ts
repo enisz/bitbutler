@@ -3,8 +3,9 @@ import { defineConfig } from 'vitepress';
 export default defineConfig({
   title: 'BitButler Docs',
   description: 'User guide for BitButler, a remote qBittorrent-nox desktop client.',
+  base: '/bitbutler/',
   lastUpdated: true,
-  head: [['link', { rel: 'icon', href: '/bitbutler-logo.png' }]],
+  head: [['link', { rel: 'icon', href: '/bitbutler/bitbutler-logo.png' }]],
   themeConfig: {
     logo: '/bitbutler-logo.png',
     nav: [{ text: 'User Guide', link: '/guide/getting-started' }],
