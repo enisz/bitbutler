@@ -1,32 +1,28 @@
 ---
 title: Glossary
-description: Placeholder guide page defining terms used throughout the BitButler documentation.
+description: Definitions for BitTorrent and BitButler-specific terms used throughout this guide.
 ---
 
 # Glossary
 
-Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
-
 ## Torrent
 
-Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
+A small file (`.torrent`) or magnet link describing content available to download over BitTorrent - its file list, sizes, and a hash identifying it uniquely, plus one or more trackers to help find other people sharing it. It isn't the content itself, just the metadata needed to fetch it.
 
 ## Tracker
 
-Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.
+A server that keeps track of who's currently sharing a given torrent, so a new client can find peers to download from. Modern torrents can also find peers without one via DHT, but a tracker is usually still the fastest way in.
 
 ## Seed and Peer
 
-Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur.
-
 ### Seed
 
-Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur.
+A peer that already has a complete copy of the torrent's content and continues sharing it with others.
 
 ### Peer
 
-At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.
+Any client participating in a torrent's swarm - downloading, seeding, or both at once. "Seed" is really just a peer that's finished downloading.
 
 ## Category and Tag
 
-Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus.
+Both are ways to organize torrents in BitButler, managed from the toolbar's **Manage** group. A torrent can belong to only one [category](./user-interface/manage/categories) at a time, and a category can carry a save path that relocates torrents assigned to it. A torrent can carry any number of [tags](./user-interface/manage/tags) instead, which are for organization only and have no path behavior of their own.
