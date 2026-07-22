@@ -1,6 +1,6 @@
 ---
 title: Keyboard Shortcuts
-description: Global and torrent grid keyboard shortcuts available in the main window.
+description: Global, menu, and torrent grid keyboard shortcuts available in BitButler.
 ---
 
 # Keyboard Shortcuts
@@ -14,6 +14,27 @@ These shortcuts are active in the main window. They're suppressed while typing i
 | `Ctrl+K` | Focus the toolbar's search box.                                                                                           |
 | `Escape` | While the search box is focused, clears it. Otherwise, closes the currently open dialog.                                  |
 | `Delete` | Deletes the selected torrent(s). Hold `Shift` to default the confirmation dialog's "also delete files" option to checked. |
+
+## Menu Shortcuts
+
+These come from the native [Application Menu](./user-interface/application-menu) and work even when the window doesn't have focus on some platforms, since they're registered at the OS level rather than in the renderer:
+
+| Shortcut       | Action               |
+| -------------- | -------------------- |
+| `Ctrl+N`       | Add Torrent          |
+| `Ctrl+E`       | Export Torrents      |
+| `Ctrl+I`       | Import Torrents      |
+| `Ctrl+L`       | Disconnect           |
+| `Ctrl+Q`       | Quit                 |
+| `Ctrl+.`       | BitButler Settings   |
+| `Ctrl+,`       | qBittorrent Settings |
+| `Ctrl+Shift+S` | Manage Servers       |
+| `Ctrl+Shift+T` | Manage Tags          |
+| `Ctrl+Shift+C` | Manage Categories    |
+| `Ctrl+U`       | Check for Updates    |
+| `F1`           | About                |
+
+All of these except Quit and About require being connected to a server. See [Application Menu](./user-interface/application-menu) for the full menu structure these belong to.
 
 ## Grid Shortcuts
 
