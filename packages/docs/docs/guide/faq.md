@@ -1,24 +1,24 @@
 ---
 title: FAQ
-description: Placeholder guide page answering frequently asked questions about BitButler.
+description: Common questions about licensing, platform support, and how BitButler relates to qBittorrent-nox.
 ---
 
 # FAQ
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
-
 ## Is BitButler free to use?
 
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Yes. BitButler is open-source and released under the MIT license.
 
 ## Which platforms are supported?
 
-Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt, neque porro quisquam est qui dolorem ipsum quia dolor sit amet.
+Windows and Linux. Windows is available as an installer, a portable build, or a plain `.zip`; Linux is available as an AppImage, `.deb`, `.rpm`, `.snap`, or `.tar.gz`. See [Getting Started > Installation](./getting-started#installation) for details. There is currently no macOS build.
 
 ## Does BitButler run torrents locally?
 
-Consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam.
+No. BitButler is a remote client - it connects to a qBittorrent-nox instance you run separately (on a home server, NAS, or VPS, for example) and controls it over qBittorrent's Web API. All actual downloading and seeding happens on that server, not on the machine running BitButler.
+
+Note also that BitButler currently targets qBittorrent v4.1.0 - v4.6.x; using it against the newer v5.x Web API may work but isn't officially supported yet.
 
 ## Where can I report a bug?
 
-Nisi ut aliquid ex ea commodi consequatur, quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur.
+Open an issue on [BitButler's GitHub repository](https://github.com/enisz/bitbutler). Issue templates are provided for bug reports, enhancements, feature requests, and maintenance tasks - pick whichever fits, or use the general "other" template if none apply.
