@@ -7,11 +7,13 @@ description: Add, switch between, and manage the qBittorrent-nox servers BitButl
 
 BitButler connects to one or more remote qBittorrent-nox instances over its Web API. Each connection is stored locally (passwords are encrypted at rest) and managed from the **Manage Servers** dialog.
 
+![Manage Servers dialog](/screenshots/manage/servers/overview.png)
+
 ## Adding a Server
 
 Open **Manage Servers** either from the login screen, or from the main window's toolbar: **Manage > Servers**. Click **Add Server** to open the connection editor.
 
-![Add server dialog placeholder](https://placehold.co/600x400/EEE/31343C?text=Add+Server)
+![New Connection editor](/screenshots/manage/servers/add-server.png)
 
 ### Connection Fields
 
@@ -38,3 +40,5 @@ Marking a connection as default (the checkbox icon next to each server in the li
 ## Editing and Deleting a Server
 
 From the Manage Servers list, use the pencil icon to reopen a connection in the editor, or the trash icon to delete it. Deleting asks for confirmation first, since the action can't be undone - any [Path Mappings](../settings/bitbutler-settings#path-mappings) or polling settings configured for that connection no longer apply once it's gone.
+
+![Manage Servers dialog with multiple servers listed](/screenshots/manage/servers/multiple-servers.png)

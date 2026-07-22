@@ -7,8 +7,6 @@ description: A Torrent részletek párbeszédablak - Általános, Trackerek, Pee
 
 A Torrent részletek párbeszédablak egy teljes, fülekre bontott áttekintést ad egyetlen torrentről: a metaadatait és átviteli statisztikáit, trackereit, csatlakozott peerjeit és fájltartalmát.
 
-![Torrent details view placeholder](https://placehold.co/600x400/31343C/EEE?text=Torrent+Details)
-
 ## Torrent részleteinek megnyitása
 
 Egy torrentsorra való dupla kattintás alapból megnyitja ezt a párbeszédablakot - lásd [Sorra dupla kattintás viselkedése](./settings/bitbutler-settings#tablazat-beallitasok) ennek megváltoztatásához vagy letiltásához. Jobb gombbal is kattinthatsz egyetlen torrentsorra, és kiválaszthatod a **Torrent részletek** lehetőséget a helyi menüből (ez az opció nem érhető el, ha több sor van kijelölve).
@@ -23,17 +21,25 @@ Az Általános fül három csoportra oszlik:
 
 A legtöbb szövegmező mellett egy kis vágólapra másoló gomb található.
 
+![Általános fül](/screenshots/torrent-details-view/general.png)
+
 ## Trackerek
 
 A torrent összes trackerének rendezhető, szűrhető táblázata: szint, URL, státusz (Letiltva, Nincs kapcsolatfelvétel, Működik, Frissítés, vagy Nem működik), valamint peer/seed/leech/letöltés számai, plusz bármely státuszüzenet a trackertől. Kattints jobb gombbal egy sorra az URL, a cellaérték, vagy a teljes sor JSON-ként való másolásához. Az oszlopok sorrendje, szélessége és rendezése munkamenetek között megőrződik.
+
+![Trackerek fül](/screenshots/torrent-details-view/trackers.png)
 
 ## Peerek
 
 A torrenthez éppen csatlakozó összes peer rendezhető, szűrhető táblázata: ország, IP és port, kapcsolattípus, protokolljelzők (mutasd az egérrel egy jelzőre a jelentéséért), kliens neve, peerenkénti állapot, letöltési/feltöltési sebesség, letöltött/feltöltött összesen, relevancia, valamint hogy az adott peernek mely fájljai vannak meg. Kattints jobb gombbal egy sorra az IP:port, a cellaérték, vagy a sor JSON-ként való másolásához.
 
+![Peerek fül](/screenshots/torrent-details-view/peers.png)
+
 ## Tartalom
 
 A torrent tartalmának kibontható fájlfa. Minden fájlhoz tartozik egy jelölőnégyzet a letöltésbe való bevonáshoz vagy kizáráshoz, valamint egy prioritás-legördülő (Normál, Magas vagy Maximális, a kizárt/kihagyott mellett), a saját folyamatsávjával együtt. A szerkesztés szerkesztő módba kapcsolja a fület - egy kis csillaggal jelölve a Tartalom fülön -, amíg el nem mented a változtatásokat.
+
+![Tartalom fül](/screenshots/torrent-details-view/content.png)
 
 ## Lábléc műveletei
 
@@ -46,3 +52,5 @@ Egy önálló **Törlés** gomb eltávolítja a torrentet. A lábléc többi ré
 - **Karbantartás** - Kényszerített ellenőrzés, Kényszerített újrajelentkezés, valamint egy kapcsoló az Automatikus torrentkezeléshez.
 
 A jobb szélen egy **Bezárás** gomb zárja be a párbeszédablakot.
+
+![Lábléc műveletei](/screenshots/torrent-details-view/footer-actions.png)

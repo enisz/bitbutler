@@ -39,6 +39,8 @@ Automatically switches to the alternative rate limits during a configured time w
 - **Active on** - Every day, Every weekday, Every weekend, or a specific day of the week.
 - **From / To** - the hour and minute the alternative limits start and stop applying.
 
+![Bandwidth tab](/screenshots/settings/qbittorrent-settings/bandwidth.png)
+
 ## Storage
 
 ### Default Paths
@@ -65,6 +67,8 @@ _(Only shown if your qBittorrent-nox version supports a separate incomplete-file
 | When category save path changes | Relocate torrents / Switch to Manual mode | Behavior applied when a category's own save path is edited.                                                                                  |
 | When default save path changes  | Relocate torrents / Switch to Manual mode | Behavior applied when the server's default save path (above) is edited.                                                                      |
 
+![Storage tab](/screenshots/settings/qbittorrent-settings/storage.png)
+
 ## Queue & Limits
 
 Control how many torrents can be active at once and how new torrents are queued.
@@ -84,6 +88,8 @@ _(Only shown if your qBittorrent-nox version supports it.)_
 
 - **Add new torrents to the top of the queue** - new torrents jump ahead of already-queued ones instead of joining at the bottom.
 
+![Queue & Limits tab](/screenshots/settings/qbittorrent-settings/queue-limits.png)
+
 ## Seeding Ratios
 
 Automatically stop seeding based on a share ratio target, a time threshold, or both.
@@ -102,3 +108,5 @@ Automatically stop seeding based on a share ratio target, a time threshold, or b
 | ---------------------------- | -------------------------------------------------- |
 | Enable Seeding Time Limit    | Turns the time limit on.                           |
 | Stop seeding after (minutes) | How long to seed before the action above is taken. |
+
+![Seeding Ratios tab](/screenshots/settings/qbittorrent-settings/seeding-ratios.png)

@@ -186,3 +186,17 @@
     line-height: 42px;
   }
 }
+
+/* medium-zoom's overlay/zoomed image are appended to <body> with no z-index
+   of their own, so they render behind VitePress's nav (z-index 30) and
+   sidebar (z-index 60). Match the renderer app's modal backdrop (black,
+   blurred) instead of the library's plain white default. */
+.medium-zoom-overlay {
+  z-index: 100;
+  backdrop-filter: blur(6px);
+}
+
+.medium-zoom-image--opened {
+  z-index: 101;
+  border-radius: 8px;
+}

@@ -7,7 +7,7 @@ description: A főablak bemutatása - eszköztár, oldalsáv szűrők, keresés,
 
 A főablak az, ahol a legtöbb időt töltöd a BitButlerben. Egy eszköztár fut végig a tetején, egy szűrő oldalsáv a bal oldalon helyezkedik el, a torrenttáblázat kitölti a középső részt, egy állapotsáv pedig végigfut az alján.
 
-![Torrent list view placeholder](https://placehold.co/600x400/31343C/EEE?text=Torrent+List+View)
+![Torrentlista nézet eszköztárral, oldalsáv szűrőkkel, torrenttáblázattal és állapotsávval](/screenshots/torrent-list-view/overview.png)
 
 ## Eszköztár
 

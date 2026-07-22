@@ -7,7 +7,7 @@ description: A tour of the main window - toolbar, sidebar filters, search, torre
 
 The main window is where you spend most of your time in BitButler. A toolbar runs across the top, a filter sidebar sits on the left, the torrent grid fills the center, and a status bar spans the bottom.
 
-![Torrent list view placeholder](https://placehold.co/600x400/31343C/EEE?text=Torrent+List+View)
+![Torrent list view with toolbar, sidebar filters, torrent grid, and status bar](/screenshots/torrent-list-view/overview.png)
 
 ## Toolbar
 
