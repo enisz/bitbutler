@@ -18,7 +18,7 @@ Open the dialog from the toolbar: **Settings > BitButler**. The dialog has four 
 | Start app with the system | Automatically launches BitButler when the operating system starts.                                                                            |
 | Start minimized           | Hides the application window on startup; BitButler stays accessible from the system tray. Requires "Start app with the system" to be enabled. |
 
-If "Start app with the system" is enabled but no server is marked as the default connection, a warning hint appears here reminding you that the app will start without logging in automatically. See [Setting a Default Server](../../connecting-a-server#setting-a-default-server).
+If "Start app with the system" is enabled but no server is marked as the default connection, a warning hint appears here reminding you that the app will start without logging in automatically. See [Setting a Default Server](../manage/servers#setting-a-default-server).
 
 ### Behavior
 
@@ -80,7 +80,7 @@ Controls how save-path fields behave throughout the app when adding or moving to
 
 ## Server
 
-Unlike the General tab, Server settings are stored **per connection** - each server you add in [Manage Servers](../../connecting-a-server) has its own polling interval and path-mapping configuration.
+Unlike the General tab, Server settings are stored **per connection** - each server you add in [Manage Servers](../manage/servers) has its own polling interval and path-mapping configuration.
 
 ### Polling
 
