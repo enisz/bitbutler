@@ -7,6 +7,8 @@ const mockBuildFromTemplate = vi.hoisted(() =>
 const mockSetApplicationMenu = vi.hoisted(() => vi.fn());
 const mockAppGetPath = vi.hoisted(() => vi.fn(() => '/fake/logs'));
 const mockShellOpenPath = vi.hoisted(() => vi.fn());
+const mockShellOpenExternal = vi.hoisted(() => vi.fn());
+const mockGetCurrentLanguage = vi.hoisted(() => vi.fn(() => 'us'));
 const mockGetCookieJar = vi.hoisted(() => vi.fn(() => new Map<string, string>()));
 const mockGetActiveServerId = vi.hoisted(() => vi.fn<() => string | null>(() => null));
 const mockServerList = vi.hoisted(() =>
@@ -23,10 +25,13 @@ vi.mock('electron', () => ({
     setApplicationMenu: mockSetApplicationMenu,
   },
   app: appMock,
-  shell: { openPath: mockShellOpenPath },
+  shell: { openPath: mockShellOpenPath, openExternal: mockShellOpenExternal },
 }));
 
-vi.mock('./i18n.js', () => ({ t: (key: string) => key }));
+vi.mock('./i18n.js', () => ({
+  t: (key: string) => key,
+  getCurrentLanguage: mockGetCurrentLanguage,
+}));
 
 vi.mock('./ipc/qbittorrent.js', () => ({ getCookieJar: mockGetCookieJar }));
 
@@ -78,6 +83,7 @@ describe('rebuildMenu', () => {
     mockGetActiveServerId.mockReturnValue(null);
     mockServerList.mockReturnValue([]);
     mockGetMainWindow.mockReturnValue(null);
+    mockGetCurrentLanguage.mockReturnValue('us');
   });
 
   afterEach(() => {
@@ -223,6 +229,25 @@ describe('rebuildMenu', () => {
         'CmdOrCtrl+U',
       );
       expect(findItem(template, byLabel('electron.menu.about'))?.accelerator).toBe('F1');
+      expect(findItem(template, byLabel('electron.menu.user-guide'))?.accelerator).toBe(
+        'CmdOrCtrl+Shift+,',
+      );
+    });
+
+    it('opens the English docs when User Guide is clicked in English', async () => {
+      mockGetCurrentLanguage.mockReturnValue('us');
+      const template = await buildMenu();
+      const item = findItem(template, byLabel('electron.menu.user-guide'))!;
+      (item.click as () => void)();
+      expect(mockShellOpenExternal).toHaveBeenCalledWith('https://enisz.github.io/bitbutler/');
+    });
+
+    it('opens the Hungarian docs when User Guide is clicked in Hungarian', async () => {
+      mockGetCurrentLanguage.mockReturnValue('hu');
+      const template = await buildMenu();
+      const item = findItem(template, byLabel('electron.menu.user-guide'))!;
+      (item.click as () => void)();
+      expect(mockShellOpenExternal).toHaveBeenCalledWith('https://enisz.github.io/bitbutler/hu/');
     });
   });
 

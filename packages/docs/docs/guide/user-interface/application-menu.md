@@ -37,9 +37,10 @@ Shown only while connected:
 
 ## Help
 
-| Item              | Shortcut | Notes                                                                                                                                                        |
-| ----------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Check for Updates | `Ctrl+U` | Manually triggers the same update check as the "Check for Updates now" button under [BitButler Settings > Behavior](./settings/bitbutler-settings#behavior). |
-| About             | `F1`     | Shows the app's version and related information.                                                                                                             |
+| Item              | Shortcut       | Notes                                                                                                                                                        |
+| ----------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Check for Updates | `Ctrl+U`       | Manually triggers the same update check as the "Check for Updates now" button under [BitButler Settings > Behavior](./settings/bitbutler-settings#behavior). |
+| User Guide        | `Ctrl+Shift+,` | Opens this documentation site in your default browser, in the app's current language.                                                                        |
+| About             | `F1`           | Shows the app's version and related information.                                                                                                             |
 
 On Windows, `Ctrl` is the modifier shown above; on other platforms the same accelerators apply with that platform's usual command modifier.

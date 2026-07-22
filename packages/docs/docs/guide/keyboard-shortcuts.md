@@ -32,9 +32,10 @@ These come from the native [Application Menu](./user-interface/application-menu)
 | `Ctrl+Shift+T` | Manage Tags          |
 | `Ctrl+Shift+C` | Manage Categories    |
 | `Ctrl+U`       | Check for Updates    |
+| `Ctrl+Shift+,` | User Guide           |
 | `F1`           | About                |
 
-All of these except Quit and About require being connected to a server. See [Application Menu](./user-interface/application-menu) for the full menu structure these belong to.
+All of these except Quit, About, and User Guide require being connected to a server. See [Application Menu](./user-interface/application-menu) for the full menu structure these belong to.
 
 ## Grid Shortcuts
 
