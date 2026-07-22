@@ -32,6 +32,8 @@ export default defineConfig({
             { text: 'Export Window', link: '/guide/user-interface/export-window' },
             { text: 'Import Window', link: '/guide/user-interface/import-window' },
             { text: 'Torrent Details View', link: '/guide/user-interface/torrent-details-view' },
+            { text: 'Application Menu', link: '/guide/user-interface/application-menu' },
+            { text: 'System Tray & Notifications', link: '/guide/user-interface/system-tray' },
             {
               text: 'Settings',
               collapsed: false,
