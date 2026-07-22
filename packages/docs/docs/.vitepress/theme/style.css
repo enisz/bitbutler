@@ -200,3 +200,11 @@
   z-index: 101;
   border-radius: 8px;
 }
+
+/* Ordinal suffix ("22nd") in the custom last-updated date, set via theme/lastUpdated.ts. */
+.VPLastUpdated .ordinal-suffix {
+  font-size: 0.7em;
+  vertical-align: baseline;
+  position: relative;
+  top: -0.4em;
+}
