@@ -1,20 +1,20 @@
 ---
 title: Why BitButler
-description: Placeholder guide page explaining the motivation behind BitButler.
+description: What BitButler is for, and why it exists alongside qBittorrent's own Web UI.
 ---
 
 # Why BitButler
 
-Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur.
+qBittorrent-nox already ships its own Web UI - BitButler exists because a browser tab isn't always the best place to manage torrents. It's a dedicated desktop client: no tab to lose track of, no page reload, just an app that's always one Alt+Tab away.
 
 ## Remote Management
 
-Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur.
+BitButler doesn't run torrents itself - it talks to qBittorrent-nox's Web API over the network, the same way a browser would, just from a native window instead of a page. Your qBittorrent-nox instance can live anywhere reachable over the network: a home server, a NAS, or a VPS.
 
 ## Multi-Server Support
 
-At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.
+Configure as many qBittorrent-nox connections as you have, and switch between them from the login screen or the toolbar's **Manage > Servers** dialog. Each connection keeps its own polling interval and path mappings, stored locally with passwords encrypted at rest - so switching servers doesn't mean re-entering credentials, and nothing is sent anywhere except directly to your own server.
 
 ## Cross-Platform
 
-Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus.
+BitButler ships as native builds for both Windows and Linux, built on the same Electron and Angular foundation, so the app looks and behaves identically regardless of which one you run it on. See [Getting Started > Installation](./getting-started#installation) for the exact packages available per platform.
