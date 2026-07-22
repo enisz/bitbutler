@@ -1,24 +1,24 @@
 ---
 title: Getting Started
-description: Placeholder guide page for getting started with BitButler.
+description: Download, install, and launch BitButler for the first time.
 ---
 
 # Getting Started
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+BitButler is a desktop application - install it on Windows or Linux, then point it at a qBittorrent-nox server you already have running. It doesn't run torrents itself; see [Why BitButler](./why-bitbutler) for how the two pieces fit together.
 
 ## Installation
 
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Download the build for your platform from the project's [GitHub Releases](https://github.com/enisz/bitbutler/releases) page.
 
 ### Windows
 
-Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
+Two options are provided: a guided **installer** (lets you choose the install location and creates Start Menu / Desktop shortcuts), or a **portable** build you can run directly with no installation. A plain `.zip` of the portable build is also available if you'd rather extract it yourself.
 
 ### Linux
 
-Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
+Available as an **AppImage** (run directly, no installation), or as a **.deb**, **.rpm**, or **snap** package for your distribution's package manager, plus a plain `.tar.gz` archive.
 
 ## First Launch
 
-Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.
+The first time BitButler starts, it has no servers configured yet, so it opens straight to the login screen instead of the torrent list. From there, continue to [First Steps](./first-steps) to add your first server connection.
