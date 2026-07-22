@@ -1,34 +1,48 @@
 ---
 title: Torrent Details View
-description: Placeholder guide page for the Torrent Details view - General, Trackers, Peers, and Content tabs.
+description: The Torrent Details dialog - General, Trackers, Peers, and Content tabs, plus its footer actions.
 ---
 
 # Torrent Details View
 
-Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
+The Torrent Details dialog gives you a full, tabbed breakdown of a single torrent: its metadata and transfer stats, its trackers, its connected peers, and its file contents.
 
 ![Torrent details view placeholder](https://placehold.co/600x400/31343C/EEE?text=Torrent+Details)
 
 ## Opening Torrent Details
 
-Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt.
+Double-clicking a torrent row opens this dialog by default - see [Row double-click behavior](./settings/bitbutler-settings#grid-options) to change or disable that. You can also right-click a single torrent row and choose **Torrent Details** from the context menu (this option isn't available when multiple rows are selected).
 
 ## General
 
-Ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam.
+The General tab is split into three groups:
+
+- **General** - name, save path, remote (server-side) path, local path (only shown if a [path mapping](./settings/bitbutler-settings#path-mappings) resolves one), Automatic Torrent Management and Force Start flags, current progress, state, and any error message.
+- **Transfer** - time active, ETA, connections, downloaded/uploaded totals, seeds/peers (connected vs. total known), download/upload speed and limits, wasted data, share ratio, time to next reannounce, last seen complete, ratio and seeding time limits, and the sequential download / first-last-piece-priority / super seeding flags.
+- **Information** - total size, piece count (with how many you have), created-by and creation date, added-on and completed-on dates, both v1 and v2 info hashes, and the torrent's comment.
+
+Most text fields have a small copy-to-clipboard button next to them.
 
 ## Trackers
 
-Nisi ut aliquid ex ea commodi consequatur. Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur.
+A sortable, filterable table of every tracker on the torrent: tier, URL, status (Disabled, Not Contacted, Working, Updating, or Not Working), and its peer/seed/leech/download counts, plus any status message from the tracker. Right-click a row to copy its URL, its cell value, or the whole row as JSON. Column order, width, and sort are remembered between sessions.
 
 ## Peers
 
-Vel illum qui dolorem eum fugiat quo voluptas nulla pariatur, at vero eos et accusamus et iusto odio dignissimos ducimus.
+A sortable, filterable table of every peer currently connected for this torrent: country, IP and port, connection type, protocol flags (hover a flag for what it means), client name, per-peer progress, download/upload speed, downloaded/uploaded totals, relevance, and which files that peer has. Right-click a row to copy its IP:port, its cell value, or the row as JSON.
 
 ## Content
 
-Qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.
+An expandable file tree for the torrent's contents. Each file has a checkbox to include or exclude it from the download and a priority dropdown (Normal, High, or Maximum, in addition to excluded/skipped) alongside its own progress bar. Editing switches the tab into edit mode - shown by a small asterisk on the Content tab - until you save the changes.
 
 ## Footer Actions
 
-Similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga: Control, Files, Manage, Transfer, and Maintenance.
+A standalone **Delete** button removes the torrent. The rest of the footer groups related actions into dropdowns:
+
+- **Control** - Resume, Pause, Force Resume.
+- **Files** - Show File / Open Destination (disabled until a [path mapping](./settings/bitbutler-settings#path-mappings) resolves a local folder), Set Save Path, Set Download Path, and Export Torrent File.
+- **Manage** - Rename, Change Category, Change Tags.
+- **Transfer** - Transfer Limits, Edit Share Limits, and toggles for Super Seeding, Sequential Download, and First/Last Piece Priority.
+- **Maintenance** - Force Recheck, Force Reannounce, and a toggle for Automatic Torrent Management.
+
+A **Close** button on the far right closes the dialog.
