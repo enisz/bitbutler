@@ -1,13 +1,13 @@
 import { defineConfig } from 'vitepress';
 
 export default defineConfig({
-  title: 'BitButler Docs',
-  description: 'Documentation for BitButler, a remote qBittorrent-nox desktop client.',
+  title: 'BitButler User Guide',
+  description: 'User guide for BitButler, a remote qBittorrent-nox desktop client.',
   lastUpdated: true,
   head: [['link', { rel: 'icon', href: '/bitbutler-logo.png' }]],
   themeConfig: {
     logo: '/bitbutler-logo.png',
-    nav: [{ text: 'Guide', link: '/guide/getting-started' }],
+    nav: [{ text: 'User Guide', link: '/guide/getting-started' }],
     sidebar: {
       '/guide/': [
         {
@@ -20,29 +20,41 @@ export default defineConfig({
         {
           text: 'Usage',
           items: [
-            { text: 'Connecting a Server', link: '/guide/connecting-a-server' },
+            { text: 'First Steps', link: '/guide/first-steps' },
             { text: 'Managing Torrents', link: '/guide/managing-torrents' },
-            { text: 'Keyboard Shortcuts', link: '/guide/keyboard-shortcuts' },
           ],
         },
         {
-          text: 'Advanced',
+          text: 'User Interface',
           items: [
+            { text: 'Login Page', link: '/guide/user-interface/login-page' },
+            { text: 'Torrent List View', link: '/guide/user-interface/torrent-list-view' },
+            { text: 'Export Window', link: '/guide/user-interface/export-window' },
+            { text: 'Import Window', link: '/guide/user-interface/import-window' },
+            { text: 'Torrent Details View', link: '/guide/user-interface/torrent-details-view' },
             {
-              text: 'Configuration',
+              text: 'Settings',
               collapsed: false,
               items: [
                 {
                   text: 'BitButler Settings',
-                  link: '/guide/advanced/configuration/bitbutler-settings',
+                  link: '/guide/user-interface/settings/bitbutler-settings',
                 },
                 {
                   text: 'qBittorrent Settings',
-                  link: '/guide/advanced/configuration/qbittorrent-settings',
+                  link: '/guide/user-interface/settings/qbittorrent-settings',
                 },
               ],
             },
-            { text: 'Troubleshooting', link: '/guide/advanced/troubleshooting' },
+            {
+              text: 'Manage',
+              collapsed: false,
+              items: [
+                { text: 'Servers', link: '/guide/user-interface/manage/servers' },
+                { text: 'Tags', link: '/guide/user-interface/manage/tags' },
+                { text: 'Categories', link: '/guide/user-interface/manage/categories' },
+              ],
+            },
           ],
         },
         {
@@ -50,6 +62,8 @@ export default defineConfig({
           items: [
             { text: 'FAQ', link: '/guide/faq' },
             { text: 'Glossary', link: '/guide/glossary' },
+            { text: 'Troubleshooting', link: '/guide/troubleshooting' },
+            { text: 'Keyboard Shortcuts', link: '/guide/keyboard-shortcuts' },
           ],
         },
       ],
