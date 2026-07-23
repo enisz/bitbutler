@@ -80,7 +80,10 @@ export class TorrentExists {
     effect(() => {
       const h = this.hash();
       if (!h) return;
-      this.filterService.resetAll();
+
+      const isVisible = this.filterService.filtered().some((t) => t.hash === h);
+      if (!isVisible) return;
+
       this.selectionStoreService.setByHashes([h]);
       this.commandBusService.emit({ type: 'UI_SCROLL_TO_TORRENT', hash: h });
     });
