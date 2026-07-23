@@ -110,6 +110,7 @@ Three lazy-loaded routes: `login`, `main` (torrent grid), `settings`. The router
 
 ## Documentation site (`@bitbutler/docs`)
 
+- Do not plan or scope the user guide update while a new feature is still being designed or implemented - the feature can still change shape during planning and execution, which would waste that work. Plan and make the docs update only once the feature has stabilized, around when the pull request is created.
 - Screenshots referenced from markdown live in `packages/docs/docs/public/screenshots/<page-slug>/<descriptive-name>.png`, one subfolder per guide page, and are referenced with an absolute path (e.g. `/screenshots/login-page/no-server.png`).
 - Every image under `.vp-doc img` (i.e. any image embedded in a doc page's markdown body) automatically gets click-to-zoom via `medium-zoom`, wired up in `packages/docs/docs/.vitepress/theme/index.ts` - no per-image or per-page opt-in needed.
 - Hungarian pages under `packages/docs/docs/hu/` mirror the same screenshots as their English counterparts (same `/screenshots/...` paths) with translated alt text - they are not a separate image set.
