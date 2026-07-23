@@ -88,7 +88,7 @@ describe('TorrentExists', () => {
         { provide: NgbActiveModal, useValue: mockActiveModal },
         { provide: TorrentStoreService, useValue: mockTorrentStore },
         { provide: SelectionStoreService, useValue: { setByHashes: vi.fn() } },
-        { provide: FilterService, useValue: { resetAll: vi.fn() } },
+        { provide: FilterService, useValue: { filtered: signal([{ hash: 'abc123' } as Torrent]) } },
         {
           provide: CommandBusService,
           useValue: { commands$: new Subject<any>().asObservable(), emit: vi.fn() },
@@ -222,6 +222,44 @@ describe('TorrentExists', () => {
         hash: 'abc123',
       });
     });
+
+    it('should not select or scroll, and should not touch active filters, when the torrent is hidden by the current filters', async () => {
+      await TestBed.resetTestingModule();
+      const mockSelectionStore = { setByHashes: vi.fn() };
+      const mockCommandBus = { commands$: new Subject<any>().asObservable(), emit: vi.fn() };
+
+      await TestBed.configureTestingModule({
+        imports: [TorrentExists],
+        providers: [
+          { provide: NgbActiveModal, useValue: { close: vi.fn(), dismiss: vi.fn() } },
+          { provide: TorrentStoreService, useValue: { torrentsMap: signal(new Map()) as any } },
+          { provide: SelectionStoreService, useValue: mockSelectionStore },
+          { provide: FilterService, useValue: { filtered: signal([]) } },
+          { provide: CommandBusService, useValue: mockCommandBus },
+          {
+            provide: GeneralSettingsService,
+            useValue: {
+              asObservable: vi.fn().mockReturnValue(
+                of({
+                  ...DEFAULT_GENERAL_SETTINGS,
+                  behavior: { ...DEFAULT_GENERAL_SETTINGS.behavior, deleteTorrentFile: true },
+                }),
+              ),
+            },
+          },
+          { provide: ToastService, useValue: { success: vi.fn(), danger: vi.fn() } },
+        ],
+      }).compileComponents();
+
+      const hiddenFixture = TestBed.createComponent(TorrentExists);
+      hiddenFixture.componentRef.setInput('hash', 'abc123');
+      hiddenFixture.detectChanges();
+
+      expect(mockSelectionStore.setByHashes).not.toHaveBeenCalled();
+      expect(mockCommandBus.emit).not.toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'UI_SCROLL_TO_TORRENT' }),
+      );
+    });
   });
 
   describe('openDetails', () => {
@@ -257,7 +295,10 @@ describe('TorrentExists', () => {
           { provide: NgbActiveModal, useValue: { close: vi.fn(), dismiss: vi.fn() } },
           { provide: TorrentStoreService, useValue: mockTorrentStoreLocal },
           { provide: SelectionStoreService, useValue: { setByHashes: vi.fn() } },
-          { provide: FilterService, useValue: { resetAll: vi.fn() } },
+          {
+            provide: FilterService,
+            useValue: { filtered: signal([{ hash: 'abc123' } as Torrent]) },
+          },
           {
             provide: CommandBusService,
             useValue: { commands$: new Subject<any>().asObservable(), emit: vi.fn() },
@@ -318,7 +359,7 @@ describe('TorrentExists - showDeleteButton with deleteTorrentFile disabled', () 
         { provide: NgbActiveModal, useValue: { close: vi.fn(), dismiss: vi.fn() } },
         { provide: TorrentStoreService, useValue: { torrentsMap: signal(new Map()) as any } },
         { provide: SelectionStoreService, useValue: { setByHashes: vi.fn() } },
-        { provide: FilterService, useValue: { resetAll: vi.fn() } },
+        { provide: FilterService, useValue: { filtered: signal([{ hash: 'abc123' } as Torrent]) } },
         {
           provide: CommandBusService,
           useValue: { commands$: new Subject<any>().asObservable(), emit: vi.fn() },
