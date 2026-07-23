@@ -5,6 +5,7 @@ import path from 'node:path';
 type TranslationMap = Record<string, unknown>;
 
 let translations: TranslationMap = {};
+let currentLang = 'us';
 
 function getI18nFilePath(lang: string): string {
   if (app.isPackaged) {
@@ -14,6 +15,7 @@ function getI18nFilePath(lang: string): string {
 }
 
 export function loadTranslations(lang: string): void {
+  currentLang = lang;
   const filePath = getI18nFilePath(lang);
   try {
     const content = fs.readFileSync(filePath, 'utf-8');
@@ -22,6 +24,10 @@ export function loadTranslations(lang: string): void {
     console.warn(`[i18n] Failed to load translations for "${lang}":`, e);
     translations = {};
   }
+}
+
+export function getCurrentLanguage(): string {
+  return currentLang;
 }
 
 export function t(key: string): string {

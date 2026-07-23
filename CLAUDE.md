@@ -15,6 +15,7 @@ This is an **npm workspaces** monorepo. All packages live under `packages/`:
 | `@bitbutler/app`      | `packages/app/`      | Angular renderer                   |
 | `@bitbutler/electron` | `packages/electron/` | Electron main process (TypeScript) |
 | `@bitbutler/shared`   | `packages/shared/`   | Shared IPC contract & models       |
+| `@bitbutler/docs`     | `packages/docs/`     | VitePress documentation site       |
 
 A single `npm ci` at the root installs all workspace dependencies. Workspace packages that depend on each other are symlinked automatically by npm.
 
@@ -30,6 +31,8 @@ npm test                # Run tests across all workspaces
 npm run build           # Angular production build
 npm run build:electron  # Compile Electron TypeScript
 npm run build:ui        # Full UI build (Angular + Electron, production)
+npm run serve:docs      # VitePress dev server for the docs site
+npm run build:docs      # Build the docs site
 npm run dist:linux      # Build Linux distributions (AppImage, DEB, RPM, Snap, tar.gz)
 npm run dist:win        # Build Windows distributions (NSIS, portable, ZIP)
 ```
@@ -104,6 +107,13 @@ Three lazy-loaded routes: `login`, `main` (torrent grid), `settings`. The router
   in the UI (e.g. a grid row reordering, a checkbox toggling) - add one
   only when something happened that the user can't otherwise see, or when
   it can fail.
+
+## Documentation site (`@bitbutler/docs`)
+
+- Do not plan or scope the user guide update while a new feature is still being designed or implemented - the feature can still change shape during planning and execution, which would waste that work. Plan and make the docs update only once the feature has stabilized, around when the pull request is created.
+- Screenshots referenced from markdown live in `packages/docs/docs/public/screenshots/<page-slug>/<descriptive-name>.png`, one subfolder per guide page, and are referenced with an absolute path (e.g. `/screenshots/login-page/no-server.png`).
+- Every image under `.vp-doc img` (i.e. any image embedded in a doc page's markdown body) automatically gets click-to-zoom via `medium-zoom`, wired up in `packages/docs/docs/.vitepress/theme/index.ts` - no per-image or per-page opt-in needed.
+- Hungarian pages under `packages/docs/docs/hu/` mirror the same screenshots as their English counterparts (same `/screenshots/...` paths) with translated alt text - they are not a separate image set.
 
 ## Writing style
 

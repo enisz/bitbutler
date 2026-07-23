@@ -1,0 +1,18 @@
+{
+  "name": "@bitbutler/docs",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "serve": "vitepress dev docs",
+    "build": "vitepress build docs",
+    "preview": "vitepress preview docs"
+  },
+  "devDependencies": {
+    "vitepress": "^1.6.4"
+  },
+  "dependencies": {
+    "dayjs": "^1.11.21",
+    "medium-zoom": "^1.1.0"
+  }
+}

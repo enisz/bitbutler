@@ -1,0 +1,46 @@
+---
+title: Alkalmazásmenü
+description: A natív Fájl, Szerverek, Beállítások és Súgó menük, valamint azok billentyűparancsai.
+---
+
+# Alkalmazásmenü
+
+A BitButler az alkalmazáson belüli eszköztár mellett natív operációs rendszer szintű menüsávval is rendelkezik. Néhány művelet - a kijelentkezés, a kilépés, a frissítések keresése - csak innen érhető el.
+
+## Fájl
+
+| Elem                  | Billentyűparancs | Megjegyzés                                                                                    |
+| --------------------- | ---------------- | --------------------------------------------------------------------------------------------- |
+| Torrent hozzáadása    | `Ctrl+N`         | Megnyitja a [Torrent hozzáadása](../managing-torrents#torrentek-hozzaadasa) párbeszédablakot. |
+| Torrentek exportálása | `Ctrl+E`         | Megnyitja az [Exportálás ablakot](./export-window).                                           |
+| Torrentek importálása | `Ctrl+I`         | Megnyitja az [Importálás ablakot](./import-window).                                           |
+| Kijelentkezés         | `Ctrl+L`         | Kijelentkezik az aktuális szerverről, és visszatér a [Bejelentkezési oldalra](./login-page).  |
+| Kilépés               | `Ctrl+Q`         | Teljesen bezárja a BitButlert.                                                                |
+
+A Torrent hozzáadása, Torrentek exportálása, Torrentek importálása és Kijelentkezés elemek csak akkor engedélyezettek, ha a program csatlakozva van egy szerverhez.
+
+## Szerverek
+
+Csak csatlakoztatott állapotban jelenik meg, és csak akkor, ha egynél több szerver van beállítva: egy rádiógombos lista az összes szerverről, az aktuálisan bejelölttel. Egy másik kiválasztása azonnal átvált arra, ugyanúgy, mint az eszköztár szerver-legördülőjének használata.
+
+## Beállítások
+
+Csak csatlakoztatott állapotban jelenik meg:
+
+| Elem                    | Billentyűparancs | Megjegyzés                                                       |
+| ----------------------- | ---------------- | ---------------------------------------------------------------- |
+| BitButler beállítások   | `Ctrl+.`         | Lásd [BitButler beállítások](./settings/bitbutler-settings).     |
+| qBittorrent beállítások | `Ctrl+,`         | Lásd [qBittorrent beállítások](./settings/qbittorrent-settings). |
+| Szerverek kezelése      | `Ctrl+Shift+S`   | Lásd [Kezelés > Szerverek](./manage/servers).                    |
+| Címkék kezelése         | `Ctrl+Shift+T`   | Lásd [Kezelés > Címkék](./manage/tags).                          |
+| Kategóriák kezelése     | `Ctrl+Shift+C`   | Lásd [Kezelés > Kategóriák](./manage/categories).                |
+
+## Súgó
+
+| Elem                   | Billentyűparancs | Megjegyzés                                                                                                                                                                            |
+| ---------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Frissítések keresése   | `Ctrl+U`         | Manuálisan kiváltja ugyanazt a frissítés-ellenőrzést, mint a "Frissítések keresése most" gomb a [BitButler beállítások > Viselkedés](./settings/bitbutler-settings#viselkedes) alatt. |
+| Felhasználói kézikönyv | `Ctrl+Shift+,`   | Megnyitja ezt a dokumentációs oldalt az alapértelmezett böngésződben, az alkalmazás jelenlegi nyelvén.                                                                                |
+| A BitButlerről         | `F1`             | Megjeleníti az alkalmazás verzióját és a kapcsolódó információkat.                                                                                                                    |
+
+Windowson a `Ctrl` a fent látható módosítóbillentyű; más platformokon ugyanezek a gyorsbillentyűk érvényesek az adott platform szokásos parancsbillentyűjével.
