@@ -10,7 +10,8 @@
 /dist-electron
 /packages/electron/dist
 /packages/electron/vitest.config.js
-/packages/docs/dist
+/packages/docs/docs/.vitepress/dist
+/packages/docs/docs/.vitepress/cache
 /packages/app/dist
 
 # Node
