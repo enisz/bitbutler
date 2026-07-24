@@ -40,6 +40,8 @@
       "title": "Adding a Torrent",
       "add-form": {
         "file-browser": "Torrent File",
+        "folder-browser": "Folder",
+        "recursive": "Recursive",
         "magnet-links": "Links (one per line)",
         "save-path": "Save Path",
         "rename": "Name",
@@ -134,6 +136,13 @@
             "line2": "Magnet links start with magnet:?xt=urn:btih:… - direct .torrent URLs point to a remote file that qBittorrent will fetch automatically."
           }
         },
+        "folder": {
+          "title": "Folder",
+          "description": {
+            "line1": "Select a folder containing .torrent files. Each file is parsed locally and listed below - no data is sent anywhere until you click Add.",
+            "line2": "Use the Refresh button or toggle Recursive to re-scan the folder after adding or removing files on disk."
+          }
+        },
         "size": {
           "title": "Size",
           "description": {
@@ -146,6 +155,12 @@
           "description": {
             "line1": "The free disk space reported by qBittorrent at the time this torrent was loaded.",
             "line2": "Compare this against the torrent size to make sure you have enough room before adding."
+          }
+        },
+        "recursive": {
+          "title": "Recursive",
+          "description": {
+            "line1": "When enabled, all subdirectories of the selected folder are scanned for .torrent files as well."
           }
         },
         "input-mode": {
@@ -180,9 +195,30 @@
           }
         }
       },
+      "folder-picker": {
+        "col-def": {
+          "name": "Name",
+          "state": "State",
+          "size": "Size",
+          "files": "Files",
+          "folders": "Folders",
+          "path": "Path"
+        },
+        "state": {
+          "new": "New",
+          "exists": "Exists",
+          "error": "Error"
+        },
+        "grid": {
+          "no-rows": {
+            "message": "No .torrent files found in this folder."
+          }
+        }
+      },
       "input-mode": {
         "file": "File",
-        "link": "Link"
+        "link": "Link",
+        "folder": "Folder"
       },
       "feedback": {
         "no-server-selected": "No server is selected. Choose a server before adding this torrent.",
@@ -1908,7 +1944,8 @@
       "update": "Update",
       "show": "Show",
       "open-details": "Open Details",
-      "edit": "Edit"
+      "edit": "Edit",
+      "refresh": "Refresh"
     },
     "form": {
       "feedback": {

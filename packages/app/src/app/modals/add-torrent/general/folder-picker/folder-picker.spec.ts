@@ -2,7 +2,13 @@ import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup } from '@angular/forms';
 import type { TorrentDraft } from '@bitbutler/shared';
+import {
+  CellValueChangedEvent,
+  RowDataUpdatedEvent,
+  SelectionChangedEvent,
+} from 'ag-grid-community';
 import { AddTorrentFormGroup } from '../../../../models/add-torrent.model';
+import { ThemeService } from '../../../../services/theme.service';
 import { TorrentStoreService } from '../../../../services/torrent-store.service';
 import { AddTorrentFolderPicker } from './folder-picker';
 
@@ -58,7 +64,10 @@ describe('AddTorrentFolderPicker', () => {
 
     await TestBed.configureTestingModule({
       imports: [AddTorrentFolderPicker],
-      providers: [{ provide: TorrentStoreService, useValue: { torrentsMap } }],
+      providers: [
+        { provide: TorrentStoreService, useValue: { torrentsMap } },
+        { provide: ThemeService, useValue: { effectiveMode: signal('light') } },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(AddTorrentFolderPicker);
@@ -239,5 +248,97 @@ describe('AddTorrentFolderPicker', () => {
 
     expect(component.scanError()).toContain('ENOENT');
     expect(component.rows()).toEqual([]);
+  });
+
+  describe('grid wiring', () => {
+    function makeApiWithRows(rows: any[]) {
+      const selected = new Set<any>();
+      return {
+        getSelectedRows: () => rows.filter((r) => selected.has(r)),
+        forEachNode: (cb: (node: any) => void) => {
+          rows.forEach((data) =>
+            cb({
+              data,
+              setSelected: (v: boolean) => (v ? selected.add(data) : selected.delete(data)),
+            }),
+          );
+        },
+      };
+    }
+
+    it('onSelectionChanged updates selectedPaths from the grid API', () => {
+      init('/downloads');
+      const rows = [{ path: '/downloads/a.torrent' }, { path: '/downloads/b.torrent' }];
+      const api = { getSelectedRows: () => [rows[0]] } as any;
+
+      component.gridOptions.onSelectionChanged!({ api } as SelectionChangedEvent<any>);
+
+      expect(component.selectedPaths()).toEqual(new Set(['/downloads/a.torrent']));
+    });
+
+    it('onRowDataUpdated selects only new-state rows via the grid API', () => {
+      init('/downloads');
+      const rows = [
+        { path: '/downloads/a.torrent', state: 'new' },
+        { path: '/downloads/b.torrent', state: 'exists' },
+      ];
+      const api = makeApiWithRows(rows);
+
+      component.gridOptions.onRowDataUpdated!({ api } as unknown as RowDataUpdatedEvent<any>);
+
+      expect(api.getSelectedRows()).toEqual([rows[0]]);
+    });
+
+    it('onCellValueChanged renames the row when the name column changes', () => {
+      init('/downloads');
+      component.rows.set([
+        {
+          path: '/downloads/a.torrent',
+          relativePath: 'a.torrent',
+          name: 'Old Name',
+          size: 0,
+          fileCount: 1,
+          folderCount: 0,
+          state: 'new',
+          hash: null,
+        },
+      ]);
+
+      const event = {
+        colDef: { colId: 'name' },
+        data: component.rows()[0],
+        newValue: 'New Name',
+      } as unknown as CellValueChangedEvent<any>;
+
+      component.gridOptions.onCellValueChanged!(event);
+
+      expect(component.rows()[0].name).toBe('New Name');
+    });
+
+    it('onCellValueChanged ignores changes to columns other than name', () => {
+      init('/downloads');
+      component.rows.set([
+        {
+          path: '/downloads/a.torrent',
+          relativePath: 'a.torrent',
+          name: 'Old Name',
+          size: 0,
+          fileCount: 1,
+          folderCount: 0,
+          state: 'new',
+          hash: null,
+        },
+      ]);
+
+      const event = {
+        colDef: { colId: 'relativePath' },
+        data: component.rows()[0],
+        newValue: 'ignored',
+      } as unknown as CellValueChangedEvent<any>;
+
+      component.gridOptions.onCellValueChanged!(event);
+
+      expect(component.rows()[0].name).toBe('Old Name');
+    });
   });
 });
