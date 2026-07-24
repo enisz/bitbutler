@@ -22,6 +22,10 @@ function createForm(): AddTorrentFormGroup {
       magnetLinks: new FormControl<string>('', { nonNullable: true }),
       rename: new FormControl<string | null>(null),
     }),
+    folderGroup: new FormGroup({
+      folder: new FormControl<string>('', { nonNullable: true }),
+      recursive: new FormControl<boolean>(false, { nonNullable: true }),
+    }),
     savepath: new FormControl<string | null>(null),
     paused: new FormControl<boolean>(false, { nonNullable: true }),
     category: new FormControl<string | null>(null),
@@ -198,6 +202,56 @@ describe('AddTorrentGeneral', () => {
 
       expect(messages.length).toBe(1);
       expect(messages[0].textContent).toContain('general.form.feedback.pattern');
+    });
+  });
+
+  it('should show the folder picker in folder mode', () => {
+    fixture.componentRef.setInput('inputMode', 'folder');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('app-add-torrent-folder-picker')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('#file_browser')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('#magnet_links')).toBeFalsy();
+  });
+
+  it('should hide the rename input in folder mode', () => {
+    fixture.componentRef.setInput('inputMode', 'folder');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('#rename')).toBeFalsy();
+  });
+
+  it('should emit inputModeChange(folder) when the folder toggle is selected', () => {
+    const emitSpy = vi.spyOn(component.inputModeChange, 'emit');
+
+    const folderRadio: HTMLInputElement = fixture.nativeElement.querySelector('#inputMode_folder');
+    folderRadio.dispatchEvent(new Event('change'));
+
+    expect(emitSpy).toHaveBeenCalledWith('folder');
+  });
+
+  describe('getSelectedFolderEntries', () => {
+    it('should return an empty array when the folder picker has not rendered yet', () => {
+      expect(component.getSelectedFolderEntries()).toEqual([]);
+    });
+
+    it('should delegate to the folder picker once in folder mode', () => {
+      fixture.componentRef.setInput('inputMode', 'folder');
+      fixture.detectChanges();
+
+      const entry = {
+        path: '/downloads/a.torrent',
+        relativePath: 'a.torrent',
+        name: 'A',
+        size: 1,
+        fileCount: 1,
+        folderCount: 0,
+        state: 'new' as const,
+        hash: 'abc',
+      };
+      (component['folderPicker']() as any).selectedEntries = () => [entry];
+
+      expect(component.getSelectedFolderEntries()).toEqual([entry]);
     });
   });
 });
