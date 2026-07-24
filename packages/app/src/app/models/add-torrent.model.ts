@@ -16,6 +16,8 @@ export type AddTorrentSettings = {
   autoTMM: boolean;
   transferRateLimits: TransferLimitValue | null;
   shareLimits: ShareLimitValue | null;
+  folder: string | null;
+  recursive: boolean;
 };
 
 export const DEFAULT_ADD_TORRENT_SETTINGS: AddTorrentSettings = {
@@ -30,6 +32,8 @@ export const DEFAULT_ADD_TORRENT_SETTINGS: AddTorrentSettings = {
   autoTMM: false,
   transferRateLimits: null,
   shareLimits: { ratioLimit: -2, seedingTimeLimit: -2, inactiveSeedingTimeLimit: -2 },
+  folder: null,
+  recursive: false,
 };
 
 export type AddTorrentFormGroup = FormGroup<{
@@ -40,6 +44,10 @@ export type AddTorrentFormGroup = FormGroup<{
   linkGroup: FormGroup<{
     magnetLinks: FormControl<string>;
     rename: FormControl<string | null>;
+  }>;
+  folderGroup: FormGroup<{
+    folder: FormControl<string>;
+    recursive: FormControl<boolean>;
   }>;
   savepath: FormControl<string | null>;
   paused: FormControl<boolean>;
