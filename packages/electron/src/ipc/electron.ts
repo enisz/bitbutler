@@ -8,7 +8,9 @@ export function registerElectronIpcHandlers(): void {
   ipcMain.handle('electron:open-external-url', async (_event, url: string) => openExternalUrl(url));
   ipcMain.handle('electron:open-path', async (_event, p: string) => openPath(p));
   ipcMain.handle('electron:show-item-in-folder', async (_event, p: string) => showItemInFolder(p));
-  ipcMain.handle('electron:show-open-dialog', async () => showOpenDialog());
+  ipcMain.handle('electron:show-open-dialog', async (_event, defaultPath?: string) =>
+    showOpenDialog(defaultPath),
+  );
   ipcMain.handle('electron:get-platform', async () => getPlatform());
   ipcMain.handle('electron:check-for-update', async () => checkForUpdate());
   ipcMain.handle('electron:set-login-item', async (_event, settings: { openAtLogin: boolean }) =>
@@ -37,8 +39,11 @@ function showItemInFolder(p: string): void {
   shell.showItemInFolder(p);
 }
 
-async function showOpenDialog(): Promise<string | undefined> {
-  const { filePaths } = await dialog.showOpenDialog({ properties: ['openDirectory'] });
+async function showOpenDialog(defaultPath?: string): Promise<string | undefined> {
+  const { filePaths } = await dialog.showOpenDialog({
+    properties: ['openDirectory'],
+    ...(defaultPath ? { defaultPath } : {}),
+  });
   return filePaths[0];
 }
 

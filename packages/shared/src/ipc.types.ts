@@ -181,7 +181,7 @@ export interface BitButlerAPI {
   electron: {
     isDev(): Promise<boolean>;
     openExternalUrl(url: string): Promise<void>;
-    showOpenDialog(): Promise<string>;
+    showOpenDialog(defaultPath?: string): Promise<string>;
     openPath(path: string): Promise<string>;
     showItemInFolder(path: string): Promise<void>;
     getPlatform(): Promise<HostPlatform>;
@@ -232,6 +232,10 @@ export interface BitButlerAPI {
   torrent: {
     parse(payload: TorrentParsePayload): Promise<TorrentDraft>;
     deleteFile(payload: { path: string }): Promise<{ ok: boolean; error?: string }>;
+    scanFolder(payload: {
+      path: string;
+      recursive: boolean;
+    }): Promise<{ path: string; relativePath: string }[]>;
   };
 
   menu: {

@@ -75,4 +75,36 @@ export function registerTorrentIpcHandlers(): void {
       error: { message: 'Invalid payload: expected {path} or {bytes}', code: 'INVALID_PAYLOAD' },
     };
   });
+
+  ipcMain.handle(
+    'torrent:scan-folder',
+    async (_e, payload: unknown): Promise<{ path: string; relativePath: string }[]> => {
+      const p = payload as Record<string, unknown>;
+      const rootDir = typeof p?.path === 'string' ? p.path.trim() : '';
+      const recursive = p?.recursive === true;
+      if (!rootDir) return [];
+
+      const absolutePaths = await walkForTorrentFiles(rootDir, recursive);
+      return absolutePaths.map((absPath) => ({
+        path: absPath,
+        relativePath: path.relative(rootDir, absPath).split(path.sep).join('/'),
+      }));
+    },
+  );
+}
+
+async function walkForTorrentFiles(dir: string, recursive: boolean): Promise<string[]> {
+  const entries = await fs.promises.readdir(dir, { withFileTypes: true });
+  const results: string[] = [];
+
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      if (recursive) results.push(...(await walkForTorrentFiles(fullPath, recursive)));
+    } else if (entry.isFile() && entry.name.toLowerCase().endsWith('.torrent')) {
+      results.push(fullPath);
+    }
+  }
+
+  return results;
 }
