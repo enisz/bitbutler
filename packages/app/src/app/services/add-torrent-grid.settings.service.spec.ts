@@ -37,6 +37,11 @@ describe('AddTorrentGridSettingsService', () => {
     expect(settings).toEqual(DEFAULT_ADD_TORRENT_GRID_SETTINGS);
   });
 
+  it('returns the default columnState array by reference when nothing is stored', async () => {
+    const settings = await service.load();
+    expect(settings.columnState).toBe(DEFAULT_ADD_TORRENT_GRID_SETTINGS.columnState);
+  });
+
   it('default column state has 6 entries', async () => {
     const settings = await service.load();
     expect(settings.columnState).toHaveLength(6);

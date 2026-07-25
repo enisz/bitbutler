@@ -167,6 +167,8 @@ export class AddTorrentFolderPicker implements OnInit {
     this.isRestoringState = true;
     try {
       const settings: AddTorrentGridSettings = await this.addTorrentGridSettingsService.load();
+      // Reference-equality is intentional: BaseSettingsService only replaces the columnState
+      // array reference once something has actually been saved (see base-settings.service.ts).
       this.isDefaultLayout = settings.columnState === DEFAULT_ADD_TORRENT_GRID_SETTINGS.columnState;
       this.gridApi.applyColumnState({ state: settings.columnState, applyOrder: true });
     } finally {
@@ -301,6 +303,10 @@ export class AddTorrentFolderPicker implements OnInit {
     onColumnVisible: () => this.queueSave(),
     onSortChanged: () => this.queueSave(),
     onFirstDataRendered: (e: FirstDataRenderedEvent<ScannedTorrentEntry>) => {
+      // True only on the very first-ever load (before BaseSettingsService has persisted anything).
+      // After that first load, defaults get written to storage, so this becomes permanently false -
+      // autosize therefore effectively runs once ever; the resulting widths get saved via the
+      // column-change handlers below and are what later opens restore.
       if (this.isDefaultLayout) e.api.autoSizeAllColumns();
     },
     onColumnHeaderContextMenu: (e: ColumnHeaderContextMenuEvent<ScannedTorrentEntry>) => {
