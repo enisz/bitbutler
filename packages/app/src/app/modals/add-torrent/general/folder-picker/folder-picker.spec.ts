@@ -250,6 +250,20 @@ describe('AddTorrentFolderPicker', () => {
     expect(component.rows()).toEqual([]);
   });
 
+  it('should render the inline folder description text under the recursive switch', () => {
+    init('/downloads');
+
+    const description: HTMLElement = fixture.nativeElement.querySelector('.folder-description');
+
+    expect(description).toBeTruthy();
+    expect(description.textContent).toContain(
+      'components.add-torrent.folder-picker.description.line1',
+    );
+    expect(description.textContent).toContain(
+      'components.add-torrent.folder-picker.description.line3',
+    );
+  });
+
   describe('grid wiring', () => {
     function makeApiWithRows(rows: any[]) {
       const selected = new Set<any>();

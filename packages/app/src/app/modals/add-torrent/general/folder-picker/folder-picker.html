@@ -49,6 +49,12 @@
     ></bb-popover>
   </div>
 
+  <div class="form-text folder-description mb-2">
+    <p class="mb-1">{{ 'components.add-torrent.folder-picker.description.line1' | translate }}</p>
+    <p class="mb-1">{{ 'components.add-torrent.folder-picker.description.line2' | translate }}</p>
+    <p class="mb-0">{{ 'components.add-torrent.folder-picker.description.line3' | translate }}</p>
+  </div>
+
   @if (scanError()) {
     <div class="alert alert-danger py-2">{{ scanError() }}</div>
   }
