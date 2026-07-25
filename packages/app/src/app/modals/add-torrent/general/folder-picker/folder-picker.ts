@@ -20,14 +20,20 @@ import {
   AllCommunityModule,
   CellValueChangedEvent,
   ColDef,
+  Column,
+  ColumnHeaderContextMenuEvent,
+  FirstDataRenderedEvent,
   GetRowIdParams,
+  GridApi,
   GridOptions,
+  GridReadyEvent,
   IOverlayParams,
   ModuleRegistry,
   RowDataUpdatedEvent,
   SelectionChangedEvent,
   ValueFormatterParams,
 } from 'ag-grid-community';
+import { Subject, debounceTime } from 'rxjs';
 import { GRID_DARK_THEME, GRID_LIGHT_THEME, GRID_SHARED_OPTIONS } from '../../../../app.const';
 import { BbBtnContent } from '../../../../components/bb-btn-content/bb-btn-content';
 import { BbPopover } from '../../../../components/bb-popover/bb-popover';
@@ -43,8 +49,15 @@ import {
   ScannedTorrentEntry,
   ScannedTorrentState,
 } from '../../../../models/add-torrent-folder.model';
+import {
+  AddTorrentGridSettings,
+  DEFAULT_ADD_TORRENT_GRID_SETTINGS,
+} from '../../../../models/add-torrent-grid.model';
 import { AddTorrentFormGroup } from '../../../../models/add-torrent.model';
+import { GridContextMenuService } from '../../../../pages/main/grid/context-menu/grid-context-menu.service';
 import { NoRowOverlay } from '../../../../pages/main/grid/overlays/no-row-overlay/no-row-overlay';
+import { AddTorrentGridSettingsService } from '../../../../services/add-torrent-grid.settings.service';
+import { ContextMenuService } from '../../../../services/context-menu.service';
 import { ThemeService } from '../../../../services/theme.service';
 import { TorrentStoreService } from '../../../../services/torrent-store.service';
 import { UiFormatService } from '../../../../services/ui-format.service';
@@ -77,6 +90,9 @@ export class AddTorrentFolderPicker implements OnInit {
   private readonly translateService = inject(TranslateService);
   private readonly themeService = inject(ThemeService);
   private readonly uiFormatService = inject(UiFormatService);
+  private readonly contextMenuService = inject(ContextMenuService);
+  private readonly gridContextMenuService = inject(GridContextMenuService);
+  private readonly addTorrentGridSettingsService = inject(AddTorrentGridSettingsService);
 
   public readonly icons = { faFolderOpen, faRotate };
   public readonly theme = this.themeService.effectiveMode;
@@ -97,6 +113,11 @@ export class AddTorrentFolderPicker implements OnInit {
   private readonly cache = new Map<string, ScannedTorrentEntry>();
   private hasScannedOnce = false;
 
+  private gridApi: GridApi<ScannedTorrentEntry> | null = null;
+  private isRestoringState = false;
+  private isDefaultLayout = true;
+  private readonly saveState$ = new Subject<void>();
+
   private get folderControl() {
     return this.form().controls.folderGroup.controls.folder;
   }
@@ -106,6 +127,10 @@ export class AddTorrentFolderPicker implements OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
+    this.saveState$.pipe(debounceTime(500), takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      void this.persistColumnState();
+    });
+
     this.recursiveControl.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       if (this.hasScannedOnce) void this.scan();
     });
@@ -130,6 +155,34 @@ export class AddTorrentFolderPicker implements OnInit {
 
   public async refresh(): Promise<void> {
     await this.scan();
+  }
+
+  public onGridReady(e: GridReadyEvent<ScannedTorrentEntry>): void {
+    this.gridApi = e.api;
+    void this.restoreColumnState();
+  }
+
+  private async restoreColumnState(): Promise<void> {
+    if (!this.gridApi) return;
+    this.isRestoringState = true;
+    try {
+      const settings: AddTorrentGridSettings = await this.addTorrentGridSettingsService.load();
+      this.isDefaultLayout = settings.columnState === DEFAULT_ADD_TORRENT_GRID_SETTINGS.columnState;
+      this.gridApi.applyColumnState({ state: settings.columnState, applyOrder: true });
+    } finally {
+      this.isRestoringState = false;
+    }
+  }
+
+  private async persistColumnState(): Promise<void> {
+    if (!this.gridApi) return;
+    const columnState = this.gridApi.getColumnState();
+    await this.addTorrentGridSettingsService.save({ columnState });
+  }
+
+  private queueSave(): void {
+    if (this.isRestoringState) return;
+    this.saveState$.next();
   }
 
   public renameEntry(path: string, newName: string): void {
@@ -239,6 +292,26 @@ export class AddTorrentFolderPicker implements OnInit {
     },
     onCellValueChanged: (e: CellValueChangedEvent<ScannedTorrentEntry>) => {
       if (e.colDef.colId === 'name') this.renameEntry(e.data.path, e.newValue ?? e.data.name);
+    },
+    onColumnResized: (e) => {
+      if (e.finished) this.queueSave();
+    },
+    onColumnMoved: () => this.queueSave(),
+    onColumnPinned: () => this.queueSave(),
+    onColumnVisible: () => this.queueSave(),
+    onSortChanged: () => this.queueSave(),
+    onFirstDataRendered: (e: FirstDataRenderedEvent<ScannedTorrentEntry>) => {
+      if (this.isDefaultLayout) e.api.autoSizeAllColumns();
+    },
+    onColumnHeaderContextMenu: (e: ColumnHeaderContextMenuEvent<ScannedTorrentEntry>) => {
+      if (!e.column) return;
+      this.contextMenuService.open({
+        items: this.gridContextMenuService.buildHeaderMenu(e),
+        payload: {
+          colId: e.column.getId(),
+          displayName: e.api.getDisplayNameForColumn(e.column as Column, 'header'),
+        },
+      });
     },
   };
 

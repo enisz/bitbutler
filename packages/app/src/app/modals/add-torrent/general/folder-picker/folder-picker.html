@@ -62,6 +62,7 @@
   <ag-grid-angular
     class="w-100 d-block mb-2"
     style="height: 320px"
+    (gridReady)="onGridReady($event)"
     [loading]="loading()"
     [rowData]="rows()"
     [columnDefs]="colDefs"

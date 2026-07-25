@@ -7,7 +7,11 @@ import {
   RowDataUpdatedEvent,
   SelectionChangedEvent,
 } from 'ag-grid-community';
+import { DEFAULT_ADD_TORRENT_GRID_SETTINGS } from '../../../../models/add-torrent-grid.model';
 import { AddTorrentFormGroup } from '../../../../models/add-torrent.model';
+import { GridContextMenuService } from '../../../../pages/main/grid/context-menu/grid-context-menu.service';
+import { AddTorrentGridSettingsService } from '../../../../services/add-torrent-grid.settings.service';
+import { ContextMenuService } from '../../../../services/context-menu.service';
 import { ThemeService } from '../../../../services/theme.service';
 import { TorrentStoreService } from '../../../../services/torrent-store.service';
 import { AddTorrentFolderPicker } from './folder-picker';
@@ -58,15 +62,28 @@ describe('AddTorrentFolderPicker', () => {
   let component: AddTorrentFolderPicker;
   let fixture: ComponentFixture<AddTorrentFolderPicker>;
   let torrentsMap: ReturnType<typeof signal<Map<string, unknown>>>;
+  let mockSettingsService: { load: ReturnType<typeof vi.fn>; save: ReturnType<typeof vi.fn> };
+  let mockContextMenuService: { open: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     torrentsMap = signal(new Map());
+    mockSettingsService = {
+      load: vi.fn().mockResolvedValue({ columnState: [] }),
+      save: vi.fn().mockResolvedValue(undefined),
+    };
+    mockContextMenuService = { open: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [AddTorrentFolderPicker],
       providers: [
         { provide: TorrentStoreService, useValue: { torrentsMap } },
         { provide: ThemeService, useValue: { effectiveMode: signal('light') } },
+        { provide: AddTorrentGridSettingsService, useValue: mockSettingsService },
+        { provide: ContextMenuService, useValue: mockContextMenuService },
+        {
+          provide: GridContextMenuService,
+          useValue: { buildHeaderMenu: vi.fn().mockReturnValue([]) },
+        },
       ],
     }).compileComponents();
 
@@ -353,6 +370,134 @@ describe('AddTorrentFolderPicker', () => {
       component.gridOptions.onCellValueChanged!(event);
 
       expect(component.rows()[0].name).toBe('Old Name');
+    });
+  });
+
+  describe('column state management', () => {
+    it('restoreColumnState loads settings and applies column state', async () => {
+      const state = [{ colId: 'name', hide: false, flex: 2 }];
+      mockSettingsService.load.mockResolvedValue({ columnState: state });
+      const mockApi = { applyColumnState: vi.fn(), getColumnState: vi.fn().mockReturnValue([]) };
+      (component as any).gridApi = mockApi;
+
+      await (component as any).restoreColumnState();
+
+      expect(mockSettingsService.load).toHaveBeenCalled();
+      expect(mockApi.applyColumnState).toHaveBeenCalledWith({ state, applyOrder: true });
+    });
+
+    it('persistColumnState reads column state and saves it', async () => {
+      const state = [{ colId: 'name', hide: false, flex: 2 }];
+      const mockApi = { applyColumnState: vi.fn(), getColumnState: vi.fn().mockReturnValue(state) };
+      (component as any).gridApi = mockApi;
+
+      await (component as any).persistColumnState();
+
+      expect(mockApi.getColumnState).toHaveBeenCalled();
+      expect(mockSettingsService.save).toHaveBeenCalledWith({ columnState: state });
+    });
+
+    it('restoreColumnState does nothing when gridApi is null', async () => {
+      (component as any).gridApi = null;
+      await (component as any).restoreColumnState();
+      expect(mockSettingsService.load).not.toHaveBeenCalled();
+    });
+
+    it('persistColumnState does nothing when gridApi is null', async () => {
+      (component as any).gridApi = null;
+      await (component as any).persistColumnState();
+      expect(mockSettingsService.save).not.toHaveBeenCalled();
+    });
+
+    it('queueSave does not emit when isRestoringState is true', () => {
+      (component as any).isRestoringState = true;
+      const next = vi.spyOn((component as any).saveState$, 'next');
+      (component as any).queueSave();
+      expect(next).not.toHaveBeenCalled();
+    });
+
+    it('queueSave emits when isRestoringState is false', () => {
+      (component as any).isRestoringState = false;
+      const next = vi.spyOn((component as any).saveState$, 'next');
+      (component as any).queueSave();
+      expect(next).toHaveBeenCalled();
+    });
+
+    it('restoreColumnState marks the layout as default when settings.columnState is the default reference', async () => {
+      const mockApi = { applyColumnState: vi.fn(), getColumnState: vi.fn() };
+      mockSettingsService.load.mockResolvedValue(DEFAULT_ADD_TORRENT_GRID_SETTINGS);
+      (component as any).gridApi = mockApi;
+
+      await (component as any).restoreColumnState();
+
+      expect((component as any).isDefaultLayout).toBe(true);
+    });
+
+    it('restoreColumnState marks the layout as customized when settings.columnState came from storage', async () => {
+      mockSettingsService.load.mockResolvedValue({ columnState: [{ colId: 'name', width: 500 }] });
+      const mockApi = { applyColumnState: vi.fn(), getColumnState: vi.fn() };
+      (component as any).gridApi = mockApi;
+
+      await (component as any).restoreColumnState();
+
+      expect((component as any).isDefaultLayout).toBe(false);
+    });
+  });
+
+  describe('autosize on first render', () => {
+    it('autosizes all columns on first data render when the layout is still default', () => {
+      init('/downloads');
+      (component as any).isDefaultLayout = true;
+      const api = { autoSizeAllColumns: vi.fn() };
+
+      component.gridOptions.onFirstDataRendered!({ api } as any);
+
+      expect(api.autoSizeAllColumns).toHaveBeenCalled();
+    });
+
+    it('does not autosize when the layout was customized', () => {
+      init('/downloads');
+      (component as any).isDefaultLayout = false;
+      const api = { autoSizeAllColumns: vi.fn() };
+
+      component.gridOptions.onFirstDataRendered!({ api } as any);
+
+      expect(api.autoSizeAllColumns).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('header context menu', () => {
+    function makeHeaderEvent() {
+      const column = {
+        getId: vi.fn().mockReturnValue('name'),
+        getColDef: vi.fn().mockReturnValue({ colId: 'name', headerName: 'Name', filter: false }),
+        getSort: vi.fn().mockReturnValue(null),
+        isFilterActive: vi.fn().mockReturnValue(false),
+        isPinnedLeft: vi.fn().mockReturnValue(false),
+        isPinnedRight: vi.fn().mockReturnValue(false),
+        getPinned: vi.fn().mockReturnValue(null),
+        isVisible: vi.fn().mockReturnValue(true),
+      };
+      const api = {
+        getDisplayNameForColumn: vi.fn().mockReturnValue('Name'),
+        getColumnDefs: vi.fn().mockReturnValue([]),
+        getColumns: vi.fn().mockReturnValue([column]),
+        getColumn: vi.fn().mockReturnValue(column),
+      };
+      return { column, api };
+    }
+
+    it('opens context menu when column header is right-clicked', () => {
+      init('/downloads');
+      const { column, api } = makeHeaderEvent();
+      component.gridOptions.onColumnHeaderContextMenu?.({ column, api } as any);
+      expect(mockContextMenuService.open).toHaveBeenCalled();
+    });
+
+    it('does not open context menu when the event has no column', () => {
+      init('/downloads');
+      component.gridOptions.onColumnHeaderContextMenu?.({ column: null, api: {} } as any);
+      expect(mockContextMenuService.open).not.toHaveBeenCalled();
     });
   });
 });
