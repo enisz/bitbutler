@@ -136,13 +136,6 @@
             "line2": "Magnet links start with magnet:?xt=urn:btih:… - direct .torrent URLs point to a remote file that qBittorrent will fetch automatically."
           }
         },
-        "folder": {
-          "title": "Folder",
-          "description": {
-            "line1": "Select a folder containing .torrent files. Each file is parsed locally and listed below - no data is sent anywhere until you click Add.",
-            "line2": "Use the Refresh button or toggle Recursive to re-scan the folder after adding or removing files on disk."
-          }
-        },
         "size": {
           "title": "Size",
           "description": {
@@ -166,8 +159,7 @@
         "input-mode": {
           "title": "Input Mode",
           "description": {
-            "line1": "Choose whether you're adding this torrent from a local .torrent file or from a magnet link / URL.",
-            "line2": "Switching modes resets save path, category, tags, and other options back to your saved defaults."
+            "line1": "Choose whether you're adding this torrent from a local .torrent file, a magnet link / URL, or by scanning a folder for .torrent files."
           }
         }
       },
@@ -209,6 +201,11 @@
           "new": "New",
           "exists": "Exists",
           "error": "Error"
+        },
+        "description": {
+          "line1": "Select a folder containing .torrent files. Each file is parsed locally and listed below - no data is sent anywhere until you click Add.",
+          "line2": "Use the Refresh button or toggle Recursive to re-scan the folder after adding or removing files on disk.",
+          "line3": "Double-click a row's Name to rename it before adding - only new, not-yet-added torrents can be selected."
         },
         "grid": {
           "no-rows": {

@@ -136,13 +136,6 @@
             "line2": "A mágneslinkkek magnet:?xt=urn:btih:… kezdetűek - a közvetlen .torrent URL-ekről a qBittorrent automatikusan letölti a fájlt."
           }
         },
-        "folder": {
-          "title": "Mappa",
-          "description": {
-            "line1": "Válasszon egy mappát, amely .torrent fájlokat tartalmaz. Minden fájl helyben kerül feldolgozásra, és az alábbi listában jelenik meg - semmilyen adat nem kerül elküldésre a Hozzáadás gombra kattintásig.",
-            "line2": "Használja a Frissítés gombot vagy a Rekurzív kapcsolót a mappa újbóli beolvasásához, ha fájlokat adott hozzá vagy távolított el a lemezen."
-          }
-        },
         "size": {
           "title": "Méret",
           "description": {
@@ -166,8 +159,7 @@
         "input-mode": {
           "title": "Bemeneti mód",
           "description": {
-            "line1": "Válaszd ki, hogy ezt a torrentet egy helyi .torrent fájlból vagy egy mágneslinkből/URL-ből szeretnéd hozzáadni.",
-            "line2": "A mód váltása visszaállítja a mentési útvonalat, a kategóriát, a címkéket és a többi beállítást a mentett alapértékekre."
+            "line1": "Válaszd ki, hogy ezt a torrentet egy helyi .torrent fájlból, egy mágneslinkből/URL-ből, vagy egy mappa .torrent fájlok után történő átvizsgálásával szeretnéd hozzáadni."
           }
         }
       },
@@ -209,6 +201,11 @@
           "new": "Új",
           "exists": "Létezik",
           "error": "Hiba"
+        },
+        "description": {
+          "line1": "Válasszon egy mappát, amely .torrent fájlokat tartalmaz. Minden fájl helyben kerül feldolgozásra, és az alábbi listában jelenik meg - semmilyen adat nem kerül elküldésre a Hozzáadás gombra kattintásig.",
+          "line2": "Használja a Frissítés gombot vagy a Rekurzív kapcsolót a mappa újbóli beolvasásához, ha fájlokat adott hozzá vagy távolított el a lemezen.",
+          "line3": "Duplán kattintva egy sor Nevére, átnevezheted azt hozzáadás előtt - csak az új, még hozzá nem adott torrentek választhatók ki."
         },
         "grid": {
           "no-rows": {
