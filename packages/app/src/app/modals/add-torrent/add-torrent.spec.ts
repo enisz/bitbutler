@@ -12,6 +12,7 @@ import { GeneralSettingsService } from '../../services/general-settings.service'
 import { OpenFilesService } from '../../services/open-files.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
+import { ToastService } from '../../services/toast.service';
 import { AddTorrent } from './add-torrent';
 
 const draftWithFiles: TorrentDraft = {
@@ -54,6 +55,10 @@ describe('AddTorrent', () => {
           },
         },
         { provide: ConfirmService, useValue: { confirm: vi.fn().mockResolvedValue(true) } },
+        {
+          provide: ToastService,
+          useValue: { success: vi.fn(), danger: vi.fn() },
+        },
         {
           provide: GeneralSettingsService,
           useValue: {
@@ -633,7 +638,9 @@ describe('AddTorrent', () => {
     it('should emit UI_TORRENT_EXISTS and consume the draft on a 409 conflict', async () => {
       vi.spyOn(window.bitbutler.qb, 'torrentsAdd')
         .mockClear()
-        .mockRejectedValue(new Error('Request failed: 409 {"name":"QbHttpError","status":409}'));
+        .mockRejectedValueOnce(
+          new Error('Request failed: 409 {"name":"QbHttpError","status":409}'),
+        );
 
       (component as any).selectedTorrentFile.set({
         name: 'test.torrent',
@@ -661,7 +668,9 @@ describe('AddTorrent', () => {
     it('should pass the draft originalPath in the UI_TORRENT_EXISTS command on a 409 conflict', async () => {
       vi.spyOn(window.bitbutler.qb, 'torrentsAdd')
         .mockClear()
-        .mockRejectedValue(new Error('Request failed: 409 {"name":"QbHttpError","status":409}'));
+        .mockRejectedValueOnce(
+          new Error('Request failed: 409 {"name":"QbHttpError","status":409}'),
+        );
 
       (component as any).selectedTorrentFile.set({
         name: 'test.torrent',
@@ -686,7 +695,7 @@ describe('AddTorrent', () => {
     it('should set addFailed when torrentsAdd throws a non-conflict error', async () => {
       vi.spyOn(window.bitbutler.qb, 'torrentsAdd')
         .mockClear()
-        .mockRejectedValue(new Error('network error'));
+        .mockRejectedValueOnce(new Error('network error'));
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       (component as any).selectedTorrentFile.set({
@@ -957,6 +966,108 @@ describe('AddTorrent', () => {
       expect(consoleErrorSpy).toHaveBeenCalled();
       expect(mockOpenFilesService.pendingDrafts()).toEqual([]);
       expect((event.target as HTMLInputElement).value).toBe('');
+    });
+  });
+
+  describe('folder mode', () => {
+    function stubSelectedFolderEntries(entries: any[]) {
+      (component as any).generalTab = () => ({
+        ensureCategoryExists: () => Promise.resolve(true),
+        getSelectedFolderEntries: () => entries,
+      });
+    }
+
+    it('canSubmit should be false in folder mode with no folder path and no selected rows', () => {
+      component.switchInputMode('folder' as any);
+      expect(component.canSubmit()).toBe(false);
+    });
+
+    it('canSubmit should be true once the folder path is set and at least one row is selected', () => {
+      component.switchInputMode('folder' as any);
+      (component.addForm as any).controls.folderGroup.controls.folder.setValue('/downloads');
+      stubSelectedFolderEntries([{ path: '/downloads/a.torrent', name: 'a' }]);
+
+      expect(component.canSubmit()).toBe(true);
+    });
+
+    it('filesTabDisabledReason should report the folder-mode reason', () => {
+      component.switchInputMode('folder' as any);
+      expect(component.filesTabDisabledReason()).toBe(
+        'components.add-torrent.tab.files.disabled.folder-mode',
+      );
+    });
+
+    it('handleSubmit should add every selected row, show a success toast, and close the modal', async () => {
+      const torrentsAddSpy = vi.spyOn(window.bitbutler.qb, 'torrentsAdd').mockClear();
+      const toastService = TestBed.inject(ToastService) as any;
+      const addTorrentSettingsService = TestBed.inject(AddTorrentSettingsService) as any;
+
+      component.switchInputMode('folder' as any);
+      (component.addForm as any).controls.folderGroup.controls.folder.setValue('/downloads');
+      stubSelectedFolderEntries([
+        { path: '/downloads/a.torrent', name: 'A' },
+        { path: '/downloads/b.torrent', name: 'B' },
+      ]);
+
+      await component.handleSubmit({ preventDefault: () => {} } as unknown as SubmitEvent);
+
+      expect(torrentsAddSpy).toHaveBeenCalledTimes(2);
+      expect(torrentsAddSpy).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({
+          torrents: [{ path: '/downloads/a.torrent', name: 'A' }],
+          options: expect.objectContaining({ rename: 'A' }),
+        }),
+      );
+      expect(torrentsAddSpy).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({
+          torrents: [{ path: '/downloads/b.torrent', name: 'B' }],
+          options: expect.objectContaining({ rename: 'B' }),
+        }),
+      );
+      expect(toastService.success).toHaveBeenCalled();
+      expect(addTorrentSettingsService.save).toHaveBeenCalledWith(
+        expect.objectContaining({ folder: '/downloads' }),
+      );
+      expect(mockActiveModal.close).toHaveBeenCalledWith(true);
+    });
+
+    it('handleSubmit should delete each successfully added file when deleteTorrentFile is enabled', async () => {
+      vi.spyOn(window.bitbutler.qb, 'torrentsAdd').mockClear();
+      const deleteFileSpy = vi.spyOn(window.bitbutler.torrent, 'deleteFile').mockClear();
+      const generalSettingsService = TestBed.inject(GeneralSettingsService) as any;
+      generalSettingsService.load.mockResolvedValue({ behavior: { deleteTorrentFile: true } });
+
+      component.switchInputMode('folder' as any);
+      (component.addForm as any).controls.folderGroup.controls.folder.setValue('/downloads');
+      stubSelectedFolderEntries([{ path: '/downloads/a.torrent', name: 'A' }]);
+
+      await component.handleSubmit({ preventDefault: () => {} } as unknown as SubmitEvent);
+
+      expect(deleteFileSpy).toHaveBeenCalledWith({ path: '/downloads/a.torrent' });
+    });
+
+    it('handleSubmit should show a partial-failure toast and keep the modal open when a row fails', async () => {
+      vi.spyOn(window.bitbutler.qb, 'torrentsAdd')
+        .mockClear()
+        .mockResolvedValueOnce(undefined)
+        .mockRejectedValueOnce(new Error('network error'));
+      const toastService = TestBed.inject(ToastService) as any;
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      component.switchInputMode('folder' as any);
+      (component.addForm as any).controls.folderGroup.controls.folder.setValue('/downloads');
+      stubSelectedFolderEntries([
+        { path: '/downloads/a.torrent', name: 'A' },
+        { path: '/downloads/b.torrent', name: 'B' },
+      ]);
+
+      await component.handleSubmit({ preventDefault: () => {} } as unknown as SubmitEvent);
+
+      expect(toastService.danger).toHaveBeenCalled();
+      expect(mockActiveModal.close).not.toHaveBeenCalled();
+      expect(consoleErrorSpy).toHaveBeenCalled();
     });
   });
 });

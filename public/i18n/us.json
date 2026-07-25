@@ -188,6 +188,7 @@
           "title": "Files",
           "disabled": {
             "link-mode": "Not available when adding by link.",
+            "folder-mode": "Not available when adding multiple torrents from a folder.",
             "no-files": "No file list available yet."
           },
           "issue": {
@@ -223,6 +224,16 @@
       "feedback": {
         "no-server-selected": "No server is selected. Choose a server before adding this torrent.",
         "add-failed": "Adding the torrent failed. Please try again."
+      },
+      "toast": {
+        "folder-added": {
+          "title": "Torrents Added",
+          "message": "Added {{count}} torrent(s)."
+        },
+        "folder-partial": {
+          "title": "Some Torrents Failed",
+          "message": "Added {{succeeded}} of {{total}} torrent(s)."
+        }
       }
     },
     "app-loader": {

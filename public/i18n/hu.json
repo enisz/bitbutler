@@ -188,6 +188,7 @@
           "title": "Fájlok",
           "disabled": {
             "link-mode": "Nem elérhető link hozzáadásakor.",
+            "folder-mode": "Nem elérhető, ha egyszerre több torrentet ad hozzá egy mappából.",
             "no-files": "Még nem érhető el fájllista."
           },
           "issue": {
@@ -223,6 +224,16 @@
       "feedback": {
         "no-server-selected": "Nincs kiválasztva szerver. Válassz szervert a torrent hozzáadása előtt.",
         "add-failed": "A torrent hozzáadása sikertelen. Próbáld újra."
+      },
+      "toast": {
+        "folder-added": {
+          "title": "Torrentek hozzáadva",
+          "message": "{{count}} torrent hozzáadva."
+        },
+        "folder-partial": {
+          "title": "Néhány torrent sikertelen",
+          "message": "{{succeeded}} / {{total}} torrent hozzáadva."
+        }
       }
     },
     "app-loader": {

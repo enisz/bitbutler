@@ -37,6 +37,7 @@ import { GeneralSettingsService } from '../../services/general-settings.service'
 import { OpenFilesService, PendingAddTorrent } from '../../services/open-files.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
+import { ToastService } from '../../services/toast.service';
 import { AddTorrentFiles } from './files/files';
 import { AddTorrentGeneral } from './general/general';
 import { AddTorrentLimits } from './limits/limits';
@@ -81,6 +82,7 @@ export class AddTorrent implements OnInit {
   private readonly openFilesService = inject(OpenFilesService);
   private readonly commandBusService = inject(CommandBusService);
   private readonly translateService = inject(TranslateService);
+  private readonly toastService = inject(ToastService);
 
   private readonly generalTab = viewChild(AddTorrentGeneral);
 
@@ -89,7 +91,7 @@ export class AddTorrent implements OnInit {
   public currentDraftNumber = computed(() => this.initialQueueCount() - this.queueCount() + 1);
 
   public manualDraft = signal<TorrentDraft | null>(null);
-  public inputMode = signal<'file' | 'link'>('file');
+  public inputMode = signal<'file' | 'link' | 'folder'>('file');
   public showTree = signal(false);
   public treeInEditMode = signal(false);
   public fileStats = signal<FileTreeStats | null>(null);
@@ -120,6 +122,10 @@ export class AddTorrent implements OnInit {
     linkGroup: new FormGroup({
       magnetLinks: new FormControl<string>('', { nonNullable: true }),
       rename: new FormControl<string | null>(null, [Validators.pattern(INVALID_FILENAME_CHARS)]),
+    }),
+    folderGroup: new FormGroup({
+      folder: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
+      recursive: new FormControl<boolean>(false, { nonNullable: true }),
     }),
     savepath: new FormControl<string | null>(null),
     paused: new FormControl<boolean>(false, { nonNullable: true }),
@@ -185,6 +191,9 @@ export class AddTorrent implements OnInit {
   public readonly filesTabDisabledReason = computed<string | null>(() => {
     if (this.inputMode() === 'link') {
       return this.translateService.instant('components.add-torrent.tab.files.disabled.link-mode');
+    }
+    if (this.inputMode() === 'folder') {
+      return this.translateService.instant('components.add-torrent.tab.files.disabled.folder-mode');
     }
     const draft = this.effectiveDraft();
     if (!this.showTree() || !draft?.torrent?.files?.length) {
@@ -252,6 +261,17 @@ export class AddTorrent implements OnInit {
         }
       }
     }
+
+    if (typeof settings.folder === 'string') {
+      this.addForm.controls.folderGroup.controls.folder.setValue(settings.folder ?? '', {
+        emitEvent: false,
+      });
+    }
+    if (typeof settings.recursive === 'boolean') {
+      this.addForm.controls.folderGroup.controls.recursive.setValue(settings.recursive, {
+        emitEvent: false,
+      });
+    }
   }
 
   public handleCancel(): void {
@@ -287,7 +307,12 @@ export class AddTorrent implements OnInit {
     }
 
     const raw = this.addForm.getRawValue();
-    const rename = this.inputMode() === 'file' ? raw.fileGroup.rename : raw.linkGroup.rename;
+    const rename =
+      this.inputMode() === 'file'
+        ? raw.fileGroup.rename
+        : this.inputMode() === 'link'
+          ? raw.linkGroup.rename
+          : undefined;
 
     const sharedOptions = {
       savepath: raw.savepath?.trim() || undefined,
@@ -325,6 +350,68 @@ export class AddTorrent implements OnInit {
           torrents: [],
           options: sharedOptions,
         });
+      } else if (this.inputMode() === 'folder') {
+        const entries = this.getSelectedFolderEntries();
+        const generalSettings = await this.generalSettingsService.load();
+        let succeeded = 0;
+
+        for (const entry of entries) {
+          try {
+            await window.bitbutler.qb.torrentsAdd({
+              id: serverId,
+              torrents: [{ name: entry.name, path: entry.path }],
+              options: { ...sharedOptions, rename: entry.name },
+            });
+            succeeded++;
+            if (generalSettings.behavior.deleteTorrentFile) {
+              await window.bitbutler.torrent.deleteFile({ path: entry.path });
+            }
+          } catch (e) {
+            console.error(
+              AddTorrent.name,
+              'handleSubmit',
+              'folder torrent add failed',
+              entry.path,
+              e,
+            );
+          }
+        }
+
+        await this.addTorrentSettings.save({
+          savepath: raw.savepath,
+          paused: raw.paused,
+          category: raw.category,
+          tags: raw.tags?.join(',') || null,
+          root_folder: raw.root_folder,
+          skip_checking: raw.skip_checking,
+          sequentialDownload: raw.sequentialDownload,
+          firstLastPiecePrio: raw.firstLastPiecePrio,
+          autoTMM: raw.autoTMM,
+          transferRateLimits: raw.transferRateLimits,
+          shareLimits: raw.shareLimits,
+          folder: raw.folderGroup.folder,
+          recursive: raw.folderGroup.recursive,
+        });
+
+        if (succeeded === entries.length) {
+          this.toastService.success(
+            this.translateService.instant('components.add-torrent.toast.folder-added.message', {
+              count: succeeded,
+            }),
+            this.translateService.instant('components.add-torrent.toast.folder-added.title'),
+          );
+          this.activeModal.close(true);
+        } else {
+          this.toastService.danger(
+            this.translateService.instant('components.add-torrent.toast.folder-partial.message', {
+              succeeded,
+              total: entries.length,
+            }),
+            this.translateService.instant('components.add-torrent.toast.folder-partial.title'),
+          );
+        }
+
+        return;
       } else {
         const selectedFile = this.selectedTorrentFile()!;
         await window.bitbutler.qb.torrentsAdd({
@@ -356,6 +443,8 @@ export class AddTorrent implements OnInit {
         autoTMM: raw.autoTMM,
         transferRateLimits: raw.transferRateLimits,
         shareLimits: raw.shareLimits,
+        folder: raw.folderGroup.folder,
+        recursive: raw.folderGroup.recursive,
       });
 
       if (this.inputMode() === 'link') {
@@ -401,19 +490,27 @@ export class AddTorrent implements OnInit {
     // would require both groups valid and let an invalid inactive-mode rename block submission.
     if (this.hasActiveWarnings() || this.isSubmitting() || this.addForm.errors) return false;
 
-    return this.inputMode() === 'link'
-      ? this.addForm.controls.linkGroup.valid && this.getMagnetLinks().length > 0
-      : this.addForm.controls.fileGroup.valid && this.selectedTorrentFile() !== null;
+    if (this.inputMode() === 'link') {
+      return this.addForm.controls.linkGroup.valid && this.getMagnetLinks().length > 0;
+    }
+    if (this.inputMode() === 'folder') {
+      return this.addForm.controls.folderGroup.valid && this.getSelectedFolderEntries().length > 0;
+    }
+    return this.addForm.controls.fileGroup.valid && this.selectedTorrentFile() !== null;
   }
 
-  public switchInputMode(mode: 'file' | 'link'): void {
+  private getSelectedFolderEntries() {
+    return this.generalTab()?.getSelectedFolderEntries() ?? [];
+  }
+
+  public switchInputMode(mode: 'file' | 'link' | 'folder'): void {
     this.inputMode.set(mode);
     if (this.treeInEditMode()) {
       this.treeInEditMode.set(false);
     }
   }
 
-  public handleInputModeChange(mode: 'file' | 'link'): void {
+  public handleInputModeChange(mode: 'file' | 'link' | 'folder'): void {
     if (mode === this.inputMode()) return;
     this.switchInputMode(mode);
   }
