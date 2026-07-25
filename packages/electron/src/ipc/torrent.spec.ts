@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const ipcHandlers = vi.hoisted(() => new Map<string, (...args: unknown[]) => unknown>());
@@ -49,7 +50,9 @@ describe('torrent:scan-folder', () => {
       recursive: false,
     })) as { path: string; relativePath: string }[];
 
-    expect(result).toEqual([{ path: '/downloads/a.torrent', relativePath: 'a.torrent' }]);
+    expect(result).toEqual([
+      { path: path.join('/downloads', 'a.torrent'), relativePath: 'a.torrent' },
+    ]);
     expect(mockReaddir).toHaveBeenCalledTimes(1);
   });
 
@@ -65,8 +68,11 @@ describe('torrent:scan-folder', () => {
     })) as { path: string; relativePath: string }[];
 
     expect(result).toEqual([
-      { path: '/downloads/top.torrent', relativePath: 'top.torrent' },
-      { path: '/downloads/nested/inner.torrent', relativePath: 'nested/inner.torrent' },
+      { path: path.join('/downloads', 'top.torrent'), relativePath: 'top.torrent' },
+      {
+        path: path.join('/downloads', 'nested', 'inner.torrent'),
+        relativePath: 'nested/inner.torrent',
+      },
     ]);
   });
 
@@ -79,7 +85,9 @@ describe('torrent:scan-folder', () => {
       recursive: false,
     })) as { path: string; relativePath: string }[];
 
-    expect(result).toEqual([{ path: '/downloads/top.torrent', relativePath: 'top.torrent' }]);
+    expect(result).toEqual([
+      { path: path.join('/downloads', 'top.torrent'), relativePath: 'top.torrent' },
+    ]);
     expect(mockReaddir).toHaveBeenCalledTimes(1);
   });
 
