@@ -158,6 +158,23 @@ describe('AddTorrentGeneral', () => {
       // plus 1 each from the nested category/tag select components.
       expect(fixture.nativeElement.querySelectorAll('bb-popover').length).toBe(6);
     });
+
+    it('should give the folder picker the full row width with no adjacent popover', () => {
+      fixture.componentRef.setInput('inputMode', 'folder');
+      fixture.detectChanges();
+
+      const picker: HTMLElement = fixture.nativeElement.querySelector(
+        'app-add-torrent-folder-picker',
+      );
+      expect(picker.parentElement?.classList.contains('col-12')).toBe(true);
+
+      // In folder mode the "Torrent" fieldset's rename/name-popover and size/free-space popovers
+      // never render (guarded by `inputMode() !== 'folder'` / `=== 'file'`), so only 2 direct
+      // popovers remain (input-mode, save-path) - the removed folder popover is not one of them -
+      // plus 1 each from the nested category/tag select components, plus 1 from the folder
+      // picker's own unconditional "recursive" popover.
+      expect(fixture.nativeElement.querySelectorAll('bb-popover').length).toBe(5);
+    });
   });
 
   describe('rename validation feedback', () => {
