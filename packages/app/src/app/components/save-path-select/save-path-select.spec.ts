@@ -133,8 +133,8 @@ describe('SavePathSelect', () => {
     });
 
     it('should pass a set position straight through to resolvedPlacement', () => {
-      fixture.componentRef.setInput('position', 'left');
-      expect(component.resolvedPlacement()).toBe('left');
+      fixture.componentRef.setInput('position', 'bottom');
+      expect(component.resolvedPlacement()).toBe('bottom');
     });
   });
 
@@ -151,13 +151,30 @@ describe('SavePathSelect', () => {
 
     it('should pass resolvedPlacement to the typeahead input in typeahead mode', () => {
       fixture.componentRef.setInput('inputType', 'typeahead');
-      fixture.componentRef.setInput('position', 'left');
+      fixture.componentRef.setInput('position', 'bottom');
       fixture.detectChanges();
 
       const typeahead = fixture.debugElement
         .query(By.directive(NgbTypeahead))
         .injector.get(NgbTypeahead);
-      expect(typeahead.placement).toBe('left');
+      expect(typeahead.placement).toBe('bottom');
+    });
+
+    it('should leave the ng-select at auto when position is unset', () => {
+      fixture.componentRef.setInput('inputType', 'select');
+      fixture.detectChanges();
+      const ngSelect = fixture.debugElement.query(By.directive(NgSelectComponent))
+        .componentInstance as NgSelectComponent;
+      expect(ngSelect.dropdownPosition()).toBe('auto');
+    });
+
+    it('should leave the typeahead at its default placement when position is unset', () => {
+      fixture.componentRef.setInput('inputType', 'typeahead');
+      fixture.detectChanges();
+      const typeahead = fixture.debugElement
+        .query(By.directive(NgbTypeahead))
+        .injector.get(NgbTypeahead);
+      expect(typeahead.placement).toEqual(['bottom-start', 'bottom-end', 'top-start', 'top-end']);
     });
   });
 });

@@ -27,7 +27,7 @@ import { GeneralSettingsService } from '../../services/general-settings.service'
 import { TorrentStoreService } from '../../services/torrent-store.service';
 import { SavePathTypeaheadService } from './save-path-typeahead.service';
 
-export type SavePathSelectPosition = 'top' | 'left' | 'bottom' | 'right';
+export type SavePathSelectPosition = 'top' | 'bottom';
 
 @Component({
   selector: 'app-save-path-select',
