@@ -384,8 +384,7 @@ export class AddTorrentFolderPicker implements OnInit {
         ),
         valueFormatter: (params: ValueFormatterParams<ScannedTorrentEntry, ScannedTorrentState>) =>
           this.stateLabel(params.value),
-        tooltipValueGetter: (params) =>
-          params.data?.errorMessage ?? this.stateLabel(params.data?.state),
+        tooltipValueGetter: (params) => this.stateLabel(params.data?.state),
         filter: SetColumnFilter,
         filterParams: { getItems: () => stateItems() } satisfies Partial<SetColumnFilterParams>,
       },
@@ -430,6 +429,21 @@ export class AddTorrentFolderPicker implements OnInit {
           'components.add-torrent.folder-picker.col-def.path',
         ),
         tooltipField: 'relativePath',
+        filter: TextColumnFilter,
+      },
+      {
+        colId: 'errorMessage',
+        field: 'errorMessage',
+        headerName: this.translateService.instant(
+          'components.add-torrent.folder-picker.col-def.error',
+        ),
+        headerTooltip: this.translateService.instant(
+          'components.add-torrent.folder-picker.col-def.error',
+        ),
+        tooltipField: 'errorMessage',
+        flex: 1,
+        minWidth: 160,
+        hide: true,
         filter: TextColumnFilter,
       },
     ];

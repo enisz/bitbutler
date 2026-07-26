@@ -346,6 +346,27 @@ describe('AddTorrentFolderPicker', () => {
     expect(colIds).not.toContain('folderCount');
   });
 
+  it('defines a hidden errorMessage column', () => {
+    init('/downloads');
+
+    const errorColumn = component.colDefs.find((c) => c.colId === 'errorMessage');
+
+    expect(errorColumn).toBeTruthy();
+    expect(errorColumn!.field).toBe('errorMessage');
+    expect(errorColumn!.hide).toBe(true);
+  });
+
+  it('state column tooltip only shows the state label, not the error message', () => {
+    init('/downloads');
+
+    const stateColumn = component.colDefs.find((c) => c.colId === 'state')!;
+    const tooltip = stateColumn.tooltipValueGetter!({
+      data: { state: 'error', errorMessage: 'boom' },
+    } as any);
+
+    expect(tooltip).toBe('components.add-torrent.folder-picker.state.error');
+  });
+
   describe('selection summary', () => {
     it('selectedTotalSize sums the size of selected entries only', async () => {
       vi.spyOn(window.bitbutler.torrent, 'scanFolder').mockResolvedValue([
