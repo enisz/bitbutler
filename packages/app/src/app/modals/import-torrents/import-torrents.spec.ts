@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BbeTorrentEntry } from '@bitbutler/shared';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
+import { GRID_ROW_MUTED_CLASS } from '../../app.const';
 import { ExportService } from '../../services/export.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { ThemeService } from '../../services/theme.service';
@@ -412,9 +413,18 @@ describe('ImportTorrents', () => {
 
   describe('import grid row selectability', () => {
     it('marks export-failed rows as non-selectable', () => {
-      const isRowSelectable = component.importGridOptions.isRowSelectable!;
+      const isRowSelectable = (component.importGridOptions.rowSelection as any).isRowSelectable!;
       expect(isRowSelectable({ data: { hash: 'aaa', failed: true } } as any)).toBe(false);
       expect(isRowSelectable({ data: { hash: 'bbb', failed: false } } as any)).toBe(true);
+    });
+
+    it('applies the muted row class to non-selectable (export-failed) rows only', () => {
+      const isMuted = component.importGridOptions.rowClassRules![GRID_ROW_MUTED_CLASS] as (
+        params: any,
+      ) => boolean;
+
+      expect(isMuted({ data: { hash: 'aaa', failed: true } } as any)).toBe(true);
+      expect(isMuted({ data: { hash: 'bbb', failed: false } } as any)).toBe(false);
     });
   });
 

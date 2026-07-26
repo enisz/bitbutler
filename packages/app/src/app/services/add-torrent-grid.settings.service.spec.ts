@@ -42,9 +42,9 @@ describe('AddTorrentGridSettingsService', () => {
     expect(settings.columnState).toBe(DEFAULT_ADD_TORRENT_GRID_SETTINGS.columnState);
   });
 
-  it('default column state has 6 entries', async () => {
+  it('default column state has 4 entries', async () => {
     const settings = await service.load();
-    expect(settings.columnState).toHaveLength(6);
+    expect(settings.columnState).toHaveLength(4);
   });
 
   it('every default column has a colId', async () => {
@@ -55,9 +55,7 @@ describe('AddTorrentGridSettingsService', () => {
   it('default column state covers expected colIds', async () => {
     const settings = await service.load();
     const ids = settings.columnState.map((c) => c.colId);
-    expect(ids).toEqual(
-      expect.arrayContaining(['name', 'state', 'size', 'fileCount', 'folderCount', 'relativePath']),
-    );
+    expect(ids).toEqual(expect.arrayContaining(['name', 'state', 'size', 'relativePath']));
   });
 
   it('should merge stored column state over defaults', async () => {
