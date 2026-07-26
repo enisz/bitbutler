@@ -127,6 +127,7 @@ export class AddTorrentFolderPicker implements OnInit {
 
   private gridApi: GridApi<ScannedTorrentEntry> | null = null;
   private isRestoringState = false;
+  private isSyncingErrorColumnVisibility = false;
   private isDefaultLayout = true;
   private readonly saveState$ = new Subject<void>();
 
@@ -171,6 +172,7 @@ export class AddTorrentFolderPicker implements OnInit {
 
   public onGridReady(e: GridReadyEvent<ScannedTorrentEntry>): void {
     this.gridApi = e.api;
+    this.syncErrorColumnVisibility();
     void this.restoreColumnState();
   }
 
@@ -195,7 +197,7 @@ export class AddTorrentFolderPicker implements OnInit {
   }
 
   private queueSave(): void {
-    if (this.isRestoringState) return;
+    if (this.isRestoringState || this.isSyncingErrorColumnVisibility) return;
     this.saveState$.next();
   }
 
@@ -209,6 +211,7 @@ export class AddTorrentFolderPicker implements OnInit {
     const cached = this.cache.get(path);
     if (cached) cached.state = 'added';
     this.rows.update((rows) => rows.map((r) => (r.path === path ? { ...r, state: 'added' } : r)));
+    this.syncErrorColumnVisibility();
   }
 
   public markFailed(path: string, error: string): void {
@@ -220,6 +223,18 @@ export class AddTorrentFolderPicker implements OnInit {
     this.rows.update((rows) =>
       rows.map((r) => (r.path === path ? { ...r, state: 'failed', errorMessage: error } : r)),
     );
+    this.syncErrorColumnVisibility();
+  }
+
+  private syncErrorColumnVisibility(): void {
+    if (!this.gridApi) return;
+    const hasError = this.rows().some((r) => r.state === 'error' || r.state === 'failed');
+    this.isSyncingErrorColumnVisibility = true;
+    try {
+      this.gridApi.setColumnsVisible(['errorMessage'], hasError);
+    } finally {
+      this.isSyncingErrorColumnVisibility = false;
+    }
   }
 
   private async scan(): Promise<void> {
@@ -250,6 +265,7 @@ export class AddTorrentFolderPicker implements OnInit {
       this.rows.set(entries);
       this.selectedPaths.set(new Set(entries.filter((e) => e.state === 'new').map((e) => e.path)));
       this.hasScannedOnce = true;
+      this.syncErrorColumnVisibility();
     } catch (e) {
       this.scanError.set(String((e as Error)?.message ?? e));
       this.rows.set([]);

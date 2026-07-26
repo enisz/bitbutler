@@ -557,6 +557,117 @@ describe('AddTorrentFolderPicker', () => {
     });
   });
 
+  describe('error column visibility', () => {
+    it('markFailed reveals the errorMessage column', async () => {
+      vi.spyOn(window.bitbutler.torrent, 'scanFolder').mockResolvedValue([
+        { path: '/downloads/a.torrent', relativePath: 'a.torrent' },
+      ]);
+      vi.spyOn(window.bitbutler.torrent, 'parse').mockResolvedValue(draft());
+
+      init('/downloads');
+      await fixture.whenStable();
+
+      const mockApi = { setColumnsVisible: vi.fn() };
+      (component as any).gridApi = mockApi;
+
+      component.markFailed('/downloads/a.torrent', 'HTTP 500');
+
+      expect(mockApi.setColumnsVisible).toHaveBeenCalledWith(['errorMessage'], true);
+    });
+
+    it('markAdded hides the errorMessage column again once no row has an error', async () => {
+      vi.spyOn(window.bitbutler.torrent, 'scanFolder').mockResolvedValue([
+        { path: '/downloads/a.torrent', relativePath: 'a.torrent' },
+      ]);
+      vi.spyOn(window.bitbutler.torrent, 'parse').mockResolvedValue(draft());
+
+      init('/downloads');
+      await fixture.whenStable();
+
+      const mockApi = { setColumnsVisible: vi.fn() };
+      (component as any).gridApi = mockApi;
+
+      component.markFailed('/downloads/a.torrent', 'HTTP 500');
+      component.markAdded('/downloads/a.torrent');
+
+      expect(mockApi.setColumnsVisible).toHaveBeenLastCalledWith(['errorMessage'], false);
+    });
+
+    it('a rescan that finds a parse error reveals the errorMessage column', async () => {
+      vi.spyOn(window.bitbutler.torrent, 'scanFolder').mockResolvedValue([
+        { path: '/downloads/a.torrent', relativePath: 'a.torrent' },
+      ]);
+      vi.spyOn(window.bitbutler.torrent, 'parse').mockResolvedValue(draft());
+
+      init('/downloads');
+      await fixture.whenStable();
+
+      const mockApi = { setColumnsVisible: vi.fn() };
+      (component as any).gridApi = mockApi;
+
+      vi.spyOn(window.bitbutler.torrent, 'scanFolder').mockResolvedValue([
+        { path: '/downloads/bad.torrent', relativePath: 'bad.torrent' },
+      ]);
+      vi.spyOn(window.bitbutler.torrent, 'parse').mockResolvedValue({
+        source: 'manual',
+        receivedAt: Date.now(),
+        error: { message: 'Invalid torrent file', code: 'PARSE_FAILED' },
+      });
+
+      await component.refresh();
+
+      expect(mockApi.setColumnsVisible).toHaveBeenCalledWith(['errorMessage'], true);
+    });
+
+    it('onGridReady syncs visibility from whatever rows already exist', async () => {
+      vi.spyOn(window.bitbutler.torrent, 'scanFolder').mockResolvedValue([]);
+      init('/downloads');
+      await fixture.whenStable();
+
+      component.rows.set([
+        {
+          path: '/downloads/a.torrent',
+          relativePath: 'a.torrent',
+          name: 'a',
+          size: 0,
+          fileCount: 1,
+          folderCount: 0,
+          state: 'error',
+          errorMessage: 'boom',
+          hash: null,
+        },
+      ]);
+
+      const mockApi = {
+        setColumnsVisible: vi.fn(),
+        applyColumnState: vi.fn(),
+        getColumnState: vi.fn().mockReturnValue([]),
+      };
+      component.onGridReady({ api: mockApi } as any);
+      await fixture.whenStable();
+
+      expect(mockApi.setColumnsVisible).toHaveBeenCalledWith(['errorMessage'], true);
+    });
+
+    it('does not persist the auto-revealed column as a saved layout change', async () => {
+      vi.spyOn(window.bitbutler.torrent, 'scanFolder').mockResolvedValue([
+        { path: '/downloads/a.torrent', relativePath: 'a.torrent' },
+      ]);
+      vi.spyOn(window.bitbutler.torrent, 'parse').mockResolvedValue(draft());
+
+      init('/downloads');
+      await fixture.whenStable();
+
+      const mockApi = { setColumnsVisible: vi.fn() };
+      (component as any).gridApi = mockApi;
+      const next = vi.spyOn((component as any).saveState$, 'next');
+
+      component.markFailed('/downloads/a.torrent', 'HTTP 500');
+
+      expect(next).not.toHaveBeenCalled();
+    });
+  });
+
   describe('column state management', () => {
     it('restoreColumnState loads settings and applies column state', async () => {
       const state = [{ colId: 'name', hide: false, flex: 2 }];
