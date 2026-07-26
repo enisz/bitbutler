@@ -272,6 +272,24 @@ export class AddTorrent implements OnInit {
         emitEvent: false,
       });
     }
+
+    // Fetch free space when modal opens - pre-emptive call to get server state faster
+    const serverId = this.serverStoreService.currentServerId();
+    if (serverId) {
+      // Try to get the current server data immediately, with fallback to default 0
+      const fetchFreeSpace = async () => {
+        try {
+          const data = await this.qbService.sync.maindata(serverId, 0);
+          if (data.server_state?.free_space_on_disk != null) {
+            this.freeSpace.set(data.server_state.free_space_on_disk);
+          }
+        } catch {
+          // If we fail to fetch, keep the default 0 value
+          // This ensures we don't have blank state on failure
+        }
+      };
+      fetchFreeSpace();
+    }
   }
 
   public handleCancel(): void {

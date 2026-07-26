@@ -260,7 +260,7 @@
               class="form-control"
               id="free_space"
               [placeholder]="'components.add-torrent.add-form.free-space' | translate"
-              [value]="freeSpace() | fileSize"
+              [value]="freeSpace() > 0 ? (freeSpace() | fileSize) : '-'"
               readonly
             />
             <label for="free_space">{{
