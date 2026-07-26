@@ -78,4 +78,12 @@ export class AddTorrentGeneral {
   public getSelectedFolderEntries(): ScannedTorrentEntry[] {
     return this.folderPicker()?.selectedEntries() ?? [];
   }
+
+  public markFolderEntryAdded(path: string): void {
+    this.folderPicker()?.markAdded(path);
+  }
+
+  public markFolderEntryFailed(path: string, error: string): void {
+    this.folderPicker()?.markFailed(path, error);
+  }
 }

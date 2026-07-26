@@ -271,4 +271,27 @@ describe('AddTorrentGeneral', () => {
       expect(component.getSelectedFolderEntries()).toEqual([entry]);
     });
   });
+
+  describe('markFolderEntryAdded / markFolderEntryFailed', () => {
+    it('should do nothing when the folder picker has not rendered yet', () => {
+      expect(() => component.markFolderEntryAdded('/downloads/a.torrent')).not.toThrow();
+      expect(() => component.markFolderEntryFailed('/downloads/a.torrent', 'oops')).not.toThrow();
+    });
+
+    it('should delegate to the folder picker once in folder mode', () => {
+      fixture.componentRef.setInput('inputMode', 'folder');
+      fixture.detectChanges();
+
+      const markAdded = vi.fn();
+      const markFailed = vi.fn();
+      (component['folderPicker']() as any).markAdded = markAdded;
+      (component['folderPicker']() as any).markFailed = markFailed;
+
+      component.markFolderEntryAdded('/downloads/a.torrent');
+      component.markFolderEntryFailed('/downloads/b.torrent', 'network error');
+
+      expect(markAdded).toHaveBeenCalledWith('/downloads/a.torrent');
+      expect(markFailed).toHaveBeenCalledWith('/downloads/b.torrent', 'network error');
+    });
+  });
 });
