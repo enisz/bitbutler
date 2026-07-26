@@ -365,7 +365,17 @@ export class AddTorrent implements OnInit {
             succeeded++;
             this.generalTab()?.markFolderEntryAdded(entry.path);
             if (generalSettings.behavior.deleteTorrentFile) {
-              await window.bitbutler.torrent.deleteFile({ path: entry.path });
+              try {
+                await window.bitbutler.torrent.deleteFile({ path: entry.path });
+              } catch (deleteError) {
+                console.error(
+                  AddTorrent.name,
+                  'handleSubmit',
+                  'folder torrent file delete failed',
+                  entry.path,
+                  deleteError,
+                );
+              }
             }
           } catch (e) {
             console.error(

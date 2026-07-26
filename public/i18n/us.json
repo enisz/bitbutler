@@ -202,7 +202,7 @@
           "added": "Added",
           "failed": "Failed"
         },
-        "description": "Select a folder containing .torrent files - each one is parsed locally and listed below, with nothing sent anywhere until you click Add. Toggle Recursive or use Refresh to re-scan after files change on disk, and double-click a row's Name to rename it before adding; only new, not-yet-added torrents can be selected.",
+        "description": "Select a folder containing .torrent files - each one is parsed locally and listed below, with nothing sent anywhere until you click Add. Toggle Recursive or use Refresh to re-scan after files change on disk, and double-click a row's Name to rename it before adding; only new and previously-failed torrents can be selected.",
         "grid": {
           "no-rows": {
             "message": "No .torrent files found in this folder."

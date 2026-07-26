@@ -1053,6 +1053,27 @@ describe('AddTorrent', () => {
       expect(deleteFileSpy).toHaveBeenCalledWith({ path: '/downloads/a.torrent' });
     });
 
+    it('handleSubmit should keep a delete failure from being reported as an add failure', async () => {
+      vi.spyOn(window.bitbutler.qb, 'torrentsAdd').mockClear().mockResolvedValue(undefined);
+      vi.spyOn(window.bitbutler.torrent, 'deleteFile')
+        .mockClear()
+        .mockRejectedValue(new Error('EPERM'));
+      const generalSettingsService = TestBed.inject(GeneralSettingsService) as any;
+      generalSettingsService.load.mockResolvedValue({ behavior: { deleteTorrentFile: true } });
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      component.switchInputMode('folder' as any);
+      (component.addForm as any).controls.folderGroup.controls.folder.setValue('/downloads');
+      const { markFolderEntryAdded, markFolderEntryFailed } = stubSelectedFolderEntries([
+        { path: '/downloads/a.torrent', name: 'A' },
+      ]);
+
+      await component.handleSubmit({ preventDefault: () => {} } as unknown as SubmitEvent);
+
+      expect(markFolderEntryAdded).toHaveBeenCalledWith('/downloads/a.torrent');
+      expect(markFolderEntryFailed).not.toHaveBeenCalled();
+    });
+
     it('handleSubmit should show a partial-failure toast and keep the modal open when a row fails', async () => {
       vi.spyOn(window.bitbutler.qb, 'torrentsAdd')
         .mockClear()
