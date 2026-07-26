@@ -37,7 +37,7 @@
       "platform": "Platform"
     },
     "add-torrent": {
-      "title": "Add Torrent",
+      "title": "Torrent hozzáadása",
       "add-form": {
         "file-browser": "Torrent fájl",
         "folder-browser": "Mappa",
