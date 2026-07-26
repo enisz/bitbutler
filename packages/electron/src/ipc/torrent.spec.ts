@@ -91,6 +91,22 @@ describe('torrent:scan-folder', () => {
     expect(mockReaddir).toHaveBeenCalledTimes(1);
   });
 
+  it('skips a subdirectory that fails to read during a recursive scan, keeping files already found', async () => {
+    mockReaddir
+      .mockResolvedValueOnce([dirent('top.torrent', false), dirent('locked', true)])
+      .mockRejectedValueOnce(new Error('EACCES: permission denied'));
+
+    const handlers = await registerAndGetHandlers();
+    const result = (await handlers.get('torrent:scan-folder')!(null, {
+      path: '/downloads',
+      recursive: true,
+    })) as { path: string; relativePath: string }[];
+
+    expect(result).toEqual([
+      { path: path.join('/downloads', 'top.torrent'), relativePath: 'top.torrent' },
+    ]);
+  });
+
   it('returns an empty array when no path is provided', async () => {
     const handlers = await registerAndGetHandlers();
     const result = await handlers.get('torrent:scan-folder')!(null, { path: '', recursive: false });

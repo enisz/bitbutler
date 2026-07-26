@@ -100,11 +100,22 @@ async function walkForTorrentFiles(dir: string, recursive: boolean): Promise<str
   for (const entry of entries) {
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
-      if (recursive) results.push(...(await walkForTorrentFiles(fullPath, recursive)));
+      if (recursive) results.push(...(await walkSubdirectory(fullPath, recursive)));
     } else if (entry.isFile() && entry.name.toLowerCase().endsWith('.torrent')) {
       results.push(fullPath);
     }
   }
 
   return results;
+}
+
+// A subdirectory that fails to read (permissions, junction, etc.) is skipped rather than
+// aborting the whole scan - only the top-level walkForTorrentFiles call lets a read error
+// propagate, so a bad root folder still surfaces as scanError.
+async function walkSubdirectory(dir: string, recursive: boolean): Promise<string[]> {
+  try {
+    return await walkForTorrentFiles(dir, recursive);
+  } catch {
+    return [];
+  }
 }
