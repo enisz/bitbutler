@@ -154,7 +154,7 @@ export class UiCommandHandlerService {
             const { AddTorrent } = await import('../modals/add-torrent/add-torrent');
             if (this.isModalOpen(AddTorrent)) break;
             const addTorrentModalRef = this.modalService.open(AddTorrent, {
-              size: 'lg',
+              size: 'xl',
               scrollable: true,
               centered: false,
               keyboard: false,
