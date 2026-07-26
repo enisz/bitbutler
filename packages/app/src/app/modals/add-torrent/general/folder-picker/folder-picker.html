@@ -23,9 +23,9 @@
     </button>
   </div>
 
-  <div formGroupName="folderGroup" class="row mb-3 mt-3 align-items-center d-flex">
-    <div class="col-6 d-flex align-items-center">
-      <div class="form-check form-switch recursive-switch">
+  <div formGroupName="folderGroup" class="row mb-3 mt-3">
+    <div class="col-12 mt-1 mb-0 d-flex justify-content-between">
+      <div class="form-check form-switch recursive-switch mb-0">
         <input
           class="form-check-input"
           type="checkbox"
@@ -42,12 +42,11 @@
           placement="right"
         ></bb-popover>
       </div>
-    </div>
-    <div class="col-6 d-flex align-items-center justify-content-end">
       <button type="button" class="btn btn-sm btn-link btn-split" (click)="refresh()">
         <bb-btn-content
           [icon]="icons.faRotate"
           [text]="'general.button.refresh' | translate"
+          position="end"
         ></bb-btn-content>
       </button>
     </div>
@@ -66,11 +65,22 @@
     style="height: 320px"
     (gridReady)="onGridReady($event)"
     [loading]="loading()"
-    [rowData]="rows()"
+    [rowData]="visibleRows()"
     [columnDefs]="colDefs"
     [gridOptions]="gridOptions"
     [theme]="theme() === 'dark' ? bbDark : bbLight"
   />
+
+  <p class="small text-body-secondary mb-0 folder-selection-summary">
+    @if (selectedEntries().length === 0) {
+      {{ 'components.add-torrent.folder-picker.selection.none' | translate }}
+    } @else {
+      {{
+        'components.add-torrent.folder-picker.selection.summary'
+          | translate: { count: selectedEntries().length, size: selectedTotalSize() | fileSize }
+      }}
+    }
+  </p>
 </div>
 
 <ng-template #recursivePopover>

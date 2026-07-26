@@ -29,15 +29,20 @@ import {
   GridReadyEvent,
   IOverlayParams,
   ModuleRegistry,
+  RowClassParams,
   RowDataUpdatedEvent,
   SelectionChangedEvent,
   ValueFormatterParams,
 } from 'ag-grid-community';
 import { Subject, debounceTime } from 'rxjs';
-import { GRID_DARK_THEME, GRID_LIGHT_THEME, GRID_SHARED_OPTIONS } from '../../../../app.const';
+import {
+  GRID_DARK_THEME,
+  GRID_LIGHT_THEME,
+  GRID_ROW_MUTED_CLASS,
+  GRID_SHARED_OPTIONS,
+} from '../../../../app.const';
 import { BbBtnContent } from '../../../../components/bb-btn-content/bb-btn-content';
 import { BbPopover } from '../../../../components/bb-popover/bb-popover';
-import { NumberColumnFilter } from '../../../../components/column-filters/number-column-filter/number-column-filter';
 import {
   SetColumnFilter,
   SetColumnFilterParams,
@@ -56,6 +61,7 @@ import {
 import { AddTorrentFormGroup } from '../../../../models/add-torrent.model';
 import { GridContextMenuService } from '../../../../pages/main/grid/context-menu/grid-context-menu.service';
 import { NoRowOverlay } from '../../../../pages/main/grid/overlays/no-row-overlay/no-row-overlay';
+import { FilesizePipe } from '../../../../pipes/filesize-pipe';
 import { AddTorrentGridSettingsService } from '../../../../services/add-torrent-grid.settings.service';
 import { ContextMenuService } from '../../../../services/context-menu.service';
 import { ThemeService } from '../../../../services/theme.service';
@@ -78,6 +84,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
     BbBtnContent,
     BbPopover,
     AgGridAngular,
+    FilesizePipe,
   ],
   templateUrl: './folder-picker.html',
   styleUrl: './folder-picker.scss',
@@ -102,12 +109,17 @@ export class AddTorrentFolderPicker implements OnInit {
   public form = input.required<AddTorrentFormGroup>();
 
   public readonly rows = signal<ScannedTorrentEntry[]>([]);
+  public readonly visibleRows = computed(() => this.rows().filter((r) => r.state !== 'added'));
   public readonly loading = signal(false);
   public readonly scanError = signal<string | null>(null);
   public readonly selectedPaths = signal<Set<string>>(new Set());
 
   public readonly selectedEntries = computed(() =>
     this.rows().filter((r) => this.selectedPaths().has(r.path)),
+  );
+
+  public readonly selectedTotalSize = computed(() =>
+    this.selectedEntries().reduce((total, entry) => total + entry.size, 0),
   );
 
   private readonly cache = new Map<string, ScannedTorrentEntry>();
@@ -193,6 +205,23 @@ export class AddTorrentFolderPicker implements OnInit {
     this.rows.update((rows) => rows.map((r) => (r.path === path ? { ...r, name: newName } : r)));
   }
 
+  public markAdded(path: string): void {
+    const cached = this.cache.get(path);
+    if (cached) cached.state = 'added';
+    this.rows.update((rows) => rows.map((r) => (r.path === path ? { ...r, state: 'added' } : r)));
+  }
+
+  public markFailed(path: string, error: string): void {
+    const cached = this.cache.get(path);
+    if (cached) {
+      cached.state = 'failed';
+      cached.errorMessage = error;
+    }
+    this.rows.update((rows) =>
+      rows.map((r) => (r.path === path ? { ...r, state: 'failed', errorMessage: error } : r)),
+    );
+  }
+
   private async scan(): Promise<void> {
     const folder = this.folderControl.value?.trim();
     if (!folder) return;
@@ -271,9 +300,15 @@ export class AddTorrentFolderPicker implements OnInit {
       checkboxes: true,
       headerCheckbox: true,
       enableClickSelection: false,
+      isRowSelectable: (node) => node.data?.state === 'new' || node.data?.state === 'failed',
     },
-    isRowSelectable: (node) => node.data?.state === 'new',
     getRowId: (params: GetRowIdParams<ScannedTorrentEntry>) => params.data.path,
+    rowClassRules: {
+      [GRID_ROW_MUTED_CLASS]: (params: RowClassParams<ScannedTorrentEntry>): boolean =>
+        params.data?.state === 'exists',
+      'text-danger bg-danger-subtle': (params: RowClassParams<ScannedTorrentEntry>): boolean =>
+        params.data?.state === 'error' || params.data?.state === 'failed',
+    },
     overlayComponentSelector: (params: IOverlayParams<ScannedTorrentEntry>) => {
       if (params.overlayType === 'noRows' || params.overlayType === 'noMatchingRows') {
         return {
@@ -290,7 +325,9 @@ export class AddTorrentFolderPicker implements OnInit {
     onSelectionChanged: (e: SelectionChangedEvent<ScannedTorrentEntry>) =>
       this.selectedPaths.set(new Set(e.api.getSelectedRows().map((r) => r.path))),
     onRowDataUpdated: (e: RowDataUpdatedEvent<ScannedTorrentEntry>) => {
-      e.api.forEachNode((node) => node.setSelected(node.data?.state === 'new'));
+      e.api.forEachNode((node) =>
+        node.setSelected(node.data?.state === 'new' || node.data?.state === 'failed'),
+      );
     },
     onCellValueChanged: (e: CellValueChangedEvent<ScannedTorrentEntry>) => {
       if (e.colDef.colId === 'name') this.renameEntry(e.data.path, e.newValue ?? e.data.name);
@@ -331,7 +368,7 @@ export class AddTorrentFolderPicker implements OnInit {
 
   private getColDefs(): ColDef<ScannedTorrentEntry>[] {
     const stateItems = computed(() =>
-      buildValueCounts(this.rows(), (r) => this.stateLabel(r.state)),
+      buildValueCounts(this.visibleRows(), (r) => this.stateLabel(r.state)),
     );
 
     return [
@@ -380,32 +417,6 @@ export class AddTorrentFolderPicker implements OnInit {
         valueFormatter: this.uiFormatService.fileSize,
         cellClass: 'tabular-nums',
         filter: SizeColumnFilter,
-      },
-      {
-        colId: 'fileCount',
-        field: 'fileCount',
-        width: 100,
-        headerName: this.translateService.instant(
-          'components.add-torrent.folder-picker.col-def.files',
-        ),
-        headerTooltip: this.translateService.instant(
-          'components.add-torrent.folder-picker.col-def.files',
-        ),
-        cellClass: 'tabular-nums',
-        filter: NumberColumnFilter,
-      },
-      {
-        colId: 'folderCount',
-        field: 'folderCount',
-        width: 100,
-        headerName: this.translateService.instant(
-          'components.add-torrent.folder-picker.col-def.folders',
-        ),
-        headerTooltip: this.translateService.instant(
-          'components.add-torrent.folder-picker.col-def.folders',
-        ),
-        cellClass: 'tabular-nums',
-        filter: NumberColumnFilter,
       },
       {
         colId: 'relativePath',

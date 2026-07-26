@@ -193,20 +193,24 @@
           "name": "Name",
           "state": "State",
           "size": "Size",
-          "files": "Files",
-          "folders": "Folders",
           "path": "Path"
         },
         "state": {
           "new": "New",
           "exists": "Exists",
-          "error": "Error"
+          "error": "Error",
+          "added": "Added",
+          "failed": "Failed"
         },
         "description": "Select a folder containing .torrent files - each one is parsed locally and listed below, with nothing sent anywhere until you click Add. Toggle Recursive or use Refresh to re-scan after files change on disk, and double-click a row's Name to rename it before adding; only new, not-yet-added torrents can be selected.",
         "grid": {
           "no-rows": {
             "message": "No .torrent files found in this folder."
           }
+        },
+        "selection": {
+          "none": "No torrents selected.",
+          "summary": "{{count}} torrent(s) selected - total size: {{size}}"
         }
       },
       "input-mode": {
