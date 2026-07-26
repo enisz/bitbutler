@@ -172,8 +172,7 @@ export class AddTorrentFolderPicker implements OnInit {
 
   public onGridReady(e: GridReadyEvent<ScannedTorrentEntry>): void {
     this.gridApi = e.api;
-    this.syncErrorColumnVisibility();
-    void this.restoreColumnState();
+    void this.restoreColumnState().then(() => this.syncErrorColumnVisibility());
   }
 
   private async restoreColumnState(): Promise<void> {
@@ -192,7 +191,10 @@ export class AddTorrentFolderPicker implements OnInit {
 
   private async persistColumnState(): Promise<void> {
     if (!this.gridApi) return;
-    const columnState = this.gridApi.getColumnState();
+    // The error column's visibility is driven by row state, never by the saved layout.
+    const columnState = this.gridApi
+      .getColumnState()
+      .map((c) => (c.colId === 'errorMessage' ? { ...c, hide: true } : c));
     await this.addTorrentGridSettingsService.save({ columnState });
   }
 

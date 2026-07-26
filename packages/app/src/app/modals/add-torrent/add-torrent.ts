@@ -385,10 +385,7 @@ export class AddTorrent implements OnInit {
               entry.path,
               e,
             );
-            this.generalTab()?.markFolderEntryFailed(
-              entry.path,
-              String((e as Error)?.message ?? e),
-            );
+            this.generalTab()?.markFolderEntryFailed(entry.path, this.describeFolderAddError(e));
           }
         }
 
@@ -627,6 +624,26 @@ export class AddTorrent implements OnInit {
         })
         .catch(() => {});
     }
+  }
+
+  private describeFolderAddError(e: unknown): string {
+    const raw = String((e as Error)?.message ?? e);
+    let parsed: { name?: string; status?: number; statusText?: string } = {};
+    try {
+      const idx = raw.indexOf('{');
+      if (idx !== -1) parsed = JSON.parse(raw.slice(idx));
+    } catch {}
+
+    if (parsed.name === 'QbHttpError') {
+      if (parsed.status === 409) {
+        return this.translateService.instant(
+          'components.add-torrent.folder-picker.error.duplicate',
+        );
+      }
+      return `HTTP ${parsed.status}${parsed.statusText ? ' - ' + parsed.statusText : ''}`;
+    }
+
+    return raw;
   }
 
   private async tryRenameContentAfterAdd(

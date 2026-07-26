@@ -1132,5 +1132,59 @@ describe('AddTorrent', () => {
       expect(markFolderEntryAdded).not.toHaveBeenCalledWith('/downloads/b.torrent');
       expect(markFolderEntryFailed).toHaveBeenCalledWith('/downloads/b.torrent', 'network error');
     });
+
+    it('handleSubmit maps a 409 QbHttpError to a human-readable duplicate message', async () => {
+      const qbError = new Error(
+        `Error invoking remote method 'qb:torrents-add': Error: ${JSON.stringify({
+          name: 'QbHttpError',
+          status: 409,
+          statusText: 'Conflict',
+          body: '',
+          path: '/api/v2/torrents/add',
+        })}`,
+      );
+      vi.spyOn(window.bitbutler.qb, 'torrentsAdd').mockClear().mockRejectedValue(qbError);
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      component.switchInputMode('folder' as any);
+      (component.addForm as any).controls.folderGroup.controls.folder.setValue('/downloads');
+      const { markFolderEntryFailed } = stubSelectedFolderEntries([
+        { path: '/downloads/a.torrent', name: 'A' },
+      ]);
+
+      await component.handleSubmit({ preventDefault: () => {} } as unknown as SubmitEvent);
+
+      expect(markFolderEntryFailed).toHaveBeenCalledWith(
+        '/downloads/a.torrent',
+        'components.add-torrent.folder-picker.error.duplicate',
+      );
+    });
+
+    it('handleSubmit maps a non-409 QbHttpError to an HTTP status summary', async () => {
+      const qbError = new Error(
+        `Error invoking remote method 'qb:torrents-add': Error: ${JSON.stringify({
+          name: 'QbHttpError',
+          status: 500,
+          statusText: 'Internal Server Error',
+          body: '',
+          path: '/api/v2/torrents/add',
+        })}`,
+      );
+      vi.spyOn(window.bitbutler.qb, 'torrentsAdd').mockClear().mockRejectedValue(qbError);
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      component.switchInputMode('folder' as any);
+      (component.addForm as any).controls.folderGroup.controls.folder.setValue('/downloads');
+      const { markFolderEntryFailed } = stubSelectedFolderEntries([
+        { path: '/downloads/a.torrent', name: 'A' },
+      ]);
+
+      await component.handleSubmit({ preventDefault: () => {} } as unknown as SubmitEvent);
+
+      expect(markFolderEntryFailed).toHaveBeenCalledWith(
+        '/downloads/a.torrent',
+        'HTTP 500 - Internal Server Error',
+      );
+    });
   });
 });

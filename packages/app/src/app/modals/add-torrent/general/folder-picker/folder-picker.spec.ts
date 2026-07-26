@@ -619,7 +619,7 @@ describe('AddTorrentFolderPicker', () => {
       expect(mockApi.setColumnsVisible).toHaveBeenCalledWith(['errorMessage'], true);
     });
 
-    it('onGridReady syncs visibility from whatever rows already exist', async () => {
+    it('onGridReady syncs visibility from whatever rows already exist, after the column state restore settles', async () => {
       vi.spyOn(window.bitbutler.torrent, 'scanFolder').mockResolvedValue([]);
       init('/downloads');
       await fixture.whenStable();
@@ -644,12 +644,15 @@ describe('AddTorrentFolderPicker', () => {
         getColumnState: vi.fn().mockReturnValue([]),
       };
       component.onGridReady({ api: mockApi } as any);
-      await fixture.whenStable();
+      await new Promise((resolve) => setTimeout(resolve, 0));
 
       expect(mockApi.setColumnsVisible).toHaveBeenCalledWith(['errorMessage'], true);
+      expect(mockApi.applyColumnState.mock.invocationCallOrder[0]).toBeLessThan(
+        mockApi.setColumnsVisible.mock.invocationCallOrder[0],
+      );
     });
 
-    it('does not persist the auto-revealed column as a saved layout change', async () => {
+    it('resets isSyncingErrorColumnVisibility to false after syncing, even if setColumnsVisible throws', async () => {
       vi.spyOn(window.bitbutler.torrent, 'scanFolder').mockResolvedValue([
         { path: '/downloads/a.torrent', relativePath: 'a.torrent' },
       ]);
@@ -658,13 +661,15 @@ describe('AddTorrentFolderPicker', () => {
       init('/downloads');
       await fixture.whenStable();
 
-      const mockApi = { setColumnsVisible: vi.fn() };
+      const mockApi = {
+        setColumnsVisible: vi.fn().mockImplementation(() => {
+          throw new Error('boom');
+        }),
+      };
       (component as any).gridApi = mockApi;
-      const next = vi.spyOn((component as any).saveState$, 'next');
 
-      component.markFailed('/downloads/a.torrent', 'HTTP 500');
-
-      expect(next).not.toHaveBeenCalled();
+      expect(() => component.markFailed('/downloads/a.torrent', 'HTTP 500')).toThrow('boom');
+      expect((component as any).isSyncingErrorColumnVisibility).toBe(false);
     });
   });
 
@@ -692,6 +697,24 @@ describe('AddTorrentFolderPicker', () => {
       expect(mockSettingsService.save).toHaveBeenCalledWith({ columnState: state });
     });
 
+    it('persistColumnState always forces the errorMessage column to hide:true regardless of its live visibility', async () => {
+      const state = [
+        { colId: 'name', hide: false, flex: 2 },
+        { colId: 'errorMessage', hide: false, flex: 1 },
+      ];
+      const mockApi = { applyColumnState: vi.fn(), getColumnState: vi.fn().mockReturnValue(state) };
+      (component as any).gridApi = mockApi;
+
+      await (component as any).persistColumnState();
+
+      expect(mockSettingsService.save).toHaveBeenCalledWith({
+        columnState: [
+          { colId: 'name', hide: false, flex: 2 },
+          { colId: 'errorMessage', hide: true, flex: 1 },
+        ],
+      });
+    });
+
     it('restoreColumnState does nothing when gridApi is null', async () => {
       (component as any).gridApi = null;
       await (component as any).restoreColumnState();
@@ -716,6 +739,13 @@ describe('AddTorrentFolderPicker', () => {
       const next = vi.spyOn((component as any).saveState$, 'next');
       (component as any).queueSave();
       expect(next).toHaveBeenCalled();
+    });
+
+    it('queueSave does not emit while the error column visibility is syncing', () => {
+      (component as any).isSyncingErrorColumnVisibility = true;
+      const next = vi.spyOn((component as any).saveState$, 'next');
+      (component as any).queueSave();
+      expect(next).not.toHaveBeenCalled();
     });
 
     it('restoreColumnState marks the layout as default when settings.columnState is the default reference', async () => {
