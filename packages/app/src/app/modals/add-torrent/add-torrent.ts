@@ -363,6 +363,7 @@ export class AddTorrent implements OnInit {
               options: { ...sharedOptions, rename: entry.name },
             });
             succeeded++;
+            this.generalTab()?.markFolderEntryAdded(entry.path);
             if (generalSettings.behavior.deleteTorrentFile) {
               await window.bitbutler.torrent.deleteFile({ path: entry.path });
             }
@@ -373,6 +374,10 @@ export class AddTorrent implements OnInit {
               'folder torrent add failed',
               entry.path,
               e,
+            );
+            this.generalTab()?.markFolderEntryFailed(
+              entry.path,
+              String((e as Error)?.message ?? e),
             );
           }
         }

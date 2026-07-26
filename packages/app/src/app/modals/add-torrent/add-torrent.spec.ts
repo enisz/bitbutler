@@ -971,10 +971,15 @@ describe('AddTorrent', () => {
 
   describe('folder mode', () => {
     function stubSelectedFolderEntries(entries: any[]) {
+      const markFolderEntryAdded = vi.fn();
+      const markFolderEntryFailed = vi.fn();
       (component as any).generalTab = () => ({
         ensureCategoryExists: () => Promise.resolve(true),
         getSelectedFolderEntries: () => entries,
+        markFolderEntryAdded,
+        markFolderEntryFailed,
       });
+      return { markFolderEntryAdded, markFolderEntryFailed };
     }
 
     it('canSubmit should be false in folder mode with no folder path and no selected rows', () => {
@@ -1068,6 +1073,43 @@ describe('AddTorrent', () => {
       expect(toastService.danger).toHaveBeenCalled();
       expect(mockActiveModal.close).not.toHaveBeenCalled();
       expect(consoleErrorSpy).toHaveBeenCalled();
+    });
+
+    it('handleSubmit should mark each selected row as added on success', async () => {
+      vi.spyOn(window.bitbutler.qb, 'torrentsAdd').mockClear().mockResolvedValue(undefined);
+
+      component.switchInputMode('folder' as any);
+      (component.addForm as any).controls.folderGroup.controls.folder.setValue('/downloads');
+      const { markFolderEntryAdded } = stubSelectedFolderEntries([
+        { path: '/downloads/a.torrent', name: 'A' },
+        { path: '/downloads/b.torrent', name: 'B' },
+      ]);
+
+      await component.handleSubmit({ preventDefault: () => {} } as unknown as SubmitEvent);
+
+      expect(markFolderEntryAdded).toHaveBeenCalledWith('/downloads/a.torrent');
+      expect(markFolderEntryAdded).toHaveBeenCalledWith('/downloads/b.torrent');
+    });
+
+    it('handleSubmit should mark a failed row with its error message and leave the succeeded row untouched', async () => {
+      vi.spyOn(window.bitbutler.qb, 'torrentsAdd')
+        .mockClear()
+        .mockResolvedValueOnce(undefined)
+        .mockRejectedValueOnce(new Error('network error'));
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      component.switchInputMode('folder' as any);
+      (component.addForm as any).controls.folderGroup.controls.folder.setValue('/downloads');
+      const { markFolderEntryAdded, markFolderEntryFailed } = stubSelectedFolderEntries([
+        { path: '/downloads/a.torrent', name: 'A' },
+        { path: '/downloads/b.torrent', name: 'B' },
+      ]);
+
+      await component.handleSubmit({ preventDefault: () => {} } as unknown as SubmitEvent);
+
+      expect(markFolderEntryAdded).toHaveBeenCalledWith('/downloads/a.torrent');
+      expect(markFolderEntryAdded).not.toHaveBeenCalledWith('/downloads/b.torrent');
+      expect(markFolderEntryFailed).toHaveBeenCalledWith('/downloads/b.torrent', 'network error');
     });
   });
 });
