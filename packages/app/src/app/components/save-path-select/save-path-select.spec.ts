@@ -1,5 +1,8 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
+import { NgSelectComponent } from '@ng-select/ng-select';
 import { TorrentStoreService } from '../../services/torrent-store.service';
 import { SavePathSelect } from './save-path-select';
 
@@ -132,6 +135,29 @@ describe('SavePathSelect', () => {
     it('should pass a set position straight through to resolvedPlacement', () => {
       fixture.componentRef.setInput('position', 'left');
       expect(component.resolvedPlacement()).toBe('left');
+    });
+  });
+
+  describe('position wiring', () => {
+    it('should pass resolvedDropdownPosition to the ng-select in select mode', () => {
+      fixture.componentRef.setInput('inputType', 'select');
+      fixture.componentRef.setInput('position', 'top');
+      fixture.detectChanges();
+
+      const ngSelect = fixture.debugElement.query(By.directive(NgSelectComponent))
+        .componentInstance as NgSelectComponent;
+      expect(ngSelect.dropdownPosition()).toBe('top');
+    });
+
+    it('should pass resolvedPlacement to the typeahead input in typeahead mode', () => {
+      fixture.componentRef.setInput('inputType', 'typeahead');
+      fixture.componentRef.setInput('position', 'left');
+      fixture.detectChanges();
+
+      const typeahead = fixture.debugElement
+        .query(By.directive(NgbTypeahead))
+        .injector.get(NgbTypeahead);
+      expect(typeahead.placement).toBe('left');
     });
   });
 });

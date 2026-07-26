@@ -9,6 +9,7 @@
       [ngbTypeahead]="typeaheadService.searchSavePaths"
       [editable]="true"
       [focusFirst]="false"
+      [placement]="resolvedPlacement()"
       autocomplete="off"
       #typeaheadInput
     />
@@ -34,6 +35,7 @@
       [appendTo]="appendTo()"
       [placeholder]="placeholder() ?? ''"
       [fixedPlaceholder]="false"
+      [dropdownPosition]="resolvedDropdownPosition()"
       #ngselect
     >
     </ng-select>
