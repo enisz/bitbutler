@@ -192,6 +192,7 @@
         "col-def": {
           "name": "Név",
           "state": "Állapot",
+          "error": "Hiba",
           "size": "Méret",
           "path": "Útvonal"
         },

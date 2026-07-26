@@ -192,6 +192,7 @@
         "col-def": {
           "name": "Name",
           "state": "State",
+          "error": "Error",
           "size": "Size",
           "path": "Path"
         },
