@@ -366,7 +366,16 @@ export class AddTorrent implements OnInit {
             this.generalTab()?.markFolderEntryAdded(entry.path);
             if (generalSettings.behavior.deleteTorrentFile) {
               try {
-                await window.bitbutler.torrent.deleteFile({ path: entry.path });
+                const result = await window.bitbutler.torrent.deleteFile({ path: entry.path });
+                if (!result?.ok) {
+                  console.error(
+                    AddTorrent.name,
+                    'handleSubmit',
+                    'folder torrent file delete failed',
+                    entry.path,
+                    result?.error,
+                  );
+                }
               } catch (deleteError) {
                 console.error(
                   AddTorrent.name,
@@ -466,7 +475,26 @@ export class AddTorrent implements OnInit {
         if (originalPath) {
           const generalSettings = await this.generalSettingsService.load();
           if (generalSettings.behavior.deleteTorrentFile) {
-            await window.bitbutler.torrent.deleteFile({ path: originalPath });
+            try {
+              const result = await window.bitbutler.torrent.deleteFile({ path: originalPath });
+              if (!result?.ok) {
+                console.error(
+                  AddTorrent.name,
+                  'handleSubmit',
+                  'file delete failed',
+                  originalPath,
+                  result?.error,
+                );
+              }
+            } catch (deleteError) {
+              console.error(
+                AddTorrent.name,
+                'handleSubmit',
+                'file delete failed',
+                originalPath,
+                deleteError,
+              );
+            }
           }
         }
         this.openFilesService.consumeCurrentDraft();

@@ -588,7 +588,10 @@ describe('AddTorrent', () => {
 
     it('should delete the source file and consume the draft when deleteTorrentFile is enabled', async () => {
       const torrentsAddSpy = vi.spyOn(window.bitbutler.qb, 'torrentsAdd').mockClear();
-      const deleteFileSpy = vi.spyOn(window.bitbutler.torrent, 'deleteFile').mockClear();
+      const deleteFileSpy = vi
+        .spyOn(window.bitbutler.torrent, 'deleteFile')
+        .mockClear()
+        .mockResolvedValue({ ok: true });
       const generalSettingsService = TestBed.inject(GeneralSettingsService) as any;
       generalSettingsService.load.mockResolvedValue({ behavior: { deleteTorrentFile: true } });
 
@@ -632,6 +635,40 @@ describe('AddTorrent', () => {
       await component.handleSubmit({ preventDefault: () => {} } as unknown as SubmitEvent);
 
       expect(deleteFileSpy).not.toHaveBeenCalled();
+      expect(mockOpenFilesService.consumeCurrentDraft).toHaveBeenCalled();
+    });
+
+    it('should log a delete failure result instead of swallowing it silently, and still consume the draft', async () => {
+      vi.spyOn(window.bitbutler.qb, 'torrentsAdd').mockClear();
+      vi.spyOn(window.bitbutler.torrent, 'deleteFile')
+        .mockClear()
+        .mockResolvedValue({ ok: false, error: 'EPERM' });
+      const generalSettingsService = TestBed.inject(GeneralSettingsService) as any;
+      generalSettingsService.load.mockResolvedValue({ behavior: { deleteTorrentFile: true } });
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      (component as any).selectedTorrentFile.set({
+        name: 'test.torrent',
+        path: '/tmp/test.torrent',
+      });
+      component.manualDraft.set({
+        source: 'manual',
+        receivedAt: Date.now(),
+        originalPath: '/tmp/test.torrent',
+        torrent: { name: 'test-torrent', totalSize: 100, files: [] },
+      });
+      component.addForm.controls.fileGroup.controls.rename.setValue('test-torrent');
+      fixture.detectChanges();
+
+      await component.handleSubmit({ preventDefault: () => {} } as unknown as SubmitEvent);
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.anything(),
+        expect.anything(),
+        '/tmp/test.torrent',
+        'EPERM',
+      );
       expect(mockOpenFilesService.consumeCurrentDraft).toHaveBeenCalled();
     });
 
@@ -1040,7 +1077,10 @@ describe('AddTorrent', () => {
 
     it('handleSubmit should delete each successfully added file when deleteTorrentFile is enabled', async () => {
       vi.spyOn(window.bitbutler.qb, 'torrentsAdd').mockClear();
-      const deleteFileSpy = vi.spyOn(window.bitbutler.torrent, 'deleteFile').mockClear();
+      const deleteFileSpy = vi
+        .spyOn(window.bitbutler.torrent, 'deleteFile')
+        .mockClear()
+        .mockResolvedValue({ ok: true });
       const generalSettingsService = TestBed.inject(GeneralSettingsService) as any;
       generalSettingsService.load.mockResolvedValue({ behavior: { deleteTorrentFile: true } });
 
@@ -1057,7 +1097,7 @@ describe('AddTorrent', () => {
       vi.spyOn(window.bitbutler.qb, 'torrentsAdd').mockClear().mockResolvedValue(undefined);
       vi.spyOn(window.bitbutler.torrent, 'deleteFile')
         .mockClear()
-        .mockRejectedValue(new Error('EPERM'));
+        .mockResolvedValue({ ok: false, error: 'EPERM' });
       const generalSettingsService = TestBed.inject(GeneralSettingsService) as any;
       generalSettingsService.load.mockResolvedValue({ behavior: { deleteTorrentFile: true } });
       vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -1072,6 +1112,30 @@ describe('AddTorrent', () => {
 
       expect(markFolderEntryAdded).toHaveBeenCalledWith('/downloads/a.torrent');
       expect(markFolderEntryFailed).not.toHaveBeenCalled();
+    });
+
+    it('handleSubmit should log a delete failure result instead of swallowing it silently', async () => {
+      vi.spyOn(window.bitbutler.qb, 'torrentsAdd').mockClear().mockResolvedValue(undefined);
+      vi.spyOn(window.bitbutler.torrent, 'deleteFile')
+        .mockClear()
+        .mockResolvedValue({ ok: false, error: 'EPERM' });
+      const generalSettingsService = TestBed.inject(GeneralSettingsService) as any;
+      generalSettingsService.load.mockResolvedValue({ behavior: { deleteTorrentFile: true } });
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      component.switchInputMode('folder' as any);
+      (component.addForm as any).controls.folderGroup.controls.folder.setValue('/downloads');
+      stubSelectedFolderEntries([{ path: '/downloads/a.torrent', name: 'A' }]);
+
+      await component.handleSubmit({ preventDefault: () => {} } as unknown as SubmitEvent);
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.anything(),
+        expect.anything(),
+        '/downloads/a.torrent',
+        'EPERM',
+      );
     });
 
     it('handleSubmit should show a partial-failure toast and keep the modal open when a row fails', async () => {
