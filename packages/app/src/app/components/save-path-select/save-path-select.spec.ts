@@ -105,4 +105,33 @@ describe('SavePathSelect', () => {
       expect(component.appendTo()).toBe('');
     });
   });
+
+  describe('position', () => {
+    it('should be null by default', () => {
+      expect(component.position()).toBeNull();
+    });
+
+    it('should resolve dropdownPosition to auto by default', () => {
+      expect(component.resolvedDropdownPosition()).toBe('auto');
+    });
+
+    it('should resolve placement to the default flip array by default', () => {
+      expect(component.resolvedPlacement()).toEqual([
+        'bottom-start',
+        'bottom-end',
+        'top-start',
+        'top-end',
+      ]);
+    });
+
+    it('should pass a set position straight through to resolvedDropdownPosition', () => {
+      fixture.componentRef.setInput('position', 'top');
+      expect(component.resolvedDropdownPosition()).toBe('top');
+    });
+
+    it('should pass a set position straight through to resolvedPlacement', () => {
+      fixture.componentRef.setInput('position', 'left');
+      expect(component.resolvedPlacement()).toBe('left');
+    });
+  });
 });
