@@ -19,8 +19,8 @@ Right-click (or on some platforms, left-click) the tray icon for a quick-action 
 
 - **Show** / **Hide** - toggles the main window.
 - **Start All Torrents** / **Stop All Torrents** - resumes or pauses every torrent on the currently active server.
-- **Remove Upload Limit** / **Remove Download Limit** - clears the server's global transfer limits.
-- **Toggle Alternative Speed Limits** - switches the server between its normal and alternative global speed limits.
+- **Remove Global Upload Limit** / **Remove Global Download Limit** - clears the server's global transfer limits.
+- **Toggle Alternative Speed** - switches the server between its normal and alternative global speed limits.
 - **Quit** - closes BitButler completely, including the tray icon.
 
 The torrent-control and transfer-limit items are disabled whenever there's no active, connected server to act on.

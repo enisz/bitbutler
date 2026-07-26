@@ -19,8 +19,8 @@ Kattints jobb gombbal (egyes platformokon bal gombbal) a tálcaikonra egy gyorsm
 
 - **Megjelenítés** / **Elrejtés** - a főablak be- és kikapcsolása.
 - **Összes torrent indítása** / **Összes torrent leállítása** - folytatja vagy szünetelteti az aktuálisan aktív szerver minden torrentjét.
-- **Feltöltési korlát eltávolítása** / **Letöltési korlát eltávolítása** - törli a szerver globális átviteli korlátait.
-- **Alternatív sebességkorlátok váltása** - átváltja a szervert a normál és az alternatív globális sebességkorlátok között.
+- **Globális feltöltési korlát eltávolítása** / **Globális letöltési korlát eltávolítása** - törli a szerver globális átviteli korlátait.
+- **Alternatív sebesség váltása** - átváltja a szervert a normál és az alternatív globális sebességkorlátok között.
 - **Kilépés** - teljesen bezárja a BitButlert, a tálcaikonnal együtt.
 
 A torrentvezérlő és átvitelikorlát-elemek le vannak tiltva, amikor nincs aktív, csatlakoztatott szerver, amelyre hatnának.

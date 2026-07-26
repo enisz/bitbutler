@@ -48,7 +48,7 @@ A standalone **Delete** button removes the torrent. The rest of the footer group
 - **Control** - Resume, Pause, Force Resume.
 - **Files** - Show File / Open Destination (disabled until a [path mapping](./settings/bitbutler-settings#path-mappings) resolves a local folder), Set Save Path, Set Download Path, and Export Torrent File.
 - **Manage** - Rename, Change Category, Change Tags.
-- **Transfer** - Transfer Limits, Edit Share Limits, and toggles for Super Seeding, Sequential Download, and First/Last Piece Priority.
+- **Transfer** - Transfer Limits, Share Limits, and toggles for Super Seeding, Sequential Download, and First/Last Piece Priority.
 - **Maintenance** - Force Recheck, Force Reannounce, and a toggle for Automatic Torrent Management.
 
 A **Close** button on the far right closes the dialog.

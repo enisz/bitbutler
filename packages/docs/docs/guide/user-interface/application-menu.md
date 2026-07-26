@@ -21,7 +21,7 @@ Add Torrent, Export Torrents, Import Torrents, and Disconnect are only enabled w
 
 ## Servers
 
-Shown only while connected and only if more than one server is configured: a radio-button list of every server, with the active one checked. Selecting another one switches to it immediately, the same as using the toolbar's server dropdown.
+Shown only while connected and only if at least one server is configured: a radio-button list of every server, with the active one checked. Selecting another one switches to it immediately, the same as using the toolbar's server dropdown.
 
 ## Settings
 
@@ -41,6 +41,6 @@ Shown only while connected:
 | ----------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Check for Updates | `Ctrl+U`       | Manually triggers the same update check as the "Check for Updates now" button under [BitButler Settings > Behavior](./settings/bitbutler-settings#behavior). |
 | User Guide        | `Ctrl+Shift+,` | Opens this documentation site in your default browser, in the app's current language.                                                                        |
-| About             | `F1`           | Shows the app's version and related information.                                                                                                             |
+| About BitButler   | `F1`           | Shows the app's version and related information.                                                                                                             |
 
 On Windows, `Ctrl` is the modifier shown above; on other platforms the same accelerators apply with that platform's usual command modifier.
