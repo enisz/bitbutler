@@ -43,6 +43,8 @@
         "folder-browser": "Folder",
         "recursive": "Recursive",
         "magnet-links": "Links (one per line)",
+        "no-links": "No links",
+        "link-count": "{{ count }} link(s)",
         "save-path": "Save Path",
         "rename": "Name",
         "skip-hash-checking": "Skip hash checking",

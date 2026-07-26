@@ -43,6 +43,8 @@
         "folder-browser": "Mappa",
         "recursive": "Rekurzív",
         "magnet-links": "Linkek (soronként egy)",
+        "no-links": "Nincs link",
+        "link-count": "{{ count }} link(ek)",
         "save-path": "Mentési útvonal",
         "rename": "Név",
         "skip-hash-checking": "Hash-ellenőrzés kihagyása",

@@ -59,6 +59,7 @@ export class AddTorrentGeneral {
   private readonly folderPicker = viewChild(AddTorrentFolderPicker);
 
   public readonly defaultSavePath = signal<string>('');
+  public readonly linkCount = signal(0);
 
   public readonly sizeValue = computed<number | null>(() => {
     switch (this.inputMode()) {
@@ -98,5 +99,14 @@ export class AddTorrentGeneral {
 
   public markFolderEntryFailed(path: string, error: string): void {
     this.folderPicker()?.markFailed(path, error);
+  }
+
+  public onMagnetLinksInput(event: Event): void {
+    const value = (event.target as HTMLTextAreaElement).value;
+    const count = value
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0).length;
+    this.linkCount.set(count);
   }
 }

@@ -117,18 +117,29 @@
               </div>
             } @else {
               <div formGroupName="linkGroup">
-                <div class="form-floating mb-3">
+                <div class="form-floating mb-1">
                   <textarea
                     class="form-control"
                     id="magnet_links"
                     style="height: 120px"
                     [placeholder]="'components.add-torrent.add-form.magnet-links' | translate"
                     formControlName="magnetLinks"
+                    (input)="onMagnetLinksInput($event)"
                   ></textarea>
                   <label for="magnet_links">{{
                     'components.add-torrent.add-form.magnet-links' | translate
                   }}</label>
                 </div>
+                <p class="small mb-3 link-count-summary">
+                  @if (linkCount() > 0) {
+                    {{
+                      'components.add-torrent.add-form.link-count'
+                        | translate: { count: linkCount() }
+                    }}
+                  } @else {
+                    {{ 'components.add-torrent.add-form.no-links' | translate }}
+                  }
+                </p>
               </div>
             }
           </div>

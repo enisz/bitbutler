@@ -288,6 +288,57 @@ describe('AddTorrentGeneral', () => {
     });
   });
 
+  describe('link counter', () => {
+    it('should show "no links" before the textarea is touched', () => {
+      fixture.componentRef.setInput('inputMode', 'link');
+      fixture.detectChanges();
+
+      const counter: HTMLElement = fixture.nativeElement.querySelector('.link-count-summary');
+      expect(counter.textContent).toContain('components.add-torrent.add-form.no-links');
+    });
+
+    it('should count non-empty lines as links when the textarea changes', () => {
+      fixture.componentRef.setInput('inputMode', 'link');
+      fixture.detectChanges();
+
+      const textarea: HTMLTextAreaElement = fixture.nativeElement.querySelector('#magnet_links');
+      textarea.value = 'magnet:?xt=urn:btih:aaa\nmagnet:?xt=urn:btih:bbb\n';
+      textarea.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+
+      const counter: HTMLElement = fixture.nativeElement.querySelector('.link-count-summary');
+      expect(counter.textContent).toContain('components.add-torrent.add-form.link-count');
+      expect(component.linkCount()).toBe(2);
+    });
+
+    it('should ignore blank lines when counting links', () => {
+      fixture.componentRef.setInput('inputMode', 'link');
+      fixture.detectChanges();
+
+      const textarea: HTMLTextAreaElement = fixture.nativeElement.querySelector('#magnet_links');
+      textarea.value = 'magnet:?xt=urn:btih:aaa\n\n   \nmagnet:?xt=urn:btih:bbb';
+      textarea.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+
+      expect(component.linkCount()).toBe(2);
+    });
+
+    it('should go back to "no links" when the textarea is cleared', () => {
+      fixture.componentRef.setInput('inputMode', 'link');
+      fixture.detectChanges();
+
+      const textarea: HTMLTextAreaElement = fixture.nativeElement.querySelector('#magnet_links');
+      textarea.value = 'magnet:?xt=urn:btih:aaa';
+      textarea.dispatchEvent(new Event('input'));
+      textarea.value = '';
+      textarea.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+
+      const counter: HTMLElement = fixture.nativeElement.querySelector('.link-count-summary');
+      expect(counter.textContent).toContain('components.add-torrent.add-form.no-links');
+    });
+  });
+
   it('should show the folder picker in folder mode', () => {
     fixture.componentRef.setInput('inputMode', 'folder');
     fixture.detectChanges();
