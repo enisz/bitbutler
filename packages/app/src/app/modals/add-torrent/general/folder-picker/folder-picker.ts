@@ -336,21 +336,6 @@ export class AddTorrentFolderPicker implements OnInit {
 
     return [
       {
-        colId: 'name',
-        field: 'name',
-        headerName: this.translateService.instant(
-          'components.add-torrent.folder-picker.col-def.name',
-        ),
-        headerTooltip: this.translateService.instant(
-          'components.add-torrent.folder-picker.col-def.name',
-        ),
-        tooltipField: 'name',
-        flex: 2,
-        minWidth: 200,
-        editable: true,
-        filter: TextColumnFilter,
-      },
-      {
         colId: 'state',
         field: 'state',
         width: 120,
@@ -366,6 +351,21 @@ export class AddTorrentFolderPicker implements OnInit {
           params.data?.errorMessage ?? this.stateLabel(params.data?.state),
         filter: SetColumnFilter,
         filterParams: { getItems: () => stateItems() } satisfies Partial<SetColumnFilterParams>,
+      },
+      {
+        colId: 'name',
+        field: 'name',
+        headerName: this.translateService.instant(
+          'components.add-torrent.folder-picker.col-def.name',
+        ),
+        headerTooltip: this.translateService.instant(
+          'components.add-torrent.folder-picker.col-def.name',
+        ),
+        tooltipField: 'name',
+        flex: 2,
+        minWidth: 200,
+        editable: true,
+        filter: TextColumnFilter,
       },
       {
         colId: 'size',

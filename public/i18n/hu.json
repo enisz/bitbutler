@@ -202,11 +202,7 @@
           "exists": "Létezik",
           "error": "Hiba"
         },
-        "description": {
-          "line1": "Válasszon egy mappát, amely .torrent fájlokat tartalmaz. Minden fájl helyben kerül feldolgozásra, és az alábbi listában jelenik meg - semmilyen adat nem kerül elküldésre a Hozzáadás gombra kattintásig.",
-          "line2": "Használja a Frissítés gombot vagy a Rekurzív kapcsolót a mappa újbóli beolvasásához, ha fájlokat adott hozzá vagy távolított el a lemezen.",
-          "line3": "Duplán kattintva egy sor Nevére, átnevezheted azt hozzáadás előtt - csak az új, még hozzá nem adott torrentek választhatók ki."
-        },
+        "description": "Válasszon egy .torrent fájlokat tartalmazó mappát - minden fájl helyben kerül feldolgozásra, és az alábbi listában jelenik meg, semmilyen adat nem kerül elküldésre a Hozzáadás gombra kattintásig. Kapcsolja be a Rekurzív opciót vagy használja a Frissítés gombot a mappa újbóli beolvasásához, ha fájlokat módosított a lemezen, egy sor Nevére duplán kattintva pedig átnevezheti azt hozzáadás előtt - csak az új, még hozzá nem adott torrentek választhatók ki.",
         "grid": {
           "no-rows": {
             "message": "Nem található .torrent fájl ebben a mappában."

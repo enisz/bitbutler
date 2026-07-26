@@ -21,39 +21,41 @@
         position="end"
       ></bb-btn-content>
     </button>
-
-    <button type="button" class="btn btn-outline-secondary btn-split" (click)="refresh()">
-      <bb-btn-content
-        [icon]="icons.faRotate"
-        [text]="'general.button.refresh' | translate"
-        position="end"
-      ></bb-btn-content>
-    </button>
   </div>
 
-  <div formGroupName="folderGroup" class="form-check form-switch mb-2">
-    <input
-      class="form-check-input"
-      type="checkbox"
-      role="switch"
-      id="folder_recursive"
-      formControlName="recursive"
-    />
-    <label class="form-check-label" for="folder_recursive">{{
-      'components.add-torrent.add-form.recursive' | translate
-    }}</label>
-    <bb-popover
-      [subject]="'components.add-torrent.popover.recursive.title' | translate"
-      [description]="recursivePopover"
-      placement="right"
-    ></bb-popover>
+  <div formGroupName="folderGroup" class="row mb-3 mt-3 align-items-center d-flex">
+    <div class="col-6 d-flex align-items-center">
+      <div class="form-check form-switch recursive-switch">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          role="switch"
+          id="folder_recursive"
+          formControlName="recursive"
+        />
+        <label class="form-check-label" for="folder_recursive">{{
+          'components.add-torrent.add-form.recursive' | translate
+        }}</label>
+        <bb-popover
+          [subject]="'components.add-torrent.popover.recursive.title' | translate"
+          [description]="recursivePopover"
+          placement="right"
+        ></bb-popover>
+      </div>
+    </div>
+    <div class="col-6 d-flex align-items-center justify-content-end">
+      <button type="button" class="btn btn-sm btn-link btn-split" (click)="refresh()">
+        <bb-btn-content
+          [icon]="icons.faRotate"
+          [text]="'general.button.refresh' | translate"
+        ></bb-btn-content>
+      </button>
+    </div>
   </div>
 
-  <div class="form-text folder-description mb-2">
-    <p class="mb-1">{{ 'components.add-torrent.folder-picker.description.line1' | translate }}</p>
-    <p class="mb-1">{{ 'components.add-torrent.folder-picker.description.line2' | translate }}</p>
-    <p class="mb-0">{{ 'components.add-torrent.folder-picker.description.line3' | translate }}</p>
-  </div>
+  <p class="small mb-3 folder-description">
+    {{ 'components.add-torrent.folder-picker.description' | translate }}
+  </p>
 
   @if (scanError()) {
     <div class="alert alert-danger py-2">{{ scanError() }}</div>

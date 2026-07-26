@@ -273,12 +273,7 @@ describe('AddTorrentFolderPicker', () => {
     const description: HTMLElement = fixture.nativeElement.querySelector('.folder-description');
 
     expect(description).toBeTruthy();
-    expect(description.textContent).toContain(
-      'components.add-torrent.folder-picker.description.line1',
-    );
-    expect(description.textContent).toContain(
-      'components.add-torrent.folder-picker.description.line3',
-    );
+    expect(description.textContent).toContain('components.add-torrent.folder-picker.description');
   });
 
   describe('grid wiring', () => {
