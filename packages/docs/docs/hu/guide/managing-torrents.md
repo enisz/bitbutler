@@ -9,17 +9,19 @@ Miután csatlakoztál egy szerverhez, a [Torrentlista nézet](./user-interface/t
 
 ## Torrentek hozzáadása
 
-Kattints az eszköztár **Hozzáadás** gombjára a Torrent hozzáadása párbeszédablak megnyitásához. Az **Általános** fül magát a bevitelt fedi le; a **Beállítások** és **Korlátok** fülek (itt nem tárgyaljuk) további, torrentenkénti beállításokat tartalmaznak, egy **Fájlok** fül pedig lehetővé teszi a letöltendő fájlok és azok prioritásának kiválasztását - ez csak akkor érhető el, ha egy ismert fájllistával rendelkező `.torrent` fájl van betöltve, mivel egy mágneslinknek nincs fájllistája, amíg a metaadatait a hozzáadás után le nem kérdezi.
-
-![Torrent grid placeholder](https://placehold.co/600x400/31343C/EEE?text=Torrent+Grid)
+Kattints az eszköztár **Hozzáadás** gombjára a [Torrent hozzáadása ablak](./user-interface/add-torrent-window) megnyitásához. Ez a párbeszédablak átfogó felületet biztosít új torrentek hozzáadásához, számos beállítási lehetőséggel.
 
 ### Fájlból
 
 Kattints a **Tallózás** gombra egy `.torrent` fájl kiválasztásához (vagy húzz egyet közvetlenül a mezőre). Kiválasztás után a BitButler megmutatja a torrent teljes méretét a célhelyen elérhető szabad hely mellett. Opcionálisan nevezd át, majd állíts be mentési útvonalat, kategóriát és címkéket a **Hozzáadás** gombra kattintás előtt.
 
+### Mappából
+
+Torrenteket közvetlenül egy mappából is hozzáadhatsz a bemeneti mód "Mappa" opciójának kiválasztásával. Ez átvizsgálja a kiválasztott könyvtárat `.torrent` fájlok után; kapcsold be a **Rekurzív** opciót (alapból kikapcsolva), hogy az alkönyvtárakat is átvizsgálja. A szerveren már létező fájlok megjelölésre kerülnek, és ki vannak zárva a kiválasztásból - részletekért lásd a [Torrent hozzáadása ablak](./user-interface/add-torrent-window#hozzaadas-mappabol) oldalt.
+
 ### Mágneslinkből
 
-Váltsd a bemeneti módot **Link**-re, és illessz be egy vagy több mágneslinket a szövegmezőbe, soronként egyet. Fájlhoz hasonlóan itt is beállíthatsz mentési útvonalat, kategóriát és címkéket a hozzáadás előtt - a Fájlok fül addig letiltva marad, amíg a torrent metaadatait ténylegesen le nem kérdezte a peerektől.
+Váltsd a bemeneti módot **Link**-re, és illessz be egy vagy több mágneslinket a szövegmezőbe, soronként egyet. Fájlhoz hasonlóan itt is beállíthatsz mentési útvonalat, kategóriát és címkéket a hozzáadás előtt - a Fájlok fül mágneslinkek esetén nem elérhető, mivel egy mágneslinknek nincs fájllistája, amíg a metaadatait a hozzáadás után le nem kérdezi.
 
 ## Szüneteltetés és folytatás
 
@@ -27,7 +29,7 @@ Jelölj ki egy vagy több torrentet, és használd az eszköztár **Indítás** 
 
 ## Duplikált torrentek
 
-Ha egy már a szerveren lévő torrentet próbálsz hozzáadni, a BitButler egy duplikátum párbeszédablakot mutat helyette: a meglévő torrent állapotát, méretét, arányát, seedjeit/peerjeit, hozzáadás dátumát, mentési útvonalát és kategóriáját/címkéit (ha van). Innen egyenesen a torrenthez ugorhatsz a **Részletek megnyitása** gombbal, vagy bezárhatod a párbeszédablakot. Ha a "Torrentfájlok törlése a listához adás után" opció be van kapcsolva (lásd [BitButler beállítások > Viselkedés](./user-interface/settings/bitbutler-settings#viselkedes)), és a forrás `.torrent` fájl ismert, egy **Törlés** gomb is megjelenik, amellyel eltávolítható lemezről az immár felesleges fájl.
+Ha egy már a szerveren lévő torrentet próbálsz hozzáadni, a BitButler a [Torrent már létezik ablakot](./user-interface/torrent-exists-window) mutatja helyette: a meglévő torrent állapotát, méretét, arányát, seedjeit/peerjeit, hozzáadás dátumát, mentési útvonalát és kategóriáját/címkéit (ha van). Innen egyenesen a torrenthez ugorhatsz a **Részletek megnyitása** gombbal, vagy bezárhatod a párbeszédablakot. Ha a "Torrentfájlok törlése a listához adás után" opció be van kapcsolva (lásd [BitButler beállítások > Viselkedés](./user-interface/settings/bitbutler-settings#viselkedes)), és a forrás `.torrent` fájl ismert, egy **Törlés** gomb is megjelenik, amellyel eltávolítható lemezről az immár felesleges fájl. Ez fájlból és mágneslinkből történő hozzáadásra vonatkozik; mappa módban a duplikátumok közvetlenül a mappa táblázatában jelennek meg megjelölve, nem ez a párbeszédablak nyílik meg.
 
 ## Torrent átnevezése
 
