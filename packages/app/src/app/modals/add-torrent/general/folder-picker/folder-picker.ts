@@ -61,7 +61,6 @@ import {
 import { AddTorrentFormGroup } from '../../../../models/add-torrent.model';
 import { GridContextMenuService } from '../../../../pages/main/grid/context-menu/grid-context-menu.service';
 import { NoRowOverlay } from '../../../../pages/main/grid/overlays/no-row-overlay/no-row-overlay';
-import { FilesizePipe } from '../../../../pipes/filesize-pipe';
 import { AddTorrentGridSettingsService } from '../../../../services/add-torrent-grid.settings.service';
 import { ContextMenuService } from '../../../../services/context-menu.service';
 import { ThemeService } from '../../../../services/theme.service';
@@ -84,7 +83,6 @@ ModuleRegistry.registerModules([AllCommunityModule]);
     BbBtnContent,
     BbPopover,
     AgGridAngular,
-    FilesizePipe,
   ],
   templateUrl: './folder-picker.html',
   styleUrl: './folder-picker.scss',

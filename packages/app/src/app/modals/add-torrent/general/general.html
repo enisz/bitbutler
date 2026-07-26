@@ -228,57 +228,55 @@
             ></bb-popover>
           </div>
         }
-        @if (inputMode() === 'file' && fileStats() !== null) {
-          <div class="col-5">
-            <div class="form-floating mb-3">
-              <input
-                type="text"
-                class="form-control"
-                id="torrent_size"
-                [placeholder]="'components.add-torrent.add-form.size' | translate"
-                [value]="fileStats()!.selectedSize | fileSize"
-                readonly
-              />
-              <label for="torrent_size">{{
-                'components.add-torrent.add-form.size' | translate
-              }}</label>
-            </div>
+        <div class="col-5">
+          <div class="form-floating mb-3">
+            <input
+              type="text"
+              class="form-control"
+              id="torrent_size"
+              [placeholder]="'components.add-torrent.add-form.size' | translate"
+              [value]="sizeValue() !== null ? (sizeValue() | fileSize) : '-'"
+              readonly
+            />
+            <label for="torrent_size">{{
+              'components.add-torrent.add-form.size' | translate
+            }}</label>
           </div>
+        </div>
 
-          <div class="col-1 d-flex align-items-center mb-3">
-            <bb-popover
-              class="mt-2"
-              [subject]="'components.add-torrent.popover.size.title' | translate"
-              [description]="sizePopover"
-              placement="left"
-            ></bb-popover>
-          </div>
+        <div class="col-1 d-flex align-items-center mb-3">
+          <bb-popover
+            class="mt-2"
+            [subject]="'components.add-torrent.popover.size.title' | translate"
+            [description]="sizePopover"
+            placement="left"
+          ></bb-popover>
+        </div>
 
-          <div class="col-5">
-            <div class="form-floating mb-3">
-              <input
-                type="text"
-                class="form-control"
-                id="free_space"
-                [placeholder]="'components.add-torrent.add-form.free-space' | translate"
-                [value]="freeSpace() | fileSize"
-                readonly
-              />
-              <label for="free_space">{{
-                'components.add-torrent.add-form.free-space' | translate
-              }}</label>
-            </div>
+        <div class="col-5">
+          <div class="form-floating mb-3">
+            <input
+              type="text"
+              class="form-control"
+              id="free_space"
+              [placeholder]="'components.add-torrent.add-form.free-space' | translate"
+              [value]="freeSpace() | fileSize"
+              readonly
+            />
+            <label for="free_space">{{
+              'components.add-torrent.add-form.free-space' | translate
+            }}</label>
           </div>
+        </div>
 
-          <div class="col-1 d-flex align-items-center mb-3">
-            <bb-popover
-              class="mt-2"
-              [subject]="'components.add-torrent.popover.free-space.title' | translate"
-              [description]="freeSpacePopover"
-              placement="left"
-            ></bb-popover>
-          </div>
-        }
+        <div class="col-1 d-flex align-items-center mb-3">
+          <bb-popover
+            class="mt-2"
+            [subject]="'components.add-torrent.popover.free-space.title' | translate"
+            [description]="freeSpacePopover"
+            placement="left"
+          ></bb-popover>
+        </div>
 
         <div class="col-11">
           <div class="mb-3">

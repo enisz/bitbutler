@@ -71,13 +71,13 @@
     [theme]="theme() === 'dark' ? bbDark : bbLight"
   />
 
-  <p class="small text-body-secondary mb-0 folder-selection-summary">
+  <p class="small mb-0 folder-selection-summary">
     @if (selectedEntries().length === 0) {
       {{ 'components.add-torrent.folder-picker.selection.none' | translate }}
     } @else {
       {{
         'components.add-torrent.folder-picker.selection.summary'
-          | translate: { count: selectedEntries().length, size: selectedTotalSize() | fileSize }
+          | translate: { count: selectedEntries().length }
       }}
     }
   </p>

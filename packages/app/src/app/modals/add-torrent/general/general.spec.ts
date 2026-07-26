@@ -138,6 +138,72 @@ describe('AddTorrentGeneral', () => {
     });
   });
 
+  describe('size field', () => {
+    it('should show the selected file size in file mode', () => {
+      fixture.componentRef.setInput('fileStats', { totalSize: 1000, selectedSize: 500 });
+      fixture.detectChanges();
+
+      const sizeInput: HTMLInputElement = fixture.nativeElement.querySelector('#torrent_size');
+      expect(sizeInput.value).toBe('500 B');
+    });
+
+    it('should show a dash in file mode before any file is loaded', () => {
+      const sizeInput: HTMLInputElement = fixture.nativeElement.querySelector('#torrent_size');
+      expect(sizeInput.value).toBe('-');
+    });
+
+    it('should show a dash in link mode', () => {
+      fixture.componentRef.setInput('inputMode', 'link');
+      fixture.detectChanges();
+
+      const sizeInput: HTMLInputElement = fixture.nativeElement.querySelector('#torrent_size');
+      expect(sizeInput.value).toBe('-');
+    });
+
+    it('should show the folder picker selected total size in folder mode', () => {
+      fixture.componentRef.setInput('inputMode', 'folder');
+      fixture.detectChanges();
+
+      const picker = component['folderPicker']() as any;
+      picker.rows.set([
+        {
+          path: '/downloads/a.torrent',
+          relativePath: 'a.torrent',
+          name: 'A',
+          size: 500,
+          fileCount: 1,
+          folderCount: 0,
+          state: 'new',
+          hash: 'a-hash',
+        },
+        {
+          path: '/downloads/b.torrent',
+          relativePath: 'b.torrent',
+          name: 'B',
+          size: 250,
+          fileCount: 1,
+          folderCount: 0,
+          state: 'new',
+          hash: 'b-hash',
+        },
+      ]);
+      picker.selectedPaths.set(new Set(['/downloads/a.torrent', '/downloads/b.torrent']));
+      fixture.detectChanges();
+
+      const sizeInput: HTMLInputElement = fixture.nativeElement.querySelector('#torrent_size');
+      expect(sizeInput.value).toBe('750 B');
+    });
+
+    it('should always show the free-space field regardless of input mode', () => {
+      fixture.componentRef.setInput('freeSpace', 2000);
+      fixture.componentRef.setInput('inputMode', 'link');
+      fixture.detectChanges();
+
+      const freeSpaceInput: HTMLInputElement = fixture.nativeElement.querySelector('#free_space');
+      expect(freeSpaceInput.value).toBe('1.95 KB');
+    });
+  });
+
   describe('fieldset layout', () => {
     it('should render the Input and Torrent fieldsets with their legends', () => {
       const legends: NodeListOf<HTMLElement> = fixture.nativeElement.querySelectorAll(
@@ -154,9 +220,9 @@ describe('AddTorrentGeneral', () => {
 
       expect(toggle.classList.contains('w-100')).toBe(true);
 
-      // 4 popovers defined directly in general.html (input-mode, file/links, name, save-path)
-      // plus 1 each from the nested category/tag select components.
-      expect(fixture.nativeElement.querySelectorAll('bb-popover').length).toBe(6);
+      // 6 popovers defined directly in general.html (input-mode, file/links, name, size,
+      // free-space, save-path) plus 1 each from the nested category/tag select components.
+      expect(fixture.nativeElement.querySelectorAll('bb-popover').length).toBe(8);
     });
 
     it('should give the folder picker the full row width with no adjacent popover', () => {
@@ -168,12 +234,12 @@ describe('AddTorrentGeneral', () => {
       );
       expect(picker.parentElement?.classList.contains('col-12')).toBe(true);
 
-      // In folder mode the "Torrent" fieldset's rename/name-popover and size/free-space popovers
-      // never render (guarded by `inputMode() !== 'folder'` / `=== 'file'`), so only 2 direct
-      // popovers remain (input-mode, save-path) - the removed folder popover is not one of them -
-      // plus 1 each from the nested category/tag select components, plus 1 from the folder
-      // picker's own unconditional "recursive" popover.
-      expect(fixture.nativeElement.querySelectorAll('bb-popover').length).toBe(5);
+      // In folder mode the "Torrent" fieldset's rename/name-popover never renders (guarded by
+      // `inputMode() !== 'folder'`), but the size/free-space popovers now render unconditionally,
+      // so 4 direct popovers remain (input-mode, size, free-space, save-path) - the removed
+      // folder popover is not one of them - plus 1 each from the nested category/tag select
+      // components, plus 1 from the folder picker's own unconditional "recursive" popover.
+      expect(fixture.nativeElement.querySelectorAll('bb-popover').length).toBe(7);
     });
   });
 

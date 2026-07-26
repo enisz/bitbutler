@@ -140,7 +140,7 @@
           "title": "Size",
           "description": {
             "line1": "The total size of the files selected for download.",
-            "line2": "Deselect individual files in the Files tab to reduce the download size - this value updates live as you make changes."
+            "line2": "For magnet links, the size isn't known until qBittorrent fetches the torrent's metadata after it's added, so this field shows a dash."
           }
         },
         "free-space": {
@@ -214,7 +214,7 @@
         },
         "selection": {
           "none": "No torrents selected.",
-          "summary": "{{count}} torrent(s) selected - total size: {{size}}"
+          "summary": "{{count}} torrent(s) selected"
         }
       },
       "input-mode": {

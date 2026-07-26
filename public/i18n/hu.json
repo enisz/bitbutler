@@ -140,7 +140,7 @@
           "title": "Méret",
           "description": {
             "line1": "A letöltésre kijelölt fájlok teljes mérete.",
-            "line2": "A letöltési méret csökkentéséhez töröld a kijelölést egyes fájloknál a Fájlok lapon - ez az érték élőben frissül a változtatások során."
+            "line2": "Mágneslinkek esetén a méret csak azután ismert, hogy a qBittorrent a hozzáadás után lekérte a torrent metaadatait, addig ez a mező kötőjelet mutat."
           }
         },
         "free-space": {
@@ -214,7 +214,7 @@
         },
         "selection": {
           "none": "Nincs kiválasztott torrent.",
-          "summary": "{{count}} torrent kiválasztva - teljes méret: {{size}}"
+          "summary": "{{count}} torrent kiválasztva"
         }
       },
       "input-mode": {

@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
   input,
   output,
@@ -58,6 +59,18 @@ export class AddTorrentGeneral {
   private readonly folderPicker = viewChild(AddTorrentFolderPicker);
 
   public readonly defaultSavePath = signal<string>('');
+
+  public readonly sizeValue = computed<number | null>(() => {
+    switch (this.inputMode()) {
+      case 'file':
+        return this.fileStats()?.selectedSize ?? null;
+      case 'folder':
+        return this.folderPicker()?.selectedTotalSize() ?? null;
+      case 'link':
+      default:
+        return null;
+    }
+  });
 
   constructor() {
     const serverId = this.serverStoreService.currentServerId();
