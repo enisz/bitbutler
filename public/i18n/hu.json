@@ -40,7 +40,11 @@
       "title": "Torrent hozzáadása",
       "add-form": {
         "file-browser": "Torrent fájl",
+        "folder-browser": "Mappa",
+        "recursive": "Rekurzív",
         "magnet-links": "Linkek (soronként egy)",
+        "no-links": "Nincs link",
+        "link-count": "{{ count }} link(ek)",
         "save-path": "Mentési útvonal",
         "rename": "Név",
         "skip-hash-checking": "Hash-ellenőrzés kihagyása",
@@ -138,7 +142,7 @@
           "title": "Méret",
           "description": {
             "line1": "A letöltésre kijelölt fájlok teljes mérete.",
-            "line2": "A letöltési méret csökkentéséhez töröld a kijelölést egyes fájloknál a Fájlok lapon - ez az érték élőben frissül a változtatások során."
+            "line2": "Mágneslinkek esetén a méret csak azután ismert, hogy a qBittorrent a hozzáadás után lekérte a torrent metaadatait, addig ez a mező kötőjelet mutat."
           }
         },
         "free-space": {
@@ -148,11 +152,16 @@
             "line2": "Hasonlítsd össze a torrent méretével, hogy ellenőrizd, elegendő-e a szabad hely a hozzáadás előtt."
           }
         },
+        "recursive": {
+          "title": "Rekurzív",
+          "description": {
+            "line1": "Ha be van kapcsolva, a kiválasztott mappa összes almappája is átvizsgálásra kerül .torrent fájlok után."
+          }
+        },
         "input-mode": {
           "title": "Bemeneti mód",
           "description": {
-            "line1": "Válaszd ki, hogy ezt a torrentet egy helyi .torrent fájlból vagy egy mágneslinkből/URL-ből szeretnéd hozzáadni.",
-            "line2": "A mód váltása visszaállítja a mentési útvonalat, a kategóriát, a címkéket és a többi beállítást a mentett alapértékekre."
+            "line1": "Válaszd ki, hogy ezt a torrentet egy helyi .torrent fájlból, egy mágneslinkből/URL-ből, vagy egy mappa .torrent fájlok után történő átvizsgálásával szeretnéd hozzáadni."
           }
         }
       },
@@ -173,6 +182,7 @@
           "title": "Fájlok",
           "disabled": {
             "link-mode": "Nem elérhető link hozzáadásakor.",
+            "folder-mode": "Nem elérhető, ha egyszerre több torrentet ad hozzá egy mappából.",
             "no-files": "Még nem érhető el fájllista."
           },
           "issue": {
@@ -180,13 +190,53 @@
           }
         }
       },
+      "folder-picker": {
+        "col-def": {
+          "name": "Név",
+          "state": "Állapot",
+          "error": "Hiba",
+          "size": "Méret",
+          "path": "Útvonal"
+        },
+        "state": {
+          "new": "Új",
+          "exists": "Létezik",
+          "error": "Hiba",
+          "added": "Hozzáadva",
+          "failed": "Sikertelen"
+        },
+        "error": {
+          "duplicate": "Már szerepel a listában"
+        },
+        "description": "Válasszon egy .torrent fájlokat tartalmazó mappát - minden fájl helyben kerül feldolgozásra, és az alábbi listában jelenik meg, semmilyen adat nem kerül elküldésre a Hozzáadás gombra kattintásig. Kapcsolja be a Rekurzív opciót vagy használja a Frissítés gombot a mappa újbóli beolvasásához, ha fájlokat módosított a lemezen, egy sor Nevére duplán kattintva pedig átnevezheti azt hozzáadás előtt - csak az új és korábban sikertelen torrentek választhatók ki.",
+        "grid": {
+          "no-rows": {
+            "message": "Nem található .torrent fájl ebben a mappában."
+          }
+        },
+        "selection": {
+          "none": "Nincs kiválasztott torrent.",
+          "summary": "{{count}} torrent kiválasztva"
+        }
+      },
       "input-mode": {
         "file": "Fájl",
-        "link": "Link"
+        "link": "Link",
+        "folder": "Mappa"
       },
       "feedback": {
         "no-server-selected": "Nincs kiválasztva szerver. Válassz szervert a torrent hozzáadása előtt.",
         "add-failed": "A torrent hozzáadása sikertelen. Próbáld újra."
+      },
+      "toast": {
+        "folder-added": {
+          "title": "Torrentek hozzáadva",
+          "message": "{{count}} torrent hozzáadva."
+        },
+        "folder-partial": {
+          "title": "Néhány torrent sikertelen",
+          "message": "{{succeeded}} / {{total}} torrent hozzáadva."
+        }
       }
     },
     "app-loader": {
@@ -1907,7 +1957,8 @@
       "update": "Frissítés",
       "show": "Megjelenítés",
       "open-details": "Részletek megnyitása",
-      "edit": "Szerkesztés"
+      "edit": "Szerkesztés",
+      "refresh": "Frissítés"
     },
     "form": {
       "feedback": {

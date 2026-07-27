@@ -6,7 +6,7 @@ export default defineConfig({
   head: [['link', { rel: 'icon', href: '/bitbutler/bitbutler-logo.png' }]],
   themeConfig: {
     logo: '/bitbutler-logo.png',
-    siteTitle: 'BitButler Docs',
+    siteTitle: 'BitButler',
     search: {
       provider: 'local',
       options: {
@@ -37,7 +37,7 @@ export default defineConfig({
     root: {
       label: 'English',
       lang: 'en-US',
-      title: 'BitButler Docs',
+      title: 'BitButler',
       description: 'User guide for BitButler, a remote qBittorrent-nox desktop client.',
       themeConfig: {
         nav: [{ text: 'User Guide', link: '/guide/getting-started' }],
@@ -64,6 +64,11 @@ export default defineConfig({
                 { text: 'Torrent List View', link: '/guide/user-interface/torrent-list-view' },
                 { text: 'Export Window', link: '/guide/user-interface/export-window' },
                 { text: 'Import Window', link: '/guide/user-interface/import-window' },
+                { text: 'Add Torrent Window', link: '/guide/user-interface/add-torrent-window' },
+                {
+                  text: 'Torrent Exists Window',
+                  link: '/guide/user-interface/torrent-exists-window',
+                },
                 {
                   text: 'Torrent Details View',
                   link: '/guide/user-interface/torrent-details-view',
@@ -153,6 +158,14 @@ export default defineConfig({
                 },
                 { text: 'Exportálás ablak', link: '/hu/guide/user-interface/export-window' },
                 { text: 'Importálás ablak', link: '/hu/guide/user-interface/import-window' },
+                {
+                  text: 'Torrent hozzáadása ablak',
+                  link: '/hu/guide/user-interface/add-torrent-window',
+                },
+                {
+                  text: 'Torrent már létezik ablak',
+                  link: '/hu/guide/user-interface/torrent-exists-window',
+                },
                 {
                   text: 'Torrent részletek nézet',
                   link: '/hu/guide/user-interface/torrent-details-view',

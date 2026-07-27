@@ -15,6 +15,10 @@ function createForm(): AddTorrentFormGroup {
       magnetLinks: new FormControl<string>('', { nonNullable: true }),
       rename: new FormControl<string | null>(null),
     }),
+    folderGroup: new FormGroup({
+      folder: new FormControl<string>('', { nonNullable: true }),
+      recursive: new FormControl<boolean>(false, { nonNullable: true }),
+    }),
     savepath: new FormControl<string | null>(null),
     paused: new FormControl<boolean>(false, { nonNullable: true }),
     category: new FormControl<string | null>(null),

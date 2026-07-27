@@ -44,7 +44,7 @@ const api: BitButlerAPI = {
   electron: {
     isDev: () => ipcRenderer.invoke('electron:is-dev'),
     openExternalUrl: (url) => ipcRenderer.invoke('electron:open-external-url', url),
-    showOpenDialog: () => ipcRenderer.invoke('electron:show-open-dialog'),
+    showOpenDialog: (defaultPath) => ipcRenderer.invoke('electron:show-open-dialog', defaultPath),
     openPath: (path) => ipcRenderer.invoke('electron:open-path', path),
     showItemInFolder: (path) => ipcRenderer.invoke('electron:show-item-in-folder', path),
     getPlatform: () => ipcRenderer.invoke('electron:get-platform'),
@@ -135,6 +135,7 @@ const api: BitButlerAPI = {
   torrent: {
     parse: (payload) => ipcRenderer.invoke('torrent:parse', payload),
     deleteFile: (payload) => ipcRenderer.invoke('torrent:delete-file', payload),
+    scanFolder: (payload) => ipcRenderer.invoke('torrent:scan-folder', payload),
   },
 
   menu: {

@@ -19,13 +19,15 @@ import {
 } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
-import { NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
-import { NgSelectComponent } from '@ng-select/ng-select';
+import { NgbTypeahead, PlacementArray } from '@ng-bootstrap/ng-bootstrap';
+import { DropdownPosition, NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe } from '@ngx-translate/core';
 import { DEFAULT_GENERAL_SETTINGS, SavePathInputType } from '../../models/general-settings.model';
 import { GeneralSettingsService } from '../../services/general-settings.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
 import { SavePathTypeaheadService } from './save-path-typeahead.service';
+
+export type SavePathSelectPosition = 'top' | 'bottom';
 
 @Component({
   selector: 'app-save-path-select',
@@ -57,6 +59,7 @@ export class SavePathSelect implements ControlValueAccessor {
   readonly placeholder = input<string | null>(null);
   readonly appendTo = input('');
   readonly inputType = input<SavePathInputType | null>(null);
+  readonly position = input<SavePathSelectPosition | null>(null);
 
   private readonly ngselect = viewChild<NgSelectComponent>('ngselect');
   private readonly typeaheadInput = viewChild<ElementRef<HTMLInputElement>>('typeaheadInput');
@@ -73,6 +76,14 @@ export class SavePathSelect implements ControlValueAccessor {
 
   public readonly resolvedInputType = computed(
     () => this.inputType() ?? this.generalSettings().savePath.inputType,
+  );
+
+  public readonly resolvedDropdownPosition = computed<DropdownPosition>(
+    () => this.position() ?? 'auto',
+  );
+
+  public readonly resolvedPlacement = computed<PlacementArray>(
+    () => this.position() ?? ['bottom-start', 'bottom-end', 'top-start', 'top-end'],
   );
 
   public paths = computed(

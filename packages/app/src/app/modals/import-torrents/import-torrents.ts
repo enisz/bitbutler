@@ -46,7 +46,12 @@ import {
   ValueFormatterParams,
   ValueGetterParams,
 } from 'ag-grid-community';
-import { GRID_DARK_THEME, GRID_LIGHT_THEME, GRID_SHARED_OPTIONS } from '../../app.const';
+import {
+  GRID_DARK_THEME,
+  GRID_LIGHT_THEME,
+  GRID_ROW_MUTED_CLASS,
+  GRID_SHARED_OPTIONS,
+} from '../../app.const';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { BbPopover } from '../../components/bb-popover/bb-popover';
 import { BbProgress } from '../../components/bb-progress/bb-progress';
@@ -269,12 +274,14 @@ export class ImportTorrents implements OnInit {
       checkboxes: true,
       headerCheckbox: true,
       enableClickSelection: false,
+      isRowSelectable: (node) => !node.data?.failed,
     },
-    isRowSelectable: (node) => !node.data?.failed,
     getRowId: (params: GetRowIdParams<ImportGridRow>) => params.data.hash,
     rowClassRules: {
       'text-danger bg-danger-subtle': (params: RowClassParams<ImportGridRow>): boolean =>
         params.data?.importState === 'failed',
+      [GRID_ROW_MUTED_CLASS]: (params: RowClassParams<ImportGridRow>): boolean =>
+        !!params.data?.failed,
     },
     overlayComponentSelector: (params: IOverlayParams<ImportGridRow>) => {
       switch (params.overlayType) {

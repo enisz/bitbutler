@@ -9,11 +9,11 @@ These shortcuts are active in the main window. They're suppressed while typing i
 
 ## Global Shortcuts
 
-| Shortcut | Action                                                                                                                    |
-| -------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `Ctrl+K` | Focus the toolbar's search box.                                                                                           |
-| `Escape` | While the search box is focused, clears it. Otherwise, closes the currently open dialog.                                  |
-| `Delete` | Deletes the selected torrent(s). Hold `Shift` to default the confirmation dialog's "also delete files" option to checked. |
+| Shortcut | Action                                                                                                                                                                                                                    |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Ctrl+K` | Focus the toolbar's search box.                                                                                                                                                                                           |
+| `Escape` | While the search box is focused, clears it. Otherwise, closes the currently open dialog (except the Add Torrent dialog, which requires an explicit Cancel/close).                                                         |
+| `Delete` | Deletes the selected torrent(s). Hold `Shift` to default the confirmation dialog's "also delete files" option to checked. Unlike the rest of the grid shortcuts, this one stays active even while another dialog is open. |
 
 ## Menu Shortcuts
 
@@ -33,9 +33,9 @@ These come from the native [Application Menu](./user-interface/application-menu)
 | `Ctrl+Shift+C` | Manage Categories    |
 | `Ctrl+U`       | Check for Updates    |
 | `Ctrl+Shift+,` | User Guide           |
-| `F1`           | About                |
+| `F1`           | About BitButler      |
 
-All of these except Quit, About, and User Guide require being connected to a server. See [Application Menu](./user-interface/application-menu) for the full menu structure these belong to.
+All of these except Quit, Check for Updates, About BitButler, and User Guide require being connected to a server. See [Application Menu](./user-interface/application-menu) for the full menu structure these belong to.
 
 ## Grid Shortcuts
 

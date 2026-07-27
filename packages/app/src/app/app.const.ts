@@ -39,6 +39,8 @@ export const GRID_DARK_THEME = themeQuartz.withPart(iconSetQuartzLight).withPara
   browserColorScheme: 'dark',
 });
 
+export const GRID_ROW_MUTED_CLASS = 'text-secondary bg-secondary-subtle bb-row-paused';
+
 export const GRID_SHARED_OPTIONS: GridOptions = {
   enableBrowserTooltips: false,
   tooltipShowDelay: 500,

@@ -1,0 +1,88 @@
+<div [formGroup]="form()">
+  <div formGroupName="folderGroup" class="input-group mb-2">
+    <div class="form-floating">
+      <input
+        type="text"
+        class="form-control"
+        id="folder_browser"
+        [placeholder]="'components.add-torrent.add-form.folder-browser' | translate"
+        formControlName="folder"
+        readonly
+      />
+      <label for="folder_browser">{{
+        'components.add-torrent.add-form.folder-browser' | translate
+      }}</label>
+    </div>
+
+    <button type="button" class="btn btn-outline-primary btn-split" (click)="browse()">
+      <bb-btn-content
+        [icon]="icons.faFolderOpen"
+        [text]="'general.button.browse' | translate"
+        position="end"
+      ></bb-btn-content>
+    </button>
+  </div>
+
+  <div formGroupName="folderGroup" class="row mb-3 mt-3">
+    <div class="col-12 mt-1 mb-0 d-flex justify-content-between">
+      <div class="form-check form-switch recursive-switch mb-0">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          role="switch"
+          id="folder_recursive"
+          formControlName="recursive"
+        />
+        <label class="form-check-label" for="folder_recursive">{{
+          'components.add-torrent.add-form.recursive' | translate
+        }}</label>
+        <bb-popover
+          [subject]="'components.add-torrent.popover.recursive.title' | translate"
+          [description]="recursivePopover"
+          placement="right"
+        ></bb-popover>
+      </div>
+      <button type="button" class="btn btn-sm btn-link btn-split" (click)="refresh()">
+        <bb-btn-content
+          [icon]="icons.faRotate"
+          [text]="'general.button.refresh' | translate"
+          position="end"
+        ></bb-btn-content>
+      </button>
+    </div>
+  </div>
+
+  <p class="small mb-3 folder-description">
+    {{ 'components.add-torrent.folder-picker.description' | translate }}
+  </p>
+
+  @if (scanError()) {
+    <div class="alert alert-danger py-2">{{ scanError() }}</div>
+  }
+
+  <ag-grid-angular
+    class="w-100 d-block mb-2"
+    style="height: 320px"
+    (gridReady)="onGridReady($event)"
+    [loading]="loading()"
+    [rowData]="visibleRows()"
+    [columnDefs]="colDefs"
+    [gridOptions]="gridOptions"
+    [theme]="theme() === 'dark' ? bbDark : bbLight"
+  />
+
+  <p class="small mb-0 folder-selection-summary">
+    @if (selectedEntries().length === 0) {
+      {{ 'components.add-torrent.folder-picker.selection.none' | translate }}
+    } @else {
+      {{
+        'components.add-torrent.folder-picker.selection.summary'
+          | translate: { count: selectedEntries().length }
+      }}
+    }
+  </p>
+</div>
+
+<ng-template #recursivePopover>
+  <p>{{ 'components.add-torrent.popover.recursive.description.line1' | translate }}</p>
+</ng-template>

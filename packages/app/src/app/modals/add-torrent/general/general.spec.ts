@@ -22,6 +22,10 @@ function createForm(): AddTorrentFormGroup {
       magnetLinks: new FormControl<string>('', { nonNullable: true }),
       rename: new FormControl<string | null>(null),
     }),
+    folderGroup: new FormGroup({
+      folder: new FormControl<string>('', { nonNullable: true }),
+      recursive: new FormControl<boolean>(false, { nonNullable: true }),
+    }),
     savepath: new FormControl<string | null>(null),
     paused: new FormControl<boolean>(false, { nonNullable: true }),
     category: new FormControl<string | null>(null),
@@ -134,6 +138,72 @@ describe('AddTorrentGeneral', () => {
     });
   });
 
+  describe('size field', () => {
+    it('should show the selected file size in file mode', () => {
+      fixture.componentRef.setInput('fileStats', { totalSize: 1000, selectedSize: 500 });
+      fixture.detectChanges();
+
+      const sizeInput: HTMLInputElement = fixture.nativeElement.querySelector('#torrent_size');
+      expect(sizeInput.value).toBe('500 B');
+    });
+
+    it('should show a dash in file mode before any file is loaded', () => {
+      const sizeInput: HTMLInputElement = fixture.nativeElement.querySelector('#torrent_size');
+      expect(sizeInput.value).toBe('-');
+    });
+
+    it('should show a dash in link mode', () => {
+      fixture.componentRef.setInput('inputMode', 'link');
+      fixture.detectChanges();
+
+      const sizeInput: HTMLInputElement = fixture.nativeElement.querySelector('#torrent_size');
+      expect(sizeInput.value).toBe('-');
+    });
+
+    it('should show the folder picker selected total size in folder mode', () => {
+      fixture.componentRef.setInput('inputMode', 'folder');
+      fixture.detectChanges();
+
+      const picker = component['folderPicker']() as any;
+      picker.rows.set([
+        {
+          path: '/downloads/a.torrent',
+          relativePath: 'a.torrent',
+          name: 'A',
+          size: 500,
+          fileCount: 1,
+          folderCount: 0,
+          state: 'new',
+          hash: 'a-hash',
+        },
+        {
+          path: '/downloads/b.torrent',
+          relativePath: 'b.torrent',
+          name: 'B',
+          size: 250,
+          fileCount: 1,
+          folderCount: 0,
+          state: 'new',
+          hash: 'b-hash',
+        },
+      ]);
+      picker.selectedPaths.set(new Set(['/downloads/a.torrent', '/downloads/b.torrent']));
+      fixture.detectChanges();
+
+      const sizeInput: HTMLInputElement = fixture.nativeElement.querySelector('#torrent_size');
+      expect(sizeInput.value).toBe('750 B');
+    });
+
+    it('should always show the free-space field regardless of input mode', () => {
+      fixture.componentRef.setInput('freeSpace', 2000);
+      fixture.componentRef.setInput('inputMode', 'link');
+      fixture.detectChanges();
+
+      const freeSpaceInput: HTMLInputElement = fixture.nativeElement.querySelector('#free_space');
+      expect(freeSpaceInput.value).toBe('1.95 KB');
+    });
+  });
+
   describe('fieldset layout', () => {
     it('should render the Input and Torrent fieldsets with their legends', () => {
       const legends: NodeListOf<HTMLElement> = fixture.nativeElement.querySelectorAll(
@@ -150,9 +220,26 @@ describe('AddTorrentGeneral', () => {
 
       expect(toggle.classList.contains('w-100')).toBe(true);
 
-      // 4 popovers defined directly in general.html (input-mode, file/links, name, save-path)
-      // plus 1 each from the nested category/tag select components.
-      expect(fixture.nativeElement.querySelectorAll('bb-popover').length).toBe(6);
+      // 6 popovers defined directly in general.html (input-mode, file/links, name, size,
+      // free-space, save-path) plus 1 each from the nested category/tag select components.
+      expect(fixture.nativeElement.querySelectorAll('bb-popover').length).toBe(8);
+    });
+
+    it('should give the folder picker the full row width with no adjacent popover', () => {
+      fixture.componentRef.setInput('inputMode', 'folder');
+      fixture.detectChanges();
+
+      const picker: HTMLElement = fixture.nativeElement.querySelector(
+        'app-add-torrent-folder-picker',
+      );
+      expect(picker.parentElement?.classList.contains('col-12')).toBe(true);
+
+      // In folder mode the "Torrent" fieldset's rename/name-popover never renders (guarded by
+      // `inputMode() !== 'folder'`), but the size/free-space popovers now render unconditionally,
+      // so 4 direct popovers remain (input-mode, size, free-space, save-path) - the removed
+      // folder popover is not one of them - plus 1 each from the nested category/tag select
+      // components, plus 1 from the folder picker's own unconditional "recursive" popover.
+      expect(fixture.nativeElement.querySelectorAll('bb-popover').length).toBe(7);
     });
   });
 
@@ -198,6 +285,130 @@ describe('AddTorrentGeneral', () => {
 
       expect(messages.length).toBe(1);
       expect(messages[0].textContent).toContain('general.form.feedback.pattern');
+    });
+  });
+
+  describe('link counter', () => {
+    it('should show "no links" before the textarea is touched', () => {
+      fixture.componentRef.setInput('inputMode', 'link');
+      fixture.detectChanges();
+
+      const counter: HTMLElement = fixture.nativeElement.querySelector('.link-count-summary');
+      expect(counter.textContent).toContain('components.add-torrent.add-form.no-links');
+    });
+
+    it('should count non-empty lines as links when the textarea changes', () => {
+      fixture.componentRef.setInput('inputMode', 'link');
+      fixture.detectChanges();
+
+      const textarea: HTMLTextAreaElement = fixture.nativeElement.querySelector('#magnet_links');
+      textarea.value = 'magnet:?xt=urn:btih:aaa\nmagnet:?xt=urn:btih:bbb\n';
+      textarea.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+
+      const counter: HTMLElement = fixture.nativeElement.querySelector('.link-count-summary');
+      expect(counter.textContent).toContain('components.add-torrent.add-form.link-count');
+      expect(component.linkCount()).toBe(2);
+    });
+
+    it('should ignore blank lines when counting links', () => {
+      fixture.componentRef.setInput('inputMode', 'link');
+      fixture.detectChanges();
+
+      const textarea: HTMLTextAreaElement = fixture.nativeElement.querySelector('#magnet_links');
+      textarea.value = 'magnet:?xt=urn:btih:aaa\n\n   \nmagnet:?xt=urn:btih:bbb';
+      textarea.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+
+      expect(component.linkCount()).toBe(2);
+    });
+
+    it('should go back to "no links" when the textarea is cleared', () => {
+      fixture.componentRef.setInput('inputMode', 'link');
+      fixture.detectChanges();
+
+      const textarea: HTMLTextAreaElement = fixture.nativeElement.querySelector('#magnet_links');
+      textarea.value = 'magnet:?xt=urn:btih:aaa';
+      textarea.dispatchEvent(new Event('input'));
+      textarea.value = '';
+      textarea.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+
+      const counter: HTMLElement = fixture.nativeElement.querySelector('.link-count-summary');
+      expect(counter.textContent).toContain('components.add-torrent.add-form.no-links');
+    });
+  });
+
+  it('should show the folder picker in folder mode', () => {
+    fixture.componentRef.setInput('inputMode', 'folder');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('app-add-torrent-folder-picker')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('#file_browser')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('#magnet_links')).toBeFalsy();
+  });
+
+  it('should hide the rename input in folder mode', () => {
+    fixture.componentRef.setInput('inputMode', 'folder');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('#rename')).toBeFalsy();
+  });
+
+  it('should emit inputModeChange(folder) when the folder toggle is selected', () => {
+    const emitSpy = vi.spyOn(component.inputModeChange, 'emit');
+
+    const folderRadio: HTMLInputElement = fixture.nativeElement.querySelector('#inputMode_folder');
+    folderRadio.dispatchEvent(new Event('change'));
+
+    expect(emitSpy).toHaveBeenCalledWith('folder');
+  });
+
+  describe('getSelectedFolderEntries', () => {
+    it('should return an empty array when the folder picker has not rendered yet', () => {
+      expect(component.getSelectedFolderEntries()).toEqual([]);
+    });
+
+    it('should delegate to the folder picker once in folder mode', () => {
+      fixture.componentRef.setInput('inputMode', 'folder');
+      fixture.detectChanges();
+
+      const entry = {
+        path: '/downloads/a.torrent',
+        relativePath: 'a.torrent',
+        name: 'A',
+        size: 1,
+        fileCount: 1,
+        folderCount: 0,
+        state: 'new' as const,
+        hash: 'abc',
+      };
+      (component['folderPicker']() as any).selectedEntries = () => [entry];
+
+      expect(component.getSelectedFolderEntries()).toEqual([entry]);
+    });
+  });
+
+  describe('markFolderEntryAdded / markFolderEntryFailed', () => {
+    it('should do nothing when the folder picker has not rendered yet', () => {
+      expect(() => component.markFolderEntryAdded('/downloads/a.torrent')).not.toThrow();
+      expect(() => component.markFolderEntryFailed('/downloads/a.torrent', 'oops')).not.toThrow();
+    });
+
+    it('should delegate to the folder picker once in folder mode', () => {
+      fixture.componentRef.setInput('inputMode', 'folder');
+      fixture.detectChanges();
+
+      const markAdded = vi.fn();
+      const markFailed = vi.fn();
+      (component['folderPicker']() as any).markAdded = markAdded;
+      (component['folderPicker']() as any).markFailed = markFailed;
+
+      component.markFolderEntryAdded('/downloads/a.torrent');
+      component.markFolderEntryFailed('/downloads/b.torrent', 'network error');
+
+      expect(markAdded).toHaveBeenCalledWith('/downloads/a.torrent');
+      expect(markFailed).toHaveBeenCalledWith('/downloads/b.torrent', 'network error');
     });
   });
 });

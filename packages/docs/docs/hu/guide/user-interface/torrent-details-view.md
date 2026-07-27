@@ -48,7 +48,7 @@ Egy önálló **Törlés** gomb eltávolítja a torrentet. A lábléc többi ré
 - **Vezérlés** - Folytatás, Szüneteltetés, Kényszerített folytatás.
 - **Fájlok** - Fájl megjelenítése / Célhely megnyitása (letiltva, amíg egy [útvonal-hozzárendelés](./settings/bitbutler-settings#utvonal-hozzarendelesek) fel nem old egy helyi mappát), Mentési útvonal beállítása, Letöltési útvonal beállítása, valamint Torrentfájl exportálása.
 - **Kezelés** - Átnevezés, Kategória módosítása, Címkék módosítása.
-- **Átvitel** - Átviteli korlátok, Megosztási korlátok szerkesztése, valamint kapcsolók a Super Seedinghez, a Szekvenciális letöltéshez és az Első/utolsó szelet prioritáshoz.
+- **Átvitel** - Átviteli korlátok, Megosztási korlátok, valamint kapcsolók a Super Seedinghez, a Szekvenciális letöltéshez és az Első/utolsó szelet prioritáshoz.
 - **Karbantartás** - Kényszerített ellenőrzés, Kényszerített újrajelentkezés, valamint egy kapcsoló az Automatikus torrentkezeléshez.
 
 A jobb szélen egy **Bezárás** gomb zárja be a párbeszédablakot.

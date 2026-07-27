@@ -1,5 +1,8 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
+import { NgSelectComponent } from '@ng-select/ng-select';
 import { TorrentStoreService } from '../../services/torrent-store.service';
 import { SavePathSelect } from './save-path-select';
 
@@ -103,6 +106,75 @@ describe('SavePathSelect', () => {
 
     it('should have appendTo empty string by default', () => {
       expect(component.appendTo()).toBe('');
+    });
+  });
+
+  describe('position', () => {
+    it('should be null by default', () => {
+      expect(component.position()).toBeNull();
+    });
+
+    it('should resolve dropdownPosition to auto by default', () => {
+      expect(component.resolvedDropdownPosition()).toBe('auto');
+    });
+
+    it('should resolve placement to the default flip array by default', () => {
+      expect(component.resolvedPlacement()).toEqual([
+        'bottom-start',
+        'bottom-end',
+        'top-start',
+        'top-end',
+      ]);
+    });
+
+    it('should pass a set position straight through to resolvedDropdownPosition', () => {
+      fixture.componentRef.setInput('position', 'top');
+      expect(component.resolvedDropdownPosition()).toBe('top');
+    });
+
+    it('should pass a set position straight through to resolvedPlacement', () => {
+      fixture.componentRef.setInput('position', 'bottom');
+      expect(component.resolvedPlacement()).toBe('bottom');
+    });
+  });
+
+  describe('position wiring', () => {
+    it('should pass resolvedDropdownPosition to the ng-select in select mode', () => {
+      fixture.componentRef.setInput('inputType', 'select');
+      fixture.componentRef.setInput('position', 'top');
+      fixture.detectChanges();
+
+      const ngSelect = fixture.debugElement.query(By.directive(NgSelectComponent))
+        .componentInstance as NgSelectComponent;
+      expect(ngSelect.dropdownPosition()).toBe('top');
+    });
+
+    it('should pass resolvedPlacement to the typeahead input in typeahead mode', () => {
+      fixture.componentRef.setInput('inputType', 'typeahead');
+      fixture.componentRef.setInput('position', 'bottom');
+      fixture.detectChanges();
+
+      const typeahead = fixture.debugElement
+        .query(By.directive(NgbTypeahead))
+        .injector.get(NgbTypeahead);
+      expect(typeahead.placement).toBe('bottom');
+    });
+
+    it('should leave the ng-select at auto when position is unset', () => {
+      fixture.componentRef.setInput('inputType', 'select');
+      fixture.detectChanges();
+      const ngSelect = fixture.debugElement.query(By.directive(NgSelectComponent))
+        .componentInstance as NgSelectComponent;
+      expect(ngSelect.dropdownPosition()).toBe('auto');
+    });
+
+    it('should leave the typeahead at its default placement when position is unset', () => {
+      fixture.componentRef.setInput('inputType', 'typeahead');
+      fixture.detectChanges();
+      const typeahead = fixture.debugElement
+        .query(By.directive(NgbTypeahead))
+        .injector.get(NgbTypeahead);
+      expect(typeahead.placement).toEqual(['bottom-start', 'bottom-end', 'top-start', 'top-end']);
     });
   });
 });

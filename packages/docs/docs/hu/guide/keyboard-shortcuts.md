@@ -9,11 +9,11 @@ Ezek a billentyűparancsok a főablakban aktívak. Szövegmezőbe gépelés köz
 
 ## Globális billentyűparancsok
 
-| Billentyűparancs | Művelet                                                                                                                                               |
-| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Ctrl+K`         | Az eszköztár keresőmezőjére fókuszál.                                                                                                                 |
-| `Escape`         | Amíg a keresőmező fókuszban van, üríti azt. Egyébként bezárja az éppen nyitva lévő párbeszédablakot.                                                  |
-| `Delete`         | Törli a kijelölt torrente(ke)t. Tartsd lenyomva a `Shift`-et, hogy a megerősítő párbeszédablak "fájlok törlése is" opciója alapból be legyen jelölve. |
+| Billentyűparancs | Művelet                                                                                                                                                                                                                                                                  |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Ctrl+K`         | Az eszköztár keresőmezőjére fókuszál.                                                                                                                                                                                                                                    |
+| `Escape`         | Amíg a keresőmező fókuszban van, üríti azt. Egyébként bezárja az éppen nyitva lévő párbeszédablakot (kivéve a Torrent hozzáadása ablakot, amelyet csak a Mégse/bezárás gombbal lehet bezárni).                                                                           |
+| `Delete`         | Törli a kijelölt torrente(ke)t. Tartsd lenyomva a `Shift`-et, hogy a megerősítő párbeszédablak "fájlok törlése is" opciója alapból be legyen jelölve. A táblázat többi billentyűparancsával ellentétben ez akkor is aktív marad, ha egy másik párbeszédablak nyitva van. |
 
 ## Menü billentyűparancsok
 
@@ -35,7 +35,7 @@ Ezek a natív [Alkalmazásmenüből](./user-interface/application-menu) származ
 | `Ctrl+Shift+,`   | Felhasználói kézikönyv  |
 | `F1`             | A BitButlerről          |
 
-Ezek közül mindegyik, a Kilépés, A BitButlerről és a Felhasználói kézikönyv kivételével, csak akkor működik, ha a program csatlakozva van egy szerverhez. Lásd [Alkalmazásmenü](./user-interface/application-menu) a teljes menüszerkezetért, amelyhez ezek tartoznak.
+Ezek közül mindegyik, a Kilépés, a Frissítések keresése, A BitButlerről és a Felhasználói kézikönyv kivételével, csak akkor működik, ha a program csatlakozva van egy szerverhez. Lásd [Alkalmazásmenü](./user-interface/application-menu) a teljes menüszerkezetért, amelyhez ezek tartoznak.
 
 ## Táblázat billentyűparancsok
 

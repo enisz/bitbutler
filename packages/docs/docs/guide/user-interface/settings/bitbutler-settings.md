@@ -40,7 +40,7 @@ Sets the UI language: **English** or **Hungarian**. Changing it updates the rend
 | First day of week | Auto, Sunday, Monday, or Saturday.                                                                                      |
 | Custom pattern    | Only shown when the date format preset is Custom. A free-text pattern built from the tokens below, with a live preview. |
 
-Custom pattern tokens (example values below are for a sample date of Tuesday, April 5th 2026, 14:05:09 PM):
+Click **Token guide** to expand a reference table of the tokens you can use in the pattern (collapsed by default), shown below (example values are for a sample date of Tuesday, April 5th 2026, 14:05:09 PM):
 
 | Token  | Description              | Example |
 | ------ | ------------------------ | ------- |

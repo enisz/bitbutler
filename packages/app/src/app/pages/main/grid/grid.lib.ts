@@ -17,7 +17,7 @@ import {
   TooltipValueGetterFunc,
   ValueFormatterParams,
 } from 'ag-grid-community';
-import { GRID_SHARED_OPTIONS } from '../../../app.const';
+import { GRID_ROW_MUTED_CLASS, GRID_SHARED_OPTIONS } from '../../../app.const';
 import { BooleanColumnFilter } from '../../../components/column-filters/boolean-column-filter/boolean-column-filter';
 import { DatepickerRangeFilter } from '../../../components/column-filters/datepicker-range-filter/datepicker-range-filter';
 import { DurationColumnFilter } from '../../../components/column-filters/duration-column-filter/duration-column-filter';
@@ -1077,9 +1077,7 @@ export function getGridOptions(
     columnDefs: getGridColDefs(uiFormatService, translateService, torrentStoreService),
     getRowId: (params: GetRowIdParams<Torrent, any>) => params.data.hash,
     rowClassRules: {
-      'text-secondary bg-secondary-subtle bb-row-paused': (
-        params: RowClassParams<Torrent, any>,
-      ): boolean =>
+      [GRID_ROW_MUTED_CLASS]: (params: RowClassParams<Torrent, any>): boolean =>
         params.data?.state === 'pausedDL' ||
         params.data?.state === 'pausedUP' ||
         params.data?.state === 'stoppedDL' ||

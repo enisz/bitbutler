@@ -62,6 +62,7 @@ if (!htmlElementProto.showPopover) {
   torrent: {
     parse: noopAsync,
     deleteFile: noopAsync,
+    scanFolder: () => Promise.resolve([]),
   },
   menu: {
     onClick: noopSubscription,

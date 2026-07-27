@@ -40,7 +40,7 @@ Beállítja a felület nyelvét: **Angol** vagy **Magyar**. A módosítás azonn
 | A hét első napja | Automatikus, Vasárnap, Hétfő vagy Szombat.                                                                              |
 | Egyéni minta     | Csak akkor jelenik meg, ha a dátumformátum Egyéni. Egy szabadszöveges minta a lenti tokenekből építve, élő előnézettel. |
 
-Egyéni minta tokenek (a lenti példaértékek egy 2026. április 5-i, keddi, 14:05:09 időpontra vonatkoznak):
+Kattints a **Jelölőútmutató** gombra a mintában használható tokenek táblázatának kibontásához (alapból összecsukva), lásd lentebb (a példaértékek egy 2026. április 5-i, keddi, 14:05:09 időpontra vonatkoznak):
 
 | Token  | Leírás                | Példa   |
 | ------ | --------------------- | ------- |

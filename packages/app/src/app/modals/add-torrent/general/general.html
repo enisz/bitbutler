@@ -37,6 +37,22 @@
                 [text]="'components.add-torrent.input-mode.link' | translate"
               ></bb-btn-content>
             </label>
+
+            <input
+              type="radio"
+              class="btn-check"
+              name="inputMode"
+              id="inputMode_folder"
+              autocomplete="off"
+              [checked]="inputMode() === 'folder'"
+              (change)="inputModeChange.emit('folder')"
+            />
+            <label class="btn btn-outline-secondary btn-split" for="inputMode_folder">
+              <bb-btn-content
+                [icon]="icons.faFolder"
+                [text]="'components.add-torrent.input-mode.folder' | translate"
+              ></bb-btn-content>
+            </label>
           </div>
         </div>
 
@@ -48,87 +64,104 @@
           ></bb-popover>
         </div>
 
-        <div class="col-11">
-          @if (inputMode() === 'file') {
-            <div formGroupName="fileGroup">
-              <div class="form-floating mb-3">
-                <div class="input-group mb-1">
-                  <div class="form-floating">
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="file_browser"
-                      [placeholder]="'components.add-torrent.add-form.file-browser' | translate"
-                      formControlName="file"
-                      [class.is-invalid]="
-                        form().controls.fileGroup.controls.file.invalid &&
-                        (form().controls.fileGroup.controls.file.touched ||
-                          form().controls.fileGroup.controls.file.dirty)
-                      "
-                      readonly
+        @if (inputMode() === 'folder') {
+          <div class="col-12">
+            <app-add-torrent-folder-picker [form]="form()"></app-add-torrent-folder-picker>
+          </div>
+        } @else {
+          <div class="col-11">
+            @if (inputMode() === 'file') {
+              <div formGroupName="fileGroup">
+                <div class="form-floating mb-3">
+                  <div class="input-group mb-1">
+                    <div class="form-floating">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="file_browser"
+                        [placeholder]="'components.add-torrent.add-form.file-browser' | translate"
+                        formControlName="file"
+                        [class.is-invalid]="
+                          form().controls.fileGroup.controls.file.invalid &&
+                          (form().controls.fileGroup.controls.file.touched ||
+                            form().controls.fileGroup.controls.file.dirty)
+                        "
+                        readonly
+                        (click)="fileInput.click()"
+                      />
+                      <label for="file_browser">{{
+                        'components.add-torrent.add-form.file-browser' | translate
+                      }}</label>
+                    </div>
+
+                    <button
+                      type="button"
+                      class="btn btn-outline-primary btn-split"
                       (click)="fileInput.click()"
-                    />
-                    <label for="file_browser">{{
-                      'components.add-torrent.add-form.file-browser' | translate
-                    }}</label>
+                    >
+                      <bb-btn-content
+                        [icon]="icons.faFolderOpen"
+                        [text]="'general.button.browse' | translate"
+                        position="end"
+                      ></bb-btn-content>
+                    </button>
                   </div>
-
-                  <button
-                    type="button"
-                    class="btn btn-outline-primary btn-split"
-                    (click)="fileInput.click()"
-                  >
-                    <bb-btn-content
-                      [icon]="icons.faFolderOpen"
-                      [text]="'general.button.browse' | translate"
-                      position="end"
-                    ></bb-btn-content>
-                  </button>
+                  <input
+                    type="file"
+                    #fileInput
+                    hidden
+                    accept=".torrent"
+                    (change)="fileSelected.emit($event)"
+                  />
                 </div>
-                <input
-                  type="file"
-                  #fileInput
-                  hidden
-                  accept=".torrent"
-                  (change)="fileSelected.emit($event)"
-                />
               </div>
-            </div>
-          } @else {
-            <div formGroupName="linkGroup">
-              <div class="form-floating mb-3">
-                <textarea
-                  class="form-control"
-                  id="magnet_links"
-                  style="height: 120px"
-                  [placeholder]="'components.add-torrent.add-form.magnet-links' | translate"
-                  formControlName="magnetLinks"
-                ></textarea>
-                <label for="magnet_links">{{
-                  'components.add-torrent.add-form.magnet-links' | translate
-                }}</label>
+            } @else {
+              <div formGroupName="linkGroup">
+                <div class="form-floating mb-1">
+                  <textarea
+                    class="form-control"
+                    id="magnet_links"
+                    style="height: 120px"
+                    [placeholder]="'components.add-torrent.add-form.magnet-links' | translate"
+                    formControlName="magnetLinks"
+                    (input)="onMagnetLinksInput($event)"
+                  ></textarea>
+                  <label for="magnet_links">{{
+                    'components.add-torrent.add-form.magnet-links' | translate
+                  }}</label>
+                </div>
+                <p class="small mb-3 link-count-summary">
+                  @if (linkCount() > 0) {
+                    {{
+                      'components.add-torrent.add-form.link-count'
+                        | translate: { count: linkCount() }
+                    }}
+                  } @else {
+                    {{ 'components.add-torrent.add-form.no-links' | translate }}
+                  }
+                </p>
               </div>
-            </div>
-          }
-        </div>
+            }
+          </div>
 
-        <div class="col-1 d-flex align-items-center mb-3">
-          @if (inputMode() === 'file') {
-            <bb-popover
-              class="mt-2"
-              [subject]="'components.add-torrent.popover.file.title' | translate"
-              [description]="filePopover"
-              placement="left"
-            ></bb-popover>
-          } @else {
-            <bb-popover
-              class="mt-2"
-              [subject]="'components.add-torrent.popover.links.title' | translate"
-              [description]="linksPopover"
-              placement="left"
-            ></bb-popover>
-          }
-        </div>
+          <div class="col-1 d-flex align-items-center mb-3">
+            @if (inputMode() === 'file') {
+              <bb-popover
+                class="mt-2"
+                [subject]="'components.add-torrent.popover.file.title' | translate"
+                [description]="filePopover"
+                placement="left"
+              ></bb-popover>
+            } @else {
+              <bb-popover
+                class="mt-2"
+                [subject]="'components.add-torrent.popover.links.title' | translate"
+                [description]="linksPopover"
+                placement="left"
+              ></bb-popover>
+            }
+          </div>
+        }
       </div>
     </fieldset>
 
@@ -136,122 +169,125 @@
       <legend>{{ 'components.add-torrent.label.torrent' | translate }}</legend>
 
       <div class="row">
-        <div class="col-11">
-          @if (inputMode() === 'file') {
-            <div formGroupName="fileGroup" class="form-floating mb-3">
-              <input
-                type="text"
-                class="form-control"
-                id="rename"
-                [placeholder]="'components.add-torrent.add-form.rename' | translate"
-                formControlName="rename"
-                [class.is-invalid]="
+        @if (inputMode() !== 'folder') {
+          <div class="col-11">
+            @if (inputMode() === 'file') {
+              <div formGroupName="fileGroup" class="form-floating mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="rename"
+                  [placeholder]="'components.add-torrent.add-form.rename' | translate"
+                  formControlName="rename"
+                  [class.is-invalid]="
+                    form().controls.fileGroup.controls.rename.invalid &&
+                    (form().controls.fileGroup.controls.rename.touched ||
+                      form().controls.fileGroup.controls.rename.dirty)
+                  "
+                />
+                <label for="rename">{{
+                  'components.add-torrent.add-form.rename' | translate
+                }}</label>
+                @if (
                   form().controls.fileGroup.controls.rename.invalid &&
                   (form().controls.fileGroup.controls.rename.touched ||
-                    form().controls.fileGroup.controls.rename.dirty)
-                "
-              />
-              <label for="rename">{{ 'components.add-torrent.add-form.rename' | translate }}</label>
-              @if (
-                form().controls.fileGroup.controls.rename.invalid &&
-                (form().controls.fileGroup.controls.rename.touched ||
-                  form().controls.fileGroup.controls.rename.dirty) &&
-                form().controls.fileGroup.controls.rename.hasError('pattern')
-              ) {
-                <div class="invalid-feedback px-2">
-                  {{ 'general.form.feedback.pattern' | translate }}
-                </div>
-              }
-            </div>
-          } @else {
-            <div formGroupName="linkGroup" class="form-floating mb-3">
-              <input
-                type="text"
-                class="form-control"
-                id="rename"
-                [placeholder]="'components.add-torrent.add-form.rename' | translate"
-                formControlName="rename"
-                [class.is-invalid]="
+                    form().controls.fileGroup.controls.rename.dirty) &&
+                  form().controls.fileGroup.controls.rename.hasError('pattern')
+                ) {
+                  <div class="invalid-feedback px-2">
+                    {{ 'general.form.feedback.pattern' | translate }}
+                  </div>
+                }
+              </div>
+            } @else {
+              <div formGroupName="linkGroup" class="form-floating mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="rename"
+                  [placeholder]="'components.add-torrent.add-form.rename' | translate"
+                  formControlName="rename"
+                  [class.is-invalid]="
+                    form().controls.linkGroup.controls.rename.invalid &&
+                    (form().controls.linkGroup.controls.rename.touched ||
+                      form().controls.linkGroup.controls.rename.dirty)
+                  "
+                />
+                <label for="rename">{{
+                  'components.add-torrent.add-form.rename' | translate
+                }}</label>
+                @if (
                   form().controls.linkGroup.controls.rename.invalid &&
                   (form().controls.linkGroup.controls.rename.touched ||
-                    form().controls.linkGroup.controls.rename.dirty)
-                "
-              />
-              <label for="rename">{{ 'components.add-torrent.add-form.rename' | translate }}</label>
-              @if (
-                form().controls.linkGroup.controls.rename.invalid &&
-                (form().controls.linkGroup.controls.rename.touched ||
-                  form().controls.linkGroup.controls.rename.dirty) &&
-                form().controls.linkGroup.controls.rename.hasError('pattern')
-              ) {
-                <div class="invalid-feedback px-2">
-                  {{ 'general.form.feedback.pattern' | translate }}
-                </div>
-              }
-            </div>
-          }
+                    form().controls.linkGroup.controls.rename.dirty) &&
+                  form().controls.linkGroup.controls.rename.hasError('pattern')
+                ) {
+                  <div class="invalid-feedback px-2">
+                    {{ 'general.form.feedback.pattern' | translate }}
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="col-1 d-flex align-items-center mb-3">
+            <bb-popover
+              class="mt-2"
+              [subject]="'components.add-torrent.popover.name.title' | translate"
+              [description]="namePopover"
+              placement="left"
+            ></bb-popover>
+          </div>
+        }
+        <div class="col-5">
+          <div class="form-floating mb-3">
+            <input
+              type="text"
+              class="form-control"
+              id="torrent_size"
+              [placeholder]="'components.add-torrent.add-form.size' | translate"
+              [value]="sizeValue() !== null ? (sizeValue() | fileSize) : '-'"
+              readonly
+            />
+            <label for="torrent_size">{{
+              'components.add-torrent.add-form.size' | translate
+            }}</label>
+          </div>
         </div>
 
         <div class="col-1 d-flex align-items-center mb-3">
           <bb-popover
             class="mt-2"
-            [subject]="'components.add-torrent.popover.name.title' | translate"
-            [description]="namePopover"
+            [subject]="'components.add-torrent.popover.size.title' | translate"
+            [description]="sizePopover"
             placement="left"
           ></bb-popover>
         </div>
 
-        @if (inputMode() === 'file' && fileStats() !== null) {
-          <div class="col-5">
-            <div class="form-floating mb-3">
-              <input
-                type="text"
-                class="form-control"
-                id="torrent_size"
-                [placeholder]="'components.add-torrent.add-form.size' | translate"
-                [value]="fileStats()!.selectedSize | fileSize"
-                readonly
-              />
-              <label for="torrent_size">{{
-                'components.add-torrent.add-form.size' | translate
-              }}</label>
-            </div>
+        <div class="col-5">
+          <div class="form-floating mb-3">
+            <input
+              type="text"
+              class="form-control"
+              id="free_space"
+              [placeholder]="'components.add-torrent.add-form.free-space' | translate"
+              [value]="freeSpace() > 0 ? (freeSpace() | fileSize) : '-'"
+              readonly
+            />
+            <label for="free_space">{{
+              'components.add-torrent.add-form.free-space' | translate
+            }}</label>
           </div>
+        </div>
 
-          <div class="col-1 d-flex align-items-center mb-3">
-            <bb-popover
-              class="mt-2"
-              [subject]="'components.add-torrent.popover.size.title' | translate"
-              [description]="sizePopover"
-              placement="left"
-            ></bb-popover>
-          </div>
-
-          <div class="col-5">
-            <div class="form-floating mb-3">
-              <input
-                type="text"
-                class="form-control"
-                id="free_space"
-                [placeholder]="'components.add-torrent.add-form.free-space' | translate"
-                [value]="freeSpace() | fileSize"
-                readonly
-              />
-              <label for="free_space">{{
-                'components.add-torrent.add-form.free-space' | translate
-              }}</label>
-            </div>
-          </div>
-
-          <div class="col-1 d-flex align-items-center mb-3">
-            <bb-popover
-              class="mt-2"
-              [subject]="'components.add-torrent.popover.free-space.title' | translate"
-              [description]="freeSpacePopover"
-              placement="left"
-            ></bb-popover>
-          </div>
-        }
+        <div class="col-1 d-flex align-items-center mb-3">
+          <bb-popover
+            class="mt-2"
+            [subject]="'components.add-torrent.popover.free-space.title' | translate"
+            [description]="freeSpacePopover"
+            placement="left"
+          ></bb-popover>
+        </div>
 
         <div class="col-11">
           <div class="mb-3">
@@ -307,7 +343,6 @@
 
 <ng-template #inputModePopover>
   <p>{{ 'components.add-torrent.popover.input-mode.description.line1' | translate }}</p>
-  <p>{{ 'components.add-torrent.popover.input-mode.description.line2' | translate }}</p>
 </ng-template>
 
 <ng-template #savePathPopover>

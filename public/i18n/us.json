@@ -40,7 +40,11 @@
       "title": "Adding a Torrent",
       "add-form": {
         "file-browser": "Torrent File",
+        "folder-browser": "Folder",
+        "recursive": "Recursive",
         "magnet-links": "Links (one per line)",
+        "no-links": "No links",
+        "link-count": "{{ count }} link(s)",
         "save-path": "Save Path",
         "rename": "Name",
         "skip-hash-checking": "Skip hash checking",
@@ -138,7 +142,7 @@
           "title": "Size",
           "description": {
             "line1": "The total size of the files selected for download.",
-            "line2": "Deselect individual files in the Files tab to reduce the download size - this value updates live as you make changes."
+            "line2": "For magnet links, the size isn't known until qBittorrent fetches the torrent's metadata after it's added, so this field shows a dash."
           }
         },
         "free-space": {
@@ -148,11 +152,16 @@
             "line2": "Compare this against the torrent size to make sure you have enough room before adding."
           }
         },
+        "recursive": {
+          "title": "Recursive",
+          "description": {
+            "line1": "When enabled, all subdirectories of the selected folder are scanned for .torrent files as well."
+          }
+        },
         "input-mode": {
           "title": "Input Mode",
           "description": {
-            "line1": "Choose whether you're adding this torrent from a local .torrent file or from a magnet link / URL.",
-            "line2": "Switching modes resets save path, category, tags, and other options back to your saved defaults."
+            "line1": "Choose whether you're adding this torrent from a local .torrent file, a magnet link / URL, or by scanning a folder for .torrent files."
           }
         }
       },
@@ -173,6 +182,7 @@
           "title": "Files",
           "disabled": {
             "link-mode": "Not available when adding by link.",
+            "folder-mode": "Not available when adding multiple torrents from a folder.",
             "no-files": "No file list available yet."
           },
           "issue": {
@@ -180,13 +190,53 @@
           }
         }
       },
+      "folder-picker": {
+        "col-def": {
+          "name": "Name",
+          "state": "State",
+          "error": "Error",
+          "size": "Size",
+          "path": "Path"
+        },
+        "state": {
+          "new": "New",
+          "exists": "Exists",
+          "error": "Error",
+          "added": "Added",
+          "failed": "Failed"
+        },
+        "error": {
+          "duplicate": "Already in the list"
+        },
+        "description": "Select a folder containing .torrent files - each one is parsed locally and listed below, with nothing sent anywhere until you click Add. Toggle Recursive or use Refresh to re-scan after files change on disk, and double-click a row's Name to rename it before adding; only new and previously-failed torrents can be selected.",
+        "grid": {
+          "no-rows": {
+            "message": "No .torrent files found in this folder."
+          }
+        },
+        "selection": {
+          "none": "No torrents selected.",
+          "summary": "{{count}} torrent(s) selected"
+        }
+      },
       "input-mode": {
         "file": "File",
-        "link": "Link"
+        "link": "Link",
+        "folder": "Folder"
       },
       "feedback": {
         "no-server-selected": "No server is selected. Choose a server before adding this torrent.",
         "add-failed": "Adding the torrent failed. Please try again."
+      },
+      "toast": {
+        "folder-added": {
+          "title": "Torrents Added",
+          "message": "Added {{count}} torrent(s)."
+        },
+        "folder-partial": {
+          "title": "Some Torrents Failed",
+          "message": "Added {{succeeded}} of {{total}} torrent(s)."
+        }
       }
     },
     "app-loader": {
@@ -1908,7 +1958,8 @@
       "update": "Update",
       "show": "Show",
       "open-details": "Open Details",
-      "edit": "Edit"
+      "edit": "Edit",
+      "refresh": "Refresh"
     },
     "form": {
       "feedback": {

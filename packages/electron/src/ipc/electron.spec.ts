@@ -108,6 +108,23 @@ describe('electron IPC handlers', () => {
       const handlers = await registerAndGetHandlers();
       expect(await handlers.get('electron:show-open-dialog')!(null)).toBe('/selected/folder');
     });
+
+    it('passes defaultPath through to dialog.showOpenDialog when provided', async () => {
+      mockDialogShowOpenDialog.mockResolvedValue({ filePaths: ['/selected/folder'] });
+      const handlers = await registerAndGetHandlers();
+      await handlers.get('electron:show-open-dialog')!(null, '/downloads');
+      expect(mockDialogShowOpenDialog).toHaveBeenCalledWith({
+        properties: ['openDirectory'],
+        defaultPath: '/downloads',
+      });
+    });
+
+    it('omits defaultPath from the dialog options when not provided', async () => {
+      mockDialogShowOpenDialog.mockResolvedValue({ filePaths: [] });
+      const handlers = await registerAndGetHandlers();
+      await handlers.get('electron:show-open-dialog')!(null);
+      expect(mockDialogShowOpenDialog).toHaveBeenCalledWith({ properties: ['openDirectory'] });
+    });
   });
 
   describe('electron:check-for-update', () => {

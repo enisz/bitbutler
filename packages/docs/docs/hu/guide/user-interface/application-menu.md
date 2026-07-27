@@ -21,7 +21,7 @@ A Torrent hozzáadása, Torrentek exportálása, Torrentek importálása és Kij
 
 ## Szerverek
 
-Csak csatlakoztatott állapotban jelenik meg, és csak akkor, ha egynél több szerver van beállítva: egy rádiógombos lista az összes szerverről, az aktuálisan bejelölttel. Egy másik kiválasztása azonnal átvált arra, ugyanúgy, mint az eszköztár szerver-legördülőjének használata.
+Csak csatlakoztatott állapotban jelenik meg, és csak akkor, ha legalább egy szerver van beállítva: egy rádiógombos lista az összes szerverről, az aktuálisan bejelölttel. Egy másik kiválasztása azonnal átvált arra, ugyanúgy, mint az eszköztár szerver-legördülőjének használata.
 
 ## Beállítások
 

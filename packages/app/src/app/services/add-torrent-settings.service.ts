@@ -30,6 +30,7 @@ export class AddTorrentSettingsService extends BaseSettingsService<AddTorrentSet
       savepath: trimOrNull(s.savepath),
       category: trimOrNull(s.category),
       tags: trimOrNull(s.tags),
+      folder: trimOrNull(s.folder),
     };
   }
 }
