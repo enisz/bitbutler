@@ -81,6 +81,10 @@ export function getGridColDefs(
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.progress'),
       width: 135,
       cellRenderer: ProgressCellRenderer,
+      // ProgressCellRenderer's color depends on row.state, not just this column's progress
+      // value - without this, ag-grid skips refresh() when progress is unchanged but state
+      // isn't, leaving the bar showing a stale color.
+      equals: () => false,
     },
     {
       colId: 'progress_percentage',
