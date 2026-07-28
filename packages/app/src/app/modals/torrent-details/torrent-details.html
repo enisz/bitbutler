@@ -1,16 +1,22 @@
 <div class="modal-header bb-modal-header">
   <div class="bb-modal-header__text">
     <h5
-      #titleElement
       class="modal-title bb-title-clamp"
-      [ngbTooltip]="titleElement.offsetWidth < titleElement.scrollWidth ? torrent()?.name : null"
+      [ngbTooltip]="torrent()?.name"
+      bbTooltipOverflow
       placement="bottom"
       tooltipClass="single-line-tooltip"
     >
       {{ torrent()?.name }}
     </h5>
 
-    <div class="small text-body-secondary mt-1 bb-hash-clamp">
+    <div
+      class="small text-body-secondary mt-1 bb-hash-clamp"
+      [ngbTooltip]="torrent()?.hash"
+      bbTooltipOverflow
+      placement="bottom"
+      tooltipClass="single-line-tooltip"
+    >
       {{ 'components.modals.torrent-details.hash' | translate }}: <code>{{ torrent()?.hash }}</code>
     </div>
 
