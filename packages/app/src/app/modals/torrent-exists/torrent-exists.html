@@ -6,9 +6,9 @@
       </h5>
 
       <div
-        #element
         class="small text-body-secondary mt-1 bb-hash-clamp"
-        [ngbTooltip]="element.offsetWidth < element.scrollWidth ? t.name : null"
+        [ngbTooltip]="t.name"
+        bbTooltipOverflow
         tooltipClass="single-line-tooltip"
         placement="top"
       >
@@ -65,7 +65,13 @@
       <dt class="col-4 te-label">
         {{ 'components.modals.torrent-exists.label.added-on' | translate }}
       </dt>
-      <dd class="col-8">
+      <dd
+        class="col-8 text-truncate"
+        [ngbTooltip]="(t.added_on | localTimestamp) + ' (' + (t.added_on * 1000 | timeago) + ')'"
+        placement="top"
+        bbTooltipOverflow
+        tooltipClass="single-line-tooltip"
+      >
         {{ t.added_on | localTimestamp }}
         <span class="text-body-secondary ms-1">({{ t.added_on * 1000 | timeago }})</span>
       </dd>
