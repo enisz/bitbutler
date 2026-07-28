@@ -212,6 +212,23 @@ describe('TorrentStoreService', () => {
     expect(finished[0].hash).toBe('abc');
   });
 
+  it('should not change the torrentsMap/torrentsArray reference on an empty incremental delta', () => {
+    service.applyMaindata(
+      makeMaindata({
+        full_update: true,
+        torrents: { abc: { name: 'A', state: 'downloading' } as TorrentDelta },
+      }),
+    );
+
+    const mapBefore = service.torrentsMap();
+    const arrayBefore = service.torrentsArray();
+
+    service.applyMaindata(makeMaindata({}));
+
+    expect(service.torrentsMap()).toBe(mapBefore);
+    expect(service.torrentsArray()).toBe(arrayBefore);
+  });
+
   it('should return delta from applyMaindata', () => {
     const delta = service.applyMaindata(
       makeMaindata({

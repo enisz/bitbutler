@@ -140,7 +140,12 @@ export class TorrentStoreService {
         }
       }
 
-      this._torrents.set(next);
+      // Skip the signal update on a no-op delta - setting an unchanged Map still creates a new
+      // reference, which would recompute torrentsArray and cascade into a full grid
+      // reconciliation on every poll tick even when nothing actually changed.
+      if (add.length || update.length || remove.length) {
+        this._torrents.set(next);
+      }
 
       this.ingestFinished(
         [...add, ...update],
