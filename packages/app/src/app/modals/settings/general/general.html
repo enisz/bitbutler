@@ -110,6 +110,36 @@
             </div>
           </div>
           <div class="row mt-2 mb-3">
+            <div class="col-12">
+              <div class="form-check form-switch">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  id="delete-torrent-on-duplicate"
+                  formControlName="deleteTorrentFileOnDuplicate"
+                />
+                <label class="form-check-label" for="delete-torrent-on-duplicate"
+                  >{{
+                    'pages.settings.tab.general.general-settings-form.behavior.delete-torrent-on-duplicate'
+                      | translate
+                  }}
+
+                  <bb-popover
+                    [subject]="
+                      'pages.settings.tab.general.popover.delete-torrent-on-duplicate.title'
+                        | translate
+                    "
+                    [description]="
+                      'pages.settings.tab.general.popover.delete-torrent-on-duplicate.description'
+                        | translate
+                    "
+                  ></bb-popover>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="row mt-2 mb-3">
             <div class="col-6">
               <div class="form-check form-switch">
                 <input
