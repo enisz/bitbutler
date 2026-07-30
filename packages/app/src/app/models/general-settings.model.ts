@@ -27,6 +27,7 @@ export const DEFAULT_LOCALE = 'en-US';
 export interface GeneralSettings {
   behavior: {
     deleteTorrentFile: boolean;
+    deleteTorrentFileOnDuplicate: boolean;
     automaticUpdate: boolean;
     toastPosition: ToastPosition;
   };
@@ -54,6 +55,7 @@ export interface GeneralSettings {
 export const DEFAULT_GENERAL_SETTINGS: GeneralSettings = {
   behavior: {
     deleteTorrentFile: true,
+    deleteTorrentFileOnDuplicate: false,
     automaticUpdate: true,
     toastPosition: 'bottom-right',
   },
