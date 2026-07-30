@@ -106,20 +106,6 @@
   </div>
 
   <div class="modal-footer d-flex flex-row">
-    @if (showDeleteButton()) {
-      <button
-        type="button"
-        class="btn btn-danger btn-sm me-auto"
-        [disabled]="fileDeleted()"
-        [ngbTooltip]="'components.modals.torrent-exists.button.delete-file' | translate"
-        [attr.aria-label]="'components.modals.torrent-exists.button.delete-file' | translate"
-        placement="top"
-        tooltipClass="single-line-tooltip"
-        (click)="deleteTorrentFile()"
-      >
-        <fa-icon [icon]="icons.faTrashCan" aria-hidden="true"></fa-icon>
-      </button>
-    }
     <button
       type="button"
       class="btn btn-dashed-info btn-sm btn-split ms-auto"
