@@ -773,9 +773,6 @@
           "category": "Kategória",
           "tags": "Címkék"
         },
-        "button": {
-          "delete-file": "Torrent fájl törlése"
-        },
         "toast": {
           "deleted-title": "Torrent fájl törölve",
           "deleted": "A torrent fájl eltávolítva a lemezről.",
@@ -1471,6 +1468,7 @@
           "general-settings-form": {
             "behavior": {
               "delete-torrent-after-added": "Torrent fájlok törlése a listához adás után.",
+              "delete-torrent-on-duplicate": "A torrent fájlok törlése, ha a torrent már szerepel a listában.",
               "automatic-update": "Automatikus frissítés",
               "check-for-update": "Frissítések keresése most",
               "notification-position": "Alkalmazáson belüli értesítések helye"
@@ -1565,6 +1563,10 @@
             "deleting-torrent-file": {
               "title": "Torrent fájl törlése",
               "description": "Engedélyezi a kliensnek a .torrent fájl törlését a lemezről, ha az sikeresen bekerült a letöltési listába."
+            },
+            "delete-torrent-on-duplicate": {
+              "title": "Torrent fájl törlése duplikátum esetén",
+              "description": "A .torrent fájl automatikus törlése a lemezről, ha az már hozzá lett adva a letöltési listához. A \"Torrent fájl törlése\" beállítást igényli."
             },
             "open-at-login": {
               "title": "Indítás a rendszerrel",

@@ -773,9 +773,6 @@
           "category": "Category",
           "tags": "Tags"
         },
-        "button": {
-          "delete-file": "Delete Torrent File"
-        },
         "toast": {
           "deleted-title": "Torrent File Deleted",
           "deleted": "The torrent file has been removed from disk.",
@@ -1471,6 +1468,7 @@
           "general-settings-form": {
             "behavior": {
               "delete-torrent-after-added": "Delete torrent files after adding them to the list.",
+              "delete-torrent-on-duplicate": "Delete torrent files when the torrent already exists in the list.",
               "automatic-update": "Automatic updates",
               "check-for-update": "Check for Updates now",
               "notification-position": "In-application notification position"
@@ -1565,6 +1563,10 @@
             "deleting-torrent-file": {
               "title": "Deleting Torrent File",
               "description": "Allowing the client to delete the .torrent file from your disk if it got added to the download list succesfully."
+            },
+            "delete-torrent-on-duplicate": {
+              "title": "Delete Torrent File on Duplicate",
+              "description": "Automatically delete the .torrent file from your disk when it was already added to the download list. Requires \"Deleting Torrent File\" to be enabled."
             },
             "open-at-login": {
               "title": "Start with System",
