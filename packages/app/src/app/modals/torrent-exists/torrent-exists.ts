@@ -116,10 +116,6 @@ export class TorrentExists {
       }
 
       this.fileDeleted.set(true);
-      this.toastService.success(
-        this.translateService.instant('components.modals.torrent-exists.toast.deleted'),
-        this.translateService.instant('components.modals.torrent-exists.toast.deleted-title'),
-      );
     } catch (err: any) {
       console.error(TorrentExists.name, 'deleteTorrentFile', 'Failed to delete torrent file', err);
       this.toastService.danger(

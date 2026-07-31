@@ -774,8 +774,6 @@
           "tags": "Címkék"
         },
         "toast": {
-          "deleted-title": "Torrent fájl törölve",
-          "deleted": "A torrent fájl eltávolítva a lemezről.",
           "delete-failed-title": "Nem sikerült törölni a torrent fájlt"
         }
       },

@@ -228,7 +228,7 @@ describe('TorrentExists - auto-delete enabled', () => {
 
     expect(deleteFileSpy).toHaveBeenCalledWith({ path: '/tmp/test.torrent' });
     expect(comp.fileDeleted()).toBe(true);
-    expect(mockToastService.success).toHaveBeenCalled();
+    expect(mockToastService.success).not.toHaveBeenCalled();
   });
 
   it('does not delete when originalPath is null', async () => {
