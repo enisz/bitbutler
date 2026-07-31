@@ -5,9 +5,9 @@ description: A főablak bemutatása - eszköztár, oldalsáv szűrők, keresés,
 
 # Torrentlista nézet
 
-A főablak az, ahol a legtöbb időt töltöd a BitButlerben. Egy eszköztár fut végig a tetején, egy szűrő oldalsáv a bal oldalon helyezkedik el, a torrenttáblázat kitölti a középső részt, egy állapotsáv pedig végigfut az alján.
-
 ![Torrentlista nézet eszköztárral, oldalsáv szűrőkkel, torrenttáblázattal és állapotsávval](/screenshots/torrent-list-view/overview.png)
+
+A főablak az, ahol a legtöbb időt töltöd a BitButlerben. Egy eszköztár fut végig a tetején, egy szűrő oldalsáv a bal oldalon helyezkedik el, a torrenttáblázat kitölti a középső részt, egy állapotsáv pedig végigfut az alján.
 
 ## Eszköztár
 
@@ -26,6 +26,8 @@ A kijelölést igénylő gombok (Törlés, Indítás, Leállítás és a sorrend
 A jobb oldali keresőmező gépelés közben szűri a táblázatot, kicsit késleltetve, hogy ne szűrjön minden billentyűleütésnél. Nyomd meg a **Ctrl+K**-t az ablak bármely pontjáról az odaugráshoz, a kis **x** gomb (vagy fókusz közben az **Escape**) pedig üríti azt.
 
 ## Helyi menü
+
+![Torrenttáblázat jobb kattintásos helyi menüje](/screenshots/torrent-list-view/context-menu.png)
 
 Egy torrentsorra jobb gombbal kattintva megnyílik ez a menü. A jobb oldali jelzéssel ellátott elemek mutatják a [billentyűparancsukat](../keyboard-shortcuts#vezerles).
 
@@ -112,8 +114,6 @@ Az **Egyedi** műveletek csak akkor jelennek meg, ha pontosan egy sor van kijel�
 | Rögzítés alulra                                      | Sor rögzítése |   ✓    |  ✓   | A táblázat aljára rögzíti a sort, figyelmen kívül hagyva a rendezést és a szűrőket.                                       |
 | Rögzítés feloldása                                   | Sor rögzítése |   ✓    |  ✓   | Feloldja a sor rögzítését.                                                                                                |
 | Eltávolítás                                          | -             |   ✓    |  ✓   | Törli a kijelölt torrente(ke)t. Tartsd lenyomva a `Shift`-et, hogy a "fájlok törlése is" opció alapból be legyen jelölve. |
-
-![Torrenttáblázat jobb kattintásos helyi menüje](/screenshots/torrent-list-view/context-menu.png)
 
 ## Oldalsáv szűrők
 

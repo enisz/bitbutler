@@ -11,6 +11,8 @@ Nyisd meg a párbeszédablakot az eszköztárból: **Beállítások > BitButler*
 
 ## Általános
 
+![Általános fül](/screenshots/settings/bitbutler-settings/general.png)
+
 ### Indítás
 
 | Beállítás                         | Leírás                                                                                                                                                             |
@@ -79,9 +81,9 @@ Szabályozza, hogyan viselkedjenek a mentésiútvonal-mezők az egész alkalmaz�
 - **ng-select** - egy legördülő, amelyet a csatlakoztatott szerveren talált mappák töltenek fel.
 - **ngb-typeahead** - egy szabadszöveges mező, amely gépelés közben automatikus kiegészítési javaslatokat ad.
 
-![Általános fül](/screenshots/settings/bitbutler-settings/general.png)
-
 ## Szerver
+
+![Szerver fül](/screenshots/settings/bitbutler-settings/server.png)
 
 Az Általános füllel ellentétben a Szerver beállítások **kapcsolatonként** kerülnek tárolásra - minden, a [Szerverek kezelésében](../manage/servers) hozzáadott szervernek saját lekérdezési intervalluma és útvonal-hozzárendelési konfigurációja van.
 
@@ -102,9 +104,9 @@ Ha egy szerver torrent-letöltési mappái helyben is csatolva vannak (például
 
 Minden sor egy **Távoli útvonalat** rendel egy **Helyi útvonalhoz**. Használd a **Hozzárendelés tesztelése** gombot annak megerősítéséhez, hogy egy hozzárendelés valódi helyi mappára oldódik fel, valamint a hozzáadás/eltávolítás gombokat minden sor mellett a lista kezeléséhez.
 
-![Szerver fül](/screenshots/settings/bitbutler-settings/server.png)
-
 ## Torrenttáblázat
+
+![Torrenttáblázat fül](/screenshots/settings/bitbutler-settings/torrent-list-grid.png)
 
 ### Táblázat beállítások
 
@@ -127,9 +129,9 @@ A sorra dupla kattintás viselkedése szabályozza, mi történik egy torrentsor
 - **Oszlopkészlet** - az összes elérhető oszlop kereshető, többszörös kiválasztású listája.
 - **Sorrend** - húzd az engedélyezett oszlopok átrendezéséhez; ez egyben a torrenttáblázatban balról jobbra megjelenő sorrend is.
 
-![Torrenttáblázat fül](/screenshots/settings/bitbutler-settings/torrent-list-grid.png)
-
 ## Állapotsáv
+
+![Állapotsáv fül](/screenshots/settings/bitbutler-settings/status-bar.png)
 
 Konfiguráld a főablak alján lévő állapotsávban megjelenő widgetek láthatóságát és sorrendjét. Húzd a widgeteket az **Elérhető modulok** (letiltva/nem használt) és a **Bal** vagy **Jobb** oszlop között az engedélyezéshez, letiltáshoz vagy átrendezéshez.
 
@@ -146,5 +148,3 @@ Elérhető widgetek:
 - Munkamenet-statisztikák
 - Kijelölés adatai
 - Lekérdezés-jelző
-
-![Állapotsáv fül](/screenshots/settings/bitbutler-settings/status-bar.png)

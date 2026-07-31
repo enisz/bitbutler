@@ -11,6 +11,8 @@ Néhány mező csak akkor jelenik meg, ha a csatlakoztatott qBittorrent-nox verz
 
 ## Sávszélesség
 
+![Sávszélesség fül](/screenshots/settings/qbittorrent-settings/bandwidth.png)
+
 ### Globális sebességkorlátok
 
 Beállítja a maximális kombinált letöltési és feltöltési sebességet az összes torrenten. Adj meg `0`-t korlátlanhoz.
@@ -39,9 +41,9 @@ Automatikusan átvált az alternatív sebességkorlátokra egy beállított idő
 - **Aktív ekkor** - Minden nap, Minden hétköznap, Minden hétvégén, vagy a hét egy adott napján.
 - **Ettől / Eddig** - az óra és perc, amikor az alternatív korlátok elkezdenek és megszűnnek érvényesülni.
 
-![Sávszélesség fül](/screenshots/settings/qbittorrent-settings/bandwidth.png)
-
 ## Tárolás
+
+![Tárolás fül](/screenshots/settings/qbittorrent-settings/storage.png)
 
 ### Alapértelmezett útvonalak
 
@@ -67,9 +69,9 @@ _(Csak akkor jelenik meg, ha a qBittorrent-nox verziód támogat egy külön bef
 | Amikor a kategória mentési útvonala megváltozik       | Torrentek áthelyezése / Váltás kézi módra | A kategória saját mentési útvonalának szerkesztésekor alkalmazott viselkedés.                                                                                          |
 | Amikor az alapértelmezett mentési útvonal megváltozik | Torrentek áthelyezése / Váltás kézi módra | A szerver (fentebbi) alapértelmezett mentési útvonalának szerkesztésekor alkalmazott viselkedés.                                                                       |
 
-![Tárolás fül](/screenshots/settings/qbittorrent-settings/storage.png)
-
 ## Sor és korlátok
+
+![Sor és korlátok fül](/screenshots/settings/qbittorrent-settings/queue-limits.png)
 
 Szabályozza, hány torrent lehet egyszerre aktív, és hogyan kerülnek sorba az új torrentek.
 
@@ -88,9 +90,9 @@ _(Csak akkor jelenik meg, ha a qBittorrent-nox verziód támogatja.)_
 
 - **Új torrentek hozzáadása a sor elejéhez** - az új torrentek a már sorban lévők elé kerülnek, ahelyett hogy a végére csatlakoznának.
 
-![Sor és korlátok fül](/screenshots/settings/qbittorrent-settings/queue-limits.png)
-
 ## Seedelési arányok
+
+![Seedelési arányok fül](/screenshots/settings/qbittorrent-settings/seeding-ratios.png)
 
 Automatikusan leállítja a seedelést egy megosztásiarány-cél, egy időküszöb, vagy mindkettő alapján.
 
@@ -108,5 +110,3 @@ Automatikusan leállítja a seedelést egy megosztásiarány-cél, egy időküsz
 | ----------------------------------------- | ------------------------------------------------------ |
 | Seedelésiidő-korlát engedélyezése         | Bekapcsolja az időkorlátot.                            |
 | Seedelés leállítása ennyi idő után (perc) | Mennyi ideig seedeljen, mielőtt a fenti művelet lefut. |
-
-![Seedelési arányok fül](/screenshots/settings/qbittorrent-settings/seeding-ratios.png)

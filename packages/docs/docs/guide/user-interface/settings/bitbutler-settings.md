@@ -11,6 +11,8 @@ Open the dialog from the toolbar: **Settings > BitButler**. The dialog has four 
 
 ## General
 
+![General tab](/screenshots/settings/bitbutler-settings/general.png)
+
 ### Startup
 
 | Setting                   | Description                                                                                                                                   |
@@ -79,9 +81,9 @@ Controls how save-path fields behave throughout the app when adding or moving to
 - **ng-select** - a dropdown populated with folders discovered on the connected server.
 - **ngb-typeahead** - a free-text field with autocomplete suggestions as you type.
 
-![General tab](/screenshots/settings/bitbutler-settings/general.png)
-
 ## Server
+
+![Server tab](/screenshots/settings/bitbutler-settings/server.png)
 
 Unlike the General tab, Server settings are stored **per connection** - each server you add in [Manage Servers](../manage/servers) has its own polling interval and path-mapping configuration.
 
@@ -102,9 +104,9 @@ If a server's torrent download folders are also mounted locally (for example, a 
 
 Each row maps a **Remote Path** to a **Local Path**. Use **Test mapping** to confirm a mapping resolves to a real local folder, and the add/remove buttons next to each row to manage the list.
 
-![Server tab](/screenshots/settings/bitbutler-settings/server.png)
-
 ## Torrent List Grid
+
+![Torrent List Grid tab](/screenshots/settings/bitbutler-settings/torrent-list-grid.png)
 
 ### Grid Options
 
@@ -127,9 +129,9 @@ Row double-click behavior controls what happens when you double-click a torrent 
 - **Column Pool** - a searchable multi-select of every available column.
 - **Order** - drag to reorder the columns you've enabled; this is also the left-to-right order shown in the torrent grid.
 
-![Torrent List Grid tab](/screenshots/settings/bitbutler-settings/torrent-list-grid.png)
-
 ## Status Bar
+
+![Status Bar tab](/screenshots/settings/bitbutler-settings/status-bar.png)
 
 Configure the visibility and order of the widgets shown in the status bar at the bottom of the main window. Drag widgets between the **Widget Pool** (disabled/unused) and the **Left** or **Right** column to enable, disable, or reorder them.
 
@@ -146,5 +148,3 @@ Available widgets:
 - Session Stats
 - Selection Info
 - Polling Indicator
-
-![Status Bar tab](/screenshots/settings/bitbutler-settings/status-bar.png)

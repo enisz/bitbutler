@@ -13,6 +13,8 @@ Double-clicking a torrent row opens this dialog by default - see [Row double-cli
 
 ## General
 
+![General tab](/screenshots/torrent-details-view/general.png)
+
 The General tab is split into three groups:
 
 - **General** - name, save path, remote (server-side) path, local path (only shown if a [path mapping](./settings/bitbutler-settings#path-mappings) resolves one), Automatic Torrent Management and Force Start flags, current progress, state, and any error message.
@@ -21,27 +23,27 @@ The General tab is split into three groups:
 
 Most text fields have a small copy-to-clipboard button next to them.
 
-![General tab](/screenshots/torrent-details-view/general.png)
-
 ## Trackers
-
-A sortable, filterable table of every tracker on the torrent: tier, URL, status (Disabled, Not Contacted, Working, Updating, or Not Working), and its peer/seed/leech/download counts, plus any status message from the tracker. Right-click a row to copy its URL, its cell value, or the whole row as JSON. Column order, width, and sort are remembered between sessions.
 
 ![Trackers tab](/screenshots/torrent-details-view/trackers.png)
 
-## Peers
+A sortable, filterable table of every tracker on the torrent: tier, URL, status (Disabled, Not Contacted, Working, Updating, or Not Working), and its peer/seed/leech/download counts, plus any status message from the tracker. Right-click a row to copy its URL, its cell value, or the whole row as JSON. Column order, width, and sort are remembered between sessions.
 
-A sortable, filterable table of every peer currently connected for this torrent: country, IP and port, connection type, protocol flags (hover a flag for what it means), client name, per-peer progress, download/upload speed, downloaded/uploaded totals, relevance, and which files that peer has. Right-click a row to copy its IP:port, its cell value, or the row as JSON.
+## Peers
 
 ![Peers tab](/screenshots/torrent-details-view/peers.png)
 
-## Content
+A sortable, filterable table of every peer currently connected for this torrent: country, IP and port, connection type, protocol flags (hover a flag for what it means), client name, per-peer progress, download/upload speed, downloaded/uploaded totals, relevance, and which files that peer has. Right-click a row to copy its IP:port, its cell value, or the row as JSON.
 
-An expandable file tree for the torrent's contents. Each file has a checkbox to include or exclude it from the download and a priority dropdown (Normal, High, or Maximum, in addition to excluded/skipped) alongside its own progress bar. Editing switches the tab into edit mode - shown by a small asterisk on the Content tab - until you save the changes.
+## Content
 
 ![Content tab](/screenshots/torrent-details-view/content.png)
 
+An expandable file tree for the torrent's contents. Each file has a checkbox to include or exclude it from the download and a priority dropdown (Normal, High, or Maximum, in addition to excluded/skipped) alongside its own progress bar. Editing switches the tab into edit mode - shown by a small asterisk on the Content tab - until you save the changes.
+
 ## Footer Actions
+
+![Footer actions](/screenshots/torrent-details-view/footer-actions.png)
 
 A standalone **Delete** button removes the torrent. The rest of the footer groups related actions into dropdowns:
 
@@ -52,5 +54,3 @@ A standalone **Delete** button removes the torrent. The rest of the footer group
 - **Maintenance** - Force Recheck, Force Reannounce, and a toggle for Automatic Torrent Management.
 
 A **Close** button on the far right closes the dialog.
-
-![Footer actions](/screenshots/torrent-details-view/footer-actions.png)

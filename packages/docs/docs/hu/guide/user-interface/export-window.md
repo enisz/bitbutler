@@ -5,9 +5,9 @@ description: Torrentek exportálása a csatlakoztatott szerverről egy BitButler
 
 # Exportálás ablak
 
-Az Exportálás ablak becsomagolja a jelenleg csatlakoztatott szerver torrentjeit - azok metaadatait, kategóriáit és címkéit - egyetlen `.bbe` archívumfájlba, amelyet később az [Importálás ablakkal](./import-window) állíthatsz vissza.
-
 ![Exportálás ablak kapcsolatadatokkal, exporthatókörrel és mentési hellyel](/screenshots/export-window/overview.png)
+
+Az Exportálás ablak becsomagolja a jelenleg csatlakoztatott szerver torrentjeit - azok metaadatait, kategóriáit és címkéit - egyetlen `.bbe` archívumfájlba, amelyet később az [Importálás ablakkal](./import-window) állíthatsz vissza.
 
 ## Az Exportálás ablak megnyitása
 

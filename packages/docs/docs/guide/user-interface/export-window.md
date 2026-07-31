@@ -5,9 +5,9 @@ description: Export torrents from the connected server to a BitButler .bbe archi
 
 # Export Window
 
-The Export Window packages torrents from the currently connected server - their metadata, categories, and tags - into a single `.bbe` archive file you can later restore with the [Import Window](./import-window).
-
 ![Export window with connection info, export scope, and save location](/screenshots/export-window/overview.png)
+
+The Export Window packages torrents from the currently connected server - their metadata, categories, and tags - into a single `.bbe` archive file you can later restore with the [Import Window](./import-window).
 
 ## Opening the Export Window
 
