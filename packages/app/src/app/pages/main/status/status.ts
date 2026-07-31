@@ -218,8 +218,15 @@ export class Status {
       this.filterService.clearStates();
       return;
     }
-    const states = this.groups[key as StatusKey] ?? [];
-    this.filterService.setStates(states);
+    const groupStates = this.groups[key as StatusKey] ?? [];
+    const current = this.filtersSig().states;
+    const isActive = groupStates.length > 0 && groupStates.every((s) => current.has(s));
+    const next = new Set(current);
+    for (const s of groupStates) {
+      if (isActive) next.delete(s);
+      else next.add(s);
+    }
+    this.filterService.setStates(next);
   }
 
   readonly activeTrackerKeys = computed<ReadonlySet<string>>(() => this.filtersSig().trackers);

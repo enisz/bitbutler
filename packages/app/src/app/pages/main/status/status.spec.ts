@@ -83,23 +83,51 @@ describe('Status', () => {
       expect(filterMock.clearStates).toHaveBeenCalled();
     });
 
-    it('should call filterService.setStates with the downloading group', () => {
+    it('should add the downloading group states when not yet active', () => {
+      filterMock.external.set({ ...GRID_FILTER_INITIAL.external, states: new Set() });
       component.setGroup('downloading');
       expect(filterMock.setStates).toHaveBeenCalledWith(
-        expect.arrayContaining(['downloading', 'forcedDL', 'stalledDL']),
+        new Set(['downloading', 'forcedDL', 'queuedDL', 'metaDL', 'stalledDL']),
       );
     });
 
-    it('should call filterService.setStates with the stopped group', () => {
-      component.setGroup('stopped');
+    it('should preserve a previously selected group when adding a second one', () => {
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        states: new Set(['pausedDL', 'pausedUP', 'stoppedDL', 'stoppedUP']),
+      });
+      component.setGroup('downloading');
       expect(filterMock.setStates).toHaveBeenCalledWith(
-        expect.arrayContaining(['pausedDL', 'pausedUP', 'stoppedDL', 'stoppedUP']),
+        new Set([
+          'pausedDL',
+          'pausedUP',
+          'stoppedDL',
+          'stoppedUP',
+          'downloading',
+          'forcedDL',
+          'queuedDL',
+          'metaDL',
+          'stalledDL',
+        ]),
       );
     });
 
-    it('should call filterService.setStates with an empty array for unknown keys', () => {
+    it('should remove the stopped group states when already fully active', () => {
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        states: new Set(['pausedDL', 'pausedUP', 'stoppedDL', 'stoppedUP']),
+      });
+      component.setGroup('stopped');
+      expect(filterMock.setStates).toHaveBeenCalledWith(new Set());
+    });
+
+    it('should not add or remove anything for an unknown key', () => {
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        states: new Set(['downloading']),
+      });
       component.setGroup('nonexistent');
-      expect(filterMock.setStates).toHaveBeenCalledWith([]);
+      expect(filterMock.setStates).toHaveBeenCalledWith(new Set(['downloading']));
     });
   });
 
