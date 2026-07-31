@@ -1,5 +1,6 @@
 import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TorrentState } from '../../../models/torrent.model';
 import { CommandBusService } from '../../../services/command-bus.service';
 import { FilterService, GRID_FILTER_INITIAL } from '../../../services/filter.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
@@ -128,6 +129,41 @@ describe('Status', () => {
       });
       component.setGroup('nonexistent');
       expect(filterMock.setStates).not.toHaveBeenCalled();
+    });
+
+    it('should preserve an overlapping sibling group when toggling one off', () => {
+      // Select Downloading, then Active, then deselect Downloading again. Downloading and
+      // Active overlap (both include the "downloading", "forcedDL" and "metaDL" states), which
+      // is exactly the scenario that broke the old differential-set implementation.
+      filterMock.external.set({ ...GRID_FILTER_INITIAL.external, states: new Set() });
+
+      component.setGroup('downloading');
+      // Simulate FilterService applying the first setStates call before the next click.
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        states: filterMock.setStates.mock.calls[0][0] as Set<TorrentState>,
+      });
+
+      component.setGroup('active');
+      // Simulate FilterService applying the second setStates call before the next click.
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        states: filterMock.setStates.mock.calls[1][0] as Set<TorrentState>,
+      });
+
+      component.setGroup('downloading');
+
+      expect(filterMock.setStates).toHaveBeenLastCalledWith(
+        new Set([
+          'downloading',
+          'uploading',
+          'forcedDL',
+          'forcedUP',
+          'metaDL',
+          'moving',
+          'allocating',
+        ]),
+      );
     });
   });
 
@@ -275,6 +311,29 @@ describe('Status', () => {
         states: new Set(['downloading', 'uploading']),
       });
       expect(component.activeStatusKeys()).toEqual(new Set());
+    });
+
+    it('should include both keys for an overlapping union (active + inactive)', () => {
+      // Active and Inactive overlap: their union fully covers Downloading's 5 states too, so
+      // "downloading" is also (correctly, per the design spec's accepted cosmetic highlighting)
+      // reported as active here.
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        states: new Set([
+          'downloading',
+          'uploading',
+          'forcedDL',
+          'forcedUP',
+          'metaDL',
+          'moving',
+          'allocating',
+          'queuedDL',
+          'queuedUP',
+          'stalledDL',
+          'stalledUP',
+        ]),
+      });
+      expect(component.activeStatusKeys()).toEqual(new Set(['active', 'inactive', 'downloading']));
     });
   });
 
