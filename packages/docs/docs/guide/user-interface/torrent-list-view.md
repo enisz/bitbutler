@@ -27,7 +27,91 @@ The search box on the right filters the grid as you type, debounced briefly to a
 
 ## Context Menu
 
-Right-clicking a torrent row opens a context menu with the same Start, Stop, and Force Resume actions as the toolbar - each showing its [keyboard shortcut](../keyboard-shortcuts#control) as a hint - plus [Torrent Details](./torrent-details-view), and submenus for Files, Manage, Queue, Transfer, Maintenance, Copy, and Pin Row. A Remove entry at the bottom deletes the selected torrent(s), also hinting the `Shift` modifier for the "also delete files" option.
+Right-clicking a torrent row opens this menu. Items with a hint on the right show their [keyboard shortcut](../keyboard-shortcuts#control).
+
+<pre>
+Start                                                  F3
+Stop                                                   F4
+Force Resume                                   Shift + F3
+-----------------------------------------------------------
+Torrent Details
+-----------------------------------------------------------
+Files                                                   ›
+  Show in Folder / Open Destination
+  Set Save Path
+  Set Download Path
+  Rename Files
+  Export .torrent File(s)
+Manage                                                  ›
+  Rename Torrent
+  Set Category
+  Set Tags
+Queue                                                   ›
+  Move to Top
+  Move Up
+  Move Down
+  Move to Bottom
+Transfer                                                ›
+  Transfer Limit
+  Share Limit
+  Enable/Disable Super Seeding
+  Enable/Disable Sequential Download
+  Enable/Disable First/Last Piece Priority
+Maintenance                                             ›
+  Force Recheck
+  Force Reannounce
+  Enable/Disable Auto TMM
+Copy                                                    ›
+  Copy Name(s)
+  Copy Magnet Link(s)
+  Copy Info Hash(es)
+  Copy Save Path(s)
+  Copy as JSON
+Pin Row                                                 ›
+  Pin to Top
+  Pin to Bottom
+  Unpin
+-----------------------------------------------------------
+Remove                                      (Shift +) Del
+</pre>
+
+**Single** actions only appear when exactly one row is selected; **Multi** actions work no matter how many rows are selected (including one).
+
+| Action                                    | Menu        | Single | Multi | Description                                                                              |
+| ----------------------------------------- | ----------- | :----: | :---: | ---------------------------------------------------------------------------------------- |
+| Start                                     | -           |   ✓    |   ✓   | Resumes the selected torrent(s).                                                         |
+| Stop                                      | -           |   ✓    |   ✓   | Pauses the selected torrent(s).                                                          |
+| Force Resume                              | -           |   ✓    |   ✓   | Force-resumes the selected torrent(s), bypassing queueing limits.                        |
+| [Torrent Details](./torrent-details-view) | -           |   ✓    |       | Opens the Torrent Details dialog for the row.                                            |
+| Show in Folder / Open Destination         | Files       |   ✓    |       | Reveals the torrent's file, or opens its folder when it has more than one.               |
+| Set Save Path                             | Files       |   ✓    |   ✓   | Changes where the selected torrent(s) save their data.                                   |
+| Set Download Path                         | Files       |   ✓    |   ✓   | Changes the incomplete-download path for the selected torrent(s).                        |
+| Rename Files                              | Files       |   ✓    |       | Opens the file rename dialog for the torrent.                                            |
+| Export .torrent File(s)                   | Files       |   ✓    |   ✓   | Exports the selected torrent(s) as .torrent file(s).                                     |
+| Rename Torrent                            | Manage      |   ✓    |       | Renames the torrent.                                                                     |
+| Set Category                              | Manage      |   ✓    |   ✓   | Assigns a category to the selected torrent(s).                                           |
+| Set Tags                                  | Manage      |   ✓    |   ✓   | Assigns tags to the selected torrent(s).                                                 |
+| Move to Top                               | Queue       |   ✓    |   ✓   | Moves the selected torrent(s) to the top of the download queue.                          |
+| Move Up                                   | Queue       |   ✓    |   ✓   | Moves the selected torrent(s) up one position.                                           |
+| Move Down                                 | Queue       |   ✓    |   ✓   | Moves the selected torrent(s) down one position.                                         |
+| Move to Bottom                            | Queue       |   ✓    |   ✓   | Moves the selected torrent(s) to the bottom of the queue.                                |
+| Transfer Limit                            | Transfer    |   ✓    |   ✓   | Sets per-torrent upload/download speed limits.                                           |
+| Share Limit                               | Transfer    |   ✓    |   ✓   | Sets ratio and seeding-time limits.                                                      |
+| Enable/Disable Super Seeding              | Transfer    |   ✓    |   ✓   | Toggles super seeding.                                                                   |
+| Enable/Disable Sequential Download        | Transfer    |   ✓    |   ✓   | Toggles sequential downloading.                                                          |
+| Enable/Disable First/Last Piece Priority  | Transfer    |   ✓    |   ✓   | Toggles first/last piece priority.                                                       |
+| Force Recheck                             | Maintenance |   ✓    |   ✓   | Rechecks the downloaded data on disk.                                                    |
+| Force Reannounce                          | Maintenance |   ✓    |   ✓   | Reannounces to trackers immediately.                                                     |
+| Enable/Disable Auto TMM                   | Maintenance |   ✓    |   ✓   | Toggles Automatic Torrent Management.                                                    |
+| Copy Name(s)                              | Copy        |   ✓    |   ✓   | Copies the torrent name(s) to the clipboard.                                             |
+| Copy Magnet Link(s)                       | Copy        |   ✓    |   ✓   | Copies the magnet link(s) to the clipboard.                                              |
+| Copy Info Hash(es)                        | Copy        |   ✓    |   ✓   | Copies the info hash(es) to the clipboard.                                               |
+| Copy Save Path(s)                         | Copy        |   ✓    |   ✓   | Copies the save path(s) to the clipboard.                                                |
+| Copy as JSON                              | Copy        |   ✓    |   ✓   | Copies the selected torrent(s) as raw JSON.                                              |
+| Pin to Top                                | Pin Row     |   ✓    |   ✓   | Pins the row to the top of the grid, ignoring sort and filters.                          |
+| Pin to Bottom                             | Pin Row     |   ✓    |   ✓   | Pins the row to the bottom of the grid, ignoring sort and filters.                       |
+| Unpin                                     | Pin Row     |   ✓    |   ✓   | Removes the row's pin.                                                                   |
+| Remove                                    | -           |   ✓    |   ✓   | Deletes the selected torrent(s). Hold `Shift` to default "also delete files" to checked. |
 
 ![Torrent grid right-click context menu](/screenshots/torrent-list-view/context-menu.png)
 
