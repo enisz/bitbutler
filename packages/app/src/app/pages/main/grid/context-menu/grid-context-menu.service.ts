@@ -79,6 +79,7 @@ export class GridContextMenuService {
         icon: faPlay,
         variant: 'success',
         action: () => this.commandBusService.emit({ type: 'TORRENT_RESUME' }),
+        hint: 'F3',
       },
       {
         kind: 'item',
@@ -87,6 +88,7 @@ export class GridContextMenuService {
         icon: faPause,
         variant: 'warning',
         action: () => this.commandBusService.emit({ type: 'TORRENT_PAUSE' }),
+        hint: 'F4',
       },
       {
         kind: 'item',
@@ -94,6 +96,7 @@ export class GridContextMenuService {
         label: 'pages.main.grid.context-menu.item.force-resume',
         icon: faForwardFast,
         action: () => this.commandBusService.emit({ type: 'TORRENT_FORCE_RESUME' }),
+        hint: 'Shift + F3',
       },
       { kind: 'divider' },
       ...(isMulti
@@ -571,6 +574,7 @@ export class GridContextMenuService {
             type: 'UI_TORRENT_DELETE_REQUEST',
             defaultRemoveFiles: false,
           }),
+        hint: '(Shift +) Del',
       },
     ];
   }

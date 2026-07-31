@@ -5,9 +5,9 @@ description: A Torrent már létezik párbeszédablak, amely duplikált torrente
 
 # Torrent már létezik ablak
 
-Ha olyan torrentet próbálsz hozzáadni, amely már létezik a qBittorrent szerveren, a BitButler a duplikált hozzáadás engedélyezése helyett a Torrent már létezik párbeszédablakot jeleníti meg.
-
 ![Torrent már létezik párbeszédablak](/screenshots/torrent-exists/torrent-exists.png)
+
+Ha olyan torrentet próbálsz hozzáadni, amely már létezik a qBittorrent szerveren, a BitButler a duplikált hozzáadás engedélyezése helyett a Torrent már létezik párbeszédablakot jeleníti meg.
 
 Ez a párbeszédablak a meglévő torrentről mutat információkat, többek között:
 

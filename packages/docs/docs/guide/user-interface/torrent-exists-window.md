@@ -5,9 +5,9 @@ description: Details about the Torrent Exists dialog that appears when adding du
 
 # Torrent Exists Window
 
-When you attempt to add a torrent that already exists on the qBittorrent server, BitButler displays the Torrent Exists dialog instead of allowing the duplicate addition.
-
 ![Torrent Exists dialog](/screenshots/torrent-exists/torrent-exists.png)
+
+When you attempt to add a torrent that already exists on the qBittorrent server, BitButler displays the Torrent Exists dialog instead of allowing the duplicate addition.
 
 This dialog shows information about the existing torrent including:
 

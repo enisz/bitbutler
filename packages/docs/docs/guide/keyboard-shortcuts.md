@@ -58,3 +58,11 @@ The rest apply to the torrent grid itself, and are disabled while any dialog is 
 | `Page Up` / `Page Down`   | Moves focus by roughly one screen of rows. |
 
 Moving focus without `Shift` also replaces the current selection with just the newly focused row, unless `Ctrl` is held, in which case focus moves without changing the selection at all. Double-clicking a cell that supports inline editing, and the `Enter`/`Escape` keys to confirm or cancel it, follow the underlying grid library's standard editing behavior rather than anything BitButler customizes.
+
+### Control
+
+| Shortcut   | Action                                 |
+| ---------- | -------------------------------------- |
+| `F3`       | Resumes the selected torrent(s).       |
+| `Shift+F3` | Force resumes the selected torrent(s). |
+| `F4`       | Pauses the selected torrent(s).        |

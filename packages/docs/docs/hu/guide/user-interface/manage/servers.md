@@ -5,15 +5,15 @@ description: A BitButler által elérni kívánt qBittorrent-nox szerverek hozz�
 
 # Szerverek
 
-A BitButler egy vagy több távoli qBittorrent-nox példányhoz csatlakozik a webes API-jukon keresztül. Minden kapcsolat helyben kerül tárolásra (a jelszavak nyugalmi állapotban titkosítva vannak), és a **Szerverek kezelése** párbeszédablakból kezelhető.
-
 ![Szerverek kezelése párbeszédablak](/screenshots/manage/servers/overview.png)
+
+A BitButler egy vagy több távoli qBittorrent-nox példányhoz csatlakozik a webes API-jukon keresztül. Minden kapcsolat helyben kerül tárolásra (a jelszavak nyugalmi állapotban titkosítva vannak), és a **Szerverek kezelése** párbeszédablakból kezelhető.
 
 ## Szerver hozzáadása
 
-Nyisd meg a **Szerverek kezelése** párbeszédablakot akár a bejelentkezési képernyőről, akár a főablak eszköztárából: **Kezelés > Szerverek**. Kattints a **Szerver hozzáadása** gombra a kapcsolatszerkesztő megnyitásához.
-
 ![Új kapcsolat szerkesztője](/screenshots/manage/servers/add-server.png)
+
+Nyisd meg a **Szerverek kezelése** párbeszédablakot akár a bejelentkezési képernyőről, akár a főablak eszköztárából: **Kezelés > Szerverek**. Kattints a **Szerver hozzáadása** gombra a kapcsolatszerkesztő megnyitásához.
 
 ### Kapcsolati mezők
 
@@ -39,6 +39,6 @@ Egy kapcsolat alapértelmezettként való megjelölése (a jelölőnégyzet ikon
 
 ## Szerver szerkesztése és törlése
 
-A Szerverek kezelése listából használd a ceruzaikont egy kapcsolat szerkesztőben való újranyitásához, vagy a kukaikont a törléséhez. A törlés előbb megerősítést kér, mivel a művelet nem vonható vissza - az adott kapcsolathoz beállított [útvonal-hozzárendelések](../settings/bitbutler-settings#utvonal-hozzarendelesek) vagy lekérdezési beállítások a törlés után már nem érvényesek.
-
 ![Szerverek kezelése párbeszédablak több szerverrel](/screenshots/manage/servers/multiple-servers.png)
+
+A Szerverek kezelése listából használd a ceruzaikont egy kapcsolat szerkesztőben való újranyitásához, vagy a kukaikont a törléséhez. A törlés előbb megerősítést kér, mivel a művelet nem vonható vissza - az adott kapcsolathoz beállított [útvonal-hozzárendelések](../settings/bitbutler-settings#utvonal-hozzarendelesek) vagy lekérdezési beállítások a törlés után már nem érvényesek.

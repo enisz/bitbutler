@@ -45,6 +45,7 @@ export class GridKeyboardNavService {
     if (this.modalService.hasOpenModals()) return;
     this.handleGridSelectAll(event);
     this.handleGridKeyboardSelection(event);
+    this.handleStartStopForceResume(event);
   }
 
   private isTypingTarget(target: EventTarget | null): boolean {
@@ -108,6 +109,22 @@ export class GridKeyboardNavService {
 
     if (colId) api.setFocusedCell(nextIndex, colId);
     api.ensureIndexVisible(nextIndex);
+  }
+
+  private handleStartStopForceResume(event: KeyboardEvent): void {
+    const { code, ctrlKey, shiftKey } = event;
+    if (ctrlKey || this.isTypingTarget(event.target)) return;
+
+    if (code === 'F3' && shiftKey) {
+      event.preventDefault();
+      this.commandBusService.emit({ type: 'TORRENT_FORCE_RESUME' });
+    } else if (code === 'F3') {
+      event.preventDefault();
+      this.commandBusService.emit({ type: 'TORRENT_RESUME' });
+    } else if (code === 'F4' && !shiftKey) {
+      event.preventDefault();
+      this.commandBusService.emit({ type: 'TORRENT_PAUSE' });
+    }
   }
 
   private computeNextDisplayedIndex(api: GridApi, code: string, leadIndex: number): number | null {
