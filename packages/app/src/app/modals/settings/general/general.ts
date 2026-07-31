@@ -301,6 +301,10 @@ export class General implements SettingsTabComponent {
   public generalSettingsForm = new FormGroup({
     behavior: new FormGroup({
       deleteTorrentFile: new FormControl(true, { nonNullable: true }),
+      deleteTorrentFileOnDuplicate: new FormControl(
+        { value: false, disabled: true },
+        { nonNullable: true },
+      ),
       automaticUpdate: new FormControl(true, { nonNullable: true }),
       toastPosition: new FormControl<ToastPosition>('bottom-right', { nonNullable: true }),
     }),
@@ -343,6 +347,20 @@ export class General implements SettingsTabComponent {
         }
       });
 
+    const behaviorGroup = this.generalSettingsForm.controls.behavior;
+
+    behaviorGroup.controls.deleteTorrentFile.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value) => {
+        const ctrl = behaviorGroup.controls.deleteTorrentFileOnDuplicate;
+        if (value) {
+          ctrl.enable({ emitEvent: false });
+        } else {
+          ctrl.setValue(false, { emitEvent: false });
+          ctrl.disable({ emitEvent: false });
+        }
+      });
+
     this.stateService.registerSave('general', () => this.save());
 
     this.generalSettingsForm.valueChanges
@@ -364,6 +382,12 @@ export class General implements SettingsTabComponent {
         if (openAtLogin) {
           startupGroup.controls.startMinimized.enable({ emitEvent: false });
         }
+        const deleteTorrentFile = settings.behavior?.deleteTorrentFile ?? false;
+        if (deleteTorrentFile) {
+          this.generalSettingsForm.controls.behavior.controls.deleteTorrentFileOnDuplicate.enable({
+            emitEvent: false,
+          });
+        }
       }),
     ),
     { initialValue: null },
@@ -373,6 +397,8 @@ export class General implements SettingsTabComponent {
     const settings = this.generalSettingsForm.getRawValue();
 
     if (!settings.startup.openAtLogin) settings.startup.startMinimized = false;
+    if (!settings.behavior.deleteTorrentFile)
+      settings.behavior.deleteTorrentFileOnDuplicate = false;
 
     const newLang = settings.language.language;
     const currentLang = this.translateService.getCurrentLang();

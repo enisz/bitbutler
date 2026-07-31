@@ -22,11 +22,12 @@ Ha az "Alkalmazás indítása a rendszerrel" be van kapcsolva, de nincs szerver 
 
 ### Viselkedés
 
-| Beállítás                                  | Leírás                                                                                                                                                                   |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Torrentfájlok törlése a listához adás után | Eltávolítja a helyi `.torrent` fájlt a lemezről, miután sikeresen hozzáadásra került a listához.                                                                         |
-| Automatikus frissítések                    | Az alkalmazás minden indulásakor automatikusan ellenőrzi a BitButler frissítéseit. Egy mellette lévő **Frissítések keresése most** gomb igény szerint indít ellenőrzést. |
-| Alkalmazáson belüli értesítés pozíciója    | Hol jelenjenek meg a felugró értesítések: Bal felül, Jobb felül, Jobb alul vagy Bal alul.                                                                                |
+| Beállítás                                                      | Leírás                                                                                                                                                                                                                                              |
+| -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Torrentfájlok törlése a listához adás után                     | Eltávolítja a helyi `.torrent` fájlt a lemezről, miután sikeresen hozzáadásra került a listához.                                                                                                                                                    |
+| A torrent fájlok törlése, ha a torrent már szerepel a listában | Automatikusan eltávolítja a forrás `.torrent` fájlt a lemezről, ha az duplikátumként kerül újra hozzáadásra. A "Torrentfájlok törlése a listához adás után" bekapcsolását igényli - lásd a [Torrent már létezik ablakot](../torrent-exists-window). |
+| Automatikus frissítések                                        | Az alkalmazás minden indulásakor automatikusan ellenőrzi a BitButler frissítéseit. Egy mellette lévő **Frissítések keresése most** gomb igény szerint indít ellenőrzést.                                                                            |
+| Alkalmazáson belüli értesítés pozíciója                        | Hol jelenjenek meg a felugró értesítések: Bal felül, Jobb felül, Jobb alul vagy Bal alul.                                                                                                                                                           |
 
 ### Nyelv
 

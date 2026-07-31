@@ -8,8 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faCircleInfo, faTrashCan, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faCircleInfo, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TimeagoPipe } from 'ngx-timeago';
@@ -41,7 +40,6 @@ import { TorrentStoreService } from '../../services/torrent-store.service';
     TranslatePipe,
     BbProgress,
     BbBtnContent,
-    FontAwesomeModule,
   ],
   styleUrls: ['./torrent-exists.scss'],
   templateUrl: './torrent-exists.html',
@@ -63,13 +61,11 @@ export class TorrentExists {
     initialValue: null,
   });
 
-  public icons = { faCircleInfo, faTrashCan, faXmark };
+  public icons = { faCircleInfo, faXmark };
 
   public readonly fileDeleted = signal(false);
 
-  public readonly showDeleteButton = computed(
-    () => !!(this.generalSettings()?.behavior.deleteTorrentFile && this.originalPath()),
-  );
+  private hasAttemptedDelete = false;
 
   public readonly torrent = computed(() => {
     const h = this.hash();
@@ -87,18 +83,39 @@ export class TorrentExists {
       this.selectionStoreService.setByHashes([h]);
       this.commandBusService.emit({ type: 'UI_SCROLL_TO_TORRENT', hash: h });
     });
+
+    effect(() => {
+      const settings = this.generalSettings();
+      const path = this.originalPath();
+      if (!settings || !path || this.hasAttemptedDelete) return;
+      if (!settings.behavior.deleteTorrentFileOnDuplicate) return;
+
+      this.hasAttemptedDelete = true;
+      void this.deleteTorrentFile(path);
+    });
   }
 
-  public async deleteTorrentFile(): Promise<void> {
-    const path = this.originalPath();
-    if (!path) return;
+  private async deleteTorrentFile(path: string): Promise<void> {
     try {
-      await window.bitbutler.torrent.deleteFile({ path });
+      const result = await window.bitbutler.torrent.deleteFile({ path });
+      if (!result?.ok) {
+        console.error(
+          TorrentExists.name,
+          'deleteTorrentFile',
+          'Failed to delete torrent file',
+          path,
+          result?.error,
+        );
+        this.toastService.danger(
+          result?.error ?? '',
+          this.translateService.instant(
+            'components.modals.torrent-exists.toast.delete-failed-title',
+          ),
+        );
+        return;
+      }
+
       this.fileDeleted.set(true);
-      this.toastService.success(
-        this.translateService.instant('components.modals.torrent-exists.toast.deleted'),
-        this.translateService.instant('components.modals.torrent-exists.toast.deleted-title'),
-      );
     } catch (err: any) {
       console.error(TorrentExists.name, 'deleteTorrentFile', 'Failed to delete torrent file', err);
       this.toastService.danger(

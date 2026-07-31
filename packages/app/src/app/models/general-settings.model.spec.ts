@@ -106,6 +106,10 @@ describe('DEFAULT_GENERAL_SETTINGS', () => {
       firstDayOfWeek: 'auto',
     });
   });
+
+  it('defaults deleteTorrentFileOnDuplicate to false', () => {
+    expect(DEFAULT_GENERAL_SETTINGS.behavior.deleteTorrentFileOnDuplicate).toBe(false);
+  });
 });
 
 describe('resolveFirstDayOfWeek', () => {

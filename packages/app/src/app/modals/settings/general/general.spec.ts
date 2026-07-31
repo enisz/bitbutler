@@ -118,6 +118,59 @@ describe('General', () => {
     });
   });
 
+  describe('behavior form controls', () => {
+    it('deleteTorrentFileOnDuplicate is enabled by default because deleteTorrentFile defaults to true', () => {
+      expect(
+        component.generalSettingsForm.controls.behavior.controls.deleteTorrentFileOnDuplicate
+          .enabled,
+      ).toBe(true);
+    });
+
+    it('deleteTorrentFileOnDuplicate is disabled and forced to false when deleteTorrentFile is turned off', () => {
+      const behaviorGroup = component.generalSettingsForm.controls.behavior;
+      behaviorGroup.controls.deleteTorrentFileOnDuplicate.setValue(true);
+
+      behaviorGroup.controls.deleteTorrentFile.setValue(false);
+
+      expect(behaviorGroup.controls.deleteTorrentFileOnDuplicate.value).toBe(false);
+      expect(behaviorGroup.controls.deleteTorrentFileOnDuplicate.disabled).toBe(true);
+    });
+
+    it('deleteTorrentFileOnDuplicate is re-enabled, staying false, when deleteTorrentFile is turned back on', () => {
+      const behaviorGroup = component.generalSettingsForm.controls.behavior;
+      behaviorGroup.controls.deleteTorrentFile.setValue(false);
+
+      behaviorGroup.controls.deleteTorrentFile.setValue(true);
+
+      expect(behaviorGroup.controls.deleteTorrentFileOnDuplicate.enabled).toBe(true);
+      expect(behaviorGroup.controls.deleteTorrentFileOnDuplicate.value).toBe(false);
+    });
+  });
+
+  describe('behavior fieldset template', () => {
+    it('renders the delete-on-duplicate switch, enabled because deleteTorrentFile defaults to true', () => {
+      fixture.detectChanges();
+
+      const input: HTMLInputElement = fixture.nativeElement.querySelector(
+        '#delete-torrent-on-duplicate',
+      );
+
+      expect(input).not.toBeNull();
+      expect(input.disabled).toBe(false);
+    });
+
+    it('disables the delete-on-duplicate checkbox in the DOM when deleteTorrentFile is off', () => {
+      component.generalSettingsForm.controls.behavior.controls.deleteTorrentFile.setValue(false);
+      fixture.detectChanges();
+
+      const input: HTMLInputElement = fixture.nativeElement.querySelector(
+        '#delete-torrent-on-duplicate',
+      );
+
+      expect(input.disabled).toBe(true);
+    });
+  });
+
   describe('hasDefaultServer', () => {
     it('returns false when no server has auto_login', () => {
       serverStoreMock.servers.set([
