@@ -127,7 +127,7 @@ describe('Status', () => {
         states: new Set(['downloading']),
       });
       component.setGroup('nonexistent');
-      expect(filterMock.setStates).toHaveBeenCalledWith(new Set(['downloading']));
+      expect(filterMock.setStates).not.toHaveBeenCalled();
     });
   });
 

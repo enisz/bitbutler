@@ -63,6 +63,11 @@ export class Status {
     return next;
   }
 
+  private isStatusGroupActive(key: StatusKey, current: ReadonlySet<TorrentState>): boolean {
+    const g = this.groups[key];
+    return g.length > 0 && g.every((s) => current.has(s));
+  }
+
   readonly totalCount = this.store.totalCount;
   readonly countsByState = this.store.countsByState;
 
@@ -207,8 +212,7 @@ export class Status {
     const current = this.filtersSig().states;
     const keys = new Set<string>();
     for (const key of Object.keys(this.groups) as StatusKey[]) {
-      const g = this.groups[key];
-      if (g.length > 0 && g.every((s) => current.has(s))) keys.add(key);
+      if (this.isStatusGroupActive(key, current)) keys.add(key);
     }
     return keys;
   });
@@ -218,14 +222,10 @@ export class Status {
       this.filterService.clearStates();
       return;
     }
-    const groupStates = this.groups[key as StatusKey] ?? [];
-    const current = this.filtersSig().states;
-    const isActive = groupStates.length > 0 && groupStates.every((s) => current.has(s));
-    const next = new Set(current);
-    for (const s of groupStates) {
-      if (isActive) next.delete(s);
-      else next.add(s);
-    }
+    if (!(key in this.groups)) return;
+    const nextKeys = this.toggleKey(this.activeStatusKeys(), key);
+    const next = new Set<TorrentState>();
+    for (const k of nextKeys) for (const s of this.groups[k as StatusKey]) next.add(s);
     this.filterService.setStates(next);
   }
 
