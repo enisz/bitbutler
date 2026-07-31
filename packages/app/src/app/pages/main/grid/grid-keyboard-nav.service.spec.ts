@@ -114,5 +114,46 @@ describe('GridKeyboardNavService', () => {
       service.onKeyDown(event);
       expect(preventDefaultSpy).not.toHaveBeenCalled();
     });
+
+    it('should emit TORRENT_RESUME when F3 is pressed', () => {
+      const event = new KeyboardEvent('keydown', { code: 'F3' });
+      service.onKeyDown(event);
+      expect(commandBusService.emit).toHaveBeenCalledWith({ type: 'TORRENT_RESUME' });
+    });
+
+    it('should emit TORRENT_FORCE_RESUME when Shift+F3 is pressed', () => {
+      const event = new KeyboardEvent('keydown', { code: 'F3', shiftKey: true });
+      service.onKeyDown(event);
+      expect(commandBusService.emit).toHaveBeenCalledWith({ type: 'TORRENT_FORCE_RESUME' });
+    });
+
+    it('should emit TORRENT_PAUSE when F4 is pressed', () => {
+      const event = new KeyboardEvent('keydown', { code: 'F4' });
+      service.onKeyDown(event);
+      expect(commandBusService.emit).toHaveBeenCalledWith({ type: 'TORRENT_PAUSE' });
+    });
+
+    it('should not emit when Shift+F4 is pressed', () => {
+      const event = new KeyboardEvent('keydown', { code: 'F4', shiftKey: true });
+      service.onKeyDown(event);
+      expect(commandBusService.emit).not.toHaveBeenCalled();
+    });
+
+    it('should not emit F3/F4 hotkeys when Ctrl is held', () => {
+      const event = new KeyboardEvent('keydown', { code: 'F3', ctrlKey: true });
+      service.onKeyDown(event);
+      expect(commandBusService.emit).not.toHaveBeenCalled();
+    });
+
+    it('should not emit when F3 is pressed in an INPUT element', () => {
+      const input = document.createElement('input');
+      document.body.appendChild(input);
+      input.focus();
+      const event = new KeyboardEvent('keydown', { code: 'F3', bubbles: true });
+      Object.defineProperty(event, 'target', { value: input, configurable: true });
+      service.onKeyDown(event);
+      expect(commandBusService.emit).not.toHaveBeenCalled();
+      document.body.removeChild(input);
+    });
   });
 });

@@ -58,3 +58,11 @@ A többi közvetlenül a torrenttáblázatra vonatkozik, és le van tiltva, amí
 | `Page Up` / `Page Down` | A fókuszt körülbelül egy képernyőnyi sorral mozgatja. |
 
 A fókusz `Shift` nélküli mozgatása egyben az aktuális kijelölést is lecseréli az újonnan fókuszált sorra, hacsak nem tartod lenyomva a `Ctrl`-t, amely esetben a fókusz a kijelölés megváltoztatása nélkül mozog. A soron belüli szerkesztést támogató cellára való dupla kattintás, valamint az `Enter`/`Escape` billentyűk a megerősítéshez vagy elvetéshez az alapul szolgáló táblázatkezelő könyvtár szokásos szerkesztési viselkedését követik, nem a BitButler egyedi testreszabását.
+
+### Vezérlés
+
+| Billentyűparancs | Művelet                                |
+| ---------------- | -------------------------------------- |
+| `F3`             | Elindítja a kijelölt torrente(ke)t.    |
+| `Shift+F3`       | Kényszerített indítás.                 |
+| `F4`             | Szünetelteti a kijelölt torrente(ke)t. |
