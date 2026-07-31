@@ -125,7 +125,7 @@ The sidebar breaks the torrent list down into five filter groups, each showing a
 - **Tags** - one entry per tag, with a **Manage** shortcut straight to [Manage > Tags](./manage/tags).
 - **Save Paths** - one entry per distinct save path in use.
 
-Trackers, Categories, Tags, and Save Paths each have their own filter box to search long lists. Selecting an entry adds it to the active filter for that group; you can select multiple entries within a group, and the grid shows torrents matching any of them. Selecting an already-active entry removes it. Once any filter is active anywhere in the sidebar, a **Clear All** button appears beneath the groups to reset every filter at once.
+Trackers, Categories, Tags, and Save Paths each have their own filter box to search long lists. Every group, including Status, works the same way: selecting an entry adds it to the active filter for that group, and you can select multiple entries within a group - the grid shows torrents matching any of them. Selecting an already-active entry removes it. Selections in different groups narrow the list together, so a torrent must match at least one selected entry in _every_ group that has an active selection to appear in the grid. Once any filter is active anywhere in the sidebar, a **Clear All** button appears beneath the groups to reset every filter at once.
 
 ## Status Bar
 
