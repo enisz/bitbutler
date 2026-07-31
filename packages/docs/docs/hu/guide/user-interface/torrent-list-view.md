@@ -125,7 +125,7 @@ Az oldalsáv öt szűrőcsoportra bontja a torrentlistát, mindegyik bejegyzés 
 - **Címkék** - egy bejegyzés minden címkéhez, egy **Kezelés** gyorsgombbal egyenesen a [Kezelés > Címkék](./manage/tags) oldalra.
 - **Mentési útvonalak** - egy bejegyzés minden használatban lévő, egyedi mentési útvonalhoz.
 
-A Trackerek, Kategóriák, Címkék és Mentési útvonalak mindegyikéhez saját szűrőmező tartozik a hosszú listák kereséséhez. Egy bejegyzés kiválasztása az adott értékre szűri a táblázatot; csoportonként egyszerre csak egy kiválasztás aktív. Amint bármely szűrő aktívvá válik bárhol az oldalsávon, egy **Összes törlése** gomb jelenik meg a csoportok alatt, amely egyszerre visszaállítja az összes szűrőt.
+A Trackerek, Kategóriák, Címkék és Mentési útvonalak mindegyikéhez saját szűrőmező tartozik a hosszú listák kereséséhez. Egy bejegyzés kiválasztása hozzáadja azt az adott csoport aktív szűréséhez; egy csoporton belül több bejegyzés is kiválasztható, és a táblázat bármelyikükre illeszkedő torrenteket megjeleníti. Egy már aktív bejegyzés kiválasztása eltávolítja azt. Amint bármely szűrő aktívvá válik bárhol az oldalsávon, egy **Összes törlése** gomb jelenik meg a csoportok alatt, amely egyszerre visszaállítja az összes szűrőt.
 
 ## Állapotsáv
 
