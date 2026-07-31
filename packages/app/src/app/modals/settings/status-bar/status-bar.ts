@@ -50,7 +50,6 @@ export class StatusBar implements SettingsTabComponent {
     'download-speed',
     'upload-speed',
     'free-space',
-    'session-stats',
     'selection',
     'polling-indicator',
   ];
