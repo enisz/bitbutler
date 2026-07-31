@@ -22,11 +22,12 @@ If "Start app with the system" is enabled but no server is marked as the default
 
 ### Behavior
 
-| Setting                                            | Description                                                                                                                                     |
-| -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| Delete torrent files after adding them to the list | Removes the local `.torrent` file from disk once it has been added successfully.                                                                |
-| Automatic updates                                  | Checks for BitButler updates automatically every time the app starts. A **Check for Updates now** button next to it triggers a check on demand. |
-| In-application notification position               | Where toast notifications appear: Top Left, Top Right, Bottom Right, or Bottom Left.                                                            |
+| Setting                                                          | Description                                                                                                                                                                                                                               |
+| ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Delete torrent files after adding them to the list               | Removes the local `.torrent` file from disk once it has been added successfully.                                                                                                                                                          |
+| Delete torrent files when the torrent already exists in the list | Automatically removes the source `.torrent` file from disk when it's added again as a duplicate. Requires "Delete torrent files after adding them to the list" to be enabled - see the [Torrent Exists Window](../torrent-exists-window). |
+| Automatic updates                                                | Checks for BitButler updates automatically every time the app starts. A **Check for Updates now** button next to it triggers a check on demand.                                                                                           |
+| In-application notification position                             | Where toast notifications appear: Top Left, Top Right, Bottom Right, or Bottom Left.                                                                                                                                                      |
 
 ### Language
 

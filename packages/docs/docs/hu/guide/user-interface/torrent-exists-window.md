@@ -19,10 +19,11 @@ Ez a párbeszédablak a meglévő torrentről mutat információkat, többek kö
 - Mentési útvonal
 - Kategória és címkék (ha van)
 
+Ha [A torrent fájlok törlése, ha a torrent már szerepel a listában](./settings/bitbutler-settings#viselkedes) engedélyezve van a BitButler beállításaiban, és a forrás `.torrent` fájl ismert, a BitButler automatikusan törli azt a lemezről, amint ez a párbeszédablak megnyílik. Ha a törlés sikertelen, egy felugró értesítés jelzi a hibát.
+
 ## Opciók
 
 Ebből a párbeszédablakból a következőket teheted:
 
 - **Részletek megnyitása** - Közvetlenül a meglévő torrent részletek nézetére ugrik
 - **Bezárás** - Bezárja a párbeszédablakot, és nem hajt végre semmilyen műveletet
-- **Törlés** - Eltávolítja a forrás `.torrent` fájlt a lemezről (csak akkor jelenik meg, ha a BitButler beállításaiban engedélyezve van, és a forrás ismert)

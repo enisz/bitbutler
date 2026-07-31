@@ -29,7 +29,7 @@ Select one or more torrents and use the toolbar's **Start** and **Stop** buttons
 
 ## Duplicate Torrents
 
-If you try to add a torrent that's already on the server, BitButler shows the [Torrent Exists window](./user-interface/torrent-exists-window) instead: the existing torrent's progress, size, ratio, seeds/peers, added date, save path, and category/tags (if set). From here you can jump straight to it with **Open Details**, or close the dialog. If "Delete torrent files after adding them to the list" is enabled (see [BitButler Settings > Behavior](./user-interface/settings/bitbutler-settings#behavior)) and the source `.torrent` file is known, a **Delete** button also appears to remove that now-redundant file from disk. This applies to file and magnet-link additions; in folder mode, duplicates are instead flagged directly in the folder grid rather than opening this dialog.
+If you try to add a torrent that's already on the server, BitButler shows the [Torrent Exists window](./user-interface/torrent-exists-window) instead: the existing torrent's progress, size, ratio, seeds/peers, added date, save path, and category/tags (if set). From here you can jump straight to it with **Open Details**, or close the dialog. If "Delete torrent files when the torrent already exists in the list" is enabled (see [BitButler Settings > Behavior](./user-interface/settings/bitbutler-settings#behavior)) and the source `.torrent` file is known, BitButler automatically deletes that now-redundant file from disk when the dialog opens. This applies to file and magnet-link additions; in folder mode, duplicates are instead flagged directly in the folder grid rather than opening this dialog.
 
 ## Renaming a Torrent
 
