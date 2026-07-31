@@ -56,6 +56,13 @@ export class Status {
   private readonly filtersSig = this.filterService.external;
   private readonly languageChanged = toSignal(this.translateService.onLangChange);
 
+  private toggleKey(current: ReadonlySet<string>, key: string): Set<string> {
+    const next = new Set(current);
+    if (next.has(key)) next.delete(key);
+    else next.add(key);
+    return next;
+  }
+
   readonly totalCount = this.store.totalCount;
   readonly countsByState = this.store.countsByState;
 
@@ -223,24 +230,16 @@ export class Status {
     this.filterService.clearTrackers();
   }
 
-  public setTracker(key: string): void {
-    this.filterService.setTrackers([key]);
-  }
-
   public setTrackerGroup(key: string): void {
     if (key === 'all') {
       this.clearTrackers();
       return;
     }
-    this.setTracker(key);
+    this.filterService.setTrackers(this.toggleKey(this.filtersSig().trackers, key));
   }
 
   public clearSavePaths(): void {
     this.filterService.clearSavePaths();
-  }
-
-  public setSavePath(key: string): void {
-    this.filterService.setSavePaths([key]);
   }
 
   public setSavePathGroup(key: string): void {
@@ -248,7 +247,7 @@ export class Status {
       this.clearSavePaths();
       return;
     }
-    this.setSavePath(key);
+    this.filterService.setSavePaths(this.toggleKey(this.filtersSig().savePaths, key));
   }
 
   readonly trackersWithCounts = computed<FilterItem[]>(() => {
@@ -311,16 +310,12 @@ export class Status {
     this.filterService.clearCategories();
   }
 
-  public setCategory(key: string): void {
-    this.filterService.setCategories([key]);
-  }
-
   public setCategoryGroup(key: string): void {
     if (key === 'all') {
       this.clearCategories();
       return;
     }
-    this.setCategory(key);
+    this.filterService.setCategories(this.toggleKey(this.filtersSig().categories, key));
   }
 
   public clearTags(): void {
@@ -331,15 +326,11 @@ export class Status {
     this.filterService.resetAll();
   }
 
-  public setTag(key: string): void {
-    this.filterService.setTags([key]);
-  }
-
   public setTagGroup(key: string): void {
     if (key === 'all') {
       this.clearTags();
       return;
     }
-    this.setTag(key);
+    this.filterService.setTags(this.toggleKey(this.filtersSig().tags, key));
   }
 }

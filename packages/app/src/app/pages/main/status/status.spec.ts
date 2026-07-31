@@ -109,9 +109,24 @@ describe('Status', () => {
       expect(filterMock.clearTrackers).toHaveBeenCalled();
     });
 
-    it('should call setTrackers with the key when not "all"', () => {
-      component.setTrackerGroup('tracker.example.com');
-      expect(filterMock.setTrackers).toHaveBeenCalledWith(['tracker.example.com']);
+    it('should add the key to the current set when not yet selected', () => {
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        trackers: new Set(['tracker.a.com']),
+      });
+      component.setTrackerGroup('tracker.b.com');
+      expect(filterMock.setTrackers).toHaveBeenCalledWith(
+        new Set(['tracker.a.com', 'tracker.b.com']),
+      );
+    });
+
+    it('should remove the key from the current set when already selected', () => {
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        trackers: new Set(['tracker.a.com', 'tracker.b.com']),
+      });
+      component.setTrackerGroup('tracker.a.com');
+      expect(filterMock.setTrackers).toHaveBeenCalledWith(new Set(['tracker.b.com']));
     });
   });
 
@@ -121,9 +136,22 @@ describe('Status', () => {
       expect(filterMock.clearSavePaths).toHaveBeenCalled();
     });
 
-    it('should call setSavePaths with the key when not "all"', () => {
+    it('should add the key to the current set when not yet selected', () => {
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        savePaths: new Set(['/downloads']),
+      });
+      component.setSavePathGroup('/media');
+      expect(filterMock.setSavePaths).toHaveBeenCalledWith(new Set(['/downloads', '/media']));
+    });
+
+    it('should remove the key from the current set when already selected', () => {
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        savePaths: new Set(['/downloads', '/media']),
+      });
       component.setSavePathGroup('/downloads');
-      expect(filterMock.setSavePaths).toHaveBeenCalledWith(['/downloads']);
+      expect(filterMock.setSavePaths).toHaveBeenCalledWith(new Set(['/media']));
     });
   });
 
@@ -133,9 +161,22 @@ describe('Status', () => {
       expect(filterMock.clearCategories).toHaveBeenCalled();
     });
 
-    it('should call setCategories with the key when not "all"', () => {
+    it('should add the key to the current set when not yet selected', () => {
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        categories: new Set(['Movies']),
+      });
+      component.setCategoryGroup('TV');
+      expect(filterMock.setCategories).toHaveBeenCalledWith(new Set(['Movies', 'TV']));
+    });
+
+    it('should remove the key from the current set when already selected', () => {
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        categories: new Set(['Movies', 'TV']),
+      });
       component.setCategoryGroup('Movies');
-      expect(filterMock.setCategories).toHaveBeenCalledWith(['Movies']);
+      expect(filterMock.setCategories).toHaveBeenCalledWith(new Set(['TV']));
     });
   });
 
@@ -145,9 +186,19 @@ describe('Status', () => {
       expect(filterMock.clearTags).toHaveBeenCalled();
     });
 
-    it('should call setTags with the key when not "all"', () => {
+    it('should add the key to the current set when not yet selected', () => {
+      filterMock.external.set({ ...GRID_FILTER_INITIAL.external, tags: new Set(['hd']) });
+      component.setTagGroup('4k');
+      expect(filterMock.setTags).toHaveBeenCalledWith(new Set(['hd', '4k']));
+    });
+
+    it('should remove the key from the current set when already selected', () => {
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        tags: new Set(['hd', '4k']),
+      });
       component.setTagGroup('hd');
-      expect(filterMock.setTags).toHaveBeenCalledWith(['hd']);
+      expect(filterMock.setTags).toHaveBeenCalledWith(new Set(['4k']));
     });
   });
 
