@@ -7,6 +7,17 @@
         </p>
       </div>
     </div>
+    <div class="row">
+      <div class="col-12 d-flex justify-content-end">
+        <button type="button" class="btn btn-sm btn-link btn-split" (click)="reset()">
+          <bb-btn-content
+            [icon]="faRotateLeft"
+            [text]="'pages.settings.tab.status-bar.label.reset' | translate"
+            position="end"
+          ></bb-btn-content>
+        </button>
+      </div>
+    </div>
     <div cdkDropListGroup class="status-bar-config">
       <fieldset class="bb-fieldset mt-2 mb-1">
         <legend>{{ 'pages.settings.tab.status-bar.label.widget-pool' | translate }}</legend>

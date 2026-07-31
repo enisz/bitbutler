@@ -1645,7 +1645,8 @@
             "widget-pool": "Elérhető modulok",
             "widgets": "Modulok",
             "left": "Bal oldal",
-            "right": "Jobb oldal"
+            "right": "Jobb oldal",
+            "reset": "Visszaállítás alapértelmezettre"
           },
           "widget": {
             "connection-status": "Kapcsolati állapot",

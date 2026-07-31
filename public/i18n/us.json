@@ -1645,7 +1645,8 @@
             "widget-pool": "Widget Pool",
             "widgets": "Widgets",
             "left": "Left",
-            "right": "Right"
+            "right": "Right",
+            "reset": "Reset to Defaults"
           },
           "widget": {
             "connection-status": "Connection Status",
