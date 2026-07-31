@@ -19,7 +19,7 @@ describe('FilterGroupComponent', () => {
     fixture = TestBed.createComponent(FilterGroupComponent);
     component = fixture.componentInstance;
     fixture.componentRef.setInput('label', 'Status');
-    fixture.componentRef.setInput('activeKey', 'all');
+    fixture.componentRef.setInput('activeKeys', new Set<string>());
     fixture.componentRef.setInput('showAllCount', 10);
     fixture.componentRef.setInput('items', sampleItems);
     fixture.detectChanges();
@@ -41,38 +41,87 @@ describe('FilterGroupComponent', () => {
     });
   });
 
-  describe('auto-emit on item removal', () => {
-    it('should emit "all" when active item is removed from items list', () => {
+  describe('auto-prune stale active keys', () => {
+    it('should emit the stale key when an active item is removed from items list', () => {
       const emitted: string[] = [];
       component.itemSelected.subscribe((key) => emitted.push(key));
 
-      fixture.componentRef.setInput('activeKey', 'downloading');
+      fixture.componentRef.setInput('activeKeys', new Set(['downloading']));
       fixture.componentRef.setInput('items', [{ key: 'seeding', label: 'Seeding', count: 7 }]);
       fixture.detectChanges();
 
-      expect(emitted).toContain('all');
+      expect(emitted).toEqual(['downloading']);
     });
 
-    it('should not emit when active item is still in the updated list', () => {
+    it('should preserve a sibling active key that is still present', () => {
       const emitted: string[] = [];
       component.itemSelected.subscribe((key) => emitted.push(key));
 
-      fixture.componentRef.setInput('activeKey', 'downloading');
+      fixture.componentRef.setInput('activeKeys', new Set(['downloading', 'seeding']));
+      fixture.componentRef.setInput('items', [{ key: 'seeding', label: 'Seeding', count: 7 }]);
+      fixture.detectChanges();
+
+      expect(emitted).toEqual(['downloading']);
+    });
+
+    it('should not emit when all active items are still in the updated list', () => {
+      const emitted: string[] = [];
+      component.itemSelected.subscribe((key) => emitted.push(key));
+
+      fixture.componentRef.setInput('activeKeys', new Set(['downloading']));
       fixture.componentRef.setInput('items', [...sampleItems]);
       fixture.detectChanges();
 
       expect(emitted).toHaveLength(0);
     });
 
-    it('should not emit when activeKey is "all"', () => {
+    it('should not emit when activeKeys is empty', () => {
       const emitted: string[] = [];
       component.itemSelected.subscribe((key) => emitted.push(key));
 
-      fixture.componentRef.setInput('activeKey', 'all');
+      fixture.componentRef.setInput('activeKeys', new Set());
       fixture.componentRef.setInput('items', []);
       fixture.detectChanges();
 
       expect(emitted).toHaveLength(0);
+    });
+  });
+
+  describe('active row highlighting', () => {
+    it('should mark the "All" row active when activeKeys is empty', () => {
+      fixture.componentRef.setInput('activeKeys', new Set());
+      fixture.detectChanges();
+      const items: HTMLElement[] = Array.from(
+        fixture.nativeElement.querySelectorAll('.list-group-item'),
+      );
+      const allItem = items.find((el) => el.textContent?.includes('all'));
+      expect(allItem?.classList.contains('active')).toBe(true);
+    });
+
+    it('should mark the "All" row active again once the only active key is toggled off', () => {
+      fixture.componentRef.setInput('activeKeys', new Set(['downloading']));
+      fixture.detectChanges();
+      fixture.componentRef.setInput('activeKeys', new Set());
+      fixture.detectChanges();
+      const items: HTMLElement[] = Array.from(
+        fixture.nativeElement.querySelectorAll('.list-group-item'),
+      );
+      const allItem = items.find((el) => el.textContent?.includes('all'));
+      expect(allItem?.classList.contains('active')).toBe(true);
+    });
+
+    it('should mark multiple item rows active simultaneously, and "All" inactive', () => {
+      fixture.componentRef.setInput('activeKeys', new Set(['downloading', 'seeding']));
+      fixture.detectChanges();
+      const items: HTMLElement[] = Array.from(
+        fixture.nativeElement.querySelectorAll('.list-group-item'),
+      );
+      const downloadingItem = items.find((el) => el.textContent?.includes('Downloading'));
+      const seedingItem = items.find((el) => el.textContent?.includes('Seeding'));
+      const allItem = items.find((el) => el.textContent?.includes('All'));
+      expect(downloadingItem?.classList.contains('active')).toBe(true);
+      expect(seedingItem?.classList.contains('active')).toBe(true);
+      expect(allItem?.classList.contains('active')).toBe(false);
     });
   });
 

@@ -44,7 +44,7 @@ export interface FilterItem {
 export class FilterGroupComponent {
   readonly label = input.required<string>();
   readonly items = input<FilterItem[] | null>(null);
-  readonly activeKey = input.required<string>();
+  readonly activeKeys = input.required<ReadonlySet<string>>();
   readonly showAll = input(true);
   readonly showAllCount = input.required<number>();
   readonly showFilter = input(false);
@@ -68,9 +68,11 @@ export class FilterGroupComponent {
   constructor() {
     effect(() => {
       const next = this.items() ?? [];
-      const key = this.activeKey();
-      if (key && key !== 'all' && !next.some((i) => i.key === key)) {
-        this.itemSelected.emit('all');
+      const validKeys = new Set(next.map((i) => i.key));
+      for (const key of this.activeKeys()) {
+        if (!validKeys.has(key)) {
+          this.itemSelected.emit(key);
+        }
       }
     });
   }

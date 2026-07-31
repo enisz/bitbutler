@@ -196,24 +196,14 @@ export class Status {
     ];
   });
 
-  readonly activeKey = computed<StatusKey>(() => {
-    const active = this.filtersSig().states;
-
-    if (active.size === 0) return 'all';
-
-    const activeArr = Array.from(active).sort();
-    const equals = (a: string[], b: string[]) =>
-      a.length === b.length && a.every((v, i) => v === b[i]);
-
+  readonly activeStatusKeys = computed<ReadonlySet<string>>(() => {
+    const current = this.filtersSig().states;
+    const keys = new Set<string>();
     for (const key of Object.keys(this.groups) as StatusKey[]) {
       const g = this.groups[key];
-      if (g.length === 0) continue;
-
-      const gSorted = [...g].sort();
-      if (equals(activeArr, gSorted)) return key;
+      if (g.length > 0 && g.every((s) => current.has(s))) keys.add(key);
     }
-
-    return 'all';
+    return keys;
   });
 
   public setGroup(key: string): void {
@@ -225,15 +215,9 @@ export class Status {
     this.filterService.setStates(states);
   }
 
-  readonly activeTrackerKey = computed(() => {
-    const set = this.filtersSig().trackers;
-    return set?.size === 0 ? 'all' : [...set][0];
-  });
+  readonly activeTrackerKeys = computed<ReadonlySet<string>>(() => this.filtersSig().trackers);
 
-  readonly activeSavePathKey = computed(() => {
-    const set = this.filtersSig().savePaths;
-    return set?.size === 0 ? 'all' : [...set][0];
-  });
+  readonly activeSavePathKeys = computed<ReadonlySet<string>>(() => this.filtersSig().savePaths);
 
   public clearTrackers(): void {
     this.filterService.clearTrackers();
@@ -319,15 +303,9 @@ export class Status {
     this.store.tagsWithCounts().map((item) => ({ ...item, icon: this.icon.faTags })),
   );
 
-  readonly activeCategoryKey = computed(() => {
-    const set = this.filtersSig().categories;
-    return set?.size === 0 ? 'all' : [...set][0];
-  });
+  readonly activeCategoryKeys = computed<ReadonlySet<string>>(() => this.filtersSig().categories);
 
-  readonly activeTagKey = computed(() => {
-    const set = this.filtersSig().tags;
-    return set?.size === 0 ? 'all' : [...set][0];
-  });
+  readonly activeTagKeys = computed<ReadonlySet<string>>(() => this.filtersSig().tags);
 
   public clearCategories(): void {
     this.filterService.clearCategories();

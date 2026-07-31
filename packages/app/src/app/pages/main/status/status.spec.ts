@@ -158,26 +158,44 @@ describe('Status', () => {
     });
   });
 
-  describe('activeKey', () => {
-    it('should return "all" when no states filter is active', () => {
+  describe('activeStatusKeys', () => {
+    it('should return an empty set when no states filter is active', () => {
       filterMock.external.set({ ...GRID_FILTER_INITIAL.external, states: new Set() });
-      expect(component.activeKey()).toBe('all');
+      expect(component.activeStatusKeys()).toEqual(new Set());
     });
 
-    it('should return "stopped" when the stopped states are active', () => {
+    it('should include "stopped" when the stopped states are fully active', () => {
       filterMock.external.set({
         ...GRID_FILTER_INITIAL.external,
         states: new Set(['pausedDL', 'pausedUP', 'stoppedDL', 'stoppedUP']),
       });
-      expect(component.activeKey()).toBe('stopped');
+      expect(component.activeStatusKeys()).toEqual(new Set(['stopped']));
     });
 
-    it('should return "all" for an unrecognised combination of states', () => {
+    it('should include both keys when the union of two groups is active', () => {
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        states: new Set([
+          'downloading',
+          'forcedDL',
+          'queuedDL',
+          'metaDL',
+          'stalledDL',
+          'pausedDL',
+          'pausedUP',
+          'stoppedDL',
+          'stoppedUP',
+        ]),
+      });
+      expect(component.activeStatusKeys()).toEqual(new Set(['downloading', 'stopped']));
+    });
+
+    it('should return an empty set for an unrecognised/partial combination of states', () => {
       filterMock.external.set({
         ...GRID_FILTER_INITIAL.external,
         states: new Set(['downloading', 'uploading']),
       });
-      expect(component.activeKey()).toBe('all');
+      expect(component.activeStatusKeys()).toEqual(new Set());
     });
   });
 
