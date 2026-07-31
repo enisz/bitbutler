@@ -269,4 +269,21 @@ describe('TorrentExists - auto-delete enabled', () => {
       'components.modals.torrent-exists.toast.delete-failed-title',
     );
   });
+
+  it('shows a danger toast and does not mark fileDeleted when deleteFile resolves with ok: false', async () => {
+    vi.spyOn(window.bitbutler.torrent, 'deleteFile').mockResolvedValue({
+      ok: false,
+      error: 'EPERM: operation not permitted',
+    });
+
+    fixture.componentRef.setInput('originalPath', '/tmp/test.torrent');
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(comp.fileDeleted()).toBe(false);
+    expect(mockToastService.danger).toHaveBeenCalledWith(
+      'EPERM: operation not permitted',
+      'components.modals.torrent-exists.toast.delete-failed-title',
+    );
+  });
 });

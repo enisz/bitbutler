@@ -8,7 +8,6 @@ import {
   signal,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCircleInfo, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -41,7 +40,6 @@ import { TorrentStoreService } from '../../services/torrent-store.service';
     TranslatePipe,
     BbProgress,
     BbBtnContent,
-    FontAwesomeModule,
   ],
   styleUrls: ['./torrent-exists.scss'],
   templateUrl: './torrent-exists.html',
@@ -99,7 +97,24 @@ export class TorrentExists {
 
   private async deleteTorrentFile(path: string): Promise<void> {
     try {
-      await window.bitbutler.torrent.deleteFile({ path });
+      const result = await window.bitbutler.torrent.deleteFile({ path });
+      if (!result?.ok) {
+        console.error(
+          TorrentExists.name,
+          'deleteTorrentFile',
+          'Failed to delete torrent file',
+          path,
+          result?.error,
+        );
+        this.toastService.danger(
+          result?.error ?? '',
+          this.translateService.instant(
+            'components.modals.torrent-exists.toast.delete-failed-title',
+          ),
+        );
+        return;
+      }
+
       this.fileDeleted.set(true);
       this.toastService.success(
         this.translateService.instant('components.modals.torrent-exists.toast.deleted'),
