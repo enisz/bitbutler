@@ -140,8 +140,11 @@ Available widgets:
 - Connection Status
 - DHT Nodes
 - Share Ratio
+- All-time Ratio
 - Global Downloaded
+- All-time Downloaded
 - Global Uploaded
+- All-time Uploaded
 - Download Speed
 - Upload Speed
 - Disk Space
