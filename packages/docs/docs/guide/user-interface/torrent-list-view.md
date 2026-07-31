@@ -25,6 +25,12 @@ Buttons that need a selection (Delete, Start, Stop, and the queue-reorder button
 
 The search box on the right filters the grid as you type, debounced briefly to avoid filtering on every keystroke. Press **Ctrl+K** from anywhere in the window to jump to it, and the small **x** button (or **Escape** while focused) clears it.
 
+## Context Menu
+
+Right-clicking a torrent row opens a context menu with the same Start, Stop, and Force Resume actions as the toolbar - each showing its [keyboard shortcut](../keyboard-shortcuts#control) as a hint - plus [Torrent Details](./torrent-details-view), and submenus for Files, Manage, Queue, Transfer, Maintenance, Copy, and Pin Row. A Remove entry at the bottom deletes the selected torrent(s), also hinting the `Shift` modifier for the "also delete files" option.
+
+![Torrent grid right-click context menu](/screenshots/torrent-list-view/context-menu.png)
+
 ## Sidebar Filters
 
 The sidebar breaks the torrent list down into five filter groups, each showing a count next to every entry:

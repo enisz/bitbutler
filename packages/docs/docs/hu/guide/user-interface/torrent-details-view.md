@@ -9,9 +9,7 @@ A Torrent részletek párbeszédablak egy teljes, fülekre bontott áttekintést
 
 ## Torrent részleteinek megnyitása
 
-Egy torrentsorra való dupla kattintás alapból megnyitja ezt a párbeszédablakot - lásd [Sorra dupla kattintás viselkedése](./settings/bitbutler-settings#tablazat-beallitasok) ennek megváltoztatásához vagy letiltásához. Jobb gombbal is kattinthatsz egyetlen torrentsorra, és kiválaszthatod a **Torrent részletek** lehetőséget a helyi menüből (ez az opció nem érhető el, ha több sor van kijelölve).
-
-![Torrenttáblázat jobb kattintásos helyi menüje](/screenshots/torrent-details-view/context-menu.png)
+Egy torrentsorra való dupla kattintás alapból megnyitja ezt a párbeszédablakot - lásd [Sorra dupla kattintás viselkedése](./settings/bitbutler-settings#tablazat-beallitasok) ennek megváltoztatásához vagy letiltásához. Jobb gombbal is kattinthatsz egyetlen torrentsorra, és kiválaszthatod a **Torrent részletek** lehetőséget a helyi menüből (ez az opció nem érhető el, ha több sor van kijelölve). Lásd [Torrenttáblázat nézet > Helyi menü](./torrent-list-view#helyi-menu) ehhez a menühöz.
 
 ## Általános
 

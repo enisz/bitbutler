@@ -9,9 +9,7 @@ The Torrent Details dialog gives you a full, tabbed breakdown of a single torren
 
 ## Opening Torrent Details
 
-Double-clicking a torrent row opens this dialog by default - see [Row double-click behavior](./settings/bitbutler-settings#grid-options) to change or disable that. You can also right-click a single torrent row and choose **Torrent Details** from the context menu (this option isn't available when multiple rows are selected).
-
-![Torrent grid right-click context menu](/screenshots/torrent-details-view/context-menu.png)
+Double-clicking a torrent row opens this dialog by default - see [Row double-click behavior](./settings/bitbutler-settings#grid-options) to change or disable that. You can also right-click a single torrent row and choose **Torrent Details** from the context menu (this option isn't available when multiple rows are selected). See [Torrent List View > Context Menu](./torrent-list-view#context-menu) for a look at that menu.
 
 ## General
 

@@ -25,6 +25,12 @@ A kijelölést igénylő gombok (Törlés, Indítás, Leállítás és a sorrend
 
 A jobb oldali keresőmező gépelés közben szűri a táblázatot, kicsit késleltetve, hogy ne szűrjön minden billentyűleütésnél. Nyomd meg a **Ctrl+K**-t az ablak bármely pontjáról az odaugráshoz, a kis **x** gomb (vagy fókusz közben az **Escape**) pedig üríti azt.
 
+## Helyi menü
+
+Egy torrentsorra jobb gombbal kattintva megnyílik egy helyi menü, amely ugyanazokat az Indítás, Leállítás és Kényszerített folytatás műveleteket tartalmazza, mint az eszköztár - mindegyik a [billentyűparancsát](../keyboard-shortcuts#vezerles) is jelzi -, plusz a [Torrent részletei](./torrent-details-view) elemet, valamint almenüket a Fájlok, Kezelés, Sor, Átvitel, Karbantartás, Másolás és Sor rögzítése funkciókhoz. Az alján egy Eltávolítás elem törli a kijelölt torrente(ke)t, szintén jelezve a `Shift` módosítót a "fájlok törlése is" opcióhoz.
+
+![Torrenttáblázat jobb kattintásos helyi menüje](/screenshots/torrent-list-view/context-menu.png)
+
 ## Oldalsáv szűrők
 
 Az oldalsáv öt szűrőcsoportra bontja a torrentlistát, mindegyik bejegyzés mellett egy számlálóval:
