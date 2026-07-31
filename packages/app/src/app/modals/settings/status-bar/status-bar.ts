@@ -71,7 +71,9 @@ export class StatusBar implements SettingsTabComponent {
       }),
       switchMap(() => this.statusBarService.asObservable()),
       tap((settings: StatusBarSettings) => {
-        this.available = this.mapIdsToWidgets(settings.available);
+        const placed = new Set([...settings.available, ...settings.left, ...settings.right]);
+        const missing = this.MASTER_WIDGET_KEYS.filter((key) => !placed.has(key));
+        this.available = this.mapIdsToWidgets([...settings.available, ...missing]);
         this.left = this.mapIdsToWidgets(settings.left);
         this.right = this.mapIdsToWidgets(settings.right);
       }),
