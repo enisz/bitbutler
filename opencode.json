@@ -1,0 +1,65 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  "model": "ollama/qwen3-coder:30b",
+
+  "provider": {
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama (threadripper)",
+      "options": {
+        "baseURL": "http://threadripper:11434/v1"
+      },
+
+      "models": {
+        "qwen3-coder:30b": {
+          "name": "Qwen3 Coder 30B",
+          "limit": {
+            "context": 65536,
+            "output": 16384
+          }
+        },
+
+        "devstral:24b": {
+          "name": "Devstral 24B",
+          "limit": {
+            "context": 131072,
+            "output": 32768
+          }
+        },
+
+        "deepseek-r1:32b": {
+          "name": "DeepSeek R1 32B",
+          "limit": {
+            "context": 131072,
+            "output": 32768
+          }
+        },
+
+        "rafw007/Qwen3.6-35B-A3B-mlx-claude-coder-abliterated:latest": {
+          "name": "Qwen3.6 Claude Coder",
+          "limit": {
+            "context": 131072,
+            "output": 32768
+          }
+        },
+
+        "gemma4:12b": {
+          "name": "Gemma 4 12B",
+          "limit": {
+            "context": 65536,
+            "output": 16384
+          }
+        },
+
+        "llama3:latest": {
+          "name": "Llama 3 8B",
+          "limit": {
+            "context": 8192,
+            "output": 8192
+          }
+        }
+      }
+    }
+  }
+}
