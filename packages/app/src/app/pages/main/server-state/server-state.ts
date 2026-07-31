@@ -66,6 +66,9 @@ export class ServerState {
   @ViewChild('tipGlobalUl') tipGlobalUl!: TemplateRef<any>;
   @ViewChild('tipLiveDl') tipLiveDl!: TemplateRef<any>;
   @ViewChild('tipLiveUl') tipLiveUl!: TemplateRef<any>;
+  @ViewChild('tipAlltimeRatio') tipAlltimeRatio!: TemplateRef<any>;
+  @ViewChild('tipAlltimeDl') tipAlltimeDl!: TemplateRef<any>;
+  @ViewChild('tipAlltimeUl') tipAlltimeUl!: TemplateRef<any>;
 
   public diskSpace = signal<bigint>(0n);
   public dlSpeed = signal<bigint>(0n);
