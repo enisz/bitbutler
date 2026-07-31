@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FilterGroupComponent, FilterItem } from './filter-group';
 
 const sampleItems: FilterItem[] = [
-  { key: 'all', label: 'All', count: 10 },
   { key: 'downloading', label: 'Downloading', count: 3 },
   { key: 'seeding', label: 'Seeding', count: 7 },
 ];
@@ -118,7 +117,7 @@ describe('FilterGroupComponent', () => {
       );
       const downloadingItem = items.find((el) => el.textContent?.includes('Downloading'));
       const seedingItem = items.find((el) => el.textContent?.includes('Seeding'));
-      const allItem = items.find((el) => el.textContent?.includes('All'));
+      const allItem = items.find((el) => el.textContent?.includes('all'));
       expect(downloadingItem?.classList.contains('active')).toBe(true);
       expect(seedingItem?.classList.contains('active')).toBe(true);
       expect(allItem?.classList.contains('active')).toBe(false);

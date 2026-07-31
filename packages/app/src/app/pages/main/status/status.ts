@@ -56,18 +56,6 @@ export class Status {
   private readonly filtersSig = this.filterService.external;
   private readonly languageChanged = toSignal(this.translateService.onLangChange);
 
-  private toggleKey(current: ReadonlySet<string>, key: string): Set<string> {
-    const next = new Set(current);
-    if (next.has(key)) next.delete(key);
-    else next.add(key);
-    return next;
-  }
-
-  private isStatusGroupActive(key: StatusKey, current: ReadonlySet<TorrentState>): boolean {
-    const g = this.groups[key];
-    return g.length > 0 && g.every((s) => current.has(s));
-  }
-
   readonly totalCount = this.store.totalCount;
   readonly countsByState = this.store.countsByState;
 
@@ -87,8 +75,6 @@ export class Status {
     };
   });
 
-  readonly hasNoTrackerFilters = computed(() => this.filtersSig().trackers.size === 0);
-  readonly hasNoSavePathFilters = computed(() => this.filtersSig().savePaths.size === 0);
   readonly hasAnyFilter = computed(() => {
     const f = this.filtersSig();
     return (
@@ -207,6 +193,18 @@ export class Status {
       },
     ];
   });
+
+  private toggleKey(current: ReadonlySet<string>, key: string): Set<string> {
+    const next = new Set(current);
+    if (next.has(key)) next.delete(key);
+    else next.add(key);
+    return next;
+  }
+
+  private isStatusGroupActive(key: StatusKey, current: ReadonlySet<TorrentState>): boolean {
+    const g = this.groups[key];
+    return g.length > 0 && g.every((s) => current.has(s));
+  }
 
   readonly activeStatusKeys = computed<ReadonlySet<string>>(() => {
     const current = this.filtersSig().states;
