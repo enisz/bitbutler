@@ -139,12 +139,12 @@ Elérhető widgetek:
 
 - Kapcsolat állapota
 - DHT csomópontok
-- Megosztási arány
-- Összesített arány
-- Globális letöltött
-- Összesített letöltés
-- Globális feltöltött
-- Összesített feltöltés
+- Globális munkamenet arány
+- Globális összesített arány
+- Globális munkamenet letöltés
+- Globális összesített letöltés
+- Globális munkamenet feltöltés
+- Globális összesített feltöltés
 - Letöltési sebesség
 - Feltöltési sebesség
 - Lemezterület
