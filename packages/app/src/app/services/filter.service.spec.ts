@@ -1,5 +1,8 @@
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { Torrent } from '../models/torrent.model';
 import { FilterService } from './filter.service';
+import { TorrentStoreService } from './torrent-store.service';
 
 describe('FilterService', () => {
   let service: FilterService;
@@ -128,5 +131,70 @@ describe('FilterService', () => {
     expect(service.external().trackers.size).toBe(0);
     expect(service.external().categories.size).toBe(0);
     expect(service.external().tags.size).toBe(0);
+  });
+
+  describe('filtered', () => {
+    let filtered: FilterService;
+    let torrentsArray: ReturnType<typeof signal<Torrent[]>>;
+
+    const makeTorrent = (overrides: Partial<Torrent> & { hash: string }): Torrent =>
+      ({
+        name: overrides.hash,
+        category: '',
+        tags: '',
+        save_path: '',
+        state: 'downloading',
+        tracker: '',
+        ...overrides,
+      }) as Torrent;
+
+    beforeEach(() => {
+      torrentsArray = signal<Torrent[]>([]);
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [FilterService, { provide: TorrentStoreService, useValue: { torrentsArray } }],
+      });
+      filtered = TestBed.inject(FilterService);
+    });
+
+    it('should return all torrents unchanged when no filters are active', () => {
+      const torrents = [makeTorrent({ hash: '1' }), makeTorrent({ hash: '2' })];
+      torrentsArray.set(torrents);
+      expect(filtered.filtered()).toEqual(torrents);
+    });
+
+    it('should OR within a group: torrents matching either of two selected categories', () => {
+      const movie = makeTorrent({ hash: '1', category: 'Movies' });
+      const tv = makeTorrent({ hash: '2', category: 'TV' });
+      const music = makeTorrent({ hash: '3', category: 'Music' });
+      torrentsArray.set([movie, tv, music]);
+
+      filtered.setCategories(['Movies', 'TV']);
+
+      expect(filtered.filtered()).toEqual([movie, tv]);
+    });
+
+    it('should AND across groups: only torrents matching both a category and a tag', () => {
+      const movieHd = makeTorrent({ hash: '1', category: 'Movies', tags: 'hd' });
+      const movie4k = makeTorrent({ hash: '2', category: 'Movies', tags: '4k' });
+      const tvHd = makeTorrent({ hash: '3', category: 'TV', tags: 'hd' });
+      torrentsArray.set([movieHd, movie4k, tvHd]);
+
+      filtered.setCategories(['Movies']);
+      filtered.setTags(['hd']);
+
+      expect(filtered.filtered()).toEqual([movieHd]);
+    });
+
+    it('should OR within a group: torrents in any of several selected states', () => {
+      const downloading = makeTorrent({ hash: '1', state: 'downloading' });
+      const uploading = makeTorrent({ hash: '2', state: 'uploading' });
+      const paused = makeTorrent({ hash: '3', state: 'pausedDL' });
+      torrentsArray.set([downloading, uploading, paused]);
+
+      filtered.setStates(['downloading', 'uploading']);
+
+      expect(filtered.filtered()).toEqual([downloading, uploading]);
+    });
   });
 });
