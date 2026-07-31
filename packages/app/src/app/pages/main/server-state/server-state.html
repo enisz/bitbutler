@@ -200,33 +200,38 @@
 
 <ng-template #tipConnection>{{ 'pages.main.server-state.network-status' | translate }}</ng-template>
 <ng-template #tipRatioGlobal>
-  {{ 'pages.main.server-state.global-ratio' | translate }}<br /><span class="opacity-75">{{
+  {{ 'pages.main.server-state.global-session-ratio' | translate }}<br /><span class="opacity-75">{{
     'pages.main.server-state.all-time' | translate: { value: globalRatio() }
   }}</span>
 </ng-template>
 <ng-template #tipGlobalDl>
-  {{ 'pages.main.server-state.total-downloaded' | translate }}<br /><span class="opacity-75">{{
-    'pages.main.server-state.all-time' | translate: { value: (allTimeDl() | fileSize) }
-  }}</span>
+  {{ 'pages.main.server-state.global-session-downloaded' | translate }}<br /><span
+    class="opacity-75"
+    >{{ 'pages.main.server-state.all-time' | translate: { value: (allTimeDl() | fileSize) } }}</span
+  >
 </ng-template>
 <ng-template #tipGlobalUl>
-  {{ 'pages.main.server-state.total-uploaded' | translate }}<br /><span class="opacity-75">{{
-    'pages.main.server-state.all-time' | translate: { value: (allTimeUl() | fileSize) }
-  }}</span>
+  {{ 'pages.main.server-state.global-session-uploaded' | translate }}<br /><span
+    class="opacity-75"
+    >{{ 'pages.main.server-state.all-time' | translate: { value: (allTimeUl() | fileSize) } }}</span
+  >
 </ng-template>
 <ng-template #tipAlltimeRatio>
-  {{ 'pages.main.server-state.global-ratio' | translate }}<br /><span class="opacity-75">{{
+  {{ 'pages.main.server-state.global-total-ratio' | translate }}<br /><span class="opacity-75">{{
     'pages.main.server-state.session' | translate: { value: sessionRatio() }
   }}</span>
 </ng-template>
 <ng-template #tipAlltimeDl>
-  {{ 'pages.main.server-state.total-downloaded' | translate }}<br /><span class="opacity-75">{{
-    'pages.main.server-state.session'
-      | translate: { value: (state()?.dl_info_data ?? 0 | fileSize) }
-  }}</span>
+  {{ 'pages.main.server-state.global-total-downloaded' | translate }}<br /><span
+    class="opacity-75"
+    >{{
+      'pages.main.server-state.session'
+        | translate: { value: (state()?.dl_info_data ?? 0 | fileSize) }
+    }}</span
+  >
 </ng-template>
 <ng-template #tipAlltimeUl>
-  {{ 'pages.main.server-state.total-uploaded' | translate }}<br /><span class="opacity-75">{{
+  {{ 'pages.main.server-state.global-total-uploaded' | translate }}<br /><span class="opacity-75">{{
     'pages.main.server-state.session'
       | translate: { value: (state()?.up_info_data ?? 0 | fileSize) }
   }}</span>
