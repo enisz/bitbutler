@@ -9,6 +9,7 @@ import { GuardableModal } from '../models/guardable-modal.interface';
 import { QbTorrentContent } from '../models/torrent.model';
 import { setModalInput } from '../utils/modal-input';
 import { CommandBusService } from './command-bus.service';
+import { CredentialPromptService } from './credential-prompt.service';
 import { ElectronService } from './electron.service';
 import { PathService } from './path.service';
 import { QbPollingService } from './qb-polling.service';
@@ -23,6 +24,7 @@ import { TorrentListGridSettingsService } from './torrent-list-grid.settings.ser
 export class UiCommandHandlerService {
   private readonly modalService = inject(NgbModal);
   private readonly commandBusService = inject(CommandBusService);
+  private readonly credentialPromptService = inject(CredentialPromptService);
   private readonly selectionStoreService = inject(SelectionStoreService);
   private readonly pathService = inject(PathService);
   private readonly toastService = inject(ToastService);
@@ -472,25 +474,49 @@ export class UiCommandHandlerService {
       }),
     );
 
-    const appLoaderModal = this.modalService.open(AppLoader, { size: 'sm', centered: true });
-    setModalInput(
-      appLoaderModal,
-      'title',
-      this.translateService.instant('services.menu-bar-command-handler.app-loader.title'),
-    );
-    setModalInput(
-      appLoaderModal,
-      'message',
-      this.translateService.instant('services.menu-bar-command-handler.app-loader.message', {
-        name,
-      }),
-    );
+    const openLoader = (): NgbModalRef => {
+      const modal = this.modalService.open(AppLoader, { size: 'sm', centered: true });
+      setModalInput(
+        modal,
+        'title',
+        this.translateService.instant('services.menu-bar-command-handler.app-loader.title'),
+      );
+      setModalInput(
+        modal,
+        'message',
+        this.translateService.instant('services.menu-bar-command-handler.app-loader.message', {
+          name,
+        }),
+      );
+      return modal;
+    };
+
+    let appLoaderModal: NgbModalRef | null = openLoader();
 
     try {
       const hasSession = await this.qbService.auth.hasCookie(serverId);
 
       if (!hasSession) {
-        const loginRes = await this.qbService.auth.login(serverId);
+        let runtimeUsername: string | undefined;
+        let runtimePassword: string | undefined;
+
+        if (server && this.credentialPromptService.needsPrompt(server)) {
+          appLoaderModal.close();
+          appLoaderModal = null;
+
+          const resolved = await this.credentialPromptService.resolve(server);
+          if (resolved === null) return;
+          runtimeUsername = resolved.username;
+          runtimePassword = resolved.password;
+
+          appLoaderModal = openLoader();
+        }
+
+        const loginRes = await this.qbService.auth.login(
+          serverId,
+          runtimeUsername,
+          runtimePassword,
+        );
         if (!loginRes.loggedIn) {
           throw new Error('Login failed');
         }
@@ -512,7 +538,7 @@ export class UiCommandHandlerService {
       );
       this.serverService.setActive(this.serverStoreService.currentServerId());
     } finally {
-      appLoaderModal.close();
+      appLoaderModal?.close();
     }
   }
 

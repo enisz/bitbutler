@@ -52,6 +52,7 @@ describe('UiCommandHandlerService', () => {
       import('../modals/export-torrents/export-torrents'),
       import('../modals/import-torrents/import-torrents'),
       import('../modals/torrent-exists/torrent-exists'),
+      import('../modals/credential-prompt/credential-prompt'),
     ]);
   });
 
@@ -99,9 +100,19 @@ describe('UiCommandHandlerService', () => {
         { provide: ElectronService, useValue: { showItemInFolder: vi.fn(), openPath: vi.fn() } },
         {
           provide: QbService,
-          useValue: { torrents: { files: vi.fn().mockResolvedValue([{ name: 'file.mkv' }]) } },
+          useValue: {
+            torrents: { files: vi.fn().mockResolvedValue([{ name: 'file.mkv' }]) },
+            auth: { hasCookie: vi.fn(), login: vi.fn() },
+          },
         },
-        { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
+        {
+          provide: ServerStoreService,
+          useValue: {
+            currentServerId: signal('server-1'),
+            servers: signal([]),
+            select: vi.fn(),
+          },
+        },
         {
           provide: TorrentListGridSettingsService,
           useValue: { asObservable: vi.fn().mockReturnValue(gridSettings$.asObservable()) },
@@ -277,6 +288,170 @@ describe('UiCommandHandlerService', () => {
     await flushPromises();
     expect(mockModalService.open).toHaveBeenCalled();
     expect(setInputSpy).toHaveBeenCalledWith('pathType', 'download');
+  });
+
+  describe('UI_SERVER_SWITCH', () => {
+    let qbAuthMock: { hasCookie: ReturnType<typeof vi.fn>; login: ReturnType<typeof vi.fn> };
+    let serverStoreMock: {
+      servers: ReturnType<typeof signal<any[]>>;
+      select: ReturnType<typeof vi.fn>;
+      currentServerId: ReturnType<typeof signal<string | null>>;
+    };
+    let toastMock: { danger: ReturnType<typeof vi.fn>; info: ReturnType<typeof vi.fn> };
+
+    function loaderRef() {
+      return { close: vi.fn() };
+    }
+
+    function credentialRef(result: Promise<unknown>) {
+      const componentInstance: Record<string, unknown> = {};
+      return {
+        componentInstance,
+        result,
+        _contentRef: {
+          componentRef: {
+            setInput: vi.fn((name: string, value: unknown) => {
+              componentInstance[name] = value;
+            }),
+          },
+        },
+      };
+    }
+
+    function setServer(overrides: Record<string, unknown> = {}) {
+      serverStoreMock.servers.set([
+        {
+          id: 'server-1',
+          name: 'My Server',
+          host: 'localhost',
+          port: 8080,
+          protocol: 'http',
+          username: '',
+          has_password: false,
+          ...overrides,
+        },
+      ]);
+    }
+
+    beforeEach(() => {
+      qbAuthMock = (TestBed.inject(QbService) as any).auth;
+      serverStoreMock = TestBed.inject(ServerStoreService) as any;
+      toastMock = TestBed.inject(ToastService) as any;
+    });
+
+    it('opens the credential prompt when there is no session and credentials are missing', async () => {
+      setServer();
+      qbAuthMock.hasCookie.mockResolvedValue(false);
+      const cancelled = Promise.reject(undefined);
+      cancelled.catch(() => {});
+      mockModalService.open
+        .mockReturnValueOnce(loaderRef())
+        .mockReturnValueOnce(credentialRef(cancelled));
+
+      commands$.next({ type: 'UI_SERVER_SWITCH', id: 'server-1' });
+      await flushPromises();
+
+      expect(mockModalService.open).toHaveBeenCalledTimes(2);
+      expect(qbAuthMock.login).not.toHaveBeenCalled();
+    });
+
+    it('skips the credential prompt when a session already exists', async () => {
+      setServer();
+      qbAuthMock.hasCookie.mockResolvedValue(true);
+      mockModalService.open.mockReturnValueOnce(loaderRef());
+
+      commands$.next({ type: 'UI_SERVER_SWITCH', id: 'server-1' });
+      await flushPromises();
+
+      expect(mockModalService.open).toHaveBeenCalledTimes(1);
+      expect(qbAuthMock.login).not.toHaveBeenCalled();
+      expect(serverStoreMock.select).toHaveBeenCalledWith('server-1');
+    });
+
+    it('skips the credential prompt when credentials are already saved', async () => {
+      setServer({ username: 'admin', has_password: true });
+      qbAuthMock.hasCookie.mockResolvedValue(false);
+      qbAuthMock.login.mockResolvedValue({ loggedIn: true });
+      mockModalService.open.mockReturnValueOnce(loaderRef());
+
+      commands$.next({ type: 'UI_SERVER_SWITCH', id: 'server-1' });
+      await flushPromises();
+
+      expect(mockModalService.open).toHaveBeenCalledTimes(1);
+      expect(qbAuthMock.login).toHaveBeenCalledWith('server-1', undefined, undefined);
+    });
+
+    it('persists credentials and logs in with no runtime args when the prompt saves', async () => {
+      setServer();
+      qbAuthMock.hasCookie.mockResolvedValue(false);
+      qbAuthMock.login.mockResolvedValue({ loggedIn: true });
+      const updateSpy = vi
+        .spyOn(window.bitbutler.server, 'update')
+        .mockResolvedValue({ updated: true });
+      mockModalService.open
+        .mockReturnValueOnce(loaderRef())
+        .mockReturnValueOnce(
+          credentialRef(Promise.resolve({ username: 'admin', password: 'secret', save: true })),
+        )
+        .mockReturnValueOnce(loaderRef());
+
+      commands$.next({ type: 'UI_SERVER_SWITCH', id: 'server-1' });
+      await flushPromises();
+
+      expect(updateSpy).toHaveBeenCalledWith({
+        id: 'server-1',
+        changes: { username: 'admin', password: 'secret' },
+      });
+      expect(commandBusEmit).toHaveBeenCalledWith({ type: 'SERVER_UPDATED', id: 'server-1' });
+      expect(qbAuthMock.login).toHaveBeenCalledWith('server-1', undefined, undefined);
+    });
+
+    it('logs in with the entered credentials without persisting when the prompt does not save', async () => {
+      setServer();
+      qbAuthMock.hasCookie.mockResolvedValue(false);
+      qbAuthMock.login.mockResolvedValue({ loggedIn: true });
+      const updateSpy = vi.spyOn(window.bitbutler.server, 'update');
+      mockModalService.open
+        .mockReturnValueOnce(loaderRef())
+        .mockReturnValueOnce(
+          credentialRef(Promise.resolve({ username: 'admin', password: 'secret', save: false })),
+        )
+        .mockReturnValueOnce(loaderRef());
+
+      commands$.next({ type: 'UI_SERVER_SWITCH', id: 'server-1' });
+      await flushPromises();
+
+      expect(updateSpy).not.toHaveBeenCalled();
+      expect(qbAuthMock.login).toHaveBeenCalledWith('server-1', 'admin', 'secret');
+    });
+
+    it('aborts quietly without a toast when the credential prompt is cancelled', async () => {
+      setServer();
+      qbAuthMock.hasCookie.mockResolvedValue(false);
+      const cancelled = Promise.reject(undefined);
+      cancelled.catch(() => {});
+      mockModalService.open
+        .mockReturnValueOnce(loaderRef())
+        .mockReturnValueOnce(credentialRef(cancelled));
+
+      commands$.next({ type: 'UI_SERVER_SWITCH', id: 'server-1' });
+      await flushPromises();
+
+      expect(qbAuthMock.login).not.toHaveBeenCalled();
+      expect(toastMock.danger).not.toHaveBeenCalled();
+    });
+
+    it('shows a danger toast and falls back to the current server when login fails', async () => {
+      setServer({ username: 'admin', has_password: true });
+      qbAuthMock.hasCookie.mockResolvedValue(false);
+      qbAuthMock.login.mockResolvedValue({ loggedIn: false });
+      mockModalService.open.mockReturnValueOnce(loaderRef());
+
+      commands$.next({ type: 'UI_SERVER_SWITCH', id: 'server-1' });
+      await flushPromises();
+
+      expect(toastMock.danger).toHaveBeenCalledWith('"My Server"', expect.any(String));
+    });
   });
 
   describe('pausePollingOnModal', () => {
