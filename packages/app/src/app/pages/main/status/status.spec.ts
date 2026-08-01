@@ -1,5 +1,6 @@
 import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TorrentState } from '../../../models/torrent.model';
 import { CommandBusService } from '../../../services/command-bus.service';
 import { FilterService, GRID_FILTER_INITIAL } from '../../../services/filter.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
@@ -83,23 +84,86 @@ describe('Status', () => {
       expect(filterMock.clearStates).toHaveBeenCalled();
     });
 
-    it('should call filterService.setStates with the downloading group', () => {
+    it('should add the downloading group states when not yet active', () => {
+      filterMock.external.set({ ...GRID_FILTER_INITIAL.external, states: new Set() });
       component.setGroup('downloading');
       expect(filterMock.setStates).toHaveBeenCalledWith(
-        expect.arrayContaining(['downloading', 'forcedDL', 'stalledDL']),
+        new Set(['downloading', 'forcedDL', 'queuedDL', 'metaDL', 'stalledDL']),
       );
     });
 
-    it('should call filterService.setStates with the stopped group', () => {
-      component.setGroup('stopped');
+    it('should preserve a previously selected group when adding a second one', () => {
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        states: new Set(['pausedDL', 'pausedUP', 'stoppedDL', 'stoppedUP']),
+      });
+      component.setGroup('downloading');
       expect(filterMock.setStates).toHaveBeenCalledWith(
-        expect.arrayContaining(['pausedDL', 'pausedUP', 'stoppedDL', 'stoppedUP']),
+        new Set([
+          'pausedDL',
+          'pausedUP',
+          'stoppedDL',
+          'stoppedUP',
+          'downloading',
+          'forcedDL',
+          'queuedDL',
+          'metaDL',
+          'stalledDL',
+        ]),
       );
     });
 
-    it('should call filterService.setStates with an empty array for unknown keys', () => {
+    it('should remove the stopped group states when already fully active', () => {
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        states: new Set(['pausedDL', 'pausedUP', 'stoppedDL', 'stoppedUP']),
+      });
+      component.setGroup('stopped');
+      expect(filterMock.setStates).toHaveBeenCalledWith(new Set());
+    });
+
+    it('should not add or remove anything for an unknown key', () => {
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        states: new Set(['downloading']),
+      });
       component.setGroup('nonexistent');
-      expect(filterMock.setStates).toHaveBeenCalledWith([]);
+      expect(filterMock.setStates).not.toHaveBeenCalled();
+    });
+
+    it('should preserve an overlapping sibling group when toggling one off', () => {
+      // Select Downloading, then Active, then deselect Downloading again. Downloading and
+      // Active overlap (both include the "downloading", "forcedDL" and "metaDL" states), which
+      // is exactly the scenario that broke the old differential-set implementation.
+      filterMock.external.set({ ...GRID_FILTER_INITIAL.external, states: new Set() });
+
+      component.setGroup('downloading');
+      // Simulate FilterService applying the first setStates call before the next click.
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        states: filterMock.setStates.mock.calls[0][0] as Set<TorrentState>,
+      });
+
+      component.setGroup('active');
+      // Simulate FilterService applying the second setStates call before the next click.
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        states: filterMock.setStates.mock.calls[1][0] as Set<TorrentState>,
+      });
+
+      component.setGroup('downloading');
+
+      expect(filterMock.setStates).toHaveBeenLastCalledWith(
+        new Set([
+          'downloading',
+          'uploading',
+          'forcedDL',
+          'forcedUP',
+          'metaDL',
+          'moving',
+          'allocating',
+        ]),
+      );
     });
   });
 
@@ -109,9 +173,24 @@ describe('Status', () => {
       expect(filterMock.clearTrackers).toHaveBeenCalled();
     });
 
-    it('should call setTrackers with the key when not "all"', () => {
-      component.setTrackerGroup('tracker.example.com');
-      expect(filterMock.setTrackers).toHaveBeenCalledWith(['tracker.example.com']);
+    it('should add the key to the current set when not yet selected', () => {
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        trackers: new Set(['tracker.a.com']),
+      });
+      component.setTrackerGroup('tracker.b.com');
+      expect(filterMock.setTrackers).toHaveBeenCalledWith(
+        new Set(['tracker.a.com', 'tracker.b.com']),
+      );
+    });
+
+    it('should remove the key from the current set when already selected', () => {
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        trackers: new Set(['tracker.a.com', 'tracker.b.com']),
+      });
+      component.setTrackerGroup('tracker.a.com');
+      expect(filterMock.setTrackers).toHaveBeenCalledWith(new Set(['tracker.b.com']));
     });
   });
 
@@ -121,9 +200,22 @@ describe('Status', () => {
       expect(filterMock.clearSavePaths).toHaveBeenCalled();
     });
 
-    it('should call setSavePaths with the key when not "all"', () => {
+    it('should add the key to the current set when not yet selected', () => {
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        savePaths: new Set(['/downloads']),
+      });
+      component.setSavePathGroup('/media');
+      expect(filterMock.setSavePaths).toHaveBeenCalledWith(new Set(['/downloads', '/media']));
+    });
+
+    it('should remove the key from the current set when already selected', () => {
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        savePaths: new Set(['/downloads', '/media']),
+      });
       component.setSavePathGroup('/downloads');
-      expect(filterMock.setSavePaths).toHaveBeenCalledWith(['/downloads']);
+      expect(filterMock.setSavePaths).toHaveBeenCalledWith(new Set(['/media']));
     });
   });
 
@@ -133,9 +225,22 @@ describe('Status', () => {
       expect(filterMock.clearCategories).toHaveBeenCalled();
     });
 
-    it('should call setCategories with the key when not "all"', () => {
+    it('should add the key to the current set when not yet selected', () => {
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        categories: new Set(['Movies']),
+      });
+      component.setCategoryGroup('TV');
+      expect(filterMock.setCategories).toHaveBeenCalledWith(new Set(['Movies', 'TV']));
+    });
+
+    it('should remove the key from the current set when already selected', () => {
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        categories: new Set(['Movies', 'TV']),
+      });
       component.setCategoryGroup('Movies');
-      expect(filterMock.setCategories).toHaveBeenCalledWith(['Movies']);
+      expect(filterMock.setCategories).toHaveBeenCalledWith(new Set(['TV']));
     });
   });
 
@@ -145,9 +250,19 @@ describe('Status', () => {
       expect(filterMock.clearTags).toHaveBeenCalled();
     });
 
-    it('should call setTags with the key when not "all"', () => {
+    it('should add the key to the current set when not yet selected', () => {
+      filterMock.external.set({ ...GRID_FILTER_INITIAL.external, tags: new Set(['hd']) });
+      component.setTagGroup('4k');
+      expect(filterMock.setTags).toHaveBeenCalledWith(new Set(['hd', '4k']));
+    });
+
+    it('should remove the key from the current set when already selected', () => {
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        tags: new Set(['hd', '4k']),
+      });
       component.setTagGroup('hd');
-      expect(filterMock.setTags).toHaveBeenCalledWith(['hd']);
+      expect(filterMock.setTags).toHaveBeenCalledWith(new Set(['4k']));
     });
   });
 
@@ -158,26 +273,67 @@ describe('Status', () => {
     });
   });
 
-  describe('activeKey', () => {
-    it('should return "all" when no states filter is active', () => {
+  describe('activeStatusKeys', () => {
+    it('should return an empty set when no states filter is active', () => {
       filterMock.external.set({ ...GRID_FILTER_INITIAL.external, states: new Set() });
-      expect(component.activeKey()).toBe('all');
+      expect(component.activeStatusKeys()).toEqual(new Set());
     });
 
-    it('should return "stopped" when the stopped states are active', () => {
+    it('should include "stopped" when the stopped states are fully active', () => {
       filterMock.external.set({
         ...GRID_FILTER_INITIAL.external,
         states: new Set(['pausedDL', 'pausedUP', 'stoppedDL', 'stoppedUP']),
       });
-      expect(component.activeKey()).toBe('stopped');
+      expect(component.activeStatusKeys()).toEqual(new Set(['stopped']));
     });
 
-    it('should return "all" for an unrecognised combination of states', () => {
+    it('should include both keys when the union of two groups is active', () => {
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        states: new Set([
+          'downloading',
+          'forcedDL',
+          'queuedDL',
+          'metaDL',
+          'stalledDL',
+          'pausedDL',
+          'pausedUP',
+          'stoppedDL',
+          'stoppedUP',
+        ]),
+      });
+      expect(component.activeStatusKeys()).toEqual(new Set(['downloading', 'stopped']));
+    });
+
+    it('should return an empty set for an unrecognised/partial combination of states', () => {
       filterMock.external.set({
         ...GRID_FILTER_INITIAL.external,
         states: new Set(['downloading', 'uploading']),
       });
-      expect(component.activeKey()).toBe('all');
+      expect(component.activeStatusKeys()).toEqual(new Set());
+    });
+
+    it('should include both keys for an overlapping union (active + inactive)', () => {
+      // Active and Inactive overlap: their union fully covers Downloading's 5 states too, so
+      // "downloading" is also (correctly, per the design spec's accepted cosmetic highlighting)
+      // reported as active here.
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        states: new Set([
+          'downloading',
+          'uploading',
+          'forcedDL',
+          'forcedUP',
+          'metaDL',
+          'moving',
+          'allocating',
+          'queuedDL',
+          'queuedUP',
+          'stalledDL',
+          'stalledUP',
+        ]),
+      });
+      expect(component.activeStatusKeys()).toEqual(new Set(['active', 'inactive', 'downloading']));
     });
   });
 

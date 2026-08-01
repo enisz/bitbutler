@@ -75,8 +75,6 @@ export class Status {
     };
   });
 
-  readonly hasNoTrackerFilters = computed(() => this.filtersSig().trackers.size === 0);
-  readonly hasNoSavePathFilters = computed(() => this.filtersSig().savePaths.size === 0);
   readonly hasAnyFilter = computed(() => {
     const f = this.filtersSig();
     return (
@@ -196,24 +194,25 @@ export class Status {
     ];
   });
 
-  readonly activeKey = computed<StatusKey>(() => {
-    const active = this.filtersSig().states;
+  private toggleKey(current: ReadonlySet<string>, key: string): Set<string> {
+    const next = new Set(current);
+    if (next.has(key)) next.delete(key);
+    else next.add(key);
+    return next;
+  }
 
-    if (active.size === 0) return 'all';
+  private isStatusGroupActive(key: StatusKey, current: ReadonlySet<TorrentState>): boolean {
+    const g = this.groups[key];
+    return g.length > 0 && g.every((s) => current.has(s));
+  }
 
-    const activeArr = Array.from(active).sort();
-    const equals = (a: string[], b: string[]) =>
-      a.length === b.length && a.every((v, i) => v === b[i]);
-
+  readonly activeStatusKeys = computed<ReadonlySet<string>>(() => {
+    const current = this.filtersSig().states;
+    const keys = new Set<string>();
     for (const key of Object.keys(this.groups) as StatusKey[]) {
-      const g = this.groups[key];
-      if (g.length === 0) continue;
-
-      const gSorted = [...g].sort();
-      if (equals(activeArr, gSorted)) return key;
+      if (this.isStatusGroupActive(key, current)) keys.add(key);
     }
-
-    return 'all';
+    return keys;
   });
 
   public setGroup(key: string): void {
@@ -221,26 +220,19 @@ export class Status {
       this.filterService.clearStates();
       return;
     }
-    const states = this.groups[key as StatusKey] ?? [];
-    this.filterService.setStates(states);
+    if (!(key in this.groups)) return;
+    const nextKeys = this.toggleKey(this.activeStatusKeys(), key);
+    const next = new Set<TorrentState>();
+    for (const k of nextKeys) for (const s of this.groups[k as StatusKey]) next.add(s);
+    this.filterService.setStates(next);
   }
 
-  readonly activeTrackerKey = computed(() => {
-    const set = this.filtersSig().trackers;
-    return set?.size === 0 ? 'all' : [...set][0];
-  });
+  readonly activeTrackerKeys = computed<ReadonlySet<string>>(() => this.filtersSig().trackers);
 
-  readonly activeSavePathKey = computed(() => {
-    const set = this.filtersSig().savePaths;
-    return set?.size === 0 ? 'all' : [...set][0];
-  });
+  readonly activeSavePathKeys = computed<ReadonlySet<string>>(() => this.filtersSig().savePaths);
 
   public clearTrackers(): void {
     this.filterService.clearTrackers();
-  }
-
-  public setTracker(key: string): void {
-    this.filterService.setTrackers([key]);
   }
 
   public setTrackerGroup(key: string): void {
@@ -248,15 +240,11 @@ export class Status {
       this.clearTrackers();
       return;
     }
-    this.setTracker(key);
+    this.filterService.setTrackers(this.toggleKey(this.filtersSig().trackers, key));
   }
 
   public clearSavePaths(): void {
     this.filterService.clearSavePaths();
-  }
-
-  public setSavePath(key: string): void {
-    this.filterService.setSavePaths([key]);
   }
 
   public setSavePathGroup(key: string): void {
@@ -264,7 +252,7 @@ export class Status {
       this.clearSavePaths();
       return;
     }
-    this.setSavePath(key);
+    this.filterService.setSavePaths(this.toggleKey(this.filtersSig().savePaths, key));
   }
 
   readonly trackersWithCounts = computed<FilterItem[]>(() => {
@@ -319,22 +307,12 @@ export class Status {
     this.store.tagsWithCounts().map((item) => ({ ...item, icon: this.icon.faTags })),
   );
 
-  readonly activeCategoryKey = computed(() => {
-    const set = this.filtersSig().categories;
-    return set?.size === 0 ? 'all' : [...set][0];
-  });
+  readonly activeCategoryKeys = computed<ReadonlySet<string>>(() => this.filtersSig().categories);
 
-  readonly activeTagKey = computed(() => {
-    const set = this.filtersSig().tags;
-    return set?.size === 0 ? 'all' : [...set][0];
-  });
+  readonly activeTagKeys = computed<ReadonlySet<string>>(() => this.filtersSig().tags);
 
   public clearCategories(): void {
     this.filterService.clearCategories();
-  }
-
-  public setCategory(key: string): void {
-    this.filterService.setCategories([key]);
   }
 
   public setCategoryGroup(key: string): void {
@@ -342,7 +320,7 @@ export class Status {
       this.clearCategories();
       return;
     }
-    this.setCategory(key);
+    this.filterService.setCategories(this.toggleKey(this.filtersSig().categories, key));
   }
 
   public clearTags(): void {
@@ -353,15 +331,11 @@ export class Status {
     this.filterService.resetAll();
   }
 
-  public setTag(key: string): void {
-    this.filterService.setTags([key]);
-  }
-
   public setTagGroup(key: string): void {
     if (key === 'all') {
       this.clearTags();
       return;
     }
-    this.setTag(key);
+    this.filterService.setTags(this.toggleKey(this.filtersSig().tags, key));
   }
 }
