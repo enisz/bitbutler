@@ -16,37 +16,23 @@
     box-shadow: none !important;
   }
 
-  &.vertical {
+  &.preview-row {
     display: flex;
-    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: center;
     gap: 10px;
     padding: 0.5rem;
-    min-height: 150px;
+    min-height: 40px;
     width: 100%;
+    overflow-x: auto;
     border: 1px solid var(--bs-border-color);
     border-radius: var(--bb-control-radius);
     background-color: var(--bs-tertiary-bg);
+
+    &.align-end {
+      justify-content: flex-end;
+    }
   }
-}
-
-.widget-item {
-  display: flex;
-  align-items: center;
-  padding: 0.5rem;
-  background-color: var(--bs-body-bg);
-  border: 1px solid var(--bs-border-color);
-  border-radius: var(--bb-control-radius);
-  cursor: grab;
-
-  &:active {
-    cursor: grabbing;
-  }
-}
-
-.drag-handle {
-  color: var(--bs-secondary);
-  margin-right: 0.5rem;
-  cursor: grab;
 }
 
 .empty-list-message {
@@ -91,17 +77,24 @@
 
 .cdk-drag-preview {
   box-sizing: border-box;
-  border-radius: var(--bb-control-radius);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
-  background-color: var(--bs-secondary);
-  color: var(--bb-secondary-ink);
-  opacity: 0.9;
-  border: none;
-  padding: 0.5rem;
 
-  .widget-item {
+  // The pool pills are plain text - recolor them into a highlighted chip
+  // while lifted. The widget-preview rows already look like a real status
+  // bar widget, so they only get a shadow below, not a recolor.
+  &.status-pill {
     border-radius: var(--bb-control-radius);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    background-color: var(--bs-secondary);
+    color: var(--bb-secondary-ink);
+    opacity: 0.9;
+    border: none;
+    padding: 0.5rem;
   }
+}
+
+app-status-bar-widget-preview.cdk-drag-preview {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  border-radius: var(--bb-control-radius);
 }
 
 .cdk-drag-placeholder {
@@ -113,7 +106,8 @@
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
-.widget-container.cdk-drop-list-dragging .status-pill:not(.cdk-drag-placeholder) {
+.widget-container.cdk-drop-list-dragging .status-pill:not(.cdk-drag-placeholder),
+.widget-container.cdk-drop-list-dragging app-status-bar-widget-preview:not(.cdk-drag-placeholder) {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 

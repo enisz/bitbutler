@@ -8,8 +8,7 @@ import {
 } from '@angular/cdk/drag-drop';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { faGripVertical, faRotateLeft } from '@fortawesome/free-solid-svg-icons';
+import { faRotateLeft } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { switchMap, tap } from 'rxjs';
 import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content';
@@ -21,6 +20,7 @@ import {
 import { StatusBarSettingsService } from '../../../services/status-bar-settings.service';
 import { SettingsStateService } from '../settings-state.service';
 import { SettingsTabComponent } from '../settings.interface';
+import { StatusBarWidgetPreview } from './widget-preview/widget-preview';
 
 interface Widget {
   id: string;
@@ -34,7 +34,7 @@ interface Widget {
     CdkDrag,
     CdkDropList,
     CdkDropListGroup,
-    FaIconComponent,
+    StatusBarWidgetPreview,
     BbSpinner,
     BbBtnContent,
     TranslatePipe,
@@ -48,7 +48,6 @@ export class StatusBar implements SettingsTabComponent {
   private readonly translateService = inject(TranslateService);
   private readonly stateService = inject(SettingsStateService);
 
-  public faGripVertical = faGripVertical;
   public faRotateLeft = faRotateLeft;
 
   private readonly MASTER_WIDGET_KEYS = [

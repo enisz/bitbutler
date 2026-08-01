@@ -1,0 +1,157 @@
+@switch (id()) {
+  @case ('connection-status') {
+    <div
+      class="bb-widget"
+      [ngbTooltip]="'pages.main.server-state.network-status' | translate"
+      placement="top"
+      container="body"
+    >
+      <fa-icon [icon]="faCircle" class="status-dot connected"></fa-icon>
+      <span class="bb-value ms-1 text-uppercase" style="font-size: 0.7rem">connected</span>
+    </div>
+  }
+  @case ('nodes') {
+    <div
+      class="bb-widget"
+      [ngbTooltip]="'pages.main.server-state.dht-nodes' | translate"
+      placement="top"
+      container="body"
+    >
+      <fa-icon [icon]="faNetworkWired" class="text-secondary opacity-75"></fa-icon>
+      <span class="bb-value bb-fixed-num bb-width-count">{{ PREVIEW_DHT_NODES }}</span>
+    </div>
+  }
+  @case ('ratio') {
+    <div
+      class="bb-widget"
+      [ngbTooltip]="'pages.main.server-state.global-session-ratio' | translate"
+      placement="top"
+      container="body"
+    >
+      <fa-icon [icon]="faShareAlt" class="text-secondary opacity-75"></fa-icon>
+      <span class="bb-value">{{ PREVIEW_SESSION_RATIO }}</span>
+    </div>
+  }
+  @case ('alltime-ratio') {
+    <div
+      class="bb-widget"
+      [ngbTooltip]="'pages.main.server-state.global-total-ratio' | translate"
+      placement="top"
+      container="body"
+    >
+      <fa-icon [icon]="faShareAlt" class="text-secondary opacity-75"></fa-icon>
+      <span class="bb-value">{{ PREVIEW_ALLTIME_RATIO }}</span>
+    </div>
+  }
+  @case ('global-down') {
+    <div
+      class="bb-widget"
+      [ngbTooltip]="'pages.main.server-state.global-session-downloaded' | translate"
+      placement="top"
+      container="body"
+    >
+      <fa-icon [icon]="faCloudDownloadAlt" class="icon-dl opacity-75"></fa-icon>
+      <span class="bb-value bb-fixed-num bb-width-size">{{ PREVIEW_GLOBAL_DOWN | fileSize }}</span>
+    </div>
+  }
+  @case ('alltime-down') {
+    <div
+      class="bb-widget"
+      [ngbTooltip]="'pages.main.server-state.global-total-downloaded' | translate"
+      placement="top"
+      container="body"
+    >
+      <fa-icon [icon]="faCloudDownloadAlt" class="icon-dl opacity-75"></fa-icon>
+      <span class="bb-value bb-fixed-num bb-width-size">{{ PREVIEW_ALLTIME_DOWN | fileSize }}</span>
+    </div>
+  }
+  @case ('global-up') {
+    <div
+      class="bb-widget"
+      [ngbTooltip]="'pages.main.server-state.global-session-uploaded' | translate"
+      placement="top"
+      container="body"
+    >
+      <fa-icon [icon]="faCloudUploadAlt" class="icon-ul opacity-75"></fa-icon>
+      <span class="bb-value bb-fixed-num bb-width-size">{{ PREVIEW_GLOBAL_UP | fileSize }}</span>
+    </div>
+  }
+  @case ('alltime-up') {
+    <div
+      class="bb-widget"
+      [ngbTooltip]="'pages.main.server-state.global-total-uploaded' | translate"
+      placement="top"
+      container="body"
+    >
+      <fa-icon [icon]="faCloudUploadAlt" class="icon-ul opacity-75"></fa-icon>
+      <span class="bb-value bb-fixed-num bb-width-size">{{ PREVIEW_ALLTIME_UP | fileSize }}</span>
+    </div>
+  }
+  @case ('download-speed') {
+    <div
+      class="bb-widget"
+      [ngbTooltip]="'pages.main.server-state.download-speed' | translate"
+      placement="top"
+      container="body"
+    >
+      <fa-icon [icon]="faDownload" class="icon-dl"></fa-icon>
+      <span class="bb-value bb-fixed-num bb-width-speed">{{ PREVIEW_DL_SPEED | fileSize }}/s</span>
+    </div>
+  }
+  @case ('upload-speed') {
+    <div
+      class="bb-widget"
+      [ngbTooltip]="'pages.main.server-state.upload-speed' | translate"
+      placement="top"
+      container="body"
+    >
+      <fa-icon [icon]="faUpload" class="icon-ul"></fa-icon>
+      <span class="bb-value bb-fixed-num bb-width-speed">{{ PREVIEW_UP_SPEED | fileSize }}/s</span>
+    </div>
+  }
+  @case ('free-space') {
+    <div
+      class="bb-widget"
+      [ngbTooltip]="'pages.main.server-state.free-space' | translate"
+      placement="top"
+      container="body"
+    >
+      <fa-icon [icon]="faHdd" class="icon-disk"></fa-icon>
+      <span class="bb-value bb-fixed-num bb-width-size">{{ PREVIEW_FREE_SPACE | fileSize }}</span>
+    </div>
+  }
+  @case ('selection') {
+    <div
+      class="bb-widget"
+      [ngbTooltip]="'pages.main.server-state.current-selection' | translate"
+      placement="top"
+      container="body"
+    >
+      <fa-icon
+        [icon]="faCircle"
+        class="text-secondary opacity-50"
+        style="font-size: 0.4rem"
+      ></fa-icon>
+      <span class="bb-value ms-1">
+        {{ PREVIEW_SELECTED_COUNT }} / {{ PREVIEW_FILTERED_COUNT }}
+        <span
+          class="ms-1 opacity-75 fw-normal"
+          style="font-size: 0.7rem"
+          [textContent]="'pages.main.server-state.selected' | translate"
+        ></span>
+      </span>
+    </div>
+  }
+  @case ('polling-indicator') {
+    <div
+      class="bb-widget"
+      [ngbTooltip]="'pages.settings.tab.status-bar.widget.polling-indicator' | translate"
+      placement="top"
+      container="body"
+    >
+      <div class="poll-container" [style.--p]="PREVIEW_POLL_PROGRESS">
+        <fa-icon class="poll-icon" [icon]="faPlay"></fa-icon>
+      </div>
+    </div>
+  }
+}

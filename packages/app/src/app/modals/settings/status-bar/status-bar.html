@@ -37,54 +37,45 @@
 
       <fieldset class="bb-fieldset mt-0">
         <legend>{{ 'pages.settings.tab.status-bar.label.widgets' | translate }}</legend>
-        <div class="container-fluid mb-3">
-          <div class="row">
-            <div class="col-md-6 col-12">
-              <p>{{ 'pages.settings.tab.status-bar.label.left' | translate }}</p>
-              <div
-                cdkDropList
-                #leftList="cdkDropList"
-                [cdkDropListData]="left"
-                class="widget-container vertical"
-                (cdkDropListDropped)="drop($event)"
-              >
-                @for (widget of left; track widget.id) {
-                  <div class="widget-item" cdkDrag>
-                    <div class="drag-handle" cdkDragHandle>
-                      <fa-icon [icon]="faGripVertical"></fa-icon>
-                    </div>
-                    <span class="widget-label">{{ widget.label }}</span>
-                  </div>
-                } @empty {
-                  <div class="empty-list-message">
-                    Drag widgets from the pool to the left column.
-                  </div>
-                }
-              </div>
-            </div>
-            <div class="col-md-6 col-12">
-              <p>{{ 'pages.settings.tab.status-bar.label.right' | translate }}</p>
-              <div
-                cdkDropList
-                #rightList="cdkDropList"
-                [cdkDropListData]="right"
-                class="widget-container vertical"
-                (cdkDropListDropped)="drop($event)"
-              >
-                @for (widget of right; track widget.id) {
-                  <div class="widget-item" cdkDrag>
-                    <div class="drag-handle" cdkDragHandle>
-                      <fa-icon [icon]="faGripVertical"></fa-icon>
-                    </div>
-                    <span class="widget-label">{{ widget.label }}</span>
-                  </div>
-                } @empty {
-                  <div class="empty-list-message">
-                    Drag widgets from the pool to the right column.
-                  </div>
-                }
-              </div>
-            </div>
+        <div class="mb-3">
+          <p class="mb-1">{{ 'pages.settings.tab.status-bar.label.left' | translate }}</p>
+          <div
+            cdkDropList
+            #leftList="cdkDropList"
+            [cdkDropListData]="left"
+            cdkDropListOrientation="horizontal"
+            class="widget-container preview-row"
+            (cdkDropListDropped)="drop($event)"
+          >
+            @for (widget of left; track widget.id) {
+              <app-status-bar-widget-preview
+                [id]="widget.id"
+                cdkDrag
+              ></app-status-bar-widget-preview>
+            } @empty {
+              <div class="empty-list-message">Drag widgets from the pool to the left column.</div>
+            }
+          </div>
+        </div>
+
+        <div>
+          <p class="mb-1">{{ 'pages.settings.tab.status-bar.label.right' | translate }}</p>
+          <div
+            cdkDropList
+            #rightList="cdkDropList"
+            [cdkDropListData]="right"
+            cdkDropListOrientation="horizontal"
+            class="widget-container preview-row align-end"
+            (cdkDropListDropped)="drop($event)"
+          >
+            @for (widget of right; track widget.id) {
+              <app-status-bar-widget-preview
+                [id]="widget.id"
+                cdkDrag
+              ></app-status-bar-widget-preview>
+            } @empty {
+              <div class="empty-list-message">Drag widgets from the pool to the right column.</div>
+            }
           </div>
         </div>
       </fieldset>
