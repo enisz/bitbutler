@@ -203,7 +203,13 @@
                     <div class="drag-handle" cdkDragHandle>
                       <fa-icon [icon]="faGripVertical"></fa-icon>
                     </div>
-                    <span class="column-label">{{ column.label }}</span>
+                    <span
+                      class="column-label"
+                      [ngbTooltip]="column.label"
+                      tooltipClass="single-line-tooltip"
+                      bbTooltipOverflow
+                      >{{ column.label }}</span
+                    >
                     <div class="column-actions ms-auto">
                       <button
                         type="button"
@@ -214,6 +220,11 @@
                           'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-to-top'
                             | translate
                         "
+                        [ngbTooltip]="
+                          'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-to-top'
+                            | translate
+                        "
+                        tooltipClass="single-line-tooltip"
                       >
                         <fa-icon [icon]="faAnglesUp"></fa-icon>
                       </button>
@@ -226,6 +237,11 @@
                           'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-up'
                             | translate
                         "
+                        [ngbTooltip]="
+                          'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-up'
+                            | translate
+                        "
+                        tooltipClass="single-line-tooltip"
                       >
                         <fa-icon [icon]="faChevronUp"></fa-icon>
                       </button>
@@ -238,6 +254,11 @@
                           'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-down'
                             | translate
                         "
+                        [ngbTooltip]="
+                          'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-down'
+                            | translate
+                        "
+                        tooltipClass="single-line-tooltip"
                       >
                         <fa-icon [icon]="faChevronDown"></fa-icon>
                       </button>
@@ -250,6 +271,11 @@
                           'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-to-bottom'
                             | translate
                         "
+                        [ngbTooltip]="
+                          'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-to-bottom'
+                            | translate
+                        "
+                        tooltipClass="single-line-tooltip"
                       >
                         <fa-icon [icon]="faAnglesDown"></fa-icon>
                       </button>
@@ -261,6 +287,11 @@
                           'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.remove'
                             | translate
                         "
+                        [ngbTooltip]="
+                          'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.remove'
+                            | translate
+                        "
+                        tooltipClass="single-line-tooltip"
                       >
                         <fa-icon [icon]="faXmark"></fa-icon>
                       </button>

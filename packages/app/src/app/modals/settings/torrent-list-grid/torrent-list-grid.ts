@@ -12,12 +12,14 @@ import {
   faTriangleExclamation,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
+import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { type ColDef, type ColumnState } from 'ag-grid-community';
 import { firstValueFrom, take, tap } from 'rxjs';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
+import { TooltipOverflow } from '../../../directives/tooltip-overflow';
 import {
   RowDoubleClickAction,
   TorrentListGridSettings,
@@ -46,6 +48,8 @@ export interface NgSelectColumnItem {
     BbPopover,
     FontAwesomeModule,
     TranslatePipe,
+    NgbTooltipModule,
+    TooltipOverflow,
   ],
   templateUrl: './torrent-list-grid.html',
   styleUrl: './torrent-list-grid.scss',
