@@ -156,6 +156,46 @@ export class TorrentListGrid implements SettingsTabComponent {
     this.stateService.markDirty('torrent-list-grid', true);
   }
 
+  public moveUp(index: number): void {
+    if (index <= 0) return;
+    const columns = [...this.orderedColumns()];
+    [columns[index - 1], columns[index]] = [columns[index], columns[index - 1]];
+    this.orderedColumns.set(columns);
+    this.stateService.markDirty('torrent-list-grid', true);
+  }
+
+  public moveDown(index: number): void {
+    if (index >= this.orderedColumns().length - 1) return;
+    const columns = [...this.orderedColumns()];
+    [columns[index], columns[index + 1]] = [columns[index + 1], columns[index]];
+    this.orderedColumns.set(columns);
+    this.stateService.markDirty('torrent-list-grid', true);
+  }
+
+  public moveToTop(index: number): void {
+    if (index <= 0) return;
+    const columns = [...this.orderedColumns()];
+    const [moved] = columns.splice(index, 1);
+    columns.unshift(moved);
+    this.orderedColumns.set(columns);
+    this.stateService.markDirty('torrent-list-grid', true);
+  }
+
+  public moveToBottom(index: number): void {
+    if (index >= this.orderedColumns().length - 1) return;
+    const columns = [...this.orderedColumns()];
+    const [moved] = columns.splice(index, 1);
+    columns.push(moved);
+    this.orderedColumns.set(columns);
+    this.stateService.markDirty('torrent-list-grid', true);
+  }
+
+  public remove(colId: string): void {
+    const columnsControl = this.torrentListGridForm.get('columns');
+    const currentIds = (columnsControl?.value as string[]) ?? [];
+    columnsControl?.setValue(currentIds.filter((id) => id !== colId));
+  }
+
   private async save(): Promise<void> {
     const settings = await firstValueFrom(this.torrentListGridSettingsService.asObservable());
     const formValue = this.torrentListGridForm.getRawValue();
