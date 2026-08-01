@@ -1,5 +1,11 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Subject } from 'rxjs';
+import {
+  DEFAULT_STATUS_BAR_SETTINGS,
+  StatusBarSettings,
+} from '../../../models/status-bar-settings.model';
+import { StatusBarSettingsService } from '../../../services/status-bar-settings.service';
 import { SettingsStateService } from '../settings-state.service';
 import { StatusBar } from './status-bar';
 
@@ -11,13 +17,26 @@ describe('StatusBar', () => {
     registerSave: ReturnType<typeof vi.fn>;
     markDirty: ReturnType<typeof vi.fn>;
   };
+  let statusBarServiceMock: {
+    asObservable: ReturnType<typeof vi.fn>;
+    save: ReturnType<typeof vi.fn>;
+  };
+  let statusBarSettings$: Subject<StatusBarSettings>;
 
   beforeEach(async () => {
     stateServiceMock = { registerSave: vi.fn(), markDirty: vi.fn() };
+    statusBarSettings$ = new Subject<StatusBarSettings>();
+    statusBarServiceMock = {
+      asObservable: vi.fn(() => statusBarSettings$.asObservable()),
+      save: vi.fn().mockResolvedValue(undefined),
+    };
 
     await TestBed.configureTestingModule({
       imports: [StatusBar],
-      providers: [{ provide: SettingsStateService, useValue: stateServiceMock }],
+      providers: [
+        { provide: SettingsStateService, useValue: stateServiceMock },
+        { provide: StatusBarSettingsService, useValue: statusBarServiceMock },
+      ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
@@ -72,6 +91,62 @@ describe('StatusBar', () => {
         currentIndex: 0,
       } as any);
       expect(stateServiceMock.markDirty).toHaveBeenCalledWith('status-bar', true);
+    });
+  });
+
+  describe('reset', () => {
+    beforeEach(() => {
+      statusBarSettings$.next({
+        available: ['selection'],
+        left: ['connection-status'],
+        right: ['download-speed'],
+      });
+      fixture.detectChanges();
+    });
+
+    it('should restore available, left, and right to the default widget layout', () => {
+      component.reset();
+
+      expect(component.available.map((w) => w.id)).toEqual(DEFAULT_STATUS_BAR_SETTINGS.available);
+      expect(component.left.map((w) => w.id)).toEqual(DEFAULT_STATUS_BAR_SETTINGS.left);
+      expect(component.right.map((w) => w.id)).toEqual(DEFAULT_STATUS_BAR_SETTINGS.right);
+    });
+
+    it('should mark status-bar as dirty', () => {
+      component.reset();
+
+      expect(stateServiceMock.markDirty).toHaveBeenCalledWith('status-bar', true);
+    });
+
+    it('should not persist the reset - save() is not called', () => {
+      component.reset();
+
+      expect(statusBarServiceMock.save).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('settings reconciliation', () => {
+    it('should append a known widget id missing from the stored settings into available', () => {
+      statusBarSettings$.next({
+        available: ['selection', 'alltime-down', 'alltime-up'],
+        left: ['connection-status', 'nodes', 'ratio', 'global-down', 'global-up'],
+        right: ['download-speed', 'upload-speed', 'free-space', 'polling-indicator'],
+      });
+      fixture.detectChanges();
+
+      expect(component.available.some((w) => w.id === 'alltime-ratio')).toBe(true);
+    });
+
+    it('should not duplicate a widget already placed in left or right', () => {
+      statusBarSettings$.next({
+        available: ['selection'],
+        left: ['connection-status', 'nodes', 'ratio', 'global-down', 'global-up', 'alltime-ratio'],
+        right: ['download-speed', 'upload-speed', 'free-space', 'polling-indicator'],
+      });
+      fixture.detectChanges();
+
+      expect(component.available.filter((w) => w.id === 'alltime-ratio')).toHaveLength(0);
+      expect(component.left.some((w) => w.id === 'alltime-ratio')).toBe(true);
     });
   });
 });

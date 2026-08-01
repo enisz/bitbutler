@@ -1420,10 +1420,14 @@
         "server-polling": "Szerver lekérdezés ({{interval}}s) - Kattints a szüneteltetéshez",
         "polling-paused": "Lekérdezés szüneteltetve - Kattints a folytatáshoz",
         "network-status": "Hálózati állapot",
-        "global-ratio": "Globális arány",
+        "global-session-ratio": "Globális munkamenet arány",
+        "global-total-ratio": "Globális összesített arány",
+        "global-session-downloaded": "Globális munkamenet letöltés",
+        "global-total-downloaded": "Globális összesített letöltés",
+        "global-session-uploaded": "Globális munkamenet feltöltés",
+        "global-total-uploaded": "Globális összesített feltöltés",
         "all-time": "Összesített: {{value}}",
-        "total-downloaded": "Összes letöltés",
-        "total-uploaded": "Összes feltöltés",
+        "session": "Munkamenet: {{value}}",
         "download-speed": "Letöltési sebesség",
         "upload-speed": "Feltöltési sebesség",
         "limit": "Korlát: {{value}}/s"
@@ -1641,14 +1645,26 @@
             "widget-pool": "Elérhető modulok",
             "widgets": "Modulok",
             "left": "Bal oldal",
-            "right": "Jobb oldal"
+            "right": "Jobb oldal",
+            "reset": "Visszaállítás alapértelmezettre"
+          },
+          "popover": {
+            "widget-pool": {
+              "description": "Az állapotsorból eltávolított modulok ide kerülnek. Húzd vissza bármelyiket a bal vagy jobb oldali oszlopba, hogy újra megjelenjen."
+            },
+            "widgets": {
+              "description": "Ezek a modulok jelennek meg jelenleg az állapotsoron, a bal és jobb oldalra igazított csoportokra bontva."
+            }
           },
           "widget": {
             "connection-status": "Kapcsolati állapot",
             "nodes": "DHT csomópontok",
-            "ratio": "Megosztási arány",
-            "global-down": "Globális letöltés",
-            "global-up": "Globális feltöltés",
+            "ratio": "Globális munkamenet arány",
+            "alltime-ratio": "Globális összesített arány",
+            "global-down": "Globális munkamenet letöltés",
+            "alltime-down": "Globális összesített letöltés",
+            "global-up": "Globális munkamenet feltöltés",
+            "alltime-up": "Globális összesített feltöltés",
             "download-speed": "Letöltési sebesség",
             "upload-speed": "Feltöltési sebesség",
             "free-space": "Lemezterület",

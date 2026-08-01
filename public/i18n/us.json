@@ -1420,10 +1420,14 @@
         "server-polling": "Server Polling ({{interval}}s) - Click to Pause",
         "polling-paused": "Polling Paused - Click to Resume",
         "network-status": "Network Status",
-        "global-ratio": "Global Ratio",
-        "all-time": "All-time: {{value}}",
-        "total-downloaded": "Total Downloaded",
-        "total-uploaded": "Total Uploaded",
+        "global-session-ratio": "Global Session Ratio",
+        "global-total-ratio": "Global Total Ratio",
+        "global-session-downloaded": "Global Session Downloaded",
+        "global-total-downloaded": "Global Total Downloaded",
+        "global-session-uploaded": "Global Session Uploaded",
+        "global-total-uploaded": "Global Total Uploaded",
+        "all-time": "Total: {{value}}",
+        "session": "Session: {{value}}",
         "download-speed": "Download Speed",
         "upload-speed": "Upload Speed",
         "limit": "Limit: {{value}}/s"
@@ -1641,14 +1645,26 @@
             "widget-pool": "Widget Pool",
             "widgets": "Widgets",
             "left": "Left",
-            "right": "Right"
+            "right": "Right",
+            "reset": "Reset to Defaults"
+          },
+          "popover": {
+            "widget-pool": {
+              "description": "Widgets you drag out of the status bar end up here. Drag any of them into the Left or Right column to show them again."
+            },
+            "widgets": {
+              "description": "Widgets that currently appear in the status bar, split into the left- and right-aligned groups shown at the bottom of the app."
+            }
           },
           "widget": {
             "connection-status": "Connection Status",
             "nodes": "DHT Nodes",
-            "ratio": "Share Ratio",
-            "global-down": "Global Downloaded",
-            "global-up": "Global Uploaded",
+            "ratio": "Global Session Ratio",
+            "alltime-ratio": "Global Total Ratio",
+            "global-down": "Global Session Downloaded",
+            "alltime-down": "Global Total Downloaded",
+            "global-up": "Global Session Uploaded",
+            "alltime-up": "Global Total Uploaded",
             "download-speed": "Download Speed",
             "upload-speed": "Upload Speed",
             "free-space": "Disk Space",

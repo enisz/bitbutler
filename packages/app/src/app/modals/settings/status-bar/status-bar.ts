@@ -8,15 +8,20 @@ import {
 } from '@angular/cdk/drag-drop';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { faGripVertical } from '@fortawesome/free-solid-svg-icons';
+import { faRotateLeft } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { switchMap, tap } from 'rxjs';
+import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content';
+import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
-import { StatusBarSettings } from '../../../models/status-bar-settings.model';
+import {
+  DEFAULT_STATUS_BAR_SETTINGS,
+  StatusBarSettings,
+} from '../../../models/status-bar-settings.model';
 import { StatusBarSettingsService } from '../../../services/status-bar-settings.service';
 import { SettingsStateService } from '../settings-state.service';
 import { SettingsTabComponent } from '../settings.interface';
+import { StatusBarWidgetPreview } from './widget-preview/widget-preview';
 
 interface Widget {
   id: string;
@@ -26,7 +31,16 @@ interface Widget {
 @Component({
   selector: 'app-status-bar',
   standalone: true,
-  imports: [CdkDrag, CdkDropList, CdkDropListGroup, FaIconComponent, BbSpinner, TranslatePipe],
+  imports: [
+    CdkDrag,
+    CdkDropList,
+    CdkDropListGroup,
+    StatusBarWidgetPreview,
+    BbSpinner,
+    BbBtnContent,
+    BbPopover,
+    TranslatePipe,
+  ],
   templateUrl: './status-bar.html',
   styleUrl: './status-bar.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -36,18 +50,20 @@ export class StatusBar implements SettingsTabComponent {
   private readonly translateService = inject(TranslateService);
   private readonly stateService = inject(SettingsStateService);
 
-  public faGripVertical = faGripVertical;
+  public faRotateLeft = faRotateLeft;
 
   private readonly MASTER_WIDGET_KEYS = [
     'connection-status',
     'nodes',
     'ratio',
+    'alltime-ratio',
     'global-down',
+    'alltime-down',
     'global-up',
+    'alltime-up',
     'download-speed',
     'upload-speed',
     'free-space',
-    'session-stats',
     'selection',
     'polling-indicator',
   ];
@@ -68,7 +84,9 @@ export class StatusBar implements SettingsTabComponent {
       }),
       switchMap(() => this.statusBarService.asObservable()),
       tap((settings: StatusBarSettings) => {
-        this.available = this.mapIdsToWidgets(settings.available);
+        const placed = new Set([...settings.available, ...settings.left, ...settings.right]);
+        const missing = this.MASTER_WIDGET_KEYS.filter((key) => !placed.has(key));
+        this.available = this.mapIdsToWidgets([...settings.available, ...missing]);
         this.left = this.mapIdsToWidgets(settings.left);
         this.right = this.mapIdsToWidgets(settings.right);
       }),
@@ -84,6 +102,13 @@ export class StatusBar implements SettingsTabComponent {
     return (ids ?? [])
       .filter((id) => !!this.MASTER_WIDGETS[id])
       .map((id) => ({ id, label: this.MASTER_WIDGETS[id] }));
+  }
+
+  public reset(): void {
+    this.available = this.mapIdsToWidgets(DEFAULT_STATUS_BAR_SETTINGS.available);
+    this.left = this.mapIdsToWidgets(DEFAULT_STATUS_BAR_SETTINGS.left);
+    this.right = this.mapIdsToWidgets(DEFAULT_STATUS_BAR_SETTINGS.right);
+    this.stateService.markDirty('status-bar', true);
   }
 
   public drop(event: CdkDragDrop<Widget[]>): void {

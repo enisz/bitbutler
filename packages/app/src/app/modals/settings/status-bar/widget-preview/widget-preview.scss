@@ -1,0 +1,92 @@
+:host {
+  display: inline-flex;
+  flex-shrink: 0;
+  cursor: grab;
+  border-radius: var(--bb-control-radius);
+  font-size: 0.8rem;
+  // Dragging renders this host as a native popover (see CDK's PreviewRef) - the
+  // browser's UA stylesheet for [popover] adds a border/padding/overflow that
+  // throw off the drag preview's size unless reset here.
+  border: none;
+  padding: 0;
+  overflow: visible;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.bb-widget {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.2rem 0.75rem;
+  white-space: nowrap;
+  background-color: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: 50px;
+}
+
+.status-dot {
+  font-size: 0.55rem;
+
+  &.connected {
+    color: var(--bs-success);
+  }
+}
+
+.icon-dl {
+  color: var(--bs-success);
+}
+.icon-ul {
+  color: var(--bs-info);
+}
+.icon-disk {
+  color: var(--bs-secondary);
+}
+
+.bb-value {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.bb-fixed-num {
+  display: inline-block;
+  text-align: right;
+}
+.bb-width-speed {
+  width: 10ch;
+}
+.bb-width-size {
+  width: 9.5ch;
+}
+.bb-width-count {
+  width: 5ch;
+}
+
+.poll-container {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(var(--bs-emphasis-color-rgb), 0.1);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: conic-gradient(var(--bs-primary) calc(var(--p) * 1%), transparent 0);
+    -webkit-mask: radial-gradient(farthest-side, transparent 65%, black 70%);
+    mask: radial-gradient(farthest-side, transparent 65%, black 70%);
+  }
+}
+
+.poll-icon {
+  font-size: 0.45rem;
+  color: var(--bs-primary);
+  opacity: 0.7;
+}

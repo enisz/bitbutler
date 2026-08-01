@@ -139,9 +139,12 @@ Available widgets:
 
 - Connection Status
 - DHT Nodes
-- Share Ratio
-- Global Downloaded
-- Global Uploaded
+- Global Session Ratio
+- Global Total Ratio
+- Global Session Downloaded
+- Global Total Downloaded
+- Global Session Uploaded
+- Global Total Uploaded
 - Download Speed
 - Upload Speed
 - Disk Space

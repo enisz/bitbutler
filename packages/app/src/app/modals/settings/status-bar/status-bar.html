@@ -7,9 +7,28 @@
         </p>
       </div>
     </div>
+    <div class="row">
+      <div class="col-12 d-flex justify-content-end">
+        <button type="button" class="btn btn-sm btn-link btn-split" (click)="reset()">
+          <bb-btn-content
+            [icon]="faRotateLeft"
+            [text]="'pages.settings.tab.status-bar.label.reset' | translate"
+            position="end"
+          ></bb-btn-content>
+        </button>
+      </div>
+    </div>
     <div cdkDropListGroup class="status-bar-config">
-      <fieldset class="bb-fieldset mt-2 mb-1">
-        <legend>{{ 'pages.settings.tab.status-bar.label.widget-pool' | translate }}</legend>
+      <fieldset class="bb-fieldset mt-2 mb-1 pb-3">
+        <legend>
+          {{ 'pages.settings.tab.status-bar.label.widget-pool' | translate }}
+          <bb-popover
+            [subject]="'pages.settings.tab.status-bar.label.widget-pool' | translate"
+            [description]="
+              'pages.settings.tab.status-bar.popover.widget-pool.description' | translate
+            "
+          ></bb-popover>
+        </legend>
         <div
           cdkDropList
           #availableList="cdkDropList"
@@ -25,55 +44,48 @@
       </fieldset>
 
       <fieldset class="bb-fieldset mt-0">
-        <legend>{{ 'pages.settings.tab.status-bar.label.widgets' | translate }}</legend>
-        <div class="container-fluid mb-3">
-          <div class="row">
-            <div class="col-md-6 col-12">
-              <p>{{ 'pages.settings.tab.status-bar.label.left' | translate }}</p>
-              <div
-                cdkDropList
-                #leftList="cdkDropList"
-                [cdkDropListData]="left"
-                class="widget-container vertical"
-                (cdkDropListDropped)="drop($event)"
-              >
-                @for (widget of left; track widget.id) {
-                  <div class="widget-item" cdkDrag>
-                    <div class="drag-handle" cdkDragHandle>
-                      <fa-icon [icon]="faGripVertical"></fa-icon>
-                    </div>
-                    <span class="widget-label">{{ widget.label }}</span>
-                  </div>
-                } @empty {
-                  <div class="empty-list-message">
-                    Drag widgets from the pool to the left column.
-                  </div>
-                }
-              </div>
-            </div>
-            <div class="col-md-6 col-12">
-              <p>{{ 'pages.settings.tab.status-bar.label.right' | translate }}</p>
-              <div
-                cdkDropList
-                #rightList="cdkDropList"
-                [cdkDropListData]="right"
-                class="widget-container vertical"
-                (cdkDropListDropped)="drop($event)"
-              >
-                @for (widget of right; track widget.id) {
-                  <div class="widget-item" cdkDrag>
-                    <div class="drag-handle" cdkDragHandle>
-                      <fa-icon [icon]="faGripVertical"></fa-icon>
-                    </div>
-                    <span class="widget-label">{{ widget.label }}</span>
-                  </div>
-                } @empty {
-                  <div class="empty-list-message">
-                    Drag widgets from the pool to the right column.
-                  </div>
-                }
-              </div>
-            </div>
+        <legend>
+          {{ 'pages.settings.tab.status-bar.label.widgets' | translate }}
+          <bb-popover
+            [subject]="'pages.settings.tab.status-bar.label.widgets' | translate"
+            [description]="'pages.settings.tab.status-bar.popover.widgets.description' | translate"
+          ></bb-popover>
+        </legend>
+        <div class="mb-3">
+          <p class="mb-1">{{ 'pages.settings.tab.status-bar.label.left' | translate }}</p>
+          <div
+            cdkDropList
+            #leftList="cdkDropList"
+            [cdkDropListData]="left"
+            cdkDropListOrientation="horizontal"
+            class="widget-container preview-row"
+            (cdkDropListDropped)="drop($event)"
+          >
+            @for (widget of left; track widget.id) {
+              <app-status-bar-widget-preview
+                [id]="widget.id"
+                cdkDrag
+              ></app-status-bar-widget-preview>
+            }
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <p class="mb-1">{{ 'pages.settings.tab.status-bar.label.right' | translate }}</p>
+          <div
+            cdkDropList
+            #rightList="cdkDropList"
+            [cdkDropListData]="right"
+            cdkDropListOrientation="horizontal"
+            class="widget-container preview-row align-end"
+            (cdkDropListDropped)="drop($event)"
+          >
+            @for (widget of right; track widget.id) {
+              <app-status-bar-widget-preview
+                [id]="widget.id"
+                cdkDrag
+              ></app-status-bar-widget-preview>
+            }
           </div>
         </div>
       </fieldset>

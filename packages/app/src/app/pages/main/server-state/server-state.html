@@ -70,6 +70,18 @@
         <span class="bb-value">{{ sessionRatio() }}</span>
       </div>
     }
+    @case ('alltime-ratio') {
+      <div
+        class="bb-widget cursor-pointer"
+        [ngbTooltip]="tipAlltimeRatio"
+        placement="top"
+        container="body"
+        (click)="setGlobalShareLimit()"
+      >
+        <fa-icon [icon]="icons.faShareAlt" class="text-secondary opacity-75"></fa-icon>
+        <span class="bb-value">{{ globalRatio() }}</span>
+      </div>
+    }
     @case ('global-down') {
       <div class="bb-widget" [ngbTooltip]="tipGlobalDl" placement="top" container="body">
         <fa-icon [icon]="icons.faCloudDownloadAlt" class="icon-dl opacity-75"></fa-icon>
@@ -78,12 +90,24 @@
         }}</span>
       </div>
     }
+    @case ('alltime-down') {
+      <div class="bb-widget" [ngbTooltip]="tipAlltimeDl" placement="top" container="body">
+        <fa-icon [icon]="icons.faCloudDownloadAlt" class="icon-dl opacity-75"></fa-icon>
+        <span class="bb-value bb-fixed-num bb-width-size">{{ allTimeDl() | fileSize }}</span>
+      </div>
+    }
     @case ('global-up') {
       <div class="bb-widget" [ngbTooltip]="tipGlobalUl" placement="top" container="body">
         <fa-icon [icon]="icons.faCloudUploadAlt" class="icon-ul opacity-75"></fa-icon>
         <span class="bb-value bb-fixed-num bb-width-size">{{
           state()?.up_info_data ?? 0 | fileSize
         }}</span>
+      </div>
+    }
+    @case ('alltime-up') {
+      <div class="bb-widget" [ngbTooltip]="tipAlltimeUl" placement="top" container="body">
+        <fa-icon [icon]="icons.faCloudUploadAlt" class="icon-ul opacity-75"></fa-icon>
+        <span class="bb-value bb-fixed-num bb-width-size">{{ allTimeUl() | fileSize }}</span>
       </div>
     }
     @case ('download-speed') {
@@ -176,18 +200,40 @@
 
 <ng-template #tipConnection>{{ 'pages.main.server-state.network-status' | translate }}</ng-template>
 <ng-template #tipRatioGlobal>
-  {{ 'pages.main.server-state.global-ratio' | translate }}<br /><span class="opacity-75">{{
+  {{ 'pages.main.server-state.global-session-ratio' | translate }}<br /><span class="opacity-75">{{
     'pages.main.server-state.all-time' | translate: { value: globalRatio() }
   }}</span>
 </ng-template>
 <ng-template #tipGlobalDl>
-  {{ 'pages.main.server-state.total-downloaded' | translate }}<br /><span class="opacity-75">{{
-    'pages.main.server-state.all-time' | translate: { value: (allTimeDl() | fileSize) }
-  }}</span>
+  {{ 'pages.main.server-state.global-session-downloaded' | translate }}<br /><span
+    class="opacity-75"
+    >{{ 'pages.main.server-state.all-time' | translate: { value: (allTimeDl() | fileSize) } }}</span
+  >
 </ng-template>
 <ng-template #tipGlobalUl>
-  {{ 'pages.main.server-state.total-uploaded' | translate }}<br /><span class="opacity-75">{{
-    'pages.main.server-state.all-time' | translate: { value: (allTimeUl() | fileSize) }
+  {{ 'pages.main.server-state.global-session-uploaded' | translate }}<br /><span
+    class="opacity-75"
+    >{{ 'pages.main.server-state.all-time' | translate: { value: (allTimeUl() | fileSize) } }}</span
+  >
+</ng-template>
+<ng-template #tipAlltimeRatio>
+  {{ 'pages.main.server-state.global-total-ratio' | translate }}<br /><span class="opacity-75">{{
+    'pages.main.server-state.session' | translate: { value: sessionRatio() }
+  }}</span>
+</ng-template>
+<ng-template #tipAlltimeDl>
+  {{ 'pages.main.server-state.global-total-downloaded' | translate }}<br /><span
+    class="opacity-75"
+    >{{
+      'pages.main.server-state.session'
+        | translate: { value: (state()?.dl_info_data ?? 0 | fileSize) }
+    }}</span
+  >
+</ng-template>
+<ng-template #tipAlltimeUl>
+  {{ 'pages.main.server-state.global-total-uploaded' | translate }}<br /><span class="opacity-75">{{
+    'pages.main.server-state.session'
+      | translate: { value: (state()?.up_info_data ?? 0 | fileSize) }
   }}</span>
 </ng-template>
 <ng-template #tipLiveDl>
