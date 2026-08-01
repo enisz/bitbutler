@@ -28,11 +28,11 @@ import { debounceTime, firstValueFrom, fromEvent } from 'rxjs';
 import { AppLoader } from '../../components/app-loader/app-loader';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { CommandBusService } from '../../services/command-bus.service';
+import { CredentialPromptService } from '../../services/credential-prompt.service';
 import { ElectronService } from '../../services/electron.service';
 import { GeneralSettingsService } from '../../services/general-settings.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
-import { ServerService } from '../../services/server.service';
 import {
   THEME_FAMILIES,
   ThemeFamily,
@@ -71,7 +71,7 @@ export class Login implements OnInit {
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly windowService = inject(WindowService);
   private readonly toastService = inject(ToastService);
-  private readonly serverService = inject(ServerService);
+  private readonly credentialPromptService = inject(CredentialPromptService);
   private readonly electronService = inject(ElectronService);
   private readonly commandBusService = inject(CommandBusService);
   private readonly translateService = inject(TranslateService);
@@ -191,32 +191,11 @@ export class Login implements OnInit {
     let runtimeUsername: string | undefined;
     let runtimePassword: string | undefined;
 
-    if (!currentServer.username || !currentServer.has_password) {
-      const { CredentialPrompt } = await import('../../modals/credential-prompt/credential-prompt');
-      const credModalRef = this.modalService.open(CredentialPrompt);
-      setModalInput(credModalRef, 'serverName', currentServer.name);
-      setModalInput(credModalRef, 'prefillUsername', currentServer.username);
-
-      try {
-        const result = (await credModalRef.result) as {
-          username: string;
-          password: string;
-          save: boolean;
-        };
-
-        if (result.save && (result.username || result.password)) {
-          await this.serverService.update(currentServer.id, {
-            username: result.username,
-            password: result.password,
-          });
-          this.commandBusService.emit({ type: 'SERVER_UPDATED', id: currentServer.id });
-        } else {
-          runtimeUsername = result.username;
-          runtimePassword = result.password;
-        }
-      } catch {
-        return;
-      }
+    if (this.credentialPromptService.needsPrompt(currentServer)) {
+      const resolved = await this.credentialPromptService.resolve(currentServer);
+      if (resolved === null) return;
+      runtimeUsername = resolved.username;
+      runtimePassword = resolved.password;
     }
 
     this.loading.set(true);

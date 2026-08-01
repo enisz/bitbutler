@@ -17,6 +17,7 @@ import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { TooltipOverflow } from '../../directives/tooltip-overflow';
 import { CommandBusService } from '../../services/command-bus.service';
 import { ConfirmService } from '../../services/confirm.service';
+import { CredentialPromptService } from '../../services/credential-prompt.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { ServerService } from '../../services/server.service';
@@ -47,6 +48,7 @@ export class ManageServers {
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
   private readonly modalService = inject(NgbModal);
+  private readonly credentialPromptService = inject(CredentialPromptService);
   public readonly activeModal = inject(NgbActiveModal);
 
   public readonly icon = {
@@ -111,29 +113,11 @@ export class ManageServers {
         let runtimeUsername: string | undefined;
         let runtimePassword: string | undefined;
 
-        if (!server.username || !server.has_password) {
-          const { CredentialPrompt } = await import('../credential-prompt/credential-prompt');
-          const credModalRef = this.modalService.open(CredentialPrompt);
-          setModalInput(credModalRef, 'serverName', server.name);
-          setModalInput(credModalRef, 'prefillUsername', server.username);
-
-          let result: { username: string; password: string; save: boolean };
-          try {
-            result = await credModalRef.result;
-          } catch {
-            return;
-          }
-
-          if (result.save && (result.username || result.password)) {
-            await this.serverService.update(server.id, {
-              username: result.username,
-              password: result.password,
-            });
-            this.commandBusService.emit({ type: 'SERVER_UPDATED', id: server.id });
-          } else {
-            runtimeUsername = result.username;
-            runtimePassword = result.password;
-          }
+        if (this.credentialPromptService.needsPrompt(server)) {
+          const resolved = await this.credentialPromptService.resolve(server);
+          if (resolved === null) return;
+          runtimeUsername = resolved.username;
+          runtimePassword = resolved.password;
         }
 
         const loginRes = await this.qbService.auth.login(

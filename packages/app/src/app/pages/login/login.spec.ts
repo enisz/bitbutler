@@ -465,5 +465,71 @@ describe('Login', () => {
 
       expect(checkAvailability).not.toHaveBeenCalled();
     });
+
+    describe('missing credentials', () => {
+      function credentialModalRef(result: Promise<unknown>) {
+        const componentInstance: Record<string, unknown> = {};
+        return {
+          componentInstance,
+          result,
+          _contentRef: {
+            componentRef: {
+              setInput: vi.fn((name: string, value: unknown) => {
+                componentInstance[name] = value;
+              }),
+            },
+          },
+        };
+      }
+
+      it('opens the credential prompt when username or password is missing', async () => {
+        setCurrentServer({ username: '', has_password: false });
+        const cancelled = Promise.reject(undefined);
+        cancelled.catch(() => {});
+        const modalRef = credentialModalRef(cancelled);
+        modalMock.open.mockReturnValue(modalRef);
+
+        await component.connect();
+
+        expect(modalMock.open).toHaveBeenCalled();
+        expect(modalRef.componentInstance['serverName']).toBe('Local');
+        expect(qbServiceMock.login).not.toHaveBeenCalled();
+      });
+
+      it('persists credentials and logs in with no runtime args when the prompt saves', async () => {
+        setCurrentServer({ username: '', has_password: false });
+        qbServiceMock.login.mockResolvedValue({ loggedIn: true });
+        modalMock.open.mockReturnValueOnce(
+          credentialModalRef(
+            Promise.resolve({ username: 'admin', password: 'secret', save: true }),
+          ),
+        );
+        const serverServiceMock = TestBed.inject(ServerService) as any;
+
+        await component.connect();
+
+        expect(serverServiceMock.update).toHaveBeenCalledWith('srv-1', {
+          username: 'admin',
+          password: 'secret',
+        });
+        expect(qbServiceMock.login).toHaveBeenCalledWith('srv-1', undefined, undefined);
+      });
+
+      it('logs in with the entered credentials without persisting when the prompt does not save', async () => {
+        setCurrentServer({ username: '', has_password: false });
+        qbServiceMock.login.mockResolvedValue({ loggedIn: true });
+        modalMock.open.mockReturnValueOnce(
+          credentialModalRef(
+            Promise.resolve({ username: 'admin', password: 'secret', save: false }),
+          ),
+        );
+        const serverServiceMock = TestBed.inject(ServerService) as any;
+
+        await component.connect();
+
+        expect(serverServiceMock.update).not.toHaveBeenCalled();
+        expect(qbServiceMock.login).toHaveBeenCalledWith('srv-1', 'admin', 'secret');
+      });
+    });
   });
 });
