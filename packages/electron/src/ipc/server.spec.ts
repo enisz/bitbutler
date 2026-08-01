@@ -611,14 +611,14 @@ describe('server:set-active IPC event handler', () => {
     expect(mockRebuildTrayMenu).toHaveBeenCalled();
   });
 
-  it('does not rebuild menus when id has not changed', async () => {
+  it('rebuilds menus even when id has not changed, to correct a stale radio button after a failed switch', async () => {
     const { registerServerIpcHandlers, setActiveServerId } = await import('./server.js');
     setActiveServerId('same-id');
     registerServerIpcHandlers();
     const handler = ipcOnHandlers.get('server:set-active')!;
     handler(null, 'same-id');
-    expect(mockRebuildMenu).not.toHaveBeenCalled();
-    expect(mockRebuildTrayMenu).not.toHaveBeenCalled();
+    expect(mockRebuildMenu).toHaveBeenCalled();
+    expect(mockRebuildTrayMenu).toHaveBeenCalled();
   });
 });
 
