@@ -23,6 +23,7 @@ describe('ManageServers', () => {
           useValue: {
             servers: signal([]),
             currentServerId: signal(null),
+            select: vi.fn(),
           },
         },
         { provide: CommandBusService, useValue: { emit: vi.fn() } },
@@ -86,6 +87,8 @@ describe('ManageServers', () => {
         host: 'localhost',
         port: 8080,
         protocol: 'http',
+        username: 'admin',
+        has_password: true,
       } as any;
 
       const qbServiceMock = TestBed.inject(QbService) as any;
@@ -101,6 +104,143 @@ describe('ManageServers', () => {
       expect(translateServiceMock.instant).toHaveBeenCalledWith(
         'services.menu-bar-command-handler.error.failed-to-connect-title',
       );
+    });
+
+    describe('credential prompt', () => {
+      function makeModalRef(result: Promise<unknown>) {
+        const componentInstance: Record<string, unknown> = {};
+        return {
+          componentInstance,
+          result,
+          _contentRef: {
+            componentRef: {
+              setInput: vi.fn((name: string, value: unknown) => {
+                componentInstance[name] = value;
+              }),
+            },
+          },
+        };
+      }
+
+      function server(overrides: Record<string, unknown> = {}) {
+        return {
+          id: 'srv-1',
+          name: 'My Server',
+          host: 'localhost',
+          port: 8080,
+          protocol: 'http',
+          username: '',
+          has_password: false,
+          ...overrides,
+        } as any;
+      }
+
+      it('opens the credential prompt when there is no session and credentials are missing', async () => {
+        const qbServiceMock = TestBed.inject(QbService) as any;
+        qbServiceMock.auth.hasCookie.mockResolvedValue(false);
+
+        const ngbModalMock = TestBed.inject(NgbModal) as any;
+        const cancelled = Promise.reject(undefined);
+        cancelled.catch(() => {});
+        const modalRef = makeModalRef(cancelled);
+        ngbModalMock.open.mockReturnValue(modalRef);
+
+        await component.switchTo(server());
+
+        expect(ngbModalMock.open).toHaveBeenCalledTimes(1);
+        expect(modalRef.componentInstance['serverName']).toBe('My Server');
+        expect(modalRef.componentInstance['prefillUsername']).toBe('');
+        expect(qbServiceMock.auth.login).not.toHaveBeenCalled();
+      });
+
+      it('skips the credential prompt when a session already exists', async () => {
+        const qbServiceMock = TestBed.inject(QbService) as any;
+        qbServiceMock.auth.hasCookie.mockResolvedValue(true);
+        const ngbModalMock = TestBed.inject(NgbModal) as any;
+        const serverStoreMock = TestBed.inject(ServerStoreService) as any;
+
+        await component.switchTo(server());
+
+        expect(ngbModalMock.open).not.toHaveBeenCalled();
+        expect(qbServiceMock.auth.login).not.toHaveBeenCalled();
+        expect(serverStoreMock.select).toHaveBeenCalledWith('srv-1');
+      });
+
+      it('skips the credential prompt when credentials are already saved', async () => {
+        const qbServiceMock = TestBed.inject(QbService) as any;
+        qbServiceMock.auth.hasCookie.mockResolvedValue(false);
+        qbServiceMock.auth.login.mockResolvedValue({ loggedIn: true });
+        const ngbModalMock = TestBed.inject(NgbModal) as any;
+
+        await component.switchTo(server({ username: 'admin', has_password: true }));
+
+        expect(ngbModalMock.open).not.toHaveBeenCalled();
+        expect(qbServiceMock.auth.login).toHaveBeenCalledWith('srv-1', undefined, undefined);
+      });
+
+      it('persists credentials and logs in with no runtime args when the prompt saves', async () => {
+        const qbServiceMock = TestBed.inject(QbService) as any;
+        qbServiceMock.auth.hasCookie.mockResolvedValue(false);
+        qbServiceMock.auth.login.mockResolvedValue({ loggedIn: true });
+
+        const ngbModalMock = TestBed.inject(NgbModal) as any;
+        const modalRef = makeModalRef(
+          Promise.resolve({ username: 'admin', password: 'secret', save: true }),
+        );
+        ngbModalMock.open.mockReturnValue(modalRef);
+
+        const updateSpy = vi
+          .spyOn(window.bitbutler.server, 'update')
+          .mockResolvedValue({ updated: true });
+        const commandBus = TestBed.inject(CommandBusService) as any;
+
+        await component.switchTo(server());
+
+        expect(updateSpy).toHaveBeenCalledWith({
+          id: 'srv-1',
+          changes: { username: 'admin', password: 'secret' },
+        });
+        expect(commandBus.emit).toHaveBeenCalledWith({ type: 'SERVER_UPDATED', id: 'srv-1' });
+        expect(qbServiceMock.auth.login).toHaveBeenCalledWith('srv-1', undefined, undefined);
+      });
+
+      it('logs in with the entered credentials without persisting when the prompt does not save', async () => {
+        const qbServiceMock = TestBed.inject(QbService) as any;
+        qbServiceMock.auth.hasCookie.mockResolvedValue(false);
+        qbServiceMock.auth.login.mockResolvedValue({ loggedIn: true });
+
+        const ngbModalMock = TestBed.inject(NgbModal) as any;
+        const modalRef = makeModalRef(
+          Promise.resolve({ username: 'admin', password: 'secret', save: false }),
+        );
+        ngbModalMock.open.mockReturnValue(modalRef);
+
+        const updateSpy = vi.spyOn(window.bitbutler.server, 'update');
+
+        await component.switchTo(server());
+
+        expect(updateSpy).not.toHaveBeenCalled();
+        expect(qbServiceMock.auth.login).toHaveBeenCalledWith('srv-1', 'admin', 'secret');
+      });
+
+      it('aborts quietly without a toast when the credential prompt is cancelled', async () => {
+        const qbServiceMock = TestBed.inject(QbService) as any;
+        qbServiceMock.auth.hasCookie.mockResolvedValue(false);
+
+        const ngbModalMock = TestBed.inject(NgbModal) as any;
+        const cancelled = Promise.reject(undefined);
+        cancelled.catch(() => {});
+        const modalRef = makeModalRef(cancelled);
+        ngbModalMock.open.mockReturnValue(modalRef);
+
+        const toastServiceMock = TestBed.inject(ToastService) as any;
+
+        await component.switchTo(server());
+
+        expect(qbServiceMock.auth.login).not.toHaveBeenCalled();
+        expect(toastServiceMock.danger).not.toHaveBeenCalled();
+        expect(component.connectingId()).toBeNull();
+      });
     });
   });
 });

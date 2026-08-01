@@ -106,10 +106,44 @@ export class ManageServers {
     this.connectingId.set(server.id);
     try {
       const hasSession = await this.qbService.auth.hasCookie(server.id);
+
       if (!hasSession) {
-        const loginRes = await this.qbService.auth.login(server.id);
+        let runtimeUsername: string | undefined;
+        let runtimePassword: string | undefined;
+
+        if (!server.username || !server.has_password) {
+          const { CredentialPrompt } = await import('../credential-prompt/credential-prompt');
+          const credModalRef = this.modalService.open(CredentialPrompt);
+          setModalInput(credModalRef, 'serverName', server.name);
+          setModalInput(credModalRef, 'prefillUsername', server.username);
+
+          let result: { username: string; password: string; save: boolean };
+          try {
+            result = await credModalRef.result;
+          } catch {
+            return;
+          }
+
+          if (result.save && (result.username || result.password)) {
+            await this.serverService.update(server.id, {
+              username: result.username,
+              password: result.password,
+            });
+            this.commandBusService.emit({ type: 'SERVER_UPDATED', id: server.id });
+          } else {
+            runtimeUsername = result.username;
+            runtimePassword = result.password;
+          }
+        }
+
+        const loginRes = await this.qbService.auth.login(
+          server.id,
+          runtimeUsername,
+          runtimePassword,
+        );
         if (!loginRes.loggedIn) throw new Error('Login failed');
       }
+
       this.serverStoreService.select(server.id);
       this.activeModal.dismiss();
     } catch (err) {
