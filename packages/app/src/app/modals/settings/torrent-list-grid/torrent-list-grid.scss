@@ -1,5 +1,5 @@
 .column-reorder-container {
-  max-height: 400px;
+  max-height: min(520px, 55vh);
   overflow-y: auto;
   background-color: var(--bb-control-bg);
   padding: 4px;
@@ -49,6 +49,24 @@
       cursor: grabbing;
     }
   }
+}
+
+.column-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  opacity: 0.6;
+  transition: opacity 0.15s ease;
+
+  .btn {
+    padding: 0 6px;
+    line-height: 1;
+  }
+}
+
+.column-drag-item:hover .column-actions,
+.column-drag-item:focus-within .column-actions {
+  opacity: 1;
 }
 
 .cdk-drag-preview {

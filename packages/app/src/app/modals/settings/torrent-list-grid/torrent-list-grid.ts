@@ -3,7 +3,15 @@ import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FaIconComponent, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faGripVertical, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
+import {
+  faAnglesDown,
+  faAnglesUp,
+  faChevronDown,
+  faChevronUp,
+  faGripVertical,
+  faTriangleExclamation,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { type ColDef, type ColumnState } from 'ag-grid-community';
@@ -78,6 +86,11 @@ export class TorrentListGrid implements SettingsTabComponent {
   public columns = signal<NgSelectColumnItem[]>([]);
   public orderedColumns = signal<NgSelectColumnItem[]>([]);
   public faGripVertical = faGripVertical;
+  public faAnglesUp = faAnglesUp;
+  public faAnglesDown = faAnglesDown;
+  public faChevronUp = faChevronUp;
+  public faChevronDown = faChevronDown;
+  public faXmark = faXmark;
   public loaded = signal(false);
 
   constructor() {

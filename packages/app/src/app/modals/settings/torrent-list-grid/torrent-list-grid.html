@@ -193,12 +193,78 @@
             </p>
             <div class="column-reorder-container">
               <div cdkDropList class="column-drop-list" (cdkDropListDropped)="drop($event)">
-                @for (column of orderedColumns(); track column.value) {
+                @for (
+                  column of orderedColumns();
+                  track column.value;
+                  let idx = $index;
+                  let last = $last
+                ) {
                   <div class="column-drag-item" cdkDrag>
                     <div class="drag-handle" cdkDragHandle>
                       <fa-icon [icon]="faGripVertical"></fa-icon>
                     </div>
                     <span class="column-label">{{ column.label }}</span>
+                    <div class="column-actions ms-auto">
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-link"
+                        [disabled]="idx === 0"
+                        (click)="moveToTop(idx)"
+                        [attr.aria-label]="
+                          'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-to-top'
+                            | translate
+                        "
+                      >
+                        <fa-icon [icon]="faAnglesUp"></fa-icon>
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-link"
+                        [disabled]="idx === 0"
+                        (click)="moveUp(idx)"
+                        [attr.aria-label]="
+                          'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-up'
+                            | translate
+                        "
+                      >
+                        <fa-icon [icon]="faChevronUp"></fa-icon>
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-link"
+                        [disabled]="last"
+                        (click)="moveDown(idx)"
+                        [attr.aria-label]="
+                          'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-down'
+                            | translate
+                        "
+                      >
+                        <fa-icon [icon]="faChevronDown"></fa-icon>
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-link"
+                        [disabled]="last"
+                        (click)="moveToBottom(idx)"
+                        [attr.aria-label]="
+                          'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-to-bottom'
+                            | translate
+                        "
+                      >
+                        <fa-icon [icon]="faAnglesDown"></fa-icon>
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-link text-danger"
+                        (click)="remove(column.value)"
+                        [attr.aria-label]="
+                          'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.remove'
+                            | translate
+                        "
+                      >
+                        <fa-icon [icon]="faXmark"></fa-icon>
+                      </button>
+                    </div>
                   </div>
                 } @empty {
                   <div class="w-100 text-center py-4 opacity-50 small">

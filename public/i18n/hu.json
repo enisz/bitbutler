@@ -1692,6 +1692,13 @@
                 "nothing": "Nincs művelet",
                 "inline-edit": "Helyszíni szerkesztés"
               }
+            },
+            "column-actions": {
+              "move-to-top": "Ugrás a lista tetejére",
+              "move-up": "Mozgatás feljebb",
+              "move-down": "Mozgatás lejjebb",
+              "move-to-bottom": "Ugrás a lista aljára",
+              "remove": "Eltávolítás"
             }
           },
           "label": {
