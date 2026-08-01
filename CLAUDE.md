@@ -142,3 +142,7 @@ Three lazy-loaded routes: `login`, `main` (torrent grid), `settings`. The router
 - Committing them to the remote feature branch is fine - it allows resuming implementation from a different machine.
 - They must not be merged to main: remove the `docs` folder in its own commit (e.g. `#<id>: removed spec and plan`) once implementation is done, before opening or merging the PR.
 - Do not reference or link spec/plan files or paths in PR or issue descriptions.
+
+## Plan execution
+
+- For a multi-task implementation plan, do not review after each task - do one review after all tasks in the plan are complete.
