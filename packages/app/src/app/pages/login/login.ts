@@ -192,10 +192,18 @@ export class Login implements OnInit {
     let runtimePassword: string | undefined;
 
     if (this.credentialPromptService.needsPrompt(currentServer)) {
-      const resolved = await this.credentialPromptService.resolve(currentServer);
-      if (resolved === null) return;
-      runtimeUsername = resolved.username;
-      runtimePassword = resolved.password;
+      try {
+        const resolved = await this.credentialPromptService.resolve(currentServer);
+        if (resolved === null) return;
+        runtimeUsername = resolved.username;
+        runtimePassword = resolved.password;
+      } catch (error) {
+        this.toastService.danger(
+          (error as Error).message,
+          this.translateService.instant('pages.login.error.connection-failed'),
+        );
+        return;
+      }
     }
 
     this.loading.set(true);

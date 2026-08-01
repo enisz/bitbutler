@@ -10,7 +10,7 @@ export interface ResolvedCredentials {
   password?: string;
 }
 
-type PromptableServer = Pick<ServerRecord, 'id' | 'name' | 'username' | 'has_password'>;
+type PromptableServer = Pick<ServerRecord, 'id' | 'name' | 'username'>;
 
 @Injectable({ providedIn: 'root' })
 export class CredentialPromptService {
@@ -23,6 +23,9 @@ export class CredentialPromptService {
   }
 
   // null return means the user cancelled - callers must abort silently.
+  // A resolved value of {} (both fields undefined) means credentials were
+  // saved to the server record - the caller should log in with no runtime
+  // args and let the saved credentials be used instead.
   public async resolve(server: PromptableServer): Promise<ResolvedCredentials | null> {
     const { CredentialPrompt } = await import('../modals/credential-prompt/credential-prompt');
     const credModalRef = this.modalService.open(CredentialPrompt);

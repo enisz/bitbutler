@@ -530,6 +530,24 @@ describe('Login', () => {
         expect(serverServiceMock.update).not.toHaveBeenCalled();
         expect(qbServiceMock.login).toHaveBeenCalledWith('srv-1', 'admin', 'secret');
       });
+
+      it('shows the connection-failed toast and does not proceed when persisting credentials fails', async () => {
+        setCurrentServer({ username: '', has_password: false });
+        modalMock.open.mockReturnValueOnce(
+          credentialModalRef(
+            Promise.resolve({ username: 'admin', password: 'secret', save: true }),
+          ),
+        );
+        const serverServiceMock = TestBed.inject(ServerService) as any;
+        serverServiceMock.update.mockRejectedValueOnce(new Error('IPC failure'));
+        const toastServiceMock = TestBed.inject(ToastService) as any;
+
+        await expect(component.connect()).resolves.toBeUndefined();
+
+        expect(toastServiceMock.danger).toHaveBeenCalledWith('IPC failure', '');
+        expect(translateMock.instant).toHaveBeenCalledWith('pages.login.error.connection-failed');
+        expect(qbServiceMock.login).not.toHaveBeenCalled();
+      });
     });
   });
 });
