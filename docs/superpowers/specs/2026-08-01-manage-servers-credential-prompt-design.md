@@ -95,6 +95,15 @@ vi.fn() }` — and an `NgbModal.open` mock returning a fake modal ref):
 ## Out of scope
 
 - The "save credentials" checkbox default (confirmed: stays unchecked).
-- Any change to `login.ts` or `CredentialPrompt` itself.
-- Extracting shared logic between `login.ts` and `manage-servers.ts` (decided
-  against - duplicate directly, only two call sites).
+- Any change to `CredentialPrompt` itself.
+
+## Addendum: extracted to `CredentialPromptService`
+
+The final whole-branch review found a third call site with the identical
+missing-credentials bug: `UiCommandHandlerService.handleServerSwitch()` (the
+app/tray menu's "switch server" action). The original two-call-site "duplicate
+directly" decision above no longer holds at three call sites. The
+implementation plan's Tasks 2-4 extract the shared check-and-prompt logic into
+a new `CredentialPromptService` (`needsPrompt()` / `resolve()`), and
+`login.ts`, `manage-servers.ts`, and `ui-command-handler.service.ts` all call
+it instead of inlining the logic. See the plan for exact interfaces.
