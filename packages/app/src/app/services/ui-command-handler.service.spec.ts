@@ -52,6 +52,7 @@ describe('UiCommandHandlerService', () => {
       import('../modals/export-torrents/export-torrents'),
       import('../modals/import-torrents/import-torrents'),
       import('../modals/torrent-exists/torrent-exists'),
+      import('../modals/credential-prompt/credential-prompt'),
     ]);
   });
 
@@ -99,9 +100,19 @@ describe('UiCommandHandlerService', () => {
         { provide: ElectronService, useValue: { showItemInFolder: vi.fn(), openPath: vi.fn() } },
         {
           provide: QbService,
-          useValue: { torrents: { files: vi.fn().mockResolvedValue([{ name: 'file.mkv' }]) } },
+          useValue: {
+            torrents: { files: vi.fn().mockResolvedValue([{ name: 'file.mkv' }]) },
+            auth: { hasCookie: vi.fn(), login: vi.fn() },
+          },
         },
-        { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
+        {
+          provide: ServerStoreService,
+          useValue: {
+            currentServerId: signal('server-1'),
+            servers: signal([]),
+            select: vi.fn(),
+          },
+        },
         {
           provide: TorrentListGridSettingsService,
           useValue: { asObservable: vi.fn().mockReturnValue(gridSettings$.asObservable()) },
@@ -277,6 +288,201 @@ describe('UiCommandHandlerService', () => {
     await flushPromises();
     expect(mockModalService.open).toHaveBeenCalled();
     expect(setInputSpy).toHaveBeenCalledWith('pathType', 'download');
+  });
+
+  describe('UI_SERVER_SWITCH', () => {
+    let qbAuthMock: { hasCookie: ReturnType<typeof vi.fn>; login: ReturnType<typeof vi.fn> };
+    let serverStoreMock: {
+      servers: ReturnType<typeof signal<any[]>>;
+      select: ReturnType<typeof vi.fn>;
+      currentServerId: ReturnType<typeof signal<string | null>>;
+    };
+    let toastMock: { danger: ReturnType<typeof vi.fn>; info: ReturnType<typeof vi.fn> };
+
+    function loaderRef() {
+      return { close: vi.fn() };
+    }
+
+    function credentialRef(result: Promise<unknown>) {
+      const componentInstance: Record<string, unknown> = {};
+      return {
+        componentInstance,
+        result,
+        _contentRef: {
+          componentRef: {
+            setInput: vi.fn((name: string, value: unknown) => {
+              componentInstance[name] = value;
+            }),
+          },
+        },
+      };
+    }
+
+    function setServer(overrides: Record<string, unknown> = {}) {
+      serverStoreMock.servers.set([
+        {
+          id: 'server-1',
+          name: 'My Server',
+          host: 'localhost',
+          port: 8080,
+          protocol: 'http',
+          username: '',
+          has_password: false,
+          ...overrides,
+        },
+      ]);
+    }
+
+    beforeEach(() => {
+      qbAuthMock = (TestBed.inject(QbService) as any).auth;
+      serverStoreMock = TestBed.inject(ServerStoreService) as any;
+      toastMock = TestBed.inject(ToastService) as any;
+    });
+
+    it('opens the credential prompt when there is no session and credentials are missing', async () => {
+      setServer();
+      qbAuthMock.hasCookie.mockResolvedValue(false);
+      const cancelled = Promise.reject(undefined);
+      cancelled.catch(() => {});
+      const firstLoader = loaderRef();
+      mockModalService.open
+        .mockReturnValueOnce(firstLoader)
+        .mockReturnValueOnce(credentialRef(cancelled));
+
+      commands$.next({ type: 'UI_SERVER_SWITCH', id: 'server-1' });
+      await flushPromises();
+
+      expect(mockModalService.open).toHaveBeenCalledTimes(2);
+      expect(firstLoader.close).toHaveBeenCalledTimes(1);
+      // Proves the loader was closed *before* the credential prompt opened, not just that
+      // both happened - a stacking regression (skipping the close) would fail this.
+      const closeOrder = firstLoader.close.mock.invocationCallOrder[0];
+      const promptOpenOrder = mockModalService.open.mock.invocationCallOrder[1];
+      expect(closeOrder).toBeLessThan(promptOpenOrder);
+      expect(qbAuthMock.login).not.toHaveBeenCalled();
+    });
+
+    it('skips the credential prompt when a session already exists', async () => {
+      setServer();
+      qbAuthMock.hasCookie.mockResolvedValue(true);
+      const loader = loaderRef();
+      mockModalService.open.mockReturnValueOnce(loader);
+
+      commands$.next({ type: 'UI_SERVER_SWITCH', id: 'server-1' });
+      await flushPromises();
+
+      expect(mockModalService.open).toHaveBeenCalledTimes(1);
+      expect(qbAuthMock.login).not.toHaveBeenCalled();
+      expect(serverStoreMock.select).toHaveBeenCalledWith('server-1');
+      expect(loader.close).toHaveBeenCalledTimes(1);
+    });
+
+    it('skips the credential prompt when credentials are already saved', async () => {
+      setServer({ username: 'admin', has_password: true });
+      qbAuthMock.hasCookie.mockResolvedValue(false);
+      qbAuthMock.login.mockResolvedValue({ loggedIn: true });
+      const loader = loaderRef();
+      mockModalService.open.mockReturnValueOnce(loader);
+
+      commands$.next({ type: 'UI_SERVER_SWITCH', id: 'server-1' });
+      await flushPromises();
+
+      expect(mockModalService.open).toHaveBeenCalledTimes(1);
+      expect(qbAuthMock.login).toHaveBeenCalledWith('server-1', undefined, undefined);
+      expect(loader.close).toHaveBeenCalledTimes(1);
+    });
+
+    it('persists credentials and logs in with no runtime args when the prompt saves', async () => {
+      setServer();
+      qbAuthMock.hasCookie.mockResolvedValue(false);
+      qbAuthMock.login.mockResolvedValue({ loggedIn: true });
+      const updateSpy = vi
+        .spyOn(window.bitbutler.server, 'update')
+        .mockResolvedValue({ updated: true });
+      const firstLoader = loaderRef();
+      const reopenedLoader = loaderRef();
+      mockModalService.open
+        .mockReturnValueOnce(firstLoader)
+        .mockReturnValueOnce(
+          credentialRef(Promise.resolve({ username: 'admin', password: 'secret', save: true })),
+        )
+        .mockReturnValueOnce(reopenedLoader);
+
+      commands$.next({ type: 'UI_SERVER_SWITCH', id: 'server-1' });
+      await flushPromises();
+
+      // Proves the loader is genuinely reopened after the prompt resolves - a regression
+      // that silently dropped the `appLoaderModal = openLoader()` reopen line would still
+      // satisfy the credential/login assertions below, but would fail this call count.
+      expect(mockModalService.open).toHaveBeenCalledTimes(3);
+      expect(firstLoader.close).toHaveBeenCalledTimes(1);
+      expect(reopenedLoader.close).toHaveBeenCalledTimes(1);
+      expect(updateSpy).toHaveBeenCalledWith({
+        id: 'server-1',
+        changes: { username: 'admin', password: 'secret' },
+      });
+      expect(commandBusEmit).toHaveBeenCalledWith({ type: 'SERVER_UPDATED', id: 'server-1' });
+      expect(qbAuthMock.login).toHaveBeenCalledWith('server-1', undefined, undefined);
+    });
+
+    it('logs in with the entered credentials without persisting when the prompt does not save', async () => {
+      setServer();
+      qbAuthMock.hasCookie.mockResolvedValue(false);
+      qbAuthMock.login.mockResolvedValue({ loggedIn: true });
+      const updateSpy = vi.spyOn(window.bitbutler.server, 'update');
+      const firstLoader = loaderRef();
+      const reopenedLoader = loaderRef();
+      mockModalService.open
+        .mockReturnValueOnce(firstLoader)
+        .mockReturnValueOnce(
+          credentialRef(Promise.resolve({ username: 'admin', password: 'secret', save: false })),
+        )
+        .mockReturnValueOnce(reopenedLoader);
+
+      commands$.next({ type: 'UI_SERVER_SWITCH', id: 'server-1' });
+      await flushPromises();
+
+      expect(mockModalService.open).toHaveBeenCalledTimes(3);
+      expect(firstLoader.close).toHaveBeenCalledTimes(1);
+      expect(reopenedLoader.close).toHaveBeenCalledTimes(1);
+      expect(updateSpy).not.toHaveBeenCalled();
+      expect(qbAuthMock.login).toHaveBeenCalledWith('server-1', 'admin', 'secret');
+    });
+
+    it('aborts quietly without a toast when the credential prompt is cancelled', async () => {
+      setServer();
+      qbAuthMock.hasCookie.mockResolvedValue(false);
+      const cancelled = Promise.reject(undefined);
+      cancelled.catch(() => {});
+      const firstLoader = loaderRef();
+      mockModalService.open
+        .mockReturnValueOnce(firstLoader)
+        .mockReturnValueOnce(credentialRef(cancelled));
+
+      commands$.next({ type: 'UI_SERVER_SWITCH', id: 'server-1' });
+      await flushPromises();
+
+      expect(qbAuthMock.login).not.toHaveBeenCalled();
+      expect(toastMock.danger).not.toHaveBeenCalled();
+      // The loader must close exactly once on the cancel path (no reopen, no double-close
+      // via the nullable appLoaderModal pattern in the `finally` block).
+      expect(mockModalService.open).toHaveBeenCalledTimes(2);
+      expect(firstLoader.close).toHaveBeenCalledTimes(1);
+    });
+
+    it('shows a danger toast and falls back to the current server when login fails', async () => {
+      setServer({ username: 'admin', has_password: true });
+      qbAuthMock.hasCookie.mockResolvedValue(false);
+      qbAuthMock.login.mockResolvedValue({ loggedIn: false });
+      const loader = loaderRef();
+      mockModalService.open.mockReturnValueOnce(loader);
+
+      commands$.next({ type: 'UI_SERVER_SWITCH', id: 'server-1' });
+      await flushPromises();
+
+      expect(toastMock.danger).toHaveBeenCalledWith('"My Server"', expect.any(String));
+      expect(loader.close).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('pausePollingOnModal', () => {

@@ -17,6 +17,7 @@ import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { TooltipOverflow } from '../../directives/tooltip-overflow';
 import { CommandBusService } from '../../services/command-bus.service';
 import { ConfirmService } from '../../services/confirm.service';
+import { CredentialPromptService } from '../../services/credential-prompt.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { ServerService } from '../../services/server.service';
@@ -47,6 +48,7 @@ export class ManageServers {
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
   private readonly modalService = inject(NgbModal);
+  private readonly credentialPromptService = inject(CredentialPromptService);
   public readonly activeModal = inject(NgbActiveModal);
 
   public readonly icon = {
@@ -106,10 +108,26 @@ export class ManageServers {
     this.connectingId.set(server.id);
     try {
       const hasSession = await this.qbService.auth.hasCookie(server.id);
+
       if (!hasSession) {
-        const loginRes = await this.qbService.auth.login(server.id);
+        let runtimeUsername: string | undefined;
+        let runtimePassword: string | undefined;
+
+        if (this.credentialPromptService.needsPrompt(server)) {
+          const resolved = await this.credentialPromptService.resolve(server);
+          if (resolved === null) return;
+          runtimeUsername = resolved.username;
+          runtimePassword = resolved.password;
+        }
+
+        const loginRes = await this.qbService.auth.login(
+          server.id,
+          runtimeUsername,
+          runtimePassword,
+        );
         if (!loginRes.loggedIn) throw new Error('Login failed');
       }
+
       this.serverStoreService.select(server.id);
       this.activeModal.dismiss();
     } catch (err) {
