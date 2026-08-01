@@ -35,17 +35,6 @@
   }
 }
 
-.empty-list-message {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  min-height: 100px;
-  color: var(--bs-secondary);
-  font-style: italic;
-  opacity: 0.7;
-}
-
 .status-pill {
   display: inline-flex;
   align-items: center;

@@ -19,8 +19,16 @@
       </div>
     </div>
     <div cdkDropListGroup class="status-bar-config">
-      <fieldset class="bb-fieldset mt-2 mb-1">
-        <legend>{{ 'pages.settings.tab.status-bar.label.widget-pool' | translate }}</legend>
+      <fieldset class="bb-fieldset mt-2 mb-1 pb-3">
+        <legend>
+          {{ 'pages.settings.tab.status-bar.label.widget-pool' | translate }}
+          <bb-popover
+            [subject]="'pages.settings.tab.status-bar.label.widget-pool' | translate"
+            [description]="
+              'pages.settings.tab.status-bar.popover.widget-pool.description' | translate
+            "
+          ></bb-popover>
+        </legend>
         <div
           cdkDropList
           #availableList="cdkDropList"
@@ -36,7 +44,13 @@
       </fieldset>
 
       <fieldset class="bb-fieldset mt-0">
-        <legend>{{ 'pages.settings.tab.status-bar.label.widgets' | translate }}</legend>
+        <legend>
+          {{ 'pages.settings.tab.status-bar.label.widgets' | translate }}
+          <bb-popover
+            [subject]="'pages.settings.tab.status-bar.label.widgets' | translate"
+            [description]="'pages.settings.tab.status-bar.popover.widgets.description' | translate"
+          ></bb-popover>
+        </legend>
         <div class="mb-3">
           <p class="mb-1">{{ 'pages.settings.tab.status-bar.label.left' | translate }}</p>
           <div
@@ -52,13 +66,11 @@
                 [id]="widget.id"
                 cdkDrag
               ></app-status-bar-widget-preview>
-            } @empty {
-              <div class="empty-list-message">Drag widgets from the pool to the left column.</div>
             }
           </div>
         </div>
 
-        <div>
+        <div class="mb-3">
           <p class="mb-1">{{ 'pages.settings.tab.status-bar.label.right' | translate }}</p>
           <div
             cdkDropList
@@ -73,8 +85,6 @@
                 [id]="widget.id"
                 cdkDrag
               ></app-status-bar-widget-preview>
-            } @empty {
-              <div class="empty-list-message">Drag widgets from the pool to the right column.</div>
             }
           </div>
         </div>

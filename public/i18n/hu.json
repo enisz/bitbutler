@@ -1648,6 +1648,14 @@
             "right": "Jobb oldal",
             "reset": "Visszaállítás alapértelmezettre"
           },
+          "popover": {
+            "widget-pool": {
+              "description": "Az állapotsorból eltávolított modulok ide kerülnek. Húzd vissza bármelyiket a bal vagy jobb oldali oszlopba, hogy újra megjelenjen."
+            },
+            "widgets": {
+              "description": "Ezek a modulok jelennek meg jelenleg az állapotsoron, a bal és jobb oldalra igazított csoportokra bontva."
+            }
+          },
           "widget": {
             "connection-status": "Kapcsolati állapot",
             "nodes": "DHT csomópontok",

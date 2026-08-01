@@ -1648,6 +1648,14 @@
             "right": "Right",
             "reset": "Reset to Defaults"
           },
+          "popover": {
+            "widget-pool": {
+              "description": "Widgets you drag out of the status bar end up here. Drag any of them into the Left or Right column to show them again."
+            },
+            "widgets": {
+              "description": "Widgets that currently appear in the status bar, split into the left- and right-aligned groups shown at the bottom of the app."
+            }
+          },
           "widget": {
             "connection-status": "Connection Status",
             "nodes": "DHT Nodes",
