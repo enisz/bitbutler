@@ -1,16 +1,36 @@
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  ElementRef,
+  inject,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FaIconComponent, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faGripVertical, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowDown,
+  faArrowUp,
+  faArrowsDownToLine,
+  faArrowsUpToLine,
+  faGripVertical,
+  faRotateLeft,
+  faTriangleExclamation,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
+import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { type ColDef, type ColumnState } from 'ag-grid-community';
 import { firstValueFrom, take, tap } from 'rxjs';
+import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
+import { TooltipOverflow } from '../../../directives/tooltip-overflow';
 import {
+  DEFAULT_TORRENT_LIST_GRID_SETTINGS,
   RowDoubleClickAction,
   TorrentListGridSettings,
 } from '../../../models/torrent-list-grid.model';
@@ -26,6 +46,16 @@ export interface NgSelectColumnItem {
   label: string;
 }
 
+type ColumnAction = 'move-to-top' | 'move-up' | 'move-down' | 'move-to-bottom' | 'remove';
+
+const FOCUS_FALLBACKS: Record<ColumnAction, ColumnAction[]> = {
+  'move-up': ['move-up', 'move-down', 'move-to-bottom', 'move-to-top'],
+  'move-to-top': ['move-down', 'move-to-bottom', 'move-up', 'move-to-top'],
+  'move-down': ['move-down', 'move-up', 'move-to-top', 'move-to-bottom'],
+  'move-to-bottom': ['move-up', 'move-to-top', 'move-down', 'move-to-bottom'],
+  remove: ['remove', 'move-down', 'move-up'],
+};
+
 @Component({
   selector: 'app-torrent-list-grid',
   standalone: true,
@@ -36,8 +66,11 @@ export interface NgSelectColumnItem {
     DragDropModule,
     FaIconComponent,
     BbPopover,
+    BbBtnContent,
     FontAwesomeModule,
     TranslatePipe,
+    NgbTooltipModule,
+    TooltipOverflow,
   ],
   templateUrl: './torrent-list-grid.html',
   styleUrl: './torrent-list-grid.scss',
@@ -50,6 +83,7 @@ export class TorrentListGrid implements SettingsTabComponent {
   private readonly translateService = inject(TranslateService);
   private readonly stateService = inject(SettingsStateService);
   private readonly torrentStoreService = inject(TorrentStoreService);
+  private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
   faTriangleExclamation = faTriangleExclamation;
 
@@ -78,6 +112,12 @@ export class TorrentListGrid implements SettingsTabComponent {
   public columns = signal<NgSelectColumnItem[]>([]);
   public orderedColumns = signal<NgSelectColumnItem[]>([]);
   public faGripVertical = faGripVertical;
+  public faArrowsUpToLine = faArrowsUpToLine;
+  public faArrowUp = faArrowUp;
+  public faArrowDown = faArrowDown;
+  public faArrowsDownToLine = faArrowsDownToLine;
+  public faXmark = faXmark;
+  public faRotateLeft = faRotateLeft;
   public loaded = signal(false);
 
   constructor() {
@@ -154,6 +194,100 @@ export class TorrentListGrid implements SettingsTabComponent {
     moveItemInArray(columns, event.previousIndex, event.currentIndex);
     this.orderedColumns.set(columns);
     this.stateService.markDirty('torrent-list-grid', true);
+  }
+
+  public moveUp(index: number): void {
+    const columns = [...this.orderedColumns()];
+    if (index <= 0 || index >= columns.length) return;
+    [columns[index - 1], columns[index]] = [columns[index], columns[index - 1]];
+    this.orderedColumns.set(columns);
+    this.stateService.markDirty('torrent-list-grid', true);
+    this.retainActionFocus('move-up', columns[index - 1].value);
+  }
+
+  public moveDown(index: number): void {
+    const columns = [...this.orderedColumns()];
+    if (index < 0 || index >= columns.length - 1) return;
+    [columns[index], columns[index + 1]] = [columns[index + 1], columns[index]];
+    this.orderedColumns.set(columns);
+    this.stateService.markDirty('torrent-list-grid', true);
+    this.retainActionFocus('move-down', columns[index + 1].value);
+  }
+
+  public moveToTop(index: number): void {
+    const columns = [...this.orderedColumns()];
+    if (index <= 0 || index >= columns.length) return;
+    const [moved] = columns.splice(index, 1);
+    columns.unshift(moved);
+    this.orderedColumns.set(columns);
+    this.stateService.markDirty('torrent-list-grid', true);
+    this.retainActionFocus('move-to-top', moved.value);
+  }
+
+  public moveToBottom(index: number): void {
+    const columns = [...this.orderedColumns()];
+    if (index < 0 || index >= columns.length - 1) return;
+    const [moved] = columns.splice(index, 1);
+    columns.push(moved);
+    this.orderedColumns.set(columns);
+    this.stateService.markDirty('torrent-list-grid', true);
+    this.retainActionFocus('move-to-bottom', moved.value);
+  }
+
+  public remove(colId: string): void {
+    const ordered = this.orderedColumns();
+    const removedIndex = ordered.findIndex((c) => c.value === colId);
+    const neighborColId = ordered[removedIndex + 1]?.value ?? ordered[removedIndex - 1]?.value;
+
+    const columnsControl = this.torrentListGridForm.controls.columns;
+    const currentIds = columnsControl.value ?? [];
+    columnsControl.setValue(currentIds.filter((id) => id !== colId));
+
+    this.retainActionFocus('remove', neighborColId);
+  }
+
+  public reset(): void {
+    const defaultColumnIds = (DEFAULT_TORRENT_LIST_GRID_SETTINGS.columnState ?? []) as string[];
+    const lookup = new Map(this.columns().map((c) => [c.value, c]));
+    const defaultOrdered = defaultColumnIds
+      .map((id) => lookup.get(id))
+      .filter((c): c is NgSelectColumnItem => !!c);
+
+    this.orderedColumns.set(defaultOrdered);
+    this.torrentListGridForm.controls.columns.setValue(
+      defaultOrdered.map((c) => c.value),
+      { emitEvent: false },
+    );
+    this.stateService.markDirty('torrent-list-grid', true);
+  }
+
+  /**
+   * Angular's @for reorders/removes the underlying DOM nodes on every move
+   * or delete, which drops browser focus to <body> regardless of whether
+   * the clicked button became disabled. Once the affected row settles at
+   * its new position, refocus the same action there, falling back to a
+   * related one only if that exact action is now disabled - so focus never
+   * jumps to an action the user didn't ask for.
+   */
+  private retainActionFocus(action: ColumnAction, colId: string | undefined): void {
+    if (!colId) return;
+    requestAnimationFrame(() => {
+      if (document.activeElement !== document.body) return;
+
+      const rows = this.elementRef.nativeElement.querySelectorAll<HTMLElement>('.column-drag-item');
+      const row = Array.from(rows).find((r) => r.dataset['colId'] === colId);
+      if (!row) return;
+
+      for (const candidate of FOCUS_FALLBACKS[action]) {
+        const button = row.querySelector<HTMLButtonElement>(
+          `[data-action="${candidate}"]:not(:disabled)`,
+        );
+        if (button) {
+          button.focus();
+          return;
+        }
+      }
+    });
   }
 
   private async save(): Promise<void> {

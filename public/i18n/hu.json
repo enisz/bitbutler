@@ -1692,13 +1692,22 @@
                 "nothing": "Nincs művelet",
                 "inline-edit": "Helyszíni szerkesztés"
               }
+            },
+            "column-actions": {
+              "move-to-top": "Ugrás a lista tetejére",
+              "move-up": "Mozgatás feljebb",
+              "move-down": "Mozgatás lejjebb",
+              "move-to-bottom": "Ugrás a lista aljára",
+              "remove": "Eltávolítás"
             }
           },
           "label": {
             "grid-options": "Táblázat beállításai",
             "columns": "Oszlopok",
             "order": "Sorrend",
-            "column-pool": "Oszlopkészlet"
+            "column-pool": "Oszlopkészlet",
+            "visible-columns": "Látható oszlopok",
+            "reset": "Visszaállítás"
           },
           "popover": {
             "animate-rows": {

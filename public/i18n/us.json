@@ -1692,13 +1692,22 @@
                 "nothing": "Do nothing",
                 "inline-edit": "Inline Edit"
               }
+            },
+            "column-actions": {
+              "move-to-top": "Move to top",
+              "move-up": "Move up",
+              "move-down": "Move down",
+              "move-to-bottom": "Move to bottom",
+              "remove": "Remove"
             }
           },
           "label": {
             "grid-options": "Grid Options",
             "columns": "Columns",
             "order": "Order",
-            "column-pool": "Column Pool"
+            "column-pool": "Column Pool",
+            "visible-columns": "Visible Columns",
+            "reset": "Reset"
           },
           "popover": {
             "animate-rows": {
