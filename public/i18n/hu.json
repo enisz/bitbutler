@@ -1705,7 +1705,8 @@
             "grid-options": "Táblázat beállításai",
             "columns": "Oszlopok",
             "order": "Sorrend",
-            "column-pool": "Oszlopkészlet"
+            "column-pool": "Oszlopkészlet",
+            "visible-columns": "Látható oszlopok"
           },
           "popover": {
             "animate-rows": {

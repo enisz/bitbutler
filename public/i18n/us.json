@@ -1705,7 +1705,8 @@
             "grid-options": "Grid Options",
             "columns": "Columns",
             "order": "Order",
-            "column-pool": "Column Pool"
+            "column-pool": "Column Pool",
+            "visible-columns": "Visible Columns"
           },
           "popover": {
             "animate-rows": {
