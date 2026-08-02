@@ -4,10 +4,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FaIconComponent, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
-  faAnglesDown,
-  faAnglesUp,
-  faChevronDown,
-  faChevronUp,
+  faArrowDown,
+  faArrowUp,
+  faArrowsDownToLine,
+  faArrowsUpToLine,
   faGripVertical,
   faTriangleExclamation,
   faXmark,
@@ -90,10 +90,10 @@ export class TorrentListGrid implements SettingsTabComponent {
   public columns = signal<NgSelectColumnItem[]>([]);
   public orderedColumns = signal<NgSelectColumnItem[]>([]);
   public faGripVertical = faGripVertical;
-  public faAnglesUp = faAnglesUp;
-  public faAnglesDown = faAnglesDown;
-  public faChevronUp = faChevronUp;
-  public faChevronDown = faChevronDown;
+  public faArrowsUpToLine = faArrowsUpToLine;
+  public faArrowUp = faArrowUp;
+  public faArrowDown = faArrowDown;
+  public faArrowsDownToLine = faArrowsDownToLine;
   public faXmark = faXmark;
   public loaded = signal(false);
 
