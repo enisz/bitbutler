@@ -31,7 +31,7 @@ Kattints a **Mentés** gombra a kapcsolat hozzáadásához a szerverlistádhoz.
 
 ## Szerverek közötti váltás
 
-A Szerverek kezelése lista minden beállított kapcsolatot megmutat, a protokolljukkal/gépnevükkel/portjukkal, valamint egy dugóikonnal az éppen aktív mellett. Kattints a **Csatlakozás** gombra bármely másik szerveren az arra való váltáshoz. Használd a lista tetején lévő szűrőmezőt a névre vagy gépnévre való kereséshez.
+A Szerverek kezelése lista minden beállított kapcsolatot megmutat, a protokolljukkal/gépnevükkel/portjukkal, valamint egy dugóikonnal az éppen aktív mellett. Kattints a **Csatlakozás** gombra bármely másik szerveren az arra való váltáshoz. Ha ahhoz a szerverhez nincs mentett felhasználónév vagy jelszó, előbb egy hitelesítő adat kérő ablak jelenik meg, azzal a lehetőséggel, hogy a megadottakat elmentse a következő alkalomra. Használd a lista tetején lévő szűrőmezőt a névre vagy gépnévre való kereséshez.
 
 ## Alapértelmezett szerver beállítása
 

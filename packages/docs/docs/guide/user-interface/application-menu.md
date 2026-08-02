@@ -21,7 +21,7 @@ Add Torrent, Export Torrents, Import Torrents, and Disconnect are only enabled w
 
 ## Servers
 
-Shown only while connected and only if at least one server is configured: a radio-button list of every server, with the active one checked. Selecting another one switches to it immediately, the same as using the toolbar's server dropdown.
+Shown only while connected and only if at least one server is configured: a radio-button list of every server, with the active one checked. Selecting another one switches to it immediately, the same as using the toolbar's server dropdown. If that server has no saved username or password, a credential prompt appears first, with an option to save what you enter for next time.
 
 ## Settings
 

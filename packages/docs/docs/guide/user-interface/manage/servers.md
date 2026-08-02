@@ -31,7 +31,7 @@ Click **Save** to add the connection to your server list.
 
 ## Switching Servers
 
-The Manage Servers list shows every configured connection, its protocol/host/port, and a plug icon next to whichever one is currently active. Click **Connect** on any other server to switch to it. Use the filter box at the top of the list to search by name or host.
+The Manage Servers list shows every configured connection, its protocol/host/port, and a plug icon next to whichever one is currently active. Click **Connect** on any other server to switch to it. If that server has no saved username or password, a credential prompt appears first, with an option to save what you enter for next time. Use the filter box at the top of the list to search by name or host.
 
 ## Setting a Default Server
 
