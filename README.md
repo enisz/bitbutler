@@ -41,6 +41,7 @@ Using with newer versions of the API may be possible, but can be buggy as there 
 - [Localization](#localization)
   - [Help the Butler Learn!](#help-the-butler-learn)
 - [Quick Start](#quick-start)
+- [User Guide](#user-guide)
 - [For the Developers](#for-the-developers)
   - [Prerequisites](#prerequisites)
   - [Setup](#setup)
@@ -96,7 +97,11 @@ Check our [Contributing Guide](.github/CONTRIBUTING.md) for more details on how 
 
 Note: On Windows, you may see a "Windows protected your PC" warning. This is because the app is not signed with an expensive developer certificate. You can click "More info" and then "Run anyway" to start the Butler.
 
-For a full walkthrough of the app, check out the [User Guide](https://enisz.github.io/bitbutler/).
+## User Guide
+
+![User Guide](readme/user-guide.png)
+
+Want the full walkthrough? The [User Guide](https://enisz.github.io/bitbutler/) covers installation, connecting servers, managing torrents, settings, and troubleshooting - available in English and Hungarian.
 
 ## For the Developers
 
