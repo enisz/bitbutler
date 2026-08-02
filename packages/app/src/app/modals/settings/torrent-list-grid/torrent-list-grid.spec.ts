@@ -101,6 +101,17 @@ describe('TorrentListGrid', () => {
       expect(ids).toEqual(['name', 'size']);
     });
 
+    it('should be a no-op for an out-of-range index', () => {
+      component.orderedColumns.set([
+        { value: 'name', label: 'Name' },
+        { value: 'size', label: 'Size' },
+      ]);
+      component.moveUp(5);
+      const ids = component.orderedColumns().map((c) => c.value);
+      expect(ids).toEqual(['name', 'size']);
+      expect(stateServiceMock.markDirty).not.toHaveBeenCalled();
+    });
+
     it('should mark torrent-list-grid as dirty', () => {
       component.orderedColumns.set([
         { value: 'name', label: 'Name' },
@@ -164,6 +175,17 @@ describe('TorrentListGrid', () => {
       const ids = component.orderedColumns().map((c) => c.value);
       expect(ids).toEqual(['name', 'size']);
     });
+
+    it('should be a no-op for an out-of-range index', () => {
+      component.orderedColumns.set([
+        { value: 'name', label: 'Name' },
+        { value: 'size', label: 'Size' },
+      ]);
+      component.moveToTop(5);
+      const ids = component.orderedColumns().map((c) => c.value);
+      expect(ids).toEqual(['name', 'size']);
+      expect(stateServiceMock.markDirty).not.toHaveBeenCalled();
+    });
   });
 
   describe('moveToBottom', () => {
@@ -201,6 +223,12 @@ describe('TorrentListGrid', () => {
       component.remove('size');
       const ids = component.orderedColumns().map((c) => c.value);
       expect(ids).toEqual(['name']);
+    });
+
+    it('should mark torrent-list-grid as dirty via the columns control valueChanges', () => {
+      component.torrentListGridForm.patchValue({ columns: ['name', 'size'] });
+      component.remove('size');
+      expect(stateServiceMock.markDirty).toHaveBeenCalledWith('torrent-list-grid', true);
     });
   });
 });

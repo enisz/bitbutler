@@ -215,7 +215,7 @@
                         type="button"
                         class="btn btn-sm btn-link"
                         [disabled]="idx === 0"
-                        (click)="moveToTop(idx)"
+                        (click)="moveToTop(idx, $event)"
                         [attr.aria-label]="
                           'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-to-top'
                             | translate
@@ -232,7 +232,7 @@
                         type="button"
                         class="btn btn-sm btn-link"
                         [disabled]="idx === 0"
-                        (click)="moveUp(idx)"
+                        (click)="moveUp(idx, $event)"
                         [attr.aria-label]="
                           'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-up'
                             | translate
@@ -249,7 +249,7 @@
                         type="button"
                         class="btn btn-sm btn-link"
                         [disabled]="last"
-                        (click)="moveDown(idx)"
+                        (click)="moveDown(idx, $event)"
                         [attr.aria-label]="
                           'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-down'
                             | translate
@@ -266,7 +266,7 @@
                         type="button"
                         class="btn btn-sm btn-link"
                         [disabled]="last"
-                        (click)="moveToBottom(idx)"
+                        (click)="moveToBottom(idx, $event)"
                         [attr.aria-label]="
                           'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-to-bottom'
                             | translate
@@ -282,7 +282,7 @@
                       <button
                         type="button"
                         class="btn btn-sm btn-link text-danger"
-                        (click)="remove(column.value)"
+                        (click)="remove(column.value, $event)"
                         [attr.aria-label]="
                           'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.remove'
                             | translate

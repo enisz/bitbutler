@@ -173,44 +173,83 @@ export class TorrentListGrid implements SettingsTabComponent {
     this.stateService.markDirty('torrent-list-grid', true);
   }
 
-  public moveUp(index: number): void {
-    if (index <= 0) return;
+  public moveUp(index: number, event?: Event): void {
     const columns = [...this.orderedColumns()];
+    if (index <= 0 || index >= columns.length) return;
     [columns[index - 1], columns[index]] = [columns[index], columns[index - 1]];
     this.orderedColumns.set(columns);
     this.stateService.markDirty('torrent-list-grid', true);
+    this.retainActionFocus(event);
   }
 
-  public moveDown(index: number): void {
-    if (index >= this.orderedColumns().length - 1) return;
+  public moveDown(index: number, event?: Event): void {
     const columns = [...this.orderedColumns()];
+    if (index < 0 || index >= columns.length - 1) return;
     [columns[index], columns[index + 1]] = [columns[index + 1], columns[index]];
     this.orderedColumns.set(columns);
     this.stateService.markDirty('torrent-list-grid', true);
+    this.retainActionFocus(event);
   }
 
-  public moveToTop(index: number): void {
-    if (index <= 0) return;
+  public moveToTop(index: number, event?: Event): void {
     const columns = [...this.orderedColumns()];
+    if (index <= 0 || index >= columns.length) return;
     const [moved] = columns.splice(index, 1);
     columns.unshift(moved);
     this.orderedColumns.set(columns);
     this.stateService.markDirty('torrent-list-grid', true);
+    this.retainActionFocus(event);
   }
 
-  public moveToBottom(index: number): void {
-    if (index >= this.orderedColumns().length - 1) return;
+  public moveToBottom(index: number, event?: Event): void {
     const columns = [...this.orderedColumns()];
+    if (index < 0 || index >= columns.length - 1) return;
     const [moved] = columns.splice(index, 1);
     columns.push(moved);
     this.orderedColumns.set(columns);
     this.stateService.markDirty('torrent-list-grid', true);
+    this.retainActionFocus(event);
   }
 
-  public remove(colId: string): void {
-    const columnsControl = this.torrentListGridForm.get('columns');
-    const currentIds = (columnsControl?.value as string[]) ?? [];
-    columnsControl?.setValue(currentIds.filter((id) => id !== colId));
+  public remove(colId: string, event?: Event): void {
+    const columnsControl = this.torrentListGridForm.controls.columns;
+    const currentIds = columnsControl.value ?? [];
+    columnsControl.setValue(currentIds.filter((id) => id !== colId));
+    this.retainActionFocus(event);
+  }
+
+  /**
+   * Disabling or removing the clicked button drops browser focus to <body>.
+   * Restore it to the nearest still-enabled action button so keyboard users
+   * don't lose their place in the list.
+   */
+  private retainActionFocus(event?: Event): void {
+    const trigger = event?.currentTarget as HTMLElement | undefined;
+    const list = trigger?.closest<HTMLElement>('.column-drop-list');
+    const row = trigger?.closest<HTMLElement>('.column-drag-item');
+    const rowIndex = row && list ? Array.from(list.children).indexOf(row) : -1;
+
+    requestAnimationFrame(() => {
+      if (document.activeElement !== document.body) return;
+
+      if (row?.isConnected) {
+        const sibling = row.querySelector<HTMLButtonElement>(
+          '.column-actions button:not(:disabled)',
+        );
+        if (sibling) {
+          sibling.focus();
+          return;
+        }
+      }
+
+      if (!list || rowIndex < 0) return;
+      const rows = list.querySelectorAll<HTMLElement>('.column-drag-item');
+      if (rows.length === 0) return;
+      const fallbackRow = rows[Math.min(rowIndex, rows.length - 1)];
+      fallbackRow
+        .querySelector<HTMLButtonElement>('.column-actions button:not(:disabled)')
+        ?.focus();
+    });
   }
 
   private async save(): Promise<void> {
