@@ -1,5 +1,12 @@
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  ElementRef,
+  inject,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FaIconComponent, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -36,6 +43,16 @@ export interface NgSelectColumnItem {
   label: string;
 }
 
+type ColumnAction = 'move-to-top' | 'move-up' | 'move-down' | 'move-to-bottom' | 'remove';
+
+const FOCUS_FALLBACKS: Record<ColumnAction, ColumnAction[]> = {
+  'move-up': ['move-up', 'move-down', 'move-to-bottom', 'move-to-top'],
+  'move-to-top': ['move-down', 'move-to-bottom', 'move-up', 'move-to-top'],
+  'move-down': ['move-down', 'move-up', 'move-to-top', 'move-to-bottom'],
+  'move-to-bottom': ['move-up', 'move-to-top', 'move-down', 'move-to-bottom'],
+  remove: ['remove', 'move-down', 'move-up'],
+};
+
 @Component({
   selector: 'app-torrent-list-grid',
   standalone: true,
@@ -62,6 +79,7 @@ export class TorrentListGrid implements SettingsTabComponent {
   private readonly translateService = inject(TranslateService);
   private readonly stateService = inject(SettingsStateService);
   private readonly torrentStoreService = inject(TorrentStoreService);
+  private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
   faTriangleExclamation = faTriangleExclamation;
 
@@ -173,82 +191,82 @@ export class TorrentListGrid implements SettingsTabComponent {
     this.stateService.markDirty('torrent-list-grid', true);
   }
 
-  public moveUp(index: number, event?: Event): void {
+  public moveUp(index: number): void {
     const columns = [...this.orderedColumns()];
     if (index <= 0 || index >= columns.length) return;
     [columns[index - 1], columns[index]] = [columns[index], columns[index - 1]];
     this.orderedColumns.set(columns);
     this.stateService.markDirty('torrent-list-grid', true);
-    this.retainActionFocus(event);
+    this.retainActionFocus('move-up', columns[index - 1].value);
   }
 
-  public moveDown(index: number, event?: Event): void {
+  public moveDown(index: number): void {
     const columns = [...this.orderedColumns()];
     if (index < 0 || index >= columns.length - 1) return;
     [columns[index], columns[index + 1]] = [columns[index + 1], columns[index]];
     this.orderedColumns.set(columns);
     this.stateService.markDirty('torrent-list-grid', true);
-    this.retainActionFocus(event);
+    this.retainActionFocus('move-down', columns[index + 1].value);
   }
 
-  public moveToTop(index: number, event?: Event): void {
+  public moveToTop(index: number): void {
     const columns = [...this.orderedColumns()];
     if (index <= 0 || index >= columns.length) return;
     const [moved] = columns.splice(index, 1);
     columns.unshift(moved);
     this.orderedColumns.set(columns);
     this.stateService.markDirty('torrent-list-grid', true);
-    this.retainActionFocus(event);
+    this.retainActionFocus('move-to-top', moved.value);
   }
 
-  public moveToBottom(index: number, event?: Event): void {
+  public moveToBottom(index: number): void {
     const columns = [...this.orderedColumns()];
     if (index < 0 || index >= columns.length - 1) return;
     const [moved] = columns.splice(index, 1);
     columns.push(moved);
     this.orderedColumns.set(columns);
     this.stateService.markDirty('torrent-list-grid', true);
-    this.retainActionFocus(event);
+    this.retainActionFocus('move-to-bottom', moved.value);
   }
 
-  public remove(colId: string, event?: Event): void {
+  public remove(colId: string): void {
+    const ordered = this.orderedColumns();
+    const removedIndex = ordered.findIndex((c) => c.value === colId);
+    const neighborColId = ordered[removedIndex + 1]?.value ?? ordered[removedIndex - 1]?.value;
+
     const columnsControl = this.torrentListGridForm.controls.columns;
     const currentIds = columnsControl.value ?? [];
     columnsControl.setValue(currentIds.filter((id) => id !== colId));
-    this.retainActionFocus(event);
+
+    this.retainActionFocus('remove', neighborColId);
   }
 
   /**
-   * Disabling or removing the clicked button drops browser focus to <body>.
-   * Restore it to the nearest still-enabled action button so keyboard users
-   * don't lose their place in the list.
+   * Angular's @for reorders/removes the underlying DOM nodes on every move
+   * or delete, which drops browser focus to <body> regardless of whether
+   * the clicked button became disabled. Once the affected row settles at
+   * its new position, refocus the same action there, falling back to a
+   * related one only if that exact action is now disabled - so focus never
+   * jumps to an action the user didn't ask for.
    */
-  private retainActionFocus(event?: Event): void {
-    const trigger = event?.currentTarget as HTMLElement | undefined;
-    const list = trigger?.closest<HTMLElement>('.column-drop-list');
-    const row = trigger?.closest<HTMLElement>('.column-drag-item');
-    const rowIndex = row && list ? Array.from(list.children).indexOf(row) : -1;
-
+  private retainActionFocus(action: ColumnAction, colId: string | undefined): void {
+    if (!colId) return;
     requestAnimationFrame(() => {
       if (document.activeElement !== document.body) return;
 
-      if (row?.isConnected) {
-        const sibling = row.querySelector<HTMLButtonElement>(
-          '.column-actions button:not(:disabled)',
+      const rows = this.elementRef.nativeElement.querySelectorAll<HTMLElement>('.column-drag-item');
+      const row = Array.from(rows).find((r) => r.dataset['colId'] === colId);
+      if (!row) return;
+
+      for (const candidate of FOCUS_FALLBACKS[action]) {
+        const button = row.querySelector<HTMLButtonElement>(
+          `[data-action="${candidate}"]:not(:disabled)`,
         );
-        if (sibling) {
-          sibling.focus();
+        if (button) {
+          button.focus();
           return;
         }
       }
-
-      if (!list || rowIndex < 0) return;
-      const rows = list.querySelectorAll<HTMLElement>('.column-drag-item');
-      if (rows.length === 0) return;
-      const fallbackRow = rows[Math.min(rowIndex, rows.length - 1)];
-      fallbackRow
-        .querySelector<HTMLButtonElement>('.column-actions button:not(:disabled)')
-        ?.focus();
     });
   }
 

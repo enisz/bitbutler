@@ -199,7 +199,7 @@
                   let idx = $index;
                   let last = $last
                 ) {
-                  <div class="column-drag-item" cdkDrag>
+                  <div class="column-drag-item" [attr.data-col-id]="column.value" cdkDrag>
                     <div class="drag-handle" cdkDragHandle>
                       <fa-icon [icon]="faGripVertical"></fa-icon>
                     </div>
@@ -214,8 +214,9 @@
                       <button
                         type="button"
                         class="btn btn-sm btn-link"
+                        data-action="move-to-top"
                         [disabled]="idx === 0"
-                        (click)="moveToTop(idx, $event)"
+                        (click)="moveToTop(idx)"
                         [attr.aria-label]="
                           'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-to-top'
                             | translate
@@ -232,8 +233,9 @@
                       <button
                         type="button"
                         class="btn btn-sm btn-link"
+                        data-action="move-up"
                         [disabled]="idx === 0"
-                        (click)="moveUp(idx, $event)"
+                        (click)="moveUp(idx)"
                         [attr.aria-label]="
                           'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-up'
                             | translate
@@ -250,8 +252,9 @@
                       <button
                         type="button"
                         class="btn btn-sm btn-link"
+                        data-action="move-down"
                         [disabled]="last"
-                        (click)="moveDown(idx, $event)"
+                        (click)="moveDown(idx)"
                         [attr.aria-label]="
                           'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-down'
                             | translate
@@ -268,8 +271,9 @@
                       <button
                         type="button"
                         class="btn btn-sm btn-link"
+                        data-action="move-to-bottom"
                         [disabled]="last"
-                        (click)="moveToBottom(idx, $event)"
+                        (click)="moveToBottom(idx)"
                         [attr.aria-label]="
                           'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-to-bottom'
                             | translate
@@ -286,7 +290,8 @@
                       <button
                         type="button"
                         class="btn btn-sm btn-link text-danger"
-                        (click)="remove(column.value, $event)"
+                        data-action="remove"
+                        (click)="remove(column.value)"
                         [attr.aria-label]="
                           'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.remove'
                             | translate
