@@ -330,6 +330,15 @@
                 "
               ></bb-popover>
             </p>
+            <div class="d-flex justify-content-end mb-2">
+              <button type="button" class="btn btn-sm btn-link btn-split" (click)="reset()">
+                <bb-btn-content
+                  [icon]="faRotateLeft"
+                  [text]="'pages.settings.tab.torrent-list-grid.label.reset' | translate"
+                  position="end"
+                ></bb-btn-content>
+              </button>
+            </div>
             <div class="form-floating mb-3">
               <ng-select
                 [items]="columns()"

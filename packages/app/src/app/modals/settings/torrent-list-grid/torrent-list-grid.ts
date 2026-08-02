@@ -16,6 +16,7 @@ import {
   faArrowsDownToLine,
   faArrowsUpToLine,
   faGripVertical,
+  faRotateLeft,
   faTriangleExclamation,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
@@ -24,10 +25,12 @@ import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { type ColDef, type ColumnState } from 'ag-grid-community';
 import { firstValueFrom, take, tap } from 'rxjs';
+import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
 import {
+  DEFAULT_TORRENT_LIST_GRID_SETTINGS,
   RowDoubleClickAction,
   TorrentListGridSettings,
 } from '../../../models/torrent-list-grid.model';
@@ -63,6 +66,7 @@ const FOCUS_FALLBACKS: Record<ColumnAction, ColumnAction[]> = {
     DragDropModule,
     FaIconComponent,
     BbPopover,
+    BbBtnContent,
     FontAwesomeModule,
     TranslatePipe,
     NgbTooltipModule,
@@ -113,6 +117,7 @@ export class TorrentListGrid implements SettingsTabComponent {
   public faArrowDown = faArrowDown;
   public faArrowsDownToLine = faArrowsDownToLine;
   public faXmark = faXmark;
+  public faRotateLeft = faRotateLeft;
   public loaded = signal(false);
 
   constructor() {
@@ -239,6 +244,21 @@ export class TorrentListGrid implements SettingsTabComponent {
     columnsControl.setValue(currentIds.filter((id) => id !== colId));
 
     this.retainActionFocus('remove', neighborColId);
+  }
+
+  public reset(): void {
+    const defaultColumnIds = (DEFAULT_TORRENT_LIST_GRID_SETTINGS.columnState ?? []) as string[];
+    const lookup = new Map(this.columns().map((c) => [c.value, c]));
+    const defaultOrdered = defaultColumnIds
+      .map((id) => lookup.get(id))
+      .filter((c): c is NgSelectColumnItem => !!c);
+
+    this.orderedColumns.set(defaultOrdered);
+    this.torrentListGridForm.controls.columns.setValue(
+      defaultOrdered.map((c) => c.value),
+      { emitEvent: false },
+    );
+    this.stateService.markDirty('torrent-list-grid', true);
   }
 
   /**

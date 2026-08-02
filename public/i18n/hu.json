@@ -1706,7 +1706,8 @@
             "columns": "Oszlopok",
             "order": "Sorrend",
             "column-pool": "Oszlopkészlet",
-            "visible-columns": "Látható oszlopok"
+            "visible-columns": "Látható oszlopok",
+            "reset": "Visszaállítás alapértelmezettre"
           },
           "popover": {
             "animate-rows": {

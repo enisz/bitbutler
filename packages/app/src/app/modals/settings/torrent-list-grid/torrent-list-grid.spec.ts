@@ -1,6 +1,7 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { DEFAULT_TORRENT_LIST_GRID_SETTINGS } from '../../../models/torrent-list-grid.model';
 import { TorrentListGridSettingsService } from '../../../services/torrent-list-grid.settings.service';
 import { SettingsStateService } from '../settings-state.service';
 import { TorrentListGrid } from './torrent-list-grid';
@@ -208,6 +209,30 @@ describe('TorrentListGrid', () => {
       component.moveToBottom(1);
       const ids = component.orderedColumns().map((c) => c.value);
       expect(ids).toEqual(['name', 'size']);
+    });
+  });
+
+  describe('reset', () => {
+    it('should restore the default visible columns and their order', () => {
+      component.orderedColumns.set([
+        { value: 'size', label: 'Size' },
+        { value: 'name', label: 'Name' },
+      ]);
+      component.reset();
+      const ids = component.orderedColumns().map((c) => c.value);
+      expect(ids).toEqual(DEFAULT_TORRENT_LIST_GRID_SETTINGS.columnState);
+    });
+
+    it('should sync the columns form control to the default ids', () => {
+      component.reset();
+      expect(component.torrentListGridForm.get('columns')?.value).toEqual(
+        DEFAULT_TORRENT_LIST_GRID_SETTINGS.columnState,
+      );
+    });
+
+    it('should mark torrent-list-grid as dirty', () => {
+      component.reset();
+      expect(stateServiceMock.markDirty).toHaveBeenCalledWith('torrent-list-grid', true);
     });
   });
 
