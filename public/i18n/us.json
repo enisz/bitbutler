@@ -1707,7 +1707,7 @@
             "order": "Order",
             "column-pool": "Column Pool",
             "visible-columns": "Visible Columns",
-            "reset": "Reset to Defaults"
+            "reset": "Reset"
           },
           "popover": {
             "animate-rows": {

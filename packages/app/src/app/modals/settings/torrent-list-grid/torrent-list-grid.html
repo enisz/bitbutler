@@ -319,18 +319,19 @@
           </div>
 
           <div class="col-6">
-            <p>
-              {{ 'pages.settings.tab.torrent-list-grid.label.column-pool' | translate }}
-              <bb-popover
-                [subject]="
-                  'pages.settings.tab.torrent-list-grid.popover.column-pool.title' | translate
-                "
-                [description]="
-                  'pages.settings.tab.torrent-list-grid.popover.column-pool.description' | translate
-                "
-              ></bb-popover>
-            </p>
-            <div class="d-flex justify-content-end mb-2">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <p class="mb-0">
+                {{ 'pages.settings.tab.torrent-list-grid.label.column-pool' | translate }}
+                <bb-popover
+                  [subject]="
+                    'pages.settings.tab.torrent-list-grid.popover.column-pool.title' | translate
+                  "
+                  [description]="
+                    'pages.settings.tab.torrent-list-grid.popover.column-pool.description'
+                      | translate
+                  "
+                ></bb-popover>
+              </p>
               <button type="button" class="btn btn-sm btn-link btn-split" (click)="reset()">
                 <bb-btn-content
                   [icon]="faRotateLeft"

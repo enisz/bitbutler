@@ -1707,7 +1707,7 @@
             "order": "Sorrend",
             "column-pool": "Oszlopkészlet",
             "visible-columns": "Látható oszlopok",
-            "reset": "Visszaállítás alapértelmezettre"
+            "reset": "Visszaállítás"
           },
           "popover": {
             "animate-rows": {

@@ -310,6 +310,7 @@ ngb-modal-window {
       }
 
       .ng-value-container {
+        position: relative !important;
         padding: 0 !important;
         display: flex !important;
         flex-wrap: wrap !important;
