@@ -43,7 +43,11 @@ describe('TorrentExists', () => {
             asObservable: vi.fn().mockReturnValue(
               of({
                 ...DEFAULT_GENERAL_SETTINGS,
-                behavior: { ...DEFAULT_GENERAL_SETTINGS.behavior, deleteTorrentFile: true },
+                behavior: {
+                  ...DEFAULT_GENERAL_SETTINGS.behavior,
+                  deleteTorrentFile: true,
+                  deleteTorrentFileOnDuplicate: false,
+                },
               }),
             ),
           },
@@ -93,7 +97,7 @@ describe('TorrentExists', () => {
   });
 
   describe('auto-delete on duplicate', () => {
-    it('does not call deleteFile when deleteTorrentFileOnDuplicate is off (the default in this suite)', async () => {
+    it('does not call deleteFile when deleteTorrentFileOnDuplicate is off', async () => {
       const deleteFileSpy = vi.spyOn(window.bitbutler.torrent, 'deleteFile');
 
       fixture.componentRef.setInput('originalPath', '/tmp/test.torrent');

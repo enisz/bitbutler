@@ -55,7 +55,7 @@ export interface GeneralSettings {
 export const DEFAULT_GENERAL_SETTINGS: GeneralSettings = {
   behavior: {
     deleteTorrentFile: true,
-    deleteTorrentFileOnDuplicate: false,
+    deleteTorrentFileOnDuplicate: true,
     automaticUpdate: true,
     toastPosition: 'bottom-right',
   },

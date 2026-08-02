@@ -302,7 +302,7 @@ export class General implements SettingsTabComponent {
     behavior: new FormGroup({
       deleteTorrentFile: new FormControl(true, { nonNullable: true }),
       deleteTorrentFileOnDuplicate: new FormControl(
-        { value: false, disabled: true },
+        { value: true, disabled: true },
         { nonNullable: true },
       ),
       automaticUpdate: new FormControl(true, { nonNullable: true }),
