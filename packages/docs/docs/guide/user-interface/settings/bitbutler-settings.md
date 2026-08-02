@@ -126,14 +126,14 @@ Row double-click behavior controls what happens when you double-click a torrent 
 
 ### Columns
 
-- **Column Pool** - a searchable multi-select of every available column.
-- **Order** - drag to reorder the columns you've enabled; this is also the left-to-right order shown in the torrent grid.
+- **Column Pool** - a searchable multi-select of every available column. The **Reset** button above it restores the visible columns and their order to the defaults.
+- **Order** - drag to reorder the columns you've enabled; this is also the left-to-right order shown in the torrent grid. Each row also has **Move to Top**, **Move Up**, **Move Down**, **Move to Bottom**, and **Remove** buttons, so you can reorder or drop a column without dragging.
 
 ## Status Bar
 
 ![Status Bar tab](/screenshots/settings/bitbutler-settings/status-bar.png)
 
-Configure the visibility and order of the widgets shown in the status bar at the bottom of the main window. Drag widgets between the **Widget Pool** (disabled/unused) and the **Left** or **Right** column to enable, disable, or reorder them.
+Configure the visibility and order of the widgets shown in the status bar at the bottom of the main window. Drag widgets between the **Widget Pool** (disabled/unused) and the **Left** or **Right** column to enable, disable, or reorder them. The **Reset to Defaults** button above the widget pool restores the default widget layout.
 
 Available widgets:
 

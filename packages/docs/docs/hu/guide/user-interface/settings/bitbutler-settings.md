@@ -126,14 +126,14 @@ A sorra dupla kattintás viselkedése szabályozza, mi történik egy torrentsor
 
 ### Oszlopok
 
-- **Oszlopkészlet** - az összes elérhető oszlop kereshető, többszörös kiválasztású listája.
-- **Sorrend** - húzd az engedélyezett oszlopok átrendezéséhez; ez egyben a torrenttáblázatban balról jobbra megjelenő sorrend is.
+- **Oszlopkészlet** - az összes elérhető oszlop kereshető, többszörös kiválasztású listája. A felette lévő **Visszaállítás** gomb visszaállítja a látható oszlopokat és sorrendjüket az alapértelmezettre.
+- **Sorrend** - húzd az engedélyezett oszlopok átrendezéséhez; ez egyben a torrenttáblázatban balról jobbra megjelenő sorrend is. Minden sorhoz tartozik **Ugrás a lista tetejére**, **Mozgatás feljebb**, **Mozgatás lejjebb**, **Ugrás a lista aljára** és **Eltávolítás** gomb is, így húzás nélkül is átrendezheted vagy eltávolíthatod az oszlopot.
 
 ## Állapotsáv
 
 ![Állapotsáv fül](/screenshots/settings/bitbutler-settings/status-bar.png)
 
-Konfiguráld a főablak alján lévő állapotsávban megjelenő widgetek láthatóságát és sorrendjét. Húzd a widgeteket az **Elérhető modulok** (letiltva/nem használt) és a **Bal** vagy **Jobb** oszlop között az engedélyezéshez, letiltáshoz vagy átrendezéshez.
+Konfiguráld a főablak alján lévő állapotsávban megjelenő widgetek láthatóságát és sorrendjét. Húzd a widgeteket az **Elérhető modulok** (letiltva/nem használt) és a **Bal** vagy **Jobb** oszlop között az engedélyezéshez, letiltáshoz vagy átrendezéshez. A widgetkészlet feletti **Visszaállítás alapértelmezettre** gomb visszaállítja az alapértelmezett widget-elrendezést.
 
 Elérhető widgetek:
 
