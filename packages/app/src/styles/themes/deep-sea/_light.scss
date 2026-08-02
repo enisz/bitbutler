@@ -1,5 +1,6 @@
 @use 'sass:color';
 @use 'sass:string';
+@use '../theme-utils' as bb;
 
 $deep-sea-light-primary: #09637e;
 $deep-sea-light-secondary: #088395;
@@ -157,6 +158,13 @@ $deep-sea-light-check-marker-colors: (
     --bs-info-border-subtle: #{color.mix(white, $deep-sea-light-info, 60%)};
     --bs-info-text-emphasis: #{color.mix(black, $deep-sea-light-info, 60%)};
   }
+
+  @include bb.bb-scrollbar-arrows(
+    'deep-sea',
+    'light',
+    $deep-sea-light-secondary,
+    $deep-sea-light-primary
+  );
 }
 
 [data-bb-theme='deep-sea'][data-bs-theme='light'] {

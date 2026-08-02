@@ -1,5 +1,6 @@
 @use 'sass:color';
 @use 'sass:string';
+@use '../theme-utils' as bb;
 
 $ob-light-primary: #0277bd;
 $ob-light-secondary: #03a9f4;
@@ -157,6 +158,8 @@ $ob-light-check-marker-colors: (
     --bs-info-border-subtle: #{color.mix(white, $ob-light-info, 60%)};
     --bs-info-text-emphasis: #{color.mix(black, $ob-light-info, 60%)};
   }
+
+  @include bb.bb-scrollbar-arrows('ocean-breeze', 'light', $ob-light-secondary, $ob-light-primary);
 }
 
 [data-bb-theme='ocean-breeze'][data-bs-theme='light'] {

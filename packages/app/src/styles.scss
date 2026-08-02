@@ -8,6 +8,7 @@
 );
 
 @use './styles/themes/index' as themes;
+@use './styles/scrollbar';
 @include themes.install-themes();
 
 .btn {

@@ -1,5 +1,6 @@
 @use 'sass:color';
 @use 'sass:string';
+@use '../theme-utils' as bb;
 
 $bb-light-primary: #4a4a4f;
 $bb-light-secondary: #c7a57a;
@@ -157,6 +158,8 @@ $bb-light-check-marker-colors: (
     --bs-info-border-subtle: #{color.mix(white, $bb-light-info, 60%)};
     --bs-info-text-emphasis: #{color.mix(black, $bb-light-info, 60%)};
   }
+
+  @include bb.bb-scrollbar-arrows('bitbutler', 'light', $bb-light-secondary, $bb-light-primary);
 }
 
 [data-bb-theme='bitbutler'][data-bs-theme='light'] {

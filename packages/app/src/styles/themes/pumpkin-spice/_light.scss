@@ -1,5 +1,6 @@
 @use 'sass:color';
 @use 'sass:string';
+@use '../theme-utils' as bb;
 
 $ps-light-primary: #d35400;
 $ps-light-secondary: #f39c12;
@@ -157,6 +158,8 @@ $ps-light-check-marker-colors: (
     --bs-info-border-subtle: #{color.mix(white, $ps-light-info, 60%)};
     --bs-info-text-emphasis: #{color.mix(black, $ps-light-info, 60%)};
   }
+
+  @include bb.bb-scrollbar-arrows('pumpkin-spice', 'light', $ps-light-secondary, $ps-light-primary);
 }
 
 [data-bb-theme='pumpkin-spice'][data-bs-theme='light'] {

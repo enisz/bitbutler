@@ -1,5 +1,6 @@
 @use 'sass:color';
 @use 'sass:string';
+@use '../theme-utils' as bb;
 
 $ob-dark-primary: #b3e5fc;
 $ob-dark-secondary: #81d4fa;
@@ -158,6 +159,8 @@ $ob-dark-check-marker-colors: (
     --bs-info-border-subtle: #{color.mix(black, $ob-dark-info, 40%)};
     --bs-info-text-emphasis: #{color.mix(white, $ob-dark-info, 40%)};
   }
+
+  @include bb.bb-scrollbar-arrows('ocean-breeze', 'dark', $ob-dark-secondary, $ob-dark-primary);
 }
 
 [data-bb-theme='ocean-breeze'][data-bs-theme='dark'] {

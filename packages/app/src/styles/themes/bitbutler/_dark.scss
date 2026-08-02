@@ -1,5 +1,6 @@
 @use 'sass:color';
 @use 'sass:string';
+@use '../theme-utils' as bb;
 
 $bb-dark-primary: #e4d7c5;
 $bb-dark-secondary: #e1b985;
@@ -158,6 +159,8 @@ $bb-dark-check-marker-colors: (
     --bs-info-border-subtle: #{color.mix(black, $bb-dark-info, 40%)};
     --bs-info-text-emphasis: #{color.mix(white, $bb-dark-info, 40%)};
   }
+
+  @include bb.bb-scrollbar-arrows('bitbutler', 'dark', $bb-dark-secondary, $bb-dark-primary);
 }
 
 [data-bb-theme='bitbutler'][data-bs-theme='dark'] {

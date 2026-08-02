@@ -1,5 +1,6 @@
 @use 'sass:color';
 @use 'sass:string';
+@use '../theme-utils' as bb;
 
 $ps-dark-primary: #f5b041;
 $ps-dark-secondary: #f8c471;
@@ -158,6 +159,8 @@ $ps-dark-check-marker-colors: (
     --bs-info-border-subtle: #{color.mix(black, $ps-dark-info, 40%)};
     --bs-info-text-emphasis: #{color.mix(white, $ps-dark-info, 40%)};
   }
+
+  @include bb.bb-scrollbar-arrows('pumpkin-spice', 'dark', $ps-dark-secondary, $ps-dark-primary);
 }
 
 [data-bb-theme='pumpkin-spice'][data-bs-theme='dark'] {

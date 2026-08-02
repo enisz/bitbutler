@@ -1,5 +1,6 @@
 @use 'sass:color';
 @use 'sass:string';
+@use '../theme-utils' as bb-utils;
 
 $bb-dark-primary: #c3110c;
 $bb-dark-secondary: #e6501b;
@@ -156,6 +157,13 @@ $bb-dark-check-marker-colors: (
     --bs-info-border-subtle: #{color.mix(black, $bb-dark-info, 40%)};
     --bs-info-text-emphasis: #{color.mix(white, $bb-dark-info, 40%)};
   }
+
+  @include bb-utils.bb-scrollbar-arrows(
+    'crimson-ember',
+    'dark',
+    $bb-dark-secondary,
+    $bb-dark-primary
+  );
 }
 
 [data-bb-theme='crimson-ember'][data-bs-theme='dark'] {

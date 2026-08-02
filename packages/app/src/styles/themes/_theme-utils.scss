@@ -193,6 +193,43 @@
   }
 }
 
+// ::-webkit-scrollbar-button pseudo-elements only honor a small subset of CSS
+// (background, border, sizing) - mask-image and currentColor-based SVGs are
+// silently ignored, so the arrow glyph color has to be baked into the SVG
+// data URI per theme instead of read from a custom property at paint time.
+$bb-scrollbar-arrows: (
+  (vertical, decrement, 'm18 15-6-6-6 6'),
+  (vertical, increment, 'm6 9 6 6 6-6'),
+  (horizontal, decrement, 'm15 18-6-6 6-6'),
+  (horizontal, increment, 'm9 18 6-6-6-6')
+);
+
+@function bb-scrollbar-arrow-svg($hex, $path) {
+  @return url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#{$hex}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="#{$path}"/></svg>');
+}
+
+@mixin bb-scrollbar-arrows($theme, $mode, $accent, $active) {
+  $accent-hex: '%23' + string.slice('#{$accent}', 2);
+  $active-hex: '%23' + string.slice('#{$active}', 2);
+
+  [data-bb-theme='#{$theme}'][data-bs-theme='#{$mode}'] {
+    @each $arrow in $bb-scrollbar-arrows {
+      $axis: nth($arrow, 1);
+      $dir: nth($arrow, 2);
+      $path: nth($arrow, 3);
+
+      ::-webkit-scrollbar-button:#{$axis}:single-button:#{$dir} {
+        background-image: bb-scrollbar-arrow-svg($accent-hex, $path);
+
+        &:hover,
+        &:active {
+          background-image: bb-scrollbar-arrow-svg($active-hex, $path);
+        }
+      }
+    }
+  }
+}
+
 @mixin bb-install-range-variants($variants...) {
   .form-range {
     &::-webkit-slider-runnable-track {

@@ -1,5 +1,6 @@
 @use 'sass:color';
 @use 'sass:string';
+@use '../theme-utils' as bb;
 
 $ph-dark-primary: #d1c4e9;
 $ph-dark-secondary: #b39ddb;
@@ -158,6 +159,8 @@ $ph-dark-check-marker-colors: (
     --bs-info-border-subtle: #{color.mix(black, $ph-dark-info, 40%)};
     --bs-info-text-emphasis: #{color.mix(white, $ph-dark-info, 40%)};
   }
+
+  @include bb.bb-scrollbar-arrows('purple-haze', 'dark', $ph-dark-secondary, $ph-dark-primary);
 }
 
 [data-bb-theme='purple-haze'][data-bs-theme='dark'] {
