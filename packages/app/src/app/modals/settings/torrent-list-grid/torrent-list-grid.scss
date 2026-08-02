@@ -92,6 +92,14 @@
     color: var(--bb-secondary-ink);
     margin-right: 12px;
   }
+
+  .column-actions {
+    opacity: 1;
+
+    .btn {
+      color: var(--bb-secondary-ink);
+    }
+  }
 }
 
 .cdk-drag-placeholder {
