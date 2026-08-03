@@ -1,4 +1,4 @@
-<div class="bb-bottom-bar px-2">
+<div class="bb-bottom-bar px-2" (wheel)="onBottomBarWheel($event)">
   <div class="d-flex align-items-center">
     @for (id of settings()?.left; track id; let last = $last) {
       <ng-container *ngTemplateOutlet="widgetRegistry; context: { $implicit: id }"></ng-container>

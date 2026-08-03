@@ -173,6 +173,18 @@ export class ServerState {
     this.commandBusService.emit({ type: 'UI_LIMIT_SHARE', target: 'global' });
   }
 
+  public onBottomBarWheel(event: WheelEvent): void {
+    // Trackpad swipes already report deltaX and scroll natively; only redirect
+    // a vertical mouse-wheel scroll into horizontal movement.
+    if (event.deltaY === 0 || Math.abs(event.deltaX) >= Math.abs(event.deltaY)) return;
+
+    const el = event.currentTarget as HTMLElement;
+    if (el.scrollWidth <= el.clientWidth) return;
+
+    event.preventDefault();
+    el.scrollLeft += event.deltaY;
+  }
+
   private reset(): void {
     this.diskSpace.set(0n);
     this.dlSpeed.set(0n);

@@ -159,8 +159,6 @@ $au-dark-check-marker-colors: (
     --bs-info-border-subtle: #{color.mix(black, $au-dark-info, 40%)};
     --bs-info-text-emphasis: #{color.mix(white, $au-dark-info, 40%)};
   }
-
-  @include bb.bb-scrollbar-arrows('aurora', 'dark', $au-dark-secondary, $au-dark-primary);
 }
 
 [data-bb-theme='aurora'][data-bs-theme='dark'] {

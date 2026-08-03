@@ -152,19 +152,6 @@
       color: var(--bs-link-hover-color);
     }
   }
-
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: var(--bs-border-color);
-    border-radius: 10px;
-  }
 }
 
 .version {

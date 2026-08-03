@@ -159,8 +159,6 @@ $au-light-check-marker-colors: (
     --bs-info-border-subtle: #{color.mix(white, $au-light-info, 60%)};
     --bs-info-text-emphasis: #{color.mix(black, $au-light-info, 60%)};
   }
-
-  @include bb.bb-scrollbar-arrows('aurora', 'light', $au-light-secondary, $au-light-primary);
 }
 
 [data-bb-theme='aurora'][data-bs-theme='light'] {

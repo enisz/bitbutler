@@ -159,13 +159,6 @@ $deep-sea-dark-check-marker-colors: (
     --bs-info-border-subtle: #{color.mix(black, $deep-sea-dark-info, 40%)};
     --bs-info-text-emphasis: #{color.mix(white, $deep-sea-dark-info, 40%)};
   }
-
-  @include bb.bb-scrollbar-arrows(
-    'deep-sea',
-    'dark',
-    $deep-sea-dark-secondary,
-    $deep-sea-dark-primary
-  );
 }
 
 [data-bb-theme='deep-sea'][data-bs-theme='dark'] {

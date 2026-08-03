@@ -158,8 +158,6 @@ $ph-light-check-marker-colors: (
     --bs-info-border-subtle: #{color.mix(white, $ph-light-info, 60%)};
     --bs-info-text-emphasis: #{color.mix(black, $ph-light-info, 60%)};
   }
-
-  @include bb.bb-scrollbar-arrows('purple-haze', 'light', $ph-light-secondary, $ph-light-primary);
 }
 
 [data-bb-theme='purple-haze'][data-bs-theme='light'] {

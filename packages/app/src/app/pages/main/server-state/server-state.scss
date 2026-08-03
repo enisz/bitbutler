@@ -10,30 +10,26 @@
   display: flex;
   align-items: center;
 
-  /* Slim, arrow-less scrollbar - the bar is only 34px tall */
   &::-webkit-scrollbar {
     height: 4px;
+    width: 4px;
   }
 
   &::-webkit-scrollbar-button {
     display: none;
   }
 
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
   /* Hidden until the bar is hovered, so it doesn't clutter the idle UI */
   &::-webkit-scrollbar-thumb {
     background-color: transparent;
-    transition: background-color 0.15s ease;
   }
 
-  &:hover {
-    &::-webkit-scrollbar-thumb {
-      background-color: color-mix(in srgb, var(--bb-accent) 45%, transparent);
-    }
-
-    &::-webkit-scrollbar-thumb:hover,
-    &::-webkit-scrollbar-thumb:active {
-      background-color: var(--bb-accent);
-    }
+  &:hover::-webkit-scrollbar-thumb {
+    background-color: color-mix(in srgb, currentColor 35%, transparent);
   }
 }
 
