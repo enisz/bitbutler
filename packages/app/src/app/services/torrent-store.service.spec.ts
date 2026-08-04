@@ -278,6 +278,23 @@ describe('TorrentStoreService', () => {
     expect(emitted[0].update).toHaveLength(1);
   });
 
+  it('should emit a fullUpdate delta$ on clear()', () => {
+    service.applyMaindata(
+      makeMaindata({
+        full_update: true,
+        torrents: { abc: { name: 'A' } as TorrentDelta },
+      }),
+    );
+
+    const emitted: any[] = [];
+    service.delta$.subscribe((d) => emitted.push(d));
+
+    service.clear();
+
+    expect(emitted).toHaveLength(1);
+    expect(emitted[0]).toEqual({ fullUpdate: true, add: [], update: [], remove: [] });
+  });
+
   it('should still emit delta$ on a true no-op incremental update', () => {
     service.applyMaindata(
       makeMaindata({

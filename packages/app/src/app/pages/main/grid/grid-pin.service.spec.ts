@@ -99,6 +99,17 @@ describe('GridPinService', () => {
       expect(api.setGridOption).toHaveBeenCalledWith('pinnedBottomRowData', []);
     });
 
+    it('should not touch the grid when the torrent list changes without a delta', () => {
+      service.init(api as any);
+      TestBed.tick();
+      api.setGridOption.mockClear();
+
+      torrentsArray.set([makeTorrent('z')]);
+      TestBed.tick();
+
+      expect(api.setGridOption).not.toHaveBeenCalled();
+    });
+
     it('should apply an incremental delta as a grid transaction instead of resetting rowData', () => {
       service.init(api as any);
       TestBed.tick();

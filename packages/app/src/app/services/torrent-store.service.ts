@@ -210,6 +210,7 @@ export class TorrentStoreService {
     this._isPrimed.set(false);
     this._categories.set(new Map());
     this._tags.set(new Set());
+    this._delta$.next({ fullUpdate: true, add: [], update: [], remove: [] });
   }
 
   private ingestFinished(changed: Torrent[], removedHashes: string[], allowEmit: boolean) {

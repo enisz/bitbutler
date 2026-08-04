@@ -47,12 +47,14 @@ export class GridPinService {
       if (!api) return;
 
       if (delta.fullUpdate) {
-        this.resyncFromFullList(
-          api,
-          this.torrentStore.torrentsArray(),
-          this.pinnedTopHashes(),
-          this.pinnedBottomHashes(),
-        );
+        untracked(() => {
+          this.resyncFromFullList(
+            api,
+            this.torrentStore.torrentsArray(),
+            this.pinnedTopHashes(),
+            this.pinnedBottomHashes(),
+          );
+        });
         return;
       }
 
