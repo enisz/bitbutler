@@ -87,6 +87,8 @@ export class TorrentStoreService {
   private readonly _finished$ = new Subject<TorrentFinishedEvent>();
   readonly finished$ = this._finished$.asObservable();
   private readonly finishedByHash = new Map<string, boolean>();
+  private readonly _delta$ = new Subject<TorrentTxnDelta>();
+  readonly delta$ = this._delta$.asObservable();
   private readonly _isPrimed = signal(false);
   readonly isPrimed = this._isPrimed.asReadonly();
 
@@ -197,7 +199,9 @@ export class TorrentStoreService {
       }
     }
 
-    return { fullUpdate, add, update, remove };
+    const delta: TorrentTxnDelta = { fullUpdate, add, update, remove };
+    this._delta$.next(delta);
+    return delta;
   }
 
   clear() {

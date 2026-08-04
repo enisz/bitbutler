@@ -243,6 +243,58 @@ describe('TorrentStoreService', () => {
     expect(delta.remove).toHaveLength(0);
   });
 
+  it('should emit delta$ with the same payload returned from applyMaindata on a full_update', () => {
+    const emitted: any[] = [];
+    service.delta$.subscribe((d) => emitted.push(d));
+
+    const returned = service.applyMaindata(
+      makeMaindata({
+        full_update: true,
+        torrents: { a: { name: 'A' } as TorrentDelta },
+      }),
+    );
+
+    expect(emitted).toHaveLength(1);
+    expect(emitted[0]).toEqual(returned);
+  });
+
+  it('should emit delta$ with the same payload returned from applyMaindata on an incremental update', () => {
+    service.applyMaindata(
+      makeMaindata({
+        full_update: true,
+        torrents: { abc: { name: 'A', dlspeed: 0 } as TorrentDelta },
+      }),
+    );
+
+    const emitted: any[] = [];
+    service.delta$.subscribe((d) => emitted.push(d));
+
+    const returned = service.applyMaindata(
+      makeMaindata({ torrents: { abc: { dlspeed: 1024 } as TorrentDelta } }),
+    );
+
+    expect(emitted).toHaveLength(1);
+    expect(emitted[0]).toEqual(returned);
+    expect(emitted[0].update).toHaveLength(1);
+  });
+
+  it('should still emit delta$ on a true no-op incremental update', () => {
+    service.applyMaindata(
+      makeMaindata({
+        full_update: true,
+        torrents: { abc: { name: 'A' } as TorrentDelta },
+      }),
+    );
+
+    const emitted: any[] = [];
+    service.delta$.subscribe((d) => emitted.push(d));
+
+    service.applyMaindata(makeMaindata({}));
+
+    expect(emitted).toHaveLength(1);
+    expect(emitted[0]).toEqual({ fullUpdate: false, add: [], update: [], remove: [] });
+  });
+
   describe('categoriesWithCounts', () => {
     it('includes known categories with zero torrents', () => {
       service.applyMaindata(
