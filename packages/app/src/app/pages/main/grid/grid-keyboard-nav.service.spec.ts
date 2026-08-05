@@ -145,6 +145,12 @@ describe('GridKeyboardNavService', () => {
       expect(commandBusService.emit).not.toHaveBeenCalled();
     });
 
+    it('should not emit TORRENT_PAUSE when Alt+F4 is pressed', () => {
+      const event = new KeyboardEvent('keydown', { code: 'F4', altKey: true });
+      service.onKeyDown(event);
+      expect(commandBusService.emit).not.toHaveBeenCalled();
+    });
+
     it('should not emit when F3 is pressed in an INPUT element', () => {
       const input = document.createElement('input');
       document.body.appendChild(input);

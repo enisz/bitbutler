@@ -112,8 +112,8 @@ export class GridKeyboardNavService {
   }
 
   private handleStartStopForceResume(event: KeyboardEvent): void {
-    const { code, ctrlKey, shiftKey } = event;
-    if (ctrlKey || this.isTypingTarget(event.target)) return;
+    const { code, ctrlKey, altKey, shiftKey } = event;
+    if (ctrlKey || altKey || this.isTypingTarget(event.target)) return;
 
     if (code === 'F3' && shiftKey) {
       event.preventDefault();
