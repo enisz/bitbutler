@@ -104,11 +104,9 @@ export class TorrentStoreService {
     const remove: Torrent[] = [];
 
     const prevMap = this._torrents();
-    const next = new Map(prevMap);
+    const next = fullUpdate ? new Map<string, Torrent>() : new Map(prevMap);
 
     if (fullUpdate) {
-      next.clear();
-
       for (const [hash, patch] of Object.entries(incoming)) {
         const t: Torrent = { ...(patch as Torrent), hash };
         next.set(hash, t);
