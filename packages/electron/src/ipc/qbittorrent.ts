@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import db from '../db.js';
 import { rebuildMenu } from '../menu.js';
 import { rebuildTrayMenu } from '../tray.js';
+import { getActiveServerId } from './server.js';
 
 const cookieJar = new Map<string, string>();
 
@@ -108,9 +109,12 @@ function qbHasCookie(payload: unknown): { hasCookie: boolean } {
   return { hasCookie: cookieJar.has(id) };
 }
 
-function qbLogout(_payload: unknown): { loggedOut: boolean } {
-  cookieJar.clear();
-  ipcMain.emit('server:set-active', null, null);
+function qbLogout(payload: unknown): { loggedOut: boolean } {
+  const id = requireString((payload as Record<string, unknown>)?.id, 'id');
+  cookieJar.delete(id);
+  if (getActiveServerId() === id) {
+    ipcMain.emit('server:set-active', null, null);
+  }
   rebuildMenu();
   rebuildTrayMenu();
   return { loggedOut: true };
@@ -308,12 +312,25 @@ function requireString(value: unknown, field: string): string {
   return value.trim();
 }
 
+const streamGeneration = new Map<number, number>();
+
 async function qbSyncMaindataStream(
   event: Electron.IpcMainEvent,
   payload: BitButlerSyncStreamPayload,
 ): Promise<void> {
   const { id, rid, chunkSize = 500, delayMs = 15, sortBy, sortDesc } = payload;
   const channel = 'qb:sync-maindata-chunk';
+
+  const senderId = event.sender.id;
+  const generation = (streamGeneration.get(senderId) ?? 0) + 1;
+  streamGeneration.set(senderId, generation);
+
+  const isCurrent = (): boolean =>
+    !event.sender.isDestroyed() && streamGeneration.get(senderId) === generation;
+
+  const send = (data: unknown): void => {
+    if (isCurrent()) event.reply(channel, data);
+  };
 
   try {
     const maindata = (await qbRequest({
@@ -343,16 +360,19 @@ async function qbSyncMaindataStream(
 
     delete maindata['torrents'];
 
-    event.reply(channel, { type: 'metadata', data: maindata, total: totalTorrents });
+    if (!isCurrent()) return;
+    send({ type: 'metadata', data: maindata, total: totalTorrents });
 
     if (totalTorrents === 0) {
-      event.reply(channel, { type: 'done' });
+      send({ type: 'done' });
       return;
     }
 
     let currentIndex = 0;
 
     const sendNextChunk = (): void => {
+      if (!isCurrent()) return;
+
       const chunk: Record<string, unknown> = {};
       const end = Math.min(currentIndex + chunkSize, totalTorrents);
 
@@ -361,20 +381,20 @@ async function qbSyncMaindataStream(
         chunk[hash] = allTorrents[hash];
       }
 
-      event.reply(channel, { type: 'chunk', data: chunk, progress: end, total: totalTorrents });
+      send({ type: 'chunk', data: chunk, progress: end, total: totalTorrents });
 
       currentIndex = end;
 
       if (currentIndex < totalTorrents) {
         setTimeout(sendNextChunk, delayMs);
       } else {
-        event.reply(channel, { type: 'done' });
+        send({ type: 'done' });
       }
     };
 
     sendNextChunk();
   } catch (error) {
-    event.reply(channel, {
+    send({
       type: 'error',
       error: (error as Error).message || 'Streaming sync failed',
     });

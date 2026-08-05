@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const ipcHandlers = vi.hoisted(() => new Map<string, (...args: unknown[]) => unknown>());
+const ipcOnHandlers = vi.hoisted(() => new Map<string, (...args: unknown[]) => unknown>());
 const mockIpcMainEmit = vi.hoisted(() => vi.fn());
 const mockGet = vi.hoisted(() => vi.fn());
 const mockRun = vi.hoisted(() => vi.fn(() => ({ changes: 1 })));
@@ -13,7 +14,9 @@ vi.mock('electron', () => ({
     handle: vi.fn((channel: string, handler: (...args: unknown[]) => unknown) => {
       ipcHandlers.set(channel, handler);
     }),
-    on: vi.fn(),
+    on: vi.fn((channel: string, handler: (...args: unknown[]) => unknown) => {
+      ipcOnHandlers.set(channel, handler);
+    }),
     emit: mockIpcMainEmit,
   },
   safeStorage: {
@@ -109,32 +112,47 @@ describe('qb:logout IPC handler', () => {
 
   async function setup() {
     const { registerQbIpcHandlers, getCookieJar } = await import('./qbittorrent.js');
+    const { setActiveServerId } = await import('./server.js');
     registerQbIpcHandlers();
-    return { handler: ipcHandlers.get('qb:logout')!, getCookieJar };
+    return { handler: ipcHandlers.get('qb:logout')!, getCookieJar, setActiveServerId };
   }
 
   it('returns { loggedOut: true }', async () => {
     const { handler } = await setup();
-    expect(await handler(null, {})).toEqual({ loggedOut: true });
+    expect(await handler(null, { id: 'srv-1' })).toEqual({ loggedOut: true });
   });
 
-  it('clears all entries from the cookie jar', async () => {
+  it('throws when id is missing', async () => {
+    const { handler } = await setup();
+    await expect(handler(null, {})).rejects.toThrow("Field 'id' is required.");
+  });
+
+  it('removes only the target server cookie, leaving other servers logged in', async () => {
     const { handler, getCookieJar } = await setup();
     getCookieJar().set('srv-1', 'SID=abc');
     getCookieJar().set('srv-2', 'SID=def');
-    await handler(null, {});
-    expect(getCookieJar().size).toBe(0);
+    await handler(null, { id: 'srv-1' });
+    expect(getCookieJar().has('srv-1')).toBe(false);
+    expect(getCookieJar().has('srv-2')).toBe(true);
   });
 
-  it('emits server:set-active with null to clear the active server', async () => {
-    const { handler } = await setup();
-    await handler(null, {});
+  it('emits server:set-active with null when the logged-out server was the active one', async () => {
+    const { handler, setActiveServerId } = await setup();
+    setActiveServerId('srv-1');
+    await handler(null, { id: 'srv-1' });
     expect(mockIpcMainEmit).toHaveBeenCalledWith('server:set-active', null, null);
+  });
+
+  it('does not touch the active server when a different server logs out', async () => {
+    const { handler, setActiveServerId } = await setup();
+    setActiveServerId('srv-2');
+    await handler(null, { id: 'srv-1' });
+    expect(mockIpcMainEmit).not.toHaveBeenCalledWith('server:set-active', null, null);
   });
 
   it('calls rebuildMenu and rebuildTrayMenu', async () => {
     const { handler } = await setup();
-    await handler(null, {});
+    await handler(null, { id: 'srv-1' });
     expect(mockRebuildMenu).toHaveBeenCalled();
     expect(mockRebuildTrayMenu).toHaveBeenCalled();
   });
@@ -457,5 +475,123 @@ describe('qbRequest', () => {
     expect((fetchInit.headers as Record<string, string>)['Content-Type']).toContain(
       'application/x-www-form-urlencoded',
     );
+  });
+});
+
+describe('qb:sync-maindata-stream IPC handler', () => {
+  const fakeServer = {
+    id: 'srv-1',
+    name: 'Test',
+    host: 'localhost',
+    protocol: 'http',
+    port: 8080,
+    username: 'admin',
+    password: Buffer.from('secret'),
+    auto_login: 0,
+    created_at: '',
+  };
+
+  beforeEach(() => {
+    vi.resetModules();
+    ipcHandlers.clear();
+    ipcOnHandlers.clear();
+    vi.stubGlobal('fetch', mockFetch);
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  function mockMaindataResponse(torrents: Record<string, unknown>) {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 200,
+      statusText: 'OK',
+      text: () => Promise.resolve(JSON.stringify({ torrents })),
+      headers: { get: (h: string) => (h === 'content-type' ? 'application/json' : null) },
+    });
+  }
+
+  function createMockEvent(senderId: number) {
+    return {
+      reply: vi.fn(),
+      sender: { id: senderId, isDestroyed: vi.fn(() => false) },
+    } as unknown as Electron.IpcMainEvent & {
+      reply: ReturnType<typeof vi.fn>;
+      sender: { id: number; isDestroyed: ReturnType<typeof vi.fn> };
+    };
+  }
+
+  async function setup() {
+    const { registerQbIpcHandlers, getCookieJar } = await import('./qbittorrent.js');
+    registerQbIpcHandlers();
+    getCookieJar().set('srv-1', 'SID=mytoken');
+    return ipcOnHandlers.get('qb:sync-maindata-stream')!;
+  }
+
+  it('replies with metadata, chunk and done for a normal stream', async () => {
+    mockGet.mockReturnValue(fakeServer);
+    mockMaindataResponse({ h1: { name: 'one' }, h2: { name: 'two' } });
+    const handler = await setup();
+    const event = createMockEvent(1);
+
+    await handler(event, { id: 'srv-1' });
+
+    const types = event.reply.mock.calls.map((c: unknown[]) => (c[1] as { type: string }).type);
+    expect(types).toEqual(['metadata', 'chunk', 'done']);
+  });
+
+  it('does not call event.reply once the sender is destroyed', async () => {
+    mockGet.mockReturnValue(fakeServer);
+    const event = createMockEvent(1);
+    mockFetch.mockImplementation(() => {
+      event.sender.isDestroyed.mockReturnValue(true);
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        text: () => Promise.resolve(JSON.stringify({ torrents: { h1: {} } })),
+        headers: { get: (h: string) => (h === 'content-type' ? 'application/json' : null) },
+      });
+    });
+    const handler = await setup();
+
+    await handler(event, { id: 'srv-1' });
+
+    expect(event.reply).not.toHaveBeenCalled();
+  });
+
+  it('supersedes an in-flight stream when a new one starts for the same sender', async () => {
+    mockGet.mockReturnValue(fakeServer);
+    const handler = await setup();
+    const event = createMockEvent(1);
+
+    let resolveFirst!: (v: unknown) => void;
+    mockFetch.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveFirst = resolve;
+        }),
+    );
+
+    const firstStream = handler(event, { id: 'srv-1' });
+
+    mockMaindataResponse({ h1: {} });
+    await handler(event, { id: 'srv-1' });
+
+    resolveFirst({
+      ok: true,
+      status: 200,
+      statusText: 'OK',
+      text: () => Promise.resolve(JSON.stringify({ torrents: { stale: {} } })),
+      headers: { get: (h: string) => (h === 'content-type' ? 'application/json' : null) },
+    });
+    await firstStream;
+
+    const dataForStale = event.reply.mock.calls.filter(
+      (c: unknown[]) => (c[1] as { data?: { stale?: unknown } }).data?.stale !== undefined,
+    );
+    expect(dataForStale).toHaveLength(0);
   });
 });
