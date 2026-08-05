@@ -2,6 +2,31 @@ import { inject } from '@angular/core';
 import { Observable, ReplaySubject } from 'rxjs';
 import { SettingsService } from './settings.service';
 
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    !Array.isArray(value) &&
+    value.constructor === Object
+  );
+}
+
+function mergeUnknown(defaults: unknown, stored: unknown): unknown {
+  if (!isPlainObject(defaults) || !isPlainObject(stored)) {
+    return stored;
+  }
+
+  const merged: Record<string, unknown> = { ...defaults };
+  for (const key of Object.keys(stored)) {
+    merged[key] = mergeUnknown(defaults[key], stored[key]);
+  }
+  return merged;
+}
+
+function deepMergeDefaults<T>(defaults: T, stored: Partial<T>): T {
+  return mergeUnknown(defaults, stored) as T;
+}
+
 export abstract class BaseSettingsService<T> {
   protected settings = inject(SettingsService);
 
@@ -34,7 +59,7 @@ export abstract class BaseSettingsService<T> {
       try {
         const stored = await this.settings.get<Partial<T>>(this.SETTINGS_ID);
 
-        const rawSettings = { ...this.DEFAULT_SETTINGS, ...(stored ?? {}) } as T;
+        const rawSettings = deepMergeDefaults(this.DEFAULT_SETTINGS, stored ?? {});
         const settings = this.normalize(rawSettings);
 
         if (!stored) {
