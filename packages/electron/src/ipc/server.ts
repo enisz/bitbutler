@@ -4,6 +4,7 @@ import crypto from 'node:crypto';
 import db from '../db.js';
 import { rebuildMenu } from '../menu.js';
 import { rebuildTrayMenu } from '../tray.js';
+import { getCookieJar } from './qbittorrent.js';
 
 let activeServerId: string | null = null;
 
@@ -176,7 +177,10 @@ function serverDelete(payload: unknown): { deleted: boolean } {
   const id = requireString((payload as Record<string, unknown>)?.id, 'id');
   const info = stmtDelete.run(id);
   const deleted = info.changes > 0;
-  if (deleted) rebuildMenu();
+  if (deleted) {
+    getCookieJar().delete(id);
+    rebuildMenu();
+  }
   return { deleted };
 }
 
