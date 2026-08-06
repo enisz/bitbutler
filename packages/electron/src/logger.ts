@@ -19,7 +19,13 @@ const stmtInsertLog = db.prepare<[number, ProcessName, LevelStr, string]>(`
 `);
 
 function insertLog(processName: ProcessName, level: LevelStr, message: string): void {
-  stmtInsertLog.run(Date.now(), processName, level, message);
+  try {
+    stmtInsertLog.run(Date.now(), processName, level, message);
+  } catch (error) {
+    process.stderr.write(
+      `[logger] failed to write log row: ${error instanceof Error ? error.message : String(error)}\n`,
+    );
+  }
 }
 
 export function initLogger(): void {

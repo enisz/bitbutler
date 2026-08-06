@@ -89,4 +89,23 @@ describe('logs retention trigger', () => {
     const rows = db.prepare('SELECT message FROM logs').all() as { message: string }[];
     expect(rows).toHaveLength(2);
   });
+
+  it('caps the logs table at 100000 rows', async () => {
+    const { default: db } = await import('./db.js');
+    const insert = db.prepare(
+      'INSERT INTO logs (timestamp, process, level, message) VALUES (?, ?, ?, ?)',
+    );
+    const insertMany = db.transaction((count: number) => {
+      for (let i = 0; i < count; i++) {
+        insert.run(Date.now(), 'main', 'info', 'row');
+      }
+    });
+
+    insertMany(100005);
+
+    const { count } = db.prepare('SELECT COUNT(*) AS count FROM logs').get() as {
+      count: number;
+    };
+    expect(count).toBeLessThanOrEqual(100000);
+  });
 });

@@ -86,6 +86,28 @@ describe('initLogger', () => {
       expect.stringContaining('Unhandled rejection:'),
     );
   });
+
+  it('does not throw and writes to stderr when the DB insert fails', async () => {
+    const stderrSpy = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
+    mockRun.mockImplementation(() => {
+      throw new Error('disk full');
+    });
+    const spy = vi.fn();
+    (console as unknown as Record<string, unknown>).error = spy;
+    const { initLogger } = await import('./logger.js');
+    initLogger();
+
+    expect(() =>
+      (console as unknown as Record<string, (...args: unknown[]) => void>).error('oops'),
+    ).not.toThrow();
+
+    expect(spy).toHaveBeenCalledWith('oops');
+    expect(stderrSpy).toHaveBeenCalledWith(
+      expect.stringContaining('[logger] failed to write log row: disk full'),
+    );
+
+    stderrSpy.mockRestore();
+  });
 });
 
 describe('hookRenderer', () => {

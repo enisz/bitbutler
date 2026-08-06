@@ -7,6 +7,7 @@ const db = new Database(dbPath);
 
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
+db.pragma('synchronous = NORMAL');
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS servers (
@@ -132,12 +133,17 @@ db.exec(`
   ON logs(timestamp);
 `);
 
+db.exec(`DROP TRIGGER IF EXISTS trg_logs_retention`);
+
 db.exec(`
-  CREATE TRIGGER IF NOT EXISTS trg_logs_retention
+  CREATE TRIGGER trg_logs_retention
   AFTER INSERT ON logs
   BEGIN
     DELETE FROM logs
     WHERE timestamp < (CAST(strftime('%s','now') AS INTEGER) - 30*24*60*60) * 1000;
+
+    DELETE FROM logs
+    WHERE id <= (SELECT MAX(id) FROM logs) - 100000;
   END;
 `);
 
