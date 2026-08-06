@@ -117,4 +117,28 @@ for (const row of stmtSelectServerIds.all()) {
   stmtRenameId.run(newId, row.id);
 }
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS logs (
+    id        INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp INTEGER NOT NULL,
+    process   TEXT NOT NULL CHECK (process IN ('main','renderer')),
+    level     TEXT NOT NULL CHECK (level IN ('debug','info','warn','error')),
+    message   TEXT NOT NULL
+  );
+`);
+
+db.exec(`
+  CREATE INDEX IF NOT EXISTS idx_logs_timestamp
+  ON logs(timestamp);
+`);
+
+db.exec(`
+  CREATE TRIGGER IF NOT EXISTS trg_logs_retention
+  AFTER INSERT ON logs
+  BEGIN
+    DELETE FROM logs
+    WHERE timestamp < (CAST(strftime('%s','now') AS INTEGER) - 30*24*60*60) * 1000;
+  END;
+`);
+
 export default db;
