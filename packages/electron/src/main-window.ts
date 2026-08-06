@@ -1,4 +1,4 @@
-import { BrowserWindow, app } from 'electron';
+import { BrowserWindow, app, session } from 'electron';
 import fs from 'node:fs';
 import { join } from 'node:path';
 
@@ -11,7 +11,37 @@ function firstExistingPath(paths: string[]): string | null {
   return null;
 }
 
+let cspApplied = false;
+
+function applyContentSecurityPolicy(): void {
+  if (cspApplied) return;
+  cspApplied = true;
+
+  const csp = [
+    "default-src 'self'",
+    "script-src 'self'",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data:",
+    "font-src 'self' data:",
+    "connect-src 'self'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+  ].join('; ');
+
+  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+    callback({
+      responseHeaders: {
+        ...details.responseHeaders,
+        'Content-Security-Policy': [csp],
+      },
+    });
+  });
+}
+
 export function createMainWindow(startMinimized = false): BrowserWindow {
+  applyContentSecurityPolicy();
+
   const appPath = app.getAppPath();
 
   const iconCandidates = [
