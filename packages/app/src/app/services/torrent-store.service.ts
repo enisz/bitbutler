@@ -87,6 +87,8 @@ export class TorrentStoreService {
   private readonly _finished$ = new Subject<TorrentFinishedEvent>();
   readonly finished$ = this._finished$.asObservable();
   private readonly finishedByHash = new Map<string, boolean>();
+  private readonly _delta$ = new Subject<TorrentTxnDelta>();
+  readonly delta$ = this._delta$.asObservable();
   private readonly _isPrimed = signal(false);
   readonly isPrimed = this._isPrimed.asReadonly();
 
@@ -102,11 +104,9 @@ export class TorrentStoreService {
     const remove: Torrent[] = [];
 
     const prevMap = this._torrents();
-    const next = new Map(prevMap);
+    const next = fullUpdate ? new Map<string, Torrent>() : new Map(prevMap);
 
     if (fullUpdate) {
-      next.clear();
-
       for (const [hash, patch] of Object.entries(incoming)) {
         const t: Torrent = { ...(patch as Torrent), hash };
         next.set(hash, t);
@@ -197,7 +197,9 @@ export class TorrentStoreService {
       }
     }
 
-    return { fullUpdate, add, update, remove };
+    const delta: TorrentTxnDelta = { fullUpdate, add, update, remove };
+    this._delta$.next(delta);
+    return delta;
   }
 
   clear() {
@@ -206,6 +208,7 @@ export class TorrentStoreService {
     this._isPrimed.set(false);
     this._categories.set(new Map());
     this._tags.set(new Set());
+    this._delta$.next({ fullUpdate: true, add: [], update: [], remove: [] });
   }
 
   private ingestFinished(changed: Torrent[], removedHashes: string[], allowEmit: boolean) {

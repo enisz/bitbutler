@@ -24,7 +24,6 @@ import { DropdownPosition, NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe } from '@ngx-translate/core';
 import { DEFAULT_GENERAL_SETTINGS, SavePathInputType } from '../../models/general-settings.model';
 import { GeneralSettingsService } from '../../services/general-settings.service';
-import { TorrentStoreService } from '../../services/torrent-store.service';
 import { SavePathTypeaheadService } from './save-path-typeahead.service';
 
 export type SavePathSelectPosition = 'top' | 'bottom';
@@ -64,7 +63,6 @@ export class SavePathSelect implements ControlValueAccessor {
   private readonly ngselect = viewChild<NgSelectComponent>('ngselect');
   private readonly typeaheadInput = viewChild<ElementRef<HTMLInputElement>>('typeaheadInput');
 
-  private readonly torrentStoreService = inject(TorrentStoreService);
   private readonly generalSettingsService = inject(GeneralSettingsService);
   public readonly typeaheadService = inject(SavePathTypeaheadService);
 
@@ -86,17 +84,7 @@ export class SavePathSelect implements ControlValueAccessor {
     () => this.position() ?? ['bottom-start', 'bottom-end', 'top-start', 'top-end'],
   );
 
-  public paths = computed(
-    () => {
-      const uniquePaths = new Set<string>();
-      for (const t of this.torrentStoreService.torrentsArray()) {
-        const path = t.save_path?.trim();
-        if (path) uniquePaths.add(path);
-      }
-      return Array.from(uniquePaths).sort();
-    },
-    { equal: (a, b) => a.length === b.length && a.every((v, i) => v === b[i]) },
-  );
+  public paths = this.typeaheadService.paths;
 
   public selectControl = new FormControl<string | null>(null);
 

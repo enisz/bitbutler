@@ -107,8 +107,8 @@ describe('DEFAULT_GENERAL_SETTINGS', () => {
     });
   });
 
-  it('defaults deleteTorrentFileOnDuplicate to false', () => {
-    expect(DEFAULT_GENERAL_SETTINGS.behavior.deleteTorrentFileOnDuplicate).toBe(false);
+  it('defaults deleteTorrentFileOnDuplicate to true', () => {
+    expect(DEFAULT_GENERAL_SETTINGS.behavior.deleteTorrentFileOnDuplicate).toBe(true);
   });
 });
 

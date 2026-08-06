@@ -6,12 +6,17 @@ import { SettingsService } from './settings.service';
 interface TestSettings {
   value: string;
   count: number;
+  group: { foo: string; bar: number };
 }
 
 @Injectable()
 class TestSettingsService extends BaseSettingsService<TestSettings> {
   protected readonly SETTINGS_ID = 'test-settings-id';
-  protected readonly DEFAULT_SETTINGS: TestSettings = { value: 'default', count: 0 };
+  protected readonly DEFAULT_SETTINGS: TestSettings = {
+    value: 'default',
+    count: 0,
+    group: { foo: 'default-foo', bar: 0 },
+  };
 }
 
 describe('BaseSettingsService', () => {
@@ -34,7 +39,11 @@ describe('BaseSettingsService', () => {
   it('should return default settings when no stored value exists', async () => {
     mockSettingsService.get.mockResolvedValue(null);
     const settings = await service.load();
-    expect(settings).toEqual({ value: 'default', count: 0 });
+    expect(settings).toEqual({
+      value: 'default',
+      count: 0,
+      group: { foo: 'default-foo', bar: 0 },
+    });
   });
 
   it('should persist defaults when no stored value exists', async () => {
@@ -43,6 +52,7 @@ describe('BaseSettingsService', () => {
     expect(mockSettingsService.set).toHaveBeenCalledWith('test-settings-id', {
       value: 'default',
       count: 0,
+      group: { foo: 'default-foo', bar: 0 },
     });
   });
 
@@ -51,6 +61,12 @@ describe('BaseSettingsService', () => {
     const settings = await service.load();
     expect(settings.value).toBe('stored');
     expect(settings.count).toBe(0);
+  });
+
+  it('should deep-merge nested groups instead of replacing them wholesale', async () => {
+    mockSettingsService.get.mockResolvedValue({ group: { foo: 'stored-foo' } });
+    const settings = await service.load();
+    expect(settings.group).toEqual({ foo: 'stored-foo', bar: 0 });
   });
 
   it('should not persist when stored value already exists', async () => {
@@ -74,7 +90,11 @@ describe('BaseSettingsService', () => {
   });
 
   it('should save new settings and emit them', async () => {
-    const newSettings: TestSettings = { value: 'new', count: 42 };
+    const newSettings: TestSettings = {
+      value: 'new',
+      count: 42,
+      group: { foo: 'new-foo', bar: 1 },
+    };
     await service.save(newSettings);
     expect(mockSettingsService.set).toHaveBeenCalledWith('test-settings-id', newSettings);
   });
@@ -93,6 +113,10 @@ describe('BaseSettingsService', () => {
     await expect(service.load()).rejects.toThrow('storage error');
     mockSettingsService.get.mockResolvedValue(null);
     const settings = await service.load();
-    expect(settings).toEqual({ value: 'default', count: 0 });
+    expect(settings).toEqual({
+      value: 'default',
+      count: 0,
+      group: { foo: 'default-foo', bar: 0 },
+    });
   });
 });

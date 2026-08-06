@@ -14,6 +14,7 @@ import {
   catchError,
   distinctUntilChanged,
   exhaustMap,
+  finalize,
   map,
   startWith,
   switchMap,
@@ -170,6 +171,7 @@ export class QbPollingService {
         );
         return EMPTY;
       }),
+      finalize(() => this.peersRidByHash.delete(hash)),
     );
   }
 

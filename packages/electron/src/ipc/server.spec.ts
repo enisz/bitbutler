@@ -453,6 +453,24 @@ describe('server:delete IPC handler', () => {
     const handler = await getDeleteHandler();
     await expect(handler(null, {})).rejects.toThrow("Field 'id' is required.");
   });
+
+  it('removes the cookie jar entry when a row was deleted', async () => {
+    mockRun.mockReturnValue({ changes: 1 });
+    const { getCookieJar } = await import('./qbittorrent.js');
+    getCookieJar().set('srv-1', 'some-sid');
+    const handler = await getDeleteHandler();
+    await handler(null, { id: 'srv-1' });
+    expect(getCookieJar().has('srv-1')).toBe(false);
+  });
+
+  it('does not touch the cookie jar when nothing was deleted', async () => {
+    mockRun.mockReturnValue({ changes: 0 });
+    const { getCookieJar } = await import('./qbittorrent.js');
+    getCookieJar().set('srv-1', 'some-sid');
+    const handler = await getDeleteHandler();
+    await handler(null, { id: 'srv-1' });
+    expect(getCookieJar().has('srv-1')).toBe(true);
+  });
 });
 
 describe('server:getById IPC handler', () => {

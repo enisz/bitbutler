@@ -343,6 +343,10 @@
             "title": "Default Host",
             "description": "When the host is set to default, the app will select it automatically on startup and tries to connect to it."
           }
+        },
+        "toast": {
+          "load-failed-title": "Failed to Load Server",
+          "load-failed": "Could not load this server's details."
         }
       },
       "credential-prompt": {

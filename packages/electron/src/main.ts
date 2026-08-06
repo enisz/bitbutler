@@ -30,6 +30,21 @@ if (process.platform === 'win32') {
   app.setAppUserModelId('com.enisz.bitbutler');
 }
 
+let appIpcHandlersRegistered = false;
+
+function registerAppIpcHandlers(): void {
+  if (appIpcHandlersRegistered) return;
+  appIpcHandlersRegistered = true;
+
+  registerNotificationIpcHandlers();
+  registerServerIpcHandlers();
+  registerQbIpcHandlers();
+  registerTorrentIpcHandlers();
+  registerSettingsIpcHandlers();
+  registerElectronIpcHandlers();
+  registerExportIpcHandlers();
+}
+
 function createOrRestoreMainWindow(startMinimized = false): Electron.BrowserWindow {
   if (mainWindow && !mainWindow.isDestroyed()) {
     mainWindow.show();
@@ -41,14 +56,8 @@ function createOrRestoreMainWindow(startMinimized = false): Electron.BrowserWind
 
   installMenu(mainWindow);
 
+  registerAppIpcHandlers();
   registerWindowIpcHandlers(mainWindow);
-  registerNotificationIpcHandlers();
-  registerServerIpcHandlers();
-  registerQbIpcHandlers();
-  registerTorrentIpcHandlers();
-  registerSettingsIpcHandlers();
-  registerElectronIpcHandlers();
-  registerExportIpcHandlers();
 
   createTray(mainWindow);
 

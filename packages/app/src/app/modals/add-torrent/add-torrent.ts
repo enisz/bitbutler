@@ -313,14 +313,21 @@ export class AddTorrent implements OnInit {
 
     if (!this.canSubmit()) return;
 
+    // Set before any `await` so a second invocation racing in on the same tick (e.g. a
+    // double-click, or Enter plus a click) is blocked by canSubmit() instead of slipping
+    // through the window before this flag would otherwise be set.
+    this.isSubmitting.set(true);
+
     const serverId = this.serverStoreService.currentServerId();
 
     if (!serverId) {
       this.addForm.setErrors({ noServerSelected: true });
+      this.isSubmitting.set(false);
       return;
     }
 
     if (!(await this.generalTab()?.ensureCategoryExists())) {
+      this.isSubmitting.set(false);
       return;
     }
 
@@ -359,7 +366,6 @@ export class AddTorrent implements OnInit {
           : undefined,
     };
 
-    this.isSubmitting.set(true);
     try {
       if (this.inputMode() === 'link') {
         await window.bitbutler.qb.torrentsAdd({

@@ -14,14 +14,15 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { TranslatePipe } from '@ngx-translate/core';
-import { filter } from 'rxjs';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { filter, firstValueFrom } from 'rxjs';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { BbPopover } from '../../components/bb-popover/bb-popover';
 import { AutofocusDirective } from '../../directives/autofocus';
 import { CommandBusService } from '../../services/command-bus.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { ServerService } from '../../services/server.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-server-editor',
@@ -44,6 +45,8 @@ export class ServerEditor implements OnInit {
   private readonly serverService = inject(ServerService);
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly commandBusService = inject(CommandBusService);
+  private readonly toastService = inject(ToastService);
+  private readonly translateService = inject(TranslateService);
 
   readonly id = input<string | null>(null);
 
@@ -62,8 +65,6 @@ export class ServerEditor implements OnInit {
     { value: 'https', label: 'https' },
   ];
 
-  public canTest = signal(false);
-  public tested = signal(false);
   public processing = signal(false);
   public canSave = signal(false);
   public editMode = signal(false);
@@ -144,7 +145,16 @@ export class ServerEditor implements OnInit {
             autoLogin: server?.auto_login || false,
           });
         })
-        .catch();
+        .catch(async () => {
+          const title = await firstValueFrom(
+            this.translateService.get('components.modals.server-editor.toast.load-failed-title'),
+          );
+          const message = await firstValueFrom(
+            this.translateService.get('components.modals.server-editor.toast.load-failed'),
+          );
+          this.toastService.danger(message, title);
+          this.activeModal.dismiss();
+        });
     } else {
       const hasDefault = this.serverStoreService.servers().some((s) => s.auto_login);
       this.editorForm.patchValue({ autoLogin: !hasDefault });
@@ -152,6 +162,9 @@ export class ServerEditor implements OnInit {
   }
 
   public handleSave(): void {
+    if (this.processing()) return;
+    this.processing.set(true);
+
     let promise: Promise<boolean | { id: string }>;
 
     if (this.id()) {
@@ -196,10 +209,9 @@ export class ServerEditor implements OnInit {
           `Failed to ${this.id() ? 'update' : 'add'} the server`,
           error,
         );
-      });
+      })
+      .finally(() => this.processing.set(false));
   }
-
-  public deleteServer(): void {}
 
   public close(): void {
     this.activeModal.dismiss();

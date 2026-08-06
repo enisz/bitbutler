@@ -343,6 +343,10 @@
             "title": "Alapértelmezett host",
             "description": "Ha a host alapértelmezett, az alkalmazás indításkor automatikusan kiválasztja és megpróbál csatlakozni hozzá."
           }
+        },
+        "toast": {
+          "load-failed-title": "Szerver betöltése sikertelen",
+          "load-failed": "Nem sikerült betölteni a szerver adatait."
         }
       },
       "credential-prompt": {

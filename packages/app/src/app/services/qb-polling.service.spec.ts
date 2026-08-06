@@ -17,6 +17,7 @@ describe('QbPollingService', () => {
       sync: {
         streamMaindata: vi.fn().mockReturnValue(new Subject()),
         maindata: vi.fn().mockResolvedValue({ rid: 1 }),
+        torrentPeers: vi.fn().mockResolvedValue({ rid: 1, peers: {} }),
       },
     };
 
@@ -128,6 +129,27 @@ describe('QbPollingService', () => {
       service.stopPolling();
       const paused = await firstValueFrom(service.isPaused$);
       expect(paused).toBe(false);
+    });
+  });
+
+  describe('startPeersPolling', () => {
+    it('creates a per-hash rid subject while a subscription is active', async () => {
+      const sub = service.startPeersPolling('server-1', 'hash-1').subscribe();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect((service as any).peersRidByHash.has('hash-1')).toBe(true);
+      sub.unsubscribe();
+    });
+
+    it('removes the per-hash rid subject once the subscription ends', async () => {
+      const sub = service.startPeersPolling('server-1', 'hash-1').subscribe();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      sub.unsubscribe();
+
+      expect((service as any).peersRidByHash.has('hash-1')).toBe(false);
     });
   });
 });

@@ -14,6 +14,7 @@ let mainWindowRef: Electron.BrowserWindow | null = null;
 let pendingOpenFiles: string[] = [];
 let pendingOpenBbe: string[] = [];
 let openHandlingEnabled = false;
+let ipcHandlersRegistered = false;
 
 function getArgStartIndex(): number {
   return app.isPackaged ? 1 : 2;
@@ -214,51 +215,55 @@ export function handleSecondInstanceArgv(argv: string[]): void {
 export function registerWindowIpcHandlers(mainWindow: Electron.BrowserWindow): void {
   mainWindowRef = mainWindow;
 
-  ipcMain.handle('window:open-files:simulate', async (_e, { paths }: { paths: string[] }) => {
-    const safe = Array.isArray(paths)
-      ? paths
-          .filter((p) => typeof p === 'string' && p.trim())
-          .map((p) => p.trim())
-          .filter((p) => path.extname(p).toLowerCase() === '.torrent')
-      : [];
+  if (!ipcHandlersRegistered) {
+    ipcHandlersRegistered = true;
 
-    void handleIncomingOpenFiles(safe, 'simulate');
-    return { ok: true, count: safe.length };
-  });
+    ipcMain.handle('window:open-files:simulate', async (_e, { paths }: { paths: string[] }) => {
+      const safe = Array.isArray(paths)
+        ? paths
+            .filter((p) => typeof p === 'string' && p.trim())
+            .map((p) => p.trim())
+            .filter((p) => path.extname(p).toLowerCase() === '.torrent')
+        : [];
 
-  ipcMain.handle('window:maximize', () => mainWindow.maximize());
-  ipcMain.handle('window:unmaximize', () => mainWindow.unmaximize());
-  ipcMain.handle('window:toggle-maximize', () =>
-    mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize(),
-  );
-  ipcMain.handle('window:set-size', (_event, width: number, height: number) =>
-    setSize(mainWindow, width, height),
-  );
+      void handleIncomingOpenFiles(safe, 'simulate');
+      return { ok: true, count: safe.length };
+    });
 
-  ipcMain.handle('window:open-files:set-enabled', async (_e, enabled: boolean) => {
-    openHandlingEnabled = !!enabled;
-    if (openHandlingEnabled) void flushQueueIfPossible();
-    if (openHandlingEnabled) flushBbeQueueIfPossible();
-    return { enabled: openHandlingEnabled };
-  });
+    ipcMain.handle('window:maximize', () => mainWindowRef?.maximize());
+    ipcMain.handle('window:unmaximize', () => mainWindowRef?.unmaximize());
+    ipcMain.handle('window:toggle-maximize', () =>
+      mainWindowRef?.isMaximized() ? mainWindowRef.unmaximize() : mainWindowRef?.maximize(),
+    );
+    ipcMain.handle('window:set-size', (_event, width: number, height: number) => {
+      if (mainWindowRef) setSize(mainWindowRef, width, height);
+    });
 
-  ipcMain.handle('window:open-files:drain', async () => {
-    const toSend = Array.from(new Set(pendingOpenFiles));
-    pendingOpenFiles = [];
-    return toSend;
-  });
+    ipcMain.handle('window:open-files:set-enabled', async (_e, enabled: boolean) => {
+      openHandlingEnabled = !!enabled;
+      if (openHandlingEnabled) void flushQueueIfPossible();
+      if (openHandlingEnabled) flushBbeQueueIfPossible();
+      return { enabled: openHandlingEnabled };
+    });
 
-  ipcMain.handle('window:open-torrents:drain', async () => {
-    const toSend = Array.from(new Set(pendingOpenFiles));
-    pendingOpenFiles = [];
-    return pathsToDrafts(toSend, 'startup');
-  });
+    ipcMain.handle('window:open-files:drain', async () => {
+      const toSend = Array.from(new Set(pendingOpenFiles));
+      pendingOpenFiles = [];
+      return toSend;
+    });
 
-  ipcMain.handle('window:open-bbe:drain', async () => {
-    const toSend = Array.from(new Set(pendingOpenBbe));
-    pendingOpenBbe = [];
-    return toSend;
-  });
+    ipcMain.handle('window:open-torrents:drain', async () => {
+      const toSend = Array.from(new Set(pendingOpenFiles));
+      pendingOpenFiles = [];
+      return pathsToDrafts(toSend, 'startup');
+    });
+
+    ipcMain.handle('window:open-bbe:drain', async () => {
+      const toSend = Array.from(new Set(pendingOpenBbe));
+      pendingOpenBbe = [];
+      return toSend;
+    });
+  }
 
   mainWindow.webContents.on('did-finish-load', () => {
     void flushQueueIfPossible();

@@ -425,11 +425,11 @@ export class QbService {
       if (!res.ok) throw new HttpError(res.status, res.statusText, `Failed to reannounce torrents`);
     },
 
-    pause: (serverId: string, hashes: string[]): Promise<void> => {
+    pause: (serverId: string, hashes: string[] | 'all'): Promise<void> => {
       return this.runTorrents(serverId, 'pause', hashes);
     },
 
-    resume: (serverId: string, hashes: string[]): Promise<void> => {
+    resume: (serverId: string, hashes: string[] | 'all'): Promise<void> => {
       return this.runTorrents(serverId, 'resume', hashes);
     },
 
@@ -888,12 +888,12 @@ export class QbService {
   private async runTorrents(
     serverId: string,
     action: 'pause' | 'resume',
-    hashes: string[],
+    hashes: string[] | 'all',
   ): Promise<void> {
-    const clean = this.cleanHashList(hashes);
-    if (clean.length === 0) return;
+    const hashesParam = hashes === 'all' ? 'all' : this.cleanHashList(hashes).join('|');
+    if (hashesParam.length === 0) return;
 
-    const form = { hashes: clean.join('|') };
+    const form = { hashes: hashesParam };
     const cached = this.runApiCache.get(serverId);
 
     if (cached) {

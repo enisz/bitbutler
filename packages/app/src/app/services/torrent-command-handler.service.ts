@@ -316,17 +316,16 @@ export class TorrentCommandHandlerService {
 
   private async handleResumeAll(): Promise<void> {
     const serverId = this.serverStore.currentServerId();
-    const hashes = this.torrentStore.torrentsArray().map((t) => t.hash);
 
     if (!serverId) return;
-    if (hashes.length === 0) return;
+    if (this.torrentStore.totalCount() === 0) return;
 
     this.toastService.info(
       this.translateService.instant('services.torrent-command-handler.toast.resuming-all'),
     );
 
     try {
-      await this.qbService.torrents.resume(serverId, hashes);
+      await this.qbService.torrents.resume(serverId, 'all');
     } catch (e: any) {
       console.error(TorrentCommandHandlerService.name, 'handleResumeAll', 'Resume all failed!', e);
       this.toastService.danger(
@@ -340,17 +339,16 @@ export class TorrentCommandHandlerService {
 
   private async handlePauseAll(): Promise<void> {
     const serverId = this.serverStore.currentServerId();
-    const hashes = this.torrentStore.torrentsArray().map((t) => t.hash);
 
     if (!serverId) return;
-    if (hashes.length === 0) return;
+    if (this.torrentStore.totalCount() === 0) return;
 
     this.toastService.info(
       this.translateService.instant('services.torrent-command-handler.toast.pausing-all'),
     );
 
     try {
-      await this.qbService.torrents.pause(serverId, hashes);
+      await this.qbService.torrents.pause(serverId, 'all');
     } catch (e: any) {
       console.error(TorrentCommandHandlerService.name, 'handlePauseAll', 'Pause all failed', e);
       this.toastService.danger(

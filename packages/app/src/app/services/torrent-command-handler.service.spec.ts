@@ -38,7 +38,7 @@ describe('TorrentCommandHandlerService', () => {
     clear: ReturnType<typeof vi.fn>;
   };
   let serverStore: { currentServerId: ReturnType<typeof signal<string | null>> };
-  let torrentStore: { torrentsArray: ReturnType<typeof signal<any[]>> };
+  let torrentStore: { totalCount: ReturnType<typeof signal<number>> };
   let toastDanger: ReturnType<typeof vi.fn>;
   let toastInfo: ReturnType<typeof vi.fn>;
   let commandBusEmit: ReturnType<typeof vi.fn>;
@@ -76,7 +76,7 @@ describe('TorrentCommandHandlerService', () => {
     };
 
     serverStore = { currentServerId: signal('server-1') };
-    torrentStore = { torrentsArray: signal([{ hash: 'hash1' }, { hash: 'hash2' }]) };
+    torrentStore = { totalCount: signal(2) };
 
     TestBed.configureTestingModule({
       providers: [
@@ -193,11 +193,18 @@ describe('TorrentCommandHandlerService', () => {
     );
   });
 
-  it('should call pauseTorrents and show an info toast on TORRENT_PAUSE_ALL', async () => {
+  it('should call pauseTorrents with "all" and show an info toast on TORRENT_PAUSE_ALL', async () => {
     commands$.next({ type: 'TORRENT_PAUSE_ALL' });
     await flushPromises();
-    expect(qbService.torrents.pause).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
+    expect(qbService.torrents.pause).toHaveBeenCalledWith('server-1', 'all');
     expect(toastInfo).toHaveBeenCalledWith('services.torrent-command-handler.toast.pausing-all');
+  });
+
+  it('should not call pauseTorrents on TORRENT_PAUSE_ALL when there are no torrents', async () => {
+    torrentStore.totalCount.set(0);
+    commands$.next({ type: 'TORRENT_PAUSE_ALL' });
+    await flushPromises();
+    expect(qbService.torrents.pause).not.toHaveBeenCalled();
   });
 
   it('should show a danger toast with the raw error when pause-all fails', async () => {
@@ -210,11 +217,18 @@ describe('TorrentCommandHandlerService', () => {
     );
   });
 
-  it('should call resumeTorrents and show an info toast on TORRENT_RESUME_ALL', async () => {
+  it('should call resumeTorrents with "all" and show an info toast on TORRENT_RESUME_ALL', async () => {
     commands$.next({ type: 'TORRENT_RESUME_ALL' });
     await flushPromises();
-    expect(qbService.torrents.resume).toHaveBeenCalledWith('server-1', ['hash1', 'hash2']);
+    expect(qbService.torrents.resume).toHaveBeenCalledWith('server-1', 'all');
     expect(toastInfo).toHaveBeenCalledWith('services.torrent-command-handler.toast.resuming-all');
+  });
+
+  it('should not call resumeTorrents on TORRENT_RESUME_ALL when there are no torrents', async () => {
+    torrentStore.totalCount.set(0);
+    commands$.next({ type: 'TORRENT_RESUME_ALL' });
+    await flushPromises();
+    expect(qbService.torrents.resume).not.toHaveBeenCalled();
   });
 
   it('should show a danger toast with the raw error when resume-all fails', async () => {
