@@ -333,6 +333,7 @@ export class UiCommandHandlerService {
                 }
               })
               .catch((error: any) => {
+                console.error(UiCommandHandlerService.name, 'UI_OPEN_DESTINATION', error);
                 this.toastService.danger(error);
               });
             break;
