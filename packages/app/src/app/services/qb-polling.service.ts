@@ -138,9 +138,13 @@ export class QbPollingService {
               }),
               catchError((err) => {
                 if (err?.status === 401 || err?.status === 403) {
+                  console.warn(
+                    `[maindata] background poll stopped: session expired (status ${err.status}).`,
+                  );
                   this.stopPolling();
+                } else {
+                  console.error('[maindata] background poll failed', err);
                 }
-                console.error('[maindata] background poll failed', err);
                 return EMPTY;
               }),
             ),
