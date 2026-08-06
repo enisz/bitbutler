@@ -565,6 +565,23 @@ describe('AddTorrent', () => {
       expect(torrentsAddSpy).not.toHaveBeenCalled();
     });
 
+    it('should ignore a second concurrent submit before the first has set isSubmitting (double-click race)', async () => {
+      const torrentsAddSpy = vi.spyOn(window.bitbutler.qb, 'torrentsAdd').mockClear();
+      (component as any).selectedTorrentFile.set({
+        name: 'test.torrent',
+        path: '/tmp/test.torrent',
+      });
+      component.addForm.controls.fileGroup.controls.rename.setValue('test-torrent');
+
+      const event = { preventDefault: () => {} } as unknown as SubmitEvent;
+      const first = component.handleSubmit(event);
+      const second = component.handleSubmit(event);
+
+      await Promise.all([first, second]);
+
+      expect(torrentsAddSpy).toHaveBeenCalledTimes(1);
+    });
+
     it('should add via link mode, save settings, and close the modal on success', async () => {
       const torrentsAddSpy = vi.spyOn(window.bitbutler.qb, 'torrentsAdd').mockClear();
       const addTorrentSettingsService = TestBed.inject(AddTorrentSettingsService) as any;
