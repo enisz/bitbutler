@@ -112,6 +112,12 @@ export class TorrentCommandHandlerService {
     try {
       await this.qbService.torrents.toggleSequentialDownload(ctx.serverId, ctx.hashes);
     } catch (e: any) {
+      console.error(
+        TorrentCommandHandlerService.name,
+        'handleToggleSequentialDownload',
+        'Toggle sequential download failed!',
+        e,
+      );
       this.toastService.danger(
         e?.message ?? String(e),
         this.translateService.instant(
@@ -127,6 +133,12 @@ export class TorrentCommandHandlerService {
     try {
       await this.qbService.torrents.toggleFirstLastPiecePrio(ctx.serverId, ctx.hashes);
     } catch (e: any) {
+      console.error(
+        TorrentCommandHandlerService.name,
+        'handleToggleFirstLastPiecePrio',
+        'Toggle first/last piece priority failed!',
+        e,
+      );
       this.toastService.danger(
         e?.message ?? String(e),
         this.translateService.instant(
