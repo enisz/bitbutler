@@ -76,19 +76,22 @@ function createOrRestoreMainWindow(startMinimized = false): Electron.BrowserWind
   return mainWindow;
 }
 
+initLogger();
+console.info(`[BitButler] Starting (platform=${process.platform}).`);
+
 const gotLock = app.requestSingleInstanceLock();
 
 if (!gotLock) {
+  console.info('[BitButler] Another instance is already running; quitting.');
   app.quit();
 } else {
   app.on('second-instance', (_event, argv) => {
+    console.info('[BitButler] Second instance launched; focusing existing window.');
     createOrRestoreMainWindow();
     handleSecondInstanceArgv(argv);
   });
 
   app.whenReady().then(() => {
-    initLogger();
-
     loadTranslations(getInitialLanguage());
     registerI18nIpcHandlers();
 
@@ -109,6 +112,9 @@ if (!gotLock) {
   });
 
   app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') app.quit();
+    if (process.platform !== 'darwin') {
+      console.info('[BitButler] All windows closed; quitting.');
+      app.quit();
+    }
   });
 }
