@@ -95,11 +95,13 @@ describe('ManageServers', () => {
       qbServiceMock.auth.hasCookie.mockResolvedValue(false);
       qbServiceMock.auth.login.mockResolvedValue({ loggedIn: false });
 
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       const toastServiceMock = TestBed.inject(ToastService) as any;
       const translateServiceMock = TestBed.inject(TranslateService) as any;
 
       await component.switchTo(server);
 
+      expect(errorSpy).toHaveBeenCalledWith(ManageServers.name, 'switchTo', expect.any(Error));
       expect(toastServiceMock.danger).toHaveBeenCalledWith('"My Server"', '');
       expect(translateServiceMock.instant).toHaveBeenCalledWith(
         'services.menu-bar-command-handler.error.failed-to-connect-title',

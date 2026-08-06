@@ -199,9 +199,11 @@ describe('qb:login IPC handler', () => {
         get: () => null,
       },
     });
+    const infoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
     const { handler, getCookieJar } = await setup();
     await expect(handler(null, { id: 'srv-1' })).resolves.toEqual({ loggedIn: true });
     expect(getCookieJar().get('srv-1')).toBe('SID=abc123');
+    expect(infoSpy).toHaveBeenCalledWith(expect.stringContaining('Logged in to server srv-1'));
   });
 
   it('succeeds with qBittorrent 5+ response (204 + QBT_SID_port cookie)', async () => {
@@ -240,8 +242,10 @@ describe('qb:login IPC handler', () => {
       text: () => Promise.resolve('Unauthorized'),
       headers: { getSetCookie: () => [], get: () => null },
     });
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const { handler } = await setup();
     await expect(handler(null, { id: 'srv-1' })).rejects.toThrow('Login failed');
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('Login failed for server srv-1'));
   });
 
   it('throws when login succeeds but no session cookie is returned', async () => {
@@ -455,9 +459,11 @@ describe('qbRequest', () => {
       text: () => Promise.resolve('Access denied'),
       headers: { get: () => null },
     });
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const { qbRequest, getCookieJar } = await import('./qbittorrent.js');
     getCookieJar().set('srv-1', 'SID=tok');
     await expect(qbRequest({ id: 'srv-1', path: '/api/v2/test' })).rejects.toThrow();
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('GET /api/v2/test failed'));
   });
 
   it('builds a form-encoded body when form is provided', async () => {

@@ -131,6 +131,7 @@ export class ManageServers {
       this.serverStoreService.select(server.id);
       this.activeModal.dismiss();
     } catch (err) {
+      console.error(ManageServers.name, 'switchTo', err);
       this.toastService.danger(
         `"${server.name || server.host}"`,
         this.translateService.instant(

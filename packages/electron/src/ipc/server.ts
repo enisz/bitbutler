@@ -178,6 +178,7 @@ function serverDelete(payload: unknown): { deleted: boolean } {
   const info = stmtDelete.run(id);
   const deleted = info.changes > 0;
   if (deleted) {
+    console.info(`[BitButler][server] Deleted server ${id}.`);
     getCookieJar().delete(id);
     rebuildMenu();
   }
@@ -201,6 +202,7 @@ function serverAdd(server: unknown): { id: string } {
 
   try {
     txInsertWithAutoLogin(row);
+    console.info(`[BitButler][server] Added server ${row.id} (${row.host}).`);
     rebuildMenu();
     return { id: row.id };
   } catch (err) {
@@ -241,7 +243,10 @@ function serverUpdate(payload: unknown): { updated: boolean } {
 
   try {
     const updated = tx();
-    if (updated) rebuildMenu();
+    if (updated) {
+      console.info(`[BitButler][server] Updated server ${id}.`);
+      rebuildMenu();
+    }
     return { updated };
   } catch (err) {
     throw new Error(toUserDbError(err));
@@ -333,6 +338,7 @@ function toUserDbError(err: unknown): string {
 function encryptPassword(plain: unknown): Buffer | null {
   if (!plain || (typeof plain === 'string' && plain.length === 0)) return null;
   if (!safeStorage.isEncryptionAvailable()) {
+    console.error('[BitButler][server] Cannot save password: OS encryption is unavailable.');
     throw new Error('Encryption is not available on this system (safeStorage).');
   }
   return safeStorage.encryptString(plain as string);

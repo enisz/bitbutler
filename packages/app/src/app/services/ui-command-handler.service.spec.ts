@@ -232,6 +232,23 @@ describe('UiCommandHandlerService', () => {
     );
   });
 
+  it('logs the error and shows a danger toast when opening the destination fails', async () => {
+    const qbServiceMock = TestBed.inject(QbService) as any;
+    qbServiceMock.torrents.files.mockRejectedValue(new Error('files lookup failed'));
+    const toastServiceMock = TestBed.inject(ToastService) as any;
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    commands$.next({ type: 'UI_OPEN_DESTINATION', hash: 'hash1', remotePath: '/data/movies' });
+    await flushPromises();
+
+    expect(errorSpy).toHaveBeenCalledWith(
+      UiCommandHandlerService.name,
+      'UI_OPEN_DESTINATION',
+      expect.any(Error),
+    );
+    expect(toastServiceMock.danger).toHaveBeenCalledWith(expect.any(Error));
+  });
+
   it('should not open TorrentDetails when hash is missing for UI_OPEN_TORRENT_DETAILS', () => {
     commands$.next({ type: 'UI_OPEN_TORRENT_DETAILS', hash: null });
     expect(mockModalService.open).not.toHaveBeenCalled();

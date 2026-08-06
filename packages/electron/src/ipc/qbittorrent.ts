@@ -83,6 +83,10 @@ async function qbTorrentsAdd(payload: BitButlerQbTorrentsAddPayload): Promise<un
 
   if (!appended) throw new Error('No torrent or URL attached to form-data.');
 
+  console.debug(
+    `[BitButler][qbittorrent] Adding torrents for server ${id}: ${(torrents ?? []).length} file(s), ${(urls ?? []).length} url(s).`,
+  );
+
   for (const [k, v] of Object.entries(options ?? {})) {
     if (v === undefined || v === null) continue;
     if (typeof v === 'string' && v.trim() === '') continue;
@@ -146,17 +150,22 @@ async function qbLogin(payload: unknown): Promise<{ loggedIn: boolean }> {
 
   const text = await res.text();
   if (!res.ok || (res.status !== 204 && !/^Ok\./i.test(text.trim()))) {
+    console.warn(`[BitButler][qbittorrent] Login failed for server ${id} (status ${res.status}).`);
     throw new Error('Login failed. Check username/password and WebUI settings.');
   }
 
   const cookie = extractSidCookie(res);
   if (!cookie) {
+    console.error(
+      `[BitButler][qbittorrent] Login succeeded for server ${id} but no SID cookie was returned.`,
+    );
     throw new Error(
       'Login succeeded but SID cookie was not returned (check proxy/HTTPS/WebUI config).',
     );
   }
 
   cookieJar.set(id, cookie);
+  console.info(`[BitButler][qbittorrent] Logged in to server ${id}.`);
   ipcMain.emit('server:set-active', null, id);
   rebuildMenu();
   rebuildTrayMenu();
@@ -240,6 +249,9 @@ export async function qbRequest(payload: QbRequestPayload): Promise<unknown> {
 
   if (!res.ok) {
     const errText = await res.text();
+    console.warn(
+      `[BitButler][qbittorrent] ${method} ${path} failed for server ${id} (status ${res.status}).`,
+    );
     throw JSON.stringify({
       name: 'QbHttpError',
       status: res.status,
@@ -277,7 +289,12 @@ function buildBaseUrl(server: ServerRow): string {
 function decryptPassword(passwordBlob: Buffer | Uint8Array | null): string {
   if (!passwordBlob) return '';
   const buf = Buffer.isBuffer(passwordBlob) ? passwordBlob : Buffer.from(passwordBlob);
-  return safeStorage.decryptString(buf);
+  try {
+    return safeStorage.decryptString(buf);
+  } catch (error) {
+    console.error('[BitButler][qbittorrent] Failed to decrypt stored password.', error);
+    throw error;
+  }
 }
 
 function extractSidCookie(res: Response): string | null {

@@ -339,6 +339,7 @@ describe('server:add IPC handler – validation', () => {
   });
 
   it('succeeds with empty username', async () => {
+    const infoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
     const handler = await getAddHandler();
     const result = (await handler(null, {
       name: 'L',
@@ -349,11 +350,13 @@ describe('server:add IPC handler – validation', () => {
       protocol: 'http',
     })) as { id: string };
     expect(typeof result.id).toBe('string');
+    expect(infoSpy).toHaveBeenCalledWith(expect.stringContaining('Added server'));
   });
 
   it('throws when safeStorage encryption is unavailable', async () => {
     const electronMock = (await import('electron')) as any;
     electronMock.safeStorage.isEncryptionAvailable.mockReturnValueOnce(false);
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const handler = await getAddHandler();
     await expect(
       handler(null, {
@@ -365,6 +368,7 @@ describe('server:add IPC handler – validation', () => {
         protocol: 'http',
       }),
     ).rejects.toThrow('Encryption is not available');
+    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('OS encryption is unavailable'));
   });
 
   it('throws a user-friendly message on duplicate host', async () => {
@@ -437,9 +441,11 @@ describe('server:delete IPC handler', () => {
 
   it('calls rebuildMenu when a row was deleted', async () => {
     mockRun.mockReturnValue({ changes: 1 });
+    const infoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
     const handler = await getDeleteHandler();
     await handler(null, { id: 'srv-1' });
     expect(mockRebuildMenu).toHaveBeenCalled();
+    expect(infoSpy).toHaveBeenCalledWith(expect.stringContaining('Deleted server srv-1'));
   });
 
   it('does not call rebuildMenu when nothing was deleted', async () => {
@@ -583,9 +589,11 @@ describe('server:update IPC handler', () => {
 
   it('returns { updated: true } when row was changed', async () => {
     mockRun.mockReturnValue({ changes: 1 });
+    const infoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
     const handler = await getHandler();
     const result = await handler(null, { id: 'srv-1', changes: { name: 'New Name' } });
     expect(result).toEqual({ updated: true });
+    expect(infoSpy).toHaveBeenCalledWith(expect.stringContaining('Updated server srv-1'));
   });
 
   it('returns { updated: false } when no rows matched', async () => {

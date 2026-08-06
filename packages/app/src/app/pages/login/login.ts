@@ -247,6 +247,7 @@ export class Login implements OnInit {
         this.router.navigate(['/pages/main']);
       })
       .catch((error) => {
+        console.error(Login.name, 'connect', error);
         loadingModalRef.close();
         this.toastService.danger(
           error.message,

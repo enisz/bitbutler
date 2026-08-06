@@ -128,7 +128,9 @@ export async function restoreCategoriesAndTags(
       method: 'POST',
       path: '/api/v2/torrents/createTags',
       form: { tags: metadata.tags.join(',') },
-    }).catch(() => {});
+    }).catch((err) => {
+      console.warn('[BitButler][export] Failed to restore tags during import.', err);
+    });
   }
 
   if (restoreCategories && metadata.categories) {
@@ -146,14 +148,21 @@ export async function restoreCategoriesAndTags(
           method: 'POST',
           path: '/api/v2/torrents/createCategory',
           form: { category: name, savePath: mappedPath },
-        }).catch(() => {});
+        }).catch((err) => {
+          console.warn(
+            `[BitButler][export] Failed to create category '${name}' during import.`,
+            err,
+          );
+        });
       } else if (overwriteCategories) {
         await qbRequest({
           id: serverId,
           method: 'POST',
           path: '/api/v2/torrents/editCategory',
           form: { category: name, savePath: mappedPath },
-        }).catch(() => {});
+        }).catch((err) => {
+          console.warn(`[BitButler][export] Failed to edit category '${name}' during import.`, err);
+        });
       }
     }
   }
@@ -443,6 +452,7 @@ async function buildExportEntry(
 
     return entry;
   } catch (err) {
+    console.warn(`[BitButler][export] Failed to export torrent ${hash}.`, err);
     return {
       hash,
       name: hash,
@@ -630,7 +640,9 @@ async function applyTorrentSettings(
       method: 'POST',
       path: '/api/v2/torrents/setLocation',
       form: { hashes: entry.hash, location: applyPathMappings(entry.save_path, pathMappings) },
-    }).catch(() => {});
+    }).catch((err) => {
+      console.warn(`[BitButler][export] Failed to restore save_path for ${entry.hash}.`, err);
+    });
   }
 
   if (has('categories') && entry.category) {
@@ -639,7 +651,9 @@ async function applyTorrentSettings(
       method: 'POST',
       path: '/api/v2/torrents/setCategory',
       form: { hashes: entry.hash, category: entry.category },
-    }).catch(() => {});
+    }).catch((err) => {
+      console.warn(`[BitButler][export] Failed to restore category for ${entry.hash}.`, err);
+    });
   }
 
   if (has('tags')) {
@@ -648,14 +662,18 @@ async function applyTorrentSettings(
       method: 'POST',
       path: '/api/v2/torrents/removeTags',
       form: { hashes: entry.hash },
-    }).catch(() => {});
+    }).catch((err) => {
+      console.warn(`[BitButler][export] Failed to clear tags for ${entry.hash}.`, err);
+    });
     if (entry.tags?.length) {
       await qbRequest({
         id: serverId,
         method: 'POST',
         path: '/api/v2/torrents/addTags',
         form: { hashes: entry.hash, tags: entry.tags.join(',') },
-      }).catch(() => {});
+      }).catch((err) => {
+        console.warn(`[BitButler][export] Failed to restore tags for ${entry.hash}.`, err);
+      });
     }
   }
 
@@ -684,7 +702,9 @@ async function applyTorrentSettings(
           method: 'POST',
           path: '/api/v2/torrents/renameFile',
           form: { hash: entry.hash, oldPath: base.name, newPath: saved.name },
-        }).catch(() => {});
+        }).catch((err) => {
+          console.warn(`[BitButler][export] Failed to rename file for ${entry.hash}.`, err);
+        });
       }
     }
   }
@@ -702,7 +722,12 @@ async function applyTorrentSettings(
         method: 'POST',
         path: '/api/v2/torrents/filePrio',
         form: { hash: entry.hash, id: indices.join('|'), priority: String(priority) },
-      }).catch(() => {});
+      }).catch((err) => {
+        console.warn(
+          `[BitButler][export] Failed to restore file priorities for ${entry.hash}.`,
+          err,
+        );
+      });
     }
   }
 
@@ -713,7 +738,9 @@ async function applyTorrentSettings(
         method: 'POST',
         path: '/api/v2/torrents/setUploadLimit',
         form: { hashes: entry.hash, limit: String(entry.up_limit) },
-      }).catch(() => {});
+      }).catch((err) => {
+        console.warn(`[BitButler][export] Failed to restore upload limit for ${entry.hash}.`, err);
+      });
     }
     if (entry.dl_limit !== undefined) {
       await qbRequest({
@@ -721,7 +748,12 @@ async function applyTorrentSettings(
         method: 'POST',
         path: '/api/v2/torrents/setDownloadLimit',
         form: { hashes: entry.hash, limit: String(entry.dl_limit) },
-      }).catch(() => {});
+      }).catch((err) => {
+        console.warn(
+          `[BitButler][export] Failed to restore download limit for ${entry.hash}.`,
+          err,
+        );
+      });
     }
   }
 
@@ -736,7 +768,9 @@ async function applyTorrentSettings(
         seedingTimeLimit: String(entry.seeding_time_limit ?? -1),
         inactiveSeedingTimeLimit: String(entry.inactive_seeding_time_limit ?? -1),
       },
-    }).catch(() => {});
+    }).catch((err) => {
+      console.warn(`[BitButler][export] Failed to restore share limits for ${entry.hash}.`, err);
+    });
   }
 
   if (has('super_seeding') && entry.super_seeding !== undefined) {
@@ -745,7 +779,9 @@ async function applyTorrentSettings(
       method: 'POST',
       path: '/api/v2/torrents/setSuperSeeding',
       form: { hashes: entry.hash, value: String(entry.super_seeding) },
-    }).catch(() => {});
+    }).catch((err) => {
+      console.warn(`[BitButler][export] Failed to restore super-seeding for ${entry.hash}.`, err);
+    });
   }
 
   const shouldResume =
@@ -756,7 +792,9 @@ async function applyTorrentSettings(
       method: 'POST',
       path: '/api/v2/torrents/resume',
       form: { hashes: entry.hash },
-    }).catch(() => {});
+    }).catch((err) => {
+      console.warn(`[BitButler][export] Failed to resume ${entry.hash} after import.`, err);
+    });
   }
 }
 

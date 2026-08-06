@@ -466,6 +466,19 @@ describe('Login', () => {
       expect(checkAvailability).not.toHaveBeenCalled();
     });
 
+    it('logs the error and shows the connection-failed toast when login rejects', async () => {
+      setCurrentServer({ export_available: null });
+      qbServiceMock.login.mockRejectedValue(new Error('ECONNREFUSED'));
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const toastServiceMock = TestBed.inject(ToastService) as any;
+
+      await component.connect();
+
+      expect(errorSpy).toHaveBeenCalledWith(Login.name, 'connect', expect.any(Error));
+      expect(toastServiceMock.danger).toHaveBeenCalledWith('ECONNREFUSED', '');
+      expect(translateMock.instant).toHaveBeenCalledWith('pages.login.error.connection-failed');
+    });
+
     describe('missing credentials', () => {
       function credentialModalRef(result: Promise<unknown>) {
         const componentInstance: Record<string, unknown> = {};

@@ -444,8 +444,15 @@ describe('TorrentCommandHandlerService', () => {
 
     it('shows danger toast when toggleSequentialDownload fails', async () => {
       qbService.torrents.toggleSequentialDownload.mockRejectedValueOnce(new Error('network error'));
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       commands$.next({ type: 'TORRENT_TOGGLE_SEQUENTIAL_DOWNLOAD' });
       await flushPromises();
+      expect(errorSpy).toHaveBeenCalledWith(
+        TorrentCommandHandlerService.name,
+        'handleToggleSequentialDownload',
+        'Toggle sequential download failed!',
+        expect.any(Error),
+      );
       expect(toastDanger).toHaveBeenCalledWith(
         'network error',
         'services.torrent-command-handler.toast.toggle-sequential-download-failed-title',
@@ -465,8 +472,15 @@ describe('TorrentCommandHandlerService', () => {
 
     it('shows danger toast when toggleFirstLastPiecePrio fails', async () => {
       qbService.torrents.toggleFirstLastPiecePrio.mockRejectedValueOnce(new Error('network error'));
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       commands$.next({ type: 'TORRENT_TOGGLE_FIRST_LAST_PIECE_PRIO' });
       await flushPromises();
+      expect(errorSpy).toHaveBeenCalledWith(
+        TorrentCommandHandlerService.name,
+        'handleToggleFirstLastPiecePrio',
+        'Toggle first/last piece priority failed!',
+        expect.any(Error),
+      );
       expect(toastDanger).toHaveBeenCalledWith(
         'network error',
         'services.torrent-command-handler.toast.toggle-first-last-piece-prio-failed-title',
