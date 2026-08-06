@@ -15,10 +15,6 @@ export const routes: Routes = [
     ],
   },
   {
-    path: 'add-torrent',
-    loadComponent: () => import('./modals/add-torrent/add-torrent').then((mod) => mod.AddTorrent),
-  },
-  {
     path: '**',
     redirectTo: '/pages/login',
     pathMatch: 'full',
