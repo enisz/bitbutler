@@ -839,6 +839,26 @@ describe('restoreCategoriesAndTags', () => {
     );
   });
 
+  it('logs a warning and does not throw when createTags fails', async () => {
+    mockQbRequestRestore.mockRejectedValue(new Error('network error'));
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const { restoreCategoriesAndTags } = await setup();
+    await expect(
+      restoreCategoriesAndTags(
+        'server-1',
+        { categories: {}, tags: ['linux'] },
+        false,
+        true,
+        [],
+        false,
+      ),
+    ).resolves.toBeUndefined();
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('Failed to restore tags'),
+      expect.any(Error),
+    );
+  });
+
   it('creates a category that does not exist on the target server', async () => {
     mockQbRequestRestore.mockImplementation(({ path }: { path: string }) => {
       if (path === '/api/v2/torrents/categories') return Promise.resolve({});
