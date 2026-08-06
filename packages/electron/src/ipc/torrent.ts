@@ -115,7 +115,8 @@ async function walkForTorrentFiles(dir: string, recursive: boolean): Promise<str
 async function walkSubdirectory(dir: string, recursive: boolean): Promise<string[]> {
   try {
     return await walkForTorrentFiles(dir, recursive);
-  } catch {
+  } catch (err) {
+    console.debug(`[BitButler][torrent] Skipped unreadable subdirectory: ${dir}.`, err);
     return [];
   }
 }
