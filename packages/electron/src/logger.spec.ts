@@ -1,124 +1,130 @@
 import { type BrowserWindow } from 'electron';
-import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const mockLogInfo = vi.hoisted(() => vi.fn());
-const mockExistsSync = vi.hoisted(() => vi.fn<() => boolean>(() => false));
-const mockStatSync = vi.hoisted(() => vi.fn<() => { size: number }>(() => ({ size: 0 })));
-const mockRenameSync = vi.hoisted(() => vi.fn());
-const mockUnlinkSync = vi.hoisted(() => vi.fn());
-
-let capturedFormat: ((params: { message: { date: Date; data: unknown[] } }) => unknown[]) | null =
-  null;
+const mockRun = vi.hoisted(() => vi.fn());
 
 vi.mock('electron', () => ({
-  app: { getPath: vi.fn(() => '/fake/logs') },
+  app: { getPath: () => '/fake' },
 }));
 
-vi.mock('electron-log/main', () => ({
+vi.mock('./db.js', () => ({
   default: {
-    transports: {
-      console: { level: false as false },
-      file: {
-        resolvePathFn: null,
-        maxSize: 0,
-        archiveLogFn: null,
-        get format() {
-          return capturedFormat;
-        },
-        set format(fn) {
-          capturedFormat = fn;
-        },
-      },
-    },
-    info: mockLogInfo,
+    prepare: () => ({ run: mockRun }),
   },
 }));
 
-vi.mock('node:fs', () => ({
-  existsSync: mockExistsSync,
-  statSync: mockStatSync,
-  renameSync: mockRenameSync,
-  unlinkSync: mockUnlinkSync,
-}));
+describe('initLogger', () => {
+  let originalConsole: Record<string, (...args: unknown[]) => void>;
 
-describe('formatTimestamp', () => {
   beforeEach(() => {
     vi.resetModules();
+    mockRun.mockReset();
+    originalConsole = {
+      log: console.log,
+      debug: console.debug,
+      info: console.info,
+      warn: console.warn,
+      error: console.error,
+    };
   });
 
   afterEach(() => {
     vi.clearAllMocks();
+    Object.assign(console, originalConsole);
+    process.removeAllListeners('uncaughtException');
+    process.removeAllListeners('unhandledRejection');
   });
 
-  it('formats a date as YYYY-MM-DD HH:mm:ss.SSS using local time', async () => {
-    const { formatTimestamp } = await import('./logger.js');
-    const date = new Date(2026, 5, 27, 10, 23, 45, 123);
-    expect(formatTimestamp(date)).toBe('2026-06-27 10:23:45.123');
-  });
+  it.each([
+    ['log', 'debug'],
+    ['debug', 'debug'],
+    ['info', 'info'],
+    ['warn', 'warn'],
+    ['error', 'error'],
+  ])(
+    'inserts a "main" row at level "%s" for console.%s and preserves terminal output',
+    async (method, expectedLevel) => {
+      const spy = vi.fn();
+      (console as unknown as Record<string, unknown>)[method] = spy;
+      const { initLogger } = await import('./logger.js');
+      initLogger();
 
-  it('pads single-digit month, day, hour, minute, second, and millisecond values', async () => {
-    const { formatTimestamp } = await import('./logger.js');
-    const date = new Date(2026, 0, 5, 9, 3, 7, 42);
-    expect(formatTimestamp(date)).toBe('2026-01-05 09:03:07.042');
-  });
-});
+      (console as unknown as Record<string, (...args: unknown[]) => void>)[method]('hello', 42);
 
-describe('archiveLog', () => {
-  beforeEach(() => {
-    vi.resetModules();
-    mockExistsSync.mockReturnValue(false);
-    mockRenameSync.mockReset();
-    mockUnlinkSync.mockReset();
-  });
+      expect(spy).toHaveBeenCalledWith('hello', 42);
+      expect(mockRun).toHaveBeenCalledWith(expect.any(Number), 'main', expectedLevel, 'hello 42');
+    },
+  );
 
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
+  it('inserts a "main" "error" row on uncaught exceptions and rethrows', async () => {
+    const { initLogger } = await import('./logger.js');
+    initLogger();
+    const error = new Error('boom');
 
-  it('moves the current log to .old.0.log when no archives exist', async () => {
-    const { archiveLog } = await import('./logger.js');
-    archiveLog(join('/fake/logs', 'bitbutler.log'));
-    expect(mockRenameSync).toHaveBeenCalledWith(
-      join('/fake/logs', 'bitbutler.log'),
-      join('/fake/logs', 'bitbutler.old.0.log'),
+    expect(() => process.emit('uncaughtException', error)).toThrow('boom');
+
+    expect(mockRun).toHaveBeenCalledWith(
+      expect.any(Number),
+      'main',
+      'error',
+      expect.stringContaining('Uncaught exception:'),
     );
   });
 
-  it('shifts .old.0 to .old.1 before writing new .old.0', async () => {
-    mockExistsSync.mockImplementation(
-      (p: string) => p === join('/fake/logs', 'bitbutler.old.0.log'),
-    );
-    const { archiveLog } = await import('./logger.js');
-    archiveLog(join('/fake/logs', 'bitbutler.log'));
-    expect(mockRenameSync).toHaveBeenCalledWith(
-      join('/fake/logs', 'bitbutler.old.0.log'),
-      join('/fake/logs', 'bitbutler.old.1.log'),
-    );
-    expect(mockRenameSync).toHaveBeenCalledWith(
-      join('/fake/logs', 'bitbutler.log'),
-      join('/fake/logs', 'bitbutler.old.0.log'),
+  it('inserts a "main" "error" row on unhandled rejections without throwing', async () => {
+    const { initLogger } = await import('./logger.js');
+    initLogger();
+
+    expect(() =>
+      process.emit('unhandledRejection', new Error('nope'), Promise.resolve()),
+    ).not.toThrow();
+
+    expect(mockRun).toHaveBeenCalledWith(
+      expect.any(Number),
+      'main',
+      'error',
+      expect.stringContaining('Unhandled rejection:'),
     );
   });
 
-  it('deletes .old.2.log when all 3 archive slots are full', async () => {
-    mockExistsSync.mockReturnValue(true);
-    const { archiveLog } = await import('./logger.js');
-    archiveLog(join('/fake/logs', 'bitbutler.log'));
-    expect(mockUnlinkSync).toHaveBeenCalledWith(join('/fake/logs', 'bitbutler.old.2.log'));
+  it('does not throw and writes to stderr when the DB insert fails', async () => {
+    const stderrSpy = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
+    mockRun.mockImplementation(() => {
+      throw new Error('disk full');
+    });
+    const spy = vi.fn();
+    (console as unknown as Record<string, unknown>).error = spy;
+    const { initLogger } = await import('./logger.js');
+    initLogger();
+
+    expect(() =>
+      (console as unknown as Record<string, (...args: unknown[]) => void>).error('oops'),
+    ).not.toThrow();
+
+    expect(spy).toHaveBeenCalledWith('oops');
+    expect(stderrSpy).toHaveBeenCalledWith(
+      expect.stringContaining('[logger] failed to write log row: disk full'),
+    );
+
+    stderrSpy.mockRestore();
   });
 });
 
 describe('hookRenderer', () => {
-  let consoleMessageHandler: (...args: unknown[]) => void;
+  let consoleMessageHandler: (details: {
+    level: string;
+    message: string;
+    lineNumber: number;
+    sourceId: string;
+  }) => void;
   let mockWindow: { webContents: { on: ReturnType<typeof vi.fn> } };
 
   beforeEach(() => {
     vi.resetModules();
-    mockLogInfo.mockReset();
+    mockRun.mockReset();
     mockWindow = {
       webContents: {
-        on: vi.fn((event: string, handler: (...args: unknown[]) => void) => {
+        on: vi.fn((event: string, handler: typeof consoleMessageHandler) => {
           if (event === 'console-message') consoleMessageHandler = handler;
         }),
       },
@@ -140,33 +146,17 @@ describe('hookRenderer', () => {
     ['info', 'info'],
     ['warning', 'warn'],
     ['error', 'error'],
-  ])('maps string level "%s" to log level "%s"', async (level, expectedLevel) => {
+  ])('inserts a "renderer" row mapping level "%s" to "%s"', async (level, expectedLevel) => {
     const { hookRenderer } = await import('./logger.js');
     hookRenderer(mockWindow as unknown as BrowserWindow);
+
     consoleMessageHandler({ level, message: 'test message', lineNumber: 10, sourceId: 'app.js' });
-    expect(mockLogInfo).toHaveBeenCalledWith(
-      `[renderer] [${expectedLevel}] test message (app.js:10)`,
+
+    expect(mockRun).toHaveBeenCalledWith(
+      expect.any(Number),
+      'renderer',
+      expectedLevel,
+      'test message (app.js:10)',
     );
-  });
-});
-
-describe('initLogger format callback', () => {
-  beforeEach(() => {
-    vi.resetModules();
-    capturedFormat = null;
-    mockExistsSync.mockReturnValue(false);
-  });
-
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it('produces a correctly formatted log line', async () => {
-    const { initLogger } = await import('./logger.js');
-    initLogger();
-    expect(capturedFormat).not.toBeNull();
-    const date = new Date(2026, 5, 27, 10, 23, 45, 123);
-    const result = capturedFormat!({ message: { date, data: ['[main] [info] hello'] } });
-    expect(result).toEqual(['[2026-06-27 10:23:45.123] [main] [info] hello']);
   });
 });

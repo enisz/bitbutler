@@ -90,11 +90,6 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
               accelerator: 'F12',
               click: () => getMainWindow()?.webContents.openDevTools({ mode: 'detach' }),
             },
-            {
-              label: 'Open Log Path',
-              accelerator: 'CmdOrCtrl+Alt+L',
-              click: () => shell.openPath(app.getPath('logs')),
-            },
             { type: 'separator' },
             {
               label: 'Show a Notification',

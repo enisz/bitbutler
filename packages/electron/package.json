@@ -4,8 +4,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@bitbutler/shared": "*",
-    "electron-log": "^5.4.4"
+    "@bitbutler/shared": "*"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json && tsc -p tsconfig.preload.json",

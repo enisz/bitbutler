@@ -7,6 +7,7 @@ const db = new Database(dbPath);
 
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
+db.pragma('synchronous = NORMAL');
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS servers (
@@ -116,5 +117,34 @@ for (const row of stmtSelectServerIds.all()) {
   stmtDeleteOldIfNewExists.run(row.id, newId);
   stmtRenameId.run(newId, row.id);
 }
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS logs (
+    id        INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp INTEGER NOT NULL,
+    process   TEXT NOT NULL CHECK (process IN ('main','renderer')),
+    level     TEXT NOT NULL CHECK (level IN ('debug','info','warn','error')),
+    message   TEXT NOT NULL
+  );
+`);
+
+db.exec(`
+  CREATE INDEX IF NOT EXISTS idx_logs_timestamp
+  ON logs(timestamp);
+`);
+
+db.exec(`DROP TRIGGER IF EXISTS trg_logs_retention`);
+
+db.exec(`
+  CREATE TRIGGER trg_logs_retention
+  AFTER INSERT ON logs
+  BEGIN
+    DELETE FROM logs
+    WHERE timestamp < (CAST(strftime('%s','now') AS INTEGER) - 30*24*60*60) * 1000;
+
+    DELETE FROM logs
+    WHERE id <= (SELECT MAX(id) FROM logs) - 100000;
+  END;
+`);
 
 export default db;
