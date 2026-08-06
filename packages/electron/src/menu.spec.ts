@@ -5,8 +5,6 @@ const mockBuildFromTemplate = vi.hoisted(() =>
   vi.fn((template: MenuItemConstructorOptions[]) => template),
 );
 const mockSetApplicationMenu = vi.hoisted(() => vi.fn());
-const mockAppGetPath = vi.hoisted(() => vi.fn(() => '/fake/logs'));
-const mockShellOpenPath = vi.hoisted(() => vi.fn());
 const mockShellOpenExternal = vi.hoisted(() => vi.fn());
 const mockGetCurrentLanguage = vi.hoisted(() => vi.fn(() => 'us'));
 const mockGetCookieJar = vi.hoisted(() => vi.fn(() => new Map<string, string>()));
@@ -17,7 +15,7 @@ const mockServerList = vi.hoisted(() =>
 const mockGetMainWindow = vi.hoisted(() => vi.fn());
 const mockNotify = vi.hoisted(() => vi.fn());
 
-const appMock = vi.hoisted(() => ({ isPackaged: false, getPath: mockAppGetPath }));
+const appMock = vi.hoisted(() => ({ isPackaged: false }));
 
 vi.mock('electron', () => ({
   Menu: {
@@ -25,7 +23,7 @@ vi.mock('electron', () => ({
     setApplicationMenu: mockSetApplicationMenu,
   },
   app: appMock,
-  shell: { openPath: mockShellOpenPath, openExternal: mockShellOpenExternal },
+  shell: { openExternal: mockShellOpenExternal },
 }));
 
 vi.mock('./i18n.js', () => ({
@@ -271,15 +269,6 @@ describe('rebuildMenu', () => {
       expect(item.accelerator).toBe('F12');
       (item.click as () => void)();
       expect(mainWindow.webContents.openDevTools).toHaveBeenCalledWith({ mode: 'detach' });
-    });
-
-    it('opens the log folder when Open Log Path is clicked', async () => {
-      const template = await buildMenu();
-      const item = findItem(template, byLabel('Open Log Path'))!;
-      expect(item.accelerator).toBe('CmdOrCtrl+Alt+L');
-      (item.click as () => void)();
-      expect(mockAppGetPath).toHaveBeenCalledWith('logs');
-      expect(mockShellOpenPath).toHaveBeenCalledWith('/fake/logs');
     });
 
     it('reloads the window using the built-in reload role instead of an unhandled IPC action', async () => {
