@@ -1,0 +1,23 @@
+.form-check.bb-check-danger .form-check-input:checked {
+  background-color: var(--bs-danger) !important;
+  border-color: var(--bs-danger) !important;
+}
+
+.bb-delete-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 0.75rem;
+  padding: 12px 14px;
+  border-radius: var(--bb-control-radius);
+  background-color: color-mix(in srgb, var(--bs-danger) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--bs-danger) 28%, transparent);
+  color: var(--bs-danger);
+  font-size: 0.85rem;
+  line-height: 1.5;
+
+  fa-icon {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+}

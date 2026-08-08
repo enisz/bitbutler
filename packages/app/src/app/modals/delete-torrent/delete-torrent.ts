@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { faTrashCan, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faTrashCan, faTriangleExclamation, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
@@ -21,6 +22,7 @@ import { TorrentStoreService } from '../../services/torrent-store.service';
     TranslatePipe,
     FilesizePipe,
     BbBtnContent,
+    FontAwesomeModule,
   ],
   templateUrl: './delete-torrent.html',
   styleUrl: './delete-torrent.scss',
@@ -34,7 +36,7 @@ export class DeleteTorrent implements OnInit {
   private readonly selectionStore = inject(SelectionStoreService);
   private readonly torrentStore = inject(TorrentStoreService);
 
-  public icons = { faTrashCan, faXmark };
+  public icons = { faTrashCan, faXmark, faTriangleExclamation };
 
   readonly selected = computed<Torrent[]>(() => {
     const override = this.hashes();
