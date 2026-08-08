@@ -77,7 +77,7 @@
     </fieldset>
 
     @if (phase() === 'idle') {
-      <fieldset class="bb-fieldset pb-3">
+      <fieldset class="bb-fieldset">
         <legend>{{ 'components.modals.export-torrents.label.scope' | translate }}</legend>
 
         <div class="small text-body-secondary mb-1">
@@ -229,7 +229,7 @@
         <div class="small text-body-secondary">{{ tagScopeHint() | translate }}</div>
       </fieldset>
 
-      <fieldset class="bb-fieldset pb-3">
+      <fieldset class="bb-fieldset">
         <legend>{{ 'components.modals.export-torrents.label.save-location' | translate }}</legend>
         <div class="input-group mb-3">
           <div class="form-floating flex-grow-1">
@@ -272,7 +272,7 @@
       </fieldset>
     }
     @if (phase() !== 'idle') {
-      <fieldset class="bb-fieldset pb-3">
+      <fieldset class="bb-fieldset">
         <legend>{{ 'components.modals.export-torrents.label.progress' | translate }}</legend>
 
         @if (isRunning()) {

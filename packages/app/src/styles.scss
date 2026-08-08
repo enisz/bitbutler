@@ -988,7 +988,7 @@ ngb-typeahead-window.dropdown-menu {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--bs-secondary-color);
+    color: color-mix(in srgb, var(--bs-body-color) 65%, transparent);
     margin: 0 0 0.875rem;
     padding: 0 !important;
   }

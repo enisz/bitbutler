@@ -1,6 +1,6 @@
 :host ::ng-deep .ag-root-wrapper {
-  border-top-left-radius: var(--ag-border-radius, 8px) !important;
-  border-top-right-radius: var(--ag-border-radius, 8px) !important;
+  border-top-left-radius: var(--ag-wrapper-border-radius, 14px) !important;
+  border-top-right-radius: var(--ag-wrapper-border-radius, 14px) !important;
   border-bottom-left-radius: 0 !important;
   border-bottom-right-radius: 0 !important;
 }

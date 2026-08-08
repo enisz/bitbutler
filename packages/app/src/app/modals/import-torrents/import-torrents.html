@@ -339,7 +339,7 @@
           </fieldset>
         }
 
-        <fieldset class="bb-fieldset pb-3">
+        <fieldset class="bb-fieldset">
           <legend>{{ 'components.modals.import-torrents.label.after-import' | translate }}</legend>
           <div class="btn-group w-100 mb-2" role="group">
             <input
@@ -386,7 +386,7 @@
         </fieldset>
       }
       @if (isRunning() || isDone() || isError()) {
-        <fieldset class="bb-fieldset pb-3">
+        <fieldset class="bb-fieldset">
           <legend>{{ 'components.modals.import-torrents.label.progress' | translate }}</legend>
 
           @if (isRunning()) {
