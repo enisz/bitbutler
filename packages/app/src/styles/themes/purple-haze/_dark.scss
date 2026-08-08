@@ -2,7 +2,7 @@
 @use 'sass:string';
 
 $ph-dark-primary: #d1c4e9;
-$ph-dark-secondary: #b39ddb;
+$ph-dark-secondary: #9a7fd1;
 
 $ph-dark-success: #7ecf95;
 $ph-dark-danger: #e06c67;
@@ -38,7 +38,7 @@ $ph-dark-check-marker-colors: (
     --bs-primary-rgb: #{string.unquote('209, 196, 233')};
 
     --bs-secondary: #{$ph-dark-secondary};
-    --bs-secondary-rgb: #{string.unquote('179, 157, 219')};
+    --bs-secondary-rgb: #{string.unquote('154, 127, 209')};
 
     --bs-success: #{$ph-dark-success};
     --bs-success-rgb: #{string.unquote('126, 207, 149')};
