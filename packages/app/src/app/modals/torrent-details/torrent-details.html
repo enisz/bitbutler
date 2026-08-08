@@ -10,6 +10,13 @@
       {{ torrent()?.name }}
     </h5>
 
+    @if (torrent()) {
+      <div class="small text-body-secondary mt-1 d-flex align-items-center gap-2 bb-status-line">
+        <fa-icon [icon]="icon.faCircle" [class]="'bb-status-dot text-' + stateVariant()"></fa-icon>
+        <span>{{ 'torrent.state.' + torrent()!.state | translate }}</span>
+      </div>
+    }
+
     <div
       class="small text-body-secondary mt-1 bb-hash-clamp"
       [ngbTooltip]="torrent()?.hash"

@@ -405,6 +405,7 @@
           "show-file": "Show File",
           "open-destination": "Open Destination",
           "progress": "Progress",
+          "progress-complete": "{{ percent }}% complete",
           "state": "State",
           "resume": "Resume Download",
           "pause": "Pause Download",

@@ -1,26 +1,56 @@
+.bb-progress-summary {
+  margin-bottom: 1.25rem;
+
+  span.fw-semibold {
+    font-weight: 600;
+  }
+}
+
+span.section-header {
+  color: var(--bs-secondary-color);
+  font-size: 0.85rem;
+}
+
+span.section-value {
+  font-weight: 600;
+
+  small {
+    display: block;
+    font-weight: 400;
+    color: var(--bs-secondary-color);
+  }
+}
+
 div.bb-section {
-  padding: 10px;
+  display: grid;
+  grid-template-columns: max-content 1fr auto;
+  align-items: center;
+  column-gap: 16px;
+  padding: 10px 4px;
   position: relative;
-  border-radius: 4px;
+  border-bottom: 1px solid var(--bs-border-color);
   transition: background-color 0.15s ease-in-out;
+
+  &:last-child {
+    border-bottom: 0;
+  }
 
   &:hover,
   &:focus-within {
     background-color: var(--bb-hover-list-item-bg);
 
-    div.button-container {
+    > div.button-container {
       opacity: 1;
       visibility: visible;
     }
   }
 
-  div.button-container {
-    position: absolute;
-    right: 15px;
-    top: 0;
-    bottom: 0;
+  > div.button-container {
+    grid-column: 3;
+    grid-row: 1 / -1;
     display: flex;
     align-items: center;
+    flex-shrink: 0;
 
     opacity: 0;
     visibility: hidden;
@@ -30,23 +60,18 @@ div.bb-section {
       visibility 0.15s ease-in-out;
   }
 
-  span.section-header {
-    display: block;
-    text-transform: uppercase;
-    color: var(--bs-secondary);
-    font-size: 0.8rem;
+  > span.section-header {
+    grid-column: 1;
+    grid-row: 1 / -1;
+    flex-shrink: 0;
   }
 
-  span.section-value {
-    small {
-      display: block;
-    }
-
-    display: block;
+  > span.section-value {
+    grid-column: 2;
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    max-width: calc(100% - 100px);
   }
 }
 
@@ -57,10 +82,12 @@ app-bb-progress {
 }
 
 div.bb-section.bb-section--danger {
+  display: block;
   background-color: var(--bs-danger-bg-subtle);
 
   span.section-header,
   span.section-value {
+    display: block;
     color: var(--bs-danger-text-emphasis);
   }
 

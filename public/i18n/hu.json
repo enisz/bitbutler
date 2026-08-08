@@ -405,6 +405,7 @@
           "show-file": "Fájl megjelenítése",
           "open-destination": "Célmappa megnyitása",
           "progress": "Állapot",
+          "progress-complete": "{{ percent }}% befejezve",
           "state": "Állapot",
           "resume": "Folytatás",
           "pause": "Felfüggesztés",

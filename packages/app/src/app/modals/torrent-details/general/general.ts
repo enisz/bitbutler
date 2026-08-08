@@ -1,5 +1,5 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FontAwesomeModule, IconDefinition } from '@fortawesome/angular-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { NgbCollapse, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
@@ -59,6 +59,12 @@ export class General implements TorrentDetailTabComponent {
   public readonly localPath = this.dataService.localPath;
   public readonly errorLog = this.dataService.errorLog;
   public errorLogExpanded = signal(false);
+
+  public readonly progressPercent = computed(() => {
+    const p = this.torrent()?.data.progress ?? 0;
+    const normalized = p > 0 && p <= 1 ? p * 100 : p;
+    return Math.round(normalized);
+  });
 
   public toClipboard(fieldKey: string, value: string): void {
     const field = this.translateService.instant(

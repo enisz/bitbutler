@@ -17,6 +17,7 @@ import {
   faAsterisk,
   faBullhorn,
   faCheck,
+  faCircle,
   faFolder,
   faFolderOpen,
   faFolderTree,
@@ -36,6 +37,7 @@ import { NgbActiveModal, NgbDropdownModule, NgbTooltip } from '@ng-bootstrap/ng-
 import { TranslatePipe } from '@ngx-translate/core';
 import { filter } from 'rxjs';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
+import { variantForTorrentState } from '../../components/bb-progress/torrent-state-variant';
 import { BbSpinner } from '../../components/bb-spinner/bb-spinner';
 import { AutofocusDirective } from '../../directives/autofocus';
 import { TooltipOverflow } from '../../directives/tooltip-overflow';
@@ -89,6 +91,7 @@ export class TorrentDetails implements OnInit, GuardableModal {
     faAsterisk,
     faBullhorn,
     faCheck,
+    faCircle,
     faFolder,
     faFolderOpen,
     faFolderTree,
@@ -113,6 +116,11 @@ export class TorrentDetails implements OnInit, GuardableModal {
   public torrent = computed<Torrent | null>(() => {
     if (!this.hash()) return null;
     return this.torrentStoreService.torrentsMap().get(this.hash()!) as Torrent;
+  });
+
+  public readonly stateVariant = computed(() => {
+    const state = this.torrent()?.state;
+    return state ? variantForTorrentState(state) : 'secondary';
   });
 
   public tabs: Tab[] = [

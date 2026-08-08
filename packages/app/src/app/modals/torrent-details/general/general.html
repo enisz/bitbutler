@@ -7,6 +7,20 @@
   </div>
 } @else {
   <div class="container-fluid">
+    <div class="bb-progress-summary">
+      <div class="d-flex justify-content-between align-items-baseline">
+        <span>{{
+          'components.modals.torrent-details.general.progress-complete'
+            | translate: { percent: progressPercent() }
+        }}</span>
+        <span class="fw-semibold">{{ torrent()!.data.total_size | fileSize }}</span>
+      </div>
+      <app-bb-progress
+        [progress]="torrent()?.data?.progress"
+        [torrentState]="torrent()?.data?.state"
+      ></app-bb-progress>
+    </div>
+
     <fieldset class="bb-fieldset mt-0">
       <legend>{{ 'components.modals.torrent-details.general.labels.title' | translate }}</legend>
       <div class="row gy-2">
@@ -161,15 +175,6 @@
               [checked]="torrent()!.data.force_start"
             />
           </span>
-        </div>
-        <div class="col-12 bb-section">
-          <span class="section-header">{{
-            'components.modals.torrent-details.general.progress' | translate
-          }}</span>
-          <app-bb-progress
-            [progress]="torrent()?.data?.progress"
-            [torrentState]="torrent()?.data?.state"
-          ></app-bb-progress>
         </div>
         <div class="col-12 bb-section">
           <span class="section-header">{{
