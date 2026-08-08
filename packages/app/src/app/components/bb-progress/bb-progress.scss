@@ -5,7 +5,7 @@
 
 .bb-progress {
   height: 18px !important;
-  background-color: rgba(255, 255, 255, 0.08);
+  background-color: var(--bb-control-bg);
   border-radius: 12px !important;
   overflow: hidden;
   position: relative;
