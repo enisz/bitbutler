@@ -23,8 +23,8 @@ const GRID_PARAMS_SHARED = {
   inputFocusBorder: 'var(--bb-control-focus-border)',
   inputFocusShadow: '0 0 0 0.2rem var(--bb-control-focus-ring)',
   spacing: 6,
-  borderRadius: 6,
-  wrapperBorderRadius: 10,
+  borderRadius: 8,
+  wrapperBorderRadius: 14,
   pinnedRowBorder: '2px solid var(--bb-accent)',
   pinnedColumnBorder: '2px solid var(--bb-accent)',
 } as const;
