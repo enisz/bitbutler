@@ -8,13 +8,14 @@
   border-color: var(--bs-border-color);
 
   &.active {
-    background-color: var(--bb-active-list-item-bg);
-    color: var(--bs-body-color);
-    border-color: var(--bb-active-list-item-bg) !important;
+    background-color: var(--bb-accent);
+    color: var(--bb-primary-ink);
+    border-color: var(--bb-accent) !important;
+    font-weight: 600;
 
-    .bb-status-badge.bb-status-badge--neutral {
-      background-color: var(--bb-accent);
-      color: var(--bb-primary-ink);
+    .bb-status-badge {
+      background-color: color-mix(in srgb, var(--bb-primary-ink) 18%, transparent) !important;
+      color: var(--bb-primary-ink) !important;
     }
   }
 
