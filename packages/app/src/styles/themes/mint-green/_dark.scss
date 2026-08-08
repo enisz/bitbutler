@@ -2,7 +2,7 @@
 @use 'sass:string';
 
 $bb-dark-primary: #a3b18a;
-$bb-dark-secondary: #dad7cd;
+$bb-dark-secondary: #6fbf98;
 
 $bb-dark-success: #81c784;
 $bb-dark-danger: #e57373;
@@ -38,7 +38,7 @@ $bb-dark-check-marker-colors: (
     --bs-primary-rgb: #{string.unquote('163, 177, 138')};
 
     --bs-secondary: #{$bb-dark-secondary};
-    --bs-secondary-rgb: #{string.unquote('218, 215, 205')};
+    --bs-secondary-rgb: #{string.unquote('111, 191, 152')};
 
     --bs-success: #{$bb-dark-success};
     --bs-success-rgb: #{string.unquote('129, 199, 132')};
