@@ -12,12 +12,7 @@
   width: 100%;
   min-width: 0;
 
-  padding: 8px 10px;
-  border-radius: 14px;
-
-  background: color-mix(in srgb, var(--bs-dropdown-bg) 88%, transparent);
-  border: 1px solid var(--bs-border-color);
-  backdrop-filter: blur(8px);
+  padding: 12px 20px;
 }
 
 .bb-toolbar__left {
