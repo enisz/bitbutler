@@ -108,8 +108,8 @@ export class UiCommandHandlerService {
             const { Settings } = await import('../modals/settings/settings');
             if (this.isModalOpen(Settings)) break;
             const settingsModalRef = this.modalService.open(Settings, {
-              size: 'xl',
-              centered: false,
+              windowClass: 'bb-modal-lg',
+              centered: true,
               scrollable: true,
               beforeDismiss: () => settingsModalRef.componentInstance.canDeactivate(),
             });
@@ -141,9 +141,9 @@ export class UiCommandHandlerService {
             if (this.isModalOpen(TorrentDetails)) break;
 
             const torrentDetailsModalRef = this.modalService.open(TorrentDetails, {
-              size: 'xl',
+              windowClass: 'bb-modal-lg',
               scrollable: true,
-              centered: false,
+              centered: true,
               beforeDismiss: () =>
                 (torrentDetailsModalRef.componentInstance as GuardableModal).canDeactivate(),
             });
@@ -156,9 +156,9 @@ export class UiCommandHandlerService {
             const { AddTorrent } = await import('../modals/add-torrent/add-torrent');
             if (this.isModalOpen(AddTorrent)) break;
             const addTorrentModalRef = this.modalService.open(AddTorrent, {
-              size: 'xl',
+              windowClass: 'bb-modal-md',
               scrollable: true,
-              centered: false,
+              centered: true,
               keyboard: false,
             });
 
@@ -370,9 +370,9 @@ export class UiCommandHandlerService {
             if (this.isModalOpen(TorrentDetails)) break;
 
             const contentModalRef = this.modalService.open(TorrentDetails, {
-              size: 'xl',
+              windowClass: 'bb-modal-lg',
               scrollable: true,
-              centered: false,
+              centered: true,
               beforeDismiss: () =>
                 (contentModalRef.componentInstance as GuardableModal).canDeactivate(),
             });

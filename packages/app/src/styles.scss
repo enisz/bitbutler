@@ -640,6 +640,24 @@ ngb-typeahead-window.dropdown-menu {
   box-shadow: 0 1.25rem 2.5rem rgba(0, 0, 0, 0.55);
 }
 
+.modal-content {
+  border-radius: 18px;
+  border-color: var(--bs-border-color);
+  overflow: hidden;
+}
+
+.bb-modal-sm .modal-dialog {
+  max-width: 460px;
+}
+
+.bb-modal-md .modal-dialog {
+  max-width: 760px;
+}
+
+.bb-modal-lg .modal-dialog {
+  max-width: 920px;
+}
+
 .bb-toast-overlay-pane {
   z-index: 11000 !important;
 }
