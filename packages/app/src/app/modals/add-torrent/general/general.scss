@@ -1,0 +1,5 @@
+.btn-check:checked + .btn-outline-secondary {
+  background-color: var(--bb-accent);
+  border-color: var(--bb-accent);
+  color: var(--bb-primary-ink);
+}
