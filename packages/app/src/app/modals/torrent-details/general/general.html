@@ -213,7 +213,17 @@
         {{ 'components.modals.torrent-details.general.labels.options' | translate }}
       </div>
       <div class="bb-toggle-grid">
-        <div class="bb-toggle" [class.bb-toggle--on]="torrent()!.data.auto_tmm">
+        <div
+          class="bb-toggle"
+          [class.bb-toggle--on]="torrent()!.data.auto_tmm"
+          [attr.aria-label]="
+            ('components.modals.torrent-details.general.auto-tmm' | translate) +
+            ' - ' +
+            (torrent()!.data.auto_tmm
+              ? ('general.state.on' | translate)
+              : ('general.state.off' | translate))
+          "
+        >
           <fa-icon
             [icon]="torrent()!.data.auto_tmm ? icons['faCheck'] : icons['faXmark']"
             class="bb-toggle__icon"
@@ -232,7 +242,17 @@
           </span>
         </div>
 
-        <div class="bb-toggle" [class.bb-toggle--on]="torrent()!.data.force_start">
+        <div
+          class="bb-toggle"
+          [class.bb-toggle--on]="torrent()!.data.force_start"
+          [attr.aria-label]="
+            ('components.modals.torrent-details.general.force-start' | translate) +
+            ' - ' +
+            (torrent()!.data.force_start
+              ? ('general.state.on' | translate)
+              : ('general.state.off' | translate))
+          "
+        >
           <fa-icon
             [icon]="torrent()!.data.force_start ? icons['faCheck'] : icons['faXmark']"
             class="bb-toggle__icon"
@@ -252,7 +272,17 @@
           </span>
         </div>
 
-        <div class="bb-toggle" [class.bb-toggle--on]="torrent()!.data.seq_dl">
+        <div
+          class="bb-toggle"
+          [class.bb-toggle--on]="torrent()!.data.seq_dl"
+          [attr.aria-label]="
+            ('components.modals.torrent-details.general.sequential-download' | translate) +
+            ' - ' +
+            (torrent()!.data.seq_dl
+              ? ('general.state.on' | translate)
+              : ('general.state.off' | translate))
+          "
+        >
           <fa-icon
             [icon]="torrent()!.data.seq_dl ? icons['faCheck'] : icons['faXmark']"
             class="bb-toggle__icon"
@@ -273,7 +303,17 @@
           </span>
         </div>
 
-        <div class="bb-toggle" [class.bb-toggle--on]="torrent()!.data.f_l_piece_prio">
+        <div
+          class="bb-toggle"
+          [class.bb-toggle--on]="torrent()!.data.f_l_piece_prio"
+          [attr.aria-label]="
+            ('components.modals.torrent-details.general.first-last-piece-prio' | translate) +
+            ' - ' +
+            (torrent()!.data.f_l_piece_prio
+              ? ('general.state.on' | translate)
+              : ('general.state.off' | translate))
+          "
+        >
           <fa-icon
             [icon]="torrent()!.data.f_l_piece_prio ? icons['faCheck'] : icons['faXmark']"
             class="bb-toggle__icon"
@@ -294,7 +334,17 @@
           </span>
         </div>
 
-        <div class="bb-toggle" [class.bb-toggle--on]="torrent()!.data.super_seeding">
+        <div
+          class="bb-toggle"
+          [class.bb-toggle--on]="torrent()!.data.super_seeding"
+          [attr.aria-label]="
+            ('components.modals.torrent-details.general.super-seeding' | translate) +
+            ' - ' +
+            (torrent()!.data.super_seeding
+              ? ('general.state.on' | translate)
+              : ('general.state.off' | translate))
+          "
+        >
           <fa-icon
             [icon]="torrent()!.data.super_seeding ? icons['faCheck'] : icons['faXmark']"
             class="bb-toggle__icon"

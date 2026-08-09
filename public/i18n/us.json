@@ -2052,6 +2052,10 @@
       "no-limit": "No Limit",
       "custom": "Custom"
     },
+    "state": {
+      "on": "On",
+      "off": "Off"
+    },
     "toast": {
       "success": "Success",
       "error": "Error",

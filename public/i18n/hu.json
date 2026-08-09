@@ -2051,6 +2051,10 @@
       "no-limit": "Nincs korlát",
       "custom": "Egyéni"
     },
+    "state": {
+      "on": "Be",
+      "off": "Ki"
+    },
     "toast": {
       "success": "Siker",
       "error": "Hiba",
