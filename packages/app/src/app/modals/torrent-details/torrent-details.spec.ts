@@ -112,6 +112,12 @@ describe('TorrentDetails', () => {
     });
   });
 
+  describe('header', () => {
+    it('does not render a hash line', () => {
+      expect(fixture.nativeElement.querySelector('.bb-hash-clamp')).toBeNull();
+    });
+  });
+
   describe('ngOnInit', () => {
     it('initializes the data service with the hash and context inputs', async () => {
       fixture.componentRef.setInput('hash', 'abc123');

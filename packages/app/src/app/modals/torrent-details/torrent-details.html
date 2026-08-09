@@ -16,16 +16,6 @@
         <span>{{ 'torrent.state.' + torrent()!.state | translate }}</span>
       </div>
     }
-
-    <div
-      class="small text-body-secondary mt-1 bb-hash-clamp"
-      [ngbTooltip]="torrent()?.hash"
-      bbTooltipOverflow
-      placement="bottom"
-      tooltipClass="single-line-tooltip"
-    >
-      {{ 'components.modals.torrent-details.hash' | translate }}: <code>{{ torrent()?.hash }}</code>
-    </div>
   </div>
 
   <button

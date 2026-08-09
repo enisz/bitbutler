@@ -759,8 +759,7 @@
             "updating": "Frissítés alatt",
             "not-working": "Nem működik"
           }
-        },
-        "hash": "Hash"
+        }
       },
       "torrent-exists": {
         "title": "A torrent már létezik",

@@ -759,8 +759,7 @@
             "updating": "Updating",
             "not-working": "Not working"
           }
-        },
-        "hash": "Hash"
+        }
       },
       "torrent-exists": {
         "title": "Torrent Exists",
