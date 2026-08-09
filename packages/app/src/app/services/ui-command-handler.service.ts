@@ -109,7 +109,7 @@ export class UiCommandHandlerService {
             if (this.isModalOpen(Settings)) break;
             const settingsModalRef = this.modalService.open(Settings, {
               windowClass: 'bb-modal-lg',
-              centered: true,
+              centered: false,
               scrollable: true,
               beforeDismiss: () => settingsModalRef.componentInstance.canDeactivate(),
             });
@@ -143,7 +143,7 @@ export class UiCommandHandlerService {
             const torrentDetailsModalRef = this.modalService.open(TorrentDetails, {
               windowClass: 'bb-modal-lg',
               scrollable: true,
-              centered: true,
+              centered: false,
               beforeDismiss: () =>
                 (torrentDetailsModalRef.componentInstance as GuardableModal).canDeactivate(),
             });
@@ -158,7 +158,7 @@ export class UiCommandHandlerService {
             const addTorrentModalRef = this.modalService.open(AddTorrent, {
               windowClass: 'bb-modal-md',
               scrollable: true,
-              centered: true,
+              centered: false,
               keyboard: false,
             });
 
@@ -372,7 +372,7 @@ export class UiCommandHandlerService {
             const contentModalRef = this.modalService.open(TorrentDetails, {
               windowClass: 'bb-modal-lg',
               scrollable: true,
-              centered: true,
+              centered: false,
               beforeDismiss: () =>
                 (contentModalRef.componentInstance as GuardableModal).canDeactivate(),
             });
