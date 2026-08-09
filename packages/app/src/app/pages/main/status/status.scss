@@ -13,7 +13,10 @@
 }
 
 .filter-groups-wrapper {
-  padding: 0.5rem;
+  padding: 18px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
 }
 
 .list-group-item {

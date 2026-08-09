@@ -4,7 +4,7 @@
       {{ label() }} ({{ (items() ?? []).length }})
     </div>
     @if (action(); as act) {
-      <button type="button" class="btn btn-sm btn-link p-0" (click)="act.action()">
+      <button type="button" class="btn btn-sm btn-link p-0 bb-manage-link" (click)="act.action()">
         {{ act.label }}
       </button>
     }
@@ -31,7 +31,7 @@
       </div>
     </div>
   }
-  <div class="list-group list-group-flush">
+  <div class="list-group">
     @if (showAll()) {
       <button
         type="button"

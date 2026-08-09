@@ -28,7 +28,8 @@
 .bb-toolbar__divider {
   width: 1px;
   align-self: stretch;
-  background: color-mix(in srgb, var(--bs-body-color) 14%, transparent);
+  margin: 0 4px;
+  background: var(--bs-border-color);
 }
 
 .bb-toolbar__meta {
@@ -50,25 +51,25 @@
 .bb-tool {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
 
-  padding: 8px 10px;
-  border-radius: 12px;
+  padding: 8px 13px;
+  border-radius: var(--bs-border-radius);
 
-  border: 1px solid color-mix(in srgb, var(--bs-border-color) 85%, transparent);
+  border: 1px solid transparent;
   background: transparent;
-  color: var(--bs-body-color);
+  color: var(--bs-secondary-color);
 
   cursor: pointer;
 
   transition:
     background-color 120ms ease,
-    border-color 120ms ease,
+    color 120ms ease,
     transform 80ms ease;
 
   &:hover {
-    background: color-mix(in srgb, var(--bs-body-color) 7%, transparent);
-    border-color: color-mix(in srgb, var(--bs-border-color) 60%, var(--bs-secondary) 40%);
+    background: var(--bb-control-hover-bg);
+    color: var(--bs-body-color);
   }
 
   &:active {
@@ -107,9 +108,13 @@
 }
 
 .bb-tool--primary {
-  color: var(--bs-primary);
+  background: var(--bb-accent);
+  color: var(--bb-primary-ink);
+
   &:hover {
-    background: color-mix(in srgb, var(--bs-primary) 14%, transparent);
+    filter: brightness(1.06);
+    background: var(--bb-accent);
+    color: var(--bb-primary-ink);
   }
 }
 .bb-tool--secondary {

@@ -4,8 +4,38 @@
   display: block;
 }
 
+.small.text-uppercase {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  padding: 0 4px;
+}
+
+.bb-manage-link {
+  color: var(--bb-accent);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: none;
+  letter-spacing: normal;
+
+  &:hover {
+    color: var(--bb-accent);
+    text-decoration: underline;
+  }
+}
+
+.list-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  --bs-list-group-action-hover-bg: var(--bb-hover-list-item-bg);
+}
+
 .list-group-item-action {
-  border-color: var(--bs-border-color);
+  border: 1px solid transparent;
+  border-radius: var(--bs-border-radius);
+  background-color: transparent;
 
   &.active {
     background-color: var(--bb-accent);
@@ -57,20 +87,15 @@
   }
 }
 
-.list-group {
-  --bs-list-group-action-hover-bg: var(--bb-hover-list-item-bg);
-}
-
 .form-control {
-  background-color: transparent;
-  border: none;
-  border-bottom: 1px solid var(--bs-border-color);
-  border-radius: 0;
-  padding-left: 15px;
+  background-color: var(--bb-control-bg);
+  border: 1px solid var(--bb-control-border);
+  border-radius: var(--bs-border-radius);
+  padding: 7px 10px;
 
   &:focus {
-    background-color: transparent;
-    box-shadow: none;
-    border-bottom-color: var(--bb-accent);
+    background-color: var(--bb-control-bg);
+    box-shadow: 0 0 0 0.2rem var(--bb-control-focus-ring);
+    border-color: var(--bb-control-focus-border);
   }
 }
