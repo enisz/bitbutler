@@ -1,0 +1,13 @@
+<div
+  class="bb-progress-compact"
+  role="progressbar"
+  [attr.aria-valuenow]="progressPercent()"
+  aria-valuemin="0"
+  aria-valuemax="100"
+>
+  <div
+    class="bb-progress-compact__fill"
+    [class]="'bg-' + displayVariant()"
+    [style.width.%]="progressPercent()"
+  ></div>
+</div>
