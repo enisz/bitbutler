@@ -462,6 +462,7 @@
           "labels": {
             "title": "Torrent",
             "transfer": "Transfer",
+            "options": "Options",
             "information": "Information"
           },
           "popover": {

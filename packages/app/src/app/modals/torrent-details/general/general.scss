@@ -81,6 +81,71 @@ app-bb-progress {
   width: 100%;
 }
 
+.bb-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 24px;
+}
+
+.bb-stat-grid > .bb-section {
+  grid-template-columns: max-content 1fr;
+  padding: 8px 4px;
+
+  > .section-value {
+    text-align: right;
+  }
+}
+
+// The Transfer card always renders an even number of stat rows, so the
+// last two DOM children are always the final visual row.
+.bb-stat-grid > .bb-section:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+
+@media (max-width: 575.98px) {
+  .bb-stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bb-stat-grid > .bb-section:nth-last-child(-n + 2) {
+    border-bottom: 1px solid var(--bs-border-color);
+  }
+
+  .bb-stat-grid > .bb-section:last-child {
+    border-bottom: 0;
+  }
+}
+
+.bb-toggle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.bb-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bb-control-radius);
+  font-size: 0.85rem;
+  color: var(--bs-secondary-color);
+}
+
+.bb-toggle__icon {
+  flex-shrink: 0;
+  color: var(--bs-secondary-color);
+}
+
+.bb-toggle--on {
+  color: var(--bs-body-color);
+
+  .bb-toggle__icon {
+    color: var(--bs-success);
+  }
+}
+
 div.bb-section.bb-section--danger {
   display: block;
   background-color: var(--bs-danger-bg-subtle);

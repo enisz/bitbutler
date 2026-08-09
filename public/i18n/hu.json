@@ -462,6 +462,7 @@
           "labels": {
             "title": "Torrent",
             "transfer": "Átvitel",
+            "options": "Beállítások",
             "information": "Információ"
           },
           "popover": {
