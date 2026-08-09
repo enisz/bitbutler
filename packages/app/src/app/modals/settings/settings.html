@@ -1,28 +1,6 @@
 <div class="modal-header bb-modal-header">
   <div class="bb-modal-header__text">
     <h5 class="modal-title bb-title-clamp">{{ 'pages.settings.title' | translate }}</h5>
-
-    <ul class="nav nav-tabs bb-modal-tabs">
-      @for (tab of tabs; track tab.id) {
-        <li class="nav-item">
-          <button
-            class="nav-link"
-            [class.active]="activeTabId() === tab.id"
-            (click)="selectTab(tab.id)"
-          >
-            {{ tab.label | translate }}
-            @if (stateService.isDirtyMap()[tab.id]) {
-              <fa-icon
-                [icon]="icon.faAsterisk"
-                [size]="'2xs'"
-                class="ms-2"
-                [ngbTooltip]="'components.modals.guard.unsaved-indicator' | translate"
-              ></fa-icon>
-            }
-          </button>
-        </li>
-      }
-    </ul>
   </div>
 
   <button
@@ -32,6 +10,28 @@
     (click)="activeModal.dismiss()"
   ></button>
 </div>
+
+<ul class="nav nav-tabs bb-modal-tabs">
+  @for (tab of tabs; track tab.id) {
+    <li class="nav-item">
+      <button
+        class="nav-link"
+        [class.active]="activeTabId() === tab.id"
+        (click)="selectTab(tab.id)"
+      >
+        {{ tab.label | translate }}
+        @if (stateService.isDirtyMap()[tab.id]) {
+          <fa-icon
+            [icon]="icon.faAsterisk"
+            [size]="'2xs'"
+            class="ms-2"
+            [ngbTooltip]="'components.modals.guard.unsaved-indicator' | translate"
+          ></fa-icon>
+        }
+      </button>
+    </li>
+  }
+</ul>
 
 <div class="modal-body">
   @if (loadedComponents().size > 0) {

@@ -5,8 +5,10 @@
         <div class="col-12">{{ 'pages.settings.tab.general.description' | translate }}</div>
       </div>
 
-      <fieldset class="bb-fieldset" formGroupName="startup">
-        <legend>{{ 'pages.settings.tab.general.label.startup' | translate }}</legend>
+      <div class="bb-fieldset" formGroupName="startup">
+        <div class="bb-fieldset-title">
+          {{ 'pages.settings.tab.general.label.startup' | translate }}
+        </div>
 
         <div class="container">
           <div class="row mb-3">
@@ -75,9 +77,11 @@
             </div>
           }
         </div>
-      </fieldset>
-      <fieldset class="bb-fieldset" formGroupName="behavior">
-        <legend>{{ 'pages.settings.tab.general.label.behavior' | translate }}</legend>
+      </div>
+      <div class="bb-fieldset" formGroupName="behavior">
+        <div class="bb-fieldset-title">
+          {{ 'pages.settings.tab.general.label.behavior' | translate }}
+        </div>
 
         <div class="container">
           <div class="row mb-3">
@@ -201,9 +205,11 @@
             </div>
           </div>
         </div>
-      </fieldset>
-      <fieldset class="bb-fieldset" formGroupName="language">
-        <legend>{{ 'pages.settings.tab.general.label.language' | translate }}</legend>
+      </div>
+      <div class="bb-fieldset" formGroupName="language">
+        <div class="bb-fieldset-title">
+          {{ 'pages.settings.tab.general.label.language' | translate }}
+        </div>
 
         <div class="container">
           <div class="row mb-3">
@@ -244,10 +250,12 @@
             </div>
           </div>
         </div>
-      </fieldset>
+      </div>
 
-      <fieldset class="bb-fieldset" formGroupName="dateFormat">
-        <legend>{{ 'pages.settings.tab.general.label.date-format' | translate }}</legend>
+      <div class="bb-fieldset" formGroupName="dateFormat">
+        <div class="bb-fieldset-title">
+          {{ 'pages.settings.tab.general.label.date-format' | translate }}
+        </div>
 
         <div class="container">
           <div class="row mb-3">
@@ -418,10 +426,12 @@
             </div>
           }
         </div>
-      </fieldset>
+      </div>
 
-      <fieldset class="bb-fieldset" formGroupName="appearance">
-        <legend>{{ 'pages.settings.tab.general.label.appearance' | translate }}</legend>
+      <div class="bb-fieldset" formGroupName="appearance">
+        <div class="bb-fieldset-title">
+          {{ 'pages.settings.tab.general.label.appearance' | translate }}
+        </div>
 
         <div class="container">
           <div class="row mt-2 mb-3">
@@ -524,10 +534,12 @@
             </div>
           </div>
         </div>
-      </fieldset>
+      </div>
 
-      <fieldset class="bb-fieldset" formGroupName="savePath">
-        <legend>{{ 'pages.settings.tab.general.label.save-path-input' | translate }}</legend>
+      <div class="bb-fieldset" formGroupName="savePath">
+        <div class="bb-fieldset-title">
+          {{ 'pages.settings.tab.general.label.save-path-input' | translate }}
+        </div>
 
         <div class="container">
           <div class="row mb-3">
@@ -581,7 +593,7 @@
             </div>
           </div>
         </div>
-      </fieldset>
+      </div>
     </div>
   </form>
 } @else {

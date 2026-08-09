@@ -7,8 +7,10 @@
         </div>
       </div>
 
-      <fieldset class="bb-fieldset" formGroupName="polling">
-        <legend>{{ 'pages.settings.tab.server.label.polling' | translate }}</legend>
+      <div class="bb-fieldset" formGroupName="polling">
+        <div class="bb-fieldset-title">
+          {{ 'pages.settings.tab.server.label.polling' | translate }}
+        </div>
 
         <p>
           {{ 'pages.settings.tab.server.server-settings-form.polling.title' | translate }}
@@ -133,10 +135,12 @@
             </div>
           </div>
         </div>
-      </fieldset>
+      </div>
 
-      <fieldset class="bb-fieldset">
-        <legend>{{ 'pages.settings.tab.server.label.path-mappings' | translate }}</legend>
+      <div class="bb-fieldset">
+        <div class="bb-fieldset-title">
+          {{ 'pages.settings.tab.server.label.path-mappings' | translate }}
+        </div>
 
         <p>
           {{ 'pages.settings.tab.server.server-settings-form.path-mapping.title' | translate }}
@@ -246,7 +250,7 @@
             </div>
           }
         </div>
-      </fieldset>
+      </div>
     </div>
   </form>
 } @else {

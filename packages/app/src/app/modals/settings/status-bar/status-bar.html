@@ -19,8 +19,8 @@
       </div>
     </div>
     <div cdkDropListGroup class="status-bar-config">
-      <fieldset class="bb-fieldset mt-2 mb-1">
-        <legend>
+      <div class="bb-fieldset mt-2 mb-1">
+        <div class="bb-fieldset-title">
           {{ 'pages.settings.tab.status-bar.label.widget-pool' | translate }}
           <bb-popover
             [subject]="'pages.settings.tab.status-bar.label.widget-pool' | translate"
@@ -28,7 +28,7 @@
               'pages.settings.tab.status-bar.popover.widget-pool.description' | translate
             "
           ></bb-popover>
-        </legend>
+        </div>
         <div
           cdkDropList
           #availableList="cdkDropList"
@@ -41,16 +41,16 @@
             <span class="badge status-pill" cdkDrag>{{ widget.label }}</span>
           }
         </div>
-      </fieldset>
+      </div>
 
-      <fieldset class="bb-fieldset mt-0">
-        <legend>
+      <div class="bb-fieldset mt-0">
+        <div class="bb-fieldset-title">
           {{ 'pages.settings.tab.status-bar.label.widgets' | translate }}
           <bb-popover
             [subject]="'pages.settings.tab.status-bar.label.widgets' | translate"
             [description]="'pages.settings.tab.status-bar.popover.widgets.description' | translate"
           ></bb-popover>
-        </legend>
+        </div>
         <div class="mb-3">
           <p class="mb-1">{{ 'pages.settings.tab.status-bar.label.left' | translate }}</p>
           <div
@@ -88,7 +88,7 @@
             }
           </div>
         </div>
-      </fieldset>
+      </div>
     </div>
   </div>
 } @else {

@@ -2,17 +2,21 @@
   <div class="container px-0">
     <div class="row">
       <div class="col-12 mb-3">
-        <fieldset class="bb-fieldset my-0">
-          <legend>{{ 'components.add-torrent.label.transfer-rate-limits' | translate }}</legend>
+        <div class="bb-fieldset my-0">
+          <div class="bb-fieldset-title">
+            {{ 'components.add-torrent.label.transfer-rate-limits' | translate }}
+          </div>
           <app-transfer-limit formControlName="transferRateLimits"></app-transfer-limit>
-        </fieldset>
+        </div>
       </div>
 
       <div class="col-12">
-        <fieldset class="bb-fieldset my-0">
-          <legend>{{ 'components.add-torrent.label.share-limits' | translate }}</legend>
+        <div class="bb-fieldset my-0">
+          <div class="bb-fieldset-title">
+            {{ 'components.add-torrent.label.share-limits' | translate }}
+          </div>
           <app-share-limit formControlName="shareLimits"></app-share-limit>
-        </fieldset>
+        </div>
       </div>
     </div>
   </div>

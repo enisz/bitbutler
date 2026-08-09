@@ -661,15 +661,24 @@ ngb-typeahead-window.dropdown-menu {
   z-index: 11000 !important;
 }
 
+.modal-header {
+  padding: 1.5rem 1.75rem 0;
+  border-bottom: 0;
+}
+
+.modal-body {
+  padding: 1.5rem 1.75rem;
+}
+
+.modal-footer {
+  padding: 1.125rem 1.75rem;
+}
+
 .bb-modal-header {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: start;
   column-gap: 0.75rem;
-
-  &:has(.bb-modal-tabs) {
-    padding-bottom: 0;
-  }
 }
 
 .bb-modal-header__text {
@@ -696,10 +705,9 @@ ngb-typeahead-window.dropdown-menu {
 }
 
 .bb-modal-tabs {
-  margin-top: 18px;
-  margin-bottom: 0;
+  margin: 0;
+  padding: 1.25rem 1.75rem 0;
   font-size: 0.85rem;
-  border-bottom: 0;
   gap: 4px;
 
   .nav-link {
@@ -1018,26 +1026,25 @@ ngb-typeahead-window.dropdown-menu {
 }
 
 .bb-fieldset {
+  display: block;
   border: 1px solid var(--bs-border-color);
   border-radius: var(--bb-control-radius);
   margin-top: 1.25rem;
   margin-bottom: 1.25rem;
   padding: 1.125rem 1.25rem;
-  position: relative;
 
-  & legend {
-    float: none;
-    width: auto;
-    position: relative;
-    top: 0.4rem;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: color-mix(in srgb, var(--bs-body-color) 65%, transparent);
-    margin: 0 0 0.875rem;
-    padding: 0 !important;
+  &:last-child {
+    margin-bottom: 0;
   }
+}
+
+.bb-fieldset-title {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: color-mix(in srgb, var(--bs-body-color) 65%, transparent);
+  margin: 0 0 0.875rem;
 }
 
 .tooltip {

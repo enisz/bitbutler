@@ -9,8 +9,10 @@
     </div>
   </div>
   <form [formGroup]="torrentListGridForm">
-    <fieldset class="bb-fieldset mt-2">
-      <legend>{{ 'pages.settings.tab.torrent-list-grid.label.grid-options' | translate }}</legend>
+    <div class="bb-fieldset mt-2">
+      <div class="bb-fieldset-title">
+        {{ 'pages.settings.tab.torrent-list-grid.label.grid-options' | translate }}
+      </div>
       <div class="container-fluid">
         <div class="row mb-3">
           <div class="col-lg-6 col-12">
@@ -170,9 +172,11 @@
           </div>
         </div>
       </div>
-    </fieldset>
-    <fieldset class="bb-fieldset">
-      <legend>{{ 'pages.settings.tab.torrent-list-grid.label.columns' | translate }}</legend>
+    </div>
+    <div class="bb-fieldset">
+      <div class="bb-fieldset-title">
+        {{ 'pages.settings.tab.torrent-list-grid.label.columns' | translate }}
+      </div>
 
       <div class="container-fluid mb-3">
         <div class="row">
@@ -362,7 +366,7 @@
           </div>
         </div>
       </div>
-    </fieldset>
+    </div>
   </form>
 } @else {
   <app-bb-spinner></app-bb-spinner>

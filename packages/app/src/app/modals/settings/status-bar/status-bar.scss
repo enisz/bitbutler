@@ -110,7 +110,7 @@ app-status-bar-widget-preview.cdk-drag-preview {
     border-color: var(--bs-secondary);
     background-color: var(--bb-hover-list-item-bg);
 
-    legend {
+    .bb-fieldset-title {
       color: var(--bs-secondary);
       transition: color 0.2s ease;
     }

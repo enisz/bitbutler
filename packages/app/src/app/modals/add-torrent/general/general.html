@@ -1,7 +1,7 @@
 <div [formGroup]="form()">
   <div class="container-fluid px-0">
-    <fieldset class="bb-fieldset mt-0">
-      <legend>{{ 'components.add-torrent.label.input' | translate }}</legend>
+    <div class="bb-fieldset mt-0">
+      <div class="bb-fieldset-title">{{ 'components.add-torrent.label.input' | translate }}</div>
 
       <div class="row">
         <div class="col-11 mb-3">
@@ -163,10 +163,10 @@
           </div>
         }
       </div>
-    </fieldset>
+    </div>
 
-    <fieldset class="bb-fieldset mb-0">
-      <legend>{{ 'components.add-torrent.label.torrent' | translate }}</legend>
+    <div class="bb-fieldset mb-0">
+      <div class="bb-fieldset-title">{{ 'components.add-torrent.label.torrent' | translate }}</div>
 
       <div class="row">
         @if (inputMode() !== 'folder') {
@@ -322,7 +322,7 @@
           </div>
         </div>
       </div>
-    </fieldset>
+    </div>
   </div>
 </div>
 

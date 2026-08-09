@@ -205,14 +205,14 @@ describe('AddTorrentGeneral', () => {
   });
 
   describe('fieldset layout', () => {
-    it('should render the Input and Torrent fieldsets with their legends', () => {
-      const legends: NodeListOf<HTMLElement> = fixture.nativeElement.querySelectorAll(
-        'fieldset.bb-fieldset > legend',
+    it('should render the Input and Torrent fieldsets with their titles', () => {
+      const titles: NodeListOf<HTMLElement> = fixture.nativeElement.querySelectorAll(
+        'div.bb-fieldset > .bb-fieldset-title',
       );
 
-      expect(legends.length).toBe(2);
-      expect(legends[0].textContent).toContain('components.add-torrent.label.input');
-      expect(legends[1].textContent).toContain('components.add-torrent.label.torrent');
+      expect(titles.length).toBe(2);
+      expect(titles[0].textContent).toContain('components.add-torrent.label.input');
+      expect(titles[1].textContent).toContain('components.add-torrent.label.torrent');
     });
 
     it('should make the input-mode toggle full width and show a popover beside it', () => {

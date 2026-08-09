@@ -7,46 +7,46 @@
         ({{ currentDraftNumber() }} / {{ initialQueueCount() }})
       </div>
     }
-
-    <ul class="nav nav-tabs bb-modal-tabs">
-      @for (tab of tabs; track tab.id) {
-        <li class="nav-item">
-          <button
-            class="nav-link"
-            [class.active]="activeTabId() === tab.id"
-            [class.disabled]="tab.id === 'files' && filesTabDisabled()"
-            (click)="!(tab.id === 'files' && filesTabDisabled()) && selectTab(tab.id)"
-          >
-            {{ tab.label | translate }}
-            @if (tab.id === 'files' && filesTabDisabled()) {
-              <fa-icon
-                [icon]="icons.faCircleInfo"
-                class="ms-2 text-secondary"
-                [ngbTooltip]="filesTabDisabledReason()"
-                tooltipClass="single-line-tooltip"
-                triggers="mouseenter:mouseleave"
-                container="body"
-                placement="top"
-              ></fa-icon>
-            } @else if (tabIssues()[tab.id]) {
-              <fa-icon
-                [icon]="icons.faTriangleExclamation"
-                class="ms-2 text-warning"
-                [ngbTooltip]="tabIssues()[tab.id]"
-                tooltipClass="single-line-tooltip warning"
-                triggers="mouseenter:mouseleave"
-                container="body"
-                placement="top"
-              ></fa-icon>
-            }
-          </button>
-        </li>
-      }
-    </ul>
   </div>
 
   <button type="button" class="btn-close" aria-label="Close" (click)="handleCancel()"></button>
 </div>
+
+<ul class="nav nav-tabs bb-modal-tabs">
+  @for (tab of tabs; track tab.id) {
+    <li class="nav-item">
+      <button
+        class="nav-link"
+        [class.active]="activeTabId() === tab.id"
+        [class.disabled]="tab.id === 'files' && filesTabDisabled()"
+        (click)="!(tab.id === 'files' && filesTabDisabled()) && selectTab(tab.id)"
+      >
+        {{ tab.label | translate }}
+        @if (tab.id === 'files' && filesTabDisabled()) {
+          <fa-icon
+            [icon]="icons.faCircleInfo"
+            class="ms-2 text-secondary"
+            [ngbTooltip]="filesTabDisabledReason()"
+            tooltipClass="single-line-tooltip"
+            triggers="mouseenter:mouseleave"
+            container="body"
+            placement="top"
+          ></fa-icon>
+        } @else if (tabIssues()[tab.id]) {
+          <fa-icon
+            [icon]="icons.faTriangleExclamation"
+            class="ms-2 text-warning"
+            [ngbTooltip]="tabIssues()[tab.id]"
+            tooltipClass="single-line-tooltip warning"
+            triggers="mouseenter:mouseleave"
+            container="body"
+            placement="top"
+          ></fa-icon>
+        }
+      </button>
+    </li>
+  }
+</ul>
 
 <div class="modal-body">
   <form [formGroup]="addForm" (submit)="handleSubmit($event)">

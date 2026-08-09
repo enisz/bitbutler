@@ -26,28 +26,6 @@
     >
       {{ 'components.modals.torrent-details.hash' | translate }}: <code>{{ torrent()?.hash }}</code>
     </div>
-
-    <ul class="nav nav-tabs bb-modal-tabs">
-      @for (tab of tabs; track tab.id) {
-        <li class="nav-item">
-          <button
-            class="nav-link"
-            [class.active]="activeTabId() === tab.id"
-            (click)="selectTab(tab.id)"
-          >
-            {{ tab.label }}
-            @if (tab.id === 'content' && guardService.isDirty()) {
-              <fa-icon
-                [icon]="icon.faAsterisk"
-                [size]="'2xs'"
-                class="ms-2"
-                [ngbTooltip]="'components.modals.guard.unsaved-indicator' | translate"
-              ></fa-icon>
-            }
-          </button>
-        </li>
-      }
-    </ul>
   </div>
 
   <button
@@ -57,6 +35,28 @@
     (click)="activeModal.dismiss()"
   ></button>
 </div>
+
+<ul class="nav nav-tabs bb-modal-tabs">
+  @for (tab of tabs; track tab.id) {
+    <li class="nav-item">
+      <button
+        class="nav-link"
+        [class.active]="activeTabId() === tab.id"
+        (click)="selectTab(tab.id)"
+      >
+        {{ tab.label }}
+        @if (tab.id === 'content' && guardService.isDirty()) {
+          <fa-icon
+            [icon]="icon.faAsterisk"
+            [size]="'2xs'"
+            class="ms-2"
+            [ngbTooltip]="'components.modals.guard.unsaved-indicator' | translate"
+          ></fa-icon>
+        }
+      </button>
+    </li>
+  }
+</ul>
 
 <div class="modal-body">
   @if (loadedComponents().size > 0) {

@@ -21,8 +21,10 @@
       ></app-bb-progress>
     </div>
 
-    <fieldset class="bb-fieldset mt-0">
-      <legend>{{ 'components.modals.torrent-details.general.labels.title' | translate }}</legend>
+    <div class="bb-fieldset mt-0">
+      <div class="bb-fieldset-title">
+        {{ 'components.modals.torrent-details.general.labels.title' | translate }}
+      </div>
       <div class="row gy-2">
         <div class="col-12 bb-section">
           <span class="section-header">{{
@@ -261,10 +263,12 @@
           </div>
         </div>
       </div>
-    </fieldset>
+    </div>
 
-    <fieldset class="bb-fieldset" style="position: relative">
-      <legend>{{ 'components.modals.torrent-details.general.labels.transfer' | translate }}</legend>
+    <div class="bb-fieldset">
+      <div class="bb-fieldset-title">
+        {{ 'components.modals.torrent-details.general.labels.transfer' | translate }}
+      </div>
 
       <div class="row gy-2">
         <div class="col-12 col-lg-6 col-xl-4 bb-section">
@@ -760,12 +764,12 @@
           </span>
         </div>
       </div>
-    </fieldset>
+    </div>
 
-    <fieldset class="bb-fieldset">
-      <legend>
+    <div class="bb-fieldset">
+      <div class="bb-fieldset-title">
         {{ 'components.modals.torrent-details.general.labels.information' | translate }}
-      </legend>
+      </div>
       <div class="row gy-2">
         <div class="col-12 col-lg-6 col-xl-4 bb-section">
           <span class="section-header">
@@ -1044,6 +1048,6 @@
           </div>
         </div>
       </div>
-    </fieldset>
+    </div>
   </div>
 }
