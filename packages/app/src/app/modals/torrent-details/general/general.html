@@ -15,10 +15,10 @@
         }}</span>
         <span class="fw-semibold">{{ torrent()!.data.total_size | fileSize }}</span>
       </div>
-      <app-bb-progress
+      <app-bb-progress-compact
         [progress]="torrent()?.data?.progress"
         [torrentState]="torrent()?.data?.state"
-      ></app-bb-progress>
+      ></app-bb-progress-compact>
     </div>
 
     <div class="bb-fieldset mt-0">
@@ -133,63 +133,6 @@
             </div>
           </div>
         }
-        <div class="col-12 col-lg-6 bb-section">
-          <span class="section-header">
-            {{ 'components.modals.torrent-details.general.auto-tmm' | translate }}
-            <bb-popover
-              placement="top"
-              [subject]="
-                'components.modals.torrent-details.general.popover.auto-tmm.title' | translate
-              "
-              [description]="
-                'components.modals.torrent-details.general.popover.auto-tmm.description' | translate
-              "
-            ></bb-popover>
-          </span>
-          <span class="section-value">
-            <input
-              type="checkbox"
-              class="form-check-input"
-              disabled
-              [checked]="torrent()!.data.auto_tmm"
-            />
-          </span>
-        </div>
-        <div class="col-12 col-lg-6 bb-section">
-          <span class="section-header">
-            {{ 'components.modals.torrent-details.general.force-start' | translate }}
-            <bb-popover
-              placement="top"
-              [subject]="
-                'components.modals.torrent-details.general.popover.force-start.title' | translate
-              "
-              [description]="
-                'components.modals.torrent-details.general.popover.force-start.description'
-                  | translate
-              "
-            ></bb-popover>
-          </span>
-          <span class="section-value">
-            <input
-              type="checkbox"
-              class="form-check-input"
-              disabled
-              [checked]="torrent()!.data.force_start"
-            />
-          </span>
-        </div>
-        <div class="col-12 bb-section">
-          <span class="section-header">{{
-            'components.modals.torrent-details.general.state' | translate
-          }}</span>
-          <span
-            class="section-value"
-            [ngbTooltip]="'torrent.state.' + torrent()!.data.state | translate"
-            bbTooltipOverflow
-            placement="bottom"
-            >{{ 'torrent.state.' + torrent()!.data.state | translate }}
-          </span>
-        </div>
         @if (errorLog(); as entry) {
           <div class="col-12 bb-section bb-section--danger">
             <button type="button" class="error-toggle" (click)="toggleErrorLog()">
@@ -267,11 +210,119 @@
 
     <div class="bb-fieldset">
       <div class="bb-fieldset-title">
+        {{ 'components.modals.torrent-details.general.labels.options' | translate }}
+      </div>
+      <div class="bb-toggle-grid">
+        <div class="bb-toggle" [class.bb-toggle--on]="torrent()!.data.auto_tmm">
+          <fa-icon
+            [icon]="torrent()!.data.auto_tmm ? icons['faCheck'] : icons['faXmark']"
+            class="bb-toggle__icon"
+          ></fa-icon>
+          <span class="bb-toggle__label">
+            {{ 'components.modals.torrent-details.general.auto-tmm' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.auto-tmm.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.auto-tmm.description' | translate
+              "
+            ></bb-popover>
+          </span>
+        </div>
+
+        <div class="bb-toggle" [class.bb-toggle--on]="torrent()!.data.force_start">
+          <fa-icon
+            [icon]="torrent()!.data.force_start ? icons['faCheck'] : icons['faXmark']"
+            class="bb-toggle__icon"
+          ></fa-icon>
+          <span class="bb-toggle__label">
+            {{ 'components.modals.torrent-details.general.force-start' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.force-start.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.force-start.description'
+                  | translate
+              "
+            ></bb-popover>
+          </span>
+        </div>
+
+        <div class="bb-toggle" [class.bb-toggle--on]="torrent()!.data.seq_dl">
+          <fa-icon
+            [icon]="torrent()!.data.seq_dl ? icons['faCheck'] : icons['faXmark']"
+            class="bb-toggle__icon"
+          ></fa-icon>
+          <span class="bb-toggle__label">
+            {{ 'components.modals.torrent-details.general.sequential-download' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.sequential-download.title'
+                  | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.sequential-download.description'
+                  | translate
+              "
+            ></bb-popover>
+          </span>
+        </div>
+
+        <div class="bb-toggle" [class.bb-toggle--on]="torrent()!.data.f_l_piece_prio">
+          <fa-icon
+            [icon]="torrent()!.data.f_l_piece_prio ? icons['faCheck'] : icons['faXmark']"
+            class="bb-toggle__icon"
+          ></fa-icon>
+          <span class="bb-toggle__label">
+            {{ 'components.modals.torrent-details.general.first-last-piece-prio' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.first-last-piece-prio.title'
+                  | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.first-last-piece-prio.description'
+                  | translate
+              "
+            ></bb-popover>
+          </span>
+        </div>
+
+        <div class="bb-toggle" [class.bb-toggle--on]="torrent()!.data.super_seeding">
+          <fa-icon
+            [icon]="torrent()!.data.super_seeding ? icons['faCheck'] : icons['faXmark']"
+            class="bb-toggle__icon"
+          ></fa-icon>
+          <span class="bb-toggle__label">
+            {{ 'components.modals.torrent-details.general.super-seeding' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.super-seeding.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.super-seeding.description'
+                  | translate
+              "
+            ></bb-popover>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="bb-fieldset">
+      <div class="bb-fieldset-title">
         {{ 'components.modals.torrent-details.general.labels.transfer' | translate }}
       </div>
 
-      <div class="row gy-2">
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+      <div class="bb-stat-grid">
+        <div class="bb-section">
           <span class="section-header">
             {{ 'components.modals.torrent-details.general.time-active' | translate }}
             <bb-popover
@@ -295,7 +346,7 @@
             >{{ (torrent()!.data.time_active * 1000 | humanizeDuration: 'long' : 2) || '-' }}</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+        <div class="bb-section">
           <span class="section-header">
             {{ 'components.modals.torrent-details.general.eta' | translate }}
             <bb-popover
@@ -323,7 +374,7 @@
             }}
           </span>
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+        <div class="bb-section">
           <span class="section-header">
             {{ 'components.modals.torrent-details.general.connections' | translate }}
             <bb-popover
@@ -344,7 +395,7 @@
             {{ 'components.modals.torrent-details.general.max' | translate }})</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+        <div class="bb-section">
           <span class="section-header">
             {{ 'components.modals.torrent-details.general.downloaded' | translate }}
             <bb-popover
@@ -370,7 +421,7 @@
             }}</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+        <div class="bb-section">
           <span class="section-header">
             {{ 'components.modals.torrent-details.general.uploaded' | translate }}
             <bb-popover
@@ -393,7 +444,7 @@
             >{{ torrent()!.data.uploaded > 0 ? (torrent()!.data.uploaded | fileSize) : '-' }}</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+        <div class="bb-section">
           <span class="section-header">
             {{ 'components.modals.torrent-details.general.seeds' | translate }}
             <bb-popover
@@ -411,7 +462,7 @@
             {{ 'components.modals.torrent-details.general.total' | translate }})</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+        <div class="bb-section">
           <span class="section-header">
             {{ 'components.modals.torrent-details.general.download-speed' | translate }}
             <bb-popover
@@ -433,7 +484,7 @@
             >{{ (torrent()!.data.dlspeed | fileSizePerSec) || '-' }}</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+        <div class="bb-section">
           <span class="section-header">
             {{ 'components.modals.torrent-details.general.upload-speed' | translate }}
             <bb-popover
@@ -455,7 +506,7 @@
             >{{ (torrent()!.data.upspeed | fileSizePerSec) || '-' }}</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+        <div class="bb-section">
           <span class="section-header">
             {{ 'components.modals.torrent-details.general.peers' | translate }}
             <bb-popover
@@ -473,7 +524,7 @@
             {{ 'components.modals.torrent-details.general.total' | translate }})</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+        <div class="bb-section">
           <span class="section-header">
             {{ 'components.modals.torrent-details.general.download-limit' | translate }}
             <bb-popover
@@ -495,7 +546,7 @@
             >{{ torrent()!.data.dl_limit | speedLimit }}</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+        <div class="bb-section">
           <span class="section-header">
             {{ 'components.modals.torrent-details.general.upload-limit' | translate }}
             <bb-popover
@@ -517,7 +568,7 @@
             >{{ torrent()!.data.up_limit | speedLimit }}</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+        <div class="bb-section">
           <span class="section-header">
             {{ 'components.modals.torrent-details.general.wasted' | translate }}
             <bb-popover
@@ -546,7 +597,7 @@
             }}</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+        <div class="bb-section">
           <span class="section-header">
             {{ 'components.modals.torrent-details.general.share-ratio' | translate }}
             <bb-popover
@@ -569,7 +620,7 @@
             {{ torrent()!.data.ratio | ratio }}
           </span>
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+        <div class="bb-section">
           <span class="section-header">
             {{ 'components.modals.torrent-details.general.reannounce-in' | translate }}
             <bb-popover
@@ -599,7 +650,7 @@
             }}</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+        <div class="bb-section">
           <span class="section-header">
             {{ 'components.modals.torrent-details.general.last-seen-complete' | translate }}
             <bb-popover
@@ -622,7 +673,7 @@
             >{{ torrent()!.data.last_activity | localTimestamp }}</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+        <div class="bb-section">
           <span class="section-header">
             {{ 'components.modals.torrent-details.general.ratio-limit' | translate }}
             <bb-popover
@@ -644,7 +695,7 @@
             >{{ torrent()!.data.ratio_limit | ratioLimit }}</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+        <div class="bb-section">
           <span class="section-header">
             {{ 'components.modals.torrent-details.general.seeding-time-limit' | translate }}
             <bb-popover
@@ -667,7 +718,7 @@
             >{{ (torrent()!.data.seeding_time_limit | timeLimit) || '-' }}</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+        <div class="bb-section">
           <span class="section-header">
             {{
               'components.modals.torrent-details.general.inactive-seeding-time-limit' | translate
@@ -691,77 +742,6 @@
             placement="bottom"
             >{{ (torrent()!.data.inactive_seeding_time_limit | timeLimit) || '-' }}</span
           >
-        </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
-          <span class="section-header">
-            {{ 'components.modals.torrent-details.general.sequential-download' | translate }}
-            <bb-popover
-              placement="top"
-              [subject]="
-                'components.modals.torrent-details.general.popover.sequential-download.title'
-                  | translate
-              "
-              [description]="
-                'components.modals.torrent-details.general.popover.sequential-download.description'
-                  | translate
-              "
-            ></bb-popover>
-          </span>
-          <span class="section-value">
-            <input
-              type="checkbox"
-              class="form-check-input"
-              disabled
-              [checked]="torrent()!.data.seq_dl"
-            />
-          </span>
-        </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
-          <span class="section-header">
-            {{ 'components.modals.torrent-details.general.first-last-piece-prio' | translate }}
-            <bb-popover
-              placement="top"
-              [subject]="
-                'components.modals.torrent-details.general.popover.first-last-piece-prio.title'
-                  | translate
-              "
-              [description]="
-                'components.modals.torrent-details.general.popover.first-last-piece-prio.description'
-                  | translate
-              "
-            ></bb-popover>
-          </span>
-          <span class="section-value">
-            <input
-              type="checkbox"
-              class="form-check-input"
-              disabled
-              [checked]="torrent()!.data.f_l_piece_prio"
-            />
-          </span>
-        </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
-          <span class="section-header">
-            {{ 'components.modals.torrent-details.general.super-seeding' | translate }}
-            <bb-popover
-              placement="top"
-              [subject]="
-                'components.modals.torrent-details.general.popover.super-seeding.title' | translate
-              "
-              [description]="
-                'components.modals.torrent-details.general.popover.super-seeding.description'
-                  | translate
-              "
-            ></bb-popover>
-          </span>
-          <span class="section-value">
-            <input
-              type="checkbox"
-              class="form-check-input"
-              disabled
-              [checked]="torrent()!.data.super_seeding"
-            />
-          </span>
         </div>
       </div>
     </div>

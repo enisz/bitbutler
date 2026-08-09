@@ -247,6 +247,53 @@ describe('General', () => {
     });
   });
 
+  describe('General tab restructure', () => {
+    beforeEach(() => {
+      mockDataService.torrent.set({
+        data: makeTorrent({
+          state: 'downloading',
+          auto_tmm: true,
+          force_start: false,
+          seq_dl: true,
+          f_l_piece_prio: false,
+          super_seeding: false,
+        }),
+        properties: makeProperties(),
+      });
+      fixture.detectChanges();
+    });
+
+    it('does not render a State row in the body', () => {
+      const sections = Array.from(
+        fixture.nativeElement.querySelectorAll('.section-header'),
+      ) as HTMLElement[];
+      expect(sections.some((el) => el.textContent?.includes('.general.state'))).toBe(false);
+    });
+
+    it('uses the compact progress bar instead of the labeled one', () => {
+      expect(fixture.nativeElement.querySelector('app-bb-progress-compact')).not.toBeNull();
+      expect(fixture.nativeElement.querySelector('app-bb-progress')).toBeNull();
+    });
+
+    it('renders 18 stat rows inside the Transfer stat grid', () => {
+      const grid = fixture.nativeElement.querySelector('.bb-stat-grid');
+      expect(grid).not.toBeNull();
+      expect(grid.querySelectorAll('.bb-section').length).toBe(18);
+    });
+
+    it('renders 5 toggle chips inside the Options card, reflecting on/off state', () => {
+      const toggles = Array.from(
+        fixture.nativeElement.querySelectorAll('.bb-toggle'),
+      ) as HTMLElement[];
+      expect(toggles.length).toBe(5);
+
+      const on = toggles.filter((t) => t.classList.contains('bb-toggle--on'));
+      const off = toggles.filter((t) => !t.classList.contains('bb-toggle--on'));
+      expect(on.length).toBe(2); // auto_tmm, seq_dl
+      expect(off.length).toBe(3); // force_start, f_l_piece_prio, super_seeding
+    });
+  });
+
   describe('date fields use the configured date format', () => {
     function sectionValueFor(headerFragment: string): string {
       const sections = Array.from(

@@ -1,12 +1,12 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FontAwesomeModule, IconDefinition } from '@fortawesome/angular-fontawesome';
-import { faCopy } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faCopy, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbCollapse, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TimeagoPipe } from 'ngx-timeago';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
-import { BbProgress } from '../../../components/bb-progress/bb-progress';
+import { BbProgressCompact } from '../../../components/bb-progress-compact/bb-progress-compact';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
 import { QbLogEntry } from '../../../models/qbittorrent.model';
@@ -32,7 +32,7 @@ import { TorrentDetailTabComponent } from '../torrent-details.interface';
     FileSizePerSecPipe,
     HumanizeDurationPipe,
     SpeedLimitPipe,
-    BbProgress,
+    BbProgressCompact,
     FontAwesomeModule,
     NgbCollapse,
     NgbTooltip,
@@ -53,7 +53,7 @@ export class General implements TorrentDetailTabComponent {
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
 
-  public icons: Record<string, IconDefinition> = { faCopy };
+  public icons: Record<string, IconDefinition> = { faCopy, faCheck, faXmark };
 
   public readonly torrent = this.dataService.torrent;
   public readonly localPath = this.dataService.localPath;
