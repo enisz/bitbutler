@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { TorrentFileEntry } from '@bitbutler/shared';
 import { TranslateService } from '@ngx-translate/core';
 import { FileTreeSaveEvent } from '../../components/bb-file-tree/bb-file-tree';
@@ -18,6 +18,22 @@ export class TorrentDetailsActionsService {
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
   private readonly torrentExportService = inject(TorrentExportService);
+
+  private readonly _pendingOptions = signal<ReadonlySet<string>>(new Set());
+  public readonly pendingOptions = this._pendingOptions.asReadonly();
+
+  public isOptionPending(key: string): boolean {
+    return this._pendingOptions().has(key);
+  }
+
+  private setOptionPending(key: string, pending: boolean): void {
+    this._pendingOptions.update((current) => {
+      const next = new Set(current);
+      if (pending) next.add(key);
+      else next.delete(key);
+      return next;
+    });
+  }
 
   public rename(): void {
     this.commandBusService.emit({
@@ -220,6 +236,12 @@ export class TorrentDetailsActionsService {
   }
 
   public async toggleSequentialDownload(): Promise<void> {
+    this.setOptionPending('sequential-download', true);
+    this.toastService.info(
+      this.translateService.instant(
+        'components.modals.torrent-details.general.toast.toggling-sequential-download',
+      ),
+    );
     try {
       await this.qbService.torrents.toggleSequentialDownload(
         this.serverStoreService.currentServerId() as string,
@@ -232,10 +254,18 @@ export class TorrentDetailsActionsService {
           'components.modals.torrent-details.general.toast.toggle-sequential-download-failed',
         ),
       );
+    } finally {
+      this.setOptionPending('sequential-download', false);
     }
   }
 
   public async toggleFirstLastPiecePrio(): Promise<void> {
+    this.setOptionPending('first-last-piece-prio', true);
+    this.toastService.info(
+      this.translateService.instant(
+        'components.modals.torrent-details.general.toast.toggling-first-last-piece-prio',
+      ),
+    );
     try {
       await this.qbService.torrents.toggleFirstLastPiecePrio(
         this.serverStoreService.currentServerId() as string,
@@ -248,6 +278,8 @@ export class TorrentDetailsActionsService {
           'components.modals.torrent-details.general.toast.toggle-first-last-piece-prio-failed',
         ),
       );
+    } finally {
+      this.setOptionPending('first-last-piece-prio', false);
     }
   }
 
@@ -271,6 +303,12 @@ export class TorrentDetailsActionsService {
 
   public async toggleAutoTmm(): Promise<void> {
     const current = this.dataService.torrent()!.data.auto_tmm;
+    this.setOptionPending('auto-tmm', true);
+    this.toastService.info(
+      this.translateService.instant(
+        'components.modals.torrent-details.general.toast.toggling-auto-tmm',
+      ),
+    );
     try {
       await this.qbService.torrents.setAutoManagement(
         this.serverStoreService.currentServerId() as string,
@@ -284,11 +322,19 @@ export class TorrentDetailsActionsService {
           'components.modals.torrent-details.general.toast.toggle-auto-tmm-failed',
         ),
       );
+    } finally {
+      this.setOptionPending('auto-tmm', false);
     }
   }
 
   public async toggleSuperSeeding(): Promise<void> {
     const current = this.dataService.torrent()!.data.super_seeding;
+    this.setOptionPending('super-seeding', true);
+    this.toastService.info(
+      this.translateService.instant(
+        'components.modals.torrent-details.general.toast.toggling-super-seeding',
+      ),
+    );
     try {
       await this.qbService.torrents.setSuperSeeding(
         this.serverStoreService.currentServerId() as string,
@@ -302,11 +348,19 @@ export class TorrentDetailsActionsService {
           'components.modals.torrent-details.general.toast.toggle-super-seeding-failed',
         ),
       );
+    } finally {
+      this.setOptionPending('super-seeding', false);
     }
   }
 
   public async toggleForceStart(): Promise<void> {
     const current = this.dataService.torrent()!.data.force_start;
+    this.setOptionPending('force-start', true);
+    this.toastService.info(
+      this.translateService.instant(
+        'components.modals.torrent-details.general.toast.toggling-force-start',
+      ),
+    );
     try {
       await this.qbService.torrents.setForceStart(
         this.serverStoreService.currentServerId() as string,
@@ -320,6 +374,8 @@ export class TorrentDetailsActionsService {
           'components.modals.torrent-details.general.toast.toggle-force-start-failed',
         ),
       );
+    } finally {
+      this.setOptionPending('force-start', false);
     }
   }
 

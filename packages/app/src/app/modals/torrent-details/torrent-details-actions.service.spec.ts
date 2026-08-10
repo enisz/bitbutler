@@ -9,6 +9,20 @@ import { TorrentExportService } from '../../services/torrent-export.service';
 import { TorrentDetailsActionsService } from './torrent-details-actions.service';
 import { MergedTorrent, TorrentDetailsDataService } from './torrent-details-data.service';
 
+function deferred<T>(): {
+  promise: Promise<T>;
+  resolve: (value: T) => void;
+  reject: (error: unknown) => void;
+} {
+  let resolve!: (value: T) => void;
+  let reject!: (error: unknown) => void;
+  const promise = new Promise<T>((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  return { promise, resolve, reject };
+}
+
 const makeTorrent = (overrides: Partial<Torrent> = {}): Torrent => ({
   added_on: 1700000000,
   amount_left: 0,
@@ -336,8 +350,11 @@ describe('TorrentDetailsActionsService', () => {
   });
 
   describe('toggleSequentialDownload', () => {
-    it('calls toggleSequentialDownload with server id and hash', async () => {
+    it('shows an info toast and calls toggleSequentialDownload with server id and hash', async () => {
       await service.toggleSequentialDownload();
+      expect(toastInfo).toHaveBeenCalledWith(
+        'components.modals.torrent-details.general.toast.toggling-sequential-download',
+      );
       expect(qbTorrents.toggleSequentialDownload).toHaveBeenCalledWith('server-1', ['abc123']);
     });
 
@@ -347,12 +364,47 @@ describe('TorrentDetailsActionsService', () => {
       await service.toggleSequentialDownload();
       expect(danger).toHaveBeenCalledWith('fail', expect.any(String));
     });
+
+    it('marks sequential-download pending during the call and clears it after', async () => {
+      const { promise, resolve } = deferred<void>();
+      qbTorrents.toggleSequentialDownload.mockReturnValueOnce(promise);
+
+      expect(service.isOptionPending('sequential-download')).toBe(false);
+      const call = service.toggleSequentialDownload();
+      expect(service.isOptionPending('sequential-download')).toBe(true);
+
+      resolve();
+      await call;
+      expect(service.isOptionPending('sequential-download')).toBe(false);
+    });
+
+    it('clears sequential-download pending even when the call fails', async () => {
+      qbTorrents.toggleSequentialDownload.mockRejectedValueOnce(new Error('fail'));
+      await service.toggleSequentialDownload();
+      expect(service.isOptionPending('sequential-download')).toBe(false);
+    });
   });
 
   describe('toggleFirstLastPiecePrio', () => {
-    it('calls toggleFirstLastPiecePrio with server id and hash', async () => {
+    it('shows an info toast and calls toggleFirstLastPiecePrio with server id and hash', async () => {
       await service.toggleFirstLastPiecePrio();
+      expect(toastInfo).toHaveBeenCalledWith(
+        'components.modals.torrent-details.general.toast.toggling-first-last-piece-prio',
+      );
       expect(qbTorrents.toggleFirstLastPiecePrio).toHaveBeenCalledWith('server-1', ['abc123']);
+    });
+
+    it('marks first-last-piece-prio pending during the call and clears it after', async () => {
+      const { promise, resolve } = deferred<void>();
+      qbTorrents.toggleFirstLastPiecePrio.mockReturnValueOnce(promise);
+
+      expect(service.isOptionPending('first-last-piece-prio')).toBe(false);
+      const call = service.toggleFirstLastPiecePrio();
+      expect(service.isOptionPending('first-last-piece-prio')).toBe(true);
+
+      resolve();
+      await call;
+      expect(service.isOptionPending('first-last-piece-prio')).toBe(false);
     });
   });
 
@@ -364,9 +416,12 @@ describe('TorrentDetailsActionsService', () => {
   });
 
   describe('toggleAutoTmm', () => {
-    it('calls setAutoManagement with inverted auto_tmm value', async () => {
+    it('shows an info toast and calls setAutoManagement with inverted auto_tmm value', async () => {
       // makeTorrent sets auto_tmm: false, so enabling = true
       await service.toggleAutoTmm();
+      expect(toastInfo).toHaveBeenCalledWith(
+        'components.modals.torrent-details.general.toast.toggling-auto-tmm',
+      );
       expect(qbTorrents.setAutoManagement).toHaveBeenCalledWith('server-1', ['abc123'], true);
     });
 
@@ -378,20 +433,58 @@ describe('TorrentDetailsActionsService', () => {
       await service.toggleAutoTmm();
       expect(qbTorrents.setAutoManagement).toHaveBeenCalledWith('server-1', ['abc123'], false);
     });
+
+    it('marks auto-tmm pending during the call and clears it after', async () => {
+      const { promise, resolve } = deferred<void>();
+      qbTorrents.setAutoManagement.mockReturnValueOnce(promise);
+
+      expect(service.isOptionPending('auto-tmm')).toBe(false);
+      const call = service.toggleAutoTmm();
+      expect(service.isOptionPending('auto-tmm')).toBe(true);
+
+      resolve();
+      await call;
+      expect(service.isOptionPending('auto-tmm')).toBe(false);
+    });
+
+    it('clears auto-tmm pending even when the call fails', async () => {
+      qbTorrents.setAutoManagement.mockRejectedValueOnce(new Error('boom'));
+      await service.toggleAutoTmm();
+      expect(service.isOptionPending('auto-tmm')).toBe(false);
+    });
   });
 
   describe('toggleSuperSeeding', () => {
-    it('calls setSuperSeeding with inverted super_seeding value', async () => {
+    it('shows an info toast and calls setSuperSeeding with inverted super_seeding value', async () => {
       // makeTorrent sets super_seeding: false, so enabling = true
       await service.toggleSuperSeeding();
+      expect(toastInfo).toHaveBeenCalledWith(
+        'components.modals.torrent-details.general.toast.toggling-super-seeding',
+      );
       expect(qbTorrents.setSuperSeeding).toHaveBeenCalledWith('server-1', ['abc123'], true);
+    });
+
+    it('marks super-seeding pending during the call and clears it after', async () => {
+      const { promise, resolve } = deferred<void>();
+      qbTorrents.setSuperSeeding.mockReturnValueOnce(promise);
+
+      expect(service.isOptionPending('super-seeding')).toBe(false);
+      const call = service.toggleSuperSeeding();
+      expect(service.isOptionPending('super-seeding')).toBe(true);
+
+      resolve();
+      await call;
+      expect(service.isOptionPending('super-seeding')).toBe(false);
     });
   });
 
   describe('toggleForceStart', () => {
-    it('calls setForceStart with the inverted force_start value', async () => {
+    it('shows an info toast and calls setForceStart with the inverted force_start value', async () => {
       // makeTorrent sets force_start: false, so enabling = true
       await service.toggleForceStart();
+      expect(toastInfo).toHaveBeenCalledWith(
+        'components.modals.torrent-details.general.toast.toggling-force-start',
+      );
       expect(qbTorrents.setForceStart).toHaveBeenCalledWith('server-1', ['abc123'], true);
     });
 
@@ -411,6 +504,25 @@ describe('TorrentDetailsActionsService', () => {
         'boom',
         'components.modals.torrent-details.general.toast.toggle-force-start-failed',
       );
+    });
+
+    it('marks force-start pending during the call and clears it after', async () => {
+      const { promise, resolve } = deferred<void>();
+      qbTorrents.setForceStart.mockReturnValueOnce(promise);
+
+      expect(service.isOptionPending('force-start')).toBe(false);
+      const call = service.toggleForceStart();
+      expect(service.isOptionPending('force-start')).toBe(true);
+
+      resolve();
+      await call;
+      expect(service.isOptionPending('force-start')).toBe(false);
+    });
+
+    it('clears force-start pending even when the call fails', async () => {
+      qbTorrents.setForceStart.mockRejectedValueOnce(new Error('boom'));
+      await service.toggleForceStart();
+      expect(service.isOptionPending('force-start')).toBe(false);
     });
   });
 

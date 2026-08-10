@@ -135,6 +135,7 @@
             [class.btn-link]="!torrent()!.data.auto_tmm"
             [class.btn-success]="torrent()!.data.auto_tmm"
             [attr.aria-pressed]="torrent()!.data.auto_tmm ? 'true' : 'false'"
+            [disabled]="actionsService.isOptionPending('auto-tmm')"
             (click)="actionsService.toggleAutoTmm()"
           >
             <bb-btn-content
@@ -174,6 +175,7 @@
             [class.btn-link]="!torrent()!.data.force_start"
             [class.btn-success]="torrent()!.data.force_start"
             [attr.aria-pressed]="torrent()!.data.force_start ? 'true' : 'false'"
+            [disabled]="actionsService.isOptionPending('force-start')"
             (click)="actionsService.toggleForceStart()"
           >
             <bb-btn-content
@@ -191,6 +193,7 @@
             [class.btn-link]="!torrent()!.data.seq_dl"
             [class.btn-success]="torrent()!.data.seq_dl"
             [attr.aria-pressed]="torrent()!.data.seq_dl ? 'true' : 'false'"
+            [disabled]="actionsService.isOptionPending('sequential-download')"
             (click)="actionsService.toggleSequentialDownload()"
           >
             <bb-btn-content
@@ -233,6 +236,7 @@
             [class.btn-link]="!torrent()!.data.f_l_piece_prio"
             [class.btn-success]="torrent()!.data.f_l_piece_prio"
             [attr.aria-pressed]="torrent()!.data.f_l_piece_prio ? 'true' : 'false'"
+            [disabled]="actionsService.isOptionPending('first-last-piece-prio')"
             (click)="actionsService.toggleFirstLastPiecePrio()"
           >
             <bb-btn-content
@@ -250,6 +254,7 @@
             [class.btn-link]="!torrent()!.data.super_seeding"
             [class.btn-success]="torrent()!.data.super_seeding"
             [attr.aria-pressed]="torrent()!.data.super_seeding ? 'true' : 'false'"
+            [disabled]="actionsService.isOptionPending('super-seeding')"
             (click)="actionsService.toggleSuperSeeding()"
           >
             <bb-btn-content

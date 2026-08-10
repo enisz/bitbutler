@@ -610,10 +610,15 @@
             "local-path-failed": "A helyi elérési út feloldása sikertelen!",
             "rechecking": "Torrent ellenőrzése…",
             "recheck-failed": "Nem sikerült ellenőrizni a torrentet",
+            "toggling-sequential-download": "A szekvenciális letöltés átváltása…",
             "toggle-sequential-download-failed": "Nem sikerült átváltani a szekvenciális letöltést",
+            "toggling-first-last-piece-prio": "Az első/utolsó szelet prioritás átváltása…",
             "toggle-first-last-piece-prio-failed": "Nem sikerült átváltani az első/utolsó szelet prioritást",
+            "toggling-auto-tmm": "Az Auto TMM átváltása…",
             "toggle-auto-tmm-failed": "Nem sikerült átváltani az Auto TMM-et",
+            "toggling-super-seeding": "A super seeding átváltása…",
             "toggle-super-seeding-failed": "Nem sikerült átváltani a super seedinget",
+            "toggling-force-start": "A kényszerített indítás átváltása…",
             "toggle-force-start-failed": "Nem sikerült átváltani a kényszerített indítást"
           },
           "footer": {

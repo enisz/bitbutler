@@ -129,7 +129,14 @@ describe('General', () => {
     toggleSequentialDownload: ReturnType<typeof vi.fn>;
     toggleFirstLastPiecePrio: ReturnType<typeof vi.fn>;
     toggleSuperSeeding: ReturnType<typeof vi.fn>;
+    isOptionPending: (key: string) => boolean;
   };
+  // Backs mockActionsService.isOptionPending with a real signal so that
+  // template bindings which read it (via a plain function call) correctly
+  // participate in this app's zoneless/signal-based reactivity - a plain
+  // vi.fn() mutated mid-test does not, since Angular never registers it as
+  // a reactive dependency and OnPush skips re-checking the binding.
+  let pendingOptionKey: ReturnType<typeof signal<string | null>>;
 
   beforeEach(async () => {
     mockDataService = {
@@ -137,12 +144,14 @@ describe('General', () => {
       localPath: signal(null),
       errorLog: signal(null),
     };
+    pendingOptionKey = signal<string | null>(null);
     mockActionsService = {
       toggleAutoTmm: vi.fn(),
       toggleForceStart: vi.fn(),
       toggleSequentialDownload: vi.fn(),
       toggleFirstLastPiecePrio: vi.fn(),
       toggleSuperSeeding: vi.fn(),
+      isOptionPending: (key: string) => pendingOptionKey() === key,
     };
 
     await TestBed.configureTestingModule({
@@ -335,6 +344,27 @@ describe('General', () => {
       expect(findButton('sequential-download').getAttribute('aria-pressed')).toBe('true');
       expect(findButton('first-last-piece-prio').getAttribute('aria-pressed')).toBe('false');
       expect(findButton('super-seeding').getAttribute('aria-pressed')).toBe('false');
+    });
+
+    it('disables only the Options button whose own action is pending', () => {
+      const findButton = (fragment: string): HTMLButtonElement => {
+        const button = (
+          Array.from(
+            fixture.nativeElement.querySelectorAll('.bb-options-grid button'),
+          ) as HTMLButtonElement[]
+        ).find((b) => b.textContent?.includes(fragment));
+        expect(button).toBeDefined();
+        return button as HTMLButtonElement;
+      };
+
+      pendingOptionKey.set('auto-tmm');
+      fixture.detectChanges();
+
+      expect(findButton('auto-tmm').disabled).toBe(true);
+      expect(findButton('force-start').disabled).toBe(false);
+      expect(findButton('sequential-download').disabled).toBe(false);
+      expect(findButton('first-last-piece-prio').disabled).toBe(false);
+      expect(findButton('super-seeding').disabled).toBe(false);
     });
 
     it('clicking an Options button calls the matching action-service toggle method', () => {

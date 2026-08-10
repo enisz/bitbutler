@@ -610,10 +610,15 @@
             "local-path-failed": "Failed to Resolve Local Path",
             "rechecking": "Rechecking torrent…",
             "recheck-failed": "Failed to Recheck Torrent",
+            "toggling-sequential-download": "Toggling Sequential Download…",
             "toggle-sequential-download-failed": "Failed to Toggle Sequential Download",
+            "toggling-first-last-piece-prio": "Toggling First/Last Piece Priority…",
             "toggle-first-last-piece-prio-failed": "Failed to Toggle First/Last Piece Priority",
+            "toggling-auto-tmm": "Toggling Auto TMM…",
             "toggle-auto-tmm-failed": "Failed to Toggle Auto TMM",
+            "toggling-super-seeding": "Toggling Super Seeding…",
             "toggle-super-seeding-failed": "Failed to Toggle Super Seeding",
+            "toggling-force-start": "Toggling Force Start…",
             "toggle-force-start-failed": "Failed to Toggle Force Start"
           },
           "footer": {
