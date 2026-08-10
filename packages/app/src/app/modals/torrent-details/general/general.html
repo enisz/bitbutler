@@ -127,156 +127,149 @@
       <div class="bb-fieldset-title">
         {{ 'components.modals.torrent-details.general.labels.options' | translate }}
       </div>
-      <div class="bb-toggle-grid">
-        <div
-          class="bb-toggle"
-          [class.bb-toggle--on]="torrent()!.data.auto_tmm"
-          [attr.aria-label]="
-            ('components.modals.torrent-details.general.auto-tmm' | translate) +
-            ' - ' +
-            (torrent()!.data.auto_tmm
-              ? ('general.state.on' | translate)
-              : ('general.state.off' | translate))
-          "
-        >
-          <fa-icon
-            [icon]="torrent()!.data.auto_tmm ? icons['faCheck'] : icons['faXmark']"
-            class="bb-toggle__icon"
-          ></fa-icon>
-          <span class="bb-toggle__label">
-            {{ 'components.modals.torrent-details.general.auto-tmm' | translate }}
-            <bb-popover
-              placement="top"
-              [subject]="
-                'components.modals.torrent-details.general.popover.auto-tmm.title' | translate
-              "
-              [description]="
-                'components.modals.torrent-details.general.popover.auto-tmm.description' | translate
-              "
-            ></bb-popover>
-          </span>
+      <div class="row gy-2 align-items-center bb-options-grid">
+        <div class="col-5">
+          <button
+            type="button"
+            class="btn btn-sm btn-split w-100"
+            [class.btn-link]="!torrent()!.data.auto_tmm"
+            [class.btn-success]="torrent()!.data.auto_tmm"
+            [attr.aria-pressed]="torrent()!.data.auto_tmm ? 'true' : 'false'"
+            (click)="actionsService.toggleAutoTmm()"
+          >
+            <bb-btn-content
+              [icon]="torrent()!.data.auto_tmm ? icons['faCheck'] : icons['faXmark']"
+              [text]="'components.modals.torrent-details.general.auto-tmm' | translate"
+              position="end"
+            ></bb-btn-content>
+          </button>
+        </div>
+        <div class="col-1 d-flex justify-content-end">
+          <bb-popover
+            placement="right"
+            [subject]="
+              'components.modals.torrent-details.general.popover.auto-tmm.title' | translate
+            "
+            [description]="
+              'components.modals.torrent-details.general.popover.auto-tmm.description' | translate
+            "
+          ></bb-popover>
+        </div>
+        <div class="col-1 d-flex justify-content-start">
+          <bb-popover
+            placement="left"
+            [subject]="
+              'components.modals.torrent-details.general.popover.force-start.title' | translate
+            "
+            [description]="
+              'components.modals.torrent-details.general.popover.force-start.description'
+                | translate
+            "
+          ></bb-popover>
+        </div>
+        <div class="col-5">
+          <button
+            type="button"
+            class="btn btn-sm btn-split w-100"
+            [class.btn-link]="!torrent()!.data.force_start"
+            [class.btn-success]="torrent()!.data.force_start"
+            [attr.aria-pressed]="torrent()!.data.force_start ? 'true' : 'false'"
+            (click)="actionsService.toggleForceStart()"
+          >
+            <bb-btn-content
+              [icon]="torrent()!.data.force_start ? icons['faCheck'] : icons['faXmark']"
+              [text]="'components.modals.torrent-details.general.force-start' | translate"
+              position="start"
+            ></bb-btn-content>
+          </button>
         </div>
 
-        <div
-          class="bb-toggle"
-          [class.bb-toggle--on]="torrent()!.data.force_start"
-          [attr.aria-label]="
-            ('components.modals.torrent-details.general.force-start' | translate) +
-            ' - ' +
-            (torrent()!.data.force_start
-              ? ('general.state.on' | translate)
-              : ('general.state.off' | translate))
-          "
-        >
-          <fa-icon
-            [icon]="torrent()!.data.force_start ? icons['faCheck'] : icons['faXmark']"
-            class="bb-toggle__icon"
-          ></fa-icon>
-          <span class="bb-toggle__label">
-            {{ 'components.modals.torrent-details.general.force-start' | translate }}
-            <bb-popover
-              placement="top"
-              [subject]="
-                'components.modals.torrent-details.general.popover.force-start.title' | translate
-              "
-              [description]="
-                'components.modals.torrent-details.general.popover.force-start.description'
-                  | translate
-              "
-            ></bb-popover>
-          </span>
+        <div class="col-5">
+          <button
+            type="button"
+            class="btn btn-sm btn-split w-100"
+            [class.btn-link]="!torrent()!.data.seq_dl"
+            [class.btn-success]="torrent()!.data.seq_dl"
+            [attr.aria-pressed]="torrent()!.data.seq_dl ? 'true' : 'false'"
+            (click)="actionsService.toggleSequentialDownload()"
+          >
+            <bb-btn-content
+              [icon]="torrent()!.data.seq_dl ? icons['faCheck'] : icons['faXmark']"
+              [text]="'components.modals.torrent-details.general.sequential-download' | translate"
+              position="end"
+            ></bb-btn-content>
+          </button>
+        </div>
+        <div class="col-1 d-flex justify-content-end">
+          <bb-popover
+            placement="right"
+            [subject]="
+              'components.modals.torrent-details.general.popover.sequential-download.title'
+                | translate
+            "
+            [description]="
+              'components.modals.torrent-details.general.popover.sequential-download.description'
+                | translate
+            "
+          ></bb-popover>
+        </div>
+        <div class="col-1 d-flex justify-content-start">
+          <bb-popover
+            placement="left"
+            [subject]="
+              'components.modals.torrent-details.general.popover.first-last-piece-prio.title'
+                | translate
+            "
+            [description]="
+              'components.modals.torrent-details.general.popover.first-last-piece-prio.description'
+                | translate
+            "
+          ></bb-popover>
+        </div>
+        <div class="col-5">
+          <button
+            type="button"
+            class="btn btn-sm btn-split w-100"
+            [class.btn-link]="!torrent()!.data.f_l_piece_prio"
+            [class.btn-success]="torrent()!.data.f_l_piece_prio"
+            [attr.aria-pressed]="torrent()!.data.f_l_piece_prio ? 'true' : 'false'"
+            (click)="actionsService.toggleFirstLastPiecePrio()"
+          >
+            <bb-btn-content
+              [icon]="torrent()!.data.f_l_piece_prio ? icons['faCheck'] : icons['faXmark']"
+              [text]="'components.modals.torrent-details.general.first-last-piece-prio' | translate"
+              position="start"
+            ></bb-btn-content>
+          </button>
         </div>
 
-        <div
-          class="bb-toggle"
-          [class.bb-toggle--on]="torrent()!.data.seq_dl"
-          [attr.aria-label]="
-            ('components.modals.torrent-details.general.sequential-download' | translate) +
-            ' - ' +
-            (torrent()!.data.seq_dl
-              ? ('general.state.on' | translate)
-              : ('general.state.off' | translate))
-          "
-        >
-          <fa-icon
-            [icon]="torrent()!.data.seq_dl ? icons['faCheck'] : icons['faXmark']"
-            class="bb-toggle__icon"
-          ></fa-icon>
-          <span class="bb-toggle__label">
-            {{ 'components.modals.torrent-details.general.sequential-download' | translate }}
-            <bb-popover
-              placement="top"
-              [subject]="
-                'components.modals.torrent-details.general.popover.sequential-download.title'
-                  | translate
-              "
-              [description]="
-                'components.modals.torrent-details.general.popover.sequential-download.description'
-                  | translate
-              "
-            ></bb-popover>
-          </span>
+        <div class="col-5">
+          <button
+            type="button"
+            class="btn btn-sm btn-split w-100"
+            [class.btn-link]="!torrent()!.data.super_seeding"
+            [class.btn-success]="torrent()!.data.super_seeding"
+            [attr.aria-pressed]="torrent()!.data.super_seeding ? 'true' : 'false'"
+            (click)="actionsService.toggleSuperSeeding()"
+          >
+            <bb-btn-content
+              [icon]="torrent()!.data.super_seeding ? icons['faCheck'] : icons['faXmark']"
+              [text]="'components.modals.torrent-details.general.super-seeding' | translate"
+              position="end"
+            ></bb-btn-content>
+          </button>
         </div>
-
-        <div
-          class="bb-toggle"
-          [class.bb-toggle--on]="torrent()!.data.f_l_piece_prio"
-          [attr.aria-label]="
-            ('components.modals.torrent-details.general.first-last-piece-prio' | translate) +
-            ' - ' +
-            (torrent()!.data.f_l_piece_prio
-              ? ('general.state.on' | translate)
-              : ('general.state.off' | translate))
-          "
-        >
-          <fa-icon
-            [icon]="torrent()!.data.f_l_piece_prio ? icons['faCheck'] : icons['faXmark']"
-            class="bb-toggle__icon"
-          ></fa-icon>
-          <span class="bb-toggle__label">
-            {{ 'components.modals.torrent-details.general.first-last-piece-prio' | translate }}
-            <bb-popover
-              placement="top"
-              [subject]="
-                'components.modals.torrent-details.general.popover.first-last-piece-prio.title'
-                  | translate
-              "
-              [description]="
-                'components.modals.torrent-details.general.popover.first-last-piece-prio.description'
-                  | translate
-              "
-            ></bb-popover>
-          </span>
-        </div>
-
-        <div
-          class="bb-toggle"
-          [class.bb-toggle--on]="torrent()!.data.super_seeding"
-          [attr.aria-label]="
-            ('components.modals.torrent-details.general.super-seeding' | translate) +
-            ' - ' +
-            (torrent()!.data.super_seeding
-              ? ('general.state.on' | translate)
-              : ('general.state.off' | translate))
-          "
-        >
-          <fa-icon
-            [icon]="torrent()!.data.super_seeding ? icons['faCheck'] : icons['faXmark']"
-            class="bb-toggle__icon"
-          ></fa-icon>
-          <span class="bb-toggle__label">
-            {{ 'components.modals.torrent-details.general.super-seeding' | translate }}
-            <bb-popover
-              placement="top"
-              [subject]="
-                'components.modals.torrent-details.general.popover.super-seeding.title' | translate
-              "
-              [description]="
-                'components.modals.torrent-details.general.popover.super-seeding.description'
-                  | translate
-              "
-            ></bb-popover>
-          </span>
+        <div class="col-1 d-flex justify-content-end">
+          <bb-popover
+            placement="right"
+            [subject]="
+              'components.modals.torrent-details.general.popover.super-seeding.title' | translate
+            "
+            [description]="
+              'components.modals.torrent-details.general.popover.super-seeding.description'
+                | translate
+            "
+          ></bb-popover>
         </div>
       </div>
     </div>

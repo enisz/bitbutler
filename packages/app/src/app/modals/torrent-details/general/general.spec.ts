@@ -1,4 +1,3 @@
-import { Clipboard } from '@angular/cdk/clipboard';
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TimeagoIntl, provideTimeago } from 'ngx-timeago';
@@ -8,7 +7,7 @@ import {
   QbTorrentProperties,
 } from '../../../models/qbittorrent.model';
 import { Torrent } from '../../../models/torrent.model';
-import { ToastService } from '../../../services/toast.service';
+import { TorrentDetailsActionsService } from '../torrent-details-actions.service';
 import { MergedTorrent, TorrentDetailsDataService } from '../torrent-details-data.service';
 import { General } from './general';
 
@@ -124,6 +123,13 @@ describe('General', () => {
     localPath: ReturnType<typeof signal<string | null>>;
     errorLog: ReturnType<typeof signal<QbLogEntry | null>>;
   };
+  let mockActionsService: {
+    toggleAutoTmm: ReturnType<typeof vi.fn>;
+    toggleForceStart: ReturnType<typeof vi.fn>;
+    toggleSequentialDownload: ReturnType<typeof vi.fn>;
+    toggleFirstLastPiecePrio: ReturnType<typeof vi.fn>;
+    toggleSuperSeeding: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(async () => {
     mockDataService = {
@@ -131,13 +137,19 @@ describe('General', () => {
       localPath: signal(null),
       errorLog: signal(null),
     };
+    mockActionsService = {
+      toggleAutoTmm: vi.fn(),
+      toggleForceStart: vi.fn(),
+      toggleSequentialDownload: vi.fn(),
+      toggleFirstLastPiecePrio: vi.fn(),
+      toggleSuperSeeding: vi.fn(),
+    };
 
     await TestBed.configureTestingModule({
       imports: [General],
       providers: [
         { provide: TorrentDetailsDataService, useValue: mockDataService },
-        { provide: Clipboard, useValue: { copy: vi.fn() } },
-        { provide: ToastService, useValue: { info: vi.fn(), danger: vi.fn() } },
+        { provide: TorrentDetailsActionsService, useValue: mockActionsService },
         provideTimeago({ intl: { provide: TimeagoIntl, useClass: TimeagoIntl } }),
       ],
     }).compileComponents();
@@ -294,16 +306,29 @@ describe('General', () => {
       expect(infoCard.querySelector('.col-lg-6')).not.toBeNull();
     });
 
-    it('renders 5 toggle chips inside the Options card, reflecting on/off state', () => {
-      const toggles = Array.from(
-        fixture.nativeElement.querySelectorAll('.bb-toggle'),
-      ) as HTMLElement[];
-      expect(toggles.length).toBe(5);
+    it('renders 5 clickable Options buttons reflecting on/off state', () => {
+      const buttons = Array.from(
+        fixture.nativeElement.querySelectorAll('.bb-options-grid button'),
+      ) as HTMLButtonElement[];
+      expect(buttons.length).toBe(5);
 
-      const on = toggles.filter((t) => t.classList.contains('bb-toggle--on'));
-      const off = toggles.filter((t) => !t.classList.contains('bb-toggle--on'));
+      const on = buttons.filter((b) => b.classList.contains('btn-success'));
+      const off = buttons.filter((b) => b.classList.contains('btn-link'));
       expect(on.length).toBe(2); // auto_tmm, seq_dl
       expect(off.length).toBe(3); // force_start, f_l_piece_prio, super_seeding
+      expect(buttons.every((b) => !b.disabled)).toBe(true);
+    });
+
+    it('clicking an Options button calls the matching action-service toggle method', () => {
+      const buttons = Array.from(
+        fixture.nativeElement.querySelectorAll('.bb-options-grid button'),
+      ) as HTMLButtonElement[];
+
+      buttons.find((b) => b.textContent?.includes('force-start'))?.click();
+      expect(mockActionsService.toggleForceStart).toHaveBeenCalled();
+
+      buttons.find((b) => b.textContent?.includes('super-seeding'))?.click();
+      expect(mockActionsService.toggleSuperSeeding).toHaveBeenCalled();
     });
   });
 

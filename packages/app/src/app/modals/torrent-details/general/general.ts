@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { FontAwesomeModule, IconDefinition } from '@fortawesome/angular-fontawesome';
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbCollapse, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { TimeagoPipe } from 'ngx-timeago';
+import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbProgressCompact } from '../../../components/bb-progress-compact/bb-progress-compact';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
@@ -17,6 +18,7 @@ import { RatioLimitPipe } from '../../../pipes/ratio-limit-pipe';
 import { RatioPipe } from '../../../pipes/ratio-pipe';
 import { SpeedLimitPipe } from '../../../pipes/speed-limit-pipe';
 import { TimeLimitPipe } from '../../../pipes/time-limit-pipe';
+import { TorrentDetailsActionsService } from '../torrent-details-actions.service';
 import { TorrentDetailsDataService } from '../torrent-details-data.service';
 import { TorrentDetailTabComponent } from '../torrent-details.interface';
 
@@ -31,13 +33,13 @@ import { TorrentDetailTabComponent } from '../torrent-details.interface';
     HumanizeDurationPipe,
     SpeedLimitPipe,
     BbProgressCompact,
-    FontAwesomeModule,
     NgbCollapse,
     NgbTooltip,
     RatioLimitPipe,
     RatioPipe,
     TimeLimitPipe,
     BbPopover,
+    BbBtnContent,
     TranslatePipe,
     TooltipOverflow,
   ],
@@ -47,6 +49,7 @@ import { TorrentDetailTabComponent } from '../torrent-details.interface';
 })
 export class General implements TorrentDetailTabComponent {
   private readonly dataService = inject(TorrentDetailsDataService);
+  public readonly actionsService = inject(TorrentDetailsActionsService);
 
   public icons: Record<string, IconDefinition> = { faCheck, faXmark };
 

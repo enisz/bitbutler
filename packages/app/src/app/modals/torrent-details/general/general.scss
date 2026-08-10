@@ -90,36 +90,6 @@ app-bb-progress-compact {
   }
 }
 
-.bb-toggle-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 10px;
-}
-
-.bb-toggle {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border: 1px solid var(--bs-border-color);
-  border-radius: var(--bb-control-radius);
-  font-size: 0.85rem;
-  color: var(--bs-secondary-color);
-}
-
-.bb-toggle__icon {
-  flex-shrink: 0;
-  color: var(--bs-secondary-color);
-}
-
-.bb-toggle--on {
-  color: var(--bs-body-color);
-
-  .bb-toggle__icon {
-    color: var(--bs-success);
-  }
-}
-
 div.bb-section.bb-section--danger {
   display: block;
   background-color: var(--bs-danger-bg-subtle);
