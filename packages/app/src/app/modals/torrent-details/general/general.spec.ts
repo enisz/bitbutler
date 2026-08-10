@@ -281,6 +281,19 @@ describe('General', () => {
       expect(grid.querySelectorAll('.bb-section').length).toBe(18);
     });
 
+    it('does not render any copy-to-clipboard buttons', () => {
+      expect(fixture.nativeElement.querySelector('.button-container')).toBeNull();
+    });
+
+    it('caps the Information card grid at 2 columns', () => {
+      const infoHeader = Array.from(
+        fixture.nativeElement.querySelectorAll('.bb-fieldset-title'),
+      ).find((el: any) => el.textContent?.includes('.labels.information')) as HTMLElement;
+      const infoCard = infoHeader.closest('.bb-fieldset') as HTMLElement;
+      expect(infoCard.querySelector('.col-xl-4')).toBeNull();
+      expect(infoCard.querySelector('.col-lg-6')).not.toBeNull();
+    });
+
     it('renders 5 toggle chips inside the Options card, reflecting on/off state', () => {
       const toggles = Array.from(
         fixture.nativeElement.querySelectorAll('.bb-toggle'),

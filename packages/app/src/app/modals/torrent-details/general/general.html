@@ -37,21 +37,6 @@
             placement="bottom"
             >{{ torrent()!.data.name }}</span
           >
-
-          <div class="button-container">
-            @if (torrent()!.data.name) {
-              <button
-                class="btn btn-sm btn-link"
-                placement="top"
-                [ngbTooltip]="
-                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
-                "
-                (click)="toClipboard('name', torrent()!.data.name)"
-              >
-                <fa-icon [icon]="icons['faCopy']" />
-              </button>
-            }
-          </div>
         </div>
         <div class="col-12 bb-section">
           <span class="section-header">{{
@@ -64,20 +49,6 @@
             placement="bottom"
             >{{ torrent()!.data.save_path }}</span
           >
-          <div class="button-container">
-            @if (torrent()!.data.save_path) {
-              <button
-                class="btn btn-sm btn-link"
-                placement="top"
-                [ngbTooltip]="
-                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
-                "
-                (click)="toClipboard('save-path', torrent()!.data.save_path)"
-              >
-                <fa-icon [icon]="icons['faCopy']" />
-              </button>
-            }
-          </div>
         </div>
         <div class="col-12 bb-section">
           <span class="section-header">{{
@@ -90,20 +61,6 @@
             placement="bottom"
             >{{ torrent()!.data.content_path }}</span
           >
-          <div class="button-container">
-            @if (torrent()!.data.content_path) {
-              <button
-                class="btn btn-sm btn-link"
-                placement="top"
-                [ngbTooltip]="
-                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
-                "
-                (click)="toClipboard('remote-path', torrent()!.data.content_path)"
-              >
-                <fa-icon [icon]="icons['faCopy']" />
-              </button>
-            }
-          </div>
         </div>
         @if (localPath()) {
           <div class="col-12 bb-section">
@@ -117,20 +74,6 @@
               placement="bottom"
               >{{ localPath() }}</span
             >
-            <div class="button-container">
-              @if (torrent()!.data.save_path) {
-                <button
-                  class="btn btn-sm btn-link"
-                  placement="top"
-                  [ngbTooltip]="
-                    'components.modals.torrent-details.general.copy-to-clipboard' | translate
-                  "
-                  (click)="toClipboard('local-path', torrent()!.data.save_path)"
-                >
-                  <fa-icon [icon]="icons['faCopy']" />
-                </button>
-              }
-            </div>
           </div>
         }
         @if (errorLog(); as entry) {
@@ -164,20 +107,6 @@
             placement="bottom"
             >{{ torrent()!.data.category || '-' }}</span
           >
-          <div class="button-container">
-            @if (torrent()!.data.category) {
-              <button
-                class="btn btn-sm btn-link"
-                placement="top"
-                [ngbTooltip]="
-                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
-                "
-                (click)="toClipboard('category', torrent()!.data.category)"
-              >
-                <fa-icon [icon]="icons['faCopy']" />
-              </button>
-            }
-          </div>
         </div>
         <div class="col-12 bb-section">
           <span class="section-header">{{
@@ -190,20 +119,6 @@
             placement="bottom"
             >{{ torrent()!.data.tags || '-' }}</span
           >
-          <div class="button-container">
-            @if (torrent()!.data.tags) {
-              <button
-                class="btn btn-sm btn-link"
-                placement="top"
-                [ngbTooltip]="
-                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
-                "
-                (click)="toClipboard('tags', torrent()!.data.tags)"
-              >
-                <fa-icon [icon]="icons['faCopy']" />
-              </button>
-            }
-          </div>
         </div>
       </div>
     </div>
@@ -801,7 +716,7 @@
         {{ 'components.modals.torrent-details.general.labels.information' | translate }}
       </div>
       <div class="row gy-2">
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+        <div class="col-12 col-lg-6 bb-section">
           <span class="section-header">
             {{ 'components.modals.torrent-details.general.total-size' | translate }}
             <bb-popover
@@ -827,7 +742,7 @@
             }}</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+        <div class="col-12 col-lg-6 bb-section">
           <span class="section-header">
             {{ 'components.modals.torrent-details.general.pieces' | translate }}
             <bb-popover
@@ -848,7 +763,7 @@
             {{ torrent()!.properties.pieces_have }})</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+        <div class="col-12 col-lg-6 bb-section">
           <span class="section-header">
             {{ 'components.modals.torrent-details.general.created-by' | translate }}
             <bb-popover
@@ -870,7 +785,7 @@
             >{{ torrent()!.properties.created_by }}</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+        <div class="col-12 col-lg-6 bb-section">
           <span class="section-header">
             {{ 'components.modals.torrent-details.general.added-on' | translate }}
             <bb-popover
@@ -896,7 +811,7 @@
             }}</small></span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+        <div class="col-12 col-lg-6 bb-section">
           <span class="section-header">
             {{ 'components.modals.torrent-details.general.completed-on' | translate }}
             <bb-popover
@@ -925,7 +840,7 @@
             >
           }
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
+        <div class="col-12 col-lg-6 bb-section">
           <span class="section-header">
             {{ 'components.modals.torrent-details.general.created-on' | translate }}
             <bb-popover
@@ -978,21 +893,6 @@
               -
             }
           </span>
-
-          <div class="button-container">
-            @if (torrent()!.data.infohash_v1) {
-              <button
-                class="btn btn-sm btn-link"
-                placement="top"
-                [ngbTooltip]="
-                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
-                "
-                (click)="toClipboard('info-hash-v1', torrent()!.data.infohash_v1)"
-              >
-                <fa-icon [icon]="icons['faCopy']" />
-              </button>
-            }
-          </div>
         </div>
         <div class="col-12 bb-section">
           <span class="section-header">
@@ -1020,21 +920,6 @@
               -
             }
           </span>
-
-          <div class="button-container">
-            @if (torrent()!.data.infohash_v2) {
-              <button
-                class="btn btn-sm btn-link"
-                placement="top"
-                [ngbTooltip]="
-                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
-                "
-                (click)="toClipboard('info-hash-v2', torrent()!.data.infohash_v2)"
-              >
-                <fa-icon [icon]="icons['faCopy']" />
-              </button>
-            }
-          </div>
         </div>
         <div class="col-12 bb-section">
           <span class="section-header">
@@ -1061,21 +946,6 @@
               -
             }
           </span>
-
-          <div class="button-container">
-            @if (torrent()!.properties.comment) {
-              <button
-                class="btn btn-sm btn-link"
-                placement="top"
-                [ngbTooltip]="
-                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
-                "
-                (click)="toClipboard('comment', torrent()!.properties.comment)"
-              >
-                <fa-icon [icon]="icons['faCopy']" />
-              </button>
-            }
-          </div>
         </div>
       </div>
     </div>

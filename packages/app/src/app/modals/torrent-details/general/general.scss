@@ -12,7 +12,7 @@ span.section-header {
 }
 
 span.section-value {
-  font-weight: 600;
+  font-weight: 400;
 
   small {
     display: block;
@@ -23,41 +23,15 @@ span.section-value {
 
 div.bb-section {
   display: grid;
-  grid-template-columns: max-content 1fr auto;
+  grid-template-columns: max-content 1fr;
   align-items: center;
   column-gap: 16px;
   padding: 10px 4px;
   position: relative;
   border-bottom: 1px solid var(--bs-border-color);
-  transition: background-color 0.15s ease-in-out;
 
   &:last-child {
     border-bottom: 0;
-  }
-
-  &:hover,
-  &:focus-within {
-    background-color: var(--bb-hover-list-item-bg);
-
-    > div.button-container {
-      opacity: 1;
-      visibility: visible;
-    }
-  }
-
-  > div.button-container {
-    grid-column: 3;
-    grid-row: 1 / -1;
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-
-    opacity: 0;
-    visibility: hidden;
-
-    transition:
-      opacity 0.15s ease-in-out,
-      visibility 0.15s ease-in-out;
   }
 
   > span.section-header {

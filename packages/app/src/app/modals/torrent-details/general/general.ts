@@ -1,9 +1,8 @@
-import { Clipboard } from '@angular/cdk/clipboard';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FontAwesomeModule, IconDefinition } from '@fortawesome/angular-fontawesome';
-import { faCheck, faCopy, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbCollapse, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { TimeagoPipe } from 'ngx-timeago';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbProgressCompact } from '../../../components/bb-progress-compact/bb-progress-compact';
@@ -18,7 +17,6 @@ import { RatioLimitPipe } from '../../../pipes/ratio-limit-pipe';
 import { RatioPipe } from '../../../pipes/ratio-pipe';
 import { SpeedLimitPipe } from '../../../pipes/speed-limit-pipe';
 import { TimeLimitPipe } from '../../../pipes/time-limit-pipe';
-import { ToastService } from '../../../services/toast.service';
 import { TorrentDetailsDataService } from '../torrent-details-data.service';
 import { TorrentDetailTabComponent } from '../torrent-details.interface';
 
@@ -49,11 +47,8 @@ import { TorrentDetailTabComponent } from '../torrent-details.interface';
 })
 export class General implements TorrentDetailTabComponent {
   private readonly dataService = inject(TorrentDetailsDataService);
-  private readonly clipboard = inject(Clipboard);
-  private readonly toastService = inject(ToastService);
-  private readonly translateService = inject(TranslateService);
 
-  public icons: Record<string, IconDefinition> = { faCopy, faCheck, faXmark };
+  public icons: Record<string, IconDefinition> = { faCheck, faXmark };
 
   public readonly torrent = this.dataService.torrent;
   public readonly localPath = this.dataService.localPath;
@@ -65,19 +60,6 @@ export class General implements TorrentDetailTabComponent {
     const normalized = p > 0 && p <= 1 ? p * 100 : p;
     return Math.round(normalized);
   });
-
-  public toClipboard(fieldKey: string, value: string): void {
-    const field = this.translateService.instant(
-      `components.modals.torrent-details.general.${fieldKey}`,
-    );
-    this.toastService.info(
-      this.translateService.instant(
-        'components.modals.torrent-details.general.toast.copied-to-clipboard',
-        { field },
-      ),
-    );
-    this.clipboard.copy(value);
-  }
 
   public isDownloading(): boolean {
     return (
