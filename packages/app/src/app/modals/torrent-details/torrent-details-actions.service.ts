@@ -305,6 +305,24 @@ export class TorrentDetailsActionsService {
     }
   }
 
+  public async toggleForceStart(): Promise<void> {
+    const current = this.dataService.torrent()!.data.force_start;
+    try {
+      await this.qbService.torrents.setForceStart(
+        this.serverStoreService.currentServerId() as string,
+        [this.dataService.hash()],
+        !current,
+      );
+    } catch (error: any) {
+      this.toastService.danger(
+        error?.message ?? String(error),
+        this.translateService.instant(
+          'components.modals.torrent-details.general.toast.toggle-force-start-failed',
+        ),
+      );
+    }
+  }
+
   public deleteTorrent(): void {
     this.commandBusService.emit({
       type: 'UI_TORRENT_DELETE_REQUEST',

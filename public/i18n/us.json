@@ -615,7 +615,8 @@
             "toggle-sequential-download-failed": "Failed to Toggle Sequential Download",
             "toggle-first-last-piece-prio-failed": "Failed to Toggle First/Last Piece Priority",
             "toggle-auto-tmm-failed": "Failed to Toggle Auto TMM",
-            "toggle-super-seeding-failed": "Failed to Toggle Super Seeding"
+            "toggle-super-seeding-failed": "Failed to Toggle Super Seeding",
+            "toggle-force-start-failed": "Failed to Toggle Force Start"
           },
           "footer": {
             "manage-header-path": "Path",
