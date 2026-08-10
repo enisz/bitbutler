@@ -395,7 +395,6 @@
         "general": {
           "loading": "Loading General Properties",
           "name": "Name",
-          "copy-to-clipboard": "Copy to clipboard",
           "rename": "Rename Torrent",
           "delete": "Delete Torrent",
           "save-path": "Save Path",
@@ -609,7 +608,6 @@
             "removing-all-tags": "Removing all tags…",
             "remove-all-tags-failed": "Failed to Remove All Tags",
             "local-path-failed": "Failed to Resolve Local Path",
-            "copied-to-clipboard": "Copied {{field}} to clipboard.",
             "rechecking": "Rechecking torrent…",
             "recheck-failed": "Failed to Recheck Torrent",
             "toggle-sequential-download-failed": "Failed to Toggle Sequential Download",
@@ -629,11 +627,7 @@
             "export-torrent-file": "Export .torrent File",
             "transfer": "Transfer",
             "maintenance": "Maintenance",
-            "sequential-download": "Sequential Download",
-            "first-last-piece-prio": "First/Last Piece Priority",
-            "super-seeding": "Super Seeding",
-            "force-recheck": "Force Recheck",
-            "auto-tmm": "Auto TMM"
+            "force-recheck": "Force Recheck"
           }
         },
         "peers": {
@@ -2052,10 +2046,6 @@
       "global": "Global Limit",
       "no-limit": "No Limit",
       "custom": "Custom"
-    },
-    "state": {
-      "on": "On",
-      "off": "Off"
     },
     "toast": {
       "success": "Success",

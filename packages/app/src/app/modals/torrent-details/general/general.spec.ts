@@ -319,15 +319,48 @@ describe('General', () => {
       expect(buttons.every((b) => !b.disabled)).toBe(true);
     });
 
-    it('clicking an Options button calls the matching action-service toggle method', () => {
-      const buttons = Array.from(
-        fixture.nativeElement.querySelectorAll('.bb-options-grid button'),
-      ) as HTMLButtonElement[];
+    it('sets aria-pressed on each Options button to match its on/off state', () => {
+      const findButton = (fragment: string): HTMLButtonElement => {
+        const button = (
+          Array.from(
+            fixture.nativeElement.querySelectorAll('.bb-options-grid button'),
+          ) as HTMLButtonElement[]
+        ).find((b) => b.textContent?.includes(fragment));
+        expect(button).toBeDefined();
+        return button as HTMLButtonElement;
+      };
 
-      buttons.find((b) => b.textContent?.includes('force-start'))?.click();
+      expect(findButton('auto-tmm').getAttribute('aria-pressed')).toBe('true');
+      expect(findButton('force-start').getAttribute('aria-pressed')).toBe('false');
+      expect(findButton('sequential-download').getAttribute('aria-pressed')).toBe('true');
+      expect(findButton('first-last-piece-prio').getAttribute('aria-pressed')).toBe('false');
+      expect(findButton('super-seeding').getAttribute('aria-pressed')).toBe('false');
+    });
+
+    it('clicking an Options button calls the matching action-service toggle method', () => {
+      const findButton = (fragment: string): HTMLButtonElement => {
+        const button = (
+          Array.from(
+            fixture.nativeElement.querySelectorAll('.bb-options-grid button'),
+          ) as HTMLButtonElement[]
+        ).find((b) => b.textContent?.includes(fragment));
+        expect(button).toBeDefined();
+        return button as HTMLButtonElement;
+      };
+
+      findButton('auto-tmm').click();
+      expect(mockActionsService.toggleAutoTmm).toHaveBeenCalled();
+
+      findButton('force-start').click();
       expect(mockActionsService.toggleForceStart).toHaveBeenCalled();
 
-      buttons.find((b) => b.textContent?.includes('super-seeding'))?.click();
+      findButton('sequential-download').click();
+      expect(mockActionsService.toggleSequentialDownload).toHaveBeenCalled();
+
+      findButton('first-last-piece-prio').click();
+      expect(mockActionsService.toggleFirstLastPiecePrio).toHaveBeenCalled();
+
+      findButton('super-seeding').click();
       expect(mockActionsService.toggleSuperSeeding).toHaveBeenCalled();
     });
   });

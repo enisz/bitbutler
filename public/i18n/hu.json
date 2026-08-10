@@ -395,7 +395,6 @@
         "general": {
           "loading": "Általános tulajdonságok betöltése",
           "name": "Név",
-          "copy-to-clipboard": "Másolás a vágólapra",
           "rename": "Torrent átnevezése",
           "delete": "Torrent törlése",
           "save-path": "Mentési útvonal",
@@ -609,7 +608,6 @@
             "removing-all-tags": "Az összes címke eltávolítása…",
             "remove-all-tags-failed": "Nem sikerült eltávolítani az összes címkét",
             "local-path-failed": "A helyi elérési út feloldása sikertelen!",
-            "copied-to-clipboard": "{{field}} a vágólapra másolva.",
             "rechecking": "Torrent ellenőrzése…",
             "recheck-failed": "Nem sikerült ellenőrizni a torrentet",
             "toggle-sequential-download-failed": "Nem sikerült átváltani a szekvenciális letöltést",
@@ -629,11 +627,7 @@
             "export-torrent-file": "Torrent fájl exportálása",
             "transfer": "Átvitel",
             "maintenance": "Karbantartás",
-            "sequential-download": "Szekvenciális letöltés",
-            "first-last-piece-prio": "Első/utolsó szelet prioritása",
-            "super-seeding": "Super Seeding",
-            "force-recheck": "Kényszerített ellenőrzés",
-            "auto-tmm": "Auto TMM"
+            "force-recheck": "Kényszerített ellenőrzés"
           }
         },
         "peers": {
@@ -2051,10 +2045,6 @@
       "global": "Globális korlát",
       "no-limit": "Nincs korlát",
       "custom": "Egyéni"
-    },
-    "state": {
-      "on": "Be",
-      "off": "Ki"
     },
     "toast": {
       "success": "Siker",

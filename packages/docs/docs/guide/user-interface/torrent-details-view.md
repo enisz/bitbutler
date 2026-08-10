@@ -15,13 +15,12 @@ Double-clicking a torrent row opens this dialog by default - see [Row double-cli
 
 ![General tab](/screenshots/torrent-details-view/general.png)
 
-The General tab is split into three groups:
+The General tab is organized into four cards:
 
-- **General** - name, save path, remote (server-side) path, local path (only shown if a [path mapping](./settings/bitbutler-settings#path-mappings) resolves one), Automatic Torrent Management and Force Start flags, current progress, state, and any error message.
-- **Transfer** - time active, ETA, connections, downloaded/uploaded totals, seeds/peers (connected vs. total known), download/upload speed and limits, wasted data, share ratio, time to next reannounce, last seen complete, ratio and seeding time limits, and the sequential download / first-last-piece-priority / super seeding flags.
+- **Details** - name, save path, remote (server-side) path, local path (only shown if a [path mapping](./settings/bitbutler-settings#path-mappings) resolves one), category, tags, and any error message. Current progress and state are shown in the header and progress bar above this card, not here.
+- **Options** - five clickable toggle buttons: Auto TMM, Force Start, Sequential Download, First/Last Piece Priority, and Super Seeding. Each button shows its current on/off state, and clicking it toggles that setting immediately.
+- **Transfer** - time active, ETA, connections, downloaded/uploaded totals, seeds/peers (connected vs. total known), download/upload speed and limits, wasted data, share ratio, time to next reannounce, last seen complete, and ratio and seeding time limits.
 - **Information** - total size, piece count (with how many you have), created-by and creation date, added-on and completed-on dates, both v1 and v2 info hashes, and the torrent's comment.
-
-Most text fields have a small copy-to-clipboard button next to them.
 
 ## Trackers
 
@@ -50,7 +49,7 @@ A standalone **Delete** button removes the torrent. The rest of the footer group
 - **Control** - Resume, Pause, Force Resume.
 - **Files** - Show File / Open Destination (disabled until a [path mapping](./settings/bitbutler-settings#path-mappings) resolves a local folder), Set Save Path, Set Download Path, and Export Torrent File.
 - **Manage** - Rename, Change Category, Change Tags.
-- **Transfer** - Transfer Limits, Share Limits, and toggles for Super Seeding, Sequential Download, and First/Last Piece Priority.
-- **Maintenance** - Force Recheck, Force Reannounce, and a toggle for Automatic Torrent Management.
+- **Transfer** - Transfer Limits, Share Limits.
+- **Maintenance** - Force Recheck, Force Reannounce.
 
 A **Close** button on the far right closes the dialog.

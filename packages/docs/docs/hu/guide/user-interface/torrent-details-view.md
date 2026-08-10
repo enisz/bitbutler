@@ -15,13 +15,12 @@ Egy torrentsorra való dupla kattintás alapból megnyitja ezt a párbeszédabla
 
 ![Általános fül](/screenshots/torrent-details-view/general.png)
 
-Az Általános fül három csoportra oszlik:
+Az Általános fül négy kártyára oszlik:
 
-- **Általános** - név, mentési útvonal, távoli (szerveroldali) útvonal, helyi útvonal (csak akkor jelenik meg, ha egy [útvonal-hozzárendelés](./settings/bitbutler-settings#utvonal-hozzarendelesek) feloldja azt), Automatikus torrentkezelés és Kényszerített indítás jelzők, jelenlegi állapot, státusz és bármely hibaüzenet.
-- **Átvitel** - aktív idő, várható hátralévő idő, kapcsolatok, letöltött/feltöltött összesen, seedek/peerek (csatlakozott vs. összes ismert), letöltési/feltöltési sebesség és korlátok, kárba veszett adat, megosztási arány, idő a következő újrajelentkezésig, utoljára teljesnek látva, arány- és seedelésiidő-korlátok, valamint a szekvenciális letöltés / első-utolsó szelet prioritás / super seeding jelzők.
+- **Részletek** - név, mentési útvonal, távoli (szerveroldali) útvonal, helyi útvonal (csak akkor jelenik meg, ha egy [útvonal-hozzárendelés](./settings/bitbutler-settings#utvonal-hozzarendelesek) feloldja azt), kategória, címkék és bármely hibaüzenet. A jelenlegi állapotot és státuszt a fenti fejléc és folyamatsáv mutatja, nem ez a kártya.
+- **Beállítások** - öt kattintható kapcsológomb: Auto TMM, Kényszerített indítás, Szekvenciális letöltés, Első/utolsó szelet prioritása és Super Seeding. Mindegyik gomb mutatja a jelenlegi be/ki állapotát, és rákattintva azonnal átváltja az adott beállítást.
+- **Átvitel** - aktív idő, várható hátralévő idő, kapcsolatok, letöltött/feltöltött összesen, seedek/peerek (csatlakozott vs. összes ismert), letöltési/feltöltési sebesség és korlátok, kárba veszett adat, megosztási arány, idő a következő újrajelentkezésig, utoljára teljesnek látva, valamint arány- és seedelésiidő-korlátok.
 - **Információ** - teljes méret, szeletek száma (azzal, hogy hányat birtokolsz), készítő és létrehozás dátuma, hozzáadás és befejezés dátuma, mind a v1, mind a v2 info hash, valamint a torrent megjegyzése.
-
-A legtöbb szövegmező mellett egy kis vágólapra másoló gomb található.
 
 ## Trackerek
 
@@ -50,7 +49,7 @@ Egy önálló **Törlés** gomb eltávolítja a torrentet. A lábléc többi ré
 - **Vezérlés** - Folytatás, Szüneteltetés, Kényszerített folytatás.
 - **Fájlok** - Fájl megjelenítése / Célhely megnyitása (letiltva, amíg egy [útvonal-hozzárendelés](./settings/bitbutler-settings#utvonal-hozzarendelesek) fel nem old egy helyi mappát), Mentési útvonal beállítása, Letöltési útvonal beállítása, valamint Torrentfájl exportálása.
 - **Kezelés** - Átnevezés, Kategória módosítása, Címkék módosítása.
-- **Átvitel** - Átviteli korlátok, Megosztási korlátok, valamint kapcsolók a Super Seedinghez, a Szekvenciális letöltéshez és az Első/utolsó szelet prioritáshoz.
-- **Karbantartás** - Kényszerített ellenőrzés, Kényszerített újrajelentkezés, valamint egy kapcsoló az Automatikus torrentkezeléshez.
+- **Átvitel** - Átviteli korlátok, Megosztási korlátok.
+- **Karbantartás** - Kényszerített ellenőrzés, Kényszerített újrajelentkezés.
 
 A jobb szélen egy **Bezárás** gomb zárja be a párbeszédablakot.
