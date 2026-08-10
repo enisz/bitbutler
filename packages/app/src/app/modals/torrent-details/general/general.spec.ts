@@ -7,6 +7,11 @@ import {
   QbTorrentProperties,
 } from '../../../models/qbittorrent.model';
 import { Torrent } from '../../../models/torrent.model';
+import { CommandBusService } from '../../../services/command-bus.service';
+import { QbService } from '../../../services/qb.service';
+import { ServerStoreService } from '../../../services/server-store.service';
+import { ToastService } from '../../../services/toast.service';
+import { TorrentExportService } from '../../../services/torrent-export.service';
 import { TorrentDetailsActionsService } from '../torrent-details-actions.service';
 import { MergedTorrent, TorrentDetailsDataService } from '../torrent-details-data.service';
 import { General } from './general';
@@ -392,6 +397,60 @@ describe('General', () => {
 
       findButton('super-seeding').click();
       expect(mockActionsService.toggleSuperSeeding).toHaveBeenCalled();
+    });
+  });
+
+  describe('Options button pending state, wired to the real TorrentDetailsActionsService', () => {
+    let realFixture: ComponentFixture<General>;
+    let realDataService: {
+      hash: ReturnType<typeof vi.fn>;
+      torrent: ReturnType<typeof signal<MergedTorrent | null>>;
+      localPath: ReturnType<typeof signal<string | null>>;
+      errorLog: ReturnType<typeof signal<QbLogEntry | null>>;
+    };
+    let setAutoManagement: ReturnType<typeof vi.fn>;
+
+    beforeEach(async () => {
+      TestBed.resetTestingModule();
+      realDataService = {
+        hash: vi.fn().mockReturnValue('abc123'),
+        torrent: signal<MergedTorrent | null>({
+          data: makeTorrent({ auto_tmm: false }),
+          properties: makeProperties(),
+        }),
+        localPath: signal(null),
+        errorLog: signal(null),
+      };
+      setAutoManagement = vi.fn().mockReturnValue(new Promise(() => {})); // never resolves
+
+      await TestBed.configureTestingModule({
+        imports: [General],
+        providers: [
+          TorrentDetailsActionsService,
+          { provide: TorrentDetailsDataService, useValue: realDataService },
+          { provide: ServerStoreService, useValue: { currentServerId: signal('server-1') } },
+          { provide: QbService, useValue: { torrents: { setAutoManagement } } },
+          { provide: CommandBusService, useValue: { emit: vi.fn() } },
+          { provide: ToastService, useValue: { info: vi.fn(), danger: vi.fn() } },
+          { provide: TorrentExportService, useValue: { exportTorrentFiles: vi.fn() } },
+          provideTimeago({ intl: { provide: TimeagoIntl, useClass: TimeagoIntl } }),
+        ],
+      }).compileComponents();
+
+      realFixture = TestBed.createComponent(General);
+      realFixture.detectChanges();
+    });
+
+    it('disables the auto-tmm button while the real service call is pending', () => {
+      const button = Array.from(
+        realFixture.nativeElement.querySelectorAll('.bb-options-grid button'),
+      ).find((b: any) => b.textContent?.includes('auto-tmm')) as HTMLButtonElement;
+
+      expect(button.disabled).toBe(false);
+      button.click();
+      realFixture.detectChanges();
+      expect(setAutoManagement).toHaveBeenCalled();
+      expect(button.disabled).toBe(true);
     });
   });
 
