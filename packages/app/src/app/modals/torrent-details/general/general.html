@@ -114,6 +114,32 @@
             >{{ torrent()!.data.tags || '-' }}</span
           >
         </div>
+        <div class="col-12 bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.comment' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.comment.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.comment.description' | translate
+              "
+            ></bb-popover>
+          </span>
+          <span
+            class="section-value"
+            [ngbTooltip]="torrent()!.properties.comment"
+            bbTooltipOverflow
+            placement="bottom"
+          >
+            @if (torrent()!.properties.comment) {
+              {{ torrent()!.properties.comment }}
+            } @else {
+              -
+            }
+          </span>
+        </div>
       </div>
     </div>
 
@@ -951,32 +977,6 @@
           >
             @if (torrent()!.data.infohash_v2) {
               <code>{{ torrent()!.data.infohash_v2 }}</code>
-            } @else {
-              -
-            }
-          </span>
-        </div>
-        <div class="col-12 bb-section">
-          <span class="section-header">
-            {{ 'components.modals.torrent-details.general.comment' | translate }}
-            <bb-popover
-              placement="top"
-              [subject]="
-                'components.modals.torrent-details.general.popover.comment.title' | translate
-              "
-              [description]="
-                'components.modals.torrent-details.general.popover.comment.description' | translate
-              "
-            ></bb-popover>
-          </span>
-          <span
-            class="section-value"
-            [ngbTooltip]="torrent()!.properties.comment"
-            bbTooltipOverflow
-            placement="bottom"
-          >
-            @if (torrent()!.properties.comment) {
-              {{ torrent()!.properties.comment }}
             } @else {
               -
             }

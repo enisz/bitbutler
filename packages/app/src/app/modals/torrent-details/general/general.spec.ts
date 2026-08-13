@@ -330,6 +330,25 @@ describe('General', () => {
       expect(infoCard.querySelector('.col-lg-6')).toBeNull();
     });
 
+    it('renders Comment inside the Torrent card, not the Information card', () => {
+      const titleHeader = Array.from(
+        fixture.nativeElement.querySelectorAll('.bb-fieldset-title'),
+      ).find((el: any) => el.textContent?.includes('.labels.title')) as HTMLElement;
+      const infoHeader = Array.from(
+        fixture.nativeElement.querySelectorAll('.bb-fieldset-title'),
+      ).find((el: any) => el.textContent?.includes('.labels.information')) as HTMLElement;
+      const titleCard = titleHeader.closest('.bb-fieldset') as HTMLElement;
+      const infoCard = infoHeader.closest('.bb-fieldset') as HTMLElement;
+
+      const findByHeader = (card: HTMLElement, fragment: string) =>
+        Array.from(card.querySelectorAll('.section-header')).find((el: any) =>
+          el.textContent?.includes(fragment),
+        );
+
+      expect(findByHeader(titleCard, '.general.comment')).toBeDefined();
+      expect(findByHeader(infoCard, '.general.comment')).toBeUndefined();
+    });
+
     it('renders 5 Options switches reflecting on/off state', () => {
       const switches = Array.from(
         fixture.nativeElement.querySelectorAll('.bb-option-row input[type="checkbox"]'),
