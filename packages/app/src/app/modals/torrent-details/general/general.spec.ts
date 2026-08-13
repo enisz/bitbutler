@@ -359,13 +359,14 @@ describe('General', () => {
       expect(fixture.nativeElement.querySelector('.button-container')).toBeNull();
     });
 
-    it('sets the Information card grid to 3 columns', () => {
+    it('renders the Information card stats in a 3-column stat grid', () => {
       const infoHeader = Array.from(
         fixture.nativeElement.querySelectorAll('.bb-fieldset-title'),
       ).find((el: any) => el.textContent?.includes('.labels.information')) as HTMLElement;
       const infoCard = infoHeader.closest('.bb-fieldset') as HTMLElement;
-      expect(infoCard.querySelector('.col-lg-4')).not.toBeNull();
-      expect(infoCard.querySelector('.col-lg-6')).toBeNull();
+      const grid = infoCard.querySelector('.bb-stat-grid');
+      expect(grid).not.toBeNull();
+      expect(grid!.querySelectorAll('.bb-section').length).toBe(6);
     });
 
     it('renders Comment inside the Torrent card, not the Information card', () => {

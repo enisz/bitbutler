@@ -1,6 +1,5 @@
 import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TorrentState } from '../../../models/torrent.model';
 import { CommandBusService } from '../../../services/command-bus.service';
 import { FilterService, GRID_FILTER_INITIAL } from '../../../services/filter.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
@@ -85,7 +84,6 @@ describe('Status', () => {
     });
 
     it('should add the downloading group states when not yet active', () => {
-      filterMock.external.set({ ...GRID_FILTER_INITIAL.external, states: new Set() });
       component.setGroup('downloading');
       expect(filterMock.setStates).toHaveBeenCalledWith(
         new Set(['downloading', 'forcedDL', 'queuedDL', 'metaDL', 'stalledDL']),
@@ -93,12 +91,9 @@ describe('Status', () => {
     });
 
     it('should preserve a previously selected group when adding a second one', () => {
-      filterMock.external.set({
-        ...GRID_FILTER_INITIAL.external,
-        states: new Set(['pausedDL', 'pausedUP', 'stoppedDL', 'stoppedUP']),
-      });
+      component.setGroup('stopped');
       component.setGroup('downloading');
-      expect(filterMock.setStates).toHaveBeenCalledWith(
+      expect(filterMock.setStates).toHaveBeenLastCalledWith(
         new Set([
           'pausedDL',
           'pausedUP',
@@ -114,19 +109,12 @@ describe('Status', () => {
     });
 
     it('should remove the stopped group states when already fully active', () => {
-      filterMock.external.set({
-        ...GRID_FILTER_INITIAL.external,
-        states: new Set(['pausedDL', 'pausedUP', 'stoppedDL', 'stoppedUP']),
-      });
       component.setGroup('stopped');
-      expect(filterMock.setStates).toHaveBeenCalledWith(new Set());
+      component.setGroup('stopped');
+      expect(filterMock.setStates).toHaveBeenLastCalledWith(new Set());
     });
 
     it('should not add or remove anything for an unknown key', () => {
-      filterMock.external.set({
-        ...GRID_FILTER_INITIAL.external,
-        states: new Set(['downloading']),
-      });
       component.setGroup('nonexistent');
       expect(filterMock.setStates).not.toHaveBeenCalled();
     });
@@ -135,22 +123,8 @@ describe('Status', () => {
       // Select Downloading, then Active, then deselect Downloading again. Downloading and
       // Active overlap (both include the "downloading", "forcedDL" and "metaDL" states), which
       // is exactly the scenario that broke the old differential-set implementation.
-      filterMock.external.set({ ...GRID_FILTER_INITIAL.external, states: new Set() });
-
       component.setGroup('downloading');
-      // Simulate FilterService applying the first setStates call before the next click.
-      filterMock.external.set({
-        ...GRID_FILTER_INITIAL.external,
-        states: filterMock.setStates.mock.calls[0][0] as Set<TorrentState>,
-      });
-
       component.setGroup('active');
-      // Simulate FilterService applying the second setStates call before the next click.
-      filterMock.external.set({
-        ...GRID_FILTER_INITIAL.external,
-        states: filterMock.setStates.mock.calls[1][0] as Set<TorrentState>,
-      });
-
       component.setGroup('downloading');
 
       expect(filterMock.setStates).toHaveBeenLastCalledWith(
@@ -271,69 +245,51 @@ describe('Status', () => {
       component.clearAll();
       expect(filterMock.resetAll).toHaveBeenCalled();
     });
+
+    it('should reset activeStatusKeys', () => {
+      component.setGroup('downloading');
+      component.clearAll();
+      expect(component.activeStatusKeys()).toEqual(new Set());
+    });
   });
 
   describe('activeStatusKeys', () => {
-    it('should return an empty set when no states filter is active', () => {
-      filterMock.external.set({ ...GRID_FILTER_INITIAL.external, states: new Set() });
+    it('should return an empty set before any selection', () => {
       expect(component.activeStatusKeys()).toEqual(new Set());
     });
 
-    it('should include "stopped" when the stopped states are fully active', () => {
-      filterMock.external.set({
-        ...GRID_FILTER_INITIAL.external,
-        states: new Set(['pausedDL', 'pausedUP', 'stoppedDL', 'stoppedUP']),
-      });
+    it('should include a key once its group is selected', () => {
+      component.setGroup('stopped');
       expect(component.activeStatusKeys()).toEqual(new Set(['stopped']));
     });
 
-    it('should include both keys when the union of two groups is active', () => {
-      filterMock.external.set({
-        ...GRID_FILTER_INITIAL.external,
-        states: new Set([
-          'downloading',
-          'forcedDL',
-          'queuedDL',
-          'metaDL',
-          'stalledDL',
-          'pausedDL',
-          'pausedUP',
-          'stoppedDL',
-          'stoppedUP',
-        ]),
-      });
+    it('should include both keys when two groups are selected', () => {
+      component.setGroup('downloading');
+      component.setGroup('stopped');
       expect(component.activeStatusKeys()).toEqual(new Set(['downloading', 'stopped']));
     });
 
-    it('should return an empty set for an unrecognised/partial combination of states', () => {
-      filterMock.external.set({
-        ...GRID_FILTER_INITIAL.external,
-        states: new Set(['downloading', 'uploading']),
-      });
+    it('should remove a key when its group is deselected', () => {
+      component.setGroup('downloading');
+      component.setGroup('stopped');
+      component.setGroup('downloading');
+      expect(component.activeStatusKeys()).toEqual(new Set(['stopped']));
+    });
+
+    it('should clear all keys when "all" is selected', () => {
+      component.setGroup('downloading');
+      component.setGroup('stopped');
+      component.setGroup('all');
       expect(component.activeStatusKeys()).toEqual(new Set());
     });
 
-    it('should include both keys for an overlapping union (active + inactive)', () => {
-      // Active and Inactive overlap: their union fully covers Downloading's 5 states too, so
-      // "downloading" is also (correctly, per the design spec's accepted cosmetic highlighting)
-      // reported as active here.
-      filterMock.external.set({
-        ...GRID_FILTER_INITIAL.external,
-        states: new Set([
-          'downloading',
-          'uploading',
-          'forcedDL',
-          'forcedUP',
-          'metaDL',
-          'moving',
-          'allocating',
-          'queuedDL',
-          'queuedUP',
-          'stalledDL',
-          'stalledUP',
-        ]),
-      });
-      expect(component.activeStatusKeys()).toEqual(new Set(['active', 'inactive', 'downloading']));
+    it('should not highlight a sibling group whose states are merely covered by the union of two selected groups', () => {
+      // Regression test: Downloading contributes queuedDL/stalledDL and Completed contributes
+      // queuedUP/stalledUP - their union fully covers Inactive's four states, but Inactive was
+      // never clicked and must not light up.
+      component.setGroup('downloading');
+      component.setGroup('completed');
+      expect(component.activeStatusKeys()).toEqual(new Set(['downloading', 'completed']));
     });
   });
 

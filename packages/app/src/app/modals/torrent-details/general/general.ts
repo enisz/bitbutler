@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   IconDefinition,
@@ -55,6 +55,13 @@ export class General implements TorrentDetailTabComponent {
   public readonly localPath = this.dataService.localPath;
   public readonly errorLog = this.dataService.errorLog;
   public errorLogExpanded = signal(false);
+
+  public readonly tagList = computed(() =>
+    (this.torrent()?.data.tags ?? '')
+      .split(',')
+      .map((tag) => tag.trim())
+      .filter((tag) => tag.length > 0),
+  );
 
   public icons: Record<string, IconDefinition> = {
     faTriangleExclamation,
