@@ -1,0 +1,39 @@
+:host {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.bb-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 0.71875rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.bb-status-badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.bb-status-badge--ok {
+  color: var(--bs-success);
+  background: color-mix(in srgb, var(--bs-success) 12%, transparent);
+}
+
+.bb-status-badge--warn {
+  color: var(--bs-danger);
+  background: color-mix(in srgb, var(--bs-danger) 12%, transparent);
+}
+
+.bb-status-badge--idle {
+  color: var(--bs-secondary-color);
+  background: color-mix(in srgb, var(--bs-secondary-color) 10%, transparent);
+}

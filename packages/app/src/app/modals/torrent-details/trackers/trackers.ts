@@ -48,6 +48,7 @@ import {
   TORRENT_DETAILS_GRID_LIGHT_THEME,
 } from '../torrent-details-grid-theme';
 import { TorrentDetailTabComponent } from '../torrent-details.interface';
+import { StatusBadgeCellRenderer } from './status-badge-cell-renderer/status-badge-cell-renderer';
 
 @Component({
   selector: 'app-trackers',
@@ -285,6 +286,7 @@ export class Trackers implements TorrentDetailTabComponent, OnInit {
         filterValueGetter: (params: ValueGetterParams<QbTorrentTracker>) =>
           this.trackerStatusLabel(params.data?.status ?? QbTrackerStatus.Disabled),
         tooltipValueGetter: (params) => this.trackerStatusLabel(params.value as QbTrackerStatus),
+        cellRenderer: StatusBadgeCellRenderer,
         sortable: true,
         resizable: true,
         filter: SetColumnFilter,
