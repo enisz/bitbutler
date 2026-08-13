@@ -12,6 +12,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { faCode, faCopy, faLink } from '@fortawesome/free-solid-svg-icons';
 import { TranslateService } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import {
   CellContextMenuEvent,
@@ -52,7 +53,7 @@ import { StatusBadgeCellRenderer } from './status-badge-cell-renderer/status-bad
 
 @Component({
   selector: 'app-trackers',
-  imports: [AgGridAngular],
+  imports: [AgGridAngular, TranslatePipe],
   templateUrl: './trackers.html',
   styleUrl: './trackers.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

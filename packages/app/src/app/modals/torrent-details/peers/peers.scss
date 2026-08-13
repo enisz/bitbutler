@@ -1,3 +1,11 @@
+.bb-grid-toolbar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--bb-control-placeholder);
+}
+
 .bb-td-grid {
   ::ng-deep .ag-header-cell-text {
     text-transform: uppercase;

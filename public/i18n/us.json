@@ -664,6 +664,9 @@
           "connections-caption": "{{ used }} of {{ max }} conn."
         },
         "peers": {
+          "toolbar": {
+            "count": "{{ count }} connected peers"
+          },
           "grid-options": {
             "loading": {
               "title": "Loading...",
@@ -754,6 +757,9 @@
           }
         },
         "trackers": {
+          "toolbar": {
+            "count": "{{ count }} trackers"
+          },
           "grid-options": {
             "loading": {
               "title": "Loading...",
