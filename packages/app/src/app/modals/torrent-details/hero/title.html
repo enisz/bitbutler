@@ -1,0 +1,25 @@
+@if (torrent(); as t) {
+  <div class="bb-title-row">
+    <span class="bb-title-row__pill">
+      <span class="bb-title-row__dot"></span>
+      {{ statusLabelKey() | translate }}
+    </span>
+    <h1
+      class="bb-title-row__name bb-title-clamp"
+      [ngbTooltip]="t.data.name"
+      bbTooltipOverflow
+      placement="bottom"
+      tooltipClass="single-line-tooltip"
+    >
+      {{ t.data.name }}
+    </h1>
+  </div>
+  <div class="bb-title-row__meta">
+    <span>{{ t.data.total_size | fileSize }}</span>
+    <span>&middot;</span>
+    <span>{{
+      'components.modals.torrent-details.hero.added'
+        | translate: { time: t.data.added_on * 1000 | timeago }
+    }}</span>
+  </div>
+}

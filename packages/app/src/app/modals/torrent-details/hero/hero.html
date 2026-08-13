@@ -1,31 +1,5 @@
 @if (torrent(); as t) {
   <div class="bb-hero">
-    <div class="bb-hero__top">
-      <div class="bb-hero__title-row">
-        <span class="bb-hero__pill">
-          <span class="bb-hero__dot"></span>
-          {{ statusLabelKey() | translate }}
-        </span>
-        <h1
-          class="bb-hero__name bb-title-clamp"
-          [ngbTooltip]="t.data.name"
-          bbTooltipOverflow
-          placement="bottom"
-          tooltipClass="single-line-tooltip"
-        >
-          {{ t.data.name }}
-        </h1>
-      </div>
-      <div class="bb-hero__meta">
-        <span>{{ t.data.total_size | fileSize }}</span>
-        <span>&middot;</span>
-        <span>{{
-          'components.modals.torrent-details.hero.added'
-            | translate: { time: t.data.added_on * 1000 | timeago }
-        }}</span>
-      </div>
-    </div>
-
     <div class="bb-hero__pct">
       {{ progressPercent() }}%
       <small>{{

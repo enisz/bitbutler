@@ -4,7 +4,7 @@ import { TimeagoIntl, provideTimeago } from 'ngx-timeago';
 import { QbTorrentProperties } from '../../../models/qbittorrent.model';
 import { Torrent } from '../../../models/torrent.model';
 import { MergedTorrent, TorrentDetailsDataService } from '../torrent-details-data.service';
-import { TorrentDetailsHero } from './hero';
+import { TorrentDetailsTitle } from './title';
 
 const makeTorrent = (overrides: Partial<Torrent> = {}): Torrent => ({
   added_on: 1700000000,
@@ -16,11 +16,11 @@ const makeTorrent = (overrides: Partial<Torrent> = {}): Torrent => ({
   completion_on: 0,
   content_path: '',
   dl_limit: 0,
-  dlspeed: 1024,
+  dlspeed: 0,
   download_path: '',
-  downloaded: 2048,
+  downloaded: 0,
   downloaded_session: 0,
-  eta: 3600,
+  eta: 0,
   f_l_piece_prio: false,
   force_start: false,
   hash: 'abc123',
@@ -35,12 +35,12 @@ const makeTorrent = (overrides: Partial<Torrent> = {}): Torrent => ({
   name: 'My Torrent',
   num_complete: 0,
   num_incomplete: 0,
-  num_leechs: 3,
-  num_seeds: 5,
+  num_leechs: 0,
+  num_seeds: 0,
   priority: 0,
-  progress: 0.46,
-  ratio: 1.23,
-  ratio_limit: -1,
+  progress: 0,
+  ratio: 0,
+  ratio_limit: 0,
   save_path: '',
   seeding_time: 0,
   seeding_time_limit: 0,
@@ -55,9 +55,9 @@ const makeTorrent = (overrides: Partial<Torrent> = {}): Torrent => ({
   tracker: '',
   trackers_count: 0,
   up_limit: 0,
-  uploaded: 512,
+  uploaded: 0,
   uploaded_session: 0,
-  upspeed: 256,
+  upspeed: 0,
   ...overrides,
 });
 
@@ -75,35 +75,35 @@ const makeProperties = (overrides: Partial<QbTorrentProperties> = {}): QbTorrent
   dl_limit: 0,
   time_elapsed: 0,
   seeding_time: 0,
-  nb_connections: 4,
-  nb_connections_limit: 100,
+  nb_connections: 0,
+  nb_connections_limit: 0,
   share_ratio: 0,
   addition_date: 0,
   completion_date: 0,
   created_by: '',
-  dl_speed: 0,
   dl_speed_avg: 0,
+  dl_speed: 0,
   eta: 0,
   last_seen: 0,
   peers: 0,
-  peers_total: 10,
-  pieces_have: 46,
-  pieces_num: 100,
+  peers_total: 0,
+  pieces_have: 0,
+  pieces_num: 0,
   reannounce: 0,
   seeds: 0,
-  seeds_total: 20,
+  seeds_total: 0,
   total_size: 0,
-  up_speed: 0,
   up_speed_avg: 0,
+  up_speed: 0,
   isPrivate: false,
   infohash_v1: '',
   infohash_v2: '',
   ...overrides,
 });
 
-describe('TorrentDetailsHero', () => {
-  let component: TorrentDetailsHero;
-  let fixture: ComponentFixture<TorrentDetailsHero>;
+describe('TorrentDetailsTitle', () => {
+  let component: TorrentDetailsTitle;
+  let fixture: ComponentFixture<TorrentDetailsTitle>;
   let torrentSignal: ReturnType<typeof signal<MergedTorrent | null>>;
 
   beforeEach(async () => {
@@ -113,14 +113,14 @@ describe('TorrentDetailsHero', () => {
     });
 
     await TestBed.configureTestingModule({
-      imports: [TorrentDetailsHero],
+      imports: [TorrentDetailsTitle],
       providers: [
         { provide: TorrentDetailsDataService, useValue: { torrent: torrentSignal } },
         provideTimeago({ intl: { provide: TimeagoIntl, useClass: TimeagoIntl } }),
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(TorrentDetailsHero);
+    fixture = TestBed.createComponent(TorrentDetailsTitle);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -129,21 +129,21 @@ describe('TorrentDetailsHero', () => {
     expect(component).toBeTruthy();
   });
 
-  it('computes the rounded progress percent', () => {
-    expect(component.progressPercent()).toBe(46);
-  });
-
-  it('reports isDownloading for a downloading-family state', () => {
-    expect(component.isDownloading()).toBe(true);
+  it('reports the status label key for the current state', () => {
+    expect(component.statusLabelKey()).toBe(
+      'components.modals.torrent-details.hero.status.downloading',
+    );
   });
 
   it('renders nothing when there is no torrent yet', () => {
     torrentSignal.set(null);
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('.bb-hero')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.bb-title-row')).toBeNull();
   });
 
-  it('renders the hero card once a torrent is present', () => {
-    expect(fixture.nativeElement.querySelector('.bb-hero')).not.toBeNull();
+  it('renders the torrent name once a torrent is present', () => {
+    const name = fixture.nativeElement.querySelector('.bb-title-row__name');
+    expect(name).not.toBeNull();
+    expect(name.textContent).toContain('My Torrent');
   });
 });
