@@ -265,7 +265,7 @@
 .bb-pill {
   background: color-mix(in srgb, var(--bs-body-color) 8%, transparent);
   padding: 2px 8px;
-  border-radius: 20px;
+  border-radius: var(--bb-control-radius, 8px);
   font-size: 0.7rem;
   font-weight: 500;
   border: 1px solid var(--bs-border-color);
