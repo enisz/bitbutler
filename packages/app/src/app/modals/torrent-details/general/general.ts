@@ -21,6 +21,7 @@ import { TimeLimitPipe } from '../../../pipes/time-limit-pipe';
 import { TorrentDetailsActionsService } from '../torrent-details-actions.service';
 import { TorrentDetailsDataService } from '../torrent-details-data.service';
 import { TorrentDetailTabComponent } from '../torrent-details.interface';
+import { isDownloadingState, normalizeProgressPercent } from '../torrent-progress';
 
 @Component({
   selector: 'app-general',
@@ -58,22 +59,12 @@ export class General implements TorrentDetailTabComponent {
   public readonly errorLog = this.dataService.errorLog;
   public errorLogExpanded = signal(false);
 
-  public readonly progressPercent = computed(() => {
-    const p = this.torrent()?.data.progress ?? 0;
-    const normalized = p > 0 && p <= 1 ? p * 100 : p;
-    return Math.round(normalized);
-  });
+  public readonly progressPercent = computed(() =>
+    normalizeProgressPercent(this.torrent()?.data.progress),
+  );
 
   public isDownloading(): boolean {
-    return (
-      this.torrent()?.data.state === 'downloading' ||
-      this.torrent()?.data.state === 'pausedDL' ||
-      this.torrent()?.data.state === 'stoppedDL' ||
-      this.torrent()?.data.state === 'queuedDL' ||
-      this.torrent()?.data.state === 'stalledDL' ||
-      this.torrent()?.data.state === 'checkingDL' ||
-      this.torrent()?.data.state === 'forcedDL'
-    );
+    return isDownloadingState(this.torrent()?.data.state);
   }
 
   public parseFileErrorReason(message: string): { reason: string; short: string } {
