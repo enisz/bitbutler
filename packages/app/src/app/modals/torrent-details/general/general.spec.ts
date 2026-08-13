@@ -415,6 +415,29 @@ describe('General', () => {
       findSwitch('super-seeding').dispatchEvent(new Event('change'));
       expect(mockActionsService.toggleSuperSeeding).toHaveBeenCalled();
     });
+
+    it('snaps a switch back to the real torrent state when the toggle action does not change it (failed toggle)', () => {
+      const findSwitch = (label: string): HTMLInputElement => {
+        const el = (
+          Array.from(fixture.nativeElement.querySelectorAll('.bb-option-row')) as HTMLElement[]
+        ).find((row) => row.textContent?.includes(label));
+        expect(el).toBeDefined();
+        return el!.querySelector('input[type="checkbox"]') as HTMLInputElement;
+      };
+
+      // auto_tmm starts as true (see beforeEach), so clicking flips the
+      // native checked property to false before (change) fires.
+      const toggle = findSwitch('auto-tmm');
+      expect(toggle.checked).toBe(true);
+
+      toggle.click();
+
+      // toggleAutoTmm failed server-side in this scenario, so the
+      // underlying signal never changed - the switch must snap back to
+      // the real (still-true) state rather than staying unchecked.
+      expect(mockActionsService.toggleAutoTmm).toHaveBeenCalled();
+      expect(toggle.checked).toBe(true);
+    });
   });
 
   describe('Options button pending state, wired to the real TorrentDetailsActionsService', () => {

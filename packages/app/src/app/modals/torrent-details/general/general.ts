@@ -12,12 +12,10 @@ import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
 import { QbLogEntry } from '../../../models/qbittorrent.model';
-import { FileSizePerSecPipe } from '../../../pipes/filesize-per-sec-pipe';
 import { FilesizePipe } from '../../../pipes/filesize-pipe';
 import { HumanizeDurationPipe } from '../../../pipes/humanize-duration-pipe';
 import { LocalTimestampPipe } from '../../../pipes/local-timestamp-pipe';
 import { RatioLimitPipe } from '../../../pipes/ratio-limit-pipe';
-import { RatioPipe } from '../../../pipes/ratio-pipe';
 import { SpeedLimitPipe } from '../../../pipes/speed-limit-pipe';
 import { TimeLimitPipe } from '../../../pipes/time-limit-pipe';
 import { TorrentDetailsActionsService } from '../torrent-details-actions.service';
@@ -33,13 +31,11 @@ import { isDownloadingState } from '../torrent-progress';
     LocalTimestampPipe,
     TimeagoPipe,
     FilesizePipe,
-    FileSizePerSecPipe,
     HumanizeDurationPipe,
     SpeedLimitPipe,
     NgbCollapse,
     NgbTooltip,
     RatioLimitPipe,
-    RatioPipe,
     TimeLimitPipe,
     BbPopover,
     TranslatePipe,
@@ -81,5 +77,40 @@ export class General implements TorrentDetailTabComponent {
 
   public toggleErrorLog(): void {
     this.errorLogExpanded.update((v) => !v);
+  }
+
+  public onOptionToggle(event: Event, current: boolean, action: () => void): void {
+    (event.target as HTMLInputElement).checked = current;
+    action();
+  }
+
+  public onAutoTmmToggle(event: Event): void {
+    this.onOptionToggle(event, this.torrent()!.data.auto_tmm, () =>
+      this.actionsService.toggleAutoTmm(),
+    );
+  }
+
+  public onSequentialDownloadToggle(event: Event): void {
+    this.onOptionToggle(event, this.torrent()!.data.seq_dl, () =>
+      this.actionsService.toggleSequentialDownload(),
+    );
+  }
+
+  public onForceStartToggle(event: Event): void {
+    this.onOptionToggle(event, this.torrent()!.data.force_start, () =>
+      this.actionsService.toggleForceStart(),
+    );
+  }
+
+  public onSuperSeedingToggle(event: Event): void {
+    this.onOptionToggle(event, this.torrent()!.data.super_seeding, () =>
+      this.actionsService.toggleSuperSeeding(),
+    );
+  }
+
+  public onFirstLastPiecePrioToggle(event: Event): void {
+    this.onOptionToggle(event, this.torrent()!.data.f_l_piece_prio, () =>
+      this.actionsService.toggleFirstLastPiecePrio(),
+    );
   }
 }
