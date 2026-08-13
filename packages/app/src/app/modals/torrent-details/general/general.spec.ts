@@ -284,6 +284,34 @@ describe('General', () => {
     });
   });
 
+  describe('hero placement', () => {
+    beforeEach(() => {
+      mockDataService.torrent.set({
+        data: makeTorrent({ state: 'downloading' }),
+        properties: makeProperties(),
+      });
+      fixture.detectChanges();
+    });
+
+    it('renders the hero card', () => {
+      expect(fixture.nativeElement.querySelector('app-torrent-details-hero')).not.toBeNull();
+    });
+
+    it('renders the hero between the error banner and the Torrent card', () => {
+      mockDataService.errorLog.set(makeLogEntry());
+      fixture.detectChanges();
+
+      const container = fixture.nativeElement.querySelector('.container-fluid');
+      const children = Array.from(container.children) as HTMLElement[];
+      const bannerIndex = children.findIndex((el) => el.classList.contains('bb-error-banner'));
+      const heroIndex = children.findIndex((el) => el.tagName === 'APP-TORRENT-DETAILS-HERO');
+      const firstFieldsetIndex = children.findIndex((el) => el.classList.contains('bb-fieldset'));
+
+      expect(heroIndex).toBeGreaterThan(bannerIndex);
+      expect(heroIndex).toBeLessThan(firstFieldsetIndex);
+    });
+  });
+
   describe('General tab restructure', () => {
     beforeEach(() => {
       mockDataService.torrent.set({

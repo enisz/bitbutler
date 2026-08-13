@@ -18,6 +18,7 @@ import { LocalTimestampPipe } from '../../../pipes/local-timestamp-pipe';
 import { RatioLimitPipe } from '../../../pipes/ratio-limit-pipe';
 import { SpeedLimitPipe } from '../../../pipes/speed-limit-pipe';
 import { TimeLimitPipe } from '../../../pipes/time-limit-pipe';
+import { TorrentDetailsHero } from '../hero/hero';
 import { TorrentDetailsActionsService } from '../torrent-details-actions.service';
 import { TorrentDetailsDataService } from '../torrent-details-data.service';
 import { TorrentDetailTabComponent } from '../torrent-details.interface';
@@ -40,6 +41,7 @@ import { isDownloadingState } from '../torrent-progress';
     BbPopover,
     TranslatePipe,
     TooltipOverflow,
+    TorrentDetailsHero,
   ],
   templateUrl: './general.html',
   styleUrl: './general.scss',
