@@ -296,8 +296,7 @@ describe('General', () => {
       expect(sections.some((el) => el.textContent?.includes('.general.state'))).toBe(false);
     });
 
-    it('uses the compact progress bar instead of the labeled one', () => {
-      expect(fixture.nativeElement.querySelector('app-bb-progress-compact')).not.toBeNull();
+    it('does not render the legacy labeled progress bar', () => {
       expect(fixture.nativeElement.querySelector('app-bb-progress')).toBeNull();
     });
 

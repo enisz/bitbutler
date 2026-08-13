@@ -7,20 +7,6 @@
   </div>
 } @else {
   <div class="container-fluid">
-    <div class="bb-progress-summary">
-      <div class="d-flex justify-content-between align-items-baseline">
-        <span>{{
-          'components.modals.torrent-details.general.progress-complete'
-            | translate: { percent: progressPercent() }
-        }}</span>
-        <span class="fw-semibold">{{ torrent()!.data.total_size | fileSize }}</span>
-      </div>
-      <app-bb-progress-compact
-        [progress]="torrent()?.data?.progress"
-        [torrentState]="torrent()?.data?.state"
-      ></app-bb-progress-compact>
-    </div>
-
     <div class="bb-fieldset mt-0">
       <div class="bb-fieldset-title">
         {{ 'components.modals.torrent-details.general.labels.title' | translate }}

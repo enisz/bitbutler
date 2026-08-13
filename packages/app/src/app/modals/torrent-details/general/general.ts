@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbCollapse, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
@@ -6,7 +6,6 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { TimeagoPipe } from 'ngx-timeago';
 import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
-import { BbProgressCompact } from '../../../components/bb-progress-compact/bb-progress-compact';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
 import { QbLogEntry } from '../../../models/qbittorrent.model';
@@ -21,7 +20,7 @@ import { TimeLimitPipe } from '../../../pipes/time-limit-pipe';
 import { TorrentDetailsActionsService } from '../torrent-details-actions.service';
 import { TorrentDetailsDataService } from '../torrent-details-data.service';
 import { TorrentDetailTabComponent } from '../torrent-details.interface';
-import { isDownloadingState, normalizeProgressPercent } from '../torrent-progress';
+import { isDownloadingState } from '../torrent-progress';
 
 @Component({
   selector: 'app-general',
@@ -33,7 +32,6 @@ import { isDownloadingState, normalizeProgressPercent } from '../torrent-progres
     FileSizePerSecPipe,
     HumanizeDurationPipe,
     SpeedLimitPipe,
-    BbProgressCompact,
     NgbCollapse,
     NgbTooltip,
     RatioLimitPipe,
@@ -58,10 +56,6 @@ export class General implements TorrentDetailTabComponent {
   public readonly localPath = this.dataService.localPath;
   public readonly errorLog = this.dataService.errorLog;
   public errorLogExpanded = signal(false);
-
-  public readonly progressPercent = computed(() =>
-    normalizeProgressPercent(this.torrent()?.data.progress),
-  );
 
   public isDownloading(): boolean {
     return isDownloadingState(this.torrent()?.data.state);

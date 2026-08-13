@@ -47,6 +47,7 @@ import { CommandBusService } from '../../services/command-bus.service';
 import { ConfirmService } from '../../services/confirm.service';
 import { ModalGuardService } from '../../services/modal-guard.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
+import { TorrentDetailsHero } from './hero/hero';
 import { TorrentDetailsActionsService } from './torrent-details-actions.service';
 import { TorrentDetailsDataService } from './torrent-details-data.service';
 import { Tab, TorrentDetailTabComponent, TorrentDetailTabId } from './torrent-details.interface';
@@ -65,6 +66,7 @@ import { Tab, TorrentDetailTabComponent, TorrentDetailTabId } from './torrent-de
     TranslatePipe,
     FontAwesomeModule,
     BbBtnContent,
+    TorrentDetailsHero,
   ],
   providers: [ModalGuardService, TorrentDetailsDataService, TorrentDetailsActionsService],
   templateUrl: './torrent-details.html',
