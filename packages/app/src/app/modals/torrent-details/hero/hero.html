@@ -1,0 +1,98 @@
+@if (torrent(); as t) {
+  <div class="bb-hero">
+    <div class="bb-hero__top">
+      <div class="bb-hero__title-row">
+        <span class="bb-hero__pill">
+          <span class="bb-hero__dot"></span>
+          {{ statusLabelKey() | translate }}
+        </span>
+        <h1
+          class="bb-hero__name bb-title-clamp"
+          [ngbTooltip]="t.data.name"
+          bbTooltipOverflow
+          placement="bottom"
+          tooltipClass="single-line-tooltip"
+        >
+          {{ t.data.name }}
+        </h1>
+      </div>
+      <div class="bb-hero__meta">
+        <span>{{ t.data.total_size | fileSize }}</span>
+        <span>&middot;</span>
+        <span>{{
+          'components.modals.torrent-details.hero.added'
+            | translate: { time: t.data.added_on * 1000 | timeago }
+        }}</span>
+      </div>
+    </div>
+
+    <div class="bb-hero__pct">
+      {{ progressPercent() }}%
+      <small
+        >{{ t.data.downloaded | fileSize }}
+        {{ 'components.modals.torrent-details.hero.of' | translate }}
+        {{ t.data.total_size | fileSize }}</small
+      >
+    </div>
+
+    <app-bb-progress-compact
+      [progress]="t.data.progress"
+      [torrentState]="t.data.state"
+    ></app-bb-progress-compact>
+
+    <div class="bb-hero__pieces">
+      <span>{{
+        'components.modals.torrent-details.hero.pieces'
+          | translate: { have: t.properties.pieces_have, total: t.properties.pieces_num }
+      }}</span>
+      @if (isDownloading()) {
+        <span>{{
+          'components.modals.torrent-details.hero.eta'
+            | translate: { value: (t.data.eta * 1000 | humanizeDuration: 'long' : 2) || '-' }
+        }}</span>
+      }
+    </div>
+
+    <div class="bb-hero__kpis">
+      <div class="bb-hero__kpi bb-hero__kpi--down">
+        <div class="bb-hero__kpi-label">
+          {{ 'components.modals.torrent-details.hero.download' | translate }}
+        </div>
+        <div class="bb-hero__kpi-value">{{ t.data.dlspeed | fileSizePerSec }}</div>
+        <div class="bb-hero__kpi-sub">
+          {{ t.data.downloaded | fileSize }} &middot; {{ t.data.dl_limit | speedLimit }}
+        </div>
+      </div>
+      <div class="bb-hero__kpi bb-hero__kpi--up">
+        <div class="bb-hero__kpi-label">
+          {{ 'components.modals.torrent-details.hero.upload' | translate }}
+        </div>
+        <div class="bb-hero__kpi-value">{{ t.data.upspeed | fileSizePerSec }}</div>
+        <div class="bb-hero__kpi-sub">
+          {{ t.data.uploaded | fileSize }} &middot; {{ t.data.up_limit | speedLimit }}
+        </div>
+      </div>
+      <div class="bb-hero__kpi">
+        <div class="bb-hero__kpi-label">
+          {{ 'components.modals.torrent-details.hero.swarm' | translate }}
+        </div>
+        <div class="bb-hero__kpi-value">{{ t.data.num_seeds }} / {{ t.data.num_leechs }}</div>
+        <div class="bb-hero__kpi-sub">
+          {{ 'components.modals.torrent-details.hero.swarm-caption' | translate }} &middot;
+          {{
+            'components.modals.torrent-details.hero.connections-caption'
+              | translate
+                : { used: t.properties.nb_connections, max: t.properties.nb_connections_limit }
+          }}
+        </div>
+      </div>
+      <div class="bb-hero__kpi">
+        <div class="bb-hero__kpi-label">
+          {{ 'components.modals.torrent-details.hero.ratio' | translate }}
+        </div>
+        <div class="bb-hero__kpi-value">{{ t.data.ratio | ratio }}</div>
+        <div class="bb-hero__kpi-sub">{{ t.data.ratio_limit | ratioLimit }}</div>
+      </div>
+    </div>
+  </div>
+}

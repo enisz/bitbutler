@@ -635,6 +635,34 @@
             "force-recheck": "Kényszerített ellenőrzés"
           }
         },
+        "hero": {
+          "status": {
+            "downloading": "Downloading",
+            "seeding": "Seeding",
+            "paused": "Paused",
+            "stopped": "Stopped",
+            "queued": "Queued",
+            "stalled": "Stalled",
+            "checking": "Checking",
+            "forced": "Forced",
+            "allocating": "Allocating",
+            "fetching-metadata": "Fetching Metadata",
+            "missing-files": "Missing Files",
+            "error": "Error",
+            "moving": "Moving",
+            "unknown": "Unknown"
+          },
+          "of": "of",
+          "pieces": "{{ have }} of {{ total }} pieces",
+          "eta": "ETA {{ value }}",
+          "added": "Added {{ time }}",
+          "download": "Download",
+          "upload": "Upload",
+          "swarm": "Swarm",
+          "ratio": "Ratio",
+          "swarm-caption": "seeds / peers",
+          "connections-caption": "{{ used }} of {{ max }} conn."
+        },
         "peers": {
           "grid-options": {
             "loading": {
