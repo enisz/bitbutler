@@ -26,7 +26,7 @@ import {
   ValueGetterParams,
 } from 'ag-grid-community';
 import { Subject, debounceTime } from 'rxjs';
-import { GRID_DARK_THEME, GRID_LIGHT_THEME, GRID_SHARED_OPTIONS } from '../../../app.const';
+import { GRID_SHARED_OPTIONS } from '../../../app.const';
 import { NumberColumnFilter } from '../../../components/column-filters/number-column-filter/number-column-filter';
 import {
   SetColumnFilter,
@@ -43,6 +43,10 @@ import { ContextMenuService } from '../../../services/context-menu.service';
 import { ThemeService } from '../../../services/theme.service';
 import { TrackersGridSettingsService } from '../../../services/trackers-grid.settings.service';
 import { TorrentDetailsDataService } from '../torrent-details-data.service';
+import {
+  TORRENT_DETAILS_GRID_DARK_THEME,
+  TORRENT_DETAILS_GRID_LIGHT_THEME,
+} from '../torrent-details-grid-theme';
 import { TorrentDetailTabComponent } from '../torrent-details.interface';
 
 @Component({
@@ -74,8 +78,8 @@ export class Trackers implements TorrentDetailTabComponent, OnInit {
   public theme = this.themeService.effectiveMode;
   public trackers: QbTorrentTracker[] = [];
   public loading = true;
-  public bbDark = GRID_DARK_THEME;
-  public bbLight = GRID_LIGHT_THEME;
+  public bbDark = TORRENT_DETAILS_GRID_DARK_THEME;
+  public bbLight = TORRENT_DETAILS_GRID_LIGHT_THEME;
   public gridOptions: GridOptions<QbTorrentTracker> = this.getGridOptions();
   public colDefs: ColDef<QbTorrentTracker>[] = this.getColDefs();
 
