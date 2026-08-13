@@ -310,13 +310,13 @@ describe('General', () => {
       expect(fixture.nativeElement.querySelector('.button-container')).toBeNull();
     });
 
-    it('caps the Information card grid at 2 columns', () => {
+    it('sets the Information card grid to 3 columns', () => {
       const infoHeader = Array.from(
         fixture.nativeElement.querySelectorAll('.bb-fieldset-title'),
       ).find((el: any) => el.textContent?.includes('.labels.information')) as HTMLElement;
       const infoCard = infoHeader.closest('.bb-fieldset') as HTMLElement;
-      expect(infoCard.querySelector('.col-xl-4')).toBeNull();
-      expect(infoCard.querySelector('.col-lg-6')).not.toBeNull();
+      expect(infoCard.querySelector('.col-lg-4')).not.toBeNull();
+      expect(infoCard.querySelector('.col-lg-6')).toBeNull();
     });
 
     it('renders 5 clickable Options buttons reflecting on/off state', () => {

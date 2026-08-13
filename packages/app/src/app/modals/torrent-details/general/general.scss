@@ -43,7 +43,7 @@ div.bb-section {
 
 .bb-stat-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   column-gap: 24px;
 }
 
@@ -56,9 +56,9 @@ div.bb-section {
   }
 }
 
-// The Transfer card always renders an even number of stat rows, so the
-// last two DOM children are always the final visual row.
-.bb-stat-grid > .bb-section:nth-last-child(-n + 2) {
+// The Transfer card always renders a row count divisible by 3, so the
+// last three DOM children are always the final visual row.
+.bb-stat-grid > .bb-section:nth-last-child(-n + 3) {
   border-bottom: 0;
 }
 
