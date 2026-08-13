@@ -311,10 +311,20 @@ describe('General', () => {
       expect(fixture.nativeElement.querySelector('app-bb-progress')).toBeNull();
     });
 
-    it('renders 18 stat rows inside the Transfer stat grid', () => {
+    it('renders 15 stat rows inside the Transfer stat grid', () => {
       const grid = fixture.nativeElement.querySelector('.bb-stat-grid');
       expect(grid).not.toBeNull();
-      expect(grid.querySelectorAll('.bb-section').length).toBe(18);
+      expect(grid.querySelectorAll('.bb-section').length).toBe(15);
+    });
+
+    it('does not duplicate Download Speed, Upload Speed, or Share Ratio in the Transfer stat grid', () => {
+      const grid = fixture.nativeElement.querySelector('.bb-stat-grid');
+      const headers = Array.from(grid.querySelectorAll('.section-header')).map(
+        (el: any) => el.textContent as string,
+      );
+      expect(headers.some((h) => h.includes('.general.download-speed'))).toBe(false);
+      expect(headers.some((h) => h.includes('.general.upload-speed'))).toBe(false);
+      expect(headers.some((h) => h.includes('.general.share-ratio'))).toBe(false);
     });
 
     it('does not render any copy-to-clipboard buttons', () => {

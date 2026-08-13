@@ -415,10 +415,9 @@
             ></bb-popover>
           </span>
           <span class="section-value"
-            >{{ torrent()!.properties.nb_connections }} ({{
-              torrent()!.properties.nb_connections_limit
-            }}
-            {{ 'components.modals.torrent-details.general.max' | translate }})</span
+            >{{ torrent()!.properties.nb_connections }} /
+            {{ torrent()!.properties.nb_connections_limit }}
+            {{ 'components.modals.torrent-details.general.max' | translate }}</span
           >
         </div>
         <div class="bb-section">
@@ -472,6 +471,35 @@
         </div>
         <div class="bb-section">
           <span class="section-header">
+            {{ 'components.modals.torrent-details.general.wasted' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.wasted.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.wasted.description' | translate
+              "
+            ></bb-popover>
+          </span>
+          <span
+            class="section-value"
+            [ngbTooltip]="
+              torrent()!.properties.total_wasted > 0
+                ? (torrent()!.properties.total_wasted | fileSize)
+                : '-'
+            "
+            bbTooltipOverflow
+            placement="bottom"
+            >{{
+              torrent()!.properties.total_wasted > 0
+                ? (torrent()!.properties.total_wasted | fileSize)
+                : '-'
+            }}</span
+          >
+        </div>
+        <div class="bb-section">
+          <span class="section-header">
             {{ 'components.modals.torrent-details.general.seeds' | translate }}
             <bb-popover
               placement="top"
@@ -490,50 +518,6 @@
         </div>
         <div class="bb-section">
           <span class="section-header">
-            {{ 'components.modals.torrent-details.general.download-speed' | translate }}
-            <bb-popover
-              placement="top"
-              [subject]="
-                'components.modals.torrent-details.general.popover.download-speed.title' | translate
-              "
-              [description]="
-                'components.modals.torrent-details.general.popover.download-speed.description'
-                  | translate
-              "
-            ></bb-popover>
-          </span>
-          <span
-            class="section-value"
-            [ngbTooltip]="(torrent()!.data.dlspeed | fileSizePerSec) || '-'"
-            bbTooltipOverflow
-            placement="bottom"
-            >{{ (torrent()!.data.dlspeed | fileSizePerSec) || '-' }}</span
-          >
-        </div>
-        <div class="bb-section">
-          <span class="section-header">
-            {{ 'components.modals.torrent-details.general.upload-speed' | translate }}
-            <bb-popover
-              placement="top"
-              [subject]="
-                'components.modals.torrent-details.general.popover.upload-speed.title' | translate
-              "
-              [description]="
-                'components.modals.torrent-details.general.popover.upload-speed.description'
-                  | translate
-              "
-            ></bb-popover>
-          </span>
-          <span
-            class="section-value"
-            [ngbTooltip]="(torrent()!.data.upspeed | fileSizePerSec) || '-'"
-            bbTooltipOverflow
-            placement="bottom"
-            >{{ (torrent()!.data.upspeed | fileSizePerSec) || '-' }}</span
-          >
-        </div>
-        <div class="bb-section">
-          <span class="section-header">
             {{ 'components.modals.torrent-details.general.peers' | translate }}
             <bb-popover
               placement="top"
@@ -548,6 +532,36 @@
           <span class="section-value"
             >{{ torrent()!.data.num_leechs }} ({{ torrent()!.properties.peers_total }}
             {{ 'components.modals.torrent-details.general.total' | translate }})</span
+          >
+        </div>
+        <div class="bb-section">
+          <span class="section-header">
+            {{ 'components.modals.torrent-details.general.reannounce-in' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.reannounce-in.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.reannounce-in.description'
+                  | translate
+              "
+            ></bb-popover>
+          </span>
+          <span
+            class="section-value"
+            [ngbTooltip]="
+              torrent()!.properties.reannounce
+                ? (torrent()!.properties.reannounce * 1000 | humanizeDuration: 'long' : 2)
+                : '-'
+            "
+            bbTooltipOverflow
+            placement="bottom"
+            >{{
+              torrent()!.properties.reannounce
+                ? (torrent()!.properties.reannounce * 1000 | humanizeDuration: 'long' : 2)
+                : '-'
+            }}</span
           >
         </div>
         <div class="bb-section">
@@ -592,88 +606,6 @@
             bbTooltipOverflow
             placement="bottom"
             >{{ torrent()!.data.up_limit | speedLimit }}</span
-          >
-        </div>
-        <div class="bb-section">
-          <span class="section-header">
-            {{ 'components.modals.torrent-details.general.wasted' | translate }}
-            <bb-popover
-              placement="top"
-              [subject]="
-                'components.modals.torrent-details.general.popover.wasted.title' | translate
-              "
-              [description]="
-                'components.modals.torrent-details.general.popover.wasted.description' | translate
-              "
-            ></bb-popover>
-          </span>
-          <span
-            class="section-value"
-            [ngbTooltip]="
-              torrent()!.properties.total_wasted > 0
-                ? (torrent()!.properties.total_wasted | fileSize)
-                : '-'
-            "
-            bbTooltipOverflow
-            placement="bottom"
-            >{{
-              torrent()!.properties.total_wasted > 0
-                ? (torrent()!.properties.total_wasted | fileSize)
-                : '-'
-            }}</span
-          >
-        </div>
-        <div class="bb-section">
-          <span class="section-header">
-            {{ 'components.modals.torrent-details.general.share-ratio' | translate }}
-            <bb-popover
-              placement="top"
-              [subject]="
-                'components.modals.torrent-details.general.popover.share-ratio.title' | translate
-              "
-              [description]="
-                'components.modals.torrent-details.general.popover.share-ratio.description'
-                  | translate
-              "
-            ></bb-popover>
-          </span>
-          <span
-            class="section-value"
-            [ngbTooltip]="torrent()!.data.ratio | ratio"
-            bbTooltipOverflow
-            placement="bottom"
-          >
-            {{ torrent()!.data.ratio | ratio }}
-          </span>
-        </div>
-        <div class="bb-section">
-          <span class="section-header">
-            {{ 'components.modals.torrent-details.general.reannounce-in' | translate }}
-            <bb-popover
-              placement="top"
-              [subject]="
-                'components.modals.torrent-details.general.popover.reannounce-in.title' | translate
-              "
-              [description]="
-                'components.modals.torrent-details.general.popover.reannounce-in.description'
-                  | translate
-              "
-            ></bb-popover>
-          </span>
-          <span
-            class="section-value"
-            [ngbTooltip]="
-              torrent()!.properties.reannounce
-                ? (torrent()!.properties.reannounce * 1000 | humanizeDuration: 'long' : 2)
-                : '-'
-            "
-            bbTooltipOverflow
-            placement="bottom"
-            >{{
-              torrent()!.properties.reannounce
-                ? (torrent()!.properties.reannounce * 1000 | humanizeDuration: 'long' : 2)
-                : '-'
-            }}</span
           >
         </div>
         <div class="bb-section">
