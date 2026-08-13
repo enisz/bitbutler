@@ -141,3 +141,34 @@ div.bb-section.bb-section--danger {
     }
   }
 }
+
+.bb-option-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 11px 4px;
+  border-bottom: 1px solid var(--bs-border-color);
+
+  &__text {
+    min-width: 0;
+  }
+
+  &__label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.875rem;
+  }
+
+  &__sub {
+    font-size: 0.75rem;
+    color: var(--bs-secondary-color);
+    margin-top: 2px;
+  }
+}
+
+.row.gy-2 > [class*='col-'] > .bb-option-row:last-child,
+.row.gy-2 > [class*='col-']:last-child .bb-option-row {
+  border-bottom: 0;
+}

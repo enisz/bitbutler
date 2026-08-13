@@ -319,82 +319,60 @@ describe('General', () => {
       expect(infoCard.querySelector('.col-lg-6')).toBeNull();
     });
 
-    it('renders 5 clickable Options buttons reflecting on/off state', () => {
-      const buttons = Array.from(
-        fixture.nativeElement.querySelectorAll('.bb-options-grid button'),
-      ) as HTMLButtonElement[];
-      expect(buttons.length).toBe(5);
+    it('renders 5 Options switches reflecting on/off state', () => {
+      const switches = Array.from(
+        fixture.nativeElement.querySelectorAll('.bb-option-row input[type="checkbox"]'),
+      ) as HTMLInputElement[];
+      expect(switches.length).toBe(5);
 
-      const on = buttons.filter((b) => b.classList.contains('btn-success'));
-      const off = buttons.filter((b) => b.classList.contains('btn-link'));
+      const on = switches.filter((s) => s.checked);
+      const off = switches.filter((s) => !s.checked);
       expect(on.length).toBe(2); // auto_tmm, seq_dl
       expect(off.length).toBe(3); // force_start, f_l_piece_prio, super_seeding
-      expect(buttons.every((b) => !b.disabled)).toBe(true);
+      expect(switches.every((s) => !s.disabled)).toBe(true);
     });
 
-    it('sets aria-pressed on each Options button to match its on/off state', () => {
-      const findButton = (fragment: string): HTMLButtonElement => {
-        const button = (
-          Array.from(
-            fixture.nativeElement.querySelectorAll('.bb-options-grid button'),
-          ) as HTMLButtonElement[]
-        ).find((b) => b.textContent?.includes(fragment));
-        expect(button).toBeDefined();
-        return button as HTMLButtonElement;
-      };
-
-      expect(findButton('auto-tmm').getAttribute('aria-pressed')).toBe('true');
-      expect(findButton('force-start').getAttribute('aria-pressed')).toBe('false');
-      expect(findButton('sequential-download').getAttribute('aria-pressed')).toBe('true');
-      expect(findButton('first-last-piece-prio').getAttribute('aria-pressed')).toBe('false');
-      expect(findButton('super-seeding').getAttribute('aria-pressed')).toBe('false');
-    });
-
-    it('disables only the Options button whose own action is pending', () => {
-      const findButton = (fragment: string): HTMLButtonElement => {
-        const button = (
-          Array.from(
-            fixture.nativeElement.querySelectorAll('.bb-options-grid button'),
-          ) as HTMLButtonElement[]
-        ).find((b) => b.textContent?.includes(fragment));
-        expect(button).toBeDefined();
-        return button as HTMLButtonElement;
+    it('disables only the Options switch whose own action is pending', () => {
+      const findSwitch = (label: string): HTMLInputElement => {
+        const el = (
+          Array.from(fixture.nativeElement.querySelectorAll('.bb-option-row')) as HTMLElement[]
+        ).find((row) => row.textContent?.includes(label));
+        expect(el).toBeDefined();
+        return el!.querySelector('input[type="checkbox"]') as HTMLInputElement;
       };
 
       pendingOptionKey.set('auto-tmm');
       fixture.detectChanges();
 
-      expect(findButton('auto-tmm').disabled).toBe(true);
-      expect(findButton('force-start').disabled).toBe(false);
-      expect(findButton('sequential-download').disabled).toBe(false);
-      expect(findButton('first-last-piece-prio').disabled).toBe(false);
-      expect(findButton('super-seeding').disabled).toBe(false);
+      expect(findSwitch('auto-tmm').disabled).toBe(true);
+      expect(findSwitch('force-start').disabled).toBe(false);
+      expect(findSwitch('sequential-download').disabled).toBe(false);
+      expect(findSwitch('first-last-piece-prio').disabled).toBe(false);
+      expect(findSwitch('super-seeding').disabled).toBe(false);
     });
 
-    it('clicking an Options button calls the matching action-service toggle method', () => {
-      const findButton = (fragment: string): HTMLButtonElement => {
-        const button = (
-          Array.from(
-            fixture.nativeElement.querySelectorAll('.bb-options-grid button'),
-          ) as HTMLButtonElement[]
-        ).find((b) => b.textContent?.includes(fragment));
-        expect(button).toBeDefined();
-        return button as HTMLButtonElement;
+    it('toggling an Options switch calls the matching action-service method', () => {
+      const findSwitch = (label: string): HTMLInputElement => {
+        const el = (
+          Array.from(fixture.nativeElement.querySelectorAll('.bb-option-row')) as HTMLElement[]
+        ).find((row) => row.textContent?.includes(label));
+        expect(el).toBeDefined();
+        return el!.querySelector('input[type="checkbox"]') as HTMLInputElement;
       };
 
-      findButton('auto-tmm').click();
+      findSwitch('auto-tmm').dispatchEvent(new Event('change'));
       expect(mockActionsService.toggleAutoTmm).toHaveBeenCalled();
 
-      findButton('force-start').click();
+      findSwitch('force-start').dispatchEvent(new Event('change'));
       expect(mockActionsService.toggleForceStart).toHaveBeenCalled();
 
-      findButton('sequential-download').click();
+      findSwitch('sequential-download').dispatchEvent(new Event('change'));
       expect(mockActionsService.toggleSequentialDownload).toHaveBeenCalled();
 
-      findButton('first-last-piece-prio').click();
+      findSwitch('first-last-piece-prio').dispatchEvent(new Event('change'));
       expect(mockActionsService.toggleFirstLastPiecePrio).toHaveBeenCalled();
 
-      findButton('super-seeding').click();
+      findSwitch('super-seeding').dispatchEvent(new Event('change'));
       expect(mockActionsService.toggleSuperSeeding).toHaveBeenCalled();
     });
   });
@@ -440,16 +418,17 @@ describe('General', () => {
       realFixture.detectChanges();
     });
 
-    it('disables the auto-tmm button while the real service call is pending', () => {
-      const button = Array.from(
-        realFixture.nativeElement.querySelectorAll('.bb-options-grid button'),
-      ).find((b: any) => b.textContent?.includes('auto-tmm')) as HTMLButtonElement;
+    it('disables the auto-tmm switch while the real service call is pending', () => {
+      const row = (
+        Array.from(realFixture.nativeElement.querySelectorAll('.bb-option-row')) as HTMLElement[]
+      ).find((el) => el.textContent?.includes('auto-tmm'));
+      const toggle = row!.querySelector('input[type="checkbox"]') as HTMLInputElement;
 
-      expect(button.disabled).toBe(false);
-      button.click();
+      expect(toggle.disabled).toBe(false);
+      toggle.dispatchEvent(new Event('change'));
       realFixture.detectChanges();
       expect(setAutoManagement).toHaveBeenCalled();
-      expect(button.disabled).toBe(true);
+      expect(toggle.disabled).toBe(true);
     });
   });
 

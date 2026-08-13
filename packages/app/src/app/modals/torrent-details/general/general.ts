@@ -1,10 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbCollapse, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { TimeagoPipe } from 'ngx-timeago';
-import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
@@ -38,7 +35,6 @@ import { isDownloadingState } from '../torrent-progress';
     RatioPipe,
     TimeLimitPipe,
     BbPopover,
-    BbBtnContent,
     TranslatePipe,
     TooltipOverflow,
   ],
@@ -49,8 +45,6 @@ import { isDownloadingState } from '../torrent-progress';
 export class General implements TorrentDetailTabComponent {
   private readonly dataService = inject(TorrentDetailsDataService);
   public readonly actionsService = inject(TorrentDetailsActionsService);
-
-  public icons: Record<string, IconDefinition> = { faCheck, faXmark };
 
   public readonly torrent = this.dataService.torrent;
   public readonly localPath = this.dataService.localPath;
