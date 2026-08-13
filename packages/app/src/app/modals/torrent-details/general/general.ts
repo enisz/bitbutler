@@ -1,4 +1,10 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {
+  IconDefinition,
+  faChevronDown,
+  faTriangleExclamation,
+} from '@fortawesome/free-solid-svg-icons';
 import { NgbCollapse, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { TimeagoPipe } from 'ngx-timeago';
@@ -23,6 +29,7 @@ import { isDownloadingState } from '../torrent-progress';
   selector: 'app-general',
   imports: [
     BbSpinner,
+    FontAwesomeModule,
     LocalTimestampPipe,
     TimeagoPipe,
     FilesizePipe,
@@ -50,6 +57,11 @@ export class General implements TorrentDetailTabComponent {
   public readonly localPath = this.dataService.localPath;
   public readonly errorLog = this.dataService.errorLog;
   public errorLogExpanded = signal(false);
+
+  public icons: Record<string, IconDefinition> = {
+    faTriangleExclamation,
+    faChevronDown,
+  };
 
   public isDownloading(): boolean {
     return isDownloadingState(this.torrent()?.data.state);

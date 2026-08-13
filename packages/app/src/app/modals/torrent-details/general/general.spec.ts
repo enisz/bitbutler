@@ -236,7 +236,7 @@ describe('General', () => {
     });
   });
 
-  describe('error row rendering', () => {
+  describe('error banner rendering', () => {
     beforeEach(() => {
       mockDataService.torrent.set({
         data: makeTorrent({ state: 'downloading' }),
@@ -245,31 +245,42 @@ describe('General', () => {
       fixture.detectChanges();
     });
 
-    it('does not render the error row when there is no errorLog', () => {
-      expect(fixture.nativeElement.querySelector('.bb-section--danger')).toBeNull();
+    it('does not render the error banner when there is no errorLog', () => {
+      expect(fixture.nativeElement.querySelector('.bb-error-banner')).toBeNull();
     });
 
-    it('renders the error row with the short reason and reflects errorLogExpanded on the icon', () => {
+    it('renders the error banner with the short reason and reflects errorLogExpanded on the chevron', () => {
       mockDataService.errorLog.set(makeLogEntry());
       fixture.detectChanges();
 
-      const row = fixture.nativeElement.querySelector('.bb-section--danger');
-      expect(row).not.toBeNull();
-      expect(row.querySelector('.section-header').textContent).not.toContain('[object Object]');
-      expect(row.querySelector('.section-value').textContent).toContain('Permission denied');
+      const banner = fixture.nativeElement.querySelector('.bb-error-banner');
+      expect(banner).not.toBeNull();
+      expect(banner.querySelector('.bb-error-banner__message').textContent).toContain(
+        'Permission denied',
+      );
 
-      const icon = row.querySelector('.error-toggle__icon');
-      expect(icon.classList.contains('error-toggle__icon--expanded')).toBe(false);
+      const chevron = banner.querySelector('.bb-error-banner__chevron');
+      expect(chevron.classList.contains('bb-error-banner__chevron--expanded')).toBe(false);
 
       component.toggleErrorLog();
       fixture.detectChanges();
 
-      expect(icon.classList.contains('error-toggle__icon--expanded')).toBe(true);
+      expect(chevron.classList.contains('bb-error-banner__chevron--expanded')).toBe(true);
 
-      const detail = row.querySelector('.error-toggle__detail');
-      expect(detail.querySelector('hr')).toBeNull();
-      expect(detail.querySelector('.section-header')).toBeNull();
+      const detail = banner.querySelector('.bb-error-banner__detail');
       expect(detail.querySelector('pre').textContent).toContain('Permission denied');
+    });
+
+    it('renders the error banner above the Torrent card', () => {
+      mockDataService.errorLog.set(makeLogEntry());
+      fixture.detectChanges();
+
+      const container = fixture.nativeElement.querySelector('.container-fluid');
+      const children = Array.from(container.children) as HTMLElement[];
+      const bannerIndex = children.findIndex((el) => el.classList.contains('bb-error-banner'));
+      const firstFieldsetIndex = children.findIndex((el) => el.classList.contains('bb-fieldset'));
+      expect(bannerIndex).toBeGreaterThanOrEqual(0);
+      expect(bannerIndex).toBeLessThan(firstFieldsetIndex);
     });
   });
 

@@ -7,6 +7,34 @@
   </div>
 } @else {
   <div class="container-fluid">
+    @if (errorLog(); as entry) {
+      <div class="bb-error-banner">
+        <button type="button" class="bb-error-banner__header" (click)="toggleErrorLog()">
+          <span class="bb-error-banner__icon">
+            <fa-icon [icon]="icons['faTriangleExclamation']" aria-hidden="true"></fa-icon>
+          </span>
+          <span class="bb-error-banner__text">
+            <span class="bb-error-banner__title">{{
+              'components.modals.torrent-details.general.error' | translate
+            }}</span>
+            <span class="bb-error-banner__message">{{
+              parseFileErrorReason(entry.message).short
+            }}</span>
+          </span>
+          <span
+            class="bb-error-banner__chevron"
+            [class.bb-error-banner__chevron--expanded]="errorLogExpanded()"
+          >
+            <fa-icon [icon]="icons['faChevronDown']" aria-hidden="true"></fa-icon>
+          </span>
+        </button>
+        <div [ngbCollapse]="!errorLogExpanded()">
+          <div class="bb-error-banner__detail">
+            <pre>{{ rawLogJson(entry) }}</pre>
+          </div>
+        </div>
+      </div>
+    }
     <div class="bb-fieldset mt-0">
       <div class="bb-fieldset-title">
         {{ 'components.modals.torrent-details.general.labels.title' | translate }}
@@ -60,26 +88,6 @@
               placement="bottom"
               >{{ localPath() }}</span
             >
-          </div>
-        }
-        @if (errorLog(); as entry) {
-          <div class="col-12 bb-section bb-section--danger">
-            <button type="button" class="error-toggle" (click)="toggleErrorLog()">
-              <span class="section-header">{{
-                'components.modals.torrent-details.general.error' | translate
-              }}</span>
-              <span class="section-value">{{ parseFileErrorReason(entry.message).short }}</span>
-              <span
-                class="error-toggle__icon"
-                [class.error-toggle__icon--expanded]="errorLogExpanded()"
-              ></span>
-            </button>
-
-            <div [ngbCollapse]="!errorLogExpanded()">
-              <div class="error-toggle__detail">
-                <pre>{{ rawLogJson(entry) }}</pre>
-              </div>
-            </div>
           </div>
         }
         <div class="col-12 bb-section">
