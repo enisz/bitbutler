@@ -422,13 +422,10 @@
           "uploaded": "Feltöltve",
           "seeds": "Seeder",
           "total": "összesen",
-          "download-speed": "Letöltési sebesség",
-          "upload-speed": "Feltöltési sebesség",
           "peers": "Peer",
           "download-limit": "Letöltési korlát",
           "upload-limit": "Feltöltési korlát",
           "wasted": "Kárba veszett",
-          "share-ratio": "Megosztási arány",
           "reannounce-in": "Újrajelentkezés",
           "force-reannounce": "Kényszerített újrajelentkezés",
           "last-seen-complete": "Utoljára teljesnek látva",
@@ -495,14 +492,6 @@
               "title": "Seeder",
               "description": "A jelenleg csatlakozott felhasználók száma, akik a fájl 100%-ával rendelkeznek."
             },
-            "download-speed": {
-              "title": "Letöltési sebesség",
-              "description": "A jelenlegi adatfogadási sebesség."
-            },
-            "upload-speed": {
-              "title": "Feltöltési sebesség",
-              "description": "A jelenlegi adatküldési sebesség mások felé."
-            },
             "peers": {
               "title": "Peer",
               "description": "Felhasználók, akik jelenleg töltik a fájlt (leecherek) és csak részei vannak meg."
@@ -518,10 +507,6 @@
             "wasted": {
               "title": "Kárba veszett",
               "description": "Sérülés vagy hash-hiba miatt eldobott adatok."
-            },
-            "share-ratio": {
-              "title": "Megosztási arány",
-              "description": "A feltöltött és letöltött adatok aránya (Feltöltött / Letöltött)."
             },
             "reannounce-in": {
               "title": "Újrajelentkezés",

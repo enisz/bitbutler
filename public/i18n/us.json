@@ -422,13 +422,10 @@
           "uploaded": "Uploaded",
           "seeds": "Seeds",
           "total": "total",
-          "download-speed": "Download Speed",
-          "upload-speed": "Upload Speed",
           "peers": "Peers",
           "download-limit": "Download Limit",
           "upload-limit": "Upload Limit",
           "wasted": "Wasted",
-          "share-ratio": "Share Ratio",
           "reannounce-in": "Reannounce In",
           "force-reannounce": "Force Reannounce",
           "last-seen-complete": "Last Seen Complete",
@@ -495,14 +492,6 @@
               "title": "Seeds",
               "description": "The number of users currently connected who have 100% of the file."
             },
-            "download-speed": {
-              "title": "Download Speed",
-              "description": "The current rate at which you are receiving data."
-            },
-            "upload-speed": {
-              "title": "Upload Speed",
-              "description": "The current rate at which you are sending data to others."
-            },
             "peers": {
               "title": "Peers",
               "description": "Users who are currently downloading the file (leechers) and have only parts of it."
@@ -518,10 +507,6 @@
             "wasted": {
               "title": "Wasted",
               "description": "Data that was discarded due to corruption or hash failures."
-            },
-            "share-ratio": {
-              "title": "Share Ratio",
-              "description": "The ratio of uploaded data to downloaded data (Uploaded / Downloaded)."
             },
             "reannounce-in": {
               "title": "Reannounce In",
