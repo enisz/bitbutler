@@ -454,6 +454,13 @@
           "auto-tmm": "Auto TMM",
           "super-seeding": "Super Seeding",
           "force-start": "Force Start",
+          "option-hint": {
+            "auto-tmm": "Save path managed by category",
+            "sequential-download": "Pieces downloaded in order",
+            "force-start": "Bypasses queue limits",
+            "super-seeding": "Only useful while seeding",
+            "first-last-piece-prio": "Prioritizes the first and last pieces"
+          },
           "tooltip": {
             "open-destination-unresolved": "This torrent's save path could not be resolved on this machine."
           },

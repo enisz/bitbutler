@@ -454,6 +454,13 @@
           "auto-tmm": "Auto TMM",
           "super-seeding": "Super Seeding",
           "force-start": "Kényszerített indítás",
+          "option-hint": {
+            "auto-tmm": "A mentési útvonalat a kategória kezeli",
+            "sequential-download": "A szeletek sorban töltődnek le",
+            "force-start": "Megkerüli a sor korlátait",
+            "super-seeding": "Csak seedelés közben hasznos",
+            "first-last-piece-prio": "Az első és utolsó szeleteket helyezi előtérbe"
+          },
           "tooltip": {
             "open-destination-unresolved": "A torrent mentési útvonala nem feloldható ezen a gépen."
           },
