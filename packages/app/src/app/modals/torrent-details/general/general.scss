@@ -67,7 +67,7 @@ div.bb-section {
     grid-template-columns: 1fr;
   }
 
-  .bb-stat-grid > .bb-section:nth-last-child(-n + 2) {
+  .bb-stat-grid > .bb-section:nth-last-child(-n + 3) {
     border-bottom: 1px solid var(--bs-border-color);
   }
 

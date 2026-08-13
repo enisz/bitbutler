@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject } from '@angular/core';
 import { ICellRendererAngularComp } from 'ag-grid-angular';
 import { ICellRendererParams } from 'ag-grid-community';
 import { QbTorrentTracker, QbTrackerStatus } from '../../../../models/qbittorrent.model';
@@ -21,14 +21,22 @@ const BADGE_VARIANT: Record<QbTrackerStatus, BadgeVariant> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StatusBadgeCellRenderer implements ICellRendererAngularComp {
+  private readonly cdr = inject(ChangeDetectorRef);
+
   public params!: ICellRendererParams<QbTorrentTracker, QbTrackerStatus, any>;
 
   public agInit(params: ICellRendererParams<QbTorrentTracker, QbTrackerStatus, any>): void {
-    this.params = params;
+    this.updateData(params);
   }
 
-  public refresh(): boolean {
+  public refresh(params: ICellRendererParams<QbTorrentTracker, QbTrackerStatus, any>): boolean {
+    this.updateData(params);
     return true;
+  }
+
+  private updateData(params: ICellRendererParams<QbTorrentTracker, QbTrackerStatus, any>): void {
+    this.params = params;
+    this.cdr.markForCheck();
   }
 
   public get variant(): BadgeVariant {

@@ -28,11 +28,11 @@
 
     <div class="bb-hero__pct">
       {{ progressPercent() }}%
-      <small
-        >{{ t.data.downloaded | fileSize }}
-        {{ 'components.modals.torrent-details.hero.of' | translate }}
-        {{ t.data.total_size | fileSize }}</small
-      >
+      <small>{{
+        'components.modals.torrent-details.hero.completed'
+          | translate
+            : { done: (t.data.completed | fileSize), total: (t.data.total_size | fileSize) }
+      }}</small>
     </div>
 
     <app-bb-progress-compact

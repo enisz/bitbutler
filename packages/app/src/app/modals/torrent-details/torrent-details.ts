@@ -39,7 +39,6 @@ import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { variantForTorrentState } from '../../components/bb-progress/torrent-state-variant';
 import { BbSpinner } from '../../components/bb-spinner/bb-spinner';
 import { AutofocusDirective } from '../../directives/autofocus';
-import { TooltipOverflow } from '../../directives/tooltip-overflow';
 import { AppCommand, TorrentCommand } from '../../models/command.model';
 import { GuardableModal } from '../../models/guardable-modal.interface';
 import { Torrent } from '../../models/torrent.model';
@@ -60,7 +59,6 @@ import { Tab, TorrentDetailTabComponent, TorrentDetailTabId } from './torrent-de
     BbSpinner,
     NgComponentOutlet,
     AutofocusDirective,
-    TooltipOverflow,
     NgbTooltip,
     NgbDropdownModule,
     TranslatePipe,

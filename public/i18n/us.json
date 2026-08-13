@@ -404,7 +404,6 @@
           "show-file": "Show File",
           "open-destination": "Open Destination",
           "progress": "Progress",
-          "progress-complete": "{{ percent }}% complete",
           "state": "State",
           "resume": "Resume Download",
           "pause": "Pause Download",
@@ -652,7 +651,7 @@
             "moving": "Moving",
             "unknown": "Unknown"
           },
-          "of": "of",
+          "completed": "{{ done }} of {{ total }}",
           "pieces": "{{ have }} of {{ total }} pieces",
           "eta": "ETA {{ value }}",
           "added": "Added {{ time }}",

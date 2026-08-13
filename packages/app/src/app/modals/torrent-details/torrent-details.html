@@ -1,23 +1,4 @@
 <div class="modal-header bb-modal-header">
-  <div class="bb-modal-header__text">
-    <h5
-      class="modal-title bb-title-clamp"
-      [ngbTooltip]="torrent()?.name"
-      bbTooltipOverflow
-      placement="bottom"
-      tooltipClass="single-line-tooltip"
-    >
-      {{ torrent()?.name }}
-    </h5>
-
-    @if (torrent()) {
-      <div class="small text-body-secondary mt-1 d-flex align-items-center gap-2 bb-status-line">
-        <fa-icon [icon]="icon.faCircle" [class]="'bb-status-dot text-' + stateVariant()"></fa-icon>
-        <span>{{ 'torrent.state.' + torrent()!.state | translate }}</span>
-      </div>
-    }
-  </div>
-
   <button
     type="button"
     class="btn-close"
@@ -67,7 +48,7 @@
 </div>
 
 <div class="modal-footer">
-  <div class="d-flex gap-2">
+  <div class="d-flex flex-wrap gap-2">
     <div ngbDropdown container="body" placement="top-start">
       <button type="button" class="btn btn-secondary btn-sm btn-split" ngbDropdownToggle>
         <bb-btn-content
@@ -231,7 +212,7 @@
     </div>
   </div>
 
-  <div class="d-flex gap-2 ms-auto">
+  <div class="d-flex flex-wrap gap-2 ms-auto">
     <button
       type="button"
       class="btn btn-danger btn-sm"

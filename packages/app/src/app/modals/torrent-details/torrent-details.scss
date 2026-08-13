@@ -2,10 +2,6 @@
   display: none;
 }
 
-.bb-status-dot {
-  font-size: 0.5rem;
-}
-
 .bb-tab-panels {
   position: relative;
 }
@@ -30,5 +26,25 @@
     transition:
       opacity 0.2s ease,
       visibility 0s linear 0s;
+  }
+}
+
+// .bb-grid-toolbar / .bb-td-grid are rendered by the Trackers and Peers tab
+// components, which are mounted dynamically via NgComponentOutlet and have
+// their own view encapsulation - ::ng-deep is required here so these rules
+// (defined once, for both tabs) still reach into their templates.
+::ng-deep {
+  .bb-grid-toolbar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    font-size: 0.8125rem;
+    color: var(--bb-control-placeholder);
+  }
+
+  .bb-td-grid .ag-header-cell-text {
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
   }
 }
