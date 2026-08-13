@@ -1,12 +1,15 @@
 @if (torrent(); as t) {
   <div class="bb-hero">
-    <div class="bb-hero__pct">
-      {{ progressPercent() }}%
-      <small>{{
-        'components.modals.torrent-details.hero.completed'
-          | translate
-            : { done: (t.data.completed | fileSize), total: (t.data.total_size | fileSize) }
-      }}</small>
+    <div class="bb-hero__top">
+      <div class="bb-hero__pct">
+        {{ progressPercent() }}%
+        <small>{{
+          'components.modals.torrent-details.hero.completed'
+            | translate
+              : { done: (t.data.completed | fileSize), total: (t.data.total_size | fileSize) }
+        }}</small>
+      </div>
+      <div class="bb-hero__state">{{ statusLabelKey() | translate }}</div>
     </div>
 
     <app-bb-progress-compact

@@ -10,8 +10,15 @@
   background: color-mix(in srgb, var(--bb-accent) 5%, transparent);
 }
 
-.bb-hero__pct {
+.bb-hero__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
   margin-top: 0.625rem;
+}
+
+.bb-hero__pct {
   font-size: 1.625rem;
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -23,6 +30,13 @@
     font-weight: 500;
     margin-left: 0.5rem;
   }
+}
+
+.bb-hero__state {
+  font-size: 0.78125rem;
+  color: var(--bb-control-placeholder);
+  text-align: right;
+  flex-shrink: 0;
 }
 
 app-bb-progress-compact {

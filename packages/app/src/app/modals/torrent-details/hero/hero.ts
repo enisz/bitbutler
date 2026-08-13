@@ -9,6 +9,7 @@ import { RatioPipe } from '../../../pipes/ratio-pipe';
 import { SpeedLimitPipe } from '../../../pipes/speed-limit-pipe';
 import { TorrentDetailsDataService } from '../torrent-details-data.service';
 import { isDownloadingState, normalizeProgressPercent } from '../torrent-progress';
+import { heroStatusLabelKey } from './hero-status-label';
 
 @Component({
   selector: 'app-torrent-details-hero',
@@ -36,4 +37,6 @@ export class TorrentDetailsHero {
   );
 
   public readonly isDownloading = computed(() => isDownloadingState(this.torrent()?.data.state));
+
+  public readonly statusLabelKey = computed(() => heroStatusLabelKey(this.torrent()?.data.state));
 }

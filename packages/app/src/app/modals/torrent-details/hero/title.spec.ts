@@ -1,8 +1,11 @@
+import { Clipboard } from '@angular/cdk/clipboard';
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TranslateService } from '@ngx-translate/core';
 import { TimeagoIntl, provideTimeago } from 'ngx-timeago';
 import { QbTorrentProperties } from '../../../models/qbittorrent.model';
 import { Torrent } from '../../../models/torrent.model';
+import { ToastService } from '../../../services/toast.service';
 import { MergedTorrent, TorrentDetailsDataService } from '../torrent-details-data.service';
 import { TorrentDetailsTitle } from './title';
 
@@ -105,20 +108,30 @@ describe('TorrentDetailsTitle', () => {
   let component: TorrentDetailsTitle;
   let fixture: ComponentFixture<TorrentDetailsTitle>;
   let torrentSignal: ReturnType<typeof signal<MergedTorrent | null>>;
+  let clipboard: { copy: ReturnType<typeof vi.fn> };
+  let toastService: { info: ReturnType<typeof vi.fn> };
+  let translateService: TranslateService;
 
   beforeEach(async () => {
     torrentSignal = signal<MergedTorrent | null>({
-      data: makeTorrent(),
+      data: makeTorrent({ infohash_v1: '59ec6454b48d0cb232cc3ad67f66c4327c1a1092' }),
       properties: makeProperties(),
     });
+    clipboard = { copy: vi.fn() };
+    toastService = { info: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [TorrentDetailsTitle],
       providers: [
         { provide: TorrentDetailsDataService, useValue: { torrent: torrentSignal } },
+        { provide: Clipboard, useValue: clipboard },
+        { provide: ToastService, useValue: toastService },
         provideTimeago({ intl: { provide: TimeagoIntl, useClass: TimeagoIntl } }),
       ],
     }).compileComponents();
+
+    translateService = TestBed.inject(TranslateService);
+    vi.spyOn(translateService, 'instant').mockImplementation((key) => key as any);
 
     fixture = TestBed.createComponent(TorrentDetailsTitle);
     component = fixture.componentInstance;
@@ -127,12 +140,6 @@ describe('TorrentDetailsTitle', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('reports the status label key for the current state', () => {
-    expect(component.statusLabelKey()).toBe(
-      'components.modals.torrent-details.hero.status.downloading',
-    );
   });
 
   it('renders nothing when there is no torrent yet', () => {
@@ -145,5 +152,50 @@ describe('TorrentDetailsTitle', () => {
     const name = fixture.nativeElement.querySelector('.bb-title-row__name');
     expect(name).not.toBeNull();
     expect(name.textContent).toContain('My Torrent');
+  });
+
+  it('does not render a status pill', () => {
+    expect(fixture.nativeElement.querySelector('.bb-title-row__pill')).toBeNull();
+  });
+
+  it('renders the info hash chip when an info hash is present', () => {
+    const chip = fixture.nativeElement.querySelector('.bb-title-row__hash');
+    expect(chip).not.toBeNull();
+    expect(chip.textContent).toContain('59ec6454b48d0cb232cc3ad67f66c4327c1a1092');
+  });
+
+  it('does not render the info hash chip when no info hash is present', () => {
+    torrentSignal.set({
+      data: makeTorrent({ infohash_v1: '', infohash_v2: '' }),
+      properties: makeProperties(),
+    });
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.bb-title-row__hash')).toBeNull();
+  });
+
+  it('falls back to the v2 info hash when v1 is empty', () => {
+    torrentSignal.set({
+      data: makeTorrent({ infohash_v1: '', infohash_v2: 'v2hash' }),
+      properties: makeProperties(),
+    });
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.bb-title-row__hash').textContent).toContain(
+      'v2hash',
+    );
+  });
+
+  it('copies the info hash to the clipboard and shows a toast when the copy button is clicked', () => {
+    const copyButton = fixture.nativeElement.querySelector('.bb-title-row__hash-copy');
+    copyButton.click();
+
+    expect(clipboard.copy).toHaveBeenCalledWith('59ec6454b48d0cb232cc3ad67f66c4327c1a1092');
+    expect(translateService.instant).toHaveBeenCalledWith(
+      'pages.main.grid.context-menu.field.info-hash',
+    );
+    expect(toastService.info).toHaveBeenCalledWith(
+      'pages.main.grid.context-menu.toast.copied-to-clipboard',
+    );
   });
 });

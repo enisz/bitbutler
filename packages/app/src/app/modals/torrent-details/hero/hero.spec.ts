@@ -146,4 +146,18 @@ describe('TorrentDetailsHero', () => {
   it('renders the hero card once a torrent is present', () => {
     expect(fixture.nativeElement.querySelector('.bb-hero')).not.toBeNull();
   });
+
+  it('reports the status label key for the current state', () => {
+    expect(component.statusLabelKey()).toBe(
+      'components.modals.torrent-details.hero.status.downloading',
+    );
+  });
+
+  it('renders the translated status label as the hero state text', () => {
+    const state = fixture.nativeElement.querySelector('.bb-hero__state');
+    expect(state).not.toBeNull();
+    expect(state.textContent).toContain(
+      'components.modals.torrent-details.hero.status.downloading',
+    );
+  });
 });
