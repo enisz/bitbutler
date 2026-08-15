@@ -334,15 +334,15 @@
               ></bb-popover>
             </span>
             <span class="bb-option__sub">{{
-              'components.modals.torrent-details.general.popover.auto-tmm.description' | translate
+              'components.modals.torrent-details.general.popover.auto-tmm.sub' | translate
             }}</span>
           </div>
           <span class="bb-option__toggle form-switch">
             <input
               type="checkbox"
               class="form-check-input"
-              disabled
               [checked]="torrent()!.data.auto_tmm"
+              (change)="actionsService.toggleAutoTmm()"
             />
           </span>
         </div>
@@ -363,7 +363,7 @@
               ></bb-popover>
             </span>
             <span class="bb-option__sub">{{
-              'components.modals.torrent-details.general.popover.sequential-download.description'
+              'components.modals.torrent-details.general.popover.sequential-download.sub'
                 | translate
             }}</span>
           </div>
@@ -371,8 +371,8 @@
             <input
               type="checkbox"
               class="form-check-input"
-              disabled
               [checked]="torrent()!.data.seq_dl"
+              (change)="actionsService.toggleSequentialDownload()"
             />
           </span>
         </div>
@@ -392,16 +392,15 @@
               ></bb-popover>
             </span>
             <span class="bb-option__sub">{{
-              'components.modals.torrent-details.general.popover.force-start.description'
-                | translate
+              'components.modals.torrent-details.general.popover.force-start.sub' | translate
             }}</span>
           </div>
           <span class="bb-option__toggle form-switch">
             <input
               type="checkbox"
               class="form-check-input"
-              disabled
               [checked]="torrent()!.data.force_start"
+              (change)="actionsService.toggleForceStart()"
             />
           </span>
         </div>
@@ -422,16 +421,15 @@
               ></bb-popover>
             </span>
             <span class="bb-option__sub">{{
-              'components.modals.torrent-details.general.popover.super-seeding.description'
-                | translate
+              'components.modals.torrent-details.general.popover.super-seeding.sub' | translate
             }}</span>
           </div>
           <span class="bb-option__toggle form-switch">
             <input
               type="checkbox"
               class="form-check-input"
-              disabled
               [checked]="torrent()!.data.super_seeding"
+              (change)="actionsService.toggleSuperSeeding()"
             />
           </span>
         </div>
@@ -452,7 +450,7 @@
               ></bb-popover>
             </span>
             <span class="bb-option__sub">{{
-              'components.modals.torrent-details.general.popover.first-last-piece-prio.description'
+              'components.modals.torrent-details.general.popover.first-last-piece-prio.sub'
                 | translate
             }}</span>
           </div>
@@ -460,8 +458,8 @@
             <input
               type="checkbox"
               class="form-check-input"
-              disabled
               [checked]="torrent()!.data.f_l_piece_prio"
+              (change)="actionsService.toggleFirstLastPiecePrio()"
             />
           </span>
         </div>

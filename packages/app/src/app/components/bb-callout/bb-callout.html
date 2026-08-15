@@ -1,0 +1,15 @@
+<div class="bb-callout" [class]="'bb-callout--' + variant()">
+  <div class="bb-callout__header">
+    @if (icon(); as ic) {
+      <fa-icon [icon]="ic" class="bb-callout__icon" aria-hidden="true" />
+    }
+    @if (title()) {
+      <span class="bb-callout__title">{{ title() }}</span>
+    } @else {
+      <span class="bb-callout__message">{{ message() }}</span>
+    }
+  </div>
+  @if (title()) {
+    <div class="bb-callout__message">{{ message() }}</div>
+  }
+</div>

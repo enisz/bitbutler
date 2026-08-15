@@ -1,0 +1,40 @@
+.bb-callout {
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+}
+
+.bb-callout__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bb-callout__header + .bb-callout__message {
+  margin-top: 4px;
+}
+
+.bb-callout__icon {
+  flex-shrink: 0;
+}
+
+.bb-callout__title {
+  font-weight: 700;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.bb-callout__message {
+  font-weight: 400;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+@each $variant in (primary, secondary, success, danger, warning, info, light, dark) {
+  .bb-callout--#{$variant} {
+    border-color: color-mix(in srgb, var(--bs-#{$variant}) 30%, transparent);
+    background-color: var(--bs-#{$variant}-bg-subtle);
+    color: var(--bs-#{$variant}-text-emphasis);
+  }
+}

@@ -26,6 +26,7 @@ import { RatioPipe } from '../../../pipes/ratio-pipe';
 import { SpeedLimitPipe } from '../../../pipes/speed-limit-pipe';
 import { TimeLimitPipe } from '../../../pipes/time-limit-pipe';
 import { ToastService } from '../../../services/toast.service';
+import { TorrentDetailsActionsService } from '../torrent-details-actions.service';
 import { TorrentDetailsDataService } from '../torrent-details-data.service';
 import { TorrentDetailTabComponent } from '../torrent-details.interface';
 
@@ -57,6 +58,7 @@ import { TorrentDetailTabComponent } from '../torrent-details.interface';
 })
 export class General implements TorrentDetailTabComponent {
   private readonly dataService = inject(TorrentDetailsDataService);
+  public readonly actionsService = inject(TorrentDetailsActionsService);
   private readonly clipboard = inject(Clipboard);
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);

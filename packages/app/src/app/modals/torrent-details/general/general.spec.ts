@@ -9,6 +9,7 @@ import {
 } from '../../../models/qbittorrent.model';
 import { Torrent } from '../../../models/torrent.model';
 import { ToastService } from '../../../services/toast.service';
+import { TorrentDetailsActionsService } from '../torrent-details-actions.service';
 import { MergedTorrent, TorrentDetailsDataService } from '../torrent-details-data.service';
 import { General } from './general';
 
@@ -136,6 +137,16 @@ describe('General', () => {
       imports: [General],
       providers: [
         { provide: TorrentDetailsDataService, useValue: mockDataService },
+        {
+          provide: TorrentDetailsActionsService,
+          useValue: {
+            toggleAutoTmm: vi.fn(),
+            toggleSequentialDownload: vi.fn(),
+            toggleForceStart: vi.fn(),
+            toggleSuperSeeding: vi.fn(),
+            toggleFirstLastPiecePrio: vi.fn(),
+          },
+        },
         { provide: Clipboard, useValue: { copy: vi.fn() } },
         { provide: ToastService, useValue: { info: vi.fn(), danger: vi.fn() } },
         provideTimeago({ intl: { provide: TimeagoIntl, useClass: TimeagoIntl } }),

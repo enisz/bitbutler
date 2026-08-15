@@ -303,7 +303,7 @@
       "delete-torrent": {
         "title": "Delete Torrent",
         "message": "Are you sure you want to remove {{count}} torrent(s) from the list?",
-        "disk-space": "Total size of the selected torrent(s): {{size}}",
+        "disk-space": "This will free up {{size}} of disk space.",
         "delete-form": {
           "confirmation": "Remove the files as well"
         }
@@ -578,23 +578,28 @@
             },
             "auto-tmm": {
               "title": "Automatic Torrent Management",
-              "description": "When enabled, qBittorrent automatically moves this torrent to the save path defined by its assigned category."
+              "description": "When enabled, qBittorrent automatically moves this torrent to the save path defined by its assigned category.",
+              "sub": "Save path managed by category"
             },
             "force-start": {
               "title": "Force Start",
-              "description": "Bypasses the global active torrent limit and starts this torrent immediately, regardless of queue position."
+              "description": "Bypasses the global active torrent limit and starts this torrent immediately, regardless of queue position.",
+              "sub": "Bypasses queue limits"
             },
             "sequential-download": {
               "title": "Sequential Download",
-              "description": "Downloads pieces in order from first to last instead of rarest-first. Useful for previewing media files before the download is complete."
+              "description": "Downloads pieces in order from first to last instead of rarest-first. Useful for previewing media files before the download is complete.",
+              "sub": "Pieces downloaded in order"
             },
             "first-last-piece-prio": {
               "title": "First/Last Piece Priority",
-              "description": "Prioritises downloading the first and last pieces first, allowing media players to open and seek the file sooner."
+              "description": "Prioritises downloading the first and last pieces first, allowing media players to open and seek the file sooner.",
+              "sub": "Faster media file previews"
             },
             "super-seeding": {
               "title": "Super Seeding",
-              "description": "An initial seeding mode that sends each piece to only one peer at a time to maximise distribution speed when starting a new torrent."
+              "description": "An initial seeding mode that sends each piece to only one peer at a time to maximise distribution speed when starting a new torrent.",
+              "sub": "Only useful while seeding"
             }
           },
           "toast": {
@@ -617,7 +622,8 @@
             "toggle-sequential-download-failed": "Failed to Toggle Sequential Download",
             "toggle-first-last-piece-prio-failed": "Failed to Toggle First/Last Piece Priority",
             "toggle-auto-tmm-failed": "Failed to Toggle Auto TMM",
-            "toggle-super-seeding-failed": "Failed to Toggle Super Seeding"
+            "toggle-super-seeding-failed": "Failed to Toggle Super Seeding",
+            "toggle-force-start-failed": "Failed to Toggle Force Start"
           },
           "footer": {
             "manage-header-path": "Path",
@@ -628,13 +634,9 @@
             "files": "Files",
             "manage": "Manage",
             "export-torrent-file": "Export .torrent File",
-            "transfer": "Transfer",
+            "transfer": "Limits",
             "maintenance": "Maintenance",
-            "sequential-download": "Sequential Download",
-            "first-last-piece-prio": "First/Last Piece Priority",
-            "super-seeding": "Super Seeding",
-            "force-recheck": "Force Recheck",
-            "auto-tmm": "Auto TMM"
+            "force-recheck": "Force Recheck"
           }
         },
         "peers": {

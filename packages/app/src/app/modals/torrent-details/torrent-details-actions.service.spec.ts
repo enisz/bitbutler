@@ -380,6 +380,32 @@ describe('TorrentDetailsActionsService', () => {
     });
   });
 
+  describe('toggleForceStart', () => {
+    it('calls setForceStart with inverted force_start value', async () => {
+      // makeTorrent sets force_start: false, so enabling = true
+      await service.toggleForceStart();
+      expect(qbTorrents.setForceStart).toHaveBeenCalledWith('server-1', ['abc123'], true);
+    });
+
+    it('disables when force_start is currently true', async () => {
+      mockDataService.torrent.set({
+        data: makeTorrent({ force_start: true }),
+        properties: {} as any,
+      });
+      await service.toggleForceStart();
+      expect(qbTorrents.setForceStart).toHaveBeenCalledWith('server-1', ['abc123'], false);
+    });
+
+    it('shows a danger toast on failure', async () => {
+      qbTorrents.setForceStart.mockRejectedValueOnce(new Error('boom'));
+      await service.toggleForceStart();
+      expect(toastDanger).toHaveBeenCalledWith(
+        'boom',
+        'components.modals.torrent-details.general.toast.toggle-force-start-failed',
+      );
+    });
+  });
+
   describe('toggleSuperSeeding', () => {
     it('calls setSuperSeeding with inverted super_seeding value', async () => {
       // makeTorrent sets super_seeding: false, so enabling = true

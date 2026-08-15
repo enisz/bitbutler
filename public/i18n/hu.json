@@ -303,7 +303,7 @@
       "delete-torrent": {
         "title": "Torrent törlése",
         "message": "Biztosan el akarod távolítani a(z) {{count}} kijelölt torrent(ek)et a listából?",
-        "disk-space": "A kijelölt torrent(ek) teljes mérete: {{size}}",
+        "disk-space": "Ez {{size}} lemezterületet szabadít fel.",
         "delete-form": {
           "confirmation": "A fájlok törlése a lemezről is"
         }
@@ -578,23 +578,28 @@
             },
             "auto-tmm": {
               "title": "Automatikus Torrent Kezelés",
-              "description": "Ha engedélyezve van, a qBittorrent automatikusan áthelyezi ezt a torrentet a hozzárendelt kategória mentési útvonalára."
+              "description": "Ha engedélyezve van, a qBittorrent automatikusan áthelyezi ezt a torrentet a hozzárendelt kategória mentési útvonalára.",
+              "sub": "A mentési útvonalat a kategória kezeli"
             },
             "force-start": {
               "title": "Kényszerített Indítás",
-              "description": "Megkerüli az aktív torrentek globális korlátját, és azonnal elindítja ezt a torrentet, függetlenül a sor pozíciójától."
+              "description": "Megkerüli az aktív torrentek globális korlátját, és azonnal elindítja ezt a torrentet, függetlenül a sor pozíciójától.",
+              "sub": "Megkerüli a sorlimitet"
             },
             "sequential-download": {
               "title": "Szekvenciális Letöltés",
-              "description": "A szeleteket az első-től az utolsóig sorban tölti le a legritkábbak-először módszer helyett. Hasznos médiafájlok előnézetéhez letöltés közben."
+              "description": "A szeleteket az első-től az utolsóig sorban tölti le a legritkábbak-először módszer helyett. Hasznos médiafájlok előnézetéhez letöltés közben.",
+              "sub": "A szeletek sorrendben töltődnek le"
             },
             "first-last-piece-prio": {
               "title": "Első/Utolsó Szelet Prioritás",
-              "description": "Az első és utolsó szeletek letöltését helyezi előtérbe, hogy a médialejátszók hamarabb meg tudják nyitni és keresni a fájlban."
+              "description": "Az első és utolsó szeletek letöltését helyezi előtérbe, hogy a médialejátszók hamarabb meg tudják nyitni és keresni a fájlban.",
+              "sub": "Gyorsabb előnézet médiafájlokhoz"
             },
             "super-seeding": {
               "title": "Super Seedelés",
-              "description": "Egy kezdeti seedelési mód, amely egyszerre csak egy peernek küld egy szeletet, maximalizálva az elosztási sebességet egy új torrent indulásakor."
+              "description": "Egy kezdeti seedelési mód, amely egyszerre csak egy peernek küld egy szeletet, maximalizálva az elosztási sebességet egy új torrent indulásakor.",
+              "sub": "Csak seedeléskor hasznos"
             }
           },
           "toast": {
@@ -617,7 +622,8 @@
             "toggle-sequential-download-failed": "Nem sikerült átváltani a szekvenciális letöltést",
             "toggle-first-last-piece-prio-failed": "Nem sikerült átváltani az első/utolsó szelet prioritást",
             "toggle-auto-tmm-failed": "Nem sikerült átváltani az Auto TMM-et",
-            "toggle-super-seeding-failed": "Nem sikerült átváltani a super seedinget"
+            "toggle-super-seeding-failed": "Nem sikerült átváltani a super seedinget",
+            "toggle-force-start-failed": "Nem sikerült átváltani a kényszerített indítást"
           },
           "footer": {
             "manage-header-path": "Útvonal",
@@ -628,13 +634,9 @@
             "files": "Fájlok",
             "manage": "Kezelés",
             "export-torrent-file": "Torrent fájl exportálása",
-            "transfer": "Átvitel",
+            "transfer": "Korlátok",
             "maintenance": "Karbantartás",
-            "sequential-download": "Szekvenciális letöltés",
-            "first-last-piece-prio": "Első/utolsó szelet prioritása",
-            "super-seeding": "Super Seeding",
-            "force-recheck": "Kényszerített ellenőrzés",
-            "auto-tmm": "Auto TMM"
+            "force-recheck": "Kényszerített ellenőrzés"
           }
         },
         "peers": {

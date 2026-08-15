@@ -26,12 +26,15 @@
       >
     </div>
     @if (deleteForm.get('removeFiles')?.value) {
-      <p class="mt-2 mb-0 text-danger">
-        {{
+      <bb-callout
+        class="mt-2 d-block"
+        variant="info"
+        [icon]="icons.faCircleInfo"
+        [message]="
           'components.modals.delete-torrent.disk-space'
             | translate: { size: totalSize() | fileSize }
-        }}
-      </p>
+        "
+      ></bb-callout>
     }
   </form>
 </div>
