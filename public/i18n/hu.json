@@ -418,9 +418,12 @@
           "time-active": "Aktív idő",
           "eta": "Várható hátralévő idő",
           "connections": "Kapcsolatok",
+          "connections-sub": "{{ count }} / {{ max }} kapcsolat",
           "max": "max",
           "downloaded": "Letöltve",
+          "downloaded-sub": "{{ amount }} letöltve · {{ limit }}",
           "uploaded": "Feltöltve",
+          "uploaded-sub": "{{ amount }} feltöltve · {{ limit }}",
           "seeds": "Seeder",
           "total": "összesen",
           "download-speed": "Letöltési sebesség",
@@ -460,6 +463,7 @@
           },
           "labels": {
             "title": "Torrent",
+            "options": "Opciók",
             "transfer": "Átvitel",
             "information": "Információ"
           },
@@ -759,7 +763,8 @@
             "not-working": "Nem működik"
           }
         },
-        "hash": "Hash"
+        "hash": "Hash",
+        "added": "Hozzáadva"
       },
       "torrent-exists": {
         "title": "A torrent már létezik",

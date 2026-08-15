@@ -418,9 +418,12 @@
           "time-active": "Time Active",
           "eta": "ETA",
           "connections": "Connections",
+          "connections-sub": "{{ count }} of {{ max }} connections",
           "max": "max",
           "downloaded": "Downloaded",
+          "downloaded-sub": "{{ amount }} downloaded · {{ limit }}",
           "uploaded": "Uploaded",
+          "uploaded-sub": "{{ amount }} uploaded · {{ limit }}",
           "seeds": "Seeds",
           "total": "total",
           "download-speed": "Download Speed",
@@ -460,6 +463,7 @@
           },
           "labels": {
             "title": "Torrent",
+            "options": "Options",
             "transfer": "Transfer",
             "information": "Information"
           },
@@ -759,7 +763,8 @@
             "not-working": "Not working"
           }
         },
-        "hash": "Hash"
+        "hash": "Hash",
+        "added": "Added"
       },
       "torrent-exists": {
         "title": "Torrent Exists",

@@ -2,7 +2,12 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FontAwesomeModule, IconDefinition } from '@fortawesome/angular-fontawesome';
-import { faCopy } from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowDown,
+  faArrowUp,
+  faCircleExclamation,
+  faCopy,
+} from '@fortawesome/free-solid-svg-icons';
 import { NgbCollapse, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TimeagoPipe } from 'ngx-timeago';
@@ -55,7 +60,12 @@ export class General implements TorrentDetailTabComponent {
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
 
-  public icons: Record<string, IconDefinition> = { faCopy };
+  public icons: Record<string, IconDefinition> = {
+    faCopy,
+    faCircleExclamation,
+    faArrowDown,
+    faArrowUp,
+  };
 
   public readonly torrent = this.dataService.torrent;
   public readonly localPath = this.dataService.localPath;
@@ -73,6 +83,16 @@ export class General implements TorrentDetailTabComponent {
       ),
     );
     this.clipboard.copy(value);
+  }
+
+  public tagList(): string[] {
+    const tags = this.torrent()?.data.tags;
+    return tags
+      ? tags
+          .split(',')
+          .map((tag) => tag.trim())
+          .filter(Boolean)
+      : [];
   }
 
   public isDownloading(): boolean {

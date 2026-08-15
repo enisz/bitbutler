@@ -1,3 +1,4 @@
+import { Clipboard } from '@angular/cdk/clipboard';
 import { CommonModule, NgComponentOutlet } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -17,6 +18,7 @@ import {
   faAsterisk,
   faBullhorn,
   faCheck,
+  faCopy,
   faFolder,
   faFolderOpen,
   faFolderTree,
@@ -33,7 +35,8 @@ import {
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbDropdownModule, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { TimeagoPipe } from 'ngx-timeago';
 import { filter } from 'rxjs';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { BbSpinner } from '../../components/bb-spinner/bb-spinner';
@@ -42,9 +45,11 @@ import { TooltipOverflow } from '../../directives/tooltip-overflow';
 import { AppCommand, TorrentCommand } from '../../models/command.model';
 import { GuardableModal } from '../../models/guardable-modal.interface';
 import { Torrent } from '../../models/torrent.model';
+import { FilesizePipe } from '../../pipes/filesize-pipe';
 import { CommandBusService } from '../../services/command-bus.service';
 import { ConfirmService } from '../../services/confirm.service';
 import { ModalGuardService } from '../../services/modal-guard.service';
+import { ToastService } from '../../services/toast.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
 import { TorrentDetailsActionsService } from './torrent-details-actions.service';
 import { TorrentDetailsDataService } from './torrent-details-data.service';
@@ -64,6 +69,8 @@ import { Tab, TorrentDetailTabComponent, TorrentDetailTabId } from './torrent-de
     TranslatePipe,
     FontAwesomeModule,
     BbBtnContent,
+    FilesizePipe,
+    TimeagoPipe,
   ],
   providers: [ModalGuardService, TorrentDetailsDataService, TorrentDetailsActionsService],
   templateUrl: './torrent-details.html',
@@ -82,6 +89,9 @@ export class TorrentDetails implements OnInit, GuardableModal {
   private readonly commandBusService = inject(CommandBusService);
   private readonly torrentStoreService = inject(TorrentStoreService);
   private readonly confirmService = inject(ConfirmService);
+  private readonly clipboard = inject(Clipboard);
+  private readonly toastService = inject(ToastService);
+  private readonly translateService = inject(TranslateService);
 
   public readonly icon = {
     faArrowDownUpAcrossLine,
@@ -89,6 +99,7 @@ export class TorrentDetails implements OnInit, GuardableModal {
     faAsterisk,
     faBullhorn,
     faCheck,
+    faCopy,
     faFolder,
     faFolderOpen,
     faFolderTree,
@@ -171,6 +182,20 @@ export class TorrentDetails implements OnInit, GuardableModal {
 
   public selectTab(tabId: TorrentDetailTabId): void {
     this.dataService.selectTab(tabId);
+  }
+
+  public copyHash(): void {
+    const hash = this.torrent()?.hash;
+    if (!hash) return;
+
+    const field = this.translateService.instant('components.modals.torrent-details.hash');
+    this.toastService.info(
+      this.translateService.instant(
+        'components.modals.torrent-details.general.toast.copied-to-clipboard',
+        { field },
+      ),
+    );
+    this.clipboard.copy(hash);
   }
 
   public async canDeactivate(): Promise<boolean> {

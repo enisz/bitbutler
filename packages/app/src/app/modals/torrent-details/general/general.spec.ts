@@ -220,42 +220,42 @@ describe('General', () => {
     });
 
     it('does not render the error row when there is no errorLog', () => {
-      expect(fixture.nativeElement.querySelector('.bb-section--danger')).toBeNull();
+      expect(fixture.nativeElement.querySelector('.bb-error-banner')).toBeNull();
     });
 
     it('renders the error row with the short reason and reflects errorLogExpanded on the icon', () => {
       mockDataService.errorLog.set(makeLogEntry());
       fixture.detectChanges();
 
-      const row = fixture.nativeElement.querySelector('.bb-section--danger');
+      const row = fixture.nativeElement.querySelector('.bb-error-banner');
       expect(row).not.toBeNull();
-      expect(row.querySelector('.section-header').textContent).not.toContain('[object Object]');
-      expect(row.querySelector('.section-value').textContent).toContain('Permission denied');
+      expect(row.querySelector('.bb-error-banner__title').textContent).not.toContain(
+        '[object Object]',
+      );
+      expect(row.querySelector('.bb-error-banner__message').textContent).toContain(
+        'Permission denied',
+      );
 
-      const icon = row.querySelector('.error-toggle__icon');
-      expect(icon.classList.contains('error-toggle__icon--expanded')).toBe(false);
+      const chevron = row.querySelector('.bb-error-banner__chevron');
+      expect(chevron.classList.contains('bb-error-banner__chevron--expanded')).toBe(false);
 
       component.toggleErrorLog();
       fixture.detectChanges();
 
-      expect(icon.classList.contains('error-toggle__icon--expanded')).toBe(true);
+      expect(chevron.classList.contains('bb-error-banner__chevron--expanded')).toBe(true);
 
-      const detail = row.querySelector('.error-toggle__detail');
-      expect(detail.querySelector('hr')).toBeNull();
-      expect(detail.querySelector('.section-header')).toBeNull();
-      expect(detail.querySelector('pre').textContent).toContain('Permission denied');
+      const detail = row.querySelector('.bb-error-banner__detail');
+      expect(detail.textContent).toContain('Permission denied');
     });
   });
 
   describe('date fields use the configured date format', () => {
     function sectionValueFor(headerFragment: string): string {
-      const sections = Array.from(
-        fixture.nativeElement.querySelectorAll('.bb-section'),
-      ) as HTMLElement[];
-      const section = sections.find((el) =>
-        el.querySelector('.section-header')?.textContent?.includes(headerFragment),
+      const cells = Array.from(fixture.nativeElement.querySelectorAll('.bb-cell')) as HTMLElement[];
+      const cell = cells.find((el) =>
+        el.querySelector('.bb-cell__label')?.textContent?.includes(headerFragment),
       );
-      return section?.querySelector('.section-value')?.textContent?.trim() ?? '';
+      return cell?.querySelector('.bb-cell__value')?.textContent?.trim() ?? '';
     }
 
     beforeEach(() => {

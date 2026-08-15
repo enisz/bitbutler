@@ -10,15 +10,35 @@
       {{ torrent()?.name }}
     </h5>
 
-    <div
-      class="small text-body-secondary mt-1 bb-hash-clamp"
-      [ngbTooltip]="torrent()?.hash"
-      bbTooltipOverflow
-      placement="bottom"
-      tooltipClass="single-line-tooltip"
-    >
-      {{ 'components.modals.torrent-details.hash' | translate }}:
-      <code class="bb-hash-chip">{{ torrent()?.hash }}</code>
+    <div class="bb-header-meta small text-body-secondary mt-1">
+      <span class="bb-header-meta__hash">
+        <code
+          class="bb-hash-chip"
+          [ngbTooltip]="torrent()?.hash"
+          bbTooltipOverflow
+          placement="bottom"
+          tooltipClass="single-line-tooltip"
+          >{{ torrent()?.hash }}</code
+        >
+        <button
+          type="button"
+          class="btn btn-sm btn-link bb-header-meta__copy"
+          placement="top"
+          [ngbTooltip]="'components.modals.torrent-details.general.copy-to-clipboard' | translate"
+          (click)="copyHash()"
+        >
+          <fa-icon [icon]="icon.faCopy" />
+        </button>
+      </span>
+      <span>·</span>
+      <span>{{ torrent()?.size | fileSize }}</span>
+      @if ((torrent()?.added_on ?? 0) > 0) {
+        <span>·</span>
+        <span
+          >{{ 'components.modals.torrent-details.added' | translate }}
+          {{ torrent()!.added_on * 1000 | timeago }}</span
+        >
+      }
     </div>
 
     <ul class="nav nav-tabs bb-modal-tabs">

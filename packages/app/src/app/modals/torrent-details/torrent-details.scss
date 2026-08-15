@@ -4,10 +4,28 @@
 
 .bb-hash-chip {
   display: inline-block;
+  font-family: var(--bs-font-monospace);
   background-color: var(--bb-control-bg);
   border: 1px solid var(--bs-border-color);
   border-radius: 8px;
   padding: 3px 8px;
+}
+
+.bb-header-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.bb-header-meta__hash {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.bb-header-meta__copy {
+  padding: 0.125rem 0.25rem;
 }
 
 .modal-footer {
