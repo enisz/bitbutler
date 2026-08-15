@@ -1,6 +1,6 @@
 import { Clipboard } from '@angular/cdk/clipboard';
 import { DecimalPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FontAwesomeModule, IconDefinition } from '@fortawesome/angular-fontawesome';
 import {
   faArrowDown,
@@ -13,6 +13,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TimeagoPipe } from 'ngx-timeago';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbProgress } from '../../../components/bb-progress/bb-progress';
+import { variantForTorrentState } from '../../../components/bb-progress/torrent-state-variant';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
 import { QbLogEntry } from '../../../models/qbittorrent.model';
@@ -71,6 +72,11 @@ export class General implements TorrentDetailTabComponent {
   public readonly localPath = this.dataService.localPath;
   public readonly errorLog = this.dataService.errorLog;
   public errorLogExpanded = signal(false);
+
+  public readonly stateVariant = computed(() => {
+    const state = this.torrent()?.data.state;
+    return state ? variantForTorrentState(state) : 'secondary';
+  });
 
   public toClipboard(fieldKey: string, value: string): void {
     const field = this.translateService.instant(

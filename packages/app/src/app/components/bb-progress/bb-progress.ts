@@ -15,6 +15,7 @@ export class BbProgress {
   readonly progress = input<number | undefined | null>();
   readonly variant = input<BbProgressVariant>('primary');
   readonly torrentState = input<string | undefined>();
+  readonly mode = input<'normal' | 'compact'>('normal');
 
   public readonly progressPercent = computed(() => {
     const p = this.progress() ?? 0;

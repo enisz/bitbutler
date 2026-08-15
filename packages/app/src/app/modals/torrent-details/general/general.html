@@ -39,13 +39,10 @@
           <span class="bb-hero-pct__value"
             >{{ torrent()!.data.progress * 100 | number: '1.0-1' }}%</span
           >
-          <span class="bb-hero-pct__sub"
-            >{{ torrent()!.data.downloaded | fileSize }} /
-            {{ torrent()!.data.total_size | fileSize }}</span
-          >
         </div>
         <div
           class="bb-hero-state"
+          [class]="'text-' + stateVariant()"
           [ngbTooltip]="'torrent.state.' + torrent()!.data.state | translate"
           bbTooltipOverflow
           placement="bottom"
@@ -55,6 +52,7 @@
       </div>
 
       <app-bb-progress
+        mode="compact"
         [progress]="torrent()?.data?.progress"
         [torrentState]="torrent()?.data?.state"
       ></app-bb-progress>

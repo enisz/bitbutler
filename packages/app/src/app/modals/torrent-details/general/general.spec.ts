@@ -200,6 +200,56 @@ describe('General', () => {
     });
   });
 
+  describe('stateVariant', () => {
+    it('maps downloading to the info variant', () => {
+      mockDataService.torrent.set({
+        data: makeTorrent({ state: 'downloading' }),
+        properties: makeProperties(),
+      });
+      fixture.detectChanges();
+      expect(component.stateVariant()).toBe('info');
+    });
+
+    it('maps error to the danger variant', () => {
+      mockDataService.torrent.set({
+        data: makeTorrent({ state: 'error' }),
+        properties: makeProperties(),
+      });
+      fixture.detectChanges();
+      expect(component.stateVariant()).toBe('danger');
+    });
+
+    it('applies the variant as a text color class on the state label', () => {
+      mockDataService.torrent.set({
+        data: makeTorrent({ state: 'uploading' }),
+        properties: makeProperties(),
+      });
+      fixture.detectChanges();
+
+      const state = fixture.nativeElement.querySelector('.bb-hero-state');
+      expect(state.classList.contains('text-success')).toBe(true);
+    });
+  });
+
+  describe('hero progress bar', () => {
+    beforeEach(() => {
+      mockDataService.torrent.set({
+        data: makeTorrent({ state: 'downloading' }),
+        properties: makeProperties(),
+      });
+      fixture.detectChanges();
+    });
+
+    it('does not render the downloaded/total size line above the progress bar', () => {
+      expect(fixture.nativeElement.querySelector('.bb-hero-pct__sub')).toBeNull();
+    });
+
+    it('renders the progress bar in compact mode', () => {
+      const progress = fixture.nativeElement.querySelector('app-bb-progress .bb-progress');
+      expect(progress.classList.contains('bb-progress--compact')).toBe(true);
+    });
+  });
+
   describe('toggleErrorLog', () => {
     it('flips errorLogExpanded', () => {
       expect(component.errorLogExpanded()).toBe(false);

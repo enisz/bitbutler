@@ -1,5 +1,6 @@
 <div
   class="progress position-relative bb-progress"
+  [class.bb-progress--compact]="mode() === 'compact'"
   [style.--p]="progressPercent() + '%'"
   [style.--label-on-fill]="'var(--bb-' + displayVariant() + '-ink)'"
 >
@@ -10,5 +11,7 @@
     role="progressbar"
   ></div>
 
-  <small class="bb-progress-label"> {{ progressPercent() | number: '1.0-1' }}% </small>
+  @if (mode() === 'normal') {
+    <small class="bb-progress-label"> {{ progressPercent() | number: '1.0-1' }}% </small>
+  }
 </div>
