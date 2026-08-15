@@ -1,18 +1,18 @@
 @if (torrent(); as t) {
   <div class="modal-header bb-modal-header">
-    <div class="bb-modal-header__text">
-      <h5 class="modal-title bb-title-clamp">
-        {{ 'components.modals.torrent-exists.title' | translate }}
-      </h5>
+    <div class="d-flex align-items-start min-w-0">
+      <div class="bb-te-header-icon">
+        <fa-icon [icon]="icons.faCopy"></fa-icon>
+      </div>
 
-      <div
-        class="small text-body-secondary mt-1 bb-hash-clamp"
-        [ngbTooltip]="t.name"
-        bbTooltipOverflow
-        tooltipClass="single-line-tooltip"
-        placement="top"
-      >
-        {{ t.name }}
+      <div class="bb-modal-header__text">
+        <h5 class="modal-title bb-title-clamp">
+          {{ 'components.modals.torrent-exists.title' | translate }}
+        </h5>
+
+        <div class="small text-body-secondary mt-1">
+          {{ 'components.modals.torrent-exists.already-in-list' | translate }}
+        </div>
       </div>
     </div>
 
@@ -20,108 +20,141 @@
   </div>
 
   <div class="modal-body">
-    <app-bb-progress
-      class="d-block mb-3"
-      [progress]="t.progress"
-      [torrentState]="t.state"
-    ></app-bb-progress>
+    <div class="bb-te-file-card">
+      <div class="bb-te-filename" [ngbTooltip]="t.name" bbTooltipOverflow placement="top">
+        <fa-icon [icon]="icons.faCopy" class="opacity-50"></fa-icon>
+        <span class="text-truncate">{{ t.name }}</span>
+      </div>
 
-    <dl class="row mb-0 small">
-      <dt class="col-4 te-label">
-        {{ 'components.modals.torrent-exists.label.size' | translate }}
-      </dt>
-      <dd class="col-8">{{ t.total_size | fileSize }}</dd>
+      <div class="d-flex align-items-baseline justify-content-between gap-3 mt-2 mb-2">
+        <div class="bb-te-pct">
+          {{ t.progress | percent: '1.1-1' }}
+          <small class="bb-te-pct-sub">
+            {{ t.downloaded | fileSize }} / {{ t.total_size | fileSize }}
+          </small>
+        </div>
+      </div>
 
-      <dt class="col-4 te-label">
-        {{ 'components.modals.torrent-exists.label.downloaded' | translate }}
-      </dt>
-      <dd class="col-8">{{ t.downloaded | fileSize }}</dd>
+      <app-bb-progress
+        class="d-block"
+        [progress]="t.progress"
+        [torrentState]="t.state"
+      ></app-bb-progress>
 
-      <dt class="col-4 te-label">
-        {{ 'components.modals.torrent-exists.label.uploaded' | translate }}
-      </dt>
-      <dd class="col-8">{{ t.uploaded | fileSize }}</dd>
+      <div class="bb-te-rates mt-2">
+        <span class="bb-te-rate bb-te-rate--dl">
+          <fa-icon [icon]="icons.faDownload"></fa-icon>
+          {{ t.dlspeed | fileSize }}/s
+        </span>
+        <span class="bb-te-rate bb-te-rate--ul">
+          <fa-icon [icon]="icons.faUpload"></fa-icon>
+          {{ t.upspeed | fileSize }}/s
+        </span>
+        <span class="text-body-secondary">{{ t.num_seeds }} / {{ t.num_leechs }}</span>
+      </div>
+    </div>
 
-      <dt class="col-4 te-label">
-        {{ 'components.modals.torrent-exists.label.ratio' | translate }}
-      </dt>
-      <dd class="col-8">{{ t.ratio | ratio }}</dd>
-
-      <dt class="col-4 te-label">
-        {{ 'components.modals.torrent-exists.label.dl-speed' | translate }}
-      </dt>
-      <dd class="col-8">{{ t.dlspeed | fileSize }}/s</dd>
-
-      <dt class="col-4 te-label">
-        {{ 'components.modals.torrent-exists.label.up-speed' | translate }}
-      </dt>
-      <dd class="col-8">{{ t.upspeed | fileSize }}/s</dd>
-
-      <dt class="col-4 te-label">
-        {{ 'components.modals.torrent-exists.label.seeds-leechers' | translate }}
-      </dt>
-      <dd class="col-8">{{ t.num_seeds }} / {{ t.num_leechs }}</dd>
-
-      <dt class="col-4 te-label">
-        {{ 'components.modals.torrent-exists.label.added-on' | translate }}
-      </dt>
-      <dd
-        class="col-8 text-truncate"
+    <div class="bb-te-stat-grid">
+      <div class="bb-te-stat">
+        <div class="bb-te-stat-label">
+          {{ 'components.modals.torrent-exists.label.size' | translate }}
+        </div>
+        <div class="bb-te-stat-value">{{ t.total_size | fileSize }}</div>
+      </div>
+      <div class="bb-te-stat">
+        <div class="bb-te-stat-label">
+          {{ 'components.modals.torrent-exists.label.downloaded' | translate }}
+        </div>
+        <div class="bb-te-stat-value">{{ t.downloaded | fileSize }}</div>
+      </div>
+      <div class="bb-te-stat">
+        <div class="bb-te-stat-label">
+          {{ 'components.modals.torrent-exists.label.uploaded' | translate }}
+        </div>
+        <div class="bb-te-stat-value">{{ t.uploaded | fileSize }}</div>
+      </div>
+      <div class="bb-te-stat">
+        <div class="bb-te-stat-label">
+          {{ 'components.modals.torrent-exists.label.ratio' | translate }}
+        </div>
+        <div class="bb-te-stat-value">{{ t.ratio | ratio }}</div>
+      </div>
+      <div class="bb-te-stat">
+        <div class="bb-te-stat-label">
+          {{ 'components.modals.torrent-exists.label.seeds-leechers' | translate }}
+        </div>
+        <div class="bb-te-stat-value">{{ t.num_seeds }} / {{ t.num_leechs }}</div>
+      </div>
+      <div
+        class="bb-te-stat"
         [ngbTooltip]="(t.added_on | localTimestamp) + ' (' + (t.added_on * 1000 | timeago) + ')'"
         placement="top"
         bbTooltipOverflow
         tooltipClass="single-line-tooltip"
       >
-        {{ t.added_on | localTimestamp }}
-        <span class="text-body-secondary ms-1">({{ t.added_on * 1000 | timeago }})</span>
-      </dd>
+        <div class="bb-te-stat-label">
+          {{ 'components.modals.torrent-exists.label.added-on' | translate }}
+        </div>
+        <div class="bb-te-stat-value text-truncate">{{ t.added_on | localTimestamp }}</div>
+        <div class="bb-te-stat-sub">{{ t.added_on * 1000 | timeago }}</div>
+      </div>
 
-      <dt class="col-4 te-label">
+      @if (t.category) {
+        <div class="bb-te-stat">
+          <div class="bb-te-stat-label">
+            {{ 'components.modals.torrent-exists.label.category' | translate }}
+          </div>
+          <div class="bb-te-stat-value">{{ t.category }}</div>
+        </div>
+      }
+
+      @if (t.tags) {
+        <div class="bb-te-stat">
+          <div class="bb-te-stat-label">
+            {{ 'components.modals.torrent-exists.label.tags' | translate }}
+          </div>
+          <div class="bb-te-stat-value">{{ t.tags }}</div>
+        </div>
+      }
+    </div>
+
+    <div class="bb-te-save-path">
+      <span class="text-body-secondary">
         {{ 'components.modals.torrent-exists.label.save-path' | translate }}
-      </dt>
-      <dd
-        class="col-8 text-truncate"
+      </span>
+      <span
+        class="bb-te-save-path-value text-truncate"
         [ngbTooltip]="t.save_path"
         placement="top"
         bbTooltipOverflow
         tooltipClass="single-line-tooltip"
       >
         {{ t.save_path }}
-      </dd>
-
-      @if (t.category) {
-        <dt class="col-4 te-label">
-          {{ 'components.modals.torrent-exists.label.category' | translate }}
-        </dt>
-        <dd class="col-8">{{ t.category }}</dd>
-      }
-
-      @if (t.tags) {
-        <dt class="col-4 te-label">
-          {{ 'components.modals.torrent-exists.label.tags' | translate }}
-        </dt>
-        <dd class="col-8">{{ t.tags }}</dd>
-      }
-    </dl>
+      </span>
+    </div>
   </div>
 
   <div class="modal-footer d-flex flex-row">
     <button
       type="button"
-      class="btn btn-dashed-info btn-sm btn-split ms-auto"
+      class="btn btn-outline-secondary btn-sm bb-te-footer-btn ms-auto"
+      (click)="closeModal()"
+    >
+      <bb-btn-content
+        [icon]="icons.faXmark"
+        [text]="'general.button.close' | translate"
+        position="end"
+      ></bb-btn-content>
+    </button>
+    <button
+      type="button"
+      class="btn btn-primary btn-sm bb-te-footer-btn"
       (click)="openDetails()"
       autofocus
     >
       <bb-btn-content
         [icon]="icons.faCircleInfo"
         [text]="'general.button.open-details' | translate"
-        position="end"
-      ></bb-btn-content>
-    </button>
-    <button type="button" class="btn btn-link btn-sm btn-split" (click)="closeModal()">
-      <bb-btn-content
-        [icon]="icons.faXmark"
-        [text]="'general.button.close' | translate"
         position="end"
       ></bb-btn-content>
     </button>

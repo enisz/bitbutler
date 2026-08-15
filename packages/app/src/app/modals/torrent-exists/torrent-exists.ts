@@ -1,3 +1,4 @@
+import { PercentPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -8,7 +9,14 @@ import {
   signal,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { faCircleInfo, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {
+  faCircleInfo,
+  faCopy,
+  faDownload,
+  faUpload,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TimeagoPipe } from 'ngx-timeago';
@@ -32,6 +40,7 @@ import { TorrentStoreService } from '../../services/torrent-store.service';
   imports: [
     LocalTimestampPipe,
     FilesizePipe,
+    PercentPipe,
     RatioPipe,
     AutofocusDirective,
     TooltipOverflow,
@@ -40,6 +49,7 @@ import { TorrentStoreService } from '../../services/torrent-store.service';
     TranslatePipe,
     BbProgress,
     BbBtnContent,
+    FontAwesomeModule,
   ],
   styleUrls: ['./torrent-exists.scss'],
   templateUrl: './torrent-exists.html',
@@ -61,7 +71,7 @@ export class TorrentExists {
     initialValue: null,
   });
 
-  public icons = { faCircleInfo, faXmark };
+  public icons = { faCircleInfo, faXmark, faCopy, faDownload, faUpload };
 
   public readonly fileDeleted = signal(false);
 

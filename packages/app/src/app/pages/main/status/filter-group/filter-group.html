@@ -1,86 +1,102 @@
 <div class="d-flex flex-column">
-  <div class="d-flex align-items-center justify-content-between pb-2">
-    <div class="small text-uppercase fw-semibold opacity-75 user-select-none">
-      {{ label() }} ({{ (items() ?? []).length }})
+  <div
+    class="bb-group-header d-flex align-items-center justify-content-between pb-2"
+    (click)="toggleOpen()"
+  >
+    <div class="d-flex align-items-center gap-2 min-w-0">
+      <fa-icon
+        [icon]="icons.faChevronDown"
+        class="bb-group-chevron"
+        [class.bb-group-chevron--closed]="!open()"
+      ></fa-icon>
+      <div class="small text-uppercase fw-semibold opacity-75 user-select-none text-truncate">
+        {{ label() }} ({{ (items() ?? []).length }})
+      </div>
     </div>
     @if (action(); as act) {
-      <button type="button" class="btn btn-sm btn-link p-0" (click)="act.action()">
+      <button
+        type="button"
+        class="btn btn-sm btn-link p-0"
+        (click)="$event.stopPropagation(); act.action()"
+      >
         {{ act.label }}
       </button>
     }
   </div>
-  @if (showFilter()) {
-    <div class="px-2 pb-2 pt-0">
-      <div class="bb-filter-input">
-        <input
-          type="text"
-          class="form-control form-control-sm"
-          placeholder="Filter..."
-          [formControl]="filterCtrl"
-        />
-        @if (filterCtrl.value) {
-          <button
-            type="button"
-            class="bb-filter-clear"
-            (click)="clearFilter()"
-            aria-label="Clear filter"
-          >
-            <fa-icon [icon]="icons.faXmark"></fa-icon>
-          </button>
-        }
+  @if (open()) {
+    @if (showFilter()) {
+      <div class="px-2 pb-2 pt-0">
+        <div class="bb-filter-input">
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            placeholder="Filter..."
+            [formControl]="filterCtrl"
+          />
+          @if (filterCtrl.value) {
+            <button
+              type="button"
+              class="bb-filter-clear"
+              (click)="clearFilter()"
+              aria-label="Clear filter"
+            >
+              <fa-icon [icon]="icons.faXmark"></fa-icon>
+            </button>
+          }
+        </div>
       </div>
+    }
+    <div class="list-group list-group-flush">
+      @if (showAll()) {
+        <button
+          type="button"
+          class="list-group-item list-group-item-action d-flex align-items-center gap-2"
+          [class.active]="activeKeys().size === 0"
+          (click)="onItemSelected('all')"
+          [ngbTooltip]="'pages.main.status.filter-group.all' | translate"
+          [bbTooltipOverflow]="allLabel"
+          placement="end"
+        >
+          <span #allLabel class="bb-status-label flex-grow-1 text-truncate">{{
+            'pages.main.status.filter-group.all' | translate
+          }}</span>
+          <span class="badge bb-status-badge bb-status-badge--neutral">{{ showAllCount() }}</span>
+        </button>
+      }
+      @for (item of filteredItems(); track item.key) {
+        <button
+          type="button"
+          class="list-group-item list-group-item-action d-flex align-items-center gap-2"
+          [class.active]="activeKeys().has(item.key)"
+          [ngClass]="item.variant ? 'bb-variant-' + item.variant : null"
+          (click)="onItemSelected(item.key)"
+          [ngbTooltip]="item.label"
+          tooltipClass="single-line-tooltip"
+          [bbTooltipOverflow]="itemLabel"
+          placement="end"
+        >
+          @if (item.icon) {
+            @if (isIconArray(item.icon)) {
+              <span class="d-inline-flex align-items-center gap-1">
+                @for (icon of item.icon; track icon.iconName) {
+                  <fa-icon
+                    [icon]="icon"
+                    [ngClass]="{ 'opacity-75': $first, 'opacity-50': !$first }"
+                  ></fa-icon>
+                }
+              </span>
+            } @else {
+              <fa-icon [icon]="item.icon" class="opacity-75"></fa-icon>
+            }
+          }
+          <span #itemLabel class="bb-status-label flex-grow-1 text-truncate">{{ item.label }}</span>
+          <span
+            class="badge bb-status-badge"
+            [ngClass]="item.variant ? 'text-bg-' + item.variant : 'bb-status-badge--neutral'"
+            >{{ item.count }}</span
+          >
+        </button>
+      }
     </div>
   }
-  <div class="list-group list-group-flush">
-    @if (showAll()) {
-      <button
-        type="button"
-        class="list-group-item list-group-item-action d-flex align-items-center gap-2"
-        [class.active]="activeKeys().size === 0"
-        (click)="onItemSelected('all')"
-        [ngbTooltip]="'pages.main.status.filter-group.all' | translate"
-        [bbTooltipOverflow]="allLabel"
-        placement="end"
-      >
-        <span #allLabel class="bb-status-label flex-grow-1 text-truncate">{{
-          'pages.main.status.filter-group.all' | translate
-        }}</span>
-        <span class="badge bb-status-badge bb-status-badge--neutral">{{ showAllCount() }}</span>
-      </button>
-    }
-    @for (item of filteredItems(); track item.key) {
-      <button
-        type="button"
-        class="list-group-item list-group-item-action d-flex align-items-center gap-2"
-        [class.active]="activeKeys().has(item.key)"
-        [ngClass]="item.variant ? 'bb-variant-' + item.variant : null"
-        (click)="onItemSelected(item.key)"
-        [ngbTooltip]="item.label"
-        tooltipClass="single-line-tooltip"
-        [bbTooltipOverflow]="itemLabel"
-        placement="end"
-      >
-        @if (item.icon) {
-          @if (isIconArray(item.icon)) {
-            <span class="d-inline-flex align-items-center gap-1">
-              @for (icon of item.icon; track icon.iconName) {
-                <fa-icon
-                  [icon]="icon"
-                  [ngClass]="{ 'opacity-75': $first, 'opacity-50': !$first }"
-                ></fa-icon>
-              }
-            </span>
-          } @else {
-            <fa-icon [icon]="item.icon" class="opacity-75"></fa-icon>
-          }
-        }
-        <span #itemLabel class="bb-status-label flex-grow-1 text-truncate">{{ item.label }}</span>
-        <span
-          class="badge bb-status-badge"
-          [ngClass]="item.variant ? 'text-bg-' + item.variant : 'bb-status-badge--neutral'"
-          >{{ item.count }}</span
-        >
-      </button>
-    }
-  </div>
 </div>

@@ -41,6 +41,7 @@ export class Main implements OnDestroy {
 
   readonly theme = this.themeService.effectiveMode;
   readonly serverState = signal<QbServerState | null>(null);
+  readonly connectionStatus = computed(() => this.serverState()?.connection_status || 'offline');
   private readonly _pollEffect = effect((onCleanup) => {
     const serverId = this.serverStoreService.currentServerId();
 

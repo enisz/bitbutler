@@ -26,7 +26,6 @@ import {
   faLink,
   faSquareCheck,
   faTags,
-  faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -66,7 +65,6 @@ export class ExportTorrents implements OnInit {
     faTags,
     faFolderOpen,
     faFileExport,
-    faXmark,
   };
 
   exportForm!: FormGroup;

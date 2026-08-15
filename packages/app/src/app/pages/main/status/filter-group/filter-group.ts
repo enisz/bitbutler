@@ -1,9 +1,17 @@
 import { NgClass } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, effect, input, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { IconDefinition, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { IconDefinition, faChevronDown, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { debounceTime, startWith } from 'rxjs/operators';
@@ -52,8 +60,13 @@ export class FilterGroupComponent {
 
   readonly itemSelected = output<string>();
 
-  public readonly icons = { faXmark };
+  public readonly icons = { faXmark, faChevronDown };
   public filterCtrl = new FormControl('', { nonNullable: true });
+  public readonly open = signal(true);
+
+  public toggleOpen(): void {
+    this.open.update((v) => !v);
+  }
 
   private readonly filterText = toSignal(
     this.filterCtrl.valueChanges.pipe(startWith(''), debounceTime(FILTER_DEBOUNCE_MS)),

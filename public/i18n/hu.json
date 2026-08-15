@@ -1970,6 +1970,8 @@
       "close": "Bezárás",
       "browse": "Tallózás",
       "add": "Hozzáadás",
+      "add-start": "Hozzáadás és azonnali indítás",
+      "add-paused": "Hozzáadás szüneteltetve",
       "cancel": "Mégse",
       "clear": "Törlés",
       "clear-all": "Összes törlése",

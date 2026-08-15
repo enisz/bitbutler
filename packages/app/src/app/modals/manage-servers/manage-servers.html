@@ -33,9 +33,9 @@
   }
 
   @if (filteredServers().length > 0) {
-    <ul class="list-group">
+    <ul class="list-group list-group-flush bb-server-list">
       @for (server of filteredServers(); track server.id) {
-        <li class="list-group-item d-flex align-items-center justify-content-between">
+        <li class="list-group-item bb-server-row d-flex align-items-center justify-content-between">
           <div class="overflow-hidden me-2 d-flex align-items-center gap-3">
             @if (!hideConnect() && currentServerId() === server.id) {
               <fa-icon
@@ -68,7 +68,7 @@
               @if (!hideConnect()) {
                 <button
                   type="button"
-                  class="btn btn-link p-1 connect-btn"
+                  class="btn bb-server-action connect-btn"
                   [ngbTooltip]="'components.modals.manage-servers.button.connect' | translate"
                   (click)="switchTo(server)"
                   [disabled]="busy()"
@@ -83,7 +83,8 @@
             }
             <button
               type="button"
-              class="btn btn-link p-1"
+              class="btn bb-server-action"
+              [class.bb-server-action--default]="server.auto_login"
               [ngbTooltip]="
                 (server.auto_login
                   ? 'components.modals.manage-servers.tooltip.unset-default'
@@ -98,7 +99,7 @@
             @if (hideConnect() || currentServerId() !== server.id) {
               <button
                 type="button"
-                class="btn btn-link p-1"
+                class="btn bb-server-action"
                 [ngbTooltip]="'general.button.edit' | translate"
                 (click)="openEditor(server.id)"
                 [disabled]="busy()"
@@ -107,7 +108,7 @@
               </button>
               <button
                 type="button"
-                class="btn btn-link text-danger p-1"
+                class="btn bb-server-action bb-server-action--danger"
                 [ngbTooltip]="'general.button.delete' | translate"
                 (click)="delete(server)"
                 [disabled]="busy()"
@@ -130,10 +131,10 @@
   }
 </div>
 
-<div class="modal-footer justify-content-end">
+<div class="modal-footer justify-content-between">
   <button
     type="button"
-    class="btn btn-primary btn-sm btn-split"
+    class="btn btn-primary btn-sm bb-modal-footer-btn"
     (click)="openEditor()"
     [disabled]="busy()"
   >
@@ -143,7 +144,11 @@
       position="end"
     ></bb-btn-content>
   </button>
-  <button type="button" class="btn btn-link btn-sm btn-split" (click)="activeModal.dismiss()">
+  <button
+    type="button"
+    class="btn btn-link btn-sm bb-modal-footer-btn"
+    (click)="activeModal.dismiss()"
+  >
     <bb-btn-content
       [icon]="icon.faXmark"
       [text]="'general.button.close' | translate"

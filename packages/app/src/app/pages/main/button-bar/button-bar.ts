@@ -87,7 +87,7 @@ export class ButtonBar implements OnInit {
         id: 'new.addTorrent',
         label: 'pages.main.button-bar.button.add',
         icon: faPlus,
-        variant: 'default',
+        variant: 'primary',
       },
       { kind: 'divider' },
       {

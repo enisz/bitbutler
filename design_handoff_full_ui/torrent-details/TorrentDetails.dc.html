@@ -1,0 +1,1397 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <!-- @template name="Torrent Details" description="Full torrent inspector modal: general info, trackers, peers, and file content tabs" -->
+      <helmet>
+        <script src="./ds-base.js"></script>
+        <style>
+          html,
+          body {
+            margin: 0;
+            padding: 0;
+            background: #100c08;
+          }
+          * {
+            box-sizing: border-box;
+          }
+          button {
+            font: inherit;
+            cursor: pointer;
+          }
+          ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+          }
+          ::-webkit-scrollbar-thumb {
+            background: rgba(240, 225, 200, 0.15);
+            border-radius: 99px;
+          }
+        </style>
+      </helmet>
+      <div
+        style="
+          width: 100vw;
+          height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 32px;
+          background: #100c08;
+          font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+          color: #f3e9d8;
+          font-size: 13.5px;
+        "
+      >
+        <div
+          style="
+            width: 100%;
+            max-width: 1020px;
+            max-height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: #1c160f;
+            border: 1px solid rgba(240, 225, 200, 0.15);
+            border-radius: 18px;
+            box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.75);
+            overflow: hidden;
+          "
+        >
+          <div
+            style="
+              flex: 0 0 auto;
+              display: flex;
+              gap: 18px;
+              align-items: flex-start;
+              padding: 22px 26px 0;
+            "
+          >
+            <div style="flex: 1; min-width: 0">
+              <h1
+                style="
+                  margin: 0 0 3px;
+                  font-size: 20px;
+                  font-weight: 650;
+                  letter-spacing: -0.01em;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  white-space: nowrap;
+                "
+              >
+                {{ name }}
+              </h1>
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  font-size: 12px;
+                  color: #7c705d;
+                  flex-wrap: wrap;
+                "
+              >
+                <span
+                  style="
+                    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                    font-size: 11px;
+                    color: #a99c86;
+                    background: #1f1912;
+                    border: 1px solid rgba(240, 225, 200, 0.08);
+                    border-radius: 8px;
+                    padding: 3px 8px;
+                  "
+                  >{{ hash }}</span
+                >
+                <span>·</span><span>{{ size }}</span
+                ><span>·</span><span>{{ addedRel }}</span>
+              </div>
+            </div>
+            <button
+              style="
+                width: 32px;
+                height: 32px;
+                border-radius: 8px;
+                border: 1px solid transparent;
+                background: transparent;
+                color: #7c705d;
+                flex-shrink: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              >
+                <path d="M6 6l12 12M18 6L6 18"></path>
+              </svg>
+            </button>
+          </div>
+
+          <div
+            style="
+              flex: 0 0 auto;
+              display: flex;
+              gap: 22px;
+              padding: 16px 26px 0;
+              border-bottom: 1px solid rgba(240, 225, 200, 0.08);
+            "
+          >
+            <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
+              <sc-if value="{{ t.active }}" hint-placeholder-val="{{ false }}"
+                ><div
+                  onClick="{{ t.select }}"
+                  style="
+                    font-size: 13.5px;
+                    font-weight: 600;
+                    color: #e3bd87;
+                    padding-bottom: 12px;
+                    border-bottom: 2px solid #e3bd87;
+                    margin-bottom: -1px;
+                    cursor: pointer;
+                  "
+                >
+                  {{ t.label }}
+                </div></sc-if
+              >
+              <sc-if value="{{ t.inactive }}" hint-placeholder-val="{{ true }}"
+                ><div
+                  onClick="{{ t.select }}"
+                  style="
+                    font-size: 13.5px;
+                    font-weight: 600;
+                    color: #7c705d;
+                    padding-bottom: 12px;
+                    border-bottom: 2px solid transparent;
+                    margin-bottom: -1px;
+                    cursor: pointer;
+                  "
+                >
+                  {{ t.label }}
+                </div></sc-if
+              >
+            </sc-for>
+          </div>
+
+          <div
+            style="
+              flex: 1 1 auto;
+              min-height: 0;
+              overflow-y: auto;
+              padding: 16px 26px;
+              display: flex;
+              flex-direction: column;
+              gap: 18px;
+            "
+          >
+            <sc-if value="{{ isGeneral }}" hint-placeholder-val="{{ true }}">
+              <div style="display: flex; flex-direction: column; gap: 18px">
+                <div
+                  style="
+                    padding: 18px 20px;
+                    border: 1px solid rgba(240, 225, 200, 0.08);
+                    border-radius: 12px;
+                    background: linear-gradient(
+                      180deg,
+                      rgba(227, 189, 135, 0.05),
+                      rgba(227, 189, 135, 0)
+                    );
+                  "
+                >
+                  <div
+                    style="
+                      display: flex;
+                      align-items: baseline;
+                      justify-content: space-between;
+                      gap: 12px;
+                    "
+                  >
+                    <div
+                      style="
+                        font-size: 26px;
+                        font-weight: 600;
+                        letter-spacing: -0.02em;
+                        font-variant-numeric: tabular-nums;
+                      "
+                    >
+                      {{ pct
+                      }}<span
+                        style="font-size: 13px; color: #7c705d; font-weight: 500; margin-left: 8px"
+                        >{{ pctSub }}</span
+                      >
+                    </div>
+                    <div style="font-size: 12.5px; color: #a99c86">{{ stateSentence }}</div>
+                  </div>
+                  <div
+                    style="
+                      height: 10px;
+                      border-radius: 999px;
+                      background: #1f1912;
+                      position: relative;
+                      overflow: hidden;
+                      box-shadow: inset 0 0 0 1px rgba(240, 225, 200, 0.08);
+                      margin-top: 12px;
+                    "
+                  >
+                    <i
+                      style="position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,#e3bd87,#dd9a4c);border-radius:999px;width:{{
+                        pct
+                      }};display:block"
+                    ></i>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      font-size: 11.5px;
+                      color: #7c705d;
+                      margin-top: 8px;
+                    "
+                  >
+                    <span>{{ piecesLine }}</span
+                    ><span>{{ etaLine }}</span>
+                  </div>
+                  <div
+                    style="
+                      display: grid;
+                      grid-template-columns: repeat(4, 1fr);
+                      gap: 12px;
+                      margin-top: 16px;
+                    "
+                  >
+                    <div
+                      style="
+                        padding: 12px 14px;
+                        border: 1px solid rgba(240, 225, 200, 0.08);
+                        border-radius: 8px;
+                        background: #1b1610;
+                      "
+                    >
+                      <div
+                        style="
+                          font-size: 10.5px;
+                          font-weight: 700;
+                          text-transform: uppercase;
+                          letter-spacing: 0.09em;
+                          color: #e3bd87;
+                        "
+                      >
+                        Download
+                      </div>
+                      <div
+                        style="
+                          font-size: 17px;
+                          font-weight: 600;
+                          font-variant-numeric: tabular-nums;
+                          margin-top: 6px;
+                        "
+                      >
+                        {{ dlSpeed }}
+                      </div>
+                      <div style="font-size: 11.5px; color: #7c705d; margin-top: 2px">
+                        {{ dlSub }}
+                      </div>
+                    </div>
+                    <div
+                      style="
+                        padding: 12px 14px;
+                        border: 1px solid rgba(240, 225, 200, 0.08);
+                        border-radius: 8px;
+                        background: #1b1610;
+                      "
+                    >
+                      <div
+                        style="
+                          font-size: 10.5px;
+                          font-weight: 700;
+                          text-transform: uppercase;
+                          letter-spacing: 0.09em;
+                          color: #8fbf8a;
+                        "
+                      >
+                        Upload
+                      </div>
+                      <div
+                        style="
+                          font-size: 17px;
+                          font-weight: 600;
+                          font-variant-numeric: tabular-nums;
+                          margin-top: 6px;
+                        "
+                      >
+                        {{ ulSpeed }}
+                      </div>
+                      <div style="font-size: 11.5px; color: #7c705d; margin-top: 2px">
+                        {{ ulSub }}
+                      </div>
+                    </div>
+                    <div
+                      style="
+                        padding: 12px 14px;
+                        border: 1px solid rgba(240, 225, 200, 0.08);
+                        border-radius: 8px;
+                        background: #1b1610;
+                      "
+                    >
+                      <div
+                        style="
+                          font-size: 10.5px;
+                          font-weight: 700;
+                          text-transform: uppercase;
+                          letter-spacing: 0.09em;
+                          color: #7c705d;
+                        "
+                      >
+                        Swarm
+                      </div>
+                      <div
+                        style="
+                          font-size: 17px;
+                          font-weight: 600;
+                          font-variant-numeric: tabular-nums;
+                          margin-top: 6px;
+                        "
+                      >
+                        {{ swarm }}
+                      </div>
+                      <div style="font-size: 11.5px; color: #7c705d; margin-top: 2px">
+                        {{ swarmSub }}
+                      </div>
+                    </div>
+                    <div
+                      style="
+                        padding: 12px 14px;
+                        border: 1px solid rgba(240, 225, 200, 0.08);
+                        border-radius: 8px;
+                        background: #1b1610;
+                      "
+                    >
+                      <div
+                        style="
+                          font-size: 10.5px;
+                          font-weight: 700;
+                          text-transform: uppercase;
+                          letter-spacing: 0.09em;
+                          color: #7c705d;
+                        "
+                      >
+                        Ratio
+                      </div>
+                      <div
+                        style="
+                          font-size: 17px;
+                          font-weight: 600;
+                          font-variant-numeric: tabular-nums;
+                          margin-top: 6px;
+                        "
+                      >
+                        {{ ratio }}
+                      </div>
+                      <div style="font-size: 11.5px; color: #7c705d; margin-top: 2px">
+                        global limit
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  style="
+                    border: 1px solid rgba(240, 225, 200, 0.08);
+                    border-radius: 12px;
+                    background: #1b1610;
+                    overflow: hidden;
+                  "
+                >
+                  <div
+                    style="
+                      padding: 12px 18px;
+                      border-bottom: 1px solid rgba(240, 225, 200, 0.08);
+                      font-size: 10.5px;
+                      font-weight: 700;
+                      text-transform: uppercase;
+                      letter-spacing: 0.1em;
+                      color: #7c705d;
+                    "
+                  >
+                    Torrent
+                  </div>
+                  <div style="padding: 6px 18px 14px">
+                    <sc-for list="{{ torrentRows }}" as="r" hint-placeholder-count="6">
+                      <div
+                        style="
+                          display: grid;
+                          grid-template-columns: 150px 1fr;
+                          gap: 16px;
+                          padding: 9px 0;
+                          border-bottom: 1px solid rgba(240, 225, 200, 0.05);
+                        "
+                      >
+                        <span style="font-size: 12.5px; color: #7c705d">{{ r.k }}</span
+                        ><span style="font-size: 13.5px; font-weight: 500; word-break: break-all">{{
+                          r.v
+                        }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+
+                <div
+                  style="
+                    border: 1px solid rgba(240, 225, 200, 0.08);
+                    border-radius: 12px;
+                    background: #1b1610;
+                    overflow: hidden;
+                  "
+                >
+                  <div
+                    style="
+                      padding: 12px 18px;
+                      border-bottom: 1px solid rgba(240, 225, 200, 0.08);
+                      font-size: 10.5px;
+                      font-weight: 700;
+                      text-transform: uppercase;
+                      letter-spacing: 0.1em;
+                      color: #7c705d;
+                    "
+                  >
+                    Options
+                  </div>
+                  <div
+                    style="
+                      display: grid;
+                      grid-template-columns: 1fr 1fr;
+                      gap: 0 32px;
+                      padding: 6px 18px 12px;
+                    "
+                  >
+                    <sc-for list="{{ options }}" as="o" hint-placeholder-count="4">
+                      <div
+                        style="
+                          display: flex;
+                          align-items: center;
+                          justify-content: space-between;
+                          gap: 12px;
+                          padding: 11px 0;
+                          border-bottom: 1px solid rgba(240, 225, 200, 0.05);
+                        "
+                      >
+                        <div>
+                          <div style="font-size: 13.5px">{{ o.label }}</div>
+                          <div style="font-size: 11.5px; color: #7c705d; margin-top: 2px">
+                            {{ o.sub }}
+                          </div>
+                        </div>
+                        <sc-if value="{{ o.on }}" hint-placeholder-val="{{ false }}"
+                          ><div
+                            onClick="{{ o.toggle }}"
+                            style="
+                              width: 40px;
+                              height: 23px;
+                              border-radius: 999px;
+                              background: #e3bd87;
+                              border: 1px solid #e3bd87;
+                              position: relative;
+                              flex-shrink: 0;
+                              cursor: pointer;
+                            "
+                          >
+                            <div
+                              style="
+                                width: 17px;
+                                height: 17px;
+                                border-radius: 50%;
+                                background: #241a0f;
+                                position: absolute;
+                                top: 2px;
+                                left: 17px;
+                                transition: 0.15s ease;
+                              "
+                            ></div></div
+                        ></sc-if>
+                        <sc-if value="{{ o.off }}" hint-placeholder-val="{{ true }}"
+                          ><div
+                            onClick="{{ o.toggle }}"
+                            style="
+                              width: 40px;
+                              height: 23px;
+                              border-radius: 999px;
+                              background: #1f1912;
+                              border: 1px solid rgba(240, 225, 200, 0.15);
+                              position: relative;
+                              flex-shrink: 0;
+                              cursor: pointer;
+                            "
+                          >
+                            <div
+                              style="
+                                width: 17px;
+                                height: 17px;
+                                border-radius: 50%;
+                                background: #7c705d;
+                                position: absolute;
+                                top: 2px;
+                                left: 2px;
+                                transition: 0.15s ease;
+                              "
+                            ></div></div
+                        ></sc-if>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+
+                <div
+                  style="
+                    border: 1px solid rgba(240, 225, 200, 0.08);
+                    border-radius: 12px;
+                    background: #1b1610;
+                    overflow: hidden;
+                  "
+                >
+                  <div
+                    style="
+                      padding: 12px 18px;
+                      border-bottom: 1px solid rgba(240, 225, 200, 0.08);
+                      font-size: 10.5px;
+                      font-weight: 700;
+                      text-transform: uppercase;
+                      letter-spacing: 0.1em;
+                      color: #7c705d;
+                    "
+                  >
+                    Transfer
+                  </div>
+                  <div
+                    style="
+                      display: grid;
+                      grid-template-columns: repeat(3, 1fr);
+                      gap: 2px 26px;
+                      padding: 14px 18px;
+                    "
+                  >
+                    <sc-for list="{{ transferCells }}" as="c" hint-placeholder-count="9">
+                      <div
+                        style="padding: 8px 0; border-bottom: 1px solid rgba(240, 225, 200, 0.05)"
+                      >
+                        <div
+                          style="
+                            font-size: 10.5px;
+                            font-weight: 700;
+                            text-transform: uppercase;
+                            letter-spacing: 0.08em;
+                            color: #7c705d;
+                          "
+                        >
+                          {{ c.k }}
+                        </div>
+                        <div
+                          style="
+                            font-size: 14px;
+                            font-weight: 550;
+                            font-variant-numeric: tabular-nums;
+                            margin-top: 4px;
+                          "
+                        >
+                          {{ c.v }}
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+
+                <div
+                  style="
+                    border: 1px solid rgba(240, 225, 200, 0.08);
+                    border-radius: 12px;
+                    background: #1b1610;
+                    overflow: hidden;
+                  "
+                >
+                  <div
+                    style="
+                      padding: 12px 18px;
+                      border-bottom: 1px solid rgba(240, 225, 200, 0.08);
+                      font-size: 10.5px;
+                      font-weight: 700;
+                      text-transform: uppercase;
+                      letter-spacing: 0.1em;
+                      color: #7c705d;
+                    "
+                  >
+                    Information
+                  </div>
+                  <div
+                    style="
+                      display: grid;
+                      grid-template-columns: repeat(3, 1fr);
+                      gap: 2px 26px;
+                      padding: 14px 18px;
+                    "
+                  >
+                    <sc-for list="{{ infoCells }}" as="c" hint-placeholder-count="6">
+                      <div
+                        style="padding: 8px 0; border-bottom: 1px solid rgba(240, 225, 200, 0.05)"
+                      >
+                        <div
+                          style="
+                            font-size: 10.5px;
+                            font-weight: 700;
+                            text-transform: uppercase;
+                            letter-spacing: 0.08em;
+                            color: #7c705d;
+                          "
+                        >
+                          {{ c.k }}
+                        </div>
+                        <div
+                          style="
+                            font-size: 14px;
+                            font-weight: 550;
+                            font-variant-numeric: tabular-nums;
+                            margin-top: 4px;
+                          "
+                        >
+                          {{ c.v }}
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isTrackers }}" hint-placeholder-val="{{ false }}">
+              <div
+                style="
+                  border: 1px solid rgba(240, 225, 200, 0.08);
+                  border-radius: 12px;
+                  background: #1b1610;
+                  overflow: hidden;
+                "
+              >
+                <table style="width: 100%; border-collapse: collapse; font-size: 13px">
+                  <thead>
+                    <tr>
+                      <th
+                        style="
+                          text-align: left;
+                          font-size: 10.5px;
+                          font-weight: 700;
+                          text-transform: uppercase;
+                          letter-spacing: 0.09em;
+                          color: #7c705d;
+                          padding: 11px 18px;
+                          border-bottom: 1px solid rgba(240, 225, 200, 0.08);
+                          width: 70px;
+                        "
+                      >
+                        Tier
+                      </th>
+                      <th
+                        style="
+                          text-align: left;
+                          font-size: 10.5px;
+                          font-weight: 700;
+                          text-transform: uppercase;
+                          letter-spacing: 0.09em;
+                          color: #7c705d;
+                          padding: 11px 18px;
+                          border-bottom: 1px solid rgba(240, 225, 200, 0.08);
+                        "
+                      >
+                        URL
+                      </th>
+                      <th
+                        style="
+                          text-align: left;
+                          font-size: 10.5px;
+                          font-weight: 700;
+                          text-transform: uppercase;
+                          letter-spacing: 0.09em;
+                          color: #7c705d;
+                          padding: 11px 18px;
+                          border-bottom: 1px solid rgba(240, 225, 200, 0.08);
+                          width: 150px;
+                        "
+                      >
+                        Status
+                      </th>
+                      <th
+                        style="
+                          text-align: right;
+                          font-size: 10.5px;
+                          font-weight: 700;
+                          text-transform: uppercase;
+                          letter-spacing: 0.09em;
+                          color: #7c705d;
+                          padding: 11px 18px;
+                          border-bottom: 1px solid rgba(240, 225, 200, 0.08);
+                          width: 80px;
+                        "
+                      >
+                        Peers
+                      </th>
+                      <th
+                        style="
+                          text-align: right;
+                          font-size: 10.5px;
+                          font-weight: 700;
+                          text-transform: uppercase;
+                          letter-spacing: 0.09em;
+                          color: #7c705d;
+                          padding: 11px 18px;
+                          border-bottom: 1px solid rgba(240, 225, 200, 0.08);
+                          width: 80px;
+                        "
+                      >
+                        Seeds
+                      </th>
+                      <th
+                        style="
+                          text-align: right;
+                          font-size: 10.5px;
+                          font-weight: 700;
+                          text-transform: uppercase;
+                          letter-spacing: 0.09em;
+                          color: #7c705d;
+                          padding: 11px 18px;
+                          border-bottom: 1px solid rgba(240, 225, 200, 0.08);
+                          width: 90px;
+                        "
+                      >
+                        Leeches
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <sc-for list="{{ trackers }}" as="tr_" hint-placeholder-count="4">
+                      <tr>
+                        <td
+                          style="
+                            padding: 12px 18px;
+                            border-bottom: 1px solid rgba(240, 225, 200, 0.05);
+                            color: #7c705d;
+                          "
+                        >
+                          {{ tr_.tier }}
+                        </td>
+                        <td
+                          style="
+                            padding: 12px 18px;
+                            border-bottom: 1px solid rgba(240, 225, 200, 0.05);
+                            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                            font-size: 12px;
+                          "
+                        >
+                          {{ tr_.url }}
+                        </td>
+                        <td
+                          style="
+                            padding: 12px 18px;
+                            border-bottom: 1px solid rgba(240, 225, 200, 0.05);
+                          "
+                        >
+                          <sc-if value="{{ tr_.working }}" hint-placeholder-val="{{ true }}"
+                            ><span
+                              style="
+                                display: inline-flex;
+                                align-items: center;
+                                gap: 6px;
+                                font-size: 11.5px;
+                                font-weight: 600;
+                                padding: 3px 9px;
+                                border-radius: 999px;
+                                background: rgba(143, 191, 138, 0.1);
+                                color: #8fbf8a;
+                                border: 1px solid rgba(143, 191, 138, 0.22);
+                              "
+                              ><i
+                                style="
+                                  width: 6px;
+                                  height: 6px;
+                                  border-radius: 50%;
+                                  background: currentColor;
+                                  display: inline-block;
+                                "
+                              ></i
+                              >{{ tr_.status }}</span
+                            ></sc-if
+                          >
+                          <sc-if value="{{ tr_.notWorking }}" hint-placeholder-val="{{ false }}"
+                            ><span
+                              style="
+                                display: inline-flex;
+                                align-items: center;
+                                gap: 6px;
+                                font-size: 11.5px;
+                                font-weight: 600;
+                                padding: 3px 9px;
+                                border-radius: 999px;
+                                background: #221b14;
+                                color: #7c705d;
+                                border: 1px solid rgba(240, 225, 200, 0.1);
+                              "
+                              ><i
+                                style="
+                                  width: 6px;
+                                  height: 6px;
+                                  border-radius: 50%;
+                                  background: currentColor;
+                                  display: inline-block;
+                                "
+                              ></i
+                              >{{ tr_.status }}</span
+                            ></sc-if
+                          >
+                        </td>
+                        <td
+                          style="
+                            padding: 12px 18px;
+                            border-bottom: 1px solid rgba(240, 225, 200, 0.05);
+                            text-align: right;
+                            font-variant-numeric: tabular-nums;
+                          "
+                        >
+                          {{ tr_.peers }}
+                        </td>
+                        <td
+                          style="
+                            padding: 12px 18px;
+                            border-bottom: 1px solid rgba(240, 225, 200, 0.05);
+                            text-align: right;
+                            font-variant-numeric: tabular-nums;
+                          "
+                        >
+                          {{ tr_.seeds }}
+                        </td>
+                        <td
+                          style="
+                            padding: 12px 18px;
+                            border-bottom: 1px solid rgba(240, 225, 200, 0.05);
+                            text-align: right;
+                            font-variant-numeric: tabular-nums;
+                          "
+                        >
+                          {{ tr_.leeches }}
+                        </td>
+                      </tr>
+                    </sc-for>
+                  </tbody>
+                </table>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isPeers }}" hint-placeholder-val="{{ false }}">
+              <div
+                style="
+                  border: 1px solid rgba(240, 225, 200, 0.08);
+                  border-radius: 12px;
+                  background: #1b1610;
+                  overflow: hidden;
+                "
+              >
+                <table style="width: 100%; border-collapse: collapse; font-size: 13px">
+                  <thead>
+                    <tr>
+                      <th
+                        style="
+                          text-align: left;
+                          font-size: 10.5px;
+                          font-weight: 700;
+                          text-transform: uppercase;
+                          letter-spacing: 0.09em;
+                          color: #7c705d;
+                          padding: 11px 18px;
+                          border-bottom: 1px solid rgba(240, 225, 200, 0.08);
+                        "
+                      >
+                        Country
+                      </th>
+                      <th
+                        style="
+                          text-align: left;
+                          font-size: 10.5px;
+                          font-weight: 700;
+                          text-transform: uppercase;
+                          letter-spacing: 0.09em;
+                          color: #7c705d;
+                          padding: 11px 18px;
+                          border-bottom: 1px solid rgba(240, 225, 200, 0.08);
+                        "
+                      >
+                        IP
+                      </th>
+                      <th
+                        style="
+                          text-align: right;
+                          font-size: 10.5px;
+                          font-weight: 700;
+                          text-transform: uppercase;
+                          letter-spacing: 0.09em;
+                          color: #7c705d;
+                          padding: 11px 18px;
+                          border-bottom: 1px solid rgba(240, 225, 200, 0.08);
+                        "
+                      >
+                        Port
+                      </th>
+                      <th
+                        style="
+                          text-align: left;
+                          font-size: 10.5px;
+                          font-weight: 700;
+                          text-transform: uppercase;
+                          letter-spacing: 0.09em;
+                          color: #7c705d;
+                          padding: 11px 18px;
+                          border-bottom: 1px solid rgba(240, 225, 200, 0.08);
+                        "
+                      >
+                        Connection
+                      </th>
+                      <th
+                        style="
+                          text-align: left;
+                          font-size: 10.5px;
+                          font-weight: 700;
+                          text-transform: uppercase;
+                          letter-spacing: 0.09em;
+                          color: #7c705d;
+                          padding: 11px 18px;
+                          border-bottom: 1px solid rgba(240, 225, 200, 0.08);
+                        "
+                      >
+                        Flags
+                      </th>
+                      <th
+                        style="
+                          text-align: left;
+                          font-size: 10.5px;
+                          font-weight: 700;
+                          text-transform: uppercase;
+                          letter-spacing: 0.09em;
+                          color: #7c705d;
+                          padding: 11px 18px;
+                          border-bottom: 1px solid rgba(240, 225, 200, 0.08);
+                        "
+                      >
+                        Client
+                      </th>
+                      <th
+                        style="
+                          text-align: left;
+                          font-size: 10.5px;
+                          font-weight: 700;
+                          text-transform: uppercase;
+                          letter-spacing: 0.09em;
+                          color: #7c705d;
+                          padding: 11px 18px;
+                          border-bottom: 1px solid rgba(240, 225, 200, 0.08);
+                        "
+                      >
+                        Progress
+                      </th>
+                      <th
+                        style="
+                          text-align: right;
+                          font-size: 10.5px;
+                          font-weight: 700;
+                          text-transform: uppercase;
+                          letter-spacing: 0.09em;
+                          color: #7c705d;
+                          padding: 11px 18px;
+                          border-bottom: 1px solid rgba(240, 225, 200, 0.08);
+                        "
+                      >
+                        Down
+                      </th>
+                    </tr>
+                  </thead>
+                </table>
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 6px;
+                    padding: 64px 24px;
+                  "
+                >
+                  <div
+                    style="
+                      width: 46px;
+                      height: 46px;
+                      border-radius: 50%;
+                      border: 1.5px dashed rgba(240, 225, 200, 0.15);
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      color: #7c705d;
+                      margin-bottom: 6px;
+                    "
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path>
+                      <circle cx="9" cy="7" r="4"></circle>
+                      <path d="M23 21v-2a4 4 0 00-3-3.87"></path>
+                      <path d="M16 3.13a4 4 0 010 7.75"></path>
+                    </svg>
+                  </div>
+                  <div style="font-size: 14.5px; font-weight: 600">No peers connected</div>
+                  <div
+                    style="font-size: 12.5px; color: #7c705d; text-align: center; max-width: 320px"
+                  >
+                    The torrent is paused, so BitButler is not contacting the swarm. Resume it to
+                    start finding peers.
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isContent }}" hint-placeholder-val="{{ false }}">
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  font-size: 12.5px;
+                  color: #7c705d;
+                "
+              >
+                <span>{{ contentSummary }}</span>
+              </div>
+              <div
+                style="
+                  border: 1px solid rgba(240, 225, 200, 0.08);
+                  border-radius: 12px;
+                  background: #1b1610;
+                  overflow: hidden;
+                "
+              >
+                <div
+                  style="
+                    display: grid;
+                    grid-template-columns: minmax(0, 1fr) 90px 160px 150px;
+                    gap: 16px;
+                    padding: 11px 18px;
+                    border-bottom: 1px solid rgba(240, 225, 200, 0.08);
+                    font-size: 10.5px;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 0.09em;
+                    color: #7c705d;
+                  "
+                >
+                  <span>Name</span><span style="text-align: right">Size</span><span>Progress</span
+                  ><span>Priority</span>
+                </div>
+                <sc-for list="{{ files }}" as="f" hint-placeholder-count="6">
+                  <div
+                    style="
+                      display: grid;
+                      grid-template-columns: minmax(0, 1fr) 90px 160px 150px;
+                      gap: 16px;
+                      padding: 9px 18px;
+                      border-bottom: 1px solid rgba(240, 225, 200, 0.05);
+                      align-items: center;
+                    "
+                  >
+                    <div style="display: flex; align-items: center; gap: 8px; min-width: 0">
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#7c705d"
+                        stroke-width="1.7"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        style="flex-shrink: 0"
+                      >
+                        <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path>
+                        <path d="M14 3v5h5"></path>
+                      </svg>
+                      <span
+                        style="
+                          font-weight: 500;
+                          overflow: hidden;
+                          text-overflow: ellipsis;
+                          white-space: nowrap;
+                        "
+                        >{{ f.name }}</span
+                      >
+                    </div>
+                    <span
+                      style="
+                        text-align: right;
+                        font-variant-numeric: tabular-nums;
+                        font-size: 12.5px;
+                      "
+                      >{{ f.size }}</span
+                    >
+                    <div>
+                      <div
+                        style="
+                          height: 6px;
+                          border-radius: 999px;
+                          background: #1f1912;
+                          box-shadow: inset 0 0 0 1px rgba(240, 225, 200, 0.08);
+                          position: relative;
+                          overflow: hidden;
+                        "
+                      >
+                        <i
+                          style="position:absolute;inset:0 auto 0 0;background:#dd9a4c;border-radius:999px;width:{{
+                            f.progress
+                          }};display:block"
+                        ></i>
+                      </div>
+                      <div style="font-size: 11px; color: #7c705d; margin-top: 3px">
+                        {{ f.progressLabel }}
+                      </div>
+                    </div>
+                    <span
+                      style="
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 6px;
+                        padding: 5px 10px;
+                        border: 1px solid rgba(240, 225, 200, 0.15);
+                        border-radius: 8px;
+                        background: #221b14;
+                        color: #a99c86;
+                        font-size: 12px;
+                        font-weight: 600;
+                        width: fit-content;
+                      "
+                      >{{ f.priority }}</span
+                    >
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+          </div>
+
+          <div
+            style="
+              flex: 0 0 auto;
+              display: flex;
+              flex-wrap: wrap;
+              row-gap: 10px;
+              justify-content: space-between;
+              align-items: center;
+              gap: 12px;
+              padding: 14px 22px;
+              border-top: 1px solid rgba(240, 225, 200, 0.08);
+            "
+          >
+            <div style="display: flex; gap: 8px; flex-wrap: wrap">
+              <button
+                style="
+                  display: inline-flex;
+                  align-items: center;
+                  gap: 8px;
+                  padding: 8px 13px;
+                  border-radius: 8px;
+                  border: 1px solid #e3bd87;
+                  background: #e3bd87;
+                  color: #241a0f;
+                  font-size: 13px;
+                  font-weight: 600;
+                "
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8 5v14l11-7z"></path></svg
+                >Resume
+              </button>
+              <button
+                style="
+                  display: inline-flex;
+                  align-items: center;
+                  gap: 8px;
+                  padding: 8px 13px;
+                  border-radius: 8px;
+                  border: 1px solid rgba(240, 225, 200, 0.15);
+                  background: transparent;
+                  color: #f3e9d8;
+                  font-size: 13px;
+                  font-weight: 600;
+                "
+              >
+                Files
+              </button>
+              <button
+                style="
+                  display: inline-flex;
+                  align-items: center;
+                  gap: 8px;
+                  padding: 8px 13px;
+                  border-radius: 8px;
+                  border: 1px solid rgba(240, 225, 200, 0.15);
+                  background: transparent;
+                  color: #f3e9d8;
+                  font-size: 13px;
+                  font-weight: 600;
+                "
+              >
+                Manage
+              </button>
+              <button
+                style="
+                  display: inline-flex;
+                  align-items: center;
+                  gap: 8px;
+                  padding: 8px 13px;
+                  border-radius: 8px;
+                  border: 1px solid rgba(240, 225, 200, 0.15);
+                  background: transparent;
+                  color: #f3e9d8;
+                  font-size: 13px;
+                  font-weight: 600;
+                "
+              >
+                Limits
+              </button>
+              <button
+                style="
+                  display: inline-flex;
+                  align-items: center;
+                  gap: 8px;
+                  padding: 8px 13px;
+                  border-radius: 8px;
+                  border: 1px solid rgba(240, 225, 200, 0.15);
+                  background: transparent;
+                  color: #f3e9d8;
+                  font-size: 13px;
+                  font-weight: 600;
+                "
+              >
+                Maintenance
+              </button>
+            </div>
+            <div style="display: flex; gap: 10px">
+              <button
+                style="
+                  padding: 9px 16px;
+                  border-radius: 8px;
+                  border: 1px solid rgba(214, 120, 102, 0.3);
+                  background: transparent;
+                  color: #e8a595;
+                  font-size: 13.5px;
+                  font-weight: 600;
+                "
+              >
+                Delete
+              </button>
+              <button
+                style="
+                  padding: 9px 16px;
+                  border-radius: 8px;
+                  border: 1px solid rgba(240, 225, 200, 0.15);
+                  background: transparent;
+                  color: #f3e9d8;
+                  font-size: 13.5px;
+                  font-weight: 600;
+                "
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </x-dc>
+    <script
+      type="text/x-dc"
+      data-dc-script
+      data-props='{"$preview":{"width":1080,"height":900},"name":{"editor":"text","default":"ubuntu-26.04-desktop-arm64.iso","tsType":"string"},"hash":{"editor":"text","default":"59ec6454b48d0cb232cc3ad67f66c4327c1a1092","tsType":"string"},"size":{"editor":"text","default":"3.88 GB","tsType":"string"}}'
+    >
+      const TABS=['general','trackers','peers','content'];
+      const TAB_LABELS={general:'General',trackers:'Trackers',peers:'Peers',content:'Content'};
+      class Component extends DCLogic {
+        state={
+          tab:'general',
+          autoTMM:true,sequential:false,forceStart:false,superSeeding:false
+        };
+        renderVals(){
+          const p=this.props;
+          const opts=[
+            {key:'autoTMM',label:'Auto TMM',sub:'Save path managed by category'},
+            {key:'sequential',label:'Sequential download',sub:'Pieces downloaded in order'},
+            {key:'forceStart',label:'Force start',sub:'Bypasses queue limits'},
+            {key:'superSeeding',label:'Super seeding',sub:'Only useful while seeding'}
+          ];
+          return {
+            name:p.name||'ubuntu-26.04-desktop-arm64.iso',
+            hash:p.hash||'59ec6454b48d0cb232cc3ad67f66c4327c1a1092',
+            size:p.size||'3.88 GB',
+            addedRel:p.addedRel||'Added less than a minute ago',
+            tabs:TABS.map(k=>({label:TAB_LABELS[k],select:()=>this.setState({tab:k}),
+              active:this.state.tab===k,inactive:this.state.tab!==k})),
+            isGeneral:this.state.tab==='general',isTrackers:this.state.tab==='trackers',
+            isPeers:this.state.tab==='peers',isContent:this.state.tab==='content',
+            pct:p.pct||'0%',pctSub:p.pctSub||'0 B of 3.88 GB',
+            stateSentence:p.stateSentence||'Torrent is paused and has not finished downloading.',
+            piecesLine:p.piecesLine||'0 of 15,874 pieces',etaLine:p.etaLine||'ETA 3 months, 8 days',
+            dlSpeed:p.dlSpeed||'0 B/s',dlSub:p.dlSub||'0 B downloaded · no limit',
+            ulSpeed:p.ulSpeed||'0 B/s',ulSub:p.ulSub||'0 B uploaded · no limit',
+            swarm:p.swarm||'0 / 0',swarmSub:p.swarmSub||'seeds / peers · 0 of 100 conn.',
+            ratio:p.ratio||'0.00',
+            torrentRows:[
+              {k:'Name',v:p.name||'ubuntu-26.04-desktop-arm64.iso'},
+              {k:'Save path',v:'/downloads/'},
+              {k:'Remote path',v:'/downloads/ubuntu-26.04-desktop-arm64.iso'},
+              {k:'Category',v:'None'},
+              {k:'Tags',v:'—'},
+              {k:'Comment',v:'Ubuntu CD cdimage.ubuntu.com'}
+            ],
+            options:opts.map(o=>({label:o.label,sub:o.sub,
+              toggle:()=>this.setState(s=>({[o.key]:!s[o.key]})),
+              on:this.state[o.key],off:!this.state[o.key]})),
+            transferCells:[
+              {k:'Time active',v:'0 seconds'},{k:'ETA',v:'3 months, 8 days'},{k:'Connections',v:'0 (100 max)'},
+              {k:'Downloaded',v:'0 B'},{k:'Uploaded',v:'0 B'},{k:'Seeds',v:'0 (0 total)'},
+              {k:'Download limit',v:'—'},{k:'Upload limit',v:'—'},{k:'Wasted',v:'0 B'},
+              {k:'Share ratio',v:'0.00'},{k:'Reannounce in',v:'—'},{k:'Last seen complete',v:'—'},
+              {k:'Ratio limit',v:'Global Limit'},{k:'Seeding time limit',v:'Global Limit'},{k:'Inactive seeding time limit',v:'Global Limit'}
+            ],
+            infoCells:[
+              {k:'Total size',v:'3.88 GB'},{k:'Pieces',v:'15874 pieces (have 0)'},{k:'Created by',v:'mktorrent 1.1'},
+              {k:'Added on',v:'less than a minute ago'},{k:'Completed on',v:'—'},{k:'Created on',v:'4 months ago'}
+            ],
+            trackers:[
+              {tier:'-1',url:'** [DHT] **',status:'Working',working:true,notWorking:false,peers:'0',seeds:'0',leeches:'0'},
+              {tier:'-1',url:'** [PeX] **',status:'Working',working:true,notWorking:false,peers:'0',seeds:'0',leeches:'0'},
+              {tier:'-1',url:'** [LSD] **',status:'Working',working:true,notWorking:false,peers:'0',seeds:'0',leeches:'0'},
+              {tier:'0',url:'https://torrent.ubuntu.com/announce',status:'Not contacted',working:false,notWorking:true,peers:'-1',seeds:'-1',leeches:'-1'}
+            ],
+            contentSummary:'1 files · 3.88 GB selected of 3.88 GB · 0 B downloaded',
+            files:[
+              {name:p.name||'ubuntu-26.04-desktop-arm64.iso',size:'3.88 GB',progress:'0%',progressLabel:'Not downloaded',priority:'Normal'}
+            ]
+          };
+        }
+      }
+    </script>
+  </body>
+</html>

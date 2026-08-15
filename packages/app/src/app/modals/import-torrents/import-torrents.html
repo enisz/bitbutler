@@ -1,5 +1,9 @@
-<div class="modal-header">
-  <h5 class="modal-title">{{ 'components.modals.import-torrents.title' | translate }}</h5>
+<div class="modal-header bb-modal-header">
+  <div class="bb-modal-header__text">
+    <h5 class="modal-title bb-title-clamp">
+      {{ 'components.modals.import-torrents.title' | translate }}
+    </h5>
+  </div>
   <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
 </div>
 
@@ -15,9 +19,11 @@
     <div class="alert alert-danger">{{ state().error }}</div>
   }
   @if (isReady() || isRunning() || isDone()) {
-    <form [formGroup]="importForm">
-      <fieldset class="bb-fieldset mt-0">
-        <legend>{{ 'components.modals.import-torrents.label.archive' | translate }}</legend>
+    <form [formGroup]="importForm" class="d-flex flex-column gap-3">
+      <div class="bb-panel">
+        <div class="bb-panel-title">
+          {{ 'components.modals.import-torrents.label.archive' | translate }}
+        </div>
         @if (metadata()) {
           <div class="row gy-2">
             <div class="col-3 bb-section">
@@ -97,11 +103,13 @@
             </div>
           </div>
         }
-      </fieldset>
+      </div>
 
       @if (isReady() || isRunning() || isDone()) {
-        <fieldset class="bb-fieldset import-grid-fieldset">
-          <legend>{{ 'components.modals.import-torrents.label.grid' | translate }}</legend>
+        <div class="bb-panel import-grid-fieldset">
+          <div class="bb-panel-title">
+            {{ 'components.modals.import-torrents.label.grid' | translate }}
+          </div>
           <p class="small mb-3">
             {{ 'components.modals.import-torrents.grid.description' | translate }}
           </p>
@@ -114,14 +122,14 @@
             [gridOptions]="importGridOptions"
             [theme]="theme() === 'dark' ? bbDark : bbLight"
           />
-        </fieldset>
+        </div>
       }
 
       @if (isReady()) {
-        <fieldset class="bb-fieldset" formGroupName="restoreFields">
-          <legend>
+        <div class="bb-panel" formGroupName="restoreFields">
+          <div class="bb-panel-title">
             {{ 'components.modals.import-torrents.label.restore-options' | translate }}
-          </legend>
+          </div>
           <div class="container-fluid px-0">
             <div class="row">
               @for (field of restoreFieldKeys; track field) {
@@ -150,13 +158,13 @@
               }
             </div>
           </div>
-        </fieldset>
+        </div>
 
         @if (showPathRemap()) {
-          <fieldset class="bb-fieldset" formArrayName="pathMappings">
-            <legend>
+          <div class="bb-panel" formArrayName="pathMappings">
+            <div class="bb-panel-title">
               {{ 'components.modals.import-torrents.label.path-remap' | translate }}
-            </legend>
+            </div>
             <p class="small mb-3">
               {{ 'components.modals.import-torrents.path-remap.description' | translate }}
             </p>
@@ -218,14 +226,14 @@
                 </div>
               </div>
             }
-          </fieldset>
+          </div>
         }
 
         @if (showCategoryPathMapping()) {
-          <fieldset class="bb-fieldset">
-            <legend>
+          <div class="bb-panel">
+            <div class="bb-panel-title">
               {{ 'components.modals.import-torrents.label.category-path-mapping' | translate }}
-            </legend>
+            </div>
             <div class="form-check form-switch mb-3">
               <input
                 class="form-check-input"
@@ -336,11 +344,13 @@
                 </div>
               }
             </div>
-          </fieldset>
+          </div>
         }
 
-        <fieldset class="bb-fieldset pb-3">
-          <legend>{{ 'components.modals.import-torrents.label.after-import' | translate }}</legend>
+        <div class="bb-panel">
+          <div class="bb-panel-title">
+            {{ 'components.modals.import-torrents.label.after-import' | translate }}
+          </div>
           <div class="btn-group w-100 mb-2" role="group">
             <input
               type="radio"
@@ -349,7 +359,7 @@
               id="sm-paused"
               value="paused"
             />
-            <label class="btn btn-outline-secondary btn-split" for="sm-paused">
+            <label class="btn btn-outline-secondary bb-pill-btn" for="sm-paused">
               <bb-btn-content
                 [icon]="icons.faPause"
                 [text]="'components.modals.import-torrents.start-mode.paused' | translate"
@@ -362,7 +372,7 @@
               id="sm-active"
               value="active"
             />
-            <label class="btn btn-outline-secondary btn-split" for="sm-active">
+            <label class="btn btn-outline-secondary bb-pill-btn" for="sm-active">
               <bb-btn-content
                 [icon]="icons.faPlay"
                 [text]="'components.modals.import-torrents.start-mode.active' | translate"
@@ -375,7 +385,7 @@
               id="sm-all"
               value="all"
             />
-            <label class="btn btn-outline-secondary btn-split" for="sm-all">
+            <label class="btn btn-outline-secondary bb-pill-btn" for="sm-all">
               <bb-btn-content
                 [icon]="icons.faForward"
                 [text]="'components.modals.import-torrents.start-mode.all' | translate"
@@ -383,11 +393,13 @@
             </label>
           </div>
           <div class="small text-body-secondary">{{ startModeHint() | translate }}</div>
-        </fieldset>
+        </div>
       }
       @if (isRunning() || isDone() || isError()) {
-        <fieldset class="bb-fieldset pb-3">
-          <legend>{{ 'components.modals.import-torrents.label.progress' | translate }}</legend>
+        <div class="bb-panel">
+          <div class="bb-panel-title">
+            {{ 'components.modals.import-torrents.label.progress' | translate }}
+          </div>
 
           @if (isRunning()) {
             <div class="d-flex justify-content-between mb-1">
@@ -427,7 +439,7 @@
           @if (isError()) {
             <div class="alert alert-danger mb-0 py-2">{{ state().error }}</div>
           }
-        </fieldset>
+        </div>
       }
     </form>
   }
@@ -435,35 +447,23 @@
 
 <div class="modal-footer">
   @if (isRunning()) {
-    <button type="button" class="btn btn-link btn-sm btn-split" (click)="cancelImport()">
-      <bb-btn-content
-        [icon]="icons.faXmark"
-        [text]="'general.button.cancel' | translate"
-        position="end"
-      ></bb-btn-content>
+    <button type="button" class="btn btn-link btn-sm" (click)="cancelImport()">
+      {{ 'general.button.cancel' | translate }}
     </button>
   } @else if (isDone() || isError()) {
-    <button type="button" class="btn btn-link btn-sm btn-split" (click)="close()">
-      <bb-btn-content
-        [icon]="icons.faXmark"
-        [text]="'general.button.close' | translate"
-        position="end"
-      ></bb-btn-content>
+    <button type="button" class="btn btn-link btn-sm" (click)="close()">
+      {{ 'general.button.close' | translate }}
     </button>
   } @else if (isReady()) {
-    <button type="button" class="btn btn-primary btn-sm btn-split" (click)="startImport()">
+    <button type="button" class="btn btn-primary btn-sm bb-pill-btn" (click)="startImport()">
       <bb-btn-content
         [icon]="icons.faFileImport"
         [text]="'components.modals.import-torrents.button.import' | translate"
         position="end"
       ></bb-btn-content>
     </button>
-    <button type="button" class="btn btn-link btn-sm btn-split" (click)="close()">
-      <bb-btn-content
-        [icon]="icons.faXmark"
-        [text]="'general.button.cancel' | translate"
-        position="end"
-      ></bb-btn-content>
+    <button type="button" class="btn btn-link btn-sm" (click)="close()">
+      {{ 'general.button.cancel' | translate }}
     </button>
   }
 </div>

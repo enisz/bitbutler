@@ -1,12 +1,18 @@
-<div class="modal-header">
-  <h5 class="modal-title">{{ 'components.modals.export-torrents.title' | translate }}</h5>
+<div class="modal-header bb-modal-header">
+  <div class="bb-modal-header__text">
+    <h5 class="modal-title bb-title-clamp">
+      {{ 'components.modals.export-torrents.title' | translate }}
+    </h5>
+  </div>
   <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
 </div>
 
 <div class="modal-body">
-  <form [formGroup]="exportForm">
-    <fieldset class="bb-fieldset mt-0">
-      <legend>{{ 'components.modals.export-torrents.label.connection' | translate }}</legend>
+  <form [formGroup]="exportForm" class="d-flex flex-column gap-3">
+    <div class="bb-panel">
+      <div class="bb-panel-title">
+        {{ 'components.modals.export-torrents.label.connection' | translate }}
+      </div>
       @if (serverInfoLoading()) {
         <div
           class="d-flex justify-content-center align-items-center gap-2 text-body-secondary small mb-3"
@@ -74,11 +80,13 @@
           </p>
         </ng-template>
       }
-    </fieldset>
+    </div>
 
     @if (phase() === 'idle') {
-      <fieldset class="bb-fieldset pb-3">
-        <legend>{{ 'components.modals.export-torrents.label.scope' | translate }}</legend>
+      <div class="bb-panel">
+        <div class="bb-panel-title">
+          {{ 'components.modals.export-torrents.label.scope' | translate }}
+        </div>
 
         <div class="small text-body-secondary mb-1">
           {{ 'components.modals.export-torrents.scope.torrents' | translate }}
@@ -91,7 +99,7 @@
             id="scope-all"
             value="all"
           />
-          <label class="btn btn-outline-secondary btn-split" for="scope-all">
+          <label class="btn btn-outline-secondary bb-pill-btn" for="scope-all">
             <bb-btn-content
               [icon]="icons.faLayerGroup"
               [text]="
@@ -110,7 +118,7 @@
             value="filtered"
             [attr.disabled]="!hasFiltered() || null"
           />
-          <label class="btn btn-outline-secondary btn-split" for="scope-filtered">
+          <label class="btn btn-outline-secondary bb-pill-btn" for="scope-filtered">
             <bb-btn-content
               [icon]="icons.faFilter"
               [text]="
@@ -129,7 +137,7 @@
             value="selected"
             [attr.disabled]="!hasSelection() || null"
           />
-          <label class="btn btn-outline-secondary btn-split" for="scope-selected">
+          <label class="btn btn-outline-secondary bb-pill-btn" for="scope-selected">
             <bb-btn-content
               [icon]="icons.faSquareCheck"
               [text]="
@@ -153,7 +161,7 @@
             id="category-scope-all"
             value="all"
           />
-          <label class="btn btn-outline-secondary btn-split" for="category-scope-all">
+          <label class="btn btn-outline-secondary bb-pill-btn" for="category-scope-all">
             <bb-btn-content
               [icon]="icons.faFolderTree"
               [text]="
@@ -171,7 +179,7 @@
             id="category-scope-assigned"
             value="assigned"
           />
-          <label class="btn btn-outline-secondary btn-split" for="category-scope-assigned">
+          <label class="btn btn-outline-secondary bb-pill-btn" for="category-scope-assigned">
             <bb-btn-content
               [icon]="icons.faLink"
               [text]="
@@ -196,7 +204,7 @@
             id="tag-scope-all"
             value="all"
           />
-          <label class="btn btn-outline-secondary btn-split" for="tag-scope-all">
+          <label class="btn btn-outline-secondary bb-pill-btn" for="tag-scope-all">
             <bb-btn-content
               [icon]="icons.faTags"
               [text]="
@@ -214,7 +222,7 @@
             id="tag-scope-assigned"
             value="assigned"
           />
-          <label class="btn btn-outline-secondary btn-split" for="tag-scope-assigned">
+          <label class="btn btn-outline-secondary bb-pill-btn" for="tag-scope-assigned">
             <bb-btn-content
               [icon]="icons.faLink"
               [text]="
@@ -227,12 +235,17 @@
           </label>
         </div>
         <div class="small text-body-secondary">{{ tagScopeHint() | translate }}</div>
-      </fieldset>
+      </div>
 
-      <fieldset class="bb-fieldset pb-3">
-        <legend>{{ 'components.modals.export-torrents.label.save-location' | translate }}</legend>
-        <div class="input-group mb-3">
-          <div class="form-floating flex-grow-1">
+      <div class="bb-panel">
+        <div class="bb-panel-title">
+          {{ 'components.modals.export-torrents.label.save-location' | translate }}
+        </div>
+        <div class="bb-field mb-3">
+          <label for="destDir" class="bb-field-label">{{
+            'components.modals.export-torrents.label.dest-dir' | translate
+          }}</label>
+          <div class="input-group">
             <input
               type="text"
               class="form-control"
@@ -242,20 +255,24 @@
               readonly
               (click)="browseDestDir()"
             />
-            <label for="destDir">{{
-              'components.modals.export-torrents.label.dest-dir' | translate
-            }}</label>
+            <button
+              type="button"
+              class="btn btn-outline-primary bb-pill-btn"
+              (click)="browseDestDir()"
+            >
+              <bb-btn-content
+                [icon]="icons.faFolderOpen"
+                [text]="'general.button.browse' | translate"
+                position="end"
+              ></bb-btn-content>
+            </button>
           </div>
-          <button type="button" class="btn btn-outline-primary btn-split" (click)="browseDestDir()">
-            <bb-btn-content
-              [icon]="icons.faFolderOpen"
-              [text]="'general.button.browse' | translate"
-              position="end"
-            ></bb-btn-content>
-          </button>
         </div>
-        <div class="input-group">
-          <div class="form-floating flex-grow-1">
+        <div class="bb-field">
+          <label for="filename" class="bb-field-label">{{
+            'components.modals.export-torrents.label.filename' | translate
+          }}</label>
+          <div class="input-group">
             <input
               type="text"
               class="form-control"
@@ -263,17 +280,16 @@
               formControlName="filename"
               [placeholder]="'components.modals.export-torrents.placeholder.filename' | translate"
             />
-            <label for="filename">{{
-              'components.modals.export-torrents.label.filename' | translate
-            }}</label>
+            <span class="input-group-text">.bbe</span>
           </div>
-          <span class="input-group-text">.bbe</span>
         </div>
-      </fieldset>
+      </div>
     }
     @if (phase() !== 'idle') {
-      <fieldset class="bb-fieldset pb-3">
-        <legend>{{ 'components.modals.export-torrents.label.progress' | translate }}</legend>
+      <div class="bb-panel">
+        <div class="bb-panel-title">
+          {{ 'components.modals.export-torrents.label.progress' | translate }}
+        </div>
 
         @if (isRunning()) {
           <div class="d-flex justify-content-between mb-1">
@@ -301,7 +317,11 @@
                 {{ 'components.modals.export-torrents.progress.skipped' | translate }}
               }
             </span>
-            <button type="button" class="btn btn-sm btn-success btn-split" (click)="showInFolder()">
+            <button
+              type="button"
+              class="btn btn-sm btn-success bb-pill-btn"
+              (click)="showInFolder()"
+            >
               <bb-btn-content
                 [icon]="icons.faFolderOpen"
                 [text]="'components.modals.export-torrents.button.show-in-folder' | translate"
@@ -312,32 +332,24 @@
         @if (isError()) {
           <div class="alert alert-danger mb-0 py-2">{{ state().error }}</div>
         }
-      </fieldset>
+      </div>
     }
   </form>
 </div>
 
 <div class="modal-footer">
   @if (isRunning()) {
-    <button type="button" class="btn btn-link btn-sm btn-split" (click)="cancelExport()">
-      <bb-btn-content
-        [icon]="icons.faXmark"
-        [text]="'general.button.cancel' | translate"
-        position="end"
-      ></bb-btn-content>
+    <button type="button" class="btn btn-link btn-sm" (click)="cancelExport()">
+      {{ 'general.button.cancel' | translate }}
     </button>
   } @else if (isDone() || isError()) {
-    <button type="button" class="btn btn-link btn-sm btn-split" (click)="close()">
-      <bb-btn-content
-        [icon]="icons.faXmark"
-        [text]="'general.button.close' | translate"
-        position="end"
-      ></bb-btn-content>
+    <button type="button" class="btn btn-link btn-sm" (click)="close()">
+      {{ 'general.button.close' | translate }}
     </button>
   } @else {
     <button
       type="button"
-      class="btn btn-primary btn-sm btn-split"
+      class="btn btn-primary btn-sm bb-pill-btn"
       (click)="startExport()"
       [disabled]="exportForm.invalid"
     >
@@ -347,12 +359,8 @@
         position="end"
       ></bb-btn-content>
     </button>
-    <button type="button" class="btn btn-link btn-sm btn-split" (click)="close()">
-      <bb-btn-content
-        [icon]="icons.faXmark"
-        [text]="'general.button.cancel' | translate"
-        position="end"
-      ></bb-btn-content>
+    <button type="button" class="btn btn-link btn-sm" (click)="close()">
+      {{ 'general.button.cancel' | translate }}
     </button>
   }
 </div>

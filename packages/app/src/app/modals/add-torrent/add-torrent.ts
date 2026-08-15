@@ -14,13 +14,14 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { SelectedTorrentInput, TorrentDraft } from '@bitbutler/shared';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
+  faChevronDown,
   faCircleInfo,
   faCircleQuestion,
   faPlus,
   faTriangleExclamation,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
-import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbDropdownModule, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { merge, scan } from 'rxjs';
 import { INVALID_FILENAME_CHARS } from '../../app.const';
@@ -57,6 +58,7 @@ interface AddTorrentTab {
     AutofocusDirective,
     FontAwesomeModule,
     NgbTooltip,
+    NgbDropdownModule,
     TranslatePipe,
     AddTorrentFiles,
     AddTorrentGeneral,
@@ -103,7 +105,14 @@ export class AddTorrent implements OnInit {
   public isSubmitting = signal(false);
   private loadedDraftIdentifier = signal<string | null>(null);
 
-  public icons = { faTriangleExclamation, faCircleQuestion, faCircleInfo, faPlus, faXmark };
+  public icons = {
+    faTriangleExclamation,
+    faCircleQuestion,
+    faCircleInfo,
+    faPlus,
+    faXmark,
+    faChevronDown,
+  };
 
   public activeTabId = signal<AddTorrentTabId>('general');
 
@@ -306,6 +315,11 @@ export class AddTorrent implements OnInit {
 
   public selectTab(tabId: AddTorrentTabId): void {
     this.activeTabId.set(tabId);
+  }
+
+  public submitWithPausedState(paused: boolean, event: PointerEvent): void {
+    this.addForm.controls.paused.setValue(paused);
+    void this.handleSubmit(event);
   }
 
   public async handleSubmit(event: SubmitEvent | PointerEvent): Promise<void> {

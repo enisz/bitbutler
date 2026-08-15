@@ -17,7 +17,8 @@
       placement="bottom"
       tooltipClass="single-line-tooltip"
     >
-      {{ 'components.modals.torrent-details.hash' | translate }}: <code>{{ torrent()?.hash }}</code>
+      {{ 'components.modals.torrent-details.hash' | translate }}:
+      <code class="bb-hash-chip">{{ torrent()?.hash }}</code>
     </div>
 
     <ul class="nav nav-tabs bb-modal-tabs">
@@ -78,7 +79,7 @@
   </button>
 
   <div ngbDropdown container="body" placement="top-start">
-    <button type="button" class="btn btn-secondary btn-sm btn-split" ngbDropdownToggle>
+    <button type="button" class="btn btn-primary btn-sm btn-split" ngbDropdownToggle>
       <bb-btn-content
         [icon]="icon.faPlay"
         [text]="'components.modals.torrent-details.general.footer.control' | translate"
@@ -275,7 +276,7 @@
 
   <button
     type="button"
-    class="btn btn-link btn-sm btn-split"
+    class="btn btn-secondary btn-sm btn-split"
     (click)="activeModal.dismiss()"
     autofocus
   >

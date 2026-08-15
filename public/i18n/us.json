@@ -1971,6 +1971,8 @@
       "close": "Close",
       "browse": "Browse",
       "add": "Add",
+      "add-start": "Add and Start Immediately",
+      "add-paused": "Add in Paused State",
       "cancel": "Cancel",
       "clear": "Clear",
       "clear-all": "Clear",

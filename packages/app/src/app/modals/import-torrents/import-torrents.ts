@@ -29,7 +29,6 @@ import {
   faPlay,
   faPlus,
   faTriangleExclamation,
-  faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -143,7 +142,6 @@ export class ImportTorrents implements OnInit {
     faPlay,
     faForward,
     faFileImport,
-    faXmark,
   };
 
   readonly phase = this.exportService.importPhase;

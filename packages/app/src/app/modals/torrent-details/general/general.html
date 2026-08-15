@@ -7,6 +7,76 @@
   </div>
 } @else {
   <div class="container-fluid">
+    <div class="bb-hero-card">
+      <div class="bb-hero-top">
+        <div class="bb-hero-pct">
+          <span class="bb-hero-pct__value"
+            >{{ torrent()!.data.progress * 100 | number: '1.0-1' }}%</span
+          >
+          <span class="bb-hero-pct__sub"
+            >{{ torrent()!.data.downloaded | fileSize }} /
+            {{ torrent()!.data.total_size | fileSize }}</span
+          >
+        </div>
+        <div
+          class="bb-hero-state"
+          [ngbTooltip]="'torrent.state.' + torrent()!.data.state | translate"
+          bbTooltipOverflow
+          placement="bottom"
+        >
+          {{ 'torrent.state.' + torrent()!.data.state | translate }}
+        </div>
+      </div>
+
+      <app-bb-progress
+        [progress]="torrent()?.data?.progress"
+        [torrentState]="torrent()?.data?.state"
+      ></app-bb-progress>
+
+      <div class="bb-hero-caption">
+        <span
+          >{{ torrent()!.properties.pieces_have }}/{{ torrent()!.properties.pieces_num }}
+          {{ 'components.modals.torrent-details.general.pieces-value' | translate }}</span
+        >
+        @if (isDownloading()) {
+          <span>{{ (torrent()!.data.eta * 1000 | humanizeDuration: 'long' : 2) || '-' }}</span>
+        }
+      </div>
+
+      <div class="bb-hero-kpis">
+        <div class="bb-hero-kpi">
+          <span class="bb-hero-kpi__label">{{
+            'components.modals.torrent-details.general.download-speed' | translate
+          }}</span>
+          <span class="bb-hero-kpi__value">{{
+            (torrent()!.data.dlspeed | fileSizePerSec) || '-'
+          }}</span>
+        </div>
+        <div class="bb-hero-kpi">
+          <span class="bb-hero-kpi__label">{{
+            'components.modals.torrent-details.general.upload-speed' | translate
+          }}</span>
+          <span class="bb-hero-kpi__value">{{
+            (torrent()!.data.upspeed | fileSizePerSec) || '-'
+          }}</span>
+        </div>
+        <div class="bb-hero-kpi">
+          <span class="bb-hero-kpi__label">{{
+            'components.modals.torrent-details.general.peers' | translate
+          }}</span>
+          <span class="bb-hero-kpi__value"
+            >{{ torrent()!.data.num_seeds }}/{{ torrent()!.data.num_leechs }}</span
+          >
+        </div>
+        <div class="bb-hero-kpi">
+          <span class="bb-hero-kpi__label">{{
+            'components.modals.torrent-details.general.share-ratio' | translate
+          }}</span>
+          <span class="bb-hero-kpi__value">{{ torrent()!.data.ratio | ratio }}</span>
+        </div>
+      </div>
+    </div>
+
     <fieldset class="bb-fieldset mt-0">
       <legend>{{ 'components.modals.torrent-details.general.labels.title' | translate }}</legend>
       <div class="row gy-2">
@@ -130,7 +200,7 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">
+          <span class="section-value form-switch">
             <input
               type="checkbox"
               class="form-check-input"
@@ -153,7 +223,7 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">
+          <span class="section-value form-switch">
             <input
               type="checkbox"
               class="form-check-input"
@@ -698,7 +768,7 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">
+          <span class="section-value form-switch">
             <input
               type="checkbox"
               class="form-check-input"
@@ -722,7 +792,7 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">
+          <span class="section-value form-switch">
             <input
               type="checkbox"
               class="form-check-input"
@@ -745,7 +815,7 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">
+          <span class="section-value form-switch">
             <input
               type="checkbox"
               class="form-check-input"

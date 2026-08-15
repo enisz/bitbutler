@@ -1,3 +1,101 @@
+.bb-hero-card {
+  border: 1px solid var(--bs-border-color);
+  border-radius: 12px;
+  background-color: var(--bs-card-bg);
+  padding: 18px;
+  margin-bottom: 1rem;
+}
+
+.bb-hero-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 10px;
+}
+
+.bb-hero-pct__value {
+  font-size: 1.625rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  margin-right: 0.5rem;
+}
+
+.bb-hero-pct__sub {
+  color: var(--bb-control-placeholder);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.bb-hero-state {
+  color: var(--bb-accent);
+  font-weight: 600;
+  font-size: 0.875rem;
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.bb-hero-caption {
+  display: flex;
+  justify-content: space-between;
+  color: var(--bb-control-placeholder);
+  font-size: 0.75rem;
+  margin-top: 6px;
+}
+
+.bb-hero-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.bb-hero-kpi {
+  border: 1px solid var(--bs-border-color);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bb-hero-kpi__label {
+  color: var(--bb-control-placeholder);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.bb-hero-kpi__value {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.bb-fieldset {
+  border-color: var(--bs-border-color);
+  border-radius: 12px;
+  background-color: var(--bs-card-bg);
+  padding-top: 0;
+
+  legend {
+    float: none;
+    width: auto;
+    font-size: 0.656rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--bb-control-placeholder);
+    margin: 0 -1.5rem 0.5rem;
+    padding: 12px 1.5rem;
+    border-bottom: 1px solid var(--bs-border-color);
+  }
+}
+
 div.bb-section {
   padding: 10px;
   position: relative;
@@ -32,8 +130,7 @@ div.bb-section {
 
   span.section-header {
     display: block;
-    text-transform: uppercase;
-    color: var(--bs-secondary);
+    color: var(--bb-control-placeholder);
     font-size: 0.8rem;
   }
 

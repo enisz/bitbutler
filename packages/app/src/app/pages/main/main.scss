@@ -1,9 +1,11 @@
 :host {
-  --bb-sidebar-width: 300px;
+  --bb-sidebar-width: 262px;
 }
 
 .bb-sidebar-width {
   width: var(--bb-sidebar-width);
+  background-color: var(--bs-card-bg);
+  border-right: 1px solid var(--bs-border-color);
 }
 
 .min-h-0 {
@@ -15,19 +17,46 @@
 }
 
 .bb-brand {
+  flex-shrink: 0;
+  padding: 14px 14px 12px;
+  border-bottom: 1px solid var(--bs-border-color);
+
+  img {
+    border-radius: 9px;
+  }
+
   .brand-title {
-    font-size: 2rem;
-    font-weight: 700;
+    font-size: 0.95rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+  }
+
+  .brand-status {
+    margin-top: 2px;
   }
 
   small {
-    color: var(--bs-secondary);
-    margin-top: -10px;
-    padding: 0 5px;
-    display: block;
-    width: calc(--bb-sidebar-width / 2);
+    color: var(--bb-control-placeholder);
+    font-size: 0.72rem;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+  }
+
+  .status-dot {
+    flex: 0 0 auto;
+    width: 6px;
+    height: 6px;
+    border-radius: 99px;
+    background: var(--bs-danger);
+
+    &.connected {
+      background: var(--bs-success);
+    }
+
+    &.firewalled {
+      background: var(--bs-warning);
+    }
   }
 }

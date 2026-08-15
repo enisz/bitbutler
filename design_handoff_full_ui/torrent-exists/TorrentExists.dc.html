@@ -1,0 +1,531 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <!-- @template name="Torrent Exists" description="Duplicate-add dialog with live progress and stats" -->
+      <helmet>
+        <script src="./ds-base.js"></script>
+        <style>
+          html,
+          body {
+            margin: 0;
+            padding: 0;
+            background: #100c08;
+          }
+          * {
+            box-sizing: border-box;
+          }
+          button {
+            font: inherit;
+            cursor: pointer;
+          }
+        </style>
+      </helmet>
+      <div
+        style="
+          width: 100vw;
+          height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 32px;
+          background: #100c08;
+          font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+          color: #f3e9d8;
+          font-size: 13.5px;
+        "
+      >
+        <div
+          style="
+            width: 100%;
+            max-width: 520px;
+            background: #1c160f;
+            border: 1px solid rgba(240, 225, 200, 0.15);
+            border-radius: 18px;
+            box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.75);
+            overflow: hidden;
+          "
+        >
+          <div style="display: flex; gap: 14px; align-items: flex-start; padding: 22px 24px 0">
+            <div
+              style="
+                width: 34px;
+                height: 34px;
+                border-radius: 10px;
+                background: rgba(227, 189, 135, 0.12);
+                border: 1px solid rgba(227, 189, 135, 0.24);
+                color: #e3bd87;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+              "
+            >
+              <svg
+                width="17"
+                height="17"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="9" y="9" width="12" height="12" rx="2"></rect>
+                <path d="M5 15V5a2 2 0 0 1 2-2h10"></path>
+              </svg>
+            </div>
+            <div style="flex: 1; min-width: 0">
+              <h1
+                style="
+                  margin: 0 0 3px;
+                  font-size: 16.5px;
+                  font-weight: 650;
+                  letter-spacing: -0.005em;
+                "
+              >
+                Torrent already added
+              </h1>
+              <p style="margin: 0; font-size: 12.5px; color: #7c705d; line-height: 1.5">
+                This torrent is already in your list
+              </p>
+            </div>
+            <div
+              style="
+                width: 30px;
+                height: 30px;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #7c705d;
+                cursor: pointer;
+                flex-shrink: 0;
+              "
+            >
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              >
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+                <line x1="6" y1="18" x2="18" y2="6"></line>
+              </svg>
+            </div>
+          </div>
+
+          <div
+            style="
+              margin: 18px 24px 0;
+              padding: 14px 16px;
+              border: 1px solid rgba(240, 225, 200, 0.08);
+              border-radius: 12px;
+              background: linear-gradient(
+                180deg,
+                rgba(227, 189, 135, 0.05),
+                rgba(227, 189, 135, 0)
+              );
+            "
+          >
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: 9px;
+                font-size: 13.5px;
+                font-weight: 600;
+                min-width: 0;
+              "
+            >
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#7c705d"
+                stroke-width="1.7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                style="flex-shrink: 0"
+              >
+                <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path>
+                <path d="M14 3v5h5"></path>
+              </svg>
+              <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{
+                fileName
+              }}</span>
+            </div>
+            <div
+              style="
+                display: flex;
+                align-items: baseline;
+                justify-content: space-between;
+                gap: 12px;
+                margin: 13px 0 7px;
+              "
+            >
+              <div
+                style="
+                  font-size: 21px;
+                  font-weight: 600;
+                  letter-spacing: -0.02em;
+                  font-variant-numeric: tabular-nums;
+                "
+              >
+                {{ pct
+                }}<small
+                  style="font-size: 12.5px; color: #7c705d; font-weight: 500; margin-left: 7px"
+                  >{{ progressSub }}</small
+                >
+              </div>
+              <div
+                style="
+                  font-size: 12px;
+                  color: #8fbf8a;
+                  display: flex;
+                  align-items: center;
+                  gap: 6px;
+                "
+              >
+                <i
+                  style="
+                    width: 6px;
+                    height: 6px;
+                    border-radius: 50%;
+                    background: currentColor;
+                    display: inline-block;
+                  "
+                ></i
+                >{{ state }}
+              </div>
+            </div>
+            <div
+              style="
+                height: 8px;
+                border-radius: 999px;
+                background: #1f1912;
+                position: relative;
+                overflow: hidden;
+                box-shadow: inset 0 0 0 1px rgba(240, 225, 200, 0.08);
+              "
+            >
+              <i
+                style="position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,#e3bd87,#dd9a4c);border-radius:999px;width:{{
+                  pct
+                }};display:block"
+              ></i>
+            </div>
+            <div
+              style="
+                display: flex;
+                gap: 18px;
+                margin-top: 10px;
+                font-size: 12px;
+                color: #a99c86;
+                font-variant-numeric: tabular-nums;
+              "
+            >
+              <span style="display: flex; align-items: center; gap: 6px; color: #e3bd87"
+                ><svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M12 4v13M6 12l6 6 6-6"></path></svg
+                >{{ dlRate }}</span
+              >
+              <span style="display: flex; align-items: center; gap: 6px; color: #8fbf8a"
+                ><svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M12 20V7M6 12l6-6 6 6"></path></svg
+                >{{ ulRate }}</span
+              >
+              <span style="color: #7c705d">{{ seedsLeeches }}</span>
+            </div>
+          </div>
+
+          <div
+            style="
+              display: grid;
+              grid-template-columns: 1fr 1fr 1fr;
+              gap: 0 22px;
+              padding: 16px 24px 4px;
+            "
+          >
+            <div style="padding: 9px 0; border-bottom: 1px solid rgba(240, 225, 200, 0.05)">
+              <div
+                style="
+                  font-size: 10.5px;
+                  font-weight: 700;
+                  letter-spacing: 0.08em;
+                  text-transform: uppercase;
+                  color: #7c705d;
+                "
+              >
+                Size
+              </div>
+              <div
+                style="
+                  margin-top: 5px;
+                  font-size: 14px;
+                  font-weight: 550;
+                  font-variant-numeric: tabular-nums;
+                "
+              >
+                {{ size }}
+              </div>
+            </div>
+            <div style="padding: 9px 0; border-bottom: 1px solid rgba(240, 225, 200, 0.05)">
+              <div
+                style="
+                  font-size: 10.5px;
+                  font-weight: 700;
+                  letter-spacing: 0.08em;
+                  text-transform: uppercase;
+                  color: #7c705d;
+                "
+              >
+                Downloaded
+              </div>
+              <div
+                style="
+                  margin-top: 5px;
+                  font-size: 14px;
+                  font-weight: 550;
+                  font-variant-numeric: tabular-nums;
+                "
+              >
+                {{ downloaded }}
+              </div>
+            </div>
+            <div style="padding: 9px 0; border-bottom: 1px solid rgba(240, 225, 200, 0.05)">
+              <div
+                style="
+                  font-size: 10.5px;
+                  font-weight: 700;
+                  letter-spacing: 0.08em;
+                  text-transform: uppercase;
+                  color: #7c705d;
+                "
+              >
+                Uploaded
+              </div>
+              <div
+                style="
+                  margin-top: 5px;
+                  font-size: 14px;
+                  font-weight: 550;
+                  font-variant-numeric: tabular-nums;
+                "
+              >
+                {{ uploaded }}
+              </div>
+            </div>
+            <div style="padding: 9px 0">
+              <div
+                style="
+                  font-size: 10.5px;
+                  font-weight: 700;
+                  letter-spacing: 0.08em;
+                  text-transform: uppercase;
+                  color: #7c705d;
+                "
+              >
+                Ratio
+              </div>
+              <div
+                style="
+                  margin-top: 5px;
+                  font-size: 14px;
+                  font-weight: 550;
+                  font-variant-numeric: tabular-nums;
+                "
+              >
+                {{ ratio }}
+              </div>
+            </div>
+            <div style="padding: 9px 0">
+              <div
+                style="
+                  font-size: 10.5px;
+                  font-weight: 700;
+                  letter-spacing: 0.08em;
+                  text-transform: uppercase;
+                  color: #7c705d;
+                "
+              >
+                Seeds / Leechers
+              </div>
+              <div
+                style="
+                  margin-top: 5px;
+                  font-size: 14px;
+                  font-weight: 550;
+                  font-variant-numeric: tabular-nums;
+                "
+              >
+                {{ seedsLeechesVal }}
+              </div>
+            </div>
+            <div style="padding: 9px 0">
+              <div
+                style="
+                  font-size: 10.5px;
+                  font-weight: 700;
+                  letter-spacing: 0.08em;
+                  text-transform: uppercase;
+                  color: #7c705d;
+                "
+              >
+                Added on
+              </div>
+              <div
+                style="
+                  margin-top: 5px;
+                  font-size: 14px;
+                  font-weight: 550;
+                  font-variant-numeric: tabular-nums;
+                "
+              >
+                {{ addedTime }}
+              </div>
+              <div style="font-size: 11.5px; color: #7c705d; margin-top: 2px">{{ addedRel }}</div>
+            </div>
+          </div>
+          <div
+            style="
+              display: grid;
+              grid-template-columns: 110px 1fr;
+              gap: 14px;
+              align-items: baseline;
+              padding: 12px 24px 20px;
+            "
+          >
+            <span style="font-size: 12.5px; color: #7c705d">Save path</span
+            ><span
+              style="
+                font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                font-size: 12px;
+                color: #a99c86;
+                word-break: break-all;
+              "
+              >{{ savePath }}</span
+            >
+          </div>
+
+          <div
+            style="
+              display: flex;
+              justify-content: flex-end;
+              align-items: center;
+              gap: 10px;
+              padding: 14px 24px;
+              border-top: 1px solid rgba(240, 225, 200, 0.08);
+            "
+          >
+            <button
+              style="
+                white-space: nowrap;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 9px 16px;
+                border-radius: 8px;
+                font-size: 13.5px;
+                font-family: inherit;
+                font-weight: 600;
+                border: 1px solid rgba(240, 225, 200, 0.15);
+                cursor: pointer;
+                color: #f3e9d8;
+                background: transparent;
+              "
+            >
+              Close
+            </button>
+            <button
+              style="
+                white-space: nowrap;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 9px 16px;
+                border-radius: 8px;
+                font-size: 13.5px;
+                font-family: inherit;
+                font-weight: 600;
+                border: 1px solid #e3bd87;
+                cursor: pointer;
+                color: #241a0f;
+                background: #e3bd87;
+              "
+            >
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.9"
+                stroke-linecap="round"
+              >
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M12 11v5.5"></path>
+                <circle cx="12" cy="7.8" r="1" fill="currentColor" stroke="none"></circle></svg
+              >Open details
+            </button>
+          </div>
+        </div>
+      </div>
+    </x-dc>
+    <script
+      type="text/x-dc"
+      data-dc-script
+      data-props='{"$preview":{"width":760,"height":640},"fileName":{"editor":"text","default":"ubuntu-26.04-desktop-arm64.iso","tsType":"string"},"pct":{"editor":"text","default":"3.7%","tsType":"string"},"state":{"editor":"text","default":"Downloading","tsType":"string"},"size":{"editor":"text","default":"3.88 GB","tsType":"string"}}'
+    >
+      class Component extends DCLogic {
+        renderVals(){
+          const p=this.props;
+          return {
+            fileName:p.fileName||'ubuntu-26.04-desktop-arm64.iso',
+            pct:p.pct||'3.7%',
+            progressSub:p.progressSub||'140.42 MB of 3.88 GB',
+            state:p.state||'Downloading',
+            dlRate:p.dlRate||'11.71 MB/s',
+            ulRate:p.ulRate||'0 B/s',
+            seedsLeeches:p.seedsLeeches||'45 seeds · 4 leechers',
+            size:p.size||'3.88 GB',
+            downloaded:p.downloaded||'140.42 MB',
+            uploaded:p.uploaded||'0 B',
+            ratio:p.ratio||'0.00',
+            seedsLeechesVal:p.seedsLeechesVal||'45 / 4',
+            addedTime:p.addedTime||'03:32',
+            addedRel:p.addedRel||'42 minutes ago',
+            savePath:p.savePath||'/downloads/'
+          };
+        }
+      }
+    </script>
+  </body>
+</html>

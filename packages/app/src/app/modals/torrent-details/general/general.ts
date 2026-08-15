@@ -1,4 +1,5 @@
 import { Clipboard } from '@angular/cdk/clipboard';
+import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FontAwesomeModule, IconDefinition } from '@fortawesome/angular-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
@@ -26,6 +27,7 @@ import { TorrentDetailTabComponent } from '../torrent-details.interface';
   selector: 'app-general',
   imports: [
     BbSpinner,
+    DecimalPipe,
     LocalTimestampPipe,
     TimeagoPipe,
     FilesizePipe,

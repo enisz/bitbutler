@@ -1,0 +1,1326 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <!-- @template name="Torrent List" description="Main BitButler window: filter sidebar, grouped toolbar, torrent grid, status bar." -->
+      <helmet>
+        <script src="./ds-base.js"></script>
+        <style>
+          html,
+          body {
+            margin: 0;
+            padding: 0;
+            background: #16120e;
+          }
+          * {
+            box-sizing: border-box;
+          }
+          input {
+            font: inherit;
+          }
+          button {
+            font: inherit;
+            cursor: pointer;
+          }
+          ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+          }
+          ::-webkit-scrollbar-thumb {
+            background: #2b231a;
+            border-radius: 99px;
+          }
+          ::-webkit-scrollbar-track {
+            background: transparent;
+          }
+          @media (max-width: 1399px) {
+            [data-w='dl-total'],
+            [data-w='ul-total'] {
+              display: none !important;
+            }
+          }
+          @media (max-width: 1179px) {
+            [data-w='dl-session'],
+            [data-w='ul-session'] {
+              display: none !important;
+            }
+          }
+          @media (max-width: 909px) {
+            [data-w='ratio'] {
+              display: none !important;
+            }
+          }
+          @media (max-width: 860px) {
+            [data-w='dht'] {
+              display: none !important;
+            }
+          }
+          @media (max-width: 820px) {
+            [data-w='conn'] {
+              display: none !important;
+            }
+          }
+        </style>
+      </helmet>
+      <div
+        style="
+          width: 100vw;
+          height: 100vh;
+          display: flex;
+          flex-direction: column;
+          background: #16120e;
+          color: #f3e9d8;
+          font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+          font-size: 13.5px;
+          overflow: hidden;
+        "
+      >
+        <div style="flex: 1 1 auto; min-height: 0; display: flex">
+          <aside
+            style="
+              width: 262px;
+              flex: 0 0 262px;
+              background: #1b1610;
+              border-right: 1px solid rgba(240, 225, 200, 0.08);
+              display: flex;
+              flex-direction: column;
+              min-height: 0;
+            "
+          >
+            <div style="display: flex; align-items: center; gap: 11px; padding: 16px 16px 14px">
+              <div
+                style="
+                  width: 34px;
+                  height: 34px;
+                  border-radius: 10px;
+                  background: #221b14;
+                  border: 1px solid rgba(240, 225, 200, 0.15);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  color: #e3bd87;
+                  font-weight: 700;
+                  font-size: 15px;
+                "
+              >
+                B
+              </div>
+              <div style="min-width: 0">
+                <div
+                  style="
+                    font-size: 15.5px;
+                    font-weight: 650;
+                    letter-spacing: -0.01em;
+                    line-height: 1.1;
+                  "
+                >
+                  BitButler
+                </div>
+                <div style="display: flex; align-items: center; gap: 5px; margin-top: 3px">
+                  <span
+                    style="width: 6px; height: 6px; border-radius: 99px; background: #8fbf8a"
+                  ></span
+                  ><span style="font-size: 11.5px; color: #7c705d">test-qb</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 0 8px 14px">
+              <sc-for list="{{ groups }}" as="g" hint-placeholder-count="4">
+                <div style="margin-bottom: 13px">
+                  <div
+                    onClick="{{ g.toggle }}"
+                    style="
+                      display: flex;
+                      align-items: center;
+                      gap: 8px;
+                      padding: 6px 8px;
+                      cursor: pointer;
+                      user-select: none;
+                    "
+                  >
+                    <sc-if value="{{ g.open }}" hint-placeholder-val="{{ true }}">
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#7c705d"
+                        stroke-width="2.4"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M6 9l6 6 6-6"></path>
+                      </svg>
+                    </sc-if>
+                    <sc-if value="{{ g.closed }}" hint-placeholder-val="{{ false }}">
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#7c705d"
+                        stroke-width="2.4"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        style="transform: rotate(-90deg)"
+                      >
+                        <path d="M6 9l6 6 6-6"></path>
+                      </svg>
+                    </sc-if>
+                    <span
+                      style="
+                        font-size: 10.5px;
+                        font-weight: 700;
+                        letter-spacing: 0.1em;
+                        text-transform: uppercase;
+                        color: #7c705d;
+                      "
+                      >{{ g.label }}</span
+                    >
+                    <span style="font-size: 10.5px; font-weight: 700; color: #574e40">{{
+                      g.count
+                    }}</span>
+                    <sc-if value="{{ g.manage }}" hint-placeholder-val="{{ true }}"
+                      ><span
+                        style="
+                          margin-left: auto;
+                          font-size: 11.5px;
+                          color: #a99c86;
+                          border-bottom: 1px solid rgba(240, 225, 200, 0.15);
+                        "
+                        >Manage</span
+                      ></sc-if
+                    >
+                  </div>
+                  <sc-if value="{{ g.open }}" hint-placeholder-val="{{ true }}">
+                    <sc-if value="{{ g.hasFilter }}" hint-placeholder-val="{{ true }}">
+                      <div
+                        style="
+                          display: flex;
+                          align-items: center;
+                          gap: 7px;
+                          margin: 4px 2px 6px;
+                          background: #1f1912;
+                          border: 1px solid rgba(240, 225, 200, 0.08);
+                          border-radius: 7px;
+                          padding: 6px 9px;
+                        "
+                      >
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="#7c705d"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                        >
+                          <circle cx="11" cy="11" r="7"></circle>
+                          <path d="M20 20l-3.5-3.5"></path>
+                        </svg>
+                        <input
+                          value="{{ g.q }}"
+                          onInput="{{ g.onQ }}"
+                          placeholder="Filter"
+                          style="
+                            flex: 1;
+                            min-width: 0;
+                            border: 0;
+                            outline: 0;
+                            background: transparent;
+                            color: #f3e9d8;
+                            font-size: 12px;
+                          "
+                        />
+                      </div>
+                    </sc-if>
+                    <div style="display: flex; flex-direction: column; gap: 1px; margin-top: 2px">
+                      <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="4">
+                        <div
+                          onClick="{{ it.pick }}"
+                          style="
+                            position: relative;
+                            display: flex;
+                            align-items: center;
+                            gap: 9px;
+                            padding: 7px 10px;
+                            border-radius: 8px;
+                            cursor: pointer;
+                          "
+                        >
+                          <sc-if value="{{ it.on }}" hint-placeholder-val="{{ false }}">
+                            <span
+                              style="
+                                position: absolute;
+                                inset: 0;
+                                border-radius: 8px;
+                                background: rgba(227, 189, 135, 0.13);
+                                pointer-events: none;
+                              "
+                            ></span>
+                          </sc-if>
+                          <span
+                            style="
+                              position: relative;
+                              display: flex;
+                              align-items: center;
+                              justify-content: center;
+                              flex: 0 0 14px;
+                              width: 14px;
+                              height: 14px;
+                            "
+                            >{{ it.icon }}</span
+                          >
+                          <span
+                            style="
+                              position: relative;
+                              flex: 1;
+                              min-width: 0;
+                              overflow: hidden;
+                              text-overflow: ellipsis;
+                              white-space: nowrap;
+                              font-size: 13px;
+                              font-weight: 500;
+                              color: #c8bba4;
+                            "
+                            >{{ it.name }}</span
+                          >
+                          <span
+                            style="
+                              position: relative;
+                              font-size: 11px;
+                              font-weight: 600;
+                              font-variant-numeric: tabular-nums;
+                              color: #6b6152;
+                            "
+                            >{{ it.count }}</span
+                          >
+                        </div>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </aside>
+
+          <div style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column">
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 12px 18px;
+                border-bottom: 1px solid rgba(240, 225, 200, 0.08);
+                background: #181309;
+                overflow-x: auto;
+              "
+            >
+              <button
+                style="
+                  display: inline-flex;
+                  align-items: center;
+                  gap: 8px;
+                  padding: 9px 15px;
+                  border-radius: 8px;
+                  border: 1px solid #e3bd87;
+                  background: #e3bd87;
+                  color: #241a0f;
+                  font-size: 13px;
+                  font-weight: 650;
+                  white-space: nowrap;
+                  flex: 0 0 auto;
+                "
+              >
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                >
+                  <path d="M12 5v14M5 12h14"></path></svg
+                >Add Torrent
+              </button>
+
+              <div
+                style="
+                  width: 1px;
+                  height: 26px;
+                  background: rgba(240, 225, 200, 0.08);
+                  margin: 0 2px;
+                "
+              ></div>
+
+              <div
+                style="
+                  position: relative;
+                  display: flex;
+                  align-items: center;
+                  gap: 6px;
+                  padding: 4px 6px;
+                  border: 1px solid rgba(240, 225, 200, 0.15);
+                  border-radius: 9px;
+                  background: #1b1610;
+                  flex: 0 0 auto;
+                "
+              >
+                <button
+                  style="
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 7px;
+                    padding: 6px 10px;
+                    border-radius: 7px;
+                    border: 0;
+                    background: transparent;
+                    color: #f3e9d8;
+                    font-size: 13px;
+                    font-weight: 600;
+                    white-space: nowrap;
+                    flex: 0 0 auto;
+                  "
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="#8fbf8a">
+                    <path d="M7 4l12 8-12 8z"></path></svg
+                  >Start
+                </button>
+                <button
+                  style="
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 7px;
+                    padding: 6px 10px;
+                    border-radius: 7px;
+                    border: 0;
+                    background: transparent;
+                    color: #f3e9d8;
+                    font-size: 13px;
+                    font-weight: 600;
+                    white-space: nowrap;
+                    flex: 0 0 auto;
+                  "
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="#a99c86">
+                    <rect x="6" y="4" width="4" height="16" rx="1"></rect>
+                    <rect x="14" y="4" width="4" height="16" rx="1"></rect></svg
+                  >Pause
+                </button>
+                <div
+                  style="
+                    width: 1px;
+                    height: 20px;
+                    background: rgba(240, 225, 200, 0.08);
+                    margin: 0 3px;
+                  "
+                ></div>
+                <button
+                  title="Move to top"
+                  style="
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 7px;
+                    padding: 6px 10px;
+                    border-radius: 7px;
+                    border: 0;
+                    background: transparent;
+                    color: #f3e9d8;
+                    font-size: 13px;
+                    font-weight: 600;
+                    white-space: nowrap;
+                    flex: 0 0 auto;
+                  "
+                >
+                  <svg
+                    width="13"
+                    height="13"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#a99c86"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 4h14M12 20V9M7 14l5-5 5 5"></path></svg
+                  >Top
+                </button>
+                <button
+                  title="Move up"
+                  style="
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 7px;
+                    padding: 6px 10px;
+                    border-radius: 7px;
+                    border: 0;
+                    background: transparent;
+                    color: #f3e9d8;
+                    font-size: 13px;
+                    font-weight: 600;
+                    white-space: nowrap;
+                    flex: 0 0 auto;
+                  "
+                >
+                  <svg
+                    width="13"
+                    height="13"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#a99c86"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M12 20V5M6 11l6-6 6 6"></path></svg
+                  >Up
+                </button>
+                <button
+                  title="Move down"
+                  style="
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 7px;
+                    padding: 6px 10px;
+                    border-radius: 7px;
+                    border: 0;
+                    background: transparent;
+                    color: #f3e9d8;
+                    font-size: 13px;
+                    font-weight: 600;
+                    white-space: nowrap;
+                    flex: 0 0 auto;
+                  "
+                >
+                  <svg
+                    width="13"
+                    height="13"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#a99c86"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M12 4v15M6 13l6 6 6-6"></path></svg
+                  >Down
+                </button>
+                <button
+                  title="Move to bottom"
+                  style="
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 7px;
+                    padding: 6px 10px;
+                    border-radius: 7px;
+                    border: 0;
+                    background: transparent;
+                    color: #f3e9d8;
+                    font-size: 13px;
+                    font-weight: 600;
+                    white-space: nowrap;
+                    flex: 0 0 auto;
+                  "
+                >
+                  <svg
+                    width="13"
+                    height="13"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#a99c86"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 20h14M12 4v11M7 10l5 5 5-5"></path></svg
+                  >Bottom
+                </button>
+                <div
+                  style="
+                    width: 1px;
+                    height: 20px;
+                    background: rgba(240, 225, 200, 0.08);
+                    margin: 0 3px;
+                  "
+                ></div>
+                <button
+                  style="
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 7px;
+                    padding: 6px 10px;
+                    border-radius: 7px;
+                    border: 0;
+                    background: transparent;
+                    color: #e8a595;
+                    font-size: 13px;
+                    font-weight: 600;
+                    white-space: nowrap;
+                    flex: 0 0 auto;
+                  "
+                >
+                  <svg
+                    width="13"
+                    height="13"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.9"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M4 7h16M9 7V5h6v2M6.5 7l1 13h9l1-13"></path></svg
+                  >Delete
+                </button>
+              </div>
+
+              <div style="margin-left: auto; display: flex; align-items: center; gap: 8px">
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    background: #1f1912;
+                    border: 1px solid rgba(240, 225, 200, 0.15);
+                    border-radius: 8px;
+                    padding: 8px 12px;
+                    width: 270px;
+                    flex: 0 0 auto;
+                  "
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#7c705d"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  >
+                    <circle cx="11" cy="11" r="7"></circle>
+                    <path d="M20 20l-3.5-3.5"></path>
+                  </svg>
+                  <input
+                    value="{{ search }}"
+                    onInput="{{ onSearch }}"
+                    placeholder="Search torrents"
+                    style="
+                      flex: 1;
+                      min-width: 0;
+                      border: 0;
+                      outline: 0;
+                      background: transparent;
+                      color: #f3e9d8;
+                      font-size: 12.5px;
+                    "
+                  />
+                </div>
+                <button
+                  style="
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 7px;
+                    padding: 8px 12px;
+                    border-radius: 8px;
+                    border: 1px solid rgba(240, 225, 200, 0.15);
+                    background: transparent;
+                    color: #a99c86;
+                    font-size: 13px;
+                    font-weight: 600;
+                    white-space: nowrap;
+                    flex: 0 0 auto;
+                  "
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                  >
+                    <circle cx="12" cy="12" r="3.2"></circle>
+                    <path
+                      d="M12 3v2.2M12 18.8V21M21 12h-2.2M5.2 12H3M18.4 5.6l-1.6 1.6M7.2 16.8l-1.6 1.6M18.4 18.4l-1.6-1.6M7.2 7.2L5.6 5.6"
+                    ></path></svg
+                  >Settings
+                  <svg
+                    width="11"
+                    height="11"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#7c705d"
+                    stroke-width="2.4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M6 9l6 6 6-6"></path>
+                  </svg>
+                </button>
+                <button
+                  style="
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 7px;
+                    padding: 8px 12px;
+                    border-radius: 8px;
+                    border: 1px solid rgba(240, 225, 200, 0.15);
+                    background: transparent;
+                    color: #a99c86;
+                    font-size: 13px;
+                    font-weight: 600;
+                    white-space: nowrap;
+                    flex: 0 0 auto;
+                  "
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                  >
+                    <path d="M4 7h16M4 12h16M4 17h16"></path></svg
+                  >Manage
+                  <svg
+                    width="11"
+                    height="11"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#7c705d"
+                    stroke-width="2.4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M6 9l6 6 6-6"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div style="flex: 1 1 auto; min-height: 0; overflow: auto">
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: 26px minmax(
+                      280px,
+                      2.2fr
+                    ) 96px 150px 110px 110px 130px 110px 110px 78px 150px 120px;
+                  align-items: center;
+                  padding: 0 18px;
+                  height: 40px;
+                  position: sticky;
+                  top: 0;
+                  z-index: 3;
+                  background: #181309;
+                  border-bottom: 1px solid rgba(240, 225, 200, 0.08);
+                  font-size: 10.5px;
+                  font-weight: 700;
+                  letter-spacing: 0.08em;
+                  text-transform: uppercase;
+                  color: #7c705d;
+                "
+              >
+                <span></span>
+                <span>Name</span>
+                <span style="text-align: right; padding-right: 16px">Size</span>
+                <span>Progress</span>
+                <span style="text-align: right; padding-right: 16px">Down</span>
+                <span style="text-align: right; padding-right: 16px">Up</span>
+                <span>ETA</span>
+                <span style="text-align: right; padding-right: 16px">Downloaded</span>
+                <span style="text-align: right; padding-right: 16px">Uploaded</span>
+                <span style="text-align: right; padding-right: 16px">Ratio</span>
+                <span>Added on</span>
+                <span>Save path</span>
+              </div>
+              <sc-for list="{{ rows }}" as="r" hint-placeholder-count="6">
+                <div
+                  onClick="{{ r.pick }}"
+                  style="
+                    position: relative;
+                    display: grid;
+                    grid-template-columns: 26px minmax(
+                        280px,
+                        2.2fr
+                      ) 96px 150px 110px 110px 130px 110px 110px 78px 150px 120px;
+                    align-items: center;
+                    padding: 0 18px;
+                    height: 44px;
+                    border-bottom: 1px solid rgba(240, 225, 200, 0.05);
+                  "
+                >
+                  <sc-if value="{{ r.on }}" hint-placeholder-val="{{ false }}">
+                    <span
+                      style="
+                        position: absolute;
+                        inset: 0;
+                        background: rgba(227, 189, 135, 0.09);
+                        box-shadow: inset 2px 0 0 0 #e3bd87;
+                        pointer-events: none;
+                      "
+                    ></span>
+                  </sc-if>
+                  <span style="position: relative">
+                    <sc-if value="{{ r.isDone }}" hint-placeholder-val="{{ false }}"
+                      ><span
+                        style="
+                          display: block;
+                          width: 8px;
+                          height: 8px;
+                          border-radius: 99px;
+                          background: #8fbf8a;
+                        "
+                      ></span
+                    ></sc-if>
+                    <sc-if value="{{ r.isDown }}" hint-placeholder-val="{{ false }}"
+                      ><span
+                        style="
+                          display: block;
+                          width: 8px;
+                          height: 8px;
+                          border-radius: 99px;
+                          background: #e3bd87;
+                        "
+                      ></span
+                    ></sc-if>
+                    <sc-if value="{{ r.isIdle }}" hint-placeholder-val="{{ true }}"
+                      ><span
+                        style="
+                          display: block;
+                          width: 8px;
+                          height: 8px;
+                          border-radius: 99px;
+                          background: #3a3129;
+                        "
+                      ></span
+                    ></sc-if>
+                  </span>
+                  <span
+                    style="
+                      position: relative;
+                      min-width: 0;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                      white-space: nowrap;
+                      font-size: 13.5px;
+                      font-weight: 500;
+                      color: #e0d4bf;
+                      padding-right: 20px;
+                    "
+                    >{{ r.name }}</span
+                  >
+                  <span
+                    style="
+                      position: relative;
+                      text-align: right;
+                      padding-right: 16px;
+                      font-variant-numeric: tabular-nums;
+                      color: #a99c86;
+                    "
+                    >{{ r.size }}</span
+                  >
+                  <span style="position: relative; padding-right: 20px">
+                    <span
+                      style="
+                        display: block;
+                        height: 6px;
+                        border-radius: 99px;
+                        background: #1f1912;
+                        box-shadow: inset 0 0 0 1px rgba(240, 225, 200, 0.08);
+                        overflow: hidden;
+                      "
+                    >
+                      {{ r.bar }}
+                    </span>
+                    <span
+                      style="
+                        display: block;
+                        margin-top: 4px;
+                        font-size: 11px;
+                        font-variant-numeric: tabular-nums;
+                        color: #7c705d;
+                      "
+                      >{{ r.pctLabel }}</span
+                    >
+                  </span>
+                  <span
+                    style="
+                      position: relative;
+                      text-align: right;
+                      padding-right: 16px;
+                      font-variant-numeric: tabular-nums;
+                      color: #a99c86;
+                    "
+                    >{{ r.dl }}</span
+                  >
+                  <span
+                    style="
+                      position: relative;
+                      text-align: right;
+                      padding-right: 16px;
+                      font-variant-numeric: tabular-nums;
+                      color: #a99c86;
+                    "
+                    >{{ r.up }}</span
+                  >
+                  <span style="position: relative; font-size: 12.5px; color: #7c705d">{{
+                    r.eta
+                  }}</span>
+                  <span
+                    style="
+                      position: relative;
+                      text-align: right;
+                      padding-right: 16px;
+                      font-variant-numeric: tabular-nums;
+                      color: #a99c86;
+                    "
+                    >{{ r.downloaded }}</span
+                  >
+                  <span
+                    style="
+                      position: relative;
+                      text-align: right;
+                      padding-right: 16px;
+                      font-variant-numeric: tabular-nums;
+                      color: #a99c86;
+                    "
+                    >{{ r.uploaded }}</span
+                  >
+                  <span
+                    style="
+                      position: relative;
+                      text-align: right;
+                      padding-right: 16px;
+                      font-variant-numeric: tabular-nums;
+                      color: #a99c86;
+                    "
+                    >{{ r.ratio }}</span
+                  >
+                  <span
+                    style="
+                      position: relative;
+                      font-size: 12.5px;
+                      font-variant-numeric: tabular-nums;
+                      color: #7c705d;
+                    "
+                    >{{ r.added }}</span
+                  >
+                  <span
+                    style="
+                      position: relative;
+                      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                      font-size: 11.5px;
+                      color: #7c705d;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                      white-space: nowrap;
+                    "
+                    >{{ r.path }}</span
+                  >
+                </div>
+              </sc-for>
+            </div>
+
+            <div
+              style="
+                flex: 0 0 38px;
+                display: flex;
+                align-items: center;
+                gap: 11px;
+                padding: 0 16px;
+                border-top: 1px solid rgba(240, 225, 200, 0.08);
+                background: #1b1610;
+                font-size: 11.5px;
+                color: #7c705d;
+                white-space: nowrap;
+                overflow: hidden;
+              "
+            >
+              <span style="display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto"
+                ><svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#8fbf8a"
+                  stroke-width="1.9"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  style="flex: 0 0 auto"
+                >
+                  <path d="M9 3v6M15 3v6M7 9h10v3a5 5 0 0 1-10 0zM12 17v4"></path></svg
+                ><span
+                  data-w="conn"
+                  style="
+                    font-weight: 700;
+                    letter-spacing: 0.08em;
+                    text-transform: uppercase;
+                    color: #a99c86;
+                  "
+                  >Connected</span
+                ></span
+              >
+              <span
+                style="
+                  flex: 0 0 1px;
+                  width: 1px;
+                  height: 16px;
+                  background: rgba(240, 225, 200, 0.08);
+                "
+              ></span>
+              <span
+                data-w="dht"
+                style="display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto"
+                ><svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#7c705d"
+                  stroke-width="1.9"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  style="flex: 0 0 auto"
+                >
+                  <circle cx="12" cy="5" r="2.2"></circle>
+                  <circle cx="5" cy="19" r="2.2"></circle>
+                  <circle cx="19" cy="19" r="2.2"></circle>
+                  <path d="M12 7.2v4.3M11 12.6L6.6 17M13 12.6L17.4 17"></path></svg
+                >DHT
+                <b style="color: #e0d4bf; font-weight: 600; font-variant-numeric: tabular-nums"
+                  >136</b
+                ></span
+              >
+              <span
+                data-w="ratio"
+                style="display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto"
+                ><svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#7c705d"
+                  stroke-width="1.9"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  style="flex: 0 0 auto"
+                >
+                  <circle cx="17" cy="6" r="2.4"></circle>
+                  <circle cx="7" cy="12" r="2.4"></circle>
+                  <circle cx="17" cy="18" r="2.4"></circle>
+                  <path d="M9.1 10.9l5.8-3.4M9.1 13.1l5.8 3.4"></path></svg
+                >Ratio
+                <b style="color: #e0d4bf; font-weight: 600; font-variant-numeric: tabular-nums"
+                  >0.00</b
+                ></span
+              >
+              <span
+                style="
+                  flex: 0 0 1px;
+                  width: 1px;
+                  height: 16px;
+                  background: rgba(240, 225, 200, 0.08);
+                "
+              ></span>
+              <span
+                data-w="dl-session"
+                style="display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto"
+                ><svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#e3bd87"
+                  stroke-width="1.9"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  style="flex: 0 0 auto"
+                >
+                  <path d="M12 4v13M6 12l6 6 6-6"></path></svg
+                ><b style="color: #e0d4bf; font-weight: 600; font-variant-numeric: tabular-nums"
+                  >488.28 MB</b
+                ><span
+                  style="
+                    font-size: 9.5px;
+                    font-weight: 700;
+                    letter-spacing: 0.09em;
+                    text-transform: uppercase;
+                    color: #574e40;
+                  "
+                  >session</span
+                ></span
+              >
+              <span
+                data-w="dl-total"
+                style="display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto"
+                ><svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#e3bd87"
+                  stroke-width="1.9"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  style="flex: 0 0 auto"
+                >
+                  <path d="M12 4v13M6 12l6 6 6-6"></path></svg
+                ><b style="color: #e0d4bf; font-weight: 600; font-variant-numeric: tabular-nums"
+                  >12.4 GB</b
+                ><span
+                  style="
+                    font-size: 9.5px;
+                    font-weight: 700;
+                    letter-spacing: 0.09em;
+                    text-transform: uppercase;
+                    color: #574e40;
+                  "
+                  >total</span
+                ></span
+              >
+              <span
+                data-w="ul-session"
+                style="display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto"
+                ><svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#8fbf8a"
+                  stroke-width="1.9"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  style="flex: 0 0 auto"
+                >
+                  <path d="M12 20V7M6 12l6-6 6 6"></path></svg
+                ><b style="color: #e0d4bf; font-weight: 600; font-variant-numeric: tabular-nums"
+                  >244.14 MB</b
+                ><span
+                  style="
+                    font-size: 9.5px;
+                    font-weight: 700;
+                    letter-spacing: 0.09em;
+                    text-transform: uppercase;
+                    color: #574e40;
+                  "
+                  >session</span
+                ></span
+              >
+              <span
+                data-w="ul-total"
+                style="display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto"
+                ><svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#8fbf8a"
+                  stroke-width="1.9"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  style="flex: 0 0 auto"
+                >
+                  <path d="M12 20V7M6 12l6-6 6 6"></path></svg
+                ><b style="color: #e0d4bf; font-weight: 600; font-variant-numeric: tabular-nums"
+                  >3.11 GB</b
+                ><span
+                  style="
+                    font-size: 9.5px;
+                    font-weight: 700;
+                    letter-spacing: 0.09em;
+                    text-transform: uppercase;
+                    color: #574e40;
+                  "
+                  >total</span
+                ></span
+              >
+              <span
+                style="
+                  margin-left: auto;
+                  display: inline-flex;
+                  align-items: center;
+                  gap: 11px;
+                  flex: 0 0 auto;
+                "
+              >
+                <span style="display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto"
+                  ><svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#e3bd87"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    style="flex: 0 0 auto"
+                  >
+                    <path d="M12 4v13M6 12l6 6 6-6"></path></svg
+                  ><b style="color: #f3e9d8; font-weight: 600; font-variant-numeric: tabular-nums"
+                    >0 B/s</b
+                  ></span
+                >
+                <span style="display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto"
+                  ><svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#8fbf8a"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    style="flex: 0 0 auto"
+                  >
+                    <path d="M12 20V7M6 12l6-6 6 6"></path></svg
+                  ><b style="color: #f3e9d8; font-weight: 600; font-variant-numeric: tabular-nums"
+                    >0 B/s</b
+                  ></span
+                >
+                <span
+                  style="
+                    flex: 0 0 1px;
+                    width: 1px;
+                    height: 16px;
+                    background: rgba(240, 225, 200, 0.08);
+                  "
+                ></span>
+                <span style="display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto"
+                  ><svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#7c705d"
+                    stroke-width="1.9"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    style="flex: 0 0 auto"
+                  >
+                    <rect x="3" y="4" width="18" height="7" rx="2"></rect>
+                    <rect x="3" y="13" width="18" height="7" rx="2"></rect>
+                    <path d="M7 7.5h.01M7 16.5h.01"></path></svg
+                  >Free
+                  <b style="color: #e0d4bf; font-weight: 600; font-variant-numeric: tabular-nums"
+                    >169.05 GB</b
+                  ></span
+                >
+                <span
+                  style="
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    flex: 0 0 auto;
+                    padding: 4px 9px;
+                    border-radius: 99px;
+                    border: 1px solid rgba(240, 225, 200, 0.08);
+                    background: #1f1912;
+                  "
+                  ><svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#7c705d"
+                    stroke-width="1.9"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    style="flex: 0 0 auto"
+                  >
+                    <path d="M4 16h16"></path>
+                    <path d="M6.5 16a5.5 5.5 0 0 1 11 0"></path>
+                    <path d="M17.5 12.5l2.5-1.5M6.5 16v2M17.5 16v2"></path></svg
+                  >Turtle off</span
+                >
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </x-dc>
+    <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+      const ICONS={
+        all:['#e3bd87','<path d="M4 6h16M4 12h16M4 18h16"/>'],
+        downloading:['#e3bd87','<path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19h14"/>'],
+        completed:['#8fbf8a','<circle cx="12" cy="12" r="8.5"/><path d="M8.5 12.2l2.4 2.4 4.6-4.8"/>'],
+        active:['#8fbf8a','<circle cx="12" cy="12" r="8.5"/><path d="M10 8.5l6 3.5-6 3.5z" fill="currentColor" stroke="none"/>'],
+        inactive:['#7c705d','<circle cx="12" cy="12" r="8.5"/><path d="M10 9v6M14 9v6"/>'],
+        stopped:['#7c705d','<circle cx="12" cy="12" r="8.5"/><rect x="9" y="9" width="6" height="6" rx="1"/>'],
+        checking:['#87b0d4','<path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4.5V9h-4.5"/>'],
+        errored:['#d67866','<circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5M12 15.6h.01"/>'],
+        tracker:['#7c705d','<path d="M10.5 13.5a3.2 3.2 0 0 0 4.6 0l2.3-2.3a3.3 3.3 0 0 0-4.6-4.6l-1 1"/><path d="M13.5 10.5a3.2 3.2 0 0 0-4.6 0l-2.3 2.3a3.3 3.3 0 0 0 4.6 4.6l1-1"/>'],
+        category:['#e3bd87','<path d="M4 6.5h5l1.6 2H20v9.5H4z"/><path d="M4 6.5V18"/>'],
+        tag:['#7c705d','<path d="M12.5 3.5H20V11l-8.5 8.5a2 2 0 0 1-2.8 0l-5.7-5.7a2 2 0 0 1 0-2.8z"/><path d="M16.5 7.2h.01"/>'],
+        path:['#7c705d','<path d="M3.5 7.5a2 2 0 0 1 2-2h3l2 2.5h8a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/>']
+      };
+      function svgIcon(kind,active){
+        const spec=ICONS[kind]||ICONS.path;
+        return React.createElement('svg',{
+          width:14,height:14,viewBox:'0 0 24 24',fill:'none',
+          stroke:active?'#f3e9d8':spec[0],strokeWidth:1.8,strokeLinecap:'round',strokeLinejoin:'round',
+          style:{display:'block',color:active?'#f3e9d8':spec[0]},
+          dangerouslySetInnerHTML:{__html:spec[1]}
+        });
+      }
+      class Component extends DCLogic {
+        state={q:{},search:'',open:{status:true,trackers:true,categories:true,tags:true,paths:true},active:'status:All',sel:2};
+        data(){return [
+          {id:'status',label:'Status',count:7,kinds:{Downloading:'downloading',Completed:'completed',Active:'active',Inactive:'inactive',Stopped:'stopped',Checking:'checking',Errored:'errored'},items:[['All',6],['Downloading',0],['Completed',1],['Active',0],['Inactive',1],['Stopped',5],['Checking',0],['Errored',0]]},
+          {id:'trackers',label:'Trackers',kind:'tracker',count:1,items:[['All',6],['torrent.ubuntu.com',6]]},
+          {id:'categories',label:'Categories',kind:'category',count:2,manage:true,items:[['All',6],['category 2',0],['test category',0]]},
+          {id:'tags',label:'Tags',kind:'tag',count:2,manage:true,items:[['All',6],['another test',0],['test 1',0]]},
+          {id:'paths',label:'Save paths',kind:'path',count:1,items:[['All',6],['/downloads',6]]}
+        ];}
+        torrents(){return [
+          {name:'ubuntu-24.04.4-live-server-arm64.iso',size:'2.85 GB',pct:0,dl:'',up:'',eta:'3 months, 8 days',downloaded:'',uploaded:'',ratio:'0.00',added:'2026-07-23 00:41',state:'stopped'},
+          {name:'ubuntu-24.04.4-live-server-amd64.iso',size:'3.17 GB',pct:0,dl:'',up:'',eta:'3 months, 8 days',downloaded:'',uploaded:'',ratio:'0.00',added:'2026-07-23 00:41',state:'stopped'},
+          {name:'ubuntu-26.04-live-server-arm64.iso',size:'2.86 GB',pct:100,dl:'',up:'',eta:'',downloaded:'2.86 GB',uploaded:'',ratio:'0.00',added:'2026-07-23 00:41',state:'done'},
+          {name:'ubuntu-26.04-live-server-amd64.iso',size:'2.72 GB',pct:2.8,dl:'',up:'',eta:'3 months, 8 days',downloaded:'74.29 MB',uploaded:'',ratio:'0.00',added:'2026-07-23 00:41',state:'stopped'},
+          {name:'ubuntu-26.04-desktop-arm64.iso',size:'3.88 GB',pct:72.8,dl:'1.4 MB/s',up:'320 KB/s',eta:'3 months, 8 days',downloaded:'2.73 GB',uploaded:'320 KB',ratio:'0.00',added:'2026-07-23 00:40',state:'downloading'},
+          {name:'ubuntu-26.04-desktop-amd64.iso',size:'6.07 GB',pct:17.7,dl:'',up:'',eta:'3 months, 8 days',downloaded:'1.06 GB',uploaded:'',ratio:'0.00',added:'2026-07-23 00:40',state:'stopped'}
+        ];}
+        renderVals(){
+          const groups=this.data().map(g=>{
+            const q=(this.state.q[g.id]||'').trim().toLowerCase();
+            const items=g.items.filter(([n])=>!q||n==='All'||n.toLowerCase().includes(q)).map(([n,c])=>{
+              const key=g.id+':'+n, on=this.state.active===key;
+              const kind=n==='All'?'all':((g.kinds&&g.kinds[n])||g.kind||'path');
+              return {name:n,count:c,on,icon:svgIcon(kind,on),pick:()=>this.setState({active:key})};
+            });
+            const open=this.state.open[g.id];
+            return {label:g.label,count:g.count,manage:!!g.manage,items,open,closed:!open,
+              hasFilter:g.id!=='status',q:this.state.q[g.id]||'',
+              onQ:e=>{const v=e.target.value;this.setState(s=>({q:{...s.q,[g.id]:v}}));},
+              toggle:()=>this.setState(s=>({open:{...s.open,[g.id]:!s.open[g.id]}}))};
+          });
+          const s=this.state.search.trim().toLowerCase();
+          const rows=this.torrents().map((t,i)=>{
+            const done=t.state==='done', down=t.state==='downloading';
+            return {...t,
+              pct:t.pct+'%',
+              pctLabel:t.pct===100?'100%':t.pct.toFixed(1).replace(/\.0$/,'')+'%',
+              isDone:done,isDown:down,isIdle:!done&&!down,
+              bar:React.createElement('span',{style:{display:'block',height:'100%',borderRadius:'99px',width:t.pct+'%',background:done?'#8fbf8a':(down?'linear-gradient(90deg,#e3bd87,#dd9a4c)':'#4a3f31')}}),
+              dl:t.dl||'—',up:t.up||'—',downloaded:t.downloaded||'—',uploaded:t.uploaded||'—',eta:t.eta||'—',
+              path:'/downloads',on:this.state.sel===i,
+              pick:()=>this.setState({sel:i})};
+          }).filter(r=>!s||r.name.toLowerCase().includes(s));
+          return {groups,rows,search:this.state.search,
+            onSearch:e=>this.setState({search:e.target.value}),
+          };
+        }
+      }
+    </script>
+  </body>
+</html>

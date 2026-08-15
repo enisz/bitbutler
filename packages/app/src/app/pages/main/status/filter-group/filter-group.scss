@@ -4,26 +4,50 @@
   display: block;
 }
 
+.bb-group-header {
+  cursor: pointer;
+  user-select: none;
+  padding: 0.375rem 0.5rem;
+  border-radius: 8px;
+
+  &:hover {
+    background-color: var(--bb-hover-list-item-bg);
+  }
+}
+
+.bb-group-chevron {
+  flex: 0 0 auto;
+  font-size: 0.65rem;
+  color: var(--bb-control-placeholder);
+  transition: transform 120ms ease;
+
+  &--closed {
+    transform: rotate(-90deg);
+  }
+}
+
+.small.text-uppercase {
+  font-size: 0.656rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--bb-control-placeholder);
+}
+
 .list-group-item-action {
-  border-color: var(--bs-border-color);
+  background-color: transparent;
+  border: 0 !important;
+  border-radius: 8px !important;
+  margin-bottom: 1px;
+  padding: 0.3rem 0.625rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
 
   &.active {
     background-color: var(--bb-active-list-item-bg);
     color: var(--bs-body-color);
-    border-color: var(--bb-active-list-item-bg) !important;
-
-    .bb-status-badge.bb-status-badge--neutral {
-      background-color: var(--bb-accent);
-      color: var(--bb-primary-ink);
-    }
   }
 
   &:not(.active) {
-    .bb-status-badge.bb-status-badge--neutral {
-      background-color: var(--bs-tertiary-bg);
-      color: var(--bs-emphasis-color);
-    }
-
     &.bb-variant-primary {
       color: var(--bs-primary);
       --bs-list-group-action-hover-bg: color-mix(in srgb, var(--bs-primary) 16%, transparent);
@@ -49,11 +73,19 @@
       --bs-list-group-action-hover-bg: color-mix(in srgb, var(--bs-danger) 16%, transparent);
     }
   }
+}
 
-  .bb-status-badge {
-    --bs-badge-font-weight: 600;
-    padding: 0.35rem 0.5rem;
-  }
+.bb-status-badge {
+  background-color: transparent !important;
+  color: var(--bb-control-placeholder);
+  font-weight: 600;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  line-height: 1.2;
+  flex-shrink: 0;
+  white-space: nowrap;
+  padding: 0;
 }
 
 .list-group {

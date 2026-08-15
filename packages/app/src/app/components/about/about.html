@@ -1,12 +1,10 @@
 <div class="modal-body bb-about p-0 overflow-hidden">
-  <div class="bb-about__header p-4 d-flex align-items-center gap-4">
-    <div class="bb-about__logo-wrapper">
-      <img [src]="logoUrl()" class="bb-about__logo" alt="BitButler logo" />
-    </div>
+  <div class="bb-about__header p-4 d-flex align-items-center gap-3">
+    <img [src]="logoUrl()" class="bb-about__logo" alt="BitButler logo" />
 
     <div class="bb-about__hero">
       <h1 class="bb-about__title mb-0">BitButler</h1>
-      <p class="bb-about__tagline text-primary mb-2">
+      <p class="bb-about__tagline mb-2">
         {{ 'components.about.tagline' | translate }}
       </p>
       <div class="d-flex gap-2">
@@ -27,8 +25,6 @@
   </div>
 
   <div class="p-4 pt-0">
-    <p class="bb-about__description mt-3 mb-4"></p>
-
     <div class="bb-about__grid">
       <div class="bb-about__item">
         <div class="d-flex flex-column">
@@ -50,7 +46,7 @@
 <div class="modal-footer justify-content-between">
   <div class="d-flex gap-2">
     <button
-      class="btn btn-sm btn-dashed-secondary btn-split"
+      class="btn btn-sm btn-dashed-secondary bb-about__link"
       (click)="openExternalUrl('https://github.com/enisz/bitbutler')"
     >
       <bb-btn-content
@@ -60,7 +56,7 @@
       ></bb-btn-content>
     </button>
     <button
-      class="btn btn-sm btn-dashed-secondary btn-split"
+      class="btn btn-sm btn-dashed-secondary bb-about__link"
       (click)="openExternalUrl('https://github.com/enisz')"
     >
       <bb-btn-content [icon]="icons.faUser" text="@enisz" position="end"></bb-btn-content>
@@ -69,7 +65,7 @@
 
   <button
     type="button"
-    class="btn btn-sm btn-link btn-split"
+    class="btn btn-sm btn-outline-secondary bb-about__link"
     (click)="activeModal.close()"
     autofocus
   >

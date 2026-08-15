@@ -1,0 +1,594 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <!-- @template name="Import Torrents" description="Import torrents from an exported archive, review rows, and set restore options" -->
+      <helmet>
+        <script src="./ds-base.js"></script>
+        <style>
+          html,
+          body {
+            margin: 0;
+            padding: 0;
+            background: #100c08;
+          }
+          * {
+            box-sizing: border-box;
+          }
+          input {
+            font: inherit;
+          }
+          button {
+            font: inherit;
+            cursor: pointer;
+          }
+          ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+          }
+          ::-webkit-scrollbar-thumb {
+            background: rgba(240, 225, 200, 0.15);
+            border-radius: 99px;
+          }
+        </style>
+      </helmet>
+      <div
+        style="
+          width: 100vw;
+          height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 32px;
+          background: #100c08;
+          font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+          color: #f3e9d8;
+          font-size: 13.5px;
+        "
+      >
+        <div
+          style="
+            width: 100%;
+            max-width: 920px;
+            height: 100%;
+            max-height: 820px;
+            display: flex;
+            flex-direction: column;
+            background: #1c160f;
+            border: 1px solid rgba(240, 225, 200, 0.15);
+            border-radius: 18px;
+            box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.75);
+            overflow: hidden;
+          "
+        >
+          <div
+            style="
+              flex: 0 0 auto;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              padding: 20px 24px;
+              border-bottom: 1px solid rgba(240, 225, 200, 0.08);
+            "
+          >
+            <div style="font-size: 19px; font-weight: 750; letter-spacing: -0.01em">
+              Import Torrents
+            </div>
+            <button
+              style="
+                width: 30px;
+                height: 30px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 8px;
+                border: 1px solid rgba(240, 225, 200, 0.15);
+                background: transparent;
+                color: #a99c86;
+              "
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              >
+                <path d="M6 6l12 12M18 6L6 18"></path>
+              </svg>
+            </button>
+          </div>
+
+          <div
+            style="
+              flex: 1 1 auto;
+              min-height: 0;
+              overflow-y: auto;
+              padding: 22px 24px;
+              display: flex;
+              flex-direction: column;
+              gap: 18px;
+            "
+          >
+            <div
+              style="
+                border: 1px solid rgba(240, 225, 200, 0.1);
+                border-radius: 12px;
+                padding: 18px 20px;
+              "
+            >
+              <div style="font-size: 16px; font-weight: 700; margin-bottom: 14px">Archive</div>
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: 1fr 1fr 1fr 1fr;
+                  gap: 16px;
+                  margin-bottom: 16px;
+                "
+              >
+                <div>
+                  <div
+                    style="
+                      font-size: 10.5px;
+                      font-weight: 700;
+                      letter-spacing: 0.06em;
+                      text-transform: uppercase;
+                      color: #7c705d;
+                      margin-bottom: 5px;
+                    "
+                  >
+                    Exported from
+                  </div>
+                  <div style="font-weight: 600">{{ exportedFrom }}</div>
+                </div>
+                <div>
+                  <div
+                    style="
+                      font-size: 10.5px;
+                      font-weight: 700;
+                      letter-spacing: 0.06em;
+                      text-transform: uppercase;
+                      color: #7c705d;
+                      margin-bottom: 5px;
+                    "
+                  >
+                    Importing to
+                  </div>
+                  <div style="font-weight: 600">{{ importingTo }}</div>
+                </div>
+                <div>
+                  <div
+                    style="
+                      font-size: 10.5px;
+                      font-weight: 700;
+                      letter-spacing: 0.06em;
+                      text-transform: uppercase;
+                      color: #7c705d;
+                      margin-bottom: 5px;
+                    "
+                  >
+                    Server URL
+                  </div>
+                  <div style="font-weight: 600">{{ serverUrl }}</div>
+                </div>
+                <div>
+                  <div
+                    style="
+                      font-size: 10.5px;
+                      font-weight: 700;
+                      letter-spacing: 0.06em;
+                      text-transform: uppercase;
+                      color: #7c705d;
+                      margin-bottom: 5px;
+                    "
+                  >
+                    Export date
+                  </div>
+                  <div style="font-weight: 600">{{ exportDate }}</div>
+                </div>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px">
+                <div>
+                  <div
+                    style="
+                      font-size: 10.5px;
+                      font-weight: 700;
+                      letter-spacing: 0.06em;
+                      text-transform: uppercase;
+                      color: #7c705d;
+                      margin-bottom: 5px;
+                    "
+                  >
+                    Torrents
+                  </div>
+                  <div style="font-weight: 600">{{ torrentCount }}</div>
+                </div>
+                <div>
+                  <div
+                    style="
+                      font-size: 10.5px;
+                      font-weight: 700;
+                      letter-spacing: 0.06em;
+                      text-transform: uppercase;
+                      color: #7c705d;
+                      margin-bottom: 5px;
+                    "
+                  >
+                    Tags
+                  </div>
+                  <div style="font-weight: 600">{{ tagCount }}</div>
+                </div>
+                <div>
+                  <div
+                    style="
+                      font-size: 10.5px;
+                      font-weight: 700;
+                      letter-spacing: 0.06em;
+                      text-transform: uppercase;
+                      color: #7c705d;
+                      margin-bottom: 5px;
+                    "
+                  >
+                    Categories
+                  </div>
+                  <div style="font-weight: 600">{{ categoryCount }}</div>
+                </div>
+                <div>
+                  <div
+                    style="
+                      display: flex;
+                      align-items: center;
+                      gap: 5px;
+                      font-size: 10.5px;
+                      font-weight: 700;
+                      letter-spacing: 0.06em;
+                      text-transform: uppercase;
+                      color: #7c705d;
+                      margin-bottom: 5px;
+                    "
+                  >
+                    Export type<svg
+                      width="11"
+                      height="11"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.9"
+                    >
+                      <circle cx="12" cy="12" r="9"></circle>
+                      <path d="M12 11v5.5"></path>
+                      <circle cx="12" cy="7.8" r="1" fill="currentColor" stroke="none"></circle>
+                    </svg>
+                  </div>
+                  <div style="font-weight: 600; color: #8fbf8a">{{ exportType }}</div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              style="
+                border: 1px solid rgba(240, 225, 200, 0.1);
+                border-radius: 12px;
+                padding: 18px 20px;
+              "
+            >
+              <div style="font-size: 16px; font-weight: 700; margin-bottom: 8px">
+                Torrents to Import
+              </div>
+              <div style="font-size: 12.5px; color: #a99c86; line-height: 1.5; margin-bottom: 14px">
+                This lists every torrent in the archive along with the metadata that will be
+                restored. Uncheck a row to skip importing it — torrents that already exist on the
+                target server are unchecked by default, but you can check them to import anyway and
+                overwrite their settings.
+              </div>
+              <div
+                style="
+                  border: 1px solid rgba(240, 225, 200, 0.08);
+                  border-radius: 8px;
+                  overflow: hidden;
+                "
+              >
+                <div
+                  style="
+                    display: grid;
+                    grid-template-columns: 36px 110px 1fr 140px;
+                    gap: 0;
+                    padding: 9px 12px;
+                    background: #221b14;
+                    font-size: 11px;
+                    font-weight: 700;
+                    letter-spacing: 0.03em;
+                    text-transform: uppercase;
+                    color: #7c705d;
+                    border-bottom: 1px solid rgba(240, 225, 200, 0.08);
+                  "
+                >
+                  <span></span><span>Import State</span><span>Name</span><span>Save Path</span>
+                </div>
+                <sc-for list="{{ rows }}" as="r" hint-placeholder-count="6">
+                  <div
+                    style="
+                      display: grid;
+                      grid-template-columns: 36px 110px 1fr 140px;
+                      gap: 0;
+                      align-items: center;
+                      padding: 9px 12px;
+                      border-bottom: 1px solid rgba(240, 225, 200, 0.05);
+                    "
+                  >
+                    <input
+                      type="checkbox"
+                      checked="{{ r.checked }}"
+                      onChange="{{ r.toggle }}"
+                      style="width: 15px; height: 15px; accent-color: #e3bd87"
+                    />
+                    <span style="font-size: 12.5px; color: #a99c86">{{ r.state }}</span>
+                    <span
+                      style="
+                        font-size: 12.5px;
+                        font-weight: 600;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                      "
+                      >{{ r.name }}</span
+                    >
+                    <span style="font-size: 12.5px; color: #a99c86">{{ r.savePath }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div
+              style="
+                border: 1px solid rgba(240, 225, 200, 0.1);
+                border-radius: 12px;
+                padding: 18px 20px;
+              "
+            >
+              <div style="font-size: 16px; font-weight: 700; margin-bottom: 14px">
+                Restore options
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px 28px">
+                <sc-for list="{{ optionsLeft }}" as="o" hint-placeholder-count="6">
+                  <div style="display: flex; align-items: center; gap: 11px">
+                    <sc-if value="{{ o.on }}" hint-placeholder-val="{{ true }}"
+                      ><div
+                        onClick="{{ o.toggle }}"
+                        style="
+                          width: 38px;
+                          height: 22px;
+                          border-radius: 999px;
+                          position: relative;
+                          cursor: pointer;
+                          flex: 0 0 auto;
+                          background: #e3bd87;
+                        "
+                      >
+                        <div
+                          style="
+                            width: 16px;
+                            height: 16px;
+                            border-radius: 999px;
+                            position: absolute;
+                            top: 2px;
+                            left: 18px;
+                            background: #241a0f;
+                          "
+                        ></div></div
+                    ></sc-if>
+                    <sc-if value="{{ o.off }}" hint-placeholder-val="{{ false }}"
+                      ><div
+                        onClick="{{ o.toggle }}"
+                        style="
+                          width: 38px;
+                          height: 22px;
+                          border-radius: 999px;
+                          position: relative;
+                          cursor: pointer;
+                          flex: 0 0 auto;
+                          background: #1f1912;
+                          border: 1px solid rgba(240, 225, 200, 0.15);
+                        "
+                      >
+                        <div
+                          style="
+                            width: 16px;
+                            height: 16px;
+                            border-radius: 999px;
+                            position: absolute;
+                            top: 1px;
+                            left: 1px;
+                            background: #7c705d;
+                          "
+                        ></div></div
+                    ></sc-if>
+                    <span style="font-size: 13.5px; font-weight: 600">{{ o.label }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: 1fr 1fr;
+                  gap: 12px 28px;
+                  margin-top: 12px;
+                "
+              >
+                <sc-for list="{{ optionsRight }}" as="o" hint-placeholder-count="5">
+                  <div style="display: flex; align-items: center; gap: 11px">
+                    <sc-if value="{{ o.on }}" hint-placeholder-val="{{ true }}"
+                      ><div
+                        onClick="{{ o.toggle }}"
+                        style="
+                          width: 38px;
+                          height: 22px;
+                          border-radius: 999px;
+                          position: relative;
+                          cursor: pointer;
+                          flex: 0 0 auto;
+                          background: #e3bd87;
+                        "
+                      >
+                        <div
+                          style="
+                            width: 16px;
+                            height: 16px;
+                            border-radius: 999px;
+                            position: absolute;
+                            top: 2px;
+                            left: 18px;
+                            background: #241a0f;
+                          "
+                        ></div></div
+                    ></sc-if>
+                    <sc-if value="{{ o.off }}" hint-placeholder-val="{{ false }}"
+                      ><div
+                        onClick="{{ o.toggle }}"
+                        style="
+                          width: 38px;
+                          height: 22px;
+                          border-radius: 999px;
+                          position: relative;
+                          cursor: pointer;
+                          flex: 0 0 auto;
+                          background: #1f1912;
+                          border: 1px solid rgba(240, 225, 200, 0.15);
+                        "
+                      >
+                        <div
+                          style="
+                            width: 16px;
+                            height: 16px;
+                            border-radius: 999px;
+                            position: absolute;
+                            top: 1px;
+                            left: 1px;
+                            background: #7c705d;
+                          "
+                        ></div></div
+                    ></sc-if>
+                    <span style="font-size: 13.5px; font-weight: 600">{{ o.label }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+
+          <div
+            style="
+              flex: 0 0 auto;
+              display: flex;
+              align-items: center;
+              justify-content: flex-end;
+              gap: 10px;
+              padding: 16px 24px;
+              border-top: 1px solid rgba(240, 225, 200, 0.08);
+            "
+          >
+            <button
+              style="
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 9px 18px;
+                border-radius: 8px;
+                border: 1px solid transparent;
+                background: transparent;
+                color: #c9bda6;
+                font-size: 13.5px;
+                font-weight: 650;
+                text-decoration: underline;
+              "
+            >
+              Cancel<svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              >
+                <path d="M6 6l12 12M18 6L6 18"></path>
+              </svg>
+            </button>
+            <button
+              onClick="{{ onImport }}"
+              style="
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 10px 20px;
+                border-radius: 8px;
+                border: 1px solid #e3bd87;
+                background: #e3bd87;
+                color: #241a0f;
+                font-size: 13.5px;
+                font-weight: 700;
+              "
+            >
+              Import<svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M21 14v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5"></path>
+                <path d="M7 10l5 5 5-5"></path>
+                <path d="M12 15V3"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </x-dc>
+    <script
+      type="text/x-dc"
+      data-dc-script
+      data-props='{"exportedFrom":{"editor":"text","default":"test-qb","tsType":"string"},"importingTo":{"editor":"text","default":"test-qb","tsType":"string"},"serverUrl":{"editor":"text","default":"http://localhost:9020","tsType":"string"},"exportDate":{"editor":"text","default":"2026-07-23 01:10","tsType":"string"}}'
+    >
+      const NAMES=['ubuntu-24.04.4-live-server-amd64.iso','ubuntu-24.04.4-live-server-arm64.iso','ubuntu-26.04-desktop-amd64.iso','ubuntu-26.04-desktop-arm64.iso','ubuntu-26.04-live-server-amd64.iso','ubuntu-26.04-live-server-arm64.iso'];
+      const OPT_LEFT=['Save path','Tags','Share limits','File priorities','Sequential download','First/last piece priority'];
+      const OPT_RIGHT=['Categories','Speed limits','File renames','Auto-TMM','Super seeding'];
+      class Component extends DCLogic {
+        state={
+          rows:NAMES.map(n=>({name:n,checked:false})),
+          opts:Object.fromEntries([...OPT_LEFT,...OPT_RIGHT].map(l=>[l,true]))
+        };
+        renderVals(){
+          return {
+            exportedFrom:this.props.exportedFrom||'test-qb',
+            importingTo:this.props.importingTo||'test-qb',
+            serverUrl:this.props.serverUrl||'http://localhost:9020',
+            exportDate:this.props.exportDate||'2026-07-23 01:10',
+            torrentCount:this.props.torrentCount??6,
+            tagCount:this.props.tagCount??2,
+            categoryCount:this.props.categoryCount??2,
+            exportType:this.props.exportType||'Full export',
+            rows:this.state.rows.map((r,i)=>({
+              name:r.name,savePath:'/downloads',state:r.checked?'Import':'Duplicate',checked:r.checked,
+              toggle:()=>this.setState(s=>{const rows=s.rows.slice();rows[i]={...rows[i],checked:!rows[i].checked};return{rows};})
+            })),
+            optionsLeft:OPT_LEFT.map(l=>({label:l,on:this.state.opts[l],off:!this.state.opts[l],
+              toggle:()=>this.setState(s=>({opts:{...s.opts,[l]:!s.opts[l]}}))})),
+            optionsRight:OPT_RIGHT.map(l=>({label:l,on:this.state.opts[l],off:!this.state.opts[l],
+              toggle:()=>this.setState(s=>({opts:{...s.opts,[l]:!s.opts[l]}}))})),
+            onImport:()=>{}
+          };
+        }
+      }
+    </script>
+  </body>
+</html>

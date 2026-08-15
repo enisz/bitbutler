@@ -1,38 +1,35 @@
-<div class="d-flex flex-column vw-100 vh-100">
-  <header class="flex-shrink-0 d-flex flex-row align-items-center">
-    <div
-      class="bb-brand bb-sidebar-width d-flex flex-row align-items-center justify-content-center pe-none user-select-none gap-3 py-2"
-    >
-      <img [ngSrc]="logoUrl()" alt="Bitbutler Logo" width="60" height="60" priority />
+<div class="d-flex flex-row vw-100 vh-100">
+  <aside class="bb-sidebar-width flex-shrink-0 d-flex flex-column min-h-0">
+    <div class="bb-brand d-flex flex-row align-items-center pe-none user-select-none gap-2">
+      <img [ngSrc]="logoUrl()" alt="Bitbutler Logo" width="34" height="34" priority />
 
-      <div class="d-flex flex-column text-center min-w-0">
+      <div class="d-flex flex-column min-w-0">
         <div class="brand-title">BitButler</div>
         @if (currentServer()) {
-          <small>{{ currentServer()?.name }}</small>
+          <div class="brand-status d-flex flex-row align-items-center gap-1">
+            <span class="status-dot" [class]="connectionStatus()"></span>
+            <small>{{ currentServer()?.name }}</small>
+          </div>
         }
       </div>
     </div>
 
-    <div class="d-flex flex-row flex-grow-1 min-w-0">
-      <app-button-bar class="flex-grow-1 min-w-0"></app-button-bar>
+    <div class="flex-grow-1 min-h-0 overflow-auto">
+      <app-status></app-status>
     </div>
-  </header>
+  </aside>
 
-  <div class="d-flex flex-row flex-grow-1 min-h-0">
-    <aside class="bb-sidebar-width flex-shrink-0 d-flex flex-column min-h-0">
-      <div class="flex-grow-1 min-h-0 overflow-auto">
-        <app-status></app-status>
-      </div>
-    </aside>
+  <main class="d-flex flex-column flex-grow-1 min-w-0 min-h-0">
+    <div class="flex-shrink-0">
+      <app-button-bar></app-button-bar>
+    </div>
 
-    <main class="d-flex flex-column flex-grow-1 min-w-0 min-h-0">
-      <div class="flex-grow-1 min-h-0 overflow-hidden">
-        <app-grid class="h-100 w-100"></app-grid>
-      </div>
+    <div class="flex-grow-1 min-h-0 overflow-hidden">
+      <app-grid class="h-100 w-100"></app-grid>
+    </div>
 
-      <footer class="flex-shrink-0 border-start">
-        <app-server-state [state]="serverState()"></app-server-state>
-      </footer>
-    </main>
-  </div>
+    <footer class="flex-shrink-0">
+      <app-server-state [state]="serverState()"></app-server-state>
+    </footer>
+  </main>
 </div>

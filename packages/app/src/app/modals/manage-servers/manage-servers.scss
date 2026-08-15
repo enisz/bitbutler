@@ -1,7 +1,68 @@
-.list-group-item {
+.bb-server-list {
+  --bs-list-group-bg: transparent;
+}
+
+.bb-server-row {
+  background-color: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--bs-border-color);
+  padding: 0.6875rem 0.25rem;
   transition: background-color 0.15s ease-in-out;
+
+  &:last-child {
+    border-bottom: 0;
+  }
 
   &:hover {
     background-color: var(--bb-hover-list-item-bg);
+  }
+}
+
+.bb-server-action {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  color: var(--bb-control-placeholder);
+
+  &:hover:not(:disabled) {
+    background-color: var(--bb-control-hover-bg);
+    color: var(--bs-body-color);
+  }
+
+  &--default {
+    border-color: var(--bb-control-border);
+    background-color: color-mix(in srgb, var(--bb-accent) 14%, transparent);
+    color: var(--bb-accent);
+  }
+
+  &--danger {
+    color: var(--bs-danger);
+
+    &:hover:not(:disabled) {
+      background-color: color-mix(in srgb, var(--bs-danger) 14%, transparent);
+      color: var(--bs-danger);
+    }
+  }
+}
+
+.bb-modal-footer-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  ::ng-deep {
+    .btn-icon,
+    .btn-text {
+      display: inline-flex;
+      align-items: center;
+      padding: 0 !important;
+      background: none !important;
+    }
   }
 }
