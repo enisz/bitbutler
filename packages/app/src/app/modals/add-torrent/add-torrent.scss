@@ -20,17 +20,3 @@
     }
   }
 }
-
-.bb-split-cta {
-  .bb-footer-btn {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-  }
-
-  .bb-split-caret {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-    border-left-color: color-mix(in srgb, var(--bb-secondary-ink) 25%, transparent);
-    padding-inline: 0.5rem;
-  }
-}

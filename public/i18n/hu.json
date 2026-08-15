@@ -38,6 +38,7 @@
     },
     "add-torrent": {
       "title": "Torrent hozzáadása",
+      "queue-position": "{{ current }} / {{ total }}",
       "add-form": {
         "file-browser": "Torrent fájl",
         "folder-browser": "Mappa",
@@ -70,7 +71,9 @@
         "transfer-rate-limits": "Átviteli sebesség korlátok",
         "share-limits": "Megosztási korlátok",
         "input": "Bemenet",
-        "torrent": "Torrent"
+        "torrent": "Torrent",
+        "layout": "Elrendezés",
+        "behaviour": "Viselkedés"
       },
       "popover": {
         "root-folder": {
@@ -84,6 +87,7 @@
         },
         "skip-hash-checking": {
           "title": "Hash-ellenőrzés kihagyása",
+          "sub": "Megbízik a lemezen lévő adatokban",
           "description": {
             "line1": "Alapesetben a qBittorrent ellenőrzi a lemezen lévő adatokat, hogy azok pontosan megegyeznek-e a torrenttel. Ennek engedélyezése kihagyja ezt a vizsgálatot.",
             "line2": "Csak akkor használd, ha 100%-ig biztos vagy benne, hogy a fájlok a mentési útvonalon épek és hiánytalanok; különben hibás adatokat tölthetsz fel másoknak."
@@ -91,6 +95,7 @@
         },
         "paused-state": {
           "title": "Felfüggesztett állapot",
+          "sub": "Sorba állítás indítás nélkül",
           "description": {
             "line1": "A torrent megjelenik a listában, de nem indul el a fel- vagy letöltés, amíg manuálisan rá nem kattintasz a „Folytatás” gombra.",
             "line2": "Ez hasznos, ha több fájlt szeretnél hozzáadni most, de a forgalmat a csúcsidőn kívülre ütemeznéd."
@@ -98,6 +103,7 @@
         },
         "auto-tmm": {
           "title": "Automatikus Torrentkezelés",
+          "sub": "A mentési útvonal a kategóriát követi",
           "description": {
             "line1": "Ha engedélyezve van, a qBittorrent a hozzárendelt kategória alapján kezeli a fájlok helyét.",
             "line2": "Például, ha egy torrent kategóriáját „Filmek”-ről „Sorozatok”-ra módosítod, a szoftver automatikusan átmozgatja a fájlokat a megfelelő mappába."
@@ -105,6 +111,7 @@
         },
         "sequential-download": {
           "title": "Sorrendi letöltés",
+          "sub": "A szeletek sorrendben töltődnek le",
           "description": {
             "line1": "A torrentek általában véletlenszerű sorrendben töltik le a szeleteket az elérhetőség alapján. Ez az opció kényszeríti a letöltést a fájl elejétől a végéig.",
             "line2": "Hasznos, ha bele akarsz nézni/streamelni szeretnél egy videót letöltés közben, bár ez néha lassíthatja az összsebességet."
@@ -112,6 +119,7 @@
         },
         "first-last-piece-prio": {
           "title": "Első/utolsó szelet priorizálása",
+          "sub": "Gyorsabb előnézet médiafájlokhoz",
           "description": {
             "line1": "Ez arra utasítja a klienst, hogy a fájl legelső és legutolsó darabjait azonnal szerezze be.",
             "line2": "Segít ellenőrizni, hogy a fájl valódi-e, illetve bizonyos médialejátszók így már a letöltés befejezése előtt beolvashatják a metaadatokat (pl. időtartam, felbontás)."
@@ -1977,8 +1985,6 @@
       "close": "Bezárás",
       "browse": "Tallózás",
       "add": "Hozzáadás",
-      "add-start": "Hozzáadás és azonnali indítás",
-      "add-paused": "Hozzáadás szüneteltetve",
       "cancel": "Mégse",
       "clear": "Törlés",
       "clear-all": "Összes törlése",

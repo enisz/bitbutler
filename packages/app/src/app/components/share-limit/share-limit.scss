@@ -26,17 +26,17 @@
     background-color: var(--bb-control-bg);
     color: var(--bb-control-placeholder);
 
-    &:first-child {
+    &:first-of-type {
       border-top-left-radius: var(--bb-control-radius);
       border-bottom-left-radius: var(--bb-control-radius);
     }
 
-    &:last-child {
+    &:last-of-type {
       border-top-right-radius: var(--bb-control-radius);
       border-bottom-right-radius: var(--bb-control-radius);
     }
 
-    &:not(:first-child) {
+    &:not(:first-of-type) {
       border-left: 0;
     }
   }

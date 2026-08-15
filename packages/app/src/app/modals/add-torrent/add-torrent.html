@@ -4,7 +4,10 @@
 
     @if (initialQueueCount() > 1) {
       <div class="small text-body-secondary mt-1 bb-hash-clamp">
-        ({{ currentDraftNumber() }} / {{ initialQueueCount() }})
+        {{
+          'components.add-torrent.queue-position'
+            | translate: { current: currentDraftNumber(), total: initialQueueCount() }
+        }}
       </div>
     }
 
@@ -89,45 +92,23 @@
 <div class="modal-footer">
   <button
     type="button"
-    class="btn btn-outline-secondary btn-sm bb-footer-btn"
-    (click)="handleCancel()"
+    class="btn btn-primary btn-sm bb-footer-btn"
+    (click)="handleSubmit($event)"
+    [disabled]="!canSubmit()"
+    [autofocus]="addForm.controls.fileGroup.controls.file.value.length === 0"
   >
+    <bb-btn-content
+      [icon]="icons.faPlus"
+      [text]="'general.button.add' | translate"
+      position="end"
+    ></bb-btn-content>
+  </button>
+
+  <button type="button" class="btn btn-link btn-sm btn-split" (click)="handleCancel()">
     <bb-btn-content
       [icon]="icons.faXmark"
       [text]="'general.button.cancel' | translate"
       position="end"
     ></bb-btn-content>
   </button>
-  <div ngbDropdown class="btn-group bb-split-cta" role="group">
-    <button
-      type="button"
-      class="btn btn-primary btn-sm bb-footer-btn"
-      (click)="handleSubmit($event)"
-      [disabled]="!canSubmit()"
-      [autofocus]="addForm.controls.fileGroup.controls.file.value.length === 0"
-    >
-      <bb-btn-content
-        [icon]="icons.faPlus"
-        [text]="'general.button.add' | translate"
-        position="end"
-      ></bb-btn-content>
-    </button>
-    <button
-      type="button"
-      class="btn btn-primary btn-sm bb-split-caret"
-      ngbDropdownToggle
-      [disabled]="!canSubmit()"
-      [attr.aria-label]="'general.button.add' | translate"
-    >
-      <fa-icon [icon]="icons.faChevronDown"></fa-icon>
-    </button>
-    <div ngbDropdownMenu class="bb-toolbar-dropdown">
-      <button ngbDropdownItem type="button" (click)="submitWithPausedState(false, $event)">
-        {{ 'general.button.add-start' | translate }}
-      </button>
-      <button ngbDropdownItem type="button" (click)="submitWithPausedState(true, $event)">
-        {{ 'general.button.add-paused' | translate }}
-      </button>
-    </div>
-  </div>
 </div>

@@ -3,7 +3,7 @@
     <fieldset class="bb-fieldset mt-0">
       <legend>{{ 'components.add-torrent.label.input' | translate }}</legend>
 
-      <div class="row">
+      <div class="row mt-3">
         <div class="col-11 mb-3">
           <div class="btn-group w-100" role="group">
             <input
@@ -15,11 +15,8 @@
               [checked]="inputMode() === 'file'"
               (change)="inputModeChange.emit('file')"
             />
-            <label class="btn btn-outline-secondary btn-split" for="inputMode_file">
-              <bb-btn-content
-                [icon]="icons.faFile"
-                [text]="'components.add-torrent.input-mode.file' | translate"
-              ></bb-btn-content>
+            <label class="btn btn-outline-secondary" for="inputMode_file">
+              {{ 'components.add-torrent.input-mode.file' | translate }}
             </label>
 
             <input
@@ -31,11 +28,8 @@
               [checked]="inputMode() === 'link'"
               (change)="inputModeChange.emit('link')"
             />
-            <label class="btn btn-outline-secondary btn-split" for="inputMode_link">
-              <bb-btn-content
-                [icon]="icons.faLink"
-                [text]="'components.add-torrent.input-mode.link' | translate"
-              ></bb-btn-content>
+            <label class="btn btn-outline-secondary" for="inputMode_link">
+              {{ 'components.add-torrent.input-mode.link' | translate }}
             </label>
 
             <input
@@ -47,11 +41,8 @@
               [checked]="inputMode() === 'folder'"
               (change)="inputModeChange.emit('folder')"
             />
-            <label class="btn btn-outline-secondary btn-split" for="inputMode_folder">
-              <bb-btn-content
-                [icon]="icons.faFolder"
-                [text]="'components.add-torrent.input-mode.folder' | translate"
-              ></bb-btn-content>
+            <label class="btn btn-outline-secondary" for="inputMode_folder">
+              {{ 'components.add-torrent.input-mode.folder' | translate }}
             </label>
           </div>
         </div>
@@ -168,7 +159,7 @@
     <fieldset class="bb-fieldset mb-0">
       <legend>{{ 'components.add-torrent.label.torrent' | translate }}</legend>
 
-      <div class="row">
+      <div class="row mt-3">
         @if (inputMode() !== 'folder') {
           <div class="col-11">
             @if (inputMode() === 'file') {

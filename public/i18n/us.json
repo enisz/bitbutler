@@ -38,6 +38,7 @@
     },
     "add-torrent": {
       "title": "Adding a Torrent",
+      "queue-position": "{{ current }} of {{ total }}",
       "add-form": {
         "file-browser": "Torrent File",
         "folder-browser": "Folder",
@@ -70,7 +71,9 @@
         "transfer-rate-limits": "Transfer Rate Limits",
         "share-limits": "Share Limits",
         "input": "Input",
-        "torrent": "Torrent"
+        "torrent": "Torrent",
+        "layout": "Layout",
+        "behaviour": "Behaviour"
       },
       "popover": {
         "root-folder": {
@@ -84,6 +87,7 @@
         },
         "skip-hash-checking": {
           "title": "Skip hash checking",
+          "sub": "Trust the data already on disk",
           "description": {
             "line1": "Normally, qBittorrent verifies existing data on your disk to ensure it matches the torrent perfectly. Enabling this skips that scan.",
             "line2": "Use this only if you are 100% sure the files in your \"Save Path\" are already complete and uncorrupted; otherwise, you risk uploading \"garbage\" data to others."
@@ -91,6 +95,7 @@
         },
         "paused-state": {
           "title": "Paused State",
+          "sub": "Queue it without starting",
           "description": {
             "line1": "The torrent will appear in your list but won't start downloading or uploading until you manually hit \"Resume\".",
             "line2": "This is great if you want to add a bunch of files now but wait for off-peak hours to start the actual traffic."
@@ -98,6 +103,7 @@
         },
         "auto-tmm": {
           "title": "Automatic Torrent Management",
+          "sub": "Save path follows the category",
           "description": {
             "line1": "When enabled, qBittorrent handles the file location based on the Category you assign.",
             "line2": "For example, if you change a torrent's category from \"Movies\" to \"TV\", the software will automatically move the files to the corresponding folder on your hard drive."
@@ -105,6 +111,7 @@
         },
         "sequential-download": {
           "title": "Sequential Download",
+          "sub": "Pieces downloaded in order",
           "description": {
             "line1": "Torrents usually download pieces in a random order based on what is available. This option forces it to download from the beginning of the file to the end.",
             "line2": "It's useful if you want to preview/stream a video file while it is still downloading, though it can sometimes slow down the overall download speed."
@@ -112,6 +119,7 @@
         },
         "first-last-piece-prio": {
           "title": "Prioritize first/last piece",
+          "sub": "Faster media file previews",
           "description": {
             "line1": "This tells the client to grab the very first and very last chunks of the file immediately.",
             "line2": "This is helpful for verifying that a file is valid or for certain media players to read the file headers and metadata (like duration and resolution) before the rest of the file arrives."
@@ -1978,8 +1986,6 @@
       "close": "Close",
       "browse": "Browse",
       "add": "Add",
-      "add-start": "Add and Start Immediately",
-      "add-paused": "Add in Paused State",
       "cancel": "Cancel",
       "clear": "Clear",
       "clear-all": "Clear",

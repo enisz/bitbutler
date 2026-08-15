@@ -4,14 +4,17 @@
       <div class="col-12 mb-3">
         <fieldset class="bb-fieldset my-0 pb-4">
           <legend>{{ 'components.add-torrent.label.transfer-rate-limits' | translate }}</legend>
-          <app-transfer-limit formControlName="transferRateLimits"></app-transfer-limit>
+          <app-transfer-limit
+            class="d-block mt-3"
+            formControlName="transferRateLimits"
+          ></app-transfer-limit>
         </fieldset>
       </div>
 
       <div class="col-12">
         <fieldset class="bb-fieldset my-0">
           <legend>{{ 'components.add-torrent.label.share-limits' | translate }}</legend>
-          <app-share-limit formControlName="shareLimits"></app-share-limit>
+          <app-share-limit class="d-block mt-3" formControlName="shareLimits"></app-share-limit>
         </fieldset>
       </div>
     </div>

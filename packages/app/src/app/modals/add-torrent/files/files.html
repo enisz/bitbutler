@@ -1,14 +1,12 @@
 @if (draft()) {
-  <div class="bb-file-tree-panel">
-    <app-bb-file-tree
-      [files]="draft()!.torrent!.files"
-      [expandAll]="true"
-      [showMeta]="true"
-      [allowEdit]="true"
-      [hideProgress]="true"
-      (saved)="saved.emit($event)"
-      (editModeChange)="editModeChange.emit($event)"
-      (statsChange)="statsChange.emit($event)"
-    ></app-bb-file-tree>
-  </div>
+  <app-bb-file-tree
+    [files]="draft()!.torrent!.files"
+    [expandAll]="true"
+    [showMeta]="true"
+    [allowEdit]="true"
+    [hideProgress]="true"
+    (saved)="saved.emit($event)"
+    (editModeChange)="editModeChange.emit($event)"
+    (statsChange)="statsChange.emit($event)"
+  ></app-bb-file-tree>
 }
