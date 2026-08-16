@@ -1734,18 +1734,22 @@
           "popover": {
             "animate-rows": {
               "title": "Torrent lista animációk",
+              "sub": "Lágy átmenetet ad a torrent lista sorainak változásához",
               "description": "A torrent lista animálva jelenik meg, ha egy sor változik. Ha teljesítménybeli problémákat tapasztalsz, érdemes ezt kikapcsolni."
             },
             "pagination": {
               "title": "Torrent lista oldalszámozás",
+              "sub": "Oldalakra bontja a torrent listát egy hosszú lista helyett",
               "description": "A torrent lista beállítható oldalszámozásra. A túl sok torrent a listában lassíthatja a teljesítményt; ha ilyen hibát észlelsz, próbáld meg bekapcsolni az oldalszámozást."
             },
             "compact-rows": {
               "title": "Kompakt sorok",
+              "sub": "Kisebb sormagasság és margó a sűrűbb nézetért",
               "description": "Csökkenti a sorok magasságát és a cellák belső margóját a torrent listában, hogy több adat férjen el egyszerre."
             },
             "pause-on-modal": {
               "title": "Lekérdezés szüneteltetése modál esetén",
+              "sub": "Szünetelteti a háttérlekérdezést, amíg egy modál nyitva van",
               "description": "Ha engedélyezve van, a háttérlekérdezés szünetel, amikor bármely modál ablak meg van nyitva. A lekérdezés automatikusan folytatódik, amikor a modál bezáródik."
             },
             "double-click-behavior": {

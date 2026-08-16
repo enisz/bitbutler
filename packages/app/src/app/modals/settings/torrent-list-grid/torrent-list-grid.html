@@ -1,5 +1,5 @@
 @if (loaded()) {
-  <div class="container-fluid">
+  <form [formGroup]="torrentListGridForm">
     <div class="row">
       <div class="col-12">
         <p>
@@ -7,358 +7,368 @@
         </p>
       </div>
     </div>
-  </div>
-  <form [formGroup]="torrentListGridForm">
+
     <fieldset class="bb-fieldset mt-2">
       <legend>{{ 'pages.settings.tab.torrent-list-grid.label.grid-options' | translate }}</legend>
-      <div class="container-fluid">
-        <div class="row mb-3">
-          <div class="col-lg-6 col-12">
-            <div class="form-check form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="animateRows"
-                formControlName="animateRows"
-              />
-              <label class="form-check-label" for="animateRows">
-                {{
-                  'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.animate-rows'
-                    | translate
-                }}
-                <bb-popover
-                  [subject]="
-                    'pages.settings.tab.torrent-list-grid.popover.animate-rows.title' | translate
-                  "
-                  [description]="
-                    'pages.settings.tab.torrent-list-grid.popover.animate-rows.description'
-                      | translate
-                  "
-                ></bb-popover>
-              </label>
-            </div>
-          </div>
-          <div class="col-lg-6 col-12">
-            <div class="form-check form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="pagination"
-                formControlName="pagination"
-              />
-              <label class="form-check-label" for="pagination">
-                {{
-                  'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.pagination'
-                    | translate
-                }}
-                <bb-popover
-                  [subject]="
-                    'pages.settings.tab.torrent-list-grid.popover.pagination.title' | translate
-                  "
-                  [description]="
-                    'pages.settings.tab.torrent-list-grid.popover.pagination.description'
-                      | translate
-                  "
-                ></bb-popover>
-              </label>
-            </div>
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div class="col-lg-6 col-12">
-            <div class="form-check form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="compactRows"
-                formControlName="compactRows"
-              />
-              <label class="form-check-label" for="compactRows">
-                {{
-                  'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.compact-rows'
-                    | translate
-                }}
-                <bb-popover
-                  [subject]="
-                    'pages.settings.tab.torrent-list-grid.popover.compact-rows.title' | translate
-                  "
-                  [description]="
-                    'pages.settings.tab.torrent-list-grid.popover.compact-rows.description'
-                      | translate
-                  "
-                ></bb-popover>
-              </label>
-            </div>
-          </div>
-          <div class="col-lg-6 col-12">
-            <div class="form-check form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="pausePollingOnModal"
-                formControlName="pausePollingOnModal"
-              />
-              <label class="form-check-label" for="pausePollingOnModal">
-                {{
-                  'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.pause-on-modal'
-                    | translate
-                }}
-                <bb-popover
-                  [subject]="
-                    'pages.settings.tab.torrent-list-grid.popover.pause-on-modal.title' | translate
-                  "
-                  [description]="
-                    'pages.settings.tab.torrent-list-grid.popover.pause-on-modal.description'
-                      | translate
-                  "
-                ></bb-popover>
-              </label>
-            </div>
-          </div>
-        </div>
-        <div class="row mt-2 mb-3">
-          <div class="col-lg-6 col-12 d-flex align-items-center">
-            {{
-              'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.row-double-click.title'
-                | translate
-            }}
-            <bb-popover
-              [subject]="
-                'pages.settings.tab.torrent-list-grid.popover.double-click-behavior.title'
+      <div class="bb-options bb-options--grid">
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <label class="bb-option__label" for="animateRows">
+              {{
+                'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.animate-rows'
                   | translate
-              "
-              [description]="doubleClickBehavior"
-            ></bb-popover>
+              }}
+              <bb-popover
+                [subject]="
+                  'pages.settings.tab.torrent-list-grid.popover.animate-rows.title' | translate
+                "
+                [description]="
+                  'pages.settings.tab.torrent-list-grid.popover.animate-rows.description'
+                    | translate
+                "
+              ></bb-popover>
+            </label>
+            <span class="bb-option__sub">{{
+              'pages.settings.tab.torrent-list-grid.popover.animate-rows.sub' | translate
+            }}</span>
           </div>
-          <div class="col-lg-6 col-12">
-            <ng-select
-              [items]="[
-                {
-                  value: 'SAVE_PATH',
-                  label:
-                    'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.row-double-click.value.show'
-                    | translate,
-                },
-                {
-                  value: 'DETAILS',
-                  label:
-                    'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.row-double-click.value.details'
-                    | translate,
-                },
-                {
-                  value: 'INLINE_EDIT',
-                  label:
-                    'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.row-double-click.value.inline-edit'
-                    | translate,
-                },
-                {
-                  value: 'NONE',
-                  label:
-                    'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.row-double-click.value.nothing'
-                    | translate,
-                },
-              ]"
-              bindValue="value"
-              bindLabel="label"
-              formControlName="rowDoubleClickAction"
-              [clearable]="false"
-              [searchable]="false"
-              id="rowDoubleClickAction"
-              appendTo="body"
-            >
-            </ng-select>
+          <span class="bb-option__toggle form-switch">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="animateRows"
+              formControlName="animateRows"
+            />
+          </span>
+        </div>
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <label class="bb-option__label" for="pagination">
+              {{
+                'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.pagination' | translate
+              }}
+              <bb-popover
+                [subject]="
+                  'pages.settings.tab.torrent-list-grid.popover.pagination.title' | translate
+                "
+                [description]="
+                  'pages.settings.tab.torrent-list-grid.popover.pagination.description' | translate
+                "
+              ></bb-popover>
+            </label>
+            <span class="bb-option__sub">{{
+              'pages.settings.tab.torrent-list-grid.popover.pagination.sub' | translate
+            }}</span>
           </div>
+          <span class="bb-option__toggle form-switch">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="pagination"
+              formControlName="pagination"
+            />
+          </span>
+        </div>
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <label class="bb-option__label" for="compactRows">
+              {{
+                'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.compact-rows'
+                  | translate
+              }}
+              <bb-popover
+                [subject]="
+                  'pages.settings.tab.torrent-list-grid.popover.compact-rows.title' | translate
+                "
+                [description]="
+                  'pages.settings.tab.torrent-list-grid.popover.compact-rows.description'
+                    | translate
+                "
+              ></bb-popover>
+            </label>
+            <span class="bb-option__sub">{{
+              'pages.settings.tab.torrent-list-grid.popover.compact-rows.sub' | translate
+            }}</span>
+          </div>
+          <span class="bb-option__toggle form-switch">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="compactRows"
+              formControlName="compactRows"
+            />
+          </span>
+        </div>
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <label class="bb-option__label" for="pausePollingOnModal">
+              {{
+                'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.pause-on-modal'
+                  | translate
+              }}
+              <bb-popover
+                [subject]="
+                  'pages.settings.tab.torrent-list-grid.popover.pause-on-modal.title' | translate
+                "
+                [description]="
+                  'pages.settings.tab.torrent-list-grid.popover.pause-on-modal.description'
+                    | translate
+                "
+              ></bb-popover>
+            </label>
+            <span class="bb-option__sub">{{
+              'pages.settings.tab.torrent-list-grid.popover.pause-on-modal.sub' | translate
+            }}</span>
+          </div>
+          <span class="bb-option__toggle form-switch">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="pausePollingOnModal"
+              formControlName="pausePollingOnModal"
+            />
+          </span>
+        </div>
+      </div>
+      <div class="row mt-2 mb-3">
+        <div class="col-lg-6 col-12 d-flex align-items-center">
+          {{
+            'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.row-double-click.title'
+              | translate
+          }}
+          <bb-popover
+            [subject]="
+              'pages.settings.tab.torrent-list-grid.popover.double-click-behavior.title' | translate
+            "
+            [description]="doubleClickBehavior"
+          ></bb-popover>
+        </div>
+        <div class="col-lg-6 col-12">
+          <ng-select
+            [items]="[
+              {
+                value: 'SAVE_PATH',
+                label:
+                  'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.row-double-click.value.show'
+                  | translate,
+              },
+              {
+                value: 'DETAILS',
+                label:
+                  'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.row-double-click.value.details'
+                  | translate,
+              },
+              {
+                value: 'INLINE_EDIT',
+                label:
+                  'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.row-double-click.value.inline-edit'
+                  | translate,
+              },
+              {
+                value: 'NONE',
+                label:
+                  'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.row-double-click.value.nothing'
+                  | translate,
+              },
+            ]"
+            bindValue="value"
+            bindLabel="label"
+            formControlName="rowDoubleClickAction"
+            [clearable]="false"
+            [searchable]="false"
+            id="rowDoubleClickAction"
+            appendTo="body"
+          >
+          </ng-select>
         </div>
       </div>
     </fieldset>
     <fieldset class="bb-fieldset">
       <legend>{{ 'pages.settings.tab.torrent-list-grid.label.columns' | translate }}</legend>
 
-      <div class="container-fluid mb-3">
-        <div class="row">
-          <div class="col-6">
-            <p>
-              {{ 'pages.settings.tab.torrent-list-grid.label.order' | translate }}
+      <div class="row mt-3 mb-3">
+        <div class="col-6">
+          <p>
+            {{ 'pages.settings.tab.torrent-list-grid.label.order' | translate }}
+            <bb-popover
+              [subject]="
+                'pages.settings.tab.torrent-list-grid.popover.column-order.title' | translate
+              "
+              [description]="
+                'pages.settings.tab.torrent-list-grid.popover.column-order.description' | translate
+              "
+            ></bb-popover>
+          </p>
+          <div class="column-reorder-container">
+            <div cdkDropList class="column-drop-list" (cdkDropListDropped)="drop($event)">
+              @for (
+                column of orderedColumns();
+                track column.value;
+                let idx = $index;
+                let last = $last
+              ) {
+                <div class="column-drag-item" [attr.data-col-id]="column.value" cdkDrag>
+                  <div class="drag-handle" cdkDragHandle>
+                    <fa-icon [icon]="faGripVertical"></fa-icon>
+                  </div>
+                  <span
+                    class="column-label"
+                    [ngbTooltip]="column.label"
+                    tooltipClass="single-line-tooltip"
+                    bbTooltipOverflow
+                    >{{ column.label }}</span
+                  >
+                  <div class="column-actions ms-auto">
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-link"
+                      data-action="move-to-top"
+                      [disabled]="idx === 0"
+                      (click)="moveToTop(idx)"
+                      [attr.aria-label]="
+                        'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-to-top'
+                          | translate
+                      "
+                      [ngbTooltip]="
+                        'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-to-top'
+                          | translate
+                      "
+                      tooltipClass="single-line-tooltip"
+                      triggers="mouseenter:mouseleave"
+                    >
+                      <fa-icon [icon]="faArrowsUpToLine"></fa-icon>
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-link"
+                      data-action="move-up"
+                      [disabled]="idx === 0"
+                      (click)="moveUp(idx)"
+                      [attr.aria-label]="
+                        'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-up'
+                          | translate
+                      "
+                      [ngbTooltip]="
+                        'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-up'
+                          | translate
+                      "
+                      tooltipClass="single-line-tooltip"
+                      triggers="mouseenter:mouseleave"
+                    >
+                      <fa-icon [icon]="faArrowUp"></fa-icon>
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-link"
+                      data-action="move-down"
+                      [disabled]="last"
+                      (click)="moveDown(idx)"
+                      [attr.aria-label]="
+                        'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-down'
+                          | translate
+                      "
+                      [ngbTooltip]="
+                        'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-down'
+                          | translate
+                      "
+                      tooltipClass="single-line-tooltip"
+                      triggers="mouseenter:mouseleave"
+                    >
+                      <fa-icon [icon]="faArrowDown"></fa-icon>
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-link"
+                      data-action="move-to-bottom"
+                      [disabled]="last"
+                      (click)="moveToBottom(idx)"
+                      [attr.aria-label]="
+                        'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-to-bottom'
+                          | translate
+                      "
+                      [ngbTooltip]="
+                        'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-to-bottom'
+                          | translate
+                      "
+                      tooltipClass="single-line-tooltip"
+                      triggers="mouseenter:mouseleave"
+                    >
+                      <fa-icon [icon]="faArrowsDownToLine"></fa-icon>
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-link text-danger"
+                      data-action="remove"
+                      (click)="remove(column.value)"
+                      [attr.aria-label]="
+                        'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.remove'
+                          | translate
+                      "
+                      [ngbTooltip]="
+                        'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.remove'
+                          | translate
+                      "
+                      tooltipClass="single-line-tooltip"
+                      triggers="mouseenter:mouseleave"
+                    >
+                      <fa-icon [icon]="faXmark"></fa-icon>
+                    </button>
+                  </div>
+                </div>
+              } @empty {
+                <div class="w-100 text-center py-4 opacity-50 small">
+                  {{ 'pages.settings.tab.torrent-list-grid.other.no-columns-selected' | translate }}
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <p class="mb-0">
+              {{ 'pages.settings.tab.torrent-list-grid.label.column-pool' | translate }}
               <bb-popover
                 [subject]="
-                  'pages.settings.tab.torrent-list-grid.popover.column-order.title' | translate
+                  'pages.settings.tab.torrent-list-grid.popover.column-pool.title' | translate
                 "
                 [description]="
-                  'pages.settings.tab.torrent-list-grid.popover.column-order.description'
-                    | translate
+                  'pages.settings.tab.torrent-list-grid.popover.column-pool.description' | translate
                 "
               ></bb-popover>
             </p>
-            <div class="column-reorder-container">
-              <div cdkDropList class="column-drop-list" (cdkDropListDropped)="drop($event)">
-                @for (
-                  column of orderedColumns();
-                  track column.value;
-                  let idx = $index;
-                  let last = $last
-                ) {
-                  <div class="column-drag-item" [attr.data-col-id]="column.value" cdkDrag>
-                    <div class="drag-handle" cdkDragHandle>
-                      <fa-icon [icon]="faGripVertical"></fa-icon>
-                    </div>
-                    <span
-                      class="column-label"
-                      [ngbTooltip]="column.label"
-                      tooltipClass="single-line-tooltip"
-                      bbTooltipOverflow
-                      >{{ column.label }}</span
-                    >
-                    <div class="column-actions ms-auto">
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-link"
-                        data-action="move-to-top"
-                        [disabled]="idx === 0"
-                        (click)="moveToTop(idx)"
-                        [attr.aria-label]="
-                          'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-to-top'
-                            | translate
-                        "
-                        [ngbTooltip]="
-                          'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-to-top'
-                            | translate
-                        "
-                        tooltipClass="single-line-tooltip"
-                        triggers="mouseenter:mouseleave"
-                      >
-                        <fa-icon [icon]="faArrowsUpToLine"></fa-icon>
-                      </button>
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-link"
-                        data-action="move-up"
-                        [disabled]="idx === 0"
-                        (click)="moveUp(idx)"
-                        [attr.aria-label]="
-                          'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-up'
-                            | translate
-                        "
-                        [ngbTooltip]="
-                          'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-up'
-                            | translate
-                        "
-                        tooltipClass="single-line-tooltip"
-                        triggers="mouseenter:mouseleave"
-                      >
-                        <fa-icon [icon]="faArrowUp"></fa-icon>
-                      </button>
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-link"
-                        data-action="move-down"
-                        [disabled]="last"
-                        (click)="moveDown(idx)"
-                        [attr.aria-label]="
-                          'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-down'
-                            | translate
-                        "
-                        [ngbTooltip]="
-                          'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-down'
-                            | translate
-                        "
-                        tooltipClass="single-line-tooltip"
-                        triggers="mouseenter:mouseleave"
-                      >
-                        <fa-icon [icon]="faArrowDown"></fa-icon>
-                      </button>
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-link"
-                        data-action="move-to-bottom"
-                        [disabled]="last"
-                        (click)="moveToBottom(idx)"
-                        [attr.aria-label]="
-                          'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-to-bottom'
-                            | translate
-                        "
-                        [ngbTooltip]="
-                          'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-to-bottom'
-                            | translate
-                        "
-                        tooltipClass="single-line-tooltip"
-                        triggers="mouseenter:mouseleave"
-                      >
-                        <fa-icon [icon]="faArrowsDownToLine"></fa-icon>
-                      </button>
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-link text-danger"
-                        data-action="remove"
-                        (click)="remove(column.value)"
-                        [attr.aria-label]="
-                          'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.remove'
-                            | translate
-                        "
-                        [ngbTooltip]="
-                          'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.remove'
-                            | translate
-                        "
-                        tooltipClass="single-line-tooltip"
-                        triggers="mouseenter:mouseleave"
-                      >
-                        <fa-icon [icon]="faXmark"></fa-icon>
-                      </button>
-                    </div>
-                  </div>
-                } @empty {
-                  <div class="w-100 text-center py-4 opacity-50 small">
-                    {{
-                      'pages.settings.tab.torrent-list-grid.other.no-columns-selected' | translate
-                    }}
-                  </div>
-                }
-              </div>
-            </div>
+            <button type="button" class="btn btn-sm btn-split" (click)="reset()">
+              <bb-btn-content
+                [icon]="faRotateLeft"
+                [text]="'pages.settings.tab.torrent-list-grid.label.reset' | translate"
+                position="end"
+              ></bb-btn-content>
+            </button>
           </div>
-
-          <div class="col-6">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <p class="mb-0">
-                {{ 'pages.settings.tab.torrent-list-grid.label.column-pool' | translate }}
-                <bb-popover
-                  [subject]="
-                    'pages.settings.tab.torrent-list-grid.popover.column-pool.title' | translate
-                  "
-                  [description]="
-                    'pages.settings.tab.torrent-list-grid.popover.column-pool.description'
-                      | translate
-                  "
-                ></bb-popover>
-              </p>
-              <button type="button" class="btn btn-sm btn-link btn-split" (click)="reset()">
-                <bb-btn-content
-                  [icon]="faRotateLeft"
-                  [text]="'pages.settings.tab.torrent-list-grid.label.reset' | translate"
-                  position="end"
-                ></bb-btn-content>
-              </button>
-            </div>
-            <div class="form-floating mb-3">
-              <ng-select
-                [items]="columns()"
-                [multiple]="true"
-                [closeOnSelect]="false"
-                [searchable]="true"
-                [hideSelected]="true"
-                bindLabel="label"
-                bindValue="value"
-                [placeholder]="
-                  'pages.settings.tab.torrent-list-grid.other.search-columns' | translate
-                "
-                formControlName="columns"
-                appendTo="body"
-                [clearSearchOnAdd]="true"
-              >
-              </ng-select>
-              <label>{{
-                'pages.settings.tab.torrent-list-grid.label.visible-columns' | translate
-              }}</label>
-            </div>
+          <div class="form-floating mb-3">
+            <ng-select
+              [items]="columns()"
+              [multiple]="true"
+              [closeOnSelect]="false"
+              [searchable]="true"
+              [hideSelected]="true"
+              bindLabel="label"
+              bindValue="value"
+              [placeholder]="
+                'pages.settings.tab.torrent-list-grid.other.search-columns' | translate
+              "
+              formControlName="columns"
+              appendTo="body"
+              [clearSearchOnAdd]="true"
+            >
+            </ng-select>
+            <label>{{
+              'pages.settings.tab.torrent-list-grid.label.visible-columns' | translate
+            }}</label>
           </div>
         </div>
       </div>

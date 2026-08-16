@@ -1,581 +1,557 @@
 @if (settingsLoaded()) {
   <form [formGroup]="generalSettingsForm">
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-12">{{ 'pages.settings.tab.general.description' | translate }}</div>
+    <div class="row">
+      <div class="col-12">{{ 'pages.settings.tab.general.description' | translate }}</div>
+    </div>
+
+    <fieldset class="bb-fieldset">
+      <legend>{{ 'pages.settings.tab.general.label.startup' | translate }}</legend>
+
+      <div class="bb-options bb-options--grid">
+        <div class="bb-option" formGroupName="startup">
+          <div class="bb-option__text">
+            <label class="bb-option__label" for="open-at-login">
+              {{
+                'pages.settings.tab.general.general-settings-form.startup.open-at-login' | translate
+              }}
+              <bb-popover
+                [subject]="'pages.settings.tab.general.popover.open-at-login.title' | translate"
+                [description]="
+                  'pages.settings.tab.general.popover.open-at-login.description' | translate
+                "
+              ></bb-popover>
+            </label>
+            <span class="bb-option__sub">{{
+              'pages.settings.tab.general.popover.open-at-login.sub' | translate
+            }}</span>
+          </div>
+          <span class="bb-option__toggle form-switch">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="open-at-login"
+              formControlName="openAtLogin"
+            />
+          </span>
+        </div>
+        <div class="bb-option" formGroupName="startup">
+          <div class="bb-option__text">
+            <label class="bb-option__label" for="start-minimized">
+              {{
+                'pages.settings.tab.general.general-settings-form.startup.start-minimized'
+                  | translate
+              }}
+              <bb-popover
+                [subject]="'pages.settings.tab.general.popover.start-minimized.title' | translate"
+                [description]="
+                  'pages.settings.tab.general.popover.start-minimized.description' | translate
+                "
+              ></bb-popover>
+            </label>
+            <span class="bb-option__sub">{{
+              'pages.settings.tab.general.popover.start-minimized.sub' | translate
+            }}</span>
+          </div>
+          <span class="bb-option__toggle form-switch">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="start-minimized"
+              formControlName="startMinimized"
+            />
+          </span>
+        </div>
+        <div class="bb-option" formGroupName="behavior">
+          <div class="bb-option__text">
+            <label class="bb-option__label" for="automatic-update">
+              {{
+                'pages.settings.tab.general.general-settings-form.behavior.automatic-update'
+                  | translate
+              }}
+              <bb-popover
+                [subject]="'pages.settings.tab.general.popover.automatic-update.title' | translate"
+                [description]="
+                  'pages.settings.tab.general.popover.automatic-update.description' | translate
+                "
+              ></bb-popover>
+            </label>
+            <span class="bb-option__sub">{{
+              'pages.settings.tab.general.popover.automatic-update.sub' | translate
+            }}</span>
+          </div>
+          <span class="bb-option__toggle form-switch">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="automatic-update"
+              formControlName="automaticUpdate"
+            />
+          </span>
+        </div>
       </div>
 
-      <fieldset class="bb-fieldset">
-        <legend>{{ 'pages.settings.tab.general.label.startup' | translate }}</legend>
+      @if (showNoDefaultHostHint()) {
+        <small class="text-warning d-block mt-2">
+          <fa-icon [icon]="icons['faTriangleExclamation']" class="me-1" />
+          {{
+            'pages.settings.tab.general.general-settings-form.startup.no-default-host-hint'
+              | translate
+          }}
+        </small>
+      }
+    </fieldset>
 
-        <div class="bb-options bb-options--grid">
-          <div class="bb-option" formGroupName="startup">
-            <div class="bb-option__text">
-              <label class="bb-option__label" for="open-at-login">
-                {{
-                  'pages.settings.tab.general.general-settings-form.startup.open-at-login'
-                    | translate
-                }}
-                <bb-popover
-                  [subject]="'pages.settings.tab.general.popover.open-at-login.title' | translate"
-                  [description]="
-                    'pages.settings.tab.general.popover.open-at-login.description' | translate
-                  "
-                ></bb-popover>
-              </label>
-              <span class="bb-option__sub">{{
-                'pages.settings.tab.general.popover.open-at-login.sub' | translate
-              }}</span>
-            </div>
-            <span class="bb-option__toggle form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                role="switch"
-                id="open-at-login"
-                formControlName="openAtLogin"
-              />
-            </span>
+    <fieldset class="bb-fieldset">
+      <legend>{{ 'pages.settings.tab.general.label.torrent-handling' | translate }}</legend>
+
+      <div class="bb-options">
+        <div class="bb-option" formGroupName="behavior">
+          <div class="bb-option__text">
+            <label class="bb-option__label" for="delete-torrent-file">
+              {{
+                'pages.settings.tab.general.general-settings-form.behavior.delete-torrent-after-added'
+                  | translate
+              }}
+              <bb-popover
+                [subject]="
+                  'pages.settings.tab.general.popover.deleting-torrent-file.title' | translate
+                "
+                [description]="
+                  'pages.settings.tab.general.popover.deleting-torrent-file.description' | translate
+                "
+              ></bb-popover>
+            </label>
+            <span class="bb-option__sub">{{
+              'pages.settings.tab.general.popover.deleting-torrent-file.sub' | translate
+            }}</span>
           </div>
-          <div class="bb-option" formGroupName="startup">
-            <div class="bb-option__text">
-              <label class="bb-option__label" for="start-minimized">
-                {{
-                  'pages.settings.tab.general.general-settings-form.startup.start-minimized'
+          <span class="bb-option__toggle form-switch">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="delete-torrent-file"
+              formControlName="deleteTorrentFile"
+            />
+          </span>
+        </div>
+        <div class="bb-option" formGroupName="behavior">
+          <div class="bb-option__text">
+            <label class="bb-option__label" for="delete-torrent-on-duplicate">
+              {{
+                'pages.settings.tab.general.general-settings-form.behavior.delete-torrent-on-duplicate'
+                  | translate
+              }}
+              <bb-popover
+                [subject]="
+                  'pages.settings.tab.general.popover.delete-torrent-on-duplicate.title' | translate
+                "
+                [description]="
+                  'pages.settings.tab.general.popover.delete-torrent-on-duplicate.description'
                     | translate
-                }}
-                <bb-popover
-                  [subject]="'pages.settings.tab.general.popover.start-minimized.title' | translate"
-                  [description]="
-                    'pages.settings.tab.general.popover.start-minimized.description' | translate
-                  "
-                ></bb-popover>
-              </label>
-              <span class="bb-option__sub">{{
-                'pages.settings.tab.general.popover.start-minimized.sub' | translate
-              }}</span>
-            </div>
-            <span class="bb-option__toggle form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                role="switch"
-                id="start-minimized"
-                formControlName="startMinimized"
-              />
-            </span>
+                "
+              ></bb-popover>
+            </label>
+            <span class="bb-option__sub">{{
+              'pages.settings.tab.general.popover.delete-torrent-on-duplicate.sub' | translate
+            }}</span>
           </div>
-          <div class="bb-option" formGroupName="behavior">
-            <div class="bb-option__text">
-              <label class="bb-option__label" for="automatic-update">
-                {{
-                  'pages.settings.tab.general.general-settings-form.behavior.automatic-update'
-                    | translate
-                }}
-                <bb-popover
-                  [subject]="
-                    'pages.settings.tab.general.popover.automatic-update.title' | translate
-                  "
-                  [description]="
-                    'pages.settings.tab.general.popover.automatic-update.description' | translate
-                  "
-                ></bb-popover>
-              </label>
-              <span class="bb-option__sub">{{
-                'pages.settings.tab.general.popover.automatic-update.sub' | translate
-              }}</span>
-            </div>
-            <span class="bb-option__toggle form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                role="switch"
-                id="automatic-update"
-                formControlName="automaticUpdate"
-              />
-            </span>
+          <span class="bb-option__toggle form-switch">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="delete-torrent-on-duplicate"
+              formControlName="deleteTorrentFileOnDuplicate"
+            />
+          </span>
+        </div>
+      </div>
+
+      <div class="container mt-3" formGroupName="savePath">
+        <div class="row mb-3">
+          <div class="col-12">
+            {{
+              'pages.settings.tab.general.general-settings-form.save-path.description' | translate
+            }}
           </div>
         </div>
+        <div class="row mb-3">
+          <div class="col-6 d-flex align-items-center">
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                id="save-path-select-radio"
+                value="select"
+                formControlName="inputType"
+              />
+              <label class="form-check-label" for="save-path-select-radio">
+                {{
+                  'pages.settings.tab.general.general-settings-form.save-path.select' | translate
+                }}
+              </label>
+            </div>
+          </div>
+          <div class="col-6">
+            <app-save-path-select [inputType]="'select'" [clearable]="true" />
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-6 d-flex align-items-center">
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                id="save-path-typeahead-radio"
+                value="typeahead"
+                formControlName="inputType"
+              />
+              <label class="form-check-label" for="save-path-typeahead-radio">
+                {{
+                  'pages.settings.tab.general.general-settings-form.save-path.typeahead' | translate
+                }}
+              </label>
+            </div>
+          </div>
+          <div class="col-6">
+            <app-save-path-select [inputType]="'typeahead'" />
+          </div>
+        </div>
+      </div>
+    </fieldset>
 
-        @if (showNoDefaultHostHint()) {
-          <small class="text-warning d-block mt-2">
-            <fa-icon [icon]="icons['faTriangleExclamation']" class="me-1" />
+    <fieldset class="bb-fieldset">
+      <legend>{{ 'pages.settings.tab.general.label.localization' | translate }}</legend>
+
+      <div class="container" formGroupName="language">
+        <div class="row mb-3">
+          <div class="col-6 d-flex align-items-center">
+            {{ 'pages.settings.tab.general.general-settings-form.language.language' | translate }}
+          </div>
+
+          <div class="col-6">
+            <ng-select
+              [items]="languages()"
+              [clearable]="false"
+              [openOnEnter]="false"
+              [clearSearchOnAdd]="true"
+              [searchable]="false"
+              bindLabel="label"
+              bindValue="value"
+              formControlName="language"
+            >
+              <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                <div class="d-flex flex-row align-items-center">
+                  <span class="fi" [ngClass]="'fi-' + item.value"></span>
+                  <span class="ms-3">{{ item.label }}</span>
+                </div>
+              </ng-template>
+
+              <ng-template ng-label-tmp let-item="item">
+                <div class="d-flex flex-row align-items-center">
+                  <span class="fi" [ngClass]="'fi-' + item.value"></span>
+                  <span class="ms-3">{{ item.label }}</span>
+                </div>
+              </ng-template>
+            </ng-select>
+          </div>
+        </div>
+      </div>
+
+      <div class="container" formGroupName="dateFormat">
+        <div class="row mb-3">
+          <div class="col-6 d-flex align-items-center">
             {{
-              'pages.settings.tab.general.general-settings-form.startup.no-default-host-hint'
+              'pages.settings.tab.general.general-settings-form.date-format.preset-label'
                 | translate
             }}
-          </small>
-        }
-      </fieldset>
-
-      <fieldset class="bb-fieldset">
-        <legend>{{ 'pages.settings.tab.general.label.torrent-handling' | translate }}</legend>
-
-        <div class="bb-options">
-          <div class="bb-option" formGroupName="behavior">
-            <div class="bb-option__text">
-              <label class="bb-option__label" for="delete-torrent-file">
-                {{
-                  'pages.settings.tab.general.general-settings-form.behavior.delete-torrent-after-added'
-                    | translate
-                }}
-                <bb-popover
-                  [subject]="
-                    'pages.settings.tab.general.popover.deleting-torrent-file.title' | translate
-                  "
-                  [description]="
-                    'pages.settings.tab.general.popover.deleting-torrent-file.description'
-                      | translate
-                  "
-                ></bb-popover>
-              </label>
-              <span class="bb-option__sub">{{
-                'pages.settings.tab.general.popover.deleting-torrent-file.sub' | translate
-              }}</span>
-            </div>
-            <span class="bb-option__toggle form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                role="switch"
-                id="delete-torrent-file"
-                formControlName="deleteTorrentFile"
-              />
-            </span>
-          </div>
-          <div class="bb-option" formGroupName="behavior">
-            <div class="bb-option__text">
-              <label class="bb-option__label" for="delete-torrent-on-duplicate">
-                {{
-                  'pages.settings.tab.general.general-settings-form.behavior.delete-torrent-on-duplicate'
-                    | translate
-                }}
-                <bb-popover
-                  [subject]="
-                    'pages.settings.tab.general.popover.delete-torrent-on-duplicate.title'
-                      | translate
-                  "
-                  [description]="
-                    'pages.settings.tab.general.popover.delete-torrent-on-duplicate.description'
-                      | translate
-                  "
-                ></bb-popover>
-              </label>
-              <span class="bb-option__sub">{{
-                'pages.settings.tab.general.popover.delete-torrent-on-duplicate.sub' | translate
-              }}</span>
-            </div>
-            <span class="bb-option__toggle form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                role="switch"
-                id="delete-torrent-on-duplicate"
-                formControlName="deleteTorrentFileOnDuplicate"
-              />
-            </span>
-          </div>
-        </div>
-
-        <div class="container mt-3" formGroupName="savePath">
-          <div class="row mb-3">
-            <div class="col-12">
-              {{
-                'pages.settings.tab.general.general-settings-form.save-path.description' | translate
-              }}
-            </div>
-          </div>
-          <div class="row mb-3">
-            <div class="col-6 d-flex align-items-center">
-              <div class="form-check">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  id="save-path-select-radio"
-                  value="select"
-                  formControlName="inputType"
-                />
-                <label class="form-check-label" for="save-path-select-radio">
-                  {{
-                    'pages.settings.tab.general.general-settings-form.save-path.select' | translate
-                  }}
-                </label>
-              </div>
-            </div>
-            <div class="col-6">
-              <app-save-path-select [inputType]="'select'" [clearable]="true" />
-            </div>
-          </div>
-          <div class="row mb-3">
-            <div class="col-6 d-flex align-items-center">
-              <div class="form-check">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  id="save-path-typeahead-radio"
-                  value="typeahead"
-                  formControlName="inputType"
-                />
-                <label class="form-check-label" for="save-path-typeahead-radio">
-                  {{
-                    'pages.settings.tab.general.general-settings-form.save-path.typeahead'
-                      | translate
-                  }}
-                </label>
-              </div>
-            </div>
-            <div class="col-6">
-              <app-save-path-select [inputType]="'typeahead'" />
-            </div>
-          </div>
-        </div>
-      </fieldset>
-
-      <fieldset class="bb-fieldset">
-        <legend>{{ 'pages.settings.tab.general.label.localization' | translate }}</legend>
-
-        <div class="container" formGroupName="language">
-          <div class="row mb-3">
-            <div class="col-6 d-flex align-items-center">
-              {{ 'pages.settings.tab.general.general-settings-form.language.language' | translate }}
-            </div>
-
-            <div class="col-6">
-              <ng-select
-                [items]="languages()"
-                [clearable]="false"
-                [openOnEnter]="false"
-                [clearSearchOnAdd]="true"
-                [searchable]="false"
-                bindLabel="label"
-                bindValue="value"
-                formControlName="language"
-              >
-                <ng-template
-                  ng-option-tmp
-                  let-item="item"
-                  let-index="index"
-                  let-search="searchTerm"
-                >
-                  <div class="d-flex flex-row align-items-center">
-                    <span class="fi" [ngClass]="'fi-' + item.value"></span>
-                    <span class="ms-3">{{ item.label }}</span>
-                  </div>
-                </ng-template>
-
-                <ng-template ng-label-tmp let-item="item">
-                  <div class="d-flex flex-row align-items-center">
-                    <span class="fi" [ngClass]="'fi-' + item.value"></span>
-                    <span class="ms-3">{{ item.label }}</span>
-                  </div>
-                </ng-template>
-              </ng-select>
-            </div>
-          </div>
-        </div>
-
-        <div class="container" formGroupName="dateFormat">
-          <div class="row mb-3">
-            <div class="col-6 d-flex align-items-center">
-              {{
-                'pages.settings.tab.general.general-settings-form.date-format.preset-label'
-                  | translate
-              }}
-            </div>
-
-            <div class="col-6">
-              <ng-select
-                [items]="dateFormatPresets()"
-                [clearable]="false"
-                [openOnEnter]="false"
-                [clearSearchOnAdd]="true"
-                [searchable]="false"
-                bindLabel="label"
-                bindValue="value"
-                formControlName="preset"
-              >
-                <ng-template ng-option-tmp let-item="item">
-                  <div class="d-flex justify-content-between align-items-center">
-                    <span>{{ item.label }}</span>
-                    <span class="text-muted ms-3">{{ item.example }}</span>
-                  </div>
-                </ng-template>
-
-                <ng-template ng-label-tmp let-item="item">
-                  <div class="d-flex justify-content-between align-items-center">
-                    <span>{{ item.label }}</span>
-                    <span class="text-muted ms-3">{{ item.example }}</span>
-                  </div>
-                </ng-template>
-              </ng-select>
-            </div>
           </div>
 
-          <div class="row mb-3">
-            <div class="col-6 d-flex align-items-center">
-              {{
-                'pages.settings.tab.general.general-settings-form.date-format.first-day-of-week-label'
-                  | translate
-              }}
-            </div>
-
-            <div class="col-6">
-              <ng-select
-                [items]="firstDayOfWeekOptions()"
-                [clearable]="false"
-                [openOnEnter]="false"
-                [clearSearchOnAdd]="true"
-                [searchable]="false"
-                bindLabel="label"
-                bindValue="value"
-                formControlName="firstDayOfWeek"
-              >
-              </ng-select>
-            </div>
-          </div>
-
-          @if (isCustomDateFormat()) {
-            <div class="row mb-3">
-              <div class="col-6 d-flex align-items-center">
-                {{
-                  'pages.settings.tab.general.general-settings-form.date-format.custom-pattern-label'
-                    | translate
-                }}
-              </div>
-
-              <div class="col-6">
-                <div class="bb-filter-input">
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="date-format-custom-pattern"
-                    formControlName="customPattern"
-                  />
-                  <button
-                    type="button"
-                    class="bb-filter-clear"
-                    [attr.aria-label]="
-                      'pages.settings.tab.general.general-settings-form.date-format.reset-custom-pattern'
-                        | translate
-                    "
-                    (click)="resetCustomPattern()"
-                  >
-                    <fa-icon [icon]="icons['faRotateLeft']"></fa-icon>
-                  </button>
+          <div class="col-6">
+            <ng-select
+              [items]="dateFormatPresets()"
+              [clearable]="false"
+              [openOnEnter]="false"
+              [clearSearchOnAdd]="true"
+              [searchable]="false"
+              bindLabel="label"
+              bindValue="value"
+              formControlName="preset"
+            >
+              <ng-template ng-option-tmp let-item="item">
+                <div class="d-flex justify-content-between align-items-center">
+                  <span>{{ item.label }}</span>
+                  <span class="text-muted ms-3">{{ item.example }}</span>
                 </div>
-              </div>
+              </ng-template>
+
+              <ng-template ng-label-tmp let-item="item">
+                <div class="d-flex justify-content-between align-items-center">
+                  <span>{{ item.label }}</span>
+                  <span class="text-muted ms-3">{{ item.example }}</span>
+                </div>
+              </ng-template>
+            </ng-select>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-6 d-flex align-items-center">
+            {{
+              'pages.settings.tab.general.general-settings-form.date-format.first-day-of-week-label'
+                | translate
+            }}
+          </div>
+
+          <div class="col-6">
+            <ng-select
+              [items]="firstDayOfWeekOptions()"
+              [clearable]="false"
+              [openOnEnter]="false"
+              [clearSearchOnAdd]="true"
+              [searchable]="false"
+              bindLabel="label"
+              bindValue="value"
+              formControlName="firstDayOfWeek"
+            >
+            </ng-select>
+          </div>
+        </div>
+
+        @if (isCustomDateFormat()) {
+          <div class="row mb-3">
+            <div class="col-6 d-flex align-items-center">
+              {{
+                'pages.settings.tab.general.general-settings-form.date-format.custom-pattern-label'
+                  | translate
+              }}
             </div>
-            <div class="row mb-3">
-              <div class="col-6 d-flex align-items-center text-muted">
-                {{
-                  'pages.settings.tab.general.general-settings-form.date-format.preview'
-                    | translate
-                }}: {{ customPatternPreview() }}
-              </div>
-              <div class="col-6 d-flex justify-content-end">
+
+            <div class="col-6">
+              <div class="bb-filter-input">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="date-format-custom-pattern"
+                  formControlName="customPattern"
+                />
                 <button
                   type="button"
-                  class="btn btn-sm btn-link btn-split"
-                  (click)="toggleTokenGuide()"
+                  class="bb-filter-clear"
+                  [attr.aria-label]="
+                    'pages.settings.tab.general.general-settings-form.date-format.reset-custom-pattern'
+                      | translate
+                  "
+                  (click)="resetCustomPattern()"
                 >
-                  <bb-btn-content
-                    [icon]="tokenGuideExpanded() ? icons['faChevronUp'] : icons['faChevronDown']"
-                    [text]="
-                      'pages.settings.tab.general.general-settings-form.date-format.token-guide.toggle'
-                        | translate
-                    "
-                  ></bb-btn-content>
+                  <fa-icon [icon]="icons['faRotateLeft']"></fa-icon>
                 </button>
               </div>
             </div>
-
-            <div [ngbCollapse]="!tokenGuideExpanded()">
-              <div class="row mb-2">
-                <div class="col-12 text-muted small">
-                  {{
-                    'pages.settings.tab.general.general-settings-form.date-format.token-guide.hint'
-                      | translate
-                  }}
-                </div>
-              </div>
-              <div class="row mb-3">
-                <div class="col-12">
-                  <table
-                    id="date-format-token-guide"
-                    class="table table-sm table-striped table-hover mb-0"
-                  >
-                    <thead>
-                      <tr>
-                        <th>
-                          {{
-                            'pages.settings.tab.general.general-settings-form.date-format.token-guide.column-token'
-                              | translate
-                          }}
-                        </th>
-                        <th>
-                          {{
-                            'pages.settings.tab.general.general-settings-form.date-format.token-guide.column-description'
-                              | translate
-                          }}
-                        </th>
-                        <th>
-                          {{
-                            'pages.settings.tab.general.general-settings-form.date-format.token-guide.column-example'
-                              | translate
-                          }}
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      @for (row of dateFormatTokenGuide(); track row.token) {
-                        <tr>
-                          <td>
-                            <code>{{ row.token }}</code>
-                          </td>
-                          <td>{{ row.description }}</td>
-                          <td>{{ row.example }}</td>
-                        </tr>
-                      }
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          }
-        </div>
-      </fieldset>
-
-      <fieldset class="bb-fieldset">
-        <legend>{{ 'pages.settings.tab.general.label.appearance' | translate }}</legend>
-
-        <div class="container" formGroupName="appearance">
-          <div class="row mt-2 mb-3">
-            <div class="col-6 d-flex align-items-center">
-              {{ 'pages.settings.tab.general.general-settings-form.appearance.family' | translate }}
-            </div>
-
-            <div class="col-6">
-              <ng-select
-                [items]="families"
-                [clearable]="false"
-                [openOnEnter]="false"
-                [clearSearchOnAdd]="true"
-                [searchable]="false"
-                bindLabel="label"
-                bindValue="value"
-                formControlName="family"
-              >
-                <ng-template
-                  ng-option-tmp
-                  let-item="item"
-                  let-index="index"
-                  let-search="searchTerm"
-                >
-                  <div class="d-flex flex-row align-items-center">
-                    <img
-                      [ngSrc]="getFamilyLogo(item.value)"
-                      [alt]="item.label"
-                      width="25"
-                      height="25"
-                      priority
-                    />
-                    <span class="ms-3 mt-1">{{ item.label }}</span>
-                  </div>
-                </ng-template>
-
-                <ng-template ng-label-tmp let-item="item">
-                  <div class="d-flex flex-row align-items-center">
-                    <img
-                      [ngSrc]="getFamilyLogo(item.value)"
-                      [alt]="item.label"
-                      width="25"
-                      height="25"
-                      priority
-                    />
-                    <span class="ms-3 mt-1">{{ item.label }}</span>
-                  </div>
-                </ng-template>
-              </ng-select>
-            </div>
           </div>
-
-          <div class="row mt-2 mb-3">
-            <div class="col-6 d-flex align-items-center">
-              {{ 'pages.settings.tab.general.general-settings-form.appearance.mode' | translate }}
-            </div>
-
-            <div class="col-6">
-              <ng-select
-                [items]="modes()"
-                [clearable]="false"
-                [openOnEnter]="false"
-                [clearSearchOnAdd]="true"
-                [searchable]="false"
-                bindLabel="label"
-                bindValue="value"
-                formControlName="mode"
-              >
-                <ng-template
-                  ng-option-tmp
-                  let-item="item"
-                  let-index="index"
-                  let-search="searchTerm"
-                >
-                  <div class="d-flex flex-row align-items-center">
-                    <div
-                      class="mode-indicator me-2"
-                      [attr.data-bb-theme]="
-                        generalSettingsForm.controls.appearance.controls.family.value
-                      "
-                      [ngClass]="item.value"
-                    ></div>
-                    <span class="ms-2 mt-1">{{ item.label }}</span>
-                  </div>
-                </ng-template>
-
-                <ng-template ng-label-tmp let-item="item">
-                  <div class="d-flex flex-row align-items-center">
-                    <div
-                      class="mode-indicator me-2"
-                      [attr.data-bb-theme]="
-                        generalSettingsForm.controls.appearance.controls.family.value
-                      "
-                      [ngClass]="item.value"
-                    ></div>
-                    <span class="ms-2 mt-1">{{ item.label }}</span>
-                  </div>
-                </ng-template>
-              </ng-select>
-            </div>
-          </div>
-        </div>
-
-        <div class="container" formGroupName="behavior">
-          <div class="row mt-2 mb-3">
-            <div class="col-6 d-flex align-items-center">
+          <div class="row mb-3">
+            <div class="col-6 d-flex align-items-center text-muted">
               {{
-                'pages.settings.tab.general.general-settings-form.behavior.notification-position'
-                  | translate
-              }}
+                'pages.settings.tab.general.general-settings-form.date-format.preview' | translate
+              }}: {{ customPatternPreview() }}
             </div>
-
-            <div class="col-6">
-              <ng-select
-                [items]="toastPositions()"
-                [clearable]="false"
-                [openOnEnter]="false"
-                [clearSearchOnAdd]="true"
-                [searchable]="false"
-                bindLabel="label"
-                bindValue="value"
-                formControlName="toastPosition"
+            <div class="col-6 d-flex justify-content-end">
+              <button
+                type="button"
+                class="btn btn-sm btn-link btn-split"
+                (click)="toggleTokenGuide()"
               >
-              </ng-select>
+                <bb-btn-content
+                  [icon]="tokenGuideExpanded() ? icons['faChevronUp'] : icons['faChevronDown']"
+                  [text]="
+                    'pages.settings.tab.general.general-settings-form.date-format.token-guide.toggle'
+                      | translate
+                  "
+                ></bb-btn-content>
+              </button>
             </div>
           </div>
+
+          <div [ngbCollapse]="!tokenGuideExpanded()">
+            <div class="row mb-2">
+              <div class="col-12 text-muted small">
+                {{
+                  'pages.settings.tab.general.general-settings-form.date-format.token-guide.hint'
+                    | translate
+                }}
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-12">
+                <table
+                  id="date-format-token-guide"
+                  class="table table-sm table-striped table-hover mb-0"
+                >
+                  <thead>
+                    <tr>
+                      <th>
+                        {{
+                          'pages.settings.tab.general.general-settings-form.date-format.token-guide.column-token'
+                            | translate
+                        }}
+                      </th>
+                      <th>
+                        {{
+                          'pages.settings.tab.general.general-settings-form.date-format.token-guide.column-description'
+                            | translate
+                        }}
+                      </th>
+                      <th>
+                        {{
+                          'pages.settings.tab.general.general-settings-form.date-format.token-guide.column-example'
+                            | translate
+                        }}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (row of dateFormatTokenGuide(); track row.token) {
+                      <tr>
+                        <td>
+                          <code>{{ row.token }}</code>
+                        </td>
+                        <td>{{ row.description }}</td>
+                        <td>{{ row.example }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </fieldset>
+
+    <fieldset class="bb-fieldset">
+      <legend>{{ 'pages.settings.tab.general.label.appearance' | translate }}</legend>
+
+      <div class="container" formGroupName="appearance">
+        <div class="row mt-2 mb-3">
+          <div class="col-6 d-flex align-items-center">
+            {{ 'pages.settings.tab.general.general-settings-form.appearance.family' | translate }}
+          </div>
+
+          <div class="col-6">
+            <ng-select
+              [items]="families"
+              [clearable]="false"
+              [openOnEnter]="false"
+              [clearSearchOnAdd]="true"
+              [searchable]="false"
+              bindLabel="label"
+              bindValue="value"
+              formControlName="family"
+            >
+              <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                <div class="d-flex flex-row align-items-center">
+                  <img
+                    [ngSrc]="getFamilyLogo(item.value)"
+                    [alt]="item.label"
+                    width="25"
+                    height="25"
+                    priority
+                  />
+                  <span class="ms-3 mt-1">{{ item.label }}</span>
+                </div>
+              </ng-template>
+
+              <ng-template ng-label-tmp let-item="item">
+                <div class="d-flex flex-row align-items-center">
+                  <img
+                    [ngSrc]="getFamilyLogo(item.value)"
+                    [alt]="item.label"
+                    width="25"
+                    height="25"
+                    priority
+                  />
+                  <span class="ms-3 mt-1">{{ item.label }}</span>
+                </div>
+              </ng-template>
+            </ng-select>
+          </div>
         </div>
-      </fieldset>
-    </div>
+
+        <div class="row mt-2 mb-3">
+          <div class="col-6 d-flex align-items-center">
+            {{ 'pages.settings.tab.general.general-settings-form.appearance.mode' | translate }}
+          </div>
+
+          <div class="col-6">
+            <ng-select
+              [items]="modes()"
+              [clearable]="false"
+              [openOnEnter]="false"
+              [clearSearchOnAdd]="true"
+              [searchable]="false"
+              bindLabel="label"
+              bindValue="value"
+              formControlName="mode"
+            >
+              <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                <div class="d-flex flex-row align-items-center">
+                  <div
+                    class="mode-indicator me-2"
+                    [attr.data-bb-theme]="
+                      generalSettingsForm.controls.appearance.controls.family.value
+                    "
+                    [ngClass]="item.value"
+                  ></div>
+                  <span class="ms-2 mt-1">{{ item.label }}</span>
+                </div>
+              </ng-template>
+
+              <ng-template ng-label-tmp let-item="item">
+                <div class="d-flex flex-row align-items-center">
+                  <div
+                    class="mode-indicator me-2"
+                    [attr.data-bb-theme]="
+                      generalSettingsForm.controls.appearance.controls.family.value
+                    "
+                    [ngClass]="item.value"
+                  ></div>
+                  <span class="ms-2 mt-1">{{ item.label }}</span>
+                </div>
+              </ng-template>
+            </ng-select>
+          </div>
+        </div>
+      </div>
+
+      <div class="container" formGroupName="behavior">
+        <div class="row mt-2 mb-3">
+          <div class="col-6 d-flex align-items-center">
+            {{
+              'pages.settings.tab.general.general-settings-form.behavior.notification-position'
+                | translate
+            }}
+          </div>
+
+          <div class="col-6">
+            <ng-select
+              [items]="toastPositions()"
+              [clearable]="false"
+              [openOnEnter]="false"
+              [clearSearchOnAdd]="true"
+              [searchable]="false"
+              bindLabel="label"
+              bindValue="value"
+              formControlName="toastPosition"
+            >
+            </ng-select>
+          </div>
+        </div>
+      </div>
+    </fieldset>
   </form>
 } @else {
   <app-bb-spinner></app-bb-spinner>

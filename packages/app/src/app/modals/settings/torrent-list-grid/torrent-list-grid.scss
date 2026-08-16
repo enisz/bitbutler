@@ -1,3 +1,8 @@
+// Grid-options switches: drop the divider on the last row of the 2-column grid.
+.bb-options--grid .bb-option:nth-last-child(-n + 2) {
+  border-bottom: none;
+}
+
 .column-reorder-container {
   max-height: min(520px, 55vh);
   overflow-y: auto;

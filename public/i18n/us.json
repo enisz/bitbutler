@@ -1734,18 +1734,22 @@
           "popover": {
             "animate-rows": {
               "title": "Torrent List Animations",
+              "sub": "Smoothly transitions row changes in the torrent list",
               "description": "There is an animation on the torrent list whenever a row is changing. If you face any performance issues, you may want to turn this off."
             },
             "pagination": {
               "title": "Torrent List Pagination",
+              "sub": "Splits the torrent list into pages instead of one long list",
               "description": "The torrent list can be set to use pagination. Having too many torrents in your list may impact performance. If you have issues, you may try enabling pagination."
             },
             "compact-rows": {
               "title": "Compact Rows",
+              "sub": "Reduces row height and padding for a denser view",
               "description": "Reduces the row height and cell padding in the torrent list for a denser view."
             },
             "pause-on-modal": {
               "title": "Pause Polling on Modal",
+              "sub": "Pauses background polling while a modal is open",
               "description": "When enabled, background polling is paused whenever any modal is open. Polling resumes automatically when the modal is closed."
             },
             "double-click-behavior": {
