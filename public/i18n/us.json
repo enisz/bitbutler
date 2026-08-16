@@ -1339,6 +1339,7 @@
             "name": "Name",
             "hash": "Hash",
             "progress": "Progress",
+            "progress_compact": "Progress (Compact)",
             "dlspeed": "Download Speed",
             "upspeed": "Upload Speed",
             "added_on": "Added On",

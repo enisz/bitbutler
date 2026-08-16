@@ -95,7 +95,7 @@ export class Grid implements AfterViewInit {
   private readonly compactRows = signal(false);
   public readonly currentTheme = computed(() => {
     const base = this.theme() === 'dark' ? GRID_DARK_THEME : GRID_LIGHT_THEME;
-    return this.compactRows() ? base.withParams({ spacing: 4 }) : base;
+    return this.compactRows() ? base.withParams({ spacing: 4, rowHeight: 32 }) : base;
   });
 
   @HostListener('window:keyup', ['$event'])

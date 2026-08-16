@@ -41,6 +41,7 @@ import { GridContextMenuService } from './context-menu/grid-context-menu.service
 import { LoadingOverlay } from './overlays/loading-overlay/loading-overlay';
 import { NoRowOverlay } from './overlays/no-row-overlay/no-row-overlay';
 import { CodeCellRenderer } from './renderers/code-cell-renderer/code-cell-renderer';
+import { CompactProgressCellRenderer } from './renderers/compact-progress-cell-renderer/compact-progress-cell-renderer';
 import { ProgressCellRenderer } from './renderers/progress-cell-renderer/progress-cell-renderer';
 
 const tooltipFormattedValue: TooltipValueGetterFunc<Torrent, any> = (params) =>
@@ -85,6 +86,17 @@ export function getGridColDefs(
       // value - without this, ag-grid skips refresh() when progress is unchanged but state
       // isn't, leaving the bar showing a stale color.
       equals: () => false,
+    },
+    {
+      colId: 'progress_compact',
+      field: 'progress',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.progress_compact'),
+      headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.progress_compact'),
+      width: 100,
+      cellRenderer: CompactProgressCellRenderer,
+      // Same staleness concern as the progress column - color depends on row.state.
+      equals: () => false,
+      hide: true,
     },
     {
       colId: 'progress_percentage',

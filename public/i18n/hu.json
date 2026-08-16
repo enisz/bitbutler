@@ -1339,6 +1339,7 @@
             "name": "Név",
             "hash": "Hash",
             "progress": "Haladás",
+            "progress_compact": "Haladás (kompakt)",
             "dlspeed": "Letöltési sebesség",
             "upspeed": "Feltöltési sebesség",
             "added_on": "Hozzáadva",

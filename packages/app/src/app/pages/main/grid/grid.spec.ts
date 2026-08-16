@@ -265,6 +265,20 @@ describe('Grid', () => {
       (component as any).applyGridSettings({ rowDoubleClickAction: 'SAVE_PATH' });
       expect(gridInlineEditService.applyEditableState).toHaveBeenCalledWith(mockApi, false);
     });
+
+    it('currentTheme should reduce spacing and rowHeight when compactRows is enabled', () => {
+      (component as any).applyGridSettings({ compactRows: true });
+      const params = (component.currentTheme() as any)._getModeParams()['$default'];
+      expect(params.spacing).toBe(4);
+      expect(params.rowHeight).toBe(32);
+    });
+
+    it('currentTheme should return the base theme when compactRows is disabled', () => {
+      themeServiceMock.effectiveMode.set('light');
+      (component as any).applyGridSettings({ compactRows: true });
+      (component as any).applyGridSettings({ compactRows: false });
+      expect(component.currentTheme()).toBe(GRID_LIGHT_THEME);
+    });
   });
 
   describe('handleRowDoubleClick', () => {
