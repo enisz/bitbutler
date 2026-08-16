@@ -40,7 +40,7 @@
             @if (!hideConnect() && currentServerId() === server.id) {
               <fa-icon
                 [icon]="icon.faPlug"
-                class="text-success flex-shrink-0"
+                class="text-success flex-shrink-0 ps-1"
                 [ngbTooltip]="'components.modals.manage-servers.tooltip.active' | translate"
                 container="body"
               ></fa-icon>
@@ -68,7 +68,7 @@
               @if (!hideConnect()) {
                 <button
                   type="button"
-                  class="btn bb-server-action connect-btn"
+                  class="btn btn-link p-1 connect-btn"
                   [ngbTooltip]="'components.modals.manage-servers.button.connect' | translate"
                   (click)="switchTo(server)"
                   [disabled]="busy()"
@@ -83,8 +83,7 @@
             }
             <button
               type="button"
-              class="btn bb-server-action"
-              [class.bb-server-action--default]="server.auto_login"
+              class="btn btn-link p-1"
               [ngbTooltip]="
                 (server.auto_login
                   ? 'components.modals.manage-servers.tooltip.unset-default'
@@ -99,7 +98,7 @@
             @if (hideConnect() || currentServerId() !== server.id) {
               <button
                 type="button"
-                class="btn bb-server-action"
+                class="btn btn-link p-1"
                 [ngbTooltip]="'general.button.edit' | translate"
                 (click)="openEditor(server.id)"
                 [disabled]="busy()"
@@ -108,7 +107,7 @@
               </button>
               <button
                 type="button"
-                class="btn bb-server-action bb-server-action--danger"
+                class="btn btn-link text-danger p-1"
                 [ngbTooltip]="'general.button.delete' | translate"
                 (click)="delete(server)"
                 [disabled]="busy()"
@@ -131,10 +130,10 @@
   }
 </div>
 
-<div class="modal-footer justify-content-between">
+<div class="modal-footer">
   <button
     type="button"
-    class="btn btn-primary btn-sm bb-modal-footer-btn"
+    class="btn btn-primary btn-sm btn-split"
     (click)="openEditor()"
     [disabled]="busy()"
   >
@@ -144,11 +143,7 @@
       position="end"
     ></bb-btn-content>
   </button>
-  <button
-    type="button"
-    class="btn btn-link btn-sm bb-modal-footer-btn"
-    (click)="activeModal.dismiss()"
-  >
+  <button type="button" class="btn btn-sm btn-split" (click)="activeModal.dismiss()" autofocus>
     <bb-btn-content
       [icon]="icon.faXmark"
       [text]="'general.button.close' | translate"
