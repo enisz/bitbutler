@@ -130,33 +130,33 @@
           <div class="bb-panel-title">
             {{ 'components.modals.import-torrents.label.restore-options' | translate }}
           </div>
-          <div class="container-fluid px-0">
-            <div class="row">
-              @for (field of restoreFieldKeys; track field) {
-                <div class="col-6">
-                  <div class="form-check form-switch mb-2">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      role="switch"
-                      [id]="'rf-' + field"
-                      [formControlName]="field"
-                    />
-                    <label
-                      class="form-check-label"
-                      [for]="'rf-' + field"
-                      [ngbTooltip]="
-                        isLegacyUnsupported(field) && metadata()?.export_mode === 'legacy'
-                          ? ('components.modals.import-torrents.legacy-unsupported' | translate)
-                          : null
-                      "
-                    >
-                      {{ 'components.modals.import-torrents.restore.' + field | translate }}
-                    </label>
-                  </div>
+          <div class="bb-options bb-options--grid">
+            @for (field of restoreFieldKeys; track field) {
+              <div class="bb-option">
+                <div class="bb-option__text">
+                  <label
+                    class="bb-option__label"
+                    [for]="'rf-' + field"
+                    [ngbTooltip]="
+                      isLegacyUnsupported(field) && metadata()?.export_mode === 'legacy'
+                        ? ('components.modals.import-torrents.legacy-unsupported' | translate)
+                        : null
+                    "
+                  >
+                    {{ 'components.modals.import-torrents.restore.' + field | translate }}
+                  </label>
                 </div>
-              }
-            </div>
+                <span class="bb-option__toggle form-switch">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    [id]="'rf-' + field"
+                    [formControlName]="field"
+                  />
+                </span>
+              </div>
+            }
           </div>
         </div>
 
@@ -234,29 +234,37 @@
             <div class="bb-panel-title">
               {{ 'components.modals.import-torrents.label.category-path-mapping' | translate }}
             </div>
-            <div class="form-check form-switch mb-3">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                role="switch"
-                id="overwrite-categories"
-                formControlName="overwriteCategories"
-              />
-              <label class="form-check-label" for="overwrite-categories">
-                {{
-                  'components.modals.import-torrents.category-path-mapping.overwrite' | translate
-                }}
-              </label>
-              <bb-popover
-                [subject]="
-                  'components.modals.import-torrents.category-path-mapping.overwrite' | translate
-                "
-                [description]="
-                  'components.modals.import-torrents.category-path-mapping.overwrite-description'
-                    | translate
-                "
-                placement="right"
-              ></bb-popover>
+            <div class="bb-options mb-3">
+              <div class="bb-option">
+                <div class="bb-option__text">
+                  <label class="bb-option__label" for="overwrite-categories">
+                    {{
+                      'components.modals.import-torrents.category-path-mapping.overwrite'
+                        | translate
+                    }}
+                    <bb-popover
+                      [subject]="
+                        'components.modals.import-torrents.category-path-mapping.overwrite'
+                          | translate
+                      "
+                      [description]="
+                        'components.modals.import-torrents.category-path-mapping.overwrite-description'
+                          | translate
+                      "
+                      placement="right"
+                    ></bb-popover>
+                  </label>
+                </div>
+                <span class="bb-option__toggle form-switch">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    id="overwrite-categories"
+                    formControlName="overwriteCategories"
+                  />
+                </span>
+              </div>
             </div>
             <p class="small mb-3">
               {{

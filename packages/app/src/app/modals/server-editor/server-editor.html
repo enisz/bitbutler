@@ -114,9 +114,21 @@
           </div>
         </div>
       </div>
-      <div class="row">
-        <div class="col-12">
-          <div class="form-check form-switch">
+      <div class="bb-options">
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <label class="bb-option__label" for="autoLogin">
+              {{ 'components.modals.server-editor.editor-form.set-default' | translate }}
+              <bb-popover
+                [subject]="'components.modals.server-editor.popover.default-host.title' | translate"
+                [description]="
+                  'components.modals.server-editor.popover.default-host.description' | translate
+                "
+                placement="top"
+              ></bb-popover>
+            </label>
+          </div>
+          <span class="bb-option__toggle form-switch">
             <input
               class="form-check-input"
               type="checkbox"
@@ -124,17 +136,7 @@
               id="autoLogin"
               formControlName="autoLogin"
             />
-            <label class="form-check-label" for="autoLogin">{{
-              'components.modals.server-editor.editor-form.set-default' | translate
-            }}</label>
-            <bb-popover
-              [subject]="'components.modals.server-editor.popover.default-host.title' | translate"
-              [description]="
-                'components.modals.server-editor.popover.default-host.description' | translate
-              "
-              placement="top"
-            ></bb-popover>
-          </div>
+          </span>
         </div>
       </div>
     </div>
