@@ -48,18 +48,24 @@
 </div>
 
 <div class="modal-footer">
-  <button type="button" class="btn btn-link btn-sm" (click)="activeModal.dismiss()" autofocus>
-    {{ 'general.button.close' | translate }}
-  </button>
   <button
     type="button"
-    class="btn btn-primary btn-sm bb-modal-footer-cta"
+    class="btn btn-primary btn-sm btn-split"
     [disabled]="!stateService.isDirty()"
     (click)="onSave()"
   >
     <bb-btn-content
       [icon]="icon.faFloppyDisk"
       [text]="'general.button.save' | translate"
+      position="end"
+    ></bb-btn-content>
+  </button>
+
+  <button type="button" class="btn btn-sm btn-split" (click)="activeModal.dismiss()" autofocus>
+    <bb-btn-content
+      [icon]="icon.faXmark"
+      [text]="'general.button.close' | translate"
+      position="end"
     ></bb-btn-content>
   </button>
 </div>

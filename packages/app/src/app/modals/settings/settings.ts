@@ -35,7 +35,6 @@ import { SettingsTabComponent, SettingsTabId, Tab } from './settings.interface';
   ],
   providers: [SettingsStateService],
   templateUrl: './settings.html',
-  styleUrl: './settings.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Settings implements OnInit, GuardableModal {

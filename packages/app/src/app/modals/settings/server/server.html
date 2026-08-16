@@ -1,253 +1,243 @@
 @if (settingsLoaded()) {
   <form [formGroup]="serverSettingsForm">
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-12">
-          {{ 'pages.settings.tab.server.description' | translate }}
+    <div class="row">
+      <div class="col-12">
+        {{ 'pages.settings.tab.server.description' | translate }}
+      </div>
+    </div>
+
+    <fieldset class="bb-fieldset" formGroupName="polling">
+      <legend>{{ 'pages.settings.tab.server.label.polling' | translate }}</legend>
+
+      <p class="mt-3">
+        {{ 'pages.settings.tab.server.server-settings-form.polling.title' | translate }}
+        <bb-popover
+          [subject]="'pages.settings.tab.server.popover.api-polling.title' | translate"
+          [description]="'pages.settings.tab.server.popover.api-polling.description' | translate"
+        ></bb-popover>
+      </p>
+
+      <div class="container">
+        <div class="row mb-3">
+          <div class="col-6 d-flex flex-column justify-content-center">
+            <span>
+              {{ 'pages.settings.tab.server.server-settings-form.polling.foreground' | translate }}
+              <bb-popover
+                [subject]="'pages.settings.tab.server.popover.foreground-polling.title' | translate"
+                [description]="
+                  'pages.settings.tab.server.popover.foreground-polling.description' | translate
+                "
+              ></bb-popover>
+            </span>
+
+            <small class="text-warning">
+              @if (serverSettingsForm.controls.polling.controls.foreground.value < 2000) {
+                <fa-icon [icon]="icons['faTriangleExclamation']" class="me-1" />
+
+                {{ 'pages.settings.tab.server.warning.too-low-polling-frequency' | translate }}
+              }
+            </small>
+          </div>
+
+          <div class="col-4 d-flex align-items-center">
+            <input
+              type="range"
+              class="form-range"
+              id="foreground-polling-range"
+              formControlName="foreground"
+              min="1000"
+              max="10000"
+              step="500"
+              [class.form-range-warning]="
+                serverSettingsForm.controls.polling.controls.foreground.value < 2000
+              "
+            />
+          </div>
+
+          <div class="col-2">
+            <div class="form-floating">
+              <input
+                type="number"
+                class="form-control"
+                id="foreground-polling-frequency"
+                placeholder="Seconds"
+                [value]="serverSettingsForm.controls.polling.controls.foreground.value / 1000"
+                disabled
+              />
+
+              <label for="foreground-polling-frequency">{{
+                'pages.settings.tab.server.server-settings-form.polling.unit' | translate
+              }}</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mt-2 mb-3">
+          <div class="col-6 d-flex flex-column justify-content-center">
+            <span>
+              {{ 'pages.settings.tab.server.server-settings-form.polling.background' | translate }}
+              <bb-popover
+                [subject]="'pages.settings.tab.server.popover.background-polling.title' | translate"
+                [description]="backgroundPollingPopover"
+              ></bb-popover>
+            </span>
+
+            <small class="text-warning">
+              @if (serverSettingsForm.controls.polling.controls.background.value < 2000) {
+                <fa-icon [icon]="icons['faTriangleExclamation']" class="me-1" />
+
+                {{ 'pages.settings.tab.server.warning.too-low-polling-frequency' | translate }}
+              }
+            </small>
+          </div>
+
+          <div class="col-4 d-flex align-items-center">
+            <input
+              type="range"
+              class="form-range"
+              id="polling-frequencyc"
+              formControlName="background"
+              min="1000"
+              max="10000"
+              step="500"
+              [class.form-range-warning]="
+                serverSettingsForm.controls.polling.controls.background.value < 2000
+              "
+            />
+          </div>
+
+          <div class="col-2">
+            <div class="form-floating">
+              <input
+                type="number"
+                class="form-control"
+                id="background-polling-frequency"
+                placeholder="Seconds"
+                [value]="serverSettingsForm.controls.polling.controls.background.value / 1000"
+                disabled
+              />
+
+              <label for="background-polling-frequency">{{
+                'pages.settings.tab.server.server-settings-form.polling.unit' | translate
+              }}</label>
+            </div>
+          </div>
         </div>
       </div>
+    </fieldset>
 
-      <fieldset class="bb-fieldset" formGroupName="polling">
-        <legend>{{ 'pages.settings.tab.server.label.polling' | translate }}</legend>
+    <fieldset class="bb-fieldset">
+      <legend>{{ 'pages.settings.tab.server.label.path-mappings' | translate }}</legend>
 
-        <p>
-          {{ 'pages.settings.tab.server.server-settings-form.polling.title' | translate }}
-          <bb-popover
-            [subject]="'pages.settings.tab.server.popover.api-polling.title' | translate"
-            [description]="'pages.settings.tab.server.popover.api-polling.description' | translate"
-          ></bb-popover>
-        </p>
+      <p class="mt-3">
+        {{ 'pages.settings.tab.server.server-settings-form.path-mapping.title' | translate }}
+        <bb-popover
+          [subject]="'pages.settings.tab.server.popover.path-mapping.title' | translate"
+          [description]="pathMappingsPopover"
+        ></bb-popover>
+      </p>
 
-        <div class="container">
-          <div class="row mb-3">
-            <div class="col-6 d-flex flex-column justify-content-center">
-              <span>
-                {{
-                  'pages.settings.tab.server.server-settings-form.polling.foreground' | translate
-                }}
-                <bb-popover
-                  [subject]="
-                    'pages.settings.tab.server.popover.foreground-polling.title' | translate
-                  "
-                  [description]="
-                    'pages.settings.tab.server.popover.foreground-polling.description' | translate
-                  "
-                ></bb-popover>
-              </span>
-
-              <small class="text-warning">
-                @if (serverSettingsForm.controls.polling.controls.foreground.value < 2000) {
-                  <fa-icon [icon]="icons['faTriangleExclamation']" class="me-1" />
-
-                  {{ 'pages.settings.tab.server.warning.too-low-polling-frequency' | translate }}
-                }
-              </small>
-            </div>
-
-            <div class="col-4 d-flex align-items-center">
-              <input
-                type="range"
-                class="form-range"
-                id="foreground-polling-range"
-                formControlName="foreground"
-                min="1000"
-                max="10000"
-                step="500"
-                [class.form-range-warning]="
-                  serverSettingsForm.controls.polling.controls.foreground.value < 2000
+      <div formArrayName="pathMappings">
+        @for (group of pathMappings.controls; track $index; let i = $index) {
+          <div class="row mb-3" [formGroupName]="i">
+            <div class="col-5">
+              <app-save-path-select
+                [clearable]="true"
+                [label]="
+                  'pages.settings.tab.server.server-settings-form.path-mapping.remote-path'
+                    | translate
                 "
-              />
+                [placeholder]="defaultRemotePath()"
+                formControlName="remote"
+              ></app-save-path-select>
             </div>
 
-            <div class="col-2">
+            <div class="col-5">
               <div class="form-floating">
-                <input
-                  type="number"
-                  class="form-control"
-                  id="foreground-polling-frequency"
-                  placeholder="Seconds"
-                  [value]="serverSettingsForm.controls.polling.controls.foreground.value / 1000"
-                  disabled
-                />
-
-                <label for="foreground-polling-frequency">{{
-                  'pages.settings.tab.server.server-settings-form.polling.unit' | translate
-                }}</label>
-              </div>
-            </div>
-          </div>
-
-          <div class="row mt-2 mb-3">
-            <div class="col-6 d-flex flex-column justify-content-center">
-              <span>
-                {{
-                  'pages.settings.tab.server.server-settings-form.polling.background' | translate
-                }}
-                <bb-popover
-                  [subject]="
-                    'pages.settings.tab.server.popover.background-polling.title' | translate
-                  "
-                  [description]="backgroundPollingPopover"
-                ></bb-popover>
-              </span>
-
-              <small class="text-warning">
-                @if (serverSettingsForm.controls.polling.controls.background.value < 2000) {
-                  <fa-icon [icon]="icons['faTriangleExclamation']" class="me-1" />
-
-                  {{ 'pages.settings.tab.server.warning.too-low-polling-frequency' | translate }}
-                }
-              </small>
-            </div>
-
-            <div class="col-4 d-flex align-items-center">
-              <input
-                type="range"
-                class="form-range"
-                id="polling-frequencyc"
-                formControlName="background"
-                min="1000"
-                max="10000"
-                step="500"
-                [class.form-range-warning]="
-                  serverSettingsForm.controls.polling.controls.background.value < 2000
-                "
-              />
-            </div>
-
-            <div class="col-2">
-              <div class="form-floating">
-                <input
-                  type="number"
-                  class="form-control"
-                  id="background-polling-frequency"
-                  placeholder="Seconds"
-                  [value]="serverSettingsForm.controls.polling.controls.background.value / 1000"
-                  disabled
-                />
-
-                <label for="background-polling-frequency">{{
-                  'pages.settings.tab.server.server-settings-form.polling.unit' | translate
-                }}</label>
-              </div>
-            </div>
-          </div>
-        </div>
-      </fieldset>
-
-      <fieldset class="bb-fieldset">
-        <legend>{{ 'pages.settings.tab.server.label.path-mappings' | translate }}</legend>
-
-        <p>
-          {{ 'pages.settings.tab.server.server-settings-form.path-mapping.title' | translate }}
-          <bb-popover
-            [subject]="'pages.settings.tab.server.popover.path-mapping.title' | translate"
-            [description]="pathMappingsPopover"
-          ></bb-popover>
-        </p>
-
-        <div formArrayName="pathMappings">
-          @for (group of pathMappings.controls; track $index; let i = $index) {
-            <div class="row mb-3" [formGroupName]="i">
-              <div class="col-5">
-                <app-save-path-select
-                  [clearable]="true"
-                  [label]="
-                    'pages.settings.tab.server.server-settings-form.path-mapping.remote-path'
-                      | translate
-                  "
-                  [placeholder]="defaultRemotePath()"
-                  formControlName="remote"
-                ></app-save-path-select>
-              </div>
-
-              <div class="col-5">
-                <div class="form-floating">
-                  <div class="input-group">
-                    <div class="form-floating">
-                      <input
-                        type="text"
-                        class="form-control"
-                        id="local_{{ i }}"
-                        [placeholder]="
-                          'pages.settings.tab.server.server-settings-form.path-mapping.local-path'
-                            | translate
-                        "
-                        formControlName="local"
-                      />
-
-                      <label for="local_{{ i }}">{{
+                <div class="input-group">
+                  <div class="form-floating">
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="local_{{ i }}"
+                      [placeholder]="
                         'pages.settings.tab.server.server-settings-form.path-mapping.local-path'
                           | translate
-                      }}</label>
-                    </div>
+                      "
+                      formControlName="local"
+                    />
 
-                    <button
-                      type="button"
-                      class="btn btn-outline-primary btn-split"
-                      (click)="onBrowse(i)"
-                      [disabled]="group.disabled"
-                    >
-                      <bb-btn-content
-                        [icon]="icons['faFolderOpen']"
-                        [text]="'general.button.browse' | translate"
-                        position="end"
-                      ></bb-btn-content>
-                    </button>
+                    <label for="local_{{ i }}">{{
+                      'pages.settings.tab.server.server-settings-form.path-mapping.local-path'
+                        | translate
+                    }}</label>
                   </div>
+
+                  <button
+                    type="button"
+                    class="btn btn-outline-primary btn-split"
+                    (click)="onBrowse(i)"
+                    [disabled]="group.disabled"
+                  >
+                    <bb-btn-content
+                      [icon]="icons['faFolderOpen']"
+                      [text]="'general.button.browse' | translate"
+                      position="end"
+                    ></bb-btn-content>
+                  </button>
                 </div>
               </div>
+            </div>
 
-              <div class="col-2 d-flex align-items-center justify-content-center">
+            <div class="col-2 d-flex align-items-center justify-content-center">
+              <button
+                class="btn btn-lg btn-link"
+                placement="top"
+                [ngbTooltip]="
+                  'pages.settings.tab.server.server-settings-form.path-mapping.button.test-mapping'
+                    | translate
+                "
+                (click)="testMapping(group.value.local)"
+                [disabled]="!group.value.remote || !group.value.local"
+              >
+                <fa-icon [icon]="icons['faFolderOpen']" />
+              </button>
+              @if (
+                !(pathMappings.controls.length === 1 && !group.value.remote && !group.value.local)
+              ) {
                 <button
-                  class="btn btn-lg btn-link"
+                  class="btn btn-lg btn-link text-danger"
                   placement="top"
                   [ngbTooltip]="
-                    'pages.settings.tab.server.server-settings-form.path-mapping.button.test-mapping'
+                    (pathMappings.controls.length === 1
+                      ? 'pages.settings.tab.server.server-settings-form.path-mapping.button.clear-mapping'
+                      : 'pages.settings.tab.server.server-settings-form.path-mapping.button.remove-mapping'
+                    ) | translate
+                  "
+                  (click)="removePathMapping(i)"
+                >
+                  <fa-icon [icon]="icons['faMinus']" />
+                </button>
+              }
+              @if ($last) {
+                <button
+                  class="btn btn-lg btn-link text-success"
+                  placement="top"
+                  [ngbTooltip]="
+                    'pages.settings.tab.server.server-settings-form.path-mapping.button.add-mapping'
                       | translate
                   "
-                  (click)="testMapping(group.value.local)"
-                  [disabled]="!group.value.remote || !group.value.local"
+                  (click)="addPathMapping()"
+                  [disabled]="i > 0 && (!group.value.remote || !group.value.local)"
                 >
-                  <fa-icon [icon]="icons['faFolderOpen']" />
+                  <fa-icon [icon]="icons['faPlus']" />
                 </button>
-                @if (
-                  !(pathMappings.controls.length === 1 && !group.value.remote && !group.value.local)
-                ) {
-                  <button
-                    class="btn btn-lg btn-link text-danger"
-                    placement="top"
-                    [ngbTooltip]="
-                      (pathMappings.controls.length === 1
-                        ? 'pages.settings.tab.server.server-settings-form.path-mapping.button.clear-mapping'
-                        : 'pages.settings.tab.server.server-settings-form.path-mapping.button.remove-mapping'
-                      ) | translate
-                    "
-                    (click)="removePathMapping(i)"
-                  >
-                    <fa-icon [icon]="icons['faMinus']" />
-                  </button>
-                }
-                @if ($last) {
-                  <button
-                    class="btn btn-lg btn-link text-success"
-                    placement="top"
-                    [ngbTooltip]="
-                      'pages.settings.tab.server.server-settings-form.path-mapping.button.add-mapping'
-                        | translate
-                    "
-                    (click)="addPathMapping()"
-                    [disabled]="i > 0 && (!group.value.remote || !group.value.local)"
-                  >
-                    <fa-icon [icon]="icons['faPlus']" />
-                  </button>
-                }
-              </div>
+              }
             </div>
-          }
-        </div>
-      </fieldset>
-    </div>
+          </div>
+        }
+      </div>
+    </fieldset>
   </form>
 } @else {
   <app-bb-spinner></app-bb-spinner>
