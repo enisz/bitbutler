@@ -1,7 +1,6 @@
 import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ServerRecord } from '@bitbutler/shared';
-import { CommandBusService } from '../../../services/command-bus.service';
 import { DateFormatService } from '../../../services/date-format.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { SettingsStateService } from '../settings-state.service';
@@ -11,7 +10,6 @@ describe('General', () => {
   let component: General;
   let fixture: ComponentFixture<General>;
 
-  let commandBusMock: { emit: ReturnType<typeof vi.fn> };
   let stateServiceMock: {
     registerSave: ReturnType<typeof vi.fn>;
     markDirty: ReturnType<typeof vi.fn>;
@@ -20,7 +18,6 @@ describe('General', () => {
   let dateFormatServiceMock: { applyFromSettings: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
-    commandBusMock = { emit: vi.fn() };
     stateServiceMock = { registerSave: vi.fn(), markDirty: vi.fn() };
     serverStoreMock = { servers: signal([]) };
     dateFormatServiceMock = { applyFromSettings: vi.fn() };
@@ -28,7 +25,6 @@ describe('General', () => {
     await TestBed.configureTestingModule({
       imports: [General],
       providers: [
-        { provide: CommandBusService, useValue: commandBusMock },
         { provide: SettingsStateService, useValue: stateServiceMock },
         { provide: ServerStoreService, useValue: serverStoreMock },
         { provide: DateFormatService, useValue: dateFormatServiceMock },
@@ -55,13 +51,6 @@ describe('General', () => {
       expect(component.getFamilyLogo('mint-green')).toBe(
         'assets/images/bitbutler-logo-mint-green.png',
       );
-    });
-  });
-
-  describe('checkUpdates', () => {
-    it('should emit UPDATE_CHECK_FOR_UPDATE', () => {
-      component.checkUpdates();
-      expect(commandBusMock.emit).toHaveBeenCalledWith({ type: 'UPDATE_CHECK_FOR_UPDATE' });
     });
   });
 

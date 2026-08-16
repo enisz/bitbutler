@@ -1084,6 +1084,66 @@ ngb-typeahead-window.dropdown-menu {
   }
 }
 
+// Option rows - label/sub-text on the left, switch on the right
+
+.bb-options {
+  display: flex;
+  flex-direction: column;
+}
+
+.bb-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--bs-border-color) 60%, transparent);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.bb-option__label {
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.bb-option__sub {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--bb-control-placeholder);
+  margin-top: 2px;
+}
+
+.bb-option__toggle {
+  flex-shrink: 0;
+  margin: 0;
+  padding-left: 0;
+
+  .form-check-input {
+    width: 40px;
+    height: 23px;
+    margin: 0;
+  }
+}
+
+// Two-column variant of .bb-options, with an optional full-width row
+
+.bb-options--grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 32px;
+  padding-bottom: 4px;
+}
+
+.bb-option--wide {
+  grid-column: 1 / -1;
+}
+
 .tooltip {
   @each $variant in danger, success, primary, secondary, warning, info, light, dark {
     &.#{$variant} {

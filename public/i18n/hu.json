@@ -1491,7 +1491,6 @@
               "delete-torrent-after-added": "Torrent fájlok törlése a listához adás után.",
               "delete-torrent-on-duplicate": "A torrent fájlok törlése, ha a torrent már szerepel a listában.",
               "automatic-update": "Automatikus frissítés",
-              "check-for-update": "Frissítések keresése most",
               "notification-position": "Alkalmazáson belüli értesítések helye"
             },
             "language": {
@@ -1559,12 +1558,11 @@
             }
           },
           "label": {
-            "behavior": "Viselkedés",
             "language": "Nyelv",
-            "date-format": "Dátum és idő",
             "appearance": "Megjelenés",
             "startup": "Indítás",
-            "save-path-input": "Mentési útvonal bevitel"
+            "torrent-handling": "Torrentkezelés",
+            "localization": "Nyelv és dátumformátum"
           },
           "position": {
             "top-left": "Bal felül",
@@ -1583,22 +1581,27 @@
           "popover": {
             "deleting-torrent-file": {
               "title": "Torrent fájl törlése",
+              "sub": "A forrás .torrent fájl eltávolítása, miután bekerült a listába",
               "description": "Engedélyezi a kliensnek a .torrent fájl törlését a lemezről, ha az sikeresen bekerült a letöltési listába."
             },
             "delete-torrent-on-duplicate": {
               "title": "Torrent fájl törlése duplikátum esetén",
+              "sub": "A \"Torrent fájlok törlése a listához adás után\" beállítást igényli",
               "description": "A .torrent fájl automatikus törlése a lemezről, ha az már hozzá lett adva a letöltési listához. A \"Torrent fájl törlése\" beállítást igényli."
             },
             "open-at-login": {
               "title": "Indítás a rendszerrel",
+              "sub": "A BitButler automatikus elindítása a rendszer indításakor",
               "description": "A BitButler automatikusan elindul az operációs rendszer indításakor."
             },
             "start-minimized": {
               "title": "Indítás minimalizálva",
+              "sub": "Az ablak elrejtése indításkor",
               "description": "Az alkalmazás ablaka el van rejtve indításkor. Az alkalmazás a rendszertálcáról érhető el. A \"Rendszerrel való indítás\" beállítást igényli."
             },
             "automatic-update": {
               "title": "Automatikus frissítés",
+              "sub": "Új verzió keresése minden induláskor",
               "description": "Frissítések automatikus keresése minden indításkor."
             }
           }

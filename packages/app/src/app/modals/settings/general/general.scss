@@ -1,14 +1,11 @@
-.btn-outline-secondary {
-  display: inline-flex;
+// Startup grid: the automatic-update row is the last row, so drop its
+// divider along with the button cell beside it.
+.bb-options--grid .bb-option:nth-child(3) {
+  border-bottom: none;
+}
+
+.bb-option-action {
+  display: flex;
   align-items: center;
-
-  .btn-icon,
-  .btn-text {
-    display: inline-flex;
-    align-items: center;
-  }
-
-  .btn-icon {
-    margin-inline-start: 0.5rem;
-  }
+  padding: 11px 0;
 }

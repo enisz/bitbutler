@@ -5,211 +5,236 @@
         <div class="col-12">{{ 'pages.settings.tab.general.description' | translate }}</div>
       </div>
 
-      <fieldset class="bb-fieldset" formGroupName="startup">
+      <fieldset class="bb-fieldset">
         <legend>{{ 'pages.settings.tab.general.label.startup' | translate }}</legend>
 
-        <div class="container">
-          <div class="row mb-3">
-            <div class="col-12">
-              <div class="form-check form-switch">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  role="switch"
-                  id="open-at-login"
-                  formControlName="openAtLogin"
-                />
-                <label class="form-check-label" for="open-at-login">
-                  {{
-                    'pages.settings.tab.general.general-settings-form.startup.open-at-login'
-                      | translate
-                  }}
-                  <bb-popover
-                    [subject]="'pages.settings.tab.general.popover.open-at-login.title' | translate"
-                    [description]="
-                      'pages.settings.tab.general.popover.open-at-login.description' | translate
-                    "
-                  ></bb-popover>
-                </label>
-              </div>
+        <div class="bb-options bb-options--grid">
+          <div class="bb-option" formGroupName="startup">
+            <div class="bb-option__text">
+              <label class="bb-option__label" for="open-at-login">
+                {{
+                  'pages.settings.tab.general.general-settings-form.startup.open-at-login'
+                    | translate
+                }}
+                <bb-popover
+                  [subject]="'pages.settings.tab.general.popover.open-at-login.title' | translate"
+                  [description]="
+                    'pages.settings.tab.general.popover.open-at-login.description' | translate
+                  "
+                ></bb-popover>
+              </label>
+              <span class="bb-option__sub">{{
+                'pages.settings.tab.general.popover.open-at-login.sub' | translate
+              }}</span>
             </div>
+            <span class="bb-option__toggle form-switch">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="open-at-login"
+                formControlName="openAtLogin"
+              />
+            </span>
           </div>
-          <div class="row mb-3">
-            <div class="col-12">
-              <div class="form-check form-switch">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  role="switch"
-                  id="start-minimized"
-                  formControlName="startMinimized"
-                />
-                <label class="form-check-label" for="start-minimized">
-                  {{
-                    'pages.settings.tab.general.general-settings-form.startup.start-minimized'
-                      | translate
-                  }}
-                  <bb-popover
-                    [subject]="
-                      'pages.settings.tab.general.popover.start-minimized.title' | translate
-                    "
-                    [description]="
-                      'pages.settings.tab.general.popover.start-minimized.description' | translate
-                    "
-                  ></bb-popover>
-                </label>
-              </div>
+          <div class="bb-option" formGroupName="startup">
+            <div class="bb-option__text">
+              <label class="bb-option__label" for="start-minimized">
+                {{
+                  'pages.settings.tab.general.general-settings-form.startup.start-minimized'
+                    | translate
+                }}
+                <bb-popover
+                  [subject]="'pages.settings.tab.general.popover.start-minimized.title' | translate"
+                  [description]="
+                    'pages.settings.tab.general.popover.start-minimized.description' | translate
+                  "
+                ></bb-popover>
+              </label>
+              <span class="bb-option__sub">{{
+                'pages.settings.tab.general.popover.start-minimized.sub' | translate
+              }}</span>
             </div>
+            <span class="bb-option__toggle form-switch">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="start-minimized"
+                formControlName="startMinimized"
+              />
+            </span>
           </div>
-          @if (showNoDefaultHostHint()) {
-            <div class="row mb-3">
-              <div class="col-12">
-                <small class="text-warning">
-                  <fa-icon [icon]="icons['faTriangleExclamation']" class="me-1" />
-                  {{
-                    'pages.settings.tab.general.general-settings-form.startup.no-default-host-hint'
-                      | translate
-                  }}
-                </small>
-              </div>
+          <div class="bb-option" formGroupName="behavior">
+            <div class="bb-option__text">
+              <label class="bb-option__label" for="automatic-update">
+                {{
+                  'pages.settings.tab.general.general-settings-form.behavior.automatic-update'
+                    | translate
+                }}
+                <bb-popover
+                  [subject]="
+                    'pages.settings.tab.general.popover.automatic-update.title' | translate
+                  "
+                  [description]="
+                    'pages.settings.tab.general.popover.automatic-update.description' | translate
+                  "
+                ></bb-popover>
+              </label>
+              <span class="bb-option__sub">{{
+                'pages.settings.tab.general.popover.automatic-update.sub' | translate
+              }}</span>
             </div>
-          }
+            <span class="bb-option__toggle form-switch">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="automatic-update"
+                formControlName="automaticUpdate"
+              />
+            </span>
+          </div>
         </div>
+
+        @if (showNoDefaultHostHint()) {
+          <small class="text-warning d-block mt-2">
+            <fa-icon [icon]="icons['faTriangleExclamation']" class="me-1" />
+            {{
+              'pages.settings.tab.general.general-settings-form.startup.no-default-host-hint'
+                | translate
+            }}
+          </small>
+        }
       </fieldset>
-      <fieldset class="bb-fieldset" formGroupName="behavior">
-        <legend>{{ 'pages.settings.tab.general.label.behavior' | translate }}</legend>
 
-        <div class="container">
-          <div class="row mb-3">
-            <div class="col-12">
-              <div class="form-check form-switch">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  role="switch"
-                  id="delete-torrent-file"
-                  formControlName="deleteTorrentFile"
-                />
-                <label class="form-check-label" for="delete-torrent-file"
-                  >{{
-                    'pages.settings.tab.general.general-settings-form.behavior.delete-torrent-after-added'
-                      | translate
-                  }}
+      <fieldset class="bb-fieldset">
+        <legend>{{ 'pages.settings.tab.general.label.torrent-handling' | translate }}</legend>
 
-                  <bb-popover
-                    [subject]="
-                      'pages.settings.tab.general.popover.deleting-torrent-file.title' | translate
-                    "
-                    [description]="
-                      'pages.settings.tab.general.popover.deleting-torrent-file.description'
-                        | translate
-                    "
-                  ></bb-popover>
-                </label>
-              </div>
-            </div>
-          </div>
-          <div class="row mt-2 mb-3">
-            <div class="col-12">
-              <div class="form-check form-switch">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  role="switch"
-                  id="delete-torrent-on-duplicate"
-                  formControlName="deleteTorrentFileOnDuplicate"
-                />
-                <label class="form-check-label" for="delete-torrent-on-duplicate"
-                  >{{
-                    'pages.settings.tab.general.general-settings-form.behavior.delete-torrent-on-duplicate'
-                      | translate
-                  }}
-
-                  <bb-popover
-                    [subject]="
-                      'pages.settings.tab.general.popover.delete-torrent-on-duplicate.title'
-                        | translate
-                    "
-                    [description]="
-                      'pages.settings.tab.general.popover.delete-torrent-on-duplicate.description'
-                        | translate
-                    "
-                  ></bb-popover>
-                </label>
-              </div>
-            </div>
-          </div>
-          <div class="row mt-2 mb-3">
-            <div class="col-6">
-              <div class="form-check form-switch">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  role="switch"
-                  id="automatic-update"
-                  formControlName="automaticUpdate"
-                />
-                <label class="form-check-label" for="automatic-update">
-                  {{
-                    'pages.settings.tab.general.general-settings-form.behavior.automatic-update'
-                      | translate
-                  }}
-                  <bb-popover
-                    [subject]="
-                      'pages.settings.tab.general.popover.automatic-update.title' | translate
-                    "
-                    [description]="
-                      'pages.settings.tab.general.popover.automatic-update.description' | translate
-                    "
-                  ></bb-popover>
-                </label>
-              </div>
-            </div>
-            <div class="col-6 d-flex justify-content-end">
-              <button
-                type="button"
-                class="btn btn-sm btn-outline-secondary"
-                (click)="checkUpdates()"
-              >
-                <bb-btn-content
-                  [icon]="icons['faArrowsRotate']"
-                  [text]="
-                    'pages.settings.tab.general.general-settings-form.behavior.check-for-update'
+        <div class="bb-options">
+          <div class="bb-option" formGroupName="behavior">
+            <div class="bb-option__text">
+              <label class="bb-option__label" for="delete-torrent-file">
+                {{
+                  'pages.settings.tab.general.general-settings-form.behavior.delete-torrent-after-added'
+                    | translate
+                }}
+                <bb-popover
+                  [subject]="
+                    'pages.settings.tab.general.popover.deleting-torrent-file.title' | translate
+                  "
+                  [description]="
+                    'pages.settings.tab.general.popover.deleting-torrent-file.description'
                       | translate
                   "
-                  position="end"
-                ></bb-btn-content>
-              </button>
+                ></bb-popover>
+              </label>
+              <span class="bb-option__sub">{{
+                'pages.settings.tab.general.popover.deleting-torrent-file.sub' | translate
+              }}</span>
             </div>
+            <span class="bb-option__toggle form-switch">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="delete-torrent-file"
+                formControlName="deleteTorrentFile"
+              />
+            </span>
           </div>
-          <div class="row mt-2 mb-3">
-            <div class="col-6 d-flex align-items-center">
+          <div class="bb-option" formGroupName="behavior">
+            <div class="bb-option__text">
+              <label class="bb-option__label" for="delete-torrent-on-duplicate">
+                {{
+                  'pages.settings.tab.general.general-settings-form.behavior.delete-torrent-on-duplicate'
+                    | translate
+                }}
+                <bb-popover
+                  [subject]="
+                    'pages.settings.tab.general.popover.delete-torrent-on-duplicate.title'
+                      | translate
+                  "
+                  [description]="
+                    'pages.settings.tab.general.popover.delete-torrent-on-duplicate.description'
+                      | translate
+                  "
+                ></bb-popover>
+              </label>
+              <span class="bb-option__sub">{{
+                'pages.settings.tab.general.popover.delete-torrent-on-duplicate.sub' | translate
+              }}</span>
+            </div>
+            <span class="bb-option__toggle form-switch">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="delete-torrent-on-duplicate"
+                formControlName="deleteTorrentFileOnDuplicate"
+              />
+            </span>
+          </div>
+        </div>
+
+        <div class="container mt-3" formGroupName="savePath">
+          <div class="row mb-3">
+            <div class="col-12">
               {{
-                'pages.settings.tab.general.general-settings-form.behavior.notification-position'
-                  | translate
+                'pages.settings.tab.general.general-settings-form.save-path.description' | translate
               }}
             </div>
-
+          </div>
+          <div class="row mb-3">
+            <div class="col-6 d-flex align-items-center">
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  id="save-path-select-radio"
+                  value="select"
+                  formControlName="inputType"
+                />
+                <label class="form-check-label" for="save-path-select-radio">
+                  {{
+                    'pages.settings.tab.general.general-settings-form.save-path.select' | translate
+                  }}
+                </label>
+              </div>
+            </div>
             <div class="col-6">
-              <ng-select
-                [items]="toastPositions()"
-                [clearable]="false"
-                [openOnEnter]="false"
-                [clearSearchOnAdd]="true"
-                [searchable]="false"
-                bindLabel="label"
-                bindValue="value"
-                formControlName="toastPosition"
-              >
-              </ng-select>
+              <app-save-path-select [inputType]="'select'" [clearable]="true" />
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-6 d-flex align-items-center">
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  id="save-path-typeahead-radio"
+                  value="typeahead"
+                  formControlName="inputType"
+                />
+                <label class="form-check-label" for="save-path-typeahead-radio">
+                  {{
+                    'pages.settings.tab.general.general-settings-form.save-path.typeahead'
+                      | translate
+                  }}
+                </label>
+              </div>
+            </div>
+            <div class="col-6">
+              <app-save-path-select [inputType]="'typeahead'" />
             </div>
           </div>
         </div>
       </fieldset>
-      <fieldset class="bb-fieldset" formGroupName="language">
-        <legend>{{ 'pages.settings.tab.general.label.language' | translate }}</legend>
 
-        <div class="container">
+      <fieldset class="bb-fieldset">
+        <legend>{{ 'pages.settings.tab.general.label.localization' | translate }}</legend>
+
+        <div class="container" formGroupName="language">
           <div class="row mb-3">
             <div class="col-6 d-flex align-items-center">
               {{ 'pages.settings.tab.general.general-settings-form.language.language' | translate }}
@@ -248,12 +273,8 @@
             </div>
           </div>
         </div>
-      </fieldset>
 
-      <fieldset class="bb-fieldset" formGroupName="dateFormat">
-        <legend>{{ 'pages.settings.tab.general.label.date-format' | translate }}</legend>
-
-        <div class="container">
+        <div class="container" formGroupName="dateFormat">
           <div class="row mb-3">
             <div class="col-6 d-flex align-items-center">
               {{
@@ -424,10 +445,10 @@
         </div>
       </fieldset>
 
-      <fieldset class="bb-fieldset" formGroupName="appearance">
+      <fieldset class="bb-fieldset">
         <legend>{{ 'pages.settings.tab.general.label.appearance' | translate }}</legend>
 
-        <div class="container">
+        <div class="container" formGroupName="appearance">
           <div class="row mt-2 mb-3">
             <div class="col-6 d-flex align-items-center">
               {{ 'pages.settings.tab.general.general-settings-form.appearance.family' | translate }}
@@ -528,60 +549,28 @@
             </div>
           </div>
         </div>
-      </fieldset>
 
-      <fieldset class="bb-fieldset" formGroupName="savePath">
-        <legend>{{ 'pages.settings.tab.general.label.save-path-input' | translate }}</legend>
-
-        <div class="container">
-          <div class="row mb-3">
-            <div class="col-12">
+        <div class="container" formGroupName="behavior">
+          <div class="row mt-2 mb-3">
+            <div class="col-6 d-flex align-items-center">
               {{
-                'pages.settings.tab.general.general-settings-form.save-path.description' | translate
+                'pages.settings.tab.general.general-settings-form.behavior.notification-position'
+                  | translate
               }}
             </div>
-          </div>
-          <div class="row mb-3">
-            <div class="col-6 d-flex align-items-center">
-              <div class="form-check">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  id="save-path-select-radio"
-                  value="select"
-                  formControlName="inputType"
-                />
-                <label class="form-check-label" for="save-path-select-radio">
-                  {{
-                    'pages.settings.tab.general.general-settings-form.save-path.select' | translate
-                  }}
-                </label>
-              </div>
-            </div>
+
             <div class="col-6">
-              <app-save-path-select [inputType]="'select'" [clearable]="true" />
-            </div>
-          </div>
-          <div class="row mb-3">
-            <div class="col-6 d-flex align-items-center">
-              <div class="form-check">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  id="save-path-typeahead-radio"
-                  value="typeahead"
-                  formControlName="inputType"
-                />
-                <label class="form-check-label" for="save-path-typeahead-radio">
-                  {{
-                    'pages.settings.tab.general.general-settings-form.save-path.typeahead'
-                      | translate
-                  }}
-                </label>
-              </div>
-            </div>
-            <div class="col-6">
-              <app-save-path-select [inputType]="'typeahead'" />
+              <ng-select
+                [items]="toastPositions()"
+                [clearable]="false"
+                [openOnEnter]="false"
+                [clearSearchOnAdd]="true"
+                [searchable]="false"
+                bindLabel="label"
+                bindValue="value"
+                formControlName="toastPosition"
+              >
+              </ng-select>
             </div>
           </div>
         </div>

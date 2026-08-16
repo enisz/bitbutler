@@ -12,7 +12,6 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   IconDefinition,
-  faArrowsRotate,
   faChevronDown,
   faChevronUp,
   faCircleQuestion,
@@ -44,7 +43,6 @@ import {
   ToastPosition,
   resolveDateFormat,
 } from '../../../models/general-settings.model';
-import { CommandBusService } from '../../../services/command-bus.service';
 import { DateFormatService } from '../../../services/date-format.service';
 import { GeneralSettingsService } from '../../../services/general-settings.service';
 import { ServerStoreService } from '../../../services/server-store.service';
@@ -119,7 +117,6 @@ const DATE_FORMAT_TOKENS = [
 export class General implements SettingsTabComponent {
   private readonly themeService = inject(ThemeService);
   private readonly generalSettingsService = inject(GeneralSettingsService);
-  private readonly commandBusService = inject(CommandBusService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly translateService = inject(TranslateService);
   private readonly stateService = inject(SettingsStateService);
@@ -284,7 +281,6 @@ export class General implements SettingsTabComponent {
   public icons: Record<string, IconDefinition> = {
     faTriangleExclamation,
     faCircleQuestion,
-    faArrowsRotate,
     faRotateLeft,
     faChevronDown,
     faChevronUp,
@@ -412,9 +408,5 @@ export class General implements SettingsTabComponent {
 
     this.themeService.applyFromSettings(settings.appearance.family, settings.appearance.mode);
     this.dateFormatService.applyFromSettings(settings);
-  }
-
-  public checkUpdates(): void {
-    this.commandBusService.emit({ type: 'UPDATE_CHECK_FOR_UPDATE' });
   }
 }

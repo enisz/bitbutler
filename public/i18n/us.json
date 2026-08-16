@@ -1491,7 +1491,6 @@
               "delete-torrent-after-added": "Delete torrent files after adding them to the list.",
               "delete-torrent-on-duplicate": "Delete torrent files when the torrent already exists in the list.",
               "automatic-update": "Automatic updates",
-              "check-for-update": "Check for Updates now",
               "notification-position": "In-application notification position"
             },
             "language": {
@@ -1559,12 +1558,11 @@
             }
           },
           "label": {
-            "behavior": "Behavior",
             "language": "Language",
-            "date-format": "Date & Time",
             "appearance": "Appearance",
             "startup": "Startup",
-            "save-path-input": "Save Path Input"
+            "torrent-handling": "Torrent Handling",
+            "localization": "Localization"
           },
           "position": {
             "top-left": "Top Left",
@@ -1583,22 +1581,27 @@
           "popover": {
             "deleting-torrent-file": {
               "title": "Deleting Torrent File",
+              "sub": "Removes the source .torrent file once it has been added to the list",
               "description": "Allowing the client to delete the .torrent file from your disk if it got added to the download list succesfully."
             },
             "delete-torrent-on-duplicate": {
               "title": "Delete Torrent File on Duplicate",
+              "sub": "Requires \"Delete torrent files after adding them to the list\" to be enabled",
               "description": "Automatically delete the .torrent file from your disk when it was already added to the download list. Requires \"Deleting Torrent File\" to be enabled."
             },
             "open-at-login": {
               "title": "Start with System",
+              "sub": "Launches BitButler automatically when your system starts",
               "description": "Automatically launch BitButler when the operating system starts."
             },
             "start-minimized": {
               "title": "Start Minimized",
+              "sub": "Hides the window on startup",
               "description": "Hide the application window on startup. The app will be accessible from the system tray. Requires \"Start with system\" to be enabled."
             },
             "automatic-update": {
               "title": "Automatic Updates",
+              "sub": "Checks for a new version on every launch",
               "description": "Check for updates automatically on every application start."
             }
           }
