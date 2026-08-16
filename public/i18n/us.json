@@ -349,7 +349,8 @@
         "popover": {
           "default-host": {
             "title": "Default Host",
-            "description": "When the host is set to default, the app will select it automatically on startup and tries to connect to it."
+            "description": "When the host is set to default, the app will select it automatically on startup and tries to connect to it.",
+            "sub": "Automatically selected and connected to on startup."
           }
         },
         "toast": {

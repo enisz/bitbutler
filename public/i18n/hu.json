@@ -349,7 +349,8 @@
         "popover": {
           "default-host": {
             "title": "Alapértelmezett host",
-            "description": "Ha a host alapértelmezett, az alkalmazás indításkor automatikusan kiválasztja és megpróbál csatlakozni hozzá."
+            "description": "Ha a host alapértelmezett, az alkalmazás indításkor automatikusan kiválasztja és megpróbál csatlakozni hozzá.",
+            "sub": "Indításkor automatikusan kiválasztva és csatlakoztatva."
           }
         },
         "toast": {

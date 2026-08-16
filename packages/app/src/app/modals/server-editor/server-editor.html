@@ -14,10 +14,7 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-12">
-          <div class="bb-field mb-3">
-            <label class="bb-field-label" for="name">{{
-              'components.modals.server-editor.editor-form.connection-name' | translate
-            }}</label>
+          <div class="form-floating mb-3">
             <input
               autofocus
               type="text"
@@ -28,15 +25,15 @@
               "
               formControlName="name"
             />
+            <label for="name">{{
+              'components.modals.server-editor.editor-form.connection-name' | translate
+            }}</label>
           </div>
         </div>
       </div>
       <div class="row">
         <div class="col-12 col-md-3 mb-3">
-          <div class="bb-field">
-            <label class="bb-field-label" for="protocol">{{
-              'components.modals.server-editor.editor-form.protocol' | translate
-            }}</label>
+          <div class="form-floating">
             <ng-select
               id="protocol"
               formControlName="protocol"
@@ -47,13 +44,11 @@
               [searchable]="false"
             >
             </ng-select>
+            <label>{{ 'components.modals.server-editor.editor-form.protocol' | translate }}</label>
           </div>
         </div>
         <div class="col-12 col-md-6 mb-3">
-          <div class="bb-field">
-            <label class="bb-field-label" for="host">{{
-              'components.modals.server-editor.editor-form.host' | translate
-            }}</label>
+          <div class="form-floating">
             <input
               type="text"
               class="form-control"
@@ -61,13 +56,13 @@
               [placeholder]="'components.modals.server-editor.editor-form.host' | translate"
               formControlName="host"
             />
+            <label for="host">{{
+              'components.modals.server-editor.editor-form.host' | translate
+            }}</label>
           </div>
         </div>
         <div class="col-12 col-md-3 mb-3">
-          <div class="bb-field">
-            <label class="bb-field-label" for="port">{{
-              'components.modals.server-editor.editor-form.port' | translate
-            }}</label>
+          <div class="form-floating">
             <input
               type="number"
               class="form-control"
@@ -77,15 +72,15 @@
               min="1"
               max="65535"
             />
+            <label for="port">{{
+              'components.modals.server-editor.editor-form.port' | translate
+            }}</label>
           </div>
         </div>
       </div>
       <div class="row">
         <div class="col-12 col-md-6 mb-3">
-          <div class="bb-field">
-            <label class="bb-field-label" for="username">{{
-              'components.modals.server-editor.editor-form.username' | translate
-            }}</label>
+          <div class="form-floating">
             <input
               type="text"
               class="form-control"
@@ -93,13 +88,13 @@
               [placeholder]="'components.modals.server-editor.editor-form.username' | translate"
               formControlName="username"
             />
+            <label for="username">{{
+              'components.modals.server-editor.editor-form.username' | translate
+            }}</label>
           </div>
         </div>
         <div class="col-12 col-md-6 mb-3">
-          <div class="bb-field">
-            <label class="bb-field-label" for="password">{{
-              'components.modals.server-editor.editor-form.password' | translate
-            }}</label>
+          <div class="form-floating">
             <input
               type="password"
               class="form-control"
@@ -111,6 +106,9 @@
               "
               formControlName="password"
             />
+            <label for="password">{{
+              'components.modals.server-editor.editor-form.password' | translate
+            }}</label>
           </div>
         </div>
       </div>
@@ -127,6 +125,9 @@
                 placement="top"
               ></bb-popover>
             </label>
+            <span class="bb-option__sub">{{
+              'components.modals.server-editor.popover.default-host.sub' | translate
+            }}</span>
           </div>
           <span class="bb-option__toggle form-switch">
             <input
@@ -144,22 +145,22 @@
   </form>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-link btn-sm bb-modal-footer-btn" (click)="close()">
-    <bb-btn-content
-      [icon]="icons.faXmark"
-      [text]="'general.button.cancel' | translate"
-      position="end"
-    ></bb-btn-content>
-  </button>
   <button
     type="button"
-    class="btn btn-primary btn-sm bb-modal-footer-btn"
+    class="btn btn-primary btn-sm btn-split"
     (click)="handleSave()"
     [disabled]="!canSave() || processing()"
   >
     <bb-btn-content
       [icon]="icons.faFloppyDisk"
       [text]="(editMode() ? 'general.button.update' : 'general.button.save') | translate"
+      position="end"
+    ></bb-btn-content>
+  </button>
+  <button type="button" class="btn btn-sm btn-split" (click)="close()">
+    <bb-btn-content
+      [icon]="icons.faXmark"
+      [text]="'general.button.cancel' | translate"
       position="end"
     ></bb-btn-content>
   </button>
