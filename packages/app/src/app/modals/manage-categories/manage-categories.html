@@ -75,11 +75,11 @@
       <app-bb-spinner></app-bb-spinner>
     </div>
   } @else if (filteredCategories().length > 0) {
-    <ul class="list-group">
+    <ul class="list-group list-group-flush bb-category-list">
       @for (item of filteredCategories(); track item.name) {
         @if (item.editing) {
           <li
-            class="list-group-item"
+            class="list-group-item bb-category-row"
             (keydown.enter)="saveEdit(item)"
             (keydown.escape)="cancelEdit()"
           >
@@ -115,7 +115,9 @@
             </div>
           </li>
         } @else {
-          <li class="list-group-item d-flex align-items-center justify-content-between">
+          <li
+            class="list-group-item bb-category-row d-flex align-items-center justify-content-between"
+          >
             <div class="overflow-hidden me-2">
               <div class="fw-semibold text-truncate" [ngbTooltip]="item.name" bbTooltipOverflow>
                 {{ item.name }}
@@ -165,7 +167,7 @@
 </div>
 
 <div class="modal-footer">
-  <button type="button" class="btn btn-link btn-sm btn-split" (click)="activeModal.dismiss()">
+  <button type="button" class="btn btn-sm btn-split" (click)="activeModal.dismiss()" autofocus>
     <bb-btn-content
       [icon]="icon.faXmark"
       [text]="'general.button.close' | translate"

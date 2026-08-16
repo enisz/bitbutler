@@ -1,5 +1,16 @@
-.list-group-item {
+.bb-category-list {
+  --bs-list-group-bg: transparent;
+}
+
+.bb-category-row {
+  background-color: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--bs-border-color);
   transition: background-color 0.15s ease-in-out;
+
+  &:last-child {
+    border-bottom: 0;
+  }
 
   &:hover {
     background-color: var(--bb-hover-list-item-bg);
