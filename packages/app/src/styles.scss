@@ -639,6 +639,7 @@ ngb-typeahead-window.dropdown-menu {
 .modal-content {
   border-radius: 18px;
   background-color: var(--bs-card-bg);
+  overflow: hidden;
 }
 
 .modal-backdrop {

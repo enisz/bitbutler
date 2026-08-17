@@ -1,18 +1,18 @@
 @if (torrent(); as t) {
   <div class="modal-header bb-modal-header">
-    <div class="d-flex align-items-start min-w-0">
-      <div class="bb-te-header-icon">
-        <fa-icon [icon]="icons.faCopy"></fa-icon>
-      </div>
+    <div class="bb-modal-header__text">
+      <h5 class="modal-title bb-title-clamp">
+        {{ 'components.modals.torrent-exists.title' | translate }}
+      </h5>
 
-      <div class="bb-modal-header__text">
-        <h5 class="modal-title bb-title-clamp">
-          {{ 'components.modals.torrent-exists.title' | translate }}
-        </h5>
-
-        <div class="small text-body-secondary mt-1">
-          {{ 'components.modals.torrent-exists.already-in-list' | translate }}
-        </div>
+      <div
+        class="small text-body-secondary mt-1 text-truncate"
+        [ngbTooltip]="t.name"
+        bbTooltipOverflow
+        placement="bottom"
+        tooltipClass="single-line-tooltip"
+      >
+        {{ t.name }}
       </div>
     </div>
 
@@ -21,17 +21,14 @@
 
   <div class="modal-body">
     <div class="bb-te-file-card">
-      <div class="bb-te-filename" [ngbTooltip]="t.name" bbTooltipOverflow placement="top">
-        <fa-icon [icon]="icons.faCopy" class="opacity-50"></fa-icon>
-        <span class="text-truncate">{{ t.name }}</span>
-      </div>
-
-      <div class="d-flex align-items-baseline justify-content-between gap-3 mt-2 mb-2">
+      <div class="d-flex align-items-baseline justify-content-between gap-3 mb-2">
         <div class="bb-te-pct">
           {{ t.progress | percent: '1.1-1' }}
-          <small class="bb-te-pct-sub">
-            {{ t.downloaded | fileSize }} / {{ t.total_size | fileSize }}
-          </small>
+          @if (isDownloading(t.state)) {
+            <small class="bb-te-pct-sub">
+              {{ t.downloaded | fileSize }} / {{ t.total_size | fileSize }}
+            </small>
+          }
         </div>
       </div>
 
@@ -42,119 +39,164 @@
       ></app-bb-progress>
 
       <div class="bb-te-rates mt-2">
-        <span class="bb-te-rate bb-te-rate--dl">
-          <fa-icon [icon]="icons.faDownload"></fa-icon>
-          {{ t.dlspeed | fileSize }}/s
-        </span>
-        <span class="bb-te-rate bb-te-rate--ul">
-          <fa-icon [icon]="icons.faUpload"></fa-icon>
-          {{ t.upspeed | fileSize }}/s
-        </span>
-        <span class="text-body-secondary">{{ t.num_seeds }} / {{ t.num_leechs }}</span>
+        <div class="bb-te-rates-left">
+          <span
+            class="text-body-secondary"
+            [ngbTooltip]="'components.modals.torrent-exists.labels.swarm' | translate"
+            placement="top"
+          >
+            {{ t.num_seeds }} / {{ t.num_leechs }}
+          </span>
+        </div>
+        <div class="bb-te-rates-right">
+          <span
+            class="bb-te-rate bb-te-rate--dl"
+            [ngbTooltip]="'components.modals.torrent-details.general.download-speed' | translate"
+            placement="top"
+          >
+            <fa-icon [icon]="icons.faArrowDown"></fa-icon>
+            <span class="bb-te-rate-value">{{ t.dlspeed | fileSize }}/s</span>
+          </span>
+          <span
+            class="bb-te-rate bb-te-rate--ul"
+            [ngbTooltip]="'components.modals.torrent-details.general.upload-speed' | translate"
+            placement="top"
+          >
+            <fa-icon [icon]="icons.faArrowUp"></fa-icon>
+            <span class="bb-te-rate-value">{{ t.upspeed | fileSize }}/s</span>
+          </span>
+          <span
+            class="text-body-secondary bb-te-ratio-value"
+            [ngbTooltip]="'components.modals.torrent-details.general.share-ratio' | translate"
+            placement="top"
+          >
+            {{ t.ratio | ratio: 1 }}
+          </span>
+        </div>
       </div>
     </div>
 
-    <div class="bb-te-stat-grid">
-      <div class="bb-te-stat">
-        <div class="bb-te-stat-label">
-          {{ 'components.modals.torrent-exists.label.size' | translate }}
+    <fieldset class="bb-fieldset bb-te-fieldset">
+      <legend>{{ 'components.modals.torrent-exists.labels.details' | translate }}</legend>
+      <div class="bb-te-rows">
+        <div class="bb-te-row">
+          <span class="bb-te-row__label">{{
+            'components.modals.torrent-details.general.name' | translate
+          }}</span>
+          <span
+            class="bb-te-row__value text-truncate"
+            [ngbTooltip]="t.name"
+            bbTooltipOverflow
+            placement="bottom"
+            tooltipClass="single-line-tooltip"
+            >{{ t.name }}</span
+          >
         </div>
-        <div class="bb-te-stat-value">{{ t.total_size | fileSize }}</div>
-      </div>
-      <div class="bb-te-stat">
-        <div class="bb-te-stat-label">
-          {{ 'components.modals.torrent-exists.label.downloaded' | translate }}
+        <div class="bb-te-row">
+          <span class="bb-te-row__label">{{
+            'components.modals.torrent-details.general.total-size' | translate
+          }}</span>
+          <span class="bb-te-row__value">{{ t.total_size | fileSize }}</span>
         </div>
-        <div class="bb-te-stat-value">{{ t.downloaded | fileSize }}</div>
-      </div>
-      <div class="bb-te-stat">
-        <div class="bb-te-stat-label">
-          {{ 'components.modals.torrent-exists.label.uploaded' | translate }}
+        <div class="bb-te-row">
+          <span class="bb-te-row__label">{{
+            'components.modals.torrent-details.general.save-path' | translate
+          }}</span>
+          <span
+            class="bb-te-row__value text-truncate"
+            [ngbTooltip]="t.save_path"
+            bbTooltipOverflow
+            placement="bottom"
+            tooltipClass="single-line-tooltip"
+            >{{ t.save_path }}</span
+          >
         </div>
-        <div class="bb-te-stat-value">{{ t.uploaded | fileSize }}</div>
-      </div>
-      <div class="bb-te-stat">
-        <div class="bb-te-stat-label">
-          {{ 'components.modals.torrent-exists.label.ratio' | translate }}
+        <div class="bb-te-row">
+          <span class="bb-te-row__label">{{
+            'components.modals.torrent-details.general.remote-path' | translate
+          }}</span>
+          <span
+            class="bb-te-row__value text-truncate"
+            [ngbTooltip]="t.content_path"
+            bbTooltipOverflow
+            placement="bottom"
+            tooltipClass="single-line-tooltip"
+            >{{ t.content_path }}</span
+          >
         </div>
-        <div class="bb-te-stat-value">{{ t.ratio | ratio }}</div>
-      </div>
-      <div class="bb-te-stat">
-        <div class="bb-te-stat-label">
-          {{ 'components.modals.torrent-exists.label.seeds-leechers' | translate }}
-        </div>
-        <div class="bb-te-stat-value">{{ t.num_seeds }} / {{ t.num_leechs }}</div>
-      </div>
-      <div
-        class="bb-te-stat"
-        [ngbTooltip]="(t.added_on | localTimestamp) + ' (' + (t.added_on * 1000 | timeago) + ')'"
-        placement="top"
-        bbTooltipOverflow
-        tooltipClass="single-line-tooltip"
-      >
-        <div class="bb-te-stat-label">
-          {{ 'components.modals.torrent-exists.label.added-on' | translate }}
-        </div>
-        <div class="bb-te-stat-value text-truncate">{{ t.added_on | localTimestamp }}</div>
-        <div class="bb-te-stat-sub">{{ t.added_on * 1000 | timeago }}</div>
-      </div>
-
-      @if (t.category) {
-        <div class="bb-te-stat">
-          <div class="bb-te-stat-label">
-            {{ 'components.modals.torrent-exists.label.category' | translate }}
+        @if (localPath(); as lp) {
+          <div class="bb-te-row">
+            <span class="bb-te-row__label">{{
+              'components.modals.torrent-details.general.local-path' | translate
+            }}</span>
+            <span
+              class="bb-te-row__value text-truncate"
+              [ngbTooltip]="lp"
+              bbTooltipOverflow
+              placement="bottom"
+              tooltipClass="single-line-tooltip"
+              >{{ lp }}</span
+            >
           </div>
-          <div class="bb-te-stat-value">{{ t.category }}</div>
+        }
+        <div class="bb-te-row">
+          <span class="bb-te-row__label">{{
+            'components.modals.torrent-details.general.category' | translate
+          }}</span>
+          <span
+            class="bb-te-row__value text-truncate"
+            [ngbTooltip]="t.category || '-'"
+            bbTooltipOverflow
+            placement="bottom"
+            tooltipClass="single-line-tooltip"
+            >{{ t.category || '-' }}</span
+          >
         </div>
-      }
-
-      @if (t.tags) {
-        <div class="bb-te-stat">
-          <div class="bb-te-stat-label">
-            {{ 'components.modals.torrent-exists.label.tags' | translate }}
-          </div>
-          <div class="bb-te-stat-value">{{ t.tags }}</div>
+        <div class="bb-te-row">
+          <span class="bb-te-row__label">{{
+            'components.modals.torrent-details.general.tags' | translate
+          }}</span>
+          <span
+            class="bb-te-row__value text-truncate"
+            [ngbTooltip]="t.tags || '-'"
+            bbTooltipOverflow
+            placement="bottom"
+            tooltipClass="single-line-tooltip"
+            >{{ t.tags || '-' }}</span
+          >
         </div>
-      }
-    </div>
-
-    <div class="bb-te-save-path">
-      <span class="text-body-secondary">
-        {{ 'components.modals.torrent-exists.label.save-path' | translate }}
-      </span>
-      <span
-        class="bb-te-save-path-value text-truncate"
-        [ngbTooltip]="t.save_path"
-        placement="top"
-        bbTooltipOverflow
-        tooltipClass="single-line-tooltip"
-      >
-        {{ t.save_path }}
-      </span>
-    </div>
+        <div class="bb-te-row">
+          <span class="bb-te-row__label">{{
+            'components.modals.torrent-details.general.added-on' | translate
+          }}</span>
+          <span
+            class="bb-te-row__value text-truncate"
+            [ngbTooltip]="
+              (t.added_on | localTimestamp) + ' (' + (t.added_on * 1000 | timeago) + ')'
+            "
+            bbTooltipOverflow
+            placement="bottom"
+            tooltipClass="single-line-tooltip"
+            >{{ t.added_on | localTimestamp }}
+            <span class="bb-te-row__value-sub">({{ t.added_on * 1000 | timeago }})</span></span
+          >
+        </div>
+      </div>
+    </fieldset>
   </div>
 
-  <div class="modal-footer d-flex flex-row">
-    <button
-      type="button"
-      class="btn btn-outline-secondary btn-sm bb-te-footer-btn ms-auto"
-      (click)="closeModal()"
-    >
-      <bb-btn-content
-        [icon]="icons.faXmark"
-        [text]="'general.button.close' | translate"
-        position="end"
-      ></bb-btn-content>
-    </button>
-    <button
-      type="button"
-      class="btn btn-primary btn-sm bb-te-footer-btn"
-      (click)="openDetails()"
-      autofocus
-    >
+  <div class="modal-footer">
+    <button type="button" class="btn btn-info btn-sm btn-split" (click)="openDetails()" autofocus>
       <bb-btn-content
         [icon]="icons.faCircleInfo"
         [text]="'general.button.open-details' | translate"
+        position="end"
+      ></bb-btn-content>
+    </button>
+    <button type="button" class="btn btn-sm btn-split" (click)="closeModal()">
+      <bb-btn-content
+        [icon]="icons.faXmark"
+        [text]="'general.button.close' | translate"
         position="end"
       ></bb-btn-content>
     </button>

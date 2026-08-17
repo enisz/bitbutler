@@ -779,19 +779,9 @@
       },
       "torrent-exists": {
         "title": "A torrent már létezik",
-        "already-in-list": "Ez a torrent már szerepel a listában!",
-        "label": {
-          "size": "Méret",
-          "downloaded": "Letöltve",
-          "uploaded": "Feltöltve",
-          "ratio": "Arány",
-          "dl-speed": "Letöltési sebesség",
-          "up-speed": "Feltöltési sebesség",
-          "seeds-leechers": "Seedek / Leecherek",
-          "added-on": "Hozzáadva",
-          "save-path": "Mentési útvonal",
-          "category": "Kategória",
-          "tags": "Címkék"
+        "labels": {
+          "details": "Részletek",
+          "swarm": "Raj"
         },
         "toast": {
           "delete-failed-title": "Nem sikerült törölni a torrent fájlt"
