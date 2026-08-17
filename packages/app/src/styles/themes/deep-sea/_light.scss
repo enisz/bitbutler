@@ -9,10 +9,10 @@ $deep-sea-light-danger: #d9534f;
 $deep-sea-light-warning: #f0ad4e;
 $deep-sea-light-info: #5bc0de;
 
-$deep-sea-light-body-bg: #ebf4f6;
+$deep-sea-light-body-bg: #d3e7ea;
 $deep-sea-light-body-color: #04161d;
-$deep-sea-light-border: rgba($deep-sea-light-body-color, 0.12);
-$deep-sea-light-surface: #ffffff;
+$deep-sea-light-border: #aecdd2;
+$deep-sea-light-surface: #eef8f9;
 
 $deep-sea-light-check-marker-colors: (
   'default': $deep-sea-light-secondary,
@@ -56,7 +56,7 @@ $deep-sea-light-check-marker-colors: (
     --bs-body-color: #{$deep-sea-light-body-color};
     --bs-border-color: #{$deep-sea-light-border};
 
-    --bs-card-bg: #ffffff;
+    --bs-card-bg: #{$deep-sea-light-surface};
     --bs-card-color: #{$deep-sea-light-body-color};
     --bs-card-border-color: #{$deep-sea-light-border};
     --bs-card-cap-bg: color-mix(in srgb, var(--bs-body-bg) 70%, var(--bs-card-bg) 30%);
@@ -94,8 +94,8 @@ $deep-sea-light-check-marker-colors: (
     --bb-ng-accent: var(--bs-secondary);
     --bb-ng-focus-ring: rgba(var(--bs-primary-rgb), 0.18);
 
-    --bb-control-bg: color-mix(in srgb, var(--bs-body-bg) 30%, var(--bs-card-bg) 70%);
-    --bb-control-border: rgba($deep-sea-light-body-color, 0.2);
+    --bb-control-bg: color-mix(in srgb, var(--bs-body-bg) 55%, var(--bs-card-bg) 45%);
+    --bb-control-border: color-mix(in srgb, var(--bs-border-color) 85%, #000 15%);
     --bb-control-text: var(--bs-body-color);
     --bb-control-placeholder: color-mix(in srgb, var(--bs-body-color) 55%, transparent);
 

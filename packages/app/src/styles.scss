@@ -499,97 +499,97 @@ ngb-modal-window {
 
   &[data-bb-theme='bitbutler'] {
     &.light {
-      background-color: #f5ede3;
+      background-color: #ecdec6;
     }
     &.dark {
       background-color: #121213;
     }
     &.system {
-      background: linear-gradient(45deg, #f5ede3 50%, #121213 50%);
+      background: linear-gradient(45deg, #ecdec6 50%, #121213 50%);
     }
   }
 
   &[data-bb-theme='aurora'] {
     &.light {
-      background-color: #f3f7ff;
+      background-color: #dfe6fb;
     }
     &.dark {
       background-color: #0b1020;
     }
     &.system {
-      background: linear-gradient(45deg, #f3f7ff 50%, #0b1020 50%);
+      background: linear-gradient(45deg, #dfe6fb 50%, #0b1020 50%);
     }
   }
 
   &[data-bb-theme='mint-green'] {
     &.light {
-      background-color: #f0f3f0;
+      background-color: #dce5dc;
     }
     &.dark {
       background-color: #1a2e2b;
     }
     &.system {
-      background: linear-gradient(45deg, #f0f3f0 50%, #1a2e2b 50%);
+      background: linear-gradient(45deg, #dce5dc 50%, #1a2e2b 50%);
     }
   }
 
   &[data-bb-theme='purple-haze'] {
     &.light {
-      background-color: #f3e5f5;
+      background-color: #ddc8e6;
     }
     &.dark {
       background-color: #1a1a2e;
     }
     &.system {
-      background: linear-gradient(45deg, #f3e5f5 50%, #1a1a2e 50%);
+      background: linear-gradient(45deg, #ddc8e6 50%, #1a1a2e 50%);
     }
   }
 
   &[data-bb-theme='ocean-breeze'] {
     &.light {
-      background-color: #e1f5fe;
+      background-color: #c2e7f7;
     }
     &.dark {
       background-color: #0d253f;
     }
     &.system {
-      background: linear-gradient(45deg, #e1f5fe 50%, #0d253f 50%);
+      background: linear-gradient(45deg, #c2e7f7 50%, #0d253f 50%);
     }
   }
 
   &[data-bb-theme='pumpkin-spice'] {
     &.light {
-      background-color: #fff3e0;
+      background-color: #f6ddb9;
     }
     &.dark {
       background-color: #1f160c;
     }
     &.system {
-      background: linear-gradient(45deg, #fff3e0 50%, #1f160c 50%);
+      background: linear-gradient(45deg, #f6ddb9 50%, #1f160c 50%);
     }
   }
 
   &[data-bb-theme='deep-sea'] {
     &.light {
-      background-color: #ebf4f6;
+      background-color: #d3e7ea;
     }
     &.dark {
       background-color: #051a21;
     }
     &.system {
-      background: linear-gradient(45deg, #ebf4f6 50%, #051a21 50%);
+      background: linear-gradient(45deg, #d3e7ea 50%, #051a21 50%);
     }
   }
 
   &[data-bb-theme='crimson-ember'] {
     &.light {
-      background-color: #fcf2f0;
+      background-color: #f6dfd9;
     }
     &.dark {
       background-color: #1a0604;
     }
     &.system {
-      background: linear-gradient(45deg, #fcf2f0 50%, #1a0604 50%);
+      background: linear-gradient(45deg, #f6dfd9 50%, #1a0604 50%);
     }
   }
 }

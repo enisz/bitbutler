@@ -9,10 +9,10 @@ $ob-light-danger: #d9534f;
 $ob-light-warning: #f0ad4e;
 $ob-light-info: #5bc0de;
 
-$ob-light-body-bg: #e1f5fe;
+$ob-light-body-bg: #c2e7f7;
 $ob-light-body-color: #01579b;
-$ob-light-border: rgba($ob-light-body-color, 0.12);
-$ob-light-surface: #e1f5fe;
+$ob-light-border: #9cc9e0;
+$ob-light-surface: #edf8fd;
 
 $ob-light-check-marker-colors: (
   'default': $ob-light-secondary,
@@ -56,7 +56,7 @@ $ob-light-check-marker-colors: (
     --bs-body-color: #{$ob-light-body-color};
     --bs-border-color: #{$ob-light-border};
 
-    --bs-card-bg: #ffffff;
+    --bs-card-bg: #{$ob-light-surface};
     --bs-card-color: #{$ob-light-body-color};
     --bs-card-border-color: #{$ob-light-border};
     --bs-card-cap-bg: color-mix(in srgb, var(--bs-body-bg) 70%, var(--bs-card-bg) 30%);
@@ -94,8 +94,8 @@ $ob-light-check-marker-colors: (
     --bb-ng-accent: var(--bs-secondary);
     --bb-ng-focus-ring: rgba(var(--bs-primary-rgb), 0.18);
 
-    --bb-control-bg: color-mix(in srgb, var(--bs-body-bg) 30%, var(--bs-card-bg) 70%);
-    --bb-control-border: rgba($ob-light-body-color, 0.2);
+    --bb-control-bg: color-mix(in srgb, var(--bs-body-bg) 55%, var(--bs-card-bg) 45%);
+    --bb-control-border: color-mix(in srgb, var(--bs-border-color) 85%, #000 15%);
     --bb-control-text: var(--bs-body-color);
     --bb-control-placeholder: color-mix(in srgb, var(--bs-body-color) 55%, transparent);
 

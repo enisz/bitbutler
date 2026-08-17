@@ -9,10 +9,10 @@ $au-light-danger: #e5487e;
 $au-light-warning: #f2b705;
 $au-light-info: #4aa3ff;
 
-$au-light-body-bg: #f3f7ff;
+$au-light-body-bg: #dfe6fb;
 $au-light-body-color: #1c2333;
-$au-light-border: rgba($au-light-body-color, 0.12);
-$au-light-surface: #ffffff;
+$au-light-border: #c5cfec;
+$au-light-surface: #f5f8ff;
 
 $au-light-check-marker-colors: (
   'default': $au-light-secondary,
@@ -95,8 +95,8 @@ $au-light-check-marker-colors: (
     --bb-ng-accent: var(--bs-secondary);
     --bb-ng-focus-ring: rgba(var(--bs-primary-rgb), 0.18);
 
-    --bb-control-bg: color-mix(in srgb, var(--bs-body-bg) 30%, var(--bs-card-bg) 70%);
-    --bb-control-border: rgba($au-light-body-color, 0.2);
+    --bb-control-bg: color-mix(in srgb, var(--bs-body-bg) 55%, var(--bs-card-bg) 45%);
+    --bb-control-border: color-mix(in srgb, var(--bs-border-color) 85%, #000 15%);
     --bb-control-text: var(--bs-body-color);
     --bb-control-placeholder: color-mix(in srgb, var(--bs-body-color) 55%, transparent);
 
