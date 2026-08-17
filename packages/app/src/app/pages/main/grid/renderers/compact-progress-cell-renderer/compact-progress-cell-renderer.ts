@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject } from '@
 import { ICellRendererAngularComp } from 'ag-grid-angular';
 import { ICellRendererParams } from 'ag-grid-community';
 import { BbProgress } from '../../../../../components/bb-progress/bb-progress';
+import { formatProgressPercent } from '../../../../../components/bb-progress/format-progress-percent';
 import { Torrent } from '../../../../../models/torrent.model';
 
 @Component({
@@ -18,6 +19,7 @@ export class CompactProgressCellRenderer implements ICellRendererAngularComp {
 
   public progress = 0;
   public state: string | undefined = undefined;
+  public percentText = formatProgressPercent(0);
 
   agInit(params: ICellRendererParams<Torrent>): void {
     this.updateData(params);
@@ -34,6 +36,7 @@ export class CompactProgressCellRenderer implements ICellRendererAngularComp {
 
     this.progress = typeof params.value === 'number' ? params.value : (data.progress ?? 0);
     this.state = data.state;
+    this.percentText = formatProgressPercent(this.progress * 100);
 
     this.cdr.markForCheck();
   }

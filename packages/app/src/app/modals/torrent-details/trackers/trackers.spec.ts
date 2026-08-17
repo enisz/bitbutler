@@ -1,4 +1,3 @@
-import { Clipboard } from '@angular/cdk/clipboard';
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NumberColumnFilter } from '../../../components/column-filters/number-column-filter/number-column-filter';
@@ -32,7 +31,10 @@ describe('Trackers', () => {
   let fixture: ComponentFixture<Trackers>;
   let mockSettingsService: { load: ReturnType<typeof vi.fn>; save: ReturnType<typeof vi.fn> };
   let mockContextMenuService: { open: ReturnType<typeof vi.fn> };
-  let mockClipboard: { copy: ReturnType<typeof vi.fn> };
+  let mockGridContextMenuService: {
+    buildHeaderMenu: ReturnType<typeof vi.fn>;
+    copyToClipboard: ReturnType<typeof vi.fn>;
+  };
 
   beforeAll(() => {
     Object.defineProperty(window, 'matchMedia', {
@@ -56,7 +58,10 @@ describe('Trackers', () => {
       save: vi.fn().mockResolvedValue(undefined),
     };
     mockContextMenuService = { open: vi.fn() };
-    mockClipboard = { copy: vi.fn() };
+    mockGridContextMenuService = {
+      buildHeaderMenu: vi.fn().mockReturnValue([]),
+      copyToClipboard: vi.fn(),
+    };
 
     await TestBed.configureTestingModule({
       imports: [Trackers],
@@ -68,11 +73,7 @@ describe('Trackers', () => {
         { provide: ThemeService, useValue: { effectiveMode: signal('light') } },
         { provide: TrackersGridSettingsService, useValue: mockSettingsService },
         { provide: ContextMenuService, useValue: mockContextMenuService },
-        {
-          provide: GridContextMenuService,
-          useValue: { buildHeaderMenu: vi.fn().mockReturnValue([]) },
-        },
-        { provide: Clipboard, useValue: mockClipboard },
+        { provide: GridContextMenuService, useValue: mockGridContextMenuService },
       ],
     }).compileComponents();
 
@@ -257,6 +258,7 @@ describe('Trackers', () => {
       return {
         data: { tier: 0, url: 'http://tracker.example.com', status: 'Working', ...overrides },
         value: overrides['url'] ?? 'http://tracker.example.com',
+        colDef: { headerName: 'URL' },
       };
     }
 
@@ -265,44 +267,27 @@ describe('Trackers', () => {
       expect(mockContextMenuService.open).toHaveBeenCalled();
     });
 
-    it('row menu contains copy.cellValue, copy.url, and copy.json', () => {
+    it('row menu contains copy.cellValue and copy.json', () => {
       const menu = (component as any).buildRowMenu(makeEvent());
       expect(findItem(menu, 'copy.cellValue')).toBeDefined();
-      expect(findItem(menu, 'copy.url')).toBeDefined();
       expect(findItem(menu, 'copy.json')).toBeDefined();
     });
 
-    it('copy.url is enabled when the row has a url', () => {
-      const menu = (component as any).buildRowMenu(
-        makeEvent({ url: 'http://tracker.example.com' }),
-      );
-      expect(findItem(menu, 'copy.url')?.disabled).toBeFalsy();
-    });
-
-    it('copy.url is disabled when the row has no url', () => {
-      const menu = (component as any).buildRowMenu(makeEvent({ url: '' }));
-      expect(findItem(menu, 'copy.url')?.disabled).toBe(true);
-    });
-
-    it('copy.cellValue action copies the cell value', () => {
+    it('copy.cellValue action delegates to gridContextMenuService.copyToClipboard', () => {
       const event = { ...makeEvent(), value: 'cell-value' };
       const menu = (component as any).buildRowMenu(event);
       (findItem(menu, 'copy.cellValue')!.action as () => void)();
-      expect(mockClipboard.copy).toHaveBeenCalledWith('cell-value');
+      expect(mockGridContextMenuService.copyToClipboard).toHaveBeenCalledWith('cell-value', 'URL');
     });
 
-    it('copy.url action copies the tracker URL', () => {
-      const url = 'http://tracker.example.com';
-      const menu = (component as any).buildRowMenu(makeEvent({ url }));
-      (findItem(menu, 'copy.url')!.action as () => void)();
-      expect(mockClipboard.copy).toHaveBeenCalledWith(url);
-    });
-
-    it('copy.json action copies the row as formatted JSON', () => {
+    it('copy.json action delegates to gridContextMenuService.copyToClipboard', () => {
       const event = makeEvent();
       const menu = (component as any).buildRowMenu(event);
       (findItem(menu, 'copy.json')!.action as () => void)();
-      expect(mockClipboard.copy).toHaveBeenCalledWith(JSON.stringify(event.data, null, 2));
+      expect(mockGridContextMenuService.copyToClipboard).toHaveBeenCalledWith(
+        JSON.stringify(event.data, null, 2),
+        'pages.main.grid.context-menu.field.row-as-json',
+      );
     });
   });
 

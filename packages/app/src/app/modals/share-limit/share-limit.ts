@@ -20,6 +20,8 @@ import {
 import { AutofocusDirective } from '../../directives/autofocus';
 import { TooltipOverflow } from '../../directives/tooltip-overflow';
 import { LimitTargetType } from '../../models/command.model';
+import { GuardableModal } from '../../models/guardable-modal.interface';
+import { ConfirmService } from '../../services/confirm.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { ToastService } from '../../services/toast.service';
@@ -41,13 +43,14 @@ import { TorrentStoreService } from '../../services/torrent-store.service';
   styleUrl: './share-limit.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ShareLimit implements OnInit {
+export class ShareLimit implements OnInit, GuardableModal {
   public readonly activeModal = inject(NgbActiveModal);
   private readonly qbService = inject(QbService);
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly torrentStoreService = inject(TorrentStoreService);
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
+  private readonly confirmService = inject(ConfirmService);
 
   public readonly icons = { faFloppyDisk, faEraser, faXmark };
 
@@ -167,11 +170,24 @@ export class ShareLimit implements OnInit {
   }
 
   public clearAll(): void {
-    this.form.controls.shareLimits.setValue({
+    const control = this.form.controls.shareLimits;
+    control.markAsDirty();
+    control.setValue({
       ratioLimit: null,
       seedingTimeLimit: null,
       inactiveSeedingTimeLimit: null,
     });
+  }
+
+  public async canDeactivate(): Promise<boolean> {
+    if (!this.form.dirty) return true;
+
+    return this.confirmService.confirm(
+      'components.modals.guard.unsaved-title',
+      'components.modals.guard.unsaved-message',
+      'components.modals.guard.btn-leave',
+      'components.modals.guard.btn-stay',
+    );
   }
 
   public canSave(): boolean {

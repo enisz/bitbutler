@@ -20,6 +20,8 @@ import {
 import { AutofocusDirective } from '../../directives/autofocus';
 import { TooltipOverflow } from '../../directives/tooltip-overflow';
 import { LimitTargetType } from '../../models/command.model';
+import { GuardableModal } from '../../models/guardable-modal.interface';
+import { ConfirmService } from '../../services/confirm.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { ToastService } from '../../services/toast.service';
@@ -41,7 +43,7 @@ import { TorrentStoreService } from '../../services/torrent-store.service';
   styleUrl: './transfer-limit.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TransferLimit implements OnInit {
+export class TransferLimit implements OnInit, GuardableModal {
   readonly target = input.required<LimitTargetType>();
   readonly hashes = input<string[]>([]);
 
@@ -50,6 +52,7 @@ export class TransferLimit implements OnInit {
   private readonly torrentStoreService = inject(TorrentStoreService);
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
+  private readonly confirmService = inject(ConfirmService);
   public activeModal = inject(NgbActiveModal);
 
   public readonly icons = { faFloppyDisk, faEraser, faXmark };
@@ -135,7 +138,20 @@ export class TransferLimit implements OnInit {
   }
 
   public clearAll(): void {
-    this.form.controls.transferRateLimits.setValue({ uploadLimit: null, downloadLimit: null });
+    const control = this.form.controls.transferRateLimits;
+    control.markAsDirty();
+    control.setValue({ uploadLimit: null, downloadLimit: null });
+  }
+
+  public async canDeactivate(): Promise<boolean> {
+    if (!this.form.dirty) return true;
+
+    return this.confirmService.confirm(
+      'components.modals.guard.unsaved-title',
+      'components.modals.guard.unsaved-message',
+      'components.modals.guard.btn-leave',
+      'components.modals.guard.btn-stay',
+    );
   }
 
   public hasClearableValues(): boolean {

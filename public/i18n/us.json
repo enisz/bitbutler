@@ -679,11 +679,6 @@
             "relevance": "Relevance",
             "files": "Files"
           },
-          "context-menu": {
-            "item": {
-              "copy-ip-port": "Copy IP:Port"
-            }
-          },
           "flags-tooltip": {
             "title": "Peer Flags",
             "flags": {
@@ -760,11 +755,6 @@
             "num_leeches": "Leeches",
             "num_downloaded": "Times Downloaded",
             "msg": "Message"
-          },
-          "context-menu": {
-            "item": {
-              "copy-url": "Copy tracker URL"
-            }
           },
           "status": {
             "disabled": "Disabled",
@@ -1239,6 +1229,8 @@
             "copy-save-path": "Copy save path",
             "copy-save-paths": "Copy save paths",
             "copy-as-json": "Copy as JSON",
+            "copy-cell-value": "Copy Cell Value",
+            "copy-row-as-json": "Copy Row as JSON",
             "export-torrent-file": "Export .torrent",
             "export-torrent-files": "Export .torrent Files",
             "torrent-details": "Torrent details",
@@ -1312,7 +1304,8 @@
             "info-hashes": "Info Hashes",
             "save-path": "Save Path",
             "save-paths": "Save Paths",
-            "json": "JSON"
+            "json": "JSON",
+            "row-as-json": "Row as JSON"
           }
         },
         "overlays": {
@@ -1327,6 +1320,7 @@
         },
         "grid-lib": {
           "col-def": {
+            "status_dot": "Status",
             "name": "Name",
             "hash": "Hash",
             "progress": "Progress",

@@ -1,4 +1,3 @@
-import { Clipboard } from '@angular/cdk/clipboard';
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NumberColumnFilter } from '../../../components/column-filters/number-column-filter/number-column-filter';
@@ -33,7 +32,10 @@ describe('Peers', () => {
   let fixture: ComponentFixture<Peers>;
   let mockSettingsService: { load: ReturnType<typeof vi.fn>; save: ReturnType<typeof vi.fn> };
   let mockContextMenuService: { open: ReturnType<typeof vi.fn> };
-  let mockClipboard: { copy: ReturnType<typeof vi.fn> };
+  let mockGridContextMenuService: {
+    buildHeaderMenu: ReturnType<typeof vi.fn>;
+    copyToClipboard: ReturnType<typeof vi.fn>;
+  };
 
   beforeAll(() => {
     Object.defineProperty(window, 'matchMedia', {
@@ -57,7 +59,10 @@ describe('Peers', () => {
       save: vi.fn().mockResolvedValue(undefined),
     };
     mockContextMenuService = { open: vi.fn() };
-    mockClipboard = { copy: vi.fn() };
+    mockGridContextMenuService = {
+      buildHeaderMenu: vi.fn().mockReturnValue([]),
+      copyToClipboard: vi.fn(),
+    };
 
     await TestBed.configureTestingModule({
       imports: [Peers],
@@ -69,11 +74,7 @@ describe('Peers', () => {
         { provide: ThemeService, useValue: { effectiveMode: signal('light') } },
         { provide: PeersGridSettingsService, useValue: mockSettingsService },
         { provide: ContextMenuService, useValue: mockContextMenuService },
-        {
-          provide: GridContextMenuService,
-          useValue: { buildHeaderMenu: vi.fn().mockReturnValue([]) },
-        },
-        { provide: Clipboard, useValue: mockClipboard },
+        { provide: GridContextMenuService, useValue: mockGridContextMenuService },
       ],
     }).compileComponents();
 
@@ -295,6 +296,7 @@ describe('Peers', () => {
       return {
         data: { ip: '192.168.1.1', port: 6881, client: 'qBittorrent', ...overrides },
         value: overrides['ip'] ?? '192.168.1.1',
+        colDef: { headerName: 'IP' },
       };
     }
 
@@ -303,41 +305,27 @@ describe('Peers', () => {
       expect(mockContextMenuService.open).toHaveBeenCalled();
     });
 
-    it('row menu contains copy.cellValue, copy.ipPort, and copy.json', () => {
+    it('row menu contains copy.cellValue and copy.json', () => {
       const menu = (component as any).buildRowMenu(makeEvent());
       expect(findItem(menu, 'copy.cellValue')).toBeDefined();
-      expect(findItem(menu, 'copy.ipPort')).toBeDefined();
       expect(findItem(menu, 'copy.json')).toBeDefined();
     });
 
-    it('copy.ipPort is enabled when the row has an ip', () => {
-      const menu = (component as any).buildRowMenu(makeEvent({ ip: '192.168.1.1' }));
-      expect(findItem(menu, 'copy.ipPort')?.disabled).toBeFalsy();
-    });
-
-    it('copy.ipPort is disabled when the row has no ip', () => {
-      const menu = (component as any).buildRowMenu(makeEvent({ ip: '' }));
-      expect(findItem(menu, 'copy.ipPort')?.disabled).toBe(true);
-    });
-
-    it('copy.cellValue action copies the cell value', () => {
+    it('copy.cellValue action delegates to gridContextMenuService.copyToClipboard', () => {
       const event = { ...makeEvent(), value: 'cell-value' };
       const menu = (component as any).buildRowMenu(event);
       (findItem(menu, 'copy.cellValue')!.action as () => void)();
-      expect(mockClipboard.copy).toHaveBeenCalledWith('cell-value');
+      expect(mockGridContextMenuService.copyToClipboard).toHaveBeenCalledWith('cell-value', 'IP');
     });
 
-    it('copy.ipPort action copies ip:port', () => {
-      const menu = (component as any).buildRowMenu(makeEvent({ ip: '10.0.0.1', port: 51413 }));
-      (findItem(menu, 'copy.ipPort')!.action as () => void)();
-      expect(mockClipboard.copy).toHaveBeenCalledWith('10.0.0.1:51413');
-    });
-
-    it('copy.json action copies the row as formatted JSON', () => {
+    it('copy.json action delegates to gridContextMenuService.copyToClipboard', () => {
       const event = makeEvent();
       const menu = (component as any).buildRowMenu(event);
       (findItem(menu, 'copy.json')!.action as () => void)();
-      expect(mockClipboard.copy).toHaveBeenCalledWith(JSON.stringify(event.data, null, 2));
+      expect(mockGridContextMenuService.copyToClipboard).toHaveBeenCalledWith(
+        JSON.stringify(event.data, null, 2),
+        'pages.main.grid.context-menu.field.row-as-json',
+      );
     });
   });
 

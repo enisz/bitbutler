@@ -38,7 +38,7 @@
 
 .bb-hero-state {
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   max-width: 40%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -50,7 +50,7 @@
   display: flex;
   justify-content: space-between;
   color: var(--bb-control-placeholder);
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   margin-top: 6px;
 }
 
@@ -255,7 +255,7 @@
   border: 1px solid var(--bb-control-border);
   background-color: var(--bb-control-bg);
   color: var(--bs-body-color);
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-weight: 500;
 }
 
@@ -309,7 +309,7 @@
 
 .bb-cell__sub {
   display: block;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-weight: 400;
   color: var(--bb-control-placeholder);
   margin-top: 2px;

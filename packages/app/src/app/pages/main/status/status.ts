@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
@@ -201,27 +201,19 @@ export class Status {
     return next;
   }
 
-  private isStatusGroupActive(key: StatusKey, current: ReadonlySet<TorrentState>): boolean {
-    const g = this.groups[key];
-    return g.length > 0 && g.every((s) => current.has(s));
-  }
+  private readonly selectedStatusKeys = signal<ReadonlySet<string>>(new Set());
 
-  readonly activeStatusKeys = computed<ReadonlySet<string>>(() => {
-    const current = this.filtersSig().states;
-    const keys = new Set<string>();
-    for (const key of Object.keys(this.groups) as StatusKey[]) {
-      if (this.isStatusGroupActive(key, current)) keys.add(key);
-    }
-    return keys;
-  });
+  readonly activeStatusKeys = this.selectedStatusKeys.asReadonly();
 
   public setGroup(key: string): void {
     if (key === 'all') {
+      this.selectedStatusKeys.set(new Set());
       this.filterService.clearStates();
       return;
     }
     if (!(key in this.groups)) return;
-    const nextKeys = this.toggleKey(this.activeStatusKeys(), key);
+    const nextKeys = this.toggleKey(this.selectedStatusKeys(), key);
+    this.selectedStatusKeys.set(nextKeys);
     const next = new Set<TorrentState>();
     for (const k of nextKeys) for (const s of this.groups[k as StatusKey]) next.add(s);
     this.filterService.setStates(next);
@@ -328,6 +320,7 @@ export class Status {
   }
 
   public clearAll(): void {
+    this.selectedStatusKeys.set(new Set());
     this.filterService.resetAll();
   }
 

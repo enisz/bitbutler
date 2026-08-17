@@ -127,6 +127,20 @@ describe('GridContextMenuService', () => {
     expect(service).toBeTruthy();
   });
 
+  describe('copyToClipboard', () => {
+    it('copies the value and shows a toast with the given field', () => {
+      service.copyToClipboard('some-value', 'Some Field');
+      expect(clipboard.copy).toHaveBeenCalledWith('some-value');
+      expect(translateService.instant).toHaveBeenCalledWith(
+        'pages.main.grid.context-menu.toast.copied-to-clipboard',
+        { field: 'Some Field' },
+      );
+      expect(toastService.info).toHaveBeenCalledWith(
+        'pages.main.grid.context-menu.toast.copied-to-clipboard',
+      );
+    });
+  });
+
   describe('buildTorrentMenu', () => {
     describe('menu structure', () => {
       it('should include top-level control items', async () => {
@@ -349,6 +363,29 @@ describe('GridContextMenuService', () => {
           type: 'UI_TORRENT_DELETE_REQUEST',
           defaultRemoveFiles: false,
         });
+      });
+
+      it('torrent.copyCellValue action copies the right-clicked cell value', async () => {
+        const entries = await service.buildTorrentMenu(
+          makeData({ cellValue: 'Downloading', cellField: 'State' }),
+        );
+        (findItem(entries, 'torrent.copyCellValue')!.action as () => void)();
+        expect(clipboard.copy).toHaveBeenCalledWith('Downloading');
+        expect(toastService.info).toHaveBeenCalledWith(
+          'pages.main.grid.context-menu.toast.copied-to-clipboard',
+        );
+      });
+
+      it('torrent.copyCellValue is disabled when there is no cell value', async () => {
+        const entries = await service.buildTorrentMenu(makeData());
+        expect(findItem(entries, 'torrent.copyCellValue')?.disabled).toBe(true);
+      });
+
+      it('torrent.copyCellValue is enabled when there is a cell value', async () => {
+        const entries = await service.buildTorrentMenu(
+          makeData({ cellValue: 'Downloading', cellField: 'State' }),
+        );
+        expect(findItem(entries, 'torrent.copyCellValue')?.disabled).toBe(false);
       });
 
       it('torrent.copyName action copies the torrent name for a single selection', async () => {

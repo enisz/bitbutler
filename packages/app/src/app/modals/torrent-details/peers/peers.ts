@@ -1,4 +1,3 @@
-import { Clipboard } from '@angular/cdk/clipboard';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -10,7 +9,7 @@ import {
   inject,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { faCode, faCopy, faNetworkWired } from '@fortawesome/free-solid-svg-icons';
+import { faCode, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { TranslateService } from '@ngx-translate/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import {
@@ -38,6 +37,7 @@ import {
 import { SizeColumnFilter } from '../../../components/column-filters/size-column-filter/size-column-filter';
 import { TextColumnFilter } from '../../../components/column-filters/text-column-filter/text-column-filter';
 import { QbTorrentPeer } from '../../../models/torrent.model';
+import { getFormattedCellValue } from '../../../pages/main/grid/context-menu/cell-value-formatter.util';
 import { ContextMenuEntry } from '../../../pages/main/grid/context-menu/context-menu.types';
 import { GridContextMenuService } from '../../../pages/main/grid/context-menu/grid-context-menu.service';
 import { LoadingOverlay } from '../../../pages/main/grid/overlays/loading-overlay/loading-overlay';
@@ -72,7 +72,6 @@ export class Peers implements TorrentDetailTabComponent, OnInit {
   private readonly contextMenuService = inject(ContextMenuService);
   private readonly gridContextMenuService = inject(GridContextMenuService);
   private readonly peersGridSettingsService = inject(PeersGridSettingsService);
-  private readonly clipboard = inject(Clipboard);
   private readonly destroyRef = inject(DestroyRef);
 
   private readonly saveState$ = new Subject<void>();
@@ -141,37 +140,28 @@ export class Peers implements TorrentDetailTabComponent, OnInit {
 
   private buildRowMenu(e: CellContextMenuEvent<QbTorrentPeer>): ContextMenuEntry[] {
     const row = e.data;
-    const ipPort = row ? `${row.ip}:${row.port}` : '';
     return [
       {
-        kind: 'submenu',
-        id: 'copy',
-        label: 'pages.main.grid.context-menu.submenu.copy',
+        kind: 'item',
+        id: 'copy.cellValue',
+        label: 'pages.main.grid.context-menu.item.copy-cell-value',
         icon: faCopy,
-        children: [
-          {
-            kind: 'item',
-            id: 'copy.cellValue',
-            label: 'pages.main.grid.context-menu.item.copy-cell-value',
-            icon: faCopy,
-            action: () => this.clipboard.copy(String(e.value ?? '')),
-          },
-          {
-            kind: 'item',
-            id: 'copy.ipPort',
-            label: 'components.modals.torrent-details.peers.context-menu.item.copy-ip-port',
-            icon: faNetworkWired,
-            disabled: !row?.ip,
-            action: () => this.clipboard.copy(ipPort),
-          },
-          {
-            kind: 'item',
-            id: 'copy.json',
-            label: 'pages.main.grid.context-menu.item.copy-as-json',
-            icon: faCode,
-            action: () => this.clipboard.copy(JSON.stringify(row, null, 2)),
-          },
-        ],
+        action: () =>
+          this.gridContextMenuService.copyToClipboard(
+            getFormattedCellValue(e) ?? '',
+            String(e.colDef?.headerName ?? ''),
+          ),
+      },
+      {
+        kind: 'item',
+        id: 'copy.json',
+        label: 'pages.main.grid.context-menu.item.copy-row-as-json',
+        icon: faCode,
+        action: () =>
+          this.gridContextMenuService.copyToClipboard(
+            JSON.stringify(row, null, 2),
+            this.translateService.instant('pages.main.grid.context-menu.field.row-as-json'),
+          ),
       },
     ];
   }

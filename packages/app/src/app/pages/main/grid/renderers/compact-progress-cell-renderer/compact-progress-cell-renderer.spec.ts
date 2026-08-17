@@ -22,12 +22,14 @@ describe('CompactProgressCellRenderer', () => {
   it('should have zero progress and undefined state by default', () => {
     expect(component.progress).toBe(0);
     expect(component.state).toBeUndefined();
+    expect(component.percentText).toBe('0%');
   });
 
   it('agInit should set progress and state from params', () => {
     component.agInit({ value: 0.65, data: { progress: 0.65, state: 'downloading' } } as any);
     expect(component.progress).toBe(0.65);
     expect(component.state).toBe('downloading');
+    expect(component.percentText).toBe('65.0%');
   });
 
   it('agInit should use data.progress when value is not a number', () => {
@@ -47,6 +49,7 @@ describe('CompactProgressCellRenderer', () => {
     } as any);
     expect(component.progress).toBe(1);
     expect(component.state).toBe('uploading');
+    expect(component.percentText).toBe('100%');
     expect(result).toBe(true);
   });
 });

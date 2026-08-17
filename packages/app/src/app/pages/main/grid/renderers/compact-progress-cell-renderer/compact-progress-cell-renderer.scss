@@ -9,7 +9,25 @@
   overflow: hidden;
 }
 
-app-bb-progress {
-  display: block;
+.bb-compact-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   width: 100%;
+}
+
+.bb-compact-progress-bar {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.bb-compact-progress-value {
+  flex: 0 0 auto;
+  width: 34px;
+  text-align: right;
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--bs-body-color);
 }

@@ -679,11 +679,6 @@
             "relevance": "Relevancia",
             "files": "Fájlok"
           },
-          "context-menu": {
-            "item": {
-              "copy-ip-port": "IP:Port másolása"
-            }
-          },
           "flags-tooltip": {
             "title": "Peer jelzők",
             "flags": {
@@ -760,11 +755,6 @@
             "num_leeches": "Leech",
             "num_downloaded": "Letöltések száma",
             "msg": "Üzenet"
-          },
-          "context-menu": {
-            "item": {
-              "copy-url": "Tracker URL másolása"
-            }
           },
           "status": {
             "disabled": "Letiltva",
@@ -1239,6 +1229,8 @@
             "copy-save-path": "Mentési útvonal másolása",
             "copy-save-paths": "Mentési útvonalak másolása",
             "copy-as-json": "Másolás JSON-ként",
+            "copy-cell-value": "Cella értékének másolása",
+            "copy-row-as-json": "Sor másolása JSON-ként",
             "export-torrent-file": "Exportálás .torrent fájlba",
             "export-torrent-files": "Exportálás .torrent fájlokba",
             "torrent-details": "Torrent részletei",
@@ -1312,7 +1304,8 @@
             "info-hashes": "Info Hash-ek",
             "save-path": "Mentési Útvonal",
             "save-paths": "Mentési Útvonalak",
-            "json": "JSON"
+            "json": "JSON",
+            "row-as-json": "Sor JSON-ként"
           }
         },
         "overlays": {
@@ -1327,6 +1320,7 @@
         },
         "grid-lib": {
           "col-def": {
+            "status_dot": "Állapot",
             "name": "Név",
             "hash": "Hash",
             "progress": "Haladás",

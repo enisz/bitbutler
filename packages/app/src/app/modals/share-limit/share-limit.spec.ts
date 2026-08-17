@@ -2,6 +2,7 @@ import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Torrent } from '../../models/torrent.model';
+import { ConfirmService } from '../../services/confirm.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { ToastService } from '../../services/toast.service';
@@ -26,6 +27,7 @@ describe('ShareLimit', () => {
   let mockActiveModal: Partial<NgbActiveModal>;
   let mockQbService: any;
   let mockToastService: { danger: ReturnType<typeof vi.fn> };
+  let mockConfirmService: { confirm: ReturnType<typeof vi.fn> };
   let torrentsMap: ReturnType<typeof makeStore>;
 
   beforeEach(async () => {
@@ -47,6 +49,7 @@ describe('ShareLimit', () => {
       },
     };
     mockToastService = { danger: vi.fn() };
+    mockConfirmService = { confirm: vi.fn().mockResolvedValue(true) };
 
     torrentsMap = makeStore([makeTorrent()]);
 
@@ -61,6 +64,7 @@ describe('ShareLimit', () => {
         },
         { provide: QbService, useValue: mockQbService },
         { provide: ToastService, useValue: mockToastService },
+        { provide: ConfirmService, useValue: mockConfirmService },
       ],
     }).compileComponents();
 
@@ -313,6 +317,30 @@ describe('ShareLimit', () => {
       component.clearAll();
       expect(mockActiveModal.close).not.toHaveBeenCalled();
       expect(mockActiveModal.dismiss).not.toHaveBeenCalled();
+    });
+
+    it('marks the form dirty', () => {
+      component.clearAll();
+      expect(component.form.controls.shareLimits.dirty).toBe(true);
+    });
+  });
+
+  describe('canDeactivate', () => {
+    it('returns true without prompting when the form is not dirty', async () => {
+      expect(await component.canDeactivate()).toBe(true);
+      expect(mockConfirmService.confirm).not.toHaveBeenCalled();
+    });
+
+    it('prompts when the form is dirty', async () => {
+      component.form.controls.shareLimits.markAsDirty();
+      await component.canDeactivate();
+      expect(mockConfirmService.confirm).toHaveBeenCalled();
+    });
+
+    it('returns the confirm result when prompted', async () => {
+      mockConfirmService.confirm.mockResolvedValue(false);
+      component.form.controls.shareLimits.markAsDirty();
+      expect(await component.canDeactivate()).toBe(false);
     });
   });
 });

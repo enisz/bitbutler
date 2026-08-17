@@ -700,7 +700,7 @@ ngb-typeahead-window.dropdown-menu {
 .bb-modal-tabs {
   margin-top: 15px;
   margin-bottom: 0;
-  font-size: 0.8rem;
+  font-size: 0.9375rem;
   gap: 1.375rem;
 
   .nav-item {
@@ -859,7 +859,7 @@ ngb-typeahead-window.dropdown-menu {
 .bb-datefilter ngb-datepicker .ngb-dp-weekday {
   color: var(--bb-dp-muted);
   font-weight: 600;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
 }
 
 .bb-datefilter ngb-datepicker .ngb-dp-day,
@@ -1055,7 +1055,7 @@ ngb-typeahead-window.dropdown-menu {
       border-color 0.15s ease-in-out,
       box-shadow 0.15s ease-in-out;
     padding: 0.25rem 0.5rem;
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     border-radius: 0.2rem;
   }
 
@@ -1064,7 +1064,7 @@ ngb-typeahead-window.dropdown-menu {
     top: 20px;
     left: 1.5rem;
     width: auto;
-    font-size: 0.75rem;
+    font-size: 0.8125rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -1106,7 +1106,7 @@ ngb-typeahead-window.dropdown-menu {
 }
 
 .bb-option__label {
-  font-size: 0.85rem;
+  font-size: 0.9375rem;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -1115,7 +1115,7 @@ ngb-typeahead-window.dropdown-menu {
 
 .bb-option__sub {
   display: block;
-  font-size: 0.72rem;
+  font-size: 0.8125rem;
   color: var(--bb-control-placeholder);
   margin-top: 2px;
 }
@@ -1214,7 +1214,7 @@ ngb-typeahead-window.dropdown-menu {
     border: 1px solid var(--bs-border-color);
     border-radius: 10px;
     padding: 6px 12px;
-    font-size: 0.75rem;
+    font-size: 0.8125rem;
     line-height: 1.4;
     text-align: left;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);

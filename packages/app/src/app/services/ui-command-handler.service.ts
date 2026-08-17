@@ -235,6 +235,8 @@ export class UiCommandHandlerService {
             const limitTransferModalRef = this.modalService.open(TransferLimit, {
               centered: true,
               size: 'lg',
+              beforeDismiss: () =>
+                (limitTransferModalRef.componentInstance as GuardableModal).canDeactivate(),
             });
             setModalInput(limitTransferModalRef, 'target', command.target);
             setModalInput(limitTransferModalRef, 'hashes', transferHashes);
@@ -249,7 +251,11 @@ export class UiCommandHandlerService {
             const shareLimitHashes =
               command.hashes ??
               (shareLimitTarget === 'torrent' ? this.selectionStoreService.selectedHashes() : []);
-            const limitTorrentShare = this.modalService.open(ShareLimit, { size: 'lg' });
+            const limitTorrentShare = this.modalService.open(ShareLimit, {
+              size: 'lg',
+              beforeDismiss: () =>
+                (limitTorrentShare.componentInstance as GuardableModal).canDeactivate(),
+            });
             setModalInput(limitTorrentShare, 'target', shareLimitTarget);
             setModalInput(limitTorrentShare, 'hashes', shareLimitHashes);
             limitTorrentShare.result.catch(() => {});

@@ -1,4 +1,3 @@
-import { Clipboard } from '@angular/cdk/clipboard';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -10,7 +9,7 @@ import {
   inject,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { faCode, faCopy, faLink } from '@fortawesome/free-solid-svg-icons';
+import { faCode, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { TranslateService } from '@ngx-translate/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import {
@@ -35,6 +34,7 @@ import {
 } from '../../../components/column-filters/set-column-filter/set-column-filter';
 import { TextColumnFilter } from '../../../components/column-filters/text-column-filter/text-column-filter';
 import { QbTorrentTracker, QbTrackerStatus } from '../../../models/qbittorrent.model';
+import { getFormattedCellValue } from '../../../pages/main/grid/context-menu/cell-value-formatter.util';
 import { ContextMenuEntry } from '../../../pages/main/grid/context-menu/context-menu.types';
 import { GridContextMenuService } from '../../../pages/main/grid/context-menu/grid-context-menu.service';
 import { LoadingOverlay } from '../../../pages/main/grid/overlays/loading-overlay/loading-overlay';
@@ -60,7 +60,6 @@ export class Trackers implements TorrentDetailTabComponent, OnInit {
   private readonly contextMenuService = inject(ContextMenuService);
   private readonly gridContextMenuService = inject(GridContextMenuService);
   private readonly trackersGridSettingsService = inject(TrackersGridSettingsService);
-  private readonly clipboard = inject(Clipboard);
   private readonly destroyRef = inject(DestroyRef);
 
   private readonly saveState$ = new Subject<void>();
@@ -137,34 +136,26 @@ export class Trackers implements TorrentDetailTabComponent, OnInit {
     const row = e.data;
     return [
       {
-        kind: 'submenu',
-        id: 'copy',
-        label: 'pages.main.grid.context-menu.submenu.copy',
+        kind: 'item',
+        id: 'copy.cellValue',
+        label: 'pages.main.grid.context-menu.item.copy-cell-value',
         icon: faCopy,
-        children: [
-          {
-            kind: 'item',
-            id: 'copy.cellValue',
-            label: 'pages.main.grid.context-menu.item.copy-cell-value',
-            icon: faCopy,
-            action: () => this.clipboard.copy(String(e.value ?? '')),
-          },
-          {
-            kind: 'item',
-            id: 'copy.url',
-            label: 'components.modals.torrent-details.trackers.context-menu.item.copy-url',
-            icon: faLink,
-            disabled: !row?.url,
-            action: () => this.clipboard.copy(row?.url ?? ''),
-          },
-          {
-            kind: 'item',
-            id: 'copy.json',
-            label: 'pages.main.grid.context-menu.item.copy-as-json',
-            icon: faCode,
-            action: () => this.clipboard.copy(JSON.stringify(row, null, 2)),
-          },
-        ],
+        action: () =>
+          this.gridContextMenuService.copyToClipboard(
+            getFormattedCellValue(e) ?? '',
+            String(e.colDef?.headerName ?? ''),
+          ),
+      },
+      {
+        kind: 'item',
+        id: 'copy.json',
+        label: 'pages.main.grid.context-menu.item.copy-row-as-json',
+        icon: faCode,
+        action: () =>
+          this.gridContextMenuService.copyToClipboard(
+            JSON.stringify(row, null, 2),
+            this.translateService.instant('pages.main.grid.context-menu.field.row-as-json'),
+          ),
       },
     ];
   }

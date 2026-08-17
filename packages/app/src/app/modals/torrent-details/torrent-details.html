@@ -1,33 +1,33 @@
 <div class="modal-header bb-modal-header">
   <div class="bb-modal-header__text">
-    <h5
-      class="modal-title bb-title-clamp"
-      [ngbTooltip]="torrent()?.name"
-      bbTooltipOverflow
-      placement="bottom"
-      tooltipClass="single-line-tooltip"
-    >
-      {{ torrent()?.name }}
-    </h5>
+    <div class="d-flex align-items-center gap-3 min-w-0">
+      <span
+        class="bb-header-status-dot bg-{{ stateVariant() }}"
+        [ngbTooltip]="'torrent.state.' + torrent()?.state | translate"
+        placement="bottom"
+      ></span>
+      <h5
+        class="modal-title bb-title-clamp"
+        [ngbTooltip]="torrent()?.name"
+        bbTooltipOverflow
+        placement="bottom"
+        tooltipClass="single-line-tooltip"
+      >
+        {{ torrent()?.name }}
+      </h5>
+    </div>
 
     <div class="bb-header-meta small text-body-secondary mt-1">
       <span class="bb-header-meta__hash">
-        <code
-          class="bb-hash-chip"
-          [ngbTooltip]="torrent()?.hash"
-          bbTooltipOverflow
-          placement="bottom"
-          tooltipClass="single-line-tooltip"
-          >{{ torrent()?.hash }}</code
-        >
         <button
           type="button"
-          class="btn btn-sm btn-link bb-header-meta__copy"
-          placement="top"
+          class="bb-hash-chip"
           [ngbTooltip]="'components.modals.torrent-details.general.copy-to-clipboard' | translate"
+          placement="bottom"
+          tooltipClass="single-line-tooltip"
           (click)="copyHash()"
         >
-          <fa-icon [icon]="icon.faCopy" />
+          {{ torrent()?.hash }}
         </button>
       </span>
       <span>·</span>
