@@ -11,7 +11,7 @@ $au-light-info: #4aa3ff;
 
 $au-light-body-bg: #f3f7ff;
 $au-light-body-color: #1c2333;
-$au-light-border: #d7e0f2;
+$au-light-border: rgba($au-light-body-color, 0.12);
 $au-light-surface: #ffffff;
 
 $au-light-check-marker-colors: (
@@ -95,8 +95,8 @@ $au-light-check-marker-colors: (
     --bb-ng-accent: var(--bs-secondary);
     --bb-ng-focus-ring: rgba(var(--bs-primary-rgb), 0.18);
 
-    --bb-control-bg: color-mix(in srgb, var(--bs-body-bg) 55%, var(--bs-card-bg) 45%);
-    --bb-control-border: color-mix(in srgb, var(--bs-border-color) 85%, #000 15%);
+    --bb-control-bg: color-mix(in srgb, var(--bs-body-bg) 30%, var(--bs-card-bg) 70%);
+    --bb-control-border: rgba($au-light-body-color, 0.2);
     --bb-control-text: var(--bs-body-color);
     --bb-control-placeholder: color-mix(in srgb, var(--bs-body-color) 55%, transparent);
 
@@ -110,7 +110,7 @@ $au-light-check-marker-colors: (
     --bb-control-focus-border: var(--bs-primary);
     --bb-control-focus-ring: rgba(var(--bs-primary-rgb), 0.18);
 
-    --bb-control-radius: 12px;
+    --bb-control-radius: 9px;
 
     --bb-dp-bg: var(--bs-dropdown-bg);
     --bb-dp-border: var(--bs-border-color);
@@ -128,7 +128,7 @@ $au-light-check-marker-colors: (
     --bb-toast-border-opacity: 1;
     --bb-toast-glow-opacity: 0.05;
 
-    --bs-popover-bg: #{$au-light-surface};
+    --bs-popover-bg: var(--bs-card-cap-bg);
     --bs-popover-border-color: #{$au-light-border};
     --bs-popover-header-bg: var(--bs-card-cap-bg);
     --bs-popover-header-color: #{$au-light-body-color};
@@ -164,7 +164,7 @@ $au-light-check-marker-colors: (
   .form-switch .form-check-input {
     background-color: var(--bb-control-bg);
     border-color: var(--bb-control-border);
-    border-radius: var(--bb-control-radius, 12px);
+    border-radius: var(--bb-control-radius, 9px);
 
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%232d3a8c' opacity='0.45'/%3e%3c/svg%3e");
 

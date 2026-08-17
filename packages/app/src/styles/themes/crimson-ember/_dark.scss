@@ -4,7 +4,6 @@
 $bb-dark-primary: #c3110c;
 $bb-dark-secondary: #e6501b;
 $bb-dark-maroon: #280905;
-$bb-dark-blood: #740a03;
 
 $bb-dark-success: #7ecf95;
 $bb-dark-danger: #ff4d4d;
@@ -13,7 +12,7 @@ $bb-dark-info: #78d0e4;
 
 $bb-dark-body-bg: #1a0604;
 $bb-dark-body-color: #f1e2e0;
-$bb-dark-border: #4e110c;
+$bb-dark-border: rgba($bb-dark-body-color, 0.08);
 $bb-dark-surface: #280905;
 
 $bb-dark-check-marker-colors: (
@@ -61,7 +60,7 @@ $bb-dark-check-marker-colors: (
     --bs-card-bg: #{$bb-dark-surface};
     --bs-card-color: var(--bs-body-color);
     --bs-card-border-color: #{$bb-dark-border};
-    --bs-card-cap-bg: #3d0e0a;
+    --bs-card-cap-bg: color-mix(in srgb, var(--bs-card-bg) 90%, #fff 10%);
     --bs-card-cap-color: #{$bb-dark-secondary};
 
     --bs-tooltip-bg: var(--bs-card-cap-bg);
@@ -75,7 +74,7 @@ $bb-dark-check-marker-colors: (
     --bs-navbar-brand-color: #{$bb-dark-primary};
 
     --bs-dropdown-link-color: #{$bb-dark-body-color};
-    --bs-dropdown-bg: #{$bb-dark-surface};
+    --bs-dropdown-bg: var(--bs-card-cap-bg);
 
     --bb-accent: var(--bs-secondary);
     --bb-accent-rgb: var(--bs-secondary-rgb);
@@ -97,8 +96,8 @@ $bb-dark-check-marker-colors: (
     --bb-ng-accent: var(--bs-secondary);
     --bb-ng-focus-ring: rgba(var(--bs-secondary-rgb), 0.2);
 
-    --bb-control-bg: #120302;
-    --bb-control-border: #{$bb-dark-blood};
+    --bb-control-bg: color-mix(in srgb, var(--bs-card-bg) 94%, #fff 6%);
+    --bb-control-border: rgba($bb-dark-body-color, 0.15);
     --bb-control-text: var(--bs-body-color);
     --bb-control-placeholder: color-mix(in srgb, var(--bs-body-color) 50%, transparent);
 
@@ -108,7 +107,7 @@ $bb-dark-check-marker-colors: (
     --bb-control-focus-border: var(--bs-secondary);
     --bb-control-focus-ring: rgba(var(--bs-secondary-rgb), 0.22);
 
-    --bb-control-radius: 12px;
+    --bb-control-radius: 9px;
 
     --bb-dp-bg: var(--bs-dropdown-bg);
     --bb-dp-border: var(--bs-border-color);
@@ -126,7 +125,7 @@ $bb-dark-check-marker-colors: (
     --bb-toast-border-opacity: 0.4;
     --bb-toast-glow-opacity: 0.15;
 
-    --bs-popover-bg: #{$bb-dark-surface};
+    --bs-popover-bg: var(--bs-card-cap-bg);
     --bs-popover-border-color: #{$bb-dark-border};
     --bs-popover-header-bg: var(--bs-card-cap-bg);
     --bs-popover-header-color: var(--bs-card-cap-color);

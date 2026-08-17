@@ -11,7 +11,7 @@ $deep-sea-dark-info: #088395;
 
 $deep-sea-dark-body-bg: #04161d;
 $deep-sea-dark-body-color: #ebf4f6;
-$deep-sea-dark-border: #09637e;
+$deep-sea-dark-border: rgba($deep-sea-dark-body-color, 0.08);
 $deep-sea-dark-surface: #06242e;
 
 $deep-sea-dark-check-marker-colors: (
@@ -59,7 +59,7 @@ $deep-sea-dark-check-marker-colors: (
     --bs-card-bg: #{$deep-sea-dark-surface};
     --bs-card-color: var(--bs-body-color);
     --bs-card-border-color: #{$deep-sea-dark-border};
-    --bs-card-cap-bg: #07313f;
+    --bs-card-cap-bg: color-mix(in srgb, var(--bs-card-bg) 90%, #fff 10%);
     --bs-card-cap-color: #{$deep-sea-dark-primary};
 
     --bs-tooltip-bg: var(--bs-card-cap-bg);
@@ -73,7 +73,7 @@ $deep-sea-dark-check-marker-colors: (
     --bs-navbar-brand-color: #{$deep-sea-dark-primary};
 
     --bs-dropdown-link-color: #{$deep-sea-dark-body-color};
-    --bs-dropdown-bg: #{$deep-sea-dark-surface};
+    --bs-dropdown-bg: var(--bs-card-cap-bg);
 
     --bb-accent: var(--bs-secondary);
     --bb-accent-rgb: var(--bs-secondary-rgb);
@@ -95,8 +95,8 @@ $deep-sea-dark-check-marker-colors: (
     --bb-ng-accent: var(--bs-secondary);
     --bb-ng-focus-ring: rgba(var(--bs-secondary-rgb), 0.2);
 
-    --bb-control-bg: color-mix(in srgb, var(--bs-card-bg) 72%, #000 28%);
-    --bb-control-border: color-mix(in srgb, var(--bs-border-color) 85%, #fff 15%);
+    --bb-control-bg: color-mix(in srgb, var(--bs-card-bg) 94%, #fff 6%);
+    --bb-control-border: rgba($deep-sea-dark-body-color, 0.15);
     --bb-control-text: var(--bs-body-color);
     --bb-control-placeholder: color-mix(in srgb, var(--bs-body-color) 60%, transparent);
 
@@ -110,7 +110,7 @@ $deep-sea-dark-check-marker-colors: (
     --bb-control-focus-border: var(--bs-secondary);
     --bb-control-focus-ring: rgba(var(--bs-secondary-rgb), 0.22);
 
-    --bb-control-radius: 12px;
+    --bb-control-radius: 9px;
 
     --bb-dp-bg: var(--bs-dropdown-bg);
     --bb-dp-border: var(--bs-border-color);
@@ -128,9 +128,9 @@ $deep-sea-dark-check-marker-colors: (
     --bb-toast-border-opacity: 0.4;
     --bb-toast-glow-opacity: 0.15;
 
-    --bs-popover-bg: #{$deep-sea-dark-surface};
+    --bs-popover-bg: var(--bs-card-cap-bg);
     --bs-popover-border-color: #{$deep-sea-dark-border};
-    --bs-popover-header-bg: #07313f;
+    --bs-popover-header-bg: var(--bs-card-cap-bg);
     --bs-popover-header-color: #{$deep-sea-dark-primary};
     --bs-popover-body-color: #{$deep-sea-dark-body-color};
 
