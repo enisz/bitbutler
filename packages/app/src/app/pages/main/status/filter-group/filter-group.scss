@@ -45,6 +45,10 @@
   &.active {
     background-color: var(--bb-active-list-item-bg);
     color: var(--bs-body-color);
+    // Bootstrap's active-adjacent border-collapsing rule sets a -1px
+    // margin-top even though we zero out the border above, shifting the
+    // item (and everything after it) up by a pixel on select.
+    margin-top: 0 !important;
   }
 
   &:not(.active) {
