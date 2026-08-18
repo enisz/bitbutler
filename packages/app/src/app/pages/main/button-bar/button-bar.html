@@ -38,19 +38,6 @@
     }
   </div>
 
-  <div class="bb-toolbar__groups">
-    @for (e of toolGroups(); track trackBy($index, e)) {
-      @if (e.kind === 'divider') {
-        <div class="bb-toolbar__divider" aria-hidden="true"></div>
-      } @else if (e.kind === 'group') {
-        <ng-container
-          [ngTemplateOutlet]="groupTpl"
-          [ngTemplateOutletContext]="{ $implicit: e }"
-        ></ng-container>
-      }
-    }
-  </div>
-
   <form
     class="bb-toolbar__search"
     autocomplete="off"
@@ -81,6 +68,19 @@
       </button>
     </div>
   </form>
+
+  <div class="bb-toolbar__groups">
+    @for (e of toolGroups(); track trackBy($index, e)) {
+      @if (e.kind === 'divider') {
+        <div class="bb-toolbar__divider" aria-hidden="true"></div>
+      } @else if (e.kind === 'group') {
+        <ng-container
+          [ngTemplateOutlet]="groupTpl"
+          [ngTemplateOutletContext]="{ $implicit: e }"
+        ></ng-container>
+      }
+    }
+  </div>
 </div>
 
 <ng-template #groupTpl let-e>
