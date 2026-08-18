@@ -1,23 +1,24 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
-import {
-  faCalendarAlt,
-  faCodeBranch,
-  faExternalLinkAlt,
-  faUser,
-  faXmark,
-} from '@fortawesome/free-solid-svg-icons';
+import { faUser, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
+import { TimeagoPipe } from 'ngx-timeago';
 import { AutofocusDirective } from '../../directives/autofocus';
 import { LocalTimestampPipe } from '../../pipes/local-timestamp-pipe';
 import { ElectronService } from '../../services/electron.service';
 import { ThemeService } from '../../services/theme.service';
 import { BbBtnContent } from '../bb-btn-content/bb-btn-content';
 
+interface TechStackItem {
+  name: string;
+  purposeKey: string;
+  version: string;
+}
+
 @Component({
   selector: 'app-about',
-  imports: [LocalTimestampPipe, AutofocusDirective, BbBtnContent, TranslatePipe],
+  imports: [LocalTimestampPipe, TimeagoPipe, AutofocusDirective, BbBtnContent, TranslatePipe],
   templateUrl: './about.html',
   styleUrl: './about.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,18 +32,22 @@ export class About {
   public icons = {
     faGithub,
     faUser,
-    faExternalLinkAlt,
-    faCalendarAlt,
-    faCodeBranch,
     faXmark,
   };
 
   public version = this.electronService.getBitButlerVersion();
-  public commit = this.electronService.getBitButlerCommit();
   public releaseDate = this.electronService.getBitButlerReleaseDate();
   public readonly logoUrl = computed(
     () => `assets/images/bitbutler-logo-${this.themeService.family()}.png`,
   );
+
+  public readonly techStack: TechStackItem[] = [
+    { name: 'Angular', purposeKey: 'angular', version: 'v20.3.0' },
+    { name: 'Electron', purposeKey: 'electron', version: 'v39.2.5' },
+    { name: 'SQLite', purposeKey: 'sqlite', version: 'v12.5.0' },
+    { name: 'ag-Grid', purposeKey: 'ag-grid', version: 'v35.0.0' },
+    { name: 'TypeScript', purposeKey: 'typescript', version: 'v5.9.2' },
+  ];
 
   public openExternalUrl(url: string): void {
     this.electronService.openExternalUrl(url);
@@ -50,9 +55,5 @@ export class About {
 
   public goToRelease(): void {
     this.electronService.goToRelease();
-  }
-
-  public goToCommit(): void {
-    this.electronService.goToCommit();
   }
 }

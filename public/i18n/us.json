@@ -34,7 +34,17 @@
       "tagline": "The digital butler for your torrents",
       "description": "BitButler is a modern cross-platform desktop client for managing qBittorrent servers remotely. Built with Angular and Electron.",
       "released": "Released",
-      "platform": "Platform"
+      "labels": {
+        "release": "Release",
+        "stack": "Tech Stack"
+      },
+      "stack": {
+        "angular": "Frontend Framework",
+        "electron": "Desktop Shell",
+        "sqlite": "Local Database",
+        "ag-grid": "Data Management",
+        "typescript": "Logic & Types"
+      }
     },
     "add-torrent": {
       "title": "Adding a Torrent",

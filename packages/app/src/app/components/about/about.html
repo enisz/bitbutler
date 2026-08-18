@@ -3,50 +3,54 @@
     <img [src]="logoUrl()" class="bb-about__logo" alt="BitButler logo" />
 
     <div class="bb-about__hero">
-      <h1 class="bb-about__title mb-0">BitButler</h1>
-      <p class="bb-about__tagline mb-2">
+      <div class="d-flex align-items-baseline gap-2">
+        <h1 class="bb-about__title mb-0">BitButler</h1>
+        <span class="bb-about__version cursor-pointer" (click)="goToRelease()">v{{ version }}</span>
+      </div>
+      <p class="bb-about__tagline mb-0">
         {{ 'components.about.tagline' | translate }}
       </p>
-      <div class="d-flex gap-2">
-        <span
-          class="badge rounded-pill bb-badge-outline-muted cursor-pointer"
-          (click)="goToRelease()"
-          >v{{ version }}</span
-        >
-        @if (commit) {
-          <span
-            class="badge rounded-pill bb-badge-outline-info cursor-pointer"
-            (click)="goToCommit()"
-            >#{{ commit.slice(0, 7) }}</span
-          >
-        }
-      </div>
     </div>
   </div>
 
-  <div class="p-4 pt-0">
-    <div class="bb-about__grid">
-      <div class="bb-about__item">
-        <div class="d-flex flex-column">
-          <span class="bb-about__label">{{ 'components.about.released' | translate }}</span>
-          <span class="bb-about__value">{{ releaseDate ?? undefined | localTimestamp }}</span>
+  <div class="p-4 pt-3 pb-3 bb-about__body">
+    <fieldset class="bb-fieldset">
+      <legend>{{ 'components.about.labels.release' | translate }}</legend>
+      <div class="bb-rows">
+        <div class="bb-row">
+          <span class="bb-row__label">{{ 'components.about.released' | translate }}</span>
+          <span class="bb-row__value"
+            >{{ releaseDate ?? undefined | localTimestamp }}
+            @if (releaseDate) {
+              <span class="bb-row__value-sub">({{ releaseDate * 1000 | timeago }})</span>
+            }
+          </span>
         </div>
       </div>
+    </fieldset>
 
-      <div class="bb-about__item">
-        <div class="d-flex flex-column">
-          <span class="bb-about__label">{{ 'components.about.platform' | translate }}</span>
-          <span class="bb-about__value">Angular & Electron</span>
-        </div>
+    <fieldset class="bb-fieldset">
+      <legend>{{ 'components.about.labels.stack' | translate }}</legend>
+      <div class="bb-rows">
+        @for (item of techStack; track item.name) {
+          <div class="bb-row">
+            <span class="bb-row__label">{{ item.name }}</span>
+            <span class="bb-row__value"
+              >{{ 'components.about.stack.' + item.purposeKey | translate }}
+              <span class="bb-row__value-sub">{{ item.version }}</span></span
+            >
+          </div>
+        }
       </div>
-    </div>
+    </fieldset>
   </div>
 </div>
 
 <div class="modal-footer justify-content-between">
   <div class="d-flex gap-2">
     <button
-      class="btn btn-sm btn-dashed-secondary bb-about__link"
+      type="button"
+      class="btn btn-sm btn-split btn-secondary"
       (click)="openExternalUrl('https://github.com/enisz/bitbutler')"
     >
       <bb-btn-content
@@ -56,19 +60,15 @@
       ></bb-btn-content>
     </button>
     <button
-      class="btn btn-sm btn-dashed-secondary bb-about__link"
+      type="button"
+      class="btn btn-sm btn-split btn-secondary"
       (click)="openExternalUrl('https://github.com/enisz')"
     >
       <bb-btn-content [icon]="icons.faUser" text="@enisz" position="end"></bb-btn-content>
     </button>
   </div>
 
-  <button
-    type="button"
-    class="btn btn-sm btn-outline-secondary bb-about__link"
-    (click)="activeModal.close()"
-    autofocus
-  >
+  <button type="button" class="btn btn-sm btn-split" (click)="activeModal.close()" autofocus>
     <bb-btn-content
       [icon]="icons.faXmark"
       [text]="'general.button.close' | translate"

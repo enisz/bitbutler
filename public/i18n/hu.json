@@ -34,7 +34,17 @@
       "tagline": "A torrentjeid digitális komornyikja",
       "description": "A BitButler egy modern, többplatformos asztali kliens qBittorrent szerverek távoli kezeléséhez. Angular és Electron alapokon.",
       "released": "Kiadva",
-      "platform": "Platform"
+      "labels": {
+        "release": "Kiadás",
+        "stack": "Technológiák"
+      },
+      "stack": {
+        "angular": "Frontend keretrendszer",
+        "electron": "Asztali héj",
+        "sqlite": "Helyi adatbázis",
+        "ag-grid": "Adatkezelés",
+        "typescript": "Logika és típusok"
+      }
     },
     "add-torrent": {
       "title": "Torrent hozzáadása",
