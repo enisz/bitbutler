@@ -10,6 +10,12 @@
     }
   </div>
   @if (title()) {
-    <div class="bb-callout__message">{{ message() }}</div>
+    <div class="bb-callout__message">
+      @if (message()) {
+        {{ message() }}
+      } @else {
+        <ng-content></ng-content>
+      }
+    </div>
   }
 </div>

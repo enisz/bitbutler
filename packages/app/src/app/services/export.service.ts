@@ -91,7 +91,8 @@ export class ExportService implements OnDestroy {
           this.translateService.instant('components.modals.export-torrents.toast.failed-title'),
         );
       }),
-      api.onImportProgress((e: ImportProgressEvent) =>
+      api.onImportProgress((e: ImportProgressEvent) => {
+        if (this._import().phase !== 'running') return;
         this._import.update((s) => {
           const results = new Map(s.results);
           results.set(e.hash.toLowerCase(), e.success ? 'imported' : 'failed');
@@ -103,20 +104,32 @@ export class ExportService implements OnDestroy {
             name: e.name,
             results,
           };
-        }),
-      ),
-      api.onImportDone((e: { total: number; failed: number; alreadyExisted: number }) =>
+        });
+      }),
+      api.onImportDone((e: { total: number; failed: number; alreadyExisted: number }) => {
+        if (this._import().phase !== 'running') return;
         this._import.update((s) => ({
           ...s,
           phase: 'done',
           current: e.total,
           failed: e.failed,
           alreadyExisted: e.alreadyExisted,
-        })),
-      ),
-      api.onImportError((e: { message: string }) =>
-        this._import.update((s) => ({ ...s, phase: 'error', error: e.message })),
-      ),
+        }));
+        this.toastService.success(
+          this.translateService.instant('components.modals.import-torrents.toast.success-message', {
+            count: e.total - e.failed,
+          }),
+          this.translateService.instant('components.modals.import-torrents.toast.success-title'),
+        );
+      }),
+      api.onImportError((e: { message: string }) => {
+        if (this._import().phase !== 'running') return;
+        this._import.update((s) => ({ ...s, phase: 'error', error: e.message }));
+        this.toastService.danger(
+          e.message,
+          this.translateService.instant('components.modals.import-torrents.toast.failed-title'),
+        );
+      }),
     );
   }
 
@@ -156,8 +169,23 @@ export class ExportService implements OnDestroy {
     this._import.update((s) => ({ ...s, phase: 'error', error: message }));
   }
 
-  startImport(): void {
+  startImport(count: number): void {
     this._import.update((s) => ({ ...s, phase: 'running' }));
+    this.toastService.info(
+      this.translateService.instant('components.modals.import-torrents.toast.started', {
+        count,
+      }),
+    );
+  }
+
+  cancelImport(): void {
+    window.bitbutler.export.importCancel();
+    if (this._import().phase !== 'running') return;
+    this._import.update((s) => ({ ...s, phase: 'ready' }));
+    this.toastService.warning(
+      this.translateService.instant('components.modals.import-torrents.toast.cancelled-message'),
+      this.translateService.instant('components.modals.import-torrents.toast.cancelled-title'),
+    );
   }
 
   resetExport(): void {

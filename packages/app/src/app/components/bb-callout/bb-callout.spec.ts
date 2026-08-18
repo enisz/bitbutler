@@ -1,3 +1,4 @@
+import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { BbCallout } from './bb-callout';
@@ -13,6 +14,28 @@ describe('BbCallout', () => {
 
     fixture = TestBed.createComponent(BbCallout);
     component = fixture.componentInstance;
+  });
+
+  it('renders projected content in place of the message when title is given and message is omitted', async () => {
+    @Component({
+      standalone: true,
+      imports: [BbCallout],
+      template: `
+        <bb-callout variant="warning" title="Keep in mind">
+          <button type="button">Open settings</button>
+        </bb-callout>
+      `,
+    })
+    class HostComponent {}
+
+    TestBed.resetTestingModule();
+    await TestBed.configureTestingModule({ imports: [HostComponent] }).compileComponents();
+    const hostFixture = TestBed.createComponent(HostComponent);
+    hostFixture.detectChanges();
+
+    const button: HTMLButtonElement | null =
+      hostFixture.nativeElement.querySelector('bb-callout button');
+    expect(button?.textContent?.trim()).toBe('Open settings');
   });
 
   function setInputs(inputs: Record<string, unknown>): void {

@@ -444,6 +444,7 @@ export class UiCommandHandlerService {
             const importRef = this.modalService.open(ImportTorrents, {
               size: 'xl',
               scrollable: true,
+              centered: false,
             });
             if (command.bbePath) {
               setModalInput(importRef, 'initialBbePath', command.bbePath);

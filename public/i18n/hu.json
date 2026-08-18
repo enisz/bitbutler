@@ -954,7 +954,8 @@
           "path-remap": "Mentési útvonal hozzárendelés",
           "category-path-mapping": "Kategória útvonal hozzárendelés",
           "after-import": "Importálás után",
-          "progress": "Haladás"
+          "progress": "Haladás",
+          "report": "Jelentés"
         },
         "archive": {
           "exported-from": "Exportálva innen",
@@ -1015,7 +1016,53 @@
           "auto_tmm": "Auto-TMM",
           "sequential_download": "Sorrendi letöltés",
           "super_seeding": "Super seeding",
-          "first_last_piece_prio": "Első/utolsó szelet prioritása"
+          "first_last_piece_prio": "Első/utolsó szelet prioritása",
+          "popover": {
+            "save_path": {
+              "description": "Visszaállítja azt a mentési útvonalat, amelyet az adott torrent a forrás szerveren használt. Ha ki van kapcsolva, a cél szerver alapértelmezett mentési útvonala kerül felhasználásra.",
+              "sub": "Az eredeti mentési hely visszaállítása torrentenként"
+            },
+            "categories": {
+              "description": "Létrehozza az archívumban hivatkozott, de a cél szerveren még nem létező kategóriákat, és visszaállítja az egyes torrentek eredeti kategória-hozzárendelését.",
+              "sub": "Kategóriák létrehozása és torrentekhez rendelése"
+            },
+            "tags": {
+              "description": "Létrehozza az archívumban hivatkozott, de a cél szerveren még nem létező címkéket, és újra alkalmazza őket az egyes torrenteken.",
+              "sub": "Címkék létrehozása és torrentekre alkalmazása"
+            },
+            "speed_limits": {
+              "description": "Visszaállítja az egyes torrentek forrás szerveren beállított egyéni letöltési és feltöltési sebességkorlátait.",
+              "sub": "Letöltési és feltöltési korlátok visszaállítása torrentenként"
+            },
+            "share_limits": {
+              "description": "Visszaállítja az egyes torrentek forrás szerveren beállított arány korlátját, seedelési idő korlátját és inaktív seedelési idő korlátját.",
+              "sub": "Arány- és seedelési idő korlátok visszaállítása torrentenként"
+            },
+            "renames": {
+              "description": "Visszaállítja a torrent tartalmán belül a forrás szerveren végrehajtott fájl- és mappa-átnevezéseket. Legacy exportnál nem elérhető.",
+              "sub": "Fájl- és mappa-átnevezések visszaállítása a torrenten belül"
+            },
+            "priorities": {
+              "description": "Visszaállítja a torrenten belüli egyes fájlokhoz beállított letöltési prioritást. Legacy exportnál nem elérhető.",
+              "sub": "Az egyes fájlok letöltési prioritásának visszaállítása"
+            },
+            "auto_tmm": {
+              "description": "Visszaállítja, hogy az egyes torrenteknél be volt-e kapcsolva az Automatikus Torrent Kezelés, amely a kategória alapján kezeli a mentési útvonalat.",
+              "sub": "Az Automatikus Torrent Kezelés beállításának visszaállítása"
+            },
+            "sequential_download": {
+              "description": "Visszaállítja, hogy az egyes torrentek sorrendben, elejétől a végéig töltötték-e le a darabokat a legritkább-elsőként mód helyett.",
+              "sub": "A sorrendi letöltés beállításának visszaállítása"
+            },
+            "super_seeding": {
+              "description": "Visszaállítja, hogy az egyes torrentek super seeding módot használtak-e a darabok hatékonyabb terjesztéséhez seedelés közben.",
+              "sub": "A super seeding beállítás visszaállítása"
+            },
+            "first_last_piece_prio": {
+              "description": "Visszaállítja, hogy az egyes torrentek előnyben részesítették-e az első és utolsó darab letöltését, ami hasznos a média előnézetéhez.",
+              "sub": "Az első/utolsó szelet prioritás beállításának visszaállítása"
+            }
+          }
         },
         "legacy-unsupported": "Legacy exportban nem elérhető - a mágneslinks nem tartalmaz fájlszerkezeti információt.",
         "path-remap": {
@@ -1048,8 +1095,25 @@
           "skipped": "kihagyva",
           "failed": "sikertelen"
         },
+        "report": {
+          "status": "Állapot",
+          "success": "Sikeres",
+          "failed": "Sikertelen",
+          "imported": "Importálva",
+          "already-existed": "Már létezett",
+          "skipped": "Kihagyva",
+          "failed-count": "Sikertelen"
+        },
         "button": {
           "import": "Importálás"
+        },
+        "toast": {
+          "started": "{{count}} torrent importálása…",
+          "cancelled-title": "Import megszakítva",
+          "cancelled-message": "Az importálás megszakadt.",
+          "success-title": "Import kész",
+          "success-message": "{{count}} torrent importálva.",
+          "failed-title": "Import sikertelen"
         }
       },
       "manage-categories": {

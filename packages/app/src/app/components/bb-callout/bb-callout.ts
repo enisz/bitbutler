@@ -24,5 +24,5 @@ export class BbCallout {
   readonly variant = input.required<BbCalloutVariant>();
   readonly icon = input<IconDefinition | null>(null);
   readonly title = input<string | null>(null);
-  readonly message = input.required<string>();
+  readonly message = input<string | null>(null);
 }

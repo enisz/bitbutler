@@ -49,6 +49,7 @@ describe('ExportService', () => {
   });
 
   it('maps import progress events onto current/total/name and records per-hash results', () => {
+    service.startImport(5);
     onImportProgressCb({ current: 2, total: 5, name: 'Foo', hash: 'AAA', success: true });
     const state = service.importState();
     expect(state.phase).toBe('running');
@@ -59,28 +60,61 @@ describe('ExportService', () => {
   });
 
   it('records a failed result for a failed progress event', () => {
+    service.startImport(1);
     onImportProgressCb({ current: 1, total: 1, name: 'Bar', hash: 'BBB', success: false });
     expect(service.importState().results.get('bbb')).toBe('failed');
   });
 
   it('setImportLoading clears previous results', () => {
+    service.startImport(1);
     onImportProgressCb({ current: 1, total: 1, name: 'Foo', hash: 'aaa', success: true });
     service.setImportLoading();
     expect(service.importState().results.size).toBe(0);
   });
 
   it('resetImport clears previous results', () => {
+    service.startImport(1);
     onImportProgressCb({ current: 1, total: 1, name: 'Foo', hash: 'aaa', success: true });
     service.resetImport();
     expect(service.importState().results.size).toBe(0);
   });
 
   it('maps the import done event to failed and alreadyExisted', () => {
+    service.startImport(3);
     onImportDoneCb({ total: 3, failed: 1, alreadyExisted: 2 });
     const state = service.importState();
     expect(state.phase).toBe('done');
     expect(state.current).toBe(3);
     expect(state.failed).toBe(1);
     expect(state.alreadyExisted).toBe(2);
+  });
+
+  it('cancelImport resets phase to ready and calls the cancel IPC', () => {
+    const cancelSpy = vi.spyOn((window as any).bitbutler.export, 'importCancel');
+    service.startImport(1);
+    service.cancelImport();
+    expect(cancelSpy).toHaveBeenCalled();
+    expect(service.importPhase()).toBe('ready');
+  });
+
+  it('cancelImport is a no-op when not running', () => {
+    const cancelSpy = vi.spyOn((window as any).bitbutler.export, 'importCancel');
+    service.cancelImport();
+    expect(cancelSpy).toHaveBeenCalled();
+    expect(service.importPhase()).toBe('idle');
+  });
+
+  it('ignores a stray import:done event that arrives after cancelImport', () => {
+    service.startImport(1);
+    service.cancelImport();
+    onImportDoneCb({ total: 1, failed: 0, alreadyExisted: 0 });
+    expect(service.importPhase()).toBe('ready');
+  });
+
+  it('ignores a stray import:progress event once no longer running', () => {
+    service.startImport(1);
+    service.cancelImport();
+    onImportProgressCb({ current: 1, total: 1, name: 'Foo', hash: 'aaa', success: true });
+    expect(service.importState().results.size).toBe(0);
   });
 });
