@@ -13,6 +13,48 @@ if (!htmlElementProto.showPopover) {
   htmlElementProto.hidePopover = noop;
 }
 
+// Node 22+ defines its own `localStorage`/`sessionStorage` globals, which throw an
+// ExperimentalWarning and resolve to `undefined` unless `--localstorage-file` is passed.
+// Vitest's jsdom environment only copies over keys from a hardcoded list that predates this
+// Node addition, so it leaves Node's non-functional globals in place instead of jsdom's real
+// Storage implementation (https://github.com/vitest-dev/vitest/blob/main/packages/vitest/src/integrations/env/jsdom.ts).
+// Provide a minimal in-memory Storage polyfill so tests can use localStorage/sessionStorage.
+class MemoryStorage implements Storage {
+  private readonly store = new Map<string, string>();
+
+  get length(): number {
+    return this.store.size;
+  }
+
+  clear(): void {
+    this.store.clear();
+  }
+
+  getItem(key: string): string | null {
+    return this.store.has(key) ? (this.store.get(key) as string) : null;
+  }
+
+  key(index: number): string | null {
+    return [...this.store.keys()][index] ?? null;
+  }
+
+  removeItem(key: string): void {
+    this.store.delete(key);
+  }
+
+  setItem(key: string, value: string): void {
+    this.store.set(key, String(value));
+  }
+}
+
+for (const key of ['localStorage', 'sessionStorage'] as const) {
+  Object.defineProperty(globalThis, key, {
+    value: new MemoryStorage(),
+    configurable: true,
+    writable: true,
+  });
+}
+
 (window as any).bitbutler = {
   electron: {
     isDev: () => Promise.resolve(false),

@@ -1,21 +1,51 @@
 <div class="d-flex flex-row vw-100 vh-100">
-  <aside class="bb-sidebar-width flex-shrink-0 d-flex flex-column min-h-0">
-    <div class="bb-brand d-flex flex-row align-items-center pe-none user-select-none gap-2">
-      <img [ngSrc]="logoUrl()" alt="Bitbutler Logo" width="34" height="34" priority />
-
-      <div class="d-flex flex-column min-w-0">
-        <div class="brand-title">BitButler</div>
-        @if (currentServer()) {
-          <div class="brand-status d-flex flex-row align-items-center gap-1">
-            <span class="status-dot" [class]="connectionStatus()"></span>
-            <small>{{ currentServer()?.name }}</small>
-          </div>
+  <aside
+    class="bb-sidebar-width flex-shrink-0 d-flex flex-column min-h-0"
+    [class.bb-sidebar-width--collapsed]="sidebarCollapsed()"
+  >
+    <div
+      class="bb-brand d-flex flex-row align-items-center user-select-none gap-2"
+      [class.justify-content-center]="sidebarCollapsed()"
+    >
+      <button
+        type="button"
+        class="bb-brand-logo"
+        [class.bb-brand-logo--expand]="sidebarCollapsed()"
+        [disabled]="!sidebarCollapsed()"
+        (click)="toggleSidebar()"
+      >
+        <img [ngSrc]="logoUrl()" alt="Bitbutler Logo" width="40" height="40" priority />
+        @if (sidebarCollapsed()) {
+          <span class="bb-brand-logo__overlay" aria-hidden="true">
+            <fa-icon [icon]="icons.faChevronRight"></fa-icon>
+          </span>
         }
-      </div>
+      </button>
+
+      @if (!sidebarCollapsed()) {
+        <div class="d-flex flex-column min-w-0 flex-grow-1">
+          <div class="brand-title">BitButler</div>
+          @if (currentServer()) {
+            <div class="brand-status d-flex flex-row align-items-center gap-2">
+              <span class="status-dot" [class]="connectionStatus()"></span>
+              <small>{{ currentServer()?.name }}</small>
+            </div>
+          }
+        </div>
+
+        <button
+          type="button"
+          class="bb-sidebar-toggle"
+          aria-label="Collapse sidebar"
+          (click)="toggleSidebar()"
+        >
+          <fa-icon [icon]="icons.faBars"></fa-icon>
+        </button>
+      }
     </div>
 
     <div class="flex-grow-1 min-h-0 overflow-auto">
-      <app-status></app-status>
+      <app-status [collapsed]="sidebarCollapsed()"></app-status>
     </div>
   </aside>
 

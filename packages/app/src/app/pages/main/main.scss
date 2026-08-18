@@ -1,11 +1,17 @@
 :host {
   --bb-sidebar-width: 262px;
+  --bb-sidebar-width-collapsed: 72px;
 }
 
 .bb-sidebar-width {
   width: var(--bb-sidebar-width);
   background-color: var(--bs-card-bg);
   border-right: 1px solid var(--bs-border-color);
+  transition: width 160ms ease;
+
+  &.bb-sidebar-width--collapsed {
+    width: var(--bb-sidebar-width-collapsed);
+  }
 }
 
 .min-h-0 {
@@ -18,12 +24,10 @@
 
 .bb-brand {
   flex-shrink: 0;
-  padding: 14px 14px 12px;
+  height: var(--bb-header-height);
+  box-sizing: border-box;
+  padding: 0 14px;
   border-bottom: 1px solid var(--bs-border-color);
-
-  img {
-    border-radius: 9px;
-  }
 
   .brand-title {
     font-size: 0.95rem;
@@ -58,5 +62,67 @@
     &.firewalled {
       background: var(--bs-warning);
     }
+  }
+}
+
+.bb-brand-logo {
+  flex: 0 0 auto;
+  position: relative;
+  display: inline-flex;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  cursor: default;
+
+  img {
+    display: block;
+    border-radius: 10px;
+  }
+
+  &--expand {
+    cursor: pointer;
+
+    .bb-brand-logo__overlay {
+      opacity: 0;
+      transition: opacity 120ms ease;
+    }
+
+    &:hover .bb-brand-logo__overlay,
+    &:focus-visible .bb-brand-logo__overlay {
+      opacity: 1;
+    }
+  }
+}
+
+.bb-brand-logo__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--bs-body-color) 55%, transparent);
+  color: var(--bs-body-bg);
+  font-size: 0.85rem;
+}
+
+.bb-sidebar-toggle {
+  flex: 0 0 auto;
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 31px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--bb-control-placeholder);
+
+  &:hover {
+    background-color: var(--bb-hover-list-item-bg);
+    color: var(--bs-body-color);
   }
 }

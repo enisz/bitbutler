@@ -57,15 +57,20 @@ export class FilterGroupComponent {
   readonly showAllCount = input.required<number>();
   readonly showFilter = input(false);
   readonly action = input<FilterGroupAction | null>(null);
+  readonly initialOpen = input(true);
 
   readonly itemSelected = output<string>();
+  readonly openChanged = output<boolean>();
 
   public readonly icons = { faXmark, faChevronDown };
   public filterCtrl = new FormControl('', { nonNullable: true });
-  public readonly open = signal(true);
+  private readonly openOverride = signal<boolean | null>(null);
+  public readonly open = computed(() => this.openOverride() ?? this.initialOpen());
 
   public toggleOpen(): void {
-    this.open.update((v) => !v);
+    const next = !this.open();
+    this.openOverride.set(next);
+    this.openChanged.emit(next);
   }
 
   private readonly filterText = toSignal(

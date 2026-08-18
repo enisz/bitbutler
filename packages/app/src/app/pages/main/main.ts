@@ -8,10 +8,15 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faBars, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { Subscription, first } from 'rxjs';
+import { DEFAULT_SIDEBAR_SETTINGS } from '../../models/sidebar-settings.model';
 import { Maindata, QbServerState } from '../../models/torrent.model';
 import { QbPollingService } from '../../services/qb-polling.service';
 import { ServerStoreService } from '../../services/server-store.service';
+import { SidebarSettingsService } from '../../services/sidebar-settings.service';
 import { ThemeService } from '../../services/theme.service';
 import { TorrentListGridSettingsService } from '../../services/torrent-list-grid.settings.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
@@ -22,7 +27,7 @@ import { Status } from './status/status';
 
 @Component({
   selector: 'app-main',
-  imports: [Grid, Status, ButtonBar, NgOptimizedImage, ServerState],
+  imports: [Grid, Status, ButtonBar, NgOptimizedImage, ServerState, FontAwesomeModule],
   templateUrl: './main.html',
   styleUrl: './main.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,11 +38,25 @@ export class Main implements OnDestroy {
   private readonly torrentStore = inject(TorrentStoreService);
   private readonly themeService = inject(ThemeService);
   private readonly torrentListGridSettingsService = inject(TorrentListGridSettingsService);
+  private readonly sidebarSettingsService = inject(SidebarSettingsService);
   private pollSub: Subscription | null = null;
   public currentServer = this.serverStoreService.currentServer;
   public readonly logoUrl = computed(
     () => `assets/images/bitbutler-logo-${this.themeService.family()}.png`,
   );
+
+  public readonly icons = { faBars, faChevronRight };
+  private readonly sidebarSettings = toSignal(this.sidebarSettingsService.asObservable());
+  public readonly sidebarCollapsed = computed(() => this.sidebarSettings()?.collapsed ?? false);
+
+  public toggleSidebar(): void {
+    const current = this.sidebarSettings();
+    this.sidebarSettingsService.save({
+      collapsed: !(current?.collapsed ?? false),
+      filterGroupsOpen: current?.filterGroupsOpen ?? DEFAULT_SIDEBAR_SETTINGS.filterGroupsOpen,
+      activeFilters: current?.activeFilters ?? DEFAULT_SIDEBAR_SETTINGS.activeFilters,
+    });
+  }
 
   readonly theme = this.themeService.effectiveMode;
   readonly serverState = signal<QbServerState | null>(null);

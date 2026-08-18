@@ -10,6 +10,10 @@
 @use './styles/themes/index' as themes;
 @include themes.install-themes();
 
+:root {
+  --bb-header-height: 61px;
+}
+
 .btn {
   font-weight: 500;
   letter-spacing: 0.02em;

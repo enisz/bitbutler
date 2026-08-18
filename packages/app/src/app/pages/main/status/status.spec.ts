@@ -1,9 +1,14 @@
 import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
+import { DEFAULT_SIDEBAR_SETTINGS, SidebarSettings } from '../../../models/sidebar-settings.model';
 import { CommandBusService } from '../../../services/command-bus.service';
 import { FilterService, GRID_FILTER_INITIAL } from '../../../services/filter.service';
+import { SidebarSettingsService } from '../../../services/sidebar-settings.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { Status } from './status';
+
+const flushMicrotasks = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
 
 describe('Status', () => {
   let component: Status;
@@ -33,8 +38,18 @@ describe('Status', () => {
     tagsWithCounts: ReturnType<typeof signal<{ key: string; label: string; count: number }[]>>;
   };
   let commandBusMock: { emit: ReturnType<typeof vi.fn> };
+  let sidebarSettingsMock: {
+    load: ReturnType<typeof vi.fn>;
+    save: ReturnType<typeof vi.fn>;
+    asObservable: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(async () => {
+    sidebarSettingsMock = {
+      load: vi.fn().mockResolvedValue(DEFAULT_SIDEBAR_SETTINGS),
+      save: vi.fn().mockResolvedValue(undefined),
+      asObservable: vi.fn().mockReturnValue(of(DEFAULT_SIDEBAR_SETTINGS)),
+    };
     filterMock = {
       external: signal({ ...GRID_FILTER_INITIAL.external }),
       clearStates: vi.fn(),
@@ -64,6 +79,7 @@ describe('Status', () => {
         { provide: FilterService, useValue: filterMock },
         { provide: TorrentStoreService, useValue: torrentStoreMock },
         { provide: CommandBusService, useValue: commandBusMock },
+        { provide: SidebarSettingsService, useValue: sidebarSettingsMock },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
@@ -71,6 +87,7 @@ describe('Status', () => {
     fixture = TestBed.createComponent(Status);
     component = fixture.componentInstance;
     fixture.detectChanges();
+    await flushMicrotasks();
   });
 
   it('should create', () => {
@@ -246,6 +263,157 @@ describe('Status', () => {
     it('should call filterService.resetAll', () => {
       component.clearAll();
       expect(filterMock.resetAll).toHaveBeenCalled();
+    });
+
+    it('should persist the cleared active filters', () => {
+      sidebarSettingsMock.save.mockClear();
+      component.clearAll();
+      expect(sidebarSettingsMock.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          activeFilters: {
+            statusKeys: [],
+            trackers: [],
+            savePaths: [],
+            categories: [],
+            tags: [],
+          },
+        }),
+      );
+    });
+  });
+
+  describe('persisting active filters', () => {
+    it('should persist the selected status keys after setGroup', () => {
+      sidebarSettingsMock.save.mockClear();
+      component.setGroup('downloading');
+      expect(sidebarSettingsMock.save).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          activeFilters: expect.objectContaining({ statusKeys: ['downloading'] }),
+        }),
+      );
+    });
+
+    it('should persist the selected trackers after setTrackerGroup', () => {
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        trackers: new Set(['tracker.a.com']),
+      });
+      sidebarSettingsMock.save.mockClear();
+      component.setTrackerGroup('tracker.a.com');
+      expect(sidebarSettingsMock.save).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          activeFilters: expect.objectContaining({ trackers: ['tracker.a.com'] }),
+        }),
+      );
+    });
+
+    it('should persist the selected save paths after setSavePathGroup', () => {
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        savePaths: new Set(['/downloads']),
+      });
+      sidebarSettingsMock.save.mockClear();
+      component.setSavePathGroup('/downloads');
+      expect(sidebarSettingsMock.save).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          activeFilters: expect.objectContaining({ savePaths: ['/downloads'] }),
+        }),
+      );
+    });
+
+    it('should persist the selected categories after setCategoryGroup', () => {
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        categories: new Set(['Movies']),
+      });
+      sidebarSettingsMock.save.mockClear();
+      component.setCategoryGroup('Movies');
+      expect(sidebarSettingsMock.save).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          activeFilters: expect.objectContaining({ categories: ['Movies'] }),
+        }),
+      );
+    });
+
+    it('should persist the selected tags after setTagGroup', () => {
+      filterMock.external.set({ ...GRID_FILTER_INITIAL.external, tags: new Set(['hd']) });
+      sidebarSettingsMock.save.mockClear();
+      component.setTagGroup('hd');
+      expect(sidebarSettingsMock.save).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          activeFilters: expect.objectContaining({ tags: ['hd'] }),
+        }),
+      );
+    });
+
+    it('should not wipe out the persisted filterGroupsOpen state when only toggling group open state', () => {
+      sidebarSettingsMock.save.mockClear();
+      component.setGroupOpen('trackers', false);
+      expect(sidebarSettingsMock.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          activeFilters: DEFAULT_SIDEBAR_SETTINGS.activeFilters,
+        }),
+      );
+    });
+  });
+
+  describe('restoring active filters', () => {
+    it('should reapply persisted filters once the sidebar settings load', async () => {
+      const restored: SidebarSettings = {
+        ...DEFAULT_SIDEBAR_SETTINGS,
+        activeFilters: {
+          statusKeys: ['downloading', 'stopped'],
+          trackers: ['tracker.a.com'],
+          savePaths: ['/downloads'],
+          categories: ['Movies'],
+          tags: ['hd'],
+        },
+      };
+      sidebarSettingsMock.load.mockResolvedValue(restored);
+
+      const restoredFixture = TestBed.createComponent(Status);
+      restoredFixture.detectChanges();
+      await flushMicrotasks();
+
+      expect(filterMock.setStates).toHaveBeenCalledWith(
+        new Set([
+          'downloading',
+          'forcedDL',
+          'queuedDL',
+          'metaDL',
+          'stalledDL',
+          'pausedDL',
+          'pausedUP',
+          'stoppedDL',
+          'stoppedUP',
+        ]),
+      );
+      expect(filterMock.setTrackers).toHaveBeenCalledWith(['tracker.a.com']);
+      expect(filterMock.setSavePaths).toHaveBeenCalledWith(['/downloads']);
+      expect(filterMock.setCategories).toHaveBeenCalledWith(['Movies']);
+      expect(filterMock.setTags).toHaveBeenCalledWith(['hd']);
+      expect(restoredFixture.componentInstance.activeStatusKeys()).toEqual(
+        new Set(['downloading', 'stopped']),
+      );
+    });
+
+    it('should ignore unknown persisted status keys', async () => {
+      const restored: SidebarSettings = {
+        ...DEFAULT_SIDEBAR_SETTINGS,
+        activeFilters: {
+          ...DEFAULT_SIDEBAR_SETTINGS.activeFilters,
+          statusKeys: ['downloading', 'no-longer-a-group'],
+        },
+      };
+      sidebarSettingsMock.load.mockResolvedValue(restored);
+
+      const restoredFixture = TestBed.createComponent(Status);
+      restoredFixture.detectChanges();
+      await flushMicrotasks();
+
+      expect(restoredFixture.componentInstance.activeStatusKeys()).toEqual(
+        new Set(['downloading']),
+      );
     });
   });
 

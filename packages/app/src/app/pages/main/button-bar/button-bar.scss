@@ -11,8 +11,10 @@
 
   width: 100%;
   min-width: 0;
+  height: var(--bb-header-height);
+  box-sizing: border-box;
 
-  padding: 12px 18px;
+  padding: 0 18px;
   border-bottom: 1px solid var(--bs-border-color);
 
   background: var(--bs-body-bg);
