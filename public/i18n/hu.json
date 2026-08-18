@@ -771,7 +771,8 @@
         "title": "A torrent már létezik",
         "labels": {
           "details": "Részletek",
-          "swarm": "Raj"
+          "seeders": "{{ count }} seeder",
+          "leechers": "{{ count }} leecher"
         },
         "toast": {
           "delete-failed-title": "Nem sikerült törölni a torrent fájlt"

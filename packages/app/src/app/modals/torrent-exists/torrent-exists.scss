@@ -29,11 +29,20 @@
   font-variant-numeric: tabular-nums;
 }
 
-.bb-te-rates-left,
-.bb-te-rates-right {
+.bb-te-rates-left {
   display: flex;
   align-items: center;
   gap: 18px;
+}
+
+.bb-te-rates-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.bb-te-rates-sep {
+  color: var(--bb-control-placeholder);
 }
 
 .bb-te-rate {
@@ -51,13 +60,11 @@
 
   &-value {
     display: inline-block;
-    min-width: 72px;
   }
 }
 
 .bb-te-ratio-value {
   display: inline-block;
-  min-width: 28px;
 }
 
 .bb-te-fieldset {

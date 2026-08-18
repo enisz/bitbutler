@@ -23,17 +23,18 @@
     <div class="bb-te-file-card">
       <div class="d-flex align-items-baseline justify-content-between gap-3 mb-2">
         <div class="bb-te-pct">
-          {{ t.progress | percent: '1.1-1' }}
-          @if (isDownloading(t.state)) {
-            <small class="bb-te-pct-sub">
-              {{ t.downloaded | fileSize }} / {{ t.total_size | fileSize }}
-            </small>
-          }
+          {{ t.progress | percent: '1.0-1' }}
         </div>
+        @if (isDownloading(t.state)) {
+          <small class="bb-te-pct-sub">
+            {{ t.downloaded | fileSize }} / {{ t.total_size | fileSize }}
+          </small>
+        }
       </div>
 
       <app-bb-progress
         class="d-block"
+        mode="compact"
         [progress]="t.progress"
         [torrentState]="t.state"
       ></app-bb-progress>
@@ -41,18 +42,9 @@
       <div class="bb-te-rates mt-2">
         <div class="bb-te-rates-left">
           <span
-            class="text-body-secondary"
-            [ngbTooltip]="'components.modals.torrent-exists.labels.swarm' | translate"
-            placement="top"
-          >
-            {{ t.num_seeds }} / {{ t.num_leechs }}
-          </span>
-        </div>
-        <div class="bb-te-rates-right">
-          <span
             class="bb-te-rate bb-te-rate--dl"
             [ngbTooltip]="'components.modals.torrent-details.general.download-speed' | translate"
-            placement="top"
+            placement="bottom"
           >
             <fa-icon [icon]="icons.faArrowDown"></fa-icon>
             <span class="bb-te-rate-value">{{ t.dlspeed | fileSize }}/s</span>
@@ -60,7 +52,7 @@
           <span
             class="bb-te-rate bb-te-rate--ul"
             [ngbTooltip]="'components.modals.torrent-details.general.upload-speed' | translate"
-            placement="top"
+            placement="bottom"
           >
             <fa-icon [icon]="icons.faArrowUp"></fa-icon>
             <span class="bb-te-rate-value">{{ t.upspeed | fileSize }}/s</span>
@@ -68,9 +60,23 @@
           <span
             class="text-body-secondary bb-te-ratio-value"
             [ngbTooltip]="'components.modals.torrent-details.general.share-ratio' | translate"
-            placement="top"
+            placement="bottom"
           >
             {{ t.ratio | ratio: 1 }}
+          </span>
+        </div>
+        <div class="bb-te-rates-right">
+          <span class="text-body-secondary">
+            {{
+              'components.modals.torrent-exists.labels.seeders' | translate: { count: t.num_seeds }
+            }}
+          </span>
+          <span class="bb-te-rates-sep" aria-hidden="true">&middot;</span>
+          <span class="text-body-secondary">
+            {{
+              'components.modals.torrent-exists.labels.leechers'
+                | translate: { count: t.num_leechs }
+            }}
           </span>
         </div>
       </div>

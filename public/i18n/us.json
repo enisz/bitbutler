@@ -771,7 +771,8 @@
         "title": "Torrent Exists",
         "labels": {
           "details": "Details",
-          "swarm": "Swarm"
+          "seeders": "{{ count }} seeders",
+          "leechers": "{{ count }} leechers"
         },
         "toast": {
           "delete-failed-title": "Failed to Delete Torrent File"
