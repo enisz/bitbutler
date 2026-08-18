@@ -164,7 +164,11 @@ export class ButtonBar implements OnInit {
         variant: 'info',
         disabled: !this.hasSelection(),
       },
-      { kind: 'divider' },
+    ];
+  });
+
+  readonly toolGroups = computed<ToolbarEntry[]>(() => {
+    return [
       {
         kind: 'group',
         id: 'settings',

@@ -30,6 +30,14 @@
   overflow: hidden;
 }
 
+.bb-toolbar__groups {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  flex: 0 0 auto;
+}
+
 .bb-toolbar__divider {
   width: 1px;
   align-self: stretch;
