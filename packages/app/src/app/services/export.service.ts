@@ -1,10 +1,12 @@
-import { Injectable, OnDestroy, computed, signal } from '@angular/core';
+import { Injectable, OnDestroy, computed, inject, signal } from '@angular/core';
 import type {
   BbeMetadata,
   ExportDoneEvent,
   ExportProgressEvent,
   ImportProgressEvent,
 } from '@bitbutler/shared';
+import { TranslateService } from '@ngx-translate/core';
+import { ToastService } from './toast.service';
 
 export type ExportPhase = 'idle' | 'running' | 'done' | 'error';
 export type ImportPhase = 'idle' | 'loading' | 'ready' | 'running' | 'done' | 'error';
@@ -44,6 +46,9 @@ const IMPORT_IDLE: ImportState = {
 
 @Injectable({ providedIn: 'root' })
 export class ExportService implements OnDestroy {
+  private readonly toastService = inject(ToastService);
+  private readonly translateService = inject(TranslateService);
+
   private readonly _export = signal<ExportState>(EXPORT_IDLE);
   private readonly _import = signal<ImportState>(IMPORT_IDLE);
 
@@ -60,20 +65,32 @@ export class ExportService implements OnDestroy {
 
     this.unsubscribers.push(
       api.onProgress((e: ExportProgressEvent) =>
-        this._export.update((s) => ({ ...s, phase: 'running', ...e })),
+        this._export.update((s) => (s.phase === 'running' ? { ...s, ...e } : s)),
       ),
-      api.onDone((e: ExportDoneEvent) =>
+      api.onDone((e: ExportDoneEvent) => {
+        if (this._export().phase !== 'running') return;
         this._export.update((s) => ({
           ...s,
           phase: 'done',
           doneEvent: e,
           current: e.total,
           skipped: e.skipped,
-        })),
-      ),
-      api.onError((e: { message: string }) =>
-        this._export.update((s) => ({ ...s, phase: 'error', error: e.message })),
-      ),
+        }));
+        this.toastService.success(
+          this.translateService.instant('components.modals.export-torrents.toast.success-message', {
+            count: e.total - e.skipped,
+          }),
+          this.translateService.instant('components.modals.export-torrents.toast.success-title'),
+        );
+      }),
+      api.onError((e: { message: string }) => {
+        if (this._export().phase !== 'running') return;
+        this._export.update((s) => ({ ...s, phase: 'error', error: e.message }));
+        this.toastService.danger(
+          e.message,
+          this.translateService.instant('components.modals.export-torrents.toast.failed-title'),
+        );
+      }),
       api.onImportProgress((e: ImportProgressEvent) =>
         this._import.update((s) => {
           const results = new Map(s.results);
@@ -103,8 +120,23 @@ export class ExportService implements OnDestroy {
     );
   }
 
-  startExport(): void {
+  startExport(count: number): void {
     this._export.set({ ...EXPORT_IDLE, phase: 'running' });
+    this.toastService.info(
+      this.translateService.instant('components.modals.export-torrents.toast.started', {
+        count,
+      }),
+    );
+  }
+
+  cancelExport(): void {
+    window.bitbutler.export.cancel();
+    if (this._export().phase !== 'running') return;
+    this._export.set(EXPORT_IDLE);
+    this.toastService.warning(
+      this.translateService.instant('components.modals.export-torrents.toast.cancelled-message'),
+      this.translateService.instant('components.modals.export-torrents.toast.cancelled-title'),
+    );
   }
 
   setImportLoading(): void {

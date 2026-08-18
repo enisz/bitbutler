@@ -432,6 +432,7 @@ export class UiCommandHandlerService {
             const exportRef = this.modalService.open(ExportTorrents, {
               size: 'lg',
               scrollable: true,
+              centered: false,
             });
             exportRef.result.catch(() => {});
             break;

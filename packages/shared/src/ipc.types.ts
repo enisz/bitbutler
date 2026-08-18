@@ -101,6 +101,9 @@ export interface ExportDoneEvent {
   path: string;
   total: number;
   skipped: number;
+  categories: number;
+  tags: number;
+  fileSize: number;
 }
 
 export interface ExportTorrentFileItem {

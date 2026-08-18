@@ -301,7 +301,16 @@ async function runExport(event: Electron.IpcMainEvent, payload: ExportStartPaylo
     await fs.promises.copyFile(tmpPath, destPath);
     await fs.promises.unlink(tmpPath).catch(() => {});
 
-    const done: ExportDoneEvent = { path: destPath, total: hashes.length, skipped };
+    const { size: fileSize } = await fs.promises.stat(destPath);
+
+    const done: ExportDoneEvent = {
+      path: destPath,
+      total: hashes.length,
+      skipped,
+      categories: Object.keys(categories).length,
+      tags: tags.length,
+      fileSize,
+    };
     send('export:done', done);
   } catch (err) {
     if (tmpPath) await fs.promises.unlink(tmpPath).catch(() => {});

@@ -864,7 +864,8 @@
           "save-location": "Save location",
           "dest-dir": "Directory",
           "filename": "Filename",
-          "progress": "Progress"
+          "progress": "Progress",
+          "report": "Report"
         },
         "placeholder": {
           "dest-dir": "Select export directory",
@@ -894,7 +895,12 @@
           "tags": "Tags",
           "all": "All",
           "filtered": "Filtered",
-          "selected": "Selected"
+          "selected": "Selected",
+          "hint": {
+            "all": "All torrents on the source server will be included in the export.",
+            "filtered": "Only torrents matching the current grid filters will be included in the export.",
+            "selected": "Only the torrents currently selected in the grid will be included in the export."
+          }
         },
         "category-scope": {
           "all": "All",
@@ -913,14 +919,30 @@
           }
         },
         "progress": {
-          "exporting": "Exporting torrents...",
-          "fetching": "Fetching",
-          "done": "Export complete",
-          "skipped": "skipped"
+          "fetching": "Fetching"
+        },
+        "report": {
+          "status": "Status",
+          "success": "Success",
+          "failed": "Failed",
+          "torrents": "Torrents exported",
+          "skipped": "Skipped",
+          "categories": "Categories exported",
+          "tags": "Tags exported",
+          "file-path": "File path",
+          "file-size": "File size"
         },
         "button": {
           "export": "Export",
           "show-in-folder": "Show in folder"
+        },
+        "toast": {
+          "started": "Exporting {{count}} torrent(s)…",
+          "cancelled-title": "Export Cancelled",
+          "cancelled-message": "The export was cancelled.",
+          "success-title": "Export Complete",
+          "success-message": "{{count}} torrent(s) exported.",
+          "failed-title": "Export Failed"
         }
       },
       "import-torrents": {
@@ -2007,7 +2029,8 @@
       "show": "Show",
       "open-details": "Open Details",
       "edit": "Edit",
-      "refresh": "Refresh"
+      "refresh": "Refresh",
+      "retry": "Retry"
     },
     "form": {
       "feedback": {

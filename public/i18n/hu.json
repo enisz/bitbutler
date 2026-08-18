@@ -864,7 +864,8 @@
           "save-location": "Mentési hely",
           "dest-dir": "Könyvtár",
           "filename": "Fájlnév",
-          "progress": "Haladás"
+          "progress": "Haladás",
+          "report": "Jelentés"
         },
         "placeholder": {
           "dest-dir": "Válaszd ki az export könyvtárát",
@@ -894,7 +895,12 @@
           "tags": "Címkék",
           "all": "Összes",
           "filtered": "Szűrt",
-          "selected": "Kijelölt"
+          "selected": "Kijelölt",
+          "hint": {
+            "all": "A forrás szerveren található összes torrent bekerül az exportba.",
+            "filtered": "Csak az aktuális szűrőknek megfelelő torrentek kerülnek bele.",
+            "selected": "Csak a táblázatban jelenleg kijelölt torrentek kerülnek bele."
+          }
         },
         "category-scope": {
           "all": "Összes",
@@ -913,14 +919,30 @@
           }
         },
         "progress": {
-          "exporting": "Torrentek exportálása...",
-          "fetching": "Lekérés",
-          "done": "Export kész",
-          "skipped": "kihagyva"
+          "fetching": "Lekérés"
+        },
+        "report": {
+          "status": "Állapot",
+          "success": "Sikeres",
+          "failed": "Sikertelen",
+          "torrents": "Exportált torrentek",
+          "skipped": "Kihagyva",
+          "categories": "Exportált kategóriák",
+          "tags": "Exportált címkék",
+          "file-path": "Fájl elérési útja",
+          "file-size": "Fájlméret"
         },
         "button": {
           "export": "Exportálás",
           "show-in-folder": "Megjelenítés a mappában"
+        },
+        "toast": {
+          "started": "{{count}} torrent exportálása…",
+          "cancelled-title": "Export megszakítva",
+          "cancelled-message": "Az exportálás megszakadt.",
+          "success-title": "Export kész",
+          "success-message": "{{count}} torrent exportálva.",
+          "failed-title": "Export sikertelen"
         }
       },
       "import-torrents": {
@@ -2006,7 +2028,8 @@
       "show": "Megjelenítés",
       "open-details": "Részletek megnyitása",
       "edit": "Szerkesztés",
-      "refresh": "Frissítés"
+      "refresh": "Frissítés",
+      "retry": "Újra"
     },
     "form": {
       "feedback": {
