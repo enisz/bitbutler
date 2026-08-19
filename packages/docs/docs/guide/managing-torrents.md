@@ -33,7 +33,7 @@ If you try to add a torrent that's already on the server, BitButler shows the [T
 
 ## Renaming a Torrent
 
-Right-click a single torrent and choose **Manage > Rename Torrent** (multi-selection doesn't offer this). The dialog shows the current name in an editable field; **Save** stays disabled until you actually change it. Renaming updates the torrent's display name, and - where possible - the underlying file or root folder on disk to match: a single-file torrent gets its file renamed, a multi-file torrent gets its root folder renamed.
+Right-click a single torrent and choose **Manage > Rename Torrent** (multi-selection doesn't offer this), or press `F2` with a single torrent selected - see [Keyboard Shortcuts > Control](./keyboard-shortcuts#control) for how `F2` behaves when inline editing is enabled. The dialog shows the current name in an editable field; **Save** stays disabled until you actually change it. Renaming updates the torrent's display name, and - where possible - the underlying file or root folder on disk to match: a single-file torrent gets its file renamed, a multi-file torrent gets its root folder renamed.
 
 ## Setting Category and Tags for a Selection
 

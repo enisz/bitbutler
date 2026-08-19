@@ -569,6 +569,11 @@ describe('GridContextMenuService', () => {
         });
       });
 
+      it('manage.renameTorrent shows the F2 hotkey hint', async () => {
+        const entries = await service.buildTorrentMenu(makeData());
+        expect(findItem(entries, 'manage.renameTorrent')!.hint).toBe('F2');
+      });
+
       it('files.renameFiles action emits UI_RENAME_FILES with the torrent hash', async () => {
         const entries = await service.buildTorrentMenu(makeData());
         (findItem(entries, 'files.renameFiles')!.action as () => void)();

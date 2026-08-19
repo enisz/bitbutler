@@ -1,13 +1,18 @@
 import { Injectable, inject } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import type { GridApi } from 'ag-grid-community';
+import { firstValueFrom } from 'rxjs';
 import { Torrent } from '../../../models/torrent.model';
 import { CommandBusService } from '../../../services/command-bus.service';
+import { SelectionStoreService } from '../../../services/selection-store.service';
+import { TorrentListGridSettingsService } from '../../../services/torrent-list-grid.settings.service';
 
 @Injectable()
 export class GridKeyboardNavService {
   private readonly commandBusService = inject(CommandBusService);
   private readonly modalService = inject(NgbModal);
+  private readonly selectionStoreService = inject(SelectionStoreService);
+  private readonly torrentListGridSettingsService = inject(TorrentListGridSettingsService);
 
   private api: GridApi<Torrent> | null = null;
   private _anchorIndex: number | null = null;
@@ -46,6 +51,7 @@ export class GridKeyboardNavService {
     this.handleGridSelectAll(event);
     this.handleGridKeyboardSelection(event);
     this.handleStartStopForceResume(event);
+    this.handleRenameHotkey(event);
   }
 
   private isTypingTarget(target: EventTarget | null): boolean {
@@ -125,6 +131,38 @@ export class GridKeyboardNavService {
       event.preventDefault();
       this.commandBusService.emit({ type: 'TORRENT_PAUSE' });
     }
+  }
+
+  private handleRenameHotkey(event: KeyboardEvent): void {
+    const { code, ctrlKey, altKey, shiftKey } = event;
+    if (code !== 'F2' || ctrlKey || altKey || shiftKey || this.isTypingTarget(event.target)) {
+      return;
+    }
+
+    const selected = this.selectionStoreService.selected();
+    if (selected.length !== 1) return;
+
+    event.preventDefault();
+    void this.renameSelectedTorrent(selected[0]);
+  }
+
+  private async renameSelectedTorrent(torrent: Torrent): Promise<void> {
+    const settings = await firstValueFrom(this.torrentListGridSettingsService.asObservable());
+    const inlineEditEnabled = (settings?.rowDoubleClickAction ?? 'DETAILS') === 'INLINE_EDIT';
+
+    if (inlineEditEnabled && this.api) {
+      const nameHidden = this.api.getColumnState().find((c) => c.colId === 'name')?.hide === true;
+      const rowIndex = this.api.getSelectedNodes()[0]?.rowIndex;
+
+      if (!nameHidden && rowIndex != null) {
+        this.api.ensureIndexVisible(rowIndex);
+        this.api.setFocusedCell(rowIndex, 'name');
+        this.api.startEditingCell({ rowIndex, colKey: 'name' });
+        return;
+      }
+    }
+
+    this.commandBusService.emit({ type: 'UI_RENAME_TORRENT', torrent });
   }
 
   private computeNextDisplayedIndex(api: GridApi, code: string, leadIndex: number): number | null {

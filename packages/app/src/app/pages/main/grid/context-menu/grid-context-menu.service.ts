@@ -234,6 +234,7 @@ export class GridContextMenuService {
                   icon: faPenToSquare,
                   action: () =>
                     this.commandBusService.emit({ type: 'UI_RENAME_TORRENT', torrent: data.row }),
+                  hint: 'F2',
                 },
               ]),
           {

@@ -61,8 +61,11 @@ Moving focus without `Shift` also replaces the current selection with just the n
 
 ### Control
 
-| Shortcut   | Action                                 |
-| ---------- | -------------------------------------- |
-| `F3`       | Resumes the selected torrent(s).       |
-| `Shift+F3` | Force resumes the selected torrent(s). |
-| `F4`       | Pauses the selected torrent(s).        |
+| Shortcut   | Action                                                                         |
+| ---------- | ------------------------------------------------------------------------------ |
+| `F2`       | Renames the selected torrent. Only works when exactly one torrent is selected. |
+| `F3`       | Resumes the selected torrent(s).                                               |
+| `Shift+F3` | Force resumes the selected torrent(s).                                         |
+| `F4`       | Pauses the selected torrent(s).                                                |
+
+`F2` opens the [rename dialog](./managing-torrents#renaming-a-torrent) unless [Row double-click behavior](./user-interface/settings/bitbutler-settings#grid-options) is set to **Inline Edit** and the Name column is currently visible in the grid - in that case it starts editing the name cell in place instead.
