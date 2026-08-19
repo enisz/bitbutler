@@ -74,7 +74,7 @@ for (const key of ['localStorage', 'sessionStorage'] as const) {
     delete: noopAsync,
     getById: noopAsync,
     getByHost: noopAsync,
-    setExportAvailable: noopAsync,
+    setConnectionInfo: noopAsync,
     setActive: noop,
   },
   qb: {
@@ -126,7 +126,6 @@ for (const key of ['localStorage', 'sessionStorage'] as const) {
     openBbePicker: () => Promise.resolve(undefined),
     readBbe: noopAsync,
     getServerInfo: noopAsync,
-    checkAvailability: () => Promise.resolve({ available: false }),
     saveTorrentFiles: () => Promise.resolve({ cancelled: true, savedPaths: [], failed: [] }),
     importStart: noop,
     importCancel: noop,

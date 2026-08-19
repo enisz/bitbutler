@@ -614,6 +614,34 @@ describe('server:update IPC handler', () => {
       "Field 'id' is required.",
     );
   });
+
+  it('resets export_available to null when host changes', async () => {
+    mockRun.mockReturnValue({ changes: 1 });
+    const handler = await getHandler();
+    await handler(null, { id: 'srv-1', changes: { host: 'newhost.local' } });
+    expect(mockRun).toHaveBeenCalledWith('srv-1');
+  });
+
+  it('resets export_available to null when port changes', async () => {
+    mockRun.mockReturnValue({ changes: 1 });
+    const handler = await getHandler();
+    await handler(null, { id: 'srv-1', changes: { port: 9999 } });
+    expect(mockRun).toHaveBeenCalledWith('srv-1');
+  });
+
+  it('resets export_available to null when protocol changes', async () => {
+    mockRun.mockReturnValue({ changes: 1 });
+    const handler = await getHandler();
+    await handler(null, { id: 'srv-1', changes: { useHttps: true } });
+    expect(mockRun).toHaveBeenCalledWith('srv-1');
+  });
+
+  it('does not reset export_available when only unrelated fields change', async () => {
+    mockRun.mockReturnValue({ changes: 1 });
+    const handler = await getHandler();
+    await handler(null, { id: 'srv-1', changes: { name: 'New Name' } });
+    expect(mockRun).not.toHaveBeenCalledWith('srv-1');
+  });
 });
 
 describe('server:set-active IPC event handler', () => {
@@ -697,6 +725,61 @@ describe('serverList export_available mapping', () => {
   });
 });
 
+describe('serverList webapi_version/qb_version mapping', () => {
+  beforeEach(() => {
+    vi.resetModules();
+    ipcHandlers.clear();
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('passes through cached version values unchanged', async () => {
+    mockAll.mockReturnValue([
+      {
+        id: 'abc',
+        name: 'Local',
+        host: 'localhost',
+        protocol: 'http',
+        port: 8080,
+        username: 'admin',
+        auto_login: 1,
+        created_at: '2024-01-01T00:00:00.000Z',
+        has_password: 1,
+        export_available: 1,
+        webapi_version: '2.9.3',
+        qb_version: '4.6.0',
+      },
+    ]);
+    const { serverList } = await import('./server.js');
+    expect(serverList()[0].webapi_version).toBe('2.9.3');
+    expect(serverList()[0].qb_version).toBe('4.6.0');
+  });
+
+  it('passes through null version values unchanged', async () => {
+    mockAll.mockReturnValue([
+      {
+        id: 'abc',
+        name: 'Local',
+        host: 'localhost',
+        protocol: 'http',
+        port: 8080,
+        username: 'admin',
+        auto_login: 1,
+        created_at: '2024-01-01T00:00:00.000Z',
+        has_password: 1,
+        export_available: null,
+        webapi_version: null,
+        qb_version: null,
+      },
+    ]);
+    const { serverList } = await import('./server.js');
+    expect(serverList()[0].webapi_version).toBeNull();
+    expect(serverList()[0].qb_version).toBeNull();
+  });
+});
+
 describe('getExportAvailable', () => {
   beforeEach(() => {
     vi.resetModules();
@@ -730,7 +813,7 @@ describe('getExportAvailable', () => {
   });
 });
 
-describe('setExportAvailable', () => {
+describe('setConnectionInfo', () => {
   beforeEach(() => {
     vi.resetModules();
   });
@@ -739,14 +822,14 @@ describe('setExportAvailable', () => {
     vi.clearAllMocks();
   });
 
-  it('runs an UPDATE with the given id and value', async () => {
-    const { setExportAvailable } = await import('./server.js');
-    setExportAvailable('srv-1', 1);
-    expect(mockRun).toHaveBeenCalledWith(1, 'srv-1');
+  it('runs an UPDATE with the given id and values', async () => {
+    const { setConnectionInfo } = await import('./server.js');
+    setConnectionInfo('srv-1', { exportAvailable: 1, webapiVersion: '2.9.3', qbVersion: '4.6.0' });
+    expect(mockRun).toHaveBeenCalledWith(1, '2.9.3', '4.6.0', 'srv-1');
   });
 });
 
-describe('server:set-export-available IPC handler', () => {
+describe('server:set-connection-info IPC handler', () => {
   beforeEach(() => {
     vi.resetModules();
     ipcHandlers.clear();
@@ -759,25 +842,51 @@ describe('server:set-export-available IPC handler', () => {
   async function getHandler() {
     const { registerServerIpcHandlers } = await import('./server.js');
     registerServerIpcHandlers();
-    return ipcHandlers.get('server:set-export-available')!;
+    return ipcHandlers.get('server:set-connection-info')!;
   }
 
-  it('returns { updated: true } and writes the value', async () => {
+  it('returns { updated: true } and writes the values', async () => {
     const handler = await getHandler();
-    const result = await handler(null, { id: 'srv-1', value: 1 });
+    const result = await handler(null, {
+      id: 'srv-1',
+      exportAvailable: 1,
+      webapiVersion: '2.9.3',
+      qbVersion: '4.6.0',
+    });
     expect(result).toEqual({ updated: true });
-    expect(mockRun).toHaveBeenCalledWith(1, 'srv-1');
+    expect(mockRun).toHaveBeenCalledWith(1, '2.9.3', '4.6.0', 'srv-1');
   });
 
-  it('throws when value is not 0 or 1', async () => {
+  it('throws when exportAvailable is not 0 or 1', async () => {
     const handler = await getHandler();
-    await expect(handler(null, { id: 'srv-1', value: 2 })).rejects.toThrow(
-      "Field 'value' must be 0 or 1.",
-    );
+    await expect(
+      handler(null, {
+        id: 'srv-1',
+        exportAvailable: 2,
+        webapiVersion: '2.9.3',
+        qbVersion: '4.6.0',
+      }),
+    ).rejects.toThrow("Field 'exportAvailable' must be 0 or 1.");
+  });
+
+  it('throws when webapiVersion is missing', async () => {
+    const handler = await getHandler();
+    await expect(
+      handler(null, { id: 'srv-1', exportAvailable: 1, qbVersion: '4.6.0' }),
+    ).rejects.toThrow("Field 'webapiVersion' is required.");
+  });
+
+  it('throws when qbVersion is missing', async () => {
+    const handler = await getHandler();
+    await expect(
+      handler(null, { id: 'srv-1', exportAvailable: 1, webapiVersion: '2.9.3' }),
+    ).rejects.toThrow("Field 'qbVersion' is required.");
   });
 
   it('throws when id is missing', async () => {
     const handler = await getHandler();
-    await expect(handler(null, { value: 1 })).rejects.toThrow("Field 'id' is required.");
+    await expect(
+      handler(null, { exportAvailable: 1, webapiVersion: '2.9.3', qbVersion: '4.6.0' }),
+    ).rejects.toThrow("Field 'id' is required.");
   });
 });

@@ -20,7 +20,9 @@ db.exec(`
     password     BLOB NOT NULL,
     auto_login   INTEGER NOT NULL DEFAULT 0 CHECK (auto_login IN (0,1)),
     created_at   TEXT NOT NULL,
-    export_available INTEGER CHECK (export_available IN (0,1))
+    export_available INTEGER CHECK (export_available IN (0,1)),
+    webapi_version TEXT,
+    qb_version   TEXT
   );
 `);
 
@@ -76,6 +78,15 @@ if (!colsAfterPasswordMigration.find((c) => c.name === 'export_available')) {
   db.exec(`
     ALTER TABLE servers ADD COLUMN export_available INTEGER CHECK (export_available IN (0,1))
   `);
+}
+
+// Migrate: add webapi_version/qb_version columns (nullable - NULL means "not yet checked").
+const colsAfterExportAvailableMigration = db.pragma('table_info(servers)') as ColInfo[];
+if (!colsAfterExportAvailableMigration.find((c) => c.name === 'webapi_version')) {
+  db.exec(`ALTER TABLE servers ADD COLUMN webapi_version TEXT`);
+}
+if (!colsAfterExportAvailableMigration.find((c) => c.name === 'qb_version')) {
+  db.exec(`ALTER TABLE servers ADD COLUMN qb_version TEXT`);
 }
 
 db.exec(`

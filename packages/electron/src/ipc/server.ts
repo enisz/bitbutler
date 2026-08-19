@@ -20,8 +20,8 @@ export function registerServerIpcHandlers(): void {
   ipcMain.handle('server:delete', async (_event, payload: unknown) => serverDelete(payload));
   ipcMain.handle('server:getById', async (_event, payload: unknown) => serverGetById(payload));
   ipcMain.handle('server:getByHost', async (_event, payload: unknown) => serverGetByHost(payload));
-  ipcMain.handle('server:set-export-available', async (_event, payload: unknown) =>
-    serverSetExportAvailable(payload),
+  ipcMain.handle('server:set-connection-info', async (_event, payload: unknown) =>
+    serverSetConnectionInfo(payload),
   );
 
   ipcMain.on('server:set-active', (_event, id: string | null) => {
@@ -43,6 +43,8 @@ interface ServerRow {
   created_at: string;
   has_password: number;
   export_available: number | null;
+  webapi_version: string | null;
+  qb_version: string | null;
 }
 
 const stmtList = db.prepare<[], ServerRow>(`
@@ -50,6 +52,8 @@ const stmtList = db.prepare<[], ServerRow>(`
     id, name, host, protocol, port, username,
     auto_login,
     export_available,
+    webapi_version,
+    qb_version,
     created_at,
     CASE WHEN password IS NOT NULL THEN 1 ELSE 0 END as has_password
   FROM servers
@@ -61,6 +65,8 @@ const stmtGetById = db.prepare<[string], ServerRow>(`
     id, name, host, protocol, port, username,
     auto_login,
     export_available,
+    webapi_version,
+    qb_version,
     created_at,
     CASE WHEN password IS NOT NULL THEN 1 ELSE 0 END as has_password
   FROM servers
@@ -72,6 +78,8 @@ const stmtGetByHost = db.prepare<[string], ServerRow>(`
     id, name, host, protocol, port, username,
     auto_login,
     export_available,
+    webapi_version,
+    qb_version,
     created_at,
     CASE WHEN password IS NOT NULL THEN 1 ELSE 0 END as has_password
   FROM servers
@@ -113,8 +121,11 @@ const stmtUpdateWithPassword = db.prepare(`
 const stmtDelete = db.prepare<[string]>(`DELETE FROM servers WHERE id = ?`);
 const stmtUnsetAutoLogin = db.prepare(`UPDATE servers SET auto_login = 0 WHERE auto_login = 1`);
 const stmtSetAutoLogin = db.prepare<[string]>(`UPDATE servers SET auto_login = 1 WHERE id = ?`);
-const stmtSetExportAvailable = db.prepare<[number, string]>(`
-  UPDATE servers SET export_available = ? WHERE id = ?
+const stmtSetConnectionInfo = db.prepare<[number, string, string, string]>(`
+  UPDATE servers SET export_available = ?, webapi_version = ?, qb_version = ? WHERE id = ?
+`);
+const stmtResetConnectionInfo = db.prepare<[string]>(`
+  UPDATE servers SET export_available = NULL, webapi_version = NULL, qb_version = NULL WHERE id = ?
 `);
 
 const txInsertWithAutoLogin = db.transaction((row: Record<string, unknown>) => {
@@ -134,6 +145,8 @@ function rowToRecord(row: ServerRow): ServerRecord {
     created_at: row.created_at,
     has_password: row.has_password === 1,
     export_available: row.export_available as 0 | 1 | null,
+    webapi_version: row.webapi_version,
+    qb_version: row.qb_version,
   };
 }
 
@@ -158,18 +171,23 @@ export function getExportAvailable(id: string): 0 | 1 | null {
   return row ? (row.export_available as 0 | 1 | null) : null;
 }
 
-export function setExportAvailable(id: string, value: 0 | 1): void {
-  stmtSetExportAvailable.run(value, id);
+export function setConnectionInfo(
+  id: string,
+  info: { exportAvailable: 0 | 1; webapiVersion: string; qbVersion: string },
+): void {
+  stmtSetConnectionInfo.run(info.exportAvailable, info.webapiVersion, info.qbVersion, id);
 }
 
-function serverSetExportAvailable(payload: unknown): { updated: boolean } {
+function serverSetConnectionInfo(payload: unknown): { updated: boolean } {
   const p = payload as Record<string, unknown>;
   const id = requireString(p?.id, 'id');
-  const value = p?.value;
-  if (value !== 0 && value !== 1) {
-    throw new Error("Field 'value' must be 0 or 1.");
+  const exportAvailable = p?.exportAvailable;
+  if (exportAvailable !== 0 && exportAvailable !== 1) {
+    throw new Error("Field 'exportAvailable' must be 0 or 1.");
   }
-  setExportAvailable(id, value);
+  const webapiVersion = requireString(p?.webapiVersion, 'webapiVersion');
+  const qbVersion = requireString(p?.qbVersion, 'qbVersion');
+  setConnectionInfo(id, { exportAvailable, webapiVersion, qbVersion });
   return { updated: true };
 }
 
@@ -221,6 +239,11 @@ function serverUpdate(payload: unknown): { updated: boolean } {
 
   const changesObj = changes as Record<string, unknown>;
   const hasExplicitPassword = 'password' in changesObj;
+  const connectionChanged =
+    'host' in changesObj ||
+    'port' in changesObj ||
+    'protocol' in changesObj ||
+    'useHttps' in changesObj;
   const normalized = normalizeUpdate(changesObj);
 
   const row = {
@@ -238,6 +261,7 @@ function serverUpdate(payload: unknown): { updated: boolean } {
     if (row.auto_login === 1) stmtUnsetAutoLogin.run();
     const stmt = hasExplicitPassword ? stmtUpdateWithPassword : stmtUpdate;
     const info = stmt.run(row);
+    if (connectionChanged) stmtResetConnectionInfo.run(id);
     return info.changes > 0;
   });
 

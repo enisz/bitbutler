@@ -170,21 +170,51 @@ export class ExportTorrents implements OnInit {
   });
 
   ngOnInit(): void {
-    const serverId = this.serverStore.currentServer()?.id;
+    const currentServer = this.serverStore.currentServer();
 
-    void Promise.all([
-      serverId ? window.bitbutler.export.getServerInfo(serverId) : Promise.resolve(null),
-      window.bitbutler.electron.getDownloadsPath(),
-    ])
-      .then(([info, downloadsPath]) => {
-        if (info) this.serverInfo.set(info);
-        this.serverInfoLoading.set(false);
-        if (downloadsPath) this.exportForm.get('destDir')?.setValue(downloadsPath);
-      })
-      .catch((err: unknown) => {
-        this.serverInfoError.set((err as Error)?.message ?? String(err));
-        this.serverInfoLoading.set(false);
+    if (
+      currentServer &&
+      currentServer.export_available !== null &&
+      currentServer.webapi_version !== null &&
+      currentServer.qb_version !== null
+    ) {
+      this.serverInfo.set({
+        webapiVersion: currentServer.webapi_version,
+        qbVersion: currentServer.qb_version,
+        isFullMode: currentServer.export_available === 1,
       });
+      this.serverInfoLoading.set(false);
+    } else if (currentServer) {
+      const serverId = currentServer.id;
+      window.bitbutler.export
+        .getServerInfo(serverId)
+        .then((info) => {
+          this.serverInfo.set(info);
+          this.serverInfoLoading.set(false);
+
+          window.bitbutler.server
+            .setConnectionInfo({
+              id: serverId,
+              exportAvailable: info.isFullMode ? 1 : 0,
+              webapiVersion: info.webapiVersion,
+              qbVersion: info.qbVersion,
+            })
+            .then(() => this.serverStore.refresh())
+            .catch((e: unknown) =>
+              console.error(ExportTorrents.name, 'ngOnInit', 'connection info self-heal failed', e),
+            );
+        })
+        .catch((err: unknown) => {
+          this.serverInfoError.set((err as Error)?.message ?? String(err));
+          this.serverInfoLoading.set(false);
+        });
+    } else {
+      this.serverInfoLoading.set(false);
+    }
+
+    void window.bitbutler.electron.getDownloadsPath().then((downloadsPath) => {
+      if (downloadsPath) this.exportForm.get('destDir')?.setValue(downloadsPath);
+    });
 
     const today = new Date();
     const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '');

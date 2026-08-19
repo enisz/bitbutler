@@ -195,13 +195,6 @@ export function registerExportIpcHandlers(): void {
   });
 
   ipcMain.handle(
-    'export:check-availability',
-    async (_event, { serverId }: { serverId: string }) => ({
-      available: await probeFullMode(serverId),
-    }),
-  );
-
-  ipcMain.handle(
     'export:save-torrent-files',
     async (_event, payload: { serverId: string; items: ExportTorrentFileItem[] }) =>
       saveTorrentFiles(payload),
