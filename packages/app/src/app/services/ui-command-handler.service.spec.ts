@@ -24,7 +24,11 @@ describe('UiCommandHandlerService', () => {
   let commandBusEmit: ReturnType<typeof vi.fn>;
   let selectionStore: any;
   let setInputSpy: ReturnType<typeof vi.fn>;
-  let mockPollingService: { pause: ReturnType<typeof vi.fn>; resume: ReturnType<typeof vi.fn> };
+  let mockPollingService: {
+    pause: ReturnType<typeof vi.fn>;
+    resume: ReturnType<typeof vi.fn>;
+    isInitialLoading$: BehaviorSubject<boolean>;
+  };
   let gridSettings$: BehaviorSubject<{ pausePollingOnModal: boolean }>;
 
   beforeAll(async () => {
@@ -64,6 +68,7 @@ describe('UiCommandHandlerService', () => {
     mockPollingService = {
       pause: vi.fn().mockReturnValue(Symbol('pause-token')),
       resume: vi.fn(),
+      isInitialLoading$: new BehaviorSubject<boolean>(false),
     };
     gridSettings$ = new BehaviorSubject<{ pausePollingOnModal: boolean }>({
       pausePollingOnModal: false,
@@ -379,6 +384,27 @@ describe('UiCommandHandlerService', () => {
       expect(qbAuthMock.login).not.toHaveBeenCalled();
     });
 
+    it('keeps the loader open until the new server finishes its initial maindata load', async () => {
+      setServer();
+      qbAuthMock.hasCookie.mockResolvedValue(true);
+      const loader = loaderRef();
+      mockModalService.open.mockReturnValueOnce(loader);
+
+      commands$.next({ type: 'UI_SERVER_SWITCH', id: 'server-1' });
+      await flushPromises();
+
+      // The server has already been selected, but the new server's maindata is still
+      // streaming in - the loader must stay open so stale torrents are never shown alone.
+      expect(serverStoreMock.select).toHaveBeenCalledWith('server-1');
+      expect(loader.close).not.toHaveBeenCalled();
+
+      mockPollingService.isInitialLoading$.next(true);
+      mockPollingService.isInitialLoading$.next(false);
+      await flushPromises();
+
+      expect(loader.close).toHaveBeenCalledTimes(1);
+    });
+
     it('skips the credential prompt when a session already exists', async () => {
       setServer();
       qbAuthMock.hasCookie.mockResolvedValue(true);
@@ -386,6 +412,9 @@ describe('UiCommandHandlerService', () => {
       mockModalService.open.mockReturnValueOnce(loader);
 
       commands$.next({ type: 'UI_SERVER_SWITCH', id: 'server-1' });
+      await flushPromises();
+      mockPollingService.isInitialLoading$.next(true);
+      mockPollingService.isInitialLoading$.next(false);
       await flushPromises();
 
       expect(mockModalService.open).toHaveBeenCalledTimes(1);
@@ -402,6 +431,9 @@ describe('UiCommandHandlerService', () => {
       mockModalService.open.mockReturnValueOnce(loader);
 
       commands$.next({ type: 'UI_SERVER_SWITCH', id: 'server-1' });
+      await flushPromises();
+      mockPollingService.isInitialLoading$.next(true);
+      mockPollingService.isInitialLoading$.next(false);
       await flushPromises();
 
       expect(mockModalService.open).toHaveBeenCalledTimes(1);
@@ -426,6 +458,9 @@ describe('UiCommandHandlerService', () => {
         .mockReturnValueOnce(reopenedLoader);
 
       commands$.next({ type: 'UI_SERVER_SWITCH', id: 'server-1' });
+      await flushPromises();
+      mockPollingService.isInitialLoading$.next(true);
+      mockPollingService.isInitialLoading$.next(false);
       await flushPromises();
 
       // Proves the loader is genuinely reopened after the prompt resolves - a regression
@@ -457,6 +492,9 @@ describe('UiCommandHandlerService', () => {
         .mockReturnValueOnce(reopenedLoader);
 
       commands$.next({ type: 'UI_SERVER_SWITCH', id: 'server-1' });
+      await flushPromises();
+      mockPollingService.isInitialLoading$.next(true);
+      mockPollingService.isInitialLoading$.next(false);
       await flushPromises();
 
       expect(mockModalService.open).toHaveBeenCalledTimes(3);
