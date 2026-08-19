@@ -2,7 +2,17 @@ import { DestroyRef, Injectable, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-import { combineLatest, filter, firstValueFrom, pairwise, startWith } from 'rxjs';
+import {
+  catchError,
+  combineLatest,
+  filter,
+  firstValueFrom,
+  map,
+  of,
+  pairwise,
+  startWith,
+  timeout,
+} from 'rxjs';
 import { AppLoader } from '../components/app-loader/app-loader';
 import { AppCommand, UiCommand } from '../models/command.model';
 import { GuardableModal } from '../models/guardable-modal.interface';
@@ -555,13 +565,18 @@ export class UiCommandHandlerService {
   // Waits for the next isInitialLoading$ true -> false transition, i.e. the moment the newly
   // selected server's maindata has fully streamed in (all chunks applied to the torrent store),
   // so the loader keeps masking the old server's torrents until they've actually been replaced.
+  // Falls back to a timeout so the loader can't hang forever if a caller ever selects a server
+  // that was already active (no new polling cycle, so no true -> false transition ever fires).
   private waitForInitialLoad(): Promise<void> {
     return firstValueFrom(
       this.qbPollingService.isInitialLoading$.pipe(
         pairwise(),
         filter(([wasLoading, isLoading]) => wasLoading && !isLoading),
+        map(() => undefined),
+        timeout(15000),
+        catchError(() => of(undefined)),
       ),
-    ).then(() => undefined);
+    );
   }
 
   private uiCommandGuard(cmd: AppCommand): cmd is UiCommand {

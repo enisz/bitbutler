@@ -8,6 +8,23 @@
 );
 
 @use './styles/themes/index' as themes;
+@use './styles/themes/bitbutler/light' as bb-light;
+@use './styles/themes/bitbutler/dark' as bb-dark;
+@use './styles/themes/aurora/light' as au-light;
+@use './styles/themes/aurora/dark' as au-dark;
+@use './styles/themes/mint-green/light' as mg-light;
+@use './styles/themes/mint-green/dark' as mg-dark;
+@use './styles/themes/purple-haze/light' as ph-light;
+@use './styles/themes/purple-haze/dark' as ph-dark;
+@use './styles/themes/ocean-breeze/light' as ob-light;
+@use './styles/themes/ocean-breeze/dark' as ob-dark;
+@use './styles/themes/pumpkin-spice/light' as ps-light;
+@use './styles/themes/pumpkin-spice/dark' as ps-dark;
+@use './styles/themes/deep-sea/light' as ds-light;
+@use './styles/themes/deep-sea/dark' as ds-dark;
+@use './styles/themes/crimson-ember/light' as ce-light;
+@use './styles/themes/crimson-ember/dark' as ce-dark;
+
 @include themes.install-themes();
 
 :root {
@@ -503,97 +520,129 @@ ngb-modal-window {
 
   &[data-bb-theme='bitbutler'] {
     &.light {
-      background-color: #ecdec6;
+      background-color: #{bb-light.$bb-light-body-bg};
     }
     &.dark {
-      background-color: #121213;
+      background-color: #{bb-dark.$bb-dark-body-bg};
     }
     &.system {
-      background: linear-gradient(45deg, #ecdec6 50%, #121213 50%);
+      background: linear-gradient(
+        45deg,
+        #{bb-light.$bb-light-body-bg} 50%,
+        #{bb-dark.$bb-dark-body-bg} 50%
+      );
     }
   }
 
   &[data-bb-theme='aurora'] {
     &.light {
-      background-color: #dfe6fb;
+      background-color: #{au-light.$au-light-body-bg};
     }
     &.dark {
-      background-color: #0b1020;
+      background-color: #{au-dark.$au-dark-body-bg};
     }
     &.system {
-      background: linear-gradient(45deg, #dfe6fb 50%, #0b1020 50%);
+      background: linear-gradient(
+        45deg,
+        #{au-light.$au-light-body-bg} 50%,
+        #{au-dark.$au-dark-body-bg} 50%
+      );
     }
   }
 
   &[data-bb-theme='mint-green'] {
     &.light {
-      background-color: #dce5dc;
+      background-color: #{mg-light.$mg-light-body-bg};
     }
     &.dark {
-      background-color: #1a2e2b;
+      background-color: #{mg-dark.$mg-dark-body-bg};
     }
     &.system {
-      background: linear-gradient(45deg, #dce5dc 50%, #1a2e2b 50%);
+      background: linear-gradient(
+        45deg,
+        #{mg-light.$mg-light-body-bg} 50%,
+        #{mg-dark.$mg-dark-body-bg} 50%
+      );
     }
   }
 
   &[data-bb-theme='purple-haze'] {
     &.light {
-      background-color: #ddc8e6;
+      background-color: #{ph-light.$ph-light-body-bg};
     }
     &.dark {
-      background-color: #1a1a2e;
+      background-color: #{ph-dark.$ph-dark-body-bg};
     }
     &.system {
-      background: linear-gradient(45deg, #ddc8e6 50%, #1a1a2e 50%);
+      background: linear-gradient(
+        45deg,
+        #{ph-light.$ph-light-body-bg} 50%,
+        #{ph-dark.$ph-dark-body-bg} 50%
+      );
     }
   }
 
   &[data-bb-theme='ocean-breeze'] {
     &.light {
-      background-color: #c2e7f7;
+      background-color: #{ob-light.$ob-light-body-bg};
     }
     &.dark {
-      background-color: #0d253f;
+      background-color: #{ob-dark.$ob-dark-body-bg};
     }
     &.system {
-      background: linear-gradient(45deg, #c2e7f7 50%, #0d253f 50%);
+      background: linear-gradient(
+        45deg,
+        #{ob-light.$ob-light-body-bg} 50%,
+        #{ob-dark.$ob-dark-body-bg} 50%
+      );
     }
   }
 
   &[data-bb-theme='pumpkin-spice'] {
     &.light {
-      background-color: #f6ddb9;
+      background-color: #{ps-light.$ps-light-body-bg};
     }
     &.dark {
-      background-color: #1f160c;
+      background-color: #{ps-dark.$ps-dark-body-bg};
     }
     &.system {
-      background: linear-gradient(45deg, #f6ddb9 50%, #1f160c 50%);
+      background: linear-gradient(
+        45deg,
+        #{ps-light.$ps-light-body-bg} 50%,
+        #{ps-dark.$ps-dark-body-bg} 50%
+      );
     }
   }
 
   &[data-bb-theme='deep-sea'] {
     &.light {
-      background-color: #d3e7ea;
+      background-color: #{ds-light.$deep-sea-light-body-bg};
     }
     &.dark {
-      background-color: #051a21;
+      background-color: #{ds-dark.$deep-sea-dark-body-bg};
     }
     &.system {
-      background: linear-gradient(45deg, #d3e7ea 50%, #051a21 50%);
+      background: linear-gradient(
+        45deg,
+        #{ds-light.$deep-sea-light-body-bg} 50%,
+        #{ds-dark.$deep-sea-dark-body-bg} 50%
+      );
     }
   }
 
   &[data-bb-theme='crimson-ember'] {
     &.light {
-      background-color: #f6dfd9;
+      background-color: #{ce-light.$ce-light-body-bg};
     }
     &.dark {
-      background-color: #1a0604;
+      background-color: #{ce-dark.$ce-dark-body-bg};
     }
     &.system {
-      background: linear-gradient(45deg, #f6dfd9 50%, #1a0604 50%);
+      background: linear-gradient(
+        45deg,
+        #{ce-light.$ce-light-body-bg} 50%,
+        #{ce-dark.$ce-dark-body-bg} 50%
+      );
     }
   }
 }

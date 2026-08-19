@@ -1,40 +1,40 @@
 @use 'sass:color';
 @use 'sass:string';
 
-$bb-light-primary: #d94a45;
-$bb-light-secondary: #f08a5d;
+$ce-light-primary: #d94a45;
+$ce-light-secondary: #f08a5d;
 
-$bb-light-success: #4aae70;
-$bb-light-danger: #d9534f;
-$bb-light-warning: #f0ad4e;
-$bb-light-info: #5bc0de;
+$ce-light-success: #4aae70;
+$ce-light-danger: #d9534f;
+$ce-light-warning: #f0ad4e;
+$ce-light-info: #5bc0de;
 
-$bb-light-body-bg: #f6dfd9;
-$bb-light-body-color: #402422;
-$bb-light-border: #e3bdb3;
-$bb-light-surface: #fbeae7;
+$ce-light-body-bg: #f6dfd9;
+$ce-light-body-color: #402422;
+$ce-light-border: #e3bdb3;
+$ce-light-surface: #fbeae7;
 
-$bb-light-check-marker-colors: (
-  'default': $bb-light-secondary,
-  'success': $bb-light-success,
-  'danger': $bb-light-danger,
-  'warning': $bb-light-warning,
-  'info': $bb-light-info,
+$ce-light-check-marker-colors: (
+  'default': $ce-light-secondary,
+  'success': $ce-light-success,
+  'danger': $ce-light-danger,
+  'warning': $ce-light-warning,
+  'info': $ce-light-info,
 );
 
 @mixin install() {
   :root[data-bb-theme='crimson-ember'][data-bs-theme='light'] {
     --bb-black: #000;
-    --bs-primary: #{$bb-light-primary};
+    --bs-primary: #{$ce-light-primary};
     --bs-primary-rgb: #{string.unquote('217, 74, 69')};
 
-    --bs-secondary: #{$bb-light-secondary};
+    --bs-secondary: #{$ce-light-secondary};
     --bs-secondary-rgb: #{string.unquote('240, 138, 93')};
 
-    --bs-success: #{$bb-light-success};
+    --bs-success: #{$ce-light-success};
     --bs-success-rgb: #{string.unquote('74, 174, 112')};
 
-    --bs-danger: #{$bb-light-danger};
+    --bs-danger: #{$ce-light-danger};
     --bs-danger-rgb: #{string.unquote('217, 83, 79')};
 
     --bb-primary-ink: #fff;
@@ -46,32 +46,32 @@ $bb-light-check-marker-colors: (
     --bb-light-ink: #000;
     --bb-dark-ink: #fff;
 
-    --bs-warning: #{$bb-light-warning};
+    --bs-warning: #{$ce-light-warning};
     --bs-warning-rgb: #{string.unquote('240, 173, 78')};
 
-    --bs-info: #{$bb-light-info};
+    --bs-info: #{$ce-light-info};
     --bs-info-rgb: #{string.unquote('91, 192, 222')};
 
-    --bs-body-bg: #{$bb-light-body-bg};
-    --bs-body-color: #{$bb-light-body-color};
-    --bs-border-color: #{$bb-light-border};
+    --bs-body-bg: #{$ce-light-body-bg};
+    --bs-body-color: #{$ce-light-body-color};
+    --bs-border-color: #{$ce-light-border};
 
-    --bs-card-bg: #{$bb-light-surface};
-    --bs-card-color: #{$bb-light-body-color};
-    --bs-card-border-color: #{$bb-light-border};
+    --bs-card-bg: #{$ce-light-surface};
+    --bs-card-color: #{$ce-light-body-color};
+    --bs-card-border-color: #{$ce-light-border};
     --bs-card-cap-bg: color-mix(in srgb, var(--bs-body-bg) 70%, var(--bs-card-bg) 30%);
-    --bs-card-cap-color: #{$bb-light-body-color};
+    --bs-card-cap-color: #{$ce-light-body-color};
 
     --bs-tooltip-bg: var(--bs-card-cap-bg);
     --bs-tooltip-color: var(--bs-body-color);
     --bs-tooltip-opacity: 0.95;
 
-    --bs-link-color: #{$bb-light-primary};
+    --bs-link-color: #{$ce-light-primary};
     --bs-link-hover-color: #b93b37;
 
-    --bs-navbar-color: #{$bb-light-body-color};
-    --bs-navbar-brand-color: #{$bb-light-primary};
-    --bs-dropdown-link-color: #{$bb-light-body-color};
+    --bs-navbar-color: #{$ce-light-body-color};
+    --bs-navbar-brand-color: #{$ce-light-primary};
+    --bs-dropdown-link-color: #{$ce-light-body-color};
     --bs-dropdown-bg: var(--bs-card-cap-bg);
 
     --bb-accent: var(--bs-secondary);
@@ -128,34 +128,34 @@ $bb-light-check-marker-colors: (
     --bb-toast-glow-opacity: 0.05;
 
     --bs-popover-bg: var(--bs-card-cap-bg);
-    --bs-popover-border-color: #{$bb-light-border};
+    --bs-popover-border-color: #{$ce-light-border};
     --bs-popover-header-bg: var(--bs-card-cap-bg);
-    --bs-popover-header-color: #{$bb-light-body-color};
-    --bs-popover-body-color: #{$bb-light-body-color};
+    --bs-popover-header-color: #{$ce-light-body-color};
+    --bs-popover-body-color: #{$ce-light-body-color};
 
-    --bs-primary-bg-subtle: #{color.mix(white, $bb-light-primary, 80%)};
-    --bs-primary-border-subtle: #{color.mix(white, $bb-light-primary, 60%)};
-    --bs-primary-text-emphasis: #{color.mix(black, $bb-light-primary, 60%)};
+    --bs-primary-bg-subtle: #{color.mix(white, $ce-light-primary, 80%)};
+    --bs-primary-border-subtle: #{color.mix(white, $ce-light-primary, 60%)};
+    --bs-primary-text-emphasis: #{color.mix(black, $ce-light-primary, 60%)};
 
-    --bs-secondary-bg-subtle: #{color.mix(white, $bb-light-secondary, 80%)};
-    --bs-secondary-border-subtle: #{color.mix(white, $bb-light-secondary, 60%)};
-    --bs-secondary-text-emphasis: #{color.mix(black, $bb-light-secondary, 60%)};
+    --bs-secondary-bg-subtle: #{color.mix(white, $ce-light-secondary, 80%)};
+    --bs-secondary-border-subtle: #{color.mix(white, $ce-light-secondary, 60%)};
+    --bs-secondary-text-emphasis: #{color.mix(black, $ce-light-secondary, 60%)};
 
-    --bs-success-bg-subtle: #{color.mix(white, $bb-light-success, 80%)};
-    --bs-success-border-subtle: #{color.mix(white, $bb-light-success, 60%)};
-    --bs-success-text-emphasis: #{color.mix(black, $bb-light-success, 60%)};
+    --bs-success-bg-subtle: #{color.mix(white, $ce-light-success, 80%)};
+    --bs-success-border-subtle: #{color.mix(white, $ce-light-success, 60%)};
+    --bs-success-text-emphasis: #{color.mix(black, $ce-light-success, 60%)};
 
-    --bs-danger-bg-subtle: #{color.mix(white, $bb-light-danger, 80%)};
-    --bs-danger-border-subtle: #{color.mix(white, $bb-light-danger, 60%)};
-    --bs-danger-text-emphasis: #{color.mix(black, $bb-light-danger, 60%)};
+    --bs-danger-bg-subtle: #{color.mix(white, $ce-light-danger, 80%)};
+    --bs-danger-border-subtle: #{color.mix(white, $ce-light-danger, 60%)};
+    --bs-danger-text-emphasis: #{color.mix(black, $ce-light-danger, 60%)};
 
-    --bs-warning-bg-subtle: #{color.mix(white, $bb-light-warning, 80%)};
-    --bs-warning-border-subtle: #{color.mix(white, $bb-light-warning, 60%)};
-    --bs-warning-text-emphasis: #{color.mix(black, $bb-light-warning, 60%)};
+    --bs-warning-bg-subtle: #{color.mix(white, $ce-light-warning, 80%)};
+    --bs-warning-border-subtle: #{color.mix(white, $ce-light-warning, 60%)};
+    --bs-warning-text-emphasis: #{color.mix(black, $ce-light-warning, 60%)};
 
-    --bs-info-bg-subtle: #{color.mix(white, $bb-light-info, 80%)};
-    --bs-info-border-subtle: #{color.mix(white, $bb-light-info, 60%)};
-    --bs-info-text-emphasis: #{color.mix(black, $bb-light-info, 60%)};
+    --bs-info-bg-subtle: #{color.mix(white, $ce-light-info, 80%)};
+    --bs-info-border-subtle: #{color.mix(white, $ce-light-info, 60%)};
+    --bs-info-text-emphasis: #{color.mix(black, $ce-light-info, 60%)};
   }
 }
 
@@ -189,7 +189,7 @@ $bb-light-check-marker-colors: (
     background-color: var(--bs-body-bg) !important;
   }
 
-  @each $variant, $hex in $bb-light-check-marker-colors {
+  @each $variant, $hex in $ce-light-check-marker-colors {
     $hex-code: '%23' + string.slice('#{$hex}', 2);
     $scope: if($variant == 'default', '', '.bb-check-#{$variant} ');
 
