@@ -13,7 +13,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule } from '@angular/forms';
 import type { TorrentDraft } from '@bitbutler/shared';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faFolderOpen, faRotate } from '@fortawesome/free-solid-svg-icons';
+import { faCircleInfo, faFolderOpen, faRotate } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import {
@@ -42,7 +42,7 @@ import {
   GRID_SHARED_OPTIONS,
 } from '../../../../app.const';
 import { BbBtnContent } from '../../../../components/bb-btn-content/bb-btn-content';
-import { BbPopover } from '../../../../components/bb-popover/bb-popover';
+import { BbCallout } from '../../../../components/bb-callout/bb-callout';
 import {
   SetColumnFilter,
   SetColumnFilterParams,
@@ -81,7 +81,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
     FontAwesomeModule,
     TranslatePipe,
     BbBtnContent,
-    BbPopover,
+    BbCallout,
     AgGridAngular,
   ],
   templateUrl: './folder-picker.html',
@@ -99,7 +99,7 @@ export class AddTorrentFolderPicker implements OnInit {
   private readonly gridContextMenuService = inject(GridContextMenuService);
   private readonly addTorrentGridSettingsService = inject(AddTorrentGridSettingsService);
 
-  public readonly icons = { faFolderOpen, faRotate };
+  public readonly icons = { faFolderOpen, faRotate, faCircleInfo };
   public readonly theme = this.themeService.effectiveMode;
   public readonly bbDark = GRID_DARK_THEME;
   public readonly bbLight = GRID_LIGHT_THEME;
@@ -171,6 +171,14 @@ export class AddTorrentFolderPicker implements OnInit {
   public onGridReady(e: GridReadyEvent<ScannedTorrentEntry>): void {
     this.gridApi = e.api;
     void this.restoreColumnState().then(() => this.syncErrorColumnVisibility());
+  }
+
+  // Ag-grid cancels the cell edit on Escape but never stops the keydown from bubbling further -
+  // without this it also reaches the modal's own Escape handler and closes the whole dialog.
+  public onGridKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'Escape' && (this.gridApi?.getEditingCells().length ?? 0) > 0) {
+      event.stopPropagation();
+    }
   }
 
   private async restoreColumnState(): Promise<void> {

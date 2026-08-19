@@ -172,6 +172,7 @@
         },
         "recursive": {
           "title": "Rekurzív",
+          "sub": "Almappák átvizsgálása is",
           "description": {
             "line1": "Ha be van kapcsolva, a kiválasztott mappa összes almappája is átvizsgálásra kerül .torrent fájlok után."
           }
@@ -226,7 +227,13 @@
         "error": {
           "duplicate": "Már szerepel a listában"
         },
-        "description": "Válasszon egy .torrent fájlokat tartalmazó mappát - minden fájl helyben kerül feldolgozásra, és az alábbi listában jelenik meg, semmilyen adat nem kerül elküldésre a Hozzáadás gombra kattintásig. Kapcsolja be a Rekurzív opciót vagy használja a Frissítés gombot a mappa újbóli beolvasásához, ha fájlokat módosított a lemezen, egy sor Nevére duplán kattintva pedig átnevezheti azt hozzáadás előtt - csak az új és korábban sikertelen torrentek választhatók ki.",
+        "note-title": "Jó tudni",
+        "description": {
+          "line1": "A fájlok helyben kerülnek feldolgozásra - semmi nem kerül elküldésre a Hozzáadás gombra kattintásig.",
+          "line2": "Kapcsolja be a Rekurzív opciót vagy használja a Frissítés gombot a mappa újbóli beolvasásához, ha fájlokat módosított a lemezen.",
+          "line3": "Egy sor Nevére duplán kattintva átnevezheti azt - az Enter menti, az Esc visszavonja a módosítást.",
+          "line4": "Csak az új és korábban sikertelen torrentek választhatók ki."
+        },
         "grid": {
           "no-rows": {
             "message": "Nem található .torrent fájl ebben a mappában."
@@ -369,8 +376,9 @@
         }
       },
       "credential-prompt": {
-        "title": "Csatlakozás: {{name}}",
-        "save-credentials": "Hitelesítő adatok mentése ehhez a szerverhez"
+        "title": "Csatlakozás",
+        "save-credentials": "Hitelesítő adatok mentése",
+        "save-credentials-sub": "Biztonságosan tárolva ezen az eszközön"
       },
       "set-torrent-category": {
         "title": "Kategória beállítása",

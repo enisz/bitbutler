@@ -27,7 +27,6 @@ import {
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom, from, tap } from 'rxjs';
 import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content';
-import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { SavePathSelect } from '../../../components/save-path-select/save-path-select';
 import {
@@ -104,7 +103,6 @@ const DATE_FORMAT_TOKENS = [
     ReactiveFormsModule,
     FontAwesomeModule,
     BbSpinner,
-    BbPopover,
     TranslatePipe,
     SavePathSelect,
     BbBtnContent,

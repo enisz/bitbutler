@@ -17,3 +17,16 @@
     background-color: var(--bb-hover-list-item-bg);
   }
 }
+
+.bb-server-orb {
+  width: 8px;
+  height: 8px;
+  border-radius: 99px;
+  border: 1.5px solid var(--bs-border-color);
+  background-color: transparent;
+
+  &.bb-server-orb-active {
+    border-color: var(--bs-success);
+    background-color: var(--bs-success);
+  }
+}

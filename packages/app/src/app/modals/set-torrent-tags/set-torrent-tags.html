@@ -32,7 +32,11 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-12">
-          <app-tag-select formControlName="tags" [autofocus]="true"></app-tag-select>
+          <app-tag-select
+            formControlName="tags"
+            [autofocus]="true"
+            appendTo="body"
+          ></app-tag-select>
         </div>
       </div>
     </div>
@@ -66,7 +70,7 @@
       ></bb-btn-content>
     </button>
   }
-  <button type="button" class="btn btn-link btn-sm btn-split" (click)="activeModal.close()">
+  <button type="button" class="btn btn-sm btn-split" (click)="activeModal.close()">
     <bb-btn-content
       [icon]="icons.faXmark"
       [text]="'general.button.cancel' | translate"

@@ -76,6 +76,8 @@ describe('General', () => {
           created_at: '',
           has_password: false,
           export_available: null,
+          webapi_version: null,
+          qb_version: null,
         },
       ]);
       fixture.detectChanges();
@@ -174,6 +176,8 @@ describe('General', () => {
           created_at: '',
           has_password: false,
           export_available: null,
+          webapi_version: null,
+          qb_version: null,
         },
       ]);
       fixture.detectChanges();
@@ -193,6 +197,8 @@ describe('General', () => {
           created_at: '',
           has_password: false,
           export_available: null,
+          webapi_version: null,
+          qb_version: null,
         },
       ]);
       fixture.detectChanges();
@@ -228,6 +234,8 @@ describe('General', () => {
           created_at: '',
           has_password: false,
           export_available: null,
+          webapi_version: null,
+          qb_version: null,
         },
       ]);
       component.generalSettingsForm.controls.startup.controls.openAtLogin.setValue(true);
