@@ -398,55 +398,81 @@ describe('Login', () => {
         username: 'admin',
         has_password: true,
         export_available: null,
+        webapi_version: null,
+        qb_version: null,
         ...overrides,
       });
     }
 
-    it('probes availability and persists the result when export_available is null', async () => {
-      setCurrentServer({ export_available: null });
+    it('probes connection info and persists the result when cached fields are null', async () => {
+      setCurrentServer({ export_available: null, webapi_version: null, qb_version: null });
       qbServiceMock.login.mockResolvedValue({ loggedIn: true });
-      const checkAvailability = vi
-        .spyOn(window.bitbutler.export, 'checkAvailability')
-        .mockResolvedValue({ available: true });
-      const setExportAvailable = vi
-        .spyOn(window.bitbutler.server, 'setExportAvailable')
+      const getServerInfo = vi
+        .spyOn(window.bitbutler.export, 'getServerInfo')
+        .mockResolvedValue({ webapiVersion: '2.9.3', qbVersion: '4.6.0', isFullMode: true });
+      const setConnectionInfo = vi
+        .spyOn(window.bitbutler.server, 'setConnectionInfo')
         .mockResolvedValue({ updated: true });
 
       await component.connect();
 
-      expect(checkAvailability).toHaveBeenCalledWith('srv-1');
-      expect(setExportAvailable).toHaveBeenCalledWith({ id: 'srv-1', value: 1 });
-    });
-
-    it('persists 0 when the probe reports unavailable', async () => {
-      setCurrentServer({ export_available: null });
-      qbServiceMock.login.mockResolvedValue({ loggedIn: true });
-      vi.spyOn(window.bitbutler.export, 'checkAvailability').mockResolvedValue({
-        available: false,
+      expect(getServerInfo).toHaveBeenCalledWith('srv-1');
+      expect(setConnectionInfo).toHaveBeenCalledWith({
+        id: 'srv-1',
+        exportAvailable: 1,
+        webapiVersion: '2.9.3',
+        qbVersion: '4.6.0',
       });
-      const setExportAvailable = vi
-        .spyOn(window.bitbutler.server, 'setExportAvailable')
+    });
+
+    it('persists exportAvailable 0 when isFullMode is false', async () => {
+      setCurrentServer({ export_available: null, webapi_version: null, qb_version: null });
+      qbServiceMock.login.mockResolvedValue({ loggedIn: true });
+      vi.spyOn(window.bitbutler.export, 'getServerInfo').mockResolvedValue({
+        webapiVersion: '2.8.3',
+        qbVersion: '4.5.0',
+        isFullMode: false,
+      });
+      const setConnectionInfo = vi
+        .spyOn(window.bitbutler.server, 'setConnectionInfo')
         .mockResolvedValue({ updated: true });
 
       await component.connect();
 
-      expect(setExportAvailable).toHaveBeenCalledWith({ id: 'srv-1', value: 0 });
+      expect(setConnectionInfo).toHaveBeenCalledWith({
+        id: 'srv-1',
+        exportAvailable: 0,
+        webapiVersion: '2.8.3',
+        qbVersion: '4.5.0',
+      });
     });
 
-    it('does not probe when export_available is already resolved', async () => {
-      setCurrentServer({ export_available: 1 });
+    it('does not probe when all cached fields are already resolved', async () => {
+      setCurrentServer({ export_available: 1, webapi_version: '2.9.3', qb_version: '4.6.0' });
       qbServiceMock.login.mockResolvedValue({ loggedIn: true });
-      const checkAvailability = vi.spyOn(window.bitbutler.export, 'checkAvailability');
+      const getServerInfo = vi.spyOn(window.bitbutler.export, 'getServerInfo');
 
       await component.connect();
 
-      expect(checkAvailability).not.toHaveBeenCalled();
+      expect(getServerInfo).not.toHaveBeenCalled();
+    });
+
+    it('probes when export_available is resolved but a version field is still null', async () => {
+      setCurrentServer({ export_available: 1, webapi_version: null, qb_version: '4.6.0' });
+      qbServiceMock.login.mockResolvedValue({ loggedIn: true });
+      const getServerInfo = vi
+        .spyOn(window.bitbutler.export, 'getServerInfo')
+        .mockResolvedValue({ webapiVersion: '2.9.3', qbVersion: '4.6.0', isFullMode: true });
+
+      await component.connect();
+
+      expect(getServerInfo).toHaveBeenCalledWith('srv-1');
     });
 
     it('does not block login when the probe throws', async () => {
-      setCurrentServer({ export_available: null });
+      setCurrentServer({ export_available: null, webapi_version: null, qb_version: null });
       qbServiceMock.login.mockResolvedValue({ loggedIn: true });
-      vi.spyOn(window.bitbutler.export, 'checkAvailability').mockRejectedValue(
+      vi.spyOn(window.bitbutler.export, 'getServerInfo').mockRejectedValue(
         new Error('network error'),
       );
       const router = TestBed.inject(Router) as any;
@@ -457,13 +483,13 @@ describe('Login', () => {
     });
 
     it('does not probe when login did not succeed', async () => {
-      setCurrentServer({ export_available: null });
+      setCurrentServer({ export_available: null, webapi_version: null, qb_version: null });
       qbServiceMock.login.mockResolvedValue({ loggedIn: false });
-      const checkAvailability = vi.spyOn(window.bitbutler.export, 'checkAvailability');
+      const getServerInfo = vi.spyOn(window.bitbutler.export, 'getServerInfo');
 
       await component.connect();
 
-      expect(checkAvailability).not.toHaveBeenCalled();
+      expect(getServerInfo).not.toHaveBeenCalled();
     });
 
     it('logs the error and shows the connection-failed toast when login rejects', async () => {

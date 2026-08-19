@@ -65,11 +65,6 @@
         <div class="bb-option__text">
           <label class="bb-option__label" for="paused">
             {{ 'components.add-torrent.add-form.paused' | translate }}
-            <bb-popover
-              [subject]="'components.add-torrent.popover.paused-state.title' | translate"
-              [description]="pausedState"
-              placement="top"
-            ></bb-popover>
           </label>
           <span class="bb-option__sub">{{
             'components.add-torrent.popover.paused-state.sub' | translate
@@ -90,11 +85,6 @@
         <div class="bb-option__text">
           <label class="bb-option__label" for="autoTMM">
             {{ 'components.add-torrent.add-form.auto-tmm' | translate }}
-            <bb-popover
-              [subject]="'components.add-torrent.popover.auto-tmm.title' | translate"
-              [description]="autoTMM"
-              placement="top"
-            ></bb-popover>
           </label>
           <span class="bb-option__sub">{{
             'components.add-torrent.popover.auto-tmm.sub' | translate
@@ -115,11 +105,6 @@
         <div class="bb-option__text">
           <label class="bb-option__label" for="sequentialDownload">
             {{ 'components.add-torrent.add-form.sequential-download' | translate }}
-            <bb-popover
-              [subject]="'components.add-torrent.popover.sequential-download.title' | translate"
-              [description]="sequentialDownload"
-              placement="top"
-            ></bb-popover>
           </label>
           <span class="bb-option__sub">{{
             'components.add-torrent.popover.sequential-download.sub' | translate
@@ -140,11 +125,6 @@
         <div class="bb-option__text">
           <label class="bb-option__label" for="firstLastPiecePrio">
             {{ 'components.add-torrent.add-form.first-last-piece-prio' | translate }}
-            <bb-popover
-              [subject]="'components.add-torrent.popover.first-last-piece-prio.title' | translate"
-              [description]="firstLastPiece"
-              placement="top"
-            ></bb-popover>
           </label>
           <span class="bb-option__sub">{{
             'components.add-torrent.popover.first-last-piece-prio.sub' | translate
@@ -170,26 +150,6 @@
     <fa-icon [icon]="faExclamationTriangle" class="me-1"></fa-icon>
     {{ 'components.add-torrent.popover.skip-hash-checking.description.line2' | translate }}
   </p>
-</ng-template>
-
-<ng-template #pausedState>
-  <p>{{ 'components.add-torrent.popover.paused-state.description.line1' | translate }}</p>
-  <p>{{ 'components.add-torrent.popover.paused-state.description.line2' | translate }}</p>
-</ng-template>
-
-<ng-template #autoTMM>
-  <p>{{ 'components.add-torrent.popover.auto-tmm.description.line1' | translate }}</p>
-  <p>{{ 'components.add-torrent.popover.auto-tmm.description.line2' | translate }}</p>
-</ng-template>
-
-<ng-template #sequentialDownload>
-  <p>{{ 'components.add-torrent.popover.sequential-download.description.line1' | translate }}</p>
-  <p>{{ 'components.add-torrent.popover.sequential-download.description.line2' | translate }}</p>
-</ng-template>
-
-<ng-template #firstLastPiece>
-  <p>{{ 'components.add-torrent.popover.first-last-piece-prio.description.line1' | translate }}</p>
-  <p>{{ 'components.add-torrent.popover.first-last-piece-prio.description.line2' | translate }}</p>
 </ng-template>
 
 <ng-template #rootFolder>

@@ -37,14 +37,16 @@
       @for (server of filteredServers(); track server.id) {
         <li class="list-group-item bb-server-row d-flex align-items-center justify-content-between">
           <div class="overflow-hidden me-2 d-flex align-items-center gap-3">
-            @if (!hideConnect() && currentServerId() === server.id) {
-              <fa-icon
-                [icon]="icon.faPlug"
-                class="text-success flex-shrink-0 ps-1"
-                [ngbTooltip]="'components.modals.manage-servers.tooltip.active' | translate"
-                container="body"
-              ></fa-icon>
-            }
+            <span
+              class="bb-server-orb flex-shrink-0 ms-2"
+              [class.bb-server-orb-active]="!hideConnect() && currentServerId() === server.id"
+              [ngbTooltip]="
+                !hideConnect() && currentServerId() === server.id
+                  ? ('components.modals.manage-servers.tooltip.active' | translate)
+                  : null
+              "
+              container="body"
+            ></span>
             <div class="overflow-hidden">
               <div
                 class="fw-medium text-truncate"

@@ -200,7 +200,12 @@ export interface BitButlerAPI {
     delete(payload: { id: string }): Promise<{ deleted: boolean }>;
     getById(payload: { id: string }): Promise<ServerRecord | null>;
     getByHost(payload: { host: string }): Promise<ServerRecord | null>;
-    setExportAvailable(payload: { id: string; value: 0 | 1 }): Promise<{ updated: boolean }>;
+    setConnectionInfo(payload: {
+      id: string;
+      exportAvailable: 0 | 1;
+      webapiVersion: string;
+      qbVersion: string;
+    }): Promise<{ updated: boolean }>;
     setActive(id: string | null): void;
   };
 
@@ -269,7 +274,6 @@ export interface BitButlerAPI {
     openBbePicker(): Promise<string | undefined>;
     readBbe(payload: { path: string }): Promise<BbeMetadata>;
     getServerInfo(serverId: string): Promise<BbeServerInfo>;
-    checkAvailability(serverId: string): Promise<{ available: boolean }>;
     saveTorrentFiles(payload: {
       serverId: string;
       items: ExportTorrentFileItem[];

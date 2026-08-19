@@ -211,7 +211,7 @@
             }}
           </label>
         </div>
-        <div class="small text-body-secondary">{{ tagScopeHint() | translate }}</div>
+        <div class="small text-body-secondary mb-3">{{ tagScopeHint() | translate }}</div>
       </fieldset>
 
       <fieldset class="bb-fieldset">
@@ -239,7 +239,7 @@
             ></bb-btn-content>
           </button>
         </div>
-        <div class="input-group">
+        <div class="input-group mb-3">
           <div class="form-floating">
             <input
               type="text"
@@ -397,12 +397,22 @@
         ></bb-btn-content>
       </button>
     }
-    <button type="button" class="btn btn-sm btn-split" (click)="close()" autofocus>
-      <bb-btn-content
-        [icon]="icons.faXmark"
-        [text]="'general.button.close' | translate"
-        position="end"
-      ></bb-btn-content>
-    </button>
+    @if (phase() === 'idle') {
+      <button type="button" class="btn btn-sm btn-split" (click)="close()" autofocus>
+        <bb-btn-content
+          [icon]="icons.faXmark"
+          [text]="'general.button.cancel' | translate"
+          position="end"
+        ></bb-btn-content>
+      </button>
+    } @else {
+      <button type="button" class="btn btn-sm btn-split" (click)="close()" autofocus>
+        <bb-btn-content
+          [icon]="icons.faXmark"
+          [text]="'general.button.close' | translate"
+          position="end"
+        ></bb-btn-content>
+      </button>
+    }
   }
 </div>

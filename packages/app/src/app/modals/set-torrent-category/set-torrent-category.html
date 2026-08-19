@@ -32,7 +32,11 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-12">
-          <app-category-select formControlName="category" [autofocus]="true"></app-category-select>
+          <app-category-select
+            formControlName="category"
+            [autofocus]="true"
+            appendTo="body"
+          ></app-category-select>
         </div>
       </div>
     </div>
@@ -52,7 +56,7 @@
       position="end"
     ></bb-btn-content>
   </button>
-  <button type="button" class="btn btn-link btn-sm btn-split" (click)="activeModal.close()">
+  <button type="button" class="btn btn-sm btn-split" (click)="activeModal.close()">
     <bb-btn-content
       [icon]="icons.faXmark"
       [text]="'general.button.cancel' | translate"

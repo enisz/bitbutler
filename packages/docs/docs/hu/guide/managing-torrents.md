@@ -33,7 +33,7 @@ Ha egy már a szerveren lévő torrentet próbálsz hozzáadni, a BitButler a [T
 
 ## Torrent átnevezése
 
-Kattints jobb gombbal egyetlen torrentre, és válaszd a **Kezelés > Torrent átnevezése** lehetőséget (több kijelölés esetén ez nem érhető el). A párbeszédablak egy szerkeszthető mezőben mutatja az aktuális nevet; a **Mentés** letiltva marad, amíg ténylegesen meg nem változtatod. Az átnevezés frissíti a torrent megjelenített nevét, és - ahol lehetséges - a lemezen lévő fájlt vagy gyökérmappát is ennek megfelelően: egy egyfájlos torrentnél a fájl kerül átnevezésre, egy többfájlos torrentnél a gyökérmappa.
+Kattints jobb gombbal egyetlen torrentre, és válaszd a **Kezelés > Torrent átnevezése** lehetőséget (több kijelölés esetén ez nem érhető el), vagy nyomd meg az `F2` billentyűt egyetlen kijelölt torrenttel - lásd a [Billentyűparancsok > Vezérlés](./keyboard-shortcuts#vezerles) részt arról, hogy az `F2` hogyan viselkedik helyszíni szerkesztés engedélyezése esetén. A párbeszédablak egy szerkeszthető mezőben mutatja az aktuális nevet; a **Mentés** letiltva marad, amíg ténylegesen meg nem változtatod. Az átnevezés frissíti a torrent megjelenített nevét, és - ahol lehetséges - a lemezen lévő fájlt vagy gyökérmappát is ennek megfelelően: egy egyfájlos torrentnél a fájl kerül átnevezésre, egy többfájlos torrentnél a gyökérmappa.
 
 ## Kategória és címkék beállítása kijelölésre
 

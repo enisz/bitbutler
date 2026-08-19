@@ -172,6 +172,7 @@
         },
         "recursive": {
           "title": "Recursive",
+          "sub": "Also scan subfolders",
           "description": {
             "line1": "When enabled, all subdirectories of the selected folder are scanned for .torrent files as well."
           }
@@ -226,7 +227,13 @@
         "error": {
           "duplicate": "Already in the list"
         },
-        "description": "Select a folder containing .torrent files - each one is parsed locally and listed below, with nothing sent anywhere until you click Add. Toggle Recursive or use Refresh to re-scan after files change on disk, and double-click a row's Name to rename it before adding; only new and previously-failed torrents can be selected.",
+        "note-title": "Good to know",
+        "description": {
+          "line1": "Files are parsed locally - nothing is sent anywhere until you click Add.",
+          "line2": "Toggle Recursive or use Refresh to re-scan after files change on disk.",
+          "line3": "Double-click a row's Name to rename it - press Enter to save, or Esc to cancel.",
+          "line4": "Only new and previously-failed torrents can be selected."
+        },
         "grid": {
           "no-rows": {
             "message": "No .torrent files found in this folder."
@@ -369,8 +376,9 @@
         }
       },
       "credential-prompt": {
-        "title": "Connect to {{name}}",
-        "save-credentials": "Save credentials for this server"
+        "title": "Connect",
+        "save-credentials": "Save credentials",
+        "save-credentials-sub": "Stored securely on this device"
       },
       "set-torrent-category": {
         "title": "Set Torrent Category",

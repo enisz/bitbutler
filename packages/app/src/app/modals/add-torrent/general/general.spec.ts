@@ -251,8 +251,9 @@ describe('AddTorrentGeneral', () => {
       // `inputMode() !== 'folder'`), but the size/free-space popovers now render unconditionally,
       // so 4 direct popovers remain (input-mode, size, free-space, save-path) - the removed
       // folder popover is not one of them - plus 1 each from the nested category/tag select
-      // components, plus 1 from the folder picker's own unconditional "recursive" popover.
-      expect(fixture.nativeElement.querySelectorAll('bb-popover').length).toBe(7);
+      // components. The folder picker's own "recursive" toggle no longer uses a popover (it has
+      // an inline sub-label instead), so no extra popover comes from it.
+      expect(fixture.nativeElement.querySelectorAll('bb-popover').length).toBe(6);
     });
   });
 

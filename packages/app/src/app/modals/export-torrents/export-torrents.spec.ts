@@ -12,8 +12,22 @@ import { ExportTorrents } from './export-torrents';
 describe('ExportTorrents', () => {
   let component: ExportTorrents;
   let fixture: ComponentFixture<ExportTorrents>;
+  let serverStoreMock: {
+    currentServer: ReturnType<typeof signal<any>>;
+    refresh: ReturnType<typeof vi.fn>;
+  };
+
+  function createFixture(): void {
+    fixture = TestBed.createComponent(ExportTorrents);
+    component = fixture.componentInstance;
+  }
 
   beforeEach(async () => {
+    serverStoreMock = {
+      currentServer: signal(null),
+      refresh: vi.fn().mockResolvedValue(undefined),
+    };
+
     await TestBed.configureTestingModule({
       imports: [ExportTorrents, TranslateModule.forRoot()],
       providers: [
@@ -37,12 +51,11 @@ describe('ExportTorrents', () => {
             tagsSet: signal(new Set()),
           },
         },
-        { provide: ServerStoreService, useValue: { currentServer: signal(null) } },
+        { provide: ServerStoreService, useValue: serverStoreMock },
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ExportTorrents);
-    component = fixture.componentInstance;
+    createFixture();
     fixture.detectChanges();
   });
 
@@ -56,5 +69,106 @@ describe('ExportTorrents', () => {
 
   it('should compute hasSelection as false when selected is empty', () => {
     expect(component.hasSelection()).toBe(false);
+  });
+
+  describe('connection info', () => {
+    function setCurrentServer(overrides: Record<string, unknown> = {}) {
+      serverStoreMock.currentServer.set({
+        id: 'srv-1',
+        name: 'Local',
+        host: 'localhost',
+        protocol: 'http',
+        port: 8080,
+        export_available: null,
+        webapi_version: null,
+        qb_version: null,
+        ...overrides,
+      });
+    }
+
+    it('reads cached values synchronously, without an async call, when all fields are cached', () => {
+      setCurrentServer({ export_available: 1, webapi_version: '2.9.3', qb_version: '4.6.0' });
+      const getServerInfo = vi.spyOn(window.bitbutler.export, 'getServerInfo');
+
+      createFixture();
+      fixture.detectChanges();
+
+      expect(getServerInfo).not.toHaveBeenCalled();
+      expect(component.serverInfoLoading()).toBe(false);
+      expect(component.serverInfo()).toEqual({
+        webapiVersion: '2.9.3',
+        qbVersion: '4.6.0',
+        isFullMode: true,
+      });
+    });
+
+    it('falls back to a live fetch and shows a loading state when a cached field is null', async () => {
+      setCurrentServer({ export_available: null, webapi_version: null, qb_version: null });
+      let resolveInfo!: (v: {
+        webapiVersion: string;
+        qbVersion: string;
+        isFullMode: boolean;
+      }) => void;
+      const pending = new Promise<{
+        webapiVersion: string;
+        qbVersion: string;
+        isFullMode: boolean;
+      }>((resolve) => {
+        resolveInfo = resolve;
+      });
+      vi.spyOn(window.bitbutler.export, 'getServerInfo').mockReturnValue(pending);
+
+      createFixture();
+      fixture.detectChanges();
+
+      expect(component.serverInfoLoading()).toBe(true);
+
+      resolveInfo({ webapiVersion: '2.9.3', qbVersion: '4.6.0', isFullMode: true });
+      await pending;
+      await Promise.resolve();
+
+      expect(component.serverInfoLoading()).toBe(false);
+      expect(component.serverInfo()).toEqual({
+        webapiVersion: '2.9.3',
+        qbVersion: '4.6.0',
+        isFullMode: true,
+      });
+    });
+
+    it('persists a successful live fallback fetch in the background to self-heal the cache', async () => {
+      setCurrentServer({ export_available: null, webapi_version: null, qb_version: null });
+      vi.spyOn(window.bitbutler.export, 'getServerInfo').mockResolvedValue({
+        webapiVersion: '2.9.3',
+        qbVersion: '4.6.0',
+        isFullMode: true,
+      });
+      const setConnectionInfo = vi
+        .spyOn(window.bitbutler.server, 'setConnectionInfo')
+        .mockResolvedValue({ updated: true });
+
+      createFixture();
+      fixture.detectChanges();
+      await vi.waitFor(() => expect(serverStoreMock.refresh).toHaveBeenCalled());
+
+      expect(setConnectionInfo).toHaveBeenCalledWith({
+        id: 'srv-1',
+        exportAvailable: 1,
+        webapiVersion: '2.9.3',
+        qbVersion: '4.6.0',
+      });
+    });
+
+    it('shows an error when the live fallback fetch fails', async () => {
+      setCurrentServer({ export_available: null, webapi_version: null, qb_version: null });
+      vi.spyOn(window.bitbutler.export, 'getServerInfo').mockRejectedValue(
+        new Error('connection refused'),
+      );
+
+      createFixture();
+      fixture.detectChanges();
+      await vi.waitFor(() => expect(component.serverInfoLoading()).toBe(false));
+
+      expect(component.serverInfoError()).toBe('connection refused');
+    });
   });
 });

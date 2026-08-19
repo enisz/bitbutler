@@ -179,49 +179,6 @@ describe('resolveFullMode', () => {
   });
 });
 
-describe('export:check-availability IPC handler', () => {
-  const ipcHandlersCheck = vi.hoisted(() => new Map<string, (...args: unknown[]) => unknown>());
-  const mockQbRequestAvail = vi.hoisted(() => vi.fn());
-
-  beforeEach(() => {
-    vi.resetModules();
-    ipcHandlersCheck.clear();
-    vi.doMock('electron', () => ({
-      ipcMain: {
-        handle: vi.fn((channel: string, handler: (...args: unknown[]) => unknown) => {
-          ipcHandlersCheck.set(channel, handler);
-        }),
-        on: vi.fn(),
-      },
-      dialog: { showSaveDialog: vi.fn(), showOpenDialog: vi.fn() },
-    }));
-    vi.doMock('./qbittorrent.js', () => ({ qbRequest: mockQbRequestAvail }));
-    vi.doMock('./server.js', () => ({ getExportAvailable: vi.fn() }));
-  });
-
-  afterEach(() => {
-    vi.clearAllMocks();
-    vi.doUnmock('./qbittorrent.js');
-    vi.doUnmock('./server.js');
-  });
-
-  it('returns { available: true } when the probe succeeds', async () => {
-    mockQbRequestAvail.mockResolvedValue(Buffer.from(''));
-    const { registerExportIpcHandlers } = await import('./export.js');
-    registerExportIpcHandlers();
-    const handler = ipcHandlersCheck.get('export:check-availability')!;
-    expect(await handler(null, { serverId: 'server-1' })).toEqual({ available: true });
-  });
-
-  it('returns { available: false } when the probe gets a 404', async () => {
-    mockQbRequestAvail.mockRejectedValue(JSON.stringify({ status: 404 }));
-    const { registerExportIpcHandlers } = await import('./export.js');
-    registerExportIpcHandlers();
-    const handler = ipcHandlersCheck.get('export:check-availability')!;
-    expect(await handler(null, { serverId: 'server-1' })).toEqual({ available: false });
-  });
-});
-
 describe('export:save-torrent-files IPC handler', () => {
   const ipcHandlersSave = vi.hoisted(() => new Map<string, (...args: unknown[]) => unknown>());
   const mockShowSaveDialog = vi.hoisted(() => vi.fn());
