@@ -128,11 +128,13 @@ describe('electron IPC handlers', () => {
   });
 
   describe('electron:check-for-update', () => {
-    it('returns { updateAvailable: false } when no releases exist', async () => {
+    it('returns { updateAvailable: false, currentVersion } when no releases exist', async () => {
+      mockAppGetVersion.mockReturnValue('1.0.0');
       mockAxiosGet.mockResolvedValue({ data: [] });
       const handlers = await registerAndGetHandlers();
       expect(await handlers.get('electron:check-for-update')!(null)).toEqual({
         updateAvailable: false,
+        currentVersion: '1.0.0',
       });
     });
 
@@ -159,6 +161,7 @@ describe('electron IPC handlers', () => {
       const handlers = await registerAndGetHandlers();
       const result = (await handlers.get('electron:check-for-update')!(null)) as any;
       expect(result.updateAvailable).toBe(true);
+      expect(result.currentVersion).toBe('1.0.0');
       expect(result.releases).toHaveLength(1);
       expect(result.releases[0].tag_name).toBe('v2.0.0');
     });

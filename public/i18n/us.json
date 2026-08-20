@@ -798,11 +798,13 @@
       },
       "update-available": {
         "title": "Update Available",
-        "new-version-ready": "New version <strong>{{ tag_name }}</strong> is ready!",
-        "whats-new": "What's New",
+        "subtitle": "You're on v{{ current_version }}, {{ count }} versions behind the latest (v{{ latest_version }}).",
+        "download-for": "Download for {{ os_name }}",
         "available-downloads": "Available Downloads",
+        "footnote": "Releases aren't code-signed, so downloads must be installed manually.",
+        "view-all-releases": "View all releases",
         "button": {
-          "view-on-github": "View on GitHub"
+          "skip-versions": "Skip these versions"
         }
       },
       "share-limit": {

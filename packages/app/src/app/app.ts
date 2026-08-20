@@ -119,7 +119,7 @@ export class App {
       )
       .subscribe((generalSettings: GeneralSettings) => {
         if (generalSettings?.behavior.automaticUpdate && !this.updateCheckedOnStartup) {
-          this.commandBusService.emit({ type: 'UPDATE_CHECK_FOR_UPDATE' });
+          this.commandBusService.emit({ type: 'UPDATE_CHECK_FOR_UPDATE', trigger: 'automatic' });
           this.updateCheckedOnStartup = true;
         }
 

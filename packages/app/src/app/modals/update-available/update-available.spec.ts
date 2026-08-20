@@ -1,11 +1,10 @@
-import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Release, ReleaseAsset, UpdateCheckResponse } from '@bitbutler/shared';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { MARKED_OPTIONS, MarkedOptions, MarkedRenderer, provideMarkdown } from 'ngx-markdown';
 import { TimeagoIntl, provideTimeago } from 'ngx-timeago';
 import { ElectronService } from '../../services/electron.service';
-import { ThemeService } from '../../services/theme.service';
+import { UpdateSettingsService } from '../../services/update-settings.service';
 import { UpdateAvailable } from './update-available';
 
 const makeRelease = (overrides: Partial<Release> = {}): Release =>
@@ -45,17 +44,27 @@ function markedOptionsFactory(): MarkedOptions {
 describe('UpdateAvailable', () => {
   let component: UpdateAvailable;
   let fixture: ComponentFixture<UpdateAvailable>;
+  let activeModal: { close: ReturnType<typeof vi.fn>; dismiss: ReturnType<typeof vi.fn> };
+  let updateSettingsSave: ReturnType<typeof vi.fn>;
+  let openExternalUrl: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
+    activeModal = { close: vi.fn(), dismiss: vi.fn() };
+    updateSettingsSave = vi.fn().mockResolvedValue(undefined);
+    openExternalUrl = vi.fn();
+
     await TestBed.configureTestingModule({
       imports: [UpdateAvailable],
       providers: [
-        { provide: NgbActiveModal, useValue: { close: vi.fn(), dismiss: vi.fn() } },
-        { provide: ThemeService, useValue: { family: signal('bitbutler') } },
+        { provide: NgbActiveModal, useValue: activeModal },
         {
           provide: ElectronService,
-          useValue: { openExternalUrl: vi.fn(), getPlatform: vi.fn().mockResolvedValue('win32') },
+          useValue: {
+            openExternalUrl,
+            getPlatform: vi.fn().mockResolvedValue('win32'),
+          },
         },
+        { provide: UpdateSettingsService, useValue: { save: updateSettingsSave } },
         provideTimeago({ intl: { provide: TimeagoIntl, useClass: TimeagoIntl } }),
         provideMarkdown({
           markedOptions: {
@@ -109,10 +118,19 @@ describe('UpdateAvailable', () => {
       } as UpdateCheckResponse);
       fixture.detectChanges();
 
-      const dateSpan = fixture.nativeElement.querySelector(
-        '.me-3.d-flex.flex-column.justify-content-between.align-items-center span',
-      );
-      expect(dateSpan.textContent.trim()).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/);
+      const dateSpan = fixture.nativeElement.querySelector('.bb-ua-version-date');
+      expect(dateSpan.textContent).toMatch(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}/);
+    });
+
+    it('renders a parenthesized relative time-ago suffix next to the date', () => {
+      fixture.componentRef.setInput('update', {
+        releases: [makeRelease({ published_at: '2024-01-15T10:00:00Z' })],
+        updateAvailable: true,
+      } as UpdateCheckResponse);
+      fixture.detectChanges();
+
+      const agoSpan = fixture.nativeElement.querySelector('.bb-ua-version-date__ago');
+      expect(agoSpan.textContent.trim()).toMatch(/^\(.+\)$/);
     });
   });
 
@@ -285,6 +303,98 @@ describe('UpdateAvailable', () => {
       fixture.detectChanges();
 
       expect(component.filteredAssets().map((asset) => asset.id)).toEqual([1, 2]);
+    });
+  });
+
+  describe('osLabel', () => {
+    it('should map win32 to Windows', () => {
+      component.platform.set('win32');
+      expect(component.osLabel()).toBe('Windows');
+    });
+
+    it('should map darwin to macOS', () => {
+      component.platform.set('darwin');
+      expect(component.osLabel()).toBe('macOS');
+    });
+
+    it('should map linux to Linux', () => {
+      component.platform.set('linux');
+      expect(component.osLabel()).toBe('Linux');
+    });
+
+    it('should be null for an unmapped platform', () => {
+      component.platform.set('aix');
+      expect(component.osLabel()).toBeNull();
+    });
+
+    it('should be null when the platform is unknown', () => {
+      component.platform.set(null);
+      expect(component.osLabel()).toBeNull();
+    });
+  });
+
+  describe('currentVersion', () => {
+    it('should reflect the normalized currentVersion from the update response', () => {
+      fixture.componentRef.setInput('update', {
+        releases: [],
+        updateAvailable: false,
+        currentVersion: 'v1.1.0',
+      } as UpdateCheckResponse);
+      fixture.detectChanges();
+      expect(component.currentVersion()).toBe('1.1.0');
+    });
+
+    it('should be null when the update response has no currentVersion', () => {
+      fixture.componentRef.setInput('update', {
+        releases: [],
+        updateAvailable: false,
+      } as UpdateCheckResponse);
+      fixture.detectChanges();
+      expect(component.currentVersion()).toBeNull();
+    });
+  });
+
+  describe('behindCount', () => {
+    it('should reflect the number of missed releases', () => {
+      fixture.componentRef.setInput('update', {
+        releases: [makeRelease({ id: 1 }), makeRelease({ id: 2 })],
+        updateAvailable: true,
+      } as UpdateCheckResponse);
+      fixture.detectChanges();
+      expect(component.behindCount()).toBe(2);
+    });
+
+    it('should be 0 when there are no releases', () => {
+      expect(component.behindCount()).toBe(0);
+    });
+  });
+
+  describe('skipVersions', () => {
+    it('should persist the normalized latest release version and close the modal', async () => {
+      fixture.componentRef.setInput('update', {
+        releases: [makeRelease({ tag_name: 'v2.0.0' })],
+        updateAvailable: true,
+      } as UpdateCheckResponse);
+      fixture.detectChanges();
+
+      await component.skipVersions();
+
+      expect(updateSettingsSave).toHaveBeenCalledWith({ skippedVersion: '2.0.0' });
+      expect(activeModal.close).toHaveBeenCalledWith('skip');
+    });
+
+    it('should close the modal without saving when there is no latest release', async () => {
+      await component.skipVersions();
+
+      expect(updateSettingsSave).not.toHaveBeenCalled();
+      expect(activeModal.close).toHaveBeenCalledWith('skip');
+    });
+  });
+
+  describe('viewAllReleases', () => {
+    it('should open the releases list page, not a specific release tag', () => {
+      component.viewAllReleases();
+      expect(openExternalUrl).toHaveBeenCalledWith('https://github.com/enisz/bitbutler/releases');
     });
   });
 });

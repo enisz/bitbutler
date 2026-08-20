@@ -1,4 +1,4 @@
-import { BrowserWindow, app, session } from 'electron';
+import { BrowserWindow, app, session, shell } from 'electron';
 import fs from 'node:fs';
 import { join } from 'node:path';
 
@@ -80,6 +80,18 @@ export function createMainWindow(startMinimized = false): BrowserWindow {
       mainWindow.loadFile(indexPath);
     }
   }
+
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    try {
+      const { protocol } = new URL(url);
+      if (protocol === 'https:' || protocol === 'http:') {
+        void shell.openExternal(url);
+      }
+    } catch {
+      // Malformed URL - ignore.
+    }
+    return { action: 'deny' };
+  });
 
   mainWindow.webContents.on('did-fail-load', (_e, code, desc, url) => {
     console.error('did-fail-load', { code, desc, url });

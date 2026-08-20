@@ -798,11 +798,13 @@
       },
       "update-available": {
         "title": "Frissítés elérhető",
-        "new-version-ready": "Az új <strong>{{ tag_name }}</strong> verzió készen áll!",
-        "whats-new": "Újdonságok",
+        "subtitle": "Jelenleg a v{{ current_version }} verziót használod, {{ count }} verzióval vagy lemaradva a legújabbtól (v{{ latest_version }}).",
+        "download-for": "Letöltés {{ os_name }} rendszerre",
         "available-downloads": "Elérhető letöltések",
+        "footnote": "A kiadások nincsenek kódaláírással ellátva, így a letöltéseket manuálisan kell telepíteni.",
+        "view-all-releases": "Összes kiadás megtekintése",
         "button": {
-          "view-on-github": "Megtekintés GitHubon"
+          "skip-versions": "Ezen verziók kihagyása"
         }
       },
       "share-limit": {

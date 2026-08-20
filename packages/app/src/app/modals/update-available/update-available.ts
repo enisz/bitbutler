@@ -9,23 +9,25 @@ import {
   signal,
 } from '@angular/core';
 import { HostPlatform, Release, ReleaseAsset, UpdateCheckResponse } from '@bitbutler/shared';
-import { faGithub } from '@fortawesome/free-brands-svg-icons';
-import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faDownload, faForward, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbAccordionModule, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MarkdownComponent } from 'ngx-markdown';
 import { TimeagoPipe } from 'ngx-timeago';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
+import { normalizeVersionTag } from '../../models/update-settings.model';
 import { FilesizePipe } from '../../pipes/filesize-pipe';
 import { LocalTimestampPipe } from '../../pipes/local-timestamp-pipe';
 import { ElectronService } from '../../services/electron.service';
-import { ThemeService } from '../../services/theme.service';
+import { UpdateSettingsService } from '../../services/update-settings.service';
 
 @Component({
   selector: 'app-update-available',
   standalone: true,
   imports: [
     CommonModule,
+    FontAwesomeModule,
     NgbAccordionModule,
     MarkdownComponent,
     FilesizePipe,
@@ -39,15 +41,11 @@ import { ThemeService } from '../../services/theme.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UpdateAvailable {
-  private readonly themeService = inject(ThemeService);
-
-  public readonly icons = { faGithub, faXmark };
+  public readonly icons = { faDownload, faForward, faXmark };
   public readonly update = input.required<UpdateCheckResponse>();
   public readonly activeModal = inject(NgbActiveModal);
   private readonly electronService = inject(ElectronService);
-  public readonly logoUrl = computed(
-    () => `assets/images/bitbutler-logo-${this.themeService.family()}.png`,
-  );
+  private readonly updateSettingsService = inject(UpdateSettingsService);
 
   public activeReleaseId = signal<string | null>(null);
   public readonly platform = signal<HostPlatform | null>(null);
@@ -56,6 +54,24 @@ export class UpdateAvailable {
     win32: ['.exe', '.zip'],
     linux: ['.appimage', '.deb', '.rpm', '.snap', '.tar.gz'],
   };
+
+  private readonly osLabels: Partial<Record<HostPlatform, string>> = {
+    win32: 'Windows',
+    darwin: 'macOS',
+    linux: 'Linux',
+  };
+
+  public readonly osLabel = computed<string | null>(() => {
+    const platform = this.platform();
+    return platform ? (this.osLabels[platform] ?? null) : null;
+  });
+
+  public readonly currentVersion = computed<string | null>(() => {
+    const version = this.update().currentVersion;
+    return version ? normalizeVersionTag(version) : null;
+  });
+
+  public readonly behindCount = computed(() => this.update().releases?.length ?? 0);
 
   public readonly filteredAssets = computed<ReleaseAsset[]>(() => {
     const assets = this.latestRelease?.assets ?? [];
@@ -96,7 +112,7 @@ export class UpdateAvailable {
   }
 
   public getVersion(version: string): string {
-    return version.replace(/^v/, '');
+    return normalizeVersionTag(version);
   }
 
   public toMs(dateStr: string | null | undefined): number {
@@ -106,5 +122,19 @@ export class UpdateAvailable {
 
   public downloadAsset(url: string): void {
     this.electronService.openExternalUrl(url);
+  }
+
+  public viewAllReleases(): void {
+    this.electronService.openExternalUrl('https://github.com/enisz/bitbutler/releases');
+  }
+
+  public async skipVersions(): Promise<void> {
+    const release = this.latestRelease;
+    if (release) {
+      await this.updateSettingsService.save({
+        skippedVersion: normalizeVersionTag(release.tag_name),
+      });
+    }
+    this.activeModal.close('skip');
   }
 }
