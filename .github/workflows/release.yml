@@ -168,7 +168,7 @@ jobs:
         run: npm run build:electron
 
       - name: Package Electron app
-        run: npx electron-builder ${{ matrix.target }}
+        run: npx electron-builder ${{ matrix.target }} --publish never
 
       - name: Upload packaged artifacts
         uses: actions/upload-artifact@v7
@@ -251,12 +251,15 @@ jobs:
           tag_name: ${{ needs.bump-version.outputs.raw_version }}
           files: |
             dist-electron/*.exe
+            dist-electron/*.exe.blockmap
             dist-electron/*.zip
             dist-electron/*.deb
             dist-electron/*.AppImage
             dist-electron/*.rpm
             dist-electron/*.snap
             dist-electron/*.tar.gz
+            dist-electron/latest.yml
+            dist-electron/latest-linux.yml
 
       - name: Publish release
         env:
