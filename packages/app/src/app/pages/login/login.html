@@ -43,50 +43,56 @@
       }
 
       @if (hasServers()) {
-        <div class="host-field mb-4">
-          <label for="server" class="host-label">{{
-            'pages.login.server-form.host' | translate
-          }}</label>
+        <div class="mb-4">
           <form [formGroup]="serverForm">
-            <ng-select
-              id="server"
-              bindLabel="name"
-              bindValue="id"
-              formControlName="server"
-              placeholder="No hosts"
-              [searchable]="false"
-              [clearable]="false"
-              [items]="servers()"
-              [fixedPlaceholder]="false"
-              [trackByFn]="trackByFn"
-            >
-              <ng-template ng-label-tmp let-item="item">{{ item.name }}</ng-template>
-            </ng-select>
+            <div class="form-floating">
+              <ng-select
+                id="server"
+                bindLabel="name"
+                bindValue="id"
+                formControlName="server"
+                placeholder="No hosts"
+                [searchable]="false"
+                [clearable]="false"
+                [items]="servers()"
+                [fixedPlaceholder]="false"
+                [trackByFn]="trackByFn"
+              >
+                <ng-template ng-label-tmp let-item="item">{{ item.name }}</ng-template>
+              </ng-select>
+              <label for="server">{{ 'pages.login.server-form.host' | translate }}</label>
+            </div>
           </form>
         </div>
 
         <div class="d-flex flex-column gap-3">
           <button
             type="button"
-            class="btn btn-lg btn-primary btn-pill-cta"
+            class="btn btn-lg btn-primary btn-pill-cta btn-split"
             (click)="connect()"
             [disabled]="!canConnect()"
           >
-            {{ 'general.button.connect' | translate }}
+            <bb-btn-content
+              [icon]="icons.faPlug"
+              [text]="'general.button.connect' | translate"
+            ></bb-btn-content>
           </button>
           <button
             type="button"
-            class="btn btn-lg btn-outline-secondary btn-pill-cta"
+            class="btn btn-lg btn-outline-secondary btn-pill-cta btn-split"
             (click)="openManageServers()"
           >
-            {{ 'general.button.manage-servers' | translate }}
+            <bb-btn-content
+              [icon]="icons.faServer"
+              [text]="'general.button.manage-servers' | translate"
+            ></bb-btn-content>
           </button>
         </div>
       } @else {
         <div class="d-flex flex-column gap-3 mb-4">
           <button
             type="button"
-            class="btn btn-lg btn-primary btn-pill-cta add-server-cta"
+            class="btn btn-lg btn-primary btn-pill-cta btn-split add-server-cta"
             (click)="addNewServer()"
             [disabled]="addingServer()"
           >

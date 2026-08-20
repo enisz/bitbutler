@@ -17,7 +17,9 @@ import {
   faCircleHalfStroke,
   faLanguage,
   faPalette,
+  faPlug,
   faPlus,
+  faServer,
 } from '@fortawesome/free-solid-svg-icons';
 import { NgbDropdownModule, NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgLabelTemplateDirective, NgSelectComponent } from '@ng-select/ng-select';
@@ -79,7 +81,7 @@ export class Login implements OnInit {
 
   public readonly logoUrl = computed(() => getFamilyLogoUrl(this.themeService.family()));
 
-  public readonly icons = { faLanguage, faPalette, faCircleHalfStroke, faPlus };
+  public readonly icons = { faLanguage, faPalette, faCircleHalfStroke, faPlug, faPlus, faServer };
 
   public readonly families = THEME_FAMILIES;
 
