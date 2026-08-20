@@ -374,6 +374,7 @@ export class UiCommandHandlerService {
               size: 'lg',
               centered: true,
               scrollable: true,
+              beforeDismiss: () => !updateAvailableModalRef.componentInstance.footerLocked(),
             });
             setModalInput(updateAvailableModalRef, 'update', command.update);
             updateAvailableModalRef.result.catch(() => {});

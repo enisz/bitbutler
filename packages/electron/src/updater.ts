@@ -3,6 +3,7 @@ import { app, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
+import { t } from './i18n.js';
 import { getMainWindow } from './main.js';
 
 const QUIT_AND_INSTALL_DELAY_MS = 1200;
@@ -20,7 +21,10 @@ export function registerUpdaterIpcHandlers(): void {
   });
 
   autoUpdater.on('update-not-available', () => {
-    sendUpdaterEvent({ status: 'error', message: 'No update is currently available.' });
+    sendUpdaterEvent({
+      status: 'error',
+      message: t('components.modals.update-available.status.no-update-available'),
+    });
   });
 
   // NSIS installers are unsigned until SignPath Foundation signing lands, so
@@ -75,8 +79,18 @@ function getUpdateCapability(): UpdateCapability {
     // OS actually runs the code - Node's default path module picks its
     // posix/win32 implementation from the real host platform, not the
     // process.platform value checked above.
-    const updateExePath = path.win32.join(path.win32.dirname(process.execPath), 'Update.exe');
-    return { supported: existsSync(updateExePath) };
+    //
+    // This app packages Windows builds with electron-builder's NSIS target
+    // (not Squirrel.Windows), which writes an uninstaller - "Uninstall
+    // BitButler.exe" - into the install directory next to the app exe. A
+    // portable exe or a zip extraction never gets this file, so checking for
+    // it correctly separates "can self-update" (NSIS install) from "cannot"
+    // (portable/zip) across all three Windows distribution forms.
+    const uninstallerPath = path.win32.join(
+      path.win32.dirname(process.execPath),
+      'Uninstall BitButler.exe',
+    );
+    return { supported: existsSync(uninstallerPath) };
   }
 
   return { supported: false };

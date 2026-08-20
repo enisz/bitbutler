@@ -129,7 +129,14 @@ export class UpdateAvailable {
   public readonly progressLabel = computed(() => Math.round(this.updaterService.progress()));
 
   constructor() {
-    this.updaterService.reset();
+    // Only reset when no update flow is already in flight - UpdaterService is
+    // a root singleton, so resetting unconditionally would clobber a live
+    // 'checking'/'downloading'/'downloaded' status back to 'idle' if this
+    // modal is ever reconstructed while an update is still running.
+    const currentStatus = this.updaterService.status();
+    if (currentStatus === 'idle' || currentStatus === 'error') {
+      this.updaterService.reset();
+    }
 
     effect(() => {
       const first = this.update().releases?.[0]?.id;

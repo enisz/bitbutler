@@ -32,6 +32,7 @@ vi.mock('electron', () => ({
 vi.mock('electron-updater', () => ({ autoUpdater: mockAutoUpdater }));
 vi.mock('node:fs', () => ({ existsSync: mockExistsSync }));
 vi.mock('./main.js', () => ({ getMainWindow: mockGetMainWindow }));
+vi.mock('./i18n.js', () => ({ t: (key: string) => key }));
 
 describe('updater IPC handlers', () => {
   const originalPlatform = process.platform;
@@ -79,15 +80,17 @@ describe('updater IPC handlers', () => {
       expect(await handlers.get('updater:get-capability')!(null)).toEqual({ supported: false });
     });
 
-    it('is supported on Windows when Update.exe exists next to the executable', async () => {
+    it('is supported on Windows when the NSIS uninstaller exists next to the executable', async () => {
       Object.defineProperty(process, 'platform', { value: 'win32', configurable: true });
       mockExistsSync.mockReturnValue(true);
       const handlers = await registerAndGetHandlers();
       expect(await handlers.get('updater:get-capability')!(null)).toEqual({ supported: true });
-      expect(mockExistsSync).toHaveBeenCalledWith('C:\\Program Files\\BitButler\\Update.exe');
+      expect(mockExistsSync).toHaveBeenCalledWith(
+        'C:\\Program Files\\BitButler\\Uninstall BitButler.exe',
+      );
     });
 
-    it('is unsupported on Windows when Update.exe is missing (portable/zip)', async () => {
+    it('is unsupported on Windows when the NSIS uninstaller is missing (portable/zip)', async () => {
       Object.defineProperty(process, 'platform', { value: 'win32', configurable: true });
       mockExistsSync.mockReturnValue(false);
       const handlers = await registerAndGetHandlers();
@@ -146,7 +149,7 @@ describe('updater IPC handlers', () => {
       updaterListeners.get('update-not-available')!();
       expect(mockSend).toHaveBeenCalledWith('updater:event', {
         status: 'error',
-        message: 'No update is currently available.',
+        message: 'components.modals.update-available.status.no-update-available',
       });
     });
 

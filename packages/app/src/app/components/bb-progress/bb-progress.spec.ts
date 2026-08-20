@@ -58,6 +58,12 @@ describe('BbProgressBar', () => {
       fixture.componentRef.setInput('progress', 0.333);
       expect(component.progressPercent()).toBe(33.3);
     });
+
+    it('should treat a sub-1% value as already a percentage when rawPercent is true', () => {
+      fixture.componentRef.setInput('rawPercent', true);
+      fixture.componentRef.setInput('progress', 0.5);
+      expect(component.progressPercent()).toBe(0.5);
+    });
   });
 
   describe('displayVariant', () => {

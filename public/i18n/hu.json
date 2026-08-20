@@ -811,7 +811,8 @@
         "status": {
           "checking": "Frissítés keresése...",
           "downloading": "Frissítés letöltése... {{ percent }}%",
-          "restarting": "Újraindítás a telepítéshez..."
+          "restarting": "Újraindítás a telepítéshez...",
+          "no-update-available": "Jelenleg nincs elérhető frissítés."
         },
         "toast": {
           "update-failed-title": "Frissítés sikertelen"

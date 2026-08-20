@@ -512,5 +512,51 @@ describe('UpdateAvailable', () => {
     it('resets the updater service state', () => {
       expect(mockUpdaterService.reset).toHaveBeenCalled();
     });
+
+    it('does not reset the updater service state when an update is already in flight', async () => {
+      await TestBed.resetTestingModule();
+      const inFlightUpdaterService = {
+        capability: signal<UpdateCapability | null>(null),
+        status: signal<'idle' | 'checking' | 'downloading' | 'downloaded' | 'error'>('downloading'),
+        progress: signal(0),
+        errorMessage: signal<string | null>(null),
+        updateNow: vi.fn(),
+        reset: vi.fn(),
+      };
+
+      await TestBed.configureTestingModule({
+        imports: [UpdateAvailable],
+        providers: [
+          { provide: NgbActiveModal, useValue: activeModal },
+          {
+            provide: ElectronService,
+            useValue: {
+              openExternalUrl,
+              getPlatform: vi.fn().mockResolvedValue('win32'),
+            },
+          },
+          { provide: UpdateSettingsService, useValue: { save: updateSettingsSave } },
+          { provide: UpdaterService, useValue: inFlightUpdaterService },
+          { provide: ToastService, useValue: { danger: toastDanger } },
+          { provide: TranslateService, useValue: translateMock },
+          provideTimeago({ intl: { provide: TimeagoIntl, useClass: TimeagoIntl } }),
+          provideMarkdown({
+            markedOptions: {
+              provide: MARKED_OPTIONS,
+              useFactory: markedOptionsFactory,
+            },
+          }),
+        ],
+      }).compileComponents();
+
+      const inFlightFixture = TestBed.createComponent(UpdateAvailable);
+      inFlightFixture.componentRef.setInput('update', {
+        releases: [],
+        updateAvailable: false,
+      } as UpdateCheckResponse);
+      inFlightFixture.detectChanges();
+
+      expect(inFlightUpdaterService.reset).not.toHaveBeenCalled();
+    });
   });
 });
