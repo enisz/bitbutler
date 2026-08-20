@@ -1,10 +1,21 @@
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Release, ReleaseAsset, UpdateCheckResponse } from '@bitbutler/shared';
+import type {
+  Release,
+  ReleaseAsset,
+  UpdateCapability,
+  UpdateCheckResponse,
+} from '@bitbutler/shared';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateService } from '@ngx-translate/core';
 import { MARKED_OPTIONS, MarkedOptions, MarkedRenderer, provideMarkdown } from 'ngx-markdown';
 import { TimeagoIntl, provideTimeago } from 'ngx-timeago';
+import { of } from 'rxjs';
 import { ElectronService } from '../../services/electron.service';
+import { ToastService } from '../../services/toast.service';
 import { UpdateSettingsService } from '../../services/update-settings.service';
+import { UpdaterService } from '../../services/updater.service';
+import { mockTranslateService } from '../../test-utils/translate.mock';
 import { UpdateAvailable } from './update-available';
 
 const makeRelease = (overrides: Partial<Release> = {}): Release =>
@@ -47,11 +58,33 @@ describe('UpdateAvailable', () => {
   let activeModal: { close: ReturnType<typeof vi.fn>; dismiss: ReturnType<typeof vi.fn> };
   let updateSettingsSave: ReturnType<typeof vi.fn>;
   let openExternalUrl: ReturnType<typeof vi.fn>;
+  let mockUpdaterService: {
+    capability: ReturnType<typeof signal<UpdateCapability | null>>;
+    status: ReturnType<typeof signal<'idle' | 'checking' | 'downloading' | 'downloaded' | 'error'>>;
+    progress: ReturnType<typeof signal<number>>;
+    errorMessage: ReturnType<typeof signal<string | null>>;
+    updateNow: ReturnType<typeof vi.fn>;
+    reset: ReturnType<typeof vi.fn>;
+  };
+  let toastDanger: ReturnType<typeof vi.fn>;
+  let translateMock: ReturnType<typeof mockTranslateService>;
 
   beforeEach(async () => {
     activeModal = { close: vi.fn(), dismiss: vi.fn() };
     updateSettingsSave = vi.fn().mockResolvedValue(undefined);
     openExternalUrl = vi.fn();
+    toastDanger = vi.fn();
+    translateMock = mockTranslateService();
+    translateMock.instant.mockImplementation((key: string) => key);
+    translateMock.get.mockImplementation((key: string) => of(key));
+    mockUpdaterService = {
+      capability: signal<UpdateCapability | null>(null),
+      status: signal<'idle' | 'checking' | 'downloading' | 'downloaded' | 'error'>('idle'),
+      progress: signal(0),
+      errorMessage: signal<string | null>(null),
+      updateNow: vi.fn(),
+      reset: vi.fn(),
+    };
 
     await TestBed.configureTestingModule({
       imports: [UpdateAvailable],
@@ -65,6 +98,9 @@ describe('UpdateAvailable', () => {
           },
         },
         { provide: UpdateSettingsService, useValue: { save: updateSettingsSave } },
+        { provide: UpdaterService, useValue: mockUpdaterService },
+        { provide: ToastService, useValue: { danger: toastDanger } },
+        { provide: TranslateService, useValue: translateMock },
         provideTimeago({ intl: { provide: TimeagoIntl, useClass: TimeagoIntl } }),
         provideMarkdown({
           markedOptions: {
@@ -395,6 +431,86 @@ describe('UpdateAvailable', () => {
     it('should open the releases list page, not a specific release tag', () => {
       component.viewAllReleases();
       expect(openExternalUrl).toHaveBeenCalledWith('https://github.com/enisz/bitbutler/releases');
+    });
+  });
+
+  describe('showUpdateNow', () => {
+    it('is false when capability has not loaded yet', () => {
+      expect(component.showUpdateNow()).toBe(false);
+    });
+
+    it('is false when the platform reports unsupported', () => {
+      mockUpdaterService.capability.set({ supported: false });
+      expect(component.showUpdateNow()).toBe(false);
+    });
+
+    it('is true when the platform reports supported', () => {
+      mockUpdaterService.capability.set({ supported: true });
+      expect(component.showUpdateNow()).toBe(true);
+    });
+  });
+
+  describe('showSmartScreenWarning', () => {
+    it('is false when update-now is not shown', () => {
+      mockUpdaterService.capability.set({ supported: false });
+      expect(component.showSmartScreenWarning()).toBe(false);
+    });
+
+    it('is true when update-now is shown and platform is win32', async () => {
+      mockUpdaterService.capability.set({ supported: true });
+      component.platform.set('win32');
+      expect(component.showSmartScreenWarning()).toBe(true);
+    });
+
+    it('is false when update-now is shown but platform is linux', () => {
+      mockUpdaterService.capability.set({ supported: true });
+      component.platform.set('linux');
+      expect(component.showSmartScreenWarning()).toBe(false);
+    });
+  });
+
+  describe('footerLocked', () => {
+    it.each(['checking', 'downloading', 'downloaded'] as const)(
+      'is true while status is %s',
+      (status) => {
+        mockUpdaterService.status.set(status);
+        expect(component.footerLocked()).toBe(true);
+      },
+    );
+
+    it.each(['idle', 'error'] as const)('is false while status is %s', (status) => {
+      mockUpdaterService.status.set(status);
+      expect(component.footerLocked()).toBe(false);
+    });
+  });
+
+  describe('updateNow', () => {
+    it('delegates to UpdaterService.updateNow()', () => {
+      component.updateNow();
+      expect(mockUpdaterService.updateNow).toHaveBeenCalled();
+    });
+  });
+
+  describe('error toast', () => {
+    it('shows a danger toast with the error message when status becomes error', () => {
+      mockUpdaterService.status.set('error');
+      mockUpdaterService.errorMessage.set('offline');
+      fixture.detectChanges();
+      expect(toastDanger).toHaveBeenCalledWith(
+        'offline',
+        'components.modals.update-available.toast.update-failed-title',
+      );
+    });
+
+    it('does not show a toast while status is idle', () => {
+      fixture.detectChanges();
+      expect(toastDanger).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('construction', () => {
+    it('resets the updater service state', () => {
+      expect(mockUpdaterService.reset).toHaveBeenCalled();
     });
   });
 });

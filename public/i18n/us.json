@@ -803,8 +803,18 @@
         "available-downloads": "Available Downloads",
         "footnote": "Releases aren't code-signed, so downloads must be installed manually.",
         "view-all-releases": "View all releases",
+        "smartscreen-warning": "Windows may show a SmartScreen warning during installation, since BitButler isn't code-signed yet. If the update doesn't finish automatically, download and run the installer manually below.",
         "button": {
-          "skip-versions": "Skip these versions"
+          "skip-versions": "Skip these versions",
+          "update-now": "Update Now"
+        },
+        "status": {
+          "checking": "Checking for the update...",
+          "downloading": "Downloading update... {{ percent }}%",
+          "restarting": "Restarting to install..."
+        },
+        "toast": {
+          "update-failed-title": "Update Failed"
         }
       },
       "share-limit": {

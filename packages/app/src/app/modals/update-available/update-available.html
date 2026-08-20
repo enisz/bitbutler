@@ -101,18 +101,76 @@
 </div>
 
 <div class="modal-footer">
-  <button type="button" class="btn btn-sm btn-split" (click)="skipVersions()">
-    <bb-btn-content
-      [icon]="icons.faForward"
-      [text]="'components.modals.update-available.button.skip-versions' | translate"
-      position="end"
-    ></bb-btn-content>
-  </button>
-  <button type="button" class="btn btn-sm btn-split" (click)="activeModal.close('close')" autofocus>
-    <bb-btn-content
-      [icon]="icons.faXmark"
-      [text]="'general.button.close' | translate"
-      position="end"
-    ></bb-btn-content>
-  </button>
+  @if (showSmartScreenWarning()) {
+    <bb-callout
+      variant="warning"
+      [icon]="icons.faTriangleExclamation"
+      [message]="'components.modals.update-available.smartscreen-warning' | translate"
+      class="bb-ua-smartscreen-warning"
+    ></bb-callout>
+  }
+
+  <div class="bb-ua-footer-row">
+    <div class="bb-ua-update-now">
+      @if (showUpdateNow()) {
+        @if (isUpdating()) {
+          <div class="bb-ua-update-progress">
+            <span class="bb-ua-update-progress__label">
+              {{
+                (updaterService.status() === 'checking'
+                  ? 'components.modals.update-available.status.checking'
+                  : 'components.modals.update-available.status.downloading'
+                ) | translate: { percent: progressLabel() }
+              }}
+            </span>
+            <app-bb-progress
+              mode="compact"
+              [progress]="updaterService.progress()"
+              variant="primary"
+            ></app-bb-progress>
+          </div>
+        } @else if (updaterService.status() === 'downloaded') {
+          <span class="bb-ua-update-progress__label">
+            {{ 'components.modals.update-available.status.restarting' | translate }}
+          </span>
+        } @else {
+          <button type="button" class="btn btn-sm btn-split btn-primary" (click)="updateNow()">
+            <bb-btn-content
+              [icon]="icons.faCloudArrowDown"
+              [text]="'components.modals.update-available.button.update-now' | translate"
+              position="end"
+            ></bb-btn-content>
+          </button>
+        }
+      }
+    </div>
+
+    <div class="bb-ua-footer-actions">
+      <button
+        type="button"
+        class="btn btn-sm btn-split"
+        [disabled]="footerLocked()"
+        (click)="skipVersions()"
+      >
+        <bb-btn-content
+          [icon]="icons.faForward"
+          [text]="'components.modals.update-available.button.skip-versions' | translate"
+          position="end"
+        ></bb-btn-content>
+      </button>
+      <button
+        type="button"
+        class="btn btn-sm btn-split"
+        [disabled]="footerLocked()"
+        (click)="activeModal.close('close')"
+        autofocus
+      >
+        <bb-btn-content
+          [icon]="icons.faXmark"
+          [text]="'general.button.close' | translate"
+          position="end"
+        ></bb-btn-content>
+      </button>
+    </div>
+  </div>
 </div>

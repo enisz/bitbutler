@@ -261,3 +261,34 @@
     }
   }
 }
+
+.bb-ua-smartscreen-warning {
+  display: block;
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.bb-ua-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 0.75rem;
+}
+
+.bb-ua-footer-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.bb-ua-update-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 220px;
+
+  &__label {
+    font-size: 0.75rem;
+    color: var(--bb-control-placeholder);
+  }
+}

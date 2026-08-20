@@ -803,8 +803,18 @@
         "available-downloads": "Elérhető letöltések",
         "footnote": "A kiadások nincsenek kódaláírással ellátva, így a letöltéseket manuálisan kell telepíteni.",
         "view-all-releases": "Összes kiadás megtekintése",
+        "smartscreen-warning": "Windows rendszeren SmartScreen figyelmeztetés jelenhet meg telepítés közben, mivel a BitButler még nincs kódaláírással ellátva. Ha a frissítés nem fejeződik be automatikusan, töltsd le és futtasd manuálisan a telepítőt alább.",
         "button": {
-          "skip-versions": "Ezen verziók kihagyása"
+          "skip-versions": "Ezen verziók kihagyása",
+          "update-now": "Frissítés most"
+        },
+        "status": {
+          "checking": "Frissítés keresése...",
+          "downloading": "Frissítés letöltése... {{ percent }}%",
+          "restarting": "Újraindítás a telepítéshez..."
+        },
+        "toast": {
+          "update-failed-title": "Frissítés sikertelen"
         }
       },
       "share-limit": {

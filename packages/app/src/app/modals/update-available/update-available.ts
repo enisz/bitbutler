@@ -10,17 +10,27 @@ import {
 } from '@angular/core';
 import { HostPlatform, Release, ReleaseAsset, UpdateCheckResponse } from '@bitbutler/shared';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faDownload, faForward, faXmark } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCloudArrowDown,
+  faDownload,
+  faForward,
+  faTriangleExclamation,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
 import { NgbAccordionModule, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MarkdownComponent } from 'ngx-markdown';
 import { TimeagoPipe } from 'ngx-timeago';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
+import { BbCallout } from '../../components/bb-callout/bb-callout';
+import { BbProgress } from '../../components/bb-progress/bb-progress';
 import { normalizeVersionTag } from '../../models/update-settings.model';
 import { FilesizePipe } from '../../pipes/filesize-pipe';
 import { LocalTimestampPipe } from '../../pipes/local-timestamp-pipe';
 import { ElectronService } from '../../services/electron.service';
+import { ToastService } from '../../services/toast.service';
 import { UpdateSettingsService } from '../../services/update-settings.service';
+import { UpdaterService } from '../../services/updater.service';
 
 @Component({
   selector: 'app-update-available',
@@ -35,17 +45,28 @@ import { UpdateSettingsService } from '../../services/update-settings.service';
     TimeagoPipe,
     TranslatePipe,
     BbBtnContent,
+    BbCallout,
+    BbProgress,
   ],
   templateUrl: './update-available.html',
   styleUrl: './update-available.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UpdateAvailable {
-  public readonly icons = { faDownload, faForward, faXmark };
+  public readonly icons = {
+    faDownload,
+    faForward,
+    faXmark,
+    faCloudArrowDown,
+    faTriangleExclamation,
+  };
   public readonly update = input.required<UpdateCheckResponse>();
   public readonly activeModal = inject(NgbActiveModal);
   private readonly electronService = inject(ElectronService);
   private readonly updateSettingsService = inject(UpdateSettingsService);
+  public readonly updaterService = inject(UpdaterService);
+  private readonly toastService = inject(ToastService);
+  private readonly translateService = inject(TranslateService);
 
   public activeReleaseId = signal<string | null>(null);
   public readonly platform = signal<HostPlatform | null>(null);
@@ -87,12 +108,50 @@ export class UpdateAvailable {
     return matched.length > 0 ? matched : assets;
   });
 
+  public readonly showUpdateNow = computed(
+    () => this.updaterService.capability()?.supported === true,
+  );
+
+  public readonly showSmartScreenWarning = computed(
+    () => this.showUpdateNow() && this.platform() === 'win32',
+  );
+
+  public readonly isUpdating = computed(() => {
+    const status = this.updaterService.status();
+    return status === 'checking' || status === 'downloading';
+  });
+
+  public readonly footerLocked = computed(() => {
+    const status = this.updaterService.status();
+    return status === 'checking' || status === 'downloading' || status === 'downloaded';
+  });
+
+  public readonly progressLabel = computed(() => Math.round(this.updaterService.progress()));
+
   constructor() {
+    this.updaterService.reset();
+
     effect(() => {
       const first = this.update().releases?.[0]?.id;
       if (first !== undefined && this.activeReleaseId() === null) {
         this.activeReleaseId.set(this.itemId(first));
       }
+    });
+
+    effect(() => {
+      if (this.updaterService.status() !== 'error') {
+        return;
+      }
+      const message = this.updaterService.errorMessage();
+      if (!message) {
+        return;
+      }
+      this.toastService.danger(
+        message,
+        this.translateService.instant(
+          'components.modals.update-available.toast.update-failed-title',
+        ),
+      );
     });
 
     this.electronService.getPlatform().then((platform) => this.platform.set(platform));
@@ -126,6 +185,10 @@ export class UpdateAvailable {
 
   public viewAllReleases(): void {
     this.electronService.openExternalUrl('https://github.com/enisz/bitbutler/releases');
+  }
+
+  public updateNow(): void {
+    this.updaterService.updateNow();
   }
 
   public async skipVersions(): Promise<void> {
