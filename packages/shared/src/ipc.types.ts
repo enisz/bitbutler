@@ -2,6 +2,7 @@ import type { HostPlatform, UpdateCheckResponse } from './models/electron.model.
 import type { NewServer, ServerRecord } from './models/server.model.js';
 import type { TorrentDraft, TorrentDraftSource } from './models/torrent-draft.model.js';
 import type { WindowState } from './models/window.model.js';
+import type { UpdateCapability, UpdaterEvent } from './models/updater.model.js';
 
 export type BitButlerServerIdPayload = { id: string };
 export type BitButlerQbLoginPayload = { id: string; username?: string; password?: string };
@@ -191,6 +192,12 @@ export interface BitButlerAPI {
     checkForUpdate(): Promise<UpdateCheckResponse>;
     setLoginItem(settings: { openAtLogin: boolean }): Promise<void>;
     getDownloadsPath(): Promise<string>;
+  };
+
+  updater: {
+    getCapability(): Promise<UpdateCapability>;
+    updateNow(): Promise<void>;
+    onEvent(callback: (event: UpdaterEvent) => void): () => void;
   };
 
   server: {

@@ -12,6 +12,7 @@ import type {
   ImportStartPayload,
   MenuClickPayload,
   TorrentDraft,
+  UpdaterEvent,
   WindowState,
 } from '@bitbutler/shared';
 import { contextBridge, ipcRenderer } from 'electron';
@@ -51,6 +52,12 @@ const api: BitButlerAPI = {
     checkForUpdate: () => ipcRenderer.invoke('electron:check-for-update'),
     setLoginItem: (settings) => ipcRenderer.invoke('electron:set-login-item', settings),
     getDownloadsPath: () => ipcRenderer.invoke('electron:get-downloads-path'),
+  },
+
+  updater: {
+    getCapability: () => ipcRenderer.invoke('updater:get-capability'),
+    updateNow: () => ipcRenderer.invoke('updater:update-now'),
+    onEvent: (callback) => makeIpcSubscription('updater:event', (e) => e as UpdaterEvent, callback),
   },
 
   server: {
