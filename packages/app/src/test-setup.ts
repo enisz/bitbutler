@@ -67,6 +67,11 @@ for (const key of ['localStorage', 'sessionStorage'] as const) {
     checkForUpdate: () => Promise.resolve({ updateAvailable: false, error: null }),
     setLoginItem: noopAsync,
   },
+  updater: {
+    getCapability: () => Promise.resolve({ supported: false }),
+    updateNow: noopAsync,
+    onEvent: noopSubscription,
+  },
   server: {
     list: () => Promise.resolve([]),
     add: noopAsync,
