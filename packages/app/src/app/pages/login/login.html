@@ -72,20 +72,14 @@
             (click)="connect()"
             [disabled]="!canConnect()"
           >
-            <bb-btn-content
-              [icon]="icons.faPlug"
-              [text]="'general.button.connect' | translate"
-            ></bb-btn-content>
+            {{ 'general.button.connect' | translate }}
           </button>
           <button
             type="button"
             class="btn btn-lg btn-outline-secondary btn-pill-cta"
             (click)="openManageServers()"
           >
-            <bb-btn-content
-              [icon]="icons.faServer"
-              [text]="'general.button.manage-servers' | translate"
-            ></bb-btn-content>
+            {{ 'general.button.manage-servers' | translate }}
           </button>
         </div>
       } @else {
