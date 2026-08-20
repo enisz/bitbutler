@@ -260,6 +260,10 @@
       color: var(--bs-link-hover-color);
     }
   }
+
+  .bb-ua-pr-ref {
+    font-variant-numeric: tabular-nums;
+  }
 }
 
 .bb-ua-smartscreen-warning {
