@@ -104,28 +104,13 @@
           }
         },
         "paused-state": {
-          "title": "Felfüggesztett állapot",
-          "sub": "Sorba állítás indítás nélkül",
-          "description": {
-            "line1": "A torrent megjelenik a listában, de nem indul el a fel- vagy letöltés, amíg manuálisan rá nem kattintasz a „Folytatás” gombra.",
-            "line2": "Ez hasznos, ha több fájlt szeretnél hozzáadni most, de a forgalmat a csúcsidőn kívülre ütemeznéd."
-          }
+          "sub": "Sorba állítás indítás nélkül"
         },
         "auto-tmm": {
-          "title": "Automatikus Torrentkezelés",
-          "sub": "A mentési útvonal a kategóriát követi",
-          "description": {
-            "line1": "Ha engedélyezve van, a qBittorrent a hozzárendelt kategória alapján kezeli a fájlok helyét.",
-            "line2": "Például, ha egy torrent kategóriáját „Filmek”-ről „Sorozatok”-ra módosítod, a szoftver automatikusan átmozgatja a fájlokat a megfelelő mappába."
-          }
+          "sub": "A mentési útvonal a kategóriát követi"
         },
         "sequential-download": {
-          "title": "Sorrendi letöltés",
-          "sub": "A szeletek sorrendben töltődnek le",
-          "description": {
-            "line1": "A torrentek általában véletlenszerű sorrendben töltik le a szeleteket az elérhetőség alapján. Ez az opció kényszeríti a letöltést a fájl elejétől a végéig.",
-            "line2": "Hasznos, ha bele akarsz nézni/streamelni szeretnél egy videót letöltés közben, bár ez néha lassíthatja az összsebességet."
-          }
+          "sub": "A szeletek sorrendben töltődnek le"
         },
         "first-last-piece-prio": {
           "title": "Első/utolsó szelet priorizálása",
@@ -171,11 +156,7 @@
           }
         },
         "recursive": {
-          "title": "Rekurzív",
-          "sub": "Almappák átvizsgálása is",
-          "description": {
-            "line1": "Ha be van kapcsolva, a kiválasztott mappa összes almappája is átvizsgálásra kerül .torrent fájlok után."
-          }
+          "sub": "Almappák átvizsgálása is"
         },
         "input-mode": {
           "title": "Bemeneti mód",
@@ -365,8 +346,6 @@
         },
         "popover": {
           "default-host": {
-            "title": "Alapértelmezett host",
-            "description": "Ha a host alapértelmezett, az alkalmazás indításkor automatikusan kiválasztja és megpróbál csatlakozni hozzá.",
             "sub": "Indításkor automatikusan kiválasztva és csatlakoztatva."
           }
         },
@@ -599,23 +578,13 @@
               "title": "Info Hash v2",
               "description": "Az egyedi SHA-256 azonosító BitTorrent v2 kompatibilis torrentekhez."
             },
-            "comment": {
-              "title": "Megjegyzés",
-              "description": "A készítő által megadott opcionális szöveg (pl. forrásinfó)."
-            },
             "auto-tmm": {
-              "title": "Automatikus Torrent Kezelés",
-              "description": "Ha engedélyezve van, a qBittorrent automatikusan áthelyezi ezt a torrentet a hozzárendelt kategória mentési útvonalára.",
               "sub": "A mentési útvonalat a kategória kezeli"
             },
             "force-start": {
-              "title": "Kényszerített Indítás",
-              "description": "Megkerüli az aktív torrentek globális korlátját, és azonnal elindítja ezt a torrentet, függetlenül a sor pozíciójától.",
               "sub": "Megkerüli a sorlimitet"
             },
             "sequential-download": {
-              "title": "Szekvenciális Letöltés",
-              "description": "A szeleteket az első-től az utolsóig sorban tölti le a legritkábbak-először módszer helyett. Hasznos médiafájlok előnézetéhez letöltés közben.",
               "sub": "A szeletek sorrendben töltődnek le"
             },
             "first-last-piece-prio": {
@@ -624,8 +593,6 @@
               "sub": "Gyorsabb előnézet médiafájlokhoz"
             },
             "super-seeding": {
-              "title": "Super Seedelés",
-              "description": "Egy kezdeti seedelési mód, amely egyszerre csak egy peernek küld egy szeletet, maximalizálva az elosztási sebességet egy új torrent indulásakor.",
               "sub": "Csak seedeléskor hasznos"
             }
           },
@@ -1040,47 +1007,36 @@
           "first_last_piece_prio": "Első/utolsó szelet prioritása",
           "popover": {
             "save_path": {
-              "description": "Visszaállítja azt a mentési útvonalat, amelyet az adott torrent a forrás szerveren használt. Ha ki van kapcsolva, a cél szerver alapértelmezett mentési útvonala kerül felhasználásra.",
               "sub": "Az eredeti mentési hely visszaállítása torrentenként"
             },
             "categories": {
-              "description": "Létrehozza az archívumban hivatkozott, de a cél szerveren még nem létező kategóriákat, és visszaállítja az egyes torrentek eredeti kategória-hozzárendelését.",
               "sub": "Kategóriák létrehozása és torrentekhez rendelése"
             },
             "tags": {
-              "description": "Létrehozza az archívumban hivatkozott, de a cél szerveren még nem létező címkéket, és újra alkalmazza őket az egyes torrenteken.",
               "sub": "Címkék létrehozása és torrentekre alkalmazása"
             },
             "speed_limits": {
-              "description": "Visszaállítja az egyes torrentek forrás szerveren beállított egyéni letöltési és feltöltési sebességkorlátait.",
               "sub": "Letöltési és feltöltési korlátok visszaállítása torrentenként"
             },
             "share_limits": {
-              "description": "Visszaállítja az egyes torrentek forrás szerveren beállított arány korlátját, seedelési idő korlátját és inaktív seedelési idő korlátját.",
               "sub": "Arány- és seedelési idő korlátok visszaállítása torrentenként"
             },
             "renames": {
-              "description": "Visszaállítja a torrent tartalmán belül a forrás szerveren végrehajtott fájl- és mappa-átnevezéseket. Legacy exportnál nem elérhető.",
               "sub": "Fájl- és mappa-átnevezések visszaállítása a torrenten belül"
             },
             "priorities": {
-              "description": "Visszaállítja a torrenten belüli egyes fájlokhoz beállított letöltési prioritást. Legacy exportnál nem elérhető.",
               "sub": "Az egyes fájlok letöltési prioritásának visszaállítása"
             },
             "auto_tmm": {
-              "description": "Visszaállítja, hogy az egyes torrenteknél be volt-e kapcsolva az Automatikus Torrent Kezelés, amely a kategória alapján kezeli a mentési útvonalat.",
               "sub": "Az Automatikus Torrent Kezelés beállításának visszaállítása"
             },
             "sequential_download": {
-              "description": "Visszaállítja, hogy az egyes torrentek sorrendben, elejétől a végéig töltötték-e le a darabokat a legritkább-elsőként mód helyett.",
               "sub": "A sorrendi letöltés beállításának visszaállítása"
             },
             "super_seeding": {
-              "description": "Visszaállítja, hogy az egyes torrentek super seeding módot használtak-e a darabok hatékonyabb terjesztéséhez seedelés közben.",
               "sub": "A super seeding beállítás visszaállítása"
             },
             "first_last_piece_prio": {
-              "description": "Visszaállítja, hogy az egyes torrentek előnyben részesítették-e az első és utolsó darab letöltését, ami hasznos a média előnézetéhez.",
               "sub": "Az első/utolsó szelet prioritás beállításának visszaállítása"
             }
           }
@@ -1684,29 +1640,19 @@
           },
           "popover": {
             "deleting-torrent-file": {
-              "title": "Torrent fájl törlése",
-              "sub": "A forrás .torrent fájl eltávolítása, miután bekerült a listába",
-              "description": "Engedélyezi a kliensnek a .torrent fájl törlését a lemezről, ha az sikeresen bekerült a letöltési listába."
+              "sub": "A forrás .torrent fájl eltávolítása, miután bekerült a listába"
             },
             "delete-torrent-on-duplicate": {
-              "title": "Torrent fájl törlése duplikátum esetén",
-              "sub": "A \"Torrent fájlok törlése a listához adás után\" beállítást igényli",
-              "description": "A .torrent fájl automatikus törlése a lemezről, ha az már hozzá lett adva a letöltési listához. A \"Torrent fájl törlése\" beállítást igényli."
+              "sub": "A \"Torrent fájlok törlése a listához adás után\" beállítást igényli"
             },
             "open-at-login": {
-              "title": "Indítás a rendszerrel",
-              "sub": "A BitButler automatikus elindítása a rendszer indításakor",
-              "description": "A BitButler automatikusan elindul az operációs rendszer indításakor."
+              "sub": "A BitButler automatikus elindítása a rendszer indításakor"
             },
             "start-minimized": {
-              "title": "Indítás minimalizálva",
-              "sub": "Az ablak elrejtése indításkor",
-              "description": "Az alkalmazás ablaka el van rejtve indításkor. Az alkalmazás a rendszertálcáról érhető el. A \"Rendszerrel való indítás\" beállítást igényli."
+              "sub": "Az ablak elrejtése indításkor"
             },
             "automatic-update": {
-              "title": "Automatikus frissítés",
-              "sub": "Új verzió keresése minden induláskor",
-              "description": "Frissítések automatikus keresése minden indításkor."
+              "sub": "Új verzió keresése minden induláskor"
             }
           }
         },
@@ -1837,24 +1783,16 @@
           },
           "popover": {
             "animate-rows": {
-              "title": "Torrent lista animációk",
-              "sub": "Lágy átmenetet ad a torrent lista sorainak változásához",
-              "description": "A torrent lista animálva jelenik meg, ha egy sor változik. Ha teljesítménybeli problémákat tapasztalsz, érdemes ezt kikapcsolni."
+              "sub": "Lágy átmenetet ad a torrent lista sorainak változásához"
             },
             "pagination": {
-              "title": "Torrent lista oldalszámozás",
-              "sub": "Oldalakra bontja a torrent listát egy hosszú lista helyett",
-              "description": "A torrent lista beállítható oldalszámozásra. A túl sok torrent a listában lassíthatja a teljesítményt; ha ilyen hibát észlelsz, próbáld meg bekapcsolni az oldalszámozást."
+              "sub": "Oldalakra bontja a torrent listát egy hosszú lista helyett"
             },
             "compact-rows": {
-              "title": "Kompakt sorok",
-              "sub": "Kisebb sormagasság és margó a sűrűbb nézetért",
-              "description": "Csökkenti a sorok magasságát és a cellák belső margóját a torrent listában, hogy több adat férjen el egyszerre."
+              "sub": "Kisebb sormagasság és margó a sűrűbb nézetért"
             },
             "pause-on-modal": {
-              "title": "Lekérdezés szüneteltetése modál esetén",
-              "sub": "Szünetelteti a háttérlekérdezést, amíg egy modál nyitva van",
-              "description": "Ha engedélyezve van, a háttérlekérdezés szünetel, amikor bármely modál ablak meg van nyitva. A lekérdezés automatikusan folytatódik, amikor a modál bezáródik."
+              "sub": "Szünetelteti a háttérlekérdezést, amíg egy modál nyitva van"
             },
             "double-click-behavior": {
               "title": "Dupla kattintás viselkedése",

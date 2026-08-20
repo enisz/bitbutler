@@ -104,28 +104,13 @@
           }
         },
         "paused-state": {
-          "title": "Paused State",
-          "sub": "Queue it without starting",
-          "description": {
-            "line1": "The torrent will appear in your list but won't start downloading or uploading until you manually hit \"Resume\".",
-            "line2": "This is great if you want to add a bunch of files now but wait for off-peak hours to start the actual traffic."
-          }
+          "sub": "Queue it without starting"
         },
         "auto-tmm": {
-          "title": "Automatic Torrent Management",
-          "sub": "Save path follows the category",
-          "description": {
-            "line1": "When enabled, qBittorrent handles the file location based on the Category you assign.",
-            "line2": "For example, if you change a torrent's category from \"Movies\" to \"TV\", the software will automatically move the files to the corresponding folder on your hard drive."
-          }
+          "sub": "Save path follows the category"
         },
         "sequential-download": {
-          "title": "Sequential Download",
-          "sub": "Pieces downloaded in order",
-          "description": {
-            "line1": "Torrents usually download pieces in a random order based on what is available. This option forces it to download from the beginning of the file to the end.",
-            "line2": "It's useful if you want to preview/stream a video file while it is still downloading, though it can sometimes slow down the overall download speed."
-          }
+          "sub": "Pieces downloaded in order"
         },
         "first-last-piece-prio": {
           "title": "Prioritize first/last piece",
@@ -171,11 +156,7 @@
           }
         },
         "recursive": {
-          "title": "Recursive",
-          "sub": "Also scan subfolders",
-          "description": {
-            "line1": "When enabled, all subdirectories of the selected folder are scanned for .torrent files as well."
-          }
+          "sub": "Also scan subfolders"
         },
         "input-mode": {
           "title": "Input Mode",
@@ -365,8 +346,6 @@
         },
         "popover": {
           "default-host": {
-            "title": "Default Host",
-            "description": "When the host is set to default, the app will select it automatically on startup and tries to connect to it.",
             "sub": "Automatically selected and connected to on startup."
           }
         },
@@ -599,23 +578,13 @@
               "title": "Info Hash v2",
               "description": "The unique SHA-256 identifier for BitTorrent v2 compatible torrents."
             },
-            "comment": {
-              "title": "Comment",
-              "description": "Optional text added by the torrent creator, often containing source info or credits."
-            },
             "auto-tmm": {
-              "title": "Automatic Torrent Management",
-              "description": "When enabled, qBittorrent automatically moves this torrent to the save path defined by its assigned category.",
               "sub": "Save path managed by category"
             },
             "force-start": {
-              "title": "Force Start",
-              "description": "Bypasses the global active torrent limit and starts this torrent immediately, regardless of queue position.",
               "sub": "Bypasses queue limits"
             },
             "sequential-download": {
-              "title": "Sequential Download",
-              "description": "Downloads pieces in order from first to last instead of rarest-first. Useful for previewing media files before the download is complete.",
               "sub": "Pieces downloaded in order"
             },
             "first-last-piece-prio": {
@@ -624,8 +593,6 @@
               "sub": "Faster media file previews"
             },
             "super-seeding": {
-              "title": "Super Seeding",
-              "description": "An initial seeding mode that sends each piece to only one peer at a time to maximise distribution speed when starting a new torrent.",
               "sub": "Only useful while seeding"
             }
           },
@@ -1040,47 +1007,36 @@
           "first_last_piece_prio": "First/last piece priority",
           "popover": {
             "save_path": {
-              "description": "Restores the save path each torrent was using on the source server. If disabled, the target server's default save path is used instead.",
               "sub": "Recreate each torrent's original save location"
             },
             "categories": {
-              "description": "Recreates any categories referenced by the archive that don't already exist on the target server, and reassigns each torrent to its original category.",
               "sub": "Recreate categories and reassign torrents to them"
             },
             "tags": {
-              "description": "Recreates any tags referenced by the archive that don't already exist on the target server, and reapplies them to each torrent.",
               "sub": "Recreate tags and reapply them to torrents"
             },
             "speed_limits": {
-              "description": "Restores the individual upload and download speed limits each torrent had on the source server.",
               "sub": "Reapply each torrent's upload and download limits"
             },
             "share_limits": {
-              "description": "Restores the individual ratio limit, seeding time limit, and inactive seeding time limit each torrent had on the source server.",
               "sub": "Reapply each torrent's ratio and seeding time limits"
             },
             "renames": {
-              "description": "Restores any files or folders that were renamed within the torrent's content on the source server. Not available for legacy exports.",
               "sub": "Reapply file and folder renames inside the torrent"
             },
             "priorities": {
-              "description": "Restores the download priority set on individual files within the torrent. Not available for legacy exports.",
               "sub": "Reapply each file's download priority"
             },
             "auto_tmm": {
-              "description": "Restores whether each torrent has Automatic Torrent Management enabled, letting qBittorrent manage its save path by category.",
               "sub": "Reapply the Automatic Torrent Management setting"
             },
             "sequential_download": {
-              "description": "Restores whether each torrent downloads its pieces in order from first to last instead of rarest-first.",
               "sub": "Reapply the sequential download setting"
             },
             "super_seeding": {
-              "description": "Restores whether each torrent uses super seeding mode to distribute pieces more efficiently while seeding.",
               "sub": "Reapply the super seeding setting"
             },
             "first_last_piece_prio": {
-              "description": "Restores whether each torrent prioritizes downloading its first and last pieces first, useful for previewing media.",
               "sub": "Reapply the first/last piece priority setting"
             }
           }
@@ -1684,29 +1640,19 @@
           },
           "popover": {
             "deleting-torrent-file": {
-              "title": "Deleting Torrent File",
-              "sub": "Removes the source .torrent file once it has been added to the list",
-              "description": "Allowing the client to delete the .torrent file from your disk if it got added to the download list succesfully."
+              "sub": "Removes the source .torrent file once it has been added to the list"
             },
             "delete-torrent-on-duplicate": {
-              "title": "Delete Torrent File on Duplicate",
-              "sub": "Requires \"Delete torrent files after adding them to the list\" to be enabled",
-              "description": "Automatically delete the .torrent file from your disk when it was already added to the download list. Requires \"Deleting Torrent File\" to be enabled."
+              "sub": "Requires \"Delete torrent files after adding them to the list\" to be enabled"
             },
             "open-at-login": {
-              "title": "Start with System",
-              "sub": "Launches BitButler automatically when your system starts",
-              "description": "Automatically launch BitButler when the operating system starts."
+              "sub": "Launches BitButler automatically when your system starts"
             },
             "start-minimized": {
-              "title": "Start Minimized",
-              "sub": "Hides the window on startup",
-              "description": "Hide the application window on startup. The app will be accessible from the system tray. Requires \"Start with system\" to be enabled."
+              "sub": "Hides the window on startup"
             },
             "automatic-update": {
-              "title": "Automatic Updates",
-              "sub": "Checks for a new version on every launch",
-              "description": "Check for updates automatically on every application start."
+              "sub": "Checks for a new version on every launch"
             }
           }
         },
@@ -1837,24 +1783,16 @@
           },
           "popover": {
             "animate-rows": {
-              "title": "Torrent List Animations",
-              "sub": "Smoothly transitions row changes in the torrent list",
-              "description": "There is an animation on the torrent list whenever a row is changing. If you face any performance issues, you may want to turn this off."
+              "sub": "Smoothly transitions row changes in the torrent list"
             },
             "pagination": {
-              "title": "Torrent List Pagination",
-              "sub": "Splits the torrent list into pages instead of one long list",
-              "description": "The torrent list can be set to use pagination. Having too many torrents in your list may impact performance. If you have issues, you may try enabling pagination."
+              "sub": "Splits the torrent list into pages instead of one long list"
             },
             "compact-rows": {
-              "title": "Compact Rows",
-              "sub": "Reduces row height and padding for a denser view",
-              "description": "Reduces the row height and cell padding in the torrent list for a denser view."
+              "sub": "Reduces row height and padding for a denser view"
             },
             "pause-on-modal": {
-              "title": "Pause Polling on Modal",
-              "sub": "Pauses background polling while a modal is open",
-              "description": "When enabled, background polling is paused whenever any modal is open. Polling resumes automatically when the modal is closed."
+              "sub": "Pauses background polling while a modal is open"
             },
             "double-click-behavior": {
               "title": "Double Click Behavior",
