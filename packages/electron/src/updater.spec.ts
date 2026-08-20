@@ -29,7 +29,7 @@ vi.mock('electron', () => ({
     }),
   },
 }));
-vi.mock('electron-updater', () => ({ autoUpdater: mockAutoUpdater }));
+vi.mock('electron-updater', () => ({ default: { autoUpdater: mockAutoUpdater } }));
 vi.mock('node:fs', () => ({ existsSync: mockExistsSync }));
 vi.mock('./main.js', () => ({ getMainWindow: mockGetMainWindow }));
 vi.mock('./i18n.js', () => ({ t: (key: string) => key }));

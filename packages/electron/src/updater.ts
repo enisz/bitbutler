@@ -1,10 +1,18 @@
 import type { UpdateCapability, UpdaterEvent } from '@bitbutler/shared';
 import { app, ipcMain } from 'electron';
-import { autoUpdater } from 'electron-updater';
+import electronUpdaterPkg from 'electron-updater';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { t } from './i18n.js';
 import { getMainWindow } from './main.js';
+
+// electron-updater is a CommonJS module that exports `autoUpdater` via a
+// getter (Object.defineProperty), which Node's ESM/CJS interop cannot
+// statically resolve as a named export - importing it directly throws
+// "SyntaxError: Named export 'autoUpdater' not found" at runtime (mocked
+// unit tests don't catch this since they replace the module entirely).
+// Importing the default and destructuring at runtime works around it.
+const { autoUpdater } = electronUpdaterPkg;
 
 const QUIT_AND_INSTALL_DELAY_MS = 1200;
 
