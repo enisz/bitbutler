@@ -19,7 +19,7 @@ This dialog shows information about the existing torrent including:
 - Save path
 - Category and tags (if set)
 
-If [Delete torrent files when the torrent already exists in the list](./settings/bitbutler-settings#behavior) is enabled in BitButler settings and the source `.torrent` file is known, BitButler automatically deletes it from disk as soon as this dialog opens. If the deletion fails, a toast notification reports the error.
+If [Delete torrent files when the torrent already exists in the list](./settings/bitbutler-settings#torrent-handling) is enabled in BitButler settings and the source `.torrent` file is known, BitButler automatically deletes it from disk as soon as this dialog opens. If the deletion fails, a toast notification reports the error.
 
 ## Options
 

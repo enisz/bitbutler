@@ -15,10 +15,16 @@ Egy torrentsorra való dupla kattintás alapból megnyitja ezt a párbeszédabla
 
 ![Általános fül](/screenshots/torrent-details-view/general.png)
 
-Az Általános fül három csoportra oszlik:
+A fül tetején egy folyamatsáv és egy színes állapotjelző látható, alattuk egy hibasávval, amikor a qBittorrent hibát jelent a torrenthez. Ez alatt a fül négy csoportra oszlik:
 
-- **Általános** - név, mentési útvonal, távoli (szerveroldali) útvonal, helyi útvonal (csak akkor jelenik meg, ha egy [útvonal-hozzárendelés](./settings/bitbutler-settings#utvonal-hozzarendelesek) feloldja azt), Automatikus torrentkezelés és Kényszerített indítás jelzők, jelenlegi állapot, státusz és bármely hibaüzenet.
-- **Átvitel** - aktív idő, várható hátralévő idő, kapcsolatok, letöltött/feltöltött összesen, seedek/peerek (csatlakozott vs. összes ismert), letöltési/feltöltési sebesség és korlátok, kárba veszett adat, megosztási arány, idő a következő újrajelentkezésig, utoljára teljesnek látva, arány- és seedelésiidő-korlátok, valamint a szekvenciális letöltés / első-utolsó szelet prioritás / super seeding jelzők.
+- **Torrent** - név, mentési útvonal, távoli (szerveroldali) útvonal, valamint helyi útvonal (csak akkor jelenik meg, ha egy [útvonal-hozzárendelés](./settings/bitbutler-settings#utvonal-hozzarendelesek) feloldja azt).
+- **Opciók** - élő kapcsolók, amelyek a bekapcsolásuk pillanatában közvetlenül hívják a qBittorrentet, a lábléc [Átvitel és Karbantartás](#lablec-muveletei) legördülőitől függetlenül. Egyikük sem vált azonnal - mindegyik a következő torrentadat-frissítéskor mutatja a megerősített állapotot, illetve hibaüzenetet jelez (a kapcsolót változatlanul hagyva), ha a hívás sikertelen.
+  - **Auto TMM** - a mentési útvonal kezelését a torrent kategóriájára bízza (Automatikus torrentkezelés).
+  - **Szekvenciális letöltés** - a szeleteket fájlsorrendben tölti le a qBittorrent alapértelmezett "legritkább előbb" stratégiája helyett.
+  - **Kényszerített indítás** - megkerüli a sorlimitet, így a torrent a sorban elfoglalt helyétől függetlenül elindul.
+  - **Super Seeding** - bekapcsolja a super seeding feltöltési stratégiát; csak seedelés közben hasznos.
+  - **Első/utolsó szelet prioritása** - minden fájl első és utolsó szeletét a többi elé sorolja, gyorsabb médiaelőnézetért.
+- **Átvitel** - aktív idő, várható hátralévő idő, kapcsolatok, letöltött/feltöltött összesen, seedek/peerek (csatlakozott vs. összes ismert), letöltési/feltöltési sebesség és korlátok, kárba veszett adat, megosztási arány, idő a következő újrajelentkezésig, utoljára teljesnek látva, valamint arány- és seedelésiidő-korlátok.
 - **Információ** - teljes méret, szeletek száma (azzal, hogy hányat birtokolsz), készítő és létrehozás dátuma, hozzáadás és befejezés dátuma, mind a v1, mind a v2 info hash, valamint a torrent megjegyzése.
 
 A legtöbb szövegmező mellett egy kis vágólapra másoló gomb található.
@@ -45,12 +51,12 @@ A torrent tartalmának kibontható fájlfa. Minden fájlhoz tartozik egy jelöl�
 
 ![Lábléc műveletei](/screenshots/torrent-details-view/footer-actions.png)
 
-Egy önálló **Törlés** gomb eltávolítja a torrentet. A lábléc többi része legördülő menükbe csoportosítja a kapcsolódó műveleteket:
+Egy önálló **Törlés** gomb eltávolítja a torrentet. A lábléc többi része legördülő menükbe csoportosítja a kapcsolódó műveleteket; az itt korábban megtalálható Auto TMM, Szekvenciális letöltés, Super Seeding és Első/utolsó szelet prioritás kapcsolók átkerültek az Általános fül [Opciók csoportjába](#altalanos):
 
 - **Vezérlés** - Folytatás, Szüneteltetés, Kényszerített folytatás.
 - **Fájlok** - Fájl megjelenítése / Célhely megnyitása (letiltva, amíg egy [útvonal-hozzárendelés](./settings/bitbutler-settings#utvonal-hozzarendelesek) fel nem old egy helyi mappát), Mentési útvonal beállítása, Letöltési útvonal beállítása, valamint Torrentfájl exportálása.
 - **Kezelés** - Átnevezés, Kategória módosítása, Címkék módosítása.
-- **Átvitel** - Átviteli korlátok, Megosztási korlátok, valamint kapcsolók a Super Seedinghez, a Szekvenciális letöltéshez és az Első/utolsó szelet prioritáshoz.
-- **Karbantartás** - Kényszerített ellenőrzés, Kényszerített újrajelentkezés, valamint egy kapcsoló az Automatikus torrentkezeléshez.
+- **Átvitel** - Átviteli korlátok és Megosztási korlátok.
+- **Karbantartás** - Kényszerített ellenőrzés és Kényszerített újrajelentkezés.
 
 A jobb szélen egy **Bezárás** gomb zárja be a párbeszédablakot.

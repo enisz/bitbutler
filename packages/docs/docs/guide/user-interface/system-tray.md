@@ -30,6 +30,6 @@ The torrent-control and transfer-limit items are disabled whenever there's no ac
 When a torrent finishes downloading, BitButler tells you about it one of two ways, depending on whether the main window is currently minimized:
 
 - **Minimized** - a native desktop notification appears, titled "Download Finished" with the torrent's name as its body.
-- **Visible** - a success toast appears in-app instead, in the corner configured by the "In-application notification position" setting under [BitButler Settings > Behavior](./settings/bitbutler-settings#behavior).
+- **Visible** - a success toast appears in-app instead, in the corner configured by the "In-application notification position" setting under [BitButler Settings > Appearance](./settings/bitbutler-settings#appearance).
 
 There's no separate on/off switch for this - it's tied to whether the window is minimized at the moment the torrent completes.

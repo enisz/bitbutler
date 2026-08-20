@@ -37,10 +37,10 @@ Csak csatlakoztatott állapotban jelenik meg:
 
 ## Súgó
 
-| Elem                   | Billentyűparancs | Megjegyzés                                                                                                                                                                            |
-| ---------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Frissítések keresése   | `Ctrl+U`         | Manuálisan kiváltja ugyanazt a frissítés-ellenőrzést, mint a "Frissítések keresése most" gomb a [BitButler beállítások > Viselkedés](./settings/bitbutler-settings#viselkedes) alatt. |
-| Felhasználói kézikönyv | `Ctrl+Shift+,`   | Megnyitja ezt a dokumentációs oldalt az alapértelmezett böngésződben, az alkalmazás jelenlegi nyelvén.                                                                                |
-| A BitButlerről         | `F1`             | Megjeleníti az alkalmazás verzióját és a kapcsolódó információkat.                                                                                                                    |
+| Elem                   | Billentyűparancs | Megjegyzés                                                                                                                                                                                                                                            |
+| ---------------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Frissítések keresése   | `Ctrl+U`         | Manuálisan ellenőrzi, hogy van-e új BitButler verzió - ugyanaz az ellenőrzés, amely induláskor automatikusan lefut, ha az "Automatikus frissítések" bekapcsolva van a [BitButler beállítások > Indítás](./settings/bitbutler-settings#inditas) alatt. |
+| Felhasználói kézikönyv | `Ctrl+Shift+,`   | Megnyitja ezt a dokumentációs oldalt az alapértelmezett böngésződben, az alkalmazás jelenlegi nyelvén.                                                                                                                                                |
+| A BitButlerről         | `F1`             | Megjeleníti az alkalmazás verzióját és a kapcsolódó információkat.                                                                                                                                                                                    |
 
-Windowson a `Ctrl` a fent látható módosítóbillentyű; más platformokon ugyanezek a gyorsbillentyűk érvényesek az adott platform szokásos parancsbillentyűjével.
+Windowson a `Ctrl` a fent látható módosítóbillentyű; más platformokon ugyanezek a gyorsbillentyűk érvényesek az adott platform szokásos parancsbillentyűjével. Nincs külön macOS alkalmazásnév-menü - **A BitButlerről** és a **Kilépés** minden platformon a **Súgó**, illetve a **Fájl** alatt marad, ahogy fent is látható; macOS-en a **Kilépés** feliratát az operációs rendszer generálja, ezért az angol "Quit BitButler" formában jelenik meg, a program nyelvi beállításától függetlenül.

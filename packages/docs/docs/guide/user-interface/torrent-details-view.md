@@ -15,10 +15,16 @@ Double-clicking a torrent row opens this dialog by default - see [Row double-cli
 
 ![General tab](/screenshots/torrent-details-view/general.png)
 
-The General tab is split into three groups:
+A progress bar and colored state pill sit at the top of the tab, with an error banner underneath whenever qBittorrent reports one for the torrent. Below that, the tab is split into four groups:
 
-- **General** - name, save path, remote (server-side) path, local path (only shown if a [path mapping](./settings/bitbutler-settings#path-mappings) resolves one), Automatic Torrent Management and Force Start flags, current progress, state, and any error message.
-- **Transfer** - time active, ETA, connections, downloaded/uploaded totals, seeds/peers (connected vs. total known), download/upload speed and limits, wasted data, share ratio, time to next reannounce, last seen complete, ratio and seeding time limits, and the sequential download / first-last-piece-priority / super seeding flags.
+- **Torrent** - name, save path, remote (server-side) path, and local path (only shown if a [path mapping](./settings/bitbutler-settings#path-mappings) resolves one).
+- **Options** - live switches that call qBittorrent directly as soon as you flip them, independently of the footer's [Transfer and Maintenance](#footer-actions) dropdowns. None update instantly - each reflects the confirmed state once the next torrent-data refresh arrives, and shows an error toast (leaving the switch as-is) if the call fails.
+  - **Auto TMM** - hands control of the save path to the torrent's category (Automatic Torrent Management).
+  - **Sequential Download** - downloads pieces in file order instead of qBittorrent's default rarest-first strategy.
+  - **Force Start** - bypasses queueing limits so the torrent starts regardless of the queue.
+  - **Super Seeding** - enables the super seeding upload strategy; only useful while the torrent is seeding.
+  - **First/Last Piece Priority** - fetches each file's first and last pieces ahead of the rest, for faster media previews.
+- **Transfer** - time active, ETA, connections, downloaded/uploaded totals, seeds/peers (connected vs. total known), download/upload speed and limits, wasted data, share ratio, time to next reannounce, last seen complete, and ratio and seeding time limits.
 - **Information** - total size, piece count (with how many you have), created-by and creation date, added-on and completed-on dates, both v1 and v2 info hashes, and the torrent's comment.
 
 Most text fields have a small copy-to-clipboard button next to them.
@@ -45,12 +51,12 @@ An expandable file tree for the torrent's contents. Each file has a checkbox to 
 
 ![Footer actions](/screenshots/torrent-details-view/footer-actions.png)
 
-A standalone **Delete** button removes the torrent. The rest of the footer groups related actions into dropdowns:
+A standalone **Delete** button removes the torrent. The rest of the footer groups related actions into dropdowns; the Auto TMM, Sequential Download, Super Seeding, and First/Last Piece Priority toggles that used to live here have moved to the [Options group](#general) on the General tab:
 
 - **Control** - Resume, Pause, Force Resume.
 - **Files** - Show File / Open Destination (disabled until a [path mapping](./settings/bitbutler-settings#path-mappings) resolves a local folder), Set Save Path, Set Download Path, and Export Torrent File.
 - **Manage** - Rename, Change Category, Change Tags.
-- **Transfer** - Transfer Limits, Share Limits, and toggles for Super Seeding, Sequential Download, and First/Last Piece Priority.
-- **Maintenance** - Force Recheck, Force Reannounce, and a toggle for Automatic Torrent Management.
+- **Transfer** - Transfer Limits and Share Limits.
+- **Maintenance** - Force Recheck and Force Reannounce.
 
 A **Close** button on the far right closes the dialog.

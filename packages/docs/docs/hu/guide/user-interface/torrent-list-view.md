@@ -45,7 +45,7 @@ Fájlok                                                              ›
   Fájlok átnevezése
   Exportálás .torrent fájl(ok)ba
 Kezelés                                                             ›
-  Torrent átnevezése
+  Torrent átnevezése                                               F2
   Kategória beállítása
   Címkék beállítása
 Sor                                                                 ›
@@ -64,6 +64,7 @@ Karbantartás                                                        ›
   Kényszerített újrajelentkezés
   Auto TMM be/kikapcsolása
 Másolás                                                             ›
+  Cella értékének másolása
   Név(ek) másolása
   Magnet link(ek) másolása
   Info hash(-ek) másolása
@@ -105,6 +106,7 @@ Az **Egyedi** műveletek csak akkor jelennek meg, ha pontosan egy sor van kijel�
 | Kényszerített ellenőrzés                             | Karbantartás  |   ✓    |  ✓   | Ellenőrzi a lemezen lévő letöltött adatokat.                                                                              |
 | Kényszerített újrajelentkezés                        | Karbantartás  |   ✓    |  ✓   | Azonnal újrajelentkezik a trackereknél.                                                                                   |
 | Auto TMM be/kikapcsolása                             | Karbantartás  |   ✓    |  ✓   | Be- vagy kikapcsolja az Automatikus torrentkezelést.                                                                      |
+| Cella értékének másolása                             | Másolás       |   ✓    |  ✓   | A vágólapra másolja a jobb kattintással kijelölt cella nyers értékét.                                                     |
 | Név(ek) másolása                                     | Másolás       |   ✓    |  ✓   | A vágólapra másolja a torrent nevét/neveit.                                                                               |
 | Magnet link(ek) másolása                             | Másolás       |   ✓    |  ✓   | A vágólapra másolja a magnet linket/linkeket.                                                                             |
 | Info hash(-ek) másolása                              | Másolás       |   ✓    |  ✓   | A vágólapra másolja az info hash-t/hash-eket.                                                                             |
@@ -126,6 +128,19 @@ Az oldalsáv öt szűrőcsoportra bontja a torrentlistát, mindegyik bejegyzés 
 - **Mentési útvonalak** - egy bejegyzés minden használatban lévő, egyedi mentési útvonalhoz.
 
 A Trackerek, Kategóriák, Címkék és Mentési útvonalak mindegyikéhez saját szűrőmező tartozik a hosszú listák kereséséhez. Minden csoport - az Állapotot is beleértve - ugyanígy működik: egy bejegyzés kiválasztása hozzáadja azt az adott csoport aktív szűréséhez, és egy csoporton belül több bejegyzés is kiválasztható - a táblázat bármelyikükre illeszkedő torrenteket megjeleníti. Egy már aktív bejegyzés kiválasztása eltávolítja azt. A különböző csoportokban tett kiválasztások együtt szűkítik a listát: egy torrentnek minden olyan csoportban illeszkednie kell legalább egy kiválasztott bejegyzésre, amelyben van aktív szűrés, hogy megjelenjen a táblázatban. Amint bármely szűrő aktívvá válik bárhol az oldalsávon, egy **Összes törlése** gomb jelenik meg a csoportok alatt, amely egyszerre visszaállítja az összes szűrőt.
+
+### Az oldalsáv összecsukása
+
+![Kibontott oldalsáv](/screenshots/torrent-list-view/sidebar-expanded.png)
+![Összecsukott oldalsáv](/screenshots/torrent-list-view/sidebar-collapsed.png)
+
+Kattints a BitButler logó melletti ikonra az oldalsáv egy szűk ikonsávvá csukásához; a logóra kattintva pedig újra kibontható. Az összecsukás csak azt változtatja meg, mi látszik, nem azt, mi van kiválasztva:
+
+- A Trackerek, Kategóriák, Címkék és Mentési útvonalak - a szűrőmezőikkel és **Kezelés** gyorsgombjaikkal együtt - teljesen eltűnnek összecsukott állapotban.
+- Az Állapot egy csak ikonokból álló oszlopra zsugorodik; húzd rá az egeret egy ikonra a nevéért. Egy **Összes törlése** ikon jelenik meg az oszlop alján, ha van aktív szűrő.
+- A rejtett csoportokban már kiválasztott szűrők továbbra is érvényben maradnak a táblázatra - az összecsukás csak elrejti őket, nem törli.
+
+A becsukott vagy kibontott állapotot a BitButler megjegyzi a következő megnyitásig.
 
 ## Állapotsáv
 

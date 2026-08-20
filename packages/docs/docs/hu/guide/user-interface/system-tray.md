@@ -30,6 +30,6 @@ A torrentvezérlő és átvitelikorlát-elemek le vannak tiltva, amikor nincs ak
 Amikor egy torrent befejezi a letöltést, a BitButler kétféleképpen tud erről tudatni, attól függően, hogy a főablak éppen minimalizálva van-e:
 
 - **Minimalizálva** - egy natív asztali értesítés jelenik meg, "Letöltés befejezve" címmel, a torrent nevével a törzsében.
-- **Látható** - egy sikerüzenet jelenik meg helyette az alkalmazáson belül, abban a sarokban, amelyet az "Alkalmazáson belüli értesítés pozíciója" beállítás határoz meg a [BitButler beállítások > Viselkedés](./settings/bitbutler-settings#viselkedes) alatt.
+- **Látható** - egy sikerüzenet jelenik meg helyette az alkalmazáson belül, abban a sarokban, amelyet az "Alkalmazáson belüli értesítés pozíciója" beállítás határoz meg a [BitButler beállítások > Megjelenés](./settings/bitbutler-settings#megjelenes) alatt.
 
 Ehhez nincs külön be-/kikapcsoló - attól függ, hogy az ablak épp minimalizálva van-e abban a pillanatban, amikor a torrent befejeződik.
