@@ -280,6 +280,7 @@
 
   &--wide {
     grid-column: 1 / -1;
+    padding-right: 0;
   }
 }
 
@@ -307,6 +308,18 @@
   }
 }
 
+.bb-cell__value-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+
+  .bb-cell__value {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+}
+
 .bb-cell__sub {
   display: block;
   font-size: 0.8125rem;
@@ -316,9 +329,7 @@
 }
 
 .bb-cell__copy {
-  position: absolute;
-  right: 0;
-  top: 8px;
+  flex-shrink: 0;
   opacity: 0;
   visibility: hidden;
   transition:

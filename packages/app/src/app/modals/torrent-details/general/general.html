@@ -1012,30 +1012,32 @@
               "
             ></bb-popover>
           </span>
-          <span
-            class="bb-cell__value"
-            [ngbTooltip]="torrent()!.data.infohash_v1"
-            bbTooltipOverflow
-            placement="bottom"
-          >
-            @if (torrent()!.data.infohash_v1) {
-              <code>{{ torrent()!.data.infohash_v1 }}</code>
-            } @else {
-              -
-            }
-          </span>
-          @if (torrent()!.data.infohash_v1) {
-            <button
-              class="btn btn-sm btn-link bb-cell__copy"
-              placement="top"
-              [ngbTooltip]="
-                'components.modals.torrent-details.general.copy-to-clipboard' | translate
-              "
-              (click)="toClipboard('info-hash-v1', torrent()!.data.infohash_v1)"
+          <div class="bb-cell__value-row">
+            <span
+              class="bb-cell__value"
+              [ngbTooltip]="torrent()!.data.infohash_v1"
+              bbTooltipOverflow
+              placement="bottom"
             >
-              <fa-icon [icon]="icons['faCopy']" />
-            </button>
-          }
+              @if (torrent()!.data.infohash_v1) {
+                <code>{{ torrent()!.data.infohash_v1 }}</code>
+              } @else {
+                -
+              }
+            </span>
+            @if (torrent()!.data.infohash_v1) {
+              <button
+                class="btn btn-sm btn-link bb-cell__copy"
+                placement="top"
+                [ngbTooltip]="
+                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
+                "
+                (click)="toClipboard('info-hash-v1', torrent()!.data.infohash_v1)"
+              >
+                <fa-icon [icon]="icons['faCopy']" />
+              </button>
+            }
+          </div>
         </div>
         <div class="bb-cell bb-cell--wide">
           <span class="bb-cell__label">
@@ -1051,30 +1053,32 @@
               "
             ></bb-popover>
           </span>
-          <span
-            class="bb-cell__value"
-            [ngbTooltip]="torrent()!.data.infohash_v2"
-            bbTooltipOverflow
-            placement="bottom"
-          >
-            @if (torrent()!.data.infohash_v2) {
-              <code>{{ torrent()!.data.infohash_v2 }}</code>
-            } @else {
-              -
-            }
-          </span>
-          @if (torrent()!.data.infohash_v2) {
-            <button
-              class="btn btn-sm btn-link bb-cell__copy"
-              placement="top"
-              [ngbTooltip]="
-                'components.modals.torrent-details.general.copy-to-clipboard' | translate
-              "
-              (click)="toClipboard('info-hash-v2', torrent()!.data.infohash_v2)"
+          <div class="bb-cell__value-row">
+            <span
+              class="bb-cell__value"
+              [ngbTooltip]="torrent()!.data.infohash_v2"
+              bbTooltipOverflow
+              placement="bottom"
             >
-              <fa-icon [icon]="icons['faCopy']" />
-            </button>
-          }
+              @if (torrent()!.data.infohash_v2) {
+                <code>{{ torrent()!.data.infohash_v2 }}</code>
+              } @else {
+                -
+              }
+            </span>
+            @if (torrent()!.data.infohash_v2) {
+              <button
+                class="btn btn-sm btn-link bb-cell__copy"
+                placement="top"
+                [ngbTooltip]="
+                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
+                "
+                (click)="toClipboard('info-hash-v2', torrent()!.data.infohash_v2)"
+              >
+                <fa-icon [icon]="icons['faCopy']" />
+              </button>
+            }
+          </div>
         </div>
       </div>
     </fieldset>
