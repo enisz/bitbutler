@@ -125,6 +125,11 @@
         <div class="bb-option__text">
           <label class="bb-option__label" for="firstLastPiecePrio">
             {{ 'components.add-torrent.add-form.first-last-piece-prio' | translate }}
+            <bb-popover
+              [subject]="'components.add-torrent.popover.first-last-piece-prio.title' | translate"
+              [description]="firstLastPiecePrio"
+              placement="top"
+            ></bb-popover>
           </label>
           <span class="bb-option__sub">{{
             'components.add-torrent.popover.first-last-piece-prio.sub' | translate
@@ -150,6 +155,11 @@
     <fa-icon [icon]="faExclamationTriangle" class="me-1"></fa-icon>
     {{ 'components.add-torrent.popover.skip-hash-checking.description.line2' | translate }}
   </p>
+</ng-template>
+
+<ng-template #firstLastPiecePrio>
+  <p>{{ 'components.add-torrent.popover.first-last-piece-prio.description.line1' | translate }}</p>
+  <p>{{ 'components.add-torrent.popover.first-last-piece-prio.description.line2' | translate }}</p>
 </ng-template>
 
 <ng-template #rootFolder>

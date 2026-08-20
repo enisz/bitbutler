@@ -61,8 +61,8 @@ describe('AddTorrentOptions', () => {
     expect(fieldsets[1].querySelectorAll('.bb-option').length).toBe(5);
   });
 
-  it('should show a popover for the root folder field and the skip hash checking warning', () => {
-    expect(fixture.nativeElement.querySelectorAll('bb-popover').length).toBe(2);
+  it('should show a popover for the root folder field, the skip hash checking warning, and the first/last piece priority switch', () => {
+    expect(fixture.nativeElement.querySelectorAll('bb-popover').length).toBe(3);
   });
 
   describe('root folder field', () => {

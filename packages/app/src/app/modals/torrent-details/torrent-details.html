@@ -19,14 +19,7 @@
 
     <div class="bb-header-meta small text-body-secondary mt-1">
       <span class="bb-header-meta__hash">
-        <button
-          type="button"
-          class="bb-hash-chip"
-          [ngbTooltip]="'components.modals.torrent-details.general.copy-to-clipboard' | translate"
-          placement="bottom"
-          tooltipClass="single-line-tooltip"
-          (click)="copyHash()"
-        >
+        <button type="button" class="bb-hash-chip" (click)="copyHash()">
           {{ torrent()?.hash }}
         </button>
       </span>
