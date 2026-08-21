@@ -68,7 +68,10 @@ export type ServerCommand =
 
 export type TransferLimitCommand = { type: 'TRANSFER_LIMIT_ALTERNATIVE_TOGGLE' };
 
-export type UpdateCommand = { type: 'UPDATE_CHECK_FOR_UPDATE' };
+export type UpdateCommand = {
+  type: 'UPDATE_CHECK_FOR_UPDATE';
+  trigger: 'automatic' | 'manual';
+};
 
 export type AppCommand =
   | UiCommand

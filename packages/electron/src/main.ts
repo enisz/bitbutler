@@ -18,6 +18,7 @@ import { createMainWindow } from './main-window.js';
 import { installMenu } from './menu.js';
 import { notify } from './notification.js';
 import { createTray } from './tray.js';
+import { registerUpdaterIpcHandlers } from './updater.js';
 
 let mainWindow: Electron.BrowserWindow | null = null;
 let notified = false;
@@ -42,6 +43,7 @@ function registerAppIpcHandlers(): void {
   registerTorrentIpcHandlers();
   registerSettingsIpcHandlers();
   registerElectronIpcHandlers();
+  registerUpdaterIpcHandlers();
   registerExportIpcHandlers();
 }
 

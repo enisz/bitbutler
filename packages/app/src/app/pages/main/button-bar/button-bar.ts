@@ -87,7 +87,7 @@ export class ButtonBar implements OnInit {
         id: 'new.addTorrent',
         label: 'pages.main.button-bar.button.add',
         icon: faPlus,
-        variant: 'default',
+        variant: 'primary',
       },
       { kind: 'divider' },
       {
@@ -164,7 +164,11 @@ export class ButtonBar implements OnInit {
         variant: 'info',
         disabled: !this.hasSelection(),
       },
-      { kind: 'divider' },
+    ];
+  });
+
+  readonly toolGroups = computed<ToolbarEntry[]>(() => {
+    return [
       {
         kind: 'group',
         id: 'settings',

@@ -15,4 +15,55 @@ describe('getGridColDefs', () => {
     expect(progressColDef?.equals).toBeDefined();
     expect(progressColDef!.equals!(0.5, 0.5)).toBe(false);
   });
+
+  describe('progress_percentage valueFormatter', () => {
+    function format(value: number | null) {
+      const colDef = getColDefs().find((c) => c.colId === 'progress_percentage');
+      return (colDef!.valueFormatter as any)({ value } as any);
+    }
+
+    it('formats a partial progress to 1 decimal place', () => {
+      expect(format(0.5)).toBe('50.0%');
+    });
+
+    it('drops the decimal at 100%', () => {
+      expect(format(1)).toBe('100%');
+    });
+
+    it('rounds values that display as 100.0% down to "100%"', () => {
+      expect(format(0.9996)).toBe('100%');
+    });
+
+    it('returns an empty string for null', () => {
+      expect(format(null)).toBe('');
+    });
+  });
+
+  describe.each(['progress', 'progress_compact'])('%s valueFormatter', (colId) => {
+    function format(value: number | null) {
+      const colDef = getColDefs().find((c) => c.colId === colId);
+      return (colDef!.valueFormatter as any)({ value } as any);
+    }
+
+    it('formats a partial progress to 1 decimal place, so copy-cell-value copies a percentage', () => {
+      expect(format(0.5)).toBe('50.0%');
+    });
+
+    it('returns an empty string for null', () => {
+      expect(format(null)).toBe('');
+    });
+  });
+
+  describe('status_dot valueFormatter', () => {
+    it('translates the raw torrent state, so copy-cell-value copies a readable label', () => {
+      const colDef = getColDefs().find((c) => c.colId === 'status_dot');
+      const formatted = (colDef!.valueFormatter as any)({ value: 'downloading' } as any);
+      expect(formatted).toBe('torrent.state.downloading');
+    });
+
+    it('returns an empty string when there is no state', () => {
+      const colDef = getColDefs().find((c) => c.colId === 'status_dot');
+      expect((colDef!.valueFormatter as any)({ value: undefined } as any)).toBe('');
+    });
+  });
 });

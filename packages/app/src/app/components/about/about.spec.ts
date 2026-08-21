@@ -14,11 +14,9 @@ describe('About', () => {
   beforeEach(async () => {
     mockElectronService = {
       getBitButlerVersion: vi.fn().mockReturnValue('1.2.3'),
-      getBitButlerCommit: vi.fn().mockReturnValue('abc1234'),
       getBitButlerReleaseDate: vi.fn().mockReturnValue(null),
       openExternalUrl: vi.fn(),
       goToRelease: vi.fn(),
-      goToCommit: vi.fn(),
     };
 
     mockThemeService = {
@@ -59,11 +57,6 @@ describe('About', () => {
   it('should call goToRelease on electronService', () => {
     component.goToRelease();
     expect(mockElectronService.goToRelease).toHaveBeenCalled();
-  });
-
-  it('should call goToCommit on electronService', () => {
-    component.goToCommit();
-    expect(mockElectronService.goToCommit).toHaveBeenCalled();
   });
 
   it('should load version from electronService', () => {

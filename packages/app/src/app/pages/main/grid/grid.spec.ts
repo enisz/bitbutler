@@ -44,6 +44,15 @@ describe('Grid', () => {
     getPinnedTopHashes: ReturnType<typeof vi.fn>;
     getPinnedBottomHashes: ReturnType<typeof vi.fn>;
   };
+  let gridContextMenuServiceMock: {
+    buildTorrentMenu: ReturnType<typeof vi.fn>;
+    buildHeaderMenu: ReturnType<typeof vi.fn>;
+  };
+  let selectionStoreMock: {
+    selected: ReturnType<typeof signal>;
+    setByHashes: ReturnType<typeof vi.fn>;
+  };
+  let contextMenuServiceMock: { open: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     commandsSubject = new Subject<any>();
@@ -72,13 +81,17 @@ describe('Grid', () => {
       getPinnedBottomHashes: vi.fn().mockReturnValue([]),
     };
 
+    selectionStoreMock = { selected: signal([]), setByHashes: vi.fn() };
+    contextMenuServiceMock = { open: vi.fn() };
+    gridContextMenuServiceMock = {
+      buildTorrentMenu: vi.fn().mockResolvedValue([]),
+      buildHeaderMenu: vi.fn().mockReturnValue([]),
+    };
+
     await TestBed.configureTestingModule({
       imports: [Grid],
       providers: [
-        {
-          provide: SelectionStoreService,
-          useValue: { selected: signal([]), set: vi.fn(), setByHashes: vi.fn() },
-        },
+        { provide: SelectionStoreService, useValue: selectionStoreMock },
         {
           provide: FilterService,
           useValue: {
@@ -87,7 +100,7 @@ describe('Grid', () => {
             setColumnModel: vi.fn(),
           },
         },
-        { provide: ContextMenuService, useValue: { open: vi.fn() } },
+        { provide: ContextMenuService, useValue: contextMenuServiceMock },
         { provide: ThemeService, useValue: themeServiceMock },
         { provide: DateFormatService, useValue: dateFormatServiceMock },
         {
@@ -132,13 +145,7 @@ describe('Grid', () => {
         set: {
           providers: [
             { provide: GridStateService, useValue: gridStateServiceMock },
-            {
-              provide: GridContextMenuService,
-              useValue: {
-                buildTorrentMenu: vi.fn().mockResolvedValue([]),
-                buildHeaderMenu: vi.fn().mockReturnValue([]),
-              },
-            },
+            { provide: GridContextMenuService, useValue: gridContextMenuServiceMock },
             { provide: GridKeyboardNavService, useValue: keyboardNavServiceMock },
             { provide: GridPinService, useValue: gridPinServiceMock },
             {
@@ -265,6 +272,20 @@ describe('Grid', () => {
       (component as any).applyGridSettings({ rowDoubleClickAction: 'SAVE_PATH' });
       expect(gridInlineEditService.applyEditableState).toHaveBeenCalledWith(mockApi, false);
     });
+
+    it('currentTheme should reduce spacing and rowHeight when compactRows is enabled', () => {
+      (component as any).applyGridSettings({ compactRows: true });
+      const params = (component.currentTheme() as any)._getModeParams()['$default'];
+      expect(params.spacing).toBe(4);
+      expect(params.rowHeight).toBe(32);
+    });
+
+    it('currentTheme should return the base theme when compactRows is disabled', () => {
+      themeServiceMock.effectiveMode.set('light');
+      (component as any).applyGridSettings({ compactRows: true });
+      (component as any).applyGridSettings({ compactRows: false });
+      expect(component.currentTheme()).toBe(GRID_LIGHT_THEME);
+    });
   });
 
   describe('handleRowDoubleClick', () => {
@@ -298,6 +319,45 @@ describe('Grid', () => {
       });
 
       expect(commandBusService.emit).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('handleCellRightClick', () => {
+    it('opens the context menu with the right-clicked cell value and field', async () => {
+      await (component as any).handleCellRightClick({
+        data: { hash: 'abc123', name: 'My Torrent' },
+        node: { rowPinned: null },
+        value: 'downloading',
+        colDef: { headerName: 'State' },
+      });
+
+      expect(gridContextMenuServiceMock.buildTorrentMenu).toHaveBeenCalledWith(
+        expect.objectContaining({ cellValue: 'downloading', cellField: 'State' }),
+      );
+      expect(contextMenuServiceMock.open).toHaveBeenCalled();
+    });
+
+    it('selects the right-clicked row when nothing else is selected', async () => {
+      await (component as any).handleCellRightClick({
+        data: { hash: 'abc123', name: 'My Torrent' },
+        node: { rowPinned: null },
+        value: 'downloading',
+        colDef: { headerName: 'State' },
+      });
+
+      expect(selectionStoreMock.setByHashes).toHaveBeenCalledWith(['abc123']);
+    });
+
+    it('does nothing when the event has no row data', async () => {
+      await (component as any).handleCellRightClick({
+        data: undefined,
+        node: { rowPinned: null },
+        value: 'downloading',
+        colDef: { headerName: 'State' },
+      });
+
+      expect(gridContextMenuServiceMock.buildTorrentMenu).not.toHaveBeenCalled();
+      expect(contextMenuServiceMock.open).not.toHaveBeenCalled();
     });
   });
 

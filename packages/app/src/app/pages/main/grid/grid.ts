@@ -37,6 +37,7 @@ import { TorrentListGridSettingsService } from '../../../services/torrent-list-g
 import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { UiFormatService } from '../../../services/ui-format.service';
 import { getTrackers, normalizeTracker } from '../tracker.utils';
+import { getFormattedCellValue } from './context-menu/cell-value-formatter.util';
 import { GridContextMenuService } from './context-menu/grid-context-menu.service';
 import { GridInlineEditService } from './grid-inline-edit.service';
 import { GridKeyboardNavService } from './grid-keyboard-nav.service';
@@ -95,7 +96,7 @@ export class Grid implements AfterViewInit {
   private readonly compactRows = signal(false);
   public readonly currentTheme = computed(() => {
     const base = this.theme() === 'dark' ? GRID_DARK_THEME : GRID_LIGHT_THEME;
-    return this.compactRows() ? base.withParams({ spacing: 4 }) : base;
+    return this.compactRows() ? base.withParams({ spacing: 4, rowHeight: 32 }) : base;
   });
 
   @HostListener('window:keyup', ['$event'])
@@ -333,6 +334,8 @@ export class Grid implements AfterViewInit {
         row: event.data,
         selected: this.selectionStore.selected(),
         rowPinned: event.node.rowPinned,
+        cellValue: getFormattedCellValue(event),
+        cellField: event.colDef.headerName,
       }),
     });
   };

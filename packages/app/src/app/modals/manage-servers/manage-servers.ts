@@ -7,7 +7,7 @@ import { faSquare, faSquareCheck } from '@fortawesome/free-regular-svg-icons';
 import {
   faPenToSquare,
   faPlug,
-  faServer,
+  faPlus,
   faTrashCan,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
@@ -58,7 +58,7 @@ export class ManageServers {
     faPlug,
     faSquare,
     faSquareCheck,
-    faServer,
+    faPlus,
   };
   readonly hideConnect = input(false);
   public readonly currentServerId = this.serverStoreService.currentServerId;

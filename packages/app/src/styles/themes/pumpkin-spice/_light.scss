@@ -9,10 +9,10 @@ $ps-light-danger: #d9534f;
 $ps-light-warning: #f0ad4e;
 $ps-light-info: #5bc0de;
 
-$ps-light-body-bg: #fff3e0;
+$ps-light-body-bg: #f6ddb9;
 $ps-light-body-color: #422a0d;
-$ps-light-border: #fbe9d7;
-$ps-light-surface: #fff8f0;
+$ps-light-border: #e0b98c;
+$ps-light-surface: #fdf3e6;
 
 $ps-light-check-marker-colors: (
   'default': $ps-light-secondary,
@@ -56,10 +56,10 @@ $ps-light-check-marker-colors: (
     --bs-body-color: #{$ps-light-body-color};
     --bs-border-color: #{$ps-light-border};
 
-    --bs-card-bg: #ffffff;
+    --bs-card-bg: #{$ps-light-surface};
     --bs-card-color: #{$ps-light-body-color};
     --bs-card-border-color: #{$ps-light-border};
-    --bs-card-cap-bg: #f0f0f0;
+    --bs-card-cap-bg: color-mix(in srgb, var(--bs-body-bg) 70%, var(--bs-card-bg) 30%);
     --bs-card-cap-color: #{$ps-light-body-color};
 
     --bs-tooltip-bg: var(--bs-card-cap-bg);
@@ -72,7 +72,7 @@ $ps-light-check-marker-colors: (
     --bs-navbar-color: #{$ps-light-body-color};
     --bs-navbar-brand-color: #{$ps-light-primary};
     --bs-dropdown-link-color: #{$ps-light-body-color};
-    --bs-dropdown-bg: #{$ps-light-surface};
+    --bs-dropdown-bg: var(--bs-card-cap-bg);
 
     --bb-accent: var(--bs-secondary);
     --bb-accent-rgb: var(--bs-secondary-rgb);
@@ -109,7 +109,7 @@ $ps-light-check-marker-colors: (
     --bb-control-focus-border: var(--bs-primary);
     --bb-control-focus-ring: rgba(var(--bs-primary-rgb), 0.18);
 
-    --bb-control-radius: 12px;
+    --bb-control-radius: 9px;
 
     --bb-dp-bg: var(--bs-dropdown-bg);
     --bb-dp-border: var(--bs-border-color);
@@ -127,9 +127,9 @@ $ps-light-check-marker-colors: (
     --bb-toast-border-opacity: 1;
     --bb-toast-glow-opacity: 0.05;
 
-    --bs-popover-bg: var(--bs-card-bg);
+    --bs-popover-bg: var(--bs-card-cap-bg);
     --bs-popover-border-color: #{$ps-light-border};
-    --bs-popover-header-bg: #f0f0f0;
+    --bs-popover-header-bg: var(--bs-card-cap-bg);
     --bs-popover-header-color: #{$ps-light-body-color};
     --bs-popover-body-color: #{$ps-light-body-color};
 
@@ -163,7 +163,7 @@ $ps-light-check-marker-colors: (
   .form-switch .form-check-input {
     background-color: var(--bb-control-bg);
     border-color: var(--bb-control-border);
-    border-radius: var(--bb-control-radius, 12px);
+    border-radius: var(--bb-control-radius, 9px);
 
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23d35400' opacity='0.45'/%3e%3c/svg%3e");
 

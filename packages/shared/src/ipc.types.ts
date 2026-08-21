@@ -2,6 +2,7 @@ import type { HostPlatform, UpdateCheckResponse } from './models/electron.model.
 import type { NewServer, ServerRecord } from './models/server.model.js';
 import type { TorrentDraft, TorrentDraftSource } from './models/torrent-draft.model.js';
 import type { WindowState } from './models/window.model.js';
+import type { UpdateCapability, UpdaterEvent } from './models/updater.model.js';
 
 export type BitButlerServerIdPayload = { id: string };
 export type BitButlerQbLoginPayload = { id: string; username?: string; password?: string };
@@ -101,6 +102,9 @@ export interface ExportDoneEvent {
   path: string;
   total: number;
   skipped: number;
+  categories: number;
+  tags: number;
+  fileSize: number;
 }
 
 export interface ExportTorrentFileItem {
@@ -190,6 +194,12 @@ export interface BitButlerAPI {
     getDownloadsPath(): Promise<string>;
   };
 
+  updater: {
+    getCapability(): Promise<UpdateCapability>;
+    updateNow(): Promise<void>;
+    onEvent(callback: (event: UpdaterEvent) => void): () => void;
+  };
+
   server: {
     list(): Promise<ServerRecord[]>;
     add(server: NewServer): Promise<{ id: string }>;
@@ -197,7 +207,12 @@ export interface BitButlerAPI {
     delete(payload: { id: string }): Promise<{ deleted: boolean }>;
     getById(payload: { id: string }): Promise<ServerRecord | null>;
     getByHost(payload: { host: string }): Promise<ServerRecord | null>;
-    setExportAvailable(payload: { id: string; value: 0 | 1 }): Promise<{ updated: boolean }>;
+    setConnectionInfo(payload: {
+      id: string;
+      exportAvailable: 0 | 1;
+      webapiVersion: string;
+      qbVersion: string;
+    }): Promise<{ updated: boolean }>;
     setActive(id: string | null): void;
   };
 
@@ -266,7 +281,6 @@ export interface BitButlerAPI {
     openBbePicker(): Promise<string | undefined>;
     readBbe(payload: { path: string }): Promise<BbeMetadata>;
     getServerInfo(serverId: string): Promise<BbeServerInfo>;
-    checkAvailability(serverId: string): Promise<{ available: boolean }>;
     saveTorrentFiles(payload: {
       serverId: string;
       items: ExportTorrentFileItem[];

@@ -1,0 +1,4 @@
+// Startup grid: the automatic-update row is the last row, so drop its divider.
+.bb-options--grid .bb-option:nth-child(3) {
+  border-bottom: none;
+}

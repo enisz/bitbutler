@@ -1,6 +1,12 @@
 :host ::ng-deep .ag-root-wrapper {
-  border-top-left-radius: var(--ag-border-radius, 8px) !important;
-  border-top-right-radius: var(--ag-border-radius, 8px) !important;
-  border-bottom-left-radius: 0 !important;
-  border-bottom-right-radius: 0 !important;
+  border-radius: 0 !important;
+}
+
+:host ::ng-deep .ag-header-cell-text {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+:host ::ng-deep .ag-row-selected {
+  box-shadow: inset 2px 0 0 0 var(--bb-accent);
 }

@@ -1,23 +1,37 @@
 <div class="modal-header bb-modal-header">
   <div class="bb-modal-header__text">
-    <h5
-      class="modal-title bb-title-clamp"
-      [ngbTooltip]="torrent()?.name"
-      bbTooltipOverflow
-      placement="bottom"
-      tooltipClass="single-line-tooltip"
-    >
-      {{ torrent()?.name }}
-    </h5>
+    <div class="d-flex align-items-center gap-3 min-w-0">
+      <span
+        class="bb-header-status-dot bg-{{ stateVariant() }}"
+        [ngbTooltip]="'torrent.state.' + torrent()?.state | translate"
+        placement="bottom"
+      ></span>
+      <h5
+        class="modal-title bb-title-clamp"
+        [ngbTooltip]="torrent()?.name"
+        bbTooltipOverflow
+        placement="bottom"
+        tooltipClass="single-line-tooltip"
+      >
+        {{ torrent()?.name }}
+      </h5>
+    </div>
 
-    <div
-      class="small text-body-secondary mt-1 bb-hash-clamp"
-      [ngbTooltip]="torrent()?.hash"
-      bbTooltipOverflow
-      placement="bottom"
-      tooltipClass="single-line-tooltip"
-    >
-      {{ 'components.modals.torrent-details.hash' | translate }}: <code>{{ torrent()?.hash }}</code>
+    <div class="bb-header-meta small text-body-secondary mt-1">
+      <span class="bb-header-meta__hash">
+        <button type="button" class="bb-hash-chip" (click)="copyHash()">
+          {{ torrent()?.hash }}
+        </button>
+      </span>
+      <span>·</span>
+      <span>{{ torrent()?.size | fileSize }}</span>
+      @if ((torrent()?.added_on ?? 0) > 0) {
+        <span>·</span>
+        <span
+          >{{ 'components.modals.torrent-details.added' | translate }}
+          {{ torrent()!.added_on * 1000 | timeago }}</span
+        >
+      }
     </div>
 
     <ul class="nav nav-tabs bb-modal-tabs">
@@ -68,19 +82,10 @@
 </div>
 
 <div class="modal-footer">
-  <button
-    type="button"
-    class="btn btn-danger btn-sm me-auto"
-    [ngbTooltip]="'components.modals.torrent-details.general.delete' | translate"
-    (click)="actionsService.deleteTorrent()"
-  >
-    <fa-icon [icon]="icon.faTrashCan" aria-hidden="true"></fa-icon>
-  </button>
-
   <div ngbDropdown container="body" placement="top-start">
     <button type="button" class="btn btn-secondary btn-sm btn-split" ngbDropdownToggle>
       <bb-btn-content
-        [icon]="icon.faPlay"
+        [icon]="icon.faChevronUp"
         [text]="'components.modals.torrent-details.general.footer.control' | translate"
         position="end"
       ></bb-btn-content>
@@ -110,7 +115,7 @@
   <div ngbDropdown container="body" placement="top-start">
     <button type="button" class="btn btn-secondary btn-sm btn-split" ngbDropdownToggle>
       <bb-btn-content
-        [icon]="icon.faFolderOpen"
+        [icon]="icon.faChevronUp"
         [text]="'components.modals.torrent-details.general.footer.files' | translate"
         position="end"
       ></bb-btn-content>
@@ -164,7 +169,7 @@
   <div ngbDropdown container="body" placement="top-start">
     <button type="button" class="btn btn-secondary btn-sm btn-split" ngbDropdownToggle>
       <bb-btn-content
-        [icon]="icon.faSliders"
+        [icon]="icon.faChevronUp"
         [text]="'components.modals.torrent-details.general.footer.manage' | translate"
         position="end"
       ></bb-btn-content>
@@ -194,7 +199,7 @@
   <div ngbDropdown container="body" placement="top-start">
     <button type="button" class="btn btn-secondary btn-sm btn-split" ngbDropdownToggle>
       <bb-btn-content
-        [icon]="icon.faGauge"
+        [icon]="icon.faChevronUp"
         [text]="'components.modals.torrent-details.general.footer.transfer' | translate"
         position="end"
       ></bb-btn-content>
@@ -212,38 +217,13 @@
         ></span>
         {{ 'components.modals.torrent-details.general.edit-share-limits' | translate }}
       </button>
-      <div class="dropdown-divider"></div>
-      <button ngbDropdownItem type="button" (click)="actionsService.toggleSuperSeeding()">
-        <span class="bb-dropdown-icon" aria-hidden="true">
-          @if (dataService.torrent()?.data?.super_seeding) {
-            <fa-icon [icon]="icon.faCheck"></fa-icon>
-          }
-        </span>
-        {{ 'components.modals.torrent-details.general.footer.super-seeding' | translate }}
-      </button>
-      <button ngbDropdownItem type="button" (click)="actionsService.toggleSequentialDownload()">
-        <span class="bb-dropdown-icon" aria-hidden="true">
-          @if (dataService.torrent()?.data?.seq_dl) {
-            <fa-icon [icon]="icon.faCheck"></fa-icon>
-          }
-        </span>
-        {{ 'components.modals.torrent-details.general.footer.sequential-download' | translate }}
-      </button>
-      <button ngbDropdownItem type="button" (click)="actionsService.toggleFirstLastPiecePrio()">
-        <span class="bb-dropdown-icon" aria-hidden="true">
-          @if (dataService.torrent()?.data?.f_l_piece_prio) {
-            <fa-icon [icon]="icon.faCheck"></fa-icon>
-          }
-        </span>
-        {{ 'components.modals.torrent-details.general.footer.first-last-piece-prio' | translate }}
-      </button>
     </div>
   </div>
 
   <div ngbDropdown container="body" placement="top-start">
     <button type="button" class="btn btn-secondary btn-sm btn-split" ngbDropdownToggle>
       <bb-btn-content
-        [icon]="icon.faRotate"
+        [icon]="icon.faChevronUp"
         [text]="'components.modals.torrent-details.general.footer.maintenance' | translate"
         position="end"
       ></bb-btn-content>
@@ -261,24 +241,22 @@
         ></span>
         {{ 'components.modals.torrent-details.general.force-reannounce' | translate }}
       </button>
-      <div class="dropdown-divider"></div>
-      <button ngbDropdownItem type="button" (click)="actionsService.toggleAutoTmm()">
-        <span class="bb-dropdown-icon" aria-hidden="true">
-          @if (dataService.torrent()?.data?.auto_tmm) {
-            <fa-icon [icon]="icon.faCheck"></fa-icon>
-          }
-        </span>
-        {{ 'components.modals.torrent-details.general.footer.auto-tmm' | translate }}
-      </button>
     </div>
   </div>
 
   <button
     type="button"
-    class="btn btn-link btn-sm btn-split"
-    (click)="activeModal.dismiss()"
-    autofocus
+    class="btn btn-danger btn-sm btn-split ms-auto"
+    (click)="actionsService.deleteTorrent()"
   >
+    <bb-btn-content
+      [icon]="icon.faTrashCan"
+      [text]="'components.modals.torrent-details.general.delete' | translate"
+      position="end"
+    ></bb-btn-content>
+  </button>
+
+  <button type="button" class="btn btn-sm btn-split" (click)="activeModal.dismiss()" autofocus>
     <bb-btn-content
       [icon]="icon.faXmark"
       [text]="'general.button.close' | translate"

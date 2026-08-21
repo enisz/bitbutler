@@ -2,6 +2,62 @@
   display: none;
 }
 
+.bb-header-status-dot {
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  border-radius: 99px;
+}
+
+.bb-hash-chip {
+  display: inline-block;
+  font-family: var(--bs-font-monospace);
+  color: inherit;
+  background-color: var(--bb-control-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: 8px;
+  padding: 3px 8px;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out;
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--bb-accent) 10%, var(--bb-control-bg));
+    border-color: color-mix(in srgb, var(--bb-accent) 30%, var(--bs-border-color));
+  }
+}
+
+.bb-header-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.bb-header-meta__hash {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.modal-footer {
+  .btn-secondary {
+    --bs-btn-color: var(--bs-body-color);
+    --bs-btn-bg: transparent;
+    --bs-btn-border-color: var(--bb-control-border);
+    --bs-btn-split-icon-bg: color-mix(in srgb, var(--bs-body-color) 8%, transparent);
+
+    --bs-btn-hover-color: var(--bs-body-color);
+    --bs-btn-hover-bg: var(--bb-hover-list-item-bg);
+    --bs-btn-hover-border-color: var(--bb-control-border);
+
+    --bs-btn-active-color: var(--bs-body-color);
+    --bs-btn-active-bg: var(--bb-active-list-item-bg);
+    --bs-btn-active-border-color: var(--bb-control-border);
+  }
+}
+
 .bb-tab-panels {
   position: relative;
 }

@@ -1,38 +1,65 @@
-<div class="d-flex flex-column vw-100 vh-100">
-  <header class="flex-shrink-0 d-flex flex-row align-items-center">
+<div class="d-flex flex-row vw-100 vh-100">
+  <aside
+    class="bb-sidebar-width flex-shrink-0 d-flex flex-column min-h-0"
+    [class.bb-sidebar-width--collapsed]="sidebarCollapsed()"
+  >
     <div
-      class="bb-brand bb-sidebar-width d-flex flex-row align-items-center justify-content-center pe-none user-select-none gap-3 py-2"
+      class="bb-brand d-flex flex-row align-items-center user-select-none gap-2"
+      [class.justify-content-center]="sidebarCollapsed()"
     >
-      <img [ngSrc]="logoUrl()" alt="Bitbutler Logo" width="60" height="60" priority />
-
-      <div class="d-flex flex-column text-center min-w-0">
-        <div class="brand-title">BitButler</div>
-        @if (currentServer()) {
-          <small>{{ currentServer()?.name }}</small>
+      <button
+        type="button"
+        class="bb-brand-logo"
+        [class.bb-brand-logo--expand]="sidebarCollapsed()"
+        [disabled]="!sidebarCollapsed()"
+        (click)="toggleSidebar()"
+      >
+        <img [ngSrc]="logoUrl()" alt="Bitbutler Logo" width="40" height="40" priority />
+        @if (sidebarCollapsed()) {
+          <span class="bb-brand-logo__overlay" aria-hidden="true">
+            <fa-icon [icon]="icons.faChevronRight"></fa-icon>
+          </span>
         }
-      </div>
+      </button>
+
+      @if (!sidebarCollapsed()) {
+        <div class="d-flex flex-column min-w-0 flex-grow-1">
+          <div class="brand-title">BitButler</div>
+          @if (currentServer()) {
+            <div class="brand-status d-flex flex-row align-items-center gap-2">
+              <span class="status-dot" [class]="connectionStatus()"></span>
+              <small>{{ currentServer()?.name }}</small>
+            </div>
+          }
+        </div>
+
+        <button
+          type="button"
+          class="bb-sidebar-toggle"
+          aria-label="Collapse sidebar"
+          (click)="toggleSidebar()"
+        >
+          <fa-icon [icon]="icons.faBars"></fa-icon>
+        </button>
+      }
     </div>
 
-    <div class="d-flex flex-row flex-grow-1 min-w-0">
-      <app-button-bar class="flex-grow-1 min-w-0"></app-button-bar>
+    <div class="flex-grow-1 min-h-0 overflow-auto">
+      <app-status [collapsed]="sidebarCollapsed()"></app-status>
     </div>
-  </header>
+  </aside>
 
-  <div class="d-flex flex-row flex-grow-1 min-h-0">
-    <aside class="bb-sidebar-width flex-shrink-0 d-flex flex-column min-h-0">
-      <div class="flex-grow-1 min-h-0 overflow-auto">
-        <app-status></app-status>
-      </div>
-    </aside>
+  <main class="d-flex flex-column flex-grow-1 min-w-0 min-h-0">
+    <div class="flex-shrink-0">
+      <app-button-bar></app-button-bar>
+    </div>
 
-    <main class="d-flex flex-column flex-grow-1 min-w-0 min-h-0">
-      <div class="flex-grow-1 min-h-0 overflow-hidden">
-        <app-grid class="h-100 w-100"></app-grid>
-      </div>
+    <div class="flex-grow-1 min-h-0 overflow-hidden">
+      <app-grid class="h-100 w-100"></app-grid>
+    </div>
 
-      <footer class="flex-shrink-0 border-start">
-        <app-server-state [state]="serverState()"></app-server-state>
-      </footer>
-    </main>
-  </div>
+    <footer class="flex-shrink-0">
+      <app-server-state [state]="serverState()"></app-server-state>
+    </footer>
+  </main>
 </div>

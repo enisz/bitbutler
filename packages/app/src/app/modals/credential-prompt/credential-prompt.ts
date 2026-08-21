@@ -1,14 +1,22 @@
 import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { faPlug, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { AutofocusDirective } from '../../directives/autofocus';
+import { TooltipOverflow } from '../../directives/tooltip-overflow';
 
 @Component({
   selector: 'app-credential-prompt',
-  imports: [ReactiveFormsModule, TranslatePipe, AutofocusDirective, BbBtnContent],
+  imports: [
+    ReactiveFormsModule,
+    TranslatePipe,
+    AutofocusDirective,
+    BbBtnContent,
+    NgbTooltip,
+    TooltipOverflow,
+  ],
   templateUrl: './credential-prompt.html',
   styleUrl: './credential-prompt.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

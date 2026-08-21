@@ -4,7 +4,10 @@
 
     @if (initialQueueCount() > 1) {
       <div class="small text-body-secondary mt-1 bb-hash-clamp">
-        ({{ currentDraftNumber() }} / {{ initialQueueCount() }})
+        {{
+          'components.add-torrent.queue-position'
+            | translate: { current: currentDraftNumber(), total: initialQueueCount() }
+        }}
       </div>
     }
 
@@ -89,7 +92,7 @@
 <div class="modal-footer">
   <button
     type="button"
-    class="btn btn-primary btn-sm btn-split"
+    class="btn btn-primary btn-sm bb-footer-btn"
     (click)="handleSubmit($event)"
     [disabled]="!canSubmit()"
     [autofocus]="addForm.controls.fileGroup.controls.file.value.length === 0"
@@ -100,7 +103,8 @@
       position="end"
     ></bb-btn-content>
   </button>
-  <button type="button" class="btn btn-link btn-sm btn-split" (click)="handleCancel()">
+
+  <button type="button" class="btn btn-sm btn-split" (click)="handleCancel()">
     <bb-btn-content
       [icon]="icons.faXmark"
       [text]="'general.button.cancel' | translate"

@@ -49,6 +49,8 @@ export class QbSettings implements OnInit, GuardableModal {
   private readonly qbService = inject(QbService);
   private readonly serverStoreService = inject(ServerStoreService);
 
+  public readonly currentServer = this.serverStoreService.currentServer;
+
   public readonly tabToOpen = input<QbSettingsTabId>('bandwidth');
 
   public activeTabId = signal<QbSettingsTabId>('bandwidth');

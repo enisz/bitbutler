@@ -9,7 +9,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { faFile, faFolder, faFolderOpen, faLink } from '@fortawesome/free-solid-svg-icons';
+import { faFolderOpen } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content';
 import { FileTreeStats } from '../../../components/bb-file-tree/bb-file-tree';
@@ -44,7 +44,7 @@ import { AddTorrentFolderPicker } from './folder-picker/folder-picker';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddTorrentGeneral {
-  public readonly icons = { faFile, faLink, faFolder, faFolderOpen };
+  public readonly icons = { faFolderOpen };
 
   public form = input.required<AddTorrentFormGroup>();
   public inputMode = input.required<'file' | 'link' | 'folder'>();

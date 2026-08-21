@@ -8,7 +8,28 @@
 );
 
 @use './styles/themes/index' as themes;
+@use './styles/themes/bitbutler/light' as bb-light;
+@use './styles/themes/bitbutler/dark' as bb-dark;
+@use './styles/themes/aurora/light' as au-light;
+@use './styles/themes/aurora/dark' as au-dark;
+@use './styles/themes/mint-green/light' as mg-light;
+@use './styles/themes/mint-green/dark' as mg-dark;
+@use './styles/themes/purple-haze/light' as ph-light;
+@use './styles/themes/purple-haze/dark' as ph-dark;
+@use './styles/themes/ocean-breeze/light' as ob-light;
+@use './styles/themes/ocean-breeze/dark' as ob-dark;
+@use './styles/themes/pumpkin-spice/light' as ps-light;
+@use './styles/themes/pumpkin-spice/dark' as ps-dark;
+@use './styles/themes/deep-sea/light' as ds-light;
+@use './styles/themes/deep-sea/dark' as ds-dark;
+@use './styles/themes/crimson-ember/light' as ce-light;
+@use './styles/themes/crimson-ember/dark' as ce-dark;
+
 @include themes.install-themes();
+
+:root {
+  --bb-header-height: 61px;
+}
 
 .btn {
   font-weight: 500;
@@ -44,6 +65,11 @@
     flex: 1 1 auto;
     padding: var(--bs-btn-padding-y) var(--bs-btn-padding-x);
   }
+}
+
+.modal-footer {
+  padding: 14px 16px;
+  gap: 8px;
 }
 
 .card {
@@ -494,97 +520,129 @@ ngb-modal-window {
 
   &[data-bb-theme='bitbutler'] {
     &.light {
-      background-color: #f5ede3;
+      background-color: #{bb-light.$bb-light-body-bg};
     }
     &.dark {
-      background-color: #121213;
+      background-color: #{bb-dark.$bb-dark-body-bg};
     }
     &.system {
-      background: linear-gradient(45deg, #f5ede3 50%, #121213 50%);
+      background: linear-gradient(
+        45deg,
+        #{bb-light.$bb-light-body-bg} 50%,
+        #{bb-dark.$bb-dark-body-bg} 50%
+      );
     }
   }
 
   &[data-bb-theme='aurora'] {
     &.light {
-      background-color: #f3f7ff;
+      background-color: #{au-light.$au-light-body-bg};
     }
     &.dark {
-      background-color: #0b1020;
+      background-color: #{au-dark.$au-dark-body-bg};
     }
     &.system {
-      background: linear-gradient(45deg, #f3f7ff 50%, #0b1020 50%);
+      background: linear-gradient(
+        45deg,
+        #{au-light.$au-light-body-bg} 50%,
+        #{au-dark.$au-dark-body-bg} 50%
+      );
     }
   }
 
   &[data-bb-theme='mint-green'] {
     &.light {
-      background-color: #f0f3f0;
+      background-color: #{mg-light.$mg-light-body-bg};
     }
     &.dark {
-      background-color: #1a2e2b;
+      background-color: #{mg-dark.$mg-dark-body-bg};
     }
     &.system {
-      background: linear-gradient(45deg, #f0f3f0 50%, #1a2e2b 50%);
+      background: linear-gradient(
+        45deg,
+        #{mg-light.$mg-light-body-bg} 50%,
+        #{mg-dark.$mg-dark-body-bg} 50%
+      );
     }
   }
 
   &[data-bb-theme='purple-haze'] {
     &.light {
-      background-color: #f3e5f5;
+      background-color: #{ph-light.$ph-light-body-bg};
     }
     &.dark {
-      background-color: #1a1a2e;
+      background-color: #{ph-dark.$ph-dark-body-bg};
     }
     &.system {
-      background: linear-gradient(45deg, #f3e5f5 50%, #1a1a2e 50%);
+      background: linear-gradient(
+        45deg,
+        #{ph-light.$ph-light-body-bg} 50%,
+        #{ph-dark.$ph-dark-body-bg} 50%
+      );
     }
   }
 
   &[data-bb-theme='ocean-breeze'] {
     &.light {
-      background-color: #e1f5fe;
+      background-color: #{ob-light.$ob-light-body-bg};
     }
     &.dark {
-      background-color: #0d253f;
+      background-color: #{ob-dark.$ob-dark-body-bg};
     }
     &.system {
-      background: linear-gradient(45deg, #e1f5fe 50%, #0d253f 50%);
+      background: linear-gradient(
+        45deg,
+        #{ob-light.$ob-light-body-bg} 50%,
+        #{ob-dark.$ob-dark-body-bg} 50%
+      );
     }
   }
 
   &[data-bb-theme='pumpkin-spice'] {
     &.light {
-      background-color: #fff3e0;
+      background-color: #{ps-light.$ps-light-body-bg};
     }
     &.dark {
-      background-color: #1f160c;
+      background-color: #{ps-dark.$ps-dark-body-bg};
     }
     &.system {
-      background: linear-gradient(45deg, #fff3e0 50%, #1f160c 50%);
+      background: linear-gradient(
+        45deg,
+        #{ps-light.$ps-light-body-bg} 50%,
+        #{ps-dark.$ps-dark-body-bg} 50%
+      );
     }
   }
 
   &[data-bb-theme='deep-sea'] {
     &.light {
-      background-color: #ebf4f6;
+      background-color: #{ds-light.$deep-sea-light-body-bg};
     }
     &.dark {
-      background-color: #051a21;
+      background-color: #{ds-dark.$deep-sea-dark-body-bg};
     }
     &.system {
-      background: linear-gradient(45deg, #ebf4f6 50%, #051a21 50%);
+      background: linear-gradient(
+        45deg,
+        #{ds-light.$deep-sea-light-body-bg} 50%,
+        #{ds-dark.$deep-sea-dark-body-bg} 50%
+      );
     }
   }
 
   &[data-bb-theme='crimson-ember'] {
     &.light {
-      background-color: #fcf2f0;
+      background-color: #{ce-light.$ce-light-body-bg};
     }
     &.dark {
-      background-color: #1a0604;
+      background-color: #{ce-dark.$ce-dark-body-bg};
     }
     &.system {
-      background: linear-gradient(45deg, #fcf2f0 50%, #1a0604 50%);
+      background: linear-gradient(
+        45deg,
+        #{ce-light.$ce-light-body-bg} 50%,
+        #{ce-dark.$ce-dark-body-bg} 50%
+      );
     }
   }
 }
@@ -631,12 +689,23 @@ ngb-typeahead-window.dropdown-menu {
   min-width: 100% !important;
 }
 
+.modal-content {
+  border-radius: 18px;
+  background-color: var(--bs-card-bg);
+  overflow: hidden;
+}
+
+.modal-backdrop {
+  --bs-backdrop-bg: rgb(10, 8, 5);
+  --bs-backdrop-opacity: 0.62;
+}
+
 [data-bs-theme='light'] .modal-content {
   box-shadow: 0 1.5rem 3rem rgba(0, 0, 0, 0.25);
 }
 
 [data-bs-theme='dark'] .modal-content {
-  box-shadow: 0 1.25rem 2.5rem rgba(0, 0, 0, 0.55);
+  box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.75);
 }
 
 .bb-toast-overlay-pane {
@@ -648,6 +717,13 @@ ngb-typeahead-window.dropdown-menu {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: start;
   column-gap: 0.75rem;
+  position: relative;
+  z-index: 1;
+  background-color: var(--bs-card-bg);
+
+  &:has(.bb-modal-tabs) {
+    padding-bottom: 0;
+  }
 }
 
 .bb-modal-header__text {
@@ -675,8 +751,43 @@ ngb-typeahead-window.dropdown-menu {
 
 .bb-modal-tabs {
   margin-top: 15px;
-  margin-bottom: -17px;
-  font-size: 0.8rem;
+  margin-bottom: 0;
+  border-bottom: none;
+  font-size: 0.9375rem;
+  gap: 1.375rem;
+
+  .nav-item {
+    margin-bottom: 0;
+  }
+
+  .nav-link {
+    position: relative;
+    padding: 0 0 12px;
+    margin-bottom: 0;
+    border: none;
+    border-radius: 0;
+    background: none;
+    color: var(--bb-control-placeholder);
+    font-weight: 600;
+
+    &::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      height: 0;
+      background: var(--bb-accent);
+      border-radius: 2px;
+      transition: height 120ms ease;
+    }
+
+    &:hover,
+    &:focus-visible {
+      color: var(--bs-body-color);
+      isolation: auto;
+    }
+  }
 }
 
 .bb-tab-panels {
@@ -812,7 +923,7 @@ ngb-typeahead-window.dropdown-menu {
 .bb-datefilter ngb-datepicker .ngb-dp-weekday {
   color: var(--bb-dp-muted);
   font-weight: 600;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
 }
 
 .bb-datefilter ngb-datepicker .ngb-dp-day,
@@ -966,30 +1077,36 @@ ngb-typeahead-window.dropdown-menu {
   box-shadow: 0 0 0 0.2rem var(--bb-control-focus-ring) !important;
 }
 
-.nav-tabs .nav-link.active {
-  border-color: var(--bs-border-color) var(--bs-border-color) transparent;
+.bb-modal-tabs .nav-link.active {
+  background: none;
   color: var(--bb-accent);
   font-weight: 600;
+
+  &::after {
+    height: 3px;
+  }
 }
 
 .bb-fieldset {
   border: 1px solid var(--bs-border-color);
-  border-radius: 0.5rem;
+  border-radius: 12px;
+  background-color: transparent;
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
-  padding-top: 0.5rem;
+  padding-top: 52px;
   padding-bottom: 0.5rem;
   padding-inline-start: 1.5rem;
   padding-inline-end: 1.5rem;
   position: relative;
+  overflow: hidden;
 
   & button.fieldset-action {
     &:active {
       background-color: var(--bs-body-bg);
     }
     position: absolute;
-    top: -35px;
-    right: 20px;
+    top: 8px;
+    right: 14px;
     background-color: var(--bs-body-bg);
     border: solid 1px var(--bs-border-color);
     display: inline-block;
@@ -1005,20 +1122,94 @@ ngb-typeahead-window.dropdown-menu {
       border-color 0.15s ease-in-out,
       box-shadow 0.15s ease-in-out;
     padding: 0.25rem 0.5rem;
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     border-radius: 0.2rem;
   }
 
   & legend {
-    float: none;
+    position: absolute;
+    top: 20px;
+    left: 1.5rem;
     width: auto;
-    font-size: 0.9rem;
-    font-weight: 600;
+    font-size: 0.8125rem;
+    font-weight: 700;
     text-transform: uppercase;
-    margin-top: -38px;
-    margin-left: 10px;
-    padding: 0 15px !important;
+    letter-spacing: 0.1em;
+    color: var(--bb-control-placeholder);
+    margin: 0;
+    padding: 4px 0 4px 15px;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 3px;
+      border-radius: 2px;
+      background-color: var(--bb-accent);
+    }
   }
+}
+
+// Option rows - label/sub-text on the left, switch on the right
+
+.bb-options {
+  display: flex;
+  flex-direction: column;
+}
+
+.bb-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--bs-border-color) 60%, transparent);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.bb-option__label {
+  font-size: 0.9375rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.bb-option__sub {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--bb-control-placeholder);
+  margin-top: 2px;
+}
+
+.bb-option__toggle {
+  flex-shrink: 0;
+  margin: 0;
+  padding-left: 0;
+
+  .form-check-input {
+    width: 40px;
+    height: 23px;
+    margin: 0;
+  }
+}
+
+// Two-column variant of .bb-options, with an optional full-width row
+
+.bb-options--grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 32px;
+  padding-bottom: 4px;
+}
+
+.bb-option--wide {
+  grid-column: 1 / -1;
 }
 
 .tooltip {
@@ -1090,7 +1281,7 @@ ngb-typeahead-window.dropdown-menu {
     border: 1px solid var(--bs-border-color);
     border-radius: 10px;
     padding: 6px 12px;
-    font-size: 0.75rem;
+    font-size: 0.8125rem;
     line-height: 1.4;
     text-align: left;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);

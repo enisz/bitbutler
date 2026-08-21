@@ -72,10 +72,10 @@ async function checkForUpdate(): Promise<UpdateCheckResponse> {
       );
 
     if (releases.length > 0) {
-      return { updateAvailable: true, releases };
+      return { updateAvailable: true, currentVersion, releases };
     }
 
-    return { updateAvailable: false };
+    return { updateAvailable: false, currentVersion };
   } catch (error) {
     console.error('Update check failed:', (error as Error).message);
     return { updateAvailable: false, error: (error as Error).message };

@@ -27,9 +27,6 @@ export function getFamilyLogoUrl(family: string): string {
   return `assets/images/bitbutler-logo-${family}.png`;
 }
 
-const THEME_FAMILY_KEY = 'bb-theme-family';
-const THEME_MODE_KEY = 'bb-theme-mode';
-
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
   private readonly _family = signal<ThemeFamily>('bitbutler');

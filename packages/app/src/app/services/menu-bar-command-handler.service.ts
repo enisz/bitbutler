@@ -66,7 +66,7 @@ export class MenuBarCommandHandlerService {
           break;
 
         case 'help.checkForUpdates':
-          this.commandBusService.emit({ type: 'UPDATE_CHECK_FOR_UPDATE' });
+          this.commandBusService.emit({ type: 'UPDATE_CHECK_FOR_UPDATE', trigger: 'manual' });
           break;
 
         case 'help.about':

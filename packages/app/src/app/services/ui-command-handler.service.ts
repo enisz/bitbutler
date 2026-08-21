@@ -2,7 +2,17 @@ import { DestroyRef, Injectable, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-import { combineLatest, filter, startWith } from 'rxjs';
+import {
+  catchError,
+  combineLatest,
+  filter,
+  firstValueFrom,
+  map,
+  of,
+  pairwise,
+  startWith,
+  timeout,
+} from 'rxjs';
 import { AppLoader } from '../components/app-loader/app-loader';
 import { AppCommand, UiCommand } from '../models/command.model';
 import { GuardableModal } from '../models/guardable-modal.interface';
@@ -156,7 +166,7 @@ export class UiCommandHandlerService {
             const { AddTorrent } = await import('../modals/add-torrent/add-torrent');
             if (this.isModalOpen(AddTorrent)) break;
             const addTorrentModalRef = this.modalService.open(AddTorrent, {
-              size: 'xl',
+              size: 'lg',
               scrollable: true,
               centered: false,
               keyboard: false,
@@ -235,6 +245,8 @@ export class UiCommandHandlerService {
             const limitTransferModalRef = this.modalService.open(TransferLimit, {
               centered: true,
               size: 'lg',
+              beforeDismiss: () =>
+                (limitTransferModalRef.componentInstance as GuardableModal).canDeactivate(),
             });
             setModalInput(limitTransferModalRef, 'target', command.target);
             setModalInput(limitTransferModalRef, 'hashes', transferHashes);
@@ -249,7 +261,11 @@ export class UiCommandHandlerService {
             const shareLimitHashes =
               command.hashes ??
               (shareLimitTarget === 'torrent' ? this.selectionStoreService.selectedHashes() : []);
-            const limitTorrentShare = this.modalService.open(ShareLimit, { size: 'lg' });
+            const limitTorrentShare = this.modalService.open(ShareLimit, {
+              size: 'lg',
+              beforeDismiss: () =>
+                (limitTorrentShare.componentInstance as GuardableModal).canDeactivate(),
+            });
             setModalInput(limitTorrentShare, 'target', shareLimitTarget);
             setModalInput(limitTorrentShare, 'hashes', shareLimitHashes);
             limitTorrentShare.result.catch(() => {});
@@ -358,6 +374,7 @@ export class UiCommandHandlerService {
               size: 'lg',
               centered: true,
               scrollable: true,
+              beforeDismiss: () => !updateAvailableModalRef.componentInstance.footerLocked(),
             });
             setModalInput(updateAvailableModalRef, 'update', command.update);
             updateAvailableModalRef.result.catch(() => {});
@@ -426,6 +443,7 @@ export class UiCommandHandlerService {
             const exportRef = this.modalService.open(ExportTorrents, {
               size: 'lg',
               scrollable: true,
+              centered: false,
             });
             exportRef.result.catch(() => {});
             break;
@@ -437,6 +455,7 @@ export class UiCommandHandlerService {
             const importRef = this.modalService.open(ImportTorrents, {
               size: 'xl',
               scrollable: true,
+              centered: false,
             });
             if (command.bbePath) {
               setModalInput(importRef, 'initialBbePath', command.bbePath);
@@ -524,6 +543,7 @@ export class UiCommandHandlerService {
       }
 
       this.serverStoreService.select(serverId);
+      await this.waitForInitialLoad();
     } catch (err) {
       console.error(
         UiCommandHandlerService.name,
@@ -541,6 +561,23 @@ export class UiCommandHandlerService {
     } finally {
       appLoaderModal?.close();
     }
+  }
+
+  // Waits for the next isInitialLoading$ true -> false transition, i.e. the moment the newly
+  // selected server's maindata has fully streamed in (all chunks applied to the torrent store),
+  // so the loader keeps masking the old server's torrents until they've actually been replaced.
+  // Falls back to a timeout so the loader can't hang forever if a caller ever selects a server
+  // that was already active (no new polling cycle, so no true -> false transition ever fires).
+  private waitForInitialLoad(): Promise<void> {
+    return firstValueFrom(
+      this.qbPollingService.isInitialLoading$.pipe(
+        pairwise(),
+        filter(([wasLoading, isLoading]) => wasLoading && !isLoading),
+        map(() => undefined),
+        timeout(15000),
+        catchError(() => of(undefined)),
+      ),
+    );
   }
 
   private uiCommandGuard(cmd: AppCommand): cmd is UiCommand {

@@ -1,30 +1,35 @@
-<div class="modal-header bb-update__header d-flex align-items-center gap-4">
-  <div class="bb-update__logo-wrapper">
-    <img [src]="logoUrl()" class="bb-update__logo" alt="BitButler logo" />
+<div class="modal-header bb-ua-header">
+  <div class="bb-ua-icon" aria-hidden="true">
+    <fa-icon [icon]="icons.faDownload"></fa-icon>
   </div>
 
-  <div class="bb-update__hero">
-    <h1 class="bb-update__title mb-0">
+  <div class="bb-ua-hero">
+    <h1 class="bb-ua-title mb-0">
       {{ 'components.modals.update-available.title' | translate }}
     </h1>
     @if (latestRelease; as release) {
-      <p
-        class="bb-update__tagline text-primary mb-0"
-        [innerHTML]="
-          'components.modals.update-available.new-version-ready'
-            | translate: { tag_name: getVersion(release.tag_name) }
-        "
-      ></p>
+      <p class="bb-ua-subtitle mb-0">
+        {{
+          'components.modals.update-available.subtitle'
+            | translate
+              : {
+                  current_version: currentVersion(),
+                  count: behindCount(),
+                  latest_version: getVersion(release.tag_name),
+                }
+        }}
+      </p>
     }
   </div>
 </div>
 
-<div class="modal-body bb-update p-4">
-  <h6 class="text-uppercase fw-bold text-muted small mb-3">
-    {{ 'components.modals.update-available.whats-new' | translate }}
-  </h6>
-
-  <div ngbAccordion class="mb-4" [closeOthers]="true" (show)="activeReleaseId.set($event)">
+<div class="modal-body bb-ua-body p-0">
+  <div
+    ngbAccordion
+    class="bb-ua-accordion"
+    [closeOthers]="true"
+    (show)="activeReleaseId.set($event)"
+  >
     @for (release of update().releases ?? []; track release.id; let i = $index) {
       <div
         [ngbAccordionItem]="itemId(release.id)"
@@ -39,11 +44,11 @@
             data-bs-target="#collapseOne"
           >
             <div class="d-flex flex-row justify-content-between align-items-center w-100">
-              <strong>v{{ getVersion(release.tag_name) }}</strong>
-              <div class="me-3 d-flex flex-column justify-content-between align-items-center">
-                <span>{{ release.published_at | localTimestamp }}</span>
-                <small class="version">{{ release.published_at | timeago }}</small>
-              </div>
+              <span class="bb-ua-version-pill">v{{ getVersion(release.tag_name) }}</span>
+              <span class="bb-ua-version-date me-2">
+                {{ release.published_at | localTimestamp }}
+                <span class="bb-ua-version-date__ago">({{ release.published_at | timeago }})</span>
+              </span>
             </div>
           </button>
         </h2>
@@ -58,52 +63,115 @@
     }
   </div>
 
-  @if (filteredAssets().length) {
-    <h6 class="text-uppercase fw-bold text-muted small mb-3">
-      {{ 'components.modals.update-available.available-downloads' | translate }}
+  <div class="bb-ua-downloads">
+    <h6 class="bb-ua-eyebrow">
+      {{
+        (osLabel()
+          ? 'components.modals.update-available.download-for'
+          : 'components.modals.update-available.available-downloads'
+        ) | translate: { os_name: osLabel() }
+      }}
     </h6>
-    <div class="list-group list-group-flush border">
-      @for (asset of filteredAssets(); track asset.id) {
-        <button
-          type="button"
-          (click)="downloadAsset(asset.browser_download_url)"
-          class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2"
-        >
-          <div class="d-flex align-items-center text-truncate">
-            <i class="bi bi-file-earmark-arrow-down me-2"></i>
-            <span class="asset-name text-truncate">{{ asset.name }}</span>
-          </div>
-          <span class="badge rounded-pill small ms-2"> {{ asset.size | fileSize }} </span>
+
+    @if (filteredAssets().length) {
+      <div class="bb-ua-assets">
+        @for (asset of filteredAssets(); track asset.id) {
+          <button
+            type="button"
+            (click)="downloadAsset(asset.browser_download_url)"
+            class="bb-ua-asset"
+          >
+            <fa-icon [icon]="icons.faDownload" class="bb-ua-asset__icon"></fa-icon>
+            <span class="bb-ua-asset__name text-truncate">{{ asset.name }}</span>
+            <span class="bb-ua-asset__size">{{ asset.size | fileSize }}</span>
+          </button>
+        }
+      </div>
+    }
+
+    @if (latestRelease) {
+      <p class="bb-ua-footnote">
+        {{ 'components.modals.update-available.footnote' | translate }}
+        <button type="button" class="bb-ua-footnote__link" (click)="viewAllReleases()">
+          {{ 'components.modals.update-available.view-all-releases' | translate }}
         </button>
-      }
-    </div>
-  }
+      </p>
+    }
+  </div>
 </div>
 
-<div class="modal-footer justify-content-between">
-  @if (latestRelease; as release) {
-    <button
-      type="button"
-      class="btn btn-dashed-secondary btn-sm btn-split"
-      (click)="downloadAsset(release.html_url)"
-    >
-      <bb-btn-content
-        [icon]="icons.faGithub"
-        [text]="'components.modals.update-available.button.view-on-github' | translate"
-        position="end"
-      ></bb-btn-content>
-    </button>
+<div class="modal-footer">
+  @if (showSmartScreenWarning()) {
+    <bb-callout
+      variant="warning"
+      [icon]="icons.faTriangleExclamation"
+      [message]="'components.modals.update-available.smartscreen-warning' | translate"
+      class="bb-ua-smartscreen-warning"
+    ></bb-callout>
   }
-  <button
-    type="button"
-    class="btn btn-link btn-sm btn-split"
-    (click)="activeModal.close('ignore')"
-    autofocus
-  >
-    <bb-btn-content
-      [icon]="icons.faXmark"
-      [text]="'general.button.close' | translate"
-      position="end"
-    ></bb-btn-content>
-  </button>
+
+  <div class="bb-ua-footer-row">
+    <div class="bb-ua-update-now">
+      @if (showUpdateNow()) {
+        @if (isUpdating()) {
+          <div class="bb-ua-update-progress">
+            <span class="bb-ua-update-progress__label">
+              {{
+                (updaterService.status() === 'checking'
+                  ? 'components.modals.update-available.status.checking'
+                  : 'components.modals.update-available.status.downloading'
+                ) | translate: { percent: progressLabel() }
+              }}
+            </span>
+            <app-bb-progress
+              mode="compact"
+              [progress]="updaterService.progress()"
+              [rawPercent]="true"
+              variant="primary"
+            ></app-bb-progress>
+          </div>
+        } @else if (updaterService.status() === 'downloaded') {
+          <span class="bb-ua-update-progress__label">
+            {{ 'components.modals.update-available.status.restarting' | translate }}
+          </span>
+        } @else {
+          <button type="button" class="btn btn-sm btn-split btn-primary" (click)="updateNow()">
+            <bb-btn-content
+              [icon]="icons.faCloudArrowDown"
+              [text]="'components.modals.update-available.button.update-now' | translate"
+              position="end"
+            ></bb-btn-content>
+          </button>
+        }
+      }
+    </div>
+
+    <div class="bb-ua-footer-actions">
+      <button
+        type="button"
+        class="btn btn-sm btn-split"
+        [disabled]="footerLocked()"
+        (click)="skipVersions()"
+      >
+        <bb-btn-content
+          [icon]="icons.faForward"
+          [text]="'components.modals.update-available.button.skip-versions' | translate"
+          position="end"
+        ></bb-btn-content>
+      </button>
+      <button
+        type="button"
+        class="btn btn-sm btn-split"
+        [disabled]="footerLocked()"
+        (click)="activeModal.close('close')"
+        autofocus
+      >
+        <bb-btn-content
+          [icon]="icons.faXmark"
+          [text]="'general.button.close' | translate"
+          position="end"
+        ></bb-btn-content>
+      </button>
+    </div>
+  </div>
 </div>

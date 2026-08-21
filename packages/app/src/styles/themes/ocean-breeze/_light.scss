@@ -9,10 +9,10 @@ $ob-light-danger: #d9534f;
 $ob-light-warning: #f0ad4e;
 $ob-light-info: #5bc0de;
 
-$ob-light-body-bg: #e1f5fe;
+$ob-light-body-bg: #c2e7f7;
 $ob-light-body-color: #01579b;
-$ob-light-border: #b3e5fc;
-$ob-light-surface: #e1f5fe;
+$ob-light-border: #9cc9e0;
+$ob-light-surface: #edf8fd;
 
 $ob-light-check-marker-colors: (
   'default': $ob-light-secondary,
@@ -56,10 +56,10 @@ $ob-light-check-marker-colors: (
     --bs-body-color: #{$ob-light-body-color};
     --bs-border-color: #{$ob-light-border};
 
-    --bs-card-bg: #ffffff;
+    --bs-card-bg: #{$ob-light-surface};
     --bs-card-color: #{$ob-light-body-color};
     --bs-card-border-color: #{$ob-light-border};
-    --bs-card-cap-bg: #f0f0f0;
+    --bs-card-cap-bg: color-mix(in srgb, var(--bs-body-bg) 70%, var(--bs-card-bg) 30%);
     --bs-card-cap-color: #{$ob-light-body-color};
 
     --bs-tooltip-bg: var(--bs-card-cap-bg);
@@ -72,7 +72,7 @@ $ob-light-check-marker-colors: (
     --bs-navbar-color: #{$ob-light-body-color};
     --bs-navbar-brand-color: #{$ob-light-primary};
     --bs-dropdown-link-color: #{$ob-light-body-color};
-    --bs-dropdown-bg: #{$ob-light-surface};
+    --bs-dropdown-bg: var(--bs-card-cap-bg);
 
     --bb-accent: var(--bs-secondary);
     --bb-accent-rgb: var(--bs-secondary-rgb);
@@ -109,7 +109,7 @@ $ob-light-check-marker-colors: (
     --bb-control-focus-border: var(--bs-primary);
     --bb-control-focus-ring: rgba(var(--bs-primary-rgb), 0.18);
 
-    --bb-control-radius: 12px;
+    --bb-control-radius: 9px;
 
     --bb-dp-bg: var(--bs-dropdown-bg);
     --bb-dp-border: var(--bs-border-color);
@@ -127,9 +127,9 @@ $ob-light-check-marker-colors: (
     --bb-toast-border-opacity: 1;
     --bb-toast-glow-opacity: 0.05;
 
-    --bs-popover-bg: var(--bs-card-bg);
+    --bs-popover-bg: var(--bs-card-cap-bg);
     --bs-popover-border-color: #{$ob-light-border};
-    --bs-popover-header-bg: #f0f0f0;
+    --bs-popover-header-bg: var(--bs-card-cap-bg);
     --bs-popover-header-color: #{$ob-light-body-color};
     --bs-popover-body-color: #{$ob-light-body-color};
 
@@ -163,7 +163,7 @@ $ob-light-check-marker-colors: (
   .form-switch .form-check-input {
     background-color: var(--bb-control-bg);
     border-color: var(--bb-control-border);
-    border-radius: var(--bb-control-radius, 12px);
+    border-radius: var(--bb-control-radius, 9px);
 
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%230277bd' opacity='0.45'/%3e%3c/svg%3e");
 

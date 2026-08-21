@@ -1,10 +1,13 @@
+import { Clipboard } from '@angular/cdk/clipboard';
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { TimeagoIntl, provideTimeago } from 'ngx-timeago';
 import { Subject } from 'rxjs';
 import { CommandBusService } from '../../services/command-bus.service';
 import { ConfirmService } from '../../services/confirm.service';
 import { ModalGuardService } from '../../services/modal-guard.service';
+import { ToastService } from '../../services/toast.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
 import { TorrentDetails } from './torrent-details';
 import { TorrentDetailsActionsService } from './torrent-details-actions.service';
@@ -67,6 +70,9 @@ describe('TorrentDetails', () => {
           useValue: { commands$: commands$.asObservable(), emit: vi.fn() },
         },
         { provide: ConfirmService, useValue: { confirm: vi.fn().mockResolvedValue(true) } },
+        { provide: Clipboard, useValue: { copy: vi.fn() } },
+        { provide: ToastService, useValue: { info: vi.fn(), danger: vi.fn() } },
+        provideTimeago({ intl: { provide: TimeagoIntl, useClass: TimeagoIntl } }),
       ],
     })
       .overrideComponent(TorrentDetails, {

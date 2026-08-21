@@ -52,12 +52,17 @@ describe('AddTorrentOptions', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should not wrap the switches in a fieldset', () => {
-    expect(fixture.nativeElement.querySelector('fieldset')).toBeNull();
+  it('should wrap the root folder field and the switches in separate fieldsets', () => {
+    const fieldsets: NodeListOf<HTMLElement> =
+      fixture.nativeElement.querySelectorAll('fieldset.bb-fieldset');
+
+    expect(fieldsets.length).toBe(2);
+    expect(fieldsets[0].querySelector('#root_folder')).toBeTruthy();
+    expect(fieldsets[1].querySelectorAll('.bb-option').length).toBe(5);
   });
 
-  it('should show a popover for each option switch plus the root folder field', () => {
-    expect(fixture.nativeElement.querySelectorAll('bb-popover').length).toBe(6);
+  it('should show a popover for the root folder field, the skip hash checking warning, and the first/last piece priority switch', () => {
+    expect(fixture.nativeElement.querySelectorAll('bb-popover').length).toBe(3);
   });
 
   describe('root folder field', () => {

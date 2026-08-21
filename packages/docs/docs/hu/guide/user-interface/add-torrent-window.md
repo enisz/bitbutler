@@ -39,7 +39,14 @@ A **Fájlok** fül csak akkor válik elérhetővé, amikor egyetlen `.torrent` f
 
 ![Torrent hozzáadása ablak - Beállítások fül](/screenshots/add-torrent-dialog/add-torrent-options.png)
 
-A **Beállítások** fülön torrentenkénti viselkedést állíthatsz be: gyökérmappa kezelése, hash-ellenőrzés kihagyása, szüneteltetett állapotban hozzáadás, Automatikus torrentkezelés, szekvenciális letöltés, valamint első/utolsó szelet prioritás.
+A **Beállítások** fülön torrentenkénti viselkedést állíthatsz be. Minden beállítás megmarad alapértelmezettként a következő hozzáadott torrenthez.
+
+- **Gyökérmappa** - meghatározza, hogyan kezelje a több fájlos torrent felső szintű mappáját: az **Alapértelmezett** a qBittorrent saját globális beállítására hagyja, a **Gyökérmappa létrehozása** mindig egy mappába csomagolja a fájlokat, a **Ne hozzon létre gyökérmappát** pedig mappa nélkül, lapos szerkezetben tölti le őket.
+- **Hash-ellenőrzés kihagyása** - megbízik a mentési útvonalon már meglévő adatokban, és nem futtatja le a qBittorrent ellenőrzését indítás előtt.
+- **Hozzáadás felfüggesztett állapotban** - sorba állítja a torrentet anélkül, hogy azonnal elindítaná.
+- **Automatikus Torrentkezelés (TMM) használata** - bekapcsolja az Automatikus torrentkezelést, így a qBittorrent a torrent kategóriájából származtatja a mentési útvonalat az Általános fülön beállított útvonal helyett (amely továbbra is elküldésre kerül, de csak akkor veszi figyelembe a szerver, ha ez ki van kapcsolva).
+- **Sorrendi letöltés engedélyezése** - a darabokat fájlsorrendben tölti le a qBittorrent alapértelmezett "legritkább előbb" stratégiája helyett.
+- **Első és utolsó szelet priorizálása** - minden fájl első és utolsó darabját a többi elé sorolja, a sorrendi letöltéstől függetlenül.
 
 ## Korlátok fül
 

@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
+  IconDefinition,
   faArrowsSpin,
   faCircleCheck,
   faCircleDown,
@@ -15,15 +16,23 @@ import {
   faFolderTree,
   faHourglassHalf,
   faLink,
+  faList,
   faPlay,
   faTags,
   faUpload,
 } from '@fortawesome/free-solid-svg-icons';
+import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content';
+import {
+  DEFAULT_SIDEBAR_SETTINGS,
+  SidebarActiveFilters,
+  SidebarFilterGroupsOpen,
+} from '../../../models/sidebar-settings.model';
 import { TorrentState } from '../../../models/torrent.model';
 import { CommandBusService } from '../../../services/command-bus.service';
 import { FilterService } from '../../../services/filter.service';
+import { SidebarSettingsService } from '../../../services/sidebar-settings.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { getTrackers, normalizeTracker } from '../tracker.utils';
 import { FilterGroupAction, FilterGroupComponent, FilterItem } from './filter-group/filter-group';
@@ -43,7 +52,14 @@ type StatusKey =
 @Component({
   selector: 'app-status',
   standalone: true,
-  imports: [CommonModule, FontAwesomeModule, FilterGroupComponent, TranslatePipe, BbBtnContent],
+  imports: [
+    CommonModule,
+    FontAwesomeModule,
+    FilterGroupComponent,
+    TranslatePipe,
+    BbBtnContent,
+    NgbTooltip,
+  ],
   templateUrl: './status.html',
   styleUrl: './status.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -53,11 +69,63 @@ export class Status {
   private readonly filterService = inject(FilterService);
   private readonly commandBusService = inject(CommandBusService);
   private readonly translateService = inject(TranslateService);
+  private readonly sidebarSettingsService = inject(SidebarSettingsService);
   private readonly filtersSig = this.filterService.external;
   private readonly languageChanged = toSignal(this.translateService.onLangChange);
 
+  readonly collapsed = input(false);
+
   readonly totalCount = this.store.totalCount;
   readonly countsByState = this.store.countsByState;
+
+  private readonly sidebarSettings = toSignal(this.sidebarSettingsService.asObservable());
+
+  readonly filterGroupsOpen = computed<SidebarFilterGroupsOpen>(
+    () => this.sidebarSettings()?.filterGroupsOpen ?? DEFAULT_SIDEBAR_SETTINGS.filterGroupsOpen,
+  );
+
+  constructor() {
+    void this.sidebarSettingsService
+      .load()
+      .then((settings) => this.restoreActiveFilters(settings.activeFilters));
+  }
+
+  public setGroupOpen(group: keyof SidebarFilterGroupsOpen, open: boolean): void {
+    const current = this.sidebarSettings();
+    this.sidebarSettingsService.save({
+      collapsed: current?.collapsed ?? DEFAULT_SIDEBAR_SETTINGS.collapsed,
+      filterGroupsOpen: { ...this.filterGroupsOpen(), [group]: open },
+      activeFilters: current?.activeFilters ?? DEFAULT_SIDEBAR_SETTINGS.activeFilters,
+    });
+  }
+
+  private restoreActiveFilters(activeFilters: SidebarActiveFilters): void {
+    const statusKeys = activeFilters.statusKeys.filter((key) => key in this.groups);
+    this.selectedStatusKeys.set(new Set(statusKeys));
+    const states = new Set<TorrentState>();
+    for (const key of statusKeys) for (const s of this.groups[key as StatusKey]) states.add(s);
+    this.filterService.setStates(states);
+    this.filterService.setTrackers(activeFilters.trackers);
+    this.filterService.setSavePaths(activeFilters.savePaths);
+    this.filterService.setCategories(activeFilters.categories);
+    this.filterService.setTags(activeFilters.tags);
+  }
+
+  private persistActiveFilters(): void {
+    const current = this.sidebarSettings();
+    const filters = this.filtersSig();
+    this.sidebarSettingsService.save({
+      collapsed: current?.collapsed ?? DEFAULT_SIDEBAR_SETTINGS.collapsed,
+      filterGroupsOpen: current?.filterGroupsOpen ?? DEFAULT_SIDEBAR_SETTINGS.filterGroupsOpen,
+      activeFilters: {
+        statusKeys: [...this.selectedStatusKeys()],
+        trackers: [...filters.trackers],
+        savePaths: [...filters.savePaths],
+        categories: [...filters.categories],
+        tags: [...filters.tags],
+      },
+    });
+  }
 
   readonly categoriesAction = computed<FilterGroupAction>(() => {
     this.languageChanged();
@@ -102,6 +170,7 @@ export class Status {
     faTags,
     faArrowsSpin,
     faEraser,
+    faList,
   };
 
   private readonly groups: Record<StatusKey, TorrentState[]> = {
@@ -194,6 +263,21 @@ export class Status {
     ];
   });
 
+  readonly collapsedStatusItems = computed<
+    { key: string; label: string; count: number; icon: IconDefinition }[]
+  >(() => {
+    this.languageChanged();
+    return [
+      {
+        key: 'all',
+        label: this.translateService.instant('pages.main.status.filter-group.all'),
+        count: this.totalCount(),
+        icon: this.icon.faList,
+      },
+      ...this.statusItems().map((item) => ({ ...item, icon: item.icon as IconDefinition })),
+    ];
+  });
+
   private toggleKey(current: ReadonlySet<string>, key: string): Set<string> {
     const next = new Set(current);
     if (next.has(key)) next.delete(key);
@@ -201,30 +285,24 @@ export class Status {
     return next;
   }
 
-  private isStatusGroupActive(key: StatusKey, current: ReadonlySet<TorrentState>): boolean {
-    const g = this.groups[key];
-    return g.length > 0 && g.every((s) => current.has(s));
-  }
+  private readonly selectedStatusKeys = signal<ReadonlySet<string>>(new Set());
 
-  readonly activeStatusKeys = computed<ReadonlySet<string>>(() => {
-    const current = this.filtersSig().states;
-    const keys = new Set<string>();
-    for (const key of Object.keys(this.groups) as StatusKey[]) {
-      if (this.isStatusGroupActive(key, current)) keys.add(key);
-    }
-    return keys;
-  });
+  readonly activeStatusKeys = this.selectedStatusKeys.asReadonly();
 
   public setGroup(key: string): void {
     if (key === 'all') {
+      this.selectedStatusKeys.set(new Set());
       this.filterService.clearStates();
+      this.persistActiveFilters();
       return;
     }
     if (!(key in this.groups)) return;
-    const nextKeys = this.toggleKey(this.activeStatusKeys(), key);
+    const nextKeys = this.toggleKey(this.selectedStatusKeys(), key);
+    this.selectedStatusKeys.set(nextKeys);
     const next = new Set<TorrentState>();
     for (const k of nextKeys) for (const s of this.groups[k as StatusKey]) next.add(s);
     this.filterService.setStates(next);
+    this.persistActiveFilters();
   }
 
   readonly activeTrackerKeys = computed<ReadonlySet<string>>(() => this.filtersSig().trackers);
@@ -233,6 +311,7 @@ export class Status {
 
   public clearTrackers(): void {
     this.filterService.clearTrackers();
+    this.persistActiveFilters();
   }
 
   public setTrackerGroup(key: string): void {
@@ -241,10 +320,12 @@ export class Status {
       return;
     }
     this.filterService.setTrackers(this.toggleKey(this.filtersSig().trackers, key));
+    this.persistActiveFilters();
   }
 
   public clearSavePaths(): void {
     this.filterService.clearSavePaths();
+    this.persistActiveFilters();
   }
 
   public setSavePathGroup(key: string): void {
@@ -253,6 +334,7 @@ export class Status {
       return;
     }
     this.filterService.setSavePaths(this.toggleKey(this.filtersSig().savePaths, key));
+    this.persistActiveFilters();
   }
 
   readonly trackersWithCounts = computed<FilterItem[]>(() => {
@@ -313,6 +395,7 @@ export class Status {
 
   public clearCategories(): void {
     this.filterService.clearCategories();
+    this.persistActiveFilters();
   }
 
   public setCategoryGroup(key: string): void {
@@ -321,14 +404,18 @@ export class Status {
       return;
     }
     this.filterService.setCategories(this.toggleKey(this.filtersSig().categories, key));
+    this.persistActiveFilters();
   }
 
   public clearTags(): void {
     this.filterService.clearTags();
+    this.persistActiveFilters();
   }
 
   public clearAll(): void {
+    this.selectedStatusKeys.set(new Set());
     this.filterService.resetAll();
+    this.persistActiveFilters();
   }
 
   public setTagGroup(key: string): void {
@@ -337,5 +424,6 @@ export class Status {
       return;
     }
     this.filterService.setTags(this.toggleKey(this.filtersSig().tags, key));
+    this.persistActiveFilters();
   }
 }

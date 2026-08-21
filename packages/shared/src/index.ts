@@ -6,6 +6,7 @@ export type {
   SimpleUser,
   UpdateCheckResponse,
 } from './models/electron.model.js';
+export type { UpdateCapability, UpdaterEvent } from './models/updater.model.js';
 export type { NewServer, ServerProtocol, ServerRecord } from './models/server.model.js';
 export type {
   TorrentDraft,

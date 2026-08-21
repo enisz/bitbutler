@@ -1,6 +1,9 @@
 <div class="modal-header bb-modal-header">
   <div class="bb-modal-header__text">
     <h5 class="modal-title bb-title-clamp">{{ 'pages.qb-settings.title' | translate }}</h5>
+    @if (currentServer(); as server) {
+      <div class="bb-modal-subtitle">{{ server.name }}</div>
+    }
 
     <ul class="nav nav-tabs bb-modal-tabs">
       @for (tab of tabs; track tab.id) {
@@ -60,15 +63,11 @@
       position="end"
     ></bb-btn-content>
   </button>
-  <button
-    type="button"
-    class="btn btn-link btn-sm btn-split"
-    (click)="activeModal.dismiss()"
-    autofocus
-  >
+
+  <button type="button" class="btn btn-sm btn-split" (click)="activeModal.dismiss()" autofocus>
     <bb-btn-content
       [icon]="icon.faXmark"
-      [text]="'general.button.close' | translate"
+      [text]="'general.button.cancel' | translate"
       position="end"
     ></bb-btn-content>
   </button>

@@ -62,6 +62,15 @@ export class GridContextMenuService {
   private readonly torrentExportService = inject(TorrentExportService);
   private readonly translateService = inject(TranslateService);
 
+  public copyToClipboard(value: string, field: string): void {
+    this.clipboard.copy(value);
+    this.toastService.info(
+      this.translateService.instant('pages.main.grid.context-menu.toast.copied-to-clipboard', {
+        field,
+      }),
+    );
+  }
+
   public async buildTorrentMenu(data: GridContextMenuData): Promise<ContextMenuEntry[]> {
     const isMulti = data.selected.length > 1;
     const hashes = data.selected.map((torrent) => torrent.hash);
@@ -225,6 +234,7 @@ export class GridContextMenuService {
                   icon: faPenToSquare,
                   action: () =>
                     this.commandBusService.emit({ type: 'UI_RENAME_TORRENT', torrent: data.row }),
+                  hint: 'F2',
                 },
               ]),
           {
@@ -396,30 +406,30 @@ export class GridContextMenuService {
         children: [
           {
             kind: 'item',
+            id: 'torrent.copyCellValue',
+            label: 'pages.main.grid.context-menu.item.copy-cell-value',
+            icon: faCopy,
+            disabled: data.cellValue == null,
+            action: () => this.copyToClipboard(String(data.cellValue ?? ''), data.cellField ?? ''),
+          },
+          {
+            kind: 'item',
             id: 'torrent.copyName',
             label: isMulti
               ? 'pages.main.grid.context-menu.item.copy-names'
               : 'pages.main.grid.context-menu.item.copy-name',
             icon: faFont,
-            action: () => {
-              this.clipboard.copy(
+            action: () =>
+              this.copyToClipboard(
                 isMulti
                   ? data.selected.map((torrent) => torrent.name).join('\n')
                   : String(data.row.name),
-              );
-              this.toastService.info(
                 this.translateService.instant(
-                  'pages.main.grid.context-menu.toast.copied-to-clipboard',
-                  {
-                    field: this.translateService.instant(
-                      isMulti
-                        ? 'pages.main.grid.context-menu.field.names'
-                        : 'pages.main.grid.context-menu.field.name',
-                    ),
-                  },
+                  isMulti
+                    ? 'pages.main.grid.context-menu.field.names'
+                    : 'pages.main.grid.context-menu.field.name',
                 ),
-              );
-            },
+              ),
           },
           {
             kind: 'item',
@@ -428,25 +438,17 @@ export class GridContextMenuService {
               ? 'pages.main.grid.context-menu.item.copy-magnet-links'
               : 'pages.main.grid.context-menu.item.copy-magnet-link',
             icon: faMagnet,
-            action: () => {
-              this.clipboard.copy(
+            action: () =>
+              this.copyToClipboard(
                 isMulti
                   ? data.selected.map((torrent) => torrent.magnet_uri).join('\n')
                   : String(data.row.magnet_uri),
-              );
-              this.toastService.info(
                 this.translateService.instant(
-                  'pages.main.grid.context-menu.toast.copied-to-clipboard',
-                  {
-                    field: this.translateService.instant(
-                      isMulti
-                        ? 'pages.main.grid.context-menu.field.magnet-links'
-                        : 'pages.main.grid.context-menu.field.magnet-link',
-                    ),
-                  },
+                  isMulti
+                    ? 'pages.main.grid.context-menu.field.magnet-links'
+                    : 'pages.main.grid.context-menu.field.magnet-link',
                 ),
-              );
-            },
+              ),
           },
           {
             kind: 'item',
@@ -455,21 +457,15 @@ export class GridContextMenuService {
               ? 'pages.main.grid.context-menu.item.copy-info-hashes'
               : 'pages.main.grid.context-menu.item.copy-info-hash',
             icon: faHashtag,
-            action: () => {
-              this.clipboard.copy(isMulti ? hashes.join('\n') : String(data.row.hash));
-              this.toastService.info(
+            action: () =>
+              this.copyToClipboard(
+                isMulti ? hashes.join('\n') : String(data.row.hash),
                 this.translateService.instant(
-                  'pages.main.grid.context-menu.toast.copied-to-clipboard',
-                  {
-                    field: this.translateService.instant(
-                      isMulti
-                        ? 'pages.main.grid.context-menu.field.info-hashes'
-                        : 'pages.main.grid.context-menu.field.info-hash',
-                    ),
-                  },
+                  isMulti
+                    ? 'pages.main.grid.context-menu.field.info-hashes'
+                    : 'pages.main.grid.context-menu.field.info-hash',
                 ),
-              );
-            },
+              ),
           },
           {
             kind: 'item',
@@ -478,42 +474,28 @@ export class GridContextMenuService {
               ? 'pages.main.grid.context-menu.item.copy-save-paths'
               : 'pages.main.grid.context-menu.item.copy-save-path',
             icon: faFolderOpen,
-            action: () => {
-              this.clipboard.copy(
+            action: () =>
+              this.copyToClipboard(
                 isMulti
                   ? data.selected.map((torrent) => torrent.save_path).join('\n')
                   : String(data.row.save_path),
-              );
-              this.toastService.info(
                 this.translateService.instant(
-                  'pages.main.grid.context-menu.toast.copied-to-clipboard',
-                  {
-                    field: this.translateService.instant(
-                      isMulti
-                        ? 'pages.main.grid.context-menu.field.save-paths'
-                        : 'pages.main.grid.context-menu.field.save-path',
-                    ),
-                  },
+                  isMulti
+                    ? 'pages.main.grid.context-menu.field.save-paths'
+                    : 'pages.main.grid.context-menu.field.save-path',
                 ),
-              );
-            },
+              ),
           },
           {
             kind: 'item',
             id: 'torrent.copyJson',
             label: 'pages.main.grid.context-menu.item.copy-as-json',
             icon: faCode,
-            action: () => {
-              this.clipboard.copy(String(JSON.stringify(data.selected, null, 2)));
-              this.toastService.info(
-                this.translateService.instant(
-                  'pages.main.grid.context-menu.toast.copied-to-clipboard',
-                  {
-                    field: this.translateService.instant('pages.main.grid.context-menu.field.json'),
-                  },
-                ),
-              );
-            },
+            action: () =>
+              this.copyToClipboard(
+                String(JSON.stringify(data.selected, null, 2)),
+                this.translateService.instant('pages.main.grid.context-menu.field.json'),
+              ),
           },
         ],
       },

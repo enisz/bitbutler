@@ -5,10 +5,15 @@
     </div>
     <fieldset class="bb-fieldset">
       <legend>{{ 'pages.qb-settings.tab.queue-limits.label.active-torrents' | translate }}</legend>
-      <div class="container">
-        <div class="row mb-3">
-          <div class="col-12">
-            <div class="form-check form-switch">
+      <div class="container mt-3">
+        <div class="bb-options mb-3">
+          <div class="bb-option">
+            <div class="bb-option__text">
+              <label class="bb-option__label" for="queueing-enabled">
+                {{ 'pages.qb-settings.tab.queue-limits.field.queueing-enabled' | translate }}
+              </label>
+            </div>
+            <span class="bb-option__toggle form-switch">
               <input
                 class="form-check-input"
                 type="checkbox"
@@ -16,10 +21,7 @@
                 id="queueing-enabled"
                 formControlName="queueing_enabled"
               />
-              <label class="form-check-label" for="queueing-enabled">
-                {{ 'pages.qb-settings.tab.queue-limits.field.queueing-enabled' | translate }}
-              </label>
-            </div>
+            </span>
           </div>
         </div>
         <div class="row mb-3">
@@ -69,10 +71,15 @@
         <legend>
           {{ 'pages.qb-settings.tab.queue-limits.label.download-behavior' | translate }}
         </legend>
-        <div class="container">
-          <div class="row mb-3">
-            <div class="col-12">
-              <div class="form-check form-switch">
+        <div class="container mt-3">
+          <div class="bb-options mb-3">
+            <div class="bb-option">
+              <div class="bb-option__text">
+                <label class="bb-option__label" for="add-to-top-of-queue">
+                  {{ 'pages.qb-settings.tab.queue-limits.field.add-to-top-of-queue' | translate }}
+                </label>
+              </div>
+              <span class="bb-option__toggle form-switch">
                 <input
                   class="form-check-input"
                   type="checkbox"
@@ -80,10 +87,7 @@
                   id="add-to-top-of-queue"
                   formControlName="add_to_top_of_queue"
                 />
-                <label class="form-check-label" for="add-to-top-of-queue">
-                  {{ 'pages.qb-settings.tab.queue-limits.field.add-to-top-of-queue' | translate }}
-                </label>
-              </div>
+              </span>
             </div>
           </div>
         </div>

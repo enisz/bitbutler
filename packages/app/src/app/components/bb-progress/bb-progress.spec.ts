@@ -58,6 +58,12 @@ describe('BbProgressBar', () => {
       fixture.componentRef.setInput('progress', 0.333);
       expect(component.progressPercent()).toBe(33.3);
     });
+
+    it('should treat a sub-1% value as already a percentage when rawPercent is true', () => {
+      fixture.componentRef.setInput('rawPercent', true);
+      fixture.componentRef.setInput('progress', 0.5);
+      expect(component.progressPercent()).toBe(0.5);
+    });
   });
 
   describe('displayVariant', () => {
@@ -76,6 +82,40 @@ describe('BbProgressBar', () => {
       fixture.componentRef.setInput('variant', 'danger');
       fixture.componentRef.setInput('torrentState', undefined);
       expect(component.displayVariant()).toBe('danger');
+    });
+  });
+
+  describe('mode', () => {
+    it('should default to normal and render the percentage label', () => {
+      fixture.componentRef.setInput('progress', 0.5);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('.bb-progress-label')).not.toBeNull();
+    });
+
+    it('should render no label in compact mode', () => {
+      fixture.componentRef.setInput('mode', 'compact');
+      fixture.componentRef.setInput('progress', 0.5);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('.bb-progress-label')).toBeNull();
+    });
+
+    it('should add the compact modifier class in compact mode', () => {
+      fixture.componentRef.setInput('mode', 'compact');
+      fixture.detectChanges();
+      expect(
+        fixture.nativeElement
+          .querySelector('.bb-progress')
+          .classList.contains('bb-progress--compact'),
+      ).toBe(true);
+    });
+
+    it('should not add the compact modifier class in normal mode', () => {
+      fixture.detectChanges();
+      expect(
+        fixture.nativeElement
+          .querySelector('.bb-progress')
+          .classList.contains('bb-progress--compact'),
+      ).toBe(false);
     });
   });
 });

@@ -6,264 +6,430 @@
     }}</small>
   </div>
 } @else {
-  <div class="container-fluid">
-    <fieldset class="bb-fieldset mt-0">
+  <div class="bb-general">
+    @if (errorLog(); as entry) {
+      <div class="bb-error-banner">
+        <button type="button" class="bb-error-banner__toggle" (click)="toggleErrorLog()">
+          <span class="bb-error-banner__icon" aria-hidden="true">
+            <fa-icon [icon]="icons['faCircleExclamation']"></fa-icon>
+          </span>
+          <span class="bb-error-banner__text">
+            <span class="bb-error-banner__title">{{
+              'components.modals.torrent-details.general.error' | translate
+            }}</span>
+            <span class="bb-error-banner__message">{{
+              parseFileErrorReason(entry.message).short
+            }}</span>
+          </span>
+          <span
+            class="bb-error-banner__chevron"
+            [class.bb-error-banner__chevron--expanded]="errorLogExpanded()"
+          ></span>
+        </button>
+
+        <div [ngbCollapse]="!errorLogExpanded()">
+          <pre class="bb-error-banner__detail">{{ rawLogJson(entry) }}</pre>
+        </div>
+      </div>
+    }
+
+    <div class="bb-hero-card">
+      <div class="bb-hero-top">
+        <div class="bb-hero-pct">
+          <span class="bb-hero-pct__value"
+            >{{ torrent()!.data.progress * 100 | number: '1.0-1' }}%</span
+          >
+        </div>
+        <div
+          class="bb-hero-state"
+          [class]="'text-' + stateVariant()"
+          [ngbTooltip]="'torrent.state.' + torrent()!.data.state | translate"
+          bbTooltipOverflow
+          placement="bottom"
+        >
+          {{ 'torrent.state.' + torrent()!.data.state | translate }}
+        </div>
+      </div>
+
+      <app-bb-progress
+        mode="compact"
+        [progress]="torrent()?.data?.progress"
+        [torrentState]="torrent()?.data?.state"
+      ></app-bb-progress>
+
+      <div class="bb-hero-caption">
+        <span
+          >{{ torrent()!.properties.pieces_have }}/{{ torrent()!.properties.pieces_num }}
+          {{ 'components.modals.torrent-details.general.pieces-value' | translate }}</span
+        >
+        @if (isDownloading()) {
+          <span>{{ (torrent()!.data.eta * 1000 | humanizeDuration: 'long' : 2) || '-' }}</span>
+        }
+      </div>
+
+      <div class="bb-hero-kpis">
+        <div class="bb-hero-kpi">
+          <span class="bb-hero-kpi__label bb-hero-kpi__label--accent">
+            <fa-icon [icon]="icons['faArrowDown']" />
+            {{ 'components.modals.torrent-details.general.download-speed' | translate }}
+          </span>
+          <span class="bb-hero-kpi__value">{{ torrent()!.data.dlspeed | fileSize }}/s</span>
+          <span class="bb-hero-kpi__sub">{{
+            'components.modals.torrent-details.general.downloaded-sub'
+              | translate
+                : {
+                    amount: torrent()!.data.downloaded | fileSize,
+                    limit:
+                      torrent()!.data.dl_limit > 0
+                        ? (torrent()!.data.dl_limit | speedLimit)
+                        : ('general.limit.no-limit' | translate),
+                  }
+          }}</span>
+        </div>
+        <div class="bb-hero-kpi">
+          <span class="bb-hero-kpi__label bb-hero-kpi__label--success">
+            <fa-icon [icon]="icons['faArrowUp']" />
+            {{ 'components.modals.torrent-details.general.upload-speed' | translate }}
+          </span>
+          <span class="bb-hero-kpi__value">{{ torrent()!.data.upspeed | fileSize }}/s</span>
+          <span class="bb-hero-kpi__sub">{{
+            'components.modals.torrent-details.general.uploaded-sub'
+              | translate
+                : {
+                    amount: torrent()!.data.uploaded | fileSize,
+                    limit:
+                      torrent()!.data.up_limit > 0
+                        ? (torrent()!.data.up_limit | speedLimit)
+                        : ('general.limit.no-limit' | translate),
+                  }
+          }}</span>
+        </div>
+        <div class="bb-hero-kpi">
+          <span class="bb-hero-kpi__label">{{
+            'components.modals.torrent-details.general.peers' | translate
+          }}</span>
+          <span class="bb-hero-kpi__value"
+            >{{ torrent()!.data.num_seeds }}/{{ torrent()!.data.num_leechs }}</span
+          >
+          <span class="bb-hero-kpi__sub">{{
+            'components.modals.torrent-details.general.connections-sub'
+              | translate
+                : {
+                    count: torrent()!.properties.nb_connections,
+                    max: torrent()!.properties.nb_connections_limit,
+                  }
+          }}</span>
+        </div>
+        <div class="bb-hero-kpi">
+          <span class="bb-hero-kpi__label">{{
+            'components.modals.torrent-details.general.share-ratio' | translate
+          }}</span>
+          <span class="bb-hero-kpi__value">{{ torrent()!.data.ratio | ratio }}</span>
+          <span class="bb-hero-kpi__sub">{{ torrent()!.data.ratio_limit | ratioLimit }}</span>
+        </div>
+      </div>
+    </div>
+
+    <fieldset class="bb-fieldset">
       <legend>{{ 'components.modals.torrent-details.general.labels.title' | translate }}</legend>
-      <div class="row gy-2">
-        <div class="col-12 bb-section">
-          <span class="section-header">{{
+      <div class="bb-rows">
+        <div class="bb-row">
+          <span class="bb-row__label">{{
             'components.modals.torrent-details.general.name' | translate
           }}</span>
           <span
-            class="section-value"
+            class="bb-row__value"
             [ngbTooltip]="torrent()!.data.name"
             bbTooltipOverflow
             placement="bottom"
             >{{ torrent()!.data.name }}</span
           >
-
-          <div class="button-container">
-            @if (torrent()!.data.name) {
-              <button
-                class="btn btn-sm btn-link"
-                placement="top"
-                [ngbTooltip]="
-                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
-                "
-                (click)="toClipboard('name', torrent()!.data.name)"
-              >
-                <fa-icon [icon]="icons['faCopy']" />
-              </button>
-            }
-          </div>
+          @if (torrent()!.data.name) {
+            <button
+              class="btn btn-sm btn-link bb-row__copy"
+              placement="top"
+              [ngbTooltip]="
+                'components.modals.torrent-details.general.copy-to-clipboard' | translate
+              "
+              (click)="toClipboard('name', torrent()!.data.name)"
+            >
+              <fa-icon [icon]="icons['faCopy']" />
+            </button>
+          }
         </div>
-        <div class="col-12 bb-section">
-          <span class="section-header">{{
+        <div class="bb-row">
+          <span class="bb-row__label">{{
             'components.modals.torrent-details.general.save-path' | translate
           }}</span>
           <span
-            class="section-value"
+            class="bb-row__value"
             [ngbTooltip]="torrent()!.data.save_path"
             bbTooltipOverflow
             placement="bottom"
             >{{ torrent()!.data.save_path }}</span
           >
-          <div class="button-container">
-            @if (torrent()!.data.save_path) {
-              <button
-                class="btn btn-sm btn-link"
-                placement="top"
-                [ngbTooltip]="
-                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
-                "
-                (click)="toClipboard('save-path', torrent()!.data.save_path)"
-              >
-                <fa-icon [icon]="icons['faCopy']" />
-              </button>
-            }
-          </div>
+          @if (torrent()!.data.save_path) {
+            <button
+              class="btn btn-sm btn-link bb-row__copy"
+              placement="top"
+              [ngbTooltip]="
+                'components.modals.torrent-details.general.copy-to-clipboard' | translate
+              "
+              (click)="toClipboard('save-path', torrent()!.data.save_path)"
+            >
+              <fa-icon [icon]="icons['faCopy']" />
+            </button>
+          }
         </div>
-        <div class="col-12 bb-section">
-          <span class="section-header">{{
+        <div class="bb-row">
+          <span class="bb-row__label">{{
             'components.modals.torrent-details.general.remote-path' | translate
           }}</span>
           <span
-            class="section-value"
+            class="bb-row__value"
             [ngbTooltip]="torrent()!.data.content_path"
             bbTooltipOverflow
             placement="bottom"
             >{{ torrent()!.data.content_path }}</span
           >
-          <div class="button-container">
-            @if (torrent()!.data.content_path) {
-              <button
-                class="btn btn-sm btn-link"
-                placement="top"
-                [ngbTooltip]="
-                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
-                "
-                (click)="toClipboard('remote-path', torrent()!.data.content_path)"
-              >
-                <fa-icon [icon]="icons['faCopy']" />
-              </button>
-            }
-          </div>
+          @if (torrent()!.data.content_path) {
+            <button
+              class="btn btn-sm btn-link bb-row__copy"
+              placement="top"
+              [ngbTooltip]="
+                'components.modals.torrent-details.general.copy-to-clipboard' | translate
+              "
+              (click)="toClipboard('remote-path', torrent()!.data.content_path)"
+            >
+              <fa-icon [icon]="icons['faCopy']" />
+            </button>
+          }
         </div>
         @if (localPath()) {
-          <div class="col-12 bb-section">
-            <span class="section-header">{{
+          <div class="bb-row">
+            <span class="bb-row__label">{{
               'components.modals.torrent-details.general.local-path' | translate
             }}</span>
             <span
-              class="section-value"
+              class="bb-row__value"
               [ngbTooltip]="localPath()"
               bbTooltipOverflow
               placement="bottom"
               >{{ localPath() }}</span
             >
-            <div class="button-container">
-              @if (torrent()!.data.save_path) {
-                <button
-                  class="btn btn-sm btn-link"
-                  placement="top"
-                  [ngbTooltip]="
-                    'components.modals.torrent-details.general.copy-to-clipboard' | translate
-                  "
-                  (click)="toClipboard('local-path', torrent()!.data.save_path)"
-                >
-                  <fa-icon [icon]="icons['faCopy']" />
-                </button>
-              }
-            </div>
+            @if (torrent()!.data.save_path) {
+              <button
+                class="btn btn-sm btn-link bb-row__copy"
+                placement="top"
+                [ngbTooltip]="
+                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
+                "
+                (click)="toClipboard('local-path', torrent()!.data.save_path)"
+              >
+                <fa-icon [icon]="icons['faCopy']" />
+              </button>
+            }
           </div>
         }
-        <div class="col-12 col-lg-6 bb-section">
-          <span class="section-header">
-            {{ 'components.modals.torrent-details.general.auto-tmm' | translate }}
-            <bb-popover
-              placement="top"
-              [subject]="
-                'components.modals.torrent-details.general.popover.auto-tmm.title' | translate
-              "
-              [description]="
-                'components.modals.torrent-details.general.popover.auto-tmm.description' | translate
-              "
-            ></bb-popover>
-          </span>
-          <span class="section-value">
-            <input
-              type="checkbox"
-              class="form-check-input"
-              disabled
-              [checked]="torrent()!.data.auto_tmm"
-            />
-          </span>
-        </div>
-        <div class="col-12 col-lg-6 bb-section">
-          <span class="section-header">
-            {{ 'components.modals.torrent-details.general.force-start' | translate }}
-            <bb-popover
-              placement="top"
-              [subject]="
-                'components.modals.torrent-details.general.popover.force-start.title' | translate
-              "
-              [description]="
-                'components.modals.torrent-details.general.popover.force-start.description'
-                  | translate
-              "
-            ></bb-popover>
-          </span>
-          <span class="section-value">
-            <input
-              type="checkbox"
-              class="form-check-input"
-              disabled
-              [checked]="torrent()!.data.force_start"
-            />
-          </span>
-        </div>
-        <div class="col-12 bb-section">
-          <span class="section-header">{{
-            'components.modals.torrent-details.general.progress' | translate
-          }}</span>
-          <app-bb-progress
-            [progress]="torrent()?.data?.progress"
-            [torrentState]="torrent()?.data?.state"
-          ></app-bb-progress>
-        </div>
-        <div class="col-12 bb-section">
-          <span class="section-header">{{
-            'components.modals.torrent-details.general.state' | translate
-          }}</span>
-          <span
-            class="section-value"
-            [ngbTooltip]="'torrent.state.' + torrent()!.data.state | translate"
-            bbTooltipOverflow
-            placement="bottom"
-            >{{ 'torrent.state.' + torrent()!.data.state | translate }}
-          </span>
-        </div>
-        @if (errorLog(); as entry) {
-          <div class="col-12 bb-section bb-section--danger">
-            <button type="button" class="error-toggle" (click)="toggleErrorLog()">
-              <span class="section-header">{{
-                'components.modals.torrent-details.general.error' | translate
-              }}</span>
-              <span class="section-value">{{ parseFileErrorReason(entry.message).short }}</span>
-              <span
-                class="error-toggle__icon"
-                [class.error-toggle__icon--expanded]="errorLogExpanded()"
-              ></span>
-            </button>
-
-            <div [ngbCollapse]="!errorLogExpanded()">
-              <div class="error-toggle__detail">
-                <pre>{{ rawLogJson(entry) }}</pre>
-              </div>
-            </div>
-          </div>
-        }
-        <div class="col-12 bb-section">
-          <span class="section-header">{{
+        <div class="bb-row">
+          <span class="bb-row__label">{{
             'components.modals.torrent-details.general.category' | translate
           }}</span>
           <span
-            class="section-value"
+            class="bb-row__value"
             [ngbTooltip]="torrent()!.data.category || '-'"
             bbTooltipOverflow
             placement="bottom"
             >{{ torrent()!.data.category || '-' }}</span
           >
-          <div class="button-container">
-            @if (torrent()!.data.category) {
-              <button
-                class="btn btn-sm btn-link"
-                placement="top"
-                [ngbTooltip]="
-                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
-                "
-                (click)="toClipboard('category', torrent()!.data.category)"
-              >
-                <fa-icon [icon]="icons['faCopy']" />
-              </button>
-            }
-          </div>
+          @if (torrent()!.data.category) {
+            <button
+              class="btn btn-sm btn-link bb-row__copy"
+              placement="top"
+              [ngbTooltip]="
+                'components.modals.torrent-details.general.copy-to-clipboard' | translate
+              "
+              (click)="toClipboard('category', torrent()!.data.category)"
+            >
+              <fa-icon [icon]="icons['faCopy']" />
+            </button>
+          }
         </div>
-        <div class="col-12 bb-section">
-          <span class="section-header">{{
+        <div class="bb-row">
+          <span class="bb-row__label">{{
             'components.modals.torrent-details.general.tags' | translate
           }}</span>
+          <span class="bb-row__value">
+            @if (tagList().length > 0) {
+              <span class="bb-tag-list">
+                @for (tag of tagList(); track tag) {
+                  <span class="bb-tag">{{ tag }}</span>
+                }
+              </span>
+            } @else {
+              -
+            }
+          </span>
+          @if (torrent()!.data.tags) {
+            <button
+              class="btn btn-sm btn-link bb-row__copy"
+              placement="top"
+              [ngbTooltip]="
+                'components.modals.torrent-details.general.copy-to-clipboard' | translate
+              "
+              (click)="toClipboard('tags', torrent()!.data.tags)"
+            >
+              <fa-icon [icon]="icons['faCopy']" />
+            </button>
+          }
+        </div>
+        <div class="bb-row">
+          <span class="bb-row__label">
+            {{ 'components.modals.torrent-details.general.comment' | translate }}
+          </span>
           <span
-            class="section-value"
-            [ngbTooltip]="torrent()!.data.tags || '-'"
+            class="bb-row__value"
+            [ngbTooltip]="torrent()!.properties.comment"
             bbTooltipOverflow
             placement="bottom"
-            >{{ torrent()!.data.tags || '-' }}</span
           >
-          <div class="button-container">
-            @if (torrent()!.data.tags) {
-              <button
-                class="btn btn-sm btn-link"
-                placement="top"
-                [ngbTooltip]="
-                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
-                "
-                (click)="toClipboard('tags', torrent()!.data.tags)"
-              >
-                <fa-icon [icon]="icons['faCopy']" />
-              </button>
+            @if (torrent()!.properties.comment) {
+              {{ torrent()!.properties.comment }}
+            } @else {
+              -
             }
-          </div>
+          </span>
+          @if (torrent()!.properties.comment) {
+            <button
+              class="btn btn-sm btn-link bb-row__copy"
+              placement="top"
+              [ngbTooltip]="
+                'components.modals.torrent-details.general.copy-to-clipboard' | translate
+              "
+              (click)="toClipboard('comment', torrent()!.properties.comment)"
+            >
+              <fa-icon [icon]="icons['faCopy']" />
+            </button>
+          }
         </div>
       </div>
     </fieldset>
 
-    <fieldset class="bb-fieldset" style="position: relative">
+    <fieldset class="bb-fieldset">
+      <legend>{{ 'components.modals.torrent-details.general.labels.options' | translate }}</legend>
+      <div class="bb-options bb-options--grid">
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'components.modals.torrent-details.general.auto-tmm' | translate }}
+            </span>
+            <span class="bb-option__sub">{{
+              'components.modals.torrent-details.general.popover.auto-tmm.sub' | translate
+            }}</span>
+          </div>
+          <span class="bb-option__toggle form-switch">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              [checked]="torrent()!.data.auto_tmm"
+              (change)="actionsService.toggleAutoTmm()"
+            />
+          </span>
+        </div>
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'components.modals.torrent-details.general.sequential-download' | translate }}
+            </span>
+            <span class="bb-option__sub">{{
+              'components.modals.torrent-details.general.popover.sequential-download.sub'
+                | translate
+            }}</span>
+          </div>
+          <span class="bb-option__toggle form-switch">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              [checked]="torrent()!.data.seq_dl"
+              (change)="actionsService.toggleSequentialDownload()"
+            />
+          </span>
+        </div>
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'components.modals.torrent-details.general.force-start' | translate }}
+            </span>
+            <span class="bb-option__sub">{{
+              'components.modals.torrent-details.general.popover.force-start.sub' | translate
+            }}</span>
+          </div>
+          <span class="bb-option__toggle form-switch">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              [checked]="torrent()!.data.force_start"
+              (change)="actionsService.toggleForceStart()"
+            />
+          </span>
+        </div>
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'components.modals.torrent-details.general.super-seeding' | translate }}
+            </span>
+            <span class="bb-option__sub">{{
+              'components.modals.torrent-details.general.popover.super-seeding.sub' | translate
+            }}</span>
+          </div>
+          <span class="bb-option__toggle form-switch">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              [checked]="torrent()!.data.super_seeding"
+              (change)="actionsService.toggleSuperSeeding()"
+            />
+          </span>
+        </div>
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'components.modals.torrent-details.general.first-last-piece-prio' | translate }}
+              <bb-popover
+                placement="top"
+                [subject]="
+                  'components.modals.torrent-details.general.popover.first-last-piece-prio.title'
+                    | translate
+                "
+                [description]="
+                  'components.modals.torrent-details.general.popover.first-last-piece-prio.description'
+                    | translate
+                "
+              ></bb-popover>
+            </span>
+            <span class="bb-option__sub">{{
+              'components.modals.torrent-details.general.popover.first-last-piece-prio.sub'
+                | translate
+            }}</span>
+          </div>
+          <span class="bb-option__toggle form-switch">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              [checked]="torrent()!.data.f_l_piece_prio"
+              (change)="actionsService.toggleFirstLastPiecePrio()"
+            />
+          </span>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="bb-fieldset">
       <legend>{{ 'components.modals.torrent-details.general.labels.transfer' | translate }}</legend>
 
-      <div class="row gy-2">
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
-          <span class="section-header">
+      <div class="bb-cells">
+        <div class="bb-cell">
+          <span class="bb-cell__label">
             {{ 'components.modals.torrent-details.general.time-active' | translate }}
             <bb-popover
               placement="top"
@@ -277,7 +443,7 @@
             ></bb-popover>
           </span>
           <span
-            class="section-value"
+            class="bb-cell__value"
             [ngbTooltip]="
               (torrent()!.data.time_active * 1000 | humanizeDuration: 'long' : 2) || '-'
             "
@@ -286,8 +452,8 @@
             >{{ (torrent()!.data.time_active * 1000 | humanizeDuration: 'long' : 2) || '-' }}</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
-          <span class="section-header">
+        <div class="bb-cell">
+          <span class="bb-cell__label">
             {{ 'components.modals.torrent-details.general.eta' | translate }}
             <bb-popover
               placement="top"
@@ -298,7 +464,7 @@
             ></bb-popover>
           </span>
           <span
-            class="section-value"
+            class="bb-cell__value"
             [ngbTooltip]="
               isDownloading()
                 ? (torrent()!.data.eta * 1000 | humanizeDuration: 'long' : 2) || '-'
@@ -314,8 +480,8 @@
             }}
           </span>
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
-          <span class="section-header">
+        <div class="bb-cell">
+          <span class="bb-cell__label">
             {{ 'components.modals.torrent-details.general.connections' | translate }}
             <bb-popover
               placement="top"
@@ -328,15 +494,15 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value"
+          <span class="bb-cell__value"
             >{{ torrent()!.properties.nb_connections }} ({{
               torrent()!.properties.nb_connections_limit
             }}
             {{ 'components.modals.torrent-details.general.max' | translate }})</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
-          <span class="section-header">
+        <div class="bb-cell">
+          <span class="bb-cell__label">
             {{ 'components.modals.torrent-details.general.downloaded' | translate }}
             <bb-popover
               placement="top"
@@ -350,7 +516,7 @@
             ></bb-popover>
           </span>
           <span
-            class="section-value"
+            class="bb-cell__value"
             [ngbTooltip]="
               torrent()!.data.downloaded > 0 ? (torrent()!.data.downloaded | fileSize) : '-'
             "
@@ -361,8 +527,8 @@
             }}</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
-          <span class="section-header">
+        <div class="bb-cell">
+          <span class="bb-cell__label">
             {{ 'components.modals.torrent-details.general.uploaded' | translate }}
             <bb-popover
               placement="top"
@@ -375,7 +541,7 @@
             ></bb-popover>
           </span>
           <span
-            class="section-value"
+            class="bb-cell__value"
             [ngbTooltip]="
               torrent()!.data.uploaded > 0 ? (torrent()!.data.uploaded | fileSize) : '-'
             "
@@ -384,8 +550,8 @@
             >{{ torrent()!.data.uploaded > 0 ? (torrent()!.data.uploaded | fileSize) : '-' }}</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
-          <span class="section-header">
+        <div class="bb-cell">
+          <span class="bb-cell__label">
             {{ 'components.modals.torrent-details.general.seeds' | translate }}
             <bb-popover
               placement="top"
@@ -397,13 +563,31 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value"
+          <span class="bb-cell__value"
             >{{ torrent()!.data.num_seeds }} ({{ torrent()!.properties.seeds_total }}
             {{ 'components.modals.torrent-details.general.total' | translate }})</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
-          <span class="section-header">
+        <div class="bb-cell">
+          <span class="bb-cell__label">
+            {{ 'components.modals.torrent-details.general.peers' | translate }}
+            <bb-popover
+              placement="top"
+              [subject]="
+                'components.modals.torrent-details.general.popover.peers.title' | translate
+              "
+              [description]="
+                'components.modals.torrent-details.general.popover.peers.description' | translate
+              "
+            ></bb-popover>
+          </span>
+          <span class="bb-cell__value"
+            >{{ torrent()!.data.num_leechs }} ({{ torrent()!.properties.peers_total }}
+            {{ 'components.modals.torrent-details.general.total' | translate }})</span
+          >
+        </div>
+        <div class="bb-cell">
+          <span class="bb-cell__label">
             {{ 'components.modals.torrent-details.general.download-speed' | translate }}
             <bb-popover
               placement="top"
@@ -417,15 +601,15 @@
             ></bb-popover>
           </span>
           <span
-            class="section-value"
+            class="bb-cell__value"
             [ngbTooltip]="(torrent()!.data.dlspeed | fileSizePerSec) || '-'"
             bbTooltipOverflow
             placement="bottom"
             >{{ (torrent()!.data.dlspeed | fileSizePerSec) || '-' }}</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
-          <span class="section-header">
+        <div class="bb-cell">
+          <span class="bb-cell__label">
             {{ 'components.modals.torrent-details.general.upload-speed' | translate }}
             <bb-popover
               placement="top"
@@ -439,33 +623,15 @@
             ></bb-popover>
           </span>
           <span
-            class="section-value"
+            class="bb-cell__value"
             [ngbTooltip]="(torrent()!.data.upspeed | fileSizePerSec) || '-'"
             bbTooltipOverflow
             placement="bottom"
             >{{ (torrent()!.data.upspeed | fileSizePerSec) || '-' }}</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
-          <span class="section-header">
-            {{ 'components.modals.torrent-details.general.peers' | translate }}
-            <bb-popover
-              placement="top"
-              [subject]="
-                'components.modals.torrent-details.general.popover.peers.title' | translate
-              "
-              [description]="
-                'components.modals.torrent-details.general.popover.peers.description' | translate
-              "
-            ></bb-popover>
-          </span>
-          <span class="section-value"
-            >{{ torrent()!.data.num_leechs }} ({{ torrent()!.properties.peers_total }}
-            {{ 'components.modals.torrent-details.general.total' | translate }})</span
-          >
-        </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
-          <span class="section-header">
+        <div class="bb-cell">
+          <span class="bb-cell__label">
             {{ 'components.modals.torrent-details.general.download-limit' | translate }}
             <bb-popover
               placement="top"
@@ -479,15 +645,15 @@
             ></bb-popover>
           </span>
           <span
-            class="section-value"
+            class="bb-cell__value"
             [ngbTooltip]="torrent()!.data.dl_limit | speedLimit"
             bbTooltipOverflow
             placement="bottom"
             >{{ torrent()!.data.dl_limit | speedLimit }}</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
-          <span class="section-header">
+        <div class="bb-cell">
+          <span class="bb-cell__label">
             {{ 'components.modals.torrent-details.general.upload-limit' | translate }}
             <bb-popover
               placement="top"
@@ -501,15 +667,15 @@
             ></bb-popover>
           </span>
           <span
-            class="section-value"
+            class="bb-cell__value"
             [ngbTooltip]="torrent()!.data.up_limit | speedLimit"
             bbTooltipOverflow
             placement="bottom"
             >{{ torrent()!.data.up_limit | speedLimit }}</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
-          <span class="section-header">
+        <div class="bb-cell">
+          <span class="bb-cell__label">
             {{ 'components.modals.torrent-details.general.wasted' | translate }}
             <bb-popover
               placement="top"
@@ -522,7 +688,7 @@
             ></bb-popover>
           </span>
           <span
-            class="section-value"
+            class="bb-cell__value"
             [ngbTooltip]="
               torrent()!.properties.total_wasted > 0
                 ? (torrent()!.properties.total_wasted | fileSize)
@@ -537,8 +703,8 @@
             }}</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
-          <span class="section-header">
+        <div class="bb-cell">
+          <span class="bb-cell__label">
             {{ 'components.modals.torrent-details.general.share-ratio' | translate }}
             <bb-popover
               placement="top"
@@ -552,7 +718,7 @@
             ></bb-popover>
           </span>
           <span
-            class="section-value"
+            class="bb-cell__value"
             [ngbTooltip]="torrent()!.data.ratio | ratio"
             bbTooltipOverflow
             placement="bottom"
@@ -560,8 +726,8 @@
             {{ torrent()!.data.ratio | ratio }}
           </span>
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
-          <span class="section-header">
+        <div class="bb-cell">
+          <span class="bb-cell__label">
             {{ 'components.modals.torrent-details.general.reannounce-in' | translate }}
             <bb-popover
               placement="top"
@@ -575,7 +741,7 @@
             ></bb-popover>
           </span>
           <span
-            class="section-value"
+            class="bb-cell__value"
             [ngbTooltip]="
               torrent()!.properties.reannounce
                 ? (torrent()!.properties.reannounce * 1000 | humanizeDuration: 'long' : 2)
@@ -590,8 +756,8 @@
             }}</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
-          <span class="section-header">
+        <div class="bb-cell">
+          <span class="bb-cell__label">
             {{ 'components.modals.torrent-details.general.last-seen-complete' | translate }}
             <bb-popover
               placement="top"
@@ -606,15 +772,15 @@
             ></bb-popover>
           </span>
           <span
-            class="section-value"
+            class="bb-cell__value"
             [ngbTooltip]="torrent()!.data.last_activity | localTimestamp"
             bbTooltipOverflow
             placement="bottom"
             >{{ torrent()!.data.last_activity | localTimestamp }}</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
-          <span class="section-header">
+        <div class="bb-cell">
+          <span class="bb-cell__label">
             {{ 'components.modals.torrent-details.general.ratio-limit' | translate }}
             <bb-popover
               placement="top"
@@ -628,15 +794,15 @@
             ></bb-popover>
           </span>
           <span
-            class="section-value"
+            class="bb-cell__value"
             [ngbTooltip]="torrent()!.data.ratio_limit | ratioLimit"
             bbTooltipOverflow
             placement="bottom"
             >{{ torrent()!.data.ratio_limit | ratioLimit }}</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
-          <span class="section-header">
+        <div class="bb-cell">
+          <span class="bb-cell__label">
             {{ 'components.modals.torrent-details.general.seeding-time-limit' | translate }}
             <bb-popover
               placement="top"
@@ -651,15 +817,15 @@
             ></bb-popover>
           </span>
           <span
-            class="section-value"
+            class="bb-cell__value"
             [ngbTooltip]="(torrent()!.data.seeding_time_limit | timeLimit) || '-'"
             bbTooltipOverflow
             placement="bottom"
             >{{ (torrent()!.data.seeding_time_limit | timeLimit) || '-' }}</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
-          <span class="section-header">
+        <div class="bb-cell">
+          <span class="bb-cell__label">
             {{
               'components.modals.torrent-details.general.inactive-seeding-time-limit' | translate
             }}
@@ -676,83 +842,12 @@
             ></bb-popover>
           </span>
           <span
-            class="section-value"
+            class="bb-cell__value"
             [ngbTooltip]="(torrent()!.data.inactive_seeding_time_limit | timeLimit) || '-'"
             bbTooltipOverflow
             placement="bottom"
             >{{ (torrent()!.data.inactive_seeding_time_limit | timeLimit) || '-' }}</span
           >
-        </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
-          <span class="section-header">
-            {{ 'components.modals.torrent-details.general.sequential-download' | translate }}
-            <bb-popover
-              placement="top"
-              [subject]="
-                'components.modals.torrent-details.general.popover.sequential-download.title'
-                  | translate
-              "
-              [description]="
-                'components.modals.torrent-details.general.popover.sequential-download.description'
-                  | translate
-              "
-            ></bb-popover>
-          </span>
-          <span class="section-value">
-            <input
-              type="checkbox"
-              class="form-check-input"
-              disabled
-              [checked]="torrent()!.data.seq_dl"
-            />
-          </span>
-        </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
-          <span class="section-header">
-            {{ 'components.modals.torrent-details.general.first-last-piece-prio' | translate }}
-            <bb-popover
-              placement="top"
-              [subject]="
-                'components.modals.torrent-details.general.popover.first-last-piece-prio.title'
-                  | translate
-              "
-              [description]="
-                'components.modals.torrent-details.general.popover.first-last-piece-prio.description'
-                  | translate
-              "
-            ></bb-popover>
-          </span>
-          <span class="section-value">
-            <input
-              type="checkbox"
-              class="form-check-input"
-              disabled
-              [checked]="torrent()!.data.f_l_piece_prio"
-            />
-          </span>
-        </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
-          <span class="section-header">
-            {{ 'components.modals.torrent-details.general.super-seeding' | translate }}
-            <bb-popover
-              placement="top"
-              [subject]="
-                'components.modals.torrent-details.general.popover.super-seeding.title' | translate
-              "
-              [description]="
-                'components.modals.torrent-details.general.popover.super-seeding.description'
-                  | translate
-              "
-            ></bb-popover>
-          </span>
-          <span class="section-value">
-            <input
-              type="checkbox"
-              class="form-check-input"
-              disabled
-              [checked]="torrent()!.data.super_seeding"
-            />
-          </span>
         </div>
       </div>
     </fieldset>
@@ -761,9 +856,9 @@
       <legend>
         {{ 'components.modals.torrent-details.general.labels.information' | translate }}
       </legend>
-      <div class="row gy-2">
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
-          <span class="section-header">
+      <div class="bb-cells">
+        <div class="bb-cell">
+          <span class="bb-cell__label">
             {{ 'components.modals.torrent-details.general.total-size' | translate }}
             <bb-popover
               placement="top"
@@ -777,7 +872,7 @@
             ></bb-popover>
           </span>
           <span
-            class="section-value"
+            class="bb-cell__value"
             [ngbTooltip]="
               torrent()!.data.total_size > 0 ? (torrent()!.data.total_size | fileSize) : '-'
             "
@@ -788,8 +883,8 @@
             }}</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
-          <span class="section-header">
+        <div class="bb-cell">
+          <span class="bb-cell__label">
             {{ 'components.modals.torrent-details.general.pieces' | translate }}
             <bb-popover
               placement="top"
@@ -801,7 +896,7 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value"
+          <span class="bb-cell__value"
             >{{ torrent()!.properties.pieces_num }}
             {{ 'components.modals.torrent-details.general.pieces-value' | translate }} ({{
               'components.modals.torrent-details.general.pieces-have' | translate
@@ -809,8 +904,8 @@
             {{ torrent()!.properties.pieces_have }})</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
-          <span class="section-header">
+        <div class="bb-cell">
+          <span class="bb-cell__label">
             {{ 'components.modals.torrent-details.general.created-by' | translate }}
             <bb-popover
               placement="top"
@@ -824,15 +919,15 @@
             ></bb-popover>
           </span>
           <span
-            class="section-value"
+            class="bb-cell__value"
             [ngbTooltip]="torrent()!.properties.created_by"
             bbTooltipOverflow
             placement="bottom"
             >{{ torrent()!.properties.created_by }}</span
           >
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
-          <span class="section-header">
+        <div class="bb-cell">
+          <span class="bb-cell__label">
             {{ 'components.modals.torrent-details.general.added-on' | translate }}
             <bb-popover
               placement="top"
@@ -845,20 +940,16 @@
             ></bb-popover>
           </span>
           <span
-            class="section-value"
+            class="bb-cell__value"
             [ngbTooltip]="torrent()!.data.added_on | localTimestamp"
             bbTooltipOverflow
             placement="bottom"
             >{{ torrent()!.data.added_on | localTimestamp }}</span
           >
-          <span class="section-value"
-            ><small class="text-body-secondary">{{
-              torrent()!.data.added_on * 1000 | timeago
-            }}</small></span
-          >
+          <small class="bb-cell__sub">{{ torrent()!.data.added_on * 1000 | timeago }}</small>
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
-          <span class="section-header">
+        <div class="bb-cell">
+          <span class="bb-cell__label">
             {{ 'components.modals.torrent-details.general.completed-on' | translate }}
             <bb-popover
               placement="top"
@@ -871,7 +962,7 @@
               "
             ></bb-popover>
           </span>
-          <span class="section-value">
+          <span class="bb-cell__value">
             @if (torrent()!.data.completion_on > 0) {
               {{ torrent()!.data.completion_on | localTimestamp }}
             } @else {
@@ -879,15 +970,11 @@
             }
           </span>
           @if (torrent()!.data.completion_on > 0) {
-            <span class="section-value"
-              ><small class="text-body-secondary">{{
-                torrent()!.data.completion_on * 1000 | timeago
-              }}</small></span
-            >
+            <small class="bb-cell__sub">{{ torrent()!.data.completion_on * 1000 | timeago }}</small>
           }
         </div>
-        <div class="col-12 col-lg-6 col-xl-4 bb-section">
-          <span class="section-header">
+        <div class="bb-cell">
+          <span class="bb-cell__label">
             {{ 'components.modals.torrent-details.general.created-on' | translate }}
             <bb-popover
               placement="top"
@@ -901,20 +988,18 @@
             ></bb-popover>
           </span>
           <span
-            class="section-value"
+            class="bb-cell__value"
             [ngbTooltip]="torrent()!.properties.creation_date | localTimestamp"
             bbTooltipOverflow
             placement="bottom"
             >{{ torrent()!.properties.creation_date | localTimestamp }}</span
           >
-          <span class="section-value"
-            ><small class="text-body-secondary">{{
-              torrent()!.properties.creation_date * 1000 | timeago
-            }}</small></span
-          >
+          <small class="bb-cell__sub">{{
+            torrent()!.properties.creation_date * 1000 | timeago
+          }}</small>
         </div>
-        <div class="col-12 bb-section">
-          <span class="section-header">
+        <div class="bb-cell bb-cell--wide">
+          <span class="bb-cell__label">
             {{ 'components.modals.torrent-details.general.info-hash-v1' | translate }}
             <bb-popover
               placement="top"
@@ -927,23 +1012,22 @@
               "
             ></bb-popover>
           </span>
-          <span
-            class="section-value"
-            [ngbTooltip]="torrent()!.data.infohash_v1"
-            bbTooltipOverflow
-            placement="bottom"
-          >
-            @if (torrent()!.data.infohash_v1) {
-              <code>{{ torrent()!.data.infohash_v1 }}</code>
-            } @else {
-              -
-            }
-          </span>
-
-          <div class="button-container">
+          <div class="bb-cell__value-row">
+            <span
+              class="bb-cell__value"
+              [ngbTooltip]="torrent()!.data.infohash_v1"
+              bbTooltipOverflow
+              placement="bottom"
+            >
+              @if (torrent()!.data.infohash_v1) {
+                <code>{{ torrent()!.data.infohash_v1 }}</code>
+              } @else {
+                -
+              }
+            </span>
             @if (torrent()!.data.infohash_v1) {
               <button
-                class="btn btn-sm btn-link"
+                class="btn btn-sm btn-link bb-cell__copy"
                 placement="top"
                 [ngbTooltip]="
                   'components.modals.torrent-details.general.copy-to-clipboard' | translate
@@ -955,8 +1039,8 @@
             }
           </div>
         </div>
-        <div class="col-12 bb-section">
-          <span class="section-header">
+        <div class="bb-cell bb-cell--wide">
+          <span class="bb-cell__label">
             {{ 'components.modals.torrent-details.general.info-hash-v2' | translate }}
             <bb-popover
               placement="top"
@@ -969,69 +1053,27 @@
               "
             ></bb-popover>
           </span>
-          <span
-            class="section-value"
-            [ngbTooltip]="torrent()!.data.infohash_v2"
-            bbTooltipOverflow
-            placement="bottom"
-          >
-            @if (torrent()!.data.infohash_v2) {
-              <code>{{ torrent()!.data.infohash_v2 }}</code>
-            } @else {
-              -
-            }
-          </span>
-
-          <div class="button-container">
+          <div class="bb-cell__value-row">
+            <span
+              class="bb-cell__value"
+              [ngbTooltip]="torrent()!.data.infohash_v2"
+              bbTooltipOverflow
+              placement="bottom"
+            >
+              @if (torrent()!.data.infohash_v2) {
+                <code>{{ torrent()!.data.infohash_v2 }}</code>
+              } @else {
+                -
+              }
+            </span>
             @if (torrent()!.data.infohash_v2) {
               <button
-                class="btn btn-sm btn-link"
+                class="btn btn-sm btn-link bb-cell__copy"
                 placement="top"
                 [ngbTooltip]="
                   'components.modals.torrent-details.general.copy-to-clipboard' | translate
                 "
                 (click)="toClipboard('info-hash-v2', torrent()!.data.infohash_v2)"
-              >
-                <fa-icon [icon]="icons['faCopy']" />
-              </button>
-            }
-          </div>
-        </div>
-        <div class="col-12 bb-section">
-          <span class="section-header">
-            {{ 'components.modals.torrent-details.general.comment' | translate }}
-            <bb-popover
-              placement="top"
-              [subject]="
-                'components.modals.torrent-details.general.popover.comment.title' | translate
-              "
-              [description]="
-                'components.modals.torrent-details.general.popover.comment.description' | translate
-              "
-            ></bb-popover>
-          </span>
-          <span
-            class="section-value"
-            [ngbTooltip]="torrent()!.properties.comment"
-            bbTooltipOverflow
-            placement="bottom"
-          >
-            @if (torrent()!.properties.comment) {
-              {{ torrent()!.properties.comment }}
-            } @else {
-              -
-            }
-          </span>
-
-          <div class="button-container">
-            @if (torrent()!.properties.comment) {
-              <button
-                class="btn btn-sm btn-link"
-                placement="top"
-                [ngbTooltip]="
-                  'components.modals.torrent-details.general.copy-to-clipboard' | translate
-                "
-                (click)="toClipboard('comment', torrent()!.properties.comment)"
               >
                 <fa-icon [icon]="icons['faCopy']" />
               </button>

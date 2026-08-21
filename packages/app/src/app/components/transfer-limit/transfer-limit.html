@@ -1,17 +1,6 @@
-<div [formGroup]="form" class="d-flex flex-column gap-2">
+<div [formGroup]="form" class="d-flex flex-column gap-3">
   <div class="limit-row">
-    <div class="form-check mb-0 text-nowrap">
-      <input
-        class="form-check-input"
-        type="radio"
-        name="downloadMode"
-        id="downloadModeCustom"
-        [checked]="downloadMode() === 'custom'"
-        (change)="setDownloadMode('custom')"
-      />
-    </div>
-
-    <div class="form-floating">
+    <div class="form-floating limit-row__field">
       <input
         type="number"
         class="form-control"
@@ -25,18 +14,28 @@
       }}</label>
     </div>
 
-    <div class="form-check mb-0 text-nowrap">
+    <div class="btn-group segmented-picker" role="group">
       <input
-        class="form-check-input"
         type="radio"
+        class="btn-check"
         name="downloadMode"
         id="downloadModeNoLimit"
         [checked]="downloadMode() === 'no-limit'"
         (change)="setDownloadMode('no-limit')"
       />
-      <label class="form-check-label" for="downloadModeNoLimit">
-        {{ 'general.limit.no-limit' | translate }}
-      </label>
+      <label class="btn" for="downloadModeNoLimit">{{
+        'general.limit.no-limit' | translate
+      }}</label>
+
+      <input
+        type="radio"
+        class="btn-check"
+        name="downloadMode"
+        id="downloadModeCustom"
+        [checked]="downloadMode() === 'custom'"
+        (change)="setDownloadMode('custom')"
+      />
+      <label class="btn" for="downloadModeCustom">{{ 'general.limit.custom' | translate }}</label>
     </div>
 
     <bb-popover
@@ -53,18 +52,7 @@
   </div>
 
   <div class="limit-row">
-    <div class="form-check mb-0 text-nowrap">
-      <input
-        class="form-check-input"
-        type="radio"
-        name="uploadMode"
-        id="uploadModeCustom"
-        [checked]="uploadMode() === 'custom'"
-        (change)="setUploadMode('custom')"
-      />
-    </div>
-
-    <div class="form-floating">
+    <div class="form-floating limit-row__field">
       <input
         type="number"
         class="form-control"
@@ -76,18 +64,26 @@
       <label for="uploadLimit">{{ 'components.transfer-limit.upload-limit' | translate }}</label>
     </div>
 
-    <div class="form-check mb-0 text-nowrap">
+    <div class="btn-group segmented-picker" role="group">
       <input
-        class="form-check-input"
         type="radio"
+        class="btn-check"
         name="uploadMode"
         id="uploadModeNoLimit"
         [checked]="uploadMode() === 'no-limit'"
         (change)="setUploadMode('no-limit')"
       />
-      <label class="form-check-label" for="uploadModeNoLimit">
-        {{ 'general.limit.no-limit' | translate }}
-      </label>
+      <label class="btn" for="uploadModeNoLimit">{{ 'general.limit.no-limit' | translate }}</label>
+
+      <input
+        type="radio"
+        class="btn-check"
+        name="uploadMode"
+        id="uploadModeCustom"
+        [checked]="uploadMode() === 'custom'"
+        (change)="setUploadMode('custom')"
+      />
+      <label class="btn" for="uploadModeCustom">{{ 'general.limit.custom' | translate }}</label>
     </div>
 
     <bb-popover

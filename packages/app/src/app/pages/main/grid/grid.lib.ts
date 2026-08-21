@@ -18,6 +18,7 @@ import {
   ValueFormatterParams,
 } from 'ag-grid-community';
 import { GRID_ROW_MUTED_CLASS, GRID_SHARED_OPTIONS } from '../../../app.const';
+import { formatProgressPercent } from '../../../components/bb-progress/format-progress-percent';
 import { BooleanColumnFilter } from '../../../components/column-filters/boolean-column-filter/boolean-column-filter';
 import { DatepickerRangeFilter } from '../../../components/column-filters/datepicker-range-filter/datepicker-range-filter';
 import { DurationColumnFilter } from '../../../components/column-filters/duration-column-filter/duration-column-filter';
@@ -41,7 +42,9 @@ import { GridContextMenuService } from './context-menu/grid-context-menu.service
 import { LoadingOverlay } from './overlays/loading-overlay/loading-overlay';
 import { NoRowOverlay } from './overlays/no-row-overlay/no-row-overlay';
 import { CodeCellRenderer } from './renderers/code-cell-renderer/code-cell-renderer';
+import { CompactProgressCellRenderer } from './renderers/compact-progress-cell-renderer/compact-progress-cell-renderer';
 import { ProgressCellRenderer } from './renderers/progress-cell-renderer/progress-cell-renderer';
+import { StatusDotCellRenderer } from './renderers/status-dot-cell-renderer/status-dot-cell-renderer';
 
 const tooltipFormattedValue: TooltipValueGetterFunc<Torrent, any> = (params) =>
   params.valueFormatted ?? '';
@@ -52,6 +55,18 @@ export function getGridColDefs(
   torrentStoreService: TorrentStoreService,
 ): ColDef<Torrent>[] {
   return [
+    {
+      colId: 'status_dot',
+      field: 'state',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.status_dot'),
+      headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.status_dot'),
+      minWidth: 40,
+      width: 44,
+      resizable: false,
+      cellRenderer: StatusDotCellRenderer,
+      valueFormatter: (params: ValueFormatterParams<Torrent, TorrentState>): string =>
+        params.value ? translateService.instant('torrent.state.' + params.value) : '',
+    },
     {
       colId: 'name',
       field: 'name',
@@ -85,6 +100,22 @@ export function getGridColDefs(
       // value - without this, ag-grid skips refresh() when progress is unchanged but state
       // isn't, leaving the bar showing a stale color.
       equals: () => false,
+      valueFormatter: (params: ValueFormatterParams<Torrent, number>): string =>
+        params.value != null ? formatProgressPercent(params.value * 100) : '',
+    },
+    {
+      colId: 'progress_compact',
+      field: 'progress',
+      headerName: translateService.instant('pages.main.grid.grid-lib.col-def.progress_compact'),
+      headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.progress_compact'),
+      width: 150,
+      minWidth: 150,
+      cellRenderer: CompactProgressCellRenderer,
+      // Same staleness concern as the progress column - color depends on row.state.
+      equals: () => false,
+      hide: true,
+      valueFormatter: (params: ValueFormatterParams<Torrent, number>): string =>
+        params.value != null ? formatProgressPercent(params.value * 100) : '',
     },
     {
       colId: 'progress_percentage',
@@ -100,7 +131,7 @@ export function getGridColDefs(
       filter: NumberColumnFilter,
       hide: true,
       valueFormatter: (params: ValueFormatterParams<Torrent, number>): string =>
-        params.value != null ? (params.value * 100).toFixed(1) + '%' : '',
+        params.value != null ? formatProgressPercent(params.value * 100) : '',
     },
     {
       colId: 'progress_raw',

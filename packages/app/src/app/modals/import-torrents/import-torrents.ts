@@ -1,3 +1,4 @@
+import { DecimalPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -23,11 +24,9 @@ import {
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
   faFileImport,
-  faForward,
   faMinus,
-  faPause,
-  faPlay,
   faPlus,
+  faRotate,
   faTriangleExclamation,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
@@ -39,13 +38,13 @@ import {
   FirstDataRenderedEvent,
   GetRowIdParams,
   GridOptions,
-  GridState,
   IOverlayParams,
   RowClassParams,
   SelectionChangedEvent,
   ValueFormatterParams,
   ValueGetterParams,
 } from 'ag-grid-community';
+import { TimeagoPipe } from 'ngx-timeago';
 import {
   GRID_DARK_THEME,
   GRID_LIGHT_THEME,
@@ -53,6 +52,7 @@ import {
   GRID_SHARED_OPTIONS,
 } from '../../app.const';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
+import { BbCallout } from '../../components/bb-callout/bb-callout';
 import { BbPopover } from '../../components/bb-popover/bb-popover';
 import { BbProgress } from '../../components/bb-progress/bb-progress';
 import { BooleanColumnFilter } from '../../components/column-filters/boolean-column-filter/boolean-column-filter';
@@ -65,6 +65,7 @@ import {
 import { SizeColumnFilter } from '../../components/column-filters/size-column-filter/size-column-filter';
 import { TextColumnFilter } from '../../components/column-filters/text-column-filter/text-column-filter';
 import { TimeLimitColumnFilter } from '../../components/column-filters/time-limit-column-filter/time-limit-column-filter';
+import { AutofocusDirective } from '../../directives/autofocus';
 import { NoRowOverlay } from '../../pages/main/grid/overlays/no-row-overlay/no-row-overlay';
 import { LocalTimestampPipe } from '../../pipes/local-timestamp-pipe';
 import { ExportService } from '../../services/export.service';
@@ -83,13 +84,17 @@ type ImportGridRow = BbeTorrentEntry & { importState: ImportRowStatus };
   imports: [
     ReactiveFormsModule,
     TranslatePipe,
+    DecimalPipe,
     FaIconComponent,
     BbProgress,
     BbPopover,
+    BbCallout,
     LocalTimestampPipe,
+    TimeagoPipe,
     NgbTooltip,
     BbBtnContent,
     AgGridAngular,
+    AutofocusDirective,
   ],
   templateUrl: './import-torrents.html',
   styleUrl: './import-torrents.scss',
@@ -139,11 +144,9 @@ export class ImportTorrents implements OnInit {
     faMinus,
     faPlus,
     faTriangleExclamation,
-    faPause,
-    faPlay,
-    faForward,
     faFileImport,
     faXmark,
+    faRotate,
   };
 
   readonly phase = this.exportService.importPhase;
@@ -299,7 +302,6 @@ export class ImportTorrents implements OnInit {
           return undefined;
       }
     },
-    initialState: this.getImportGridInitialState(),
     onSelectionChanged: (e: SelectionChangedEvent<ImportGridRow>) =>
       this.onImportSelectionChanged(e),
     onFirstDataRendered: (e: FirstDataRenderedEvent<ImportGridRow>) =>
@@ -324,17 +326,6 @@ export class ImportTorrents implements OnInit {
           'components.modals.import-torrents.grid.import-state.' + state,
         )
       : '';
-  }
-
-  private getImportGridInitialState(): GridState {
-    const visibleStates: ImportRowStatus[] = ['pending', 'duplicate', 'failed', 'skipped'];
-    return {
-      filter: {
-        filterModel: {
-          importState: { values: visibleStates.map((s) => this.importStateLabel(s)) },
-        },
-      },
-    };
   }
 
   private getImportColDefs(): ColDef<ImportGridRow>[] {
@@ -734,12 +725,12 @@ export class ImportTorrents implements OnInit {
       skipHashes,
     };
 
-    this.exportService.startImport();
+    this.exportService.startImport(selected.size);
     window.bitbutler.export.importStart(payload);
   }
 
   cancelImport(): void {
-    window.bitbutler.export.importCancel();
+    this.exportService.cancelImport();
   }
 
   close(): void {

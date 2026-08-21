@@ -34,12 +34,18 @@ export function markedOptionsFactory(): MarkedOptions {
     const text = link.text || link;
     const title = link.title || '';
 
+    // release-drafter's change-template links each entry as "[#123](...)" -
+    // give those a class so their digits can be aligned with tabular-nums,
+    // without affecting other markdown links (e.g. "View all releases").
+    const isPrReference = /^#\d+$/.test(text);
+    const cssClass = isPrReference ? ' class="bb-ua-pr-ref"' : '';
+
     const escapedHref = href.replace(/'/g, "\\'");
     return `
       <a
         href="${href}"
         title="${title}"
-        target="_blank"
+        target="_blank"${cssClass}
         onclick="event.preventDefault(); if(window.bitbutler?.electron?.openExternalUrl) { window.bitbutler.electron.openExternalUrl('${escapedHref}'); }"
       >
         ${text}

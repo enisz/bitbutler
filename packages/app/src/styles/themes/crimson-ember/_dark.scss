@@ -1,42 +1,41 @@
 @use 'sass:color';
 @use 'sass:string';
 
-$bb-dark-primary: #c3110c;
-$bb-dark-secondary: #e6501b;
-$bb-dark-maroon: #280905;
-$bb-dark-blood: #740a03;
+$ce-dark-primary: #c3110c;
+$ce-dark-secondary: #e6501b;
+$ce-dark-maroon: #280905;
 
-$bb-dark-success: #7ecf95;
-$bb-dark-danger: #ff4d4d;
-$bb-dark-warning: #f4c46b;
-$bb-dark-info: #78d0e4;
+$ce-dark-success: #7ecf95;
+$ce-dark-danger: #ff4d4d;
+$ce-dark-warning: #f4c46b;
+$ce-dark-info: #78d0e4;
 
-$bb-dark-body-bg: #1a0604;
-$bb-dark-body-color: #f1e2e0;
-$bb-dark-border: #4e110c;
-$bb-dark-surface: #280905;
+$ce-dark-body-bg: #1a0604;
+$ce-dark-body-color: #f1e2e0;
+$ce-dark-border: rgba($ce-dark-body-color, 0.08);
+$ce-dark-surface: #280905;
 
-$bb-dark-check-marker-colors: (
-  'default': $bb-dark-secondary,
-  'success': $bb-dark-success,
-  'danger': $bb-dark-danger,
-  'warning': $bb-dark-warning,
-  'info': $bb-dark-info,
+$ce-dark-check-marker-colors: (
+  'default': $ce-dark-secondary,
+  'success': $ce-dark-success,
+  'danger': $ce-dark-danger,
+  'warning': $ce-dark-warning,
+  'info': $ce-dark-info,
 );
 
 @mixin install() {
   :root[data-bb-theme='crimson-ember'][data-bs-theme='dark'] {
     --bb-black: #000;
-    --bs-primary: #{$bb-dark-primary};
+    --bs-primary: #{$ce-dark-primary};
     --bs-primary-rgb: #{string.unquote('195, 17, 12')};
 
-    --bs-secondary: #{$bb-dark-secondary};
+    --bs-secondary: #{$ce-dark-secondary};
     --bs-secondary-rgb: #{string.unquote('230, 80, 27')};
 
-    --bs-success: #{$bb-dark-success};
+    --bs-success: #{$ce-dark-success};
     --bs-success-rgb: #{string.unquote('126, 207, 149')};
 
-    --bs-danger: #{$bb-dark-danger};
+    --bs-danger: #{$ce-dark-danger};
     --bs-danger-rgb: #{string.unquote('255, 77, 77')};
 
     --bb-primary-ink: #fff;
@@ -48,34 +47,34 @@ $bb-dark-check-marker-colors: (
     --bb-light-ink: #000;
     --bb-dark-ink: #fff;
 
-    --bs-warning: #{$bb-dark-warning};
+    --bs-warning: #{$ce-dark-warning};
     --bs-warning-rgb: #{string.unquote('244, 196, 107')};
 
-    --bs-info: #{$bb-dark-info};
+    --bs-info: #{$ce-dark-info};
     --bs-info-rgb: #{string.unquote('120, 208, 228')};
 
-    --bs-body-bg: #{$bb-dark-body-bg};
-    --bs-body-color: #{$bb-dark-body-color};
-    --bs-border-color: #{$bb-dark-border};
+    --bs-body-bg: #{$ce-dark-body-bg};
+    --bs-body-color: #{$ce-dark-body-color};
+    --bs-border-color: #{$ce-dark-border};
 
-    --bs-card-bg: #{$bb-dark-surface};
+    --bs-card-bg: #{$ce-dark-surface};
     --bs-card-color: var(--bs-body-color);
-    --bs-card-border-color: #{$bb-dark-border};
-    --bs-card-cap-bg: #3d0e0a;
-    --bs-card-cap-color: #{$bb-dark-secondary};
+    --bs-card-border-color: #{$ce-dark-border};
+    --bs-card-cap-bg: color-mix(in srgb, var(--bs-card-bg) 90%, #fff 10%);
+    --bs-card-cap-color: #{$ce-dark-secondary};
 
     --bs-tooltip-bg: var(--bs-card-cap-bg);
     --bs-tooltip-color: var(--bs-body-color);
     --bs-tooltip-opacity: 0.95;
 
-    --bs-link-color: #{$bb-dark-secondary};
+    --bs-link-color: #{$ce-dark-secondary};
     --bs-link-hover-color: #ffffff;
 
-    --bs-navbar-color: #{$bb-dark-body-color};
-    --bs-navbar-brand-color: #{$bb-dark-primary};
+    --bs-navbar-color: #{$ce-dark-body-color};
+    --bs-navbar-brand-color: #{$ce-dark-primary};
 
-    --bs-dropdown-link-color: #{$bb-dark-body-color};
-    --bs-dropdown-bg: #{$bb-dark-surface};
+    --bs-dropdown-link-color: #{$ce-dark-body-color};
+    --bs-dropdown-bg: var(--bs-card-cap-bg);
 
     --bb-accent: var(--bs-secondary);
     --bb-accent-rgb: var(--bs-secondary-rgb);
@@ -97,8 +96,8 @@ $bb-dark-check-marker-colors: (
     --bb-ng-accent: var(--bs-secondary);
     --bb-ng-focus-ring: rgba(var(--bs-secondary-rgb), 0.2);
 
-    --bb-control-bg: #120302;
-    --bb-control-border: #{$bb-dark-blood};
+    --bb-control-bg: color-mix(in srgb, var(--bs-card-bg) 94%, #fff 6%);
+    --bb-control-border: rgba($ce-dark-body-color, 0.15);
     --bb-control-text: var(--bs-body-color);
     --bb-control-placeholder: color-mix(in srgb, var(--bs-body-color) 50%, transparent);
 
@@ -108,7 +107,7 @@ $bb-dark-check-marker-colors: (
     --bb-control-focus-border: var(--bs-secondary);
     --bb-control-focus-ring: rgba(var(--bs-secondary-rgb), 0.22);
 
-    --bb-control-radius: 12px;
+    --bb-control-radius: 9px;
 
     --bb-dp-bg: var(--bs-dropdown-bg);
     --bb-dp-border: var(--bs-border-color);
@@ -126,35 +125,35 @@ $bb-dark-check-marker-colors: (
     --bb-toast-border-opacity: 0.4;
     --bb-toast-glow-opacity: 0.15;
 
-    --bs-popover-bg: #{$bb-dark-surface};
-    --bs-popover-border-color: #{$bb-dark-border};
+    --bs-popover-bg: var(--bs-card-cap-bg);
+    --bs-popover-border-color: #{$ce-dark-border};
     --bs-popover-header-bg: var(--bs-card-cap-bg);
     --bs-popover-header-color: var(--bs-card-cap-color);
-    --bs-popover-body-color: #{$bb-dark-body-color};
+    --bs-popover-body-color: #{$ce-dark-body-color};
 
-    --bs-primary-bg-subtle: #{color.mix(black, $bb-dark-primary, 80%)};
-    --bs-primary-border-subtle: #{color.mix(black, $bb-dark-primary, 40%)};
-    --bs-primary-text-emphasis: #{color.mix(white, $bb-dark-primary, 40%)};
+    --bs-primary-bg-subtle: #{color.mix(black, $ce-dark-primary, 80%)};
+    --bs-primary-border-subtle: #{color.mix(black, $ce-dark-primary, 40%)};
+    --bs-primary-text-emphasis: #{color.mix(white, $ce-dark-primary, 40%)};
 
-    --bs-secondary-bg-subtle: #{color.mix(black, $bb-dark-secondary, 80%)};
-    --bs-secondary-border-subtle: #{color.mix(black, $bb-dark-secondary, 40%)};
-    --bs-secondary-text-emphasis: #{color.mix(white, $bb-dark-secondary, 40%)};
+    --bs-secondary-bg-subtle: #{color.mix(black, $ce-dark-secondary, 80%)};
+    --bs-secondary-border-subtle: #{color.mix(black, $ce-dark-secondary, 40%)};
+    --bs-secondary-text-emphasis: #{color.mix(white, $ce-dark-secondary, 40%)};
 
-    --bs-success-bg-subtle: #{color.mix(black, $bb-dark-success, 80%)};
-    --bs-success-border-subtle: #{color.mix(black, $bb-dark-success, 40%)};
-    --bs-success-text-emphasis: #{color.mix(white, $bb-dark-success, 40%)};
+    --bs-success-bg-subtle: #{color.mix(black, $ce-dark-success, 80%)};
+    --bs-success-border-subtle: #{color.mix(black, $ce-dark-success, 40%)};
+    --bs-success-text-emphasis: #{color.mix(white, $ce-dark-success, 40%)};
 
-    --bs-danger-bg-subtle: #{color.mix(black, $bb-dark-danger, 80%)};
-    --bs-danger-border-subtle: #{color.mix(black, $bb-dark-danger, 40%)};
-    --bs-danger-text-emphasis: #{color.mix(white, $bb-dark-danger, 40%)};
+    --bs-danger-bg-subtle: #{color.mix(black, $ce-dark-danger, 80%)};
+    --bs-danger-border-subtle: #{color.mix(black, $ce-dark-danger, 40%)};
+    --bs-danger-text-emphasis: #{color.mix(white, $ce-dark-danger, 40%)};
 
-    --bs-warning-bg-subtle: #{color.mix(black, $bb-dark-warning, 80%)};
-    --bs-warning-border-subtle: #{color.mix(black, $bb-dark-warning, 40%)};
-    --bs-warning-text-emphasis: #{color.mix(white, $bb-dark-warning, 40%)};
+    --bs-warning-bg-subtle: #{color.mix(black, $ce-dark-warning, 80%)};
+    --bs-warning-border-subtle: #{color.mix(black, $ce-dark-warning, 40%)};
+    --bs-warning-text-emphasis: #{color.mix(white, $ce-dark-warning, 40%)};
 
-    --bs-info-bg-subtle: #{color.mix(black, $bb-dark-info, 80%)};
-    --bs-info-border-subtle: #{color.mix(black, $bb-dark-info, 40%)};
-    --bs-info-text-emphasis: #{color.mix(white, $bb-dark-info, 40%)};
+    --bs-info-bg-subtle: #{color.mix(black, $ce-dark-info, 80%)};
+    --bs-info-border-subtle: #{color.mix(black, $ce-dark-info, 40%)};
+    --bs-info-text-emphasis: #{color.mix(white, $ce-dark-info, 40%)};
   }
 }
 
@@ -189,7 +188,7 @@ $bb-dark-check-marker-colors: (
     background-color: var(--bs-body-bg) !important;
   }
 
-  @each $variant, $hex in $bb-dark-check-marker-colors {
+  @each $variant, $hex in $ce-dark-check-marker-colors {
     $hex-code: '%23' + string.slice('#{$hex}', 2);
     $scope: if($variant == 'default', '', '.bb-check-#{$variant} ');
 

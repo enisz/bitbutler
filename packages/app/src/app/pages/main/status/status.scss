@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
 }
 
 .status-container {
@@ -16,65 +16,58 @@
   padding: 0.5rem;
 }
 
-.list-group-item {
-  transition:
-    background-color 120ms ease,
-    border-color 120ms ease;
-  padding: 0.35rem 0.5rem;
-  line-height: 1.2;
+.collapsed-status-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 0.5rem;
 }
 
-.list-group-item.active {
-  background-color: color-mix(in srgb, var(--bs-secondary) 18%, transparent);
-  border-color: color-mix(in srgb, var(--bs-secondary) 35%, var(--bs-border-color));
-  color: var(--bs-body-color);
-}
-
-.small.text-uppercase {
-  font-size: 0.75rem;
-  letter-spacing: 0.04em;
-  margin-bottom: 0.25rem;
-}
-
-.bb-status-badge {
-  font-weight: 700;
-  font-size: 0.75rem;
-  min-width: 2.2rem;
-  text-align: center;
+.collapsed-status-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
   border-radius: 10px;
-  line-height: 1.2;
-  flex-shrink: 0;
-  white-space: nowrap;
+  background: transparent;
+  color: var(--bb-control-placeholder);
+  font-size: 1.05rem;
+
+  &:hover {
+    background-color: var(--bb-hover-list-item-bg);
+    color: var(--bs-body-color);
+  }
+
+  &.active {
+    background-color: var(--bb-active-list-item-bg);
+    color: var(--bs-body-color);
+  }
 }
 
-:host-context([data-bs-theme='light']) .bb-status-badge {
-  background-color: #d2b48c;
-  color: #2f2f33;
+.collapsed-clear-all-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 100;
+  margin-top: auto;
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem;
+  background-color: var(--bs-body-bg);
+  border-top: 1px solid var(--bs-border-color);
+
+  box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.05);
 }
 
-:host-context([data-bs-theme='dark']) .bb-status-badge {
-  background-color: #e1b985;
-  color: #121213;
-}
+.collapsed-clear-all {
+  color: var(--bb-accent);
 
-:host-context([data-bs-theme='dark']) .list-group-item.active .bb-status-badge {
-  background-color: #d1aa73;
-}
-
-:host-context([data-bs-theme='light']) .list-group-item.active .bb-status-badge {
-  background-color: #c7a57a;
-}
-
-.bb-status-label {
-  min-width: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.save-path-label {
-  direction: rtl;
-  text-align: left;
+  &:hover {
+    background-color: color-mix(in srgb, var(--bb-accent) 16%, transparent);
+    color: var(--bb-accent);
+  }
 }
 
 .clear-all-bar {

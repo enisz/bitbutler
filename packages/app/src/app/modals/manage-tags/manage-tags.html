@@ -67,21 +67,24 @@
       <app-bb-spinner></app-bb-spinner>
     </div>
   } @else if (filteredTags().length > 0) {
-    <ul class="list-group">
+    <div class="bb-tag-pills">
       @for (tag of filteredTags(); track tag) {
-        <li class="list-group-item d-flex align-items-center justify-content-between">
-          <span class="text-truncate me-2" [ngbTooltip]="tag" bbTooltipOverflow>{{ tag }}</span>
+        <span class="bb-tag-pill">
+          <span class="bb-tag-pill__label text-truncate" [ngbTooltip]="tag" bbTooltipOverflow>{{
+            tag
+          }}</span>
           <button
             type="button"
-            class="btn btn-link text-danger p-1 flex-shrink-0"
+            class="bb-tag-pill__remove"
             [ngbTooltip]="'general.button.delete' | translate"
+            [attr.aria-label]="'general.button.delete' | translate"
             (click)="delete(tag)"
           >
-            <fa-icon [icon]="icon.faTrashCan" />
+            <fa-icon [icon]="icon.faXmark" />
           </button>
-        </li>
+        </span>
       }
-    </ul>
+    </div>
   } @else {
     <p class="text-body-secondary small mb-0">
       @if (filterControl.value) {
@@ -94,7 +97,7 @@
 </div>
 
 <div class="modal-footer">
-  <button type="button" class="btn btn-link btn-sm btn-split" (click)="activeModal.dismiss()">
+  <button type="button" class="btn btn-sm btn-split" (click)="activeModal.dismiss()" autofocus>
     <bb-btn-content
       [icon]="icon.faXmark"
       [text]="'general.button.close' | translate"

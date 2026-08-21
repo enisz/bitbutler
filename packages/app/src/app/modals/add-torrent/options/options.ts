@@ -11,7 +11,6 @@ import { AddTorrentFormGroup } from '../../../models/add-torrent.model';
   selector: 'app-add-torrent-options',
   imports: [ReactiveFormsModule, FontAwesomeModule, BbPopover, TranslatePipe, NgSelectModule],
   templateUrl: './options.html',
-  styleUrl: './options.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddTorrentOptions {

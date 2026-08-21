@@ -103,7 +103,13 @@ export class AddTorrent implements OnInit {
   public isSubmitting = signal(false);
   private loadedDraftIdentifier = signal<string | null>(null);
 
-  public icons = { faTriangleExclamation, faCircleQuestion, faCircleInfo, faPlus, faXmark };
+  public icons = {
+    faTriangleExclamation,
+    faCircleQuestion,
+    faCircleInfo,
+    faPlus,
+    faXmark,
+  };
 
   public activeTabId = signal<AddTorrentTabId>('general');
 

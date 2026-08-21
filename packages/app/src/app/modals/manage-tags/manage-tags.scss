@@ -1,7 +1,48 @@
-.list-group-item {
-  transition: background-color 0.15s ease-in-out;
+.bb-tag-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.bb-tag-pill {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  gap: 0.4rem;
+  padding: 0.3rem 0.3rem 0.3rem 0.7rem;
+  background-color: var(--bb-control-bg);
+  border: 1px solid var(--bb-control-border);
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  transition: border-color 0.15s ease-in-out;
 
   &:hover {
-    background-color: var(--bb-hover-list-item-bg);
+    border-color: var(--bb-control-hover-border);
+  }
+}
+
+.bb-tag-pill__label {
+  max-width: 220px;
+}
+
+.bb-tag-pill__remove {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--bb-control-placeholder);
+  transition:
+    color 120ms ease,
+    background-color 120ms ease;
+
+  &:hover {
+    color: var(--bs-danger);
+    background-color: color-mix(in srgb, var(--bs-danger) 15%, transparent);
   }
 }

@@ -2,10 +2,10 @@
   flex-wrap: nowrap;
   overflow-x: auto;
   overflow-y: hidden;
-  height: 34px;
-  background: var(--bs-body-bg);
+  height: 38px;
+  background: var(--bs-card-bg);
   border-top: 1px solid var(--bs-border-color);
-  color: var(--bs-body-color);
+  color: var(--bb-control-placeholder);
   font-size: 0.8rem;
   display: flex;
   align-items: center;
@@ -113,7 +113,9 @@
 }
 
 .bb-alt-speed {
-  color: var(--bs-secondary);
+  color: var(--bb-control-placeholder);
+  background-color: var(--bb-control-bg);
+  border: 1px solid var(--bs-border-color);
   transition: all 0.2s ease-in-out;
   cursor: pointer;
 

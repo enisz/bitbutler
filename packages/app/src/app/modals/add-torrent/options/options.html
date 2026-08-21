@@ -1,6 +1,8 @@
 <div [formGroup]="form()">
-  <div class="container-fluid px-0">
-    <div class="row">
+  <fieldset class="bb-fieldset mt-0">
+    <legend>{{ 'components.add-torrent.label.layout' | translate }}</legend>
+
+    <div class="row mt-3">
       <div class="col-11">
         <div class="form-floating mb-3">
           <ng-select
@@ -28,10 +30,27 @@
         ></bb-popover>
       </div>
     </div>
+  </fieldset>
 
-    <div class="row">
-      <div class="col-12">
-        <div class="form-check form-switch mb-3">
+  <fieldset class="bb-fieldset mb-0">
+    <legend>{{ 'components.add-torrent.label.behaviour' | translate }}</legend>
+
+    <div class="bb-options">
+      <div class="bb-option">
+        <div class="bb-option__text">
+          <label class="bb-option__label" for="skip_checking">
+            {{ 'components.add-torrent.add-form.skip-hash-checking' | translate }}
+            <bb-popover
+              [subject]="'components.add-torrent.popover.skip-hash-checking.title' | translate"
+              [description]="skipChecking"
+              placement="top"
+            ></bb-popover>
+          </label>
+          <span class="bb-option__sub">{{
+            'components.add-torrent.popover.skip-hash-checking.sub' | translate
+          }}</span>
+        </div>
+        <span class="bb-option__toggle form-switch">
           <input
             class="form-check-input"
             type="checkbox"
@@ -39,19 +58,19 @@
             id="skip_checking"
             formControlName="skip_checking"
           />
-          <label class="form-check-label" for="skip_checking">{{
-            'components.add-torrent.add-form.skip-hash-checking' | translate
-          }}</label>
-          <bb-popover
-            [subject]="'components.add-torrent.popover.skip-hash-checking.title' | translate"
-            [description]="skipChecking"
-            placement="right"
-          ></bb-popover>
-        </div>
+        </span>
       </div>
 
-      <div class="col-12">
-        <div class="form-check form-switch mb-3">
+      <div class="bb-option">
+        <div class="bb-option__text">
+          <label class="bb-option__label" for="paused">
+            {{ 'components.add-torrent.add-form.paused' | translate }}
+          </label>
+          <span class="bb-option__sub">{{
+            'components.add-torrent.popover.paused-state.sub' | translate
+          }}</span>
+        </div>
+        <span class="bb-option__toggle form-switch">
           <input
             class="form-check-input"
             type="checkbox"
@@ -59,19 +78,19 @@
             id="paused"
             formControlName="paused"
           />
-          <label class="form-check-label" for="paused">{{
-            'components.add-torrent.add-form.paused' | translate
-          }}</label>
-          <bb-popover
-            [subject]="'components.add-torrent.popover.paused-state.title' | translate"
-            [description]="pausedState"
-            placement="right"
-          ></bb-popover>
-        </div>
+        </span>
       </div>
 
-      <div class="col-12">
-        <div class="form-check form-switch mb-3">
+      <div class="bb-option">
+        <div class="bb-option__text">
+          <label class="bb-option__label" for="autoTMM">
+            {{ 'components.add-torrent.add-form.auto-tmm' | translate }}
+          </label>
+          <span class="bb-option__sub">{{
+            'components.add-torrent.popover.auto-tmm.sub' | translate
+          }}</span>
+        </div>
+        <span class="bb-option__toggle form-switch">
           <input
             class="form-check-input"
             type="checkbox"
@@ -79,19 +98,19 @@
             id="autoTMM"
             formControlName="autoTMM"
           />
-          <label class="form-check-label" for="autoTMM">{{
-            'components.add-torrent.add-form.auto-tmm' | translate
-          }}</label>
-          <bb-popover
-            [subject]="'components.add-torrent.popover.auto-tmm.title' | translate"
-            [description]="autoTMM"
-            placement="right"
-          ></bb-popover>
-        </div>
+        </span>
       </div>
 
-      <div class="col-12">
-        <div class="form-check form-switch mb-3">
+      <div class="bb-option">
+        <div class="bb-option__text">
+          <label class="bb-option__label" for="sequentialDownload">
+            {{ 'components.add-torrent.add-form.sequential-download' | translate }}
+          </label>
+          <span class="bb-option__sub">{{
+            'components.add-torrent.popover.sequential-download.sub' | translate
+          }}</span>
+        </div>
+        <span class="bb-option__toggle form-switch">
           <input
             class="form-check-input"
             type="checkbox"
@@ -99,19 +118,24 @@
             id="sequentialDownload"
             formControlName="sequentialDownload"
           />
-          <label class="form-check-label" for="sequentialDownload">{{
-            'components.add-torrent.add-form.sequential-download' | translate
-          }}</label>
-          <bb-popover
-            [subject]="'components.add-torrent.popover.sequential-download.title' | translate"
-            [description]="sequentialDownload"
-            placement="right"
-          ></bb-popover>
-        </div>
+        </span>
       </div>
 
-      <div class="col-12">
-        <div class="form-check form-switch mb-3">
+      <div class="bb-option">
+        <div class="bb-option__text">
+          <label class="bb-option__label" for="firstLastPiecePrio">
+            {{ 'components.add-torrent.add-form.first-last-piece-prio' | translate }}
+            <bb-popover
+              [subject]="'components.add-torrent.popover.first-last-piece-prio.title' | translate"
+              [description]="firstLastPiecePrio"
+              placement="top"
+            ></bb-popover>
+          </label>
+          <span class="bb-option__sub">{{
+            'components.add-torrent.popover.first-last-piece-prio.sub' | translate
+          }}</span>
+        </div>
+        <span class="bb-option__toggle form-switch">
           <input
             class="form-check-input"
             type="checkbox"
@@ -119,18 +143,10 @@
             id="firstLastPiecePrio"
             formControlName="firstLastPiecePrio"
           />
-          <label class="form-check-label" for="firstLastPiecePrio">{{
-            'components.add-torrent.add-form.first-last-piece-prio' | translate
-          }}</label>
-          <bb-popover
-            [subject]="'components.add-torrent.popover.first-last-piece-prio.title' | translate"
-            [description]="firstLastPiece"
-            placement="right"
-          ></bb-popover>
-        </div>
+        </span>
       </div>
     </div>
-  </div>
+  </fieldset>
 </div>
 
 <ng-template #skipChecking>
@@ -141,22 +157,7 @@
   </p>
 </ng-template>
 
-<ng-template #pausedState>
-  <p>{{ 'components.add-torrent.popover.paused-state.description.line1' | translate }}</p>
-  <p>{{ 'components.add-torrent.popover.paused-state.description.line2' | translate }}</p>
-</ng-template>
-
-<ng-template #autoTMM>
-  <p>{{ 'components.add-torrent.popover.auto-tmm.description.line1' | translate }}</p>
-  <p>{{ 'components.add-torrent.popover.auto-tmm.description.line2' | translate }}</p>
-</ng-template>
-
-<ng-template #sequentialDownload>
-  <p>{{ 'components.add-torrent.popover.sequential-download.description.line1' | translate }}</p>
-  <p>{{ 'components.add-torrent.popover.sequential-download.description.line2' | translate }}</p>
-</ng-template>
-
-<ng-template #firstLastPiece>
+<ng-template #firstLastPiecePrio>
   <p>{{ 'components.add-torrent.popover.first-last-piece-prio.description.line1' | translate }}</p>
   <p>{{ 'components.add-torrent.popover.first-last-piece-prio.description.line2' | translate }}</p>
 </ng-template>

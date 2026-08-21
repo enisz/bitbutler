@@ -19,6 +19,11 @@
     border-radius: 0 !important;
     transition: width 0.4s ease-out !important;
   }
+
+  &--compact {
+    height: 6px !important;
+    border-radius: 999px !important;
+  }
 }
 
 .bb-progress-label {

@@ -29,7 +29,21 @@ Egy **Importálandó torrentek** táblázat felsorolja az archívum minden torre
 
 ![Visszaállítási opciók kapcsolói](/screenshots/import-window/restore-options.png)
 
-Egy kapcsolókészlet szabályozza, hogy az egyes torrentek metaadatainak mely részei kerülnek visszaállításra importáláskor: mentési útvonal, kategóriák, címkék, sebességkorlátok, megosztási korlátok, fájlátnevezések, fájlprioritások, Auto-TMM, szekvenciális letöltés, super seeding, valamint első/utolsó szelet prioritás. A fájlátnevezések és fájlprioritások örökölt (legacy) exportálás esetén nem elérhetők (és le vannak tiltva), mivel a puszta mágneslinkek nem hordozzák ezt az információt.
+Minden kapcsoló a torrent metaadatainak egy-egy részét szabályozza importáláskor; amit kikapcsolva hagysz, ott a qBittorrent saját alapértelmezése marad érvényben.
+
+- **Mentési útvonal** - visszaállítja a torrent eredeti mentési helyét, előbb átfuttatva a beállított [mentési útvonal-hozzárendelési](#utvonal-hozzarendeles) szabályokon.
+- **Kategóriák** - létrehozza az archívumban szereplő, a célszerveren még nem létező kategóriákat (lásd [Kategória útvonal-hozzárendelés](#kategoria-utvonal-hozzarendeles)), és minden torrenthez hozzárendeli a mentett kategóriáját.
+- **Címkék** - létrehozza az archívumban szereplő, a célszerveren még nem létező címkéket, majd minden torrenthez alkalmazza a mentett címkéit - egy mentett címke nélküli torrentnél is törlődik minden, ami éppen a célszerveren rajta van, így pontosan az archivált címkekészlet marad rajta.
+- **Sebességkorlátok** - visszaállítja minden torrent fel- és letöltési sebességkorlátait.
+- **Megosztási korlátok** - visszaállítja minden torrent arány- és seedelésiidő-korlátait.
+- **Fájlátnevezések** - visszaállítja a torrent tartalmán belül végzett fájl- és mappaátnevezéseket.
+- **Fájlprioritások** - visszaállítja minden fájl letöltési prioritását.
+- **Auto-TMM** - visszaállítja az Automatikus torrentkezelés beállítást.
+- **Szekvenciális letöltés** - visszaállítja a szekvenciális letöltés beállítást.
+- **Super seeding** - visszaállítja a super seeding beállítást.
+- **Első/utolsó szelet prioritás** - visszaállítja az első/utolsó szelet prioritás beállítást.
+
+A fájlátnevezések és fájlprioritások örökölt (legacy) exportálás esetén nem elérhetők (és le vannak tiltva), mivel a puszta mágneslinkek nem hordozzák ezt az információt.
 
 ## Útvonal-hozzárendelés
 

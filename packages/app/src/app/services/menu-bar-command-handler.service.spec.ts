@@ -114,7 +114,10 @@ describe('MenuBarCommandHandlerService', () => {
 
   it('should emit UPDATE_CHECK_FOR_UPDATE for help.checkForUpdates', () => {
     clicks$.next({ action: 'help.checkForUpdates', ts: 1 });
-    expect(commandBusEmit).toHaveBeenCalledWith({ type: 'UPDATE_CHECK_FOR_UPDATE' });
+    expect(commandBusEmit).toHaveBeenCalledWith({
+      type: 'UPDATE_CHECK_FOR_UPDATE',
+      trigger: 'manual',
+    });
   });
 
   it('should emit UI_OPEN_ABOUT for help.about', () => {

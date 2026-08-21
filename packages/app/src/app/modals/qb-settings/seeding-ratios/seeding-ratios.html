@@ -5,10 +5,15 @@
     </div>
     <fieldset class="bb-fieldset">
       <legend>{{ 'pages.qb-settings.tab.seeding-ratios.label.share-ratio' | translate }}</legend>
-      <div class="container">
-        <div class="row mb-3">
-          <div class="col-12">
-            <div class="form-check form-switch">
+      <div class="container mt-3">
+        <div class="bb-options mb-3">
+          <div class="bb-option">
+            <div class="bb-option__text">
+              <label class="bb-option__label" for="max-ratio-enabled">
+                {{ 'pages.qb-settings.tab.seeding-ratios.field.max-ratio-enabled' | translate }}
+              </label>
+            </div>
+            <span class="bb-option__toggle form-switch">
               <input
                 class="form-check-input"
                 type="checkbox"
@@ -16,10 +21,7 @@
                 id="max-ratio-enabled"
                 formControlName="max_ratio_enabled"
               />
-              <label class="form-check-label" for="max-ratio-enabled">
-                {{ 'pages.qb-settings.tab.seeding-ratios.field.max-ratio-enabled' | translate }}
-              </label>
-            </div>
+            </span>
           </div>
         </div>
         <div class="row mb-3">
@@ -48,6 +50,7 @@
               bindLabel="label"
               bindValue="value"
               formControlName="max_ratio_act"
+              appendTo="body"
             ></ng-select>
           </div>
         </div>
@@ -56,10 +59,17 @@
 
     <fieldset class="bb-fieldset">
       <legend>{{ 'pages.qb-settings.tab.seeding-ratios.label.seeding-time' | translate }}</legend>
-      <div class="container">
-        <div class="row mb-3">
-          <div class="col-12">
-            <div class="form-check form-switch">
+      <div class="container mt-3">
+        <div class="bb-options mb-3">
+          <div class="bb-option">
+            <div class="bb-option__text">
+              <label class="bb-option__label" for="max-seeding-time-enabled">
+                {{
+                  'pages.qb-settings.tab.seeding-ratios.field.max-seeding-time-enabled' | translate
+                }}
+              </label>
+            </div>
+            <span class="bb-option__toggle form-switch">
               <input
                 class="form-check-input"
                 type="checkbox"
@@ -67,12 +77,7 @@
                 id="max-seeding-time-enabled"
                 formControlName="max_seeding_time_enabled"
               />
-              <label class="form-check-label" for="max-seeding-time-enabled">
-                {{
-                  'pages.qb-settings.tab.seeding-ratios.field.max-seeding-time-enabled' | translate
-                }}
-              </label>
-            </div>
+            </span>
           </div>
         </div>
         <div class="row mb-3">

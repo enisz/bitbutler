@@ -29,7 +29,21 @@ A **Torrents to Import** grid lists every torrent in the archive with its save p
 
 ![Restore options toggles](/screenshots/import-window/restore-options.png)
 
-A set of toggles controls which pieces of each torrent's metadata get restored on import: save path, categories, tags, speed limits, share limits, file renames, file priorities, Auto-TMM, sequential download, super seeding, and first/last piece priority. File renames and file priorities are unavailable (and disabled) for a legacy export, since magnet links alone don't carry that information.
+Each toggle controls one piece of a torrent's metadata restored on import; leaving one off keeps qBittorrent's own default for that torrent instead.
+
+- **Save path** - recreates each torrent's original save location, run first through any [save path remapping](#path-remapping) rules.
+- **Categories** - recreates any categories from the archive that don't already exist on the destination server (see [Category Path Mapping](#category-path-mapping)) and assigns each torrent to its saved category.
+- **Tags** - recreates any tags from the archive that don't already exist on the destination server, then applies each torrent's saved tags - even a torrent with no saved tags has any tags already on the destination cleared, so it ends up with exactly the archived set.
+- **Speed limits** - reapplies each torrent's upload and download speed limits.
+- **Share limits** - reapplies each torrent's ratio limit and seeding-time limits.
+- **File renames** - reapplies any file and folder renames made inside the torrent's content.
+- **File priorities** - reapplies each file's download priority.
+- **Auto-TMM** - reapplies the Automatic Torrent Management setting.
+- **Sequential download** - reapplies the sequential download setting.
+- **Super seeding** - reapplies the super seeding setting.
+- **First/Last Piece Priority** - reapplies the first/last piece priority setting.
+
+File renames and file priorities are unavailable (and disabled) for a legacy export, since magnet links alone don't carry that information.
 
 ## Path Remapping
 

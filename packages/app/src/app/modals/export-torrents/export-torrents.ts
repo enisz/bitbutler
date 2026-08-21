@@ -1,3 +1,4 @@
+import { DecimalPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -17,23 +18,15 @@ import {
   ExportStartPayload,
   ExportTagScope,
 } from '@bitbutler/shared';
-import {
-  faFileExport,
-  faFilter,
-  faFolderOpen,
-  faFolderTree,
-  faLayerGroup,
-  faLink,
-  faSquareCheck,
-  faTags,
-  faXmark,
-} from '@fortawesome/free-solid-svg-icons';
+import { faFileExport, faFolderOpen, faRotate, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { BbPopover } from '../../components/bb-popover/bb-popover';
 import { BbProgress } from '../../components/bb-progress/bb-progress';
 import { BbSpinner } from '../../components/bb-spinner/bb-spinner';
+import { AutofocusDirective } from '../../directives/autofocus';
+import { FilesizePipe } from '../../pipes/filesize-pipe';
 import { ExportService } from '../../services/export.service';
 import { FilterService } from '../../services/filter.service';
 import { SelectionStoreService } from '../../services/selection-store.service';
@@ -43,7 +36,17 @@ import { TorrentStoreService } from '../../services/torrent-store.service';
 @Component({
   selector: 'app-export-torrents',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe, BbProgress, BbPopover, BbSpinner, BbBtnContent],
+  imports: [
+    ReactiveFormsModule,
+    TranslatePipe,
+    DecimalPipe,
+    FilesizePipe,
+    BbProgress,
+    BbPopover,
+    BbSpinner,
+    BbBtnContent,
+    AutofocusDirective,
+  ],
   templateUrl: './export-torrents.html',
   styleUrl: './export-torrents.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -58,15 +61,10 @@ export class ExportTorrents implements OnInit {
   private readonly injector = inject(Injector);
 
   public readonly icons = {
-    faLayerGroup,
-    faFilter,
-    faSquareCheck,
-    faFolderTree,
-    faLink,
-    faTags,
     faFolderOpen,
     faFileExport,
     faXmark,
+    faRotate,
   };
 
   exportForm!: FormGroup;
@@ -126,6 +124,16 @@ export class ExportTorrents implements OnInit {
     return tags.size;
   });
 
+  readonly scopeHint = computed(() => {
+    const mode = this.scopeValue?.() ?? 'all';
+    const hints: Record<ExportScope, string> = {
+      all: 'components.modals.export-torrents.scope.hint.all',
+      filtered: 'components.modals.export-torrents.scope.hint.filtered',
+      selected: 'components.modals.export-torrents.scope.hint.selected',
+    };
+    return hints[mode] ?? hints['all'];
+  });
+
   readonly categoryScopeHint = computed(() => {
     const mode = this.categoryScopeValue?.() ?? 'all';
     const hints: Record<ExportCategoryScope, string> = {
@@ -156,22 +164,57 @@ export class ExportTorrents implements OnInit {
     return s.total > 0 ? s.current / s.total : 0;
   });
 
-  ngOnInit(): void {
-    const serverId = this.serverStore.currentServer()?.id;
+  readonly exportedCount = computed(() => {
+    const s = this.state();
+    return s.total - s.skipped;
+  });
 
-    void Promise.all([
-      serverId ? window.bitbutler.export.getServerInfo(serverId) : Promise.resolve(null),
-      window.bitbutler.electron.getDownloadsPath(),
-    ])
-      .then(([info, downloadsPath]) => {
-        if (info) this.serverInfo.set(info);
-        this.serverInfoLoading.set(false);
-        if (downloadsPath) this.exportForm.get('destDir')?.setValue(downloadsPath);
-      })
-      .catch((err: unknown) => {
-        this.serverInfoError.set((err as Error)?.message ?? String(err));
-        this.serverInfoLoading.set(false);
+  ngOnInit(): void {
+    const currentServer = this.serverStore.currentServer();
+
+    if (
+      currentServer &&
+      currentServer.export_available !== null &&
+      currentServer.webapi_version !== null &&
+      currentServer.qb_version !== null
+    ) {
+      this.serverInfo.set({
+        webapiVersion: currentServer.webapi_version,
+        qbVersion: currentServer.qb_version,
+        isFullMode: currentServer.export_available === 1,
       });
+      this.serverInfoLoading.set(false);
+    } else if (currentServer) {
+      const serverId = currentServer.id;
+      window.bitbutler.export
+        .getServerInfo(serverId)
+        .then((info) => {
+          this.serverInfo.set(info);
+          this.serverInfoLoading.set(false);
+
+          window.bitbutler.server
+            .setConnectionInfo({
+              id: serverId,
+              exportAvailable: info.isFullMode ? 1 : 0,
+              webapiVersion: info.webapiVersion,
+              qbVersion: info.qbVersion,
+            })
+            .then(() => this.serverStore.refresh())
+            .catch((e: unknown) =>
+              console.error(ExportTorrents.name, 'ngOnInit', 'connection info self-heal failed', e),
+            );
+        })
+        .catch((err: unknown) => {
+          this.serverInfoError.set((err as Error)?.message ?? String(err));
+          this.serverInfoLoading.set(false);
+        });
+    } else {
+      this.serverInfoLoading.set(false);
+    }
+
+    void window.bitbutler.electron.getDownloadsPath().then((downloadsPath) => {
+      if (downloadsPath) this.exportForm.get('destDir')?.setValue(downloadsPath);
+    });
 
     const today = new Date();
     const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '');
@@ -234,12 +277,12 @@ export class ExportTorrents implements OnInit {
       filename,
     };
 
-    this.exportService.startExport();
+    this.exportService.startExport(hashes.length);
     window.bitbutler.export.start(payload);
   }
 
   cancelExport(): void {
-    window.bitbutler.export.cancel();
+    this.exportService.cancelExport();
   }
 
   showInFolder(): void {

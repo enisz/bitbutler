@@ -322,13 +322,18 @@ describe('AddTorrentFolderPicker', () => {
     expect(component.rows()).toEqual([]);
   });
 
-  it('should render the inline folder description text under the recursive switch', () => {
+  it('should render the folder description as an info callout with a bullet list', () => {
     init('/downloads');
 
-    const description: HTMLElement = fixture.nativeElement.querySelector('.folder-description');
+    const callout: HTMLElement = fixture.nativeElement.querySelector('bb-callout');
+    const items = callout.querySelectorAll('li');
 
-    expect(description).toBeTruthy();
-    expect(description.textContent).toContain('components.add-torrent.folder-picker.description');
+    expect(callout).toBeTruthy();
+    expect(callout.textContent).toContain('components.add-torrent.folder-picker.note-title');
+    expect(items.length).toBe(4);
+    expect(items[0].textContent).toContain(
+      'components.add-torrent.folder-picker.description.line1',
+    );
   });
 
   it('renders the state column before the name column', () => {
@@ -823,6 +828,41 @@ describe('AddTorrentFolderPicker', () => {
       init('/downloads');
       component.gridOptions.onColumnHeaderContextMenu?.({ column: null, api: {} } as any);
       expect(mockContextMenuService.open).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('escape during cell edit', () => {
+    it('stops the Escape keydown from bubbling to the modal while a cell is being edited', () => {
+      init('/downloads');
+      const mockApi = { getEditingCells: vi.fn().mockReturnValue([{}]) };
+      (component as any).gridApi = mockApi;
+      const event = { key: 'Escape', stopPropagation: vi.fn() } as unknown as KeyboardEvent;
+
+      component.onGridKeyDown(event);
+
+      expect(event.stopPropagation).toHaveBeenCalled();
+    });
+
+    it('leaves the Escape keydown alone when no cell is being edited', () => {
+      init('/downloads');
+      const mockApi = { getEditingCells: vi.fn().mockReturnValue([]) };
+      (component as any).gridApi = mockApi;
+      const event = { key: 'Escape', stopPropagation: vi.fn() } as unknown as KeyboardEvent;
+
+      component.onGridKeyDown(event);
+
+      expect(event.stopPropagation).not.toHaveBeenCalled();
+    });
+
+    it('ignores keys other than Escape even while editing', () => {
+      init('/downloads');
+      const mockApi = { getEditingCells: vi.fn().mockReturnValue([{}]) };
+      (component as any).gridApi = mockApi;
+      const event = { key: 'Enter', stopPropagation: vi.fn() } as unknown as KeyboardEvent;
+
+      component.onGridKeyDown(event);
+
+      expect(event.stopPropagation).not.toHaveBeenCalled();
     });
   });
 });

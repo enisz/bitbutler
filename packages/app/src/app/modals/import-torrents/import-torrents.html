@@ -15,75 +15,72 @@
     <div class="alert alert-danger">{{ state().error }}</div>
   }
   @if (isReady() || isRunning() || isDone()) {
-    <form [formGroup]="importForm">
-      <fieldset class="bb-fieldset mt-0">
+    <form [formGroup]="importForm" class="d-flex flex-column gap-3">
+      <fieldset class="bb-fieldset">
         <legend>{{ 'components.modals.import-torrents.label.archive' | translate }}</legend>
         @if (metadata()) {
-          <div class="row gy-2">
-            <div class="col-3 bb-section">
-              <span class="section-header">{{
+          <div class="bb-rows bb-rows--cols-2">
+            <div class="bb-row">
+              <span class="bb-row__label">{{
                 'components.modals.import-torrents.archive.exported-from' | translate
               }}</span>
-              <span class="section-value">
+              <span class="bb-row__value">
                 {{ metadata()!.source_server_name ?? metadata()!.source_server }}
               </span>
             </div>
-
-            <div class="col-3 bb-section">
-              <span class="section-header">{{
+            <div class="bb-row">
+              <span class="bb-row__label">{{
                 'components.modals.import-torrents.archive.importing-to' | translate
               }}</span>
-              <span class="section-value">{{ serverStore.currentServer()?.name ?? '' }}</span>
+              <span class="bb-row__value">{{ serverStore.currentServer()?.name ?? '' }}</span>
             </div>
-
-            <div class="col-3 bb-section">
-              <span class="section-header">{{
+            <div class="bb-row">
+              <span class="bb-row__label">{{
                 'components.modals.import-torrents.archive.server-url' | translate
               }}</span>
-              <span class="section-value">{{ serverUrl() }}</span>
+              <span class="bb-row__value">{{ serverUrl() }}</span>
             </div>
-
-            <div class="col-3 bb-section">
-              <span class="section-header">{{
+            <div class="bb-row">
+              <span class="bb-row__label">{{
                 'components.modals.import-torrents.archive.export-date' | translate
               }}</span>
-              <span class="section-value">{{ metadata()!.exported_at | localTimestamp }}</span>
+              <span class="bb-row__value">
+                {{ metadata()!.exported_at | localTimestamp }}
+                <small class="bb-row__sub">{{ metadata()!.exported_at * 1000 | timeago }}</small>
+              </span>
             </div>
-
-            <div class="col-3 bb-section">
-              <span class="section-header">{{
+            <div class="bb-row">
+              <span class="bb-row__label">{{
                 'components.modals.import-torrents.archive.torrents' | translate
               }}</span>
-              <span class="section-value">{{ metadata()!.torrents.length }}</span>
+              <span class="bb-row__value">{{ metadata()!.torrents.length }}</span>
             </div>
-
             @if (metadata()?.tags !== undefined) {
-              <div class="col-3 bb-section">
-                <span class="section-header">{{
+              <div class="bb-row">
+                <span class="bb-row__label">{{
                   'components.modals.import-torrents.archive.tags' | translate
                 }}</span>
-                <span class="section-value">{{ tagsCount() }}</span>
+                <span class="bb-row__value">{{ tagsCount() }}</span>
               </div>
             }
             @if (metadata()?.categories !== undefined) {
-              <div class="col-3 bb-section">
-                <span class="section-header">{{
+              <div class="bb-row">
+                <span class="bb-row__label">{{
                   'components.modals.import-torrents.archive.categories' | translate
                 }}</span>
-                <span class="section-value">{{ categoriesCount() }}</span>
+                <span class="bb-row__value">{{ categoriesCount() }}</span>
               </div>
             }
-
-            <div class="col-3 bb-section">
-              <span class="section-header">
+            <div class="bb-row">
+              <span class="bb-row__label">
                 {{ 'components.modals.import-torrents.archive.export-type' | translate }}
                 <bb-popover
-                  placement="top"
                   [subject]="'components.modals.import-torrents.archive.export-type' | translate"
                   [description]="exportTypePopoverDescription()"
+                  placement="right"
                 ></bb-popover>
               </span>
-              <span class="section-value">
+              <span class="bb-row__value">
                 <span
                   [class]="metadata()!.export_mode === 'full' ? 'text-success' : 'text-warning'"
                 >
@@ -102,7 +99,7 @@
       @if (isReady() || isRunning() || isDone()) {
         <fieldset class="bb-fieldset import-grid-fieldset">
           <legend>{{ 'components.modals.import-torrents.label.grid' | translate }}</legend>
-          <p class="small mb-3">
+          <p class="small mb-3 mt-3">
             {{ 'components.modals.import-torrents.grid.description' | translate }}
           </p>
           <ag-grid-angular
@@ -122,42 +119,44 @@
           <legend>
             {{ 'components.modals.import-torrents.label.restore-options' | translate }}
           </legend>
-          <div class="container-fluid px-0">
-            <div class="row">
-              @for (field of restoreFieldKeys; track field) {
-                <div class="col-6">
-                  <div class="form-check form-switch mb-2">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      role="switch"
-                      [id]="'rf-' + field"
-                      [formControlName]="field"
-                    />
-                    <label
-                      class="form-check-label"
-                      [for]="'rf-' + field"
-                      [ngbTooltip]="
-                        isLegacyUnsupported(field) && metadata()?.export_mode === 'legacy'
-                          ? ('components.modals.import-torrents.legacy-unsupported' | translate)
-                          : null
-                      "
-                    >
-                      {{ 'components.modals.import-torrents.restore.' + field | translate }}
-                    </label>
-                  </div>
+          <div class="bb-options bb-options--grid mt-3">
+            @for (field of restoreFieldKeys; track field) {
+              <div class="bb-option">
+                <div class="bb-option__text">
+                  <label
+                    class="bb-option__label"
+                    [for]="'rf-' + field"
+                    [ngbTooltip]="
+                      isLegacyUnsupported(field) && metadata()?.export_mode === 'legacy'
+                        ? ('components.modals.import-torrents.legacy-unsupported' | translate)
+                        : null
+                    "
+                  >
+                    {{ 'components.modals.import-torrents.restore.' + field | translate }}
+                  </label>
+                  <span class="bb-option__sub">{{
+                    'components.modals.import-torrents.restore.popover.' + field + '.sub'
+                      | translate
+                  }}</span>
                 </div>
-              }
-            </div>
+                <span class="bb-option__toggle form-switch">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    [id]="'rf-' + field"
+                    [formControlName]="field"
+                  />
+                </span>
+              </div>
+            }
           </div>
         </fieldset>
 
         @if (showPathRemap()) {
           <fieldset class="bb-fieldset" formArrayName="pathMappings">
-            <legend>
-              {{ 'components.modals.import-torrents.label.path-remap' | translate }}
-            </legend>
-            <p class="small mb-3">
+            <legend>{{ 'components.modals.import-torrents.label.path-remap' | translate }}</legend>
+            <p class="small mt-3">
               {{ 'components.modals.import-torrents.path-remap.description' | translate }}
             </p>
             @for (group of pathMappings.controls; track $index; let i = $index) {
@@ -226,43 +225,53 @@
             <legend>
               {{ 'components.modals.import-torrents.label.category-path-mapping' | translate }}
             </legend>
-            <div class="form-check form-switch mb-3">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                role="switch"
-                id="overwrite-categories"
-                formControlName="overwriteCategories"
-              />
-              <label class="form-check-label" for="overwrite-categories">
-                {{
-                  'components.modals.import-torrents.category-path-mapping.overwrite' | translate
-                }}
-              </label>
-              <bb-popover
-                [subject]="
-                  'components.modals.import-torrents.category-path-mapping.overwrite' | translate
-                "
-                [description]="
-                  'components.modals.import-torrents.category-path-mapping.overwrite-description'
-                    | translate
-                "
-                placement="right"
-              ></bb-popover>
+            <div class="bb-options mb-3">
+              <div class="bb-option">
+                <div class="bb-option__text">
+                  <label class="bb-option__label" for="overwrite-categories">
+                    {{
+                      'components.modals.import-torrents.category-path-mapping.overwrite'
+                        | translate
+                    }}
+                    <bb-popover
+                      [subject]="
+                        'components.modals.import-torrents.category-path-mapping.overwrite'
+                          | translate
+                      "
+                      [description]="
+                        'components.modals.import-torrents.category-path-mapping.overwrite-description'
+                          | translate
+                      "
+                      placement="right"
+                    ></bb-popover>
+                  </label>
+                </div>
+                <span class="bb-option__toggle form-switch">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    id="overwrite-categories"
+                    formControlName="overwriteCategories"
+                  />
+                </span>
+              </div>
             </div>
             <p class="small mb-3">
               {{
                 'components.modals.import-torrents.category-path-mapping.description' | translate
               }}
             </p>
-            <div class="alert alert-warning small">
-              <p class="fw-bold mb-1">
-                <fa-icon [icon]="icons.faTriangleExclamation" class="me-1"></fa-icon>
-                {{
-                  'components.modals.import-torrents.category-path-mapping.note-title' | translate
-                }}
-              </p>
+            <bb-callout
+              class="d-block mb-3"
+              variant="warning"
+              [icon]="icons.faTriangleExclamation"
+              [title]="
+                'components.modals.import-torrents.category-path-mapping.note-title' | translate
+              "
+            >
               <span
+                class="mt-3"
                 [innerHTML]="
                   'components.modals.import-torrents.category-path-mapping.note-prefix' | translate
                 "
@@ -275,7 +284,7 @@
                 {{ 'pages.qb-settings.title' | translate }} -
                 {{ 'pages.qb-settings.tab.storage.title' | translate }}</button
               >.
-            </div>
+            </bb-callout>
             <div formArrayName="categoryPathMappings">
               @for (group of categoryPathMappings.controls; track $index; let i = $index) {
                 <div class="row mb-2" [formGroupName]="i">
@@ -339,9 +348,9 @@
           </fieldset>
         }
 
-        <fieldset class="bb-fieldset pb-3">
+        <fieldset class="bb-fieldset">
           <legend>{{ 'components.modals.import-torrents.label.after-import' | translate }}</legend>
-          <div class="btn-group w-100 mb-2" role="group">
+          <div class="btn-group w-100 mb-1 mt-3" role="group">
             <input
               type="radio"
               class="btn-check"
@@ -349,11 +358,8 @@
               id="sm-paused"
               value="paused"
             />
-            <label class="btn btn-outline-secondary btn-split" for="sm-paused">
-              <bb-btn-content
-                [icon]="icons.faPause"
-                [text]="'components.modals.import-torrents.start-mode.paused' | translate"
-              ></bb-btn-content>
+            <label class="btn btn-outline-secondary" for="sm-paused">
+              {{ 'components.modals.import-torrents.start-mode.paused' | translate }}
             </label>
             <input
               type="radio"
@@ -362,11 +368,8 @@
               id="sm-active"
               value="active"
             />
-            <label class="btn btn-outline-secondary btn-split" for="sm-active">
-              <bb-btn-content
-                [icon]="icons.faPlay"
-                [text]="'components.modals.import-torrents.start-mode.active' | translate"
-              ></bb-btn-content>
+            <label class="btn btn-outline-secondary" for="sm-active">
+              {{ 'components.modals.import-torrents.start-mode.active' | translate }}
             </label>
             <input
               type="radio"
@@ -375,57 +378,93 @@
               id="sm-all"
               value="all"
             />
-            <label class="btn btn-outline-secondary btn-split" for="sm-all">
-              <bb-btn-content
-                [icon]="icons.faForward"
-                [text]="'components.modals.import-torrents.start-mode.all' | translate"
-              ></bb-btn-content>
+            <label class="btn btn-outline-secondary" for="sm-all">
+              {{ 'components.modals.import-torrents.start-mode.all' | translate }}
             </label>
           </div>
           <div class="small text-body-secondary">{{ startModeHint() | translate }}</div>
         </fieldset>
       }
-      @if (isRunning() || isDone() || isError()) {
-        <fieldset class="bb-fieldset pb-3">
+
+      @if (isRunning()) {
+        <fieldset class="bb-fieldset">
           <legend>{{ 'components.modals.import-torrents.label.progress' | translate }}</legend>
 
-          @if (isRunning()) {
-            <div class="d-flex justify-content-between mb-1">
-              <span>{{ 'components.modals.import-torrents.progress.importing' | translate }}</span>
-              <span class="text-body-secondary">{{ state().current }} / {{ state().total }}</span>
+          <div class="bb-progress-top">
+            <span class="bb-progress-pct">{{ progressPct() * 100 | number: '1.0-1' }}%</span>
+            <span class="text-body-secondary fw-semibold"
+              >{{ state().current }} / {{ state().total }}</span
+            >
+          </div>
+          <app-bb-progress mode="compact" [progress]="progressPct()" variant="secondary">
+          </app-bb-progress>
+
+          <div class="text-body-secondary small mt-2 d-flex min-w-0">
+            <em class="text-truncate">{{ state().name }}</em>
+          </div>
+        </fieldset>
+      }
+
+      @if (isDone() || isError()) {
+        <fieldset class="bb-fieldset">
+          <legend>{{ 'components.modals.import-torrents.label.report' | translate }}</legend>
+
+          <div class="bb-rows">
+            <div class="bb-row">
+              <span class="bb-row__label">{{
+                'components.modals.import-torrents.report.status' | translate
+              }}</span>
+              <span class="bb-row__value">
+                @if (isDone()) {
+                  <span class="text-success">{{
+                    'components.modals.import-torrents.report.success' | translate
+                  }}</span>
+                } @else {
+                  <span class="text-danger">{{
+                    'components.modals.import-torrents.report.failed' | translate
+                  }}</span>
+                }
+              </span>
             </div>
-            <app-bb-progress
-              class="d-block mb-2"
-              [progress]="progressPct()"
-              variant="secondary"
-            ></app-bb-progress>
-            <div class="text-body-secondary small d-flex min-w-0">
-              <em class="text-truncate">{{ state().name }}</em>
-            </div>
-          }
-          @if (isDone()) {
-            <span class="text-success">
-              {{ 'components.modals.import-torrents.progress.done' | translate }}
+
+            @if (isDone()) {
               @if (doneImported() > 0) {
-                - {{ doneImported() }}
-                {{ 'components.modals.import-torrents.progress.imported' | translate }}
+                <div class="bb-row">
+                  <span class="bb-row__label">{{
+                    'components.modals.import-torrents.report.imported' | translate
+                  }}</span>
+                  <span class="bb-row__value">{{ doneImported() }}</span>
+                </div>
               }
               @if (doneAlreadyExisted() > 0) {
-                - {{ doneAlreadyExisted() }}
-                {{ 'components.modals.import-torrents.progress.already-existed' | translate }}
+                <div class="bb-row">
+                  <span class="bb-row__label">{{
+                    'components.modals.import-torrents.report.already-existed' | translate
+                  }}</span>
+                  <span class="bb-row__value">{{ doneAlreadyExisted() }}</span>
+                </div>
               }
               @if (doneSkipped() > 0) {
-                - {{ doneSkipped() }}
-                {{ 'components.modals.import-torrents.progress.skipped' | translate }}
+                <div class="bb-row">
+                  <span class="bb-row__label">{{
+                    'components.modals.import-torrents.report.skipped' | translate
+                  }}</span>
+                  <span class="bb-row__value">{{ doneSkipped() }}</span>
+                </div>
               }
               @if (state().failed > 0) {
-                - {{ state().failed }}
-                {{ 'components.modals.import-torrents.progress.failed' | translate }}
+                <div class="bb-row">
+                  <span class="bb-row__label">{{
+                    'components.modals.import-torrents.report.failed-count' | translate
+                  }}</span>
+                  <span class="bb-row__value">{{ state().failed }}</span>
+                </div>
               }
-            </span>
-          }
+            }
+          </div>
+
           @if (isError()) {
-            <div class="alert alert-danger mb-0 py-2">{{ state().error }}</div>
+            <div class="alert alert-danger mb-0 mt-3 py-2">{{ state().error }}</div>
           }
         </fieldset>
       }
@@ -435,15 +474,30 @@
 
 <div class="modal-footer">
   @if (isRunning()) {
-    <button type="button" class="btn btn-link btn-sm btn-split" (click)="cancelImport()">
+    <button type="button" class="btn btn-sm btn-split" (click)="cancelImport()">
       <bb-btn-content
         [icon]="icons.faXmark"
         [text]="'general.button.cancel' | translate"
         position="end"
       ></bb-btn-content>
     </button>
-  } @else if (isDone() || isError()) {
-    <button type="button" class="btn btn-link btn-sm btn-split" (click)="close()">
+  } @else if (isDone()) {
+    <button type="button" class="btn btn-sm btn-split" (click)="close()" autofocus>
+      <bb-btn-content
+        [icon]="icons.faXmark"
+        [text]="'general.button.close' | translate"
+        position="end"
+      ></bb-btn-content>
+    </button>
+  } @else if (isError()) {
+    <button type="button" class="btn btn-primary btn-sm bb-pill-btn" (click)="startImport()">
+      <bb-btn-content
+        [icon]="icons.faRotate"
+        [text]="'general.button.retry' | translate"
+        position="end"
+      ></bb-btn-content>
+    </button>
+    <button type="button" class="btn btn-sm btn-split" (click)="close()" autofocus>
       <bb-btn-content
         [icon]="icons.faXmark"
         [text]="'general.button.close' | translate"
@@ -451,14 +505,19 @@
       ></bb-btn-content>
     </button>
   } @else if (isReady()) {
-    <button type="button" class="btn btn-primary btn-sm btn-split" (click)="startImport()">
+    <button
+      type="button"
+      class="btn btn-primary btn-sm bb-pill-btn"
+      (click)="startImport()"
+      [disabled]="selectedHashes().size === 0"
+    >
       <bb-btn-content
         [icon]="icons.faFileImport"
         [text]="'components.modals.import-torrents.button.import' | translate"
         position="end"
       ></bb-btn-content>
     </button>
-    <button type="button" class="btn btn-link btn-sm btn-split" (click)="close()">
+    <button type="button" class="btn btn-sm btn-split" (click)="close()" autofocus>
       <bb-btn-content
         [icon]="icons.faXmark"
         [text]="'general.button.cancel' | translate"

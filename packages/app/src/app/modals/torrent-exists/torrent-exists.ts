@@ -1,3 +1,4 @@
+import { PercentPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -8,7 +9,8 @@ import {
   signal,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { faCircleInfo, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faArrowDown, faArrowUp, faCircleInfo, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TimeagoPipe } from 'ngx-timeago';
@@ -16,12 +18,14 @@ import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { BbProgress } from '../../components/bb-progress/bb-progress';
 import { AutofocusDirective } from '../../directives/autofocus';
 import { TooltipOverflow } from '../../directives/tooltip-overflow';
+import { TorrentState } from '../../models/torrent.model';
 import { FilesizePipe } from '../../pipes/filesize-pipe';
 import { LocalTimestampPipe } from '../../pipes/local-timestamp-pipe';
 import { RatioPipe } from '../../pipes/ratio-pipe';
 import { CommandBusService } from '../../services/command-bus.service';
 import { FilterService } from '../../services/filter.service';
 import { GeneralSettingsService } from '../../services/general-settings.service';
+import { PathService } from '../../services/path.service';
 import { SelectionStoreService } from '../../services/selection-store.service';
 import { ToastService } from '../../services/toast.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
@@ -30,16 +34,18 @@ import { TorrentStoreService } from '../../services/torrent-store.service';
   selector: 'app-torrent-exists',
   standalone: true,
   imports: [
-    LocalTimestampPipe,
     FilesizePipe,
+    PercentPipe,
     RatioPipe,
+    LocalTimestampPipe,
+    TimeagoPipe,
     AutofocusDirective,
     TooltipOverflow,
-    TimeagoPipe,
     NgbTooltip,
     TranslatePipe,
     BbProgress,
     BbBtnContent,
+    FontAwesomeModule,
   ],
   styleUrls: ['./torrent-exists.scss'],
   templateUrl: './torrent-exists.html',
@@ -55,15 +61,17 @@ export class TorrentExists {
   private readonly filterService = inject(FilterService);
   private readonly commandBusService = inject(CommandBusService);
   private readonly generalSettingsService = inject(GeneralSettingsService);
+  private readonly pathService = inject(PathService);
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
   private readonly generalSettings = toSignal(this.generalSettingsService.asObservable(), {
     initialValue: null,
   });
 
-  public icons = { faCircleInfo, faXmark };
+  public icons = { faCircleInfo, faXmark, faArrowDown, faArrowUp };
 
   public readonly fileDeleted = signal(false);
+  public readonly localPath = signal<string | null>(null);
 
   private hasAttemptedDelete = false;
 
@@ -92,6 +100,13 @@ export class TorrentExists {
 
       this.hasAttemptedDelete = true;
       void this.deleteTorrentFile(path);
+    });
+
+    effect(() => {
+      const remotePath = this.torrent()?.content_path;
+      void this.pathService
+        .resolveLocalPath(remotePath)
+        .then((resolved) => this.localPath.set(resolved));
     });
   }
 
@@ -123,6 +138,18 @@ export class TorrentExists {
         this.translateService.instant('components.modals.torrent-exists.toast.delete-failed-title'),
       );
     }
+  }
+
+  public isDownloading(state: TorrentState): boolean {
+    return (
+      state === 'downloading' ||
+      state === 'pausedDL' ||
+      state === 'stoppedDL' ||
+      state === 'queuedDL' ||
+      state === 'stalledDL' ||
+      state === 'checkingDL' ||
+      state === 'forcedDL'
+    );
   }
 
   public openDetails(): void {

@@ -9,6 +9,7 @@ import {
 } from '../../../models/qbittorrent.model';
 import { Torrent } from '../../../models/torrent.model';
 import { ToastService } from '../../../services/toast.service';
+import { TorrentDetailsActionsService } from '../torrent-details-actions.service';
 import { MergedTorrent, TorrentDetailsDataService } from '../torrent-details-data.service';
 import { General } from './general';
 
@@ -136,6 +137,16 @@ describe('General', () => {
       imports: [General],
       providers: [
         { provide: TorrentDetailsDataService, useValue: mockDataService },
+        {
+          provide: TorrentDetailsActionsService,
+          useValue: {
+            toggleAutoTmm: vi.fn(),
+            toggleSequentialDownload: vi.fn(),
+            toggleForceStart: vi.fn(),
+            toggleSuperSeeding: vi.fn(),
+            toggleFirstLastPiecePrio: vi.fn(),
+          },
+        },
         { provide: Clipboard, useValue: { copy: vi.fn() } },
         { provide: ToastService, useValue: { info: vi.fn(), danger: vi.fn() } },
         provideTimeago({ intl: { provide: TimeagoIntl, useClass: TimeagoIntl } }),
@@ -200,6 +211,56 @@ describe('General', () => {
     });
   });
 
+  describe('stateVariant', () => {
+    it('maps downloading to the info variant', () => {
+      mockDataService.torrent.set({
+        data: makeTorrent({ state: 'downloading' }),
+        properties: makeProperties(),
+      });
+      fixture.detectChanges();
+      expect(component.stateVariant()).toBe('info');
+    });
+
+    it('maps error to the danger variant', () => {
+      mockDataService.torrent.set({
+        data: makeTorrent({ state: 'error' }),
+        properties: makeProperties(),
+      });
+      fixture.detectChanges();
+      expect(component.stateVariant()).toBe('danger');
+    });
+
+    it('applies the variant as a text color class on the state label', () => {
+      mockDataService.torrent.set({
+        data: makeTorrent({ state: 'uploading' }),
+        properties: makeProperties(),
+      });
+      fixture.detectChanges();
+
+      const state = fixture.nativeElement.querySelector('.bb-hero-state');
+      expect(state.classList.contains('text-success')).toBe(true);
+    });
+  });
+
+  describe('hero progress bar', () => {
+    beforeEach(() => {
+      mockDataService.torrent.set({
+        data: makeTorrent({ state: 'downloading' }),
+        properties: makeProperties(),
+      });
+      fixture.detectChanges();
+    });
+
+    it('does not render the downloaded/total size line above the progress bar', () => {
+      expect(fixture.nativeElement.querySelector('.bb-hero-pct__sub')).toBeNull();
+    });
+
+    it('renders the progress bar in compact mode', () => {
+      const progress = fixture.nativeElement.querySelector('app-bb-progress .bb-progress');
+      expect(progress.classList.contains('bb-progress--compact')).toBe(true);
+    });
+  });
+
   describe('toggleErrorLog', () => {
     it('flips errorLogExpanded', () => {
       expect(component.errorLogExpanded()).toBe(false);
@@ -220,42 +281,42 @@ describe('General', () => {
     });
 
     it('does not render the error row when there is no errorLog', () => {
-      expect(fixture.nativeElement.querySelector('.bb-section--danger')).toBeNull();
+      expect(fixture.nativeElement.querySelector('.bb-error-banner')).toBeNull();
     });
 
     it('renders the error row with the short reason and reflects errorLogExpanded on the icon', () => {
       mockDataService.errorLog.set(makeLogEntry());
       fixture.detectChanges();
 
-      const row = fixture.nativeElement.querySelector('.bb-section--danger');
+      const row = fixture.nativeElement.querySelector('.bb-error-banner');
       expect(row).not.toBeNull();
-      expect(row.querySelector('.section-header').textContent).not.toContain('[object Object]');
-      expect(row.querySelector('.section-value').textContent).toContain('Permission denied');
+      expect(row.querySelector('.bb-error-banner__title').textContent).not.toContain(
+        '[object Object]',
+      );
+      expect(row.querySelector('.bb-error-banner__message').textContent).toContain(
+        'Permission denied',
+      );
 
-      const icon = row.querySelector('.error-toggle__icon');
-      expect(icon.classList.contains('error-toggle__icon--expanded')).toBe(false);
+      const chevron = row.querySelector('.bb-error-banner__chevron');
+      expect(chevron.classList.contains('bb-error-banner__chevron--expanded')).toBe(false);
 
       component.toggleErrorLog();
       fixture.detectChanges();
 
-      expect(icon.classList.contains('error-toggle__icon--expanded')).toBe(true);
+      expect(chevron.classList.contains('bb-error-banner__chevron--expanded')).toBe(true);
 
-      const detail = row.querySelector('.error-toggle__detail');
-      expect(detail.querySelector('hr')).toBeNull();
-      expect(detail.querySelector('.section-header')).toBeNull();
-      expect(detail.querySelector('pre').textContent).toContain('Permission denied');
+      const detail = row.querySelector('.bb-error-banner__detail');
+      expect(detail.textContent).toContain('Permission denied');
     });
   });
 
   describe('date fields use the configured date format', () => {
     function sectionValueFor(headerFragment: string): string {
-      const sections = Array.from(
-        fixture.nativeElement.querySelectorAll('.bb-section'),
-      ) as HTMLElement[];
-      const section = sections.find((el) =>
-        el.querySelector('.section-header')?.textContent?.includes(headerFragment),
+      const cells = Array.from(fixture.nativeElement.querySelectorAll('.bb-cell')) as HTMLElement[];
+      const cell = cells.find((el) =>
+        el.querySelector('.bb-cell__label')?.textContent?.includes(headerFragment),
       );
-      return section?.querySelector('.section-value')?.textContent?.trim() ?? '';
+      return cell?.querySelector('.bb-cell__value')?.textContent?.trim() ?? '';
     }
 
     beforeEach(() => {

@@ -19,29 +19,32 @@ Nyisd meg a párbeszédablakot az eszköztárból: **Beállítások > BitButler*
 | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Alkalmazás indítása a rendszerrel | Automatikusan elindítja a BitButlert az operációs rendszer indulásakor.                                                                                            |
 | Kicsinyítve indítás               | Induláskor elrejti az alkalmazás ablakát; a BitButler továbbra is elérhető marad a rendszertálcáról. Az "Alkalmazás indítása a rendszerrel" bekapcsolását igényli. |
+| Automatikus frissítések           | Az alkalmazás minden indulásakor automatikusan ellenőrzi a BitButler frissítéseit.                                                                                 |
 
 Ha az "Alkalmazás indítása a rendszerrel" be van kapcsolva, de nincs szerver alapértelmezett kapcsolatként megjelölve, itt egy figyelmeztető szöveg jelenik meg, amely emlékeztet, hogy az alkalmazás automatikus bejelentkezés nélkül fog elindulni. Lásd [Alapértelmezett szerver beállítása](../manage/servers#alapertelmezett-szerver-beallitasa).
 
-### Viselkedés
+Ha azonnal ellenőrizni szeretnéd a frissítéseket, ne a következő indításra várva, használd a **Súgó > Frissítések keresése** menüpontot az [alkalmazásmenüben](../application-menu#sugo).
+
+### Torrentkezelés
 
 | Beállítás                                                      | Leírás                                                                                                                                                                                                                                              |
 | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Torrentfájlok törlése a listához adás után                     | Eltávolítja a helyi `.torrent` fájlt a lemezről, miután sikeresen hozzáadásra került a listához.                                                                                                                                                    |
 | A torrent fájlok törlése, ha a torrent már szerepel a listában | Automatikusan eltávolítja a forrás `.torrent` fájlt a lemezről, ha az duplikátumként kerül újra hozzáadásra. A "Torrentfájlok törlése a listához adás után" bekapcsolását igényli - lásd a [Torrent már létezik ablakot](../torrent-exists-window). |
-| Automatikus frissítések                                        | Az alkalmazás minden indulásakor automatikusan ellenőrzi a BitButler frissítéseit. Egy mellette lévő **Frissítések keresése most** gomb igény szerint indít ellenőrzést.                                                                            |
-| Alkalmazáson belüli értesítés pozíciója                        | Hol jelenjenek meg a felugró értesítések: Bal felül, Jobb felül, Jobb alul vagy Bal alul.                                                                                                                                                           |
 
-### Nyelv
+A Mentésiútvonal-bevitel szabályozza, hogyan viselkedjenek a mentésiútvonal-mezők az egész alkalmazásban torrentek hozzáadásakor vagy áthelyezésekor, valamint a lenti [Szerver fülön](#szerver) a Távoli útvonal mezőnél - mindkét lehetőségnél élő előnézetet láthatsz, mielőtt választasz:
 
-Beállítja a felület nyelvét: **Angol** vagy **Magyar**. A módosítás azonnal frissíti a felületet, és újraépíti a tálca és az alkalmazásmenü címkéit is.
+- **ng-select** - egy legördülő, amelyet a csatlakoztatott szerveren talált mappák töltenek fel.
+- **ngb-typeahead** - egy szabadszöveges mező, amely gépelés közben automatikus kiegészítési javaslatokat ad.
 
-### Dátum és idő
+### Nyelv és dátumformátum
 
-| Beállítás        | Leírás                                                                                                                  |
-| ---------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| Dátumformátum    | Egy előre beállított minta: Nyelv szerint, ISO, USA, Európai vagy Egyéni.                                               |
-| A hét első napja | Automatikus, Vasárnap, Hétfő vagy Szombat.                                                                              |
-| Egyéni minta     | Csak akkor jelenik meg, ha a dátumformátum Egyéni. Egy szabadszöveges minta a lenti tokenekből építve, élő előnézettel. |
+| Beállítás        | Leírás                                                                                                                                                                                              |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Nyelv            | Beállítja a felület nyelvét: **Angol** vagy **Magyar**. A módosítás azonnal frissíti a felületet, és újraépíti a tálca és az alkalmazásmenü címkéit is.                                             |
+| Dátumformátum    | Egy előre beállított minta: Nyelv szerint, ISO, USA, Európai vagy Egyéni.                                                                                                                           |
+| A hét első napja | Automatikus, Vasárnap, Hétfő vagy Szombat.                                                                                                                                                          |
+| Egyéni minta     | Csak akkor jelenik meg, ha a dátumformátum Egyéni. Egy szabadszöveges minta a lenti tokenekből építve, élő előnézettel és egy mellette lévő gombbal, amely visszaállítja az alapértelmezett mintát. |
 
 Kattints a **Jelölőútmutató** gombra a mintában használható tokenek táblázatának kibontásához (alapból összecsukva), lásd lentebb (a példaértékek egy 2026. április 5-i, keddi, 14:05:09 időpontra vonatkoznak):
 
@@ -69,17 +72,11 @@ A szó szerinti szöveget egyszeres idézőjelbe tedd (pl. `'at'`), hogy változ
 
 ### Megjelenés
 
-| Beállítás  | Leírás                                                                                                                          |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| Témacsalád | Az általános színpaletta: BitButler, Aurora, Crimson Ember, Deep Sea, Mint Green, Ocean Breeze, Pumpkin Spice vagy Purple Haze. |
-| Témamód    | Világos, Sötét vagy Rendszerszintű (követi az operációs rendszer témáját).                                                      |
-
-### Mentésiútvonal-bevitel
-
-Szabályozza, hogyan viselkedjenek a mentésiútvonal-mezők az egész alkalmazásban torrentek hozzáadásakor vagy áthelyezésekor:
-
-- **ng-select** - egy legördülő, amelyet a csatlakoztatott szerveren talált mappák töltenek fel.
-- **ngb-typeahead** - egy szabadszöveges mező, amely gépelés közben automatikus kiegészítési javaslatokat ad.
+| Beállítás                               | Leírás                                                                                                                          |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Témacsalád                              | Az általános színpaletta: BitButler, Aurora, Mint Green, Purple Haze, Ocean Breeze, Pumpkin Spice, Deep Sea vagy Crimson Ember. |
+| Témamód                                 | Világos, Sötét vagy Rendszerszintű (követi az operációs rendszer témáját).                                                      |
+| Alkalmazáson belüli értesítés pozíciója | Hol jelenjenek meg a felugró értesítések: Bal felül, Jobb felül, Jobb alul vagy Bal alul.                                       |
 
 ## Szerver
 
@@ -102,7 +99,7 @@ Ha bármelyik intervallumot 2 másodperc alá állítod, egy figyelmeztetés jel
 
 Ha egy szerver torrent-letöltési mappái helyben is csatolva vannak (például egy hálózati megosztás), a szerver távoli útvonalát a helyi megfelelőjéhez rendelheted. Ez lehetővé teszi, hogy a BitButler a megfelelő helyi mappát az operációs rendszer natív fájlböngészőjében nyissa meg a Torrent részletek nézetből, vagy a torrentlistából, amikor a [sorra dupla kattintás viselkedése](#tablazat-beallitasok) "Megjelenítés a mappában / Célhely megnyitása" értékre van állítva.
 
-Minden sor egy **Távoli útvonalat** rendel egy **Helyi útvonalhoz**. Használd a **Hozzárendelés tesztelése** gombot annak megerősítéséhez, hogy egy hozzárendelés valódi helyi mappára oldódik fel, valamint a hozzáadás/eltávolítás gombokat minden sor mellett a lista kezeléséhez.
+Minden sor egy **Távoli útvonalat** rendel egy **Helyi útvonalhoz**; a Távoli útvonal mező ugyanaz a [Mentésiútvonal-bevitel](#torrentkezeles) vezérlőelem, amit máshol is használ az alkalmazás, tehát legördülő vagy szabadszöveges mező, az Általános fülön beállítottaktól függően. Használd a **Tallózás** gombot a helyi mappa kiválasztásához, valamint a **Hozzárendelés tesztelése** gombot annak megerősítéséhez, hogy a hozzárendelés valódi helyi mappára oldódik fel. A sor végén lévő gomb kiüríti a mezőket, ha az az utolsó megmaradt sor, vagy eltávolítja a sort, ha egynél több van; az utolsó sor **+** gombja új sort ad hozzá, mihelyt mindkét mezője ki van töltve.
 
 ## Torrenttáblázat
 
@@ -126,14 +123,14 @@ A sorra dupla kattintás viselkedése szabályozza, mi történik egy torrentsor
 
 ### Oszlopok
 
-- **Oszlopkészlet** - az összes elérhető oszlop kereshető, többszörös kiválasztású listája. A felette lévő **Visszaállítás** gomb visszaállítja a látható oszlopokat és sorrendjüket az alapértelmezettre.
 - **Sorrend** - húzd az engedélyezett oszlopok átrendezéséhez; ez egyben a torrenttáblázatban balról jobbra megjelenő sorrend is. Minden sorhoz tartozik **Ugrás a lista tetejére**, **Mozgatás feljebb**, **Mozgatás lejjebb**, **Ugrás a lista aljára** és **Eltávolítás** gomb is, így húzás nélkül is átrendezheted vagy eltávolíthatod az oszlopot.
+- **Oszlopkészlet** - az összes elérhető oszlop kereshető, többszörös kiválasztású listája. A felette lévő **Visszaállítás** gomb visszaállítja a látható oszlopokat és sorrendjüket az alapértelmezettre.
 
 ## Állapotsáv
 
 ![Állapotsáv fül](/screenshots/settings/bitbutler-settings/status-bar.png)
 
-Konfiguráld a főablak alján lévő állapotsávban megjelenő widgetek láthatóságát és sorrendjét. Húzd a widgeteket az **Elérhető modulok** (letiltva/nem használt) és a **Bal** vagy **Jobb** oszlop között az engedélyezéshez, letiltáshoz vagy átrendezéshez. A widgetkészlet feletti **Visszaállítás alapértelmezettre** gomb visszaállítja az alapértelmezett widget-elrendezést.
+Konfiguráld a főablak alján lévő állapotsávban megjelenő widgetek láthatóságát és sorrendjét. Húzd a widgeteket az **Elérhető modulok** (letiltva/nem használt, egyszerű felirattal megjelenítve) és a **Bal** vagy **Jobb** oszlop között az engedélyezéshez, letiltáshoz vagy átrendezéshez - a Bal/Jobb oszlopban a widgetek élőnek tűnő, minta adatokkal ellátott előnézetként jelennek meg, hogy mentés előtt is lásd, körülbelül hogyan fognak kinézni. A widgetkészlet feletti **Visszaállítás alapértelmezettre** gomb visszaállítja az alapértelmezett widget-elrendezést.
 
 Elérhető widgetek:
 
@@ -148,6 +145,5 @@ Elérhető widgetek:
 - Letöltési sebesség
 - Feltöltési sebesség
 - Lemezterület
-- Munkamenet-statisztikák
 - Kijelölés adatai
 - Lekérdezés-jelző

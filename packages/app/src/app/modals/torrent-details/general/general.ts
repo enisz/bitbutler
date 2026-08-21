@@ -1,12 +1,19 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FontAwesomeModule, IconDefinition } from '@fortawesome/angular-fontawesome';
-import { faCopy } from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowDown,
+  faArrowUp,
+  faCircleExclamation,
+  faCopy,
+} from '@fortawesome/free-solid-svg-icons';
 import { NgbCollapse, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TimeagoPipe } from 'ngx-timeago';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbProgress } from '../../../components/bb-progress/bb-progress';
+import { variantForTorrentState } from '../../../components/bb-progress/torrent-state-variant';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { TooltipOverflow } from '../../../directives/tooltip-overflow';
 import { QbLogEntry } from '../../../models/qbittorrent.model';
@@ -19,6 +26,7 @@ import { RatioPipe } from '../../../pipes/ratio-pipe';
 import { SpeedLimitPipe } from '../../../pipes/speed-limit-pipe';
 import { TimeLimitPipe } from '../../../pipes/time-limit-pipe';
 import { ToastService } from '../../../services/toast.service';
+import { TorrentDetailsActionsService } from '../torrent-details-actions.service';
 import { TorrentDetailsDataService } from '../torrent-details-data.service';
 import { TorrentDetailTabComponent } from '../torrent-details.interface';
 
@@ -26,6 +34,7 @@ import { TorrentDetailTabComponent } from '../torrent-details.interface';
   selector: 'app-general',
   imports: [
     BbSpinner,
+    DecimalPipe,
     LocalTimestampPipe,
     TimeagoPipe,
     FilesizePipe,
@@ -49,16 +58,27 @@ import { TorrentDetailTabComponent } from '../torrent-details.interface';
 })
 export class General implements TorrentDetailTabComponent {
   private readonly dataService = inject(TorrentDetailsDataService);
+  public readonly actionsService = inject(TorrentDetailsActionsService);
   private readonly clipboard = inject(Clipboard);
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
 
-  public icons: Record<string, IconDefinition> = { faCopy };
+  public icons: Record<string, IconDefinition> = {
+    faCopy,
+    faCircleExclamation,
+    faArrowDown,
+    faArrowUp,
+  };
 
   public readonly torrent = this.dataService.torrent;
   public readonly localPath = this.dataService.localPath;
   public readonly errorLog = this.dataService.errorLog;
   public errorLogExpanded = signal(false);
+
+  public readonly stateVariant = computed(() => {
+    const state = this.torrent()?.data.state;
+    return state ? variantForTorrentState(state) : 'secondary';
+  });
 
   public toClipboard(fieldKey: string, value: string): void {
     const field = this.translateService.instant(
@@ -71,6 +91,16 @@ export class General implements TorrentDetailTabComponent {
       ),
     );
     this.clipboard.copy(value);
+  }
+
+  public tagList(): string[] {
+    const tags = this.torrent()?.data.tags;
+    return tags
+      ? tags
+          .split(',')
+          .map((tag) => tag.trim())
+          .filter(Boolean)
+      : [];
   }
 
   public isDownloading(): boolean {

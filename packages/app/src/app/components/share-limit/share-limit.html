@@ -1,17 +1,6 @@
-<div [formGroup]="form" class="d-flex flex-column gap-2 pb-3">
+<div [formGroup]="form" class="d-flex flex-column gap-3 pb-3">
   <div class="limit-row">
-    <div class="form-check mb-0 text-nowrap">
-      <input
-        class="form-check-input"
-        type="radio"
-        name="ratioMode"
-        id="ratioModeCustom"
-        [checked]="ratioMode() === 'custom'"
-        (change)="setRatioMode('custom')"
-      />
-    </div>
-
-    <div class="form-floating">
+    <div class="form-floating limit-row__field">
       <input
         type="number"
         step="0.1"
@@ -24,34 +13,36 @@
       <label for="ratioLimit">{{ 'components.share-limit.ratio-limit' | translate }}</label>
     </div>
 
-    <div class="d-flex flex-column gap-1">
-      <div class="form-check mb-0 text-nowrap">
-        <input
-          class="form-check-input"
-          type="radio"
-          name="ratioMode"
-          id="ratioModeGlobal"
-          [checked]="ratioMode() === 'global'"
-          (change)="setRatioMode('global')"
-        />
-        <label class="form-check-label" for="ratioModeGlobal">
-          {{ 'general.limit.global' | translate }}
-        </label>
-      </div>
+    <div class="btn-group segmented-picker" role="group">
+      <input
+        type="radio"
+        class="btn-check"
+        name="ratioMode"
+        id="ratioModeGlobal"
+        [checked]="ratioMode() === 'global'"
+        (change)="setRatioMode('global')"
+      />
+      <label class="btn" for="ratioModeGlobal">{{ 'general.limit.global' | translate }}</label>
 
-      <div class="form-check mb-0 text-nowrap">
-        <input
-          class="form-check-input"
-          type="radio"
-          name="ratioMode"
-          id="ratioModeNoLimit"
-          [checked]="ratioMode() === 'no-limit'"
-          (change)="setRatioMode('no-limit')"
-        />
-        <label class="form-check-label" for="ratioModeNoLimit">
-          {{ 'general.limit.no-limit' | translate }}
-        </label>
-      </div>
+      <input
+        type="radio"
+        class="btn-check"
+        name="ratioMode"
+        id="ratioModeNoLimit"
+        [checked]="ratioMode() === 'no-limit'"
+        (change)="setRatioMode('no-limit')"
+      />
+      <label class="btn" for="ratioModeNoLimit">{{ 'general.limit.no-limit' | translate }}</label>
+
+      <input
+        type="radio"
+        class="btn-check"
+        name="ratioMode"
+        id="ratioModeCustom"
+        [checked]="ratioMode() === 'custom'"
+        (change)="setRatioMode('custom')"
+      />
+      <label class="btn" for="ratioModeCustom">{{ 'general.limit.custom' | translate }}</label>
     </div>
 
     <bb-popover
@@ -68,18 +59,7 @@
   </div>
 
   <div class="limit-row">
-    <div class="form-check mb-0 text-nowrap">
-      <input
-        class="form-check-input"
-        type="radio"
-        name="seedingMode"
-        id="seedingModeCustom"
-        [checked]="seedingMode() === 'custom'"
-        (change)="setSeedingMode('custom')"
-      />
-    </div>
-
-    <div class="form-floating">
+    <div class="form-floating limit-row__field">
       <input
         type="number"
         class="form-control"
@@ -93,34 +73,36 @@
       </label>
     </div>
 
-    <div class="d-flex flex-column gap-1">
-      <div class="form-check mb-0 text-nowrap">
-        <input
-          class="form-check-input"
-          type="radio"
-          name="seedingMode"
-          id="seedingModeGlobal"
-          [checked]="seedingMode() === 'global'"
-          (change)="setSeedingMode('global')"
-        />
-        <label class="form-check-label" for="seedingModeGlobal">
-          {{ 'general.limit.global' | translate }}
-        </label>
-      </div>
+    <div class="btn-group segmented-picker" role="group">
+      <input
+        type="radio"
+        class="btn-check"
+        name="seedingMode"
+        id="seedingModeGlobal"
+        [checked]="seedingMode() === 'global'"
+        (change)="setSeedingMode('global')"
+      />
+      <label class="btn" for="seedingModeGlobal">{{ 'general.limit.global' | translate }}</label>
 
-      <div class="form-check mb-0 text-nowrap">
-        <input
-          class="form-check-input"
-          type="radio"
-          name="seedingMode"
-          id="seedingModeNoLimit"
-          [checked]="seedingMode() === 'no-limit'"
-          (change)="setSeedingMode('no-limit')"
-        />
-        <label class="form-check-label" for="seedingModeNoLimit">
-          {{ 'general.limit.no-limit' | translate }}
-        </label>
-      </div>
+      <input
+        type="radio"
+        class="btn-check"
+        name="seedingMode"
+        id="seedingModeNoLimit"
+        [checked]="seedingMode() === 'no-limit'"
+        (change)="setSeedingMode('no-limit')"
+      />
+      <label class="btn" for="seedingModeNoLimit">{{ 'general.limit.no-limit' | translate }}</label>
+
+      <input
+        type="radio"
+        class="btn-check"
+        name="seedingMode"
+        id="seedingModeCustom"
+        [checked]="seedingMode() === 'custom'"
+        (change)="setSeedingMode('custom')"
+      />
+      <label class="btn" for="seedingModeCustom">{{ 'general.limit.custom' | translate }}</label>
     </div>
 
     <bb-popover
@@ -137,18 +119,7 @@
   </div>
 
   <div class="limit-row">
-    <div class="form-check mb-0 text-nowrap">
-      <input
-        class="form-check-input"
-        type="radio"
-        name="inactiveMode"
-        id="inactiveModeCustom"
-        [checked]="inactiveMode() === 'custom'"
-        (change)="setInactiveMode('custom')"
-      />
-    </div>
-
-    <div class="form-floating">
+    <div class="form-floating limit-row__field">
       <input
         type="number"
         class="form-control"
@@ -162,34 +133,38 @@
       </label>
     </div>
 
-    <div class="d-flex flex-column gap-1">
-      <div class="form-check mb-0 text-nowrap">
-        <input
-          class="form-check-input"
-          type="radio"
-          name="inactiveMode"
-          id="inactiveModeGlobal"
-          [checked]="inactiveMode() === 'global'"
-          (change)="setInactiveMode('global')"
-        />
-        <label class="form-check-label" for="inactiveModeGlobal">
-          {{ 'general.limit.global' | translate }}
-        </label>
-      </div>
+    <div class="btn-group segmented-picker" role="group">
+      <input
+        type="radio"
+        class="btn-check"
+        name="inactiveMode"
+        id="inactiveModeGlobal"
+        [checked]="inactiveMode() === 'global'"
+        (change)="setInactiveMode('global')"
+      />
+      <label class="btn" for="inactiveModeGlobal">{{ 'general.limit.global' | translate }}</label>
 
-      <div class="form-check mb-0 text-nowrap">
-        <input
-          class="form-check-input"
-          type="radio"
-          name="inactiveMode"
-          id="inactiveModeNoLimit"
-          [checked]="inactiveMode() === 'no-limit'"
-          (change)="setInactiveMode('no-limit')"
-        />
-        <label class="form-check-label" for="inactiveModeNoLimit">
-          {{ 'general.limit.no-limit' | translate }}
-        </label>
-      </div>
+      <input
+        type="radio"
+        class="btn-check"
+        name="inactiveMode"
+        id="inactiveModeNoLimit"
+        [checked]="inactiveMode() === 'no-limit'"
+        (change)="setInactiveMode('no-limit')"
+      />
+      <label class="btn" for="inactiveModeNoLimit">{{
+        'general.limit.no-limit' | translate
+      }}</label>
+
+      <input
+        type="radio"
+        class="btn-check"
+        name="inactiveMode"
+        id="inactiveModeCustom"
+        [checked]="inactiveMode() === 'custom'"
+        (change)="setInactiveMode('custom')"
+      />
+      <label class="btn" for="inactiveModeCustom">{{ 'general.limit.custom' | translate }}</label>
     </div>
 
     <bb-popover

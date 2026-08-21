@@ -1,9 +1,17 @@
 import { NgClass } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, effect, input, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { IconDefinition, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { IconDefinition, faChevronDown, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { debounceTime, startWith } from 'rxjs/operators';
@@ -49,11 +57,21 @@ export class FilterGroupComponent {
   readonly showAllCount = input.required<number>();
   readonly showFilter = input(false);
   readonly action = input<FilterGroupAction | null>(null);
+  readonly initialOpen = input(true);
 
   readonly itemSelected = output<string>();
+  readonly openChanged = output<boolean>();
 
-  public readonly icons = { faXmark };
+  public readonly icons = { faXmark, faChevronDown };
   public filterCtrl = new FormControl('', { nonNullable: true });
+  private readonly openOverride = signal<boolean | null>(null);
+  public readonly open = computed(() => this.openOverride() ?? this.initialOpen());
+
+  public toggleOpen(): void {
+    const next = !this.open();
+    this.openOverride.set(next);
+    this.openChanged.emit(next);
+  }
 
   private readonly filterText = toSignal(
     this.filterCtrl.valueChanges.pipe(startWith(''), debounceTime(FILTER_DEBOUNCE_MS)),

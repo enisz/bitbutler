@@ -1,64 +1,107 @@
 <div class="status-container">
-  <div class="filter-groups-wrapper">
-    <app-filter-group
-      [label]="'pages.main.status.label.status' | translate"
-      [items]="statusItems()"
-      [activeKeys]="activeStatusKeys()"
-      [showAllCount]="totalCount()"
-      (itemSelected)="setGroup($event)"
-    ></app-filter-group>
-
-    <app-filter-group
-      class="mt-3"
-      [label]="'pages.main.status.label.trackers' | translate"
-      [items]="trackersWithCounts()"
-      [activeKeys]="activeTrackerKeys()"
-      [showAllCount]="totalCount()"
-      [showFilter]="true"
-      (itemSelected)="setTrackerGroup($event)"
-    ></app-filter-group>
-
-    <app-filter-group
-      class="mt-3"
-      [label]="'pages.main.status.label.categories' | translate"
-      [items]="categoriesWithCounts()"
-      [activeKeys]="activeCategoryKeys()"
-      [showAllCount]="totalCount()"
-      [showFilter]="true"
-      [action]="categoriesAction()"
-      (itemSelected)="setCategoryGroup($event)"
-    ></app-filter-group>
-
-    <app-filter-group
-      class="mt-3"
-      [label]="'pages.main.status.label.tags' | translate"
-      [items]="tagsWithCounts()"
-      [activeKeys]="activeTagKeys()"
-      [showAllCount]="totalCount()"
-      [showFilter]="true"
-      [action]="tagsAction()"
-      (itemSelected)="setTagGroup($event)"
-    ></app-filter-group>
-
-    <app-filter-group
-      class="mt-3"
-      [label]="'pages.main.status.label.save-paths' | translate"
-      [items]="savePathsWithCounts()"
-      [activeKeys]="activeSavePathKeys()"
-      [showAllCount]="totalCount()"
-      [showFilter]="true"
-      (itemSelected)="setSavePathGroup($event)"
-    ></app-filter-group>
-  </div>
-
-  @if (hasAnyFilter()) {
-    <div class="clear-all-bar">
-      <button class="btn btn-clear-all w-100 btn-split" type="button" (click)="clearAll()">
-        <bb-btn-content
-          [icon]="icon.faEraser"
-          [text]="'pages.main.status.clear-all' | translate"
-        ></bb-btn-content>
-      </button>
+  @if (collapsed()) {
+    <div class="collapsed-status-list">
+      @for (item of collapsedStatusItems(); track item.key) {
+        <button
+          type="button"
+          class="collapsed-status-item"
+          [class.active]="
+            item.key === 'all' ? activeStatusKeys().size === 0 : activeStatusKeys().has(item.key)
+          "
+          (click)="setGroup(item.key)"
+          [ngbTooltip]="item.label"
+          placement="end"
+        >
+          <fa-icon [icon]="item.icon"></fa-icon>
+        </button>
+      }
     </div>
+
+    @if (hasAnyFilter()) {
+      <div class="collapsed-clear-all-bar">
+        <button
+          type="button"
+          class="collapsed-status-item collapsed-clear-all"
+          (click)="clearAll()"
+          [ngbTooltip]="'pages.main.status.clear-all' | translate"
+          placement="end"
+        >
+          <fa-icon [icon]="icon.faEraser"></fa-icon>
+        </button>
+      </div>
+    }
+  } @else {
+    <div class="filter-groups-wrapper">
+      <app-filter-group
+        [label]="'pages.main.status.label.status' | translate"
+        [items]="statusItems()"
+        [activeKeys]="activeStatusKeys()"
+        [showAllCount]="totalCount()"
+        [initialOpen]="filterGroupsOpen().status"
+        (itemSelected)="setGroup($event)"
+        (openChanged)="setGroupOpen('status', $event)"
+      ></app-filter-group>
+
+      <app-filter-group
+        class="mt-3"
+        [label]="'pages.main.status.label.trackers' | translate"
+        [items]="trackersWithCounts()"
+        [activeKeys]="activeTrackerKeys()"
+        [showAllCount]="totalCount()"
+        [showFilter]="true"
+        [initialOpen]="filterGroupsOpen().trackers"
+        (itemSelected)="setTrackerGroup($event)"
+        (openChanged)="setGroupOpen('trackers', $event)"
+      ></app-filter-group>
+
+      <app-filter-group
+        class="mt-3"
+        [label]="'pages.main.status.label.categories' | translate"
+        [items]="categoriesWithCounts()"
+        [activeKeys]="activeCategoryKeys()"
+        [showAllCount]="totalCount()"
+        [showFilter]="true"
+        [action]="categoriesAction()"
+        [initialOpen]="filterGroupsOpen().categories"
+        (itemSelected)="setCategoryGroup($event)"
+        (openChanged)="setGroupOpen('categories', $event)"
+      ></app-filter-group>
+
+      <app-filter-group
+        class="mt-3"
+        [label]="'pages.main.status.label.tags' | translate"
+        [items]="tagsWithCounts()"
+        [activeKeys]="activeTagKeys()"
+        [showAllCount]="totalCount()"
+        [showFilter]="true"
+        [action]="tagsAction()"
+        [initialOpen]="filterGroupsOpen().tags"
+        (itemSelected)="setTagGroup($event)"
+        (openChanged)="setGroupOpen('tags', $event)"
+      ></app-filter-group>
+
+      <app-filter-group
+        class="mt-3"
+        [label]="'pages.main.status.label.save-paths' | translate"
+        [items]="savePathsWithCounts()"
+        [activeKeys]="activeSavePathKeys()"
+        [showAllCount]="totalCount()"
+        [showFilter]="true"
+        [initialOpen]="filterGroupsOpen().savePaths"
+        (itemSelected)="setSavePathGroup($event)"
+        (openChanged)="setGroupOpen('savePaths', $event)"
+      ></app-filter-group>
+    </div>
+
+    @if (hasAnyFilter()) {
+      <div class="clear-all-bar">
+        <button class="btn btn-clear-all w-100 btn-split" type="button" (click)="clearAll()">
+          <bb-btn-content
+            [icon]="icon.faEraser"
+            [text]="'pages.main.status.clear-all' | translate"
+          ></bb-btn-content>
+        </button>
+      </div>
+    }
   }
 </div>

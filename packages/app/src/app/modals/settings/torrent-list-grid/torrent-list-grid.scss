@@ -1,7 +1,14 @@
+// Grid-options switches: drop the divider on the last row of the 2-column grid.
+.bb-options--grid .bb-option:nth-last-child(-n + 2) {
+  border-bottom: none;
+}
+
 .column-reorder-container {
   max-height: min(520px, 55vh);
   overflow-y: auto;
   background-color: var(--bb-control-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: 8px;
   padding: 4px;
 }
 
@@ -16,10 +23,10 @@
   align-items: center;
   padding: 8px 12px;
   margin-bottom: 2px;
-  background-color: var(--bs-card-bg);
+  background-color: transparent;
   color: var(--bs-body-color);
   border-bottom: 1px solid var(--bs-border-color);
-  font-size: 0.9rem;
+  font-size: 0.9375rem;
   cursor: default;
   transition: background-color 0.15s ease;
 

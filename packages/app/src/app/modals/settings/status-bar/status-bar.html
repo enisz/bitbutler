@@ -1,95 +1,87 @@
 @if (settingsLoaded()) {
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-12">
-        <p>
-          {{ 'pages.settings.tab.status-bar.description' | translate }}
-        </p>
-      </div>
+  <div class="row">
+    <div class="col-12">
+      <p>
+        {{ 'pages.settings.tab.status-bar.description' | translate }}
+      </p>
     </div>
-    <div class="row">
-      <div class="col-12 d-flex justify-content-end">
-        <button type="button" class="btn btn-sm btn-link btn-split" (click)="reset()">
-          <bb-btn-content
-            [icon]="faRotateLeft"
-            [text]="'pages.settings.tab.status-bar.label.reset' | translate"
-            position="end"
-          ></bb-btn-content>
-        </button>
-      </div>
+  </div>
+  <div class="row">
+    <div class="col-12 d-flex justify-content-end">
+      <button type="button" class="btn btn-sm btn-split" (click)="reset()">
+        <bb-btn-content
+          [icon]="faRotateLeft"
+          [text]="'pages.settings.tab.status-bar.label.reset' | translate"
+          position="end"
+        ></bb-btn-content>
+      </button>
     </div>
-    <div cdkDropListGroup class="status-bar-config">
-      <fieldset class="bb-fieldset mt-2 mb-1 pb-3">
-        <legend>
-          {{ 'pages.settings.tab.status-bar.label.widget-pool' | translate }}
-          <bb-popover
-            [subject]="'pages.settings.tab.status-bar.label.widget-pool' | translate"
-            [description]="
-              'pages.settings.tab.status-bar.popover.widget-pool.description' | translate
-            "
-          ></bb-popover>
-        </legend>
+  </div>
+  <div cdkDropListGroup class="status-bar-config">
+    <fieldset class="bb-fieldset mt-2 mb-1 pb-3">
+      <legend>
+        {{ 'pages.settings.tab.status-bar.label.widget-pool' | translate }}
+        <bb-popover
+          [subject]="'pages.settings.tab.status-bar.label.widget-pool' | translate"
+          [description]="
+            'pages.settings.tab.status-bar.popover.widget-pool.description' | translate
+          "
+        ></bb-popover>
+      </legend>
+      <div
+        cdkDropList
+        #availableList="cdkDropList"
+        [cdkDropListData]="available"
+        cdkDropListOrientation="horizontal"
+        class="widget-container horizontal"
+        (cdkDropListDropped)="drop($event)"
+      >
+        @for (widget of available; track widget.id) {
+          <span class="badge status-pill" cdkDrag>{{ widget.label }}</span>
+        }
+      </div>
+    </fieldset>
+
+    <fieldset class="bb-fieldset mt-0">
+      <legend>
+        {{ 'pages.settings.tab.status-bar.label.widgets' | translate }}
+        <bb-popover
+          [subject]="'pages.settings.tab.status-bar.label.widgets' | translate"
+          [description]="'pages.settings.tab.status-bar.popover.widgets.description' | translate"
+        ></bb-popover>
+      </legend>
+      <div class="mb-3">
+        <p class="mb-1">{{ 'pages.settings.tab.status-bar.label.left' | translate }}</p>
         <div
           cdkDropList
-          #availableList="cdkDropList"
-          [cdkDropListData]="available"
+          #leftList="cdkDropList"
+          [cdkDropListData]="left"
           cdkDropListOrientation="horizontal"
-          class="widget-container horizontal"
+          class="widget-container preview-row"
           (cdkDropListDropped)="drop($event)"
         >
-          @for (widget of available; track widget.id) {
-            <span class="badge status-pill" cdkDrag>{{ widget.label }}</span>
+          @for (widget of left; track widget.id) {
+            <app-status-bar-widget-preview [id]="widget.id" cdkDrag></app-status-bar-widget-preview>
           }
         </div>
-      </fieldset>
+      </div>
 
-      <fieldset class="bb-fieldset mt-0">
-        <legend>
-          {{ 'pages.settings.tab.status-bar.label.widgets' | translate }}
-          <bb-popover
-            [subject]="'pages.settings.tab.status-bar.label.widgets' | translate"
-            [description]="'pages.settings.tab.status-bar.popover.widgets.description' | translate"
-          ></bb-popover>
-        </legend>
-        <div class="mb-3">
-          <p class="mb-1">{{ 'pages.settings.tab.status-bar.label.left' | translate }}</p>
-          <div
-            cdkDropList
-            #leftList="cdkDropList"
-            [cdkDropListData]="left"
-            cdkDropListOrientation="horizontal"
-            class="widget-container preview-row"
-            (cdkDropListDropped)="drop($event)"
-          >
-            @for (widget of left; track widget.id) {
-              <app-status-bar-widget-preview
-                [id]="widget.id"
-                cdkDrag
-              ></app-status-bar-widget-preview>
-            }
-          </div>
+      <div class="mb-3">
+        <p class="mb-1">{{ 'pages.settings.tab.status-bar.label.right' | translate }}</p>
+        <div
+          cdkDropList
+          #rightList="cdkDropList"
+          [cdkDropListData]="right"
+          cdkDropListOrientation="horizontal"
+          class="widget-container preview-row align-end"
+          (cdkDropListDropped)="drop($event)"
+        >
+          @for (widget of right; track widget.id) {
+            <app-status-bar-widget-preview [id]="widget.id" cdkDrag></app-status-bar-widget-preview>
+          }
         </div>
-
-        <div class="mb-3">
-          <p class="mb-1">{{ 'pages.settings.tab.status-bar.label.right' | translate }}</p>
-          <div
-            cdkDropList
-            #rightList="cdkDropList"
-            [cdkDropListData]="right"
-            cdkDropListOrientation="horizontal"
-            class="widget-container preview-row align-end"
-            (cdkDropListDropped)="drop($event)"
-          >
-            @for (widget of right; track widget.id) {
-              <app-status-bar-widget-preview
-                [id]="widget.id"
-                cdkDrag
-              ></app-status-bar-widget-preview>
-            }
-          </div>
-        </div>
-      </fieldset>
-    </div>
+      </div>
+    </fieldset>
   </div>
 } @else {
   <app-bb-spinner></app-bb-spinner>

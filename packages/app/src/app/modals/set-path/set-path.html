@@ -42,6 +42,7 @@
             [autofocus]="true"
             [clearable]="true"
             [placeholder]="pathType() === 'save' ? defaultSavePath() : ''"
+            appendTo="body"
           ></app-save-path-select>
         </div>
 
@@ -78,7 +79,7 @@
       position="end"
     ></bb-btn-content>
   </button>
-  <button type="button" class="btn btn-link btn-sm btn-split" (click)="activeModal.close()">
+  <button type="button" class="btn btn-sm btn-split" (click)="activeModal.close()">
     <bb-btn-content
       [icon]="icons.faXmark"
       [text]="'general.button.cancel' | translate"

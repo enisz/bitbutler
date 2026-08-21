@@ -85,6 +85,7 @@ export interface Release {
 
 export interface UpdateCheckResponse {
   updateAvailable: boolean;
+  currentVersion?: string;
   releases?: Release[];
   error?: unknown;
 }

@@ -12,6 +12,7 @@ import type {
   ImportStartPayload,
   MenuClickPayload,
   TorrentDraft,
+  UpdaterEvent,
   WindowState,
 } from '@bitbutler/shared';
 import { contextBridge, ipcRenderer } from 'electron';
@@ -53,6 +54,12 @@ const api: BitButlerAPI = {
     getDownloadsPath: () => ipcRenderer.invoke('electron:get-downloads-path'),
   },
 
+  updater: {
+    getCapability: () => ipcRenderer.invoke('updater:get-capability'),
+    updateNow: () => ipcRenderer.invoke('updater:update-now'),
+    onEvent: (callback) => makeIpcSubscription('updater:event', (e) => e as UpdaterEvent, callback),
+  },
+
   server: {
     list: () => ipcRenderer.invoke('server:list'),
     add: (server) => ipcRenderer.invoke('server:add', server),
@@ -60,8 +67,13 @@ const api: BitButlerAPI = {
     delete: ({ id }) => ipcRenderer.invoke('server:delete', { id }),
     getById: ({ id }) => ipcRenderer.invoke('server:getById', { id }),
     getByHost: ({ host }) => ipcRenderer.invoke('server:getByHost', { host }),
-    setExportAvailable: ({ id, value }) =>
-      ipcRenderer.invoke('server:set-export-available', { id, value }),
+    setConnectionInfo: ({ id, exportAvailable, webapiVersion, qbVersion }) =>
+      ipcRenderer.invoke('server:set-connection-info', {
+        id,
+        exportAvailable,
+        webapiVersion,
+        qbVersion,
+      }),
     setActive: (id) => ipcRenderer.send('server:set-active', id),
   },
 
@@ -169,10 +181,6 @@ const api: BitButlerAPI = {
       ipcRenderer.invoke('export:read-bbe', payload) as Promise<BbeMetadata>,
     getServerInfo: (serverId: string) =>
       ipcRenderer.invoke('export:get-server-info', { serverId }) as Promise<BbeServerInfo>,
-    checkAvailability: (serverId: string) =>
-      ipcRenderer.invoke('export:check-availability', { serverId }) as Promise<{
-        available: boolean;
-      }>,
     saveTorrentFiles: (payload: { serverId: string; items: ExportTorrentFileItem[] }) =>
       ipcRenderer.invoke('export:save-torrent-files', payload) as Promise<ExportTorrentFilesResult>,
     importStart: (payload: ImportStartPayload) => ipcRenderer.send('import:start', payload),

@@ -39,7 +39,14 @@ The **Files** tab becomes available only when a single `.torrent` file has been 
 
 ![Add Torrent dialog - Options tab](/screenshots/add-torrent-dialog/add-torrent-options.png)
 
-The **Options** tab lets you configure per-torrent behavior: root folder handling, skip hash checking, adding in a paused state, Automatic Torrent Management, sequential download, and first/last piece priority.
+The **Options** tab lets you configure per-torrent behavior. Each setting is remembered as the dialog's default for the next torrent you add.
+
+- **Root Folder** - controls how a multi-file torrent's top-level folder is handled: **Default (unset)** leaves it up to qBittorrent's own global setting, **Create root folder** always wraps the files in one, and **Do not create root folder** downloads them flat.
+- **Skip hash checking** - trusts data already on disk at the save path instead of having qBittorrent re-verify it before starting.
+- **Add torrents in the paused state** - queues the torrent without starting it immediately.
+- **Use Auto TMM** - turns on Automatic Torrent Management, so qBittorrent derives the save path from the torrent's category rather than the path set on the General tab (which is still sent, but only honored when this is off).
+- **Enable sequential download** - downloads pieces in file order instead of qBittorrent's default rarest-first strategy.
+- **Prioritize download first last piece** - fetches each file's first and last pieces ahead of the rest, independently of sequential download.
 
 ## Limits Tab
 

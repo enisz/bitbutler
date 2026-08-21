@@ -2,3 +2,13 @@ ng-select.flex-grow-1 {
   min-width: 0;
   flex-basis: 0;
 }
+
+input[type='number'].form-control {
+  max-width: 160px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.form-text {
+  font-size: 0.8125rem;
+}

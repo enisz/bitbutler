@@ -59,7 +59,11 @@
     ]
   },
   "build": {
-    "publish": null,
+    "publish": {
+      "provider": "github",
+      "owner": "enisz",
+      "repo": "bitbutler"
+    },
     "forceCodeSigning": false,
     "executableName": "BitButler",
     "appId": "com.enisz.bitbutler",
@@ -220,6 +224,7 @@
     "axios": "^1.13.6",
     "better-sqlite3": "^12.5.0",
     "bootstrap": "^5.3.6",
+    "electron-updater": "^6.8.9",
     "filesize": "^11.0.13",
     "flag-icons": "^7.5.0",
     "form-data": "^4.0.5",

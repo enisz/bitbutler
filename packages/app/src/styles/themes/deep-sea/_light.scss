@@ -9,10 +9,10 @@ $deep-sea-light-danger: #d9534f;
 $deep-sea-light-warning: #f0ad4e;
 $deep-sea-light-info: #5bc0de;
 
-$deep-sea-light-body-bg: #ebf4f6;
+$deep-sea-light-body-bg: #d3e7ea;
 $deep-sea-light-body-color: #04161d;
-$deep-sea-light-border: #7ab2b2;
-$deep-sea-light-surface: #ffffff;
+$deep-sea-light-border: #aecdd2;
+$deep-sea-light-surface: #eef8f9;
 
 $deep-sea-light-check-marker-colors: (
   'default': $deep-sea-light-secondary,
@@ -56,10 +56,10 @@ $deep-sea-light-check-marker-colors: (
     --bs-body-color: #{$deep-sea-light-body-color};
     --bs-border-color: #{$deep-sea-light-border};
 
-    --bs-card-bg: #ffffff;
+    --bs-card-bg: #{$deep-sea-light-surface};
     --bs-card-color: #{$deep-sea-light-body-color};
     --bs-card-border-color: #{$deep-sea-light-border};
-    --bs-card-cap-bg: #dcedf0;
+    --bs-card-cap-bg: color-mix(in srgb, var(--bs-body-bg) 70%, var(--bs-card-bg) 30%);
     --bs-card-cap-color: #{$deep-sea-light-primary};
 
     --bs-tooltip-bg: var(--bs-card-cap-bg);
@@ -72,7 +72,7 @@ $deep-sea-light-check-marker-colors: (
     --bs-navbar-color: #{$deep-sea-light-body-color};
     --bs-navbar-brand-color: #{$deep-sea-light-primary};
     --bs-dropdown-link-color: #{$deep-sea-light-body-color};
-    --bs-dropdown-bg: #{$deep-sea-light-surface};
+    --bs-dropdown-bg: var(--bs-card-cap-bg);
 
     --bb-accent: var(--bs-secondary);
     --bb-accent-rgb: var(--bs-secondary-rgb);
@@ -109,7 +109,7 @@ $deep-sea-light-check-marker-colors: (
     --bb-control-focus-border: var(--bs-primary);
     --bb-control-focus-ring: rgba(var(--bs-primary-rgb), 0.18);
 
-    --bb-control-radius: 12px;
+    --bb-control-radius: 9px;
 
     --bb-dp-bg: var(--bs-dropdown-bg);
     --bb-dp-border: var(--bs-border-color);
@@ -127,9 +127,9 @@ $deep-sea-light-check-marker-colors: (
     --bb-toast-border-opacity: 1;
     --bb-toast-glow-opacity: 0.05;
 
-    --bs-popover-bg: #ffffff;
+    --bs-popover-bg: var(--bs-card-cap-bg);
     --bs-popover-border-color: #{$deep-sea-light-border};
-    --bs-popover-header-bg: #dcedf0;
+    --bs-popover-header-bg: var(--bs-card-cap-bg);
     --bs-popover-header-color: #{$deep-sea-light-primary};
     --bs-popover-body-color: #{$deep-sea-light-body-color};
 
@@ -163,7 +163,7 @@ $deep-sea-light-check-marker-colors: (
   .form-switch .form-check-input {
     background-color: var(--bb-control-bg);
     border-color: var(--bb-control-border);
-    border-radius: var(--bb-control-radius, 12px);
+    border-radius: var(--bb-control-radius, 9px);
 
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%2309637e' opacity='0.45'/%3e%3c/svg%3e");
 

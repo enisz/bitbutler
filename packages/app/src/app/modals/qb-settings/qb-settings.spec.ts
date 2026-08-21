@@ -22,7 +22,10 @@ describe('QbSettings', () => {
   let confirmMock: { confirm: ReturnType<typeof vi.fn> };
   let toastMock: { success: ReturnType<typeof vi.fn>; danger: ReturnType<typeof vi.fn> };
   let qbMock: { app: { preferences: ReturnType<typeof vi.fn> } };
-  let serverStoreMock: { currentServerId: ReturnType<typeof signal<string | null>> };
+  let serverStoreMock: {
+    currentServerId: ReturnType<typeof signal<string | null>>;
+    currentServer: ReturnType<typeof signal<{ name: string } | null>>;
+  };
 
   beforeEach(async () => {
     stateServiceMock = {
@@ -40,7 +43,10 @@ describe('QbSettings', () => {
     confirmMock = { confirm: vi.fn().mockResolvedValue(false) };
     toastMock = { success: vi.fn(), danger: vi.fn() };
     qbMock = { app: { preferences: vi.fn().mockResolvedValue({ dl_limit: 0 }) } };
-    serverStoreMock = { currentServerId: signal('server-1') };
+    serverStoreMock = {
+      currentServerId: signal('server-1'),
+      currentServer: signal({ name: 'test-qb' }),
+    };
 
     await TestBed.configureTestingModule({
       imports: [QbSettings],

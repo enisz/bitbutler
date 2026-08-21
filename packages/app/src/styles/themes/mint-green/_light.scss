@@ -1,25 +1,25 @@
 @use 'sass:color';
 @use 'sass:string';
 
-$bb-light-primary: #588157;
-$bb-light-secondary: #a3b18a;
+$mg-light-primary: #588157;
+$mg-light-secondary: #a3b18a;
 
-$bb-light-success: #4caf50;
-$bb-light-danger: #ef5350;
-$bb-light-warning: #ffc107;
-$bb-light-info: #2196f3;
+$mg-light-success: #4caf50;
+$mg-light-danger: #ef5350;
+$mg-light-warning: #ffc107;
+$mg-light-info: #2196f3;
 
-$bb-light-body-bg: #f0f3f0;
-$bb-light-body-color: #344e41;
-$bb-light-border: #dad7cd;
-$bb-light-surface: #e8eae8;
+$mg-light-body-bg: #dce5dc;
+$mg-light-body-color: #344e41;
+$mg-light-border: #c0cec0;
+$mg-light-surface: #eef2ee;
 
-$bb-light-check-marker-colors: (
-  'default': $bb-light-secondary,
-  'success': $bb-light-success,
-  'danger': $bb-light-danger,
-  'warning': $bb-light-warning,
-  'info': $bb-light-info,
+$mg-light-check-marker-colors: (
+  'default': $mg-light-secondary,
+  'success': $mg-light-success,
+  'danger': $mg-light-danger,
+  'warning': $mg-light-warning,
+  'info': $mg-light-info,
 );
 
 @mixin install() {
@@ -34,45 +34,45 @@ $bb-light-check-marker-colors: (
     --bb-light-ink: #000;
     --bb-dark-ink: #fff;
 
-    --bs-primary: #{$bb-light-primary};
+    --bs-primary: #{$mg-light-primary};
     --bs-primary-rgb: #{string.unquote('88, 129, 87')};
 
-    --bs-secondary: #{$bb-light-secondary};
+    --bs-secondary: #{$mg-light-secondary};
     --bs-secondary-rgb: #{string.unquote('163, 177, 138')};
 
-    --bs-success: #{$bb-light-success};
+    --bs-success: #{$mg-light-success};
     --bs-success-rgb: #{string.unquote('76, 175, 80')};
 
-    --bs-danger: #{$bb-light-danger};
+    --bs-danger: #{$mg-light-danger};
     --bs-danger-rgb: #{string.unquote('239, 83, 80')};
 
-    --bs-warning: #{$bb-light-warning};
+    --bs-warning: #{$mg-light-warning};
     --bs-warning-rgb: #{string.unquote('255, 193, 7')};
 
-    --bs-info: #{$bb-light-info};
+    --bs-info: #{$mg-light-info};
     --bs-info-rgb: #{string.unquote('33, 150, 243')};
 
-    --bs-body-bg: #{$bb-light-body-bg};
-    --bs-body-color: #{$bb-light-body-color};
-    --bs-border-color: #{$bb-light-border};
+    --bs-body-bg: #{$mg-light-body-bg};
+    --bs-body-color: #{$mg-light-body-color};
+    --bs-border-color: #{$mg-light-border};
 
-    --bs-card-bg: #ffffff;
-    --bs-card-color: #{$bb-light-body-color};
-    --bs-card-border-color: #{$bb-light-border};
-    --bs-card-cap-bg: #f0f0f0;
-    --bs-card-cap-color: #{$bb-light-body-color};
+    --bs-card-bg: #{$mg-light-surface};
+    --bs-card-color: #{$mg-light-body-color};
+    --bs-card-border-color: #{$mg-light-border};
+    --bs-card-cap-bg: color-mix(in srgb, var(--bs-body-bg) 70%, var(--bs-card-bg) 30%);
+    --bs-card-cap-color: #{$mg-light-body-color};
 
     --bs-tooltip-bg: var(--bs-card-cap-bg);
     --bs-tooltip-color: var(--bs-body-color);
     --bs-tooltip-opacity: 0.95;
 
-    --bs-link-color: #{$bb-light-primary};
+    --bs-link-color: #{$mg-light-primary};
     --bs-link-hover-color: #3b3b3f;
 
-    --bs-navbar-color: #{$bb-light-body-color};
-    --bs-navbar-brand-color: #{$bb-light-primary};
-    --bs-dropdown-link-color: #{$bb-light-body-color};
-    --bs-dropdown-bg: #{$bb-light-surface};
+    --bs-navbar-color: #{$mg-light-body-color};
+    --bs-navbar-brand-color: #{$mg-light-primary};
+    --bs-dropdown-link-color: #{$mg-light-body-color};
+    --bs-dropdown-bg: var(--bs-card-cap-bg);
 
     --bb-accent: var(--bs-secondary);
     --bb-accent-rgb: var(--bs-secondary-rgb);
@@ -109,7 +109,7 @@ $bb-light-check-marker-colors: (
     --bb-control-focus-border: var(--bs-primary);
     --bb-control-focus-ring: rgba(var(--bs-primary-rgb), 0.18);
 
-    --bb-control-radius: 12px;
+    --bb-control-radius: 9px;
 
     --bb-dp-bg: var(--bs-dropdown-bg);
     --bb-dp-border: var(--bs-border-color);
@@ -127,35 +127,35 @@ $bb-light-check-marker-colors: (
     --bb-toast-border-opacity: 1;
     --bb-toast-glow-opacity: 0.05;
 
-    --bs-popover-bg: var(--bs-card-bg);
-    --bs-popover-border-color: #{$bb-light-border};
-    --bs-popover-header-bg: #f0f0f0;
-    --bs-popover-header-color: #{$bb-light-body-color};
-    --bs-popover-body-color: #{$bb-light-body-color};
+    --bs-popover-bg: var(--bs-card-cap-bg);
+    --bs-popover-border-color: #{$mg-light-border};
+    --bs-popover-header-bg: var(--bs-card-cap-bg);
+    --bs-popover-header-color: #{$mg-light-body-color};
+    --bs-popover-body-color: #{$mg-light-body-color};
 
-    --bs-primary-bg-subtle: #{color.mix(white, $bb-light-primary, 80%)};
-    --bs-primary-border-subtle: #{color.mix(white, $bb-light-primary, 60%)};
-    --bs-primary-text-emphasis: #{color.mix(black, $bb-light-primary, 60%)};
+    --bs-primary-bg-subtle: #{color.mix(white, $mg-light-primary, 80%)};
+    --bs-primary-border-subtle: #{color.mix(white, $mg-light-primary, 60%)};
+    --bs-primary-text-emphasis: #{color.mix(black, $mg-light-primary, 60%)};
 
-    --bs-secondary-bg-subtle: #{color.mix(white, $bb-light-secondary, 80%)};
-    --bs-secondary-border-subtle: #{color.mix(white, $bb-light-secondary, 60%)};
-    --bs-secondary-text-emphasis: #{color.mix(black, $bb-light-secondary, 60%)};
+    --bs-secondary-bg-subtle: #{color.mix(white, $mg-light-secondary, 80%)};
+    --bs-secondary-border-subtle: #{color.mix(white, $mg-light-secondary, 60%)};
+    --bs-secondary-text-emphasis: #{color.mix(black, $mg-light-secondary, 60%)};
 
-    --bs-success-bg-subtle: #{color.mix(white, $bb-light-success, 80%)};
-    --bs-success-border-subtle: #{color.mix(white, $bb-light-success, 60%)};
-    --bs-success-text-emphasis: #{color.mix(black, $bb-light-success, 60%)};
+    --bs-success-bg-subtle: #{color.mix(white, $mg-light-success, 80%)};
+    --bs-success-border-subtle: #{color.mix(white, $mg-light-success, 60%)};
+    --bs-success-text-emphasis: #{color.mix(black, $mg-light-success, 60%)};
 
-    --bs-danger-bg-subtle: #{color.mix(white, $bb-light-danger, 80%)};
-    --bs-danger-border-subtle: #{color.mix(white, $bb-light-danger, 60%)};
-    --bs-danger-text-emphasis: #{color.mix(black, $bb-light-danger, 60%)};
+    --bs-danger-bg-subtle: #{color.mix(white, $mg-light-danger, 80%)};
+    --bs-danger-border-subtle: #{color.mix(white, $mg-light-danger, 60%)};
+    --bs-danger-text-emphasis: #{color.mix(black, $mg-light-danger, 60%)};
 
-    --bs-warning-bg-subtle: #{color.mix(white, $bb-light-warning, 80%)};
-    --bs-warning-border-subtle: #{color.mix(white, $bb-light-warning, 60%)};
-    --bs-warning-text-emphasis: #{color.mix(black, $bb-light-warning, 60%)};
+    --bs-warning-bg-subtle: #{color.mix(white, $mg-light-warning, 80%)};
+    --bs-warning-border-subtle: #{color.mix(white, $mg-light-warning, 60%)};
+    --bs-warning-text-emphasis: #{color.mix(black, $mg-light-warning, 60%)};
 
-    --bs-info-bg-subtle: #{color.mix(white, $bb-light-info, 80%)};
-    --bs-info-border-subtle: #{color.mix(white, $bb-light-info, 60%)};
-    --bs-info-text-emphasis: #{color.mix(black, $bb-light-info, 60%)};
+    --bs-info-bg-subtle: #{color.mix(white, $mg-light-info, 80%)};
+    --bs-info-border-subtle: #{color.mix(white, $mg-light-info, 60%)};
+    --bs-info-text-emphasis: #{color.mix(black, $mg-light-info, 60%)};
   }
 }
 
@@ -163,7 +163,7 @@ $bb-light-check-marker-colors: (
   .form-switch .form-check-input {
     background-color: var(--bb-control-bg);
     border-color: var(--bb-control-border);
-    border-radius: var(--bb-control-radius, 12px);
+    border-radius: var(--bb-control-radius, 9px);
 
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23588157' opacity='0.45'/%3e%3c/svg%3e");
 
@@ -189,7 +189,7 @@ $bb-light-check-marker-colors: (
     background-color: var(--bs-body-bg) !important;
   }
 
-  @each $variant, $hex in $bb-light-check-marker-colors {
+  @each $variant, $hex in $mg-light-check-marker-colors {
     $hex-code: '%23' + string.slice('#{$hex}', 2);
     $scope: if($variant == 'default', '', '.bb-check-#{$variant} ');
 

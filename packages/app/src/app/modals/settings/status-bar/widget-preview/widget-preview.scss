@@ -22,9 +22,9 @@
   gap: 0.5rem;
   padding: 0.2rem 0.75rem;
   white-space: nowrap;
-  background-color: var(--bs-body-bg);
-  border: 1px solid var(--bs-border-color);
-  border-radius: 50px;
+  background-color: var(--bs-card-bg);
+  border: 1px solid var(--bb-control-border);
+  border-radius: 999px;
 }
 
 .status-dot {

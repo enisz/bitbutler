@@ -45,7 +45,7 @@ Files                                                   ›
   Rename Files
   Export .torrent File(s)
 Manage                                                  ›
-  Rename Torrent
+  Rename Torrent                                       F2
   Set Category
   Set Tags
 Queue                                                   ›
@@ -64,6 +64,7 @@ Maintenance                                             ›
   Force Reannounce
   Enable/Disable Auto TMM
 Copy                                                    ›
+  Copy Cell Value
   Copy Name(s)
   Copy Magnet Link(s)
   Copy Info Hash(es)
@@ -105,6 +106,7 @@ Remove                                      (Shift +) Del
 | Force Recheck                             | Maintenance |   ✓    |   ✓   | Rechecks the downloaded data on disk.                                                    |
 | Force Reannounce                          | Maintenance |   ✓    |   ✓   | Reannounces to trackers immediately.                                                     |
 | Enable/Disable Auto TMM                   | Maintenance |   ✓    |   ✓   | Toggles Automatic Torrent Management.                                                    |
+| Copy Cell Value                           | Copy        |   ✓    |   ✓   | Copies the right-clicked cell's raw value to the clipboard.                              |
 | Copy Name(s)                              | Copy        |   ✓    |   ✓   | Copies the torrent name(s) to the clipboard.                                             |
 | Copy Magnet Link(s)                       | Copy        |   ✓    |   ✓   | Copies the magnet link(s) to the clipboard.                                              |
 | Copy Info Hash(es)                        | Copy        |   ✓    |   ✓   | Copies the info hash(es) to the clipboard.                                               |
@@ -126,6 +128,19 @@ The sidebar breaks the torrent list down into five filter groups, each showing a
 - **Save Paths** - one entry per distinct save path in use.
 
 Trackers, Categories, Tags, and Save Paths each have their own filter box to search long lists. Every group, including Status, works the same way: selecting an entry adds it to the active filter for that group, and you can select multiple entries within a group - the grid shows torrents matching any of them. Selecting an already-active entry removes it. Selections in different groups narrow the list together, so a torrent must match at least one selected entry in _every_ group that has an active selection to appear in the grid. Once any filter is active anywhere in the sidebar, a **Clear All** button appears beneath the groups to reset every filter at once.
+
+### Collapsing the Sidebar
+
+![Expanded sidebar](/screenshots/torrent-list-view/sidebar-expanded.png)
+![Collapsed sidebar](/screenshots/torrent-list-view/sidebar-collapsed.png)
+
+Click the icon button next to the BitButler logo to collapse the sidebar down to a narrow icon rail; click the logo itself to expand it again. Collapsing only changes what's shown, not what's selected:
+
+- Trackers, Categories, Tags, and Save Paths - along with their filter boxes and **Manage** links - disappear entirely while collapsed.
+- Status shrinks to an icon-only column; hover an icon for its name. A **Clear All** icon appears at the bottom of the column if any filter is active.
+- Any filters you already had selected in the hidden groups stay applied to the grid - collapsing just stops showing them, it doesn't clear them.
+
+The collapsed or expanded state is remembered the next time you open BitButler.
 
 ## Status Bar
 

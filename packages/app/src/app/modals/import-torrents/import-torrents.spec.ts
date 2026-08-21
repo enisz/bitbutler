@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BbeTorrentEntry } from '@bitbutler/shared';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
+import { TimeagoIntl, provideTimeago } from 'ngx-timeago';
 import { GRID_ROW_MUTED_CLASS } from '../../app.const';
 import { ExportService } from '../../services/export.service';
 import { ServerStoreService } from '../../services/server-store.service';
@@ -21,6 +22,7 @@ describe('ImportTorrents', () => {
     setImportReady: ReturnType<typeof vi.fn>;
     setImportError: ReturnType<typeof vi.fn>;
     startImport: ReturnType<typeof vi.fn>;
+    cancelImport: ReturnType<typeof vi.fn>;
     resetImport: ReturnType<typeof vi.fn>;
   };
 
@@ -44,6 +46,7 @@ describe('ImportTorrents', () => {
       setImportReady: vi.fn(),
       setImportError: vi.fn(),
       startImport: vi.fn(),
+      cancelImport: vi.fn(),
       resetImport: vi.fn(),
     };
 
@@ -55,6 +58,7 @@ describe('ImportTorrents', () => {
         { provide: ServerStoreService, useValue: { currentServer: signal(null) } },
         { provide: ThemeService, useValue: { effectiveMode: signal('light') } },
         { provide: TorrentStoreService, useValue: { torrentsMap: signal(new Map()) } },
+        provideTimeago({ intl: { provide: TimeagoIntl, useClass: TimeagoIntl } }),
       ],
     }).compileComponents();
 
@@ -97,7 +101,7 @@ describe('ImportTorrents', () => {
       results: new Map(),
       metadata: {
         version: 1,
-        exported_at: 0,
+        exported_at: 1700000000,
         source_server: 'srv',
         export_mode: 'full',
         torrents: [],
@@ -161,7 +165,7 @@ describe('ImportTorrents', () => {
         results,
         metadata: {
           version: 1,
-          exported_at: 0,
+          exported_at: 1700000000,
           source_server: 'srv',
           export_mode: 'full',
           torrents,
@@ -248,6 +252,23 @@ describe('ImportTorrents', () => {
       fixture.detectChanges();
 
       expect(component.selectedHashes()).toEqual(new Set(['bbb']));
+    });
+
+    it('disables the import button when no torrents are selected', () => {
+      torrentStoreMock().torrentsMap.set(new Map([['aaa', {}]]));
+      setMetadata([{ hash: 'aaa', name: 'A', failed: false }]);
+      mockExportService.importPhase.set('ready');
+      fixture.detectChanges();
+
+      const importButton: HTMLButtonElement = fixture.nativeElement.querySelector(
+        'button.btn-primary.bb-pill-btn',
+      );
+      expect(component.selectedHashes().size).toBe(0);
+      expect(importButton.disabled).toBe(true);
+
+      component.selectedHashes.set(new Set(['aaa']));
+      fixture.detectChanges();
+      expect(importButton.disabled).toBe(false);
     });
 
     it('startImport sends skipHashes for every unselected row', () => {
@@ -447,7 +468,7 @@ describe('ImportTorrents', () => {
         results: new Map(),
         metadata: {
           version: 1,
-          exported_at: 0,
+          exported_at: 1700000000,
           source_server: 'srv',
           export_mode: 'full',
           torrents: [{ hash: 'aaa', name: 'A', failed: false }],
@@ -471,7 +492,7 @@ describe('ImportTorrents', () => {
         results: new Map(),
         metadata: {
           version: 1,
-          exported_at: 0,
+          exported_at: 1700000000,
           source_server: 'srv',
           export_mode: 'full',
           torrents: [{ hash: 'aaa', name: 'A', failed: false }],
@@ -503,7 +524,7 @@ describe('ImportTorrents', () => {
         results: new Map(),
         metadata: {
           version: 1,
-          exported_at: 0,
+          exported_at: 1700000000,
           source_server: 'srv',
           export_mode: 'full',
           torrents,
@@ -550,7 +571,7 @@ describe('ImportTorrents', () => {
         ]),
         metadata: {
           version: 1,
-          exported_at: 0,
+          exported_at: 1700000000,
           source_server: 'srv',
           export_mode: 'full',
           torrents: [
@@ -578,7 +599,7 @@ describe('ImportTorrents', () => {
         results: new Map(),
         metadata: {
           version: 1,
-          exported_at: 0,
+          exported_at: 1700000000,
           source_server: 'srv',
           export_mode: 'full',
           torrents: [

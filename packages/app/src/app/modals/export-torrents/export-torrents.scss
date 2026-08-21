@@ -1,0 +1,114 @@
+.bb-pill-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  ::ng-deep {
+    .btn-icon,
+    .btn-text {
+      display: inline-flex;
+      align-items: center;
+      padding: 0 !important;
+      background: none !important;
+    }
+  }
+}
+
+// Segmented scope toggles - single joined control, no icons
+
+.btn-group.w-100 {
+  .btn {
+    --bs-btn-border-radius: 0;
+    border: 1px solid var(--bb-control-border);
+    background-color: var(--bb-control-bg);
+    color: var(--bb-control-placeholder);
+
+    &:first-of-type {
+      border-top-left-radius: var(--bb-control-radius);
+      border-bottom-left-radius: var(--bb-control-radius);
+    }
+
+    &:last-of-type {
+      border-top-right-radius: var(--bb-control-radius);
+      border-bottom-right-radius: var(--bb-control-radius);
+    }
+
+    &:not(:first-of-type) {
+      border-left: 0;
+    }
+  }
+
+  .btn-check:checked + .btn {
+    background-color: var(--bb-accent);
+    border-color: var(--bb-accent);
+    color: var(--bb-secondary-ink);
+  }
+
+  .btn-check:focus-visible + .btn {
+    box-shadow: 0 0 0 0.2rem var(--bb-control-focus-ring);
+  }
+}
+
+.form-control,
+.input-group-text {
+  background-color: var(--bb-control-bg);
+  border-color: var(--bb-control-border);
+}
+
+.form-control:focus {
+  background-color: var(--bb-control-bg);
+}
+
+form > fieldset.bb-fieldset {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+// Connection panel - label/value row list, mirrors torrent details > general tab > torrent section
+
+.bb-rows {
+  padding-bottom: 4px;
+}
+
+.bb-row {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 16px;
+  align-items: baseline;
+  padding: 9px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--bs-border-color) 60%, transparent);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.bb-row__label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.78rem;
+  color: var(--bb-control-placeholder);
+}
+
+.bb-row__value {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+// Progress panel - hero-style percentage readout
+
+.bb-progress-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 10px;
+}
+
+.bb-progress-pct {
+  font-size: 1.625rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}

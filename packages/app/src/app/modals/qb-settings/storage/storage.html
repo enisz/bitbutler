@@ -5,7 +5,7 @@
     </div>
     <fieldset class="bb-fieldset">
       <legend>{{ 'pages.qb-settings.tab.storage.label.default-paths' | translate }}</legend>
-      <div class="container">
+      <div class="container mt-3">
         <div class="row mb-3">
           <div class="col-4 d-flex align-items-center">
             {{ 'pages.qb-settings.tab.storage.field.save-path' | translate }}
@@ -20,10 +20,15 @@
     @if (hasTempPath()) {
       <fieldset class="bb-fieldset">
         <legend>{{ 'pages.qb-settings.tab.storage.label.temp-files' | translate }}</legend>
-        <div class="container">
-          <div class="row mb-3">
-            <div class="col-12">
-              <div class="form-check form-switch">
+        <div class="container mt-3">
+          <div class="bb-options mb-3">
+            <div class="bb-option">
+              <div class="bb-option__text">
+                <label class="bb-option__label" for="temp-path-enabled">
+                  {{ 'pages.qb-settings.tab.storage.field.temp-path-enabled' | translate }}
+                </label>
+              </div>
+              <span class="bb-option__toggle form-switch">
                 <input
                   class="form-check-input"
                   type="checkbox"
@@ -31,10 +36,7 @@
                   id="temp-path-enabled"
                   formControlName="temp_path_enabled"
                 />
-                <label class="form-check-label" for="temp-path-enabled">
-                  {{ 'pages.qb-settings.tab.storage.field.temp-path-enabled' | translate }}
-                </label>
-              </div>
+              </span>
             </div>
           </div>
           <div class="row mb-3">
@@ -51,10 +53,15 @@
 
     <fieldset class="bb-fieldset">
       <legend>{{ 'pages.qb-settings.tab.storage.label.file-management' | translate }}</legend>
-      <div class="container">
-        <div class="row mb-3">
-          <div class="col-12">
-            <div class="form-check form-switch">
+      <div class="container mt-3">
+        <div class="bb-options mb-3">
+          <div class="bb-option">
+            <div class="bb-option__text">
+              <label class="bb-option__label" for="incomplete-files-ext">
+                {{ 'pages.qb-settings.tab.storage.field.incomplete-files-ext' | translate }}
+              </label>
+            </div>
+            <span class="bb-option__toggle form-switch">
               <input
                 class="form-check-input"
                 type="checkbox"
@@ -62,10 +69,7 @@
                 id="incomplete-files-ext"
                 formControlName="incomplete_files_ext"
               />
-              <label class="form-check-label" for="incomplete-files-ext">
-                {{ 'pages.qb-settings.tab.storage.field.incomplete-files-ext' | translate }}
-              </label>
-            </div>
+            </span>
           </div>
         </div>
         @if (hasContentLayout()) {
@@ -81,6 +85,7 @@
                 bindLabel="label"
                 bindValue="value"
                 formControlName="torrent_content_layout"
+                appendTo="body"
               ></ng-select>
             </div>
           </div>
@@ -90,7 +95,7 @@
 
     <fieldset class="bb-fieldset">
       <legend>{{ 'pages.qb-settings.tab.storage.label.save-management' | translate }}</legend>
-      <div class="container">
+      <div class="container mt-3">
         <div class="row mb-3">
           <div class="col-6 d-flex align-items-center">
             {{ 'pages.qb-settings.tab.storage.field.auto-tmm-enabled' | translate }}
@@ -103,6 +108,7 @@
               bindLabel="label"
               bindValue="value"
               formControlName="auto_tmm_enabled"
+              appendTo="body"
             ></ng-select>
           </div>
         </div>
@@ -118,6 +124,7 @@
               bindLabel="label"
               bindValue="value"
               formControlName="torrent_changed_tmm_enabled"
+              appendTo="body"
             ></ng-select>
           </div>
         </div>
@@ -133,6 +140,7 @@
               bindLabel="label"
               bindValue="value"
               formControlName="category_changed_tmm_enabled"
+              appendTo="body"
             ></ng-select>
           </div>
         </div>
@@ -148,7 +156,7 @@
               bindLabel="label"
               bindValue="value"
               formControlName="save_path_changed_tmm_enabled"
-              dropdownPosition="top"
+              appendTo="body"
             ></ng-select>
           </div>
         </div>

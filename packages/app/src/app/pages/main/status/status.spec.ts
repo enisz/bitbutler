@@ -1,10 +1,14 @@
 import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TorrentState } from '../../../models/torrent.model';
+import { of } from 'rxjs';
+import { DEFAULT_SIDEBAR_SETTINGS, SidebarSettings } from '../../../models/sidebar-settings.model';
 import { CommandBusService } from '../../../services/command-bus.service';
 import { FilterService, GRID_FILTER_INITIAL } from '../../../services/filter.service';
+import { SidebarSettingsService } from '../../../services/sidebar-settings.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { Status } from './status';
+
+const flushMicrotasks = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
 
 describe('Status', () => {
   let component: Status;
@@ -34,8 +38,18 @@ describe('Status', () => {
     tagsWithCounts: ReturnType<typeof signal<{ key: string; label: string; count: number }[]>>;
   };
   let commandBusMock: { emit: ReturnType<typeof vi.fn> };
+  let sidebarSettingsMock: {
+    load: ReturnType<typeof vi.fn>;
+    save: ReturnType<typeof vi.fn>;
+    asObservable: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(async () => {
+    sidebarSettingsMock = {
+      load: vi.fn().mockResolvedValue(DEFAULT_SIDEBAR_SETTINGS),
+      save: vi.fn().mockResolvedValue(undefined),
+      asObservable: vi.fn().mockReturnValue(of(DEFAULT_SIDEBAR_SETTINGS)),
+    };
     filterMock = {
       external: signal({ ...GRID_FILTER_INITIAL.external }),
       clearStates: vi.fn(),
@@ -65,6 +79,7 @@ describe('Status', () => {
         { provide: FilterService, useValue: filterMock },
         { provide: TorrentStoreService, useValue: torrentStoreMock },
         { provide: CommandBusService, useValue: commandBusMock },
+        { provide: SidebarSettingsService, useValue: sidebarSettingsMock },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
@@ -72,6 +87,7 @@ describe('Status', () => {
     fixture = TestBed.createComponent(Status);
     component = fixture.componentInstance;
     fixture.detectChanges();
+    await flushMicrotasks();
   });
 
   it('should create', () => {
@@ -85,7 +101,6 @@ describe('Status', () => {
     });
 
     it('should add the downloading group states when not yet active', () => {
-      filterMock.external.set({ ...GRID_FILTER_INITIAL.external, states: new Set() });
       component.setGroup('downloading');
       expect(filterMock.setStates).toHaveBeenCalledWith(
         new Set(['downloading', 'forcedDL', 'queuedDL', 'metaDL', 'stalledDL']),
@@ -93,12 +108,9 @@ describe('Status', () => {
     });
 
     it('should preserve a previously selected group when adding a second one', () => {
-      filterMock.external.set({
-        ...GRID_FILTER_INITIAL.external,
-        states: new Set(['pausedDL', 'pausedUP', 'stoppedDL', 'stoppedUP']),
-      });
+      component.setGroup('stopped');
       component.setGroup('downloading');
-      expect(filterMock.setStates).toHaveBeenCalledWith(
+      expect(filterMock.setStates).toHaveBeenLastCalledWith(
         new Set([
           'pausedDL',
           'pausedUP',
@@ -114,19 +126,14 @@ describe('Status', () => {
     });
 
     it('should remove the stopped group states when already fully active', () => {
-      filterMock.external.set({
-        ...GRID_FILTER_INITIAL.external,
-        states: new Set(['pausedDL', 'pausedUP', 'stoppedDL', 'stoppedUP']),
-      });
       component.setGroup('stopped');
-      expect(filterMock.setStates).toHaveBeenCalledWith(new Set());
+      component.setGroup('stopped');
+      expect(filterMock.setStates).toHaveBeenLastCalledWith(new Set());
     });
 
     it('should not add or remove anything for an unknown key', () => {
-      filterMock.external.set({
-        ...GRID_FILTER_INITIAL.external,
-        states: new Set(['downloading']),
-      });
+      component.setGroup('downloading');
+      filterMock.setStates.mockClear();
       component.setGroup('nonexistent');
       expect(filterMock.setStates).not.toHaveBeenCalled();
     });
@@ -135,22 +142,8 @@ describe('Status', () => {
       // Select Downloading, then Active, then deselect Downloading again. Downloading and
       // Active overlap (both include the "downloading", "forcedDL" and "metaDL" states), which
       // is exactly the scenario that broke the old differential-set implementation.
-      filterMock.external.set({ ...GRID_FILTER_INITIAL.external, states: new Set() });
-
       component.setGroup('downloading');
-      // Simulate FilterService applying the first setStates call before the next click.
-      filterMock.external.set({
-        ...GRID_FILTER_INITIAL.external,
-        states: filterMock.setStates.mock.calls[0][0] as Set<TorrentState>,
-      });
-
       component.setGroup('active');
-      // Simulate FilterService applying the second setStates call before the next click.
-      filterMock.external.set({
-        ...GRID_FILTER_INITIAL.external,
-        states: filterMock.setStates.mock.calls[1][0] as Set<TorrentState>,
-      });
-
       component.setGroup('downloading');
 
       expect(filterMock.setStates).toHaveBeenLastCalledWith(
@@ -271,26 +264,119 @@ describe('Status', () => {
       component.clearAll();
       expect(filterMock.resetAll).toHaveBeenCalled();
     });
+
+    it('should persist the cleared active filters', () => {
+      sidebarSettingsMock.save.mockClear();
+      component.clearAll();
+      expect(sidebarSettingsMock.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          activeFilters: {
+            statusKeys: [],
+            trackers: [],
+            savePaths: [],
+            categories: [],
+            tags: [],
+          },
+        }),
+      );
+    });
   });
 
-  describe('activeStatusKeys', () => {
-    it('should return an empty set when no states filter is active', () => {
-      filterMock.external.set({ ...GRID_FILTER_INITIAL.external, states: new Set() });
-      expect(component.activeStatusKeys()).toEqual(new Set());
+  describe('persisting active filters', () => {
+    it('should persist the selected status keys after setGroup', () => {
+      sidebarSettingsMock.save.mockClear();
+      component.setGroup('downloading');
+      expect(sidebarSettingsMock.save).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          activeFilters: expect.objectContaining({ statusKeys: ['downloading'] }),
+        }),
+      );
     });
 
-    it('should include "stopped" when the stopped states are fully active', () => {
+    it('should persist the selected trackers after setTrackerGroup', () => {
       filterMock.external.set({
         ...GRID_FILTER_INITIAL.external,
-        states: new Set(['pausedDL', 'pausedUP', 'stoppedDL', 'stoppedUP']),
+        trackers: new Set(['tracker.a.com']),
       });
-      expect(component.activeStatusKeys()).toEqual(new Set(['stopped']));
+      sidebarSettingsMock.save.mockClear();
+      component.setTrackerGroup('tracker.a.com');
+      expect(sidebarSettingsMock.save).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          activeFilters: expect.objectContaining({ trackers: ['tracker.a.com'] }),
+        }),
+      );
     });
 
-    it('should include both keys when the union of two groups is active', () => {
+    it('should persist the selected save paths after setSavePathGroup', () => {
       filterMock.external.set({
         ...GRID_FILTER_INITIAL.external,
-        states: new Set([
+        savePaths: new Set(['/downloads']),
+      });
+      sidebarSettingsMock.save.mockClear();
+      component.setSavePathGroup('/downloads');
+      expect(sidebarSettingsMock.save).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          activeFilters: expect.objectContaining({ savePaths: ['/downloads'] }),
+        }),
+      );
+    });
+
+    it('should persist the selected categories after setCategoryGroup', () => {
+      filterMock.external.set({
+        ...GRID_FILTER_INITIAL.external,
+        categories: new Set(['Movies']),
+      });
+      sidebarSettingsMock.save.mockClear();
+      component.setCategoryGroup('Movies');
+      expect(sidebarSettingsMock.save).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          activeFilters: expect.objectContaining({ categories: ['Movies'] }),
+        }),
+      );
+    });
+
+    it('should persist the selected tags after setTagGroup', () => {
+      filterMock.external.set({ ...GRID_FILTER_INITIAL.external, tags: new Set(['hd']) });
+      sidebarSettingsMock.save.mockClear();
+      component.setTagGroup('hd');
+      expect(sidebarSettingsMock.save).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          activeFilters: expect.objectContaining({ tags: ['hd'] }),
+        }),
+      );
+    });
+
+    it('should not wipe out the persisted filterGroupsOpen state when only toggling group open state', () => {
+      sidebarSettingsMock.save.mockClear();
+      component.setGroupOpen('trackers', false);
+      expect(sidebarSettingsMock.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          activeFilters: DEFAULT_SIDEBAR_SETTINGS.activeFilters,
+        }),
+      );
+    });
+  });
+
+  describe('restoring active filters', () => {
+    it('should reapply persisted filters once the sidebar settings load', async () => {
+      const restored: SidebarSettings = {
+        ...DEFAULT_SIDEBAR_SETTINGS,
+        activeFilters: {
+          statusKeys: ['downloading', 'stopped'],
+          trackers: ['tracker.a.com'],
+          savePaths: ['/downloads'],
+          categories: ['Movies'],
+          tags: ['hd'],
+        },
+      };
+      sidebarSettingsMock.load.mockResolvedValue(restored);
+
+      const restoredFixture = TestBed.createComponent(Status);
+      restoredFixture.detectChanges();
+      await flushMicrotasks();
+
+      expect(filterMock.setStates).toHaveBeenCalledWith(
+        new Set([
           'downloading',
           'forcedDL',
           'queuedDL',
@@ -301,39 +387,69 @@ describe('Status', () => {
           'stoppedDL',
           'stoppedUP',
         ]),
-      });
+      );
+      expect(filterMock.setTrackers).toHaveBeenCalledWith(['tracker.a.com']);
+      expect(filterMock.setSavePaths).toHaveBeenCalledWith(['/downloads']);
+      expect(filterMock.setCategories).toHaveBeenCalledWith(['Movies']);
+      expect(filterMock.setTags).toHaveBeenCalledWith(['hd']);
+      expect(restoredFixture.componentInstance.activeStatusKeys()).toEqual(
+        new Set(['downloading', 'stopped']),
+      );
+    });
+
+    it('should ignore unknown persisted status keys', async () => {
+      const restored: SidebarSettings = {
+        ...DEFAULT_SIDEBAR_SETTINGS,
+        activeFilters: {
+          ...DEFAULT_SIDEBAR_SETTINGS.activeFilters,
+          statusKeys: ['downloading', 'no-longer-a-group'],
+        },
+      };
+      sidebarSettingsMock.load.mockResolvedValue(restored);
+
+      const restoredFixture = TestBed.createComponent(Status);
+      restoredFixture.detectChanges();
+      await flushMicrotasks();
+
+      expect(restoredFixture.componentInstance.activeStatusKeys()).toEqual(
+        new Set(['downloading']),
+      );
+    });
+  });
+
+  describe('activeStatusKeys', () => {
+    it('should return an empty set when no group has been selected', () => {
+      expect(component.activeStatusKeys()).toEqual(new Set());
+    });
+
+    it('should include "stopped" after selecting the stopped group', () => {
+      component.setGroup('stopped');
+      expect(component.activeStatusKeys()).toEqual(new Set(['stopped']));
+    });
+
+    it('should include both keys after selecting two distinct groups', () => {
+      component.setGroup('downloading');
+      component.setGroup('stopped');
       expect(component.activeStatusKeys()).toEqual(new Set(['downloading', 'stopped']));
     });
 
-    it('should return an empty set for an unrecognised/partial combination of states', () => {
+    it('should ignore state changes not made through setGroup', () => {
+      // The grid's raw states filter can coincidentally cover a group's states without the user
+      // ever selecting that group (e.g. via a saved filter or external mutation). Highlighting
+      // must reflect explicit selections only, not be re-derived from the raw states set.
       filterMock.external.set({
         ...GRID_FILTER_INITIAL.external,
-        states: new Set(['downloading', 'uploading']),
+        states: new Set(['downloading', 'forcedDL', 'queuedDL', 'metaDL', 'stalledDL']),
       });
       expect(component.activeStatusKeys()).toEqual(new Set());
     });
 
-    it('should include both keys for an overlapping union (active + inactive)', () => {
-      // Active and Inactive overlap: their union fully covers Downloading's 5 states too, so
-      // "downloading" is also (correctly, per the design spec's accepted cosmetic highlighting)
-      // reported as active here.
-      filterMock.external.set({
-        ...GRID_FILTER_INITIAL.external,
-        states: new Set([
-          'downloading',
-          'uploading',
-          'forcedDL',
-          'forcedUP',
-          'metaDL',
-          'moving',
-          'allocating',
-          'queuedDL',
-          'queuedUP',
-          'stalledDL',
-          'stalledUP',
-        ]),
-      });
-      expect(component.activeStatusKeys()).toEqual(new Set(['active', 'inactive', 'downloading']));
+    it('should not include "downloading" when active and inactive are both selected', () => {
+      // Active and Inactive overlap: their union fully covers Downloading's 5 states too, but
+      // "downloading" was never explicitly selected and must not be highlighted as active.
+      component.setGroup('active');
+      component.setGroup('inactive');
+      expect(component.activeStatusKeys()).toEqual(new Set(['active', 'inactive']));
     });
   });
 

@@ -61,8 +61,11 @@ A fókusz `Shift` nélküli mozgatása egyben az aktuális kijelölést is lecse
 
 ### Vezérlés
 
-| Billentyűparancs | Művelet                                |
-| ---------------- | -------------------------------------- |
-| `F3`             | Elindítja a kijelölt torrente(ke)t.    |
-| `Shift+F3`       | Kényszerített indítás.                 |
-| `F4`             | Szünetelteti a kijelölt torrente(ke)t. |
+| Billentyűparancs | Művelet                                                                                   |
+| ---------------- | ----------------------------------------------------------------------------------------- |
+| `F2`             | Átnevezi a kijelölt torrentet. Csak akkor működik, ha pontosan egy torrent van kijelölve. |
+| `F3`             | Elindítja a kijelölt torrente(ke)t.                                                       |
+| `Shift+F3`       | Kényszerített indítás.                                                                    |
+| `F4`             | Szünetelteti a kijelölt torrente(ke)t.                                                    |
+
+Az `F2` megnyitja az [átnevezés párbeszédablakot](./managing-torrents#torrent-atnevezese), hacsak a [Sorra dupla kattintás viselkedése](./user-interface/settings/bitbutler-settings#tablazat-beallitasok) nincs **Helyszíni szerkesztésre** állítva és a Név oszlop nincs éppen látható állapotban a táblázatban - ebben az esetben helyben kezdi el szerkeszteni a név cellát.

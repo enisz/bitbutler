@@ -225,6 +225,19 @@ describe('AddTorrentGeneral', () => {
       expect(fixture.nativeElement.querySelectorAll('bb-popover').length).toBe(8);
     });
 
+    it('should render the input-mode toggle as plain text with no icons', () => {
+      const toggle: HTMLElement = fixture.nativeElement.querySelector('.btn-group');
+      const labels: HTMLLabelElement[] = Array.from(toggle.querySelectorAll('label.btn'));
+
+      expect(labels.length).toBe(3);
+      expect(toggle.querySelectorAll('bb-btn-content, fa-icon').length).toBe(0);
+      expect(labels.map((label) => label.textContent?.trim())).toEqual([
+        'components.add-torrent.input-mode.file',
+        'components.add-torrent.input-mode.link',
+        'components.add-torrent.input-mode.folder',
+      ]);
+    });
+
     it('should give the folder picker the full row width with no adjacent popover', () => {
       fixture.componentRef.setInput('inputMode', 'folder');
       fixture.detectChanges();
@@ -238,8 +251,9 @@ describe('AddTorrentGeneral', () => {
       // `inputMode() !== 'folder'`), but the size/free-space popovers now render unconditionally,
       // so 4 direct popovers remain (input-mode, size, free-space, save-path) - the removed
       // folder popover is not one of them - plus 1 each from the nested category/tag select
-      // components, plus 1 from the folder picker's own unconditional "recursive" popover.
-      expect(fixture.nativeElement.querySelectorAll('bb-popover').length).toBe(7);
+      // components. The folder picker's own "recursive" toggle no longer uses a popover (it has
+      // an inline sub-label instead), so no extra popover comes from it.
+      expect(fixture.nativeElement.querySelectorAll('bb-popover').length).toBe(6);
     });
   });
 
