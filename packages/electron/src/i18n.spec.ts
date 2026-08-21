@@ -86,7 +86,7 @@ describe('i18n', () => {
     loadTranslations('us');
 
     expect(vi.mocked(fs.default.readFileSync)).toHaveBeenCalledWith(
-      path.join('/fake/app', 'public', 'i18n', 'us.json'),
+      path.join('/fake/app', 'packages', 'app', 'public', 'i18n', 'us.json'),
       'utf-8',
     );
   });

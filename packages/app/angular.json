@@ -24,7 +24,7 @@
             "assets": [
               {
                 "glob": "**/*",
-                "input": "../../public"
+                "input": "public"
               },
               "src/assets"
             ],
@@ -88,7 +88,7 @@
             "setupFiles": ["src/test-setup.ts"],
             "providersFile": "src/test-providers.ts",
             "reporters": ["verbose"],
-            "codeCoverageReporters": ["text-summary", "html", "lcov"]
+            "coverageReporters": ["text-summary", "html", "lcov"]
           }
         }
       }

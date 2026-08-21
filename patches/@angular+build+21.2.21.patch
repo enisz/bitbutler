@@ -1,0 +1,46 @@
+# Temporary patch for https://github.com/angular/angular-cli/issues/31993
+# (Vitest + `providersFile` crashes with "PlatformLocation needs to be
+# compiled using the JIT compiler, but '@angular/compiler' is not
+# available."). Applies the fix from unmerged PR
+# https://github.com/angular/angular-cli/pull/32304. Remove this patch once
+# a released @angular/build version includes that fix.
+diff --git a/node_modules/@angular/build/src/builders/unit-test/options.js b/node_modules/@angular/build/src/builders/unit-test/options.js
+index 806ccf0..de9c7fb 100644
+--- a/node_modules/@angular/build/src/builders/unit-test/options.js
++++ b/node_modules/@angular/build/src/builders/unit-test/options.js
+@@ -113,7 +113,11 @@ async function normalizeOptions(context, projectName, options) {
+             : runnerConfig,
+     };
+ }
+-function injectTestingPolyfills(polyfills = []) {
+-    return polyfills.includes('zone.js') ? [...polyfills, 'zone.js/testing'] : polyfills;
++function injectTestingPolyfills(polyfills = [], runner, hasProvidersFile) {
++    const testPolyfills = polyfills.includes('zone.js') ? [...polyfills, 'zone.js/testing'] : [...polyfills];
++    if (runner === schema_1.Runner.Vitest && hasProvidersFile) {
++        testPolyfills.push('@angular/compiler');
++    }
++    return testPolyfills;
+ }
+ //# sourceMappingURL=options.js.map
+\ No newline at end of file
+diff --git a/node_modules/@angular/build/src/builders/unit-test/runners/vitest/build-options.js b/node_modules/@angular/build/src/builders/unit-test/runners/vitest/build-options.js
+index 2374111..2fc8010 100644
+--- a/node_modules/@angular/build/src/builders/unit-test/runners/vitest/build-options.js
++++ b/node_modules/@angular/build/src/builders/unit-test/runners/vitest/build-options.js
+@@ -16,6 +16,7 @@ const path_1 = require("../../../../utils/path");
+ const schema_1 = require("../../../application/schema");
+ const options_1 = require("../../options");
+ const test_discovery_1 = require("../../test-discovery");
++const unit_test_schema_1 = require("../../schema");
+ function createTestBedInitVirtualFile(providersFile, projectSourceRoot, teardown, polyfills = []) {
+     const usesZoneJS = polyfills.includes('zone.js');
+     let providersImport = 'const providers = [];';
+@@ -126,7 +127,7 @@ async function getVitestBuildOptions(options, baseBuildOptions) {
+         externalPackages: true,
+         externalDependencies,
+     };
+-    buildOptions.polyfills = (0, options_1.injectTestingPolyfills)(buildOptions.polyfills);
++    buildOptions.polyfills = (0, options_1.injectTestingPolyfills)(buildOptions.polyfills, unit_test_schema_1.Runner.Vitest, !!providersFile);
+     const testBedInitContents = createTestBedInitVirtualFile(providersFile, projectSourceRoot, !options.debug, buildOptions.polyfills);
+     const mockPatchContents = `
+     import { vi } from 'vitest';
