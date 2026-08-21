@@ -83,7 +83,7 @@ BitButler speaks multiple languages! Currently:
 
 ### Help the Butler Learn!
 
-Want to see BitButler in your language? We make it easy to contribute. Language files are located in `public/i18n/`. You can simply copy `us.json` to a new file and translate the values.
+Want to see BitButler in your language? We make it easy to contribute. Language files are located in `packages/app/public/i18n/`. You can simply copy `us.json` to a new file and translate the values.
 
 Check our [Contributing Guide](.github/CONTRIBUTING.md) for more details on how to submit a new language.
 

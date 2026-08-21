@@ -53,8 +53,8 @@
 
       <app-bb-progress
         mode="compact"
-        [progress]="torrent()?.data?.progress"
-        [torrentState]="torrent()?.data?.state"
+        [progress]="$safeNavigationMigration(torrent()?.data?.progress)"
+        [torrentState]="$safeNavigationMigration(torrent()?.data?.state)"
       ></app-bb-progress>
 
       <div class="bb-hero-caption">

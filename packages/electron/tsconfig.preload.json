@@ -3,6 +3,8 @@
     "target": "ES2022",
     "module": "CommonJS",
     "moduleResolution": "Node",
+    // TypeScript 6.0 deprecated `moduleResolution: "Node"` (node10) and errors without this flag; the preload script still needs node10 + CommonJS output because `packages/electron/package.json` declares `"type": "module"`. Moving the preload build off node10 is a follow-up (not urgent, but required before TypeScript 6.1/7.0 removes node10 support entirely).
+    "ignoreDeprecations": "6.0",
     "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,

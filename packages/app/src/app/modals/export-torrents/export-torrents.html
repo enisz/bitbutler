@@ -337,7 +337,9 @@
               <span class="bb-row__label">{{
                 'components.modals.export-torrents.report.file-size' | translate
               }}</span>
-              <span class="bb-row__value">{{ state().doneEvent?.fileSize | fileSize }}</span>
+              <span class="bb-row__value">{{
+                $safeNavigationMigration(state().doneEvent?.fileSize) | fileSize
+              }}</span>
             </div>
           }
         </div>

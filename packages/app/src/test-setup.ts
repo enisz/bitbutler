@@ -1,3 +1,11 @@
+// Vitest 4's `vi.spyOn()` returns the *existing* mock when the target property is already a mock
+// instead of installing a fresh wrapper (Vitest 3 re-wrapped it). Since the `window.bitbutler`
+// stubs below are shared by every test in a file, a spy installed in one test would otherwise keep
+// accumulating calls into the next one. Restore spies after each test to keep tests isolated.
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
 const noop = () => {};
 const noopAsync = () => Promise.resolve(null);
 const noopSubscription = () => noop;

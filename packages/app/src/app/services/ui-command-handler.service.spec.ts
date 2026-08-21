@@ -14,8 +14,14 @@ import { TorrentListGridSettingsService } from './torrent-list-grid.settings.ser
 import { UiCommandHandlerService } from './ui-command-handler.service';
 
 // The module cache is pre-warmed in beforeAll so dynamic import() calls in the service
-// resolve as microtasks. setTimeout(0) lets all pending microtasks drain before asserting.
-const flushPromises = () => new Promise<void>((resolve) => setTimeout(resolve));
+// resolve as microtasks. Multiple setTimeout(0) round trips let all pending microtasks -
+// including ones enqueued by callbacks that only run once an earlier round trip's macrotask
+// fires - drain before asserting.
+const flushPromises = async () => {
+  for (let i = 0; i < 4; i++) {
+    await new Promise<void>((resolve) => setTimeout(resolve));
+  }
+};
 
 describe('UiCommandHandlerService', () => {
   let service: UiCommandHandlerService;

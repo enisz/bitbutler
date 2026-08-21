@@ -11,7 +11,7 @@ function getI18nFilePath(lang: string): string {
   if (app.isPackaged) {
     return path.join(process.resourcesPath, 'i18n', `${lang}.json`);
   }
-  return path.join(app.getAppPath(), 'public', 'i18n', `${lang}.json`);
+  return path.join(app.getAppPath(), 'packages', 'app', 'public', 'i18n', `${lang}.json`);
 }
 
 export function loadTranslations(lang: string): void {

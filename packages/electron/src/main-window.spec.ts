@@ -11,19 +11,23 @@ const mockWebContents = vi.hoisted(() => ({
   setWindowOpenHandler: mockWindowOpenHandler,
 }));
 
+// Vitest 4 invokes a mock's implementation through `Reflect.construct` when the mock is called with
+// `new`, so the implementation has to be a `function` (arrow functions are not constructable).
 const MockBrowserWindow = vi.hoisted(() =>
-  vi.fn().mockImplementation(() => ({
-    webContents: mockWebContents,
-    loadURL: vi.fn(),
-    loadFile: vi.fn(),
-    on: vi.fn(),
-    isMaximized: vi.fn(() => false),
-    isMinimized: vi.fn(() => false),
-    isVisible: vi.fn(() => true),
-    isFullScreen: vi.fn(() => false),
-    isDestroyed: vi.fn(() => false),
-    getSize: vi.fn(() => [600, 750]),
-  })),
+  vi.fn().mockImplementation(function () {
+    return {
+      webContents: mockWebContents,
+      loadURL: vi.fn(),
+      loadFile: vi.fn(),
+      on: vi.fn(),
+      isMaximized: vi.fn(() => false),
+      isMinimized: vi.fn(() => false),
+      isVisible: vi.fn(() => true),
+      isFullScreen: vi.fn(() => false),
+      isDestroyed: vi.fn(() => false),
+      getSize: vi.fn(() => [600, 750]),
+    };
+  }),
 );
 
 vi.mock('electron', () => ({

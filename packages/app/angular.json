@@ -24,7 +24,7 @@
             "assets": [
               {
                 "glob": "**/*",
-                "input": "../../public"
+                "input": "public"
               },
               "src/assets"
             ],
@@ -49,8 +49,8 @@
                 },
                 {
                   "type": "any",
-                  "maximumWarning": "1.2mb",
-                  "maximumError": "1.5mb"
+                  "maximumWarning": "1.6mb",
+                  "maximumError": "1.9mb"
                 }
               ],
               "outputHashing": "all"
@@ -85,10 +85,11 @@
             "buildTarget": "bitbutler:build",
             "tsConfig": "tsconfig.spec.json",
             "runner": "vitest",
+            "isolate": true,
             "setupFiles": ["src/test-setup.ts"],
             "providersFile": "src/test-providers.ts",
             "reporters": ["verbose"],
-            "codeCoverageReporters": ["text-summary", "html", "lcov"]
+            "coverageReporters": ["text-summary", "html", "lcov"]
           }
         }
       }

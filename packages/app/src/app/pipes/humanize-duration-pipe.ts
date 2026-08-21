@@ -1,7 +1,8 @@
-import { Pipe, PipeTransform, inject } from '@angular/core';
+import { Injectable, Pipe, PipeTransform, inject } from '@angular/core';
 import { DurationFormat } from '@formatjs/intl-durationformat';
 import { TranslateService } from '@ngx-translate/core';
 
+@Injectable({ providedIn: 'root' })
 @Pipe({
   name: 'humanizeDuration',
   standalone: true,

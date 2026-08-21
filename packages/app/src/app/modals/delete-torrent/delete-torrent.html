@@ -11,8 +11,8 @@
     <div
       class="form-check"
       [ngClass]="{
-        'bb-check-danger': deleteForm.get('removeFiles')?.value,
-        'text-danger': deleteForm.get('removeFiles')?.value,
+        'bb-check-danger': $safeNavigationMigration(deleteForm.get('removeFiles')?.value),
+        'text-danger': $safeNavigationMigration(deleteForm.get('removeFiles')?.value),
       }"
     >
       <input

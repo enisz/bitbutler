@@ -55,7 +55,7 @@
               }}</span>
               <span class="bb-row__value">{{ metadata()!.torrents.length }}</span>
             </div>
-            @if (metadata()?.tags !== undefined) {
+            @if ($safeNavigationMigration(metadata()?.tags) !== undefined) {
               <div class="bb-row">
                 <span class="bb-row__label">{{
                   'components.modals.import-torrents.archive.tags' | translate
@@ -63,7 +63,7 @@
                 <span class="bb-row__value">{{ tagsCount() }}</span>
               </div>
             }
-            @if (metadata()?.categories !== undefined) {
+            @if ($safeNavigationMigration(metadata()?.categories) !== undefined) {
               <div class="bb-row">
                 <span class="bb-row__label">{{
                   'components.modals.import-torrents.archive.categories' | translate

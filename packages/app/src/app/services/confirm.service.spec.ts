@@ -44,7 +44,13 @@ describe('ConfirmService', () => {
   });
 
   it('should resolve with false when modal is dismissed', async () => {
-    mockModalRef.result = Promise.reject(undefined);
+    // `confirm()` only attaches its own `.catch()` after an internal dynamic import() settles,
+    // which is at least one microtask after this rejection is created. Attach a no-op `.catch()`
+    // immediately so Vitest doesn't flag it as unhandled in that window - it doesn't change what
+    // `confirm()` itself observes, since a promise can have multiple independent handlers.
+    const dismissed = Promise.reject(undefined);
+    dismissed.catch(() => {});
+    mockModalRef.result = dismissed;
     const result = await service.confirm('Title', 'Message');
     expect(result).toBe(false);
   });

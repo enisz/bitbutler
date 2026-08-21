@@ -23,9 +23,19 @@ describe('TorrentDetails', () => {
     localPath: ReturnType<typeof signal<string | null>>;
     singleFile: ReturnType<typeof signal<boolean>>;
     torrent: ReturnType<typeof signal<any>>;
+    trackers: ReturnType<typeof signal<any[]>>;
+    trackersLoading: ReturnType<typeof signal<boolean>>;
+    peers: ReturnType<typeof signal<any[]>>;
+    peersLoading: ReturnType<typeof signal<boolean>>;
+    content: ReturnType<typeof signal<any[]>>;
+    contentLoading: ReturnType<typeof signal<boolean>>;
+    properties: ReturnType<typeof signal<any>>;
+    errorLog: ReturnType<typeof signal<any>>;
+    localTorrentData: ReturnType<typeof signal<any>>;
     selectTab: ReturnType<typeof vi.fn>;
     init: ReturnType<typeof vi.fn>;
     stopAll: ReturnType<typeof vi.fn>;
+    context: ReturnType<typeof vi.fn>;
   };
   let mockActionsService: Record<string, ReturnType<typeof vi.fn>>;
 
@@ -38,9 +48,19 @@ describe('TorrentDetails', () => {
       localPath: signal<string | null>(null),
       singleFile: signal(false),
       torrent: signal<any>(null),
+      trackers: signal<any[]>([]),
+      trackersLoading: signal(false),
+      peers: signal<any[]>([]),
+      peersLoading: signal(false),
+      content: signal<any[]>([]),
+      contentLoading: signal(false),
+      properties: signal<any>(null),
+      errorLog: signal<any>(null),
+      localTorrentData: signal<any>(null),
       selectTab: vi.fn((id: any) => activeTabIdSignal.set(id)),
       init: vi.fn(),
       stopAll: vi.fn(),
+      context: vi.fn().mockReturnValue({}),
     };
     mockActionsService = {
       deleteTorrent: vi.fn(),

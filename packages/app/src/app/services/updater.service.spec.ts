@@ -1,16 +1,21 @@
 import { TestBed } from '@angular/core/testing';
 import type { UpdateCapability, UpdaterEvent } from '@bitbutler/shared';
+import type { Mock } from 'vitest';
 import { UpdaterService } from './updater.service';
 
 describe('UpdaterService', () => {
   let service: UpdaterService;
   let emit: (event: UpdaterEvent) => void;
-  let updateNowSpy: ReturnType<typeof vi.fn>;
-  let getCapabilitySpy: ReturnType<typeof vi.fn>;
+  // Vitest 4's bare `vi.fn()` resolves to `Mock<Procedure | Constructable>`, which is not callable
+  // and not assignable to a concrete signature - spell the signature out instead.
+  let updateNowSpy: Mock<() => Promise<void>>;
+  let getCapabilitySpy: Mock<() => Promise<UpdateCapability>>;
 
   beforeEach(() => {
-    updateNowSpy = vi.fn().mockResolvedValue(undefined);
-    getCapabilitySpy = vi.fn().mockResolvedValue({ supported: false } as UpdateCapability);
+    updateNowSpy = vi.fn<() => Promise<void>>().mockResolvedValue(undefined);
+    getCapabilitySpy = vi
+      .fn<() => Promise<UpdateCapability>>()
+      .mockResolvedValue({ supported: false });
 
     vi.spyOn(window.bitbutler.updater, 'onEvent').mockImplementation((callback) => {
       emit = callback;

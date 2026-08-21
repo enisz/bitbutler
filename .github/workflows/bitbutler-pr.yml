@@ -70,13 +70,12 @@ jobs:
             app:
               - 'packages/app/**'
               - 'packages/shared/**'
-              - 'public/**'
               - 'package.json'
               - 'package-lock.json'
             electron:
               - 'packages/electron/**'
               - 'packages/shared/**'
-              - 'public/**'
+              - 'packages/app/public/**'
               - 'package.json'
               - 'package-lock.json'
             packaging:
@@ -84,12 +83,11 @@ jobs:
               - 'package-lock.json'
               - 'packages/app/src/assets/icons/**'
               - 'build/**'
-              - 'public/i18n/**'
+              - 'packages/app/public/i18n/**'
             docs:
               - 'packages/docs/**'
             any-source:
               - 'packages/**'
-              - 'public/**'
               - '.eslint*'
               - 'tsconfig*'
               - 'package.json'

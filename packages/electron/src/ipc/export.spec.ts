@@ -137,8 +137,8 @@ describe('applyPathMappings', () => {
 });
 
 describe('resolveFullMode', () => {
-  const mockGetExportAvailable = vi.hoisted(() => vi.fn());
-  const mockQbRequestProbe = vi.hoisted(() => vi.fn());
+  const mockGetExportAvailable = vi.fn();
+  const mockQbRequestProbe = vi.fn();
 
   beforeEach(() => {
     vi.resetModules();
@@ -180,11 +180,11 @@ describe('resolveFullMode', () => {
 });
 
 describe('export:save-torrent-files IPC handler', () => {
-  const ipcHandlersSave = vi.hoisted(() => new Map<string, (...args: unknown[]) => unknown>());
-  const mockShowSaveDialog = vi.hoisted(() => vi.fn());
-  const mockShowOpenDialog = vi.hoisted(() => vi.fn());
-  const mockQbRequestSave = vi.hoisted(() => vi.fn());
-  const mockWriteFile = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
+  const ipcHandlersSave = new Map<string, (...args: unknown[]) => unknown>();
+  const mockShowSaveDialog = vi.fn();
+  const mockShowOpenDialog = vi.fn();
+  const mockQbRequestSave = vi.fn();
+  const mockWriteFile = vi.fn().mockResolvedValue(undefined);
 
   beforeEach(() => {
     vi.resetModules();
@@ -349,7 +349,7 @@ describe('export:save-torrent-files IPC handler', () => {
 });
 
 describe('collectCategoriesAndTags', () => {
-  const mockQbRequest = vi.hoisted(() => vi.fn());
+  const mockQbRequest = vi.fn();
 
   beforeEach(() => {
     vi.resetModules();
@@ -465,8 +465,8 @@ describe('partitionImportEntries', () => {
 });
 
 describe('runImport', () => {
-  const mockQbRequestImport = vi.hoisted(() => vi.fn());
-  const mockZipGetEntry = vi.hoisted(() => vi.fn());
+  const mockQbRequestImport = vi.fn();
+  const mockZipGetEntry = vi.fn();
 
   function fakeEvent() {
     return { sender: { isDestroyed: () => false, send: vi.fn() } };
@@ -509,7 +509,12 @@ describe('runImport', () => {
     vi.doMock('./qbittorrent.js', () => ({ qbRequest: mockQbRequestImport }));
     vi.doMock('./server.js', () => ({ getExportAvailable: vi.fn() }));
     vi.doMock('adm-zip', () => ({
-      default: vi.fn().mockImplementation(() => ({ getEntry: mockZipGetEntry })),
+      // Vitest 4 invokes a mock's implementation through `Reflect.construct` when the mock is
+      // called with `new`, so the implementation has to be a `function` (arrows are not
+      // constructable).
+      default: vi.fn().mockImplementation(function () {
+        return { getEntry: mockZipGetEntry };
+      }),
     }));
   });
 
@@ -740,7 +745,7 @@ describe('runImport', () => {
 });
 
 describe('restoreCategoriesAndTags', () => {
-  const mockQbRequestRestore = vi.hoisted(() => vi.fn());
+  const mockQbRequestRestore = vi.fn();
 
   beforeEach(() => {
     vi.resetModules();
