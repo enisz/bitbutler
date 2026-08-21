@@ -56,7 +56,6 @@ export class SavePathSelect implements ControlValueAccessor {
   readonly clearable = input(false);
   readonly label = input<string | null>(null);
   readonly placeholder = input<string | null>(null);
-  readonly appendTo = input('');
   readonly inputType = input<SavePathInputType | null>(null);
   readonly position = input<SavePathSelectPosition | null>(null);
 

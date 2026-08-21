@@ -103,10 +103,6 @@ describe('SavePathSelect', () => {
     it('should have label null by default', () => {
       expect(component.label()).toBeNull();
     });
-
-    it('should have appendTo empty string by default', () => {
-      expect(component.appendTo()).toBe('');
-    });
   });
 
   describe('position', () => {

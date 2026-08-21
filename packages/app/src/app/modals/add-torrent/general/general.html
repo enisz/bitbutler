@@ -276,7 +276,6 @@
         <div class="mb-3">
           <app-save-path-select
             formControlName="savepath"
-            appendTo="body"
             [autofocus]="true"
             [clearable]="true"
             [placeholder]="defaultSavePath()"
@@ -295,13 +294,13 @@
 
       <div class="col-12">
         <div class="mb-3">
-          <app-category-select formControlName="category" appendTo="body"></app-category-select>
+          <app-category-select formControlName="category"></app-category-select>
         </div>
       </div>
 
       <div class="col-12">
         <div class="mb-3">
-          <app-tag-select formControlName="tags" appendTo="body"></app-tag-select>
+          <app-tag-select formControlName="tags"></app-tag-select>
         </div>
       </div>
     </div>

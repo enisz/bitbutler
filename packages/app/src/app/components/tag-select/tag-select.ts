@@ -46,7 +46,6 @@ export class TagSelect implements ControlValueAccessor {
 
   public tags = signal<string[]>([]);
   public selectControl = new FormControl<string[]>([]);
-  public readonly appendTo = input('');
 
   private onChange: (value: string[] | null) => void = () => {};
   private onTouched: () => void = () => {};
