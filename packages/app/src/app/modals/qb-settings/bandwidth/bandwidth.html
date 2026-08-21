@@ -130,7 +130,6 @@
                 bindLabel="label"
                 bindValue="value"
                 formControlName="scheduler_days"
-                appendTo="body"
               ></ng-select>
             </div>
           </div>
@@ -145,7 +144,6 @@
                 [clearable]="false"
                 [searchable]="false"
                 formControlName="schedule_from_hour"
-                appendTo="body"
               >
                 <ng-template ng-label-tmp let-item="item">{{ item | number: '2.0-0' }}</ng-template>
                 <ng-template ng-option-tmp let-item="item">{{
@@ -158,7 +156,6 @@
                 [clearable]="false"
                 [searchable]="false"
                 formControlName="schedule_from_min"
-                appendTo="body"
               >
                 <ng-template ng-label-tmp let-item="item">{{ item | number: '2.0-0' }}</ng-template>
                 <ng-template ng-option-tmp let-item="item">{{
@@ -178,7 +175,6 @@
                 [clearable]="false"
                 [searchable]="false"
                 formControlName="schedule_to_hour"
-                appendTo="body"
               >
                 <ng-template ng-label-tmp let-item="item">{{ item | number: '2.0-0' }}</ng-template>
                 <ng-template ng-option-tmp let-item="item">{{
@@ -191,7 +187,6 @@
                 [clearable]="false"
                 [searchable]="false"
                 formControlName="schedule_to_min"
-                appendTo="body"
               >
                 <ng-template ng-label-tmp let-item="item">{{ item | number: '2.0-0' }}</ng-template>
                 <ng-template ng-option-tmp let-item="item">{{
