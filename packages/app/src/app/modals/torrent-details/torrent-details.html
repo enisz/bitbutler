@@ -3,12 +3,12 @@
     <div class="d-flex align-items-center gap-3 min-w-0">
       <span
         class="bb-header-status-dot bg-{{ stateVariant() }}"
-        [ngbTooltip]="'torrent.state.' + torrent()?.state | translate"
+        [ngbTooltip]="'torrent.state.' + $safeNavigationMigration(torrent()?.state) | translate"
         placement="bottom"
       ></span>
       <h5
         class="modal-title bb-title-clamp"
-        [ngbTooltip]="torrent()?.name"
+        [ngbTooltip]="$safeNavigationMigration(torrent()?.name)"
         bbTooltipOverflow
         placement="bottom"
         tooltipClass="single-line-tooltip"
@@ -24,7 +24,7 @@
         </button>
       </span>
       <span>·</span>
-      <span>{{ torrent()?.size | fileSize }}</span>
+      <span>{{ $safeNavigationMigration(torrent()?.size) | fileSize }}</span>
       @if ((torrent()?.added_on ?? 0) > 0) {
         <span>·</span>
         <span

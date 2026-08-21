@@ -1,6 +1,7 @@
-import { Pipe, PipeTransform, inject } from '@angular/core';
+import { Injectable, Pipe, PipeTransform, inject } from '@angular/core';
 import { DateFormatService } from '../services/date-format.service';
 
+@Injectable({ providedIn: 'root' })
 @Pipe({
   name: 'localTimestamp',
   standalone: true,

@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
@@ -6,6 +6,7 @@ import { TooltipOverflow } from './tooltip-overflow';
 
 @Component({
   template: '<span ngbTooltip="tip" bbTooltipOverflow>text</span>',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [NgbTooltip, TooltipOverflow],
 })
 class DefaultHostComponent {}
@@ -15,6 +16,7 @@ class DefaultHostComponent {}
     <span #target>target text</span>
     <span ngbTooltip="tip" [bbTooltipOverflow]="target">host</span>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [NgbTooltip, TooltipOverflow],
 })
 class TargetElementHostComponent {

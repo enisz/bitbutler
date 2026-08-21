@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { AutofocusDirective } from './autofocus';
@@ -7,6 +7,7 @@ const flushPromises = () => new Promise<void>((resolve) => setTimeout(resolve));
 
 @Component({
   template: '<input [autofocus]="enabled" />',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AutofocusDirective],
 })
 class DynamicHostComponent {
@@ -15,18 +16,21 @@ class DynamicHostComponent {
 
 @Component({
   template: '<input autofocus />',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AutofocusDirective],
 })
 class StaticTrueHostComponent {}
 
 @Component({
   template: '<input autofocus="true" />',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AutofocusDirective],
 })
 class StringTrueHostComponent {}
 
 @Component({
   template: '<input autofocus="false" />',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AutofocusDirective],
 })
 class StringFalseHostComponent {}

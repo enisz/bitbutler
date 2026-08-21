@@ -1,7 +1,8 @@
-import { Pipe, PipeTransform, inject } from '@angular/core';
+import { Injectable, Pipe, PipeTransform, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { HumanizeDurationPipe } from './humanize-duration-pipe';
 
+@Injectable({ providedIn: 'root' })
 @Pipe({
   name: 'timeLimit',
 })

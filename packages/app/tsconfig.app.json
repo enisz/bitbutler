@@ -5,5 +5,13 @@
     "types": ["@angular/localize"]
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["src/**/*.spec.ts", "src/**/test-utils/**"]
+  "exclude": ["src/**/*.spec.ts", "src/**/test-utils/**"],
+  "angularCompilerOptions": {
+    "extendedDiagnostics": {
+      "checks": {
+        "nullishCoalescingNotNullable": "suppress",
+        "optionalChainNotNullable": "suppress"
+      }
+    }
+  }
 }

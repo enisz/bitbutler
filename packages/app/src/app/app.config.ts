@@ -1,7 +1,7 @@
 import { OverlayModule } from '@angular/cdk/overlay';
 import { PortalModule } from '@angular/cdk/portal';
 import { registerLocaleData } from '@angular/common';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withXhr } from '@angular/common/http';
 import localeHu from '@angular/common/locales/hu';
 import {
   ApplicationConfig,
@@ -17,12 +17,6 @@ import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { MARKED_OPTIONS, MarkedOptions, MarkedRenderer, provideMarkdown } from 'ngx-markdown';
 import { TimeagoCustomFormatter, TimeagoFormatter, TimeagoIntl, provideTimeago } from 'ngx-timeago';
 import { routes } from './app.routes';
-import { FilesizePipe } from './pipes/filesize-pipe';
-import { HumanizeDurationPipe } from './pipes/humanize-duration-pipe';
-import { LocalTimestampPipe } from './pipes/local-timestamp-pipe';
-import { RatioLimitPipe } from './pipes/ratio-limit-pipe';
-import { RatioPipe } from './pipes/ratio-pipe';
-import { TimeLimitPipe } from './pipes/time-limit-pipe';
 import { DateFormatService } from './services/date-format.service';
 import { ThemeService } from './services/theme.service';
 
@@ -67,7 +61,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
     provideRouter(routes, withHashLocation()),
-    provideHttpClient(),
+    provideHttpClient(withXhr()),
     provideMarkdown({
       markedOptions: {
         provide: MARKED_OPTIONS,
@@ -83,12 +77,6 @@ export const appConfig: ApplicationConfig = {
       intl: { provide: TimeagoIntl, useClass: TimeagoIntl },
       formatter: { provide: TimeagoFormatter, useClass: TimeagoCustomFormatter },
     }),
-    FilesizePipe,
-    HumanizeDurationPipe,
-    RatioPipe,
-    LocalTimestampPipe,
-    RatioLimitPipe,
-    TimeLimitPipe,
     provideAppInitializer(() => {
       const themeService = inject(ThemeService);
       return themeService.init();
