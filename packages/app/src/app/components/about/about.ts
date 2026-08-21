@@ -42,11 +42,11 @@ export class About {
   );
 
   public readonly techStack: TechStackItem[] = [
-    { name: 'Angular', purposeKey: 'angular', version: 'v20.3.0' },
+    { name: 'Angular', purposeKey: 'angular', version: 'v22.1.3' },
     { name: 'Electron', purposeKey: 'electron', version: 'v39.2.5' },
     { name: 'SQLite', purposeKey: 'sqlite', version: 'v12.5.0' },
     { name: 'ag-Grid', purposeKey: 'ag-grid', version: 'v35.0.0' },
-    { name: 'TypeScript', purposeKey: 'typescript', version: 'v5.9.2' },
+    { name: 'TypeScript', purposeKey: 'typescript', version: 'v6.0.0' },
   ];
 
   public openExternalUrl(url: string): void {
