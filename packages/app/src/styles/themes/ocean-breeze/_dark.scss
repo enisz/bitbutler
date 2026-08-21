@@ -193,7 +193,7 @@ $ob-dark-check-marker-colors: (
 
   @each $variant, $hex in $ob-dark-check-marker-colors {
     $hex-code: '%23' + string.slice('#{$hex}', 2);
-    $scope: if($variant == 'default', '', '.bb-check-#{$variant} ');
+    $scope: if(sass($variant == 'default'): '' ; else: '.bb-check-#{$variant} ');
 
     #{$scope}.form-check-input[type='radio']:checked {
       background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='#{$hex-code}'/%3e%3c/svg%3e");
