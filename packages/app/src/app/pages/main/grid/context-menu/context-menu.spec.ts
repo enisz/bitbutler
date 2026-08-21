@@ -21,7 +21,7 @@ describe('ContextMenu', () => {
   let overlayRefMock: ReturnType<typeof makeOverlayRefMock>;
 
   const items: ContextMenuEntry[] = [
-    { kind: 'item', id: 'action1', label: 'Action 1', action: vi.fn() },
+    { kind: 'item', id: 'action1', label: 'Action 1', action: vi.fn<() => void>() },
     { kind: 'divider' },
     { kind: 'header', label: 'Section' },
     { kind: 'submenu', id: 'sub1', label: 'Submenu', children: [] },

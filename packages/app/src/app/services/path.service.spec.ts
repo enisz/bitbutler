@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import type { Mock } from 'vitest';
 import { ElectronService } from './electron.service';
 import { PathService } from './path.service';
 import { ServerSettingsService } from './server-settings.service';
@@ -10,11 +11,13 @@ const makeSettings = (pathMappings: { remote: string; local: string }[]) => ({
 
 describe('PathService', () => {
   let service: PathService;
-  let mockElectron: { getPlatform: ReturnType<typeof vi.fn> };
+  // `getPlatform` is invoked directly below, so it needs a concrete signature: Vitest 4's bare
+  // `vi.fn()` resolves to the non-callable `Mock<Procedure | Constructable>` union.
+  let mockElectron: { getPlatform: Mock<() => Promise<string>> };
   let mockServerSettings: { load: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
-    mockElectron = { getPlatform: vi.fn().mockResolvedValue('linux') };
+    mockElectron = { getPlatform: vi.fn<() => Promise<string>>().mockResolvedValue('linux') };
     mockServerSettings = { load: vi.fn().mockResolvedValue(makeSettings([])) };
 
     TestBed.configureTestingModule({

@@ -3,7 +3,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 const mockShow = vi.hoisted(() => vi.fn());
 const mockIsSupported = vi.hoisted(() => vi.fn(() => true));
 const MockNotification = vi.hoisted(() => {
-  const Ctor = vi.fn().mockImplementation(() => ({ show: mockShow }));
+  // Vitest 4 invokes a mock's implementation through `Reflect.construct` when the mock is called
+  // with `new`, so the implementation has to be a `function` (arrow functions are not constructable).
+  const Ctor = vi.fn().mockImplementation(function () {
+    return { show: mockShow };
+  });
   (Ctor as unknown as { isSupported: ReturnType<typeof vi.fn> }).isSupported = mockIsSupported;
   return Ctor;
 });
@@ -76,7 +80,7 @@ describe('notify', () => {
   });
 
   it('returns null when the Notification constructor throws', async () => {
-    MockNotification.mockImplementationOnce(() => {
+    MockNotification.mockImplementationOnce(function () {
       throw new Error('constructor failed');
     });
     const { notify } = await import('./notification.js');

@@ -5,7 +5,15 @@
     "types": ["@angular/localize"]
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["src/**/*.spec.ts", "src/**/test-utils/**"],
+  // `test-setup.ts`/`test-providers.ts` are test-only entry points (they belong to
+  // `tsconfig.spec.json`, which lists them explicitly) and reference Vitest globals, so they must
+  // stay out of the application compilation unit.
+  "exclude": [
+    "src/**/*.spec.ts",
+    "src/**/test-utils/**",
+    "src/test-setup.ts",
+    "src/test-providers.ts"
+  ],
   "angularCompilerOptions": {
     "extendedDiagnostics": {
       "checks": {

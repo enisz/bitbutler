@@ -12,12 +12,17 @@ describe('QbSettings', () => {
   let component: QbSettings;
   let fixture: ComponentFixture<QbSettings>;
 
+  // Must cover everything the four tab components read off the state service too, since rendering a
+  // tab body instantiates one of them.
   let stateServiceMock: {
     isDirty: ReturnType<typeof signal<boolean>>;
     isDirtyMap: ReturnType<typeof signal<any>>;
+    preferences: ReturnType<typeof signal<any>>;
     saveAll: ReturnType<typeof vi.fn>;
     resetDirty: ReturnType<typeof vi.fn>;
     setPreferences: ReturnType<typeof vi.fn>;
+    markDirty: ReturnType<typeof vi.fn>;
+    registerSave: ReturnType<typeof vi.fn>;
   };
   let confirmMock: { confirm: ReturnType<typeof vi.fn> };
   let toastMock: { success: ReturnType<typeof vi.fn>; danger: ReturnType<typeof vi.fn> };
@@ -36,9 +41,12 @@ describe('QbSettings', () => {
         'queue-limits': false,
         'seeding-ratios': false,
       }),
+      preferences: signal(null),
       saveAll: vi.fn().mockResolvedValue(undefined),
       resetDirty: vi.fn(),
       setPreferences: vi.fn(),
+      markDirty: vi.fn(),
+      registerSave: vi.fn(),
     };
     confirmMock = { confirm: vi.fn().mockResolvedValue(false) };
     toastMock = { success: vi.fn(), danger: vi.fn() };

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What is BitButler
 
-BitButler is a cross-platform **Electron desktop app** for managing remote qBittorrent-nox instances. It uses **Angular 20** (zoneless, signal-based) for the frontend and communicates with the Electron main process exclusively via IPC.
+BitButler is a cross-platform **Electron desktop app** for managing remote qBittorrent-nox instances. It uses **Angular 22** (zoneless, signal-based) for the frontend and communicates with the Electron main process exclusively via IPC.
 
 ## Monorepo structure
 
@@ -63,7 +63,7 @@ Both `packages/app` and `packages/electron` import from `@bitbutler/shared`. Ang
 
 ### Angular state & data flow
 
-- **Signals** are the primary reactive primitive (Angular 20 zoneless mode). Use `signal()`, `computed()`, `effect()` - not `BehaviorSubject` for new state.
+- **Signals** are the primary reactive primitive (Angular 22 zoneless mode). Use `signal()`, `computed()`, `effect()` - not `BehaviorSubject` for new state.
 - **RxJS** is used for async streams (polling, HTTP streaming); `QbPollingService` drives the background sync loop.
 - `TorrentStoreService` is the central torrent state. It receives maindata chunks from `QbPollingService` and applies `full_update` vs incremental diffs.
 - `ServerStoreService` tracks the active server selection; `currentServer` is a `computed()` signal.
