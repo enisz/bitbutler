@@ -7,7 +7,7 @@ const flushPromises = () => new Promise<void>((resolve) => setTimeout(resolve));
 
 @Component({
   template: '<input [autofocus]="enabled" />',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [AutofocusDirective],
 })
 class DynamicHostComponent {
@@ -16,21 +16,21 @@ class DynamicHostComponent {
 
 @Component({
   template: '<input autofocus />',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [AutofocusDirective],
 })
 class StaticTrueHostComponent {}
 
 @Component({
   template: '<input autofocus="true" />',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [AutofocusDirective],
 })
 class StringTrueHostComponent {}
 
 @Component({
   template: '<input autofocus="false" />',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [AutofocusDirective],
 })
 class StringFalseHostComponent {}

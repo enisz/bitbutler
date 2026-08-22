@@ -6,7 +6,7 @@ import { TooltipOverflow } from './tooltip-overflow';
 
 @Component({
   template: '<span ngbTooltip="tip" bbTooltipOverflow>text</span>',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgbTooltip, TooltipOverflow],
 })
 class DefaultHostComponent {}
@@ -16,7 +16,7 @@ class DefaultHostComponent {}
     <span #target>target text</span>
     <span ngbTooltip="tip" [bbTooltipOverflow]="target">host</span>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgbTooltip, TooltipOverflow],
 })
 class TargetElementHostComponent {
