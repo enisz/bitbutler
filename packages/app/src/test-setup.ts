@@ -8,6 +8,7 @@ afterEach(() => {
 
 const noop = () => {};
 const noopAsync = () => Promise.resolve(null);
+const noopVoidAsync = () => Promise.resolve();
 const noopSubscription = () => noop;
 
 // jsdom does not implement the Popover API (https://github.com/jsdom/jsdom/issues/3294).
@@ -63,72 +64,72 @@ for (const key of ['localStorage', 'sessionStorage'] as const) {
   });
 }
 
-(window as any).bitbutler = {
+window.bitbutler = {
   electron: {
     isDev: () => Promise.resolve(false),
-    openExternalUrl: noopAsync,
-    showOpenDialog: () => Promise.resolve(null),
+    openExternalUrl: noopVoidAsync,
+    showOpenDialog: () => Promise.resolve(''),
     getDownloadsPath: () => Promise.resolve(''),
-    openPath: noopAsync,
-    showItemInFolder: noop,
+    openPath: () => Promise.resolve(''),
+    showItemInFolder: noopVoidAsync,
     getPlatform: () => Promise.resolve('linux'),
     checkForUpdate: () => Promise.resolve({ updateAvailable: false, error: null }),
-    setLoginItem: noopAsync,
+    setLoginItem: noopVoidAsync,
   },
   updater: {
     getCapability: () => Promise.resolve({ supported: false }),
-    updateNow: noopAsync,
+    updateNow: noopVoidAsync,
     onEvent: noopSubscription,
   },
   server: {
     list: () => Promise.resolve([]),
-    add: noopAsync,
-    update: noopAsync,
-    delete: noopAsync,
+    add: () => Promise.resolve({ id: '' }),
+    update: () => Promise.resolve({ updated: false }),
+    delete: () => Promise.resolve({ deleted: false }),
     getById: noopAsync,
     getByHost: noopAsync,
-    setConnectionInfo: noopAsync,
+    setConnectionInfo: () => Promise.resolve({ updated: false }),
     setActive: noop,
   },
   qb: {
-    login: noopAsync,
-    logout: noopAsync,
-    hasCookie: () => Promise.resolve(false),
-    request: noopAsync,
+    login: () => Promise.resolve({ loggedIn: false }),
+    logout: () => Promise.resolve({ loggedOut: false }),
+    hasCookie: () => Promise.resolve({ hasCookie: false }),
+    request: <TResponse = unknown>(_payload: unknown) => Promise.resolve(null as TResponse),
     torrentsAdd: noopAsync,
     startSyncStream: noop,
     onSyncChunk: noopSubscription,
   },
   window: {
-    maximize: noopAsync,
-    unmaximize: noopAsync,
-    toggleMaximize: noopAsync,
-    setSize: noopAsync,
-    setOpenFilesEnabled: noopAsync,
+    maximize: noopVoidAsync,
+    unmaximize: noopVoidAsync,
+    toggleMaximize: noopVoidAsync,
+    setSize: noopVoidAsync,
+    setOpenFilesEnabled: () => Promise.resolve({ enabled: false }),
     onOpenFiles: noopSubscription,
     onTorrentDrafts: noopSubscription,
     onStateChange: noopSubscription,
-    drainOpenFiles: noopAsync,
-    drainOpenTorrents: noopAsync,
+    drainOpenFiles: () => Promise.resolve([]),
+    drainOpenTorrents: () => Promise.resolve([]),
     onOpenBbe: noopSubscription,
     drainOpenBbe: () => Promise.resolve([]),
-    simulateOpenFiles: noopAsync,
+    simulateOpenFiles: () => Promise.resolve([]),
   },
   torrent: {
-    parse: noopAsync,
-    deleteFile: noopAsync,
+    parse: () => Promise.resolve({ source: 'manual', receivedAt: 0 }),
+    deleteFile: () => Promise.resolve({ ok: false }),
     scanFolder: () => Promise.resolve([]),
   },
   menu: {
     onClick: noopSubscription,
   },
   notification: {
-    show: noopAsync,
+    show: () => Promise.resolve({ ok: false }),
   },
   settings: {
     get: () => Promise.resolve(null),
-    upsert: noopAsync,
-    delete: noopAsync,
+    upsert: () => Promise.resolve({ ok: true as const }),
+    delete: () => Promise.resolve({ ok: true as const }),
   },
   i18n: {
     languageChanged: noop,
@@ -137,8 +138,15 @@ for (const key of ['localStorage', 'sessionStorage'] as const) {
     start: noop,
     cancel: noop,
     openBbePicker: () => Promise.resolve(undefined),
-    readBbe: noopAsync,
-    getServerInfo: noopAsync,
+    readBbe: () =>
+      Promise.resolve({
+        version: 0,
+        exported_at: 0,
+        source_server: '',
+        export_mode: 'full' as const,
+        torrents: [],
+      }),
+    getServerInfo: () => Promise.resolve({ webapiVersion: '', qbVersion: '', isFullMode: false }),
     saveTorrentFiles: () => Promise.resolve({ cancelled: true, savedPaths: [], failed: [] }),
     importStart: noop,
     importCancel: noop,

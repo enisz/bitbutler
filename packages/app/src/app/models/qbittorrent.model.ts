@@ -17,7 +17,7 @@ export interface QbtRequest {
   method: string;
   httpMethod?: QbtHttpMethod;
   query?: Record<string, string | number | boolean>;
-  body?: Record<string, any>;
+  body?: Record<string, unknown>;
   timeoutMs?: number;
   protocol?: 'http' | 'https';
   sessionKey?: string;
