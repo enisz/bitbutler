@@ -28,6 +28,14 @@ describe('RatioLimitPipe', () => {
     expect(pipe.transform(-1)).toBe('general.limit.no-limit');
   });
 
+  it('returns the "no-limit" translation key for undefined', () => {
+    expect(pipe.transform(undefined)).toBe('general.limit.no-limit');
+  });
+
+  it('returns the "no-limit" translation key for null', () => {
+    expect(pipe.transform(null)).toBe('general.limit.no-limit');
+  });
+
   it('formats a numeric ratio to 2 decimal places', () => {
     expect(pipe.transform(1.5)).toBe('1.50');
   });

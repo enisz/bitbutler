@@ -35,6 +35,14 @@ describe('TimeLimitPipe', () => {
     expect(pipe.transform(-1)).toBe('general.limit.no-limit');
   });
 
+  it('returns the "no-limit" translation key for undefined', () => {
+    expect(pipe.transform(undefined)).toBe('general.limit.no-limit');
+  });
+
+  it('returns the "no-limit" translation key for null', () => {
+    expect(pipe.transform(null)).toBe('general.limit.no-limit');
+  });
+
   it('converts minutes to a humanized duration string', () => {
     const result = pipe.transform(60);
     expect(result).toBeTruthy();

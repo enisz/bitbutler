@@ -10,10 +10,10 @@ export class TimeLimitPipe implements PipeTransform {
   private readonly humanizeDurationPipe = inject(HumanizeDurationPipe);
   private readonly translateService = inject(TranslateService);
 
-  transform(value: number): string {
+  transform(value: number | undefined | null): string {
     if (value === -2) {
       return this.translateService.instant('general.limit.global');
-    } else if (value === -1) {
+    } else if (value == null || value === -1) {
       return this.translateService.instant('general.limit.no-limit');
     } else {
       return this.humanizeDurationPipe.transform(value * 60 * 1000, 'long', 2);
