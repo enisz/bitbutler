@@ -82,6 +82,7 @@ export class App {
     this.modalConfigService.animation = true;
     this.tooltipConfigService.container = 'body';
     this.setNgSelectTranslations();
+    this.interceptNgSelectEscapeInModals();
 
     this.openFilesService.start();
     this.uiCommandHandlerService.start();
@@ -129,6 +130,33 @@ export class App {
           }
         }
       });
+  }
+
+  /**
+   * ng-select's own `(keydown)` handler lives on the `<ng-select>` host element, but its
+   * dropdown panel always renders through Angular CDK Overlay - a DOM sibling, not a
+   * descendant - so an Escape pressed while the panel's search input is focused never
+   * bubbles to that host listener, and ng-select's own `preventDefault()` (which is meant to
+   * stop the keypress from also closing an ancestor NgbModal) never runs. Intercepting in the
+   * capture phase and closing the dropdown the same way a real outside click would (ng-select
+   * listens for exactly that, regardless of where the panel renders) restores the expected
+   * "first Escape closes the dropdown, second Escape closes the modal" behavior.
+   */
+  private interceptNgSelectEscapeInModals(): void {
+    const listener = (event: KeyboardEvent): void => {
+      if (event.key !== 'Escape') return;
+      if (!document.querySelector('.cdk-overlay-container .ng-dropdown-panel')) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      document.body.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+      document.body.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    };
+
+    document.addEventListener('keydown', listener, { capture: true });
+    this.destroyRef.onDestroy(() =>
+      document.removeEventListener('keydown', listener, { capture: true }),
+    );
   }
 
   private setNgSelectTranslations(): void {
