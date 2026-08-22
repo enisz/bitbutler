@@ -52,7 +52,7 @@ describe('TimeLimitColumnFilter', () => {
       );
     });
 
-    it('noLimit mode matches only -1', () => {
+    it('noLimit mode matches -1 and nullish (missing seeding_time_limit, e.g. from an older .bbe import)', () => {
       component.applied = {
         mode: 'noLimit',
         operator: 'equals',
@@ -64,6 +64,10 @@ describe('TimeLimitColumnFilter', () => {
         true,
       );
       expect(mockParams.getValue).toHaveBeenCalled();
+      expect(component.doesFilterPass({ node: { data: {} } } as any)).toBe(true);
+      expect(
+        component.doesFilterPass({ node: { data: { seeding_time_limit: null } } } as any),
+      ).toBe(true);
       expect(component.doesFilterPass({ node: { data: { seeding_time_limit: -2 } } } as any)).toBe(
         false,
       );
@@ -101,7 +105,7 @@ describe('TimeLimitColumnFilter', () => {
       );
     });
 
-    it('custom mode never matches the -1/-2 sentinel values', () => {
+    it('custom mode never matches the -1/-2 sentinel values or a nullish seeding_time_limit', () => {
       component.applied = {
         mode: 'custom',
         operator: 'lt',
@@ -115,6 +119,7 @@ describe('TimeLimitColumnFilter', () => {
       expect(component.doesFilterPass({ node: { data: { seeding_time_limit: -2 } } } as any)).toBe(
         false,
       );
+      expect(component.doesFilterPass({ node: { data: {} } } as any)).toBe(false);
     });
 
     it('applies days scaling for between in custom mode', () => {

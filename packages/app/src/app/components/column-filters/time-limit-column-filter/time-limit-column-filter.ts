@@ -129,9 +129,9 @@ export class TimeLimitColumnFilter
   doesFilterPass(params: IDoesFilterPassParams): boolean {
     if (!this.isFilterActive()) return true;
     const cellValue = this.params.getValue(params.node) as number | null | undefined;
-    if (this.applied.mode === 'noLimit') return cellValue === -1;
+    if (this.applied.mode === 'noLimit') return cellValue == null || cellValue === -1;
     if (this.applied.mode === 'global') return cellValue === -2;
-    if (cellValue === -1 || cellValue === -2) return false;
+    if (cellValue == null || cellValue === -1 || cellValue === -2) return false;
     const multiplier = TIME_UNIT_SECONDS[this.applied.unit] / 60;
     const from = this.applied.from != null ? this.applied.from * multiplier : null;
     const to = this.applied.to != null ? this.applied.to * multiplier : null;
