@@ -76,7 +76,7 @@ export class SetTorrentTags implements OnInit {
         .filter((t) => t.length > 0);
 
       this.setTorrentTagsForm.get('tags')?.patchValue(initialTags, { emitEvent: false });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(SetTorrentTags.name, 'ngOnInit', 'Failed to get torrent tags!', err);
     }
   }
@@ -116,10 +116,10 @@ export class SetTorrentTags implements OnInit {
       }
 
       this.activeModal.close();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(SetTorrentTags.name, 'handleSubmit', 'Failed to set torrent tags!', error);
       this.toastService.danger(
-        error?.message ?? String(error),
+        error instanceof Error ? error.message : String(error),
         this.translateService.instant('components.modals.set-torrent-tags.toast.set-failed-title'),
       );
     } finally {

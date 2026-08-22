@@ -118,10 +118,10 @@ export class ManageTags implements OnInit, GuardableModal {
           ? this.translateService.instant('components.modals.manage-tags.toast.added-one-title')
           : this.translateService.instant('components.modals.manage-tags.toast.added-title'),
       );
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(ManageTags.name, 'add', 'Failed to add tag', err);
       this.toastService.danger(
-        err?.message ?? String(err),
+        err instanceof Error ? err.message : String(err),
         this.translateService.instant('components.modals.manage-tags.toast.add-failed-title'),
       );
     } finally {
@@ -158,10 +158,10 @@ export class ManageTags implements OnInit, GuardableModal {
         `"${tag}"`,
         this.translateService.instant('components.modals.manage-tags.toast.deleted-title'),
       );
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(ManageTags.name, 'delete', 'Failed to delete tag', err);
       this.toastService.danger(
-        err?.message ?? String(err),
+        err instanceof Error ? err.message : String(err),
         this.translateService.instant('components.modals.manage-tags.toast.delete-failed-title'),
       );
     }

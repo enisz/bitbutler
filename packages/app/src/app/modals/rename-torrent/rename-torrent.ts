@@ -64,11 +64,10 @@ export class RenameTorrent implements OnInit {
       this.processing.set(true);
       await this.renameTorrentContent(serverId, this.torrent().hash, desiredRaw);
       await this.qbService.torrents.rename(serverId, this.torrent().hash, desiredRaw);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- retyped in issue #287 Task 8
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(RenameTorrent.name, 'handleSubmit', 'Failed to rename the torrent!');
       this.toastService.danger(
-        error?.message ?? String(error),
+        error instanceof Error ? error.message : String(error),
         this.translateService.instant('components.modals.rename-torrent.error.failed-to-rename'),
       );
     } finally {

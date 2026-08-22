@@ -126,10 +126,10 @@ export class TransferLimit implements OnInit, GuardableModal {
           : this.qbService.torrents.setDownloadLimit(serverId, downloadBytes, hashes),
       ]);
       this.activeModal.close();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(TransferLimit.name, 'handleSubmit', 'Failed to update limits!', error);
       this.toastService.danger(
-        error?.message ?? String(error),
+        error instanceof Error ? error.message : String(error),
         this.translateService.instant('components.modals.transfer-limit.toast.set-failed-title'),
       );
     } finally {

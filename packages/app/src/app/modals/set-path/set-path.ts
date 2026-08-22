@@ -93,10 +93,10 @@ export class SetPath implements OnInit {
       try {
         await this.qbService.torrents.setLocation(serverId, this.hashes(), newPath);
         this.activeModal.close();
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error(SetPath.name, 'handleSubmit', 'Failed to set save path!', error);
         this.toastService.danger(
-          error.message,
+          error instanceof Error ? error.message : String(error),
           this.translateService.instant('components.modals.set-path.error.save-failed'),
         );
       }
@@ -113,10 +113,10 @@ export class SetPath implements OnInit {
     try {
       await this.qbService.torrents.setDownloadPath(serverId, this.hashes(), newPath);
       this.activeModal.close();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(SetPath.name, 'handleSubmit', 'Failed to set download path!', error);
       this.toastService.danger(
-        error.message,
+        error instanceof Error ? error.message : String(error),
         this.translateService.instant('components.modals.set-path.error.download-failed'),
       );
     }

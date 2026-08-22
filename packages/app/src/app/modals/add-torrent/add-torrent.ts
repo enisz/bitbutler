@@ -29,7 +29,11 @@ import { FileTreeSaveEvent, FileTreeStats } from '../../components/bb-file-tree/
 import { ShareLimitValue } from '../../components/share-limit/share-limit';
 import { TransferLimitValue } from '../../components/transfer-limit/transfer-limit';
 import { AutofocusDirective } from '../../directives/autofocus';
-import { AddTorrentFormGroup, RootFolderMode } from '../../models/add-torrent.model';
+import {
+  AddTorrentFormGroup,
+  AddTorrentSettings,
+  RootFolderMode,
+} from '../../models/add-torrent.model';
 import { HttpError } from '../../models/http.model';
 import { AddTorrentSettingsService } from '../../services/add-torrent-settings.service';
 import { CommandBusService } from '../../services/command-bus.service';
@@ -252,18 +256,19 @@ export class AddTorrent implements OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
-    const settings = (await this.addTorrentSettings.load()) as any;
+    const settings = await this.addTorrentSettings.load();
 
-    for (const [k, v] of Object.entries(settings)) {
+    for (const k of Object.keys(settings) as (keyof AddTorrentSettings)[]) {
       const ctrl = this.addForm.get(k);
       if (ctrl && !ctrl.dirty) {
+        const v = settings[k];
         if (k === 'tags' && typeof v === 'string') {
           ctrl.patchValue(
             v.split(',').map((t) => t.trim()),
             { emitEvent: false },
           );
         } else {
-          ctrl.patchValue(v as any, { emitEvent: false });
+          ctrl.patchValue(v, { emitEvent: false });
         }
       }
     }
@@ -601,7 +606,9 @@ export class AddTorrent implements OnInit {
     this.loadedDraftIdentifier.set(null);
 
     const file = fileList[0];
-    const filePath = ((file as any).path as string | undefined)?.trim();
+    // Electron augments the DOM File object with an absolute `path`, not present in the
+    // standard lib.dom typings.
+    const filePath = (file as File & { path?: string }).path?.trim();
 
     let torrent: SelectedTorrentInput;
     if (filePath) {
