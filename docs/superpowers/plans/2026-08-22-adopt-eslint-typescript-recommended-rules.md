@@ -183,11 +183,11 @@ In `packages/app/src/app/app.const.ts`, directly above the `INVALID_FILENAME_CHA
 export const INVALID_FILENAME_CHARS = /^[^<>:"/\\|?*\x00-\x1f]+$/;
 ```
 
-In `packages/electron/src/../` — actually this one is in `packages/app/src/app/modals/rename-torrent/rename-torrent.ts`, inside `sanitizeFileName`, directly above the `.replace(/[<>:"/\\|?* -]/g, '')` line:
+In `packages/electron/src/../` — actually this one is in `packages/app/src/app/modals/rename-torrent/rename-torrent.ts`, inside `sanitizeFileName`, directly above the `.replace(/[<>:"/\\|?*\x00-\x1f]/g, '')` line:
 
 ```ts
       // eslint-disable-next-line no-control-regex -- intentionally strips OS-illegal control characters from filenames
-      .replace(/[<>:"/\\|?* -]/g, '')
+      .replace(/[<>:"/\\|?*\x00-\x1f]/g, '')
 ```
 
 - [ ] **Step 5: Fix `no-unused-expressions` (3 sites) — ternaries/comma-expressions used as statements**
