@@ -1,28 +1,3 @@
-export type QbtApiName =
-  | 'auth'
-  | 'app'
-  | 'log'
-  | 'sync'
-  | 'transfer'
-  | 'torrents'
-  | 'rss'
-  | 'search';
-
-export type QbtHttpMethod = 'GET' | 'POST';
-
-export interface QbtRequest {
-  host: string;
-  port: number;
-  api: QbtApiName;
-  method: string;
-  httpMethod?: QbtHttpMethod;
-  query?: Record<string, string | number | boolean>;
-  body?: Record<string, unknown>;
-  timeoutMs?: number;
-  protocol?: 'http' | 'https';
-  sessionKey?: string;
-}
-
 export interface QbTorrentProperties {
   save_path: string;
   creation_date: number;
