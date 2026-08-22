@@ -98,7 +98,7 @@ describe('App', () => {
     });
 
     afterEach(() => {
-      document.body.removeChild(overlayContainer);
+      overlayContainer.remove();
     });
 
     it('should close an open ng-select dropdown on Escape and stop it from also closing the modal', () => {
@@ -160,6 +160,30 @@ describe('App', () => {
       expect(mousedownSpy).not.toHaveBeenCalled();
 
       document.body.removeEventListener('mousedown', mousedownSpy);
+    });
+
+    it('should not intercept Escape for a dropdown rendered inside an ag-grid filter popup', () => {
+      const popupPortal = document.createElement('div');
+      popupPortal.className = 'ag-custom-component-popup';
+      popupPortal.appendChild(overlayContainer);
+      document.body.appendChild(popupPortal);
+      overlayContainer.appendChild(panel);
+      TestBed.createComponent(App);
+
+      const mousedownSpy = vi.fn();
+      document.body.addEventListener('mousedown', mousedownSpy);
+
+      const event = new KeyboardEvent('keydown', {
+        key: 'Escape',
+        cancelable: true,
+        bubbles: true,
+      });
+      document.dispatchEvent(event);
+
+      expect(mousedownSpy).not.toHaveBeenCalled();
+
+      document.body.removeEventListener('mousedown', mousedownSpy);
+      popupPortal.remove();
     });
   });
 

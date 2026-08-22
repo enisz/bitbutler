@@ -141,11 +141,17 @@ export class App {
    * capture phase and closing the dropdown the same way a real outside click would (ng-select
    * listens for exactly that, regardless of where the panel renders) restores the expected
    * "first Escape closes the dropdown, second Escape closes the modal" behavior.
+   *
+   * Excludes panels rendered inside an ag-grid column-filter's `ag-custom-component-popup`
+   * portal (see `operator-filter-base.ts`): a synthetic outside click there would land outside
+   * ag-grid's own tracked popup subtree and close the whole filter, not just the dropdown -
+   * ag-grid's popup containment already owns that interaction.
    */
   private interceptNgSelectEscapeInModals(): void {
     const listener = (event: KeyboardEvent): void => {
       if (event.key !== 'Escape') return;
-      if (!document.querySelector('.cdk-overlay-container .ng-dropdown-panel')) return;
+      const panel = document.querySelector('.cdk-overlay-container .ng-dropdown-panel');
+      if (!panel || panel.closest('.ag-custom-component-popup')) return;
 
       event.preventDefault();
       event.stopPropagation();
