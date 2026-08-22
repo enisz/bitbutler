@@ -57,6 +57,11 @@ describe('UiFormatService', () => {
     expect(typeof result).toBe('string');
   });
 
+  it('should return the no-limit translation key from ratioLimit() for undefined', () => {
+    const result = service.ratioLimit(makeParams(undefined));
+    expect(result).toBe('general.limit.no-limit');
+  });
+
   it('should return a string from timeLimit()', () => {
     const result = service.timeLimit(makeParams(-1));
     expect(typeof result).toBe('string');
