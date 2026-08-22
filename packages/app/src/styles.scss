@@ -103,6 +103,30 @@ html {
   color: var(--bb-secondary-ink);
 }
 
+// Themed scrollbars app-wide - default browser thickness, no arrow buttons,
+// transparent-until-hover thumb. Covers ag-grid v36 too: its visible scroll
+// UI lives on plain, un-hidden `.ag-body-horizontal/vertical-scroll-viewport`
+// divs (`.ag-grid-viewport` itself hides its native scrollbar and is scrolled
+// programmatically), so the universal selector reaches them like any other
+// overflow container.
+*::-webkit-scrollbar-button {
+  display: none;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  transition: background-color 0.15s ease;
+}
+
+*:hover::-webkit-scrollbar-thumb {
+  background-color: color-mix(in srgb, var(--bb-accent) 45%, transparent);
+}
+
+*:hover::-webkit-scrollbar-thumb:hover,
+*:hover::-webkit-scrollbar-thumb:active {
+  background-color: var(--bb-accent);
+}
+
 @font-face {
   font-family: 'Montserrat';
   src: url('assets/fonts/montserrat/static/Montserrat-Regular.ttf') format('truetype');
