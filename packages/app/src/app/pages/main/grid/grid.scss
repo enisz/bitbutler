@@ -2,11 +2,6 @@
   border-radius: 0 !important;
 }
 
-:host ::ng-deep .ag-header-cell-text {
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
 :host ::ng-deep .ag-row-selected {
   box-shadow: inset 2px 0 0 0 var(--bb-accent);
 }

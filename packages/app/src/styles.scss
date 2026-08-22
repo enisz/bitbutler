@@ -161,6 +161,11 @@ ngb-modal-window {
   border-bottom: 1px solid var(--bb-grid-header-border);
 }
 
+.ag-header-cell-text {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
 .bb-ag-light .ag-row-hover,
 .bb-ag-dark .ag-row-hover {
   background-color: var(--bb-grid-row-hover-bg) !important;
