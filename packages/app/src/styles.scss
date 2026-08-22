@@ -116,11 +116,10 @@ html {
 // WebKit only switches an element into custom-scrollbar rendering once its
 // base `::-webkit-scrollbar` carries a size - without it, `-thumb`/`-button`
 // overrides are silently ignored and the native OS scrollbar renders
-// instead. 14px approximates the native Chromium default so this reads as
-// "themed default", not a shrunk one.
+// instead.
 *::-webkit-scrollbar {
-  width: 14px;
-  height: 14px;
+  width: 10px;
+  height: 10px;
 }
 
 *::-webkit-scrollbar-button {
@@ -129,7 +128,7 @@ html {
 
 *::-webkit-scrollbar-thumb {
   background-color: color-mix(in srgb, var(--bb-accent) 45%, transparent);
-  border-radius: 8px;
+  border-radius: 6px;
   transition: background-color 0.15s ease;
 }
 
