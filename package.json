@@ -251,7 +251,7 @@
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",
     "@types/adm-zip": "^0.5.8",
     "@types/archiver": "^7.0.0",
-    "@types/better-sqlite3": "^7.6.13",
+    "@types/better-sqlite3": "^9.6.0",
     "@types/humanize-duration": "^3.27.4",
     "@types/semver": "^7.7.1",
     "@vitest/coverage-v8": "^4.0.8",
