@@ -29,6 +29,19 @@
   border-color: var(--bb-control-placeholder) transparent transparent;
 }
 
+// v24 lets a non-searchable select's displayed value absorb the opening click, so it can be
+// text-selected/copied instead (ng-select/ng-select#2669) - moot here since `body` disables
+// text selection app-wide to feel like a native desktop control, not a webpage. Restore
+// click-anywhere-opens by keeping the value out of that hit-test, while re-enabling the
+// multi-select remove (x) icon so tag/category removal still works.
+.ng-select .ng-value-container .ng-value {
+  pointer-events: none;
+}
+
+.ng-select .ng-value-container .ng-value .ng-value-icon {
+  pointer-events: auto;
+}
+
 .ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-marked {
   color: var(--bb-accent) !important;
 }
