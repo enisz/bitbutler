@@ -1,5 +1,8 @@
 <p align="center">
-<img src="readme/logo.png"/>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="readme/logo-dark.svg" />
+  <img src="readme/logo-light.svg" alt="BitButler logo" />
+</picture>
 </p>
 
 <div align="center">

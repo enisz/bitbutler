@@ -6,7 +6,8 @@ hero:
   text: Távoli qBittorrent-nox kliens
   tagline: Kezeld a torrentjeidet a távoli qBittorrent-nox szervereiden egy letisztult, modern asztali alkalmazásból.
   image:
-    src: /bitbutler-logo.png
+    light: /bitbutler-logo-light.svg
+    dark: /bitbutler-logo-dark.svg
     alt: BitButler
   actions:
     - theme: brand
