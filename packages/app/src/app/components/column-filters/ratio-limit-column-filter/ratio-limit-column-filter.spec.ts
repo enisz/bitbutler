@@ -53,10 +53,12 @@ describe('RatioLimitColumnFilter', () => {
       expect(component.doesFilterPass({ node: { data: { ratio_limit: 2 } } } as any)).toBe(true);
     });
 
-    it('noLimit mode matches only -1', () => {
+    it('noLimit mode matches -1 and nullish (missing ratio_limit, e.g. from an older .bbe import)', () => {
       component.applied = { mode: 'noLimit', operator: 'equals', from: null, to: null };
       expect(component.doesFilterPass({ node: { data: { ratio_limit: -1 } } } as any)).toBe(true);
       expect(mockParams.getValue).toHaveBeenCalled();
+      expect(component.doesFilterPass({ node: { data: {} } } as any)).toBe(true);
+      expect(component.doesFilterPass({ node: { data: { ratio_limit: null } } } as any)).toBe(true);
       expect(component.doesFilterPass({ node: { data: { ratio_limit: -2 } } } as any)).toBe(false);
       expect(component.doesFilterPass({ node: { data: { ratio_limit: 2 } } } as any)).toBe(false);
     });
@@ -74,10 +76,11 @@ describe('RatioLimitColumnFilter', () => {
       expect(component.doesFilterPass({ node: { data: { ratio_limit: 1.9 } } } as any)).toBe(false);
     });
 
-    it('custom mode never matches the -1/-2 sentinel values', () => {
+    it('custom mode never matches the -1/-2 sentinel values or a nullish ratio_limit', () => {
       component.applied = { mode: 'custom', operator: 'lt', from: 1000, to: null };
       expect(component.doesFilterPass({ node: { data: { ratio_limit: -1 } } } as any)).toBe(false);
       expect(component.doesFilterPass({ node: { data: { ratio_limit: -2 } } } as any)).toBe(false);
+      expect(component.doesFilterPass({ node: { data: {} } } as any)).toBe(false);
     });
 
     it('applies between in custom mode inclusively', () => {
