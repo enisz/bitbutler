@@ -46,10 +46,10 @@ export class About {
 
   public readonly techStack: TechStackItem[] = [
     { name: 'Angular', purposeKey: 'angular', version: 'v22.1.3' },
-    { name: 'Electron', purposeKey: 'electron', version: 'v39.2.5' },
-    { name: 'SQLite', purposeKey: 'sqlite', version: 'v12.5.0' },
-    { name: 'ag-Grid', purposeKey: 'ag-grid', version: 'v35.0.0' },
-    { name: 'TypeScript', purposeKey: 'typescript', version: 'v6.0.0' },
+    { name: 'Electron', purposeKey: 'electron', version: 'v43.4.1' },
+    { name: 'SQLite', purposeKey: 'sqlite', version: 'v13.0.3' },
+    { name: 'ag-Grid', purposeKey: 'ag-grid', version: 'v36.1.0' },
+    { name: 'TypeScript', purposeKey: 'typescript', version: 'v6.0.3' },
   ];
 
   public openExternalUrl(url: string): void {

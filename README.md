@@ -68,11 +68,11 @@ I built BitButler to fill that gap: to give qBittorrent-nox users a fast, native
 
 | Tool           | Purpose            | Badge                                                                                                                  |
 | :------------- | :----------------- | :--------------------------------------------------------------------------------------------------------------------- |
-| **Angular**    | Frontend Framework | ![Angular](https://img.shields.io/badge/Angular-v20.3.0-DD0031?style=flat-square&logo=angular&logoColor=white)         |
-| **Electron**   | Desktop Shell      | ![Electron](https://img.shields.io/badge/Electron-v39.2.5-47848F?style=flat-square&logo=electron&logoColor=white)      |
-| **SQLite**     | Local Database     | ![SQLite](https://img.shields.io/badge/SQLite-v12.5.0-003B57?style=flat-square&logo=sqlite&logoColor=white)            |
-| **ag-Grid**    | Data Management    | ![ag-Grid](https://img.shields.io/badge/ag--Grid-v35.0.0-2185d0?style=flat-square&logo=google-sheets&logoColor=white)  |
-| **TypeScript** | Logic & Types      | ![TypeScript](https://img.shields.io/badge/TypeScript-v5.9.2-3178C6?style=flat-square&logo=typescript&logoColor=white) |
+| **Angular**    | Frontend Framework | ![Angular](https://img.shields.io/badge/Angular-v22.1.3-DD0031?style=flat-square&logo=angular&logoColor=white)         |
+| **Electron**   | Desktop Shell      | ![Electron](https://img.shields.io/badge/Electron-v43.4.1-47848F?style=flat-square&logo=electron&logoColor=white)      |
+| **SQLite**     | Local Database     | ![SQLite](https://img.shields.io/badge/SQLite-v13.0.3-003B57?style=flat-square&logo=sqlite&logoColor=white)            |
+| **ag-Grid**    | Data Management    | ![ag-Grid](https://img.shields.io/badge/ag--Grid-v36.1.0-2185d0?style=flat-square&logo=google-sheets&logoColor=white)  |
+| **TypeScript** | Logic & Types      | ![TypeScript](https://img.shields.io/badge/TypeScript-v6.0.3-3178C6?style=flat-square&logo=typescript&logoColor=white) |
 
 ## Localization
 
