@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { faUser, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -7,8 +7,8 @@ import { TimeagoPipe } from 'ngx-timeago';
 import { AutofocusDirective } from '../../directives/autofocus';
 import { LocalTimestampPipe } from '../../pipes/local-timestamp-pipe';
 import { ElectronService } from '../../services/electron.service';
-import { ThemeService } from '../../services/theme.service';
 import { BbBtnContent } from '../bb-btn-content/bb-btn-content';
+import { BbLogo } from '../bb-logo/bb-logo';
 
 interface TechStackItem {
   name: string;
@@ -18,14 +18,20 @@ interface TechStackItem {
 
 @Component({
   selector: 'app-about',
-  imports: [LocalTimestampPipe, TimeagoPipe, AutofocusDirective, BbBtnContent, TranslatePipe],
+  imports: [
+    LocalTimestampPipe,
+    TimeagoPipe,
+    AutofocusDirective,
+    BbBtnContent,
+    BbLogo,
+    TranslatePipe,
+  ],
   templateUrl: './about.html',
   styleUrl: './about.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class About {
   public readonly activeModal = inject(NgbActiveModal);
-  private readonly themeService = inject(ThemeService);
   private readonly electronService = inject(ElectronService);
   public readonly tagline = 'The Digital Butler for your Torrents';
 
@@ -37,9 +43,6 @@ export class About {
 
   public version = this.electronService.getBitButlerVersion();
   public releaseDate = this.electronService.getBitButlerReleaseDate();
-  public readonly logoUrl = computed(
-    () => `assets/images/bitbutler-logo-${this.themeService.family()}.png`,
-  );
 
   public readonly techStack: TechStackItem[] = [
     { name: 'Angular', purposeKey: 'angular', version: 'v22.1.3' },

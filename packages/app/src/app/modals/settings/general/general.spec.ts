@@ -42,18 +42,6 @@ describe('General', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('getFamilyLogo', () => {
-    it('should return the logo URL for a given family name', () => {
-      expect(component.getFamilyLogo('aurora')).toBe('assets/images/bitbutler-logo-aurora.png');
-    });
-
-    it('should use the exact family name in the URL', () => {
-      expect(component.getFamilyLogo('mint-green')).toBe(
-        'assets/images/bitbutler-logo-mint-green.png',
-      );
-    });
-  });
-
   describe('startup form controls', () => {
     it('openAtLogin control is enabled regardless of whether a default server exists', () => {
       serverStoreMock.servers.set([]);

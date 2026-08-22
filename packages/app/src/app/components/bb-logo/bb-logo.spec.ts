@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FAMILY_ACCENT_COLORS } from '../../services/theme.service';
 import { BbLogo } from './bb-logo';
 
 describe('BbLogo', () => {
@@ -33,5 +34,19 @@ describe('BbLogo', () => {
     const svg = (fixture.nativeElement as HTMLElement).querySelector('svg');
     expect(svg?.getAttribute('width')).toBe('48');
     expect(svg?.getAttribute('height')).toBe('48');
+  });
+
+  it('should leave color unset by default so it inherits the active theme accent', () => {
+    const svg = (fixture.nativeElement as HTMLElement).querySelector('svg');
+    expect(svg?.style.color).toBe('');
+  });
+
+  it('should pin color to the given family accent when family is set', () => {
+    fixture.componentRef.setInput('family', 'aurora');
+    fixture.detectChanges();
+
+    const svg = (fixture.nativeElement as HTMLElement).querySelector('svg');
+    expect(svg?.style.color).toBe('rgb(43, 179, 177)');
+    expect(FAMILY_ACCENT_COLORS['aurora']).toBe('#2bb3b1');
   });
 });

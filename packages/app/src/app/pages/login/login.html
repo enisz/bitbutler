@@ -148,13 +148,7 @@
                   [class.active]="fam.value === currentFamily()"
                   (click)="setFamily(fam.value)"
                 >
-                  <img
-                    [ngSrc]="getFamilyLogoUrl(fam.value)"
-                    [alt]="fam.label"
-                    width="20"
-                    height="20"
-                    [priority]="fam.value === currentFamily()"
-                  />
+                  <app-bb-logo [family]="fam.value" [size]="20" />
                   <span>{{ fam.label }}</span>
                 </button>
               }

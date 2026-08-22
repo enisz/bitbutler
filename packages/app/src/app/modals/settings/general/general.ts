@@ -1,4 +1,4 @@
-import { CommonModule, NgOptimizedImage, formatDate } from '@angular/common';
+import { CommonModule, formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -27,6 +27,7 @@ import {
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom, from, tap } from 'rxjs';
 import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content';
+import { BbLogo } from '../../../components/bb-logo/bb-logo';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { SavePathSelect } from '../../../components/save-path-select/save-path-select';
 import {
@@ -50,7 +51,6 @@ import {
   ThemeFamily,
   ThemeMode,
   ThemeService,
-  getFamilyLogoUrl,
 } from '../../../services/theme.service';
 import { SettingsStateService } from '../settings-state.service';
 import { SettingsTabComponent } from '../settings.interface';
@@ -99,13 +99,13 @@ const DATE_FORMAT_TOKENS = [
     NgSelectComponent,
     NgOptionTemplateDirective,
     NgLabelTemplateDirective,
-    NgOptimizedImage,
     ReactiveFormsModule,
     FontAwesomeModule,
     BbSpinner,
     TranslatePipe,
     SavePathSelect,
     BbBtnContent,
+    BbLogo,
     NgbCollapse,
   ],
   templateUrl: './general.html',
@@ -289,8 +289,6 @@ export class General implements SettingsTabComponent {
   public toggleTokenGuide(): void {
     this.tokenGuideExpanded.update((v) => !v);
   }
-
-  public getFamilyLogo = getFamilyLogoUrl;
 
   public generalSettingsForm = new FormGroup({
     behavior: new FormGroup({

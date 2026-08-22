@@ -1,4 +1,4 @@
-import { NgClass, NgOptimizedImage } from '@angular/common';
+import { NgClass } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -34,13 +34,7 @@ import { ElectronService } from '../../services/electron.service';
 import { GeneralSettingsService } from '../../services/general-settings.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
-import {
-  THEME_FAMILIES,
-  ThemeFamily,
-  ThemeMode,
-  ThemeService,
-  getFamilyLogoUrl,
-} from '../../services/theme.service';
+import { THEME_FAMILIES, ThemeFamily, ThemeMode, ThemeService } from '../../services/theme.service';
 import { ToastService } from '../../services/toast.service';
 import { WindowService } from '../../services/window.service';
 import { setModalInput } from '../../utils/modal-input';
@@ -49,7 +43,6 @@ import { setModalInput } from '../../utils/modal-input';
   selector: 'app-login',
   standalone: true,
   imports: [
-    NgOptimizedImage,
     NgClass,
     ReactiveFormsModule,
     NgbTooltipModule,
@@ -120,8 +113,6 @@ export class Login implements OnInit {
     this.languageChanged();
     return this.translateService.getCurrentLang();
   });
-
-  public readonly getFamilyLogoUrl = getFamilyLogoUrl;
 
   public servers = this.serverStoreService.servers;
   public readonly hasServers = computed(() => this.servers().length > 0);

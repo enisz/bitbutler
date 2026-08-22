@@ -195,12 +195,6 @@ describe('Login', () => {
     });
   });
 
-  describe('getFamilyLogoUrl', () => {
-    it('should build a logo URL for a given family', () => {
-      expect(component.getFamilyLogoUrl('aurora')).toBe('assets/images/bitbutler-logo-aurora.png');
-    });
-  });
-
   describe('setFamily', () => {
     it('should delegate to themeService.setFamily', () => {
       component.setFamily('aurora');
