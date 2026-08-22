@@ -56,6 +56,10 @@
       "eslint --max-warnings=0 --fix",
       "prettier --write"
     ],
+    "packages/shared/src/**/*.ts": [
+      "eslint --max-warnings=0 --fix",
+      "prettier --write"
+    ],
     "*.{json,md,scss,css,html}": [
       "prettier --write"
     ]
