@@ -16,6 +16,11 @@ export type TorrentFinishedEvent = {
   ts: number;
 };
 
+// QbService.sync.streamMaindata tags each streamed chunk with this internal marker (see
+// qb.service.ts) so downstream consumers can tell a still-streaming initial load apart from a
+// fully-primed maindata snapshot. It is not part of the qBittorrent API response itself.
+type StreamableMaindata = Maindata & { _isStreamingChunk?: boolean };
+
 export type { ValueCount };
 
 @Injectable({ providedIn: 'root' })
@@ -97,7 +102,7 @@ export class TorrentStoreService {
     const removed: string[] = data?.torrents_removed ?? [];
     const fullUpdate = !!data?.full_update;
 
-    const isStreamingChunk = !!(data as any)?._isStreamingChunk;
+    const isStreamingChunk = !!(data as StreamableMaindata)._isStreamingChunk;
 
     const add: Torrent[] = [];
     const update: Torrent[] = [];

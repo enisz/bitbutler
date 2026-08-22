@@ -29,7 +29,7 @@ export class TorrentExportService {
           title,
         );
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       this.toastService.danger(this.describeExportError(err), title);
     }
   }

@@ -180,7 +180,7 @@ export class FilterService {
     this._columns.update((prev) => {
       const next: FilterModel = { ...(prev ?? {}) };
       if (filter == null) delete next[id];
-      else (next as any)[id] = filter;
+      else next[id] = filter;
       return next;
     });
   }

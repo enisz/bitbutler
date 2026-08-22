@@ -43,6 +43,22 @@ export type StreamMaindataState = {
   done: boolean;
 };
 
+// The IPC boundary (window.bitbutler.qb.request) rejects with whatever the main process threw,
+// which is not statically typed. HttpError messages embed a JSON-encoded QbResponse-shaped
+// payload (see extractJson/extractIpcStatus below), so this describes only the loosely-typed
+// properties we actually read off a caught rejection.
+type IpcErrorLike = {
+  status?: unknown;
+  message?: unknown;
+};
+
+type IpcErrorPayload = {
+  status: number;
+  statusText: string;
+  body: unknown;
+  path?: string;
+};
+
 @Injectable({ providedIn: 'root' })
 export class QbService {
   private readonly toastService = inject(ToastService);
@@ -787,7 +803,7 @@ export class QbService {
       try {
         const body = await (window.bitbutler.qb.request(fullReq) as Promise<T>);
         return { ok: true, status: 200, statusText: 'OK', body };
-      } catch (err: any) {
+      } catch (err: unknown) {
         const errJson = this.extractJson(err);
         const ipcStatus = this.extractIpcStatus(err);
 
@@ -840,7 +856,9 @@ export class QbService {
         }
 
         if (!options?.suppressErrors) {
-          const message = errJson?.body ? String(errJson.body) : err?.message || String(err);
+          const message = errJson?.body
+            ? String(errJson.body)
+            : this.getErrorMessage(err) || String(err);
           this.toastService.danger(
             message,
             this.translateService.instant('services.qb.error.request-failed-title'),
@@ -859,7 +877,7 @@ export class QbService {
               ok: false,
               status: errJson.status,
               statusText: errJson.statusText,
-              body: errJson.body,
+              body: errJson.body as T,
               path: errJson.path,
             };
           }
@@ -902,14 +920,14 @@ export class QbService {
     }
 
     const candidates: TorrentRunApi[] = ['PAUSE_RESUME', 'START_STOP'];
-    let lastErr: any;
+    let lastErr: unknown;
 
     for (const api of candidates) {
       try {
         await this.callRunEndpoint(serverId, api, action, form, { suppressErrors: true });
         this.runApiCache.set(serverId, api);
         return;
-      } catch (e: any) {
+      } catch (e: unknown) {
         lastErr = e;
       }
     }
@@ -946,11 +964,11 @@ export class QbService {
     return (hashes ?? []).map((h) => (h ?? '').trim()).filter(Boolean);
   }
 
-  private extractIpcStatus(err: any): number | null {
-    const direct = Number(err?.status);
+  private extractIpcStatus(err: unknown): number | null {
+    const direct = Number((err as IpcErrorLike | undefined)?.status);
     if (Number.isFinite(direct)) return direct;
 
-    const msg = String(err?.message ?? '');
+    const msg = this.getErrorMessage(err);
     const idx = msg.indexOf('{');
     if (idx === -1) return null;
 
@@ -963,15 +981,19 @@ export class QbService {
     }
   }
 
-  private extractJson(err: any): any {
-    const msg = String(err?.message ?? '');
+  private extractJson(err: unknown): IpcErrorPayload | null {
+    const msg = this.getErrorMessage(err);
     const idx = msg.indexOf('{');
     if (idx === -1) return null;
 
     try {
-      return JSON.parse(msg.slice(idx));
+      return JSON.parse(msg.slice(idx)) as IpcErrorPayload;
     } catch {
       return null;
     }
+  }
+
+  private getErrorMessage(err: unknown): string {
+    return String((err as IpcErrorLike | undefined)?.message ?? '');
   }
 }
