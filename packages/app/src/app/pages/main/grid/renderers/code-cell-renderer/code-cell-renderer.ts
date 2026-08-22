@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ICellRendererAngularComp } from 'ag-grid-angular';
 import { ICellRendererParams } from 'ag-grid-community';
+import { Torrent } from '../../../../../models/torrent.model';
 
 @Component({
   selector: 'app-code-cell-renderer',
@@ -12,11 +13,11 @@ import { ICellRendererParams } from 'ag-grid-community';
 export class CodeCellRenderer implements ICellRendererAngularComp {
   public value: string = '';
 
-  agInit(params: ICellRendererParams<any, any, any>): void {
-    this.value = params.value;
+  agInit(params: ICellRendererParams<Torrent, string>): void {
+    this.value = params.value ?? '';
   }
-  refresh(params: ICellRendererParams<any, any, any>): boolean {
-    this.value = params.value;
+  refresh(params: ICellRendererParams<Torrent, string>): boolean {
+    this.value = params.value ?? '';
     return true;
   }
 }

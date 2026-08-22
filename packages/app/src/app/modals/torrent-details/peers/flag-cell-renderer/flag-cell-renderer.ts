@@ -12,16 +12,15 @@ import { QbTorrentPeer } from '../../../../models/torrent.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FlagCellRenderer implements ICellRendererAngularComp {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- retyped in issue #287 Task 5
-  public params!: ICellRendererParams<QbTorrentPeer, any, any>;
+  public params!: ICellRendererParams<QbTorrentPeer, QbTorrentPeer['country_code']>;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- retyped in issue #287 Task 5
-  public agInit(params: ICellRendererParams<QbTorrentPeer, any, any>): void {
+  public agInit(params: ICellRendererParams<QbTorrentPeer, QbTorrentPeer['country_code']>): void {
     this.params = params;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- retyped in issue #287 Task 5
-  public refresh(_params: ICellRendererParams<any, any, any>): boolean {
+  public refresh(
+    _params: ICellRendererParams<QbTorrentPeer, QbTorrentPeer['country_code']>,
+  ): boolean {
     return true;
   }
 }
