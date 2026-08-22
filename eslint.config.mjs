@@ -74,6 +74,12 @@ export default tseslint.config(
     },
   },
   {
+    files: ['packages/electron/src/**/*.spec.ts'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
+  {
     files: ['packages/shared/src/**/*.ts'],
     languageOptions: {
       parser: tseslint.parser,
@@ -88,6 +94,12 @@ export default tseslint.config(
     rules: {
       ...noUnusedVarsRules,
       ...noEmptyRules,
+    },
+  },
+  {
+    files: ['packages/shared/src/**/*.spec.ts'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
     },
   },
   {
