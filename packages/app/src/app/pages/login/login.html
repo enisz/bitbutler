@@ -3,7 +3,7 @@
     <div class="login-hero-side">
       <div class="hero-content">
         <div class="hero-logo-wrapper">
-          <img [ngSrc]="logoUrl()" alt="BitButler logo" width="190" height="190" priority />
+          <app-bb-logo [size]="190" />
         </div>
         <h1 class="hero-title">BitButler</h1>
         <p class="hero-subtitle mb-0">{{ 'pages.login.tagline' | translate }}</p>
@@ -14,14 +14,7 @@
   <div class="login-form-side">
     @if (!showHero()) {
       <div class="mobile-brand-header text-center mb-4">
-        <img
-          [ngSrc]="logoUrl()"
-          alt="BitButler logo"
-          width="180"
-          height="180"
-          priority
-          class="mb-3 mobile-logo"
-        />
+        <app-bb-logo [size]="180" class="mb-3 mobile-logo" />
         <h2 class="fw-bold mb-1">BitButler</h2>
         <p class="text-body-secondary small mb-0">{{ 'pages.login.tagline' | translate }}</p>
       </div>

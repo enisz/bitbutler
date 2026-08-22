@@ -27,6 +27,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { debounceTime, firstValueFrom, fromEvent } from 'rxjs';
 import { AppLoader } from '../../components/app-loader/app-loader';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
+import { BbLogo } from '../../components/bb-logo/bb-logo';
 import { CommandBusService } from '../../services/command-bus.service';
 import { CredentialPromptService } from '../../services/credential-prompt.service';
 import { ElectronService } from '../../services/electron.service';
@@ -58,6 +59,7 @@ import { setModalInput } from '../../utils/modal-input';
     NgLabelTemplateDirective,
     TranslatePipe,
     BbBtnContent,
+    BbLogo,
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
@@ -78,8 +80,6 @@ export class Login implements OnInit {
   private readonly generalSettingsService = inject(GeneralSettingsService);
 
   private readonly languageChanged = toSignal(this.translateService.onLangChange);
-
-  public readonly logoUrl = computed(() => getFamilyLogoUrl(this.themeService.family()));
 
   public readonly icons = { faLanguage, faPalette, faCircleHalfStroke, faPlug, faPlus, faServer };
 

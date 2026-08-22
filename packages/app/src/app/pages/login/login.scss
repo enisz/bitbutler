@@ -42,7 +42,7 @@
   display: inline-block;
   margin-bottom: 2rem;
 
-  img {
+  app-bb-logo {
     filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.45));
   }
 }
@@ -91,7 +91,7 @@
   margin-bottom: 0.375rem;
 }
 
-.mobile-logo {
+app-bb-logo.mobile-logo {
   filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.5));
 }
 

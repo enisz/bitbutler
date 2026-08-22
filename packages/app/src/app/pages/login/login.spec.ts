@@ -154,13 +154,6 @@ describe('Login', () => {
     });
   });
 
-  describe('logoUrl', () => {
-    it('should build a URL from the current theme family', () => {
-      themeMock.family.set('aurora');
-      expect(component.logoUrl()).toBe('assets/images/bitbutler-logo-aurora.png');
-    });
-  });
-
   describe('families', () => {
     it('should expose the shared THEME_FAMILIES list', () => {
       expect(component.families).toHaveLength(8);
