@@ -258,7 +258,7 @@
     "angular-eslint": "^22.1.0",
     "concurrently": "^9.2.1",
     "electron": "^43.4.1",
-    "electron-builder": "^26.4.0",
+    "electron-builder": "^26.15.7",
     "eslint": "^10.9.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-n": "^17.23.2",
