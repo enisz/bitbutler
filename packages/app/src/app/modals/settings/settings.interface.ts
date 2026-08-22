@@ -8,4 +8,4 @@ export interface Tab {
   loadComponent: () => Promise<Type<SettingsTabComponent>>;
 }
 
-export interface SettingsTabComponent {}
+export type SettingsTabComponent = object;

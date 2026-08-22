@@ -1,7 +1,24 @@
 // @ts-check
+import js from '@eslint/js';
 import angular from 'angular-eslint';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import tseslint from 'typescript-eslint';
+
+const noUnusedVarsRules = {
+  '@typescript-eslint/no-unused-vars': [
+    'error',
+    {
+      args: 'after-used',
+      argsIgnorePattern: '^_',
+      varsIgnorePattern: '^_',
+      caughtErrorsIgnorePattern: '^_',
+    },
+  ],
+};
+
+const noEmptyRules = {
+  'no-empty': ['error', { allowEmptyCatch: true }],
+};
 
 export default tseslint.config(
   {
@@ -17,7 +34,23 @@ export default tseslint.config(
   },
   {
     files: ['packages/app/src/**/*.ts'],
-    extends: [...angular.configs.tsRecommended, eslintPluginPrettierRecommended],
+    extends: [
+      js.configs.recommended,
+      ...tseslint.configs.recommended,
+      ...angular.configs.tsRecommended,
+      eslintPluginPrettierRecommended,
+    ],
+    processor: angular.processInlineTemplates,
+    rules: {
+      ...noUnusedVarsRules,
+      ...noEmptyRules,
+    },
+  },
+  {
+    files: ['packages/app/src/**/*.spec.ts'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
   },
   {
     files: ['packages/app/src/**/*.html'],
@@ -30,7 +63,15 @@ export default tseslint.config(
       ecmaVersion: 'latest',
       sourceType: 'module',
     },
-    extends: [eslintPluginPrettierRecommended],
+    extends: [
+      js.configs.recommended,
+      ...tseslint.configs.recommended,
+      eslintPluginPrettierRecommended,
+    ],
+    rules: {
+      ...noUnusedVarsRules,
+      ...noEmptyRules,
+    },
   },
   {
     files: ['packages/shared/src/**/*.ts'],
@@ -39,7 +80,15 @@ export default tseslint.config(
       ecmaVersion: 'latest',
       sourceType: 'module',
     },
-    extends: [eslintPluginPrettierRecommended],
+    extends: [
+      js.configs.recommended,
+      ...tseslint.configs.recommended,
+      eslintPluginPrettierRecommended,
+    ],
+    rules: {
+      ...noUnusedVarsRules,
+      ...noEmptyRules,
+    },
   },
   {
     files: ['packages/docs/docs/.vitepress/**/*.ts'],

@@ -285,13 +285,13 @@ export class Grid implements AfterViewInit {
       );
     });
 
-    (this.torrentListGridSettingsService
+    this.torrentListGridSettingsService
       .asObservable()
       .pipe(skip(1), takeUntilDestroyed(this.destroyRef))
-      .subscribe((settings) => this.applyGridSettings(settings)),
-      this.translateService.onLangChange.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-        this.refreshColumnHeaders();
-      }));
+      .subscribe((settings) => this.applyGridSettings(settings));
+    this.translateService.onLangChange.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.refreshColumnHeaders();
+    });
   }
 
   deselectRows() {
@@ -310,6 +310,7 @@ export class Grid implements AfterViewInit {
     this.isApplyingFilterFromService = false;
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- retyped in issue #287 Task 4
   private onColumnFilterChange = (model: any) => {
     if (!this.api) return;
     this.isApplyingFilterFromService = true;
@@ -318,6 +319,7 @@ export class Grid implements AfterViewInit {
     this.isApplyingFilterFromService = false;
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- retyped in issue #287 Task 4
   private handleCellRightClick = async (event: CellContextMenuEvent<Torrent, any>) => {
     if (!event.data) return;
 
@@ -340,6 +342,7 @@ export class Grid implements AfterViewInit {
     });
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- retyped in issue #287 Task 4
   private handleRowDoubleClick = async (event: RowDoubleClickedEvent<Torrent, any>) => {
     if (!event.data) return;
     const settings = await firstValueFrom(this.torrentListGridSettingsService.asObservable());

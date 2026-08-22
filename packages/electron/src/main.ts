@@ -47,14 +47,14 @@ function registerAppIpcHandlers(): void {
   registerExportIpcHandlers();
 }
 
-function createOrRestoreMainWindow(startMinimized = false): Electron.BrowserWindow {
+function createOrRestoreMainWindow(): Electron.BrowserWindow {
   if (mainWindow && !mainWindow.isDestroyed()) {
     mainWindow.show();
     mainWindow.focus();
     return mainWindow;
   }
 
-  mainWindow = createMainWindow(startMinimized);
+  mainWindow = createMainWindow();
 
   installMenu(mainWindow);
 
@@ -99,7 +99,7 @@ if (!gotLock) {
 
     const { openAtLogin, startMinimized } = getStartupSettings();
     app.setLoginItemSettings({ openAtLogin });
-    const mainWindow = createOrRestoreMainWindow(startMinimized);
+    const mainWindow = createOrRestoreMainWindow();
     hookRenderer(mainWindow);
     if (!startMinimized) {
       mainWindow.once('ready-to-show', () => {

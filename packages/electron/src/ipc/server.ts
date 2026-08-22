@@ -120,7 +120,6 @@ const stmtUpdateWithPassword = db.prepare(`
 
 const stmtDelete = db.prepare<[string]>(`DELETE FROM servers WHERE id = ?`);
 const stmtUnsetAutoLogin = db.prepare(`UPDATE servers SET auto_login = 0 WHERE auto_login = 1`);
-const stmtSetAutoLogin = db.prepare<[string]>(`UPDATE servers SET auto_login = 1 WHERE id = ?`);
 const stmtSetConnectionInfo = db.prepare<[number, string, string, string]>(`
   UPDATE servers SET export_available = ?, webapi_version = ?, qb_version = ? WHERE id = ?
 `);
@@ -224,7 +223,7 @@ function serverAdd(server: unknown): { id: string } {
     rebuildMenu();
     return { id: row.id };
   } catch (err) {
-    throw new Error(toUserDbError(err));
+    throw new Error(toUserDbError(err), { cause: err });
   }
 }
 
@@ -273,7 +272,7 @@ function serverUpdate(payload: unknown): { updated: boolean } {
     }
     return { updated };
   } catch (err) {
-    throw new Error(toUserDbError(err));
+    throw new Error(toUserDbError(err), { cause: err });
   }
 }
 

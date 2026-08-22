@@ -8,4 +8,4 @@ export interface QbSettingsTab {
   loadComponent: () => Promise<Type<QbSettingsTabComponent>>;
 }
 
-export interface QbSettingsTabComponent {}
+export type QbSettingsTabComponent = object;

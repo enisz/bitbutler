@@ -6,8 +6,6 @@ import { ServerService } from './server.service';
 const makeServer = (id: string, name: string, auto_login = false): ServerRecord =>
   ({ id, name, auto_login, host: `http://${id}`, username: '', port: 8080 }) as ServerRecord;
 
-const flushPromises = () => new Promise<void>((resolve) => setTimeout(resolve));
-
 describe('ServerStoreService', () => {
   let service: ServerStoreService;
   let mockServerService: { list: ReturnType<typeof vi.fn> };

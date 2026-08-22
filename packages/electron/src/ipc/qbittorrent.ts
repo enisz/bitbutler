@@ -358,7 +358,7 @@ async function qbSyncMaindataStream(
     })) as Record<string, unknown>;
     const allTorrents = (maindata['torrents'] as Record<string, Record<string, unknown>>) || {};
 
-    let torrentHashes = Object.keys(allTorrents);
+    const torrentHashes = Object.keys(allTorrents);
     const totalTorrents = torrentHashes.length;
 
     if (sortBy && totalTorrents > 0) {

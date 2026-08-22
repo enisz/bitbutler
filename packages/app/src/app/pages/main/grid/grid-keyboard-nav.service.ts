@@ -85,7 +85,7 @@ export class GridKeyboardNavService {
     if (!api) return;
 
     const selectedNodes = api.getSelectedNodes();
-    let leadIndex =
+    const leadIndex =
       this._leadIndex ??
       (selectedNodes.length ? selectedNodes[selectedNodes.length - 1].rowIndex : null);
     if (leadIndex == null) return;
@@ -187,6 +187,7 @@ export class GridKeyboardNavService {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- retyped in issue #287 Task 4
   private getApproxPageSize(api: any): number {
     const rowHeight = 32;
     const viewportHeight = api.gridBodyCtrl?.eBodyViewport?.clientHeight ?? 400;
