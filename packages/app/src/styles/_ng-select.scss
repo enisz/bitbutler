@@ -54,10 +54,18 @@
   border: 1px solid var(--bb-control-border) !important;
   border-radius: var(--bb-control-radius) !important;
   padding-right: 0.75rem !important;
+  padding-left: 0.75rem !important;
   transition:
     background-color 120ms ease,
     border-color 120ms ease,
     box-shadow 120ms ease;
+}
+
+// The container above now carries the left inset itself, so cancel ng-select's own
+// default value-container padding-left (--ng-select-value-padding-left) to avoid stacking
+// both and ending up with more space on the left than the right.
+.ng-select .ng-value-container {
+  padding-left: 0 !important;
 }
 
 .ng-select:hover .ng-select-container {
@@ -130,6 +138,10 @@ ng-select.ng-select .ng-select-container .ng-input input {
   font-size: 0.75rem !important;
   border-radius: 4px !important;
   width: 100px;
+  // Reset the general 0.75rem container inset - it would eat nearly a quarter of this
+  // 100px width. This variant does its own spacing via .ng-value-container below.
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
 .bb-select-compact.ng-select .ng-select-container .ng-value-container {
