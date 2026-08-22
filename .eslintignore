@@ -1,8 +1,0 @@
-node_modules/
-dist/
-dist-electron/
-out/
-coverage/
-.release/
-**/*.min.js
-packages/*/node_modules/
