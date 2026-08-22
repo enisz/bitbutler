@@ -12,8 +12,10 @@ import {
 import {
   NgbCalendar,
   NgbDate,
+  NgbDatepicker,
   NgbDatepickerI18n,
   NgbDatepickerModule,
+  NgbDatepickerNavigateEvent,
 } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslateModule } from '@ngx-translate/core';
@@ -22,6 +24,14 @@ import { IAfterGuiAttachedParams, IDoesFilterPassParams, IFilterParams } from 'a
 import { CustomDatepickerI18n } from '../../../services/custom-datepicker-i18n.service';
 import { DateFormatService } from '../../../services/date-format.service';
 import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
+
+interface DateRangeFilterModel {
+  from: NgbDate | null;
+  to: NgbDate | null;
+}
+
+/** The subset of `NgbDatepicker` this component actually drives. */
+type NavigableDatepicker = Pick<NgbDatepicker, 'navigateTo'>;
 
 @Component({
   selector: 'app-datepicker-range-filter',
@@ -94,10 +104,10 @@ export class DatepickerRangeFilter implements IFilterAngularComp, OnInit {
     }
     return cellLocalMidnight === from;
   }
-  getModel(): any {
+  getModel(): DateRangeFilterModel | null {
     return this.isFilterActive() ? { from: this.appliedFrom, to: this.appliedTo } : null;
   }
-  setModel(model: any): void {
+  setModel(model: DateRangeFilterModel | null): void {
     this.appliedFrom = model?.from ?? null;
     this.appliedTo = model?.to ?? null;
     this.fromDate = this.appliedFrom;
@@ -108,10 +118,10 @@ export class DatepickerRangeFilter implements IFilterAngularComp, OnInit {
     this.toDate = this.appliedTo;
     this.hoveredDate = null;
   }
-  updateView(dp: any) {
+  updateView(dp: NavigableDatepicker) {
     dp.navigateTo(this.viewDate);
   }
-  moveMonth(dp: any, step: number) {
+  moveMonth(dp: NavigableDatepicker, step: number) {
     const nextDate = this.calendarService.getNext(
       new NgbDate(this.viewDate.year, this.viewDate.month, 1),
       'm',
@@ -120,18 +130,17 @@ export class DatepickerRangeFilter implements IFilterAngularComp, OnInit {
     this.viewDate = { month: nextDate.month, year: nextDate.year };
     dp.navigateTo(this.viewDate);
   }
-  selectToday(dp: any) {
+  selectToday(dp: NavigableDatepicker) {
     this.fromDate = this.today;
     this.toDate = null;
     this.hoveredDate = null;
     this.viewDate = { month: this.today.month, year: this.today.year };
     dp.navigateTo(this.today);
   }
-  onNavigate(event: any) {
+  onNavigate(event: NgbDatepickerNavigateEvent) {
     this.viewDate = { month: event.next.month, year: event.next.year };
   }
-  onSelect(ev: any) {
-    const date = ev as NgbDate;
+  onSelect(date: NgbDate) {
     if (!this.fromDate && !this.toDate) {
       this.fromDate = date;
     } else if (this.fromDate && !this.toDate && date.after(this.fromDate)) {
