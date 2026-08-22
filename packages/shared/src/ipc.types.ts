@@ -1,8 +1,8 @@
 import type { HostPlatform, UpdateCheckResponse } from './models/electron.model.js';
 import type { NewServer, ServerRecord } from './models/server.model.js';
 import type { TorrentDraft, TorrentDraftSource } from './models/torrent-draft.model.js';
-import type { WindowState } from './models/window.model.js';
 import type { UpdateCapability, UpdaterEvent } from './models/updater.model.js';
+import type { WindowState } from './models/window.model.js';
 
 export type BitButlerServerIdPayload = { id: string };
 export type BitButlerQbLoginPayload = { id: string; username?: string; password?: string };
