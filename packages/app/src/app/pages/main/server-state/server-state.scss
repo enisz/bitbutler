@@ -15,14 +15,9 @@
     height: 4px;
   }
 
-  &::-webkit-scrollbar-button {
-    display: none;
-  }
-
-  /* Hidden until the bar is hovered, so it doesn't clutter the idle UI */
+  /* Hidden until the bar is hovered, unlike the app-wide permanent thumb (styles.scss) */
   &::-webkit-scrollbar-thumb {
     background-color: transparent;
-    transition: background-color 0.15s ease;
   }
 
   &:hover {
