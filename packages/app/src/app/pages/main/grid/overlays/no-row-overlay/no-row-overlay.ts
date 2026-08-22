@@ -4,7 +4,7 @@ import { INoRowsOverlayAngularComp } from 'ag-grid-angular';
 import { INoRowsOverlayParams } from 'ag-grid-community';
 import { Torrent } from '../../../../../models/torrent.model';
 
-type NoRowOverlayParams = INoRowsOverlayParams<Torrent, any> & {
+type NoRowOverlayParams = INoRowsOverlayParams<Torrent> & {
   message?: string;
 };
 

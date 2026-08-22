@@ -86,9 +86,11 @@ export class SeedingRatios implements QbSettingsTabComponent, OnInit {
   }
 
   private updateSeedingTimeState(enabled: boolean): void {
-    enabled
-      ? this.form.controls.max_seeding_time.enable({ emitEvent: false })
-      : this.form.controls.max_seeding_time.disable({ emitEvent: false });
+    if (enabled) {
+      this.form.controls.max_seeding_time.enable({ emitEvent: false });
+    } else {
+      this.form.controls.max_seeding_time.disable({ emitEvent: false });
+    }
   }
 
   private async save(): Promise<void> {

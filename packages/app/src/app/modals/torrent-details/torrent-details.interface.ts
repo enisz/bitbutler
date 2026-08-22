@@ -8,4 +8,4 @@ export interface Tab {
   loadComponent: () => Promise<Type<TorrentDetailTabComponent>>;
 }
 
-export interface TorrentDetailTabComponent {}
+export type TorrentDetailTabComponent = object;

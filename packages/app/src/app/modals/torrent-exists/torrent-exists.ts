@@ -131,10 +131,10 @@ export class TorrentExists {
       }
 
       this.fileDeleted.set(true);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(TorrentExists.name, 'deleteTorrentFile', 'Failed to delete torrent file', err);
       this.toastService.danger(
-        err?.message ?? String(err),
+        err instanceof Error ? err.message : String(err),
         this.translateService.instant('components.modals.torrent-exists.toast.delete-failed-title'),
       );
     }

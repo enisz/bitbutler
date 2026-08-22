@@ -11,6 +11,7 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faBars, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import type { ColumnState } from 'ag-grid-community';
 import { Subscription, first } from 'rxjs';
 import { DEFAULT_SIDEBAR_SETTINGS } from '../../models/sidebar-settings.model';
 import { Maindata, QbServerState } from '../../models/torrent.model';
@@ -78,8 +79,8 @@ export class Main implements OnDestroy {
       .pipe(first())
       .subscribe((prefs) => {
         const sortCol = prefs?.columnState?.find(
-          (c: any) => typeof c === 'object' && c !== null && c.sort,
-        ) as any;
+          (c): c is ColumnState => typeof c === 'object' && c !== null && !!c.sort,
+        );
 
         const sortBy = sortCol?.colId;
         const sortDesc = sortCol?.sort === 'desc';
@@ -114,10 +115,10 @@ function mergeServerState(
   if (!patch) return prev;
   if (!prev) return patch;
 
-  const out: any = { ...prev };
-  for (const k of Object.keys(patch as any)) {
-    const v = (patch as any)[k];
+  const out: QbServerState = { ...prev };
+  for (const k of Object.keys(patch)) {
+    const v = patch[k];
     if (v !== undefined) out[k] = v;
   }
-  return out as QbServerState;
+  return out;
 }

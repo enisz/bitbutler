@@ -133,7 +133,7 @@ export class QbPollingService {
           tap(() => this._onPoll$.next()),
           exhaustMap(() =>
             from(this.qb.sync.maindata(serverId, this.maindataRid$.value)).pipe(
-              tap((res: any) => {
+              tap((res: Maindata) => {
                 if (typeof res?.rid === 'number') this.maindataRid$.next(res.rid);
               }),
               catchError((err) => {

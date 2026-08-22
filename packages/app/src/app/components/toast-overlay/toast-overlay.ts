@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import {
   faCircleCheck,
   faCircleInfo,
@@ -25,7 +26,7 @@ export class ToastOverlay {
   readonly toasts = signal<Toast[]>([]);
   readonly position = signal<ToastPosition>('bottom-right');
   readonly xmark = faXmark;
-  readonly icons: Record<ToastType, any> = {
+  readonly icons: Record<ToastType, IconDefinition> = {
     primary: faCircleInfo,
     secondary: faCircleInfo,
     success: faCircleCheck,

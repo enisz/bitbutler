@@ -16,6 +16,7 @@ import { AgGridAngular } from 'ag-grid-angular';
 import {
   type CellContextMenuEvent,
   type ColumnState,
+  type FilterModel,
   type GridApi,
   type GridOptions,
   type RowDoubleClickedEvent,
@@ -285,13 +286,13 @@ export class Grid implements AfterViewInit {
       );
     });
 
-    (this.torrentListGridSettingsService
+    this.torrentListGridSettingsService
       .asObservable()
       .pipe(skip(1), takeUntilDestroyed(this.destroyRef))
-      .subscribe((settings) => this.applyGridSettings(settings)),
-      this.translateService.onLangChange.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-        this.refreshColumnHeaders();
-      }));
+      .subscribe((settings) => this.applyGridSettings(settings));
+    this.translateService.onLangChange.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.refreshColumnHeaders();
+    });
   }
 
   deselectRows() {
@@ -310,7 +311,7 @@ export class Grid implements AfterViewInit {
     this.isApplyingFilterFromService = false;
   };
 
-  private onColumnFilterChange = (model: any) => {
+  private onColumnFilterChange = (model: FilterModel) => {
     if (!this.api) return;
     this.isApplyingFilterFromService = true;
     this.api.setFilterModel(model);
@@ -318,7 +319,7 @@ export class Grid implements AfterViewInit {
     this.isApplyingFilterFromService = false;
   };
 
-  private handleCellRightClick = async (event: CellContextMenuEvent<Torrent, any>) => {
+  private handleCellRightClick = async (event: CellContextMenuEvent<Torrent>) => {
     if (!event.data) return;
 
     const currentSelection = this.selectionStore.selected();
@@ -340,7 +341,7 @@ export class Grid implements AfterViewInit {
     });
   };
 
-  private handleRowDoubleClick = async (event: RowDoubleClickedEvent<Torrent, any>) => {
+  private handleRowDoubleClick = async (event: RowDoubleClickedEvent<Torrent>) => {
     if (!event.data) return;
     const settings = await firstValueFrom(this.torrentListGridSettingsService.asObservable());
     const action = settings?.rowDoubleClickAction ?? 'DETAILS';

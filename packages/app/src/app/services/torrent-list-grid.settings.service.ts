@@ -39,7 +39,7 @@ export class TorrentListGridSettingsService extends BaseSettingsService<TorrentL
             colId: def.colId!,
             hide: false,
             width: typeof def.width === 'number' ? def.width : undefined,
-            flex: (def as any)?.flex ?? (typeof def.width === 'number' ? undefined : 1),
+            flex: def.flex ?? (typeof def.width === 'number' ? undefined : 1),
             sort: def.sort === 'asc' || def.sort === 'desc' ? def.sort : null,
             pinned: def.pinned ?? null,
           });
@@ -52,7 +52,7 @@ export class TorrentListGridSettingsService extends BaseSettingsService<TorrentL
           colId: def.colId!,
           hide: true,
           width: typeof def.width === 'number' ? def.width : undefined,
-          flex: (def as any)?.flex ?? (typeof def.width === 'number' ? undefined : 1),
+          flex: def.flex ?? (typeof def.width === 'number' ? undefined : 1),
           sort: def.sort === 'asc' || def.sort === 'desc' ? def.sort : null,
           pinned: def.pinned ?? null,
         });
@@ -64,7 +64,7 @@ export class TorrentListGridSettingsService extends BaseSettingsService<TorrentL
     return normalized;
   }
 
-  private isColumnStateStrings(state: any): state is string[] {
+  private isColumnStateStrings(state: TorrentListGridSettings['columnState']): state is string[] {
     if (!Array.isArray(state) || state.length === 0) {
       return false;
     }

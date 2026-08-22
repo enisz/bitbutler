@@ -17,6 +17,7 @@ import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { AppCommand } from '../../../../models/command.model';
 import { CommandBusService } from '../../../../services/command-bus.service';
 import { CANCEL_ANCESTOR_CLOSE, CLOSE_ROOT, CONTEXT_MENU_CONFIG } from './context-menu.tokens';
 import type { ContextMenuConfig, ContextMenuEntry } from './context-menu.types';
@@ -33,7 +34,7 @@ export class ContextMenu implements OnDestroy {
   private readonly overlayRef = inject(OverlayRef);
   private readonly overlay = inject(Overlay);
   private readonly injector = inject(Injector);
-  readonly config = inject<ContextMenuConfig<any>>(CONTEXT_MENU_CONFIG);
+  readonly config = inject<ContextMenuConfig>(CONTEXT_MENU_CONFIG);
   private readonly clipboard = inject(Clipboard);
   private readonly commandBus = inject(CommandBusService);
 
@@ -165,7 +166,7 @@ export class ContextMenu implements OnDestroy {
     this.clipboard.copy(value);
   }
 
-  emit(cmd: any): void {
+  emit(cmd: AppCommand): void {
     this.commandBus.emit(cmd);
   }
 

@@ -64,10 +64,10 @@ export class RenameTorrent implements OnInit {
       this.processing.set(true);
       await this.renameTorrentContent(serverId, this.torrent().hash, desiredRaw);
       await this.qbService.torrents.rename(serverId, this.torrent().hash, desiredRaw);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(RenameTorrent.name, 'handleSubmit', 'Failed to rename the torrent!');
       this.toastService.danger(
-        error?.message ?? String(error),
+        error instanceof Error ? error.message : String(error),
         this.translateService.instant('components.modals.rename-torrent.error.failed-to-rename'),
       );
     } finally {
@@ -133,11 +133,14 @@ export class RenameTorrent implements OnInit {
   }
 
   private sanitizeFileName(input: string): string {
-    return (input ?? '')
-      .trim()
-      .replace(/[<>:"/\\|?*\u0000-\u001F]/g, '')
-      .replace(/\s+$/g, '')
-      .replace(/\.+$/g, '');
+    return (
+      (input ?? '')
+        .trim()
+        // eslint-disable-next-line no-control-regex -- intentionally strips OS-illegal control characters from filenames
+        .replace(/[<>:"/\\|?*\u0000-\u001F]/g, '')
+        .replace(/\s+$/g, '')
+        .replace(/\.+$/g, '')
+    );
   }
 
   private sanitizeFolderName(input: string): string {

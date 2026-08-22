@@ -38,7 +38,7 @@ export class HumanizeDurationPipe implements PipeTransform {
 
     try {
       return new DurationFormat(locale, { style }).format(duration);
-    } catch (e) {
+    } catch {
       return new DurationFormat('en-US', { style }).format(duration);
     }
   }

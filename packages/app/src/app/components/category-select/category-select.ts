@@ -85,15 +85,15 @@ export class CategorySelect implements ControlValueAccessor {
       .catch((err) => console.error('Failed to get torrent categories!', err));
   }
 
-  writeValue(value: any): void {
+  writeValue(value: string | null): void {
     this.selectControl.setValue(value, { emitEvent: false });
   }
 
-  registerOnChange(fn: any): void {
+  registerOnChange(fn: (value: string | null) => void): void {
     this.onChange = fn;
   }
 
-  registerOnTouched(fn: any): void {
+  registerOnTouched(fn: () => void): void {
     this.onTouched = fn;
   }
 

@@ -74,7 +74,7 @@ export class SetTorrentCategory implements OnInit {
     try {
       await this.qbService.torrents.setCategory(serverId, this.hashes(), category);
       this.activeModal.close();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(
         SetTorrentCategory.name,
         'handleSubmit',
@@ -82,7 +82,7 @@ export class SetTorrentCategory implements OnInit {
         error,
       );
       this.toastService.danger(
-        error?.message ?? String(error),
+        error instanceof Error ? error.message : String(error),
         this.translateService.instant(
           'components.modals.set-torrent-category.toast.set-failed-title',
         ),

@@ -1,4 +1,4 @@
-import { DestroyRef, Injectable, inject } from '@angular/core';
+import { DestroyRef, Injectable, Type, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
@@ -348,9 +348,9 @@ export class UiCommandHandlerService {
                   );
                 }
               })
-              .catch((error: any) => {
+              .catch((error: unknown) => {
                 console.error(UiCommandHandlerService.name, 'UI_OPEN_DESTINATION', error);
-                this.toastService.danger(error);
+                this.toastService.danger(error instanceof Error ? error.message : String(error));
               });
             break;
 
@@ -584,7 +584,7 @@ export class UiCommandHandlerService {
     return cmd.type.startsWith('UI_');
   }
 
-  private isModalOpen(component: any): boolean {
+  private isModalOpen(component: Type<unknown>): boolean {
     return this.activeModals.some((modal) => modal.componentInstance instanceof component);
   }
 }

@@ -77,9 +77,9 @@ export class TorrentDetailsActionsService {
         this.serverStoreService.currentServerId() as string,
         [this.dataService.hash()],
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.toastService.danger(
-        error?.message ?? String(error),
+        error instanceof Error ? error.message : String(error),
         this.translateService.instant(
           'components.modals.torrent-details.general.toast.remove-category-failed',
         ),
@@ -110,9 +110,9 @@ export class TorrentDetailsActionsService {
           .data.tags.split(',')
           .map((t) => t.trim()),
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.toastService.danger(
-        error?.message ?? String(error),
+        error instanceof Error ? error.message : String(error),
         this.translateService.instant(
           'components.modals.torrent-details.general.toast.remove-all-tags-failed',
         ),
@@ -128,9 +128,9 @@ export class TorrentDetailsActionsService {
       await this.qbService.torrents.resume(this.serverStoreService.currentServerId() as string, [
         this.dataService.hash(),
       ]);
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.toastService.danger(
-        error?.message ?? String(error),
+        error instanceof Error ? error.message : String(error),
         this.translateService.instant(
           'components.modals.torrent-details.general.toast.resume-failed',
         ),
@@ -146,9 +146,9 @@ export class TorrentDetailsActionsService {
       await this.qbService.torrents.pause(this.serverStoreService.currentServerId() as string, [
         this.dataService.hash(),
       ]);
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.toastService.danger(
-        error?.message ?? String(error),
+        error instanceof Error ? error.message : String(error),
         this.translateService.instant(
           'components.modals.torrent-details.general.toast.pause-failed',
         ),
@@ -168,9 +168,9 @@ export class TorrentDetailsActionsService {
         [this.dataService.hash()],
         true,
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.toastService.danger(
-        error?.message ?? String(error),
+        error instanceof Error ? error.message : String(error),
         this.translateService.instant(
           'components.modals.torrent-details.general.toast.force-resume-failed',
         ),
@@ -203,9 +203,9 @@ export class TorrentDetailsActionsService {
         this.serverStoreService.currentServerId() as string,
         [this.dataService.hash()],
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.toastService.danger(
-        error?.message ?? String(error),
+        error instanceof Error ? error.message : String(error),
         this.translateService.instant(
           'components.modals.torrent-details.general.toast.reannounce-failed',
         ),
@@ -225,9 +225,9 @@ export class TorrentDetailsActionsService {
         this.serverStoreService.currentServerId() as string,
         [this.dataService.hash()],
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.toastService.danger(
-        error?.message ?? String(error),
+        error instanceof Error ? error.message : String(error),
         this.translateService.instant(
           'components.modals.torrent-details.general.toast.toggle-sequential-download-failed',
         ),
@@ -241,9 +241,9 @@ export class TorrentDetailsActionsService {
         this.serverStoreService.currentServerId() as string,
         [this.dataService.hash()],
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.toastService.danger(
-        error?.message ?? String(error),
+        error instanceof Error ? error.message : String(error),
         this.translateService.instant(
           'components.modals.torrent-details.general.toast.toggle-first-last-piece-prio-failed',
         ),
@@ -259,9 +259,9 @@ export class TorrentDetailsActionsService {
       await this.qbService.torrents.recheck(this.serverStoreService.currentServerId() as string, [
         this.dataService.hash(),
       ]);
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.toastService.danger(
-        error?.message ?? String(error),
+        error instanceof Error ? error.message : String(error),
         this.translateService.instant(
           'components.modals.torrent-details.general.toast.recheck-failed',
         ),
@@ -277,9 +277,9 @@ export class TorrentDetailsActionsService {
         [this.dataService.hash()],
         !current,
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.toastService.danger(
-        error?.message ?? String(error),
+        error instanceof Error ? error.message : String(error),
         this.translateService.instant(
           'components.modals.torrent-details.general.toast.toggle-auto-tmm-failed',
         ),
@@ -295,9 +295,9 @@ export class TorrentDetailsActionsService {
         [this.dataService.hash()],
         !current,
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.toastService.danger(
-        error?.message ?? String(error),
+        error instanceof Error ? error.message : String(error),
         this.translateService.instant(
           'components.modals.torrent-details.general.toast.toggle-force-start-failed',
         ),
@@ -313,9 +313,9 @@ export class TorrentDetailsActionsService {
         [this.dataService.hash()],
         !current,
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.toastService.danger(
-        error?.message ?? String(error),
+        error instanceof Error ? error.message : String(error),
         this.translateService.instant(
           'components.modals.torrent-details.general.toast.toggle-super-seeding-failed',
         ),
@@ -351,7 +351,7 @@ export class TorrentDetailsActionsService {
           await this.qbService.torrents.filePrio(serverId, hash, [file.index], file.priority ?? 0);
         }
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(
         TorrentDetailsActionsService.name,
         'saveFileChanges',
@@ -359,7 +359,7 @@ export class TorrentDetailsActionsService {
         e,
       );
       this.toastService.danger(
-        e?.message ?? String(e),
+        e instanceof Error ? e.message : String(e),
         this.translateService.instant(
           'components.modals.torrent-details.content.error.failed-to-save-title',
         ),

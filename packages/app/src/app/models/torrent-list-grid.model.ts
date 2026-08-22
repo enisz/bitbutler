@@ -1,10 +1,10 @@
-import type { ColumnState } from 'ag-grid-community';
+import type { ColumnState, FilterModel } from 'ag-grid-community';
 
 export type RowDoubleClickAction = 'SAVE_PATH' | 'DETAILS' | 'NONE' | 'INLINE_EDIT';
 
 export interface TorrentListGridSettings {
   columnState: (ColumnState[] | string[]) | null;
-  filterModel: any;
+  filterModel: FilterModel | null;
   pagination: boolean;
   animateRows: boolean;
   compactRows: boolean;

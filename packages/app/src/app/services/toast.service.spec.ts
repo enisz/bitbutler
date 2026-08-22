@@ -71,7 +71,7 @@ describe('ToastService - showText()', () => {
   });
 
   it('should escape & in showText()', () => {
-    const id = service.showText('a & b');
+    service.showText('a & b');
     expect(mockSanitizer.sanitize).toHaveBeenCalledWith(
       expect.anything(),
       expect.stringContaining('&amp;'),

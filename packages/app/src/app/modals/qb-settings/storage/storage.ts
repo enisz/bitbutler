@@ -133,9 +133,11 @@ export class Storage implements QbSettingsTabComponent, OnInit {
   }
 
   private updateTempPathState(enabled: boolean): void {
-    enabled
-      ? this.form.controls.temp_path.enable({ emitEvent: false })
-      : this.form.controls.temp_path.disable({ emitEvent: false });
+    if (enabled) {
+      this.form.controls.temp_path.enable({ emitEvent: false });
+    } else {
+      this.form.controls.temp_path.disable({ emitEvent: false });
+    }
   }
 
   private async save(): Promise<void> {

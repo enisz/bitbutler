@@ -150,10 +150,10 @@ export class ShareLimit implements OnInit, GuardableModal {
         );
       }
       this.activeModal.close();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(ShareLimit.name, 'handleSubmit', 'Failed to set share limits!', error);
       this.toastService.danger(
-        error?.message ?? String(error),
+        error instanceof Error ? error.message : String(error),
         this.translateService.instant('components.modals.share-limit.toast.set-failed-title'),
       );
     } finally {

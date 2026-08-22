@@ -60,10 +60,11 @@ export class MenuBarCommandHandlerService {
           this.commandBusService.emit({ type: 'UI_MANAGE_SERVERS' });
           break;
 
-        case 'server.select':
+        case 'server.select': {
           const { serverId } = payload;
           if (serverId) this.handleServerSwitch(serverId);
           break;
+        }
 
         case 'help.checkForUpdates':
           this.commandBusService.emit({ type: 'UPDATE_CHECK_FOR_UPDATE', trigger: 'manual' });
@@ -121,7 +122,7 @@ export class MenuBarCommandHandlerService {
           this.toastService.adaptive(loremIpsum, 'Adaptive');
           break;
 
-        case 'debug.toast.random':
+        case 'debug.toast.random': {
           const types: ToastType[] = [
             'primary',
             'secondary',
@@ -139,6 +140,7 @@ export class MenuBarCommandHandlerService {
             duration: 5000,
           });
           break;
+        }
 
         case 'debug.toast.all':
           this.toastService.primary('This is a primary system message.', 'Primary');

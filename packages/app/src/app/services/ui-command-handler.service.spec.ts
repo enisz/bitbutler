@@ -257,7 +257,7 @@ describe('UiCommandHandlerService', () => {
       'UI_OPEN_DESTINATION',
       expect.any(Error),
     );
-    expect(toastServiceMock.danger).toHaveBeenCalledWith(expect.any(Error));
+    expect(toastServiceMock.danger).toHaveBeenCalledWith('files lookup failed');
   });
 
   it('should not open TorrentDetails when hash is missing for UI_OPEN_TORRENT_DETAILS', () => {

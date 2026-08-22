@@ -61,14 +61,14 @@ export class ServerState {
 
   public settings = toSignal(this.statusbarSettingsService.asObservable());
 
-  @ViewChild('tipRatioGlobal') tipRatioGlobal!: TemplateRef<any>;
-  @ViewChild('tipGlobalDl') tipGlobalDl!: TemplateRef<any>;
-  @ViewChild('tipGlobalUl') tipGlobalUl!: TemplateRef<any>;
-  @ViewChild('tipLiveDl') tipLiveDl!: TemplateRef<any>;
-  @ViewChild('tipLiveUl') tipLiveUl!: TemplateRef<any>;
-  @ViewChild('tipAlltimeRatio') tipAlltimeRatio!: TemplateRef<any>;
-  @ViewChild('tipAlltimeDl') tipAlltimeDl!: TemplateRef<any>;
-  @ViewChild('tipAlltimeUl') tipAlltimeUl!: TemplateRef<any>;
+  @ViewChild('tipRatioGlobal') tipRatioGlobal!: TemplateRef<unknown>;
+  @ViewChild('tipGlobalDl') tipGlobalDl!: TemplateRef<unknown>;
+  @ViewChild('tipGlobalUl') tipGlobalUl!: TemplateRef<unknown>;
+  @ViewChild('tipLiveDl') tipLiveDl!: TemplateRef<unknown>;
+  @ViewChild('tipLiveUl') tipLiveUl!: TemplateRef<unknown>;
+  @ViewChild('tipAlltimeRatio') tipAlltimeRatio!: TemplateRef<unknown>;
+  @ViewChild('tipAlltimeDl') tipAlltimeDl!: TemplateRef<unknown>;
+  @ViewChild('tipAlltimeUl') tipAlltimeUl!: TemplateRef<unknown>;
 
   public diskSpace = signal<bigint>(0n);
   public dlSpeed = signal<bigint>(0n);
@@ -198,7 +198,11 @@ export class ServerState {
     this.useAltSpeedLimits.set(false);
   }
 
-  private applyIfPresentBigInt(obj: any, key: string, target: { set(v: bigint): void }): void {
+  private applyIfPresentBigInt(
+    obj: QbServerState,
+    key: string,
+    target: { set(v: bigint): void },
+  ): void {
     if (obj[key] != null) target.set(BigInt(Math.trunc(Number(obj[key]))));
   }
 }

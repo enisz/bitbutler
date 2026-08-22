@@ -12,13 +12,15 @@ import { QbTorrentPeer } from '../../../../models/torrent.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FlagCellRenderer implements ICellRendererAngularComp {
-  public params!: ICellRendererParams<QbTorrentPeer, any, any>;
+  public params!: ICellRendererParams<QbTorrentPeer, QbTorrentPeer['country_code']>;
 
-  public agInit(params: ICellRendererParams<QbTorrentPeer, any, any>): void {
+  public agInit(params: ICellRendererParams<QbTorrentPeer, QbTorrentPeer['country_code']>): void {
     this.params = params;
   }
 
-  public refresh(params: ICellRendererParams<any, any, any>): boolean {
+  public refresh(
+    _params: ICellRendererParams<QbTorrentPeer, QbTorrentPeer['country_code']>,
+  ): boolean {
     return true;
   }
 }

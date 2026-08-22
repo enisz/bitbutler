@@ -39,7 +39,7 @@ function applyContentSecurityPolicy(): void {
   });
 }
 
-export function createMainWindow(startMinimized = false): BrowserWindow {
+export function createMainWindow(): BrowserWindow {
   applyContentSecurityPolicy();
 
   const appPath = app.getAppPath();

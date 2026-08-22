@@ -200,7 +200,7 @@ export class ServerEditor implements OnInit {
           this.activeModal.close(response.id);
         }
       })
-      .catch((error: any) => {
+      .catch((error: unknown) => {
         console.error(
           ServerEditor.name,
           'handleSave',

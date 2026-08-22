@@ -4,7 +4,7 @@ import { ILoadingOverlayParams } from 'ag-grid-community';
 import { BbSpinner } from '../../../../../components/bb-spinner/bb-spinner';
 import { Torrent } from '../../../../../models/torrent.model';
 
-type LoadingOverlayParams = ILoadingOverlayParams<Torrent, any> & {
+type LoadingOverlayParams = ILoadingOverlayParams<Torrent> & {
   title?: string;
   message?: string;
 };

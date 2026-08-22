@@ -61,7 +61,6 @@ describe('ContextMenuService', () => {
   it('should close any existing overlay before opening a new one', () => {
     const config = { items: [] } as any;
     service.openAt(100, 200, config);
-    const firstRef = service['overlayRef'];
     service.openAt(300, 400, config);
     expect(mockOverlayRef.dispose).toHaveBeenCalled();
   });

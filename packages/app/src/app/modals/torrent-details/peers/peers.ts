@@ -52,7 +52,7 @@ import { TorrentDetailTabComponent } from '../torrent-details.interface';
 import { FlagCellRenderer } from './flag-cell-renderer/flag-cell-renderer';
 import { FlagsTooltipComponent } from './flags-tooltip/flags-tooltip';
 
-const tooltipFormattedValue: TooltipValueGetterFunc<QbTorrentPeer, any> = (params) =>
+const tooltipFormattedValue: TooltipValueGetterFunc<QbTorrentPeer, number> = (params) =>
   params.valueFormatted ?? '';
 
 @Component({
@@ -170,8 +170,7 @@ export class Peers implements TorrentDetailTabComponent, OnInit {
     return {
       ...GRID_SHARED_OPTIONS,
       tooltipShowMode: 'standard',
-      getRowId: (params: GetRowIdParams<QbTorrentPeer, any>) =>
-        `${params.data.ip}:${params.data.port}`,
+      getRowId: (params: GetRowIdParams<QbTorrentPeer>) => `${params.data.ip}:${params.data.port}`,
       overlayComponentSelector: (params: IOverlayParams<QbTorrentPeer>) => {
         switch (params.overlayType) {
           case 'loading':
