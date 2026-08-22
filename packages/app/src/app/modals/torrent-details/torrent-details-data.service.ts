@@ -38,6 +38,11 @@ export interface MergedTorrent {
   properties: QbTorrentProperties;
 }
 
+/** Arbitrary per-open context passed to the modal (e.g. to request a specific tab behavior). */
+export interface TorrentDetailsContext {
+  editMode?: boolean;
+}
+
 @Injectable()
 export class TorrentDetailsDataService {
   private readonly torrentStoreService = inject(TorrentStoreService);
@@ -49,7 +54,7 @@ export class TorrentDetailsDataService {
   private readonly destroyRef = inject(DestroyRef);
 
   private readonly hashSignal = signal('');
-  private readonly contextSignal = signal<Record<string, any>>({});
+  private readonly contextSignal = signal<TorrentDetailsContext>({});
 
   public readonly activeTabId = signal<TorrentDetailTabId>('general');
   public readonly properties = signal<QbTorrentProperties | null>(null);
@@ -160,7 +165,7 @@ export class TorrentDetailsDataService {
         if (matches.length > 0) {
           this.errorLog.set(matches.reduce((a, b) => (b.id > a.id ? b : a)));
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error(
           TorrentDetailsDataService.name,
           'errorLog effect',
@@ -197,12 +202,12 @@ export class TorrentDetailsDataService {
 
     try {
       this.properties.set(await this.qbService.torrents.properties(serverId, hash));
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(
         TorrentDetailsDataService.name,
         'fetchProperties',
         'Failed to fetch torrent properties!',
-        e?.message ?? String(e),
+        e instanceof Error ? e.message : String(e),
       );
     }
   }
@@ -215,12 +220,12 @@ export class TorrentDetailsDataService {
     try {
       const torrent = await this.qbService.torrents.info(serverId, hash);
       if (torrent) this.localTorrentData.set(torrent);
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(
         TorrentDetailsDataService.name,
         'fetchTorrentInfo',
         'Failed to fetch torrent info!',
-        e?.message ?? String(e),
+        e instanceof Error ? e.message : String(e),
       );
     }
   }
@@ -233,19 +238,19 @@ export class TorrentDetailsDataService {
     this.trackersLoading.set(true);
     try {
       this.trackers.set(await this.qbService.torrents.trackers(serverId, hash));
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(
         TorrentDetailsDataService.name,
         'fetchTrackers',
         'Failed to fetch torrent trackers!',
-        e?.message ?? String(e),
+        e instanceof Error ? e.message : String(e),
       );
     } finally {
       this.trackersLoading.set(false);
     }
   }
 
-  public init(hash: string, context: Record<string, any>): void {
+  public init(hash: string, context: TorrentDetailsContext): void {
     this.hashSignal.set(hash);
     this.contextSignal.set(context);
 
@@ -255,12 +260,12 @@ export class TorrentDetailsDataService {
     this.qbService.torrents
       .files(serverId, hash)
       .then((content) => this.singleFile.set(content.length === 1))
-      .catch((e: any) =>
+      .catch((e: unknown) =>
         console.error(
           TorrentDetailsDataService.name,
           'init',
           'Failed to fetch torrent files for singleFile',
-          e?.message ?? String(e),
+          e instanceof Error ? e.message : String(e),
         ),
       );
   }
@@ -269,7 +274,7 @@ export class TorrentDetailsDataService {
     return this.hashSignal();
   }
 
-  public context(): Record<string, any> {
+  public context(): TorrentDetailsContext {
     return this.contextSignal();
   }
 
@@ -317,11 +322,14 @@ export class TorrentDetailsDataService {
 
     if (!patch.peers) return;
 
-    for (const [id, update] of Object.entries(patch.peers)) {
+    // qBittorrent's sync API only sends the fields that changed on incremental
+    // (rid > 0) updates, so an entry here may be missing properties present on
+    // a prior full_update - the declared response type overstates completeness.
+    for (const [id, update] of Object.entries(patch.peers) as [string, Partial<QbTorrentPeer>][]) {
       const prev = this.peerMap.get(id);
 
-      let ip = (update as any).ip ?? prev?.ip;
-      let port = (update as any).port ?? prev?.port;
+      let ip = update.ip ?? prev?.ip;
+      let port = update.port ?? prev?.port;
 
       if (!ip || port == null) {
         const lastColon = id.lastIndexOf(':');
@@ -334,7 +342,7 @@ export class TorrentDetailsDataService {
 
       this.peerMap.set(id, {
         ...(prev ?? {}),
-        ...(update as any),
+        ...update,
         ...(ip ? { ip } : {}),
         ...(port != null ? { port } : {}),
       } as QbTorrentPeer);
@@ -364,12 +372,12 @@ export class TorrentDetailsDataService {
           index: c.index,
         })),
       );
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(
         TorrentDetailsDataService.name,
         'fetchContent',
         'Failed to load torrent contents',
-        e?.message ?? String(e),
+        e instanceof Error ? e.message : String(e),
       );
     } finally {
       this.contentLoading.set(false);

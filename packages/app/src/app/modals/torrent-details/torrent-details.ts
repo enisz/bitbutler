@@ -50,7 +50,7 @@ import { ModalGuardService } from '../../services/modal-guard.service';
 import { ToastService } from '../../services/toast.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
 import { TorrentDetailsActionsService } from './torrent-details-actions.service';
-import { TorrentDetailsDataService } from './torrent-details-data.service';
+import { TorrentDetailsContext, TorrentDetailsDataService } from './torrent-details-data.service';
 import { Tab, TorrentDetailTabComponent, TorrentDetailTabId } from './torrent-details.interface';
 
 @Component({
@@ -78,7 +78,7 @@ import { Tab, TorrentDetailTabComponent, TorrentDetailTabId } from './torrent-de
 export class TorrentDetails implements OnInit, GuardableModal {
   readonly hash = input<string | null>(null);
   readonly tabToOpen = input<TorrentDetailTabId>('general');
-  readonly context = input<Record<string, any>>({});
+  readonly context = input<TorrentDetailsContext>({});
 
   public readonly activeModal = inject(NgbActiveModal);
   public readonly guardService = inject(ModalGuardService);
