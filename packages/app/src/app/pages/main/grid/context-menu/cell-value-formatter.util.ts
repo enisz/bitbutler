@@ -5,8 +5,12 @@ import type { CellContextMenuEvent, ValueFormatterParams } from 'ag-grid-communi
  * column's formatted display value (matching what the user sees) when a valueFormatter is
  * defined, falling back to the raw value otherwise. Returns undefined when there is no value,
  * so callers can disable the copy action instead of copying an empty string.
+ *
+ * Shared across every AG Grid instance in the app (torrents, peers, trackers, the file picker
+ * tree, ...), so the row/value types are intentionally left generic rather than pinned to
+ * `Torrent` - TData/TValue are inferred from the caller's own event type.
  */
-export function getFormattedCellValue<TData = any, TValue = any>(
+export function getFormattedCellValue<TData, TValue>(
   e: CellContextMenuEvent<TData, TValue>,
 ): string | undefined {
   if (e.value == null) return undefined;

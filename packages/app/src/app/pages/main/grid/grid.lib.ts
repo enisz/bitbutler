@@ -46,7 +46,7 @@ import { CompactProgressCellRenderer } from './renderers/compact-progress-cell-r
 import { ProgressCellRenderer } from './renderers/progress-cell-renderer/progress-cell-renderer';
 import { StatusDotCellRenderer } from './renderers/status-dot-cell-renderer/status-dot-cell-renderer';
 
-const tooltipFormattedValue: TooltipValueGetterFunc<Torrent, any> = (params) =>
+const tooltipFormattedValue: TooltipValueGetterFunc<Torrent, unknown> = (params) =>
   params.valueFormatted ?? '';
 
 export function getGridColDefs(
@@ -430,7 +430,7 @@ export function getGridColDefs(
       headerTooltip: translateService.instant('pages.main.grid.grid-lib.col-def.eta'),
       minWidth: 50,
       width: 220,
-      valueFormatter: (params: ValueFormatterParams<Torrent, any>): string =>
+      valueFormatter: (params: ValueFormatterParams<Torrent, number>): string =>
         params.data?.state === 'uploading' ||
         params.data?.state === 'pausedUP' ||
         params.data?.state === 'stoppedUP' ||
@@ -1089,7 +1089,7 @@ export function getGridOptions(
     normalizeTracker: (raw?: string | null) => string;
     getTrackers: (t: Torrent) => string[];
     handleCellRightClick: (e: CellContextMenuEvent<Torrent>) => void;
-    handleRowDoubleClick: (e: RowDoubleClickedEvent<Torrent, any>) => void;
+    handleRowDoubleClick: (e: RowDoubleClickedEvent<Torrent>) => void;
     onApiReady: (api: GridApi<Torrent>) => void;
     getIsProgrammaticSelection: () => boolean;
     applyDbSettings: () => Promise<void>;
@@ -1110,15 +1110,15 @@ export function getGridOptions(
     paginationPageSize: 50,
     gridId: 'torrent-list',
     columnDefs: getGridColDefs(uiFormatService, translateService, torrentStoreService),
-    getRowId: (params: GetRowIdParams<Torrent, any>) => params.data.hash,
+    getRowId: (params: GetRowIdParams<Torrent>) => params.data.hash,
     rowClassRules: {
-      [GRID_ROW_MUTED_CLASS]: (params: RowClassParams<Torrent, any>): boolean =>
+      [GRID_ROW_MUTED_CLASS]: (params: RowClassParams<Torrent>): boolean =>
         params.data?.state === 'pausedDL' ||
         params.data?.state === 'pausedUP' ||
         params.data?.state === 'stoppedDL' ||
         params.data?.state === 'stoppedUP',
 
-      'text-danger bg-danger-subtle': (params: RowClassParams<Torrent, any>): boolean =>
+      'text-danger bg-danger-subtle': (params: RowClassParams<Torrent>): boolean =>
         params.data?.state === 'error',
     },
     rowSelection: {
@@ -1228,14 +1228,14 @@ export function getGridOptions(
     onFirstDataRendered: opts.updateInViewCount,
 
     isExternalFilterPresent: () => {
-      const f: any = opts.getLatestFilters();
+      const f = opts.getLatestFilters();
       return (
-        f.states?.size > 0 ||
-        !!(f.search ?? '').trim() ||
-        f.trackers?.size > 0 ||
-        f.savePaths?.size > 0 ||
-        f.categories?.size > 0 ||
-        f.tags?.size > 0
+        f.states.size > 0 ||
+        !!f.search.trim() ||
+        f.trackers.size > 0 ||
+        f.savePaths.size > 0 ||
+        f.categories.size > 0 ||
+        f.tags.size > 0
       );
     },
 
@@ -1284,8 +1284,8 @@ export function getGridOptions(
     },
 
     onCellContextMenu: (e: CellContextMenuEvent<Torrent>) => opts.handleCellRightClick(e),
-    onRowDoubleClicked: (e: RowDoubleClickedEvent<Torrent, any>) => opts.handleRowDoubleClick(e),
-    onCellValueChanged: (e: CellValueChangedEvent<Torrent, any>) => opts.handleCellValueChanged(e),
+    onRowDoubleClicked: (e: RowDoubleClickedEvent<Torrent>) => opts.handleRowDoubleClick(e),
+    onCellValueChanged: (e: CellValueChangedEvent<Torrent>) => opts.handleCellValueChanged(e),
     onCellEditingStarted: () => opts.onCellEditingStarted(),
     onCellEditingStopped: () => opts.onCellEditingStopped(),
     onSelectionChanged: (ev: SelectionChangedEvent<Torrent>) => {
@@ -1295,7 +1295,7 @@ export function getGridOptions(
       selectionStore.set(ev.api.getSelectedRows() ?? []);
     },
 
-    onColumnHeaderContextMenu: (e: ColumnHeaderContextMenuEvent<Torrent, any>) => {
+    onColumnHeaderContextMenu: (e: ColumnHeaderContextMenuEvent<Torrent>) => {
       if (!e.column) {
         return;
       }

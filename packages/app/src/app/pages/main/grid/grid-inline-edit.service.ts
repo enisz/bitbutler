@@ -53,7 +53,7 @@ export class GridInlineEditService {
       }
       return colDef;
     });
-    api.updateGridOptions({ columnDefs: newDefs as ColDef<any>[] });
+    api.updateGridOptions({ columnDefs: newDefs });
   }
 
   async handleCellValueChanged(event: CellValueChangedEvent<Torrent>): Promise<void> {

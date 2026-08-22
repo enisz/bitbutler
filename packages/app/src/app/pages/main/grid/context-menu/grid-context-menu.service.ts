@@ -561,14 +561,14 @@ export class GridContextMenuService {
     ];
   }
 
-  public buildHeaderMenu(event: ColumnHeaderContextMenuEvent<any, any>): ContextMenuEntry[] {
+  public buildHeaderMenu<TData>(event: ColumnHeaderContextMenuEvent<TData>): ContextMenuEntry[] {
     const api = event.api;
     const column = event.column as Column;
 
     const columns =
       api
         .getColumns()
-        ?.map((c: Column<any>) => {
+        ?.map((c) => {
           const { colId, headerName } = c.getColDef();
           return { id: colId ?? '', label: headerName ?? '', visible: c.isVisible() };
         })

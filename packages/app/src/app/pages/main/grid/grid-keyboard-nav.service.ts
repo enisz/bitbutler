@@ -7,6 +7,14 @@ import { CommandBusService } from '../../../services/command-bus.service';
 import { SelectionStoreService } from '../../../services/selection-store.service';
 import { TorrentListGridSettingsService } from '../../../services/torrent-list-grid.settings.service';
 
+/**
+ * `gridBodyCtrl` is an internal ag-grid implementation detail not exposed on the public
+ * `GridApi` type - this narrow shape documents the only part of it we rely on.
+ */
+interface GridApiWithBodyViewport {
+  gridBodyCtrl?: { eBodyViewport?: { clientHeight?: number } };
+}
+
 @Injectable()
 export class GridKeyboardNavService {
   private readonly commandBusService = inject(CommandBusService);
@@ -187,10 +195,10 @@ export class GridKeyboardNavService {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- retyped in issue #287 Task 4
-  private getApproxPageSize(api: any): number {
+  private getApproxPageSize(api: GridApi): number {
     const rowHeight = 32;
-    const viewportHeight = api.gridBodyCtrl?.eBodyViewport?.clientHeight ?? 400;
+    const internalApi = api as unknown as GridApiWithBodyViewport;
+    const viewportHeight = internalApi.gridBodyCtrl?.eBodyViewport?.clientHeight ?? 400;
     return Math.max(1, Math.floor(viewportHeight / rowHeight) - 1);
   }
 }
