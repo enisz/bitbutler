@@ -138,6 +138,10 @@ html {
   background-color: var(--bb-accent);
 }
 
+*::-webkit-scrollbar-corner {
+  background-color: transparent;
+}
+
 @font-face {
   font-family: 'Montserrat';
   src: url('assets/fonts/montserrat/static/Montserrat-Regular.ttf') format('truetype');
