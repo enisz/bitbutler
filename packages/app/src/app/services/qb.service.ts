@@ -993,6 +993,8 @@ export class QbService {
     }
   }
 
+  // Duck-typed rather than `instanceof Error`: IPC rejections are structured-clone'd across the
+  // preload bridge and may not survive as real `Error` instances.
   private getErrorMessage(err: unknown): string {
     return String((err as IpcErrorLike | undefined)?.message ?? '');
   }

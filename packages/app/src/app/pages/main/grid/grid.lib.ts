@@ -1274,7 +1274,7 @@ export function getGridOptions(
         if (!tags.some((t) => f.tags.has(t))) return false;
       }
 
-      const q = (f.search ?? '').trim().toLowerCase();
+      const q = f.search.trim().toLowerCase();
       if (q) {
         const hay = `${row.name ?? ''} ${row.save_path ?? ''} ${row.tracker ?? ''}`.toLowerCase();
         if (!hay.includes(q)) return false;
