@@ -54,7 +54,6 @@ export class CategorySelect implements ControlValueAccessor {
   private readonly qbService = inject(QbService);
 
   public readonly icons = { faTriangleExclamation };
-  public readonly appendTo = input('');
 
   public categories = signal<string[]>([]);
   public selectControl = new FormControl('');
@@ -107,14 +106,6 @@ export class CategorySelect implements ControlValueAccessor {
   }
 
   addTag = (term: string): string => term.trim();
-
-  keyDownFn(event: KeyboardEvent): boolean {
-    if (event.key === 'Escape') {
-      return false;
-    }
-
-    return true;
-  }
 
   public async ensureCategoryExists(): Promise<boolean> {
     const value = (this.selectControl.value ?? '').trim();

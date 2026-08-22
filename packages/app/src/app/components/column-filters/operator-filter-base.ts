@@ -5,9 +5,9 @@ import { IAfterGuiAttachedParams, IDoesFilterPassParams, IFilterParams } from 'a
 /**
  * ag-grid closes a filter popup on any mousedown outside its DOM subtree, unless the click
  * target is inside an element carrying this class (see ag-grid's PopupService). ng-select's
- * `appendTo` moves its dropdown panel out of the filter's DOM (to avoid being clipped by the
- * popup's bounds), so the panel must be appended into an element tagged with this class instead
- * of directly into `body`.
+ * dropdown panel renders into a CDK Overlay outside the filter's DOM, so `appendTo` is used to
+ * contain it inside an element tagged with this class instead - otherwise a click inside the
+ * dropdown would register as "outside" and ag-grid would close the filter popup.
  */
 const AG_GRID_CUSTOM_POPUP_CLASS = 'ag-custom-component-popup';
 
@@ -37,10 +37,9 @@ export abstract class OperatorFilterBase<TValue> implements IFilterAngularComp, 
     this.popupPortal = document.createElement('div');
     this.popupPortal.id = `${this.instanceId}-popup-portal`;
     this.popupPortal.className = AG_GRID_CUSTOM_POPUP_CLASS;
-    // ng-select positions its appended dropdown relative to the appendTo target's own
-    // getBoundingClientRect(), so the target must be the dropdown's actual CSS containing
-    // block (position !== static) or the two reference frames diverge and the panel renders
-    // off-screen.
+    // Needs a non-static position so it establishes its own containing block - CDK Overlay
+    // positions the dropdown panel via viewport coordinates regardless, but this keeps the
+    // portal a well-formed positioning context for anything else appended into it.
     this.popupPortal.style.position = 'relative';
     document.body.appendChild(this.popupPortal);
   }

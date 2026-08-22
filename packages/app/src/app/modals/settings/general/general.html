@@ -162,7 +162,7 @@
             </div>
           </div>
           <div class="col-6">
-            <app-save-path-select [inputType]="'select'" [clearable]="true" appendTo="body" />
+            <app-save-path-select [inputType]="'select'" [clearable]="true" />
           </div>
         </div>
         <div class="row mb-3">
@@ -208,7 +208,6 @@
               bindLabel="label"
               bindValue="value"
               formControlName="language"
-              appendTo="body"
             >
               <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
                 <div class="d-flex flex-row align-items-center">
@@ -247,7 +246,6 @@
               bindLabel="label"
               bindValue="value"
               formControlName="preset"
-              appendTo="body"
             >
               <ng-template ng-option-tmp let-item="item">
                 <div class="d-flex justify-content-between align-items-center">
@@ -259,7 +257,9 @@
               <ng-template ng-label-tmp let-item="item">
                 <div class="d-flex justify-content-between align-items-center">
                   <span>{{ item.label }}</span>
-                  <span class="text-muted ms-3">{{ item.example }}</span>
+                  <span class="text-muted ms-3 bb-select-selected-value-example">{{
+                    item.example
+                  }}</span>
                 </div>
               </ng-template>
             </ng-select>
@@ -284,7 +284,6 @@
               bindLabel="label"
               bindValue="value"
               formControlName="firstDayOfWeek"
-              appendTo="body"
             >
             </ng-select>
           </div>
@@ -419,7 +418,6 @@
               bindLabel="label"
               bindValue="value"
               formControlName="family"
-              appendTo="body"
             >
               <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
                 <div class="d-flex flex-row align-items-center">
@@ -465,7 +463,6 @@
               bindLabel="label"
               bindValue="value"
               formControlName="mode"
-              appendTo="body"
             >
               <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
                 <div class="d-flex flex-row align-items-center">
@@ -516,7 +513,6 @@
               bindLabel="label"
               bindValue="value"
               formControlName="toastPosition"
-              appendTo="body"
             >
             </ng-select>
           </div>

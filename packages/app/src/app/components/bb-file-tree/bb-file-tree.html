@@ -177,7 +177,6 @@
                 bindLabel="label"
                 [searchable]="false"
                 [clearable]="false"
-                appendTo="body"
                 [ngModel]="getDominantFolderPriority(node)"
                 (ngModelChange)="setFolderPriority(node, $event)"
                 (click)="$event.stopPropagation()"
@@ -276,7 +275,6 @@
                     bindLabel="label"
                     [searchable]="false"
                     [clearable]="false"
-                    appendTo="body"
                     [(ngModel)]="f.priority"
                     (ngModelChange)="onFilePriorityChange()"
                   ></ng-select>

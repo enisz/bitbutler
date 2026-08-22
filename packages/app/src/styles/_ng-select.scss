@@ -29,6 +29,19 @@
   border-color: var(--bb-control-placeholder) transparent transparent;
 }
 
+// v24 lets a non-searchable select's displayed value absorb the opening click, so it can be
+// text-selected/copied instead (ng-select/ng-select#2669) - moot here since `body` disables
+// text selection app-wide to feel like a native desktop control, not a webpage. Restore
+// click-anywhere-opens by keeping the value out of that hit-test, while re-enabling the
+// multi-select remove (x) icon so tag/category removal still works.
+.ng-select .ng-value-container .ng-value {
+  pointer-events: none;
+}
+
+.ng-select .ng-value-container .ng-value .ng-value-icon {
+  pointer-events: auto;
+}
+
 .ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-marked {
   color: var(--bb-accent) !important;
 }
@@ -40,10 +53,19 @@
   background-color: var(--bb-control-bg) !important;
   border: 1px solid var(--bb-control-border) !important;
   border-radius: var(--bb-control-radius) !important;
+  padding-right: 0.75rem !important;
+  padding-left: 0.75rem !important;
   transition:
     background-color 120ms ease,
     border-color 120ms ease,
     box-shadow 120ms ease;
+}
+
+// The container above now carries the left inset itself, so cancel ng-select's own
+// default value-container padding-left (--ng-select-value-padding-left) to avoid stacking
+// both and ending up with more space on the left than the right.
+.ng-select .ng-value-container {
+  padding-left: 0 !important;
 }
 
 .ng-select:hover .ng-select-container {
@@ -76,7 +98,6 @@ ng-select.ng-select .ng-select-container .ng-input input {
   border-radius: 12px !important;
   overflow: hidden;
   box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.22) !important;
-  z-index: 9999 !important;
   color: var(--bb-ng-text) !important;
 }
 
@@ -117,6 +138,10 @@ ng-select.ng-select .ng-select-container .ng-input input {
   font-size: 0.75rem !important;
   border-radius: 4px !important;
   width: 100px;
+  // Reset the general 0.75rem container inset - it would eat nearly a quarter of this
+  // 100px width. This variant does its own spacing via .ng-value-container below.
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
 .bb-select-compact.ng-select .ng-select-container .ng-value-container {

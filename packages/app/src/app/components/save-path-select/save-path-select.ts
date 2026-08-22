@@ -56,7 +56,6 @@ export class SavePathSelect implements ControlValueAccessor {
   readonly clearable = input(false);
   readonly label = input<string | null>(null);
   readonly placeholder = input<string | null>(null);
-  readonly appendTo = input('');
   readonly inputType = input<SavePathInputType | null>(null);
   readonly position = input<SavePathSelectPosition | null>(null);
 
@@ -133,12 +132,5 @@ export class SavePathSelect implements ControlValueAccessor {
 
   public clearValue(): void {
     this.selectControl.setValue(null);
-  }
-
-  keyDownFn(event: KeyboardEvent): boolean {
-    if (event.key === 'Escape') {
-      return false;
-    }
-    return true;
   }
 }

@@ -46,7 +46,6 @@ export class TagSelect implements ControlValueAccessor {
 
   public tags = signal<string[]>([]);
   public selectControl = new FormControl<string[]>([]);
-  public readonly appendTo = input('');
 
   private onChange: (value: string[] | null) => void = () => {};
   private onTouched: () => void = () => {};
@@ -87,14 +86,6 @@ export class TagSelect implements ControlValueAccessor {
   }
 
   addTag = (term: string): string => term.trim();
-
-  keyDownFn(event: KeyboardEvent): boolean {
-    if (event.key === 'Escape') {
-      return false;
-    }
-
-    return true;
-  }
 
   private async loadAllTags(): Promise<void> {
     try {
