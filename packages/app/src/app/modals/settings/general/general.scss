@@ -2,3 +2,10 @@
 .bb-options--grid .bb-option:nth-child(3) {
   border-bottom: none;
 }
+
+// The date format select's label template right-aligns its example text against the
+// value container's own edge, which sits flush against the arrow - give it the same
+// breathing room the control has against its own border.
+.bb-select-selected-value-example {
+  margin-right: 0.75rem;
+}
