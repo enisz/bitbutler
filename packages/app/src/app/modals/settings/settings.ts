@@ -114,12 +114,12 @@ export class Settings implements OnInit, GuardableModal {
       );
       this.toastService.success(message, title);
       this.activeModal.close();
-    } catch (err: any) {
+    } catch (err: unknown) {
       const title = await firstValueFrom(
         this.translateService.get('pages.settings.error.save-failed-title'),
       );
       const message =
-        err?.message ??
+        (err instanceof Error ? err.message : undefined) ??
         (await firstValueFrom(this.translateService.get('pages.settings.error.save-failed')));
       this.toastService.danger(message, title);
     }

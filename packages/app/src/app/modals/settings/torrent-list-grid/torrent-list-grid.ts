@@ -313,8 +313,7 @@ export class TorrentListGrid implements SettingsTabComponent {
         colId: col.value,
         hide: false,
         width: existing?.width ?? (typeof def?.width === 'number' ? def.width : undefined),
-        flex:
-          existing?.flex ?? (def as any)?.flex ?? (typeof def?.width === 'number' ? undefined : 1),
+        flex: existing?.flex ?? def?.flex ?? (typeof def?.width === 'number' ? undefined : 1),
         sort: existing?.sort ?? null,
         pinned: existing?.pinned ?? null,
       };
@@ -327,8 +326,7 @@ export class TorrentListGrid implements SettingsTabComponent {
           colId: def.colId!,
           hide: true,
           width: existing?.width ?? (typeof def.width === 'number' ? def.width : undefined),
-          flex:
-            existing?.flex ?? (def as any)?.flex ?? (typeof def.width === 'number' ? undefined : 1),
+          flex: existing?.flex ?? def.flex ?? (typeof def.width === 'number' ? undefined : 1),
           sort: existing?.sort ?? null,
           pinned: existing?.pinned ?? null,
         });

@@ -14,6 +14,7 @@ import {
 import { provideRouter, withHashLocation } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
+import type { Tokens } from 'marked';
 import { MARKED_OPTIONS, MarkedOptions, MarkedRenderer, provideMarkdown } from 'ngx-markdown';
 import { TimeagoCustomFormatter, TimeagoFormatter, TimeagoIntl, provideTimeago } from 'ngx-timeago';
 import { routes } from './app.routes';
@@ -23,10 +24,8 @@ import { ThemeService } from './services/theme.service';
 export function markedOptionsFactory(): MarkedOptions {
   const renderer = new MarkedRenderer();
 
-  renderer.link = (link: any) => {
-    const href = link.href || link;
-    const text = link.text || link;
-    const title = link.title || '';
+  renderer.link = ({ href, text, title: rawTitle }: Tokens.Link) => {
+    const title = rawTitle || '';
 
     // release-drafter's change-template links each entry as "[#123](...)" -
     // give those a class so their digits can be aligned with tabular-nums,
