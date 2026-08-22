@@ -87,14 +87,6 @@ export class TagSelect implements ControlValueAccessor {
 
   addTag = (term: string): string => term.trim();
 
-  keyDownFn(event: KeyboardEvent): boolean {
-    if (event.key === 'Escape') {
-      return false;
-    }
-
-    return true;
-  }
-
   private async loadAllTags(): Promise<void> {
     try {
       const tags = await this.qbService.torrents.tags(

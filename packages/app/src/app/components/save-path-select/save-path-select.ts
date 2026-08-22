@@ -133,11 +133,4 @@ export class SavePathSelect implements ControlValueAccessor {
   public clearValue(): void {
     this.selectControl.setValue(null);
   }
-
-  keyDownFn(event: KeyboardEvent): boolean {
-    if (event.key === 'Escape') {
-      return false;
-    }
-    return true;
-  }
 }

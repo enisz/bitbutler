@@ -74,18 +74,6 @@ describe('SavePathSelect', () => {
     });
   });
 
-  describe('keyDownFn', () => {
-    it('should return false for Escape key', () => {
-      const event = new KeyboardEvent('keydown', { key: 'Escape' });
-      expect(component.keyDownFn(event)).toBe(false);
-    });
-
-    it('should return true for other keys', () => {
-      const event = new KeyboardEvent('keydown', { key: 'Enter' });
-      expect(component.keyDownFn(event)).toBe(true);
-    });
-  });
-
   describe('initialization', () => {
     it('should call onChange when selectControl value changes', () => {
       const onChange = vi.fn();

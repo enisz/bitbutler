@@ -82,7 +82,6 @@ export class App {
     this.modalConfigService.animation = true;
     this.tooltipConfigService.container = 'body';
     this.setNgSelectTranslations();
-    this.interceptNgSelectEscapeInModals();
 
     this.openFilesService.start();
     this.uiCommandHandlerService.start();
@@ -130,39 +129,6 @@ export class App {
           }
         }
       });
-  }
-
-  /**
-   * ng-select's own `(keydown)` handler lives on the `<ng-select>` host element, but its
-   * dropdown panel always renders through Angular CDK Overlay - a DOM sibling, not a
-   * descendant - so an Escape pressed while the panel's search input is focused never
-   * bubbles to that host listener, and ng-select's own `preventDefault()` (which is meant to
-   * stop the keypress from also closing an ancestor NgbModal) never runs. Intercepting in the
-   * capture phase and closing the dropdown the same way a real outside click would (ng-select
-   * listens for exactly that, regardless of where the panel renders) restores the expected
-   * "first Escape closes the dropdown, second Escape closes the modal" behavior.
-   *
-   * Excludes panels rendered inside an ag-grid column-filter's `ag-custom-component-popup`
-   * portal (see `operator-filter-base.ts`): a synthetic outside click there would land outside
-   * ag-grid's own tracked popup subtree and close the whole filter, not just the dropdown -
-   * ag-grid's popup containment already owns that interaction.
-   */
-  private interceptNgSelectEscapeInModals(): void {
-    const listener = (event: KeyboardEvent): void => {
-      if (event.key !== 'Escape') return;
-      const panel = document.querySelector('.cdk-overlay-container .ng-dropdown-panel');
-      if (!panel || panel.closest('.ag-custom-component-popup')) return;
-
-      event.preventDefault();
-      event.stopPropagation();
-      document.body.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-      document.body.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-    };
-
-    document.addEventListener('keydown', listener, { capture: true });
-    this.destroyRef.onDestroy(() =>
-      document.removeEventListener('keydown', listener, { capture: true }),
-    );
   }
 
   private setNgSelectTranslations(): void {

@@ -51,16 +51,6 @@ describe('TagSelect', () => {
     });
   });
 
-  describe('keyDownFn', () => {
-    it('should return false for Escape key', () => {
-      expect(component.keyDownFn(new KeyboardEvent('keydown', { key: 'Escape' }))).toBe(false);
-    });
-
-    it('should return true for other keys', () => {
-      expect(component.keyDownFn(new KeyboardEvent('keydown', { key: 'Tab' }))).toBe(true);
-    });
-  });
-
   describe('addTag', () => {
     it('should return the trimmed term', () => {
       expect(component.addTag('  new-tag  ')).toBe('new-tag');

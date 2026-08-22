@@ -59,18 +59,6 @@ describe('CategorySelect', () => {
     });
   });
 
-  describe('keyDownFn', () => {
-    it('should return false for Escape key', () => {
-      const event = new KeyboardEvent('keydown', { key: 'Escape' });
-      expect(component.keyDownFn(event)).toBe(false);
-    });
-
-    it('should return true for other keys', () => {
-      const event = new KeyboardEvent('keydown', { key: 'Enter' });
-      expect(component.keyDownFn(event)).toBe(true);
-    });
-  });
-
   describe('addTag', () => {
     it('should return the trimmed term', () => {
       expect(component.addTag('  New Category  ')).toBe('New Category');
