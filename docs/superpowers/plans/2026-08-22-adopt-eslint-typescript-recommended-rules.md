@@ -414,7 +414,7 @@ Each task below owns a disjoint cluster of files. For every occurrence:
 
 - Run: `npx eslint <every file this task lists> --rule '{"@typescript-eslint/no-explicit-any": "error"}'` — expect `0 problems`. (Scoping the rule like this ignores unrelated pre-existing issues in the same run and keeps the check fast; the plain `npx eslint <files>` should also show zero errors since Task 1 already cleared every other rule.)
 - Run: `npx tsc --noEmit -p packages/app/tsconfig.app.json` — expect no errors.
-- Run: `npx vitest run <the file's matching .spec.ts, if one exists>` — expect pass. If a type change legitimately requires updating a spec's mock shape (e.g. a mock object literal now needs an extra property to satisfy a real interface instead of `any`), update the spec's mock, not the production type.
+- Run (from `packages/app`, NOT the repo root — plain `npx vitest run <path>` doesn't work here since `packages/app`'s tests run through the Angular CLI's own runner, not bare Vitest): `cd packages/app && npx ng test --watch=false --include='<path relative to packages/app, e.g. src/app/services/foo.spec.ts>'` for the file's matching `.spec.ts`, if one exists — expect pass. If a type change legitimately requires updating a spec's mock shape (e.g. a mock object literal now needs an extra property to satisfy a real interface instead of `any`), update the spec's mock, not the production type.
 - Commit only that task's files.
 
 ---
@@ -586,7 +586,7 @@ instead of:
 
 Run `npx tsc --noEmit -p packages/app/tsconfig.app.json && npx tsc --noEmit -p packages/app/tsconfig.spec.json` immediately after this one change (`test-setup.ts` is included by both). If TypeScript reports the mock object is missing properties or has mismatched types against `BitButlerAPI`, that's real drift between the mock and the current IPC contract — fix the mock object to genuinely satisfy `BitButlerAPI` (add the missing stub methods/properties), don't re-add a cast to paper over it.
 
-- [ ] **Step 3:** Run the Task verification block (for `test-setup.ts`, "run vitest" here means the full suite, since it's shared setup: `npx vitest run`).
+- [ ] **Step 3:** Run the Task verification block (for `test-setup.ts`, since it's shared setup used by every spec, run the full suite instead of one file: `npm test` from the repo root).
 - [ ] **Step 4:** Commit with `git commit -m "#287: type app models and test-setup bitbutler mock"`.
 
 ---
