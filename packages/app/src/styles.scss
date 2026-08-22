@@ -104,18 +104,20 @@ html {
 }
 
 // Themed scrollbars app-wide - default-ish browser thickness, no arrow
-// buttons, transparent-until-hover thumb. Covers ag-grid v36 too: its
-// visible scroll UI lives on plain, un-hidden
+// buttons, rounded thumb permanently visible (a subtle accent tint) so
+// scrollable areas stay discoverable. Covers ag-grid v36 too: its visible
+// scroll UI lives on plain, un-hidden
 // `.ag-body-horizontal/vertical-scroll-viewport` divs (`.ag-grid-viewport`
 // itself hides its native scrollbar and is scrolled programmatically), so
 // the universal selector reaches them like any other overflow container.
+// `.bb-bottom-bar` (server-state.scss) opts out with its own hide-until-hover
+// treatment, since that bar is only 34px tall.
 //
 // WebKit only switches an element into custom-scrollbar rendering once its
 // base `::-webkit-scrollbar` carries a size - without it, `-thumb`/`-button`
 // overrides are silently ignored and the native OS scrollbar renders
 // instead. 14px approximates the native Chromium default so this reads as
-// "themed default", not a shrunk one; `.bb-bottom-bar` overrides height to
-// 4px for its own slim treatment.
+// "themed default", not a shrunk one.
 *::-webkit-scrollbar {
   width: 14px;
   height: 14px;
@@ -126,16 +128,13 @@ html {
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: transparent;
+  background-color: color-mix(in srgb, var(--bb-accent) 45%, transparent);
+  border-radius: 8px;
   transition: background-color 0.15s ease;
 }
 
-*:hover::-webkit-scrollbar-thumb {
-  background-color: color-mix(in srgb, var(--bb-accent) 45%, transparent);
-}
-
-*:hover::-webkit-scrollbar-thumb:hover,
-*:hover::-webkit-scrollbar-thumb:active {
+*::-webkit-scrollbar-thumb:hover,
+*::-webkit-scrollbar-thumb:active {
   background-color: var(--bb-accent);
 }
 

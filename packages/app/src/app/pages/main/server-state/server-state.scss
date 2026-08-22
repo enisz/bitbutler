@@ -10,9 +10,25 @@
   display: flex;
   align-items: center;
 
-  /* Slim scrollbar - the bar is only 34px tall; button/thumb styling is app-wide (styles.scss) */
+  /* Slim, arrow-less scrollbar - the bar is only 34px tall */
   &::-webkit-scrollbar {
     height: 4px;
+  }
+
+  /* Hidden until the bar is hovered, unlike the app-wide permanent thumb (styles.scss) */
+  &::-webkit-scrollbar-thumb {
+    background-color: transparent;
+  }
+
+  &:hover {
+    &::-webkit-scrollbar-thumb {
+      background-color: color-mix(in srgb, var(--bb-accent) 45%, transparent);
+    }
+
+    &::-webkit-scrollbar-thumb:hover,
+    &::-webkit-scrollbar-thumb:active {
+      background-color: var(--bb-accent);
+    }
   }
 }
 
