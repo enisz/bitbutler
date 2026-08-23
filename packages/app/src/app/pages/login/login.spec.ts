@@ -154,13 +154,6 @@ describe('Login', () => {
     });
   });
 
-  describe('logoUrl', () => {
-    it('should build a URL from the current theme family', () => {
-      themeMock.family.set('aurora');
-      expect(component.logoUrl()).toBe('assets/images/bitbutler-logo-aurora.png');
-    });
-  });
-
   describe('families', () => {
     it('should expose the shared THEME_FAMILIES list', () => {
       expect(component.families).toHaveLength(8);
@@ -199,12 +192,6 @@ describe('Login', () => {
       translateMock.getCurrentLang.mockReturnValue('hu');
       translateMock.onLangChange.next({ lang: 'hu', translations: {} });
       expect(component.currentLang()).toBe('hu');
-    });
-  });
-
-  describe('getFamilyLogoUrl', () => {
-    it('should build a logo URL for a given family', () => {
-      expect(component.getFamilyLogoUrl('aurora')).toBe('assets/images/bitbutler-logo-aurora.png');
     });
   });
 

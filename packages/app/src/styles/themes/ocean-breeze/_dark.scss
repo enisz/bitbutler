@@ -96,7 +96,7 @@ $ob-dark-check-marker-colors: (
     --bb-ng-focus-ring: rgba(var(--bs-secondary-rgb), 0.2);
 
     --bb-control-bg: color-mix(in srgb, var(--bs-card-bg) 94%, #fff 6%);
-    --bb-control-border: rgba($ob-dark-body-color, 0.15);
+    --bb-control-border: #{rgba($ob-dark-body-color, 0.15)};
     --bb-control-text: var(--bs-body-color);
     --bb-control-placeholder: color-mix(in srgb, var(--bs-body-color) 60%, transparent);
 

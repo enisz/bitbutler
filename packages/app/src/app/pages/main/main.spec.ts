@@ -81,14 +81,6 @@ describe('Main', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('logoUrl', () => {
-    it('should build the URL from the current theme family', async () => {
-      await createComponent();
-      themeMock.family.set('aurora');
-      expect(component.logoUrl()).toBe('assets/images/bitbutler-logo-aurora.png');
-    });
-  });
-
   describe('theme', () => {
     it('should be the effectiveMode signal from ThemeService', async () => {
       await createComponent();

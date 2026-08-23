@@ -23,9 +23,18 @@ export const THEME_FAMILIES: { value: ThemeFamily; label: string }[] = [
   { value: 'crimson-ember', label: 'Crimson Ember' },
 ];
 
-export function getFamilyLogoUrl(family: string): string {
-  return `assets/images/bitbutler-logo-${family}.png`;
-}
+// Mirrors each family's $..._light-secondary SCSS variable (packages/app/src/styles/themes/<family>/_light.scss) -
+// kept here so BbLogo can render a theme's accent color without switching the active theme.
+export const FAMILY_ACCENT_COLORS: Record<ThemeFamily, string> = {
+  bitbutler: '#c7a57a',
+  aurora: '#2bb3b1',
+  'mint-green': '#a3b18a',
+  'purple-haze': '#ab47bc',
+  'ocean-breeze': '#03a9f4',
+  'pumpkin-spice': '#f39c12',
+  'deep-sea': '#088395',
+  'crimson-ember': '#f08a5d',
+};
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {

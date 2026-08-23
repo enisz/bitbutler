@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { GeneralSettingsService } from './general-settings.service';
-import { THEME_FAMILIES, ThemeService, getFamilyLogoUrl } from './theme.service';
+import { FAMILY_ACCENT_COLORS, THEME_FAMILIES, ThemeService } from './theme.service';
 
 describe('ThemeService', () => {
   let service: ThemeService;
@@ -88,13 +88,11 @@ describe('ThemeService', () => {
     expect(THEME_FAMILIES.find((f) => f.value === 'mint-green')?.label).toBe('Mint Green');
   });
 
-  describe('getFamilyLogoUrl', () => {
-    it('should build a logo URL for the given family', () => {
-      expect(getFamilyLogoUrl('aurora')).toBe('assets/images/bitbutler-logo-aurora.png');
-    });
-
-    it('should use the exact family name in the URL', () => {
-      expect(getFamilyLogoUrl('mint-green')).toBe('assets/images/bitbutler-logo-mint-green.png');
+  describe('FAMILY_ACCENT_COLORS', () => {
+    it('should provide an accent color for every theme family', () => {
+      for (const { value } of THEME_FAMILIES) {
+        expect(FAMILY_ACCENT_COLORS[value]).toMatch(/^#[0-9a-f]{6}$/);
+      }
     });
   });
 });

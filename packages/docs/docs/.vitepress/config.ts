@@ -3,9 +3,9 @@ import { defineConfig } from 'vitepress';
 export default defineConfig({
   base: '/bitbutler/',
   lastUpdated: true,
-  head: [['link', { rel: 'icon', href: '/bitbutler/bitbutler-logo.png' }]],
+  head: [['link', { rel: 'icon', href: '/bitbutler/bitbutler-logo-dark.svg' }]],
   themeConfig: {
-    logo: '/bitbutler-logo.png',
+    logo: { light: '/bitbutler-logo-light.svg', dark: '/bitbutler-logo-dark.svg' },
     siteTitle: 'BitButler',
     search: {
       provider: 'local',

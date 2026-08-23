@@ -1,4 +1,4 @@
-import { NgClass, NgOptimizedImage } from '@angular/common';
+import { NgClass } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -27,19 +27,14 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { debounceTime, firstValueFrom, fromEvent } from 'rxjs';
 import { AppLoader } from '../../components/app-loader/app-loader';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
+import { BbLogo } from '../../components/bb-logo/bb-logo';
 import { CommandBusService } from '../../services/command-bus.service';
 import { CredentialPromptService } from '../../services/credential-prompt.service';
 import { ElectronService } from '../../services/electron.service';
 import { GeneralSettingsService } from '../../services/general-settings.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
-import {
-  THEME_FAMILIES,
-  ThemeFamily,
-  ThemeMode,
-  ThemeService,
-  getFamilyLogoUrl,
-} from '../../services/theme.service';
+import { THEME_FAMILIES, ThemeFamily, ThemeMode, ThemeService } from '../../services/theme.service';
 import { ToastService } from '../../services/toast.service';
 import { WindowService } from '../../services/window.service';
 import { setModalInput } from '../../utils/modal-input';
@@ -48,7 +43,6 @@ import { setModalInput } from '../../utils/modal-input';
   selector: 'app-login',
   standalone: true,
   imports: [
-    NgOptimizedImage,
     NgClass,
     ReactiveFormsModule,
     NgbTooltipModule,
@@ -58,6 +52,7 @@ import { setModalInput } from '../../utils/modal-input';
     NgLabelTemplateDirective,
     TranslatePipe,
     BbBtnContent,
+    BbLogo,
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
@@ -78,8 +73,6 @@ export class Login implements OnInit {
   private readonly generalSettingsService = inject(GeneralSettingsService);
 
   private readonly languageChanged = toSignal(this.translateService.onLangChange);
-
-  public readonly logoUrl = computed(() => getFamilyLogoUrl(this.themeService.family()));
 
   public readonly icons = { faLanguage, faPalette, faCircleHalfStroke, faPlug, faPlus, faServer };
 
@@ -120,8 +113,6 @@ export class Login implements OnInit {
     this.languageChanged();
     return this.translateService.getCurrentLang();
   });
-
-  public readonly getFamilyLogoUrl = getFamilyLogoUrl;
 
   public servers = this.serverStoreService.servers;
   public readonly hasServers = computed(() => this.servers().length > 0);

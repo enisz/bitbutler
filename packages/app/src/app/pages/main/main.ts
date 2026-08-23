@@ -1,4 +1,3 @@
-import { NgOptimizedImage } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -13,6 +12,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faBars, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import type { ColumnState } from 'ag-grid-community';
 import { Subscription, first } from 'rxjs';
+import { BbLogo } from '../../components/bb-logo/bb-logo';
 import { DEFAULT_SIDEBAR_SETTINGS } from '../../models/sidebar-settings.model';
 import { Maindata, QbServerState } from '../../models/torrent.model';
 import { QbPollingService } from '../../services/qb-polling.service';
@@ -28,7 +28,7 @@ import { Status } from './status/status';
 
 @Component({
   selector: 'app-main',
-  imports: [Grid, Status, ButtonBar, NgOptimizedImage, ServerState, FontAwesomeModule],
+  imports: [Grid, Status, ButtonBar, BbLogo, ServerState, FontAwesomeModule],
   templateUrl: './main.html',
   styleUrl: './main.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -42,9 +42,6 @@ export class Main implements OnDestroy {
   private readonly sidebarSettingsService = inject(SidebarSettingsService);
   private pollSub: Subscription | null = null;
   public currentServer = this.serverStoreService.currentServer;
-  public readonly logoUrl = computed(
-    () => `assets/images/bitbutler-logo-${this.themeService.family()}.png`,
-  );
 
   public readonly icons = { faBars, faChevronRight };
   private readonly sidebarSettings = toSignal(this.sidebarSettingsService.asObservable());

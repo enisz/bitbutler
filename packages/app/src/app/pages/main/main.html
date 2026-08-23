@@ -14,7 +14,7 @@
         [disabled]="!sidebarCollapsed()"
         (click)="toggleSidebar()"
       >
-        <img [ngSrc]="logoUrl()" alt="Bitbutler Logo" width="40" height="40" priority />
+        <app-bb-logo [size]="40" />
         @if (sidebarCollapsed()) {
           <span class="bb-brand-logo__overlay" aria-hidden="true">
             <fa-icon [icon]="icons.faChevronRight"></fa-icon>
@@ -23,7 +23,7 @@
       </button>
 
       @if (!sidebarCollapsed()) {
-        <div class="d-flex flex-column min-w-0 flex-grow-1">
+        <div class="d-flex flex-column min-w-0 flex-grow-1 ms-2">
           <div class="brand-title">BitButler</div>
           @if (currentServer()) {
             <div class="brand-status d-flex flex-row align-items-center gap-2">

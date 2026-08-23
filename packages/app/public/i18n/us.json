@@ -593,6 +593,8 @@
               "sub": "Faster media file previews"
             },
             "super-seeding": {
+              "title": "Super Seeding",
+              "description": "An advanced seeding mode that carefully controls which pieces are shared with peers, helping distribute the torrent efficiently when you're the only seeder with limited upload bandwidth.",
               "sub": "Only useful while seeding"
             }
           },
