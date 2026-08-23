@@ -12,7 +12,6 @@
 _The digital butler for your torrents._
 
 [![Version](https://img.shields.io/github/v/release/enisz/bitbutler?style=flat-square&color=blue&label=version&logo=github)](https://github.com/enisz/bitbutler/releases/latest)
-[![CI Status](https://img.shields.io/github/actions/workflow/status/enisz/bitbutler/bitbutler-pr.yml?branch=main&style=flat-square&label=CI&logo=github-actions&logoColor=white)](https://github.com/enisz/bitbutler/actions)
 [![Downloads](https://img.shields.io/github/downloads/enisz/bitbutler/total?style=flat-square&color=orange&logo=instacart&logoColor=white)](https://github.com/enisz/bitbutler/releases)
 [![License](https://img.shields.io/github/license/enisz/bitbutler?style=flat-square&color=green)](https://github.com/enisz/bitbutler/blob/main/LICENSE)
 
