@@ -19,11 +19,11 @@ _The digital butler for your torrents._
 
 </div>
 
-![Main View](readme/main-view.png)
+![Main View](packages/docs/docs/public/screenshots/torrent-list-view/overview.png)
 
 BitButler is a desktop remote client specifically designed to connect to and manage **qBittorrent-nox** instances. Instead of dealing with clunky web interfaces or browser tabs, BitButler gives you a dedicated, professional space to keep your downloads organized.
 
-![Torrent Detail View](readme/torrent-details-view.png)
+![Torrent Detail View](packages/docs/docs/public/screenshots/torrent-details-view/general.png)
 
 It’s fast, it’s modern, and it works where you do.
 
