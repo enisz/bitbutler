@@ -593,6 +593,8 @@
               "sub": "Gyorsabb előnézet médiafájlokhoz"
             },
             "super-seeding": {
+              "title": "Super Seeding",
+              "description": "Egy speciális seedelési mód, amely gondosan szabályozza, mely szeleteket osztja meg a partnerekkel, így hatékonyabban terjeszti a torrentet, ha korlátozott feltöltési sávszélességgel te vagy az egyetlen seeder.",
               "sub": "Csak seedeléskor hasznos"
             }
           },

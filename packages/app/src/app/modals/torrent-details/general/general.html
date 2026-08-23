@@ -377,6 +377,17 @@
           <div class="bb-option__text">
             <span class="bb-option__label">
               {{ 'components.modals.torrent-details.general.super-seeding' | translate }}
+              <bb-popover
+                placement="top"
+                [subject]="
+                  'components.modals.torrent-details.general.popover.super-seeding.title'
+                    | translate
+                "
+                [description]="
+                  'components.modals.torrent-details.general.popover.super-seeding.description'
+                    | translate
+                "
+              ></bb-popover>
             </span>
             <span class="bb-option__sub">{{
               'components.modals.torrent-details.general.popover.super-seeding.sub' | translate
