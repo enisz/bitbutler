@@ -81,9 +81,8 @@ jobs:
             packaging:
               - 'package.json'
               - 'package-lock.json'
-              - 'packages/app/src/assets/icons/**'
               - 'build/**'
-              - 'packages/app/public/i18n/**'
+              - 'packages/app/public/**'
             docs:
               - 'packages/docs/**'
             any-source:

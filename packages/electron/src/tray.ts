@@ -11,7 +11,7 @@ function getTrayIconPath(): string {
   if (app.isPackaged) {
     return path.join(process.resourcesPath, 'bitbutler.png');
   }
-  return path.join(app.getAppPath(), 'packages', 'app', 'src', 'assets', 'icons', 'bitbutler.png');
+  return path.join(app.getAppPath(), 'packages', 'app', 'public', 'bitbutler.png');
 }
 
 function showMainWindow({ maximize = true } = {}): void {
