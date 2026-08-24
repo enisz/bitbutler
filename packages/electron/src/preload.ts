@@ -11,6 +11,7 @@ import type {
   ImportProgressEvent,
   ImportStartPayload,
   MenuClickPayload,
+  RendererLogEntry,
   TorrentDraft,
   UpdaterEvent,
   WindowState,
@@ -161,6 +162,10 @@ const api: BitButlerAPI = {
 
   notification: {
     show: (payload) => ipcRenderer.invoke('notification:show', payload),
+  },
+
+  log: {
+    write: (entry: RendererLogEntry) => ipcRenderer.send('log:write', entry),
   },
 
   settings: {

@@ -144,6 +144,18 @@ db.exec(`
   ON logs(timestamp);
 `);
 
+// Migrate: add context/filename/line columns (nullable - populated only when available).
+const logCols = db.pragma('table_info(logs)') as ColInfo[];
+if (!logCols.find((c) => c.name === 'context')) {
+  db.exec(`ALTER TABLE logs ADD COLUMN context TEXT`);
+}
+if (!logCols.find((c) => c.name === 'filename')) {
+  db.exec(`ALTER TABLE logs ADD COLUMN filename TEXT`);
+}
+if (!logCols.find((c) => c.name === 'line')) {
+  db.exec(`ALTER TABLE logs ADD COLUMN line INTEGER`);
+}
+
 db.exec(`DROP TRIGGER IF EXISTS trg_logs_retention`);
 
 db.exec(`
