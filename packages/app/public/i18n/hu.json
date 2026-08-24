@@ -779,7 +779,7 @@
         },
         "status": {
           "checking": "Frissítés keresése...",
-          "downloading": "Frissítés letöltése... {{ percent }}%",
+          "downloading": "Frissítés letöltése... {{ percent }}% ({{ transferred }} / {{ total }})",
           "restarting": "Újraindítás a telepítéshez...",
           "no-update-available": "Jelenleg nincs elérhető frissítés."
         },

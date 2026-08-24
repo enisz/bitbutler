@@ -62,6 +62,8 @@ describe('UpdateAvailable', () => {
     capability: ReturnType<typeof signal<UpdateCapability | null>>;
     status: ReturnType<typeof signal<'idle' | 'checking' | 'downloading' | 'downloaded' | 'error'>>;
     progress: ReturnType<typeof signal<number>>;
+    transferred: ReturnType<typeof signal<number>>;
+    total: ReturnType<typeof signal<number>>;
     errorMessage: ReturnType<typeof signal<string | null>>;
     updateNow: ReturnType<typeof vi.fn>;
     reset: ReturnType<typeof vi.fn>;
@@ -81,6 +83,8 @@ describe('UpdateAvailable', () => {
       capability: signal<UpdateCapability | null>(null),
       status: signal<'idle' | 'checking' | 'downloading' | 'downloaded' | 'error'>('idle'),
       progress: signal(0),
+      transferred: signal(0),
+      total: signal(0),
       errorMessage: signal<string | null>(null),
       updateNow: vi.fn(),
       reset: vi.fn(),
@@ -484,6 +488,16 @@ describe('UpdateAvailable', () => {
     });
   });
 
+  describe('transferredLabel / totalLabel', () => {
+    it('formats the transferred and total byte counts as human-readable sizes', () => {
+      mockUpdaterService.transferred.set(1024);
+      mockUpdaterService.total.set(1024 * 1024 * 150);
+
+      expect(component.transferredLabel()).toBe('1 KB');
+      expect(component.totalLabel()).toBe('150 MB');
+    });
+  });
+
   describe('updateNow', () => {
     it('delegates to UpdaterService.updateNow()', () => {
       component.updateNow();
@@ -519,6 +533,8 @@ describe('UpdateAvailable', () => {
         capability: signal<UpdateCapability | null>(null),
         status: signal<'idle' | 'checking' | 'downloading' | 'downloaded' | 'error'>('downloading'),
         progress: signal(0),
+        transferred: signal(0),
+        total: signal(0),
         errorMessage: signal<string | null>(null),
         updateNow: vi.fn(),
         reset: vi.fn(),

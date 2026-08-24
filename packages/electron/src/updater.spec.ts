@@ -172,7 +172,7 @@ describe('updater IPC handlers', () => {
       expect(mockAutoUpdater.quitAndInstall).not.toHaveBeenCalled();
 
       await vi.advanceTimersByTimeAsync(1200);
-      expect(mockAutoUpdater.quitAndInstall).toHaveBeenCalled();
+      expect(mockAutoUpdater.quitAndInstall).toHaveBeenCalledWith(true, true);
       vi.useRealTimers();
     });
 

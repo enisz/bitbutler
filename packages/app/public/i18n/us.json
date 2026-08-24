@@ -779,7 +779,7 @@
         },
         "status": {
           "checking": "Checking for the update...",
-          "downloading": "Downloading update... {{ percent }}%",
+          "downloading": "Downloading update... {{ percent }}% ({{ transferred }} / {{ total }})",
           "restarting": "Restarting to install...",
           "no-update-available": "No update is currently available."
         },

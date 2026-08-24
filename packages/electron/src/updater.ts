@@ -54,7 +54,10 @@ export function registerUpdaterIpcHandlers(): void {
 
   autoUpdater.on('update-downloaded', () => {
     sendUpdaterEvent({ status: 'downloaded' });
-    setTimeout(() => autoUpdater.quitAndInstall(), QUIT_AND_INSTALL_DELAY_MS);
+    // isForceRunAfter is only honored by electron-updater when isSilent is also true -
+    // both must be passed explicitly to keep the existing "relaunch after install" behavior
+    // while skipping the NSIS installer wizard.
+    setTimeout(() => autoUpdater.quitAndInstall(true, true), QUIT_AND_INSTALL_DELAY_MS);
   });
 
   autoUpdater.on('error', (error: unknown) => {

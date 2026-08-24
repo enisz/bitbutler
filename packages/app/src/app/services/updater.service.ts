@@ -8,11 +8,15 @@ export class UpdaterService {
   private readonly _capability = signal<UpdateCapability | null>(null);
   private readonly _status = signal<UpdaterStatus>('idle');
   private readonly _progress = signal<number>(0);
+  private readonly _transferred = signal<number>(0);
+  private readonly _total = signal<number>(0);
   private readonly _errorMessage = signal<string | null>(null);
 
   readonly capability = this._capability.asReadonly();
   readonly status = this._status.asReadonly();
   readonly progress = this._progress.asReadonly();
+  readonly transferred = this._transferred.asReadonly();
+  readonly total = this._total.asReadonly();
   readonly errorMessage = this._errorMessage.asReadonly();
 
   constructor() {
@@ -29,6 +33,8 @@ export class UpdaterService {
   public reset(): void {
     this._status.set('idle');
     this._progress.set(0);
+    this._transferred.set(0);
+    this._total.set(0);
     this._errorMessage.set(null);
   }
 
@@ -40,6 +46,8 @@ export class UpdaterService {
       case 'downloading':
         this._status.set('downloading');
         this._progress.set(event.percent);
+        this._transferred.set(event.transferred);
+        this._total.set(event.total);
         break;
       case 'downloaded':
         this._status.set('downloaded');

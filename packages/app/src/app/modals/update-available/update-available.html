@@ -116,12 +116,19 @@
         @if (isUpdating()) {
           <div class="bb-ua-update-progress">
             <span class="bb-ua-update-progress__label">
-              {{
-                (updaterService.status() === 'checking'
-                  ? 'components.modals.update-available.status.checking'
-                  : 'components.modals.update-available.status.downloading'
-                ) | translate: { percent: progressLabel() }
-              }}
+              @if (updaterService.status() === 'checking') {
+                {{ 'components.modals.update-available.status.checking' | translate }}
+              } @else {
+                {{
+                  'components.modals.update-available.status.downloading'
+                    | translate
+                      : {
+                          percent: progressLabel(),
+                          transferred: transferredLabel(),
+                          total: totalLabel(),
+                        }
+                }}
+              }
             </span>
             <app-bb-progress
               mode="compact"

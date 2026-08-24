@@ -31,6 +31,8 @@ describe('UpdaterService', () => {
   it('starts idle with no capability, zero progress, and no error', () => {
     expect(service.status()).toBe('idle');
     expect(service.progress()).toBe(0);
+    expect(service.transferred()).toBe(0);
+    expect(service.total()).toBe(0);
     expect(service.errorMessage()).toBeNull();
   });
 
@@ -54,10 +56,12 @@ describe('UpdaterService', () => {
     expect(service.status()).toBe('checking');
   });
 
-  it('sets status to downloading and tracks percent on a downloading event', () => {
+  it('sets status to downloading and tracks percent/transferred/total on a downloading event', () => {
     emit({ status: 'downloading', percent: 37, transferred: 370, total: 1000 });
     expect(service.status()).toBe('downloading');
     expect(service.progress()).toBe(37);
+    expect(service.transferred()).toBe(370);
+    expect(service.total()).toBe(1000);
   });
 
   it('sets status to downloaded on a downloaded event', () => {
@@ -72,19 +76,23 @@ describe('UpdaterService', () => {
   });
 
   it('updateNow() resets status/progress/error and calls the preload API', () => {
-    emit({ status: 'error', message: 'offline' });
+    emit({ status: 'downloading', percent: 50, transferred: 500, total: 1000 });
     service.updateNow();
     expect(service.status()).toBe('checking');
     expect(service.progress()).toBe(0);
+    expect(service.transferred()).toBe(0);
+    expect(service.total()).toBe(0);
     expect(service.errorMessage()).toBeNull();
     expect(updateNowSpy).toHaveBeenCalled();
   });
 
-  it('reset() returns to idle with no progress or error', () => {
-    emit({ status: 'error', message: 'offline' });
+  it('reset() returns to idle with no progress, transferred, total, or error', () => {
+    emit({ status: 'downloading', percent: 50, transferred: 500, total: 1000 });
     service.reset();
     expect(service.status()).toBe('idle');
     expect(service.progress()).toBe(0);
+    expect(service.transferred()).toBe(0);
+    expect(service.total()).toBe(0);
     expect(service.errorMessage()).toBeNull();
   });
 });

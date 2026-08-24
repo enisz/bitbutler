@@ -26,6 +26,7 @@ import { BbCallout } from '../../components/bb-callout/bb-callout';
 import { BbProgress } from '../../components/bb-progress/bb-progress';
 import { normalizeVersionTag } from '../../models/update-settings.model';
 import { FilesizePipe } from '../../pipes/filesize-pipe';
+import { formatBytes } from '../../pipes/format-bytes';
 import { LocalTimestampPipe } from '../../pipes/local-timestamp-pipe';
 import { ElectronService } from '../../services/electron.service';
 import { ToastService } from '../../services/toast.service';
@@ -127,6 +128,9 @@ export class UpdateAvailable {
   });
 
   public readonly progressLabel = computed(() => Math.round(this.updaterService.progress()));
+
+  public readonly transferredLabel = computed(() => formatBytes(this.updaterService.transferred()));
+  public readonly totalLabel = computed(() => formatBytes(this.updaterService.total()));
 
   constructor() {
     // Only reset when no update flow is already in flight - UpdaterService is
