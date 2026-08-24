@@ -29,6 +29,7 @@ categories:
     labels: []
 
 change-template: '- [#$NUMBER](https://github.com/enisz/bitbutler/pull/$NUMBER): $TITLE'
+no-changes-template: '- Maintenance and internal improvements - no user-facing changes.'
 
 template: |
   ## What's Changed
