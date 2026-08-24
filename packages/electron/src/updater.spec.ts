@@ -1,3 +1,4 @@
+import { CancellationError, CancellationToken } from 'builder-util-runtime';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const ipcHandlers = vi.hoisted(() => new Map<string, (...args: unknown[]) => unknown>());
@@ -9,7 +10,7 @@ const mockAutoUpdater = vi.hoisted(() => ({
     updaterListeners.set(event, handler);
   }),
   checkForUpdates: vi.fn(),
-  downloadUpdate: vi.fn(),
+  downloadUpdate: vi.fn().mockResolvedValue(undefined),
   quitAndInstall: vi.fn(),
 }));
 const mockExistsSync = vi.hoisted(() => vi.fn());
@@ -131,6 +132,24 @@ describe('updater IPC handlers', () => {
     });
   });
 
+  describe('updater:cancel-download', () => {
+    it('cancels the in-flight download token', async () => {
+      const handlers = await registerAndGetHandlers();
+      updaterListeners.get('update-available')!();
+      const token = mockAutoUpdater.downloadUpdate.mock.calls[0][0] as CancellationToken;
+      expect(token.cancelled).toBe(false);
+
+      await handlers.get('updater:cancel-download')!(null);
+
+      expect(token.cancelled).toBe(true);
+    });
+
+    it('does nothing when there is no download in progress', async () => {
+      const handlers = await registerAndGetHandlers();
+      await expect(handlers.get('updater:cancel-download')!(null)).resolves.toBeUndefined();
+    });
+  });
+
   describe('autoUpdater event forwarding', () => {
     it('forwards checking-for-update as a checking event', async () => {
       await registerAndGetHandlers();
@@ -138,10 +157,39 @@ describe('updater IPC handlers', () => {
       expect(mockSend).toHaveBeenCalledWith('updater:event', { status: 'checking' });
     });
 
-    it('starts the download when update-available fires', async () => {
+    it('starts the download with a fresh cancellation token when update-available fires', async () => {
       await registerAndGetHandlers();
       updaterListeners.get('update-available')!();
-      expect(mockAutoUpdater.downloadUpdate).toHaveBeenCalled();
+      expect(mockAutoUpdater.downloadUpdate).toHaveBeenCalledWith(expect.any(CancellationToken));
+    });
+
+    it('swallows a CancellationError from downloadUpdate without logging it', async () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      mockAutoUpdater.downloadUpdate.mockRejectedValueOnce(new CancellationError());
+      await registerAndGetHandlers();
+      updaterListeners.get('update-available')!();
+      await vi.waitFor(() => expect(mockAutoUpdater.downloadUpdate).toHaveBeenCalled());
+
+      expect(consoleErrorSpy).not.toHaveBeenCalled();
+      consoleErrorSpy.mockRestore();
+    });
+
+    it('logs a non-cancellation error from downloadUpdate', async () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const downloadError = new Error('network down');
+      mockAutoUpdater.downloadUpdate.mockRejectedValueOnce(downloadError);
+      await registerAndGetHandlers();
+      updaterListeners.get('update-available')!();
+      await vi.waitFor(() => expect(mockAutoUpdater.downloadUpdate).toHaveBeenCalled());
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Download failed:', downloadError);
+      consoleErrorSpy.mockRestore();
+    });
+
+    it('sends an idle event when update-cancelled fires', async () => {
+      await registerAndGetHandlers();
+      updaterListeners.get('update-cancelled')!();
+      expect(mockSend).toHaveBeenCalledWith('updater:event', { status: 'idle' });
     });
 
     it('sends a friendly error when update-not-available fires', async () => {

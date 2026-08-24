@@ -3,6 +3,7 @@ export interface UpdateCapability {
 }
 
 export type UpdaterEvent =
+  | { status: 'idle' }
   | { status: 'checking' }
   | { status: 'downloading'; percent: number; transferred: number; total: number }
   | { status: 'downloaded' }

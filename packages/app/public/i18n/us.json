@@ -770,16 +770,15 @@
         "subtitle": "You're on v{{ current_version }}, {{ count }} versions behind the latest (v{{ latest_version }}).",
         "download-for": "Download for {{ os_name }}",
         "available-downloads": "Available Downloads",
-        "footnote": "Releases aren't code-signed, so downloads must be installed manually.",
-        "view-all-releases": "View all releases",
-        "smartscreen-warning": "Windows may show a SmartScreen warning during installation, since BitButler isn't code-signed yet. If the update doesn't finish automatically, download and run the installer manually below.",
+        "code-signing-notice": "BitButler isn't code-signed yet, which may trigger a Windows security warning or interrupt the automatic update. If that happens, install one of the files above manually.",
         "button": {
           "skip-versions": "Skip these versions",
+          "view-releases": "View Releases",
           "update-now": "Update Now"
         },
         "status": {
           "checking": "Checking for the update...",
-          "downloading": "Downloading update... {{ percent }}% ({{ transferred }} / {{ total }})",
+          "downloading": "Downloading {{ asset_name }}",
           "restarting": "Restarting to install...",
           "no-update-available": "No update is currently available."
         },

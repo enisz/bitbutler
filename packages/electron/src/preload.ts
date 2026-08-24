@@ -57,6 +57,7 @@ const api: BitButlerAPI = {
   updater: {
     getCapability: () => ipcRenderer.invoke('updater:get-capability'),
     updateNow: () => ipcRenderer.invoke('updater:update-now'),
+    cancelDownload: () => ipcRenderer.invoke('updater:cancel-download'),
     onEvent: (callback) => makeIpcSubscription('updater:event', (e) => e as UpdaterEvent, callback),
   },
 

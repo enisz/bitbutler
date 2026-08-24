@@ -9,10 +9,12 @@ describe('UpdaterService', () => {
   // Vitest 4's bare `vi.fn()` resolves to `Mock<Procedure | Constructable>`, which is not callable
   // and not assignable to a concrete signature - spell the signature out instead.
   let updateNowSpy: Mock<() => Promise<void>>;
+  let cancelDownloadSpy: Mock<() => Promise<void>>;
   let getCapabilitySpy: Mock<() => Promise<UpdateCapability>>;
 
   beforeEach(() => {
     updateNowSpy = vi.fn<() => Promise<void>>().mockResolvedValue(undefined);
+    cancelDownloadSpy = vi.fn<() => Promise<void>>().mockResolvedValue(undefined);
     getCapabilitySpy = vi
       .fn<() => Promise<UpdateCapability>>()
       .mockResolvedValue({ supported: false });
@@ -23,6 +25,7 @@ describe('UpdaterService', () => {
     });
     vi.spyOn(window.bitbutler.updater, 'getCapability').mockImplementation(getCapabilitySpy);
     vi.spyOn(window.bitbutler.updater, 'updateNow').mockImplementation(updateNowSpy);
+    vi.spyOn(window.bitbutler.updater, 'cancelDownload').mockImplementation(cancelDownloadSpy);
 
     TestBed.configureTestingModule({ providers: [UpdaterService] });
     service = TestBed.inject(UpdaterService);
@@ -94,5 +97,20 @@ describe('UpdaterService', () => {
     expect(service.transferred()).toBe(0);
     expect(service.total()).toBe(0);
     expect(service.errorMessage()).toBeNull();
+  });
+
+  it('resets to idle with no progress, transferred, or total on an idle event', () => {
+    emit({ status: 'downloading', percent: 50, transferred: 500, total: 1000 });
+    emit({ status: 'idle' });
+    expect(service.status()).toBe('idle');
+    expect(service.progress()).toBe(0);
+    expect(service.transferred()).toBe(0);
+    expect(service.total()).toBe(0);
+    expect(service.errorMessage()).toBeNull();
+  });
+
+  it('cancelDownload() calls the preload API', () => {
+    service.cancelDownload();
+    expect(cancelDownloadSpy).toHaveBeenCalled();
   });
 });

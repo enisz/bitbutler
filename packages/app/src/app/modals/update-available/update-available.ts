@@ -11,6 +11,8 @@ import {
 import { HostPlatform, Release, ReleaseAsset, UpdateCheckResponse } from '@bitbutler/shared';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
+  faArrowUpRightFromSquare,
+  faBan,
   faCloudArrowDown,
   faDownload,
   faForward,
@@ -60,6 +62,8 @@ export class UpdateAvailable {
     faXmark,
     faCloudArrowDown,
     faTriangleExclamation,
+    faArrowUpRightFromSquare,
+    faBan,
   };
   public readonly update = input.required<UpdateCheckResponse>();
   public readonly activeModal = inject(NgbActiveModal);
@@ -113,10 +117,6 @@ export class UpdateAvailable {
     () => this.updaterService.capability()?.supported === true,
   );
 
-  public readonly showSmartScreenWarning = computed(
-    () => this.showUpdateNow() && this.platform() === 'win32',
-  );
-
   public readonly isUpdating = computed(() => {
     const status = this.updaterService.status();
     return status === 'checking' || status === 'downloading';
@@ -126,6 +126,14 @@ export class UpdateAvailable {
     const status = this.updaterService.status();
     return status === 'checking' || status === 'downloading' || status === 'downloaded';
   });
+
+  // The full footer is replaced by the progress row + Cancel button while an
+  // update the user started from this modal is checking or downloading -
+  // isUpdating() alone isn't enough since it doesn't require showUpdateNow(),
+  // and this row only makes sense for the self-update flow.
+  public readonly showProgressFooter = computed(() => this.showUpdateNow() && this.isUpdating());
+
+  public readonly downloadingAssetName = computed(() => this.filteredAssets()[0]?.name ?? '');
 
   public readonly progressLabel = computed(() => Math.round(this.updaterService.progress()));
 
@@ -200,6 +208,10 @@ export class UpdateAvailable {
 
   public updateNow(): void {
     this.updaterService.updateNow();
+  }
+
+  public cancelDownload(): void {
+    this.updaterService.cancelDownload();
   }
 
   public async skipVersions(): Promise<void> {

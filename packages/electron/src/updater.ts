@@ -1,4 +1,5 @@
 import type { UpdateCapability, UpdaterEvent } from '@bitbutler/shared';
+import { CancellationError, CancellationToken } from 'builder-util-runtime';
 import { app, ipcMain } from 'electron';
 import electronUpdaterPkg from 'electron-updater';
 import { existsSync } from 'node:fs';
@@ -16,6 +17,8 @@ const { autoUpdater } = electronUpdaterPkg;
 
 const QUIT_AND_INSTALL_DELAY_MS = 1200;
 
+let downloadCancellationToken: CancellationToken | null = null;
+
 export function registerUpdaterIpcHandlers(): void {
   autoUpdater.autoDownload = false;
   autoUpdater.autoInstallOnAppQuit = false;
@@ -25,7 +28,22 @@ export function registerUpdaterIpcHandlers(): void {
   });
 
   autoUpdater.on('update-available', () => {
-    void autoUpdater.downloadUpdate();
+    downloadCancellationToken = new CancellationToken();
+    autoUpdater.downloadUpdate(downloadCancellationToken).catch((error: unknown) => {
+      // A user-initiated cancel is already reported via the 'update-cancelled'
+      // event below, and any other failure already reaches the renderer via the
+      // 'error' event handler - this catch exists only so the rejection itself
+      // doesn't surface as an unhandled promise rejection. Still log non-cancel
+      // failures explicitly so they land in the logs table.
+      if (!(error instanceof CancellationError)) {
+        console.error('Download failed:', error);
+      }
+    });
+  });
+
+  autoUpdater.on('update-cancelled', () => {
+    downloadCancellationToken = null;
+    sendUpdaterEvent({ status: 'idle' });
   });
 
   autoUpdater.on('update-not-available', () => {
@@ -72,6 +90,10 @@ export function registerUpdaterIpcHandlers(): void {
     } catch (error) {
       sendUpdaterEvent({ status: 'error', message: sanitizeError(error) });
     }
+  });
+
+  ipcMain.handle('updater:cancel-download', async () => {
+    downloadCancellationToken?.cancel();
   });
 }
 

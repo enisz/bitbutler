@@ -770,16 +770,15 @@
         "subtitle": "Jelenleg a v{{ current_version }} verziót használod, {{ count }} verzióval vagy lemaradva a legújabbtól (v{{ latest_version }}).",
         "download-for": "Letöltés {{ os_name }} rendszerre",
         "available-downloads": "Elérhető letöltések",
-        "footnote": "A kiadások nincsenek kódaláírással ellátva, így a letöltéseket manuálisan kell telepíteni.",
-        "view-all-releases": "Összes kiadás megtekintése",
-        "smartscreen-warning": "Windows rendszeren SmartScreen figyelmeztetés jelenhet meg telepítés közben, mivel a BitButler még nincs kódaláírással ellátva. Ha a frissítés nem fejeződik be automatikusan, töltsd le és futtasd manuálisan a telepítőt alább.",
+        "code-signing-notice": "A BitButler még nincs kódaláírással ellátva, ezért Windows biztonsági figyelmeztetést jelezhet, vagy megszakíthatja az automatikus frissítést. Ha ez történik, telepítsd manuálisan a fent található fájlok egyikét.",
         "button": {
           "skip-versions": "Ezen verziók kihagyása",
+          "view-releases": "Kiadások megtekintése",
           "update-now": "Frissítés most"
         },
         "status": {
           "checking": "Frissítés keresése...",
-          "downloading": "Frissítés letöltése... {{ percent }}% ({{ transferred }} / {{ total }})",
+          "downloading": "{{ asset_name }} letöltése",
           "restarting": "Újraindítás a telepítéshez...",
           "no-update-available": "Jelenleg nincs elérhető frissítés."
         },

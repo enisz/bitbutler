@@ -30,6 +30,10 @@ export class UpdaterService {
     void window.bitbutler.updater.updateNow();
   }
 
+  public cancelDownload(): void {
+    void window.bitbutler.updater.cancelDownload();
+  }
+
   public reset(): void {
     this._status.set('idle');
     this._progress.set(0);
@@ -40,6 +44,9 @@ export class UpdaterService {
 
   private applyEvent(event: UpdaterEvent): void {
     switch (event.status) {
+      case 'idle':
+        this.reset();
+        break;
       case 'checking':
         this._status.set('checking');
         break;
