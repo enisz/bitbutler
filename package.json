@@ -87,7 +87,7 @@
     ],
     "extraResources": [
       {
-        "from": "packages/app/src/assets/icons/bitbutler.png",
+        "from": "packages/app/public/bitbutler.png",
         "to": "bitbutler.png"
       },
       {
@@ -105,7 +105,7 @@
         "portable",
         "zip"
       ],
-      "icon": "packages/app/src/assets/icons/bitbutler.ico",
+      "icon": "packages/app/public/bitbutler.ico",
       "requestedExecutionLevel": "asInvoker"
     },
     "portable": {
@@ -121,8 +121,8 @@
       "shortcutName": "BitButler",
       "uninstallDisplayName": "BitButler",
       "artifactName": "bitbutler-setup-${version}.${ext}",
-      "installerIcon": "packages/app/src/assets/icons/bitbutler.ico",
-      "uninstallerIcon": "packages/app/src/assets/icons/bitbutler.ico",
+      "installerIcon": "packages/app/public/bitbutler.ico",
+      "uninstallerIcon": "packages/app/public/bitbutler.ico",
       "installerHeader": "build/installerHeader.bmp",
       "installerSidebar": "build/installerSidebar.bmp"
     },
@@ -141,7 +141,7 @@
       "mimeTypes": [
         "application/x-bittorrent"
       ],
-      "icon": "packages/app/src/assets/icons/bitbutler.png"
+      "icon": "packages/app/public/bitbutler.png"
     },
     "deb": {
       "depends": [
@@ -160,7 +160,7 @@
         "description": "BitTorrent file",
         "mimeType": "application/x-bittorrent",
         "role": "Viewer",
-        "icon": "packages/app/src/assets/icons/bitbutler.ico"
+        "icon": "packages/app/public/bitbutler.ico"
       },
       {
         "ext": "bbe",
@@ -168,7 +168,7 @@
         "description": "BitButler export archive",
         "mimeType": "application/x-bitbutler-export",
         "role": "Viewer",
-        "icon": "packages/app/src/assets/icons/bitbutler.ico"
+        "icon": "packages/app/public/bitbutler.ico"
       }
     ]
   },

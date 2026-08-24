@@ -45,8 +45,8 @@ export function createMainWindow(): BrowserWindow {
   const appPath = app.getAppPath();
 
   const iconCandidates = [
-    join(appPath, 'dist', 'bitbutler', 'browser', 'assets', 'icons', 'bitbutler.png'),
-    join(appPath, 'dist', 'bitbutler', 'assets', 'icons', 'bitbutler.png'),
+    join(appPath, 'dist', 'bitbutler', 'browser', 'bitbutler.png'),
+    join(appPath, 'dist', 'bitbutler', 'bitbutler.png'),
   ];
   const windowIcon = firstExistingPath(iconCandidates);
 
