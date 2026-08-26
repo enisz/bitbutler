@@ -42,20 +42,20 @@ describe('variantForTorrentState', () => {
     expect(variantForTorrentState('stalledUP')).toBe('warning');
   });
 
-  it('returns "success" for uploading', () => {
-    expect(variantForTorrentState('uploading')).toBe('success');
+  it('returns "info" for uploading', () => {
+    expect(variantForTorrentState('uploading')).toBe('info');
   });
 
-  it('returns "success" for forcedUP', () => {
-    expect(variantForTorrentState('forcedUP')).toBe('success');
+  it('returns "info" for forcedUP', () => {
+    expect(variantForTorrentState('forcedUP')).toBe('info');
   });
 
-  it('returns "info" for downloading', () => {
-    expect(variantForTorrentState('downloading')).toBe('info');
+  it('returns "success" for downloading', () => {
+    expect(variantForTorrentState('downloading')).toBe('success');
   });
 
-  it('returns "info" for forcedDL', () => {
-    expect(variantForTorrentState('forcedDL')).toBe('info');
+  it('returns "success" for forcedDL', () => {
+    expect(variantForTorrentState('forcedDL')).toBe('success');
   });
 
   it('returns "primary" for checkingDL', () => {

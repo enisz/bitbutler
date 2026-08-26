@@ -5,7 +5,7 @@ $au-dark-primary: #a5b4ff;
 $au-dark-secondary: #62e6e2;
 
 $au-dark-success: #7de7a8;
-$au-dark-danger: #ff6fa6;
+$au-dark-danger: #ff5c72;
 $au-dark-warning: #ffd166;
 $au-dark-info: #6ec5ff;
 
@@ -44,7 +44,7 @@ $au-dark-check-marker-colors: (
     --bs-success-rgb: #{string.unquote('125, 231, 168')};
 
     --bs-danger: #{$au-dark-danger};
-    --bs-danger-rgb: #{string.unquote('255, 111, 166')};
+    --bs-danger-rgb: #{string.unquote('255, 92, 114')};
 
     --bs-warning: #{$au-dark-warning};
     --bs-warning-rgb: #{string.unquote('255, 209, 102')};
