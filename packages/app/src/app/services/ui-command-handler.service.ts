@@ -469,6 +469,7 @@ export class UiCommandHandlerService {
 
           case 'UI_TORRENT_EXISTS': {
             const { TorrentExists } = await import('../modals/torrent-exists/torrent-exists');
+            if (this.isModalOpen(TorrentExists)) break;
             const torrentExistsModalRef = this.modalService.open(TorrentExists, {
               centered: true,
             });

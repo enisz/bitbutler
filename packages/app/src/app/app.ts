@@ -14,7 +14,7 @@ import { ElectronService } from './services/electron.service';
 import { GeneralSettingsService } from './services/general-settings.service';
 import { MenuBarCommandHandlerService } from './services/menu-bar-command-handler.service';
 import { NotificationService } from './services/notification.service';
-import { OpenFilesService } from './services/open-files.service';
+import { OpenFilesService, PendingAddTorrent } from './services/open-files.service';
 import { ServerCommandHandlerService } from './services/server-command-handler.service';
 import { ToastService } from './services/toast.service';
 import { TorrentCommandHandlerService } from './services/torrent-command-handler.service';
@@ -56,11 +56,34 @@ export class App {
   public readonly isDev = toSignal(from(this.electronService.isDev()), { initialValue: false });
   private updateCheckedOnStartup = false;
 
+  // Drafts that have already been checked against the torrent store and routed to the Add
+  // Torrent flow. Once routed, a draft is never re-checked - without this, a draft that stays
+  // queued while AddTorrent is still finishing up (e.g. post-add renaming/priority calls) would
+  // get re-evaluated every time a background maindata poll updates torrentsMap(), and could be
+  // misread as "already exists" once the poll picks up the very torrent this draft just added.
+  private readonly routedDraftKeys = new Set<string>();
+
+  private draftKey(draft: PendingAddTorrent['draft']): string {
+    const hash = draft.torrent?.infoHashV1?.toLowerCase().trim();
+    return hash ? `hash:${hash}` : `path:${(draft.originalPath ?? '').trim()}`;
+  }
+
   private readonly _openDraftsEffect = effect(() => {
     const items = this.openFilesService.pendingDrafts();
+
+    if (this.routedDraftKeys.size > 0) {
+      const currentKeys = new Set(items.map((item) => this.draftKey(item.draft)));
+      for (const key of this.routedDraftKeys) {
+        if (!currentKeys.has(key)) this.routedDraftKeys.delete(key);
+      }
+    }
+
     const first = items[0];
     if (!first) return;
     if (!this.torrentStoreService.isPrimed()) return;
+
+    const key = this.draftKey(first.draft);
+    if (this.routedDraftKeys.has(key)) return;
 
     const hash = first.draft.torrent?.infoHashV1?.toLowerCase();
     if (hash && this.torrentStoreService.torrentsMap().has(hash)) {
@@ -73,6 +96,7 @@ export class App {
       return;
     }
 
+    this.routedDraftKeys.add(key);
     this.commandBusService.emit({ type: 'UI_ADD_TORRENT' });
   });
 

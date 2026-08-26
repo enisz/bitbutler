@@ -279,15 +279,20 @@ describe('UiCommandHandlerService', () => {
     expect(setInputSpy).toHaveBeenCalledWith('originalPath', '/tmp/a.torrent');
   });
 
-  it('should open a new TorrentExists modal even if one is already open (no isModalOpen guard)', async () => {
+  it('should not open a second TorrentExists modal while one is already open', async () => {
+    const { TorrentExists } = await import('../modals/torrent-exists/torrent-exists');
+
     commands$.next({ type: 'UI_TORRENT_EXISTS', hash: 'abc123', originalPath: null });
     await flushPromises();
     mockModalService.open.mockClear();
+    mockModalService.activeInstances.next([
+      { componentInstance: Object.create(TorrentExists.prototype) },
+    ]);
 
     commands$.next({ type: 'UI_TORRENT_EXISTS', hash: 'def456', originalPath: null });
     await flushPromises();
 
-    expect(mockModalService.open).toHaveBeenCalled();
+    expect(mockModalService.open).not.toHaveBeenCalled();
   });
 
   it('should open UpdateAvailable modal with the update input for UI_UPDATE_AVAILABLE', async () => {
