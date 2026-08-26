@@ -168,6 +168,78 @@ describe('App', () => {
       expect(openFilesService.pendingDrafts().length).toBe(1);
     });
 
+    it('should not re-check a routed draft when the store catches up while it is still queued (mid-add poll race)', () => {
+      const fixture = TestBed.createComponent(App);
+      const openFilesService = TestBed.inject(OpenFilesService);
+      const torrentStoreService = TestBed.inject(TorrentStoreService);
+      const commandBusService = TestBed.inject(CommandBusService);
+      const emitSpy = vi.spyOn(commandBusService, 'emit');
+
+      torrentStoreService.applyMaindata(makeMaindata({ full_update: true }));
+
+      const draft = makePendingDraft({ originalPath: '/tmp/new.torrent', infoHashV1: 'NEW789' });
+      openFilesService.pendingDrafts.set([draft]);
+
+      fixture.detectChanges();
+
+      expect(emitSpy).toHaveBeenCalledWith({ type: 'UI_ADD_TORRENT' });
+      expect(openFilesService.pendingDrafts()).toEqual([draft]);
+
+      emitSpy.mockClear();
+
+      // Simulate a background maindata poll landing while AddTorrent is still finishing up for
+      // this same draft (e.g. post-add renaming/priority calls) and now reporting the torrent
+      // this draft itself just added as present in the store.
+      torrentStoreService.applyMaindata(
+        makeMaindata({ full_update: true, torrents: { new789: { name: 'New' } as any } }),
+      );
+
+      fixture.detectChanges();
+
+      expect(emitSpy).not.toHaveBeenCalled();
+      expect(openFilesService.pendingDrafts()).toEqual([draft]);
+    });
+
+    it('should re-check a torrent if it is queued again after its earlier draft left the queue', () => {
+      const fixture = TestBed.createComponent(App);
+      const openFilesService = TestBed.inject(OpenFilesService);
+      const torrentStoreService = TestBed.inject(TorrentStoreService);
+      const commandBusService = TestBed.inject(CommandBusService);
+      const emitSpy = vi.spyOn(commandBusService, 'emit');
+
+      torrentStoreService.applyMaindata(makeMaindata({ full_update: true }));
+
+      openFilesService.pendingDrafts.set([
+        makePendingDraft({ originalPath: '/tmp/new.torrent', infoHashV1: 'NEW789' }),
+      ]);
+      fixture.detectChanges();
+      expect(emitSpy).toHaveBeenCalledWith({ type: 'UI_ADD_TORRENT' });
+
+      // The draft leaves the queue (e.g. consumed after a successful add) and later the same
+      // torrent is queued again - this time it should be re-checked against the store.
+      openFilesService.pendingDrafts.set([]);
+      fixture.detectChanges();
+
+      torrentStoreService.applyMaindata(
+        makeMaindata({ full_update: true, torrents: { new789: { name: 'New' } as any } }),
+      );
+
+      emitSpy.mockClear();
+      const secondDraft = makePendingDraft({
+        originalPath: '/tmp/new-again.torrent',
+        infoHashV1: 'NEW789',
+      });
+      openFilesService.pendingDrafts.set([secondDraft]);
+      fixture.detectChanges();
+
+      expect(emitSpy).toHaveBeenCalledWith({
+        type: 'UI_TORRENT_EXISTS',
+        hash: 'new789',
+        originalPath: '/tmp/new-again.torrent',
+      });
+      expect(openFilesService.pendingDrafts()).toEqual([]);
+    });
+
     it('should not emit anything until the torrent store is primed', () => {
       const fixture = TestBed.createComponent(App);
       const openFilesService = TestBed.inject(OpenFilesService);
