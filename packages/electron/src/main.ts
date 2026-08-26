@@ -3,6 +3,7 @@ import { loadTranslations } from './i18n.js';
 import { registerElectronIpcHandlers } from './ipc/electron.js';
 import { registerExportIpcHandlers } from './ipc/export.js';
 import { registerI18nIpcHandlers } from './ipc/i18n.js';
+import { registerLogIpcHandlers } from './ipc/log.js';
 import { registerNotificationIpcHandlers } from './ipc/notification.js';
 import { registerQbIpcHandlers } from './ipc/qbittorrent.js';
 import { registerServerIpcHandlers } from './ipc/server.js';
@@ -13,7 +14,7 @@ import {
 } from './ipc/settings.js';
 import { registerTorrentIpcHandlers } from './ipc/torrent.js';
 import { handleSecondInstanceArgv, registerWindowIpcHandlers } from './ipc/window.js';
-import { hookRenderer, initLogger } from './logger.js';
+import { initLogger } from './logger.js';
 import { createMainWindow } from './main-window.js';
 import { installMenu } from './menu.js';
 import { notify } from './notification.js';
@@ -45,6 +46,7 @@ function registerAppIpcHandlers(): void {
   registerElectronIpcHandlers();
   registerUpdaterIpcHandlers();
   registerExportIpcHandlers();
+  registerLogIpcHandlers();
 }
 
 function createOrRestoreMainWindow(): Electron.BrowserWindow {
@@ -100,7 +102,6 @@ if (!gotLock) {
     const { openAtLogin, startMinimized } = getStartupSettings();
     app.setLoginItemSettings({ openAtLogin });
     const mainWindow = createOrRestoreMainWindow();
-    hookRenderer(mainWindow);
     if (!startMinimized) {
       mainWindow.once('ready-to-show', () => {
         mainWindow.maximize();

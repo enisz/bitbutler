@@ -126,6 +126,9 @@ window.bitbutler = {
   notification: {
     show: () => Promise.resolve({ ok: false }),
   },
+  log: {
+    write: noop,
+  },
   settings: {
     get: () => Promise.resolve(null),
     upsert: () => Promise.resolve({ ok: true as const }),

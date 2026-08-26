@@ -1,7 +1,7 @@
-import { type BrowserWindow } from 'electron';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mockRun = vi.hoisted(() => vi.fn());
+const mockResolveOriginalLocation = vi.hoisted(() => vi.fn());
 
 vi.mock('electron', () => ({
   app: { getPath: () => '/fake' },
@@ -13,12 +13,18 @@ vi.mock('./db.js', () => ({
   },
 }));
 
+vi.mock('./source-map-resolver.js', () => ({
+  resolveOriginalLocation: mockResolveOriginalLocation,
+}));
+
 describe('initLogger', () => {
   let originalConsole: Record<string, (...args: unknown[]) => void>;
 
   beforeEach(() => {
     vi.resetModules();
     mockRun.mockReset();
+    mockResolveOriginalLocation.mockReset();
+    mockResolveOriginalLocation.mockReturnValue(null);
     originalConsole = {
       log: console.log,
       debug: console.debug,
@@ -52,9 +58,56 @@ describe('initLogger', () => {
       (console as unknown as Record<string, (...args: unknown[]) => void>)[method]('hello', 42);
 
       expect(spy).toHaveBeenCalledWith('hello', 42);
-      expect(mockRun).toHaveBeenCalledWith(expect.any(Number), 'main', expectedLevel, 'hello 42');
+      expect(mockRun).toHaveBeenCalledWith(
+        expect.any(Number),
+        'main',
+        expectedLevel,
+        'hello 42',
+        null,
+        expect.stringContaining('logger.spec.ts'),
+        expect.any(Number),
+      );
     },
   );
+
+  it('uses the source-map-resolved location when one is available', async () => {
+    mockResolveOriginalLocation.mockReturnValue({
+      filename: 'packages/electron/src/logger.ts',
+      line: 42,
+    });
+    const { initLogger } = await import('./logger.js');
+    initLogger();
+
+    console.info('hello');
+
+    expect(mockRun).toHaveBeenCalledWith(
+      expect.any(Number),
+      'main',
+      'info',
+      'hello',
+      null,
+      'packages/electron/src/logger.ts',
+      42,
+    );
+  });
+
+  it('falls back to the compiled location when resolution finds no source map', async () => {
+    mockResolveOriginalLocation.mockReturnValue(null);
+    const { initLogger } = await import('./logger.js');
+    initLogger();
+
+    console.info('hello');
+
+    expect(mockRun).toHaveBeenCalledWith(
+      expect.any(Number),
+      'main',
+      'info',
+      'hello',
+      null,
+      expect.stringContaining('logger.spec.ts'),
+      expect.any(Number),
+    );
+  });
 
   it('inserts a "main" "error" row on uncaught exceptions and rethrows', async () => {
     const { initLogger } = await import('./logger.js');
@@ -68,6 +121,9 @@ describe('initLogger', () => {
       'main',
       'error',
       expect.stringContaining('Uncaught exception:'),
+      null,
+      null,
+      null,
     );
   });
 
@@ -84,6 +140,9 @@ describe('initLogger', () => {
       'main',
       'error',
       expect.stringContaining('Unhandled rejection:'),
+      null,
+      null,
+      null,
     );
   });
 
@@ -107,56 +166,5 @@ describe('initLogger', () => {
     );
 
     stderrSpy.mockRestore();
-  });
-});
-
-describe('hookRenderer', () => {
-  let consoleMessageHandler: (details: {
-    level: string;
-    message: string;
-    lineNumber: number;
-    sourceId: string;
-  }) => void;
-  let mockWindow: { webContents: { on: ReturnType<typeof vi.fn> } };
-
-  beforeEach(() => {
-    vi.resetModules();
-    mockRun.mockReset();
-    mockWindow = {
-      webContents: {
-        on: vi.fn((event: string, handler: typeof consoleMessageHandler) => {
-          if (event === 'console-message') consoleMessageHandler = handler;
-        }),
-      },
-    };
-  });
-
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it('attaches a console-message listener to webContents', async () => {
-    const { hookRenderer } = await import('./logger.js');
-    hookRenderer(mockWindow as unknown as BrowserWindow);
-    expect(mockWindow.webContents.on).toHaveBeenCalledWith('console-message', expect.any(Function));
-  });
-
-  it.each([
-    ['debug', 'debug'],
-    ['info', 'info'],
-    ['warning', 'warn'],
-    ['error', 'error'],
-  ])('inserts a "renderer" row mapping level "%s" to "%s"', async (level, expectedLevel) => {
-    const { hookRenderer } = await import('./logger.js');
-    hookRenderer(mockWindow as unknown as BrowserWindow);
-
-    consoleMessageHandler({ level, message: 'test message', lineNumber: 10, sourceId: 'app.js' });
-
-    expect(mockRun).toHaveBeenCalledWith(
-      expect.any(Number),
-      'renderer',
-      expectedLevel,
-      'test message (app.js:10)',
-    );
   });
 });

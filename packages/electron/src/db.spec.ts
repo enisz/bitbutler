@@ -51,6 +51,28 @@ describe('logs table', () => {
         .run(Date.now(), 'main', 'verbose', 'hello'),
     ).toThrow();
   });
+
+  it('accepts context, filename and line, and leaves them null when omitted', async () => {
+    const { default: db } = await import('./db.js');
+    db.prepare(
+      'INSERT INTO logs (timestamp, process, level, message, context, filename, line) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    ).run(Date.now(), 'renderer', 'error', 'boom', '["ctx"]', 'app.ts', 12);
+    db.prepare('INSERT INTO logs (timestamp, process, level, message) VALUES (?, ?, ?, ?)').run(
+      Date.now(),
+      'main',
+      'info',
+      'no extra columns',
+    );
+
+    const rows = db.prepare('SELECT context, filename, line FROM logs ORDER BY id ASC').all() as {
+      context: string | null;
+      filename: string | null;
+      line: number | null;
+    }[];
+
+    expect(rows[0]).toEqual({ context: '["ctx"]', filename: 'app.ts', line: 12 });
+    expect(rows[1]).toEqual({ context: null, filename: null, line: null });
+  });
 });
 
 describe('logs retention trigger', () => {
