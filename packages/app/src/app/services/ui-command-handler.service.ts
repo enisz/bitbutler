@@ -5,6 +5,7 @@ import { TranslateService } from '@ngx-translate/core';
 import {
   catchError,
   combineLatest,
+  concatMap,
   filter,
   firstValueFrom,
   map,
@@ -87,402 +88,418 @@ export class UiCommandHandlerService {
     });
 
     this.commandBusService.commands$
-      .pipe(filter(this.uiCommandGuard), takeUntilDestroyed(this.destroyRef))
-      .subscribe(async (command: AppCommand) => {
-        switch (command.type) {
-          case 'UI_TORRENT_DELETE_REQUEST': {
-            const deleteHashes = command.hashes ?? this.selectionStoreService.selectedHashes();
-            if (deleteHashes.length === 0) return;
-            const { DeleteTorrent } = await import('../modals/delete-torrent/delete-torrent');
-            if (this.isModalOpen(DeleteTorrent)) break;
+      .pipe(
+        filter(this.uiCommandGuard),
+        // Processes one command fully - including its `await import(...)` and isModalOpen()
+        // check - before starting the next. commands$ is a plain Subject, so without this a
+        // burst of same-type commands (e.g. two UI_ADD_TORRENT in quick succession) could
+        // interleave: both would read isModalOpen() as false before either opened its modal,
+        // opening two. handleCommand() never rejects, so an error here can't kill the
+        // subscription and silently stop all future command handling.
+        concatMap((command) => this.handleCommand(command)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe();
+  }
 
-            const deleteModalRef = this.modalService.open(DeleteTorrent);
-            setModalInput(deleteModalRef, 'defaultRemoveFiles', command.defaultRemoveFiles);
-            if (command.hashes) {
-              setModalInput(deleteModalRef, 'hashes', command.hashes);
-            }
+  private async handleCommand(command: UiCommand): Promise<void> {
+    try {
+      switch (command.type) {
+        case 'UI_TORRENT_DELETE_REQUEST': {
+          const deleteHashes = command.hashes ?? this.selectionStoreService.selectedHashes();
+          if (deleteHashes.length === 0) return;
+          const { DeleteTorrent } = await import('../modals/delete-torrent/delete-torrent');
+          if (this.isModalOpen(DeleteTorrent)) break;
 
-            deleteModalRef.result
-              .then(({ removeFiles }) =>
-                this.commandBusService.emit({
-                  type: 'TORRENT_DELETE_CONFIRM',
-                  removeFiles,
-                  hashes: command.hashes,
-                }),
-              )
-              .catch(() => {});
-            break;
+          const deleteModalRef = this.modalService.open(DeleteTorrent);
+          setModalInput(deleteModalRef, 'defaultRemoveFiles', command.defaultRemoveFiles);
+          if (command.hashes) {
+            setModalInput(deleteModalRef, 'hashes', command.hashes);
           }
 
-          case 'UI_OPEN_SETTINGS': {
-            const { Settings } = await import('../modals/settings/settings');
-            if (this.isModalOpen(Settings)) break;
-            const settingsModalRef = this.modalService.open(Settings, {
-              size: 'xl',
-              centered: false,
-              scrollable: true,
-              beforeDismiss: () => settingsModalRef.componentInstance.canDeactivate(),
-            });
-
-            if (command.tabToOpen) {
-              setModalInput(settingsModalRef, 'tabToOpen', command.tabToOpen);
-            }
-
-            settingsModalRef.result.catch(() => {});
-            break;
-          }
-
-          case 'UI_OPEN_QB_SETTINGS': {
-            const { QbSettings } = await import('../modals/qb-settings/qb-settings');
-            if (this.isModalOpen(QbSettings)) break;
-            const qbSettingsModalRef = this.modalService.open(QbSettings, {
-              size: 'xl',
-              centered: false,
-              scrollable: true,
-              beforeDismiss: () => qbSettingsModalRef.componentInstance.canDeactivate(),
-            });
-            qbSettingsModalRef.result.catch(() => {});
-            break;
-          }
-
-          case 'UI_OPEN_TORRENT_DETAILS': {
-            if (!command.hash) return;
-            const { TorrentDetails } = await import('../modals/torrent-details/torrent-details');
-            if (this.isModalOpen(TorrentDetails)) break;
-
-            const torrentDetailsModalRef = this.modalService.open(TorrentDetails, {
-              size: 'xl',
-              scrollable: true,
-              centered: false,
-              beforeDismiss: () =>
-                (torrentDetailsModalRef.componentInstance as GuardableModal).canDeactivate(),
-            });
-            setModalInput(torrentDetailsModalRef, 'hash', command.hash);
-            torrentDetailsModalRef.result.catch(() => {});
-            break;
-          }
-
-          case 'UI_ADD_TORRENT': {
-            const { AddTorrent } = await import('../modals/add-torrent/add-torrent');
-            if (this.isModalOpen(AddTorrent)) break;
-            const addTorrentModalRef = this.modalService.open(AddTorrent, {
-              size: 'lg',
-              scrollable: true,
-              centered: false,
-              keyboard: false,
-            });
-
-            addTorrentModalRef.result.catch(() => {});
-            break;
-          }
-
-          case 'UI_OPEN_ABOUT': {
-            const { About } = await import('../components/about/about');
-            if (this.isModalOpen(About)) break;
-            const aboutModalRef = this.modalService.open(About);
-            aboutModalRef.result.catch(() => {});
-            break;
-          }
-
-          case 'UI_RENAME_TORRENT': {
-            if (!command.torrent) return;
-            const { RenameTorrent } = await import('../modals/rename-torrent/rename-torrent');
-            if (this.isModalOpen(RenameTorrent)) break;
-
-            const renameModalRef = this.modalService.open(RenameTorrent, {
-              size: 'lg',
-              centered: true,
-            });
-
-            setModalInput(renameModalRef, 'torrent', command.torrent);
-            renameModalRef.result.catch(() => {});
-            break;
-          }
-
-          case 'UI_SET_SAVE_PATH': {
-            if (!command.torrent) return;
-            const { SetPath } = await import('../modals/set-path/set-path');
-            if (this.isModalOpen(SetPath)) break;
-
-            const setPathModalRef = this.modalService.open(SetPath, {
-              size: 'lg',
-              centered: true,
-            });
-
-            setModalInput(setPathModalRef, 'torrent', command.torrent);
-            setModalInput(
-              setPathModalRef,
-              'hashes',
-              command.hashes ?? this.selectionStoreService.selectedHashes(),
-            );
-            setModalInput(setPathModalRef, 'pathType', 'save');
-            setPathModalRef.result.catch(() => {});
-            break;
-          }
-
-          case 'UI_SET_DOWNLOAD_PATH': {
-            const { SetPath } = await import('../modals/set-path/set-path');
-            if (this.isModalOpen(SetPath)) break;
-
-            const setPathModalRef = this.modalService.open(SetPath, {
-              size: 'lg',
-              centered: true,
-            });
-
-            setModalInput(setPathModalRef, 'torrent', command.torrent);
-            setModalInput(setPathModalRef, 'hashes', command.hashes ?? [command.torrent.hash]);
-            setModalInput(setPathModalRef, 'pathType', 'download');
-            setPathModalRef.result.catch(() => {});
-            break;
-          }
-
-          case 'UI_LIMIT_TRANSFER': {
-            const { TransferLimit } = await import('../modals/transfer-limit/transfer-limit');
-            if (this.isModalOpen(TransferLimit)) break;
-            const transferHashes =
-              command.hashes ??
-              (command.target === 'torrent' ? this.selectionStoreService.selectedHashes() : []);
-            const limitTransferModalRef = this.modalService.open(TransferLimit, {
-              centered: true,
-              size: 'lg',
-              beforeDismiss: () =>
-                (limitTransferModalRef.componentInstance as GuardableModal).canDeactivate(),
-            });
-            setModalInput(limitTransferModalRef, 'target', command.target);
-            setModalInput(limitTransferModalRef, 'hashes', transferHashes);
-            limitTransferModalRef.result.catch(() => {});
-            break;
-          }
-
-          case 'UI_LIMIT_SHARE': {
-            const { ShareLimit } = await import('../modals/share-limit/share-limit');
-            if (this.isModalOpen(ShareLimit)) break;
-            const shareLimitTarget = command.target ?? 'torrent';
-            const shareLimitHashes =
-              command.hashes ??
-              (shareLimitTarget === 'torrent' ? this.selectionStoreService.selectedHashes() : []);
-            const limitTorrentShare = this.modalService.open(ShareLimit, {
-              size: 'lg',
-              beforeDismiss: () =>
-                (limitTorrentShare.componentInstance as GuardableModal).canDeactivate(),
-            });
-            setModalInput(limitTorrentShare, 'target', shareLimitTarget);
-            setModalInput(limitTorrentShare, 'hashes', shareLimitHashes);
-            limitTorrentShare.result.catch(() => {});
-            break;
-          }
-
-          case 'UI_SET_TORRENT_TAGS': {
-            const { SetTorrentTags } = await import('../modals/set-torrent-tags/set-torrent-tags');
-            if (this.isModalOpen(SetTorrentTags)) break;
-            const setTagsModalRef = this.modalService.open(SetTorrentTags, { size: 'lg' });
-            setModalInput(setTagsModalRef, 'torrent', command.torrent);
-            setModalInput(
-              setTagsModalRef,
-              'hashes',
-              command.hashes ?? this.selectionStoreService.selectedHashes(),
-            );
-            setTagsModalRef.result.catch(() => {});
-            break;
-          }
-
-          case 'UI_SET_TORRENT_CATEGORY': {
-            const { SetTorrentCategory } =
-              await import('../modals/set-torrent-category/set-torrent-category');
-            if (this.isModalOpen(SetTorrentCategory)) break;
-            const setCategoryModalRef = this.modalService.open(SetTorrentCategory, { size: 'lg' });
-            setModalInput(setCategoryModalRef, 'torrent', command.torrent);
-            setModalInput(
-              setCategoryModalRef,
-              'hashes',
-              command.hashes ?? this.selectionStoreService.selectedHashes(),
-            );
-            setCategoryModalRef.result.catch(() => {});
-            break;
-          }
-
-          case 'UI_OPEN_DESTINATION':
-            if (!command.remotePath) {
-              this.toastService.danger(
-                this.translateService.instant(
-                  'services.ui-command-handler.error.remote-path-missing',
-                ),
-              );
-              break;
-            }
-
-            Promise.all([
-              this.qbService.torrents.files(
-                this.serverStoreService.currentServerId() as string,
-                command.hash,
-              ),
-              this.pathService.resolveLocalPath(command.remotePath),
-            ])
-              .then(([contents, path]: [QbTorrentContent[], string | null]) => {
-                const singleFile = contents.length === 1;
-
-                if (!path) {
-                  this.toastService.danger(
-                    this.translateService.instant(
-                      'services.ui-command-handler.error.local-path-unresolved',
-                    ),
-                  );
-                  return;
-                }
-
-                if (singleFile) {
-                  this.electronService.showItemInFolder(path);
-                  this.toastService.info(
-                    `"${path}"`,
-                    this.translateService.instant(
-                      'services.ui-command-handler.info.showing-file-title',
-                    ),
-                  );
-                } else {
-                  this.electronService.openPath(path);
-                  this.toastService.info(
-                    `"${path}"`,
-                    this.translateService.instant(
-                      'services.ui-command-handler.info.opening-folder-title',
-                    ),
-                  );
-                }
-              })
-              .catch((error: unknown) => {
-                console.error(UiCommandHandlerService.name, 'UI_OPEN_DESTINATION', error);
-                this.toastService.danger(error instanceof Error ? error.message : String(error));
-              });
-            break;
-
-          case 'UI_SERVER_EDITOR_OPEN': {
-            const { ServerEditor } = await import('../modals/server-editor/server-editor');
-            if (this.isModalOpen(ServerEditor)) break;
-            const serverEditorModalRef = this.modalService.open(ServerEditor, { size: 'lg' });
-            setModalInput(serverEditorModalRef, 'id', command.id);
-            serverEditorModalRef.result
-              .then((newId: string) =>
-                this.commandBusService.emit({ type: 'SERVER_ADDED', id: newId }),
-              )
-              .catch(() => {});
-            break;
-          }
-
-          case 'UI_UPDATE_AVAILABLE': {
-            const { UpdateAvailable } = await import('../modals/update-available/update-available');
-            if (this.isModalOpen(UpdateAvailable)) break;
-            const updateAvailableModalRef = this.modalService.open(UpdateAvailable, {
-              size: 'lg',
-              centered: true,
-              scrollable: true,
-              beforeDismiss: () => !updateAvailableModalRef.componentInstance.footerLocked(),
-            });
-            setModalInput(updateAvailableModalRef, 'update', command.update);
-            updateAvailableModalRef.result.catch(() => {});
-            break;
-          }
-
-          case 'UI_RENAME_FILES': {
-            if (!command.hash) return;
-            const { TorrentDetails } = await import('../modals/torrent-details/torrent-details');
-            if (this.isModalOpen(TorrentDetails)) break;
-
-            const contentModalRef = this.modalService.open(TorrentDetails, {
-              size: 'xl',
-              scrollable: true,
-              centered: false,
-              beforeDismiss: () =>
-                (contentModalRef.componentInstance as GuardableModal).canDeactivate(),
-            });
-            setModalInput(contentModalRef, 'hash', command.hash);
-            setModalInput(contentModalRef, 'tabToOpen', 'content');
-            setModalInput(contentModalRef, 'context', { editMode: true });
-            contentModalRef.result.catch(() => {});
-            break;
-          }
-
-          case 'UI_MANAGE_TAGS': {
-            const { ManageTags } = await import('../modals/manage-tags/manage-tags');
-            if (this.isModalOpen(ManageTags)) break;
-            const manageTagsModalRef = this.modalService.open(ManageTags, {
-              scrollable: true,
-              beforeDismiss: () => manageTagsModalRef.componentInstance.canDeactivate(),
-            });
-            manageTagsModalRef.result.catch(() => {});
-            break;
-          }
-
-          case 'UI_MANAGE_CATEGORIES': {
-            const { ManageCategories } =
-              await import('../modals/manage-categories/manage-categories');
-            if (this.isModalOpen(ManageCategories)) break;
-            const manageCategoriesModalRef = this.modalService.open(ManageCategories, {
-              scrollable: true,
-              beforeDismiss: () => manageCategoriesModalRef.componentInstance.canDeactivate(),
-            });
-            manageCategoriesModalRef.result.catch(() => {});
-            break;
-          }
-
-          case 'UI_MANAGE_SERVERS': {
-            const { ManageServers } = await import('../modals/manage-servers/manage-servers');
-            if (this.isModalOpen(ManageServers)) break;
-            const manageServersModalRef = this.modalService.open(ManageServers, {
-              scrollable: true,
-            });
-            manageServersModalRef.result.catch(() => {});
-            break;
-          }
-
-          case 'UI_SERVER_SWITCH':
-            this.handleServerSwitch(command.id);
-            break;
-
-          case 'UI_EXPORT_TORRENTS': {
-            const { ExportTorrents } = await import('../modals/export-torrents/export-torrents');
-            if (this.isModalOpen(ExportTorrents)) break;
-            const exportRef = this.modalService.open(ExportTorrents, {
-              size: 'lg',
-              scrollable: true,
-              centered: false,
-            });
-            exportRef.result.catch(() => {});
-            break;
-          }
-
-          case 'UI_IMPORT_TORRENTS': {
-            const { ImportTorrents } = await import('../modals/import-torrents/import-torrents');
-            if (this.isModalOpen(ImportTorrents)) break;
-            const importRef = this.modalService.open(ImportTorrents, {
-              size: 'xl',
-              scrollable: true,
-              centered: false,
-            });
-            if (command.bbePath) {
-              setModalInput(importRef, 'initialBbePath', command.bbePath);
-            }
-            importRef.result.catch(() => {});
-            break;
-          }
-
-          case 'UI_SCROLL_TO_TORRENT':
-            break;
-
-          case 'UI_TORRENT_EXISTS': {
-            const { TorrentExists } = await import('../modals/torrent-exists/torrent-exists');
-            if (this.isModalOpen(TorrentExists)) break;
-            const torrentExistsModalRef = this.modalService.open(TorrentExists, {
-              centered: true,
-            });
-            setModalInput(torrentExistsModalRef, 'hash', command.hash);
-            setModalInput(torrentExistsModalRef, 'originalPath', command.originalPath);
-            torrentExistsModalRef.result.catch(() => {});
-            break;
-          }
-
-          default:
-            console.warn(UiCommandHandlerService.name, 'start', 'Unhandled UI command', command);
+          deleteModalRef.result
+            .then(({ removeFiles }) =>
+              this.commandBusService.emit({
+                type: 'TORRENT_DELETE_CONFIRM',
+                removeFiles,
+                hashes: command.hashes,
+              }),
+            )
+            .catch(() => {});
+          break;
         }
-      });
+
+        case 'UI_OPEN_SETTINGS': {
+          const { Settings } = await import('../modals/settings/settings');
+          if (this.isModalOpen(Settings)) break;
+          const settingsModalRef = this.modalService.open(Settings, {
+            size: 'xl',
+            centered: false,
+            scrollable: true,
+            beforeDismiss: () => settingsModalRef.componentInstance.canDeactivate(),
+          });
+
+          if (command.tabToOpen) {
+            setModalInput(settingsModalRef, 'tabToOpen', command.tabToOpen);
+          }
+
+          settingsModalRef.result.catch(() => {});
+          break;
+        }
+
+        case 'UI_OPEN_QB_SETTINGS': {
+          const { QbSettings } = await import('../modals/qb-settings/qb-settings');
+          if (this.isModalOpen(QbSettings)) break;
+          const qbSettingsModalRef = this.modalService.open(QbSettings, {
+            size: 'xl',
+            centered: false,
+            scrollable: true,
+            beforeDismiss: () => qbSettingsModalRef.componentInstance.canDeactivate(),
+          });
+          qbSettingsModalRef.result.catch(() => {});
+          break;
+        }
+
+        case 'UI_OPEN_TORRENT_DETAILS': {
+          if (!command.hash) return;
+          const { TorrentDetails } = await import('../modals/torrent-details/torrent-details');
+          if (this.isModalOpen(TorrentDetails)) break;
+
+          const torrentDetailsModalRef = this.modalService.open(TorrentDetails, {
+            size: 'xl',
+            scrollable: true,
+            centered: false,
+            beforeDismiss: () =>
+              (torrentDetailsModalRef.componentInstance as GuardableModal).canDeactivate(),
+          });
+          setModalInput(torrentDetailsModalRef, 'hash', command.hash);
+          torrentDetailsModalRef.result.catch(() => {});
+          break;
+        }
+
+        case 'UI_ADD_TORRENT': {
+          const { AddTorrent } = await import('../modals/add-torrent/add-torrent');
+          if (this.isModalOpen(AddTorrent)) break;
+          const addTorrentModalRef = this.modalService.open(AddTorrent, {
+            size: 'lg',
+            scrollable: true,
+            centered: false,
+            keyboard: false,
+          });
+
+          addTorrentModalRef.result.catch(() => {});
+          break;
+        }
+
+        case 'UI_OPEN_ABOUT': {
+          const { About } = await import('../components/about/about');
+          if (this.isModalOpen(About)) break;
+          const aboutModalRef = this.modalService.open(About);
+          aboutModalRef.result.catch(() => {});
+          break;
+        }
+
+        case 'UI_RENAME_TORRENT': {
+          if (!command.torrent) return;
+          const { RenameTorrent } = await import('../modals/rename-torrent/rename-torrent');
+          if (this.isModalOpen(RenameTorrent)) break;
+
+          const renameModalRef = this.modalService.open(RenameTorrent, {
+            size: 'lg',
+            centered: true,
+          });
+
+          setModalInput(renameModalRef, 'torrent', command.torrent);
+          renameModalRef.result.catch(() => {});
+          break;
+        }
+
+        case 'UI_SET_SAVE_PATH': {
+          if (!command.torrent) return;
+          const { SetPath } = await import('../modals/set-path/set-path');
+          if (this.isModalOpen(SetPath)) break;
+
+          const setPathModalRef = this.modalService.open(SetPath, {
+            size: 'lg',
+            centered: true,
+          });
+
+          setModalInput(setPathModalRef, 'torrent', command.torrent);
+          setModalInput(
+            setPathModalRef,
+            'hashes',
+            command.hashes ?? this.selectionStoreService.selectedHashes(),
+          );
+          setModalInput(setPathModalRef, 'pathType', 'save');
+          setPathModalRef.result.catch(() => {});
+          break;
+        }
+
+        case 'UI_SET_DOWNLOAD_PATH': {
+          const { SetPath } = await import('../modals/set-path/set-path');
+          if (this.isModalOpen(SetPath)) break;
+
+          const setPathModalRef = this.modalService.open(SetPath, {
+            size: 'lg',
+            centered: true,
+          });
+
+          setModalInput(setPathModalRef, 'torrent', command.torrent);
+          setModalInput(setPathModalRef, 'hashes', command.hashes ?? [command.torrent.hash]);
+          setModalInput(setPathModalRef, 'pathType', 'download');
+          setPathModalRef.result.catch(() => {});
+          break;
+        }
+
+        case 'UI_LIMIT_TRANSFER': {
+          const { TransferLimit } = await import('../modals/transfer-limit/transfer-limit');
+          if (this.isModalOpen(TransferLimit)) break;
+          const transferHashes =
+            command.hashes ??
+            (command.target === 'torrent' ? this.selectionStoreService.selectedHashes() : []);
+          const limitTransferModalRef = this.modalService.open(TransferLimit, {
+            centered: true,
+            size: 'lg',
+            beforeDismiss: () =>
+              (limitTransferModalRef.componentInstance as GuardableModal).canDeactivate(),
+          });
+          setModalInput(limitTransferModalRef, 'target', command.target);
+          setModalInput(limitTransferModalRef, 'hashes', transferHashes);
+          limitTransferModalRef.result.catch(() => {});
+          break;
+        }
+
+        case 'UI_LIMIT_SHARE': {
+          const { ShareLimit } = await import('../modals/share-limit/share-limit');
+          if (this.isModalOpen(ShareLimit)) break;
+          const shareLimitTarget = command.target ?? 'torrent';
+          const shareLimitHashes =
+            command.hashes ??
+            (shareLimitTarget === 'torrent' ? this.selectionStoreService.selectedHashes() : []);
+          const limitTorrentShare = this.modalService.open(ShareLimit, {
+            size: 'lg',
+            beforeDismiss: () =>
+              (limitTorrentShare.componentInstance as GuardableModal).canDeactivate(),
+          });
+          setModalInput(limitTorrentShare, 'target', shareLimitTarget);
+          setModalInput(limitTorrentShare, 'hashes', shareLimitHashes);
+          limitTorrentShare.result.catch(() => {});
+          break;
+        }
+
+        case 'UI_SET_TORRENT_TAGS': {
+          const { SetTorrentTags } = await import('../modals/set-torrent-tags/set-torrent-tags');
+          if (this.isModalOpen(SetTorrentTags)) break;
+          const setTagsModalRef = this.modalService.open(SetTorrentTags, { size: 'lg' });
+          setModalInput(setTagsModalRef, 'torrent', command.torrent);
+          setModalInput(
+            setTagsModalRef,
+            'hashes',
+            command.hashes ?? this.selectionStoreService.selectedHashes(),
+          );
+          setTagsModalRef.result.catch(() => {});
+          break;
+        }
+
+        case 'UI_SET_TORRENT_CATEGORY': {
+          const { SetTorrentCategory } =
+            await import('../modals/set-torrent-category/set-torrent-category');
+          if (this.isModalOpen(SetTorrentCategory)) break;
+          const setCategoryModalRef = this.modalService.open(SetTorrentCategory, { size: 'lg' });
+          setModalInput(setCategoryModalRef, 'torrent', command.torrent);
+          setModalInput(
+            setCategoryModalRef,
+            'hashes',
+            command.hashes ?? this.selectionStoreService.selectedHashes(),
+          );
+          setCategoryModalRef.result.catch(() => {});
+          break;
+        }
+
+        case 'UI_OPEN_DESTINATION':
+          if (!command.remotePath) {
+            this.toastService.danger(
+              this.translateService.instant(
+                'services.ui-command-handler.error.remote-path-missing',
+              ),
+            );
+            break;
+          }
+
+          Promise.all([
+            this.qbService.torrents.files(
+              this.serverStoreService.currentServerId() as string,
+              command.hash,
+            ),
+            this.pathService.resolveLocalPath(command.remotePath),
+          ])
+            .then(([contents, path]: [QbTorrentContent[], string | null]) => {
+              const singleFile = contents.length === 1;
+
+              if (!path) {
+                this.toastService.danger(
+                  this.translateService.instant(
+                    'services.ui-command-handler.error.local-path-unresolved',
+                  ),
+                );
+                return;
+              }
+
+              if (singleFile) {
+                this.electronService.showItemInFolder(path);
+                this.toastService.info(
+                  `"${path}"`,
+                  this.translateService.instant(
+                    'services.ui-command-handler.info.showing-file-title',
+                  ),
+                );
+              } else {
+                this.electronService.openPath(path);
+                this.toastService.info(
+                  `"${path}"`,
+                  this.translateService.instant(
+                    'services.ui-command-handler.info.opening-folder-title',
+                  ),
+                );
+              }
+            })
+            .catch((error: unknown) => {
+              console.error(UiCommandHandlerService.name, 'UI_OPEN_DESTINATION', error);
+              this.toastService.danger(error instanceof Error ? error.message : String(error));
+            });
+          break;
+
+        case 'UI_SERVER_EDITOR_OPEN': {
+          const { ServerEditor } = await import('../modals/server-editor/server-editor');
+          if (this.isModalOpen(ServerEditor)) break;
+          const serverEditorModalRef = this.modalService.open(ServerEditor, { size: 'lg' });
+          setModalInput(serverEditorModalRef, 'id', command.id);
+          serverEditorModalRef.result
+            .then((newId: string) =>
+              this.commandBusService.emit({ type: 'SERVER_ADDED', id: newId }),
+            )
+            .catch(() => {});
+          break;
+        }
+
+        case 'UI_UPDATE_AVAILABLE': {
+          const { UpdateAvailable } = await import('../modals/update-available/update-available');
+          if (this.isModalOpen(UpdateAvailable)) break;
+          const updateAvailableModalRef = this.modalService.open(UpdateAvailable, {
+            size: 'lg',
+            centered: true,
+            scrollable: true,
+            beforeDismiss: () => !updateAvailableModalRef.componentInstance.footerLocked(),
+          });
+          setModalInput(updateAvailableModalRef, 'update', command.update);
+          updateAvailableModalRef.result.catch(() => {});
+          break;
+        }
+
+        case 'UI_RENAME_FILES': {
+          if (!command.hash) return;
+          const { TorrentDetails } = await import('../modals/torrent-details/torrent-details');
+          if (this.isModalOpen(TorrentDetails)) break;
+
+          const contentModalRef = this.modalService.open(TorrentDetails, {
+            size: 'xl',
+            scrollable: true,
+            centered: false,
+            beforeDismiss: () =>
+              (contentModalRef.componentInstance as GuardableModal).canDeactivate(),
+          });
+          setModalInput(contentModalRef, 'hash', command.hash);
+          setModalInput(contentModalRef, 'tabToOpen', 'content');
+          setModalInput(contentModalRef, 'context', { editMode: true });
+          contentModalRef.result.catch(() => {});
+          break;
+        }
+
+        case 'UI_MANAGE_TAGS': {
+          const { ManageTags } = await import('../modals/manage-tags/manage-tags');
+          if (this.isModalOpen(ManageTags)) break;
+          const manageTagsModalRef = this.modalService.open(ManageTags, {
+            scrollable: true,
+            beforeDismiss: () => manageTagsModalRef.componentInstance.canDeactivate(),
+          });
+          manageTagsModalRef.result.catch(() => {});
+          break;
+        }
+
+        case 'UI_MANAGE_CATEGORIES': {
+          const { ManageCategories } =
+            await import('../modals/manage-categories/manage-categories');
+          if (this.isModalOpen(ManageCategories)) break;
+          const manageCategoriesModalRef = this.modalService.open(ManageCategories, {
+            scrollable: true,
+            beforeDismiss: () => manageCategoriesModalRef.componentInstance.canDeactivate(),
+          });
+          manageCategoriesModalRef.result.catch(() => {});
+          break;
+        }
+
+        case 'UI_MANAGE_SERVERS': {
+          const { ManageServers } = await import('../modals/manage-servers/manage-servers');
+          if (this.isModalOpen(ManageServers)) break;
+          const manageServersModalRef = this.modalService.open(ManageServers, {
+            scrollable: true,
+          });
+          manageServersModalRef.result.catch(() => {});
+          break;
+        }
+
+        case 'UI_SERVER_SWITCH':
+          this.handleServerSwitch(command.id);
+          break;
+
+        case 'UI_EXPORT_TORRENTS': {
+          const { ExportTorrents } = await import('../modals/export-torrents/export-torrents');
+          if (this.isModalOpen(ExportTorrents)) break;
+          const exportRef = this.modalService.open(ExportTorrents, {
+            size: 'lg',
+            scrollable: true,
+            centered: false,
+          });
+          exportRef.result.catch(() => {});
+          break;
+        }
+
+        case 'UI_IMPORT_TORRENTS': {
+          const { ImportTorrents } = await import('../modals/import-torrents/import-torrents');
+          if (this.isModalOpen(ImportTorrents)) break;
+          const importRef = this.modalService.open(ImportTorrents, {
+            size: 'xl',
+            scrollable: true,
+            centered: false,
+          });
+          if (command.bbePath) {
+            setModalInput(importRef, 'initialBbePath', command.bbePath);
+          }
+          importRef.result.catch(() => {});
+          break;
+        }
+
+        case 'UI_SCROLL_TO_TORRENT':
+          break;
+
+        case 'UI_TORRENT_EXISTS': {
+          const { TorrentExists } = await import('../modals/torrent-exists/torrent-exists');
+          if (this.isModalOpen(TorrentExists)) break;
+          const torrentExistsModalRef = this.modalService.open(TorrentExists, {
+            centered: true,
+          });
+          setModalInput(torrentExistsModalRef, 'hash', command.hash);
+          setModalInput(torrentExistsModalRef, 'originalPath', command.originalPath);
+          torrentExistsModalRef.result.catch(() => {});
+          break;
+        }
+
+        default:
+          console.warn(UiCommandHandlerService.name, 'start', 'Unhandled UI command', command);
+      }
+    } catch (err) {
+      console.error(UiCommandHandlerService.name, 'handleCommand', command.type, err);
+    }
   }
 
   private async handleServerSwitch(serverId: string): Promise<void> {

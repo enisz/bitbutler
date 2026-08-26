@@ -234,6 +234,56 @@ describe('UiCommandHandlerService', () => {
     expect(mockModalService.open).toHaveBeenCalled();
   });
 
+  describe('command serialization', () => {
+    it('should not start handling a later command until an earlier command has fully settled', async () => {
+      // Spies directly on the private per-command handler concatMap projects through, so this
+      // exercises the actual RxJS composition rather than racing real dynamic-import timing
+      // (which the Angular/Vitest integration doesn't allow mocking for relative specifiers).
+      const original = (service as unknown as { handleCommand: (cmd: unknown) => Promise<void> })[
+        'handleCommand'
+      ].bind(service);
+      let releaseFirst!: () => void;
+      const gate = new Promise<void>((resolve) => (releaseFirst = resolve));
+
+      const handleCommandSpy = vi
+        .spyOn(
+          service as unknown as { handleCommand: (cmd: unknown) => Promise<void> },
+          'handleCommand',
+        )
+        .mockImplementationOnce(async (command: unknown) => {
+          await gate;
+          return original(command);
+        });
+
+      commands$.next({ type: 'UI_ADD_TORRENT' }); // gated - blocks on `gate`
+      commands$.next({ type: 'UI_OPEN_ABOUT' }); // must queue behind it, not run concurrently
+
+      await flushPromises();
+      // The second command's handler must not have been invoked yet while the first is still
+      // pending - that's the exact interleaving that let a duplicate/interleaved modal open.
+      expect(handleCommandSpy).toHaveBeenCalledTimes(1);
+      expect(mockModalService.open).not.toHaveBeenCalled();
+
+      releaseFirst();
+      await flushPromises();
+
+      expect(handleCommandSpy).toHaveBeenCalledTimes(2);
+      expect(mockModalService.open).toHaveBeenCalledTimes(2);
+    });
+
+    it('should still process a later command after an earlier one throws', async () => {
+      mockModalService.open.mockImplementationOnce(() => {
+        throw new Error('boom');
+      });
+
+      commands$.next({ type: 'UI_OPEN_ABOUT' });
+      commands$.next({ type: 'UI_OPEN_QB_SETTINGS' });
+      await flushPromises();
+
+      expect(mockModalService.open).toHaveBeenCalledTimes(2);
+    });
+  });
+
   it('should open ImportTorrents modal at xl size for UI_IMPORT_TORRENTS', async () => {
     commands$.next({ type: 'UI_IMPORT_TORRENTS' });
     await flushPromises();
