@@ -777,7 +777,7 @@
           "update-now": "Frissítés most"
         },
         "status": {
-          "checking": "Frissítés keresése...",
+          "checking": "Letöltés előkészítése...",
           "downloading": "{{ asset_name }} letöltése",
           "restarting": "Újraindítás a telepítéshez...",
           "no-update-available": "Jelenleg nincs elérhető frissítés."

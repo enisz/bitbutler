@@ -108,7 +108,7 @@
           </span>
         } @else {
           <div class="bb-ua-update-progress__info">
-            <span class="bb-ua-update-progress__label">
+            <span class="bb-ua-update-progress__label text-truncate">
               {{
                 'components.modals.update-available.status.downloading'
                   | translate: { asset_name: downloadingAssetName() }
@@ -132,7 +132,7 @@
 
       <button type="button" class="btn btn-sm btn-split" (click)="cancelDownload()">
         <bb-btn-content
-          [icon]="icons.faBan"
+          [icon]="icons.faXmark"
           [text]="'general.button.cancel' | translate"
           position="end"
         ></bb-btn-content>
@@ -142,6 +142,20 @@
         {{ 'components.modals.update-available.status.restarting' | translate }}
       </span>
     } @else {
+      @if (showUpdateNow()) {
+        <button
+          type="button"
+          class="btn btn-sm btn-split btn-primary bb-ua-update-now"
+          (click)="updateNow()"
+        >
+          <bb-btn-content
+            [icon]="icons.faCloudArrowDown"
+            [text]="'components.modals.update-available.button.update-now' | translate"
+            position="end"
+          ></bb-btn-content>
+        </button>
+      }
+
       <div class="bb-ua-footer-actions">
         <button type="button" class="btn btn-sm btn-split" (click)="skipVersions()">
           <bb-btn-content
@@ -170,16 +184,6 @@
           ></bb-btn-content>
         </button>
       </div>
-
-      @if (showUpdateNow()) {
-        <button type="button" class="btn btn-sm btn-split btn-primary" (click)="updateNow()">
-          <bb-btn-content
-            [icon]="icons.faCloudArrowDown"
-            [text]="'components.modals.update-available.button.update-now' | translate"
-            position="end"
-          ></bb-btn-content>
-        </button>
-      }
     }
   </div>
 </div>

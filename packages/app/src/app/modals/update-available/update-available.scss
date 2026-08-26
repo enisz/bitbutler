@@ -255,9 +255,18 @@
 .bb-ua-footer-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   width: 100%;
   gap: 0.75rem;
+  // Matches the two-row progress content's natural height (label line + gap +
+  // bar/percent line) so switching between the button row and the progress
+  // row never changes the modal-footer's height - that height change was
+  // causing a visible flicker.
+  min-height: 2.5rem;
+}
+
+.bb-ua-update-now {
+  margin-inline-end: auto;
 }
 
 .bb-ua-footer-actions {

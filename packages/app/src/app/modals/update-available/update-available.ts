@@ -12,7 +12,6 @@ import { HostPlatform, Release, ReleaseAsset, UpdateCheckResponse } from '@bitbu
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faArrowUpRightFromSquare,
-  faBan,
   faCloudArrowDown,
   faDownload,
   faForward,
@@ -63,7 +62,6 @@ export class UpdateAvailable {
     faCloudArrowDown,
     faTriangleExclamation,
     faArrowUpRightFromSquare,
-    faBan,
   };
   public readonly update = input.required<UpdateCheckResponse>();
   public readonly activeModal = inject(NgbActiveModal);

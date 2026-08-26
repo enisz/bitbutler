@@ -777,7 +777,7 @@
           "update-now": "Update Now"
         },
         "status": {
-          "checking": "Checking for the update...",
+          "checking": "Preparing download...",
           "downloading": "Downloading {{ asset_name }}",
           "restarting": "Restarting to install...",
           "no-update-available": "No update is currently available."
