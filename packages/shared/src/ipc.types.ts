@@ -198,6 +198,7 @@ export interface BitButlerAPI {
   updater: {
     getCapability(): Promise<UpdateCapability>;
     updateNow(): Promise<void>;
+    cancelDownload(): Promise<void>;
     onEvent(callback: (event: UpdaterEvent) => void): () => void;
   };
 

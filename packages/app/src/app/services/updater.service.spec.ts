@@ -9,10 +9,12 @@ describe('UpdaterService', () => {
   // Vitest 4's bare `vi.fn()` resolves to `Mock<Procedure | Constructable>`, which is not callable
   // and not assignable to a concrete signature - spell the signature out instead.
   let updateNowSpy: Mock<() => Promise<void>>;
+  let cancelDownloadSpy: Mock<() => Promise<void>>;
   let getCapabilitySpy: Mock<() => Promise<UpdateCapability>>;
 
   beforeEach(() => {
     updateNowSpy = vi.fn<() => Promise<void>>().mockResolvedValue(undefined);
+    cancelDownloadSpy = vi.fn<() => Promise<void>>().mockResolvedValue(undefined);
     getCapabilitySpy = vi
       .fn<() => Promise<UpdateCapability>>()
       .mockResolvedValue({ supported: false });
@@ -23,6 +25,7 @@ describe('UpdaterService', () => {
     });
     vi.spyOn(window.bitbutler.updater, 'getCapability').mockImplementation(getCapabilitySpy);
     vi.spyOn(window.bitbutler.updater, 'updateNow').mockImplementation(updateNowSpy);
+    vi.spyOn(window.bitbutler.updater, 'cancelDownload').mockImplementation(cancelDownloadSpy);
 
     TestBed.configureTestingModule({ providers: [UpdaterService] });
     service = TestBed.inject(UpdaterService);
@@ -31,6 +34,8 @@ describe('UpdaterService', () => {
   it('starts idle with no capability, zero progress, and no error', () => {
     expect(service.status()).toBe('idle');
     expect(service.progress()).toBe(0);
+    expect(service.transferred()).toBe(0);
+    expect(service.total()).toBe(0);
     expect(service.errorMessage()).toBeNull();
   });
 
@@ -54,10 +59,12 @@ describe('UpdaterService', () => {
     expect(service.status()).toBe('checking');
   });
 
-  it('sets status to downloading and tracks percent on a downloading event', () => {
+  it('sets status to downloading and tracks percent/transferred/total on a downloading event', () => {
     emit({ status: 'downloading', percent: 37, transferred: 370, total: 1000 });
     expect(service.status()).toBe('downloading');
     expect(service.progress()).toBe(37);
+    expect(service.transferred()).toBe(370);
+    expect(service.total()).toBe(1000);
   });
 
   it('sets status to downloaded on a downloaded event', () => {
@@ -72,19 +79,38 @@ describe('UpdaterService', () => {
   });
 
   it('updateNow() resets status/progress/error and calls the preload API', () => {
-    emit({ status: 'error', message: 'offline' });
+    emit({ status: 'downloading', percent: 50, transferred: 500, total: 1000 });
     service.updateNow();
     expect(service.status()).toBe('checking');
     expect(service.progress()).toBe(0);
+    expect(service.transferred()).toBe(0);
+    expect(service.total()).toBe(0);
     expect(service.errorMessage()).toBeNull();
     expect(updateNowSpy).toHaveBeenCalled();
   });
 
-  it('reset() returns to idle with no progress or error', () => {
-    emit({ status: 'error', message: 'offline' });
+  it('reset() returns to idle with no progress, transferred, total, or error', () => {
+    emit({ status: 'downloading', percent: 50, transferred: 500, total: 1000 });
     service.reset();
     expect(service.status()).toBe('idle');
     expect(service.progress()).toBe(0);
+    expect(service.transferred()).toBe(0);
+    expect(service.total()).toBe(0);
     expect(service.errorMessage()).toBeNull();
+  });
+
+  it('resets to idle with no progress, transferred, or total on an idle event', () => {
+    emit({ status: 'downloading', percent: 50, transferred: 500, total: 1000 });
+    emit({ status: 'idle' });
+    expect(service.status()).toBe('idle');
+    expect(service.progress()).toBe(0);
+    expect(service.transferred()).toBe(0);
+    expect(service.total()).toBe(0);
+    expect(service.errorMessage()).toBeNull();
+  });
+
+  it('cancelDownload() calls the preload API', () => {
+    service.cancelDownload();
+    expect(cancelDownloadSpy).toHaveBeenCalled();
   });
 });

@@ -182,24 +182,10 @@
   }
 }
 
-.bb-ua-footnote {
-  margin: 10px 0 0;
-  font-size: 0.71875rem;
-  line-height: 1.5;
-  color: var(--bb-control-placeholder);
-
-  &__link {
-    padding: 0;
-    border: none;
-    background: none;
-    font: inherit;
-    color: var(--bb-accent);
-    cursor: pointer;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
+.bb-ua-code-signing-notice {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
 }
 
 :host ::ng-deep .markdown-content {
@@ -266,18 +252,21 @@
   }
 }
 
-.bb-ua-smartscreen-warning {
-  display: block;
-  width: 100%;
-  margin-bottom: 0.75rem;
-}
-
 .bb-ua-footer-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   width: 100%;
   gap: 0.75rem;
+  // Matches the two-row progress content's natural height (label line + gap +
+  // bar/percent line) so switching between the button row and the progress
+  // row never changes the modal-footer's height - that height change was
+  // causing a visible flicker.
+  min-height: 2.5rem;
+}
+
+.bb-ua-update-now {
+  margin-inline-end: auto;
 }
 
 .bb-ua-footer-actions {
@@ -287,12 +276,44 @@
 
 .bb-ua-update-progress {
   display: flex;
+  flex: 1;
   flex-direction: column;
+  min-width: 0;
   gap: 4px;
-  min-width: 220px;
 
   &__label {
     font-size: 0.75rem;
     color: var(--bb-control-placeholder);
+  }
+
+  &__info {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  &__bytes {
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    color: var(--bb-control-placeholder);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__bar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    app-bb-progress {
+      flex: 1;
+    }
+  }
+
+  &__percent {
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    color: var(--bb-control-placeholder);
+    font-variant-numeric: tabular-nums;
   }
 }

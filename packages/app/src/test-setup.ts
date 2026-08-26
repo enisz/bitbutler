@@ -79,6 +79,7 @@ window.bitbutler = {
   updater: {
     getCapability: () => Promise.resolve({ supported: false }),
     updateNow: noopVoidAsync,
+    cancelDownload: noopVoidAsync,
     onEvent: noopSubscription,
   },
   server: {

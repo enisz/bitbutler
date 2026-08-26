@@ -62,8 +62,11 @@ describe('UpdateAvailable', () => {
     capability: ReturnType<typeof signal<UpdateCapability | null>>;
     status: ReturnType<typeof signal<'idle' | 'checking' | 'downloading' | 'downloaded' | 'error'>>;
     progress: ReturnType<typeof signal<number>>;
+    transferred: ReturnType<typeof signal<number>>;
+    total: ReturnType<typeof signal<number>>;
     errorMessage: ReturnType<typeof signal<string | null>>;
     updateNow: ReturnType<typeof vi.fn>;
+    cancelDownload: ReturnType<typeof vi.fn>;
     reset: ReturnType<typeof vi.fn>;
   };
   let toastDanger: ReturnType<typeof vi.fn>;
@@ -81,8 +84,11 @@ describe('UpdateAvailable', () => {
       capability: signal<UpdateCapability | null>(null),
       status: signal<'idle' | 'checking' | 'downloading' | 'downloaded' | 'error'>('idle'),
       progress: signal(0),
+      transferred: signal(0),
+      total: signal(0),
       errorMessage: signal<string | null>(null),
       updateNow: vi.fn(),
+      cancelDownload: vi.fn(),
       reset: vi.fn(),
     };
 
@@ -450,22 +456,57 @@ describe('UpdateAvailable', () => {
     });
   });
 
-  describe('showSmartScreenWarning', () => {
-    it('is false when update-now is not shown', () => {
-      mockUpdaterService.capability.set({ supported: false });
-      expect(component.showSmartScreenWarning()).toBe(false);
-    });
+  describe('showProgressFooter', () => {
+    it.each(['checking', 'downloading'] as const)(
+      'is true while status is %s and update-now is supported',
+      (status) => {
+        mockUpdaterService.capability.set({ supported: true });
+        mockUpdaterService.status.set(status);
+        expect(component.showProgressFooter()).toBe(true);
+      },
+    );
 
-    it('is true when update-now is shown and platform is win32', async () => {
-      mockUpdaterService.capability.set({ supported: true });
+    it.each(['checking', 'downloading'] as const)(
+      'is false while status is %s if update-now is not supported',
+      (status) => {
+        mockUpdaterService.capability.set({ supported: false });
+        mockUpdaterService.status.set(status);
+        expect(component.showProgressFooter()).toBe(false);
+      },
+    );
+
+    it.each(['idle', 'downloaded', 'error'] as const)(
+      'is false while status is %s even if update-now is supported',
+      (status) => {
+        mockUpdaterService.capability.set({ supported: true });
+        mockUpdaterService.status.set(status);
+        expect(component.showProgressFooter()).toBe(false);
+      },
+    );
+  });
+
+  describe('downloadingAssetName', () => {
+    it('reflects the first filtered asset name', () => {
+      const assets = [makeAsset({ id: 1, name: 'bitbutler-setup-2.0.1.exe' })];
       component.platform.set('win32');
-      expect(component.showSmartScreenWarning()).toBe(true);
+      fixture.componentRef.setInput('update', {
+        releases: [makeRelease({ assets })],
+        updateAvailable: true,
+      } as UpdateCheckResponse);
+      fixture.detectChanges();
+
+      expect(component.downloadingAssetName()).toBe('bitbutler-setup-2.0.1.exe');
     });
 
-    it('is false when update-now is shown but platform is linux', () => {
-      mockUpdaterService.capability.set({ supported: true });
-      component.platform.set('linux');
-      expect(component.showSmartScreenWarning()).toBe(false);
+    it('is an empty string when there are no matching assets', () => {
+      expect(component.downloadingAssetName()).toBe('');
+    });
+  });
+
+  describe('cancelDownload', () => {
+    it('delegates to UpdaterService.cancelDownload()', () => {
+      component.cancelDownload();
+      expect(mockUpdaterService.cancelDownload).toHaveBeenCalled();
     });
   });
 
@@ -481,6 +522,16 @@ describe('UpdateAvailable', () => {
     it.each(['idle', 'error'] as const)('is false while status is %s', (status) => {
       mockUpdaterService.status.set(status);
       expect(component.footerLocked()).toBe(false);
+    });
+  });
+
+  describe('transferredLabel / totalLabel', () => {
+    it('formats the transferred and total byte counts as human-readable sizes', () => {
+      mockUpdaterService.transferred.set(1024);
+      mockUpdaterService.total.set(1024 * 1024 * 150);
+
+      expect(component.transferredLabel()).toBe('1 KB');
+      expect(component.totalLabel()).toBe('150 MB');
     });
   });
 
@@ -519,8 +570,11 @@ describe('UpdateAvailable', () => {
         capability: signal<UpdateCapability | null>(null),
         status: signal<'idle' | 'checking' | 'downloading' | 'downloaded' | 'error'>('downloading'),
         progress: signal(0),
+        transferred: signal(0),
+        total: signal(0),
         errorMessage: signal<string | null>(null),
         updateNow: vi.fn(),
+        cancelDownload: vi.fn(),
         reset: vi.fn(),
       };
 

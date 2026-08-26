@@ -89,89 +89,101 @@
       </div>
     }
 
-    @if (latestRelease) {
-      <p class="bb-ua-footnote">
-        {{ 'components.modals.update-available.footnote' | translate }}
-        <button type="button" class="bb-ua-footnote__link" (click)="viewAllReleases()">
-          {{ 'components.modals.update-available.view-all-releases' | translate }}
-        </button>
-      </p>
-    }
+    <bb-callout
+      variant="warning"
+      [icon]="icons.faTriangleExclamation"
+      [message]="'components.modals.update-available.code-signing-notice' | translate"
+      class="bb-ua-code-signing-notice"
+    ></bb-callout>
   </div>
 </div>
 
 <div class="modal-footer">
-  @if (showSmartScreenWarning()) {
-    <bb-callout
-      variant="warning"
-      [icon]="icons.faTriangleExclamation"
-      [message]="'components.modals.update-available.smartscreen-warning' | translate"
-      class="bb-ua-smartscreen-warning"
-    ></bb-callout>
-  }
-
   <div class="bb-ua-footer-row">
-    <div class="bb-ua-update-now">
-      @if (showUpdateNow()) {
-        @if (isUpdating()) {
-          <div class="bb-ua-update-progress">
-            <span class="bb-ua-update-progress__label">
+    @if (showProgressFooter()) {
+      <div class="bb-ua-update-progress">
+        @if (updaterService.status() === 'checking') {
+          <span class="bb-ua-update-progress__label">
+            {{ 'components.modals.update-available.status.checking' | translate }}
+          </span>
+        } @else {
+          <div class="bb-ua-update-progress__info">
+            <span class="bb-ua-update-progress__label text-truncate">
               {{
-                (updaterService.status() === 'checking'
-                  ? 'components.modals.update-available.status.checking'
-                  : 'components.modals.update-available.status.downloading'
-                ) | translate: { percent: progressLabel() }
+                'components.modals.update-available.status.downloading'
+                  | translate: { asset_name: downloadingAssetName() }
               }}
             </span>
+            <span class="bb-ua-update-progress__bytes">
+              {{ transferredLabel() }} / {{ totalLabel() }}
+            </span>
+          </div>
+          <div class="bb-ua-update-progress__bar-row">
             <app-bb-progress
               mode="compact"
               [progress]="updaterService.progress()"
               [rawPercent]="true"
               variant="primary"
             ></app-bb-progress>
+            <span class="bb-ua-update-progress__percent">{{ progressLabel() }}%</span>
           </div>
-        } @else if (updaterService.status() === 'downloaded') {
-          <span class="bb-ua-update-progress__label">
-            {{ 'components.modals.update-available.status.restarting' | translate }}
-          </span>
-        } @else {
-          <button type="button" class="btn btn-sm btn-split btn-primary" (click)="updateNow()">
-            <bb-btn-content
-              [icon]="icons.faCloudArrowDown"
-              [text]="'components.modals.update-available.button.update-now' | translate"
-              position="end"
-            ></bb-btn-content>
-          </button>
         }
-      }
-    </div>
+      </div>
 
-    <div class="bb-ua-footer-actions">
-      <button
-        type="button"
-        class="btn btn-sm btn-split"
-        [disabled]="footerLocked()"
-        (click)="skipVersions()"
-      >
-        <bb-btn-content
-          [icon]="icons.faForward"
-          [text]="'components.modals.update-available.button.skip-versions' | translate"
-          position="end"
-        ></bb-btn-content>
-      </button>
-      <button
-        type="button"
-        class="btn btn-sm btn-split"
-        [disabled]="footerLocked()"
-        (click)="activeModal.close('close')"
-        autofocus
-      >
+      <button type="button" class="btn btn-sm btn-split" (click)="cancelDownload()">
         <bb-btn-content
           [icon]="icons.faXmark"
-          [text]="'general.button.close' | translate"
+          [text]="'general.button.cancel' | translate"
           position="end"
         ></bb-btn-content>
       </button>
-    </div>
+    } @else if (updaterService.status() === 'downloaded') {
+      <span class="bb-ua-update-progress__label">
+        {{ 'components.modals.update-available.status.restarting' | translate }}
+      </span>
+    } @else {
+      @if (showUpdateNow()) {
+        <button
+          type="button"
+          class="btn btn-sm btn-split btn-primary bb-ua-update-now"
+          (click)="updateNow()"
+        >
+          <bb-btn-content
+            [icon]="icons.faCloudArrowDown"
+            [text]="'components.modals.update-available.button.update-now' | translate"
+            position="end"
+          ></bb-btn-content>
+        </button>
+      }
+
+      <div class="bb-ua-footer-actions">
+        <button type="button" class="btn btn-sm btn-split" (click)="skipVersions()">
+          <bb-btn-content
+            [icon]="icons.faForward"
+            [text]="'components.modals.update-available.button.skip-versions' | translate"
+            position="end"
+          ></bb-btn-content>
+        </button>
+        <button type="button" class="btn btn-sm btn-split" (click)="viewAllReleases()">
+          <bb-btn-content
+            [icon]="icons.faArrowUpRightFromSquare"
+            [text]="'components.modals.update-available.button.view-releases' | translate"
+            position="end"
+          ></bb-btn-content>
+        </button>
+        <button
+          type="button"
+          class="btn btn-sm btn-split"
+          (click)="activeModal.close('close')"
+          autofocus
+        >
+          <bb-btn-content
+            [icon]="icons.faXmark"
+            [text]="'general.button.close' | translate"
+            position="end"
+          ></bb-btn-content>
+        </button>
+      </div>
+    }
   </div>
 </div>
