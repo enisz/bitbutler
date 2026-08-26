@@ -1,5 +1,6 @@
 import { ipcMain } from 'electron';
 import { insertLog } from '../logger.js';
+import { resolveOriginalLocation } from '../source-map-resolver.js';
 
 const VALID_LEVELS = ['debug', 'info', 'warn', 'error'] as const;
 type LevelStr = (typeof VALID_LEVELS)[number];
@@ -20,13 +21,21 @@ export function registerLogIpcHandlers(): void {
     const message = asNullableString(e['message'], 2000);
     if (!level || !message) return;
 
+    const filename = asNullableString(e['filename'], 500);
+    const line = asNullableInt(e['line']);
+    const column = asNullableInt(e['column']);
+    const resolved =
+      filename !== null && line !== null && column !== null
+        ? resolveOriginalLocation(filename, line, column, 'app')
+        : null;
+
     insertLog(
       'renderer',
       level,
       message,
       asNullableString(e['context'], 20000),
-      asNullableString(e['filename'], 500),
-      asNullableInt(e['line']),
+      resolved ? asNullableString(resolved.filename, 500) : filename,
+      resolved?.line ?? line,
     );
   });
 }

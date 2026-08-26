@@ -1,5 +1,6 @@
 import { format as utilFormat } from 'node:util';
 import db from './db.js';
+import { resolveOriginalLocation } from './source-map-resolver.js';
 
 type LevelStr = 'debug' | 'info' | 'warn' | 'error';
 type ProcessName = 'main' | 'renderer';
@@ -41,13 +42,15 @@ export function insertLog(
 // for Windows paths, whose drive letter ("C:\...") also contains a colon.
 const STACK_FRAME_PATTERN = /at\s+(?:.*\()?(.+):(\d+):(\d+)\)?\s*$/;
 
-function callerLocation(stack: string | undefined): { filename: string; line: number } | null {
+function callerLocation(
+  stack: string | undefined,
+): { filename: string; line: number; column: number } | null {
   // frames[0] (index 1 after the leading "Error" line) is where `new Error()` was constructed -
   // i.e. inside the console wrapper below. frames[1] (index 2) is that wrapper's caller, which
   // is the actual console.* call site we want to report.
   const frame = stack?.split('\n')[2];
   const match = frame ? STACK_FRAME_PATTERN.exec(frame) : null;
-  return match ? { filename: match[1], line: Number(match[2]) } : null;
+  return match ? { filename: match[1], line: Number(match[2]), column: Number(match[3]) } : null;
 }
 
 export function initLogger(): void {
@@ -58,13 +61,16 @@ export function initLogger(): void {
     (console as unknown as Record<string, unknown>)[method] = (...args: unknown[]): void => {
       original.call(console, ...args);
       const location = callerLocation(new Error().stack);
+      const resolved = location
+        ? resolveOriginalLocation(location.filename, location.line, location.column, 'electron')
+        : null;
       insertLog(
         'main',
         levelStr,
         utilFormat(...args),
         null,
-        location?.filename ?? null,
-        location?.line ?? null,
+        resolved?.filename ?? location?.filename ?? null,
+        resolved?.line ?? location?.line ?? null,
       );
     };
   }

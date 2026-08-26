@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mockRun = vi.hoisted(() => vi.fn());
+const mockResolveOriginalLocation = vi.hoisted(() => vi.fn());
 
 vi.mock('electron', () => ({
   app: { getPath: () => '/fake' },
@@ -12,12 +13,18 @@ vi.mock('./db.js', () => ({
   },
 }));
 
+vi.mock('./source-map-resolver.js', () => ({
+  resolveOriginalLocation: mockResolveOriginalLocation,
+}));
+
 describe('initLogger', () => {
   let originalConsole: Record<string, (...args: unknown[]) => void>;
 
   beforeEach(() => {
     vi.resetModules();
     mockRun.mockReset();
+    mockResolveOriginalLocation.mockReset();
+    mockResolveOriginalLocation.mockReturnValue(null);
     originalConsole = {
       log: console.log,
       debug: console.debug,
@@ -62,6 +69,45 @@ describe('initLogger', () => {
       );
     },
   );
+
+  it('uses the source-map-resolved location when one is available', async () => {
+    mockResolveOriginalLocation.mockReturnValue({
+      filename: 'packages/electron/src/logger.ts',
+      line: 42,
+    });
+    const { initLogger } = await import('./logger.js');
+    initLogger();
+
+    console.info('hello');
+
+    expect(mockRun).toHaveBeenCalledWith(
+      expect.any(Number),
+      'main',
+      'info',
+      'hello',
+      null,
+      'packages/electron/src/logger.ts',
+      42,
+    );
+  });
+
+  it('falls back to the compiled location when resolution finds no source map', async () => {
+    mockResolveOriginalLocation.mockReturnValue(null);
+    const { initLogger } = await import('./logger.js');
+    initLogger();
+
+    console.info('hello');
+
+    expect(mockRun).toHaveBeenCalledWith(
+      expect.any(Number),
+      'main',
+      'info',
+      'hello',
+      null,
+      expect.stringContaining('logger.spec.ts'),
+      expect.any(Number),
+    );
+  });
 
   it('inserts a "main" "error" row on uncaught exceptions and rethrows', async () => {
     const { initLogger } = await import('./logger.js');

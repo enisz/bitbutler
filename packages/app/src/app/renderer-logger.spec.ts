@@ -63,13 +63,18 @@ describe('initRendererLogger', () => {
     ]);
   });
 
-  it('captures the caller filename and line number', () => {
+  it('captures the caller filename, line and column', () => {
     initRendererLogger();
     console.info('hello');
 
-    const entry = writeSpy.mock.calls[0][0] as { filename: string | null; line: number | null };
+    const entry = writeSpy.mock.calls[0][0] as {
+      filename: string | null;
+      line: number | null;
+      column: number | null;
+    };
     expect(entry.filename).toContain('renderer-logger.spec.ts');
     expect(entry.line).toBeGreaterThan(0);
+    expect(entry.column).toBeGreaterThan(0);
   });
 
   it('reports null context when no structured arguments are passed', () => {

@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const ipcHandlers = vi.hoisted(() => new Map<string, (...args: unknown[]) => unknown>());
 const mockInsertLog = vi.hoisted(() => vi.fn());
+const mockResolveOriginalLocation = vi.hoisted(() => vi.fn());
 
 vi.mock('electron', () => ({
   ipcMain: {
@@ -15,10 +16,16 @@ vi.mock('../logger.js', () => ({
   insertLog: mockInsertLog,
 }));
 
+vi.mock('../source-map-resolver.js', () => ({
+  resolveOriginalLocation: mockResolveOriginalLocation,
+}));
+
 describe('log IPC handlers', () => {
   beforeEach(() => {
     vi.resetModules();
     ipcHandlers.clear();
+    mockResolveOriginalLocation.mockReset();
+    mockResolveOriginalLocation.mockReturnValue(null);
   });
 
   afterEach(() => {
@@ -82,6 +89,80 @@ describe('log IPC handlers', () => {
     handler(null, 'not an object');
 
     expect(mockInsertLog).not.toHaveBeenCalled();
+  });
+
+  it('resolves the original TypeScript location via source maps when a column is given', async () => {
+    const handler = await registerAndGetHandler();
+    mockResolveOriginalLocation.mockReturnValue({
+      filename: 'packages/app/src/app/services/updater.service.ts',
+      line: 42,
+    });
+
+    handler(null, {
+      level: 'error',
+      message: 'Unhandled command',
+      filename: 'http://localhost:4200/main.js',
+      line: 471,
+      column: 12,
+    });
+
+    expect(mockResolveOriginalLocation).toHaveBeenCalledWith(
+      'http://localhost:4200/main.js',
+      471,
+      12,
+      'app',
+    );
+    expect(mockInsertLog).toHaveBeenCalledWith(
+      'renderer',
+      'error',
+      'Unhandled command',
+      null,
+      'packages/app/src/app/services/updater.service.ts',
+      42,
+    );
+  });
+
+  it('does not attempt resolution when no column is given', async () => {
+    const handler = await registerAndGetHandler();
+
+    handler(null, {
+      level: 'error',
+      message: 'Unhandled command',
+      filename: 'http://localhost:4200/main.js',
+      line: 471,
+    });
+
+    expect(mockResolveOriginalLocation).not.toHaveBeenCalled();
+    expect(mockInsertLog).toHaveBeenCalledWith(
+      'renderer',
+      'error',
+      'Unhandled command',
+      null,
+      'http://localhost:4200/main.js',
+      471,
+    );
+  });
+
+  it('falls back to the compiled location when resolution finds no source map', async () => {
+    const handler = await registerAndGetHandler();
+    mockResolveOriginalLocation.mockReturnValue(null);
+
+    handler(null, {
+      level: 'error',
+      message: 'Unhandled command',
+      filename: 'http://localhost:4200/main.js',
+      line: 471,
+      column: 12,
+    });
+
+    expect(mockInsertLog).toHaveBeenCalledWith(
+      'renderer',
+      'error',
+      'Unhandled command',
+      null,
+      'http://localhost:4200/main.js',
+      471,
+    );
   });
 
   it('truncates an overly long message, context and filename', async () => {

@@ -6,4 +6,5 @@ export interface RendererLogEntry {
   context: string | null;
   filename: string | null;
   line: number | null;
+  column: number | null;
 }

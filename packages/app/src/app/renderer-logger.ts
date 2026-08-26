@@ -11,13 +11,15 @@ const METHOD_TO_LEVEL: Record<string, LogLevel> = {
 // A V8 stack frame reads "at name (file:line:col)" or "at file:line:col".
 const STACK_FRAME_PATTERN = /at\s+(?:.*\()?(.+):(\d+):(\d+)\)?\s*$/;
 
-function callerLocation(stack: string | undefined): { filename: string; line: number } | null {
+function callerLocation(
+  stack: string | undefined,
+): { filename: string; line: number; column: number } | null {
   // frames[0] (index 1 after the leading "Error" line) is where `new Error()` was constructed -
   // i.e. inside the console wrapper below. frames[1] (index 2) is that wrapper's caller, which
   // is the actual console.* call site we want to report.
   const frame = stack?.split('\n')[2];
   const match = frame ? STACK_FRAME_PATTERN.exec(frame) : null;
-  return match ? { filename: match[1], line: Number(match[2]) } : null;
+  return match ? { filename: match[1], line: Number(match[2]), column: Number(match[3]) } : null;
 }
 
 function serializeArg(arg: unknown): unknown {
@@ -71,6 +73,7 @@ export function initRendererLogger(): void {
         context,
         filename: location?.filename ?? null,
         line: location?.line ?? null,
+        column: location?.column ?? null,
       });
     };
   }

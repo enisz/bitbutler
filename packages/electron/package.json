@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@bitbutler/shared": "*"
+    "@bitbutler/shared": "*",
+    "@jridgewell/trace-mapping": "^0.3.31"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json && tsc -p tsconfig.preload.json",
