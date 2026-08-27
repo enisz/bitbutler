@@ -15,11 +15,11 @@ Nyisd meg a párbeszédablakot az eszköztárból: **Beállítások > BitButler*
 
 ### Indítás
 
-| Beállítás                         | Leírás                                                                                                                                                             |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Alkalmazás indítása a rendszerrel | Automatikusan elindítja a BitButlert az operációs rendszer indulásakor.                                                                                            |
-| Kicsinyítve indítás               | Induláskor elrejti az alkalmazás ablakát; a BitButler továbbra is elérhető marad a rendszertálcáról. Az "Alkalmazás indítása a rendszerrel" bekapcsolását igényli. |
-| Automatikus frissítések           | Az alkalmazás minden indulásakor automatikusan ellenőrzi a BitButler frissítéseit.                                                                                 |
+| Beállítás                         | Leírás                                                                                                                                                                      |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Alkalmazás indítása a rendszerrel | Automatikusan elindítja a BitButlert az operációs rendszer indulásakor.                                                                                                     |
+| Kicsinyítve indítás               | Induláskor elrejti az alkalmazás ablakát; a BitButler továbbra is elérhető marad a rendszertálcáról. Az "Alkalmazás indítása a rendszerrel" bekapcsolását igényli.          |
+| Automatikus frissítések           | Az alkalmazás minden indulásakor automatikusan ellenőrzi a BitButler frissítéseit. Ha van újabb verzió, megnyílik a [Frissítés elérhető ablak](../update-available-window). |
 
 Ha az "Alkalmazás indítása a rendszerrel" be van kapcsolva, de nincs szerver alapértelmezett kapcsolatként megjelölve, itt egy figyelmeztető szöveg jelenik meg, amely emlékeztet, hogy az alkalmazás automatikus bejelentkezés nélkül fog elindulni. Lásd [Alapértelmezett szerver beállítása](../manage/servers#alapertelmezett-szerver-beallitasa).
 
