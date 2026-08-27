@@ -3,13 +3,17 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { provideRouter } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { CommandBusService } from '../../../services/command-bus.service';
 import { NavRail } from './nav-rail';
 
 describe('NavRail', () => {
   let fixture: ComponentFixture<NavRail>;
   let router: Router;
+  let commandBusEmit: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
+    commandBusEmit = vi.fn();
+
     await TestBed.configureTestingModule({
       imports: [NavRail, TranslateModule.forRoot()],
       providers: [
@@ -25,6 +29,7 @@ describe('NavRail', () => {
             ],
           },
         ]),
+        { provide: CommandBusService, useValue: { emit: commandBusEmit } },
       ],
     }).compileComponents();
 
@@ -59,5 +64,30 @@ describe('NavRail', () => {
     await fixture.whenStable();
     fixture.detectChanges();
     expect(link.classList.contains('active')).toBe(true);
+  });
+
+  describe('bottom actions', () => {
+    function getButtons(): HTMLButtonElement[] {
+      return Array.from(fixture.nativeElement.querySelectorAll('button'));
+    }
+
+    it('should render an About button above a Disconnect button', () => {
+      const buttons = getButtons();
+      expect(buttons.length).toBe(2);
+      expect(buttons[0].getAttribute('aria-label')).toBeTruthy();
+      expect(buttons[1].getAttribute('aria-label')).toBeTruthy();
+    });
+
+    it('should emit UI_OPEN_ABOUT when the About button is clicked', () => {
+      const [aboutButton] = getButtons();
+      aboutButton.click();
+      expect(commandBusEmit).toHaveBeenCalledWith({ type: 'UI_OPEN_ABOUT' });
+    });
+
+    it('should emit UI_DISCONNECT when the Disconnect button is clicked', () => {
+      const [, disconnectButton] = getButtons();
+      disconnectButton.click();
+      expect(commandBusEmit).toHaveBeenCalledWith({ type: 'UI_DISCONNECT' });
+    });
   });
 });

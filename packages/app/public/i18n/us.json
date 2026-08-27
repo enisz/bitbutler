@@ -1249,7 +1249,9 @@
     "shell": {
       "nav": {
         "label": "Page navigation",
-        "torrents": "Torrents"
+        "torrents": "Torrents",
+        "about": "About",
+        "disconnect": "Disconnect"
       }
     },
     "main": {
@@ -1969,6 +1971,10 @@
       "info": {
         "showing-file-title": "Showing File",
         "opening-folder-title": "Opening Folder"
+      },
+      "disconnect-confirm": {
+        "title": "Disconnect",
+        "message": "Are you sure you want to disconnect from {{name}}?"
       }
     },
     "transfer-limit-command-handler": {
@@ -2052,6 +2058,7 @@
       "apply": "Apply",
       "today": "Today",
       "connect": "Connect",
+      "disconnect": "Disconnect",
       "add-server": "Add Server",
       "manage": "Manage",
       "manage-servers": "Manage Servers",

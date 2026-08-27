@@ -1,10 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import { Router } from '@angular/router';
 import { ToastType } from '../models/toast.model';
 import { CommandBusService } from './command-bus.service';
 import { MenuBarService, MenuClick } from './menu-bar.service';
 import { NotificationService } from './notification.service';
-import { QbService } from './qb.service';
 import { ServerStoreService } from './server-store.service';
 import { ToastService } from './toast.service';
 
@@ -18,8 +16,6 @@ export class MenuBarCommandHandlerService {
   private readonly notificationService = inject(NotificationService);
   private readonly toastService = inject(ToastService);
   private readonly serverStoreService = inject(ServerStoreService);
-  private readonly qbService = inject(QbService);
-  private readonly router = inject(Router);
 
   public start(): void {
     this.menuBarService.clicks$.subscribe((payload: MenuClick) => {
@@ -49,7 +45,7 @@ export class MenuBarCommandHandlerService {
           break;
 
         case 'file.disconnect':
-          this.disconnect();
+          this.commandBusService.emit({ type: 'UI_DISCONNECT' });
           break;
 
         case 'server.add':
@@ -169,37 +165,6 @@ export class MenuBarCommandHandlerService {
           );
       }
     });
-  }
-
-  private async disconnect(): Promise<void> {
-    const serverId = this.serverStoreService.currentServerId();
-
-    try {
-      await window.bitbutler.window.setOpenFilesEnabled(false);
-
-      if (serverId) {
-        await this.qbService.auth.logout(serverId);
-      }
-
-      this.serverStoreService.suppressAutoLoginUntilManualConnect();
-
-      this.serverStoreService.clearSelection();
-
-      await this.router.navigate(['/login']);
-    } catch (e) {
-      console.error('[Main] logout failed', e);
-
-      try {
-        await window.bitbutler.window.setOpenFilesEnabled(false);
-      } catch {}
-
-      try {
-        this.serverStoreService.suppressAutoLoginUntilManualConnect();
-        this.serverStoreService.clearSelection();
-      } catch {}
-
-      this.router.navigate(['/login']);
-    }
   }
 
   private handleServerSwitch(serverId: string): void {
