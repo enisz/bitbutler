@@ -5,7 +5,7 @@ $au-light-primary: #2d3a8c;
 $au-light-secondary: #2bb3b1;
 
 $au-light-success: #2fbf71;
-$au-light-danger: #e5487e;
+$au-light-danger: #e6394f;
 $au-light-warning: #f2b705;
 $au-light-info: #4aa3ff;
 
@@ -44,7 +44,7 @@ $au-light-check-marker-colors: (
     --bs-success-rgb: #{string.unquote('47, 191, 113')};
 
     --bs-danger: #{$au-light-danger};
-    --bs-danger-rgb: #{string.unquote('229, 72, 126')};
+    --bs-danger-rgb: #{string.unquote('230, 57, 79')};
 
     --bs-warning: #{$au-light-warning};
     --bs-warning-rgb: #{string.unquote('242, 183, 5')};

@@ -212,13 +212,13 @@ describe('General', () => {
   });
 
   describe('stateVariant', () => {
-    it('maps downloading to the info variant', () => {
+    it('maps downloading to the success variant', () => {
       mockDataService.torrent.set({
         data: makeTorrent({ state: 'downloading' }),
         properties: makeProperties(),
       });
       fixture.detectChanges();
-      expect(component.stateVariant()).toBe('info');
+      expect(component.stateVariant()).toBe('success');
     });
 
     it('maps error to the danger variant', () => {
@@ -238,7 +238,7 @@ describe('General', () => {
       fixture.detectChanges();
 
       const state = fixture.nativeElement.querySelector('.bb-hero-state');
-      expect(state.classList.contains('text-success')).toBe(true);
+      expect(state.classList.contains('text-info')).toBe(true);
     });
   });
 

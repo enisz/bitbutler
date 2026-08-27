@@ -85,12 +85,12 @@
     font-size: 0.625rem;
   }
 
-  &--accent {
-    color: var(--bb-accent);
+  &--dl {
+    color: var(--bs-success);
   }
 
-  &--success {
-    color: var(--bs-success);
+  &--ul {
+    color: var(--bs-info);
   }
 }
 

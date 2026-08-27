@@ -4,10 +4,10 @@
 $deep-sea-dark-primary: #7ab2b2;
 $deep-sea-dark-secondary: #088395;
 
-$deep-sea-dark-success: #7ab2b2;
+$deep-sea-dark-success: #7ecf95;
 $deep-sea-dark-danger: #e06c67;
 $deep-sea-dark-warning: #f4c46b;
-$deep-sea-dark-info: #088395;
+$deep-sea-dark-info: #78d0e4;
 
 $deep-sea-dark-body-bg: #04161d;
 $deep-sea-dark-body-color: #ebf4f6;
@@ -32,14 +32,14 @@ $deep-sea-dark-check-marker-colors: (
     --bs-secondary-rgb: #{string.unquote('8, 131, 149')};
 
     --bs-success: #{$deep-sea-dark-success};
-    --bs-success-rgb: #{string.unquote('122, 178, 178')};
+    --bs-success-rgb: #{string.unquote('126, 207, 149')};
 
     --bs-danger: #{$deep-sea-dark-danger};
     --bs-danger-rgb: #{string.unquote('224, 108, 103')};
 
     --bb-primary-ink: #04161d;
     --bb-secondary-ink: #04161d;
-    --bb-success-ink: #04161d;
+    --bb-success-ink: #000;
     --bb-danger-ink: #fff;
     --bb-warning-ink: #000;
     --bb-info-ink: #000;
@@ -50,7 +50,7 @@ $deep-sea-dark-check-marker-colors: (
     --bs-warning-rgb: #{string.unquote('244, 196, 107')};
 
     --bs-info: #{$deep-sea-dark-info};
-    --bs-info-rgb: #{string.unquote('8, 131, 149')};
+    --bs-info-rgb: #{string.unquote('120, 208, 228')};
 
     --bs-body-bg: #{$deep-sea-dark-body-bg};
     --bs-body-color: #{$deep-sea-dark-body-color};

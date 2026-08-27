@@ -20,11 +20,11 @@ export function variantForTorrentState(state: BbProgressState): BbProgressVarian
 
     case 'uploading':
     case 'forcedUP':
-      return 'success';
+      return 'info';
 
     case 'downloading':
     case 'forcedDL':
-      return 'info';
+      return 'success';
 
     case 'checkingDL':
     case 'checkingUP':
