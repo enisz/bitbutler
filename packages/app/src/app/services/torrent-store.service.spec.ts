@@ -183,7 +183,7 @@ describe('TorrentStoreService', () => {
     expect(service.isPrimed()).toBe(false);
   });
 
-  it('should set isPrimed to true after first non-streaming full_update', () => {
+  it('should set isPrimed to true after the first full_update', () => {
     expect(service.isPrimed()).toBe(false);
     service.applyMaindata(makeMaindata({ full_update: true }));
     expect(service.isPrimed()).toBe(true);
