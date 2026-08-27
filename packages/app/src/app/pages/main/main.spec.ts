@@ -4,7 +4,6 @@ import { Subject } from 'rxjs';
 import { QbPollingService } from '../../services/qb-polling.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { ThemeService } from '../../services/theme.service';
-import { TorrentListGridSettingsService } from '../../services/torrent-list-grid.settings.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
 import { Main } from './main';
 
@@ -38,6 +37,11 @@ describe('Main', () => {
     });
   });
 
+  let torrentStoreMock: {
+    applyMaindata: ReturnType<typeof vi.fn>;
+    clear: ReturnType<typeof vi.fn>;
+  };
+
   async function createComponent(): Promise<void> {
     await TestBed.configureTestingModule({
       imports: [Main],
@@ -48,11 +52,7 @@ describe('Main', () => {
           provide: QbPollingService,
           useValue: { startMaindataPolling: vi.fn().mockReturnValue(new Subject()) },
         },
-        { provide: TorrentStoreService, useValue: { applyMaindata: vi.fn() } },
-        {
-          provide: TorrentListGridSettingsService,
-          useValue: { asObservable: vi.fn().mockReturnValue(new Subject().asObservable()) },
-        },
+        { provide: TorrentStoreService, useValue: torrentStoreMock },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     })
@@ -73,6 +73,10 @@ describe('Main', () => {
       currentServer: signal(null),
       currentServerId: signal(null),
       refresh: vi.fn().mockResolvedValue(undefined),
+    };
+    torrentStoreMock = {
+      applyMaindata: vi.fn(),
+      clear: vi.fn(),
     };
   });
 
@@ -99,6 +103,30 @@ describe('Main', () => {
     it('should be null initially', async () => {
       await createComponent();
       expect(component.serverState()).toBeNull();
+    });
+  });
+
+  describe('server switch', () => {
+    it('should clear the torrent store before starting to poll a server', async () => {
+      await createComponent();
+      expect(torrentStoreMock.clear).not.toHaveBeenCalled();
+
+      serverStoreMock.currentServerId.set('server-1');
+      fixture.detectChanges();
+
+      expect(torrentStoreMock.clear).toHaveBeenCalledTimes(1);
+    });
+
+    it('should clear the torrent store again on a subsequent switch to another server', async () => {
+      await createComponent();
+
+      serverStoreMock.currentServerId.set('server-1');
+      fixture.detectChanges();
+
+      serverStoreMock.currentServerId.set('server-2');
+      fixture.detectChanges();
+
+      expect(torrentStoreMock.clear).toHaveBeenCalledTimes(2);
     });
   });
 });

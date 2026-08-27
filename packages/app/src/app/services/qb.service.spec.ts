@@ -44,29 +44,6 @@ describe('QbService', () => {
     expect(result).toBe(true);
   });
 
-  it('should expose streamMaindata() as an observable', () => {
-    vi.spyOn(window.bitbutler.qb, 'onSyncChunk').mockReturnValue(() => {});
-    vi.spyOn(window.bitbutler.qb, 'startSyncStream').mockReturnValue(undefined as any);
-    const obs = service.sync.streamMaindata('server-1', 0);
-    expect(typeof obs.subscribe).toBe('function');
-  });
-
-  it('should call startSyncStream when streamMaindata is subscribed', () => {
-    const startSpy = vi
-      .spyOn(window.bitbutler.qb, 'startSyncStream')
-      .mockReturnValue(undefined as any);
-    vi.spyOn(window.bitbutler.qb, 'onSyncChunk').mockReturnValue(() => {});
-
-    const sub = service.sync.streamMaindata('server-1', 5, 'name', true).subscribe();
-    expect(startSpy).toHaveBeenCalledWith({
-      id: 'server-1',
-      rid: 5,
-      sortBy: 'name',
-      sortDesc: true,
-    });
-    sub.unsubscribe();
-  });
-
   it('should call login with server id via maindata()', async () => {
     const spy = vi.spyOn(window.bitbutler.qb, 'request').mockResolvedValue({
       ok: true,

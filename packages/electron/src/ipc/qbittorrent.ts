@@ -1,4 +1,4 @@
-import type { BitButlerQbTorrentsAddPayload, BitButlerSyncStreamPayload } from '@bitbutler/shared';
+import type { BitButlerQbTorrentsAddPayload } from '@bitbutler/shared';
 import { ipcMain, safeStorage } from 'electron';
 import FormData from 'form-data';
 import fs from 'node:fs';
@@ -51,9 +51,6 @@ export function registerQbIpcHandlers(): void {
   );
   ipcMain.handle('qb:torrentsAdd', async (_evt, payload: BitButlerQbTorrentsAddPayload) =>
     qbTorrentsAdd(payload),
-  );
-  ipcMain.on('qb:sync-maindata-stream', async (event, payload: BitButlerSyncStreamPayload) =>
-    qbSyncMaindataStream(event, payload),
   );
 }
 
@@ -327,93 +324,4 @@ function requireString(value: unknown, field: string): string {
     throw new Error(`Field '${field}' is required.`);
   }
   return value.trim();
-}
-
-const streamGeneration = new Map<number, number>();
-
-async function qbSyncMaindataStream(
-  event: Electron.IpcMainEvent,
-  payload: BitButlerSyncStreamPayload,
-): Promise<void> {
-  const { id, rid, chunkSize = 500, delayMs = 15, sortBy, sortDesc } = payload;
-  const channel = 'qb:sync-maindata-chunk';
-
-  const senderId = event.sender.id;
-  const generation = (streamGeneration.get(senderId) ?? 0) + 1;
-  streamGeneration.set(senderId, generation);
-
-  const isCurrent = (): boolean =>
-    !event.sender.isDestroyed() && streamGeneration.get(senderId) === generation;
-
-  const send = (data: unknown): void => {
-    if (isCurrent()) event.reply(channel, data);
-  };
-
-  try {
-    const maindata = (await qbRequest({
-      id,
-      method: 'GET',
-      path: '/api/v2/sync/maindata',
-      query: { rid: rid ?? 0 },
-    })) as Record<string, unknown>;
-    const allTorrents = (maindata['torrents'] as Record<string, Record<string, unknown>>) || {};
-
-    const torrentHashes = Object.keys(allTorrents);
-    const totalTorrents = torrentHashes.length;
-
-    if (sortBy && totalTorrents > 0) {
-      torrentHashes.sort((hashA, hashB) => {
-        let valA = allTorrents[hashA][sortBy] ?? '';
-        let valB = allTorrents[hashB][sortBy] ?? '';
-
-        if (typeof valA === 'string') valA = valA.toLowerCase();
-        if (typeof valB === 'string') valB = valB.toLowerCase();
-
-        if (valA < valB) return sortDesc ? 1 : -1;
-        if (valA > valB) return sortDesc ? -1 : 1;
-        return 0;
-      });
-    }
-
-    delete maindata['torrents'];
-
-    if (!isCurrent()) return;
-    send({ type: 'metadata', data: maindata, total: totalTorrents });
-
-    if (totalTorrents === 0) {
-      send({ type: 'done' });
-      return;
-    }
-
-    let currentIndex = 0;
-
-    const sendNextChunk = (): void => {
-      if (!isCurrent()) return;
-
-      const chunk: Record<string, unknown> = {};
-      const end = Math.min(currentIndex + chunkSize, totalTorrents);
-
-      for (let i = currentIndex; i < end; i++) {
-        const hash = torrentHashes[i];
-        chunk[hash] = allTorrents[hash];
-      }
-
-      send({ type: 'chunk', data: chunk, progress: end, total: totalTorrents });
-
-      currentIndex = end;
-
-      if (currentIndex < totalTorrents) {
-        setTimeout(sendNextChunk, delayMs);
-      } else {
-        send({ type: 'done' });
-      }
-    };
-
-    sendNextChunk();
-  } catch (error) {
-    send({
-      type: 'error',
-      error: (error as Error).message || 'Streaming sync failed',
-    });
-  }
 }

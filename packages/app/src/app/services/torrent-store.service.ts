@@ -16,11 +16,6 @@ export type TorrentFinishedEvent = {
   ts: number;
 };
 
-// QbService.sync.streamMaindata tags each streamed chunk with this internal marker (see
-// qb.service.ts) so downstream consumers can tell a still-streaming initial load apart from a
-// fully-primed maindata snapshot. It is not part of the qBittorrent API response itself.
-type StreamableMaindata = Maindata & { _isStreamingChunk?: boolean };
-
 export type { ValueCount };
 
 @Injectable({ providedIn: 'root' })
@@ -102,8 +97,6 @@ export class TorrentStoreService {
     const removed: string[] = data?.torrents_removed ?? [];
     const fullUpdate = !!data?.full_update;
 
-    const isStreamingChunk = !!(data as StreamableMaindata)._isStreamingChunk;
-
     const add: Torrent[] = [];
     const update: Torrent[] = [];
     const remove: Torrent[] = [];
@@ -120,8 +113,8 @@ export class TorrentStoreService {
 
       this._torrents.set(next);
 
-      this.ingestFinished(add, [], this._isPrimed() && !isStreamingChunk);
-      if (!isStreamingChunk) this._isPrimed.set(true);
+      this.ingestFinished(add, [], this._isPrimed());
+      this._isPrimed.set(true);
     } else {
       for (const hash of removed) {
         const existing = next.get(hash);
@@ -155,9 +148,9 @@ export class TorrentStoreService {
       this.ingestFinished(
         [...add, ...update],
         remove.map((r) => r.hash),
-        this._isPrimed() && !isStreamingChunk,
+        this._isPrimed(),
       );
-      if (!isStreamingChunk) this._isPrimed.set(true);
+      this._isPrimed.set(true);
     }
 
     if (data.full_update) {
@@ -227,9 +220,10 @@ export class TorrentStoreService {
       const hash = t.hash;
 
       const nowFinished = this.isFinished(t);
+      const known = this.finishedByHash.has(hash);
       const wasFinished = this.finishedByHash.get(hash) ?? false;
 
-      if (allowEmit && !wasFinished && nowFinished) {
+      if (allowEmit && known && !wasFinished && nowFinished) {
         this._finished$.next({ hash, torrent: t, ts: now });
       }
 

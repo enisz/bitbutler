@@ -98,8 +98,6 @@ window.bitbutler = {
     hasCookie: () => Promise.resolve({ hasCookie: false }),
     request: <TResponse = unknown>(_payload: unknown) => Promise.resolve(null as TResponse),
     torrentsAdd: noopAsync,
-    startSyncStream: noop,
-    onSyncChunk: noopSubscription,
   },
   window: {
     maximize: noopVoidAsync,

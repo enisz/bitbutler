@@ -1,15 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
-import {
-  BehaviorSubject,
-  EMPTY,
-  Observable,
-  Subject,
-  combineLatest,
-  from,
-  interval,
-  of,
-} from 'rxjs';
+import { BehaviorSubject, EMPTY, Observable, Subject, combineLatest, from, interval } from 'rxjs';
 import {
   catchError,
   distinctUntilChanged,
@@ -22,7 +13,7 @@ import {
   tap,
 } from 'rxjs/operators';
 import { Maindata, QbTorrentPeersResponse } from '../models/torrent.model';
-import { QbService, StreamMaindataState } from './qb.service';
+import { QbService } from './qb.service';
 import { ServerSettingsService } from './server-settings.service';
 import { WindowService } from './window.service';
 
@@ -53,6 +44,13 @@ export class QbPollingService {
     distinctUntilChanged(),
   );
 
+  // The last serverId polling was started for. A restart for the SAME server (e.g. a future
+  // "resume after navigating away from the torrent list") should resume from the last known rid
+  // instead of paying for a full reload - qBittorrent's sync API is self-healing (a stale rid
+  // just yields a fresh full_update), so there's no downside to trying the cached rid first. A
+  // restart for a DIFFERENT server means the data is genuinely stale and must be reset.
+  private lastPolledServerId: string | null = null;
+
   public pause(): symbol {
     const token = Symbol();
     const next = new Set(this._pauseTokens$.value);
@@ -71,45 +69,31 @@ export class QbPollingService {
     this.stopPolling$.next();
     this._isInitialLoading$.next(false);
     this._pauseTokens$.next(new Set());
+    this.lastPolledServerId = null;
   }
 
-  startMaindataPolling(
-    serverId: string,
-    sortBy?: string,
-    sortDesc?: boolean,
-  ): Observable<Maindata> {
-    this.stopPolling();
-    this.maindataRid$.next(0);
+  // The first tick of the returned poll loop (via startWith(0) below) IS the initial load - there
+  // is no separate streaming/initial-load protocol. qb.sync.maindata(serverId, rid) is the same
+  // plain request used for every later poll tick.
+  startMaindataPolling(serverId: string): Observable<Maindata> {
+    const isFreshStart = this.lastPolledServerId !== serverId;
+    this.lastPolledServerId = serverId;
+
+    this.stopPolling$.next();
+    this._pauseTokens$.next(new Set());
+    if (isFreshStart) {
+      this.maindataRid$.next(0);
+    }
     this._isInitialLoading$.next(true);
     void this.serverSettingsService.load();
 
-    return this.qb.sync.streamMaindata(serverId, 0, sortBy, sortDesc).pipe(
-      takeUntil(this.stopPolling$),
-      switchMap((state: StreamMaindataState) => {
-        if (state.maindata && !state.done) {
-          return of(state.maindata);
-        }
+    let hasLoadedOnce = false;
+    const markInitialLoadDone = (): void => {
+      if (hasLoadedOnce) return;
+      hasLoadedOnce = true;
+      this._isInitialLoading$.next(false);
+    };
 
-        if (state.done) {
-          if (typeof state.maindata?.rid === 'number') {
-            this.maindataRid$.next(state.maindata.rid);
-          }
-          this._isInitialLoading$.next(false);
-
-          return this.createBackgroundPoll(serverId);
-        }
-
-        return EMPTY;
-      }),
-      catchError((err) => {
-        this._isInitialLoading$.next(false);
-        console.error('Polling failed:', err);
-        return EMPTY;
-      }),
-    );
-  }
-
-  private createBackgroundPoll(serverId: string): Observable<Maindata> {
     const settings$ = this.serverSettingsService.asObservable().pipe(startWith(null));
     const windowState$ = this.windowState$.pipe(startWith(null));
 
@@ -127,7 +111,9 @@ export class QbPollingService {
         if (!isPaused) this._pollingInterval$.next(pollMs);
       }),
       switchMap(({ pollMs, isPaused }) => {
-        if (isPaused) return EMPTY;
+        // Pausing throttles routine polling; it must never block the initial load, which
+        // isPrimed() and the server-switch loader both wait on.
+        if (isPaused && hasLoadedOnce) return EMPTY;
         return interval(pollMs).pipe(
           startWith(0),
           tap(() => this._onPoll$.next()),
@@ -135,15 +121,15 @@ export class QbPollingService {
             from(this.qb.sync.maindata(serverId, this.maindataRid$.value)).pipe(
               tap((res: Maindata) => {
                 if (typeof res?.rid === 'number') this.maindataRid$.next(res.rid);
+                markInitialLoadDone();
               }),
               catchError((err) => {
+                markInitialLoadDone();
                 if (err?.status === 401 || err?.status === 403) {
-                  console.warn(
-                    `[maindata] background poll stopped: session expired (status ${err.status}).`,
-                  );
+                  console.warn(`[maindata] poll stopped: session expired (status ${err.status}).`);
                   this.stopPolling();
                 } else {
-                  console.error('[maindata] background poll failed', err);
+                  console.error('[maindata] poll failed', err);
                 }
                 return EMPTY;
               }),

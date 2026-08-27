@@ -10,8 +10,7 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faBars, faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import type { ColumnState } from 'ag-grid-community';
-import { Subscription, first } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { BbLogo } from '../../components/bb-logo/bb-logo';
 import { DEFAULT_SIDEBAR_SETTINGS } from '../../models/sidebar-settings.model';
 import { Maindata, QbServerState } from '../../models/torrent.model';
@@ -19,7 +18,6 @@ import { QbPollingService } from '../../services/qb-polling.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { SidebarSettingsService } from '../../services/sidebar-settings.service';
 import { ThemeService } from '../../services/theme.service';
-import { TorrentListGridSettingsService } from '../../services/torrent-list-grid.settings.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
 import { ButtonBar } from './button-bar/button-bar';
 import { Grid } from './grid/grid';
@@ -38,7 +36,6 @@ export class Main implements OnDestroy {
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly torrentStore = inject(TorrentStoreService);
   private readonly themeService = inject(ThemeService);
-  private readonly torrentListGridSettingsService = inject(TorrentListGridSettingsService);
   private readonly sidebarSettingsService = inject(SidebarSettingsService);
   private pollSub: Subscription | null = null;
   public currentServer = this.serverStoreService.currentServer;
@@ -68,29 +65,17 @@ export class Main implements OnDestroy {
 
     if (!serverId) return;
 
+    this.torrentStore.clear();
+
     const sub = new Subscription();
     this.pollSub = sub;
 
-    this.torrentListGridSettingsService
-      .asObservable()
-      .pipe(first())
-      .subscribe((prefs) => {
-        const sortCol = prefs?.columnState?.find(
-          (c): c is ColumnState => typeof c === 'object' && c !== null && !!c.sort,
-        );
-
-        const sortBy = sortCol?.colId;
-        const sortDesc = sortCol?.sort === 'desc';
-
-        sub.add(
-          this.qbPollingService
-            .startMaindataPolling(serverId, sortBy, sortDesc)
-            .subscribe((data: Maindata) => {
-              this.torrentStore.applyMaindata(data);
-              this.serverState.update((prev) => mergeServerState(prev, data.server_state));
-            }),
-        );
-      });
+    sub.add(
+      this.qbPollingService.startMaindataPolling(serverId).subscribe((data: Maindata) => {
+        this.torrentStore.applyMaindata(data);
+        this.serverState.update((prev) => mergeServerState(prev, data.server_state));
+      }),
+    );
 
     onCleanup(() => sub.unsubscribe());
   });

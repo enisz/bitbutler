@@ -1,7 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, Subscriber } from 'rxjs';
 import { HttpError } from '../models/http.model';
 import {
   QbAppPreferences,
@@ -34,13 +33,6 @@ type QbRequestArgs = {
   body?: unknown;
   form?: Record<string, string | number | boolean>;
   headers?: Record<string, string>;
-};
-
-export type StreamMaindataState = {
-  maindata: Maindata | null;
-  progress: number;
-  total: number;
-  done: boolean;
 };
 
 // The IPC boundary (window.bitbutler.qb.request) rejects with whatever the main process threw,
@@ -148,58 +140,6 @@ export class QbService {
       });
       if (res.ok) return res.body;
       throw new HttpError(res.status, res.statusText, `Failed to get maindata`);
-    },
-
-    streamMaindata: (
-      serverId: string,
-      rid: number = 0,
-      sortBy?: string,
-      sortDesc?: boolean,
-    ): Observable<StreamMaindataState> => {
-      return new Observable((subscriber: Subscriber<StreamMaindataState>) => {
-        let totalCount = 0;
-        let progressCount = 0;
-
-        const unsubscribe = window.bitbutler.qb.onSyncChunk((payload) => {
-          if (payload.type === 'error') {
-            subscriber.error(new Error(payload.error));
-            return;
-          }
-
-          if (payload.type === 'metadata') {
-            totalCount = payload.total;
-            const metaChunk = { ...payload.data, _isStreamingChunk: true } as unknown as Maindata;
-            subscriber.next({ maindata: metaChunk, progress: 0, total: totalCount, done: false });
-          }
-
-          if (payload.type === 'chunk') {
-            progressCount = payload.progress;
-            const deltaChunk = {
-              torrents: payload.data,
-              _isStreamingChunk: true,
-            } as unknown as Maindata;
-            subscriber.next({
-              maindata: deltaChunk,
-              progress: progressCount,
-              total: totalCount,
-              done: false,
-            });
-          }
-
-          if (payload.type === 'done') {
-            const finalChunk = { _isStreamingChunk: false } as unknown as Maindata;
-            subscriber.next({
-              maindata: finalChunk,
-              progress: totalCount,
-              total: totalCount,
-              done: true,
-            });
-          }
-        });
-
-        window.bitbutler.qb.startSyncStream({ id: serverId, rid, sortBy, sortDesc });
-        return () => unsubscribe();
-      });
     },
 
     torrentPeers: async (

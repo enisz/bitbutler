@@ -15,7 +15,6 @@ describe('QbPollingService', () => {
   beforeEach(() => {
     mockQbService = {
       sync: {
-        streamMaindata: vi.fn().mockReturnValue(new Subject()),
         maindata: vi.fn().mockResolvedValue({ rid: 1 }),
         torrentPeers: vi.fn().mockResolvedValue({ rid: 1, peers: {} }),
       },
@@ -72,20 +71,81 @@ describe('QbPollingService', () => {
     expect(service.onPoll$).toBeDefined();
   });
 
-  it('should call streamMaindata when startMaindataPolling() is called', () => {
-    service.startMaindataPolling('server-1');
-    expect(mockQbService.sync.streamMaindata).toHaveBeenCalledWith(
-      'server-1',
-      0,
-      undefined,
-      undefined,
-    );
+  // qb.sync.maindata is only invoked lazily, from inside the returned Observable's operator
+  // chain (exhaustMap), so every test that asserts on it must actually subscribe - calling
+  // startMaindataPolling() alone (as the old streamMaindata-based test did) never triggers it.
+  it('should call qb.sync.maindata with rid 0 on the first call for a server', async () => {
+    const sub = service.startMaindataPolling('server-1').subscribe();
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(mockQbService.sync.maindata).toHaveBeenCalledWith('server-1', 0);
+    sub.unsubscribe();
   });
 
-  it('should stop any previous polling when startMaindataPolling() is called again', () => {
-    service.startMaindataPolling('server-1');
-    service.startMaindataPolling('server-1');
-    expect(mockQbService.sync.streamMaindata).toHaveBeenCalledTimes(2);
+  it('should stop any previous polling when startMaindataPolling() is called again', async () => {
+    const sub1 = service.startMaindataPolling('server-1').subscribe();
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    const sub2 = service.startMaindataPolling('server-1').subscribe();
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(mockQbService.sync.maindata).toHaveBeenCalledTimes(2);
+    sub1.unsubscribe();
+    sub2.unsubscribe();
+  });
+
+  it('should flip isInitialLoading$ back to false once the first fetch resolves', async () => {
+    mockQbService.sync.maindata.mockResolvedValueOnce({ rid: 1 });
+    const sub = service.startMaindataPolling('server-1').subscribe();
+
+    expect(await firstValueFrom(service.isInitialLoading$)).toBe(true);
+
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(await firstValueFrom(service.isInitialLoading$)).toBe(false);
+    sub.unsubscribe();
+  });
+
+  it('should resume from the last known rid when restarting polling for the same server', async () => {
+    mockQbService.sync.maindata.mockResolvedValueOnce({ rid: 42 });
+    const sub1 = service.startMaindataPolling('server-1').subscribe();
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+    sub1.unsubscribe();
+
+    const sub2 = service.startMaindataPolling('server-1').subscribe();
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(mockQbService.sync.maindata).toHaveBeenLastCalledWith('server-1', 42);
+    sub2.unsubscribe();
+  });
+
+  it('should reset the rid to 0 when restarting polling for a different server', async () => {
+    mockQbService.sync.maindata.mockResolvedValueOnce({ rid: 42 });
+    const sub1 = service.startMaindataPolling('server-1').subscribe();
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+    sub1.unsubscribe();
+
+    const sub2 = service.startMaindataPolling('server-2').subscribe();
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(mockQbService.sync.maindata).toHaveBeenLastCalledWith('server-2', 0);
+    sub2.unsubscribe();
   });
 
   describe('pause / resume', () => {
@@ -129,6 +189,21 @@ describe('QbPollingService', () => {
       service.stopPolling();
       const paused = await firstValueFrom(service.isPaused$);
       expect(paused).toBe(false);
+    });
+
+    it('should still complete the initial load when paused immediately after starting, before the first fetch resolves', async () => {
+      const sub = service.startMaindataPolling('server-1').subscribe();
+      const token = service.pause();
+
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(mockQbService.sync.maindata).toHaveBeenCalledWith('server-1', 0);
+      expect(await firstValueFrom(service.isInitialLoading$)).toBe(false);
+
+      service.resume(token);
+      sub.unsubscribe();
     });
   });
 

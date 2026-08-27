@@ -2,7 +2,6 @@ import type {
   BbeMetadata,
   BbeServerInfo,
   BitButlerAPI,
-  BitButlerSyncStreamResponse,
   ExportDoneEvent,
   ExportProgressEvent,
   ExportStartPayload,
@@ -86,13 +85,6 @@ const api: BitButlerAPI = {
     hasCookie: ({ id }) => ipcRenderer.invoke('qb:has-cookie', { id }),
     request: (payload) => ipcRenderer.invoke('qb:request', payload),
     torrentsAdd: (payload) => ipcRenderer.invoke('qb:torrentsAdd', payload),
-    startSyncStream: (payload) => ipcRenderer.send('qb:sync-maindata-stream', payload),
-    onSyncChunk: (callback) =>
-      makeIpcSubscription(
-        'qb:sync-maindata-chunk',
-        (p) => p as BitButlerSyncStreamResponse,
-        callback,
-      ),
   },
 
   window: {

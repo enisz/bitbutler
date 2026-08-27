@@ -183,7 +183,7 @@ describe('TorrentStoreService', () => {
     expect(service.isPrimed()).toBe(false);
   });
 
-  it('should set isPrimed to true after first non-streaming full_update', () => {
+  it('should set isPrimed to true after the first full_update', () => {
     expect(service.isPrimed()).toBe(false);
     service.applyMaindata(makeMaindata({ full_update: true }));
     expect(service.isPrimed()).toBe(true);
@@ -210,6 +210,34 @@ describe('TorrentStoreService', () => {
 
     expect(finished).toHaveLength(1);
     expect(finished[0].hash).toBe('abc');
+  });
+
+  it('should not emit finished$ for an already-finished torrent hash seen for the first time on a full_update after priming (e.g. a server switch)', () => {
+    // Prime the store, e.g. with the previous server's data.
+    service.applyMaindata(
+      makeMaindata({
+        full_update: true,
+        torrents: {
+          abc: { state: 'downloading', progress: 0.5, amount_left: 100 } as TorrentDelta,
+        },
+      }),
+    );
+
+    const finished: any[] = [];
+    service.finished$.subscribe((e) => finished.push(e));
+
+    // A genuine server switch: a fresh full_update for a different server, containing a hash
+    // never seen before that is already in a finished/seeding state.
+    service.applyMaindata(
+      makeMaindata({
+        full_update: true,
+        torrents: {
+          xyz: { state: 'uploading', progress: 1.0, amount_left: 0 } as TorrentDelta,
+        },
+      }),
+    );
+
+    expect(finished).toHaveLength(0);
   });
 
   it('should not change the torrentsMap/torrentsArray reference on an empty incremental delta', () => {
