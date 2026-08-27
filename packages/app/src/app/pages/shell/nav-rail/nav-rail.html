@@ -1,0 +1,15 @@
+<nav
+  class="bb-nav-rail d-flex flex-column align-items-center"
+  [attr.aria-label]="'pages.shell.nav.label' | translate"
+>
+  <a
+    class="bb-nav-rail-item"
+    routerLink="/pages/torrent-list"
+    routerLinkActive="active"
+    [ngbTooltip]="'pages.shell.nav.torrents' | translate"
+    placement="start"
+    [attr.aria-label]="'pages.shell.nav.torrents' | translate"
+  >
+    <fa-icon [icon]="icons.faList"></fa-icon>
+  </a>
+</nav>

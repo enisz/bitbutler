@@ -1246,6 +1246,12 @@
         "message": "Biztosan törölni szeretnéd a következőt: {{name}}?"
       }
     },
+    "shell": {
+      "nav": {
+        "label": "Oldal navigáció",
+        "torrents": "Torrentek"
+      }
+    },
     "main": {
       "button-bar": {
         "button": {
