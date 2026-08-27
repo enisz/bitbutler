@@ -90,6 +90,17 @@ export class UpdateAvailable {
     return platform ? (this.osLabels[platform] ?? null) : null;
   });
 
+  private readonly codeSigningNoticeVariants: Partial<Record<HostPlatform, string>> = {
+    win32: 'win32',
+    linux: 'linux',
+  };
+
+  public readonly codeSigningNoticeKey = computed<string>(() => {
+    const platform = this.platform();
+    const variant = (platform && this.codeSigningNoticeVariants[platform]) || 'default';
+    return `components.modals.update-available.code-signing-notice.${variant}`;
+  });
+
   public readonly currentVersion = computed<string | null>(() => {
     const version = this.update().currentVersion;
     return version ? normalizeVersionTag(version) : null;
