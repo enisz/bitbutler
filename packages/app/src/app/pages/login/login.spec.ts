@@ -466,7 +466,7 @@ describe('Login', () => {
 
       await component.connect();
 
-      expect(router.navigate).toHaveBeenCalledWith(['/pages/main']);
+      expect(router.navigate).toHaveBeenCalledWith(['/pages/torrent-list']);
     });
 
     it('does not probe when login did not succeed', async () => {
