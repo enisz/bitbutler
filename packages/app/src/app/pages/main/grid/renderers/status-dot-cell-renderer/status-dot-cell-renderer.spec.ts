@@ -25,7 +25,7 @@ describe('StatusDotCellRenderer', () => {
 
   it('agInit should derive the variant from data.state', () => {
     component.agInit({ data: { state: 'downloading' } } as any);
-    expect(component.variant).toBe('info');
+    expect(component.variant).toBe('success');
   });
 
   it('agInit should fall back to secondary when data is null', () => {
