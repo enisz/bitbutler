@@ -65,6 +65,8 @@ export class Main implements OnDestroy {
 
     if (!serverId) return;
 
+    this.torrentStore.clear();
+
     const sub = new Subscription();
     this.pollSub = sub;
 

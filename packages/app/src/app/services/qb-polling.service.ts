@@ -111,7 +111,9 @@ export class QbPollingService {
         if (!isPaused) this._pollingInterval$.next(pollMs);
       }),
       switchMap(({ pollMs, isPaused }) => {
-        if (isPaused) return EMPTY;
+        // Pausing throttles routine polling; it must never block the initial load, which
+        // isPrimed() and the server-switch loader both wait on.
+        if (isPaused && hasLoadedOnce) return EMPTY;
         return interval(pollMs).pipe(
           startWith(0),
           tap(() => this._onPoll$.next()),

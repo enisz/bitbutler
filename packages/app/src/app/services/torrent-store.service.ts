@@ -220,9 +220,10 @@ export class TorrentStoreService {
       const hash = t.hash;
 
       const nowFinished = this.isFinished(t);
+      const known = this.finishedByHash.has(hash);
       const wasFinished = this.finishedByHash.get(hash) ?? false;
 
-      if (allowEmit && !wasFinished && nowFinished) {
+      if (allowEmit && known && !wasFinished && nowFinished) {
         this._finished$.next({ hash, torrent: t, ts: now });
       }
 

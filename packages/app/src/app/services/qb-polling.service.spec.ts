@@ -190,6 +190,21 @@ describe('QbPollingService', () => {
       const paused = await firstValueFrom(service.isPaused$);
       expect(paused).toBe(false);
     });
+
+    it('should still complete the initial load when paused immediately after starting, before the first fetch resolves', async () => {
+      const sub = service.startMaindataPolling('server-1').subscribe();
+      const token = service.pause();
+
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(mockQbService.sync.maindata).toHaveBeenCalledWith('server-1', 0);
+      expect(await firstValueFrom(service.isInitialLoading$)).toBe(false);
+
+      service.resume(token);
+      sub.unsubscribe();
+    });
   });
 
   describe('startPeersPolling', () => {
