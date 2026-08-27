@@ -17,14 +17,16 @@ Every release between your current version and the latest is listed in an accord
 
 ## Downloads
 
-The **Download for `<OS>`** section lists that release's assets, filtered to the ones relevant to your platform (installer and zip on Windows, AppImage/deb/rpm/snap/tar.gz on Linux) - if none match, every asset is shown instead. Clicking an asset opens its download URL in your default browser; nothing downloads inside the app from this list. Below the list, a callout warns about code signing and Windows SmartScreen - see [Code Signing & SmartScreen Warnings](#code-signing-smartscreen-warnings).
+The **Download for `<OS>`** section lists that release's assets, filtered to the ones relevant to your platform (installer and zip on Windows, AppImage/deb/rpm/snap/tar.gz on Linux) - if none match, every asset is shown instead. Clicking an asset opens its download URL in your default browser; nothing downloads inside the app from this list. Below the list, a callout warns about code signing, with wording tailored to your platform - see [Code Signing Warnings](#code-signing-warnings).
 
-## Code Signing & SmartScreen Warnings
+## Code Signing Warnings
 
-BitButler doesn't have a code-signing certificate, so its Windows builds aren't code-signed. Because of that, Windows SmartScreen doesn't recognize BitButler as a trusted publisher and may flag it:
+BitButler doesn't have a code-signing certificate, so none of its builds are code-signed. What that means depends on your platform:
 
-- **Downloading manually** - your browser or Windows may show a "Windows protected your PC" warning before the installer runs. Choose **More info > Run anyway** to continue.
-- **Updating via Update Now** - the in-app silent update launches the downloaded installer without a wizard, so there's no dialog for you to click through if SmartScreen intervenes. It can stall or fail the automatic install; a stalled update is a known limitation of running unsigned, not a bug. If it happens, download and run one of the assets from the [Downloads](#downloads) list manually instead.
+- **Windows** - Windows SmartScreen doesn't recognize BitButler as a trusted publisher and may flag it. Downloading manually, your browser or Windows may show a "Windows protected your PC" warning before the installer runs - choose **More info > Run anyway** to continue. Updating via **Update Now** launches the downloaded installer without a wizard, so there's no dialog for you to click through if SmartScreen intervenes; it can stall or fail the automatic install, which is a known limitation of running unsigned, not a bug.
+- **Linux** - installing the downloaded package may prompt for your password, or fail depending on your distribution's setup, since it isn't signed.
+
+If the automatic install stalls or fails, download and run one of the assets from the [Downloads](#downloads) list manually instead.
 
 ## Footer
 
@@ -42,7 +44,7 @@ The modal can't be dismissed (via Close, Escape, or clicking the backdrop) while
 
 Only shown when BitButler can update itself in place - currently a Windows install via the NSIS installer, or a Linux AppImage. Other builds (portable/zip on Windows, deb/rpm/snap/tar.gz on Linux, macOS) don't show this button; use the download links instead.
 
-Clicking it starts the in-app flow: the footer switches to a progress row showing the asset name, bytes transferred versus total, and a percentage bar while the latest release downloads. **Cancel** stops the download and returns to the idle footer. Once the download completes, the app quits and reinstalls itself silently (no installer wizard) and relaunches automatically - no further action is needed from you, unless SmartScreen intervenes; see [Code Signing & SmartScreen Warnings](#code-signing-smartscreen-warnings).
+Clicking it starts the in-app flow: the footer switches to a progress row showing the asset name, bytes transferred versus total, and a percentage bar while the latest release downloads. **Cancel** stops the download and returns to the idle footer. Once the download completes, the app quits and reinstalls itself silently (no installer wizard) and relaunches automatically - no further action is needed from you, unless the install is interrupted; see [Code Signing Warnings](#code-signing-warnings).
 
 ### Skip These Versions
 
