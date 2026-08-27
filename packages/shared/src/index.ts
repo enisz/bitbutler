@@ -27,8 +27,6 @@ export type {
   BitButlerQbRequest,
   BitButlerQbTorrentsAddPayload,
   BitButlerServerIdPayload,
-  BitButlerSyncStreamPayload,
-  BitButlerSyncStreamResponse,
   ExportCategoryScope,
   ExportDoneEvent,
   ExportMode,

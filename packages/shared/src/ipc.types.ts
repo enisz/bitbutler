@@ -30,21 +30,6 @@ export interface BitButlerQbRequest<TBody = unknown> {
   headers?: Record<string, string>;
 }
 
-export interface BitButlerSyncStreamPayload {
-  id: string;
-  rid?: number;
-  chunkSize?: number;
-  delayMs?: number;
-  sortBy?: string;
-  sortDesc?: boolean;
-}
-
-export type BitButlerSyncStreamResponse =
-  | { type: 'metadata'; data: Record<string, unknown>; total: number }
-  | { type: 'chunk'; data: Record<string, unknown>; progress: number; total: number }
-  | { type: 'done' }
-  | { type: 'error'; error: string };
-
 export type MenuClickPayload = { action: string; ts: number; serverId?: string };
 
 export type TorrentParsePayload = {
@@ -226,8 +211,6 @@ export interface BitButlerAPI {
       payload: BitButlerQbRequest<TBody>,
     ): Promise<TResponse>;
     torrentsAdd(payload: BitButlerQbTorrentsAddPayload): Promise<unknown>;
-    startSyncStream(payload: BitButlerSyncStreamPayload): void;
-    onSyncChunk(callback: (payload: BitButlerSyncStreamResponse) => void): () => void;
   };
 
   window: {
