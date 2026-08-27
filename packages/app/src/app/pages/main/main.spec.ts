@@ -4,7 +4,6 @@ import { Subject } from 'rxjs';
 import { QbPollingService } from '../../services/qb-polling.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { ThemeService } from '../../services/theme.service';
-import { TorrentListGridSettingsService } from '../../services/torrent-list-grid.settings.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
 import { Main } from './main';
 
@@ -49,10 +48,6 @@ describe('Main', () => {
           useValue: { startMaindataPolling: vi.fn().mockReturnValue(new Subject()) },
         },
         { provide: TorrentStoreService, useValue: { applyMaindata: vi.fn() } },
-        {
-          provide: TorrentListGridSettingsService,
-          useValue: { asObservable: vi.fn().mockReturnValue(new Subject().asObservable()) },
-        },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     })
