@@ -15,11 +15,11 @@ Open the dialog from the toolbar: **Settings > BitButler**. The dialog has four 
 
 ### Startup
 
-| Setting                   | Description                                                                                                                                   |
-| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| Start app with the system | Automatically launches BitButler when the operating system starts.                                                                            |
-| Start minimized           | Hides the application window on startup; BitButler stays accessible from the system tray. Requires "Start app with the system" to be enabled. |
-| Automatic updates         | Checks for BitButler updates automatically every time the app starts.                                                                         |
+| Setting                   | Description                                                                                                                                                       |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Start app with the system | Automatically launches BitButler when the operating system starts.                                                                                                |
+| Start minimized           | Hides the application window on startup; BitButler stays accessible from the system tray. Requires "Start app with the system" to be enabled.                     |
+| Automatic updates         | Checks for BitButler updates automatically every time the app starts. If a newer version exists, the [Update Available window](../update-available-window) opens. |
 
 If "Start app with the system" is enabled but no server is marked as the default connection, a warning hint appears here reminding you that the app will start without logging in automatically. See [Setting a Default Server](../manage/servers#setting-a-default-server).
 

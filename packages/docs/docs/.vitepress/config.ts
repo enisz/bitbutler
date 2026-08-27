@@ -75,6 +75,10 @@ export default defineConfig({
                 },
                 { text: 'Application Menu', link: '/guide/user-interface/application-menu' },
                 {
+                  text: 'Update Available Window',
+                  link: '/guide/user-interface/update-available-window',
+                },
+                {
                   text: 'System Tray & Notifications',
                   link: '/guide/user-interface/system-tray',
                 },
@@ -171,6 +175,10 @@ export default defineConfig({
                   link: '/hu/guide/user-interface/torrent-details-view',
                 },
                 { text: 'Alkalmazásmenü', link: '/hu/guide/user-interface/application-menu' },
+                {
+                  text: 'Frissítés elérhető ablak',
+                  link: '/hu/guide/user-interface/update-available-window',
+                },
                 {
                   text: 'Rendszertálca és értesítések',
                   link: '/hu/guide/user-interface/system-tray',
