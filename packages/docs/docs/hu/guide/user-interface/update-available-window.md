@@ -17,14 +17,16 @@ A jelenlegi verziód és a legújabb kiadás közötti összes verzió listázva
 
 ## Letöltések
 
-A **Letöltés `<operációs rendszer>` rendszerre** szakasz az adott kiadás fájljait listázza, a platformodhoz szűrve (telepítő és zip Windows alatt, AppImage/deb/rpm/snap/tar.gz Linux alatt) - ha egyik sem illeszkedik, az összes fájl megjelenik. Egy fájlra kattintva a letöltési URL megnyílik az alapértelmezett böngésződben; ebből a listából semmi sem töltődik le magán az alkalmazáson belül. A lista alatt egy figyelmeztetés utal a kódaláírásra és a Windows SmartScreenre - lásd [Kódaláírás és SmartScreen figyelmeztetések](#kodalairas-es-smartscreen-figyelmeztetesek).
+A **Letöltés `<operációs rendszer>` rendszerre** szakasz az adott kiadás fájljait listázza, a platformodhoz szűrve (telepítő és zip Windows alatt, AppImage/deb/rpm/snap/tar.gz Linux alatt) - ha egyik sem illeszkedik, az összes fájl megjelenik. Egy fájlra kattintva a letöltési URL megnyílik az alapértelmezett böngésződben; ebből a listából semmi sem töltődik le magán az alkalmazáson belül. A lista alatt egy figyelmeztetés utal a kódaláírásra, a platformodnak megfelelő szöveggel - lásd [Kódaláírási figyelmeztetések](#kodalairasi-figyelmeztetesek).
 
-## Kódaláírás és SmartScreen figyelmeztetések
+## Kódaláírási figyelmeztetések
 
-A BitButlernek nincs kódaláíró tanúsítványa, ezért a Windows buildjei nincsenek kódaláírással ellátva. Emiatt a Windows SmartScreen nem ismeri el a BitButlert megbízható kiadóként, és jelezheti ezt:
+A BitButlernek nincs kódaláíró tanúsítványa, ezért egyik buildje sincs kódaláírással ellátva. Hogy ez mit jelent, az a platformodtól függ:
 
-- **Manuális letöltés** - a böngésződ vagy a Windows egy "A Windows megvédte a számítógépet" figyelmeztetést mutathat, mielőtt a telepítő elindulna. Válaszd a **További információ > Futtatás mindenképp** lehetőséget a folytatáshoz.
-- **Frissítés a Frissítés most gombbal** - az alkalmazáson belüli néma frissítés telepítővarázsló nélkül indítja el a letöltött telepítőt, így nincs párbeszédablak, amin keresztülkattinthatnál, ha a SmartScreen közbelép. Emiatt az automatikus telepítés elakadhat vagy sikertelen lehet; egy elakadt frissítés az aláíratlan futtatás ismert korlátja, nem hiba. Ha ez történik, töltsd le és futtasd manuálisan a [Letöltések](#letoltesek) listából az egyik fájlt.
+- **Windows** - a Windows SmartScreen nem ismeri el a BitButlert megbízható kiadóként, és jelezheti ezt. Manuális letöltésnél a böngésződ vagy a Windows egy "A Windows megvédte a számítógépet" figyelmeztetést mutathat, mielőtt a telepítő elindulna - válaszd a **További információ > Futtatás mindenképp** lehetőséget a folytatáshoz. A **Frissítés most** gombbal indított frissítés telepítővarázsló nélkül indítja el a letöltött telepítőt, így nincs párbeszédablak, amin keresztülkattinthatnál, ha a SmartScreen közbelép; emiatt az automatikus telepítés elakadhat vagy sikertelen lehet, ami az aláíratlan futtatás ismert korlátja, nem hiba.
+- **Linux** - a letöltött csomag telepítése jelszót kérhet, vagy a disztribúciód beállításaitól függően sikertelen lehet, mivel a csomag nincs aláírva.
+
+Ha az automatikus telepítés elakad vagy sikertelen, töltsd le és futtasd manuálisan a [Letöltések](#letoltesek) listából az egyik fájlt.
 
 ## Lábléc
 
@@ -42,7 +44,7 @@ Az ablak nem zárható be (sem a Bezárás gombbal, sem az Esc billentyűvel, se
 
 Csak akkor jelenik meg, ha a BitButler képes önmagát a helyén frissíteni - jelenleg ez a Windowsra NSIS telepítővel telepített verziót, vagy a Linux AppImage-et jelenti. Más buildeknél (hordozható/zip Windows alatt, deb/rpm/snap/tar.gz Linux alatt, macOS) ez a gomb nem jelenik meg; ilyenkor a letöltési linkeket használd.
 
-Kattintásra elindul az alkalmazáson belüli folyamat: a lábléc egy folyamatjelző sorra vált, amely a fájl nevét, a letöltött és teljes bájtszámot, valamint egy százalékos sávot mutat, amíg a legújabb kiadás letöltődik. A **Mégse** megszakítja a letöltést, és visszatér az alaphelyzeti láblécre. A letöltés befejeztével az alkalmazás bezárja magát, néma módban (telepítővarázsló nélkül) újratelepíti magát, majd automatikusan újraindul - további teendőd nincs, hacsak nem lép közbe a SmartScreen; lásd [Kódaláírás és SmartScreen figyelmeztetések](#kodalairas-es-smartscreen-figyelmeztetesek).
+Kattintásra elindul az alkalmazáson belüli folyamat: a lábléc egy folyamatjelző sorra vált, amely a fájl nevét, a letöltött és teljes bájtszámot, valamint egy százalékos sávot mutat, amíg a legújabb kiadás letöltődik. A **Mégse** megszakítja a letöltést, és visszatér az alaphelyzeti láblécre. A letöltés befejeztével az alkalmazás bezárja magát, néma módban (telepítővarázsló nélkül) újratelepíti magát, majd automatikusan újraindul - további teendőd nincs, hacsak a telepítés meg nem szakad; lásd [Kódaláírási figyelmeztetések](#kodalairasi-figyelmeztetesek).
 
 ### Ezen verziók kihagyása
 

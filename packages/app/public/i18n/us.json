@@ -770,7 +770,11 @@
         "subtitle": "You're on v{{ current_version }}, {{ count }} versions behind the latest (v{{ latest_version }}).",
         "download-for": "Download for {{ os_name }}",
         "available-downloads": "Available Downloads",
-        "code-signing-notice": "BitButler isn't code-signed yet, which may trigger a Windows security warning or interrupt the automatic update. If that happens, install one of the files above manually.",
+        "code-signing-notice": {
+          "win32": "BitButler isn't code-signed yet, which may trigger a Windows security warning or interrupt the automatic update. If that happens, install one of the files above manually.",
+          "linux": "BitButler isn't code-signed yet, so installing the update may prompt for your password or fail depending on your setup. If that happens, install one of the files above manually.",
+          "default": "BitButler isn't code-signed yet, which may interrupt the automatic update. If that happens, install one of the files above manually."
+        },
         "button": {
           "skip-versions": "Skip these versions",
           "view-releases": "View Releases",
