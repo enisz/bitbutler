@@ -1249,7 +1249,9 @@
     "shell": {
       "nav": {
         "label": "Oldal navigáció",
-        "torrents": "Torrentek"
+        "torrents": "Torrentek",
+        "about": "A BitButlerről",
+        "disconnect": "Kijelentkezés"
       }
     },
     "main": {
@@ -1966,6 +1968,10 @@
         "remote-path-missing": "Nincs megadva távoli elérési út.",
         "local-path-unresolved": "A helyi elérési út nem feloldható."
       },
+      "disconnect-confirm": {
+        "title": "Kijelentkezés",
+        "message": "Biztosan le szeretnél csatlakozni a következőről: {{name}}?"
+      },
       "info": {
         "showing-file-title": "Fájl megjelenítése",
         "opening-folder-title": "Mappa megnyitása"
@@ -2051,6 +2057,7 @@
       "apply": "Alkalmaz",
       "today": "Ma",
       "connect": "Csatlakozás",
+      "disconnect": "Kijelentkezés",
       "add-server": "Szerver hozzáadása",
       "manage": "Kezelés",
       "manage-servers": "Szerverek kezelése",

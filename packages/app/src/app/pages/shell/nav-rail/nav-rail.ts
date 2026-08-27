@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faList } from '@fortawesome/free-solid-svg-icons';
+import { faCircleInfo, faList, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
+import { CommandBusService } from '../../../services/command-bus.service';
 
 @Component({
   selector: 'app-nav-rail',
@@ -13,5 +14,15 @@ import { TranslatePipe } from '@ngx-translate/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavRail {
-  public readonly icons = { faList };
+  private readonly commandBusService = inject(CommandBusService);
+
+  public readonly icons = { faList, faCircleInfo, faRightFromBracket };
+
+  public openAbout(): void {
+    this.commandBusService.emit({ type: 'UI_OPEN_ABOUT' });
+  }
+
+  public disconnect(): void {
+    this.commandBusService.emit({ type: 'UI_DISCONNECT' });
+  }
 }

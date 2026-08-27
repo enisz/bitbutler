@@ -1,8 +1,10 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { CommandBusService } from './command-bus.service';
+import { ConfirmService } from './confirm.service';
 import { ElectronService } from './electron.service';
 import { PathService } from './path.service';
 import { QbPollingService } from './qb-polling.service';
@@ -36,6 +38,10 @@ describe('UiCommandHandlerService', () => {
     isInitialLoading$: BehaviorSubject<boolean>;
   };
   let gridSettings$: BehaviorSubject<{ pausePollingOnModal: boolean }>;
+  let confirmServiceConfirm: ReturnType<typeof vi.fn>;
+  let routerNavigate: ReturnType<typeof vi.fn>;
+  let qbAuthLogout: ReturnType<typeof vi.fn>;
+  let serverStoreService: any;
 
   beforeAll(async () => {
     // Load all modal chunks into the Node.js ESM cache once before any test runs.
@@ -94,6 +100,18 @@ describe('UiCommandHandlerService', () => {
       selectedHashes: signal(['abc']),
     };
 
+    confirmServiceConfirm = vi.fn().mockResolvedValue(true);
+    routerNavigate = vi.fn().mockResolvedValue(true);
+    qbAuthLogout = vi.fn().mockResolvedValue(undefined);
+    serverStoreService = {
+      currentServerId: signal('server-1'),
+      currentServer: signal({ id: 'server-1', name: 'Test Server' }),
+      servers: signal([]),
+      select: vi.fn(),
+      suppressAutoLoginUntilManualConnect: vi.fn(),
+      clearSelection: vi.fn(),
+    };
+
     TestBed.configureTestingModule({
       providers: [
         UiCommandHandlerService,
@@ -113,21 +131,16 @@ describe('UiCommandHandlerService', () => {
           provide: QbService,
           useValue: {
             torrents: { files: vi.fn().mockResolvedValue([{ name: 'file.mkv' }]) },
-            auth: { hasCookie: vi.fn(), login: vi.fn() },
+            auth: { hasCookie: vi.fn(), login: vi.fn(), logout: qbAuthLogout },
           },
         },
-        {
-          provide: ServerStoreService,
-          useValue: {
-            currentServerId: signal('server-1'),
-            servers: signal([]),
-            select: vi.fn(),
-          },
-        },
+        { provide: ServerStoreService, useValue: serverStoreService },
         {
           provide: TorrentListGridSettingsService,
           useValue: { asObservable: vi.fn().mockReturnValue(gridSettings$.asObservable()) },
         },
+        { provide: ConfirmService, useValue: { confirm: confirmServiceConfirm } },
+        { provide: Router, useValue: { navigate: routerNavigate } },
         {
           provide: QbPollingService,
           useValue: mockPollingService,
@@ -226,6 +239,49 @@ describe('UiCommandHandlerService', () => {
     commands$.next({ type: 'UI_OPEN_ABOUT' });
     await flushPromises();
     expect(mockModalService.open).toHaveBeenCalled();
+  });
+
+  describe('UI_DISCONNECT', () => {
+    it('should ask for confirmation naming the current server', async () => {
+      commands$.next({ type: 'UI_DISCONNECT' });
+      await flushPromises();
+
+      expect(confirmServiceConfirm).toHaveBeenCalledWith(
+        'services.ui-command-handler.disconnect-confirm.title',
+        {
+          text: 'services.ui-command-handler.disconnect-confirm.message',
+          data: { name: 'Test Server' },
+        },
+        'general.button.disconnect',
+        undefined,
+        undefined,
+        expect.objectContaining({ iconName: 'right-from-bracket' }),
+      );
+    });
+
+    it('should log out, suppress auto-login, clear the selected server, and navigate to /login when confirmed', async () => {
+      confirmServiceConfirm.mockResolvedValue(true);
+
+      commands$.next({ type: 'UI_DISCONNECT' });
+      await flushPromises();
+
+      expect(qbAuthLogout).toHaveBeenCalledWith('server-1');
+      expect(serverStoreService.suppressAutoLoginUntilManualConnect).toHaveBeenCalled();
+      expect(serverStoreService.clearSelection).toHaveBeenCalled();
+      expect(routerNavigate).toHaveBeenCalledWith(['/login']);
+    });
+
+    it('should do nothing when the confirmation is declined', async () => {
+      confirmServiceConfirm.mockResolvedValue(false);
+
+      commands$.next({ type: 'UI_DISCONNECT' });
+      await flushPromises();
+
+      expect(qbAuthLogout).not.toHaveBeenCalled();
+      expect(serverStoreService.suppressAutoLoginUntilManualConnect).not.toHaveBeenCalled();
+      expect(serverStoreService.clearSelection).not.toHaveBeenCalled();
+      expect(routerNavigate).not.toHaveBeenCalled();
+    });
   });
 
   it('should open AddTorrent modal for UI_ADD_TORRENT', async () => {
