@@ -4,6 +4,7 @@ import { Subject, firstValueFrom } from 'rxjs';
 import { QbPollingService } from './qb-polling.service';
 import { QbService } from './qb.service';
 import { ServerSettingsService } from './server-settings.service';
+import { TorrentStoreService } from './torrent-store.service';
 import { WindowService } from './window.service';
 
 describe('QbPollingService', () => {
@@ -11,6 +12,7 @@ describe('QbPollingService', () => {
   let mockQbService: any;
   let mockWindowService: any;
   let mockServerSettings: any;
+  let mockTorrentStore: any;
 
   beforeEach(() => {
     mockQbService = {
@@ -35,12 +37,17 @@ describe('QbPollingService', () => {
       asObservable: vi.fn().mockReturnValue(new Subject()),
     };
 
+    mockTorrentStore = {
+      clear: vi.fn(),
+    };
+
     TestBed.configureTestingModule({
       providers: [
         QbPollingService,
         { provide: QbService, useValue: mockQbService },
         { provide: WindowService, useValue: mockWindowService },
         { provide: ServerSettingsService, useValue: mockServerSettings },
+        { provide: TorrentStoreService, useValue: mockTorrentStore },
       ],
     });
 
@@ -146,6 +153,126 @@ describe('QbPollingService', () => {
 
     expect(mockQbService.sync.maindata).toHaveBeenLastCalledWith('server-2', 0);
     sub2.unsubscribe();
+  });
+
+  describe('clearing the torrent store', () => {
+    it('should clear the torrent store on a fresh start for a new server', async () => {
+      const sub1 = service.startMaindataPolling('server-1').subscribe();
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+      sub1.unsubscribe();
+
+      expect(mockTorrentStore.clear).toHaveBeenCalledTimes(1);
+
+      const sub2 = service.startMaindataPolling('server-2').subscribe();
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+      sub2.unsubscribe();
+
+      expect(mockTorrentStore.clear).toHaveBeenCalledTimes(2);
+    });
+
+    it('should not clear the torrent store when resuming polling for the same server', async () => {
+      const sub1 = service.startMaindataPolling('server-1').subscribe();
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+      sub1.unsubscribe();
+
+      expect(mockTorrentStore.clear).toHaveBeenCalledTimes(1);
+
+      const sub2 = service.startMaindataPolling('server-1').subscribe();
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+      sub2.unsubscribe();
+
+      expect(mockTorrentStore.clear).toHaveBeenCalledTimes(1);
+    });
+
+    it('should clear the torrent store again after stopPolling() resets fresh-start tracking, even for the same server', async () => {
+      const sub1 = service.startMaindataPolling('server-1').subscribe();
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+      sub1.unsubscribe();
+
+      service.stopPolling();
+
+      const sub2 = service.startMaindataPolling('server-1').subscribe();
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+      sub2.unsubscribe();
+
+      expect(mockTorrentStore.clear).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('data preservation across a same-server restart', () => {
+    let realTorrentStore: TorrentStoreService;
+    let realService: QbPollingService;
+
+    beforeEach(() => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          QbPollingService,
+          TorrentStoreService,
+          { provide: QbService, useValue: mockQbService },
+          { provide: WindowService, useValue: mockWindowService },
+          { provide: ServerSettingsService, useValue: mockServerSettings },
+        ],
+      });
+
+      realTorrentStore = TestBed.inject(TorrentStoreService);
+      realService = TestBed.inject(QbPollingService);
+    });
+
+    it('should not lose torrents that did not change when restarting polling for the same server without an intervening stopPolling()', async () => {
+      mockQbService.sync.maindata.mockResolvedValueOnce({
+        rid: 1,
+        full_update: true,
+        torrents: {
+          'hash-a': { name: 'Torrent A' },
+          'hash-b': { name: 'Torrent B' },
+        },
+      });
+
+      const sub1 = realService.startMaindataPolling('server-1').subscribe((maindata) => {
+        realTorrentStore.applyMaindata(maindata);
+      });
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+      sub1.unsubscribe();
+
+      expect(realTorrentStore.torrentsMap().size).toBe(2);
+
+      // Simulate a remount (e.g. navigating to another page and back) without an intervening
+      // stopPolling() call - lastPolledServerId is still 'server-1', so this is a resume, not
+      // a fresh start, and the response below is a delta containing only hash-b.
+      mockQbService.sync.maindata.mockResolvedValueOnce({
+        rid: 2,
+        full_update: false,
+        torrents: {
+          'hash-b': { name: 'Torrent B (updated)' },
+        },
+      });
+
+      const sub2 = realService.startMaindataPolling('server-1').subscribe((maindata) => {
+        realTorrentStore.applyMaindata(maindata);
+      });
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+      sub2.unsubscribe();
+
+      expect(realTorrentStore.torrentsMap().has('hash-a')).toBe(true);
+      expect(realTorrentStore.torrentsMap().get('hash-b')?.name).toBe('Torrent B (updated)');
+    });
   });
 
   describe('pause / resume', () => {
