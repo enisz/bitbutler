@@ -1246,14 +1246,6 @@
         "message": "Are you sure you want to delete {{name}}?"
       }
     },
-    "shell": {
-      "nav": {
-        "label": "Page navigation",
-        "torrents": "Torrents",
-        "about": "About",
-        "disconnect": "Disconnect"
-      }
-    },
     "main": {
       "button-bar": {
         "button": {

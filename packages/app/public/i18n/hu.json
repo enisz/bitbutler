@@ -1246,14 +1246,6 @@
         "message": "Biztosan törölni szeretnéd a következőt: {{name}}?"
       }
     },
-    "shell": {
-      "nav": {
-        "label": "Oldal navigáció",
-        "torrents": "Torrentek",
-        "about": "A BitButlerről",
-        "disconnect": "Kijelentkezés"
-      }
-    },
     "main": {
       "button-bar": {
         "button": {
