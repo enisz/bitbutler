@@ -48,6 +48,10 @@ export class MenuBarCommandHandlerService {
           this.commandBusService.emit({ type: 'UI_DISCONNECT' });
           break;
 
+        case 'file.quit':
+          this.commandBusService.emit({ type: 'UI_QUIT' });
+          break;
+
         case 'server.add':
           this.commandBusService.emit({ type: 'UI_SERVER_EDITOR_OPEN' });
           break;

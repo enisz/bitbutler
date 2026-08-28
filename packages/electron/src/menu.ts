@@ -199,7 +199,11 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
           click: () => sendMenuAction(mainWindow, 'file.disconnect'),
         },
         { type: 'separator' },
-        { role: 'quit', accelerator: 'CmdOrCtrl+Q' },
+        {
+          label: t('electron.menu.quit'),
+          accelerator: 'CmdOrCtrl+Q',
+          click: () => sendMenuAction(mainWindow, 'file.quit'),
+        },
       ],
     },
     ...loggedInItems,

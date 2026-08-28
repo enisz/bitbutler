@@ -290,6 +290,42 @@ describe('UiCommandHandlerService', () => {
     });
   });
 
+  describe('UI_QUIT', () => {
+    it('should ask for confirmation', async () => {
+      commands$.next({ type: 'UI_QUIT' });
+      await flushPromises();
+
+      expect(confirmServiceConfirm).toHaveBeenCalledWith(
+        'services.ui-command-handler.quit-confirm.title',
+        'services.ui-command-handler.quit-confirm.message',
+        'general.button.quit',
+        undefined,
+        undefined,
+        expect.objectContaining({ iconName: 'right-from-bracket' }),
+      );
+    });
+
+    it('should quit the app when confirmed', async () => {
+      confirmServiceConfirm.mockResolvedValue(true);
+      const quitSpy = vi.spyOn(window.bitbutler.electron, 'quit');
+
+      commands$.next({ type: 'UI_QUIT' });
+      await flushPromises();
+
+      expect(quitSpy).toHaveBeenCalled();
+    });
+
+    it('should do nothing when the confirmation is declined', async () => {
+      confirmServiceConfirm.mockResolvedValue(false);
+      const quitSpy = vi.spyOn(window.bitbutler.electron, 'quit');
+
+      commands$.next({ type: 'UI_QUIT' });
+      await flushPromises();
+
+      expect(quitSpy).not.toHaveBeenCalled();
+    });
+  });
+
   it('should open AddTorrent modal for UI_ADD_TORRENT', async () => {
     commands$.next({ type: 'UI_ADD_TORRENT' });
     await flushPromises();

@@ -75,6 +75,7 @@ window.bitbutler = {
     getPlatform: () => Promise.resolve('linux'),
     checkForUpdate: () => Promise.resolve({ updateAvailable: false, error: null }),
     setLoginItem: noopVoidAsync,
+    quit: noop,
   },
   updater: {
     getCapability: () => Promise.resolve({ supported: false }),

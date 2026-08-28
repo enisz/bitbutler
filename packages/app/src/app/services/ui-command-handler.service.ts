@@ -522,6 +522,21 @@ export class UiCommandHandlerService {
           this.router.navigate(['/pages', command.viewId]);
           break;
 
+        case 'UI_QUIT': {
+          const confirmed = await this.confirmService.confirm(
+            'services.ui-command-handler.quit-confirm.title',
+            'services.ui-command-handler.quit-confirm.message',
+            'general.button.quit',
+            undefined,
+            undefined,
+            faRightFromBracket,
+          );
+          if (!confirmed) break;
+
+          window.bitbutler.electron.quit();
+          break;
+        }
+
         default:
           console.warn(UiCommandHandlerService.name, 'start', 'Unhandled UI command', command);
       }

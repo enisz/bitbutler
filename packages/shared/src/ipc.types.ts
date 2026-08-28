@@ -178,6 +178,7 @@ export interface BitButlerAPI {
     checkForUpdate(): Promise<UpdateCheckResponse>;
     setLoginItem(settings: { openAtLogin: boolean }): Promise<void>;
     getDownloadsPath(): Promise<string>;
+    quit(): void;
   };
 
   updater: {

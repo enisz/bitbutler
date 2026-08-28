@@ -40,7 +40,8 @@ export type UiCommand =
   | { type: 'UI_SCROLL_TO_TORRENT'; hash: string }
   | { type: 'UI_TORRENT_EXISTS'; hash: string | null; originalPath: string | null }
   | { type: 'UI_DISCONNECT' }
-  | { type: 'UI_VIEW_SELECT'; viewId: string };
+  | { type: 'UI_VIEW_SELECT'; viewId: string }
+  | { type: 'UI_QUIT' };
 
 export type TorrentCommand =
   | { type: 'TORRENT_DELETE_CONFIRM'; removeFiles: boolean; hashes?: string[] }

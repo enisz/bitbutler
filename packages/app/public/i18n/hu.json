@@ -1967,6 +1967,10 @@
       "disconnect-confirm": {
         "title": "Kijelentkezés",
         "message": "Biztosan le szeretnél csatlakozni a következőről: {{name}}?"
+      },
+      "quit-confirm": {
+        "title": "Kilépés",
+        "message": "Biztosan ki szeretnél lépni a BitButlerből?"
       }
     },
     "transfer-limit-command-handler": {
@@ -2050,6 +2054,7 @@
       "today": "Ma",
       "connect": "Csatlakozás",
       "disconnect": "Kijelentkezés",
+      "quit": "Kilépés",
       "add-server": "Szerver hozzáadása",
       "manage": "Kezelés",
       "manage-servers": "Szerverek kezelése",
@@ -2152,6 +2157,7 @@
       "file": "Fájl",
       "add-torrent": "Torrent hozzáadása",
       "disconnect": "Kijelentkezés",
+      "quit": "Kilépés",
       "view-menu": "Nézet",
       "view-torrent-list": "Torrent lista",
       "servers": "Szerverek",

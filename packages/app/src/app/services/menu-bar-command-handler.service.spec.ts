@@ -132,6 +132,11 @@ describe('MenuBarCommandHandlerService', () => {
     expect(commandBusEmit).toHaveBeenCalledWith({ type: 'UI_DISCONNECT' });
   });
 
+  it('should emit UI_QUIT for file.quit', () => {
+    clicks$.next({ action: 'file.quit', ts: 1 });
+    expect(commandBusEmit).toHaveBeenCalledWith({ type: 'UI_QUIT' });
+  });
+
   it('should show primary toast for debug.toast.primary', () => {
     clicks$.next({ action: 'debug.toast.primary', ts: 1 });
     expect(toastPrimary).toHaveBeenCalled();

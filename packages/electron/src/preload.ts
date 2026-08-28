@@ -52,6 +52,7 @@ const api: BitButlerAPI = {
     checkForUpdate: () => ipcRenderer.invoke('electron:check-for-update'),
     setLoginItem: (settings) => ipcRenderer.invoke('electron:set-login-item', settings),
     getDownloadsPath: () => ipcRenderer.invoke('electron:get-downloads-path'),
+    quit: () => ipcRenderer.send('electron:quit'),
   },
 
   updater: {

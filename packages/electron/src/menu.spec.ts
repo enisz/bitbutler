@@ -119,7 +119,19 @@ describe('rebuildMenu', () => {
       expect(findItem(template, byLabel('electron.menu.disconnect'))?.accelerator).toBe(
         'CmdOrCtrl+L',
       );
-      expect(findItem(template, (i) => i.role === 'quit')?.accelerator).toBe('CmdOrCtrl+Q');
+      expect(findItem(template, byLabel('electron.menu.quit'))?.accelerator).toBe('CmdOrCtrl+Q');
+    });
+
+    it('sends file.quit when Quit is clicked, instead of quitting immediately', async () => {
+      const mainWindow = createFakeWindow();
+      const template = await buildMenu(mainWindow);
+      const item = findItem(template, byLabel('electron.menu.quit'))!;
+      expect(item.role).toBeUndefined();
+      (item.click as () => void)();
+      expect(mainWindow.webContents.send).toHaveBeenCalledWith(
+        'menu:clicked',
+        expect.objectContaining({ action: 'file.quit' }),
+      );
     });
 
     it('disables actions requiring a connection when logged out', async () => {
