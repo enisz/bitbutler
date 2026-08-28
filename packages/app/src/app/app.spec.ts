@@ -1,6 +1,6 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { Router, provideRouter } from '@angular/router';
 import { NgSelectConfig } from '@ng-select/ng-select';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TimeagoIntl, provideTimeago } from 'ngx-timeago';
@@ -41,7 +41,10 @@ describe('App', () => {
       imports: [App, TranslateModule.forRoot()],
       providers: [
         provideZonelessChangeDetection(),
-        provideRouter([]),
+        provideRouter([
+          { path: 'pages/torrent-list', component: App },
+          { path: 'login', component: App },
+        ]),
         provideTimeago({ intl: { provide: TimeagoIntl, useClass: TimeagoIntl } }),
         // Real UiCommandHandlerService would act on the commands emitted below (e.g. actually
         // opening NgbModal), which doesn't work once the test environment tears down. App's own
@@ -253,6 +256,30 @@ describe('App', () => {
       fixture.detectChanges();
 
       expect(emitSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('active view reporting', () => {
+    it('notifies the main process of the active view when navigation reaches a /pages/* route', async () => {
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const router = TestBed.inject(Router);
+      const setActiveSpy = vi.spyOn(window.bitbutler.view, 'setActive');
+
+      await router.navigateByUrl('/pages/torrent-list');
+
+      expect(setActiveSpy).toHaveBeenCalledWith('torrent-list');
+    });
+
+    it('does not notify the main process for a non-/pages/ route', async () => {
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const router = TestBed.inject(Router);
+      const setActiveSpy = vi.spyOn(window.bitbutler.view, 'setActive');
+
+      await router.navigateByUrl('/login');
+
+      expect(setActiveSpy).not.toHaveBeenCalled();
     });
   });
 });
