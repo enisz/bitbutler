@@ -92,6 +92,9 @@ window.bitbutler = {
     setConnectionInfo: () => Promise.resolve({ updated: false }),
     setActive: noop,
   },
+  view: {
+    setActive: noop,
+  },
   qb: {
     login: () => Promise.resolve({ loggedIn: false }),
     logout: () => Promise.resolve({ loggedOut: false }),

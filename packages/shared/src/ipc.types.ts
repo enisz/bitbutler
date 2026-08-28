@@ -30,7 +30,7 @@ export interface BitButlerQbRequest<TBody = unknown> {
   headers?: Record<string, string>;
 }
 
-export type MenuClickPayload = { action: string; ts: number; serverId?: string };
+export type MenuClickPayload = { action: string; ts: number; serverId?: string; viewId?: string };
 
 export type TorrentParsePayload = {
   source?: TorrentDraftSource;
@@ -201,6 +201,10 @@ export interface BitButlerAPI {
       qbVersion: string;
     }): Promise<{ updated: boolean }>;
     setActive(id: string | null): void;
+  };
+
+  view: {
+    setActive(viewId: string): void;
   };
 
   qb: {

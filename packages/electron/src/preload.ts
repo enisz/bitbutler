@@ -78,6 +78,10 @@ const api: BitButlerAPI = {
     setActive: (id) => ipcRenderer.send('server:set-active', id),
   },
 
+  view: {
+    setActive: (viewId: string) => ipcRenderer.send('view:set-active', viewId),
+  },
+
   qb: {
     login: ({ id, username, password }) =>
       ipcRenderer.invoke('qb:login', { id, username, password }),
