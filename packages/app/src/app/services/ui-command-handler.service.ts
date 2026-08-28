@@ -518,6 +518,10 @@ export class UiCommandHandlerService {
           break;
         }
 
+        case 'UI_VIEW_SELECT':
+          this.router.navigate(['/pages', command.viewId]);
+          break;
+
         default:
           console.warn(UiCommandHandlerService.name, 'start', 'Unhandled UI command', command);
       }

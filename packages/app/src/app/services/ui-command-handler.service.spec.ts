@@ -229,6 +229,12 @@ describe('UiCommandHandlerService', () => {
     expect(mockModalService.open).toHaveBeenCalled();
   });
 
+  it('should navigate to the selected view for UI_VIEW_SELECT', async () => {
+    commands$.next({ type: 'UI_VIEW_SELECT', viewId: 'torrent-list' });
+    await flushPromises();
+    expect(routerNavigate).toHaveBeenCalledWith(['/pages', 'torrent-list']);
+  });
+
   it('should open QbSettings modal for UI_OPEN_QB_SETTINGS', async () => {
     commands$.next({ type: 'UI_OPEN_QB_SETTINGS' });
     await flushPromises();
