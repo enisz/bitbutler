@@ -62,6 +62,12 @@ export class MenuBarCommandHandlerService {
           break;
         }
 
+        case 'view.select': {
+          const { viewId } = payload;
+          if (viewId) this.commandBusService.emit({ type: 'UI_VIEW_SELECT', viewId });
+          break;
+        }
+
         case 'help.checkForUpdates':
           this.commandBusService.emit({ type: 'UPDATE_CHECK_FOR_UPDATE', trigger: 'manual' });
           break;

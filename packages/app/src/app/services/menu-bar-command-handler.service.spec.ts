@@ -101,6 +101,19 @@ describe('MenuBarCommandHandlerService', () => {
     expect(commandBusEmit).toHaveBeenCalledWith({ type: 'UI_SERVER_EDITOR_OPEN' });
   });
 
+  it('should emit UI_VIEW_SELECT with the view id for view.select', () => {
+    clicks$.next({ action: 'view.select', ts: 1, viewId: 'torrent-list' });
+    expect(commandBusEmit).toHaveBeenCalledWith({
+      type: 'UI_VIEW_SELECT',
+      viewId: 'torrent-list',
+    });
+  });
+
+  it('should do nothing for view.select without a view id', () => {
+    clicks$.next({ action: 'view.select', ts: 1 });
+    expect(commandBusEmit).not.toHaveBeenCalled();
+  });
+
   it('should emit UPDATE_CHECK_FOR_UPDATE for help.checkForUpdates', () => {
     clicks$.next({ action: 'help.checkForUpdates', ts: 1 });
     expect(commandBusEmit).toHaveBeenCalledWith({
