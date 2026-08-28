@@ -2161,6 +2161,8 @@
       "file": "File",
       "add-torrent": "Add Torrent",
       "disconnect": "Disconnect",
+      "view-menu": "View",
+      "view-torrent-list": "Torrent List",
       "servers": "Servers",
       "add-new": "Add new…",
       "settings-menu": "Settings",
