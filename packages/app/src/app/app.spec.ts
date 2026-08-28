@@ -281,5 +281,16 @@ describe('App', () => {
 
       expect(setActiveSpy).not.toHaveBeenCalled();
     });
+
+    it('strips a query string from the reported view id', async () => {
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const router = TestBed.inject(Router);
+      const setActiveSpy = vi.spyOn(window.bitbutler.view, 'setActive');
+
+      await router.navigateByUrl('/pages/torrent-list?tab=general');
+
+      expect(setActiveSpy).toHaveBeenCalledWith('torrent-list');
+    });
   });
 });

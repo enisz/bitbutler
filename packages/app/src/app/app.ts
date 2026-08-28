@@ -161,7 +161,7 @@ export class App {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((event) => {
-        const match = event.urlAfterRedirects.match(/^\/pages\/([^/]+)/);
+        const match = event.urlAfterRedirects.match(/^\/pages\/([^/?#]+)/);
         if (match) window.bitbutler.view.setActive(match[1]);
       });
   }

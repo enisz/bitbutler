@@ -1960,13 +1960,13 @@
         "remote-path-missing": "Nincs megadva távoli elérési út.",
         "local-path-unresolved": "A helyi elérési út nem feloldható."
       },
-      "disconnect-confirm": {
-        "title": "Kijelentkezés",
-        "message": "Biztosan le szeretnél csatlakozni a következőről: {{name}}?"
-      },
       "info": {
         "showing-file-title": "Fájl megjelenítése",
         "opening-folder-title": "Mappa megnyitása"
+      },
+      "disconnect-confirm": {
+        "title": "Kijelentkezés",
+        "message": "Biztosan le szeretnél csatlakozni a következőről: {{name}}?"
       }
     },
     "transfer-limit-command-handler": {
