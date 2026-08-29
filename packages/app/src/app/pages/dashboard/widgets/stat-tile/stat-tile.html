@@ -1,0 +1,22 @@
+<div class="stat-tile">
+  <div class="stat-tile__label">{{ labelKey | translate }}</div>
+  <div class="stat-tile__value">
+    @switch (displayKind) {
+      @case ('speed') {
+        {{ data.value | fileSize }}/s
+      }
+      @case ('bytes') {
+        {{ data.value | fileSize }}
+      }
+      @case ('ratio') {
+        {{ data.value | ratio }}
+      }
+      @case ('count') {
+        {{ data.value }}
+        @if (data.total !== undefined) {
+          <span class="stat-tile__total">of {{ data.total }}</span>
+        }
+      }
+    }
+  </div>
+</div>

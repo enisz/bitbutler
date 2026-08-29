@@ -10,7 +10,8 @@
     "test:watch": "ng test"
   },
   "dependencies": {
-    "@bitbutler/shared": "*"
+    "@bitbutler/shared": "*",
+    "gridstack": "^13.2.0"
   },
   "release": {
     "commit": "0f067511234d5d86c6601481f20438379eed7d08",

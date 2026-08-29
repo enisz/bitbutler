@@ -1225,7 +1225,18 @@
   },
   "pages": {
     "dashboard": {
-      "title": "Irányítópult"
+      "title": "Irányítópult",
+      "widgets": {
+        "stat-tile": {
+          "metric": {
+            "download_speed": "Letöltés",
+            "upload_speed": "Feltöltés",
+            "active_count": "Aktív torrentek",
+            "global_ratio": "Arány",
+            "free_disk_space": "Szabad lemezterület"
+          }
+        }
+      }
     },
     "login": {
       "tagline": "qBittorrent-nox távoli kliens",

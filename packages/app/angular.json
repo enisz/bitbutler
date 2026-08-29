@@ -94,6 +94,7 @@
             "buildTarget": "bitbutler:build",
             "tsConfig": "tsconfig.spec.json",
             "runner": "vitest",
+            "runnerConfig": true,
             "isolate": true,
             "setupFiles": ["src/test-setup.ts"],
             "providersFile": "src/test-providers.ts",

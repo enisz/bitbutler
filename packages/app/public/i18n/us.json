@@ -1225,7 +1225,18 @@
   },
   "pages": {
     "dashboard": {
-      "title": "Dashboard"
+      "title": "Dashboard",
+      "widgets": {
+        "stat-tile": {
+          "metric": {
+            "download_speed": "Download",
+            "upload_speed": "Upload",
+            "active_count": "Active Torrents",
+            "global_ratio": "Ratio",
+            "free_disk_space": "Free Disk Space"
+          }
+        }
+      }
     },
     "login": {
       "tagline": "qBittorrent-nox Remote Client",
