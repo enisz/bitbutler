@@ -397,6 +397,45 @@ describe('TorrentStoreService', () => {
     });
   });
 
+  describe('serverState', () => {
+    it('should start as null', () => {
+      expect(service.serverState()).toBeNull();
+    });
+
+    it('should be set on the first full_update', () => {
+      service.applyMaindata(
+        makeMaindata({
+          full_update: true,
+          server_state: { dl_info_speed: 100, up_info_speed: 50 } as any,
+        }),
+      );
+
+      expect(service.serverState()?.dl_info_speed).toBe(100);
+    });
+
+    it('should merge partial server_state on incremental updates, keeping prior fields', () => {
+      service.applyMaindata(
+        makeMaindata({
+          full_update: true,
+          server_state: { dl_info_speed: 100, up_info_speed: 50 } as any,
+        }),
+      );
+      service.applyMaindata(makeMaindata({ server_state: { dl_info_speed: 200 } as any }));
+
+      expect(service.serverState()?.dl_info_speed).toBe(200);
+      expect(service.serverState()?.up_info_speed).toBe(50);
+    });
+
+    it('should reset to null on clear()', () => {
+      service.applyMaindata(
+        makeMaindata({ full_update: true, server_state: { dl_info_speed: 100 } as any }),
+      );
+      service.clear();
+
+      expect(service.serverState()).toBeNull();
+    });
+  });
+
   describe('statesWithCounts', () => {
     it('is empty with no torrents', () => {
       expect(service.statesWithCounts()).toEqual([]);

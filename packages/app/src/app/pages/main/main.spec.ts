@@ -40,6 +40,7 @@ describe('Main', () => {
   let torrentStoreMock: {
     applyMaindata: ReturnType<typeof vi.fn>;
     clear: ReturnType<typeof vi.fn>;
+    serverState: ReturnType<typeof signal<any>>;
   };
 
   let qbPollingMock: {
@@ -78,6 +79,7 @@ describe('Main', () => {
     torrentStoreMock = {
       applyMaindata: vi.fn(),
       clear: vi.fn(),
+      serverState: signal(null),
     };
     qbPollingMock = {
       startMaindataPolling: vi.fn().mockReturnValue(new Subject()),
@@ -104,9 +106,9 @@ describe('Main', () => {
   });
 
   describe('serverState', () => {
-    it('should be null initially', async () => {
+    it('should be the serverState signal from TorrentStoreService', async () => {
       await createComponent();
-      expect(component.serverState()).toBeNull();
+      expect(component.serverState).toBe(torrentStoreMock.serverState);
     });
   });
 

@@ -1,7 +1,14 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ValueCount } from '../components/column-filters/set-column-filter/set-column-filter';
-import { Maindata, QbCategory, Torrent, TorrentMap, TorrentState } from '../models/torrent.model';
+import {
+  Maindata,
+  QbCategory,
+  QbServerState,
+  Torrent,
+  TorrentMap,
+  TorrentState,
+} from '../models/torrent.model';
 
 export interface TorrentTxnDelta {
   fullUpdate: boolean;
@@ -23,6 +30,8 @@ export class TorrentStoreService {
   private readonly _torrents = signal<TorrentMap>(new Map());
   private readonly _categories = signal<Map<string, QbCategory>>(new Map());
   private readonly _tags = signal<Set<string>>(new Set());
+  private readonly _serverState = signal<QbServerState | null>(null);
+  readonly serverState = this._serverState.asReadonly();
 
   readonly torrentsMap = this._torrents.asReadonly();
   readonly categoriesMap = this._categories.asReadonly();
@@ -195,6 +204,10 @@ export class TorrentStoreService {
       }
     }
 
+    if (data.server_state) {
+      this._serverState.update((prev) => mergeServerState(prev, data.server_state));
+    }
+
     const delta: TorrentTxnDelta = { fullUpdate, add, update, remove };
     this._delta$.next(delta);
     return delta;
@@ -206,6 +219,7 @@ export class TorrentStoreService {
     this._isPrimed.set(false);
     this._categories.set(new Map());
     this._tags.set(new Set());
+    this._serverState.set(null);
     this._delta$.next({ fullUpdate: true, add: [], update: [], remove: [] });
   }
 
@@ -248,4 +262,19 @@ export class TorrentStoreService {
 
     return isSeedingState || (progressDone && amountLeftDone);
   }
+}
+
+function mergeServerState(
+  prev: QbServerState | null,
+  patch: QbServerState | null | undefined,
+): QbServerState | null {
+  if (!patch) return prev;
+  if (!prev) return patch;
+
+  const out: QbServerState = { ...prev };
+  for (const k of Object.keys(patch)) {
+    const v = patch[k];
+    if (v !== undefined) out[k] = v;
+  }
+  return out;
 }
