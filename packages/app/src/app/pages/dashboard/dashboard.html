@@ -22,6 +22,24 @@
     </div>
   </header>
 
+  @if (editMode()) {
+    <div class="dashboard__manage-panel">
+      <ul>
+        @for (widget of widgets(); track widget.instanceId) {
+          <li>
+            <span>{{ catalog[widget.widgetTypeId].labelKey | translate }}</span>
+            <button type="button" (click)="editWidget(widget.instanceId)">
+              {{ 'general.button.edit' | translate }}
+            </button>
+            <button type="button" (click)="removeWidget(widget.instanceId)">
+              {{ 'general.button.delete' | translate }}
+            </button>
+          </li>
+        }
+      </ul>
+    </div>
+  }
+
   <gridstack
     [options]="gridOptions()"
     (changeCB)="onGridChange($event)"

@@ -1,0 +1,62 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ 'modals.widget-config.title' | translate }}</h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
+</div>
+<div class="modal-body widget-config">
+  @if (isStatTile()) {
+    <label>
+      {{ 'modals.widget-config.metric' | translate }}
+      <select (change)="updateStatTileMetric($any($event.target).value)">
+        @for (metric of statTileMetrics; track metric) {
+          <option [value]="metric" [selected]="$any(config()).metric === metric">
+            {{ 'pages.dashboard.widgets.stat-tile.metric.' + metric | translate }}
+          </option>
+        }
+      </select>
+    </label>
+  } @else {
+    <label>
+      {{ 'modals.widget-config.count' | translate }}
+      <input
+        type="number"
+        min="1"
+        [value]="$any(config()).count"
+        (change)="updateTorrentListField('count', +$any($event.target).value)"
+      />
+    </label>
+    <label>
+      {{ 'modals.widget-config.sort-field' | translate }}
+      <select (change)="updateTorrentListField('sortField', $any($event.target).value)">
+        @for (field of sortFields; track field) {
+          <option [value]="field" [selected]="$any(config()).sortField === field">
+            {{ 'pages.dashboard.widgets.torrent-list.column.' + field | translate }}
+          </option>
+        }
+      </select>
+    </label>
+    <label>
+      {{ 'modals.widget-config.sort-order' | translate }}
+      <select (change)="updateTorrentListField('sortOrder', $any($event.target).value)">
+        <option value="desc" [selected]="$any(config()).sortOrder === 'desc'">desc</option>
+        <option value="asc" [selected]="$any(config()).sortOrder === 'asc'">asc</option>
+      </select>
+    </label>
+    <fieldset>
+      <legend>{{ 'modals.widget-config.columns' | translate }}</legend>
+      @for (column of availableColumns; track column) {
+        <label>
+          <input
+            type="checkbox"
+            [checked]="$any(config()).columns.includes(column)"
+            (change)="toggleColumn(column)"
+          />
+          {{ 'pages.dashboard.widgets.torrent-list.column.' + column | translate }}
+        </label>
+      }
+    </fieldset>
+  }
+</div>
+<div class="modal-footer">
+  <button type="button" (click)="cancel()">{{ 'general.button.cancel' | translate }}</button>
+  <button type="button" (click)="save()">{{ 'general.button.save' | translate }}</button>
+</div>

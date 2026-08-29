@@ -1,0 +1,95 @@
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+  linkedSignal,
+} from '@angular/core';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { TranslatePipe } from '@ngx-translate/core';
+import {
+  StatTileConfig,
+  StatTileMetric,
+  TorrentListColumn,
+  TorrentListConfig,
+  TorrentListSortField,
+  WidgetConfig as WidgetConfigModel,
+  WidgetTypeId,
+} from '../../models/dashboard.model';
+
+@Component({
+  selector: 'app-widget-config',
+  standalone: true,
+  imports: [TranslatePipe],
+  templateUrl: './widget-config.html',
+  styleUrl: './widget-config.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class WidgetConfig {
+  private readonly activeModal = inject(NgbActiveModal);
+
+  readonly widgetTypeId = input.required<WidgetTypeId>();
+  readonly initialConfig = input.required<WidgetConfigModel>();
+
+  readonly statTileMetrics: StatTileMetric[] = [
+    'download_speed',
+    'upload_speed',
+    'active_count',
+    'global_ratio',
+    'free_disk_space',
+  ];
+
+  readonly sortFields: TorrentListSortField[] = [
+    'ratio',
+    'dlspeed',
+    'upspeed',
+    'size',
+    'progress',
+    'added_on',
+    'eta',
+  ];
+
+  readonly availableColumns: TorrentListColumn[] = [
+    'name',
+    'state',
+    'category',
+    'ratio',
+    'dlspeed',
+    'upspeed',
+    'size',
+    'progress',
+    'added_on',
+    'eta',
+  ];
+
+  readonly config = linkedSignal<WidgetConfigModel>(() => this.initialConfig());
+
+  readonly isStatTile = computed(() => this.widgetTypeId() === 'stat-tile');
+
+  updateStatTileMetric(metric: StatTileMetric): void {
+    this.config.set({ metric } satisfies StatTileConfig);
+  }
+
+  updateTorrentListField<K extends keyof TorrentListConfig>(
+    key: K,
+    value: TorrentListConfig[K],
+  ): void {
+    this.config.update((c) => ({ ...(c as TorrentListConfig), [key]: value }));
+  }
+
+  toggleColumn(column: TorrentListColumn): void {
+    const c = this.config() as TorrentListConfig;
+    const has = c.columns.includes(column);
+    const columns = has ? c.columns.filter((x) => x !== column) : [...c.columns, column];
+    this.config.set({ ...c, columns });
+  }
+
+  save(): void {
+    this.activeModal.close(this.config());
+  }
+
+  cancel(): void {
+    this.activeModal.dismiss();
+  }
+}

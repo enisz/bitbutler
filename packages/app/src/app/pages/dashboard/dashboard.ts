@@ -18,18 +18,21 @@ import {
   nodesCB,
 } from 'gridstack/dist/angular';
 import { Subscription } from 'rxjs';
+import { WidgetConfig as WidgetConfigModal } from '../../modals/widget-config/widget-config';
 import { WidgetPicker } from '../../modals/widget-picker/widget-picker';
 import {
   DashboardSnapshot,
   DashboardWidgetInstance,
   StatTileData,
   TorrentListData,
+  WidgetConfig,
   WidgetTypeId,
 } from '../../models/dashboard.model';
 import { DashboardSettingsService } from '../../services/dashboard-settings.service';
 import { QbPollingService } from '../../services/qb-polling.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
+import { setModalInput } from '../../utils/modal-input';
 import { WIDGET_CATALOG } from './widget-catalog';
 import { resolveWidgetData } from './widget-selectors';
 import { StatTile } from './widgets/stat-tile/stat-tile';
@@ -53,6 +56,7 @@ export class Dashboard implements OnDestroy {
   readonly widgets = signal<DashboardWidgetInstance[]>([]);
   readonly isPaused = toSignal(this.qbPollingService.isPaused$, { initialValue: false });
   readonly editMode = signal(false);
+  readonly catalog = WIDGET_CATALOG;
 
   private readonly snapshot = computed<DashboardSnapshot>(() => ({
     torrents: this.torrentStore.torrentsArray(),
@@ -149,20 +153,51 @@ export class Dashboard implements OnDestroy {
     pickerRef.result
       .then((widgetTypeId: WidgetTypeId) => {
         const meta = WIDGET_CATALOG[widgetTypeId];
-        const instance: DashboardWidgetInstance = {
-          instanceId: crypto.randomUUID(),
-          widgetTypeId,
-          x: 0,
-          y: 0,
-          w: meta.defaultSize.w,
-          h: meta.defaultSize.h,
-          config: meta.defaultConfig,
-        };
-        const next = [...this.widgets(), instance];
+        const configRef = this.modalService.open(WidgetConfigModal, { centered: true });
+        setModalInput(configRef, 'widgetTypeId', widgetTypeId);
+        setModalInput(configRef, 'initialConfig', meta.defaultConfig);
+
+        return configRef.result.then((config: WidgetConfig) => {
+          const instance: DashboardWidgetInstance = {
+            instanceId: crypto.randomUUID(),
+            widgetTypeId,
+            x: 0,
+            y: 0,
+            w: meta.defaultSize.w,
+            h: meta.defaultSize.h,
+            config,
+          };
+          const next = [...this.widgets(), instance];
+          this.widgets.set(next);
+          void this.dashboardSettingsService.save({ widgets: next });
+        });
+      })
+      .catch(() => {});
+  }
+
+  editWidget(instanceId: string): void {
+    const target = this.widgets().find((w) => w.instanceId === instanceId);
+    if (!target) return;
+
+    const configRef = this.modalService.open(WidgetConfigModal, { centered: true });
+    setModalInput(configRef, 'widgetTypeId', target.widgetTypeId);
+    setModalInput(configRef, 'initialConfig', target.config);
+
+    configRef.result
+      .then((config: WidgetConfig) => {
+        const next = this.widgets().map((w) =>
+          w.instanceId === instanceId ? { ...w, config } : w,
+        );
         this.widgets.set(next);
         void this.dashboardSettingsService.save({ widgets: next });
       })
       .catch(() => {});
+  }
+
+  removeWidget(instanceId: string): void {
+    const next = this.widgets().filter((w) => w.instanceId !== instanceId);
+    this.widgets.set(next);
+    void this.dashboardSettingsService.save({ widgets: next });
   }
 
   // Live polling recomputes `gridOptions` (via `items()`/`snapshot()`), which re-triggers

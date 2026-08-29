@@ -275,26 +275,64 @@ describe('Dashboard', () => {
   });
 
   describe('addWidget', () => {
-    it('should append a new instance with the catalog default config/size on confirm', async () => {
+    it('should open the picker, then the config modal pre-filled with the catalog default, then append the confirmed instance', async () => {
       dashboardSettingsMock.save = vi.fn().mockResolvedValue(undefined);
-      const resultPromise = Promise.resolve('stat-tile');
-      modalServiceMock.open.mockReturnValue({ result: resultPromise });
+      const pickerResult = Promise.resolve('stat-tile');
+      const configResult = Promise.resolve({ metric: 'global_ratio' });
+      modalServiceMock.open
+        .mockReturnValueOnce({ result: pickerResult })
+        .mockReturnValueOnce({ result: configResult, componentInstance: {} });
       await createComponent();
 
       component.addWidget();
-      await resultPromise;
+      await pickerResult;
+      await Promise.resolve();
+      await configResult;
       await Promise.resolve();
 
-      const added = component
-        .widgets()
-        .find((w) => w.widgetTypeId === 'stat-tile' && w !== statTileInstance);
+      const added = component.widgets().find((w) => w !== statTileInstance);
       expect(added).toMatchObject({
         widgetTypeId: 'stat-tile',
-        w: 3,
-        h: 2,
-        config: { metric: 'download_speed' },
+        config: { metric: 'global_ratio' },
       });
       expect(dashboardSettingsMock.save).toHaveBeenCalled();
+    });
+  });
+
+  describe('editWidget', () => {
+    it('should open the config modal pre-filled with the instance config and update it on confirm', async () => {
+      dashboardSettingsMock.save = vi.fn().mockResolvedValue(undefined);
+      const configResult = Promise.resolve({ metric: 'active_count' });
+      modalServiceMock.open.mockReturnValue({ result: configResult, componentInstance: {} });
+      await createComponent();
+
+      component.editWidget('w1');
+      await configResult;
+      await Promise.resolve();
+
+      expect(component.widgets()[0]).toMatchObject({
+        instanceId: 'w1',
+        config: { metric: 'active_count' },
+      });
+      expect(dashboardSettingsMock.save).toHaveBeenCalled();
+    });
+
+    it('should do nothing for an unknown instance id', async () => {
+      await createComponent();
+      component.editWidget('does-not-exist');
+      expect(modalServiceMock.open).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('removeWidget', () => {
+    it('should remove the matching widget and persist the layout', async () => {
+      dashboardSettingsMock.save = vi.fn().mockResolvedValue(undefined);
+      await createComponent();
+
+      component.removeWidget('w1');
+
+      expect(component.widgets()).toEqual([]);
+      expect(dashboardSettingsMock.save).toHaveBeenCalledWith({ widgets: [] });
     });
   });
 });

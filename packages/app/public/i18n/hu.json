@@ -768,6 +768,14 @@
       "widget-picker": {
         "title": "Widget hozzáadása"
       },
+      "widget-config": {
+        "title": "Widget beállítása",
+        "metric": "Mérőszám",
+        "count": "Darabszám",
+        "sort-field": "Rendezés mező",
+        "sort-order": "Sorrend",
+        "columns": "Oszlopok"
+      },
       "update-available": {
         "title": "Frissítés elérhető",
         "subtitle": "Jelenleg a v{{ current_version }} verziót használod, {{ count }} verzióval vagy lemaradva a legújabbtól (v{{ latest_version }}).",
