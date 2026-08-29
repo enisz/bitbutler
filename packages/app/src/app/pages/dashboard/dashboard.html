@@ -1,13 +1,21 @@
 <div class="dashboard">
   <header class="dashboard__header">
     <h1>{{ 'pages.dashboard.title' | translate }}</h1>
-    <button type="button" (click)="toggleLive()">
-      {{
-        (isPaused() ? 'pages.dashboard.live-toggle.paused' : 'pages.dashboard.live-toggle.live')
-          | translate
-      }}
-    </button>
+    <div class="dashboard__actions">
+      <button type="button" (click)="toggleLive()">
+        {{
+          (isPaused() ? 'pages.dashboard.live-toggle.paused' : 'pages.dashboard.live-toggle.live')
+            | translate
+        }}
+      </button>
+      <button type="button" (click)="toggleEditMode()">
+        {{
+          (editMode() ? 'pages.dashboard.edit-toggle.done' : 'pages.dashboard.edit-toggle.edit')
+            | translate
+        }}
+      </button>
+    </div>
   </header>
 
-  <gridstack [options]="gridOptions()"></gridstack>
+  <gridstack [options]="gridOptions()" (changeCB)="onGridChange($event)"></gridstack>
 </div>

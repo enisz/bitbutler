@@ -9,7 +9,12 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslatePipe } from '@ngx-translate/core';
-import { GridstackComponent, NgGridStackOptions, NgGridStackWidget } from 'gridstack/dist/angular';
+import {
+  GridstackComponent,
+  NgGridStackOptions,
+  NgGridStackWidget,
+  nodesCB,
+} from 'gridstack/dist/angular';
 import { Subscription } from 'rxjs';
 import {
   DashboardSnapshot,
@@ -42,6 +47,7 @@ export class Dashboard implements OnDestroy {
 
   readonly widgets = signal<DashboardWidgetInstance[]>([]);
   readonly isPaused = toSignal(this.qbPollingService.isPaused$, { initialValue: false });
+  readonly editMode = signal(false);
 
   private readonly snapshot = computed<DashboardSnapshot>(() => ({
     torrents: this.torrentStore.torrentsArray(),
@@ -79,7 +85,7 @@ export class Dashboard implements OnDestroy {
     column: 12,
     cellHeight: 64,
     margin: 8,
-    staticGrid: true,
+    staticGrid: !this.editMode(),
     children: this.items(),
   }));
 
@@ -122,6 +128,27 @@ export class Dashboard implements OnDestroy {
     } else {
       this.pauseToken = this.qbPollingService.pause();
     }
+  }
+
+  toggleEditMode(): void {
+    this.editMode.update((v) => !v);
+  }
+
+  onGridChange(event: nodesCB): void {
+    const positions = new Map(event.nodes.map((n) => [String(n.id), n]));
+    const next = this.widgets().map((w) => {
+      const pos = positions.get(w.instanceId);
+      if (!pos) return w;
+      return {
+        ...w,
+        x: pos.x ?? w.x,
+        y: pos.y ?? w.y,
+        w: pos.w ?? w.w,
+        h: pos.h ?? w.h,
+      };
+    });
+    this.widgets.set(next);
+    void this.dashboardSettingsService.save({ widgets: next });
   }
 
   dataFor(instance: DashboardWidgetInstance): StatTileData | TorrentListData {

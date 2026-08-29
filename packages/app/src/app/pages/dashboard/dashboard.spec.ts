@@ -25,7 +25,7 @@ describe('Dashboard', () => {
     pause: ReturnType<typeof vi.fn>;
     resume: ReturnType<typeof vi.fn>;
   };
-  let dashboardSettingsMock: { load: ReturnType<typeof vi.fn> };
+  let dashboardSettingsMock: { load: ReturnType<typeof vi.fn>; save: ReturnType<typeof vi.fn> };
 
   const statTileInstance: DashboardWidgetInstance = {
     instanceId: 'w1',
@@ -73,7 +73,10 @@ describe('Dashboard', () => {
       pause: vi.fn().mockReturnValue(Symbol('pause-token')),
       resume: vi.fn(),
     };
-    dashboardSettingsMock = { load: vi.fn().mockResolvedValue({ widgets: [statTileInstance] }) };
+    dashboardSettingsMock = {
+      load: vi.fn().mockResolvedValue({ widgets: [statTileInstance] }),
+      save: vi.fn().mockResolvedValue(undefined),
+    };
   });
 
   it('should create', async () => {
@@ -179,6 +182,40 @@ describe('Dashboard', () => {
           props: { data: { metric: 'download_speed', value: 0 } },
         },
       ]);
+    });
+  });
+
+  describe('editMode', () => {
+    it('should default to false', async () => {
+      await createComponent();
+      expect(component.editMode()).toBe(false);
+    });
+
+    it('should toggle', async () => {
+      await createComponent();
+      component.toggleEditMode();
+      expect(component.editMode()).toBe(true);
+      component.toggleEditMode();
+      expect(component.editMode()).toBe(false);
+    });
+  });
+
+  describe('onGridChange', () => {
+    it('should update the matching widget position/size and persist the layout', async () => {
+      dashboardSettingsMock.save = vi.fn().mockResolvedValue(undefined);
+      await createComponent();
+
+      component.onGridChange({ nodes: [{ id: 'w1', x: 4, y: 1, w: 5, h: 3 }] } as any);
+
+      expect(component.widgets()[0]).toMatchObject({ x: 4, y: 1, w: 5, h: 3 });
+      expect(dashboardSettingsMock.save).toHaveBeenCalledWith({ widgets: component.widgets() });
+    });
+
+    it('should leave widgets with no matching node untouched', async () => {
+      await createComponent();
+      const before = component.widgets()[0];
+      component.onGridChange({ nodes: [{ id: 'not-w1', x: 9, y: 9, w: 9, h: 9 }] } as any);
+      expect(component.widgets()[0]).toEqual(before);
     });
   });
 });
