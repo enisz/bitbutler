@@ -1,6 +1,11 @@
 import { DashboardSnapshot, DashboardWidgetInstance } from '../../models/dashboard.model';
 import { Torrent } from '../../models/torrent.model';
-import { resolveWidgetData, selectStatTileData, selectTorrentListData } from './widget-selectors';
+import {
+  resolveWidgetData,
+  selectPieChartData,
+  selectStatTileData,
+  selectTorrentListData,
+} from './widget-selectors';
 
 const makeTorrent = (overrides: Partial<Torrent>): Torrent =>
   ({
@@ -153,6 +158,61 @@ describe('selectTorrentListData', () => {
   });
 });
 
+describe('selectPieChartData', () => {
+  it('should partition torrents into non-overlapping state buckets, omitting empty buckets', () => {
+    const snapshot: DashboardSnapshot = {
+      torrents: [
+        makeTorrent({ state: 'downloading' }),
+        makeTorrent({ state: 'forcedDL' }),
+        makeTorrent({ state: 'uploading' }),
+        makeTorrent({ state: 'error' }),
+      ],
+      serverState: null,
+    };
+
+    const result = selectPieChartData(snapshot, { groupBy: 'state' });
+
+    expect(result.groupBy).toBe('state');
+    expect(result.slices).toEqual([
+      {
+        key: 'downloading',
+        labelKey: 'pages.dashboard.widgets.pie-chart.bucket.downloading',
+        value: 2,
+      },
+      {
+        key: 'completed',
+        labelKey: 'pages.dashboard.widgets.pie-chart.bucket.completed',
+        value: 1,
+      },
+      { key: 'errored', labelKey: 'pages.dashboard.widgets.pie-chart.bucket.errored', value: 1 },
+    ]);
+  });
+
+  it('should return no slices for an empty torrent list', () => {
+    const result = selectPieChartData({ torrents: [], serverState: null }, { groupBy: 'state' });
+    expect(result.slices).toEqual([]);
+  });
+
+  it('should group by raw category, using "-" for an empty category', () => {
+    const snapshot: DashboardSnapshot = {
+      torrents: [
+        makeTorrent({ category: 'linux' }),
+        makeTorrent({ category: 'linux' }),
+        makeTorrent({ category: '' }),
+      ],
+      serverState: null,
+    };
+
+    const result = selectPieChartData(snapshot, { groupBy: 'category' });
+
+    expect(result.groupBy).toBe('category');
+    expect(result.slices).toEqual([
+      { key: 'linux', value: 2 },
+      { key: '-', value: 1 },
+    ]);
+  });
+});
+
 describe('resolveWidgetData', () => {
   it('should dispatch to selectStatTileData for a stat-tile instance', () => {
     const instance: DashboardWidgetInstance = {
@@ -187,6 +247,33 @@ describe('resolveWidgetData', () => {
     expect(resolveWidgetData(instance, snapshot)).toEqual({
       columns: ['name'],
       rows: [expect.objectContaining({ hash: 'x' })],
+    });
+  });
+
+  it('should dispatch to selectPieChartData for a pie-chart instance', () => {
+    const instance: DashboardWidgetInstance = {
+      instanceId: 'i3',
+      widgetTypeId: 'pie-chart',
+      x: 0,
+      y: 0,
+      w: 4,
+      h: 4,
+      config: { groupBy: 'state' },
+    };
+    const snapshot: DashboardSnapshot = {
+      torrents: [makeTorrent({ state: 'downloading' })],
+      serverState: null,
+    };
+
+    expect(resolveWidgetData(instance, snapshot)).toEqual({
+      groupBy: 'state',
+      slices: [
+        {
+          key: 'downloading',
+          labelKey: 'pages.dashboard.widgets.pie-chart.bucket.downloading',
+          value: 1,
+        },
+      ],
     });
   });
 });

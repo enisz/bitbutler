@@ -1,6 +1,9 @@
 import {
   DashboardSnapshot,
   DashboardWidgetInstance,
+  PieChartConfig,
+  PieChartData,
+  PieChartSlice,
   StatTileConfig,
   StatTileData,
   TorrentListConfig,
@@ -21,6 +24,52 @@ const ACTIVE_STATES = new Set<TorrentState>([
   'moving',
   'allocating',
 ]);
+
+// Every TorrentState maps to exactly one bucket (unlike ACTIVE_STATES/the sidebar's `groups` map
+// in status.ts, whose groups deliberately overlap for independent filter checkboxes) - a pie
+// chart's slices must sum to the full torrent count.
+type PieStateBucket =
+  | 'downloading'
+  | 'completed'
+  | 'inactive'
+  | 'stopped'
+  | 'checking'
+  | 'errored'
+  | 'other';
+
+const PIE_STATE_BUCKETS: Record<TorrentState, PieStateBucket> = {
+  downloading: 'downloading',
+  forcedDL: 'downloading',
+  metaDL: 'downloading',
+  allocating: 'downloading',
+  uploading: 'completed',
+  forcedUP: 'completed',
+  queuedDL: 'inactive',
+  queuedUP: 'inactive',
+  stalledDL: 'inactive',
+  stalledUP: 'inactive',
+  pausedDL: 'stopped',
+  stoppedDL: 'stopped',
+  pausedUP: 'stopped',
+  stoppedUP: 'stopped',
+  checkingDL: 'checking',
+  checkingUP: 'checking',
+  checkingResumeData: 'checking',
+  moving: 'checking',
+  error: 'errored',
+  missingFiles: 'errored',
+  unknown: 'other',
+};
+
+const PIE_STATE_BUCKET_ORDER: PieStateBucket[] = [
+  'downloading',
+  'completed',
+  'inactive',
+  'stopped',
+  'checking',
+  'errored',
+  'other',
+];
 
 export function selectStatTileData(
   snapshot: DashboardSnapshot,
@@ -72,14 +121,47 @@ export function selectTorrentListData(
   return { columns: config.columns, rows: rows.slice(0, config.count) };
 }
 
+export function selectPieChartData(
+  snapshot: DashboardSnapshot,
+  config: PieChartConfig,
+): PieChartData {
+  const counts = new Map<string, number>();
+
+  if (config.groupBy === 'state') {
+    for (const t of snapshot.torrents) {
+      const bucket = PIE_STATE_BUCKETS[t.state];
+      counts.set(bucket, (counts.get(bucket) ?? 0) + 1);
+    }
+    const slices: PieChartSlice[] = PIE_STATE_BUCKET_ORDER.filter(
+      (bucket) => (counts.get(bucket) ?? 0) > 0,
+    ).map((bucket) => ({
+      key: bucket,
+      labelKey: `pages.dashboard.widgets.pie-chart.bucket.${bucket}`,
+      value: counts.get(bucket)!,
+    }));
+    return { groupBy: 'state', slices };
+  }
+
+  for (const t of snapshot.torrents) {
+    const key = t.category || '-';
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+  const slices: PieChartSlice[] = Array.from(counts.entries())
+    .sort((a, b) => b[1] - a[1])
+    .map(([key, value]) => ({ key, value }));
+  return { groupBy: 'category', slices };
+}
+
 export function resolveWidgetData(
   instance: DashboardWidgetInstance,
   snapshot: DashboardSnapshot,
-): StatTileData | TorrentListData {
+): StatTileData | TorrentListData | PieChartData {
   switch (instance.widgetTypeId) {
     case 'stat-tile':
       return selectStatTileData(snapshot, instance.config as StatTileConfig);
     case 'torrent-list':
       return selectTorrentListData(snapshot, instance.config as TorrentListConfig);
+    case 'pie-chart':
+      return selectPieChartData(snapshot, instance.config as PieChartConfig);
   }
 }

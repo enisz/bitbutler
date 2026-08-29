@@ -1,6 +1,6 @@
 import { QbServerState, Torrent, TorrentState } from './torrent.model';
 
-export type WidgetTypeId = 'stat-tile' | 'torrent-list';
+export type WidgetTypeId = 'stat-tile' | 'torrent-list' | 'pie-chart';
 
 export type StatTileMetric =
   | 'download_speed'
@@ -31,7 +31,13 @@ export interface TorrentListConfig {
   columns: TorrentListColumn[];
 }
 
-export type WidgetConfig = StatTileConfig | TorrentListConfig;
+export type PieChartGroupBy = 'state' | 'category';
+
+export interface PieChartConfig {
+  groupBy: PieChartGroupBy;
+}
+
+export type WidgetConfig = StatTileConfig | TorrentListConfig | PieChartConfig;
 
 export interface DashboardWidgetInstance {
   instanceId: string;
@@ -117,4 +123,16 @@ export interface TorrentListRow {
 export interface TorrentListData {
   columns: TorrentListColumn[];
   rows: TorrentListRow[];
+}
+
+export interface PieChartSlice {
+  key: string;
+  /** Translation key for a 'state' bucket slice. Absent for 'category' slices - `key` there is the raw category string, already display-ready. */
+  labelKey?: string;
+  value: number;
+}
+
+export interface PieChartData {
+  groupBy: PieChartGroupBy;
+  slices: PieChartSlice[];
 }
