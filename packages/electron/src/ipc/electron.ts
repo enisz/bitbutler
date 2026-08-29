@@ -17,6 +17,7 @@ export function registerElectronIpcHandlers(): void {
     setLoginItem(settings),
   );
   ipcMain.handle('electron:get-downloads-path', () => app.getPath('downloads'));
+  ipcMain.on('electron:quit', () => app.quit());
 }
 
 function getPlatform(): HostPlatform {

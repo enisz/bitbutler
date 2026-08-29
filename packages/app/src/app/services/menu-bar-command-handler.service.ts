@@ -48,6 +48,10 @@ export class MenuBarCommandHandlerService {
           this.commandBusService.emit({ type: 'UI_DISCONNECT' });
           break;
 
+        case 'file.quit':
+          this.commandBusService.emit({ type: 'UI_QUIT' });
+          break;
+
         case 'server.add':
           this.commandBusService.emit({ type: 'UI_SERVER_EDITOR_OPEN' });
           break;
@@ -59,6 +63,12 @@ export class MenuBarCommandHandlerService {
         case 'server.select': {
           const { serverId } = payload;
           if (serverId) this.handleServerSwitch(serverId);
+          break;
+        }
+
+        case 'view.select': {
+          const { viewId } = payload;
+          if (viewId) this.commandBusService.emit({ type: 'UI_VIEW_SELECT', viewId });
           break;
         }
 

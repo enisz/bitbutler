@@ -1246,14 +1246,6 @@
         "message": "Are you sure you want to delete {{name}}?"
       }
     },
-    "shell": {
-      "nav": {
-        "label": "Page navigation",
-        "torrents": "Torrents",
-        "about": "About",
-        "disconnect": "Disconnect"
-      }
-    },
     "main": {
       "button-bar": {
         "button": {
@@ -1975,6 +1967,10 @@
       "disconnect-confirm": {
         "title": "Disconnect",
         "message": "Are you sure you want to disconnect from {{name}}?"
+      },
+      "quit-confirm": {
+        "title": "Quit",
+        "message": "Are you sure you want to quit BitButler?"
       }
     },
     "transfer-limit-command-handler": {
@@ -2059,6 +2055,7 @@
       "today": "Today",
       "connect": "Connect",
       "disconnect": "Disconnect",
+      "quit": "Quit",
       "add-server": "Add Server",
       "manage": "Manage",
       "manage-servers": "Manage Servers",
@@ -2161,6 +2158,9 @@
       "file": "File",
       "add-torrent": "Add Torrent",
       "disconnect": "Disconnect",
+      "quit": "Quit",
+      "view-menu": "View",
+      "view-torrent-list": "Torrent List",
       "servers": "Servers",
       "add-new": "Add new…",
       "settings-menu": "Settings",

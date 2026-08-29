@@ -7,7 +7,6 @@ export const routes: Routes = [
   },
   {
     path: 'pages',
-    loadComponent: () => import('./pages/shell/shell').then((mod) => mod.Shell),
     children: [
       {
         path: 'torrent-list',

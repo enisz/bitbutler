@@ -1246,14 +1246,6 @@
         "message": "Biztosan törölni szeretnéd a következőt: {{name}}?"
       }
     },
-    "shell": {
-      "nav": {
-        "label": "Oldal navigáció",
-        "torrents": "Torrentek",
-        "about": "A BitButlerről",
-        "disconnect": "Kijelentkezés"
-      }
-    },
     "main": {
       "button-bar": {
         "button": {
@@ -1968,13 +1960,17 @@
         "remote-path-missing": "Nincs megadva távoli elérési út.",
         "local-path-unresolved": "A helyi elérési út nem feloldható."
       },
+      "info": {
+        "showing-file-title": "Fájl megjelenítése",
+        "opening-folder-title": "Mappa megnyitása"
+      },
       "disconnect-confirm": {
         "title": "Kijelentkezés",
         "message": "Biztosan le szeretnél csatlakozni a következőről: {{name}}?"
       },
-      "info": {
-        "showing-file-title": "Fájl megjelenítése",
-        "opening-folder-title": "Mappa megnyitása"
+      "quit-confirm": {
+        "title": "Kilépés",
+        "message": "Biztosan ki szeretnél lépni a BitButlerből?"
       }
     },
     "transfer-limit-command-handler": {
@@ -2058,6 +2054,7 @@
       "today": "Ma",
       "connect": "Csatlakozás",
       "disconnect": "Kijelentkezés",
+      "quit": "Kilépés",
       "add-server": "Szerver hozzáadása",
       "manage": "Kezelés",
       "manage-servers": "Szerverek kezelése",
@@ -2160,6 +2157,9 @@
       "file": "Fájl",
       "add-torrent": "Torrent hozzáadása",
       "disconnect": "Kijelentkezés",
+      "quit": "Kilépés",
+      "view-menu": "Nézet",
+      "view-torrent-list": "Torrent lista",
       "servers": "Szerverek",
       "add-new": "Új hozzáadása…",
       "settings-menu": "Beállítások",

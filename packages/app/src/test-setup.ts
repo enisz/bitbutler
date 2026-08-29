@@ -75,6 +75,7 @@ window.bitbutler = {
     getPlatform: () => Promise.resolve('linux'),
     checkForUpdate: () => Promise.resolve({ updateAvailable: false, error: null }),
     setLoginItem: noopVoidAsync,
+    quit: noop,
   },
   updater: {
     getCapability: () => Promise.resolve({ supported: false }),
@@ -90,6 +91,9 @@ window.bitbutler = {
     getById: noopAsync,
     getByHost: noopAsync,
     setConnectionInfo: () => Promise.resolve({ updated: false }),
+    setActive: noop,
+  },
+  view: {
     setActive: noop,
   },
   qb: {
