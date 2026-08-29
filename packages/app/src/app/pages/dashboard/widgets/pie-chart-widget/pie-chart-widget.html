@@ -1,0 +1,4 @@
+<div class="pie-chart-widget">
+  <app-widget-menu [visible]="editMode" (configure)="onConfigure()" (remove)="onRemove()" />
+  <highcharts-chart class="pie-chart-widget__chart" [options]="buildOptions()"></highcharts-chart>
+</div>

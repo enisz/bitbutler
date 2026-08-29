@@ -1260,6 +1260,17 @@
             "added_on": "Hozzáadva",
             "eta": "Várható idő"
           }
+        },
+        "pie-chart": {
+          "bucket": {
+            "downloading": "Letöltés alatt",
+            "completed": "Kész",
+            "inactive": "Inaktív",
+            "stopped": "Szüneteltetve",
+            "checking": "Ellenőrzés",
+            "errored": "Hiba",
+            "other": "Egyéb"
+          }
         }
       },
       "widget-menu": {

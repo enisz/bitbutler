@@ -14,6 +14,7 @@ import {
 import { provideRouter, withHashLocation } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
+import { provideHighcharts } from 'highcharts-angular';
 import type { Tokens } from 'marked';
 import { MARKED_OPTIONS, MarkedOptions, MarkedRenderer, provideMarkdown } from 'ngx-markdown';
 import { TimeagoCustomFormatter, TimeagoFormatter, TimeagoIntl, provideTimeago } from 'ngx-timeago';
@@ -71,6 +72,7 @@ export const appConfig: ApplicationConfig = {
       loader: provideTranslateHttpLoader({ prefix: './i18n/', suffix: '.json' }),
       fallbackLang: 'us',
     }),
+    provideHighcharts(),
     importProvidersFrom(OverlayModule, PortalModule),
     provideTimeago({
       intl: { provide: TimeagoIntl, useClass: TimeagoIntl },

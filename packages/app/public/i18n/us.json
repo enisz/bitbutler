@@ -1260,6 +1260,17 @@
             "added_on": "Added On",
             "eta": "ETA"
           }
+        },
+        "pie-chart": {
+          "bucket": {
+            "downloading": "Downloading",
+            "completed": "Completed",
+            "inactive": "Inactive",
+            "stopped": "Stopped",
+            "checking": "Checking",
+            "errored": "Errored",
+            "other": "Other"
+          }
         }
       },
       "widget-menu": {
