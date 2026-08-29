@@ -275,6 +275,32 @@ describe('rebuildMenu', () => {
         expect.objectContaining({ action: 'view.select', viewId: 'torrent-list' }),
       );
     });
+
+    it('is shown when logged in, with the dashboard item checked when active', async () => {
+      mockGetCookieJar.mockReturnValue(new Map([['srv-1', 'SID=abc']]));
+      mockGetActiveViewId.mockReturnValue('dashboard');
+      const template = await buildMenu();
+      const viewMenu = findItem(template, byLabel('electron.menu.view-menu'));
+      const items = viewMenu!.submenu as MenuItemConstructorOptions[];
+      expect(items[1]).toMatchObject({
+        label: 'electron.menu.view-dashboard',
+        type: 'radio',
+        checked: true,
+      });
+    });
+
+    it('sends view.select with the dashboard view id when clicked', async () => {
+      mockGetCookieJar.mockReturnValue(new Map([['srv-1', 'SID=abc']]));
+      const mainWindow = createFakeWindow();
+      const template = await buildMenu(mainWindow);
+      const viewMenu = findItem(template, byLabel('electron.menu.view-menu'));
+      const items = viewMenu!.submenu as MenuItemConstructorOptions[];
+      (items[1].click as () => void)();
+      expect(mainWindow.webContents.send).toHaveBeenCalledWith(
+        'menu:clicked',
+        expect.objectContaining({ action: 'view.select', viewId: 'dashboard' }),
+      );
+    });
   });
 
   describe('Help menu', () => {

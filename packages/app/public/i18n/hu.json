@@ -1224,6 +1224,9 @@
     }
   },
   "pages": {
+    "dashboard": {
+      "title": "Irányítópult"
+    },
     "login": {
       "tagline": "qBittorrent-nox távoli kliens",
       "form-title": "Csatlakozás",
@@ -2160,6 +2163,7 @@
       "quit": "Kilépés",
       "view-menu": "Nézet",
       "view-torrent-list": "Torrent lista",
+      "view-dashboard": "Irányítópult",
       "servers": "Szerverek",
       "add-new": "Új hozzáadása…",
       "settings-menu": "Beállítások",

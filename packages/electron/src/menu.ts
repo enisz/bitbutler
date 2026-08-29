@@ -48,6 +48,12 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
               checked: getActiveViewId() === 'torrent-list',
               click: () => sendMenuAction(mainWindow, 'view.select', { viewId: 'torrent-list' }),
             },
+            {
+              label: t('electron.menu.view-dashboard'),
+              type: 'radio' as const,
+              checked: getActiveViewId() === 'dashboard',
+              click: () => sendMenuAction(mainWindow, 'view.select', { viewId: 'dashboard' }),
+            },
           ],
         },
         ...(servers.length > 0

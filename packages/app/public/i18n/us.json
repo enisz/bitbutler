@@ -1224,6 +1224,9 @@
     }
   },
   "pages": {
+    "dashboard": {
+      "title": "Dashboard"
+    },
     "login": {
       "tagline": "qBittorrent-nox Remote Client",
       "form-title": "Connect to Server",
@@ -2161,6 +2164,7 @@
       "quit": "Quit",
       "view-menu": "View",
       "view-torrent-list": "Torrent List",
+      "view-dashboard": "Dashboard",
       "servers": "Servers",
       "add-new": "Add new…",
       "settings-menu": "Settings",
