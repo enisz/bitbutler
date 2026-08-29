@@ -766,7 +766,8 @@
         }
       },
       "widget-picker": {
-        "title": "Widget hozzáadása"
+        "title": "Widget hozzáadása",
+        "subtitle": "Válassz egy widgetet, amit az irányítópultra szeretnél helyezni."
       },
       "widget-config": {
         "title": "Widget beállítása",
@@ -1238,6 +1239,7 @@
   "pages": {
     "dashboard": {
       "title": "Irányítópult",
+      "subtitle": "A torrentjeid és az átviteli forgalom testreszabható áttekintése.",
       "widgets": {
         "stat-tile": {
           "metric": {
@@ -1292,12 +1294,10 @@
         "pie-chart": "Kör"
       },
       "live-toggle": {
-        "live": "Élő",
-        "paused": "Szüneteltetve"
+        "label": "Élő"
       },
       "edit-toggle": {
-        "edit": "Szerkesztés",
-        "done": "Kész"
+        "label": "Szerkesztő mód"
       },
       "add-widget": "Widget hozzáadása"
     },

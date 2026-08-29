@@ -766,7 +766,8 @@
         }
       },
       "widget-picker": {
-        "title": "Add Widget"
+        "title": "Add Widget",
+        "subtitle": "Pick a widget to place on the dashboard."
       },
       "widget-config": {
         "title": "Configure Widget",
@@ -1238,6 +1239,7 @@
   "pages": {
     "dashboard": {
       "title": "Dashboard",
+      "subtitle": "A customizable overview of your torrents and transfer activity.",
       "widgets": {
         "stat-tile": {
           "metric": {
@@ -1292,12 +1294,10 @@
         "pie-chart": "Pie"
       },
       "live-toggle": {
-        "live": "Live",
-        "paused": "Paused"
+        "label": "Live"
       },
       "edit-toggle": {
-        "edit": "Edit",
-        "done": "Done"
+        "label": "Edit mode"
       },
       "add-widget": "Add Widget"
     },

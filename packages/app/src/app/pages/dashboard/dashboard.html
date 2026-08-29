@@ -1,25 +1,44 @@
 <div class="dashboard">
   <header class="dashboard__header">
-    <h1>{{ 'pages.dashboard.title' | translate }}</h1>
+    <div class="dashboard__heading">
+      <h1>{{ 'pages.dashboard.title' | translate }}</h1>
+      <p class="dashboard__subtitle text-body-secondary small mb-0">
+        {{ 'pages.dashboard.subtitle' | translate }}
+      </p>
+    </div>
     <div class="dashboard__actions">
-      <button type="button" class="btn btn-outline-secondary btn-sm" (click)="toggleLive()">
-        {{
-          (isPaused() ? 'pages.dashboard.live-toggle.paused' : 'pages.dashboard.live-toggle.live')
-            | translate
-        }}
-      </button>
+      <div class="dashboard__switch form-switch">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          role="switch"
+          id="dashboardLiveToggle"
+          [checked]="!isPaused()"
+          (change)="toggleLive()"
+        />
+        <label class="form-check-label small" for="dashboardLiveToggle">
+          {{ 'pages.dashboard.live-toggle.label' | translate }}
+        </label>
+      </div>
       @if (editMode()) {
         <button type="button" class="btn btn-outline-primary btn-sm" (click)="addWidget()">
           <fa-icon [icon]="icon.faPlus" />
           {{ 'pages.dashboard.add-widget' | translate }}
         </button>
       }
-      <button type="button" class="btn btn-outline-secondary btn-sm" (click)="toggleEditMode()">
-        {{
-          (editMode() ? 'pages.dashboard.edit-toggle.done' : 'pages.dashboard.edit-toggle.edit')
-            | translate
-        }}
-      </button>
+      <div class="dashboard__switch form-switch">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          role="switch"
+          id="dashboardEditToggle"
+          [checked]="editMode()"
+          (change)="toggleEditMode()"
+        />
+        <label class="form-check-label small" for="dashboardEditToggle">
+          {{ 'pages.dashboard.edit-toggle.label' | translate }}
+        </label>
+      </div>
     </div>
   </header>
 

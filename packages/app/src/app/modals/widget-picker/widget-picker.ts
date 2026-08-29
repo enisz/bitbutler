@@ -10,6 +10,7 @@ import { WIDGET_CATALOG, WidgetCatalogMeta } from '../../pages/dashboard/widget-
   standalone: true,
   imports: [TranslatePipe, FontAwesomeModule],
   templateUrl: './widget-picker.html',
+  styleUrl: './widget-picker.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WidgetPicker {

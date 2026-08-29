@@ -1,5 +1,10 @@
-<div class="offcanvas-header">
-  <h5 class="offcanvas-title">{{ 'components.modals.widget-picker.title' | translate }}</h5>
+<div class="offcanvas-header widget-picker">
+  <div class="widget-picker__heading">
+    <h5 class="offcanvas-title">{{ 'components.modals.widget-picker.title' | translate }}</h5>
+    <p class="widget-picker__subtitle text-body-secondary small mb-0">
+      {{ 'components.modals.widget-picker.subtitle' | translate }}
+    </p>
+  </div>
   <button
     type="button"
     class="btn-close"
@@ -7,18 +12,16 @@
     (click)="cancel()"
   ></button>
 </div>
-<div class="offcanvas-body">
-  <div class="list-group list-group-flush">
+<div class="offcanvas-body widget-picker">
+  <div class="widget-picker__list">
     @for (entry of catalogEntries; track entry.id) {
-      <button
-        type="button"
-        class="list-group-item list-group-item-action d-flex align-items-center gap-3"
-        (click)="choose(entry.id)"
-      >
-        <fa-icon [icon]="entry.icon" />
-        <span class="flex-grow-1">
-          <span class="d-block">{{ entry.labelKey | translate }}</span>
-          <span class="d-block text-body-secondary small">{{
+      <button type="button" class="widget-picker__item" (click)="choose(entry.id)">
+        <span class="widget-picker__icon">
+          <fa-icon [icon]="entry.icon" />
+        </span>
+        <span class="widget-picker__text">
+          <span class="widget-picker__label">{{ entry.labelKey | translate }}</span>
+          <span class="widget-picker__desc text-body-secondary small">{{
             entry.descriptionKey | translate
           }}</span>
         </span>
