@@ -221,6 +221,25 @@ describe('Dashboard', () => {
       props.onRemove();
       expect(component.widgets()).toEqual([]);
     });
+
+    it('should map a pie-chart instance to the app-pie-chart-widget component', async () => {
+      dashboardSettingsMock.load = vi.fn().mockResolvedValue({
+        widgets: [
+          {
+            instanceId: 'w2',
+            widgetTypeId: 'pie-chart',
+            x: 0,
+            y: 0,
+            w: 4,
+            h: 4,
+            config: { groupBy: 'state' },
+          },
+        ],
+      });
+      await createComponent();
+
+      expect(component.items()[0].component).toBe('app-pie-chart-widget');
+    });
   });
 
   describe('editMode', () => {
