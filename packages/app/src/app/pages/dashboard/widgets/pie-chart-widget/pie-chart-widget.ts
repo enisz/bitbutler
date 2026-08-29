@@ -1,11 +1,27 @@
 import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import {
+  ArcElement,
+  Chart,
+  ChartData,
+  ChartOptions,
+  DoughnutController,
+  Legend,
+  Tooltip,
+} from 'chart.js';
 import { BaseWidget } from 'gridstack/dist/angular';
-import * as Highcharts from 'highcharts';
-import { HighchartsChartComponent } from 'highcharts-angular';
+import { BaseChartDirective } from 'ng2-charts';
 import { PieChartData } from '../../../../models/dashboard.model';
 import { ThemeService } from '../../../../services/theme.service';
 import { WidgetMenu } from '../widget-menu/widget-menu';
+
+// Registered here (module scope), rather than via ng2-charts' provideCharts() in app.config.ts,
+// so 'chart.js' is only ever imported from this lazy-loaded widget file - keeping it out of the
+// eagerly-bundled main chunk entirely (mirroring how the removed Highcharts version's loader was
+// only ever pulled in when this widget actually rendered). BaseChartDirective's own
+// NG_CHARTS_CONFIGURATION injection is optional, so registering directly with Chart.register()
+// here needs no corresponding app-level provider.
+Chart.register(DoughnutController, ArcElement, Legend, Tooltip);
 
 const COLOR_TOKENS = [
   '--bs-primary',
@@ -16,10 +32,15 @@ const COLOR_TOKENS = [
   '--bs-info',
 ];
 
+interface PieChartRenderConfig {
+  data: ChartData<'doughnut', number[], string>;
+  options: ChartOptions<'doughnut'>;
+}
+
 @Component({
   selector: 'app-pie-chart-widget',
   standalone: true,
-  imports: [HighchartsChartComponent, WidgetMenu],
+  imports: [BaseChartDirective, WidgetMenu],
   templateUrl: './pie-chart-widget.html',
   styleUrl: './pie-chart-widget.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,18 +51,25 @@ export class PieChartWidget extends BaseWidget {
   @Input() onConfigure?: () => void;
   @Input() onRemove?: () => void;
 
+  readonly chartType = 'doughnut' as const;
+
   private readonly translate = inject(TranslateService);
   private readonly themeService = inject(ThemeService);
 
-  // Memoizes buildOptions()'s result so an unchanged call returns the SAME object reference
-  // rather than an equal-looking new one. The template calls buildOptions() on every change
+  // Memoizes buildConfig()'s result so an unchanged call returns the SAME object reference
+  // rather than an equal-looking new one. The template calls buildConfig() on every change
   // detection pass, and gridstack's deserialize/setInput machinery re-sets the `data` @Input on
   // every grid load() - which fires on every live-polling tick, even when nothing visibly
   // changed. Angular's template-binding dirty-check skips an unchanged, ===-identical value, so
-  // returning the cached reference stops highcharts-angular's own update effect (and the
-  // resulting full Highcharts redraw + getComputedStyle() calls) from firing needlessly.
+  // returning the cached reference stops ng2-charts' own ngOnChanges-driven update (and the
+  // resulting Chart.js redraw + getComputedStyle() calls) from firing needlessly.
+  //
+  // The signature includes the active translation language alongside data/family/mode - a prior
+  // (Highcharts-based) version of this cache omitted the language, so a runtime language switch
+  // with otherwise-unchanged data left segment labels stuck in the old language until the
+  // underlying data next changed. Including `translate.currentLang` here closes that gap.
   private cachedSignature: string | null = null;
-  private cachedOptions: Highcharts.Options | null = null;
+  private cachedConfig: PieChartRenderConfig | null = null;
 
   private themeColors(styles: CSSStyleDeclaration): string[] {
     return COLOR_TOKENS.map((token) => styles.getPropertyValue(token).trim());
@@ -51,39 +79,54 @@ export class PieChartWidget extends BaseWidget {
     return styles.getPropertyValue('--bs-body-color').trim();
   }
 
-  buildOptions(): Highcharts.Options {
+  buildConfig(): PieChartRenderConfig {
     // Re-read ThemeService here (rather than caching across calls) so the signature below always
-    // reflects the current family/mode - the caller (the template's [options] binding) re-runs
-    // this on every change detection pass, which includes theme changes.
+    // reflects the current family/mode - the caller (the template's [data]/[options] bindings)
+    // re-runs this on every change detection pass, which includes theme changes.
     const family = this.themeService.family();
     const mode = this.themeService.effectiveMode();
-    const signature = JSON.stringify({ data: this.data, family, mode });
+    const lang = this.translate.currentLang;
+    const signature = JSON.stringify({ data: this.data, family, mode, lang });
 
-    if (this.cachedOptions && this.cachedSignature === signature) {
-      return this.cachedOptions;
+    if (this.cachedConfig && this.cachedSignature === signature) {
+      return this.cachedConfig;
     }
 
     const styles = getComputedStyle(document.documentElement);
     const colors = this.themeColors(styles);
     const textColor = this.bodyColor(styles);
 
-    const points = this.data.slices.map((slice, i) => ({
-      name: slice.labelKey ? this.translate.instant(slice.labelKey) : slice.key,
-      y: slice.value,
-      color: colors[i % colors.length],
-    }));
+    const labels = this.data.slices.map((slice) =>
+      slice.labelKey ? this.translate.instant(slice.labelKey) : slice.key,
+    );
+    const values = this.data.slices.map((slice) => slice.value);
+    const backgroundColor = this.data.slices.map((_, i) => colors[i % colors.length]);
 
-    const options: Highcharts.Options = {
-      chart: { type: 'pie', backgroundColor: 'transparent', style: { color: textColor } },
-      title: { text: undefined },
-      credits: { enabled: false },
-      legend: { itemStyle: { color: textColor } },
-      plotOptions: { pie: { innerSize: '60%', dataLabels: { enabled: false } } },
-      series: [{ type: 'pie', name: '', data: points }],
+    const config: PieChartRenderConfig = {
+      data: {
+        labels,
+        datasets: [{ data: values, backgroundColor }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '60%',
+        // Chart.js canvases have no fill of their own by default - unlike Highcharts, which
+        // paints an opaque white chart.backgroundColor unless overridden, there is no separate
+        // "whole canvas" background concept in Chart.js core. This `backgroundColor` is only the
+        // base fallback color Chart.js would use for an arc that doesn't specify its own color,
+        // which never happens here since every slice above gets one from the theme. The card
+        // surface actually shows through because nothing paints the canvas itself - keeping this
+        // set to 'transparent' documents that intentionally, rather than leaving it unset.
+        backgroundColor: 'transparent',
+        plugins: {
+          legend: { labels: { color: textColor } },
+        },
+      },
     };
 
     this.cachedSignature = signature;
-    this.cachedOptions = options;
-    return options;
+    this.cachedConfig = config;
+    return config;
   }
 }

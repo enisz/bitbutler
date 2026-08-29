@@ -1,8 +1,6 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateService } from '@ngx-translate/core';
-import type * as Highcharts from 'highcharts';
-import { provideHighcharts } from 'highcharts-angular';
 import { ThemeFamily, ThemeService } from '../../../../services/theme.service';
 import { PieChartWidget } from './pie-chart-widget';
 
@@ -20,20 +18,17 @@ describe('PieChartWidget', () => {
       effectiveMode: signal<'light' | 'dark'>('light'),
     };
 
-    // provideHighcharts() is required because the template unconditionally renders
-    // <highcharts-chart>, whose directive injects HighchartsChartService (needs
-    // HIGHCHARTS_LOADER) as soon as the component tree is built - even though these tests
-    // only assert on component.buildOptions()'s pure return value, not on the rendered chart.
-    // Supply a loader that never resolves rather than the library default (which dynamically
-    // imports 'highcharts/esm/highcharts' - an extensionless specifier Node's ESM resolver
-    // rejects outside a bundler) so these tests stay synchronous and never construct a real
-    // Highcharts chart in jsdom.
+    // Unlike the removed Highcharts version, ng2-charts' BaseChartDirective injects its
+    // NG_CHARTS_CONFIGURATION token with `optional: true` and only calls canvas.getContext('2d')
+    // guarded by isPlatformBrowser. jsdom's canvas stub returns null from getContext('2d') (no
+    // 'canvas' package installed in this repo), so BaseChartDirective's own `!this.ctx` check in
+    // render() bails out before ever constructing a real Chart.js instance. No special provider
+    // or DI stub is needed here - the Highcharts version needed a stubbed provideHighcharts() to
+    // satisfy an NG0201 because HighchartsChartComponent injected its loader eagerly and
+    // non-optionally.
     await TestBed.configureTestingModule({
       imports: [PieChartWidget],
-      providers: [
-        provideHighcharts({ instance: () => new Promise(() => {}) }),
-        { provide: ThemeService, useValue: themeServiceMock },
-      ],
+      providers: [{ provide: ThemeService, useValue: themeServiceMock }],
     }).compileComponents();
     fixture = TestBed.createComponent(PieChartWidget);
     component = fixture.componentInstance;
@@ -45,7 +40,7 @@ describe('PieChartWidget', () => {
     TestBed.inject(TranslateService).use('en');
   });
 
-  it('should build one Highcharts pie series point per slice, translating state bucket labelKeys', () => {
+  it('should build one doughnut segment per slice, translating state bucket labelKeys', () => {
     component.data = {
       groupBy: 'state',
       slices: [
@@ -58,43 +53,42 @@ describe('PieChartWidget', () => {
     };
     fixture.detectChanges();
 
-    const options = component.buildOptions();
-    const series = options.series![0] as Highcharts.SeriesPieOptions;
-    expect(series.type).toBe('pie');
-    expect(series.data).toEqual([expect.objectContaining({ name: 'Downloading', y: 3 })]);
+    const config = component.buildConfig();
+    expect(config.data.labels).toEqual(['Downloading']);
+    expect(config.data.datasets[0].data).toEqual([3]);
   });
 
-  it('should use the raw key as the point name for category slices (no labelKey)', () => {
+  it('should use the raw key as the segment label for category slices (no labelKey)', () => {
     component.data = { groupBy: 'category', slices: [{ key: 'linux', value: 5 }] };
     fixture.detectChanges();
 
-    const options = component.buildOptions();
-    const series = options.series![0] as Highcharts.SeriesPieOptions;
-    expect(series.data).toEqual([expect.objectContaining({ name: 'linux', y: 5 })]);
+    const config = component.buildConfig();
+    expect(config.data.labels).toEqual(['linux']);
+    expect(config.data.datasets[0].data).toEqual([5]);
   });
 
-  it('should render a transparent chart background so the card surface shows through', () => {
+  it('should leave the chart background transparent so the card surface shows through', () => {
     component.data = { groupBy: 'state', slices: [] };
     fixture.detectChanges();
 
-    const options = component.buildOptions();
-    expect(options.chart?.backgroundColor).toBe('transparent');
+    const config = component.buildConfig();
+    expect(config.options.backgroundColor).toBe('transparent');
   });
 
-  // Regression coverage: the template calls buildOptions() on every change detection pass, and
+  // Regression coverage: the template calls buildConfig() on every change detection pass, and
   // gridstack re-sets the `data` @Input on every live-polling tick even when nothing visibly
-  // changed. Returning a NEW-but-equal object every time would still force Highcharts to redraw,
-  // so buildOptions() must return the exact same cached reference when its inputs are unchanged.
+  // changed. Returning a NEW-but-equal object every time would still force Chart.js to redraw,
+  // so buildConfig() must return the exact same cached reference when its inputs are unchanged.
   describe('memoization', () => {
     it('should return the same object reference on a second call with content-equal (but not identical) data', () => {
       component.data = { groupBy: 'state', slices: [{ key: 'downloading', value: 3 }] };
       fixture.detectChanges();
-      const first = component.buildOptions();
+      const first = component.buildConfig();
 
       // A fresh object with equal values, not the same reference - proves the cache compares by
       // content, not by `data`'s object identity.
       component.data = { groupBy: 'state', slices: [{ key: 'downloading', value: 3 }] };
-      const second = component.buildOptions();
+      const second = component.buildConfig();
 
       expect(second).toBe(first);
     });
@@ -102,10 +96,10 @@ describe('PieChartWidget', () => {
     it('should return a new object reference when the data actually changes', () => {
       component.data = { groupBy: 'state', slices: [{ key: 'downloading', value: 3 }] };
       fixture.detectChanges();
-      const first = component.buildOptions();
+      const first = component.buildConfig();
 
       component.data = { groupBy: 'state', slices: [{ key: 'downloading', value: 4 }] };
-      const second = component.buildOptions();
+      const second = component.buildConfig();
 
       expect(second).not.toBe(first);
     });
@@ -113,10 +107,10 @@ describe('PieChartWidget', () => {
     it('should return a new object reference when the theme family changes', () => {
       component.data = { groupBy: 'state', slices: [{ key: 'downloading', value: 3 }] };
       fixture.detectChanges();
-      const first = component.buildOptions();
+      const first = component.buildConfig();
 
       themeServiceMock.family.set('aurora');
-      const second = component.buildOptions();
+      const second = component.buildConfig();
 
       expect(second).not.toBe(first);
     });
@@ -124,12 +118,42 @@ describe('PieChartWidget', () => {
     it('should return a new object reference when the effective mode changes', () => {
       component.data = { groupBy: 'state', slices: [{ key: 'downloading', value: 3 }] };
       fixture.detectChanges();
-      const first = component.buildOptions();
+      const first = component.buildConfig();
 
       themeServiceMock.effectiveMode.set('dark');
-      const second = component.buildOptions();
+      const second = component.buildConfig();
 
       expect(second).not.toBe(first);
+    });
+
+    // Regression coverage for a bug fixed in this rewrite: the removed Highcharts version's cache
+    // signature omitted the active UI language, so switching languages with otherwise-unchanged
+    // data left segment labels stuck in the old language until the underlying data next changed.
+    it('should return a new object reference (with re-translated labels) when the active language changes', () => {
+      component.data = {
+        groupBy: 'state',
+        slices: [
+          {
+            key: 'downloading',
+            labelKey: 'pages.dashboard.widgets.pie-chart.bucket.downloading',
+            value: 3,
+          },
+        ],
+      };
+      fixture.detectChanges();
+      const first = component.buildConfig();
+
+      const translate = TestBed.inject(TranslateService);
+      translate.setTranslation('hu', {
+        pages: {
+          dashboard: { widgets: { 'pie-chart': { bucket: { downloading: 'Letöltés' } } } },
+        },
+      });
+      translate.use('hu');
+      const second = component.buildConfig();
+
+      expect(second).not.toBe(first);
+      expect(second.data.labels).toEqual(['Letöltés']);
     });
   });
 

@@ -16,8 +16,14 @@
   border-radius: var(--bs-border-radius);
 
   &__chart {
-    display: block;
+    // Chart.js's `responsive: true` resizes the canvas via a ResizeObserver on its immediate
+    // positioned parent - this wrapper gives it one, sized to fill the remaining card area.
+    position: relative;
     height: 100%;
     width: 100%;
+  }
+
+  &__canvas {
+    display: block;
   }
 }
