@@ -6,6 +6,7 @@ import {
   effect,
   inject,
   signal,
+  viewChild,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -61,8 +62,13 @@ export class Dashboard implements OnDestroy {
   readonly widgets = signal<DashboardWidgetInstance[]>([]);
   readonly isPaused = toSignal(this.qbPollingService.isPaused$, { initialValue: false });
   readonly editMode = signal(false);
-  readonly catalog = WIDGET_CATALOG;
   readonly icon = { faPlus };
+
+  // GridstackComponent's own `options` setter only calls the underlying grid's `load()` when
+  // `children?.length` is truthy - an empty array is falsy on `.length`, so removing the last
+  // widget never actually reaches GridStack.load() and its DOM node is left behind. Removing the
+  // last widget needs an explicit `grid.removeAll()` call instead of relying on the options diff.
+  private readonly gridComponent = viewChild(GridstackComponent);
 
   private readonly snapshot = computed<DashboardSnapshot>(() => ({
     torrents: this.torrentStore.torrentsArray(),
@@ -208,6 +214,11 @@ export class Dashboard implements OnDestroy {
   removeWidget(instanceId: string): void {
     const next = this.widgets().filter((w) => w.instanceId !== instanceId);
     this.widgets.set(next);
+    if (next.length === 0) {
+      // GridStack.load() never runs for an empty children array (see `gridComponent` comment
+      // above), so explicitly tear down the grid's remaining DOM node/Angular component here.
+      this.gridComponent()?.grid?.removeAll();
+    }
     void this.dashboardSettingsService.save({ widgets: next });
   }
 

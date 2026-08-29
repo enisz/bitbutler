@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { WidgetTypeId } from '../../models/dashboard.model';
 import { WidgetConfig } from './widget-config';
 
 describe('WidgetConfig', () => {
@@ -17,7 +18,7 @@ describe('WidgetConfig', () => {
     component = fixture.componentInstance;
   });
 
-  function withInputs(widgetTypeId: 'stat-tile' | 'torrent-list', initialConfig: unknown): void {
+  function withInputs(widgetTypeId: WidgetTypeId, initialConfig: unknown): void {
     fixture.componentRef.setInput('widgetTypeId', widgetTypeId);
     fixture.componentRef.setInput('initialConfig', initialConfig);
     fixture.detectChanges();
@@ -77,12 +78,12 @@ describe('WidgetConfig', () => {
   });
 
   it('should seed config from initialConfig for a pie-chart', () => {
-    withInputs('pie-chart' as any, { groupBy: 'state' });
+    withInputs('pie-chart', { groupBy: 'state' });
     expect(component.config()).toEqual({ groupBy: 'state' });
   });
 
   it('should update groupBy for a pie-chart', () => {
-    withInputs('pie-chart' as any, { groupBy: 'state' });
+    withInputs('pie-chart', { groupBy: 'state' });
     component.updatePieChartGroupBy('category');
     expect(component.config()).toEqual({ groupBy: 'category' });
   });

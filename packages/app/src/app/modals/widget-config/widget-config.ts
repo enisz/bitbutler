@@ -27,7 +27,6 @@ import {
   standalone: true,
   imports: [FormsModule, NgSelectComponent, TranslatePipe],
   templateUrl: './widget-config.html',
-  styleUrl: './widget-config.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WidgetConfig {

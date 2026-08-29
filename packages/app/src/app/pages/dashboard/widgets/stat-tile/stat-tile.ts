@@ -17,8 +17,8 @@ import { WidgetMenu } from '../widget-menu/widget-menu';
 export class StatTile extends BaseWidget {
   @Input() data!: StatTileData;
   @Input() editMode = false;
-  @Input() onConfigure!: () => void;
-  @Input() onRemove!: () => void;
+  @Input() onConfigure?: () => void;
+  @Input() onRemove?: () => void;
 
   get labelKey(): string {
     return `pages.dashboard.widgets.stat-tile.metric.${this.data.metric}`;

@@ -390,5 +390,37 @@ describe('Dashboard', () => {
       expect(component.widgets()).toEqual([]);
       expect(dashboardSettingsMock.save).toHaveBeenCalledWith({ widgets: [] });
     });
+
+    // Regression test: GridstackComponent's `options` setter only calls the underlying grid's
+    // load() when `children?.length` is truthy, so removing the last widget never reaches
+    // GridStack.load() and its DOM node/component is left behind. removeWidget() must explicitly
+    // call `grid.removeAll()` when the widget list becomes empty. `gridComponent` is a
+    // viewChild() signal, which real GridStack rendering can't easily exercise in jsdom, so it's
+    // stubbed directly here (a standard seam for testing ViewChild/viewChild-based code).
+    it('should explicitly clear the grid when the last widget is removed', async () => {
+      dashboardSettingsMock.save = vi.fn().mockResolvedValue(undefined);
+      await createComponent();
+      const removeAll = vi.fn();
+      (component as any).gridComponent = () => ({ grid: { removeAll } });
+
+      component.removeWidget('w1');
+
+      expect(removeAll).toHaveBeenCalled();
+    });
+
+    it('should not touch the grid when other widgets remain after removal', async () => {
+      dashboardSettingsMock.save = vi.fn().mockResolvedValue(undefined);
+      dashboardSettingsMock.load = vi.fn().mockResolvedValue({
+        widgets: [statTileInstance, { ...statTileInstance, instanceId: 'w2' }],
+      });
+      await createComponent();
+      const removeAll = vi.fn();
+      (component as any).gridComponent = () => ({ grid: { removeAll } });
+
+      component.removeWidget('w1');
+
+      expect(component.widgets()).toHaveLength(1);
+      expect(removeAll).not.toHaveBeenCalled();
+    });
   });
 });
