@@ -26,6 +26,28 @@
           </ng-select>
         </div>
       </div>
+    } @else if (isPieChart()) {
+      <div class="row mb-3">
+        <div class="col-12">
+          <label class="form-label">{{
+            'components.modals.widget-config.group-by' | translate
+          }}</label>
+          <ng-select
+            [items]="groupByOptions"
+            [clearable]="false"
+            [searchable]="false"
+            [ngModel]="pieChartConfig().groupBy"
+            (change)="updatePieChartGroupBy($event)"
+          >
+            <ng-template ng-label-tmp let-item="item">{{
+              'pages.dashboard.widgets.pie-chart.group-by.' + item | translate
+            }}</ng-template>
+            <ng-template ng-option-tmp let-item="item">{{
+              'pages.dashboard.widgets.pie-chart.group-by.' + item | translate
+            }}</ng-template>
+          </ng-select>
+        </div>
+      </div>
     } @else {
       <div class="row mb-3">
         <div class="col-12">

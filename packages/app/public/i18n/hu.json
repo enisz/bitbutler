@@ -774,7 +774,8 @@
         "count": "Darabszám",
         "sort-field": "Rendezés mező",
         "sort-order": "Sorrend",
-        "columns": "Oszlopok"
+        "columns": "Oszlopok",
+        "group-by": "Csoportosítás"
       },
       "update-available": {
         "title": "Frissítés elérhető",
@@ -1270,6 +1271,10 @@
             "checking": "Ellenőrzés",
             "errored": "Hiba",
             "other": "Egyéb"
+          },
+          "group-by": {
+            "state": "Állapot",
+            "category": "Kategória"
           }
         }
       },

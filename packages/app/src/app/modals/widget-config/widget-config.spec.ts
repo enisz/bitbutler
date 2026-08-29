@@ -75,4 +75,15 @@ describe('WidgetConfig', () => {
     component.cancel();
     expect(activeModalMock.dismiss).toHaveBeenCalled();
   });
+
+  it('should seed config from initialConfig for a pie-chart', () => {
+    withInputs('pie-chart' as any, { groupBy: 'state' });
+    expect(component.config()).toEqual({ groupBy: 'state' });
+  });
+
+  it('should update groupBy for a pie-chart', () => {
+    withInputs('pie-chart' as any, { groupBy: 'state' });
+    component.updatePieChartGroupBy('category');
+    expect(component.config()).toEqual({ groupBy: 'category' });
+  });
 });

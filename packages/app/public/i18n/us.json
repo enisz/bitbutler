@@ -774,7 +774,8 @@
         "count": "Count",
         "sort-field": "Sort By",
         "sort-order": "Order",
-        "columns": "Columns"
+        "columns": "Columns",
+        "group-by": "Group By"
       },
       "update-available": {
         "title": "Update Available",
@@ -1270,6 +1271,10 @@
             "checking": "Checking",
             "errored": "Errored",
             "other": "Other"
+          },
+          "group-by": {
+            "state": "State",
+            "category": "Category"
           }
         }
       },

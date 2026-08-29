@@ -11,6 +11,8 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe } from '@ngx-translate/core';
 import {
+  PieChartConfig,
+  PieChartGroupBy,
   StatTileConfig,
   StatTileMetric,
   TorrentListColumn,
@@ -65,14 +67,22 @@ export class WidgetConfig {
     'eta',
   ];
 
+  readonly groupByOptions: PieChartGroupBy[] = ['state', 'category'];
+
   readonly config = linkedSignal<WidgetConfigModel>(() => this.initialConfig());
 
   readonly isStatTile = computed(() => this.widgetTypeId() === 'stat-tile');
+  readonly isPieChart = computed(() => this.widgetTypeId() === 'pie-chart');
   readonly statTileConfig = computed(() => this.config() as StatTileConfig);
   readonly torrentListConfig = computed(() => this.config() as TorrentListConfig);
+  readonly pieChartConfig = computed(() => this.config() as PieChartConfig);
 
   updateStatTileMetric(metric: StatTileMetric): void {
     this.config.set({ metric } satisfies StatTileConfig);
+  }
+
+  updatePieChartGroupBy(groupBy: PieChartGroupBy): void {
+    this.config.set({ groupBy } satisfies PieChartConfig);
   }
 
   updateTorrentListField<K extends keyof TorrentListConfig>(
