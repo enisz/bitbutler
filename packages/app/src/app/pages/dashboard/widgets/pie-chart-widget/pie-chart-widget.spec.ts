@@ -157,6 +157,47 @@ describe('PieChartWidget', () => {
     });
   });
 
+  // Regression coverage for an "Important" review finding on the initial Chart.js swap:
+  // buildConfig()'s cache signature already included the active language (proven above), but
+  // nothing told Angular's zoneless change detection to re-invoke buildConfig() *because* the
+  // language changed - it only rode along on the next unrelated theme/data-driven change
+  // detection. This test proves the fix (reading a toSignal(onLangChange) signal inside
+  // buildConfig()) by firing a real language change and letting Angular's own zoneless scheduler
+  // run via fixture.whenStable() - WITHOUT ever calling buildConfig() or detectChanges()
+  // manually afterwards. If the signal weren't wired in, nothing would tell Angular to re-check
+  // this component and the spy below would never fire again.
+  describe('language-change reactivity', () => {
+    it('should re-invoke buildConfig() on its own when the active language changes, with no other trigger', async () => {
+      component.data = {
+        groupBy: 'state',
+        slices: [
+          {
+            key: 'downloading',
+            labelKey: 'pages.dashboard.widgets.pie-chart.bucket.downloading',
+            value: 3,
+          },
+        ],
+      };
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      const buildConfigSpy = vi.spyOn(component, 'buildConfig');
+      buildConfigSpy.mockClear();
+
+      const translate = TestBed.inject(TranslateService);
+      translate.setTranslation('hu', {
+        pages: {
+          dashboard: { widgets: { 'pie-chart': { bucket: { downloading: 'Letöltés' } } } },
+        },
+      });
+      translate.use('hu');
+
+      await fixture.whenStable();
+
+      expect(buildConfigSpy).toHaveBeenCalled();
+    });
+  });
+
   // Regression coverage: the widget wires <app-widget-menu> identically across all three widget
   // types (gated by editMode, configure/remove routed to onConfigure()/onRemove()) - a typo in
   // any one of them would currently ship green with no test catching it.

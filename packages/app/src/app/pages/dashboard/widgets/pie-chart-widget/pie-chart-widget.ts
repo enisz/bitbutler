@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
 import {
   ArcElement,
@@ -56,6 +57,17 @@ export class PieChartWidget extends BaseWidget {
   private readonly translate = inject(TranslateService);
   private readonly themeService = inject(ThemeService);
 
+  // Same toSignal(onLangChange) pattern used by ~10 other components in this codebase (status.ts,
+  // general.ts, login.ts, the column-filter family) - reading this signal (its emitted value is
+  // discarded; `translate.currentLang` below is what's actually used) registers
+  // TranslateService.onLangChange as a reactive dependency of this component's view. buildConfig()
+  // is invoked directly from the template's [data]/[options] bindings, so that read happens inside
+  // the template's reactive consumer context: a language switch now schedules this component's
+  // next change detection directly, the same way a theme-signal change does, rather than only
+  // being picked up incidentally whenever some other unrelated trigger (a theme change, or
+  // gridstack's periodic `data` @Input reset from live polling) next runs change detection.
+  private readonly languageChanged = toSignal(this.translate.onLangChange);
+
   // Memoizes buildConfig()'s result so an unchanged call returns the SAME object reference
   // rather than an equal-looking new one. The template calls buildConfig() on every change
   // detection pass, and gridstack's deserialize/setInput machinery re-sets the `data` @Input on
@@ -85,6 +97,7 @@ export class PieChartWidget extends BaseWidget {
     // re-runs this on every change detection pass, which includes theme changes.
     const family = this.themeService.family();
     const mode = this.themeService.effectiveMode();
+    this.languageChanged(); // registers the reactive dependency - see field comment above
     const lang = this.translate.currentLang;
     const signature = JSON.stringify({ data: this.data, family, mode, lang });
 
