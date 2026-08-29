@@ -1254,6 +1254,10 @@
       "catalog": {
         "stat-tile": "Stat Tile",
         "torrent-list": "Torrent List"
+      },
+      "live-toggle": {
+        "live": "Live",
+        "paused": "Paused"
       }
     },
     "login": {

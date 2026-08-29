@@ -1254,6 +1254,10 @@
       "catalog": {
         "stat-tile": "Statisztika csempe",
         "torrent-list": "Torrent lista"
+      },
+      "live-toggle": {
+        "live": "Élő",
+        "paused": "Szüneteltetve"
       }
     },
     "login": {
