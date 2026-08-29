@@ -13,6 +13,7 @@ import {
   GridstackComponent,
   NgGridStackOptions,
   NgGridStackWidget,
+  elementCB,
   nodesCB,
 } from 'gridstack/dist/angular';
 import { Subscription } from 'rxjs';
@@ -90,6 +91,11 @@ export class Dashboard implements OnDestroy {
   }));
 
   private pauseToken: symbol | null = null;
+  // Separate from `pauseToken` (which tracks the manual "Live"/"Paused" toggle) so a drag/resize
+  // pause-and-resume never clobbers a pause the user explicitly requested, and vice versa - both
+  // are tokens in QbPollingService's pause-token Set, which only reports "resumed" once every
+  // token has been removed.
+  private dragPauseToken: symbol | null = null;
   private pollSub: Subscription | null = null;
 
   private readonly _pollEffect = effect((onCleanup) => {
@@ -132,6 +138,21 @@ export class Dashboard implements OnDestroy {
 
   toggleEditMode(): void {
     this.editMode.update((v) => !v);
+  }
+
+  // Live polling recomputes `gridOptions` (via `items()`/`snapshot()`), which re-triggers
+  // GridStack.load() and unconditionally repositions widgets to their last-persisted x/y - so a
+  // poll tick landing mid-drag/resize would snap the widget back under the user's cursor. Pause
+  // polling for the duration of the interaction and resume once it settles.
+  onInteractionStart(_event: elementCB): void {
+    if (this.dragPauseToken) return;
+    this.dragPauseToken = this.qbPollingService.pause();
+  }
+
+  onInteractionStop(_event: elementCB): void {
+    if (!this.dragPauseToken) return;
+    this.qbPollingService.resume(this.dragPauseToken);
+    this.dragPauseToken = null;
   }
 
   onGridChange(event: nodesCB): void {

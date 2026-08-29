@@ -17,5 +17,12 @@
     </div>
   </header>
 
-  <gridstack [options]="gridOptions()" (changeCB)="onGridChange($event)"></gridstack>
+  <gridstack
+    [options]="gridOptions()"
+    (changeCB)="onGridChange($event)"
+    (dragStartCB)="onInteractionStart($event)"
+    (dragStopCB)="onInteractionStop($event)"
+    (resizeStartCB)="onInteractionStart($event)"
+    (resizeStopCB)="onInteractionStop($event)"
+  ></gridstack>
 </div>

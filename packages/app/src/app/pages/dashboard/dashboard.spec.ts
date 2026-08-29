@@ -70,7 +70,7 @@ describe('Dashboard', () => {
     qbPollingMock = {
       startMaindataPolling: vi.fn().mockReturnValue(new Subject()),
       isPaused$: new Subject<boolean>(),
-      pause: vi.fn().mockReturnValue(Symbol('pause-token')),
+      pause: vi.fn().mockImplementation(() => Symbol('pause-token')),
       resume: vi.fn(),
     };
     dashboardSettingsMock = {
@@ -216,6 +216,57 @@ describe('Dashboard', () => {
       const before = component.widgets()[0];
       component.onGridChange({ nodes: [{ id: 'not-w1', x: 9, y: 9, w: 9, h: 9 }] } as any);
       expect(component.widgets()[0]).toEqual(before);
+    });
+  });
+
+  // Regression coverage: live polling recomputes gridOptions() on every poll tick, which
+  // unconditionally repositions widgets via GridStack.load() - so a poll landing mid-drag/resize
+  // would snap the widget back under the user's cursor. Polling must be paused for the duration
+  // of the interaction, using a token kept separate from toggleLive()'s own pauseToken so neither
+  // interaction clobbers the other's pause/resume state.
+  describe('onInteractionStart / onInteractionStop', () => {
+    it('should pause polling on interaction start', async () => {
+      await createComponent();
+      component.onInteractionStart({} as any);
+      expect(qbPollingMock.pause).toHaveBeenCalled();
+    });
+
+    it('should resume polling with the token it received, on interaction stop', async () => {
+      await createComponent();
+      component.onInteractionStart({} as any);
+      const token = qbPollingMock.pause.mock.results[0].value;
+
+      component.onInteractionStop({} as any);
+
+      expect(qbPollingMock.resume).toHaveBeenCalledWith(token);
+    });
+
+    it('should not pause again if a second interaction start fires before the first stops', async () => {
+      await createComponent();
+      component.onInteractionStart({} as any);
+      component.onInteractionStart({} as any);
+      expect(qbPollingMock.pause).toHaveBeenCalledTimes(1);
+    });
+
+    it('should do nothing if stop fires with no interaction in progress', async () => {
+      await createComponent();
+      component.onInteractionStop({} as any);
+      expect(qbPollingMock.resume).not.toHaveBeenCalled();
+    });
+
+    it('should not resume the manual Live-toggle pause when a drag/resize interaction stops', async () => {
+      await createComponent();
+
+      component.toggleLive(); // manual pause -> its own pauseToken
+      const manualToken = qbPollingMock.pause.mock.results[0].value;
+
+      component.onInteractionStart({} as any); // drag pause -> separate dragPauseToken
+      const dragToken = qbPollingMock.pause.mock.results[1].value;
+
+      component.onInteractionStop({} as any);
+
+      expect(qbPollingMock.resume).toHaveBeenCalledWith(dragToken);
+      expect(qbPollingMock.resume).not.toHaveBeenCalledWith(manualToken);
     });
   });
 });
