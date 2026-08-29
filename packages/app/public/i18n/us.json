@@ -768,6 +768,14 @@
       "widget-picker": {
         "title": "Add Widget"
       },
+      "widget-config": {
+        "title": "Configure Widget",
+        "metric": "Metric",
+        "count": "Count",
+        "sort-field": "Sort By",
+        "sort-order": "Order",
+        "columns": "Columns"
+      },
       "update-available": {
         "title": "Update Available",
         "subtitle": "You're on v{{ current_version }}, {{ count }} versions behind the latest (v{{ latest_version }}).",
