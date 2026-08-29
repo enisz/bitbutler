@@ -1250,6 +1250,10 @@
             "eta": "ETA"
           }
         }
+      },
+      "catalog": {
+        "stat-tile": "Stat Tile",
+        "torrent-list": "Torrent List"
       }
     },
     "login": {
