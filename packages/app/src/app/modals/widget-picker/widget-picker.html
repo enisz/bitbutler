@@ -1,16 +1,27 @@
-<div class="modal-header">
-  <h5 class="modal-title">{{ 'components.modals.widget-picker.title' | translate }}</h5>
-  <button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
+<div class="offcanvas-header">
+  <h5 class="offcanvas-title">{{ 'components.modals.widget-picker.title' | translate }}</h5>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="{{ 'general.button.close' | translate }}"
+    (click)="cancel()"
+  ></button>
 </div>
-<div class="modal-body">
+<div class="offcanvas-body">
   <div class="list-group list-group-flush">
     @for (entry of catalogEntries; track entry.id) {
       <button
         type="button"
-        class="list-group-item list-group-item-action"
+        class="list-group-item list-group-item-action d-flex align-items-center gap-3"
         (click)="choose(entry.id)"
       >
-        {{ entry.labelKey | translate }}
+        <fa-icon [icon]="entry.icon" />
+        <span class="flex-grow-1">
+          <span class="d-block">{{ entry.labelKey | translate }}</span>
+          <span class="d-block text-body-secondary small">{{
+            entry.descriptionKey | translate
+          }}</span>
+        </span>
       </button>
     }
   </div>

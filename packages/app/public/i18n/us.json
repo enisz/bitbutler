@@ -1267,7 +1267,13 @@
       },
       "catalog": {
         "stat-tile": "Stat Tile",
-        "torrent-list": "Torrent List"
+        "torrent-list": "Torrent List",
+        "pie-chart": "Pie Chart"
+      },
+      "catalog-type": {
+        "stat-tile": "Number",
+        "torrent-list": "Table",
+        "pie-chart": "Pie"
       },
       "live-toggle": {
         "live": "Live",

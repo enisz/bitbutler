@@ -10,7 +10,7 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import {
   GridstackComponent,
@@ -25,6 +25,7 @@ import { WidgetPicker } from '../../modals/widget-picker/widget-picker';
 import {
   DashboardSnapshot,
   DashboardWidgetInstance,
+  PieChartData,
   StatTileData,
   TorrentListData,
   WidgetConfig,
@@ -54,6 +55,7 @@ export class Dashboard implements OnDestroy {
   private readonly torrentStore = inject(TorrentStoreService);
   private readonly dashboardSettingsService = inject(DashboardSettingsService);
   private readonly modalService = inject(NgbModal);
+  private readonly offcanvasService = inject(NgbOffcanvas);
 
   readonly widgets = signal<DashboardWidgetInstance[]>([]);
   readonly isPaused = toSignal(this.qbPollingService.isPaused$, { initialValue: false });
@@ -71,7 +73,7 @@ export class Dashboard implements OnDestroy {
     {
       instance: DashboardWidgetInstance;
       snapshot: DashboardSnapshot;
-      value: StatTileData | TorrentListData;
+      value: StatTileData | TorrentListData | PieChartData;
     }
   >();
 
@@ -157,7 +159,7 @@ export class Dashboard implements OnDestroy {
   }
 
   addWidget(): void {
-    const pickerRef = this.modalService.open(WidgetPicker, { centered: true });
+    const pickerRef = this.offcanvasService.open(WidgetPicker, { position: 'end' });
     pickerRef.result
       .then((widgetTypeId: WidgetTypeId) => {
         const meta = WIDGET_CATALOG[widgetTypeId];
@@ -240,7 +242,7 @@ export class Dashboard implements OnDestroy {
     void this.dashboardSettingsService.save({ widgets: next });
   }
 
-  dataFor(instance: DashboardWidgetInstance): StatTileData | TorrentListData {
+  dataFor(instance: DashboardWidgetInstance): StatTileData | TorrentListData | PieChartData {
     // Read snapshot() unconditionally (even on a cache hit) so this computed-reactive read always
     // happens during evaluation - otherwise, once the cache warms, `items` (which calls dataFor())
     // would stop depending on torrentsArray/serverState and would never react to a live update

@@ -1267,7 +1267,13 @@
       },
       "catalog": {
         "stat-tile": "Statisztika csempe",
-        "torrent-list": "Torrent lista"
+        "torrent-list": "Torrent lista",
+        "pie-chart": "Kördiagram"
+      },
+      "catalog-type": {
+        "stat-tile": "Szám",
+        "torrent-list": "Táblázat",
+        "pie-chart": "Kör"
       },
       "live-toggle": {
         "live": "Élő",

@@ -1,6 +1,6 @@
 import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { DashboardWidgetInstance } from '../../models/dashboard.model';
@@ -28,6 +28,7 @@ describe('Dashboard', () => {
   };
   let dashboardSettingsMock: { load: ReturnType<typeof vi.fn>; save: ReturnType<typeof vi.fn> };
   let modalServiceMock: { open: ReturnType<typeof vi.fn> };
+  let offcanvasServiceMock: { open: ReturnType<typeof vi.fn> };
 
   const statTileInstance: DashboardWidgetInstance = {
     instanceId: 'w1',
@@ -48,6 +49,7 @@ describe('Dashboard', () => {
         { provide: QbPollingService, useValue: qbPollingMock },
         { provide: DashboardSettingsService, useValue: dashboardSettingsMock },
         { provide: NgbModal, useValue: modalServiceMock },
+        { provide: NgbOffcanvas, useValue: offcanvasServiceMock },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     })
@@ -81,6 +83,7 @@ describe('Dashboard', () => {
       save: vi.fn().mockResolvedValue(undefined),
     };
     modalServiceMock = { open: vi.fn() };
+    offcanvasServiceMock = { open: vi.fn() };
   });
 
   it('should create', async () => {
@@ -306,13 +309,12 @@ describe('Dashboard', () => {
   });
 
   describe('addWidget', () => {
-    it('should open the picker, then the config modal pre-filled with the catalog default, then append the confirmed instance', async () => {
+    it('should open the picker offcanvas, then the config modal pre-filled with the catalog default, then append the confirmed instance', async () => {
       dashboardSettingsMock.save = vi.fn().mockResolvedValue(undefined);
       const pickerResult = Promise.resolve('stat-tile');
       const configResult = Promise.resolve({ metric: 'global_ratio' });
-      modalServiceMock.open
-        .mockReturnValueOnce({ result: pickerResult })
-        .mockReturnValueOnce({ result: configResult, componentInstance: {} });
+      offcanvasServiceMock.open.mockReturnValue({ result: pickerResult });
+      modalServiceMock.open.mockReturnValue({ result: configResult, componentInstance: {} });
       await createComponent();
 
       component.addWidget();
@@ -321,6 +323,10 @@ describe('Dashboard', () => {
       await configResult;
       await Promise.resolve();
 
+      expect(offcanvasServiceMock.open).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ position: 'end' }),
+      );
       const added = component.widgets().find((w) => w !== statTileInstance);
       expect(added).toMatchObject({
         widgetTypeId: 'stat-tile',

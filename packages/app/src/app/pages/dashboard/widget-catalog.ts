@@ -1,4 +1,7 @@
+import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import { faChartPie, faHashtag, faTable } from '@fortawesome/free-solid-svg-icons';
 import {
+  PieChartConfig,
   StatTileConfig,
   TorrentListConfig,
   WidgetConfig,
@@ -8,6 +11,8 @@ import {
 export interface WidgetCatalogMeta {
   id: WidgetTypeId;
   labelKey: string;
+  descriptionKey: string;
+  icon: IconDefinition;
   componentSelector: string;
   defaultConfig: WidgetConfig;
   defaultSize: { w: number; h: number };
@@ -17,6 +22,8 @@ export const WIDGET_CATALOG: Record<WidgetTypeId, WidgetCatalogMeta> = {
   'stat-tile': {
     id: 'stat-tile',
     labelKey: 'pages.dashboard.catalog.stat-tile',
+    descriptionKey: 'pages.dashboard.catalog-type.stat-tile',
+    icon: faHashtag,
     componentSelector: 'app-stat-tile',
     defaultConfig: { metric: 'download_speed' } satisfies StatTileConfig,
     defaultSize: { w: 3, h: 2 },
@@ -24,6 +31,8 @@ export const WIDGET_CATALOG: Record<WidgetTypeId, WidgetCatalogMeta> = {
   'torrent-list': {
     id: 'torrent-list',
     labelKey: 'pages.dashboard.catalog.torrent-list',
+    descriptionKey: 'pages.dashboard.catalog-type.torrent-list',
+    icon: faTable,
     componentSelector: 'app-torrent-list-widget',
     defaultConfig: {
       count: 5,
@@ -32,5 +41,14 @@ export const WIDGET_CATALOG: Record<WidgetTypeId, WidgetCatalogMeta> = {
       columns: ['name', 'ratio'],
     } satisfies TorrentListConfig,
     defaultSize: { w: 6, h: 4 },
+  },
+  'pie-chart': {
+    id: 'pie-chart',
+    labelKey: 'pages.dashboard.catalog.pie-chart',
+    descriptionKey: 'pages.dashboard.catalog-type.pie-chart',
+    icon: faChartPie,
+    componentSelector: 'app-pie-chart-widget',
+    defaultConfig: { groupBy: 'state' } satisfies PieChartConfig,
+    defaultSize: { w: 4, h: 4 },
   },
 };

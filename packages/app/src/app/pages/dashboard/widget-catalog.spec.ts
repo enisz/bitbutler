@@ -2,7 +2,7 @@ import { WIDGET_CATALOG } from './widget-catalog';
 
 describe('WIDGET_CATALOG', () => {
   it('should have an entry for every WidgetTypeId', () => {
-    expect(Object.keys(WIDGET_CATALOG).sort()).toEqual(['stat-tile', 'torrent-list']);
+    expect(Object.keys(WIDGET_CATALOG).sort()).toEqual(['pie-chart', 'stat-tile', 'torrent-list']);
   });
 
   it('should map stat-tile to the StatTile component selector', () => {
@@ -20,5 +20,12 @@ describe('WIDGET_CATALOG', () => {
       sortOrder: 'desc',
       columns: ['name', 'ratio'],
     });
+  });
+
+  it('should give every entry an icon and a description key', () => {
+    for (const entry of Object.values(WIDGET_CATALOG)) {
+      expect(entry.icon).toBeTruthy();
+      expect(entry.descriptionKey).toMatch(/^pages\.dashboard\.catalog-type\./);
+    }
   });
 });
