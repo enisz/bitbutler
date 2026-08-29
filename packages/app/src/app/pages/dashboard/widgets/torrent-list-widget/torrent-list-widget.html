@@ -1,4 +1,5 @@
 <div class="torrent-list-widget">
+  <app-widget-menu [visible]="editMode" (configure)="onConfigure()" (remove)="onRemove()" />
   <div class="torrent-list-widget__scroll">
     <table class="torrent-list-widget__table">
       <thead>

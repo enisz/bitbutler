@@ -175,17 +175,48 @@ describe('Dashboard', () => {
     it('should map each placed widget instance to a gridstack node with component/props fields', async () => {
       await createComponent();
 
-      expect(component.items()).toEqual([
-        {
-          id: 'w1',
-          x: 0,
-          y: 0,
-          w: 3,
-          h: 2,
-          component: 'app-stat-tile',
-          props: { data: { metric: 'download_speed', value: 0 } },
+      const items = component.items();
+      expect(items).toHaveLength(1);
+      expect(items[0]).toMatchObject({
+        id: 'w1',
+        x: 0,
+        y: 0,
+        w: 3,
+        h: 2,
+        component: 'app-stat-tile',
+        props: {
+          data: { metric: 'download_speed', value: 0 },
+          editMode: false,
         },
-      ]);
+      });
+      expect(typeof (items[0].props as any).onConfigure).toBe('function');
+      expect(typeof (items[0].props as any).onRemove).toBe('function');
+    });
+
+    it('should reflect editMode in props and toggle it live', async () => {
+      await createComponent();
+      expect((component.items()[0].props as any).editMode).toBe(false);
+
+      component.toggleEditMode();
+
+      expect((component.items()[0].props as any).editMode).toBe(true);
+    });
+
+    it("should route each widget's onConfigure/onRemove callback to editWidget/removeWidget for that instance", async () => {
+      dashboardSettingsMock.save = vi.fn().mockResolvedValue(undefined);
+      const configResult = Promise.resolve({ metric: 'active_count' });
+      modalServiceMock.open.mockReturnValue({ result: configResult, componentInstance: {} });
+      await createComponent();
+
+      const props = component.items()[0].props as any;
+      props.onConfigure();
+      await configResult;
+      await Promise.resolve();
+
+      expect(component.widgets()[0]).toMatchObject({ config: { metric: 'active_count' } });
+
+      props.onRemove();
+      expect(component.widgets()).toEqual([]);
     });
   });
 

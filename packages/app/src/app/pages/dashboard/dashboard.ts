@@ -9,8 +9,8 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faPenToSquare, faPlus, faTrashCan } from '@fortawesome/free-solid-svg-icons';
-import { NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import {
   GridstackComponent,
@@ -43,7 +43,7 @@ import { TorrentListWidget } from './widgets/torrent-list-widget/torrent-list-wi
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [GridstackComponent, TranslatePipe, FontAwesomeModule, NgbTooltipModule],
+  imports: [GridstackComponent, TranslatePipe, FontAwesomeModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -59,7 +59,7 @@ export class Dashboard implements OnDestroy {
   readonly isPaused = toSignal(this.qbPollingService.isPaused$, { initialValue: false });
   readonly editMode = signal(false);
   readonly catalog = WIDGET_CATALOG;
-  readonly icon = { faPenToSquare, faTrashCan, faPlus };
+  readonly icon = { faPlus };
 
   private readonly snapshot = computed<DashboardSnapshot>(() => ({
     torrents: this.torrentStore.torrentsArray(),
@@ -83,7 +83,12 @@ export class Dashboard implements OnDestroy {
       w: instance.w,
       h: instance.h,
       component: WIDGET_CATALOG[instance.widgetTypeId].componentSelector,
-      props: { data: this.dataFor(instance) },
+      props: {
+        data: this.dataFor(instance),
+        editMode: this.editMode(),
+        onConfigure: () => this.editWidget(instance.instanceId),
+        onRemove: () => this.removeWidget(instance.instanceId),
+      },
     })),
   );
 

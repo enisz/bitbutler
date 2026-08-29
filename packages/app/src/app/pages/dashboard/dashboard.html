@@ -23,36 +23,6 @@
     </div>
   </header>
 
-  @if (editMode()) {
-    <div class="dashboard__manage-panel">
-      <ul class="list-group list-group-flush">
-        @for (widget of widgets(); track widget.instanceId) {
-          <li class="list-group-item d-flex align-items-center justify-content-between">
-            <span>{{ catalog[widget.widgetTypeId].labelKey | translate }}</span>
-            <div class="d-flex gap-1">
-              <button
-                type="button"
-                class="btn btn-link p-1"
-                [ngbTooltip]="'general.button.edit' | translate"
-                (click)="editWidget(widget.instanceId)"
-              >
-                <fa-icon [icon]="icon.faPenToSquare" />
-              </button>
-              <button
-                type="button"
-                class="btn btn-link text-danger p-1"
-                [ngbTooltip]="'general.button.delete' | translate"
-                (click)="removeWidget(widget.instanceId)"
-              >
-                <fa-icon [icon]="icon.faTrashCan" />
-              </button>
-            </div>
-          </li>
-        }
-      </ul>
-    </div>
-  }
-
   <gridstack
     class="dashboard__grid"
     [options]="gridOptions()"

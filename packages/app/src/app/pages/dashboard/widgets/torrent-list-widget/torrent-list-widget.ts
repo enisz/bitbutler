@@ -9,17 +9,21 @@ import {
 import { FilesizePipe } from '../../../../pipes/filesize-pipe';
 import { HumanizeDurationPipe } from '../../../../pipes/humanize-duration-pipe';
 import { RatioPipe } from '../../../../pipes/ratio-pipe';
+import { WidgetMenu } from '../widget-menu/widget-menu';
 
 @Component({
   selector: 'app-torrent-list-widget',
   standalone: true,
-  imports: [TranslatePipe],
+  imports: [TranslatePipe, WidgetMenu],
   templateUrl: './torrent-list-widget.html',
   styleUrl: './torrent-list-widget.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TorrentListWidget extends BaseWidget {
   @Input() data!: TorrentListData;
+  @Input() editMode = false;
+  @Input() onConfigure!: () => void;
+  @Input() onRemove!: () => void;
 
   private readonly ratioPipe = inject(RatioPipe);
   private readonly filesizePipe = inject(FilesizePipe);
