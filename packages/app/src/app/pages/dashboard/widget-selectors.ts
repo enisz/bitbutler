@@ -1,4 +1,12 @@
-import { DashboardSnapshot, StatTileConfig, StatTileData } from '../../models/dashboard.model';
+import {
+  DashboardSnapshot,
+  DashboardWidgetInstance,
+  StatTileConfig,
+  StatTileData,
+  TorrentListConfig,
+  TorrentListData,
+  TorrentListRow,
+} from '../../models/dashboard.model';
 import { TorrentState } from '../../models/torrent.model';
 
 // Mirrors the "active" filter group semantics used by the main grid's status sidebar
@@ -37,5 +45,41 @@ export function selectStatTileData(
       for (const t of torrents) if (ACTIVE_STATES.has(t.state)) active++;
       return { metric: config.metric, value: active, total: torrents.length };
     }
+  }
+}
+
+export function selectTorrentListData(
+  snapshot: DashboardSnapshot,
+  config: TorrentListConfig,
+): TorrentListData {
+  const rows: TorrentListRow[] = snapshot.torrents.map((t) => ({
+    hash: t.hash,
+    name: t.name,
+    state: t.state,
+    category: t.category,
+    ratio: t.ratio,
+    dlspeed: t.dlspeed,
+    upspeed: t.upspeed,
+    size: t.size,
+    progress: t.progress,
+    added_on: t.added_on,
+    eta: t.eta,
+  }));
+
+  const direction = config.sortOrder === 'asc' ? 1 : -1;
+  rows.sort((a, b) => (a[config.sortField] - b[config.sortField]) * direction);
+
+  return { columns: config.columns, rows: rows.slice(0, config.count) };
+}
+
+export function resolveWidgetData(
+  instance: DashboardWidgetInstance,
+  snapshot: DashboardSnapshot,
+): StatTileData | TorrentListData {
+  switch (instance.widgetTypeId) {
+    case 'stat-tile':
+      return selectStatTileData(snapshot, instance.config as StatTileConfig);
+    case 'torrent-list':
+      return selectTorrentListData(snapshot, instance.config as TorrentListConfig);
   }
 }

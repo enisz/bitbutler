@@ -1,6 +1,6 @@
-import { DashboardSnapshot } from '../../models/dashboard.model';
+import { DashboardSnapshot, DashboardWidgetInstance } from '../../models/dashboard.model';
 import { Torrent } from '../../models/torrent.model';
-import { selectStatTileData } from './widget-selectors';
+import { resolveWidgetData, selectStatTileData, selectTorrentListData } from './widget-selectors';
 
 const makeTorrent = (overrides: Partial<Torrent>): Torrent =>
   ({
@@ -85,6 +85,108 @@ describe('selectStatTileData', () => {
       metric: 'active_count',
       value: 2,
       total: 3,
+    });
+  });
+});
+
+describe('selectTorrentListData', () => {
+  it('should sort descending by the configured field and truncate to count', () => {
+    const snapshot: DashboardSnapshot = {
+      torrents: [
+        makeTorrent({ hash: 'a', ratio: 1.5 }),
+        makeTorrent({ hash: 'b', ratio: 3.0 }),
+        makeTorrent({ hash: 'c', ratio: 2.0 }),
+      ],
+      serverState: null,
+    };
+
+    const result = selectTorrentListData(snapshot, {
+      count: 2,
+      sortField: 'ratio',
+      sortOrder: 'desc',
+      columns: ['name', 'ratio'],
+    });
+
+    expect(result.rows.map((r) => r.hash)).toEqual(['b', 'c']);
+    expect(result.columns).toEqual(['name', 'ratio']);
+  });
+
+  it('should sort ascending when configured', () => {
+    const snapshot: DashboardSnapshot = {
+      torrents: [
+        makeTorrent({ hash: 'a', progress: 0.9 }),
+        makeTorrent({ hash: 'b', progress: 0.1 }),
+      ],
+      serverState: null,
+    };
+
+    const result = selectTorrentListData(snapshot, {
+      count: 5,
+      sortField: 'progress',
+      sortOrder: 'asc',
+      columns: ['name'],
+    });
+
+    expect(result.rows.map((r) => r.hash)).toEqual(['b', 'a']);
+  });
+
+  it('should return fewer rows than count when there are fewer torrents', () => {
+    const snapshot: DashboardSnapshot = {
+      torrents: [makeTorrent({ hash: 'only' })],
+      serverState: null,
+    };
+    const result = selectTorrentListData(snapshot, {
+      count: 5,
+      sortField: 'ratio',
+      sortOrder: 'desc',
+      columns: ['name'],
+    });
+    expect(result.rows).toHaveLength(1);
+  });
+
+  it('should return no rows for an empty torrent map', () => {
+    const result = selectTorrentListData(
+      { torrents: [], serverState: null },
+      { count: 5, sortField: 'ratio', sortOrder: 'desc', columns: ['name'] },
+    );
+    expect(result.rows).toEqual([]);
+  });
+});
+
+describe('resolveWidgetData', () => {
+  it('should dispatch to selectStatTileData for a stat-tile instance', () => {
+    const instance: DashboardWidgetInstance = {
+      instanceId: 'i1',
+      widgetTypeId: 'stat-tile',
+      x: 0,
+      y: 0,
+      w: 3,
+      h: 2,
+      config: { metric: 'download_speed' },
+    };
+    const snapshot: DashboardSnapshot = { torrents: [], serverState: { dl_info_speed: 42 } as any };
+
+    expect(resolveWidgetData(instance, snapshot)).toEqual({ metric: 'download_speed', value: 42 });
+  });
+
+  it('should dispatch to selectTorrentListData for a torrent-list instance', () => {
+    const instance: DashboardWidgetInstance = {
+      instanceId: 'i2',
+      widgetTypeId: 'torrent-list',
+      x: 0,
+      y: 0,
+      w: 6,
+      h: 4,
+      config: { count: 1, sortField: 'ratio', sortOrder: 'desc', columns: ['name'] },
+    };
+    const snapshot: DashboardSnapshot = {
+      torrents: [makeTorrent({ hash: 'x' })],
+      serverState: null,
+    };
+
+    expect(resolveWidgetData(instance, snapshot)).toEqual({
+      columns: ['name'],
+      rows: [expect.objectContaining({ hash: 'x' })],
     });
   });
 });
