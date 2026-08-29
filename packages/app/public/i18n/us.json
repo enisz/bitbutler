@@ -1262,6 +1262,9 @@
           }
         }
       },
+      "widget-menu": {
+        "toggle-label": "Widget options"
+      },
       "catalog": {
         "stat-tile": "Stat Tile",
         "torrent-list": "Torrent List"
@@ -2119,6 +2122,7 @@
       "show": "Show",
       "open-details": "Open Details",
       "edit": "Edit",
+      "configure": "Configure",
       "refresh": "Refresh",
       "retry": "Retry"
     },

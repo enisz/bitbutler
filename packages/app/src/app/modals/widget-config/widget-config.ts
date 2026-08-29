@@ -6,7 +6,9 @@ import {
   input,
   linkedSignal,
 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe } from '@ngx-translate/core';
 import {
   StatTileConfig,
@@ -21,7 +23,7 @@ import {
 @Component({
   selector: 'app-widget-config',
   standalone: true,
-  imports: [TranslatePipe],
+  imports: [FormsModule, NgSelectComponent, TranslatePipe],
   templateUrl: './widget-config.html',
   styleUrl: './widget-config.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -66,6 +68,8 @@ export class WidgetConfig {
   readonly config = linkedSignal<WidgetConfigModel>(() => this.initialConfig());
 
   readonly isStatTile = computed(() => this.widgetTypeId() === 'stat-tile');
+  readonly statTileConfig = computed(() => this.config() as StatTileConfig);
+  readonly torrentListConfig = computed(() => this.config() as TorrentListConfig);
 
   updateStatTileMetric(metric: StatTileMetric): void {
     this.config.set({ metric } satisfies StatTileConfig);

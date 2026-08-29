@@ -1,5 +1,42 @@
 .dashboard {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  // A plain height:100% has nothing to resolve against - html/body only set
+  // overflow:hidden, never an explicit height (see login.scss's .login-container
+  // and main.html's vh-100 root div for the same viewport-unit convention).
+  height: 100vh;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--bs-border-color);
+
+    h1 {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__manage-panel {
+    flex-shrink: 0;
+    max-height: 30vh;
+    overflow-y: auto;
+    border-bottom: 1px solid var(--bs-border-color);
+  }
+
+  &__grid {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    padding: 1.5rem;
+  }
 }

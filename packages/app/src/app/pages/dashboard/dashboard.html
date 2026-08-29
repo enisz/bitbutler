@@ -2,18 +2,19 @@
   <header class="dashboard__header">
     <h1>{{ 'pages.dashboard.title' | translate }}</h1>
     <div class="dashboard__actions">
-      <button type="button" (click)="toggleLive()">
+      <button type="button" class="btn btn-outline-secondary btn-sm" (click)="toggleLive()">
         {{
           (isPaused() ? 'pages.dashboard.live-toggle.paused' : 'pages.dashboard.live-toggle.live')
             | translate
         }}
       </button>
       @if (editMode()) {
-        <button type="button" (click)="addWidget()">
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="addWidget()">
+          <fa-icon [icon]="icon.faPlus" />
           {{ 'pages.dashboard.add-widget' | translate }}
         </button>
       }
-      <button type="button" (click)="toggleEditMode()">
+      <button type="button" class="btn btn-outline-secondary btn-sm" (click)="toggleEditMode()">
         {{
           (editMode() ? 'pages.dashboard.edit-toggle.done' : 'pages.dashboard.edit-toggle.edit')
             | translate
@@ -24,16 +25,28 @@
 
   @if (editMode()) {
     <div class="dashboard__manage-panel">
-      <ul>
+      <ul class="list-group list-group-flush">
         @for (widget of widgets(); track widget.instanceId) {
-          <li>
+          <li class="list-group-item d-flex align-items-center justify-content-between">
             <span>{{ catalog[widget.widgetTypeId].labelKey | translate }}</span>
-            <button type="button" (click)="editWidget(widget.instanceId)">
-              {{ 'general.button.edit' | translate }}
-            </button>
-            <button type="button" (click)="removeWidget(widget.instanceId)">
-              {{ 'general.button.delete' | translate }}
-            </button>
+            <div class="d-flex gap-1">
+              <button
+                type="button"
+                class="btn btn-link p-1"
+                [ngbTooltip]="'general.button.edit' | translate"
+                (click)="editWidget(widget.instanceId)"
+              >
+                <fa-icon [icon]="icon.faPenToSquare" />
+              </button>
+              <button
+                type="button"
+                class="btn btn-link text-danger p-1"
+                [ngbTooltip]="'general.button.delete' | translate"
+                (click)="removeWidget(widget.instanceId)"
+              >
+                <fa-icon [icon]="icon.faTrashCan" />
+              </button>
+            </div>
           </li>
         }
       </ul>
@@ -41,6 +54,7 @@
   }
 
   <gridstack
+    class="dashboard__grid"
     [options]="gridOptions()"
     (changeCB)="onGridChange($event)"
     (dragStartCB)="onInteractionStart($event)"
