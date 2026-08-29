@@ -57,5 +57,11 @@ describe('TorrentListWidget', () => {
     expect(cells.length).toBe(2);
     expect(cells[0].textContent).toContain('Ubuntu ISO');
     expect(cells[1].textContent).toContain('1.50');
+
+    const scrollHost = fixture.nativeElement.querySelector('.torrent-list-widget__scroll');
+    expect(scrollHost).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('table').classList).toContain(
+      'torrent-list-widget__table',
+    );
   });
 });

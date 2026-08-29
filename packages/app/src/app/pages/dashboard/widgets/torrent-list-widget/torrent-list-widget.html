@@ -1,18 +1,22 @@
-<table class="torrent-list-widget">
-  <thead>
-    <tr>
-      @for (column of data.columns; track column) {
-        <th>{{ 'pages.dashboard.widgets.torrent-list.column.' + column | translate }}</th>
-      }
-    </tr>
-  </thead>
-  <tbody>
-    @for (row of data.rows; track row.hash) {
-      <tr>
-        @for (column of data.columns; track column) {
-          <td>{{ formattedValue(row, column) }}</td>
+<div class="torrent-list-widget">
+  <div class="torrent-list-widget__scroll">
+    <table class="torrent-list-widget__table">
+      <thead>
+        <tr>
+          @for (column of data.columns; track column) {
+            <th>{{ 'pages.dashboard.widgets.torrent-list.column.' + column | translate }}</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of data.rows; track row.hash) {
+          <tr>
+            @for (column of data.columns; track column) {
+              <td>{{ formattedValue(row, column) }}</td>
+            }
+          </tr>
         }
-      </tr>
-    }
-  </tbody>
-</table>
+      </tbody>
+    </table>
+  </div>
+</div>
