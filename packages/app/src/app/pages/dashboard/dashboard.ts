@@ -8,6 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import {
   GridstackComponent,
@@ -17,11 +18,13 @@ import {
   nodesCB,
 } from 'gridstack/dist/angular';
 import { Subscription } from 'rxjs';
+import { WidgetPicker } from '../../modals/widget-picker/widget-picker';
 import {
   DashboardSnapshot,
   DashboardWidgetInstance,
   StatTileData,
   TorrentListData,
+  WidgetTypeId,
 } from '../../models/dashboard.model';
 import { DashboardSettingsService } from '../../services/dashboard-settings.service';
 import { QbPollingService } from '../../services/qb-polling.service';
@@ -45,6 +48,7 @@ export class Dashboard implements OnDestroy {
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly torrentStore = inject(TorrentStoreService);
   private readonly dashboardSettingsService = inject(DashboardSettingsService);
+  private readonly modalService = inject(NgbModal);
 
   readonly widgets = signal<DashboardWidgetInstance[]>([]);
   readonly isPaused = toSignal(this.qbPollingService.isPaused$, { initialValue: false });
@@ -138,6 +142,27 @@ export class Dashboard implements OnDestroy {
 
   toggleEditMode(): void {
     this.editMode.update((v) => !v);
+  }
+
+  addWidget(): void {
+    const pickerRef = this.modalService.open(WidgetPicker, { centered: true });
+    pickerRef.result
+      .then((widgetTypeId: WidgetTypeId) => {
+        const meta = WIDGET_CATALOG[widgetTypeId];
+        const instance: DashboardWidgetInstance = {
+          instanceId: crypto.randomUUID(),
+          widgetTypeId,
+          x: 0,
+          y: 0,
+          w: meta.defaultSize.w,
+          h: meta.defaultSize.h,
+          config: meta.defaultConfig,
+        };
+        const next = [...this.widgets(), instance];
+        this.widgets.set(next);
+        void this.dashboardSettingsService.save({ widgets: next });
+      })
+      .catch(() => {});
   }
 
   // Live polling recomputes `gridOptions` (via `items()`/`snapshot()`), which re-triggers

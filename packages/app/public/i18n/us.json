@@ -765,6 +765,9 @@
           "delete-failed-title": "Failed to Delete Torrent File"
         }
       },
+      "widget-picker": {
+        "title": "Add Widget"
+      },
       "update-available": {
         "title": "Update Available",
         "subtitle": "You're on v{{ current_version }}, {{ count }} versions behind the latest (v{{ latest_version }}).",
@@ -1262,7 +1265,8 @@
       "edit-toggle": {
         "edit": "Edit",
         "done": "Done"
-      }
+      },
+      "add-widget": "Add Widget"
     },
     "login": {
       "tagline": "qBittorrent-nox Remote Client",

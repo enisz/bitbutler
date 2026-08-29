@@ -8,6 +8,11 @@
             | translate
         }}
       </button>
+      @if (editMode()) {
+        <button type="button" (click)="addWidget()">
+          {{ 'pages.dashboard.add-widget' | translate }}
+        </button>
+      }
       <button type="button" (click)="toggleEditMode()">
         {{
           (editMode() ? 'pages.dashboard.edit-toggle.done' : 'pages.dashboard.edit-toggle.edit')

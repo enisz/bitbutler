@@ -765,6 +765,9 @@
           "delete-failed-title": "Nem sikerült törölni a torrent fájlt"
         }
       },
+      "widget-picker": {
+        "title": "Widget hozzáadása"
+      },
       "update-available": {
         "title": "Frissítés elérhető",
         "subtitle": "Jelenleg a v{{ current_version }} verziót használod, {{ count }} verzióval vagy lemaradva a legújabbtól (v{{ latest_version }}).",
@@ -1262,7 +1265,8 @@
       "edit-toggle": {
         "edit": "Szerkesztés",
         "done": "Kész"
-      }
+      },
+      "add-widget": "Widget hozzáadása"
     },
     "login": {
       "tagline": "qBittorrent-nox távoli kliens",

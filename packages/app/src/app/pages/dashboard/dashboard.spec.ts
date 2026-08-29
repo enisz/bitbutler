@@ -1,5 +1,6 @@
 import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { DashboardWidgetInstance } from '../../models/dashboard.model';
@@ -26,6 +27,7 @@ describe('Dashboard', () => {
     resume: ReturnType<typeof vi.fn>;
   };
   let dashboardSettingsMock: { load: ReturnType<typeof vi.fn>; save: ReturnType<typeof vi.fn> };
+  let modalServiceMock: { open: ReturnType<typeof vi.fn> };
 
   const statTileInstance: DashboardWidgetInstance = {
     instanceId: 'w1',
@@ -45,6 +47,7 @@ describe('Dashboard', () => {
         { provide: TorrentStoreService, useValue: torrentStoreMock },
         { provide: QbPollingService, useValue: qbPollingMock },
         { provide: DashboardSettingsService, useValue: dashboardSettingsMock },
+        { provide: NgbModal, useValue: modalServiceMock },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     })
@@ -77,6 +80,7 @@ describe('Dashboard', () => {
       load: vi.fn().mockResolvedValue({ widgets: [statTileInstance] }),
       save: vi.fn().mockResolvedValue(undefined),
     };
+    modalServiceMock = { open: vi.fn() };
   });
 
   it('should create', async () => {
@@ -267,6 +271,30 @@ describe('Dashboard', () => {
 
       expect(qbPollingMock.resume).toHaveBeenCalledWith(dragToken);
       expect(qbPollingMock.resume).not.toHaveBeenCalledWith(manualToken);
+    });
+  });
+
+  describe('addWidget', () => {
+    it('should append a new instance with the catalog default config/size on confirm', async () => {
+      dashboardSettingsMock.save = vi.fn().mockResolvedValue(undefined);
+      const resultPromise = Promise.resolve('stat-tile');
+      modalServiceMock.open.mockReturnValue({ result: resultPromise });
+      await createComponent();
+
+      component.addWidget();
+      await resultPromise;
+      await Promise.resolve();
+
+      const added = component
+        .widgets()
+        .find((w) => w.widgetTypeId === 'stat-tile' && w !== statTileInstance);
+      expect(added).toMatchObject({
+        widgetTypeId: 'stat-tile',
+        w: 3,
+        h: 2,
+        config: { metric: 'download_speed' },
+      });
+      expect(dashboardSettingsMock.save).toHaveBeenCalled();
     });
   });
 });
