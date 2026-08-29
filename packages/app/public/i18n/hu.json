@@ -1252,8 +1252,8 @@
         }
       },
       "catalog": {
-        "stat-tile": "Stat Tile",
-        "torrent-list": "Torrent List"
+        "stat-tile": "Statisztika csempe",
+        "torrent-list": "Torrent lista"
       }
     },
     "login": {
