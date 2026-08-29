@@ -1235,6 +1235,20 @@
             "global_ratio": "Ratio",
             "free_disk_space": "Free Disk Space"
           }
+        },
+        "torrent-list": {
+          "column": {
+            "name": "Name",
+            "state": "State",
+            "category": "Category",
+            "ratio": "Ratio",
+            "dlspeed": "Down Speed",
+            "upspeed": "Up Speed",
+            "size": "Size",
+            "progress": "Progress",
+            "added_on": "Added On",
+            "eta": "ETA"
+          }
         }
       }
     },

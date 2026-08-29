@@ -1,0 +1,18 @@
+<table class="torrent-list-widget">
+  <thead>
+    <tr>
+      @for (column of data.columns; track column) {
+        <th>{{ 'pages.dashboard.widgets.torrent-list.column.' + column | translate }}</th>
+      }
+    </tr>
+  </thead>
+  <tbody>
+    @for (row of data.rows; track row.hash) {
+      <tr>
+        @for (column of data.columns; track column) {
+          <td>{{ formattedValue(row, column) }}</td>
+        }
+      </tr>
+    }
+  </tbody>
+</table>
