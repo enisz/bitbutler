@@ -9,13 +9,10 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslatePipe } from '@ngx-translate/core';
-import {
-  GridstackComponent,
-  GridstackItemComponent,
-  NgGridStackWidget,
-} from 'gridstack/dist/angular';
+import { GridstackComponent, NgGridStackOptions, NgGridStackWidget } from 'gridstack/dist/angular';
 import { Subscription } from 'rxjs';
 import {
+  DashboardSnapshot,
   DashboardWidgetInstance,
   StatTileData,
   TorrentListData,
@@ -32,7 +29,7 @@ import { TorrentListWidget } from './widgets/torrent-list-widget/torrent-list-wi
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [GridstackComponent, GridstackItemComponent, TranslatePipe],
+  imports: [GridstackComponent, TranslatePipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -46,16 +43,18 @@ export class Dashboard implements OnDestroy {
   readonly widgets = signal<DashboardWidgetInstance[]>([]);
   readonly isPaused = toSignal(this.qbPollingService.isPaused$, { initialValue: false });
 
-  readonly gridOptions = { column: 12, cellHeight: 64, margin: 8, staticGrid: true };
-
-  private readonly snapshot = computed(() => ({
+  private readonly snapshot = computed<DashboardSnapshot>(() => ({
     torrents: this.torrentStore.torrentsArray(),
     serverState: this.torrentStore.serverState(),
   }));
 
   private readonly dataCache = new Map<
     string,
-    { instance: DashboardWidgetInstance; value: StatTileData | TorrentListData }
+    {
+      instance: DashboardWidgetInstance;
+      snapshot: DashboardSnapshot;
+      value: StatTileData | TorrentListData;
+    }
   >();
 
   readonly items = computed<NgGridStackWidget[]>(() =>
@@ -69,6 +68,20 @@ export class Dashboard implements OnDestroy {
       props: { data: this.dataFor(instance) },
     })),
   );
+
+  // gridstack's Angular bindings only invoke gsCreateNgComponents (the hook that actually
+  // instantiates `component`/`props` into real Angular components) for widgets it creates via
+  // GridStack.load()/updateOptions({ children }) - NOT for <gridstack-item> template elements,
+  // whose [options] setter always stamps the pre-existing DOM node (`el`) into the node options,
+  // which makes GridStack reuse that node instead of calling the create hook. So the widget list
+  // must be delivered as `options.children`, not as templated <gridstack-item> children.
+  readonly gridOptions = computed<NgGridStackOptions>(() => ({
+    column: 12,
+    cellHeight: 64,
+    margin: 8,
+    staticGrid: true,
+    children: this.items(),
+  }));
 
   private pauseToken: symbol | null = null;
   private pollSub: Subscription | null = null;
@@ -112,11 +125,17 @@ export class Dashboard implements OnDestroy {
   }
 
   dataFor(instance: DashboardWidgetInstance): StatTileData | TorrentListData {
+    // Read snapshot() unconditionally (even on a cache hit) so this computed-reactive read always
+    // happens during evaluation - otherwise, once the cache warms, `items` (which calls dataFor())
+    // would stop depending on torrentsArray/serverState and would never react to a live update
+    // again, since a computed's tracked dependencies are only those read during its most recent
+    // evaluation.
+    const snap = this.snapshot();
     const cached = this.dataCache.get(instance.instanceId);
-    if (cached && cached.instance === instance) return cached.value;
+    if (cached && cached.instance === instance && cached.snapshot === snap) return cached.value;
 
-    const value = resolveWidgetData(instance, this.snapshot());
-    this.dataCache.set(instance.instanceId, { instance, value });
+    const value = resolveWidgetData(instance, snap);
+    this.dataCache.set(instance.instanceId, { instance, snapshot: snap, value });
     return value;
   }
 }

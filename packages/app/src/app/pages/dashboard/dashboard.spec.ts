@@ -146,5 +146,39 @@ describe('Dashboard', () => {
 
       expect(component.dataFor(edited)).toEqual({ metric: 'upload_speed', value: 777 });
     });
+
+    // Regression test: dataFor() must re-read the reactive snapshot() on every call - even a
+    // cache hit - or `items` (which calls dataFor()) permanently drops its dependency on
+    // torrentsArray/serverState after the cache warms once, since a computed()'s tracked
+    // dependencies are only those actually read during its most recent evaluation.
+    it('should recompute when the snapshot changes for the same instance reference (live update)', async () => {
+      await createComponent();
+      expect(component.dataFor(statTileInstance)).toEqual({ metric: 'download_speed', value: 0 });
+
+      torrentStoreMock.serverState.set({ dl_info_speed: 999 });
+
+      expect(component.dataFor(statTileInstance)).toEqual({
+        metric: 'download_speed',
+        value: 999,
+      });
+    });
+  });
+
+  describe('items', () => {
+    it('should map each placed widget instance to a gridstack node with component/props fields', async () => {
+      await createComponent();
+
+      expect(component.items()).toEqual([
+        {
+          id: 'w1',
+          x: 0,
+          y: 0,
+          w: 3,
+          h: 2,
+          component: 'app-stat-tile',
+          props: { data: { metric: 'download_speed', value: 0 } },
+        },
+      ]);
+    });
   });
 });

@@ -9,9 +9,5 @@
     </button>
   </header>
 
-  <gridstack [options]="gridOptions">
-    @for (item of items(); track item.id) {
-      <gridstack-item [options]="item"></gridstack-item>
-    }
-  </gridstack>
+  <gridstack [options]="gridOptions()"></gridstack>
 </div>

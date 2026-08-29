@@ -1,5 +1,6 @@
 @use 'bootstrap/scss/bootstrap' as *;
 @use '@ng-select/ng-select/themes/default.theme.css';
+@use 'gridstack/dist/gridstack.min.css';
 @use './styles/ng-select';
 @use './styles/themes/theme-utils' as bb;
 
