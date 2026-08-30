@@ -98,4 +98,14 @@ describe('Bandwidth', () => {
     expect(component.form.controls.schedule_to_hour.disabled).toBe(true);
     expect(component.form.controls.scheduler_days.disabled).toBe(true);
   });
+
+  it('should zero-pad the hour/minute ng-select values instead of showing raw numbers', async () => {
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const values = Array.from(fixture.nativeElement.querySelectorAll('.ng-value')).map((el) =>
+      (el as HTMLElement).textContent!.trim(),
+    );
+    expect(values).toContain('08'); // schedule_from_hour: 8
+    expect(values).toContain('00'); // schedule_from_min: 0
+  });
 });
