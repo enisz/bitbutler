@@ -4,6 +4,7 @@ import {
   PieChartConfig,
   StatTileConfig,
   TorrentListConfig,
+  WidgetChartType,
   WidgetConfig,
   WidgetTypeId,
 } from '../../models/dashboard.model';
@@ -11,7 +12,8 @@ import {
 export interface WidgetCatalogMeta {
   id: WidgetTypeId;
   labelKey: string;
-  descriptionKey: string;
+  chartType: WidgetChartType;
+  category: string;
   icon: IconDefinition;
   componentSelector: string;
   defaultConfig: WidgetConfig;
@@ -22,7 +24,8 @@ export const WIDGET_CATALOG: Record<WidgetTypeId, WidgetCatalogMeta> = {
   'stat-tile': {
     id: 'stat-tile',
     labelKey: 'pages.dashboard.catalog.stat-tile',
-    descriptionKey: 'pages.dashboard.catalog-type.stat-tile',
+    chartType: 'number',
+    category: 'transfers',
     icon: faHashtag,
     componentSelector: 'app-stat-tile',
     defaultConfig: { metric: 'download_speed' } satisfies StatTileConfig,
@@ -31,7 +34,8 @@ export const WIDGET_CATALOG: Record<WidgetTypeId, WidgetCatalogMeta> = {
   'torrent-list': {
     id: 'torrent-list',
     labelKey: 'pages.dashboard.catalog.torrent-list',
-    descriptionKey: 'pages.dashboard.catalog-type.torrent-list',
+    chartType: 'table',
+    category: 'transfers',
     icon: faTable,
     componentSelector: 'app-torrent-list-widget',
     defaultConfig: {
@@ -45,7 +49,8 @@ export const WIDGET_CATALOG: Record<WidgetTypeId, WidgetCatalogMeta> = {
   'pie-chart': {
     id: 'pie-chart',
     labelKey: 'pages.dashboard.catalog.pie-chart',
-    descriptionKey: 'pages.dashboard.catalog-type.pie-chart',
+    chartType: 'pie',
+    category: 'transfers',
     icon: faChartPie,
     componentSelector: 'app-pie-chart-widget',
     defaultConfig: { groupBy: 'state' } satisfies PieChartConfig,

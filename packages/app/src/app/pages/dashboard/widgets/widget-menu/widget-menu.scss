@@ -8,14 +8,20 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 1.75rem;
-    height: 1.75rem;
+    width: 1.5rem;
+    height: 1.5rem;
     padding: 0;
     border: none;
     border-radius: var(--bs-border-radius);
     background: transparent;
     color: var(--bs-body-color);
     opacity: 0.6;
+
+    // ng-bootstrap's dropdownToggle directive stamps the Bootstrap `dropdown-toggle` class onto
+    // this button itself, which paints a default caret via `::after` - this menu is icon-only.
+    &::after {
+      display: none;
+    }
 
     &:hover {
       opacity: 1;

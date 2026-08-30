@@ -767,7 +767,11 @@
       },
       "widget-picker": {
         "title": "Add Widget",
-        "subtitle": "Pick a widget to place on the dashboard."
+        "subtitle": "Pick a widget to place on the dashboard.",
+        "search-placeholder": "Search widgets",
+        "chart-type-filter-label": "Show by chart type",
+        "chart-type-filter-all": "All",
+        "empty": "No widgets match that filter."
       },
       "widget-config": {
         "title": "Configure Widget",
@@ -1288,18 +1292,27 @@
         "torrent-list": "Torrent List",
         "pie-chart": "Pie Chart"
       },
-      "catalog-type": {
-        "stat-tile": "Number",
-        "torrent-list": "Table",
-        "pie-chart": "Pie"
+      "chart-type": {
+        "number": "Number",
+        "pie": "Pie",
+        "line": "Line",
+        "column": "Column",
+        "table": "Table"
+      },
+      "category": {
+        "transfers": "Transfers"
       },
       "live-toggle": {
-        "label": "Live"
+        "label": "Live",
+        "paused-label": "Paused",
+        "paused-hint": "manual refresh"
       },
-      "edit-toggle": {
-        "label": "Edit mode"
-      },
-      "add-widget": "Add Widget"
+      "back-button": "Back to torrent list",
+      "add-button": "Add widget",
+      "lock-button": {
+        "label": "Lock layout",
+        "unlock-label": "Unlock layout"
+      }
     },
     "login": {
       "tagline": "qBittorrent-nox Remote Client",

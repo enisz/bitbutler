@@ -21,7 +21,6 @@ import { WidgetMenu } from '../widget-menu/widget-menu';
 })
 export class TorrentListWidget extends BaseWidget {
   @Input() data!: TorrentListData;
-  @Input() editMode = false;
   @Input() onConfigure?: () => void;
   @Input() onRemove?: () => void;
 

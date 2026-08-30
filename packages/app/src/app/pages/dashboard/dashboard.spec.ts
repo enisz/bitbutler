@@ -1,5 +1,6 @@
 import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { NgbModal, NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
@@ -29,6 +30,7 @@ describe('Dashboard', () => {
   let dashboardSettingsMock: { load: ReturnType<typeof vi.fn>; save: ReturnType<typeof vi.fn> };
   let modalServiceMock: { open: ReturnType<typeof vi.fn> };
   let offcanvasServiceMock: { open: ReturnType<typeof vi.fn> };
+  let routerMock: { navigate: ReturnType<typeof vi.fn> };
 
   const statTileInstance: DashboardWidgetInstance = {
     instanceId: 'w1',
@@ -50,6 +52,7 @@ describe('Dashboard', () => {
         { provide: DashboardSettingsService, useValue: dashboardSettingsMock },
         { provide: NgbModal, useValue: modalServiceMock },
         { provide: NgbOffcanvas, useValue: offcanvasServiceMock },
+        { provide: Router, useValue: routerMock },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     })
@@ -84,6 +87,7 @@ describe('Dashboard', () => {
     };
     modalServiceMock = { open: vi.fn() };
     offcanvasServiceMock = { open: vi.fn() };
+    routerMock = { navigate: vi.fn() };
   });
 
   it('should create', async () => {
@@ -94,6 +98,14 @@ describe('Dashboard', () => {
   it('should load the persisted layout into widgets()', async () => {
     await createComponent();
     expect(component.widgets()).toEqual([statTileInstance]);
+  });
+
+  describe('goToTorrentList', () => {
+    it('should navigate back to the torrent list page', async () => {
+      await createComponent();
+      component.goToTorrentList();
+      expect(routerMock.navigate).toHaveBeenCalledWith(['/pages/torrent-list']);
+    });
   });
 
   describe('polling lifecycle', () => {
@@ -116,6 +128,28 @@ describe('Dashboard', () => {
 
       expect(qbPollingMock.startMaindataPolling).toHaveBeenCalledTimes(2);
       expect(qbPollingMock.startMaindataPolling).toHaveBeenLastCalledWith('server-2');
+    });
+  });
+
+  describe('toggleLock', () => {
+    it('should default isLocked to true', async () => {
+      await createComponent();
+      expect(component.isLocked()).toBe(true);
+    });
+
+    it('should flip isLocked when toggled', async () => {
+      await createComponent();
+      component.toggleLock();
+      expect(component.isLocked()).toBe(false);
+      component.toggleLock();
+      expect(component.isLocked()).toBe(true);
+    });
+
+    it('should reflect isLocked as gridOptions.staticGrid', async () => {
+      await createComponent();
+      expect(component.gridOptions().staticGrid).toBe(true);
+      component.toggleLock();
+      expect(component.gridOptions().staticGrid).toBe(false);
     });
   });
 
@@ -189,20 +223,10 @@ describe('Dashboard', () => {
         component: 'app-stat-tile',
         props: {
           data: { metric: 'download_speed', value: 0 },
-          editMode: false,
         },
       });
       expect(typeof (items[0].props as any).onConfigure).toBe('function');
       expect(typeof (items[0].props as any).onRemove).toBe('function');
-    });
-
-    it('should reflect editMode in props and toggle it live', async () => {
-      await createComponent();
-      expect((component.items()[0].props as any).editMode).toBe(false);
-
-      component.toggleEditMode();
-
-      expect((component.items()[0].props as any).editMode).toBe(true);
     });
 
     it("should route each widget's onConfigure/onRemove callback to editWidget/removeWidget for that instance", async () => {
@@ -239,21 +263,6 @@ describe('Dashboard', () => {
       await createComponent();
 
       expect(component.items()[0].component).toBe('app-pie-chart-widget');
-    });
-  });
-
-  describe('editMode', () => {
-    it('should default to false', async () => {
-      await createComponent();
-      expect(component.editMode()).toBe(false);
-    });
-
-    it('should toggle', async () => {
-      await createComponent();
-      component.toggleEditMode();
-      expect(component.editMode()).toBe(true);
-      component.toggleEditMode();
-      expect(component.editMode()).toBe(false);
     });
   });
 
@@ -327,7 +336,7 @@ describe('Dashboard', () => {
     });
   });
 
-  describe('addWidget', () => {
+  describe('openWidgetPicker', () => {
     it('should open the picker offcanvas, then the config modal pre-filled with the catalog default, then append the confirmed instance', async () => {
       dashboardSettingsMock.save = vi.fn().mockResolvedValue(undefined);
       const pickerResult = Promise.resolve('stat-tile');
@@ -336,7 +345,7 @@ describe('Dashboard', () => {
       modalServiceMock.open.mockReturnValue({ result: configResult, componentInstance: {} });
       await createComponent();
 
-      component.addWidget();
+      component.openWidgetPicker();
       await pickerResult;
       await Promise.resolve();
       await configResult;

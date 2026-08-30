@@ -127,9 +127,17 @@
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-primary btn-sm btn-split" (click)="save()">
-    {{ 'general.button.save' | translate }}
+    <bb-btn-content
+      [icon]="icons.faFloppyDisk"
+      [text]="'general.button.save' | translate"
+      position="end"
+    ></bb-btn-content>
   </button>
   <button type="button" class="btn btn-sm btn-split" (click)="cancel()">
-    {{ 'general.button.cancel' | translate }}
+    <bb-btn-content
+      [icon]="icons.faXmark"
+      [text]="'general.button.cancel' | translate"
+      position="end"
+    ></bb-btn-content>
   </button>
 </div>

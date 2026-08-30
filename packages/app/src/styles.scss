@@ -1459,3 +1459,7 @@ body {
     color: var(--bs-body-color);
   }
 }
+
+.widget-picker-offcanvas {
+  --bs-offcanvas-width: 372px;
+}

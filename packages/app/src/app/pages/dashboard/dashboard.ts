@@ -9,9 +9,17 @@ import {
   viewChild,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { NgbModal, NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
+import {
+  faChevronLeft,
+  faLock,
+  faPause,
+  faPlay,
+  faPlus,
+  faUnlock,
+} from '@fortawesome/free-solid-svg-icons';
+import { NgbModal, NgbOffcanvas, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import {
   GridstackComponent,
@@ -46,7 +54,7 @@ import { TorrentListWidget } from './widgets/torrent-list-widget/torrent-list-wi
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [GridstackComponent, TranslatePipe, FontAwesomeModule],
+  imports: [GridstackComponent, TranslatePipe, FontAwesomeModule, NgbTooltipModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -58,11 +66,12 @@ export class Dashboard implements OnDestroy {
   private readonly dashboardSettingsService = inject(DashboardSettingsService);
   private readonly modalService = inject(NgbModal);
   private readonly offcanvasService = inject(NgbOffcanvas);
+  private readonly router = inject(Router);
 
   readonly widgets = signal<DashboardWidgetInstance[]>([]);
   readonly isPaused = toSignal(this.qbPollingService.isPaused$, { initialValue: false });
-  readonly editMode = signal(false);
-  readonly icon = { faPlus };
+  readonly isLocked = signal(true);
+  readonly icon = { faChevronLeft, faLock, faUnlock, faPlay, faPause, faPlus };
 
   // GridstackComponent's own `options` setter only calls the underlying grid's `load()` when
   // `children?.length` is truthy - an empty array is falsy on `.length`, so removing the last
@@ -94,7 +103,6 @@ export class Dashboard implements OnDestroy {
       component: WIDGET_CATALOG[instance.widgetTypeId].componentSelector,
       props: {
         data: this.dataFor(instance),
-        editMode: this.editMode(),
         onConfigure: () => this.editWidget(instance.instanceId),
         onRemove: () => this.removeWidget(instance.instanceId),
       },
@@ -111,7 +119,7 @@ export class Dashboard implements OnDestroy {
     column: 12,
     cellHeight: 64,
     margin: 8,
-    staticGrid: !this.editMode(),
+    staticGrid: this.isLocked(),
     children: this.items(),
   }));
 
@@ -152,6 +160,10 @@ export class Dashboard implements OnDestroy {
     this.pollSub = null;
   }
 
+  toggleLock(): void {
+    this.isLocked.update((locked) => !locked);
+  }
+
   toggleLive(): void {
     if (this.isPaused()) {
       if (this.pauseToken) this.qbPollingService.resume(this.pauseToken);
@@ -161,12 +173,15 @@ export class Dashboard implements OnDestroy {
     }
   }
 
-  toggleEditMode(): void {
-    this.editMode.update((v) => !v);
+  goToTorrentList(): void {
+    void this.router.navigate(['/pages/torrent-list']);
   }
 
-  addWidget(): void {
-    const pickerRef = this.offcanvasService.open(WidgetPicker, { position: 'end' });
+  openWidgetPicker(): void {
+    const pickerRef = this.offcanvasService.open(WidgetPicker, {
+      position: 'end',
+      panelClass: 'widget-picker-offcanvas',
+    });
     pickerRef.result
       .then((widgetTypeId: WidgetTypeId) => {
         const meta = WIDGET_CATALOG[widgetTypeId];

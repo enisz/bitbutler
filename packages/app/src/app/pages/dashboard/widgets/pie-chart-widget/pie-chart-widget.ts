@@ -48,7 +48,6 @@ interface PieChartRenderConfig {
 })
 export class PieChartWidget extends BaseWidget {
   @Input() data!: PieChartData;
-  @Input() editMode = false;
   @Input() onConfigure?: () => void;
   @Input() onRemove?: () => void;
 

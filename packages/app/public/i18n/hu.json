@@ -767,7 +767,11 @@
       },
       "widget-picker": {
         "title": "Widget hozzáadása",
-        "subtitle": "Válassz egy widgetet, amit az irányítópultra szeretnél helyezni."
+        "subtitle": "Válassz egy widgetet, amit az irányítópultra szeretnél helyezni.",
+        "search-placeholder": "Widgetek keresése",
+        "chart-type-filter-label": "Szűrés diagramtípus szerint",
+        "chart-type-filter-all": "Összes",
+        "empty": "Nincs a szűrésnek megfelelő widget."
       },
       "widget-config": {
         "title": "Widget beállítása",
@@ -1288,18 +1292,27 @@
         "torrent-list": "Torrent lista",
         "pie-chart": "Kördiagram"
       },
-      "catalog-type": {
-        "stat-tile": "Szám",
-        "torrent-list": "Táblázat",
-        "pie-chart": "Kör"
+      "chart-type": {
+        "number": "Szám",
+        "pie": "Kör",
+        "line": "Vonal",
+        "column": "Oszlop",
+        "table": "Táblázat"
+      },
+      "category": {
+        "transfers": "Átvitelek"
       },
       "live-toggle": {
-        "label": "Élő"
+        "label": "Élő",
+        "paused-label": "Szüneteltetve",
+        "paused-hint": "kézi frissítés"
       },
-      "edit-toggle": {
-        "label": "Szerkesztő mód"
-      },
-      "add-widget": "Widget hozzáadása"
+      "back-button": "Vissza a torrent listához",
+      "add-button": "Widget hozzáadása",
+      "lock-button": {
+        "label": "Elrendezés zárolása",
+        "unlock-label": "Elrendezés zárolásának feloldása"
+      }
     },
     "login": {
       "tagline": "qBittorrent-nox távoli kliens",

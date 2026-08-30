@@ -7,9 +7,11 @@ import {
   linkedSignal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { faFloppyDisk, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe } from '@ngx-translate/core';
+import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import {
   PieChartConfig,
   PieChartGroupBy,
@@ -25,12 +27,14 @@ import {
 @Component({
   selector: 'app-widget-config',
   standalone: true,
-  imports: [FormsModule, NgSelectComponent, TranslatePipe],
+  imports: [FormsModule, NgSelectComponent, TranslatePipe, BbBtnContent],
   templateUrl: './widget-config.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WidgetConfig {
   private readonly activeModal = inject(NgbActiveModal);
+
+  readonly icons = { faFloppyDisk, faXmark };
 
   readonly widgetTypeId = input.required<WidgetTypeId>();
   readonly initialConfig = input.required<WidgetConfigModel>();

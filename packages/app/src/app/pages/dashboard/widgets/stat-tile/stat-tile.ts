@@ -16,7 +16,6 @@ import { WidgetMenu } from '../widget-menu/widget-menu';
 })
 export class StatTile extends BaseWidget {
   @Input() data!: StatTileData;
-  @Input() editMode = false;
   @Input() onConfigure?: () => void;
   @Input() onRemove?: () => void;
 

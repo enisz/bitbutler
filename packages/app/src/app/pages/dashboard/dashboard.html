@@ -1,5 +1,15 @@
 <div class="dashboard">
   <header class="dashboard__header">
+    <button
+      type="button"
+      class="dashboard__nav-btn"
+      (click)="goToTorrentList()"
+      [attr.aria-label]="'pages.dashboard.back-button' | translate"
+      [ngbTooltip]="'pages.dashboard.back-button' | translate"
+      placement="bottom"
+    >
+      <fa-icon [icon]="icon.faChevronLeft" />
+    </button>
     <div class="dashboard__heading">
       <h1>{{ 'pages.dashboard.title' | translate }}</h1>
       <p class="dashboard__subtitle text-body-secondary small mb-0">
@@ -7,48 +17,77 @@
       </p>
     </div>
     <div class="dashboard__actions">
-      <div class="dashboard__switch form-switch">
-        <input
-          class="form-check-input"
-          type="checkbox"
-          role="switch"
-          id="dashboardLiveToggle"
-          [checked]="!isPaused()"
-          (change)="toggleLive()"
-        />
-        <label class="form-check-label small" for="dashboardLiveToggle">
-          {{ 'pages.dashboard.live-toggle.label' | translate }}
-        </label>
-      </div>
-      @if (editMode()) {
-        <button type="button" class="btn btn-outline-primary btn-sm" (click)="addWidget()">
-          <fa-icon [icon]="icon.faPlus" />
-          {{ 'pages.dashboard.add-widget' | translate }}
-        </button>
-      }
-      <div class="dashboard__switch form-switch">
-        <input
-          class="form-check-input"
-          type="checkbox"
-          role="switch"
-          id="dashboardEditToggle"
-          [checked]="editMode()"
-          (change)="toggleEditMode()"
-        />
-        <label class="form-check-label small" for="dashboardEditToggle">
-          {{ 'pages.dashboard.edit-toggle.label' | translate }}
-        </label>
-      </div>
+      <button
+        type="button"
+        class="dashboard__nav-btn"
+        [class.dashboard__nav-btn--active]="isLocked()"
+        (click)="toggleLock()"
+        [attr.aria-label]="
+          (isLocked()
+            ? 'pages.dashboard.lock-button.unlock-label'
+            : 'pages.dashboard.lock-button.label'
+          ) | translate
+        "
+        [ngbTooltip]="
+          (isLocked()
+            ? 'pages.dashboard.lock-button.unlock-label'
+            : 'pages.dashboard.lock-button.label'
+          ) | translate
+        "
+        placement="bottom"
+      >
+        <fa-icon [icon]="isLocked() ? icon.faLock : icon.faUnlock" />
+      </button>
+      <button
+        type="button"
+        class="dashboard__nav-btn"
+        [class.dashboard__nav-btn--active]="!isPaused()"
+        (click)="toggleLive()"
+        [attr.aria-label]="
+          (isPaused()
+            ? 'pages.dashboard.live-toggle.paused-label'
+            : 'pages.dashboard.live-toggle.label'
+          ) | translate
+        "
+        [ngbTooltip]="
+          (isPaused()
+            ? 'pages.dashboard.live-toggle.paused-label'
+            : 'pages.dashboard.live-toggle.label'
+          ) | translate
+        "
+        placement="bottom"
+      >
+        <fa-icon [icon]="isPaused() ? icon.faPlay : icon.faPause" />
+      </button>
+      <button
+        type="button"
+        class="dashboard__nav-btn"
+        (click)="openWidgetPicker()"
+        [attr.aria-label]="'pages.dashboard.add-button' | translate"
+        [ngbTooltip]="'pages.dashboard.add-button' | translate"
+        placement="bottom"
+      >
+        <fa-icon [icon]="icon.faPlus" />
+      </button>
     </div>
   </header>
 
-  <gridstack
-    class="dashboard__grid"
-    [options]="gridOptions()"
-    (changeCB)="onGridChange($event)"
-    (dragStartCB)="onInteractionStart($event)"
-    (dragStopCB)="onInteractionStop($event)"
-    (resizeStartCB)="onInteractionStart($event)"
-    (resizeStopCB)="onInteractionStop($event)"
-  ></gridstack>
+  <!--
+    GridStack positions every `.grid-stack-item` with `position: absolute; top/left: 0`, whose
+    containing block is `<gridstack>`'s own padding box - CSS resolves those offsets against the
+    padding box's edge, not its content box, so padding placed directly on `<gridstack>` is
+    invisible to its absolutely-positioned children (the widgets render flush with the outer
+    edge, ignoring it). The inset has to come from a padded ancestor `<gridstack>` merely sits
+    inside as an ordinary block - not from padding on `<gridstack>` itself.
+  -->
+  <div class="dashboard__grid">
+    <gridstack
+      [options]="gridOptions()"
+      (changeCB)="onGridChange($event)"
+      (dragStartCB)="onInteractionStart($event)"
+      (dragStopCB)="onInteractionStop($event)"
+      (resizeStartCB)="onInteractionStart($event)"
+      (resizeStopCB)="onInteractionStop($event)"
+    ></gridstack>
+  </div>
 </div>

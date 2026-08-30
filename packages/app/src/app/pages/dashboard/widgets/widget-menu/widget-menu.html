@@ -1,25 +1,35 @@
-@if (visible()) {
-  <div class="widget-menu" ngbDropdown container="body" placement="bottom-end">
+<div class="widget-menu" ngbDropdown container="body" placement="bottom-end">
+  <button
+    type="button"
+    class="widget-menu__toggle"
+    ngbDropdownToggle
+    [attr.aria-label]="'pages.dashboard.widget-menu.toggle-label' | translate"
+  >
+    <fa-icon [icon]="icon.faEllipsisVertical" />
+  </button>
+  <div ngbDropdownMenu class="bb-toolbar-dropdown">
     <button
       type="button"
-      class="widget-menu__toggle"
-      ngbDropdownToggle
-      [attr.aria-label]="'pages.dashboard.widget-menu.toggle-label' | translate"
+      ngbDropdownItem
+      data-test="widget-menu-configure"
+      (click)="configure.emit()"
     >
-      <fa-icon [icon]="icon.faEllipsisVertical" />
+      <span class="bb-dropdown-icon" aria-hidden="true">
+        <fa-icon [icon]="icon.faSliders" />
+      </span>
+      {{ 'general.button.configure' | translate }}
     </button>
-    <div ngbDropdownMenu>
-      <button
-        type="button"
-        ngbDropdownItem
-        data-test="widget-menu-configure"
-        (click)="configure.emit()"
-      >
-        {{ 'general.button.configure' | translate }}
-      </button>
-      <button type="button" ngbDropdownItem data-test="widget-menu-remove" (click)="remove.emit()">
-        {{ 'general.button.delete' | translate }}
-      </button>
-    </div>
+    <button
+      type="button"
+      ngbDropdownItem
+      class="bb-dropdown-item--danger"
+      data-test="widget-menu-remove"
+      (click)="remove.emit()"
+    >
+      <span class="bb-dropdown-icon" aria-hidden="true">
+        <fa-icon [icon]="icon.faTrashCan" />
+      </span>
+      {{ 'general.button.delete' | translate }}
+    </button>
   </div>
-}
+</div>

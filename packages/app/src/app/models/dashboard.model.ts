@@ -2,6 +2,8 @@ import { QbServerState, Torrent, TorrentState } from './torrent.model';
 
 export type WidgetTypeId = 'stat-tile' | 'torrent-list' | 'pie-chart';
 
+export type WidgetChartType = 'number' | 'pie' | 'line' | 'column' | 'table';
+
 export type StatTileMetric =
   | 'download_speed'
   | 'upload_speed'

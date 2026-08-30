@@ -22,10 +22,11 @@ describe('WIDGET_CATALOG', () => {
     });
   });
 
-  it('should give every entry an icon and a description key', () => {
+  it('should give every entry an icon, a chart type and a category', () => {
     for (const entry of Object.values(WIDGET_CATALOG)) {
       expect(entry.icon).toBeTruthy();
-      expect(entry.descriptionKey).toMatch(/^pages\.dashboard\.catalog-type\./);
+      expect(entry.chartType).toBeTruthy();
+      expect(entry.category).toBeTruthy();
     }
   });
 });

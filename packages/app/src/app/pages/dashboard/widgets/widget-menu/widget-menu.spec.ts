@@ -11,20 +11,12 @@ describe('WidgetMenu', () => {
     component = fixture.componentInstance;
   });
 
-  it('should render nothing when not visible', () => {
-    fixture.componentRef.setInput('visible', false);
-    fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('.widget-menu')).toBeNull();
-  });
-
-  it('should render the toggle when visible', () => {
-    fixture.componentRef.setInput('visible', true);
+  it('should always render the toggle', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.widget-menu')).toBeTruthy();
   });
 
   it('should emit configure when the Configure item is clicked', () => {
-    fixture.componentRef.setInput('visible', true);
     fixture.detectChanges();
     const emitted = vi.fn();
     component.configure.subscribe(emitted);
@@ -35,7 +27,6 @@ describe('WidgetMenu', () => {
   });
 
   it('should emit remove when the Delete item is clicked', () => {
-    fixture.componentRef.setInput('visible', true);
     fixture.detectChanges();
     const emitted = vi.fn();
     component.remove.subscribe(emitted);

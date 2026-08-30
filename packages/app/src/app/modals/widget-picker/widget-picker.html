@@ -8,24 +8,87 @@
   <button
     type="button"
     class="btn-close"
-    aria-label="{{ 'general.button.close' | translate }}"
+    [attr.aria-label]="'general.button.close' | translate"
     (click)="cancel()"
   ></button>
 </div>
+
 <div class="offcanvas-body widget-picker">
-  <div class="widget-picker__list">
-    @for (entry of catalogEntries; track entry.id) {
-      <button type="button" class="widget-picker__item" (click)="choose(entry.id)">
-        <span class="widget-picker__icon">
-          <fa-icon [icon]="entry.icon" />
-        </span>
-        <span class="widget-picker__text">
-          <span class="widget-picker__label">{{ entry.labelKey | translate }}</span>
-          <span class="widget-picker__desc text-body-secondary small">{{
-            entry.descriptionKey | translate
-          }}</span>
-        </span>
+  <div class="widget-picker__search">
+    <fa-icon [icon]="icon.faMagnifyingGlass" aria-hidden="true" />
+    <input
+      type="text"
+      class="widget-picker__search-input"
+      [placeholder]="'components.modals.widget-picker.search-placeholder' | translate"
+      [ngModel]="query()"
+      (ngModelChange)="onQueryChange($event)"
+    />
+  </div>
+
+  <div class="widget-picker__filter-label">
+    {{ 'components.modals.widget-picker.chart-type-filter-label' | translate }}
+  </div>
+  <div class="widget-picker__filters">
+    <button
+      type="button"
+      class="widget-picker__filter widget-picker__filter--text"
+      [class.widget-picker__filter--active]="activeFilter() === 'all'"
+      (click)="setFilter('all')"
+    >
+      {{ 'components.modals.widget-picker.chart-type-filter-all' | translate }}
+    </button>
+    @for (f of chartTypeFilters; track f.type) {
+      <button
+        type="button"
+        class="widget-picker__filter"
+        [class.widget-picker__filter--active]="activeFilter() === f.type"
+        [ngbTooltip]="'pages.dashboard.chart-type.' + f.type | translate"
+        placement="bottom"
+        (click)="setFilter(f.type)"
+      >
+        <fa-icon [icon]="f.icon" />
       </button>
+    }
+  </div>
+
+  <div class="widget-picker__list">
+    @for (cat of categories(); track cat.id) {
+      <div class="widget-picker__category">
+        <button
+          type="button"
+          class="widget-picker__category-toggle"
+          (click)="toggleCategory(cat.id)"
+        >
+          <fa-icon
+            [icon]="icon.faChevronRight"
+            class="widget-picker__category-caret"
+            [class.widget-picker__category-caret--expanded]="cat.expanded"
+          />
+          <span>{{ cat.labelKey | translate }}</span>
+        </button>
+        @if (cat.expanded) {
+          <div class="widget-picker__items">
+            @for (entry of cat.items; track entry.id) {
+              <button type="button" class="widget-picker__item" (click)="choose(entry.id)">
+                <span class="widget-picker__icon">
+                  <fa-icon [icon]="entry.icon" />
+                </span>
+                <span class="widget-picker__text">
+                  <span class="widget-picker__label">{{ entry.labelKey | translate }}</span>
+                  <span class="widget-picker__type text-body-secondary small">{{
+                    'pages.dashboard.chart-type.' + entry.chartType | translate
+                  }}</span>
+                </span>
+              </button>
+            }
+          </div>
+        }
+      </div>
+    }
+    @if (isEmpty()) {
+      <div class="widget-picker__empty text-body-secondary small">
+        {{ 'components.modals.widget-picker.empty' | translate }}
+      </div>
     }
   </div>
 </div>
