@@ -1247,10 +1247,15 @@
       "widgets": {
         "stat-tile": {
           "metric": {
-            "download_speed": "Letöltés",
-            "upload_speed": "Feltöltés",
+            "download_speed": "Letöltési sebesség",
+            "upload_speed": "Feltöltési sebesség",
             "active_count": "Aktív torrentek",
-            "global_ratio": "Arány",
+            "global_ratio": "Globális arány",
+            "session_ratio": "Munkamenet arány",
+            "global_downloaded": "Globális letöltés",
+            "session_downloaded": "Munkamenet letöltés",
+            "global_uploaded": "Globális feltöltés",
+            "session_uploaded": "Munkamenet feltöltés",
             "free_disk_space": "Szabad lemezterület"
           }
         },

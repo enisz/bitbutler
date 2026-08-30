@@ -70,6 +70,72 @@ describe('selectStatTileData', () => {
     });
   });
 
+  it('should compute session_ratio from session uploaded/downloaded', () => {
+    const snapshot: DashboardSnapshot = {
+      torrents: [],
+      serverState: { dl_info_data: 100, up_info_data: 50 } as any,
+    };
+    expect(selectStatTileData(snapshot, { metric: 'session_ratio' })).toEqual({
+      metric: 'session_ratio',
+      value: 0.5,
+    });
+  });
+
+  it('should report session_ratio as 0 when session downloaded is 0', () => {
+    const snapshot: DashboardSnapshot = {
+      torrents: [],
+      serverState: { dl_info_data: 0, up_info_data: 50 } as any,
+    };
+    expect(selectStatTileData(snapshot, { metric: 'session_ratio' })).toEqual({
+      metric: 'session_ratio',
+      value: 0,
+    });
+  });
+
+  it('should read global_downloaded from alltime_dl', () => {
+    const snapshot: DashboardSnapshot = {
+      torrents: [],
+      serverState: { alltime_dl: 111 } as any,
+    };
+    expect(selectStatTileData(snapshot, { metric: 'global_downloaded' })).toEqual({
+      metric: 'global_downloaded',
+      value: 111,
+    });
+  });
+
+  it('should read session_downloaded from dl_info_data', () => {
+    const snapshot: DashboardSnapshot = {
+      torrents: [],
+      serverState: { dl_info_data: 222 } as any,
+    };
+    expect(selectStatTileData(snapshot, { metric: 'session_downloaded' })).toEqual({
+      metric: 'session_downloaded',
+      value: 222,
+    });
+  });
+
+  it('should read global_uploaded from alltime_ul', () => {
+    const snapshot: DashboardSnapshot = {
+      torrents: [],
+      serverState: { alltime_ul: 333 } as any,
+    };
+    expect(selectStatTileData(snapshot, { metric: 'global_uploaded' })).toEqual({
+      metric: 'global_uploaded',
+      value: 333,
+    });
+  });
+
+  it('should read session_uploaded from up_info_data', () => {
+    const snapshot: DashboardSnapshot = {
+      torrents: [],
+      serverState: { up_info_data: 444 } as any,
+    };
+    expect(selectStatTileData(snapshot, { metric: 'session_uploaded' })).toEqual({
+      metric: 'session_uploaded',
+      value: 444,
+    });
+  });
+
   it('should default to 0 when server_state is null', () => {
     expect(selectStatTileData(emptySnapshot, { metric: 'download_speed' })).toEqual({
       metric: 'download_speed',

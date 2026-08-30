@@ -9,6 +9,11 @@ export type StatTileMetric =
   | 'upload_speed'
   | 'active_count'
   | 'global_ratio'
+  | 'session_ratio'
+  | 'global_downloaded'
+  | 'session_downloaded'
+  | 'global_uploaded'
+  | 'session_uploaded'
   | 'free_disk_space';
 
 export interface StatTileConfig {

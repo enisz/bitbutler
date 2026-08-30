@@ -29,8 +29,13 @@ export class StatTile extends BaseWidget {
       case 'upload_speed':
         return 'speed';
       case 'free_disk_space':
+      case 'global_downloaded':
+      case 'session_downloaded':
+      case 'global_uploaded':
+      case 'session_uploaded':
         return 'bytes';
       case 'global_ratio':
+      case 'session_ratio':
         return 'ratio';
       case 'active_count':
         return 'count';

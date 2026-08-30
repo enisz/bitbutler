@@ -23,6 +23,19 @@ describe('StatTile', () => {
     expect(fixture.nativeElement.textContent).toContain('2.30');
   });
 
+  it('should format session_ratio with two decimals', () => {
+    component.data = { metric: 'session_ratio', value: 1.5 };
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('1.50');
+  });
+
+  it('should format session_downloaded as bytes', () => {
+    component.data = { metric: 'session_downloaded', value: 2048 };
+    fixture.detectChanges();
+    const text = fixture.nativeElement.textContent as string;
+    expect(text).not.toContain('/s');
+  });
+
   it('should show "value of total" for active_count', () => {
     component.data = { metric: 'active_count', value: 18, total: 42 };
     fixture.detectChanges();

@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateService } from '@ngx-translate/core';
 import { WidgetTypeId } from '../../models/dashboard.model';
 import { WidgetConfig } from './widget-config';
 
@@ -16,6 +17,12 @@ describe('WidgetConfig', () => {
     }).compileComponents();
     fixture = TestBed.createComponent(WidgetConfig);
     component = fixture.componentInstance;
+    TestBed.inject(TranslateService).setTranslation('en', {
+      pages: {
+        dashboard: { widgets: { 'stat-tile': { metric: { download_speed: 'Download Speed' } } } },
+      },
+    });
+    TestBed.inject(TranslateService).use('en');
   });
 
   function withInputs(widgetTypeId: WidgetTypeId, initialConfig: unknown): void {
@@ -27,6 +34,14 @@ describe('WidgetConfig', () => {
   it('should seed config from initialConfig for a stat-tile', () => {
     withInputs('stat-tile', { metric: 'download_speed' });
     expect(component.config()).toEqual({ metric: 'download_speed' });
+  });
+
+  it('should render the translated metric label in the ng-select, not the raw enum value', async () => {
+    withInputs('stat-tile', { metric: 'download_speed' });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const value = fixture.nativeElement.querySelector('.ng-value');
+    expect(value.textContent.trim()).toBe('Download Speed');
   });
 
   it('should update the metric for a stat-tile', () => {

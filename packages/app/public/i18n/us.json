@@ -1247,10 +1247,15 @@
       "widgets": {
         "stat-tile": {
           "metric": {
-            "download_speed": "Download",
-            "upload_speed": "Upload",
+            "download_speed": "Download Speed",
+            "upload_speed": "Upload Speed",
             "active_count": "Active Torrents",
-            "global_ratio": "Ratio",
+            "global_ratio": "Global Ratio",
+            "session_ratio": "Session Ratio",
+            "global_downloaded": "Global Downloaded",
+            "session_downloaded": "Session Downloaded",
+            "global_uploaded": "Global Uploaded",
+            "session_uploaded": "Session Uploaded",
             "free_disk_space": "Free Disk Space"
           }
         },

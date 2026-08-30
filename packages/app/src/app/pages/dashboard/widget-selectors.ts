@@ -89,6 +89,19 @@ export function selectStatTileData(
         metric: config.metric,
         value: parseFloat(String(serverState?.global_ratio ?? '0')) || 0,
       };
+    case 'session_ratio': {
+      const dl = serverState?.dl_info_data ?? 0;
+      const ul = serverState?.up_info_data ?? 0;
+      return { metric: config.metric, value: dl > 0 ? ul / dl : 0 };
+    }
+    case 'global_downloaded':
+      return { metric: config.metric, value: serverState?.alltime_dl ?? 0 };
+    case 'session_downloaded':
+      return { metric: config.metric, value: serverState?.dl_info_data ?? 0 };
+    case 'global_uploaded':
+      return { metric: config.metric, value: serverState?.alltime_ul ?? 0 };
+    case 'session_uploaded':
+      return { metric: config.metric, value: serverState?.up_info_data ?? 0 };
     case 'active_count': {
       let active = 0;
       for (const t of torrents) if (ACTIVE_STATES.has(t.state)) active++;

@@ -9,7 +9,11 @@ import {
 import { FormsModule } from '@angular/forms';
 import { faFloppyDisk, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { NgSelectComponent } from '@ng-select/ng-select';
+import {
+  NgLabelTemplateDirective,
+  NgOptionTemplateDirective,
+  NgSelectComponent,
+} from '@ng-select/ng-select';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import {
@@ -27,7 +31,14 @@ import {
 @Component({
   selector: 'app-widget-config',
   standalone: true,
-  imports: [FormsModule, NgSelectComponent, TranslatePipe, BbBtnContent],
+  imports: [
+    FormsModule,
+    NgSelectComponent,
+    NgOptionTemplateDirective,
+    NgLabelTemplateDirective,
+    TranslatePipe,
+    BbBtnContent,
+  ],
   templateUrl: './widget-config.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -40,11 +51,16 @@ export class WidgetConfig {
   readonly initialConfig = input.required<WidgetConfigModel>();
 
   readonly statTileMetrics: StatTileMetric[] = [
-    'download_speed',
-    'upload_speed',
     'active_count',
-    'global_ratio',
+    'download_speed',
     'free_disk_space',
+    'global_downloaded',
+    'global_ratio',
+    'global_uploaded',
+    'session_downloaded',
+    'session_ratio',
+    'session_uploaded',
+    'upload_speed',
   ];
 
   readonly sortFields: TorrentListSortField[] = [
