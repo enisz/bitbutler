@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslateService } from '@ngx-translate/core';
 import { WidgetTypeId } from '../../models/dashboard.model';
 import { WidgetConfig } from './widget-config';
@@ -66,17 +68,124 @@ describe('WidgetConfig', () => {
     });
   });
 
-  it('should add and remove a column via toggleColumn', () => {
+  it('should update the torrent-list title via updateTorrentListField', () => {
     withInputs('torrent-list', {
       count: 5,
       sortField: 'ratio',
       sortOrder: 'desc',
       columns: ['name'],
     });
-    component.toggleColumn('ratio');
-    expect((component.config() as any).columns).toEqual(['name', 'ratio']);
-    component.toggleColumn('name');
-    expect((component.config() as any).columns).toEqual(['ratio']);
+    component.updateTorrentListField('title', 'Top Seeders');
+    expect((component.config() as any).title).toBe('Top Seeders');
+  });
+
+  it('should offer every Torrent field as a sort/column option', () => {
+    const values = component.torrentFieldOptions.map((o) => o.value);
+    expect(values).toEqual(
+      expect.arrayContaining([
+        'seeding_time',
+        'availability',
+        'num_complete',
+        'tracker',
+        'auto_tmm',
+      ]),
+    );
+    expect(values.length).toBeGreaterThan(40);
+  });
+
+  it('should sort torrentFieldOptions alphabetically by translated label', () => {
+    const labels = component.torrentFieldOptions.map((o) => o.label);
+    expect(labels).toEqual([...labels].sort((a, b) => a.localeCompare(b)));
+  });
+
+  it('should render a title input bound to the torrent-list config', async () => {
+    withInputs('torrent-list', {
+      count: 5,
+      sortField: 'ratio',
+      sortOrder: 'desc',
+      columns: ['name'],
+      title: 'Top Seeders',
+    });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const input = fixture.nativeElement.querySelector('#widget-config-title');
+    expect(input.value).toBe('Top Seeders');
+  });
+
+  it('should update the columns list via updateTorrentListField', () => {
+    withInputs('torrent-list', {
+      count: 5,
+      sortField: 'ratio',
+      sortOrder: 'desc',
+      columns: ['name'],
+    });
+    component.updateTorrentListField('columns', ['name', 'tracker']);
+    expect((component.config() as any).columns).toEqual(['name', 'tracker']);
+  });
+
+  it('should render a multiselect ng-select for columns', async () => {
+    withInputs('torrent-list', {
+      count: 5,
+      sortField: 'ratio',
+      sortOrder: 'desc',
+      columns: ['name'],
+    });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const select = fixture.nativeElement.querySelector('#widget-config-columns');
+    expect(select).toBeTruthy();
+  });
+
+  it('should clear the search box after picking a column, so the multiselect stays usable for the next pick', async () => {
+    withInputs('torrent-list', {
+      count: 5,
+      sortField: 'ratio',
+      sortOrder: 'desc',
+      columns: ['name'],
+    });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const ngSelect = fixture.debugElement.query(By.css('#widget-config-columns'))
+      .componentInstance as NgSelectComponent;
+    expect(ngSelect.clearSearchOnAdd()).toBe(true);
+  });
+
+  it('should update sortField to the raw field value (not the {value,label} option object) when a selection is made in the UI', async () => {
+    withInputs('torrent-list', {
+      count: 5,
+      sortField: 'ratio',
+      sortOrder: 'desc',
+      columns: ['name'],
+    });
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const ngSelect = fixture.debugElement.query(By.css('#widget-config-sort-field'))
+      .componentInstance as NgSelectComponent;
+    const option = ngSelect.itemsList.items.find((i) => i.value?.['value'] === 'size');
+    ngSelect.select(option!);
+    fixture.detectChanges();
+
+    expect((component.config() as any).sortField).toBe('size');
+  });
+
+  it('should reflect the newly selected sortField back in the ng-select once chosen', async () => {
+    withInputs('torrent-list', {
+      count: 5,
+      sortField: 'ratio',
+      sortOrder: 'desc',
+      columns: ['name'],
+    });
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const ngSelect = fixture.debugElement.query(By.css('#widget-config-sort-field'))
+      .componentInstance as NgSelectComponent;
+    const option = ngSelect.itemsList.items.find((i) => i.value?.['value'] === 'size');
+    ngSelect.select(option!);
+    fixture.detectChanges();
+
+    expect(ngSelect.selectedItems.map((i) => i.value?.['value'])).toEqual(['size']);
   });
 
   it('should close the modal with the current config on save', () => {

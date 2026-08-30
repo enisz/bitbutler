@@ -20,6 +20,9 @@ const makeTorrent = (overrides: Partial<Torrent>): Torrent =>
     progress: 0,
     added_on: 0,
     eta: 0,
+    seeding_time: 0,
+    availability: 0,
+    num_complete: 0,
     ...overrides,
   }) as Torrent;
 
@@ -222,6 +225,89 @@ describe('selectTorrentListData', () => {
     );
     expect(result.rows).toEqual([]);
   });
+
+  it('should pass through the full torrent object for each row, not just a curated subset', () => {
+    const snapshot: DashboardSnapshot = {
+      torrents: [makeTorrent({ hash: 'a', magnet_uri: 'magnet:?xt=urn:btih:abc' })],
+      serverState: null,
+    };
+    const result = selectTorrentListData(snapshot, {
+      count: 5,
+      sortField: 'ratio',
+      sortOrder: 'desc',
+      columns: ['name'],
+    });
+    expect(result.rows[0].magnet_uri).toBe('magnet:?xt=urn:btih:abc');
+  });
+
+  it('should sort by any numeric field, e.g. num_complete', () => {
+    const snapshot: DashboardSnapshot = {
+      torrents: [
+        makeTorrent({ hash: 'a', num_complete: 10 }),
+        makeTorrent({ hash: 'b', num_complete: 30 }),
+        makeTorrent({ hash: 'c', num_complete: 20 }),
+      ],
+      serverState: null,
+    };
+    const result = selectTorrentListData(snapshot, {
+      count: 5,
+      sortField: 'num_complete',
+      sortOrder: 'desc',
+      columns: ['name'],
+    });
+    expect(result.rows.map((r) => r.hash)).toEqual(['b', 'c', 'a']);
+  });
+
+  it('should sort by a string field using locale comparison', () => {
+    const snapshot: DashboardSnapshot = {
+      torrents: [
+        makeTorrent({ hash: 'a', category: 'linux' }),
+        makeTorrent({ hash: 'b', category: 'apps' }),
+        makeTorrent({ hash: 'c', category: 'games' }),
+      ],
+      serverState: null,
+    };
+    const result = selectTorrentListData(snapshot, {
+      count: 5,
+      sortField: 'category',
+      sortOrder: 'asc',
+      columns: ['name'],
+    });
+    expect(result.rows.map((r) => r.hash)).toEqual(['b', 'c', 'a']);
+  });
+
+  it('should sort by a boolean field, false before true when ascending', () => {
+    const snapshot: DashboardSnapshot = {
+      torrents: [
+        makeTorrent({ hash: 'a', auto_tmm: true }),
+        makeTorrent({ hash: 'b', auto_tmm: false }),
+      ],
+      serverState: null,
+    };
+    const result = selectTorrentListData(snapshot, {
+      count: 5,
+      sortField: 'auto_tmm',
+      sortOrder: 'asc',
+      columns: ['name'],
+    });
+    expect(result.rows.map((r) => r.hash)).toEqual(['b', 'a']);
+  });
+
+  it('should pass the configured title through untouched', () => {
+    const result = selectTorrentListData(
+      { torrents: [], serverState: null },
+      { count: 5, sortField: 'ratio', sortOrder: 'desc', columns: ['name'], title: 'Top Seeders' },
+    );
+    expect(result.title).toBe('Top Seeders');
+  });
+
+  it('should leave title undefined when not configured', () => {
+    const result = selectTorrentListData(
+      { torrents: [], serverState: null },
+      { count: 5, sortField: 'ratio', sortOrder: 'desc', columns: ['name'] },
+    );
+    expect(result.title).toBeUndefined();
+  });
 });
 
 describe('selectPieChartData', () => {
@@ -313,6 +399,8 @@ describe('resolveWidgetData', () => {
     expect(resolveWidgetData(instance, snapshot)).toEqual({
       columns: ['name'],
       rows: [expect.objectContaining({ hash: 'x' })],
+      sortField: 'ratio',
+      sortOrder: 'desc',
     });
   });
 

@@ -14,19 +14,23 @@ import {
   NgOptionTemplateDirective,
   NgSelectComponent,
 } from '@ng-select/ng-select';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import {
   PieChartConfig,
   PieChartGroupBy,
   StatTileConfig,
   StatTileMetric,
-  TorrentListColumn,
   TorrentListConfig,
-  TorrentListSortField,
   WidgetConfig as WidgetConfigModel,
   WidgetTypeId,
 } from '../../models/dashboard.model';
+import { TORRENT_FIELD_CATALOG, TorrentField } from '../../pages/dashboard/torrent-field-catalog';
+
+export interface TorrentFieldOption {
+  value: TorrentField;
+  label: string;
+}
 
 @Component({
   selector: 'app-widget-config',
@@ -44,6 +48,7 @@ import {
 })
 export class WidgetConfig {
   private readonly activeModal = inject(NgbActiveModal);
+  private readonly translateService = inject(TranslateService);
 
   readonly icons = { faFloppyDisk, faXmark };
 
@@ -63,28 +68,13 @@ export class WidgetConfig {
     'upload_speed',
   ];
 
-  readonly sortFields: TorrentListSortField[] = [
-    'ratio',
-    'dlspeed',
-    'upspeed',
-    'size',
-    'progress',
-    'added_on',
-    'eta',
-  ];
-
-  readonly availableColumns: TorrentListColumn[] = [
-    'name',
-    'state',
-    'category',
-    'ratio',
-    'dlspeed',
-    'upspeed',
-    'size',
-    'progress',
-    'added_on',
-    'eta',
-  ];
+  // Every Torrent field is a valid sort-by / column choice, labeled via the main grid's own
+  // translations (see torrent-field-catalog.ts) and sorted alphabetically by that translated
+  // label - same approach as the "Visible columns" picker in Settings > Torrent List Grid.
+  readonly torrentFieldOptions: TorrentFieldOption[] = TORRENT_FIELD_CATALOG.map((m) => ({
+    value: m.field,
+    label: this.translateService.instant(m.labelKey),
+  })).sort((a, b) => a.label.localeCompare(b.label));
 
   readonly groupByOptions: PieChartGroupBy[] = ['state', 'category'];
 
@@ -109,13 +99,6 @@ export class WidgetConfig {
     value: TorrentListConfig[K],
   ): void {
     this.config.update((c) => ({ ...(c as TorrentListConfig), [key]: value }));
-  }
-
-  toggleColumn(column: TorrentListColumn): void {
-    const c = this.config() as TorrentListConfig;
-    const has = c.columns.includes(column);
-    const columns = has ? c.columns.filter((x) => x !== column) : [...c.columns, column];
-    this.config.set({ ...c, columns });
   }
 
   save(): void {

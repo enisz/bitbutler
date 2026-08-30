@@ -1,11 +1,34 @@
 <div class="torrent-list-widget">
   <app-widget-menu (configure)="onConfigure?.()" (remove)="onRemove?.()" />
+  <div class="torrent-list-widget__header">
+    <div class="torrent-list-widget__title">
+      {{ data.title || ('pages.dashboard.catalog.torrent-list' | translate) }}
+    </div>
+    @if (subtitleColumns().length) {
+      <div class="torrent-list-widget__subtitle">
+        @for (column of subtitleColumns(); track column; let last = $last) {
+          <span
+            class="torrent-list-widget__subtitle-item"
+            [class.torrent-list-widget__subtitle-item--active]="isSortColumn(column)"
+          >
+            {{ labelKeyFor(column) | translate }}
+            @if (isSortColumn(column)) {
+              <span class="torrent-list-widget__subtitle-arrow">{{ sortIndicator() }}</span>
+            }
+          </span>
+          @if (!last) {
+            <span class="torrent-list-widget__subtitle-sep">&middot;</span>
+          }
+        }
+      </div>
+    }
+  </div>
   <div class="torrent-list-widget__scroll">
     <table class="torrent-list-widget__table">
       <thead>
         <tr>
           @for (column of data.columns; track column) {
-            <th>{{ 'pages.dashboard.widgets.torrent-list.column.' + column | translate }}</th>
+            <th [class.text-end]="isRightAligned(column)">{{ labelKeyFor(column) | translate }}</th>
           }
         </tr>
       </thead>
@@ -13,7 +36,12 @@
         @for (row of data.rows; track row.hash) {
           <tr>
             @for (column of data.columns; track column) {
-              <td>{{ formattedValue(row, column) }}</td>
+              <td
+                [class.text-end]="isRightAligned(column)"
+                [class.tabular-nums]="isRightAligned(column)"
+              >
+                {{ formattedValue(row, column) }}
+              </td>
             }
           </tr>
         }

@@ -1,14 +1,12 @@
 import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BaseWidget } from 'gridstack/dist/angular';
-import {
-  TorrentListColumn,
-  TorrentListData,
-  TorrentListRow,
-} from '../../../../models/dashboard.model';
+import { TorrentListData } from '../../../../models/dashboard.model';
+import { Torrent } from '../../../../models/torrent.model';
 import { FilesizePipe } from '../../../../pipes/filesize-pipe';
 import { HumanizeDurationPipe } from '../../../../pipes/humanize-duration-pipe';
 import { RatioPipe } from '../../../../pipes/ratio-pipe';
+import { TORRENT_FIELD_META_BY_FIELD, TorrentField } from '../../torrent-field-catalog';
 import { WidgetMenu } from '../widget-menu/widget-menu';
 
 @Component({
@@ -27,29 +25,58 @@ export class TorrentListWidget extends BaseWidget {
   private readonly ratioPipe = inject(RatioPipe);
   private readonly filesizePipe = inject(FilesizePipe);
   private readonly humanizeDurationPipe = inject(HumanizeDurationPipe);
+  private readonly translateService = inject(TranslateService);
 
-  formattedValue(row: TorrentListRow, column: TorrentListColumn): string {
-    switch (column) {
-      case 'name':
-        return row.name;
+  labelKeyFor(column: TorrentField): string {
+    return TORRENT_FIELD_META_BY_FIELD[column].labelKey;
+  }
+
+  isRightAligned(column: TorrentField): boolean {
+    const type = TORRENT_FIELD_META_BY_FIELD[column].type;
+    return type !== 'string' && type !== 'state';
+  }
+
+  subtitleColumns(): TorrentField[] {
+    return this.data.columns.filter((c) => c !== 'name');
+  }
+
+  isSortColumn(column: TorrentField): boolean {
+    return column === this.data.sortField;
+  }
+
+  sortIndicator(): string {
+    return this.data.sortOrder === 'asc' ? '▲' : '▼';
+  }
+
+  formattedValue(row: Torrent, column: TorrentField): string {
+    const value = row[column];
+    const meta = TORRENT_FIELD_META_BY_FIELD[column];
+
+    switch (meta.type) {
+      case 'string':
+        return (value as string) || '-';
       case 'state':
-        return row.state;
-      case 'category':
-        return row.category || '-';
-      case 'ratio':
-        return this.ratioPipe.transform(row.ratio);
-      case 'dlspeed':
-        return `${this.filesizePipe.transform(row.dlspeed)}/s`;
-      case 'upspeed':
-        return `${this.filesizePipe.transform(row.upspeed)}/s`;
-      case 'size':
-        return this.filesizePipe.transform(row.size);
-      case 'progress':
-        return `${Math.round(row.progress * 100)}%`;
-      case 'added_on':
-        return row.added_on ? new Date(row.added_on * 1000).toLocaleDateString() : '-';
-      case 'eta':
-        return this.humanizeDurationPipe.transform(row.eta * 1000, 'short', 2);
+        return String(value);
+      case 'integer':
+        return String(value);
+      case 'decimal':
+        return this.ratioPipe.transform(value as number, meta.precision ?? 2);
+      case 'percent':
+        return `${Math.round((value as number) * 100)}%`;
+      case 'bytes':
+        return this.filesizePipe.transform(value as number);
+      case 'bytesPerSec':
+        return `${this.filesizePipe.transform(value as number)}/s`;
+      case 'duration':
+        return this.humanizeDurationPipe.transform((value as number) * 1000, 'short', 2);
+      case 'timestamp':
+        return (value as number) > 0
+          ? new Date((value as number) * 1000).toLocaleDateString()
+          : '-';
+      case 'boolean':
+        return this.translateService.instant(
+          `components.column-filters.boolean.${value ? 'true' : 'false'}`,
+        );
     }
   }
 }

@@ -8,9 +8,14 @@ import {
   StatTileData,
   TorrentListConfig,
   TorrentListData,
-  TorrentListRow,
 } from '../../models/dashboard.model';
-import { TorrentState } from '../../models/torrent.model';
+import { Torrent, TorrentState } from '../../models/torrent.model';
+
+function compareTorrentFieldValues(a: unknown, b: unknown): number {
+  if (typeof a === 'number' && typeof b === 'number') return a - b;
+  if (typeof a === 'boolean' && typeof b === 'boolean') return Number(a) - Number(b);
+  return String(a ?? '').localeCompare(String(b ?? ''));
+}
 
 // Mirrors the "active" filter group semantics used by the main grid's status sidebar
 // (see Status component's `groups.active`) - duplicated here as a small, self-contained
@@ -114,24 +119,18 @@ export function selectTorrentListData(
   snapshot: DashboardSnapshot,
   config: TorrentListConfig,
 ): TorrentListData {
-  const rows: TorrentListRow[] = snapshot.torrents.map((t) => ({
-    hash: t.hash,
-    name: t.name,
-    state: t.state,
-    category: t.category,
-    ratio: t.ratio,
-    dlspeed: t.dlspeed,
-    upspeed: t.upspeed,
-    size: t.size,
-    progress: t.progress,
-    added_on: t.added_on,
-    eta: t.eta,
-  }));
-
   const direction = config.sortOrder === 'asc' ? 1 : -1;
-  rows.sort((a, b) => (a[config.sortField] - b[config.sortField]) * direction);
+  const rows: Torrent[] = [...snapshot.torrents].sort(
+    (a, b) => compareTorrentFieldValues(a[config.sortField], b[config.sortField]) * direction,
+  );
 
-  return { columns: config.columns, rows: rows.slice(0, config.count) };
+  return {
+    columns: config.columns,
+    rows: rows.slice(0, config.count),
+    title: config.title,
+    sortField: config.sortField,
+    sortOrder: config.sortOrder,
+  };
 }
 
 export function selectPieChartData(

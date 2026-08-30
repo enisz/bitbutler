@@ -776,6 +776,7 @@
       "widget-config": {
         "title": "Configure Widget",
         "metric": "Metric",
+        "widget-title": "Widget Title",
         "count": "Count",
         "sort-field": "Sort By",
         "sort-order": "Order",
@@ -1257,20 +1258,6 @@
             "global_uploaded": "Global Uploaded",
             "session_uploaded": "Session Uploaded",
             "free_disk_space": "Free Disk Space"
-          }
-        },
-        "torrent-list": {
-          "column": {
-            "name": "Name",
-            "state": "State",
-            "category": "Category",
-            "ratio": "Ratio",
-            "dlspeed": "Down Speed",
-            "upspeed": "Up Speed",
-            "size": "Size",
-            "progress": "Progress",
-            "added_on": "Added On",
-            "eta": "ETA"
           }
         },
         "pie-chart": {

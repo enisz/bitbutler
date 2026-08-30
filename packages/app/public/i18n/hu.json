@@ -776,6 +776,7 @@
       "widget-config": {
         "title": "Widget beállítása",
         "metric": "Mérőszám",
+        "widget-title": "Widget címe",
         "count": "Darabszám",
         "sort-field": "Rendezés mező",
         "sort-order": "Sorrend",
@@ -1257,20 +1258,6 @@
             "global_uploaded": "Globális feltöltés",
             "session_uploaded": "Munkamenet feltöltés",
             "free_disk_space": "Szabad lemezterület"
-          }
-        },
-        "torrent-list": {
-          "column": {
-            "name": "Név",
-            "state": "Állapot",
-            "category": "Kategória",
-            "ratio": "Arány",
-            "dlspeed": "Letöltési sebesség",
-            "upspeed": "Feltöltési sebesség",
-            "size": "Méret",
-            "progress": "Haladás",
-            "added_on": "Hozzáadva",
-            "eta": "Várható idő"
           }
         },
         "pie-chart": {

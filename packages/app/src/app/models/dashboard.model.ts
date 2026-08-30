@@ -1,4 +1,4 @@
-import { QbServerState, Torrent, TorrentState } from './torrent.model';
+import { QbServerState, Torrent } from './torrent.model';
 
 export type WidgetTypeId = 'stat-tile' | 'torrent-list' | 'pie-chart';
 
@@ -20,22 +20,15 @@ export interface StatTileConfig {
   metric: StatTileMetric;
 }
 
-export type TorrentListSortField =
-  | 'ratio'
-  | 'dlspeed'
-  | 'upspeed'
-  | 'size'
-  | 'progress'
-  | 'added_on'
-  | 'eta';
-
-export type TorrentListColumn = 'name' | 'state' | 'category' | TorrentListSortField;
+export type TorrentField = keyof Torrent;
 
 export interface TorrentListConfig {
   count: number;
-  sortField: TorrentListSortField;
+  sortField: TorrentField;
   sortOrder: 'asc' | 'desc';
-  columns: TorrentListColumn[];
+  columns: TorrentField[];
+  /** Custom widget header text. Falls back to the catalog's translated default label when unset. */
+  title?: string;
 }
 
 export type PieChartGroupBy = 'state' | 'category';
@@ -113,23 +106,12 @@ export interface StatTileData {
   total?: number;
 }
 
-export interface TorrentListRow {
-  hash: string;
-  name: string;
-  state: TorrentState;
-  category: string;
-  ratio: number;
-  dlspeed: number;
-  upspeed: number;
-  size: number;
-  progress: number;
-  added_on: number;
-  eta: number;
-}
-
 export interface TorrentListData {
-  columns: TorrentListColumn[];
-  rows: TorrentListRow[];
+  columns: TorrentField[];
+  rows: Torrent[];
+  title?: string;
+  sortField: TorrentField;
+  sortOrder: 'asc' | 'desc';
 }
 
 export interface PieChartSlice {
