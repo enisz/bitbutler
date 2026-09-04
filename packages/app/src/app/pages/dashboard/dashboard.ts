@@ -32,6 +32,7 @@ import { Subscription } from 'rxjs';
 import { WidgetConfig as WidgetConfigModal } from '../../modals/widget-config/widget-config';
 import { WidgetPicker } from '../../modals/widget-picker/widget-picker';
 import {
+  BarChartData,
   DashboardSnapshot,
   DashboardWidgetInstance,
   PieChartData,
@@ -89,7 +90,7 @@ export class Dashboard implements OnDestroy {
     {
       instance: DashboardWidgetInstance;
       snapshot: DashboardSnapshot;
-      value: StatTileData | TorrentListData | PieChartData;
+      value: StatTileData | TorrentListData | PieChartData | BarChartData;
     }
   >();
 
@@ -270,7 +271,9 @@ export class Dashboard implements OnDestroy {
     void this.dashboardSettingsService.save({ widgets: next });
   }
 
-  dataFor(instance: DashboardWidgetInstance): StatTileData | TorrentListData | PieChartData {
+  dataFor(
+    instance: DashboardWidgetInstance,
+  ): StatTileData | TorrentListData | PieChartData | BarChartData {
     // Read snapshot() unconditionally (even on a cache hit) so this computed-reactive read always
     // happens during evaluation - otherwise, once the cache warms, `items` (which calls dataFor())
     // would stop depending on torrentsArray/serverState and would never react to a live update
