@@ -18,7 +18,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import {
   PieChartConfig,
-  PieChartGroupBy,
+  PieChartField,
   StatTileConfig,
   StatTileMetric,
   TorrentListConfig,
@@ -76,7 +76,7 @@ export class WidgetConfig {
     label: this.translateService.instant(m.labelKey),
   })).sort((a, b) => a.label.localeCompare(b.label));
 
-  readonly groupByOptions: PieChartGroupBy[] = ['state', 'category'];
+  readonly groupByOptions: PieChartField[] = ['state', 'category'];
 
   readonly config = linkedSignal<WidgetConfigModel>(() => this.initialConfig());
 
@@ -106,7 +106,7 @@ export class WidgetConfig {
     this.config.set({ metric } satisfies StatTileConfig);
   }
 
-  updatePieChartGroupBy(groupBy: PieChartGroupBy): void {
+  updatePieChartGroupBy(groupBy: PieChartField): void {
     this.config.set({ groupBy } satisfies PieChartConfig);
   }
 

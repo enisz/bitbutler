@@ -1,6 +1,6 @@
 import { QbServerState, Torrent } from './torrent.model';
 
-export type WidgetTypeId = 'stat-tile' | 'torrent-list' | 'pie-chart';
+export type WidgetTypeId = 'stat-tile' | 'torrent-list' | 'pie-chart' | 'bar-chart';
 
 export type WidgetChartType = 'number' | 'pie' | 'line' | 'column' | 'table';
 
@@ -31,13 +31,51 @@ export interface TorrentListConfig {
   title?: string;
 }
 
-export type PieChartGroupBy = 'state' | 'category';
+// 9 curated Torrent fields meaningful to break down by - see breakdown-field-catalog.ts for
+// which are categorical (grouped by distinct value) vs numeric (grouped into fixed buckets).
+export type BreakdownField =
+  | 'state'
+  | 'category'
+  | 'tracker'
+  | 'save_path'
+  | 'tags'
+  | 'ratio'
+  | 'progress'
+  | 'size'
+  | 'eta';
 
-export interface PieChartConfig {
-  groupBy: PieChartGroupBy;
+export interface BreakdownSlice {
+  key: string;
+  /** Translation key for a bucket/curated slice (e.g. a 'state' bucket, a numeric-field bucket, or the capped 'other' slice). Absent when `key` is already display-ready raw data (a raw category/tracker/save_path/tag value). */
+  labelKey?: string;
+  value: number;
 }
 
-export type WidgetConfig = StatTileConfig | TorrentListConfig | PieChartConfig;
+// The single-valued subset of BreakdownField - a torrent has exactly one value for each, so a
+// pie chart's "slices sum to the whole" reading holds. 'tags' (multi-valued) and the numeric
+// fields (a histogram, not a proportion-of-whole) are pie-ineligible - see BarChartConfig for
+// those.
+export type PieChartField = 'state' | 'category' | 'tracker' | 'save_path';
+
+export interface PieChartConfig {
+  groupBy: PieChartField;
+}
+
+export interface PieChartData {
+  groupBy: PieChartField;
+  slices: BreakdownSlice[];
+}
+
+export interface BarChartConfig {
+  field: BreakdownField;
+}
+
+export interface BarChartData {
+  field: BreakdownField;
+  slices: BreakdownSlice[];
+}
+
+export type WidgetConfig = StatTileConfig | TorrentListConfig | PieChartConfig | BarChartConfig;
 
 export interface DashboardWidgetInstance {
   instanceId: string;
@@ -112,16 +150,4 @@ export interface TorrentListData {
   title?: string;
   sortField: TorrentField;
   sortOrder: 'asc' | 'desc';
-}
-
-export interface PieChartSlice {
-  key: string;
-  /** Translation key for a 'state' bucket slice. Absent for 'category' slices - `key` there is the raw category string, already display-ready. */
-  labelKey?: string;
-  value: number;
-}
-
-export interface PieChartData {
-  groupBy: PieChartGroupBy;
-  slices: PieChartSlice[];
 }

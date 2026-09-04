@@ -1,9 +1,10 @@
 import {
+  BarChartData,
+  BreakdownSlice,
   DashboardSnapshot,
   DashboardWidgetInstance,
   PieChartConfig,
   PieChartData,
-  PieChartSlice,
   StatTileConfig,
   StatTileData,
   TorrentListConfig,
@@ -144,7 +145,7 @@ export function selectPieChartData(
       const bucket = PIE_STATE_BUCKETS[t.state];
       counts.set(bucket, (counts.get(bucket) ?? 0) + 1);
     }
-    const slices: PieChartSlice[] = PIE_STATE_BUCKET_ORDER.filter(
+    const slices: BreakdownSlice[] = PIE_STATE_BUCKET_ORDER.filter(
       (bucket) => (counts.get(bucket) ?? 0) > 0,
     ).map((bucket) => ({
       key: bucket,
@@ -158,7 +159,7 @@ export function selectPieChartData(
     const key = t.category || '-';
     counts.set(key, (counts.get(key) ?? 0) + 1);
   }
-  const slices: PieChartSlice[] = Array.from(counts.entries())
+  const slices: BreakdownSlice[] = Array.from(counts.entries())
     .sort((a, b) => b[1] - a[1])
     .map(([key, value]) => ({ key, value }));
   return { groupBy: 'category', slices };
@@ -167,7 +168,7 @@ export function selectPieChartData(
 export function resolveWidgetData(
   instance: DashboardWidgetInstance,
   snapshot: DashboardSnapshot,
-): StatTileData | TorrentListData | PieChartData {
+): StatTileData | TorrentListData | PieChartData | BarChartData {
   switch (instance.widgetTypeId) {
     case 'stat-tile':
       return selectStatTileData(snapshot, instance.config as StatTileConfig);
@@ -175,5 +176,7 @@ export function resolveWidgetData(
       return selectTorrentListData(snapshot, instance.config as TorrentListConfig);
     case 'pie-chart':
       return selectPieChartData(snapshot, instance.config as PieChartConfig);
+    case 'bar-chart':
+      throw new Error('bar-chart widget selector not yet implemented');
   }
 }
