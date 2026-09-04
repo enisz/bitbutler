@@ -86,6 +86,22 @@ export class WidgetConfig {
   readonly torrentListConfig = computed(() => this.config() as TorrentListConfig);
   readonly pieChartConfig = computed(() => this.config() as PieChartConfig);
 
+  readonly widgetLabelKey = computed(() => `pages.dashboard.catalog.${this.widgetTypeId()}`);
+
+  readonly canSave = computed(() => {
+    if (this.widgetTypeId() !== 'torrent-list') return true;
+
+    const c = this.torrentListConfig();
+    return (
+      !!(c.title ?? '').trim() &&
+      Number.isFinite(c.count) &&
+      c.count >= 1 &&
+      !!c.sortField &&
+      !!c.sortOrder &&
+      c.columns.length > 0
+    );
+  });
+
   updateStatTileMetric(metric: StatTileMetric): void {
     this.config.set({ metric } satisfies StatTileConfig);
   }

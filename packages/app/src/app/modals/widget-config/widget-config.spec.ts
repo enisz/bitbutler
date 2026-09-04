@@ -211,4 +211,74 @@ describe('WidgetConfig', () => {
     component.updatePieChartGroupBy('category');
     expect(component.config()).toEqual({ groupBy: 'category' });
   });
+
+  it('should render the widget type name in the header for every widget type', async () => {
+    TestBed.inject(TranslateService).setTranslation('en', {
+      pages: { dashboard: { catalog: { 'torrent-list': 'Torrent List' } } },
+    });
+    withInputs('torrent-list', {
+      count: 5,
+      sortField: 'name',
+      sortOrder: 'asc',
+      columns: ['name'],
+      title: 'Top Seeders',
+    });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Torrent List');
+  });
+
+  it('should always allow saving a stat-tile', () => {
+    withInputs('stat-tile', { metric: 'download_speed' });
+    expect(component.canSave()).toBe(true);
+  });
+
+  it('should always allow saving a pie-chart', () => {
+    withInputs('pie-chart', { groupBy: 'state' });
+    expect(component.canSave()).toBe(true);
+  });
+
+  it('should disallow saving a torrent-list when the title is blank', () => {
+    withInputs('torrent-list', {
+      count: 5,
+      sortField: 'name',
+      sortOrder: 'asc',
+      columns: ['name'],
+      title: '   ',
+    });
+    expect(component.canSave()).toBe(false);
+  });
+
+  it('should disallow saving a torrent-list when columns is empty', () => {
+    withInputs('torrent-list', {
+      count: 5,
+      sortField: 'name',
+      sortOrder: 'asc',
+      columns: [],
+      title: 'Top Seeders',
+    });
+    expect(component.canSave()).toBe(false);
+  });
+
+  it('should disallow saving a torrent-list when count is not a positive number', () => {
+    withInputs('torrent-list', {
+      count: 0,
+      sortField: 'name',
+      sortOrder: 'asc',
+      columns: ['name'],
+      title: 'Top Seeders',
+    });
+    expect(component.canSave()).toBe(false);
+  });
+
+  it('should allow saving a fully filled-out torrent-list config', () => {
+    withInputs('torrent-list', {
+      count: 5,
+      sortField: 'name',
+      sortOrder: 'asc',
+      columns: ['name'],
+      title: 'Top Seeders',
+    });
+    expect(component.canSave()).toBe(true);
+  });
 });

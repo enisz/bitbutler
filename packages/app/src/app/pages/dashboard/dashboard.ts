@@ -119,6 +119,7 @@ export class Dashboard implements OnDestroy {
     column: 12,
     cellHeight: 64,
     margin: 8,
+    float: true,
     staticGrid: this.isLocked(),
     children: this.items(),
   }));

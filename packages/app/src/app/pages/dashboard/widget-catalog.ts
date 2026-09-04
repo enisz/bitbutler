@@ -40,9 +40,9 @@ export const WIDGET_CATALOG: Record<WidgetTypeId, WidgetCatalogMeta> = {
     componentSelector: 'app-torrent-list-widget',
     defaultConfig: {
       count: 5,
-      sortField: 'ratio',
-      sortOrder: 'desc',
-      columns: ['name', 'ratio'],
+      sortField: 'name',
+      sortOrder: 'asc',
+      columns: ['name'],
     } satisfies TorrentListConfig,
     defaultSize: { w: 6, h: 4 },
   },

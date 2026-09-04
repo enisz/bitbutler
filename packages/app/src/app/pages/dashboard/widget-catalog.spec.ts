@@ -16,9 +16,9 @@ describe('WIDGET_CATALOG', () => {
   it('should give torrent-list a sensible default config', () => {
     expect(WIDGET_CATALOG['torrent-list'].defaultConfig).toEqual({
       count: 5,
-      sortField: 'ratio',
-      sortOrder: 'desc',
-      columns: ['name', 'ratio'],
+      sortField: 'name',
+      sortOrder: 'asc',
+      columns: ['name'],
     });
   });
 
