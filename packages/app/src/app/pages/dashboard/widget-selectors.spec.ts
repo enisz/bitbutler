@@ -1,7 +1,11 @@
 import { DashboardSnapshot, DashboardWidgetInstance } from '../../models/dashboard.model';
 import { Torrent } from '../../models/torrent.model';
 import {
+  countBreakdownValue,
+  listBreakdownValues,
   resolveWidgetData,
+  selectBarChartData,
+  selectBreakdownCounts,
   selectPieChartData,
   selectStatTileData,
   selectTorrentListData,
@@ -328,15 +332,19 @@ describe('selectPieChartData', () => {
     expect(result.slices).toEqual([
       {
         key: 'downloading',
-        labelKey: 'pages.dashboard.widgets.pie-chart.bucket.downloading',
+        labelKey: 'pages.dashboard.widgets.breakdown.state.bucket.downloading',
         value: 2,
       },
       {
         key: 'completed',
-        labelKey: 'pages.dashboard.widgets.pie-chart.bucket.completed',
+        labelKey: 'pages.dashboard.widgets.breakdown.state.bucket.completed',
         value: 1,
       },
-      { key: 'errored', labelKey: 'pages.dashboard.widgets.pie-chart.bucket.errored', value: 1 },
+      {
+        key: 'errored',
+        labelKey: 'pages.dashboard.widgets.breakdown.state.bucket.errored',
+        value: 1,
+      },
     ]);
   });
 
@@ -362,6 +370,127 @@ describe('selectPieChartData', () => {
       { key: 'linux', value: 2 },
       { key: '-', value: 1 },
     ]);
+  });
+});
+
+describe('selectBreakdownCounts', () => {
+  it('should cap a high-cardinality categorical field to the top 7 + "Other"', () => {
+    const torrents: Torrent[] = [];
+    // 9 distinct categories, counts 9,8,...,1
+    for (let i = 0; i < 9; i++) {
+      const count = 9 - i;
+      for (let j = 0; j < count; j++) {
+        torrents.push(makeTorrent({ hash: `${i}-${j}`, category: `cat-${i}` }));
+      }
+    }
+
+    const result = selectBreakdownCounts(torrents, 'category');
+
+    expect(result).toHaveLength(8); // top 7 + Other
+    expect(result[0]).toEqual({ key: 'cat-0', value: 9 });
+    expect(result[6]).toEqual({ key: 'cat-6', value: 3 });
+    // cat-7 (2) + cat-8 (1) folded into Other
+    expect(result[7]).toEqual({
+      key: 'other',
+      labelKey: 'pages.dashboard.widgets.breakdown.other',
+      value: 3,
+    });
+  });
+
+  it('should not add an "Other" slice when there are 7 or fewer distinct values', () => {
+    const torrents = [makeTorrent({ category: 'a' }), makeTorrent({ category: 'b' })];
+    const result = selectBreakdownCounts(torrents, 'category');
+    expect(result.map((s) => s.key)).toEqual(['a', 'b']);
+  });
+
+  it('should count a multi-valued tags field once per tag, with no untagged slice', () => {
+    const torrents = [
+      makeTorrent({ tags: 'linux,iso' }),
+      makeTorrent({ tags: 'linux' }),
+      makeTorrent({ tags: '' }),
+    ];
+    const result = selectBreakdownCounts(torrents, 'tags');
+    expect(result).toEqual(
+      expect.arrayContaining([
+        { key: 'linux', value: 2 },
+        { key: 'iso', value: 1 },
+      ]),
+    );
+    expect(result.find((s) => s.key === '')).toBeUndefined();
+  });
+
+  it('should render every numeric bucket in order, including zero-count buckets', () => {
+    const torrents = [makeTorrent({ ratio: 0.05 }), makeTorrent({ ratio: 3 })];
+    const result = selectBreakdownCounts(torrents, 'ratio');
+    expect(result).toEqual([
+      {
+        key: 'lt-0-1',
+        labelKey: 'pages.dashboard.widgets.breakdown.ratio.bucket.lt-0-1',
+        value: 1,
+      },
+      {
+        key: '0-1-to-0-5',
+        labelKey: 'pages.dashboard.widgets.breakdown.ratio.bucket.0-1-to-0-5',
+        value: 0,
+      },
+      {
+        key: '0-5-to-1',
+        labelKey: 'pages.dashboard.widgets.breakdown.ratio.bucket.0-5-to-1',
+        value: 0,
+      },
+      {
+        key: '1-to-2',
+        labelKey: 'pages.dashboard.widgets.breakdown.ratio.bucket.1-to-2',
+        value: 0,
+      },
+      { key: 'gte-2', labelKey: 'pages.dashboard.widgets.breakdown.ratio.bucket.gte-2', value: 1 },
+    ]);
+  });
+});
+
+describe('countBreakdownValue', () => {
+  it('should count the exact value even when it would be folded into "Other" on a capped display', () => {
+    const torrents: Torrent[] = [];
+    for (let i = 0; i < 9; i++) {
+      torrents.push(makeTorrent({ hash: `${i}`, category: `cat-${i}` }));
+    }
+    // Every category has count 1, so the 8th and 9th alphabetically-last ones (by insertion,
+    // after the desc-count sort keeps original relative order for ties) fold into Other.
+    expect(countBreakdownValue(torrents, 'category', 'cat-8')).toBe(1);
+  });
+
+  it('should count a numeric bucket key directly', () => {
+    const torrents = [makeTorrent({ ratio: 0.05 }), makeTorrent({ ratio: 0.05 })];
+    expect(countBreakdownValue(torrents, 'ratio', 'lt-0-1')).toBe(2);
+  });
+
+  it('should return 0 for a key with no matching torrents', () => {
+    expect(countBreakdownValue([], 'category', 'anything')).toBe(0);
+  });
+});
+
+describe('listBreakdownValues', () => {
+  it('should list every distinct categorical value uncapped, with no "Other" folding', () => {
+    const torrents: Torrent[] = [];
+    for (let i = 0; i < 9; i++) torrents.push(makeTorrent({ hash: `${i}`, category: `cat-${i}` }));
+    const result = listBreakdownValues(torrents, 'category');
+    expect(result).toHaveLength(9);
+    expect(result.find((s) => s.key === 'other')).toBeUndefined();
+  });
+
+  it('should list all numeric buckets, same as selectBreakdownCounts', () => {
+    expect(listBreakdownValues([], 'ratio')).toEqual(selectBreakdownCounts([], 'ratio'));
+  });
+});
+
+describe('selectBarChartData', () => {
+  it('should wrap selectBreakdownCounts for the configured field', () => {
+    const snapshot: DashboardSnapshot = {
+      torrents: [makeTorrent({ category: 'linux' })],
+      serverState: null,
+    };
+    const result = selectBarChartData(snapshot, { field: 'category' });
+    expect(result).toEqual({ field: 'category', slices: [{ key: 'linux', value: 1 }] });
   });
 });
 
@@ -424,10 +553,31 @@ describe('resolveWidgetData', () => {
       slices: [
         {
           key: 'downloading',
-          labelKey: 'pages.dashboard.widgets.pie-chart.bucket.downloading',
+          labelKey: 'pages.dashboard.widgets.breakdown.state.bucket.downloading',
           value: 1,
         },
       ],
+    });
+  });
+
+  it('should dispatch to selectBarChartData for a bar-chart instance', () => {
+    const instance: DashboardWidgetInstance = {
+      instanceId: 'i4',
+      widgetTypeId: 'bar-chart',
+      x: 0,
+      y: 0,
+      w: 4,
+      h: 4,
+      config: { field: 'category' },
+    };
+    const snapshot: DashboardSnapshot = {
+      torrents: [makeTorrent({ category: 'linux' })],
+      serverState: null,
+    };
+
+    expect(resolveWidgetData(instance, snapshot)).toEqual({
+      field: 'category',
+      slices: [{ key: 'linux', value: 1 }],
     });
   });
 });

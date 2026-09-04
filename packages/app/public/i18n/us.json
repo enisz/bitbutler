@@ -1261,21 +1261,24 @@
           }
         },
         "pie-chart": {
-          "bucket": {
-            "downloading": "Downloading",
-            "completed": "Completed",
-            "inactive": "Inactive",
-            "stopped": "Stopped",
-            "checking": "Checking",
-            "errored": "Errored",
-            "other": "Other"
-          },
           "group-by": {
             "state": "State",
             "category": "Category"
           }
         },
         "breakdown": {
+          "other": "Other",
+          "state": {
+            "bucket": {
+              "downloading": "Downloading",
+              "completed": "Completed",
+              "inactive": "Inactive",
+              "stopped": "Stopped",
+              "checking": "Checking",
+              "errored": "Errored",
+              "other": "Other"
+            }
+          },
           "ratio": {
             "bucket": {
               "lt-0-1": "< 0.1",

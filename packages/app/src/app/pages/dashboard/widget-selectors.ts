@@ -1,5 +1,7 @@
 import {
+  BarChartConfig,
   BarChartData,
+  BreakdownField,
   BreakdownSlice,
   DashboardSnapshot,
   DashboardWidgetInstance,
@@ -11,6 +13,11 @@ import {
   TorrentListData,
 } from '../../models/dashboard.model';
 import { Torrent, TorrentState } from '../../models/torrent.model';
+import {
+  BREAKDOWN_FIELD_META_BY_FIELD,
+  PIE_STATE_BUCKETS,
+  PIE_STATE_BUCKET_ORDER,
+} from './breakdown-field-catalog';
 
 function compareTorrentFieldValues(a: unknown, b: unknown): number {
   if (typeof a === 'number' && typeof b === 'number') return a - b;
@@ -31,51 +38,122 @@ const ACTIVE_STATES = new Set<TorrentState>([
   'allocating',
 ]);
 
-// Every TorrentState maps to exactly one bucket (unlike ACTIVE_STATES/the sidebar's `groups` map
-// in status.ts, whose groups deliberately overlap for independent filter checkboxes) - a pie
-// chart's slices must sum to the full torrent count.
-type PieStateBucket =
-  | 'downloading'
-  | 'completed'
-  | 'inactive'
-  | 'stopped'
-  | 'checking'
-  | 'errored'
-  | 'other';
+const CATEGORICAL_CAP = 7;
 
-const PIE_STATE_BUCKETS: Record<TorrentState, PieStateBucket> = {
-  downloading: 'downloading',
-  forcedDL: 'downloading',
-  metaDL: 'downloading',
-  allocating: 'downloading',
-  uploading: 'completed',
-  forcedUP: 'completed',
-  queuedDL: 'inactive',
-  queuedUP: 'inactive',
-  stalledDL: 'inactive',
-  stalledUP: 'inactive',
-  pausedDL: 'stopped',
-  stoppedDL: 'stopped',
-  pausedUP: 'stopped',
-  stoppedUP: 'stopped',
-  checkingDL: 'checking',
-  checkingUP: 'checking',
-  checkingResumeData: 'checking',
-  moving: 'checking',
-  error: 'errored',
-  missingFiles: 'errored',
-  unknown: 'other',
-};
+function rawCategoricalCounts(torrents: Torrent[], field: BreakdownField): Map<string, number> {
+  const counts = new Map<string, number>();
 
-const PIE_STATE_BUCKET_ORDER: PieStateBucket[] = [
-  'downloading',
-  'completed',
-  'inactive',
-  'stopped',
-  'checking',
-  'errored',
-  'other',
-];
+  if (field === 'state') {
+    for (const t of torrents) {
+      const bucket = PIE_STATE_BUCKETS[t.state];
+      counts.set(bucket, (counts.get(bucket) ?? 0) + 1);
+    }
+    return counts;
+  }
+
+  if (field === 'tags') {
+    for (const t of torrents) {
+      for (const tag of t.tags
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)) {
+        counts.set(tag, (counts.get(tag) ?? 0) + 1);
+      }
+    }
+    return counts;
+  }
+
+  for (const t of torrents) {
+    const key = (t[field] as string) || '-';
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+  return counts;
+}
+
+function rawNumericBucketCounts(torrents: Torrent[], field: BreakdownField): Map<string, number> {
+  const meta = BREAKDOWN_FIELD_META_BY_FIELD[field];
+  const counts = new Map<string, number>();
+  for (const t of torrents) {
+    const value = t[field] as number;
+    const bucket = meta.buckets!.find((b) => b.test(value))!;
+    counts.set(bucket.key, (counts.get(bucket.key) ?? 0) + 1);
+  }
+  return counts;
+}
+
+// Chart display for categorical fields: 'state' keeps its curated 7-bucket order (never capped -
+// it's already <=7 by construction); other categorical fields are sorted by count desc and capped
+// to the top CATEGORICAL_CAP + a synthetic 'other' slice. Numeric fields render every defined
+// bucket in its fixed order, including zero-count ones - a histogram's shape is part of the
+// point, unlike a pie chart where an empty slice is just noise.
+export function selectBreakdownCounts(
+  torrents: Torrent[],
+  field: BreakdownField,
+): BreakdownSlice[] {
+  const meta = BREAKDOWN_FIELD_META_BY_FIELD[field];
+
+  if (meta.kind === 'numeric') {
+    const counts = rawNumericBucketCounts(torrents, field);
+    return meta.buckets!.map((b) => ({
+      key: b.key,
+      labelKey: b.labelKey,
+      value: counts.get(b.key) ?? 0,
+    }));
+  }
+
+  const counts = rawCategoricalCounts(torrents, field);
+
+  if (field === 'state') {
+    return PIE_STATE_BUCKET_ORDER.filter((bucket) => (counts.get(bucket) ?? 0) > 0).map(
+      (bucket) => ({
+        key: bucket,
+        labelKey: `pages.dashboard.widgets.breakdown.state.bucket.${bucket}`,
+        value: counts.get(bucket)!,
+      }),
+    );
+  }
+
+  const sorted = Array.from(counts.entries()).sort((a, b) => b[1] - a[1]);
+  const top = sorted.slice(0, CATEGORICAL_CAP);
+  const rest = sorted.slice(CATEGORICAL_CAP);
+  const slices: BreakdownSlice[] = top.map(([key, value]) => ({ key, value }));
+  const otherTotal = rest.reduce((sum, [, value]) => sum + value, 0);
+  if (otherTotal > 0) {
+    slices.push({
+      key: 'other',
+      labelKey: 'pages.dashboard.widgets.breakdown.other',
+      value: otherTotal,
+    });
+  }
+  return slices;
+}
+
+// Uncapped, exact count for one specific key/bucket - used directly by stat-tile's torrent-count
+// mode, so a stat-tile stays correct even when its configured value would've been folded into
+// "Other" on a pie/bar widget breaking down the same field.
+export function countBreakdownValue(
+  torrents: Torrent[],
+  field: BreakdownField,
+  key: string,
+): number {
+  const meta = BREAKDOWN_FIELD_META_BY_FIELD[field];
+  if (meta.kind === 'numeric') return rawNumericBucketCounts(torrents, field).get(key) ?? 0;
+  return rawCategoricalCounts(torrents, field).get(key) ?? 0;
+}
+
+// Every selectable value for a field, uncapped, with no "Other" folding - used by the config
+// modal's live value picker (§WidgetConfigModal) so a user can never pick the synthetic "Other"
+// bucket as a stat-tile's target. 'state' and numeric fields are already uncapped, so they just
+// delegate to selectBreakdownCounts.
+export function listBreakdownValues(torrents: Torrent[], field: BreakdownField): BreakdownSlice[] {
+  const meta = BREAKDOWN_FIELD_META_BY_FIELD[field];
+  if (meta.kind === 'numeric' || field === 'state') return selectBreakdownCounts(torrents, field);
+
+  const counts = rawCategoricalCounts(torrents, field);
+  return Array.from(counts.entries())
+    .sort((a, b) => b[1] - a[1])
+    .map(([key, value]) => ({ key, value }));
+}
 
 export function selectStatTileData(
   snapshot: DashboardSnapshot,
@@ -138,31 +216,17 @@ export function selectPieChartData(
   snapshot: DashboardSnapshot,
   config: PieChartConfig,
 ): PieChartData {
-  const counts = new Map<string, number>();
+  return {
+    groupBy: config.groupBy,
+    slices: selectBreakdownCounts(snapshot.torrents, config.groupBy),
+  };
+}
 
-  if (config.groupBy === 'state') {
-    for (const t of snapshot.torrents) {
-      const bucket = PIE_STATE_BUCKETS[t.state];
-      counts.set(bucket, (counts.get(bucket) ?? 0) + 1);
-    }
-    const slices: BreakdownSlice[] = PIE_STATE_BUCKET_ORDER.filter(
-      (bucket) => (counts.get(bucket) ?? 0) > 0,
-    ).map((bucket) => ({
-      key: bucket,
-      labelKey: `pages.dashboard.widgets.pie-chart.bucket.${bucket}`,
-      value: counts.get(bucket)!,
-    }));
-    return { groupBy: 'state', slices };
-  }
-
-  for (const t of snapshot.torrents) {
-    const key = t.category || '-';
-    counts.set(key, (counts.get(key) ?? 0) + 1);
-  }
-  const slices: BreakdownSlice[] = Array.from(counts.entries())
-    .sort((a, b) => b[1] - a[1])
-    .map(([key, value]) => ({ key, value }));
-  return { groupBy: 'category', slices };
+export function selectBarChartData(
+  snapshot: DashboardSnapshot,
+  config: BarChartConfig,
+): BarChartData {
+  return { field: config.field, slices: selectBreakdownCounts(snapshot.torrents, config.field) };
 }
 
 export function resolveWidgetData(
@@ -177,6 +241,6 @@ export function resolveWidgetData(
     case 'pie-chart':
       return selectPieChartData(snapshot, instance.config as PieChartConfig);
     case 'bar-chart':
-      throw new Error('bar-chart widget selector not yet implemented');
+      return selectBarChartData(snapshot, instance.config as BarChartConfig);
   }
 }

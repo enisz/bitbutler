@@ -1261,21 +1261,24 @@
           }
         },
         "pie-chart": {
-          "bucket": {
-            "downloading": "Letöltés alatt",
-            "completed": "Kész",
-            "inactive": "Inaktív",
-            "stopped": "Szüneteltetve",
-            "checking": "Ellenőrzés",
-            "errored": "Hiba",
-            "other": "Egyéb"
-          },
           "group-by": {
             "state": "Állapot",
             "category": "Kategória"
           }
         },
         "breakdown": {
+          "other": "Egyéb",
+          "state": {
+            "bucket": {
+              "downloading": "Letöltés alatt",
+              "completed": "Kész",
+              "inactive": "Inaktív",
+              "stopped": "Szüneteltetve",
+              "checking": "Ellenőrzés",
+              "errored": "Hiba",
+              "other": "Egyéb"
+            }
+          },
           "ratio": {
             "bucket": {
               "lt-0-1": "< 0,1",

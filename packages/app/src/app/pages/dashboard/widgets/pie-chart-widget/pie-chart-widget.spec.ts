@@ -34,7 +34,9 @@ describe('PieChartWidget', () => {
     component = fixture.componentInstance;
     TestBed.inject(TranslateService).setTranslation('en', {
       pages: {
-        dashboard: { widgets: { 'pie-chart': { bucket: { downloading: 'Downloading' } } } },
+        dashboard: {
+          widgets: { breakdown: { state: { bucket: { downloading: 'Downloading' } } } },
+        },
       },
     });
     TestBed.inject(TranslateService).use('en');
@@ -46,7 +48,7 @@ describe('PieChartWidget', () => {
       slices: [
         {
           key: 'downloading',
-          labelKey: 'pages.dashboard.widgets.pie-chart.bucket.downloading',
+          labelKey: 'pages.dashboard.widgets.breakdown.state.bucket.downloading',
           value: 3,
         },
       ],
@@ -135,7 +137,7 @@ describe('PieChartWidget', () => {
         slices: [
           {
             key: 'downloading',
-            labelKey: 'pages.dashboard.widgets.pie-chart.bucket.downloading',
+            labelKey: 'pages.dashboard.widgets.breakdown.state.bucket.downloading',
             value: 3,
           },
         ],
@@ -146,7 +148,7 @@ describe('PieChartWidget', () => {
       const translate = TestBed.inject(TranslateService);
       translate.setTranslation('hu', {
         pages: {
-          dashboard: { widgets: { 'pie-chart': { bucket: { downloading: 'Letöltés' } } } },
+          dashboard: { widgets: { breakdown: { state: { bucket: { downloading: 'Letöltés' } } } } },
         },
       });
       translate.use('hu');
@@ -173,7 +175,7 @@ describe('PieChartWidget', () => {
         slices: [
           {
             key: 'downloading',
-            labelKey: 'pages.dashboard.widgets.pie-chart.bucket.downloading',
+            labelKey: 'pages.dashboard.widgets.breakdown.state.bucket.downloading',
             value: 3,
           },
         ],
@@ -187,7 +189,7 @@ describe('PieChartWidget', () => {
       const translate = TestBed.inject(TranslateService);
       translate.setTranslation('hu', {
         pages: {
-          dashboard: { widgets: { 'pie-chart': { bucket: { downloading: 'Letöltés' } } } },
+          dashboard: { widgets: { breakdown: { state: { bucket: { downloading: 'Letöltés' } } } } },
         },
       });
       translate.use('hu');
