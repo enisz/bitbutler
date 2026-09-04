@@ -1,0 +1,13 @@
+<div class="bar-chart-widget">
+  <app-widget-menu (configure)="onConfigure?.()" (remove)="onRemove?.()" />
+  @let config = buildConfig();
+  <div class="bar-chart-widget__chart">
+    <canvas
+      baseChart
+      class="bar-chart-widget__canvas"
+      [type]="chartType"
+      [data]="config.data"
+      [options]="config.options"
+    ></canvas>
+  </div>
+</div>
