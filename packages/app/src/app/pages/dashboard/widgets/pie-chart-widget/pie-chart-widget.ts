@@ -14,6 +14,7 @@ import { BaseWidget } from 'gridstack/dist/angular';
 import { BaseChartDirective } from 'ng2-charts';
 import { PieChartData } from '../../../../models/dashboard.model';
 import { ThemeService } from '../../../../services/theme.service';
+import { bodyColor, memoizeBySignature, themeColors } from '../chart-widget-utils';
 import { WidgetMenu } from '../widget-menu/widget-menu';
 
 // Registered here (module scope), rather than via ng2-charts' provideCharts() in app.config.ts,
@@ -23,15 +24,6 @@ import { WidgetMenu } from '../widget-menu/widget-menu';
 // NG_CHARTS_CONFIGURATION injection is optional, so registering directly with Chart.register()
 // here needs no corresponding app-level provider.
 Chart.register(DoughnutController, ArcElement, Legend, Tooltip);
-
-const COLOR_TOKENS = [
-  '--bs-primary',
-  '--bs-secondary',
-  '--bs-success',
-  '--bs-danger',
-  '--bs-warning',
-  '--bs-info',
-];
 
 interface PieChartRenderConfig {
   data: ChartData<'doughnut', number[], string>;
@@ -79,16 +71,7 @@ export class PieChartWidget extends BaseWidget {
   // (Highcharts-based) version of this cache omitted the language, so a runtime language switch
   // with otherwise-unchanged data left segment labels stuck in the old language until the
   // underlying data next changed. Including `translate.currentLang` here closes that gap.
-  private cachedSignature: string | null = null;
-  private cachedConfig: PieChartRenderConfig | null = null;
-
-  private themeColors(styles: CSSStyleDeclaration): string[] {
-    return COLOR_TOKENS.map((token) => styles.getPropertyValue(token).trim());
-  }
-
-  private bodyColor(styles: CSSStyleDeclaration): string {
-    return styles.getPropertyValue('--bs-body-color').trim();
-  }
+  private readonly cache = memoizeBySignature<PieChartRenderConfig>();
 
   buildConfig(): PieChartRenderConfig {
     // Re-read ThemeService here (rather than caching across calls) so the signature below always
@@ -100,13 +83,12 @@ export class PieChartWidget extends BaseWidget {
     const lang = this.translate.currentLang;
     const signature = JSON.stringify({ data: this.data, family, mode, lang });
 
-    if (this.cachedConfig && this.cachedSignature === signature) {
-      return this.cachedConfig;
-    }
+    const cached = this.cache.get(signature);
+    if (cached) return cached;
 
     const styles = getComputedStyle(document.documentElement);
-    const colors = this.themeColors(styles);
-    const textColor = this.bodyColor(styles);
+    const colors = themeColors(styles);
+    const textColor = bodyColor(styles);
 
     const labels = this.data.slices.map((slice) =>
       slice.labelKey ? this.translate.instant(slice.labelKey) : slice.key,
@@ -115,30 +97,17 @@ export class PieChartWidget extends BaseWidget {
     const backgroundColor = this.data.slices.map((_, i) => colors[i % colors.length]);
 
     const config: PieChartRenderConfig = {
-      data: {
-        labels,
-        datasets: [{ data: values, backgroundColor }],
-      },
+      data: { labels, datasets: [{ data: values, backgroundColor }] },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         cutout: '60%',
-        // Chart.js canvases have no fill of their own by default - unlike Highcharts, which
-        // paints an opaque white chart.backgroundColor unless overridden, there is no separate
-        // "whole canvas" background concept in Chart.js core. This `backgroundColor` is only the
-        // base fallback color Chart.js would use for an arc that doesn't specify its own color,
-        // which never happens here since every slice above gets one from the theme. The card
-        // surface actually shows through because nothing paints the canvas itself - keeping this
-        // set to 'transparent' documents that intentionally, rather than leaving it unset.
         backgroundColor: 'transparent',
-        plugins: {
-          legend: { labels: { color: textColor } },
-        },
+        plugins: { legend: { labels: { color: textColor } } },
       },
     };
 
-    this.cachedSignature = signature;
-    this.cachedConfig = config;
+    this.cache.set(signature, config);
     return config;
   }
 }
