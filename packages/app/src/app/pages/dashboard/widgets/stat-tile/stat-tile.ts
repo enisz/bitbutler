@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BaseWidget } from 'gridstack/dist/angular';
-import { StatTileData } from '../../../../models/dashboard.model';
+import { BreakdownField, ServerMetricId, StatTileData } from '../../../../models/dashboard.model';
 import { FilesizePipe } from '../../../../pipes/filesize-pipe';
 import { RatioPipe } from '../../../../pipes/ratio-pipe';
+import { SERVER_METRIC_META_BY_ID } from '../../server-metric-catalog';
 import { WidgetMenu } from '../widget-menu/widget-menu';
 
 @Component({
@@ -19,26 +20,32 @@ export class StatTile extends BaseWidget {
   @Input() onConfigure?: () => void;
   @Input() onRemove?: () => void;
 
-  get labelKey(): string {
-    return `pages.dashboard.widgets.stat-tile.metric.${this.data.metric}`;
+  get isTorrentCount(): boolean {
+    return 'source' in this.data;
+  }
+
+  get metricLabelKey(): string {
+    return `pages.dashboard.widgets.stat-tile.metric.${(this.data as { metric: ServerMetricId }).metric}`;
+  }
+
+  get torrentCountFieldLabelKey(): string {
+    return `pages.main.grid.grid-lib.col-def.${(this.data as { field: BreakdownField }).field}`;
+  }
+
+  get torrentCountValueLabelKey(): string | undefined {
+    return (this.data as { labelKey?: string }).labelKey;
+  }
+
+  get torrentCountValueKey(): string {
+    return (this.data as { key: string }).key;
+  }
+
+  get total(): number | undefined {
+    return 'source' in this.data ? undefined : this.data.total;
   }
 
   get displayKind(): 'bytes' | 'speed' | 'ratio' | 'count' {
-    switch (this.data.metric) {
-      case 'download_speed':
-      case 'upload_speed':
-        return 'speed';
-      case 'free_disk_space':
-      case 'global_downloaded':
-      case 'session_downloaded':
-      case 'global_uploaded':
-      case 'session_uploaded':
-        return 'bytes';
-      case 'global_ratio':
-      case 'session_ratio':
-        return 'ratio';
-      case 'active_count':
-        return 'count';
-    }
+    if ('source' in this.data) return 'count';
+    return SERVER_METRIC_META_BY_ID[this.data.metric].displayKind;
   }
 }

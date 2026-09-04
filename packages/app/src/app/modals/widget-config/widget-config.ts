@@ -19,12 +19,13 @@ import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import {
   PieChartConfig,
   PieChartField,
+  ServerMetricId,
   StatTileConfig,
-  StatTileMetric,
   TorrentListConfig,
   WidgetConfig as WidgetConfigModel,
   WidgetTypeId,
 } from '../../models/dashboard.model';
+import { SERVER_METRIC_CATALOG } from '../../pages/dashboard/server-metric-catalog';
 import { TORRENT_FIELD_CATALOG, TorrentField } from '../../pages/dashboard/torrent-field-catalog';
 
 export interface TorrentFieldOption {
@@ -55,18 +56,7 @@ export class WidgetConfig {
   readonly widgetTypeId = input.required<WidgetTypeId>();
   readonly initialConfig = input.required<WidgetConfigModel>();
 
-  readonly statTileMetrics: StatTileMetric[] = [
-    'active_count',
-    'download_speed',
-    'free_disk_space',
-    'global_downloaded',
-    'global_ratio',
-    'global_uploaded',
-    'session_downloaded',
-    'session_ratio',
-    'session_uploaded',
-    'upload_speed',
-  ];
+  readonly statTileMetrics: ServerMetricId[] = SERVER_METRIC_CATALOG.map((m) => m.id);
 
   // Every Torrent field is a valid sort-by / column choice, labeled via the main grid's own
   // translations (see torrent-field-catalog.ts) and sorted alphabetically by that translated
@@ -82,7 +72,10 @@ export class WidgetConfig {
 
   readonly isStatTile = computed(() => this.widgetTypeId() === 'stat-tile');
   readonly isPieChart = computed(() => this.widgetTypeId() === 'pie-chart');
-  readonly statTileConfig = computed(() => this.config() as StatTileConfig);
+  // Narrowed to the { metric } variant - the torrent-count source-toggle UI is Task 10.
+  readonly statTileConfig = computed(
+    () => this.config() as Extract<StatTileConfig, { metric: ServerMetricId }>,
+  );
   readonly torrentListConfig = computed(() => this.config() as TorrentListConfig);
   readonly pieChartConfig = computed(() => this.config() as PieChartConfig);
 
@@ -102,7 +95,7 @@ export class WidgetConfig {
     );
   });
 
-  updateStatTileMetric(metric: StatTileMetric): void {
+  updateStatTileMetric(metric: ServerMetricId): void {
     this.config.set({ metric } satisfies StatTileConfig);
   }
 

@@ -4,7 +4,7 @@ export type WidgetTypeId = 'stat-tile' | 'torrent-list' | 'pie-chart' | 'bar-cha
 
 export type WidgetChartType = 'number' | 'pie' | 'line' | 'column' | 'table';
 
-export type StatTileMetric =
+export type ServerMetricId =
   | 'download_speed'
   | 'upload_speed'
   | 'active_count'
@@ -14,11 +14,15 @@ export type StatTileMetric =
   | 'session_downloaded'
   | 'global_uploaded'
   | 'session_uploaded'
-  | 'free_disk_space';
+  | 'free_disk_space'
+  | 'dht_nodes'
+  | 'total_peer_connections'
+  | 'download_limit'
+  | 'upload_limit';
 
-export interface StatTileConfig {
-  metric: StatTileMetric;
-}
+export type StatTileConfig =
+  | { metric: ServerMetricId }
+  | { source: 'torrent-count'; field: BreakdownField; value: string };
 
 export type TorrentField = keyof Torrent;
 
@@ -137,12 +141,9 @@ export interface DashboardSnapshot {
   serverState: QbServerState | null;
 }
 
-export interface StatTileData {
-  metric: StatTileMetric;
-  value: number;
-  /** Only set for 'active_count' - total torrent count, for an "18 of 42" style display. */
-  total?: number;
-}
+export type StatTileData =
+  | { metric: ServerMetricId; value: number; total?: number }
+  | (BreakdownSlice & { source: 'torrent-count'; field: BreakdownField });
 
 export interface TorrentListData {
   columns: TorrentField[];

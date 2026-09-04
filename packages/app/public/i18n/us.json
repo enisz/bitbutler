@@ -1257,7 +1257,11 @@
             "session_downloaded": "Session Downloaded",
             "global_uploaded": "Global Uploaded",
             "session_uploaded": "Session Uploaded",
-            "free_disk_space": "Free Disk Space"
+            "free_disk_space": "Free Disk Space",
+            "dht_nodes": "DHT Nodes",
+            "total_peer_connections": "Peer Connections",
+            "download_limit": "Download Limit",
+            "upload_limit": "Upload Limit"
           }
         },
         "pie-chart": {

@@ -165,6 +165,92 @@ describe('selectStatTileData', () => {
       total: 3,
     });
   });
+
+  it('should read dht_nodes from server_state', () => {
+    const snapshot: DashboardSnapshot = { torrents: [], serverState: { dht_nodes: 12 } as any };
+    expect(selectStatTileData(snapshot, { metric: 'dht_nodes' })).toEqual({
+      metric: 'dht_nodes',
+      value: 12,
+    });
+  });
+
+  it('should read total_peer_connections from server_state', () => {
+    const snapshot: DashboardSnapshot = {
+      torrents: [],
+      serverState: { total_peer_connections: 7 } as any,
+    };
+    expect(selectStatTileData(snapshot, { metric: 'total_peer_connections' })).toEqual({
+      metric: 'total_peer_connections',
+      value: 7,
+    });
+  });
+
+  it('should read download_limit from dl_rate_limit', () => {
+    const snapshot: DashboardSnapshot = {
+      torrents: [],
+      serverState: { dl_rate_limit: 500 } as any,
+    };
+    expect(selectStatTileData(snapshot, { metric: 'download_limit' })).toEqual({
+      metric: 'download_limit',
+      value: 500,
+    });
+  });
+
+  it('should read upload_limit from up_rate_limit', () => {
+    const snapshot: DashboardSnapshot = {
+      torrents: [],
+      serverState: { up_rate_limit: 250 } as any,
+    };
+    expect(selectStatTileData(snapshot, { metric: 'upload_limit' })).toEqual({
+      metric: 'upload_limit',
+      value: 250,
+    });
+  });
+
+  it('should count torrents matching a torrent-count field/value config', () => {
+    const snapshot: DashboardSnapshot = {
+      torrents: [makeTorrent({ category: 'linux' }), makeTorrent({ category: 'linux' })],
+      serverState: null,
+    };
+    expect(
+      selectStatTileData(snapshot, { source: 'torrent-count', field: 'category', value: 'linux' }),
+    ).toEqual({
+      source: 'torrent-count',
+      field: 'category',
+      key: 'linux',
+      labelKey: undefined,
+      value: 2,
+    });
+  });
+
+  it('should attach a labelKey for a torrent-count config pointed at a bucketed value', () => {
+    const snapshot: DashboardSnapshot = {
+      torrents: [makeTorrent({ ratio: 0.05 })],
+      serverState: null,
+    };
+    expect(
+      selectStatTileData(snapshot, { source: 'torrent-count', field: 'ratio', value: 'lt-0-1' }),
+    ).toEqual({
+      source: 'torrent-count',
+      field: 'ratio',
+      key: 'lt-0-1',
+      labelKey: 'pages.dashboard.widgets.breakdown.ratio.bucket.lt-0-1',
+      value: 1,
+    });
+  });
+
+  it('should count 0 for a torrent-count config whose value no longer exists in the data', () => {
+    const snapshot: DashboardSnapshot = { torrents: [], serverState: null };
+    expect(
+      selectStatTileData(snapshot, { source: 'torrent-count', field: 'category', value: 'gone' }),
+    ).toEqual({
+      source: 'torrent-count',
+      field: 'category',
+      key: 'gone',
+      labelKey: undefined,
+      value: 0,
+    });
+  });
 });
 
 describe('selectTorrentListData', () => {

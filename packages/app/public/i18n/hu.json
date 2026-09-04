@@ -1257,7 +1257,11 @@
             "session_downloaded": "Munkamenet letöltés",
             "global_uploaded": "Globális feltöltés",
             "session_uploaded": "Munkamenet feltöltés",
-            "free_disk_space": "Szabad lemezterület"
+            "free_disk_space": "Szabad lemezterület",
+            "dht_nodes": "DHT csomópontok",
+            "total_peer_connections": "Partner kapcsolatok",
+            "download_limit": "Letöltési korlát",
+            "upload_limit": "Feltöltési korlát"
           }
         },
         "pie-chart": {

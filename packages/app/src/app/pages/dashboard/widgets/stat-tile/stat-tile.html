@@ -1,6 +1,17 @@
 <div class="stat-tile">
   <app-widget-menu (configure)="onConfigure?.()" (remove)="onRemove?.()" />
-  <div class="stat-tile__label">{{ labelKey | translate }}</div>
+  <div class="stat-tile__label">
+    @if (isTorrentCount) {
+      {{ torrentCountFieldLabelKey | translate }}:
+      @if (torrentCountValueLabelKey) {
+        {{ torrentCountValueLabelKey | translate }}
+      } @else {
+        {{ torrentCountValueKey }}
+      }
+    } @else {
+      {{ metricLabelKey | translate }}
+    }
+  </div>
   <div class="stat-tile__value">
     @switch (displayKind) {
       @case ('speed') {
@@ -14,8 +25,8 @@
       }
       @case ('count') {
         {{ data.value }}
-        @if (data.total !== undefined) {
-          <span class="stat-tile__total">of {{ data.total }}</span>
+        @if (total !== undefined) {
+          <span class="stat-tile__total">of {{ total }}</span>
         }
       }
     }

@@ -161,6 +161,17 @@ export function selectStatTileData(
 ): StatTileData {
   const { torrents, serverState } = snapshot;
 
+  if ('source' in config) {
+    const matched = listBreakdownValues(torrents, config.field).find((s) => s.key === config.value);
+    return {
+      source: 'torrent-count',
+      field: config.field,
+      key: config.value,
+      labelKey: matched?.labelKey,
+      value: countBreakdownValue(torrents, config.field, config.value),
+    };
+  }
+
   switch (config.metric) {
     case 'download_speed':
       return { metric: config.metric, value: serverState?.dl_info_speed ?? 0 };
@@ -186,6 +197,14 @@ export function selectStatTileData(
       return { metric: config.metric, value: serverState?.alltime_ul ?? 0 };
     case 'session_uploaded':
       return { metric: config.metric, value: serverState?.up_info_data ?? 0 };
+    case 'dht_nodes':
+      return { metric: config.metric, value: (serverState?.['dht_nodes'] as number) ?? 0 };
+    case 'total_peer_connections':
+      return { metric: config.metric, value: serverState?.total_peer_connections ?? 0 };
+    case 'download_limit':
+      return { metric: config.metric, value: serverState?.dl_rate_limit ?? 0 };
+    case 'upload_limit':
+      return { metric: config.metric, value: serverState?.up_rate_limit ?? 0 };
     case 'active_count': {
       let active = 0;
       for (const t of torrents) if (ACTIVE_STATES.has(t.state)) active++;
