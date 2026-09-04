@@ -48,6 +48,7 @@ import { TorrentStoreService } from '../../services/torrent-store.service';
 import { setModalInput } from '../../utils/modal-input';
 import { WIDGET_CATALOG } from './widget-catalog';
 import { resolveWidgetData } from './widget-selectors';
+import { BarChartWidget } from './widgets/bar-chart-widget/bar-chart-widget';
 import { PieChartWidget } from './widgets/pie-chart-widget/pie-chart-widget';
 import { StatTile } from './widgets/stat-tile/stat-tile';
 import { TorrentListWidget } from './widgets/torrent-list-widget/torrent-list-widget';
@@ -153,7 +154,12 @@ export class Dashboard implements OnDestroy {
   });
 
   constructor() {
-    GridstackComponent.registerComponents([StatTile, TorrentListWidget, PieChartWidget]);
+    GridstackComponent.registerComponents([
+      StatTile,
+      TorrentListWidget,
+      PieChartWidget,
+      BarChartWidget,
+    ]);
     void this.dashboardSettingsService.load().then((layout) => this.widgets.set(layout.widgets));
   }
 
