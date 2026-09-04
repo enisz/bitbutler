@@ -1324,7 +1324,8 @@
       "catalog": {
         "stat-tile": "Stat Tile",
         "torrent-list": "Torrent List",
-        "pie-chart": "Pie Chart"
+        "pie-chart": "Pie Chart",
+        "bar-chart": "Bar Chart"
       },
       "chart-type": {
         "number": "Number",

@@ -1324,7 +1324,8 @@
       "catalog": {
         "stat-tile": "Statisztika csempe",
         "torrent-list": "Torrent lista",
-        "pie-chart": "Kördiagram"
+        "pie-chart": "Kördiagram",
+        "bar-chart": "Oszlopdiagram"
       },
       "chart-type": {
         "number": "Szám",

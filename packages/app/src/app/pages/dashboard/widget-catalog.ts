@@ -1,5 +1,5 @@
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import { faChartBar, faChartPie, faHashtag, faTable } from '@fortawesome/free-solid-svg-icons';
+import { faChartColumn, faChartPie, faHashtag, faTable } from '@fortawesome/free-solid-svg-icons';
 import {
   BarChartConfig,
   PieChartConfig,
@@ -62,7 +62,7 @@ export const WIDGET_CATALOG: Record<WidgetTypeId, WidgetCatalogMeta> = {
     labelKey: 'pages.dashboard.catalog.bar-chart',
     chartType: 'column',
     category: 'transfers',
-    icon: faChartBar,
+    icon: faChartColumn,
     componentSelector: 'app-bar-chart-widget',
     defaultConfig: { field: 'state' } satisfies BarChartConfig,
     defaultSize: { w: 4, h: 4 },

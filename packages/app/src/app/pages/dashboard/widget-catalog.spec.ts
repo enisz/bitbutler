@@ -27,6 +27,18 @@ describe('WIDGET_CATALOG', () => {
     });
   });
 
+  it('should map pie-chart to the PieChartWidget component selector with a sensible default config', () => {
+    expect(WIDGET_CATALOG['pie-chart'].componentSelector).toBe('app-pie-chart-widget');
+    expect(WIDGET_CATALOG['pie-chart'].defaultConfig).toEqual({ groupBy: 'state' });
+    expect(WIDGET_CATALOG['pie-chart'].chartType).toBe('pie');
+  });
+
+  it('should map bar-chart to the BarChartWidget component selector with a sensible default config', () => {
+    expect(WIDGET_CATALOG['bar-chart'].componentSelector).toBe('app-bar-chart-widget');
+    expect(WIDGET_CATALOG['bar-chart'].defaultConfig).toEqual({ field: 'state' });
+    expect(WIDGET_CATALOG['bar-chart'].chartType).toBe('column');
+  });
+
   it('should give every entry an icon, a chart type and a category', () => {
     for (const entry of Object.values(WIDGET_CATALOG)) {
       expect(entry.icon).toBeTruthy();

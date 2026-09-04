@@ -264,6 +264,25 @@ describe('Dashboard', () => {
 
       expect(component.items()[0].component).toBe('app-pie-chart-widget');
     });
+
+    it('should map a bar-chart instance to the app-bar-chart-widget component', async () => {
+      dashboardSettingsMock.load = vi.fn().mockResolvedValue({
+        widgets: [
+          {
+            instanceId: 'w3',
+            widgetTypeId: 'bar-chart',
+            x: 0,
+            y: 0,
+            w: 4,
+            h: 4,
+            config: { field: 'state' },
+          },
+        ],
+      });
+      await createComponent();
+
+      expect(component.items()[0].component).toBe('app-bar-chart-widget');
+    });
   });
 
   describe('onGridChange', () => {
