@@ -469,6 +469,27 @@ describe('Login', () => {
       expect(router.navigate).toHaveBeenCalledWith(['/pages/torrent-list']);
     });
 
+    it('navigates to the torrent list when no landing page setting is stored', async () => {
+      setCurrentServer({ export_available: 1, webapi_version: '2.9.3', qb_version: '4.6.0' });
+      qbServiceMock.login.mockResolvedValue({ loggedIn: true });
+      const router = TestBed.inject(Router) as any;
+
+      await component.connect();
+
+      expect(router.navigate).toHaveBeenCalledWith(['/pages/torrent-list']);
+    });
+
+    it('navigates to the dashboard when the landing page setting is dashboard', async () => {
+      setCurrentServer({ export_available: 1, webapi_version: '2.9.3', qb_version: '4.6.0' });
+      qbServiceMock.login.mockResolvedValue({ loggedIn: true });
+      generalSettingsMock.load.mockResolvedValue({ startup: { landingPage: 'dashboard' } });
+      const router = TestBed.inject(Router) as any;
+
+      await component.connect();
+
+      expect(router.navigate).toHaveBeenCalledWith(['/pages/dashboard']);
+    });
+
     it('does not probe when login did not succeed', async () => {
       setCurrentServer({ export_available: null, webapi_version: null, qb_version: null });
       qbServiceMock.login.mockResolvedValue({ loggedIn: false });

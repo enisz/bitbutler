@@ -84,6 +84,30 @@
           }}
         </small>
       }
+
+      <div class="container mt-3" formGroupName="startup">
+        <div class="row mb-3">
+          <div class="col-6 d-flex align-items-center">
+            {{
+              'pages.settings.tab.general.general-settings-form.startup.landing-page' | translate
+            }}
+          </div>
+
+          <div class="col-6">
+            <ng-select
+              [items]="landingPages()"
+              [clearable]="false"
+              [openOnEnter]="false"
+              [clearSearchOnAdd]="true"
+              [searchable]="false"
+              bindLabel="label"
+              bindValue="value"
+              formControlName="landingPage"
+            >
+            </ng-select>
+          </div>
+        </div>
+      </div>
     </fieldset>
 
     <fieldset class="bb-fieldset">

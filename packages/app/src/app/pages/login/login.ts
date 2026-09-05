@@ -242,7 +242,12 @@ export class Login implements OnInit {
 
         await this.windowService.setOpenFilesEnabled(true);
         loadingModalRef.close();
-        this.router.navigate(['/pages/torrent-list']);
+        const settings = await this.generalSettingsService.load();
+        const landingRoute =
+          settings.startup?.landingPage === 'dashboard'
+            ? '/pages/dashboard'
+            : '/pages/torrent-list';
+        this.router.navigate([landingRoute]);
       })
       .catch((error) => {
         console.error(Login.name, 'connect', error);

@@ -2,6 +2,7 @@ import { ThemeFamily, ThemeMode } from '../services/theme.service';
 
 export type ToastPosition = 'top-left' | 'top-right' | 'bottom-right' | 'bottom-left';
 export type SavePathInputType = 'select' | 'typeahead';
+export type LandingPage = 'torrent-list' | 'dashboard';
 
 export type DateFormatPreset = 'follow-language' | 'iso' | 'us' | 'eu' | 'custom';
 
@@ -46,6 +47,7 @@ export interface GeneralSettings {
   startup: {
     openAtLogin: boolean;
     startMinimized: boolean;
+    landingPage: LandingPage;
   };
   savePath: {
     inputType: SavePathInputType;
@@ -74,6 +76,7 @@ export const DEFAULT_GENERAL_SETTINGS: GeneralSettings = {
   startup: {
     openAtLogin: false,
     startMinimized: false,
+    landingPage: 'torrent-list',
   },
   savePath: {
     inputType: 'select',

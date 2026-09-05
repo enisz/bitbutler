@@ -1750,7 +1750,8 @@
             "startup": {
               "open-at-login": "Start app with the system",
               "start-minimized": "Start minimized",
-              "no-default-host-hint": "No default host configured. The app will start but won't log in automatically."
+              "no-default-host-hint": "No default host configured. The app will start but won't log in automatically.",
+              "landing-page": "View to load after login"
             },
             "save-path": {
               "description": "Choose how save path fields behave when adding or moving torrents.",
@@ -1775,6 +1776,10 @@
             "light": "Light",
             "dark": "Dark",
             "system": "System"
+          },
+          "landing-page": {
+            "torrent-list": "Torrent List",
+            "dashboard": "Dashboard"
           },
           "success": {
             "saved": "General Settings Saved"

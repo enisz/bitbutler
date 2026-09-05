@@ -406,6 +406,35 @@ describe('General', () => {
     });
   });
 
+  describe('landingPages', () => {
+    it('lists torrent-list and dashboard, each with a translated label', () => {
+      const items = component.landingPages();
+      expect(items.map((i) => i.value)).toEqual(['torrent-list', 'dashboard']);
+      expect(items.every((i) => i.label.length > 0)).toBe(true);
+    });
+  });
+
+  describe('save with landingPage', () => {
+    it('defaults to torrent-list', () => {
+      expect(component.generalSettingsForm.controls.startup.controls.landingPage.value).toBe(
+        'torrent-list',
+      );
+    });
+
+    it('persists the selected landingPage value', async () => {
+      component.generalSettingsForm.controls.startup.controls.landingPage.setValue('dashboard');
+
+      const saveCallback = stateServiceMock.registerSave.mock.calls[0][1];
+      await saveCallback();
+
+      expect(dateFormatServiceMock.applyFromSettings).toHaveBeenCalledWith(
+        expect.objectContaining({
+          startup: expect.objectContaining({ landingPage: 'dashboard' }),
+        }),
+      );
+    });
+  });
+
   describe('save with firstDayOfWeek', () => {
     it('persists the selected firstDayOfWeek value', async () => {
       component.generalSettingsForm.controls.dateFormat.controls.firstDayOfWeek.setValue('sunday');

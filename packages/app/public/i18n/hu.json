@@ -1750,7 +1750,8 @@
             "startup": {
               "open-at-login": "Alkalmazás indítása a rendszerrel",
               "start-minimized": "Indítás minimalizálva",
-              "no-default-host-hint": "Nincs alapértelmezett kiszolgáló beállítva. Az alkalmazás elindul, de nem fog automatikusan bejelentkezni."
+              "no-default-host-hint": "Nincs alapértelmezett kiszolgáló beállítva. Az alkalmazás elindul, de nem fog automatikusan bejelentkezni.",
+              "landing-page": "Bejelentkezés után betöltendő nézet"
             },
             "save-path": {
               "description": "Válaszd ki, hogyan viselkedjenek a mentési útvonal mezők torrentek hozzáadásakor vagy áthelyezésekor.",
@@ -1775,6 +1776,10 @@
             "light": "Világos",
             "dark": "Sötét",
             "system": "Rendszerszintű"
+          },
+          "landing-page": {
+            "torrent-list": "Torrent lista",
+            "dashboard": "Irányítópult"
           },
           "success": {
             "saved": "Általános beállítások mentve"

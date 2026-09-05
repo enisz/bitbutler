@@ -39,6 +39,7 @@ import {
   FirstDayOfWeek,
   GeneralSettings,
   LANGUAGE_LOCALE_MAP,
+  LandingPage,
   SavePathInputType,
   ToastPosition,
   resolveDateFormat,
@@ -166,6 +167,23 @@ export class General implements SettingsTabComponent {
       {
         value: 'bottom-left',
         label: this.translateService.instant('pages.settings.tab.general.position.bottom-left'),
+      },
+    ];
+  });
+
+  public landingPages = computed<NgSelectItem[]>(() => {
+    this.languageChanged();
+
+    return [
+      {
+        value: 'torrent-list',
+        label: this.translateService.instant(
+          'pages.settings.tab.general.landing-page.torrent-list',
+        ),
+      },
+      {
+        value: 'dashboard',
+        label: this.translateService.instant('pages.settings.tab.general.landing-page.dashboard'),
       },
     ];
   });
@@ -315,6 +333,7 @@ export class General implements SettingsTabComponent {
     startup: new FormGroup({
       openAtLogin: new FormControl(false, { nonNullable: true }),
       startMinimized: new FormControl({ value: false, disabled: true }, { nonNullable: true }),
+      landingPage: new FormControl<LandingPage>('torrent-list', { nonNullable: true }),
     }),
     savePath: new FormGroup({
       inputType: new FormControl<SavePathInputType>('select', { nonNullable: true }),
