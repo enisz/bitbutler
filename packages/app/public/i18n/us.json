@@ -786,6 +786,12 @@
         "field-group": {
           "categorical": "By Category",
           "numeric": "By Value Range"
+        },
+        "value": "Value",
+        "source": "Source",
+        "source-option": {
+          "metric": "Server Metric",
+          "torrent-count": "Torrent Count"
         }
       },
       "update-available": {

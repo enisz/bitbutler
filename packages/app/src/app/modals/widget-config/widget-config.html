@@ -15,24 +15,88 @@
       <div class="row mb-3">
         <div class="col-12">
           <label class="form-label">{{
-            'components.modals.widget-config.metric' | translate
+            'components.modals.widget-config.source' | translate
           }}</label>
           <ng-select
-            [items]="statTileMetrics"
+            [items]="sourceOptions"
             [clearable]="false"
             [searchable]="false"
-            [ngModel]="statTileConfig().metric"
-            (change)="updateStatTileMetric($event)"
+            [ngModel]="statTileSource()"
+            (change)="updateStatTileSource($event)"
           >
             <ng-template ng-label-tmp let-item="item">{{
-              'pages.dashboard.widgets.stat-tile.metric.' + item | translate
+              'components.modals.widget-config.source-option.' + item | translate
             }}</ng-template>
             <ng-template ng-option-tmp let-item="item">{{
-              'pages.dashboard.widgets.stat-tile.metric.' + item | translate
+              'components.modals.widget-config.source-option.' + item | translate
             }}</ng-template>
           </ng-select>
         </div>
       </div>
+      @if (statTileSource() === 'metric') {
+        <div class="row mb-3">
+          <div class="col-12">
+            <label class="form-label">{{
+              'components.modals.widget-config.metric' | translate
+            }}</label>
+            <ng-select
+              id="widget-config-metric"
+              [items]="statTileMetrics"
+              [clearable]="false"
+              [searchable]="false"
+              [ngModel]="statTileConfig().metric"
+              (change)="updateStatTileMetric($event)"
+            >
+              <ng-template ng-label-tmp let-item="item">{{
+                'pages.dashboard.widgets.stat-tile.metric.' + item | translate
+              }}</ng-template>
+              <ng-template ng-option-tmp let-item="item">{{
+                'pages.dashboard.widgets.stat-tile.metric.' + item | translate
+              }}</ng-template>
+            </ng-select>
+          </div>
+        </div>
+      } @else {
+        <div class="row mb-3">
+          <div class="col-6">
+            <label class="form-label">{{
+              'components.modals.widget-config.field' | translate
+            }}</label>
+            <ng-select
+              [items]="breakdownFieldOptions"
+              bindLabel="label"
+              bindValue="value"
+              groupBy="group"
+              [clearable]="false"
+              [searchable]="false"
+              [ngModel]="torrentCountConfig().field"
+              (ngModelChange)="updateTorrentCountField($event)"
+            >
+            </ng-select>
+          </div>
+          <div class="col-6">
+            <label class="form-label">{{
+              'components.modals.widget-config.value' | translate
+            }}</label>
+            <ng-select
+              [items]="torrentCountValueOptions()"
+              bindLabel="fallbackLabel"
+              bindValue="value"
+              [clearable]="false"
+              [searchable]="true"
+              [ngModel]="torrentCountConfig().value"
+              (ngModelChange)="updateTorrentCountValue($event)"
+            >
+              <ng-template ng-label-tmp let-item="item">{{
+                item.labelKey ? (item.labelKey | translate) : item.fallbackLabel
+              }}</ng-template>
+              <ng-template ng-option-tmp let-item="item">{{
+                item.labelKey ? (item.labelKey | translate) : item.fallbackLabel
+              }}</ng-template>
+            </ng-select>
+          </div>
+        </div>
+      }
     } @else if (isPieChart()) {
       <div class="row mb-3">
         <div class="col-12">

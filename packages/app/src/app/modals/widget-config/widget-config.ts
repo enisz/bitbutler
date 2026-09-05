@@ -30,6 +30,8 @@ import {
 import { BREAKDOWN_FIELD_CATALOG } from '../../pages/dashboard/breakdown-field-catalog';
 import { SERVER_METRIC_CATALOG } from '../../pages/dashboard/server-metric-catalog';
 import { TORRENT_FIELD_CATALOG, TorrentField } from '../../pages/dashboard/torrent-field-catalog';
+import { listBreakdownValues } from '../../pages/dashboard/widget-selectors';
+import { TorrentStoreService } from '../../services/torrent-store.service';
 
 export interface TorrentFieldOption {
   value: TorrentField;
@@ -59,6 +61,7 @@ export interface BreakdownFieldOption {
 export class WidgetConfig {
   private readonly activeModal = inject(NgbActiveModal);
   private readonly translateService = inject(TranslateService);
+  private readonly torrentStore = inject(TorrentStoreService);
 
   readonly icons = { faFloppyDisk, faXmark };
 
@@ -77,6 +80,8 @@ export class WidgetConfig {
 
   readonly groupByOptions: PieChartField[] = ['state', 'category', 'tracker', 'save_path'];
 
+  readonly sourceOptions: ('metric' | 'torrent-count')[] = ['metric', 'torrent-count'];
+
   readonly breakdownFieldOptions: BreakdownFieldOption[] = BREAKDOWN_FIELD_CATALOG.map((m) => ({
     value: m.field,
     label: this.translateService.instant(m.labelKey),
@@ -91,7 +96,7 @@ export class WidgetConfig {
   readonly isStatTile = computed(() => this.widgetTypeId() === 'stat-tile');
   readonly isPieChart = computed(() => this.widgetTypeId() === 'pie-chart');
   readonly isBarChart = computed(() => this.widgetTypeId() === 'bar-chart');
-  // Narrowed to the { metric } variant - the torrent-count source-toggle UI is Task 10.
+  // Narrowed to the { metric } variant - use torrentCountConfig for the 'torrent-count' source.
   readonly statTileConfig = computed(
     () => this.config() as Extract<StatTileConfig, { metric: ServerMetricId }>,
   );
@@ -99,9 +104,29 @@ export class WidgetConfig {
   readonly pieChartConfig = computed(() => this.config() as PieChartConfig);
   readonly barChartConfig = computed(() => this.config() as BarChartConfig);
 
+  readonly statTileSource = computed<'metric' | 'torrent-count'>(() =>
+    'source' in this.config() ? 'torrent-count' : 'metric',
+  );
+
+  readonly torrentCountConfig = computed(
+    () => this.config() as Extract<StatTileConfig, { source: 'torrent-count' }>,
+  );
+
+  readonly torrentCountValueOptions = computed(() => {
+    if (this.statTileSource() !== 'torrent-count') return [];
+    return listBreakdownValues(
+      this.torrentStore.torrentsArray(),
+      this.torrentCountConfig().field,
+    ).map((s) => ({ value: s.key, labelKey: s.labelKey, fallbackLabel: s.key }));
+  });
+
   readonly widgetLabelKey = computed(() => `pages.dashboard.catalog.${this.widgetTypeId()}`);
 
   readonly canSave = computed(() => {
+    if (this.widgetTypeId() === 'stat-tile') {
+      const c = this.config() as StatTileConfig;
+      return !('source' in c) || !!c.value;
+    }
     if (this.widgetTypeId() !== 'torrent-list') return true;
 
     const c = this.torrentListConfig();
@@ -125,6 +150,26 @@ export class WidgetConfig {
 
   updateBarChartField(field: BarChartConfig['field']): void {
     this.config.set({ field } satisfies BarChartConfig);
+  }
+
+  updateStatTileSource(source: 'metric' | 'torrent-count'): void {
+    if (source === 'metric') {
+      this.config.set({ metric: 'download_speed' } satisfies StatTileConfig);
+      return;
+    }
+    const field = 'state' as const;
+    const firstValue = listBreakdownValues(this.torrentStore.torrentsArray(), field)[0]?.key ?? '';
+    this.config.set({ source: 'torrent-count', field, value: firstValue } satisfies StatTileConfig);
+  }
+
+  updateTorrentCountField(field: BreakdownField): void {
+    const firstValue = listBreakdownValues(this.torrentStore.torrentsArray(), field)[0]?.key ?? '';
+    this.config.set({ source: 'torrent-count', field, value: firstValue } satisfies StatTileConfig);
+  }
+
+  updateTorrentCountValue(value: string): void {
+    const c = this.torrentCountConfig();
+    this.config.set({ ...c, value } satisfies StatTileConfig);
   }
 
   updateTorrentListField<K extends keyof TorrentListConfig>(

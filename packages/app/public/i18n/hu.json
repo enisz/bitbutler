@@ -786,6 +786,12 @@
         "field-group": {
           "categorical": "Kategória szerint",
           "numeric": "Érték tartomány szerint"
+        },
+        "value": "Érték",
+        "source": "Forrás",
+        "source-option": {
+          "metric": "Szerver metrika",
+          "torrent-count": "Torrent szám"
         }
       },
       "update-available": {

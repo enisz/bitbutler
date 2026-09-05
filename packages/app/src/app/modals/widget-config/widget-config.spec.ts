@@ -1,21 +1,29 @@
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslateService } from '@ngx-translate/core';
 import { WidgetTypeId } from '../../models/dashboard.model';
+import { Torrent } from '../../models/torrent.model';
+import { TorrentStoreService } from '../../services/torrent-store.service';
 import { WidgetConfig } from './widget-config';
 
 describe('WidgetConfig', () => {
   let component: WidgetConfig;
   let fixture: ComponentFixture<WidgetConfig>;
   let activeModalMock: { close: ReturnType<typeof vi.fn>; dismiss: ReturnType<typeof vi.fn> };
+  let torrentStoreMock: { torrentsArray: ReturnType<typeof signal<Torrent[]>> };
 
   beforeEach(async () => {
     activeModalMock = { close: vi.fn(), dismiss: vi.fn() };
+    torrentStoreMock = { torrentsArray: signal<Torrent[]>([]) };
     await TestBed.configureTestingModule({
       imports: [WidgetConfig],
-      providers: [{ provide: NgbActiveModal, useValue: activeModalMock }],
+      providers: [
+        { provide: NgbActiveModal, useValue: activeModalMock },
+        { provide: TorrentStoreService, useValue: torrentStoreMock },
+      ],
     }).compileComponents();
     fixture = TestBed.createComponent(WidgetConfig);
     component = fixture.componentInstance;
@@ -42,7 +50,7 @@ describe('WidgetConfig', () => {
     withInputs('stat-tile', { metric: 'download_speed' });
     await fixture.whenStable();
     fixture.detectChanges();
-    const value = fixture.nativeElement.querySelector('.ng-value');
+    const value = fixture.nativeElement.querySelector('#widget-config-metric .ng-value');
     expect(value.textContent.trim()).toBe('Download Speed');
   });
 
@@ -329,6 +337,76 @@ describe('WidgetConfig', () => {
 
   it('should always allow saving a bar-chart', () => {
     withInputs('bar-chart', { field: 'state' });
+    expect(component.canSave()).toBe(true);
+  });
+
+  it('should default to "metric" source for a plain metric config', () => {
+    withInputs('stat-tile', { metric: 'download_speed' });
+    expect(component.statTileSource()).toBe('metric');
+  });
+
+  it('should report "torrent-count" source for a torrent-count config', () => {
+    withInputs('stat-tile', { source: 'torrent-count', field: 'category', value: 'linux' });
+    expect(component.statTileSource()).toBe('torrent-count');
+  });
+
+  it('should switch to torrent-count mode with the first available state value', () => {
+    torrentStoreMock.torrentsArray.set([{ state: 'downloading' } as Torrent]);
+    withInputs('stat-tile', { metric: 'download_speed' });
+    component.updateStatTileSource('torrent-count');
+    expect(component.config()).toEqual({
+      source: 'torrent-count',
+      field: 'state',
+      value: 'downloading',
+    });
+  });
+
+  it('should switch back to metric mode with a sensible default', () => {
+    withInputs('stat-tile', { source: 'torrent-count', field: 'category', value: 'linux' });
+    component.updateStatTileSource('metric');
+    expect(component.config()).toEqual({ metric: 'download_speed' });
+  });
+
+  it('should update the torrent-count field and reset value to the first available option', () => {
+    torrentStoreMock.torrentsArray.set([
+      { category: 'linux' } as Torrent,
+      { category: 'games' } as Torrent,
+    ]);
+    withInputs('stat-tile', { source: 'torrent-count', field: 'state', value: 'downloading' });
+    component.updateTorrentCountField('category');
+    const config = component.config() as any;
+    expect(config.field).toBe('category');
+    expect(['linux', 'games']).toContain(config.value);
+  });
+
+  it('should update the torrent-count value without changing the field', () => {
+    withInputs('stat-tile', { source: 'torrent-count', field: 'category', value: 'linux' });
+    component.updateTorrentCountValue('games');
+    expect(component.config()).toEqual({
+      source: 'torrent-count',
+      field: 'category',
+      value: 'games',
+    });
+  });
+
+  it('should list live torrentCountValueOptions for the currently selected field', () => {
+    torrentStoreMock.torrentsArray.set([
+      { category: 'linux' } as Torrent,
+      { category: 'linux' } as Torrent,
+      { category: 'games' } as Torrent,
+    ]);
+    withInputs('stat-tile', { source: 'torrent-count', field: 'category', value: 'linux' });
+    const values = component.torrentCountValueOptions().map((o) => o.value);
+    expect(values.sort()).toEqual(['games', 'linux']);
+  });
+
+  it('should disallow saving a torrent-count stat-tile with an empty value', () => {
+    withInputs('stat-tile', { source: 'torrent-count', field: 'category', value: '' });
+    expect(component.canSave()).toBe(false);
+  });
+
+  it('should allow saving a torrent-count stat-tile with a value set', () => {
+    withInputs('stat-tile', { source: 'torrent-count', field: 'category', value: 'linux' });
     expect(component.canSave()).toBe(true);
   });
 });
