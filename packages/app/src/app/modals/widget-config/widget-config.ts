@@ -69,7 +69,15 @@ export class WidgetConfig {
   readonly widgetTypeId = input.required<WidgetTypeId>();
   readonly initialConfig = input.required<WidgetConfigModel>();
 
-  readonly statTileMetrics: ServerMetricId[] = SERVER_METRIC_CATALOG.map((m) => m.id);
+  // Every ng-select in this modal is sorted alphabetically by its displayed (translated) label,
+  // so the option order stays predictable regardless of catalog/enum declaration order.
+  readonly statTileMetrics: ServerMetricId[] = SERVER_METRIC_CATALOG.map((m) => m.id).sort((a, b) =>
+    this.translateService
+      .instant(`pages.dashboard.widgets.stat-tile.metric.${a}`)
+      .localeCompare(
+        this.translateService.instant(`pages.dashboard.widgets.stat-tile.metric.${b}`),
+      ),
+  );
 
   // Every Torrent field is a valid sort-by / column choice, labeled via the main grid's own
   // translations (see torrent-field-catalog.ts) and sorted alphabetically by that translated
@@ -79,10 +87,26 @@ export class WidgetConfig {
     label: this.translateService.instant(m.labelKey),
   })).sort((a, b) => a.label.localeCompare(b.label));
 
-  readonly groupByOptions: PieChartField[] = ['state', 'category', 'tracker', 'save_path'];
+  readonly groupByOptions: PieChartField[] = (
+    ['state', 'category', 'tracker', 'save_path'] as PieChartField[]
+  ).sort((a, b) =>
+    this.translateService
+      .instant(`pages.main.grid.grid-lib.col-def.${a}`)
+      .localeCompare(this.translateService.instant(`pages.main.grid.grid-lib.col-def.${b}`)),
+  );
 
-  readonly sourceOptions: ('metric' | 'torrent-count')[] = ['metric', 'torrent-count'];
+  readonly sourceOptions: ('metric' | 'torrent-count')[] = (
+    ['metric', 'torrent-count'] as ('metric' | 'torrent-count')[]
+  ).sort((a, b) =>
+    this.translateService
+      .instant(`components.modals.widget-config.source-option.${a}`)
+      .localeCompare(
+        this.translateService.instant(`components.modals.widget-config.source-option.${b}`),
+      ),
+  );
 
+  // Sorted by group first, then by label within each group, so both the group order and the
+  // options inside each group read alphabetically.
   readonly breakdownFieldOptions: BreakdownFieldOption[] = BREAKDOWN_FIELD_CATALOG.map((m) => ({
     value: m.field,
     label: this.translateService.instant(m.labelKey),
@@ -90,7 +114,7 @@ export class WidgetConfig {
       m.kind === 'categorical'
         ? this.translateService.instant('components.modals.widget-config.field-group.categorical')
         : this.translateService.instant('components.modals.widget-config.field-group.numeric'),
-  }));
+  })).sort((a, b) => a.group.localeCompare(b.group) || a.label.localeCompare(b.label));
 
   readonly config = linkedSignal<WidgetConfigModel>(() => this.initialConfig());
 
@@ -117,10 +141,13 @@ export class WidgetConfig {
 
   readonly torrentCountValueOptions = computed(() => {
     if (this.statTileSource() !== 'torrent-count') return [];
-    return listBreakdownValues(
-      this.torrentStore.torrentsArray(),
-      this.torrentCountConfig().field,
-    ).map((s) => ({ value: s.key, labelKey: s.labelKey, fallbackLabel: s.key }));
+    return listBreakdownValues(this.torrentStore.torrentsArray(), this.torrentCountConfig().field)
+      .map((s) => ({ value: s.key, labelKey: s.labelKey, fallbackLabel: s.key }))
+      .sort((a, b) =>
+        (a.labelKey ? this.translateService.instant(a.labelKey) : a.fallbackLabel).localeCompare(
+          b.labelKey ? this.translateService.instant(b.labelKey) : b.fallbackLabel,
+        ),
+      );
   });
 
   readonly widgetLabelKey = computed(() => `pages.dashboard.catalog.${this.widgetTypeId()}`);

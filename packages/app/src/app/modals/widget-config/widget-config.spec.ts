@@ -106,6 +106,49 @@ describe('WidgetConfig', () => {
     expect(labels).toEqual([...labels].sort((a, b) => a.localeCompare(b)));
   });
 
+  it('should sort statTileMetrics alphabetically by translated label', () => {
+    TestBed.inject(TranslateService).setTranslation('en', {
+      pages: {
+        dashboard: {
+          widgets: {
+            'stat-tile': {
+              metric: {
+                download_speed: 'Download Speed',
+                upload_speed: 'Upload Speed',
+                active_count: 'Active Torrents',
+                global_ratio: 'Global Ratio',
+              },
+            },
+          },
+        },
+      },
+    });
+    const translated = new Set(['download_speed', 'upload_speed', 'active_count', 'global_ratio']);
+    const freshComponent = TestBed.createComponent(WidgetConfig).componentInstance;
+    expect(freshComponent.statTileMetrics.filter((m) => translated.has(m))).toEqual([
+      'active_count',
+      'download_speed',
+      'global_ratio',
+      'upload_speed',
+    ]);
+  });
+
+  it('should sort groupByOptions alphabetically by translated label', () => {
+    expect(component.groupByOptions).toEqual(['category', 'save_path', 'state', 'tracker']);
+  });
+
+  it('should sort breakdownFieldOptions by group, then alphabetically by label within each group', () => {
+    const categorical = component.breakdownFieldOptions
+      .filter((o) => o.group === component.breakdownFieldOptions[0].group)
+      .map((o) => o.value);
+    expect(categorical).toEqual(['category', 'save_path', 'state', 'tags', 'tracker']);
+
+    const numeric = component.breakdownFieldOptions
+      .filter((o) => o.group !== component.breakdownFieldOptions[0].group)
+      .map((o) => o.value);
+    expect(numeric).toEqual(['eta', 'progress', 'ratio', 'size']);
+  });
+
   it('should render a title input bound to the torrent-list config', async () => {
     withInputs('torrent-list', {
       count: 5,
@@ -398,6 +441,17 @@ describe('WidgetConfig', () => {
     withInputs('stat-tile', { source: 'torrent-count', field: 'category', value: 'linux' });
     const values = component.torrentCountValueOptions().map((o) => o.value);
     expect(values.sort()).toEqual(['games', 'linux']);
+  });
+
+  it('should sort torrentCountValueOptions alphabetically rather than by torrent count', () => {
+    torrentStoreMock.torrentsArray.set([
+      { category: 'linux' } as Torrent,
+      { category: 'linux' } as Torrent,
+      { category: 'games' } as Torrent,
+    ]);
+    withInputs('stat-tile', { source: 'torrent-count', field: 'category', value: 'linux' });
+    const values = component.torrentCountValueOptions().map((o) => o.value);
+    expect(values).toEqual(['games', 'linux']);
   });
 
   it('should disallow saving a torrent-count stat-tile with an empty value', () => {
