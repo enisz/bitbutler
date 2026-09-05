@@ -47,11 +47,30 @@
             (change)="updatePieChartGroupBy($event)"
           >
             <ng-template ng-label-tmp let-item="item">{{
-              'pages.dashboard.widgets.pie-chart.group-by.' + item | translate
+              'pages.main.grid.grid-lib.col-def.' + item | translate
             }}</ng-template>
             <ng-template ng-option-tmp let-item="item">{{
-              'pages.dashboard.widgets.pie-chart.group-by.' + item | translate
+              'pages.main.grid.grid-lib.col-def.' + item | translate
             }}</ng-template>
+          </ng-select>
+        </div>
+      </div>
+    } @else if (isBarChart()) {
+      <div class="row mb-3">
+        <div class="col-12">
+          <label class="form-label">{{
+            'components.modals.widget-config.field' | translate
+          }}</label>
+          <ng-select
+            [items]="breakdownFieldOptions"
+            bindLabel="label"
+            bindValue="value"
+            groupBy="group"
+            [clearable]="false"
+            [searchable]="false"
+            [ngModel]="barChartConfig().field"
+            (ngModelChange)="updateBarChartField($event)"
+          >
           </ng-select>
         </div>
       </div>

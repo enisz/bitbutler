@@ -781,7 +781,12 @@
         "sort-field": "Sort By",
         "sort-order": "Order",
         "columns": "Columns",
-        "group-by": "Group By"
+        "group-by": "Group By",
+        "field": "Field",
+        "field-group": {
+          "categorical": "By Category",
+          "numeric": "By Value Range"
+        }
       },
       "update-available": {
         "title": "Update Available",
@@ -1262,12 +1267,6 @@
             "total_peer_connections": "Peer Connections",
             "download_limit": "Download Limit",
             "upload_limit": "Upload Limit"
-          }
-        },
-        "pie-chart": {
-          "group-by": {
-            "state": "State",
-            "category": "Category"
           }
         },
         "breakdown": {

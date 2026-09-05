@@ -17,6 +17,8 @@ import {
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import {
+  BarChartConfig,
+  BreakdownField,
   PieChartConfig,
   PieChartField,
   ServerMetricId,
@@ -25,12 +27,19 @@ import {
   WidgetConfig as WidgetConfigModel,
   WidgetTypeId,
 } from '../../models/dashboard.model';
+import { BREAKDOWN_FIELD_CATALOG } from '../../pages/dashboard/breakdown-field-catalog';
 import { SERVER_METRIC_CATALOG } from '../../pages/dashboard/server-metric-catalog';
 import { TORRENT_FIELD_CATALOG, TorrentField } from '../../pages/dashboard/torrent-field-catalog';
 
 export interface TorrentFieldOption {
   value: TorrentField;
   label: string;
+}
+
+export interface BreakdownFieldOption {
+  value: BreakdownField;
+  label: string;
+  group: string;
 }
 
 @Component({
@@ -66,18 +75,29 @@ export class WidgetConfig {
     label: this.translateService.instant(m.labelKey),
   })).sort((a, b) => a.label.localeCompare(b.label));
 
-  readonly groupByOptions: PieChartField[] = ['state', 'category'];
+  readonly groupByOptions: PieChartField[] = ['state', 'category', 'tracker', 'save_path'];
+
+  readonly breakdownFieldOptions: BreakdownFieldOption[] = BREAKDOWN_FIELD_CATALOG.map((m) => ({
+    value: m.field,
+    label: this.translateService.instant(m.labelKey),
+    group:
+      m.kind === 'categorical'
+        ? this.translateService.instant('components.modals.widget-config.field-group.categorical')
+        : this.translateService.instant('components.modals.widget-config.field-group.numeric'),
+  }));
 
   readonly config = linkedSignal<WidgetConfigModel>(() => this.initialConfig());
 
   readonly isStatTile = computed(() => this.widgetTypeId() === 'stat-tile');
   readonly isPieChart = computed(() => this.widgetTypeId() === 'pie-chart');
+  readonly isBarChart = computed(() => this.widgetTypeId() === 'bar-chart');
   // Narrowed to the { metric } variant - the torrent-count source-toggle UI is Task 10.
   readonly statTileConfig = computed(
     () => this.config() as Extract<StatTileConfig, { metric: ServerMetricId }>,
   );
   readonly torrentListConfig = computed(() => this.config() as TorrentListConfig);
   readonly pieChartConfig = computed(() => this.config() as PieChartConfig);
+  readonly barChartConfig = computed(() => this.config() as BarChartConfig);
 
   readonly widgetLabelKey = computed(() => `pages.dashboard.catalog.${this.widgetTypeId()}`);
 
@@ -101,6 +121,10 @@ export class WidgetConfig {
 
   updatePieChartGroupBy(groupBy: PieChartField): void {
     this.config.set({ groupBy } satisfies PieChartConfig);
+  }
+
+  updateBarChartField(field: BarChartConfig['field']): void {
+    this.config.set({ field } satisfies BarChartConfig);
   }
 
   updateTorrentListField<K extends keyof TorrentListConfig>(

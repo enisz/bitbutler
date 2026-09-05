@@ -781,7 +781,12 @@
         "sort-field": "Rendezés mező",
         "sort-order": "Sorrend",
         "columns": "Oszlopok",
-        "group-by": "Csoportosítás"
+        "group-by": "Csoportosítás",
+        "field": "Mező",
+        "field-group": {
+          "categorical": "Kategória szerint",
+          "numeric": "Érték tartomány szerint"
+        }
       },
       "update-available": {
         "title": "Frissítés elérhető",
@@ -1262,12 +1267,6 @@
             "total_peer_connections": "Partner kapcsolatok",
             "download_limit": "Letöltési korlát",
             "upload_limit": "Feltöltési korlát"
-          }
-        },
-        "pie-chart": {
-          "group-by": {
-            "state": "Állapot",
-            "category": "Kategória"
           }
         },
         "breakdown": {

@@ -281,4 +281,54 @@ describe('WidgetConfig', () => {
     });
     expect(component.canSave()).toBe(true);
   });
+
+  it('should offer all 4 single-valued fields for a pie-chart', () => {
+    withInputs('pie-chart', { groupBy: 'state' });
+    expect(component.groupByOptions.sort()).toEqual(
+      ['category', 'save_path', 'state', 'tracker'].sort(),
+    );
+  });
+
+  it('should update groupBy to tracker for a pie-chart', () => {
+    withInputs('pie-chart', { groupBy: 'state' });
+    component.updatePieChartGroupBy('tracker');
+    expect(component.config()).toEqual({ groupBy: 'tracker' });
+  });
+
+  it('should offer all 9 breakdown fields, grouped into categorical/numeric, for a bar-chart', () => {
+    withInputs('bar-chart', { field: 'state' });
+    const values = component.breakdownFieldOptions.map((o) => o.value);
+    expect(values.sort()).toEqual(
+      [
+        'state',
+        'category',
+        'tracker',
+        'save_path',
+        'tags',
+        'ratio',
+        'progress',
+        'size',
+        'eta',
+      ].sort(),
+    );
+    const ratioOption = component.breakdownFieldOptions.find((o) => o.value === 'ratio')!;
+    const categoryOption = component.breakdownFieldOptions.find((o) => o.value === 'category')!;
+    expect(ratioOption.group).not.toBe(categoryOption.group);
+  });
+
+  it('should seed config from initialConfig for a bar-chart', () => {
+    withInputs('bar-chart', { field: 'category' });
+    expect(component.config()).toEqual({ field: 'category' });
+  });
+
+  it('should update the field for a bar-chart', () => {
+    withInputs('bar-chart', { field: 'state' });
+    component.updateBarChartField('ratio');
+    expect(component.config()).toEqual({ field: 'ratio' });
+  });
+
+  it('should always allow saving a bar-chart', () => {
+    withInputs('bar-chart', { field: 'state' });
+    expect(component.canSave()).toBe(true);
+  });
 });
