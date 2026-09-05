@@ -1275,6 +1275,10 @@
             "upload_limit": "Upload Limit"
           }
         },
+        "active-downloads": {
+          "idle": "Idle",
+          "empty": "No active downloads"
+        },
         "breakdown": {
           "other": "Other",
           "state": {
@@ -1334,7 +1338,8 @@
         "stat-tile": "Stat Tile",
         "torrent-list": "Torrent List",
         "pie-chart": "Pie Chart",
-        "bar-chart": "Bar Chart"
+        "bar-chart": "Bar Chart",
+        "active-downloads": "Active Downloads"
       },
       "chart-type": {
         "number": "Number",
@@ -2203,7 +2208,8 @@
       "edit": "Edit",
       "configure": "Configure",
       "refresh": "Refresh",
-      "retry": "Retry"
+      "retry": "Retry",
+      "view-all": "View All"
     },
     "form": {
       "feedback": {

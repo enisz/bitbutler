@@ -1,6 +1,11 @@
 import { QbServerState, Torrent } from './torrent.model';
 
-export type WidgetTypeId = 'stat-tile' | 'torrent-list' | 'pie-chart' | 'bar-chart';
+export type WidgetTypeId =
+  | 'stat-tile'
+  | 'torrent-list'
+  | 'pie-chart'
+  | 'bar-chart'
+  | 'active-downloads';
 
 export type WidgetChartType = 'number' | 'pie' | 'line' | 'column' | 'table';
 
@@ -79,7 +84,16 @@ export interface BarChartData {
   slices: BreakdownSlice[];
 }
 
-export type WidgetConfig = StatTileConfig | TorrentListConfig | PieChartConfig | BarChartConfig;
+export interface ActiveDownloadsConfig {
+  count: number;
+}
+
+export type WidgetConfig =
+  | StatTileConfig
+  | TorrentListConfig
+  | PieChartConfig
+  | BarChartConfig
+  | ActiveDownloadsConfig;
 
 export interface DashboardWidgetInstance {
   instanceId: string;
@@ -151,4 +165,8 @@ export interface TorrentListData {
   title?: string;
   sortField: TorrentField;
   sortOrder: 'asc' | 'desc';
+}
+
+export interface ActiveDownloadsData {
+  rows: Torrent[];
 }

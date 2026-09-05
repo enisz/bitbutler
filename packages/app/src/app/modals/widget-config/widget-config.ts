@@ -17,6 +17,7 @@ import {
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import {
+  ActiveDownloadsConfig,
   BarChartConfig,
   BreakdownField,
   PieChartConfig,
@@ -96,6 +97,7 @@ export class WidgetConfig {
   readonly isStatTile = computed(() => this.widgetTypeId() === 'stat-tile');
   readonly isPieChart = computed(() => this.widgetTypeId() === 'pie-chart');
   readonly isBarChart = computed(() => this.widgetTypeId() === 'bar-chart');
+  readonly isActiveDownloads = computed(() => this.widgetTypeId() === 'active-downloads');
   // Narrowed to the { metric } variant - use torrentCountConfig for the 'torrent-count' source.
   readonly statTileConfig = computed(
     () => this.config() as Extract<StatTileConfig, { metric: ServerMetricId }>,
@@ -103,6 +105,7 @@ export class WidgetConfig {
   readonly torrentListConfig = computed(() => this.config() as TorrentListConfig);
   readonly pieChartConfig = computed(() => this.config() as PieChartConfig);
   readonly barChartConfig = computed(() => this.config() as BarChartConfig);
+  readonly activeDownloadsConfig = computed(() => this.config() as ActiveDownloadsConfig);
 
   readonly statTileSource = computed<'metric' | 'torrent-count'>(() =>
     'source' in this.config() ? 'torrent-count' : 'metric',
@@ -126,6 +129,10 @@ export class WidgetConfig {
     if (this.widgetTypeId() === 'stat-tile') {
       const c = this.config() as StatTileConfig;
       return !('source' in c) || !!c.value;
+    }
+    if (this.widgetTypeId() === 'active-downloads') {
+      const c = this.activeDownloadsConfig();
+      return Number.isFinite(c.count) && c.count >= 1;
     }
     if (this.widgetTypeId() !== 'torrent-list') return true;
 
@@ -170,6 +177,10 @@ export class WidgetConfig {
   updateTorrentCountValue(value: string): void {
     const c = this.torrentCountConfig();
     this.config.set({ ...c, value } satisfies StatTileConfig);
+  }
+
+  updateActiveDownloadsCount(count: number): void {
+    this.config.set({ count } satisfies ActiveDownloadsConfig);
   }
 
   updateTorrentListField<K extends keyof TorrentListConfig>(

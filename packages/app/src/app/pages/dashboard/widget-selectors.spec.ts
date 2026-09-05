@@ -4,6 +4,7 @@ import {
   countBreakdownValue,
   listBreakdownValues,
   resolveWidgetData,
+  selectActiveDownloadsData,
   selectBarChartData,
   selectBreakdownCounts,
   selectPieChartData,
@@ -400,6 +401,77 @@ describe('selectTorrentListData', () => {
   });
 });
 
+describe('selectActiveDownloadsData', () => {
+  it('should include only in-flight download states', () => {
+    const snapshot: DashboardSnapshot = {
+      torrents: [
+        makeTorrent({ hash: 'a', state: 'downloading', progress: 0.5 }),
+        makeTorrent({ hash: 'b', state: 'forcedDL', progress: 0.5 }),
+        makeTorrent({ hash: 'c', state: 'metaDL', progress: 0 }),
+        makeTorrent({ hash: 'd', state: 'allocating', progress: 0 }),
+        makeTorrent({ hash: 'e', state: 'stalledDL', progress: 0.5 }),
+        makeTorrent({ hash: 'f', state: 'queuedDL', progress: 0.5 }),
+        makeTorrent({ hash: 'g', state: 'uploading', progress: 1 }),
+        makeTorrent({ hash: 'h', state: 'pausedDL', progress: 0.5 }),
+        makeTorrent({ hash: 'i', state: 'error', progress: 0.5 }),
+      ],
+      serverState: null,
+    };
+
+    const result = selectActiveDownloadsData(snapshot, { count: 10 });
+
+    expect(result.rows.map((r) => r.hash).sort()).toEqual(['a', 'b', 'c', 'd', 'e', 'f']);
+  });
+
+  it('should exclude a torrent that has already finished downloading (progress 1)', () => {
+    const snapshot: DashboardSnapshot = {
+      torrents: [makeTorrent({ hash: 'a', state: 'downloading', progress: 1 })],
+      serverState: null,
+    };
+
+    expect(selectActiveDownloadsData(snapshot, { count: 10 }).rows).toEqual([]);
+  });
+
+  it('should sort by progress descending', () => {
+    const snapshot: DashboardSnapshot = {
+      torrents: [
+        makeTorrent({ hash: 'a', state: 'downloading', progress: 0.2 }),
+        makeTorrent({ hash: 'b', state: 'downloading', progress: 0.8 }),
+        makeTorrent({ hash: 'c', state: 'downloading', progress: 0.5 }),
+      ],
+      serverState: null,
+    };
+
+    const result = selectActiveDownloadsData(snapshot, { count: 10 });
+
+    expect(result.rows.map((r) => r.hash)).toEqual(['b', 'c', 'a']);
+  });
+
+  it('should truncate to the configured count', () => {
+    const snapshot: DashboardSnapshot = {
+      torrents: [
+        makeTorrent({ hash: 'a', state: 'downloading', progress: 0.2 }),
+        makeTorrent({ hash: 'b', state: 'downloading', progress: 0.8 }),
+        makeTorrent({ hash: 'c', state: 'downloading', progress: 0.5 }),
+      ],
+      serverState: null,
+    };
+
+    const result = selectActiveDownloadsData(snapshot, { count: 2 });
+
+    expect(result.rows.map((r) => r.hash)).toEqual(['b', 'c']);
+  });
+
+  it('should return no rows when nothing is downloading', () => {
+    const snapshot: DashboardSnapshot = {
+      torrents: [makeTorrent({ state: 'uploading', progress: 1 })],
+      serverState: null,
+    };
+
+    expect(selectActiveDownloadsData(snapshot, { count: 10 }).rows).toEqual([]);
+  });
+});
+
 describe('selectPieChartData', () => {
   it('should partition torrents into non-overlapping state buckets, omitting empty buckets', () => {
     const snapshot: DashboardSnapshot = {
@@ -664,6 +736,26 @@ describe('resolveWidgetData', () => {
     expect(resolveWidgetData(instance, snapshot)).toEqual({
       field: 'category',
       slices: [{ key: 'linux', value: 1 }],
+    });
+  });
+
+  it('should dispatch to selectActiveDownloadsData for an active-downloads instance', () => {
+    const instance: DashboardWidgetInstance = {
+      instanceId: 'i5',
+      widgetTypeId: 'active-downloads',
+      x: 0,
+      y: 0,
+      w: 6,
+      h: 4,
+      config: { count: 5 },
+    };
+    const snapshot: DashboardSnapshot = {
+      torrents: [makeTorrent({ hash: 'x', state: 'downloading', progress: 0.5 })],
+      serverState: null,
+    };
+
+    expect(resolveWidgetData(instance, snapshot)).toEqual({
+      rows: [expect.objectContaining({ hash: 'x' })],
     });
   });
 });

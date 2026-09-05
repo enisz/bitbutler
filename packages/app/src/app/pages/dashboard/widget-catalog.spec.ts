@@ -3,6 +3,7 @@ import { WIDGET_CATALOG } from './widget-catalog';
 describe('WIDGET_CATALOG', () => {
   it('should have an entry for every WidgetTypeId', () => {
     expect(Object.keys(WIDGET_CATALOG).sort()).toEqual([
+      'active-downloads',
       'bar-chart',
       'pie-chart',
       'stat-tile',
@@ -37,6 +38,13 @@ describe('WIDGET_CATALOG', () => {
     expect(WIDGET_CATALOG['bar-chart'].componentSelector).toBe('app-bar-chart-widget');
     expect(WIDGET_CATALOG['bar-chart'].defaultConfig).toEqual({ field: 'state' });
     expect(WIDGET_CATALOG['bar-chart'].chartType).toBe('column');
+  });
+
+  it('should map active-downloads to the ActiveDownloadsWidget component selector with a sensible default config', () => {
+    expect(WIDGET_CATALOG['active-downloads'].componentSelector).toBe(
+      'app-active-downloads-widget',
+    );
+    expect(WIDGET_CATALOG['active-downloads'].defaultConfig).toEqual({ count: 5 });
   });
 
   it('should give every entry an icon, a chart type and a category', () => {

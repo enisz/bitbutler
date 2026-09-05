@@ -409,4 +409,33 @@ describe('WidgetConfig', () => {
     withInputs('stat-tile', { source: 'torrent-count', field: 'category', value: 'linux' });
     expect(component.canSave()).toBe(true);
   });
+
+  it('should seed config from initialConfig for active-downloads', () => {
+    withInputs('active-downloads', { count: 5 });
+    expect(component.config()).toEqual({ count: 5 });
+  });
+
+  it('should update the count for active-downloads', () => {
+    withInputs('active-downloads', { count: 5 });
+    component.updateActiveDownloadsCount(8);
+    expect(component.config()).toEqual({ count: 8 });
+  });
+
+  it('should render a count input pre-filled for active-downloads', async () => {
+    withInputs('active-downloads', { count: 5 });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const input = fixture.nativeElement.querySelector('#widget-config-active-downloads-count');
+    expect(input.value).toBe('5');
+  });
+
+  it('should disallow saving active-downloads when count is not a positive number', () => {
+    withInputs('active-downloads', { count: 0 });
+    expect(component.canSave()).toBe(false);
+  });
+
+  it('should allow saving active-downloads with a valid count', () => {
+    withInputs('active-downloads', { count: 5 });
+    expect(component.canSave()).toBe(true);
+  });
 });

@@ -32,6 +32,7 @@ import { Subscription } from 'rxjs';
 import { WidgetConfig as WidgetConfigModal } from '../../modals/widget-config/widget-config';
 import { WidgetPicker } from '../../modals/widget-picker/widget-picker';
 import {
+  ActiveDownloadsData,
   BarChartData,
   DashboardSnapshot,
   DashboardWidgetInstance,
@@ -48,6 +49,7 @@ import { TorrentStoreService } from '../../services/torrent-store.service';
 import { setModalInput } from '../../utils/modal-input';
 import { WIDGET_CATALOG } from './widget-catalog';
 import { resolveWidgetData } from './widget-selectors';
+import { ActiveDownloadsWidget } from './widgets/active-downloads-widget/active-downloads-widget';
 import { BarChartWidget } from './widgets/bar-chart-widget/bar-chart-widget';
 import { PieChartWidget } from './widgets/pie-chart-widget/pie-chart-widget';
 import { StatTile } from './widgets/stat-tile/stat-tile';
@@ -91,7 +93,7 @@ export class Dashboard implements OnDestroy {
     {
       instance: DashboardWidgetInstance;
       snapshot: DashboardSnapshot;
-      value: StatTileData | TorrentListData | PieChartData | BarChartData;
+      value: StatTileData | TorrentListData | PieChartData | BarChartData | ActiveDownloadsData;
     }
   >();
 
@@ -159,6 +161,7 @@ export class Dashboard implements OnDestroy {
       TorrentListWidget,
       PieChartWidget,
       BarChartWidget,
+      ActiveDownloadsWidget,
     ]);
     void this.dashboardSettingsService.load().then((layout) => this.widgets.set(layout.widgets));
   }
@@ -279,7 +282,7 @@ export class Dashboard implements OnDestroy {
 
   dataFor(
     instance: DashboardWidgetInstance,
-  ): StatTileData | TorrentListData | PieChartData | BarChartData {
+  ): StatTileData | TorrentListData | PieChartData | BarChartData | ActiveDownloadsData {
     // Read snapshot() unconditionally (even on a cache hit) so this computed-reactive read always
     // happens during evaluation - otherwise, once the cache warms, `items` (which calls dataFor())
     // would stop depending on torrentsArray/serverState and would never react to a live update

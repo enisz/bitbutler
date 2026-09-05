@@ -1,4 +1,6 @@
 import {
+  ActiveDownloadsConfig,
+  ActiveDownloadsData,
   BarChartConfig,
   BarChartData,
   BreakdownField,
@@ -36,6 +38,20 @@ const ACTIVE_STATES = new Set<TorrentState>([
   'metaDL',
   'moving',
   'allocating',
+]);
+
+// States that mean "on the way to becoming a finished download" - deliberately narrower than
+// ACTIVE_STATES above (which also covers uploading/seeding): metaDL/allocating are the startup
+// steps before data transfer begins, stalledDL/queuedDL have no throughput right now but are
+// still headed toward completion, so the Active Downloads widget still lists them (with an
+// "Idle" speed label - see active-downloads-widget.ts) rather than dropping them entirely.
+const DOWNLOADING_STATES = new Set<TorrentState>([
+  'downloading',
+  'forcedDL',
+  'metaDL',
+  'allocating',
+  'stalledDL',
+  'queuedDL',
 ]);
 
 const CATEGORICAL_CAP = 7;
@@ -231,6 +247,18 @@ export function selectTorrentListData(
   };
 }
 
+export function selectActiveDownloadsData(
+  snapshot: DashboardSnapshot,
+  config: ActiveDownloadsConfig,
+): ActiveDownloadsData {
+  const rows = snapshot.torrents
+    .filter((t) => DOWNLOADING_STATES.has(t.state) && t.progress < 1)
+    .sort((a, b) => b.progress - a.progress)
+    .slice(0, config.count);
+
+  return { rows };
+}
+
 export function selectPieChartData(
   snapshot: DashboardSnapshot,
   config: PieChartConfig,
@@ -251,7 +279,7 @@ export function selectBarChartData(
 export function resolveWidgetData(
   instance: DashboardWidgetInstance,
   snapshot: DashboardSnapshot,
-): StatTileData | TorrentListData | PieChartData | BarChartData {
+): StatTileData | TorrentListData | PieChartData | BarChartData | ActiveDownloadsData {
   switch (instance.widgetTypeId) {
     case 'stat-tile':
       return selectStatTileData(snapshot, instance.config as StatTileConfig);
@@ -261,5 +289,7 @@ export function resolveWidgetData(
       return selectPieChartData(snapshot, instance.config as PieChartConfig);
     case 'bar-chart':
       return selectBarChartData(snapshot, instance.config as BarChartConfig);
+    case 'active-downloads':
+      return selectActiveDownloadsData(snapshot, instance.config as ActiveDownloadsConfig);
   }
 }

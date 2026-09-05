@@ -283,6 +283,25 @@ describe('Dashboard', () => {
 
       expect(component.items()[0].component).toBe('app-bar-chart-widget');
     });
+
+    it('should map an active-downloads instance to the app-active-downloads-widget component', async () => {
+      dashboardSettingsMock.load = vi.fn().mockResolvedValue({
+        widgets: [
+          {
+            instanceId: 'w4',
+            widgetTypeId: 'active-downloads',
+            x: 0,
+            y: 0,
+            w: 6,
+            h: 4,
+            config: { count: 5 },
+          },
+        ],
+      });
+      await createComponent();
+
+      expect(component.items()[0].component).toBe('app-active-downloads-widget');
+    });
   });
 
   describe('onGridChange', () => {

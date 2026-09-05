@@ -27,6 +27,7 @@ describe('WidgetPicker', () => {
             'torrent-list': 'Torrent List',
             'pie-chart': 'Pie Chart',
             'bar-chart': 'Bar Chart',
+            'active-downloads': 'Active Downloads',
           },
         },
       },
@@ -43,7 +44,13 @@ describe('WidgetPicker', () => {
   }
 
   it('should list every catalog entry across categories', () => {
-    expect(ids()).toEqual(['bar-chart', 'pie-chart', 'stat-tile', 'torrent-list']);
+    expect(ids()).toEqual([
+      'active-downloads',
+      'bar-chart',
+      'pie-chart',
+      'stat-tile',
+      'torrent-list',
+    ]);
   });
 
   it('should close the offcanvas with the chosen widget type id', () => {
@@ -77,13 +84,19 @@ describe('WidgetPicker', () => {
   describe('chart type filter', () => {
     it('should filter entries by chart type', () => {
       component.setFilter('table');
-      expect(ids()).toEqual(['torrent-list']);
+      expect(ids()).toEqual(['active-downloads', 'torrent-list']);
     });
 
     it('should show every entry again when switching back to all', () => {
       component.setFilter('table');
       component.setFilter('all');
-      expect(ids()).toEqual(['bar-chart', 'pie-chart', 'stat-tile', 'torrent-list']);
+      expect(ids()).toEqual([
+        'active-downloads',
+        'bar-chart',
+        'pie-chart',
+        'stat-tile',
+        'torrent-list',
+      ]);
     });
 
     it('should show the empty state for a chart type with no matching widgets', () => {

@@ -138,6 +138,25 @@
           </ng-select>
         </div>
       </div>
+    } @else if (isActiveDownloads()) {
+      <div class="row mb-3">
+        <div class="col-12">
+          <div class="form-floating">
+            <input
+              type="number"
+              class="form-control"
+              id="widget-config-active-downloads-count"
+              min="1"
+              required
+              [ngModel]="activeDownloadsConfig().count"
+              (ngModelChange)="updateActiveDownloadsCount(+$event)"
+            />
+            <label for="widget-config-active-downloads-count">{{
+              'components.modals.widget-config.count' | translate
+            }}</label>
+          </div>
+        </div>
+      </div>
     } @else {
       <div class="row mb-3">
         <div class="col-12">

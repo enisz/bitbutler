@@ -1,0 +1,40 @@
+<div class="active-downloads-widget">
+  <app-widget-menu (configure)="onConfigure?.()" (remove)="onRemove?.()" />
+  <div class="active-downloads-widget__header">
+    <div class="active-downloads-widget__title">
+      {{ 'pages.dashboard.catalog.active-downloads' | translate }}
+    </div>
+    <button type="button" class="active-downloads-widget__view-all" (click)="viewAll()">
+      {{ 'general.button.view-all' | translate }}
+    </button>
+  </div>
+  @if (data.rows.length === 0) {
+    <div class="active-downloads-widget__empty">
+      {{ 'pages.dashboard.widgets.active-downloads.empty' | translate }}
+    </div>
+  } @else {
+    <div class="active-downloads-widget__scroll">
+      @for (row of data.rows; track row.hash) {
+        <div class="active-downloads-widget__row" (click)="openDetails(row)">
+          <div class="active-downloads-widget__main">
+            <div class="active-downloads-widget__name">{{ row.name }}</div>
+            <app-bb-progress
+              class="active-downloads-widget__progress"
+              mode="compact"
+              [progress]="row.progress"
+              [torrentState]="row.state"
+            />
+          </div>
+          <div class="active-downloads-widget__side">
+            <div class="active-downloads-widget__speed">
+              {{ speedLabel(row) ?? ('pages.dashboard.widgets.active-downloads.idle' | translate) }}
+            </div>
+            <div class="active-downloads-widget__meta">
+              {{ percentLabel(row) }} · {{ etaLabel(row) }}
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

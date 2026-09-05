@@ -1275,6 +1275,10 @@
             "upload_limit": "Feltöltési korlát"
           }
         },
+        "active-downloads": {
+          "idle": "Várakozik",
+          "empty": "Nincs aktív letöltés"
+        },
         "breakdown": {
           "other": "Egyéb",
           "state": {
@@ -1334,7 +1338,8 @@
         "stat-tile": "Statisztika csempe",
         "torrent-list": "Torrent lista",
         "pie-chart": "Kördiagram",
-        "bar-chart": "Oszlopdiagram"
+        "bar-chart": "Oszlopdiagram",
+        "active-downloads": "Aktív letöltések"
       },
       "chart-type": {
         "number": "Szám",
@@ -2202,7 +2207,8 @@
       "edit": "Szerkesztés",
       "configure": "Konfigurálás",
       "refresh": "Frissítés",
-      "retry": "Újra"
+      "retry": "Újra",
+      "view-all": "Összes megtekintése"
     },
     "form": {
       "feedback": {
