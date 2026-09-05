@@ -14,10 +14,27 @@
   background-color: var(--bs-card-bg);
   border: 1px solid var(--bs-border-color);
   border-radius: var(--bs-border-radius);
+  display: flex;
+  flex-direction: column;
+
+  &__header {
+    flex: none;
+    // Leaves room on the right for the widget-menu's absolutely-positioned toggle button.
+    padding: 0.1rem 1.5rem 0.4rem 0.25rem;
+  }
+
+  &__title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
   &__chart {
     position: relative;
-    height: 100%;
+    flex: 1 1 auto;
+    min-height: 0;
     width: 100%;
   }
 

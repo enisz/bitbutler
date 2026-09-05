@@ -1,5 +1,8 @@
 <div class="bar-chart-widget">
   <app-widget-menu (configure)="onConfigure?.()" (remove)="onRemove?.()" />
+  <div class="bar-chart-widget__header">
+    <div class="bar-chart-widget__title">{{ fieldLabelKey() | translate }}</div>
+  </div>
   @let config = buildConfig();
   <div class="bar-chart-widget__chart">
     <canvas

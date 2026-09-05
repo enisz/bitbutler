@@ -1,5 +1,8 @@
 <div class="pie-chart-widget">
   <app-widget-menu (configure)="onConfigure?.()" (remove)="onRemove?.()" />
+  <div class="pie-chart-widget__header">
+    <div class="pie-chart-widget__title">{{ fieldLabelKey() | translate }}</div>
+  </div>
   @let config = buildConfig();
   <div class="pie-chart-widget__chart">
     <canvas

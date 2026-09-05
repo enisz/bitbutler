@@ -26,12 +26,29 @@ describe('BarChartWidget', () => {
     component = fixture.componentInstance;
     TestBed.inject(TranslateService).setTranslation('en', {
       pages: {
+        main: { grid: { 'grid-lib': { 'col-def': { ratio: 'Ratio', category: 'Category' } } } },
         dashboard: {
           widgets: { breakdown: { ratio: { bucket: { 'lt-0-1': '< 0.1' } } } },
         },
       },
     });
     TestBed.inject(TranslateService).use('en');
+  });
+
+  describe('title header', () => {
+    it('should show the translated label for the field being broken down', () => {
+      component.data = { field: 'ratio', slices: [] };
+      fixture.detectChanges();
+      const title = fixture.nativeElement.querySelector('.bar-chart-widget__title');
+      expect(title.textContent.trim()).toBe('Ratio');
+    });
+
+    it('should update when the config field changes', () => {
+      component.data = { field: 'category', slices: [] };
+      fixture.detectChanges();
+      const title = fixture.nativeElement.querySelector('.bar-chart-widget__title');
+      expect(title.textContent.trim()).toBe('Category');
+    });
   });
 
   it('should build one bar per slice, translating bucket labelKeys', () => {

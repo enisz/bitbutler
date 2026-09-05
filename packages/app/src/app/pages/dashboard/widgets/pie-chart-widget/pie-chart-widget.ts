@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import {
   ArcElement,
   Chart,
@@ -14,6 +14,7 @@ import { BaseWidget } from 'gridstack/dist/angular';
 import { BaseChartDirective } from 'ng2-charts';
 import { PieChartData } from '../../../../models/dashboard.model';
 import { ThemeService } from '../../../../services/theme.service';
+import { BREAKDOWN_FIELD_META_BY_FIELD } from '../../breakdown-field-catalog';
 import { bodyColor, memoizeBySignature, themeColors } from '../chart-widget-utils';
 import { WidgetMenu } from '../widget-menu/widget-menu';
 
@@ -33,7 +34,7 @@ interface PieChartRenderConfig {
 @Component({
   selector: 'app-pie-chart-widget',
   standalone: true,
-  imports: [BaseChartDirective, WidgetMenu],
+  imports: [BaseChartDirective, WidgetMenu, TranslatePipe],
   templateUrl: './pie-chart-widget.html',
   styleUrl: './pie-chart-widget.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -44,6 +45,10 @@ export class PieChartWidget extends BaseWidget {
   @Input() onRemove?: () => void;
 
   readonly chartType = 'doughnut' as const;
+
+  fieldLabelKey(): string {
+    return BREAKDOWN_FIELD_META_BY_FIELD[this.data.groupBy].labelKey;
+  }
 
   private readonly translate = inject(TranslateService);
   private readonly themeService = inject(ThemeService);
@@ -101,9 +106,12 @@ export class PieChartWidget extends BaseWidget {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        cutout: '60%',
+        cutout: '75%',
         backgroundColor: 'transparent',
-        plugins: { legend: { labels: { color: textColor } } },
+        // 'right' rather than the default 'top' - a categorical field with many distinct values
+        // (e.g. tracker/save_path) produces a long legend that would otherwise wrap onto several
+        // lines above the chart, squeezing the ring down to a sliver.
+        plugins: { legend: { position: 'right', labels: { color: textColor } } },
       },
     };
 

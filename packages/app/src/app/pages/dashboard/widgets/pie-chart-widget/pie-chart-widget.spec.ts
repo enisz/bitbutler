@@ -34,12 +34,29 @@ describe('PieChartWidget', () => {
     component = fixture.componentInstance;
     TestBed.inject(TranslateService).setTranslation('en', {
       pages: {
+        main: { grid: { 'grid-lib': { 'col-def': { state: 'State', category: 'Category' } } } },
         dashboard: {
           widgets: { breakdown: { state: { bucket: { downloading: 'Downloading' } } } },
         },
       },
     });
     TestBed.inject(TranslateService).use('en');
+  });
+
+  describe('title header', () => {
+    it('should show the translated label for the field being broken down', () => {
+      component.data = { groupBy: 'state', slices: [] };
+      fixture.detectChanges();
+      const title = fixture.nativeElement.querySelector('.pie-chart-widget__title');
+      expect(title.textContent.trim()).toBe('State');
+    });
+
+    it('should update when the config field changes', () => {
+      component.data = { groupBy: 'category', slices: [] };
+      fixture.detectChanges();
+      const title = fixture.nativeElement.querySelector('.pie-chart-widget__title');
+      expect(title.textContent.trim()).toBe('Category');
+    });
   });
 
   it('should build one doughnut segment per slice, translating state bucket labelKeys', () => {
@@ -75,6 +92,22 @@ describe('PieChartWidget', () => {
 
     const config = component.buildConfig();
     expect(config.options.backgroundColor).toBe('transparent');
+  });
+
+  it('should use a thin ring (75% cutout) rather than a thick doughnut band', () => {
+    component.data = { groupBy: 'state', slices: [] };
+    fixture.detectChanges();
+
+    const config = component.buildConfig();
+    expect(config.options.cutout).toBe('75%');
+  });
+
+  it('should place the legend on the right so a long category list grows sideways instead of pushing the ring down', () => {
+    component.data = { groupBy: 'state', slices: [] };
+    fixture.detectChanges();
+
+    const config = component.buildConfig();
+    expect(config.options.plugins?.legend?.position).toBe('right');
   });
 
   // Regression coverage: the template calls buildConfig() on every change detection pass, and

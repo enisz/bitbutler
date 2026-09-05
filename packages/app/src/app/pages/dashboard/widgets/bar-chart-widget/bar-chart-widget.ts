@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import {
   BarController,
   BarElement,
@@ -15,6 +15,7 @@ import { BaseWidget } from 'gridstack/dist/angular';
 import { BaseChartDirective } from 'ng2-charts';
 import { BarChartData } from '../../../../models/dashboard.model';
 import { ThemeService } from '../../../../services/theme.service';
+import { BREAKDOWN_FIELD_META_BY_FIELD } from '../../breakdown-field-catalog';
 import { bodyColor, memoizeBySignature, themeColors } from '../chart-widget-utils';
 import { WidgetMenu } from '../widget-menu/widget-menu';
 
@@ -30,7 +31,7 @@ interface BarChartRenderConfig {
 @Component({
   selector: 'app-bar-chart-widget',
   standalone: true,
-  imports: [BaseChartDirective, WidgetMenu],
+  imports: [BaseChartDirective, WidgetMenu, TranslatePipe],
   templateUrl: './bar-chart-widget.html',
   styleUrl: './bar-chart-widget.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -41,6 +42,10 @@ export class BarChartWidget extends BaseWidget {
   @Input() onRemove?: () => void;
 
   readonly chartType = 'bar' as const;
+
+  fieldLabelKey(): string {
+    return BREAKDOWN_FIELD_META_BY_FIELD[this.data.field].labelKey;
+  }
 
   private readonly translate = inject(TranslateService);
   private readonly themeService = inject(ThemeService);
