@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { NgbModalConfig, NgbTooltipConfig } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectConfig } from '@ng-select/ng-select';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
@@ -52,6 +52,7 @@ export class App {
   private readonly translateService = inject(TranslateService);
   private readonly timeagoIntl = inject(TimeagoIntl);
   private readonly windowService = inject(WindowService);
+  private readonly router = inject(Router);
 
   public readonly isDev = toSignal(from(this.electronService.isDev()), { initialValue: false });
   private updateCheckedOnStartup = false;
@@ -152,6 +153,16 @@ export class App {
             this.translateService.use(generalSettings.language.language);
           }
         }
+      });
+
+    this.router.events
+      .pipe(
+        filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((event) => {
+        const match = event.urlAfterRedirects.match(/^\/pages\/([^/?#]+)/);
+        if (match) window.bitbutler.view.setActive(match[1]);
       });
   }
 

@@ -9,6 +9,7 @@ const mockShellOpenExternal = vi.hoisted(() => vi.fn());
 const mockGetCurrentLanguage = vi.hoisted(() => vi.fn(() => 'us'));
 const mockGetCookieJar = vi.hoisted(() => vi.fn(() => new Map<string, string>()));
 const mockGetActiveServerId = vi.hoisted(() => vi.fn<() => string | null>(() => null));
+const mockGetActiveViewId = vi.hoisted(() => vi.fn<() => string | null>(() => null));
 const mockServerList = vi.hoisted(() =>
   vi.fn(() => [] as { id: string; name: string; host: string }[]),
 );
@@ -37,6 +38,8 @@ vi.mock('./ipc/server.js', () => ({
   getActiveServerId: mockGetActiveServerId,
   serverList: mockServerList,
 }));
+
+vi.mock('./ipc/view.js', () => ({ getActiveViewId: mockGetActiveViewId }));
 
 vi.mock('./main.js', () => ({ getMainWindow: mockGetMainWindow }));
 
@@ -79,6 +82,7 @@ describe('rebuildMenu', () => {
     appMock.isPackaged = false;
     mockGetCookieJar.mockReturnValue(new Map());
     mockGetActiveServerId.mockReturnValue(null);
+    mockGetActiveViewId.mockReturnValue(null);
     mockServerList.mockReturnValue([]);
     mockGetMainWindow.mockReturnValue(null);
     mockGetCurrentLanguage.mockReturnValue('us');
@@ -115,7 +119,19 @@ describe('rebuildMenu', () => {
       expect(findItem(template, byLabel('electron.menu.disconnect'))?.accelerator).toBe(
         'CmdOrCtrl+L',
       );
-      expect(findItem(template, (i) => i.role === 'quit')?.accelerator).toBe('CmdOrCtrl+Q');
+      expect(findItem(template, byLabel('electron.menu.quit'))?.accelerator).toBe('CmdOrCtrl+Q');
+    });
+
+    it('sends file.quit when Quit is clicked, instead of quitting immediately', async () => {
+      const mainWindow = createFakeWindow();
+      const template = await buildMenu(mainWindow);
+      const item = findItem(template, byLabel('electron.menu.quit'))!;
+      expect(item.role).toBeUndefined();
+      (item.click as () => void)();
+      expect(mainWindow.webContents.send).toHaveBeenCalledWith(
+        'menu:clicked',
+        expect.objectContaining({ action: 'file.quit' }),
+      );
     });
 
     it('disables actions requiring a connection when logged out', async () => {
@@ -216,6 +232,47 @@ describe('rebuildMenu', () => {
       expect(mainWindow.webContents.send).toHaveBeenCalledWith(
         'menu:clicked',
         expect.objectContaining({ action: 'server.select', serverId: 'srv-1' }),
+      );
+    });
+  });
+
+  describe('View menu', () => {
+    it('is hidden when logged out', async () => {
+      const template = await buildMenu();
+      expect(findItem(template, byLabel('electron.menu.view-menu'))).toBeUndefined();
+    });
+
+    it('is shown when logged in, with the torrent list item checked when active', async () => {
+      mockGetCookieJar.mockReturnValue(new Map([['srv-1', 'SID=abc']]));
+      mockGetActiveViewId.mockReturnValue('torrent-list');
+      const template = await buildMenu();
+      const viewMenu = findItem(template, byLabel('electron.menu.view-menu'));
+      const items = viewMenu!.submenu as MenuItemConstructorOptions[];
+      expect(items[0]).toMatchObject({
+        label: 'electron.menu.view-torrent-list',
+        type: 'radio',
+        checked: true,
+      });
+    });
+
+    it('is unchecked when no view has reported itself active yet', async () => {
+      mockGetCookieJar.mockReturnValue(new Map([['srv-1', 'SID=abc']]));
+      const template = await buildMenu();
+      const viewMenu = findItem(template, byLabel('electron.menu.view-menu'));
+      const items = viewMenu!.submenu as MenuItemConstructorOptions[];
+      expect(items[0].checked).toBe(false);
+    });
+
+    it('sends view.select with the view id when clicked', async () => {
+      mockGetCookieJar.mockReturnValue(new Map([['srv-1', 'SID=abc']]));
+      const mainWindow = createFakeWindow();
+      const template = await buildMenu(mainWindow);
+      const viewMenu = findItem(template, byLabel('electron.menu.view-menu'));
+      const items = viewMenu!.submenu as MenuItemConstructorOptions[];
+      (items[0].click as () => void)();
+      expect(mainWindow.webContents.send).toHaveBeenCalledWith(
+        'menu:clicked',
+        expect.objectContaining({ action: 'view.select', viewId: 'torrent-list' }),
       );
     });
   });

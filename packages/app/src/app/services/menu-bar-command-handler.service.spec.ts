@@ -1,6 +1,5 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
@@ -8,7 +7,6 @@ import { CommandBusService } from './command-bus.service';
 import { MenuBarCommandHandlerService } from './menu-bar-command-handler.service';
 import { MenuBarService } from './menu-bar.service';
 import { NotificationService } from './notification.service';
-import { QbService } from './qb.service';
 import { ServerStoreService } from './server-store.service';
 import { ToastService } from './toast.service';
 
@@ -66,15 +64,6 @@ describe('MenuBarCommandHandlerService', () => {
         },
         { provide: ServerStoreService, useValue: serverStoreService },
         {
-          provide: QbService,
-          useValue: {
-            logout: vi.fn().mockResolvedValue(undefined),
-            hasCookie: vi.fn().mockResolvedValue(false),
-            login: vi.fn().mockResolvedValue({ loggedIn: true }),
-          },
-        },
-        { provide: Router, useValue: { navigate: vi.fn().mockResolvedValue(true) } },
-        {
           provide: NgbModal,
           useValue: {
             open: vi.fn().mockReturnValue({
@@ -112,6 +101,19 @@ describe('MenuBarCommandHandlerService', () => {
     expect(commandBusEmit).toHaveBeenCalledWith({ type: 'UI_SERVER_EDITOR_OPEN' });
   });
 
+  it('should emit UI_VIEW_SELECT with the view id for view.select', () => {
+    clicks$.next({ action: 'view.select', ts: 1, viewId: 'torrent-list' });
+    expect(commandBusEmit).toHaveBeenCalledWith({
+      type: 'UI_VIEW_SELECT',
+      viewId: 'torrent-list',
+    });
+  });
+
+  it('should do nothing for view.select without a view id', () => {
+    clicks$.next({ action: 'view.select', ts: 1 });
+    expect(commandBusEmit).not.toHaveBeenCalled();
+  });
+
   it('should emit UPDATE_CHECK_FOR_UPDATE for help.checkForUpdates', () => {
     clicks$.next({ action: 'help.checkForUpdates', ts: 1 });
     expect(commandBusEmit).toHaveBeenCalledWith({
@@ -123,6 +125,16 @@ describe('MenuBarCommandHandlerService', () => {
   it('should emit UI_OPEN_ABOUT for help.about', () => {
     clicks$.next({ action: 'help.about', ts: 1 });
     expect(commandBusEmit).toHaveBeenCalledWith({ type: 'UI_OPEN_ABOUT' });
+  });
+
+  it('should emit UI_DISCONNECT for file.disconnect', () => {
+    clicks$.next({ action: 'file.disconnect', ts: 1 });
+    expect(commandBusEmit).toHaveBeenCalledWith({ type: 'UI_DISCONNECT' });
+  });
+
+  it('should emit UI_QUIT for file.quit', () => {
+    clicks$.next({ action: 'file.quit', ts: 1 });
+    expect(commandBusEmit).toHaveBeenCalledWith({ type: 'UI_QUIT' });
   });
 
   it('should show primary toast for debug.toast.primary', () => {

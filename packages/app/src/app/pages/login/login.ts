@@ -242,7 +242,7 @@ export class Login implements OnInit {
 
         await this.windowService.setOpenFilesEnabled(true);
         loadingModalRef.close();
-        this.router.navigate(['/pages/main']);
+        this.router.navigate(['/pages/torrent-list']);
       })
       .catch((error) => {
         console.error(Login.name, 'connect', error);

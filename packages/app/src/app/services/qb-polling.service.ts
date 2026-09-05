@@ -15,6 +15,7 @@ import {
 import { Maindata, QbTorrentPeersResponse } from '../models/torrent.model';
 import { QbService } from './qb.service';
 import { ServerSettingsService } from './server-settings.service';
+import { TorrentStoreService } from './torrent-store.service';
 import { WindowService } from './window.service';
 
 @Injectable({ providedIn: 'root' })
@@ -22,6 +23,7 @@ export class QbPollingService {
   private qb = inject(QbService);
   private readonly serverSettingsService = inject(ServerSettingsService);
   private readonly windowService = inject(WindowService);
+  private readonly torrentStore = inject(TorrentStoreService);
 
   private maindataRid$ = new BehaviorSubject<number>(0);
   private peersRidByHash = new Map<string, BehaviorSubject<number>>();
@@ -83,6 +85,7 @@ export class QbPollingService {
     this._pauseTokens$.next(new Set());
     if (isFreshStart) {
       this.maindataRid$.next(0);
+      this.torrentStore.clear();
     }
     this._isInitialLoading$.next(true);
     void this.serverSettingsService.load();

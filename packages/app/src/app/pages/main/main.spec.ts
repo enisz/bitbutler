@@ -42,16 +42,17 @@ describe('Main', () => {
     clear: ReturnType<typeof vi.fn>;
   };
 
+  let qbPollingMock: {
+    startMaindataPolling: ReturnType<typeof vi.fn>;
+  };
+
   async function createComponent(): Promise<void> {
     await TestBed.configureTestingModule({
       imports: [Main],
       providers: [
         { provide: ThemeService, useValue: themeMock },
         { provide: ServerStoreService, useValue: serverStoreMock },
-        {
-          provide: QbPollingService,
-          useValue: { startMaindataPolling: vi.fn().mockReturnValue(new Subject()) },
-        },
+        { provide: QbPollingService, useValue: qbPollingMock },
         { provide: TorrentStoreService, useValue: torrentStoreMock },
       ],
       schemas: [NO_ERRORS_SCHEMA],
@@ -77,6 +78,9 @@ describe('Main', () => {
     torrentStoreMock = {
       applyMaindata: vi.fn(),
       clear: vi.fn(),
+    };
+    qbPollingMock = {
+      startMaindataPolling: vi.fn().mockReturnValue(new Subject()),
     };
   });
 
@@ -106,18 +110,18 @@ describe('Main', () => {
     });
   });
 
-  describe('server switch', () => {
-    it('should clear the torrent store before starting to poll a server', async () => {
+  describe('polling', () => {
+    it('should start polling the new server on switch', async () => {
       await createComponent();
-      expect(torrentStoreMock.clear).not.toHaveBeenCalled();
+      expect(qbPollingMock.startMaindataPolling).not.toHaveBeenCalled();
 
       serverStoreMock.currentServerId.set('server-1');
       fixture.detectChanges();
 
-      expect(torrentStoreMock.clear).toHaveBeenCalledTimes(1);
+      expect(qbPollingMock.startMaindataPolling).toHaveBeenCalledWith('server-1');
     });
 
-    it('should clear the torrent store again on a subsequent switch to another server', async () => {
+    it('should start polling again on a subsequent switch to another server', async () => {
       await createComponent();
 
       serverStoreMock.currentServerId.set('server-1');
@@ -126,7 +130,23 @@ describe('Main', () => {
       serverStoreMock.currentServerId.set('server-2');
       fixture.detectChanges();
 
-      expect(torrentStoreMock.clear).toHaveBeenCalledTimes(2);
+      expect(qbPollingMock.startMaindataPolling).toHaveBeenCalledTimes(2);
+      expect(qbPollingMock.startMaindataPolling).toHaveBeenLastCalledWith('server-2');
+    });
+
+    // Clearing the store on a fresh start (vs. resuming the same server) is QbPollingService's
+    // call, not Main's - it is the only thing that knows whether a restart is a genuine reset
+    // or a same-server resume. See QbPollingService's own spec for that coverage.
+    it('should never clear the torrent store itself', async () => {
+      await createComponent();
+
+      serverStoreMock.currentServerId.set('server-1');
+      fixture.detectChanges();
+
+      serverStoreMock.currentServerId.set('server-2');
+      fixture.detectChanges();
+
+      expect(torrentStoreMock.clear).not.toHaveBeenCalled();
     });
   });
 });

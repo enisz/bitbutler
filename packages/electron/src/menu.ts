@@ -2,6 +2,7 @@ import { Menu, app, shell } from 'electron';
 import { getCurrentLanguage, t } from './i18n.js';
 import { getCookieJar } from './ipc/qbittorrent.js';
 import { getActiveServerId, serverList } from './ipc/server.js';
+import { getActiveViewId } from './ipc/view.js';
 import { getMainWindow } from './main.js';
 import { notify } from './notification.js';
 
@@ -38,6 +39,17 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
 
   const loggedInItems: Electron.MenuItemConstructorOptions[] = loggedIn
     ? [
+        {
+          label: t('electron.menu.view-menu'),
+          submenu: [
+            {
+              label: t('electron.menu.view-torrent-list'),
+              type: 'radio' as const,
+              checked: getActiveViewId() === 'torrent-list',
+              click: () => sendMenuAction(mainWindow, 'view.select', { viewId: 'torrent-list' }),
+            },
+          ],
+        },
         ...(servers.length > 0
           ? [
               {
@@ -187,7 +199,11 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
           click: () => sendMenuAction(mainWindow, 'file.disconnect'),
         },
         { type: 'separator' },
-        { role: 'quit', accelerator: 'CmdOrCtrl+Q' },
+        {
+          label: t('electron.menu.quit'),
+          accelerator: 'CmdOrCtrl+Q',
+          click: () => sendMenuAction(mainWindow, 'file.quit'),
+        },
       ],
     },
     ...loggedInItems,

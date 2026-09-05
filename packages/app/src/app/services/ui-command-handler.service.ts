@@ -1,5 +1,7 @@
 import { DestroyRef, Injectable, Type, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
+import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -20,6 +22,7 @@ import { GuardableModal } from '../models/guardable-modal.interface';
 import { QbTorrentContent } from '../models/torrent.model';
 import { setModalInput } from '../utils/modal-input';
 import { CommandBusService } from './command-bus.service';
+import { ConfirmService } from './confirm.service';
 import { CredentialPromptService } from './credential-prompt.service';
 import { ElectronService } from './electron.service';
 import { PathService } from './path.service';
@@ -47,6 +50,8 @@ export class UiCommandHandlerService {
   private readonly destroyRef = inject(DestroyRef);
   private readonly torrentListGridSettingsService = inject(TorrentListGridSettingsService);
   private readonly qbPollingService = inject(QbPollingService);
+  private readonly confirmService = inject(ConfirmService);
+  private readonly router = inject(Router);
   private pauseToken: symbol | null = null;
 
   private activeModals: NgbModalRef[] = [];
@@ -482,6 +487,25 @@ export class UiCommandHandlerService {
         case 'UI_SCROLL_TO_TORRENT':
           break;
 
+        case 'UI_DISCONNECT': {
+          const server = this.serverStoreService.currentServer();
+          const confirmed = await this.confirmService.confirm(
+            'services.ui-command-handler.disconnect-confirm.title',
+            {
+              text: 'services.ui-command-handler.disconnect-confirm.message',
+              data: { name: server?.name || server?.host || '' },
+            },
+            'general.button.disconnect',
+            undefined,
+            undefined,
+            faRightFromBracket,
+          );
+          if (!confirmed) break;
+
+          await this.disconnect();
+          break;
+        }
+
         case 'UI_TORRENT_EXISTS': {
           const { TorrentExists } = await import('../modals/torrent-exists/torrent-exists');
           if (this.isModalOpen(TorrentExists)) break;
@@ -491,6 +515,25 @@ export class UiCommandHandlerService {
           setModalInput(torrentExistsModalRef, 'hash', command.hash);
           setModalInput(torrentExistsModalRef, 'originalPath', command.originalPath);
           torrentExistsModalRef.result.catch(() => {});
+          break;
+        }
+
+        case 'UI_VIEW_SELECT':
+          this.router.navigate(['/pages', command.viewId]);
+          break;
+
+        case 'UI_QUIT': {
+          const confirmed = await this.confirmService.confirm(
+            'services.ui-command-handler.quit-confirm.title',
+            'services.ui-command-handler.quit-confirm.message',
+            'general.button.quit',
+            undefined,
+            undefined,
+            faRightFromBracket,
+          );
+          if (!confirmed) break;
+
+          window.bitbutler.electron.quit();
           break;
         }
 
@@ -578,6 +621,36 @@ export class UiCommandHandlerService {
       this.serverService.setActive(this.serverStoreService.currentServerId());
     } finally {
       appLoaderModal?.close();
+    }
+  }
+
+  private async disconnect(): Promise<void> {
+    const serverId = this.serverStoreService.currentServerId();
+
+    try {
+      await window.bitbutler.window.setOpenFilesEnabled(false);
+
+      if (serverId) {
+        await this.qbService.auth.logout(serverId);
+      }
+
+      this.serverStoreService.suppressAutoLoginUntilManualConnect();
+      this.serverStoreService.clearSelection();
+
+      await this.router.navigate(['/login']);
+    } catch (err) {
+      console.error(UiCommandHandlerService.name, 'disconnect', 'logout failed', err);
+
+      try {
+        await window.bitbutler.window.setOpenFilesEnabled(false);
+      } catch {}
+
+      try {
+        this.serverStoreService.suppressAutoLoginUntilManualConnect();
+        this.serverStoreService.clearSelection();
+      } catch {}
+
+      this.router.navigate(['/login']);
     }
   }
 

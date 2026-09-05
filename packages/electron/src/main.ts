@@ -13,6 +13,7 @@ import {
   registerSettingsIpcHandlers,
 } from './ipc/settings.js';
 import { registerTorrentIpcHandlers } from './ipc/torrent.js';
+import { registerViewIpcHandlers } from './ipc/view.js';
 import { handleSecondInstanceArgv, registerWindowIpcHandlers } from './ipc/window.js';
 import { initLogger } from './logger.js';
 import { createMainWindow } from './main-window.js';
@@ -40,6 +41,7 @@ function registerAppIpcHandlers(): void {
 
   registerNotificationIpcHandlers();
   registerServerIpcHandlers();
+  registerViewIpcHandlers();
   registerQbIpcHandlers();
   registerTorrentIpcHandlers();
   registerSettingsIpcHandlers();

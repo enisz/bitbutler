@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const ipcHandlers = vi.hoisted(() => new Map<string, (...args: unknown[]) => unknown>());
+const ipcOnHandlers = vi.hoisted(() => new Map<string, (...args: unknown[]) => unknown>());
 const mockAxiosGet = vi.hoisted(() => vi.fn());
 const mockShellOpenExternal = vi.hoisted(() => vi.fn());
 const mockShellOpenPath = vi.hoisted(() => vi.fn(() => Promise.resolve('')));
@@ -9,11 +10,13 @@ const mockDialogShowOpenDialog = vi.hoisted(() =>
   vi.fn(() => Promise.resolve({ filePaths: [] as string[] })),
 );
 const mockAppGetVersion = vi.hoisted(() => vi.fn(() => '1.0.0'));
+const mockAppQuit = vi.hoisted(() => vi.fn());
 
 vi.mock('electron', () => ({
   app: {
     isPackaged: false,
     getVersion: mockAppGetVersion,
+    quit: mockAppQuit,
   },
   shell: {
     openExternal: mockShellOpenExternal,
@@ -27,6 +30,9 @@ vi.mock('electron', () => ({
     handle: vi.fn((channel: string, handler: (...args: unknown[]) => unknown) => {
       ipcHandlers.set(channel, handler);
     }),
+    on: vi.fn((channel: string, handler: (...args: unknown[]) => unknown) => {
+      ipcOnHandlers.set(channel, handler);
+    }),
   },
 }));
 
@@ -38,6 +44,7 @@ describe('electron IPC handlers', () => {
   beforeEach(() => {
     vi.resetModules();
     ipcHandlers.clear();
+    ipcOnHandlers.clear();
   });
 
   afterEach(() => {
@@ -49,6 +56,20 @@ describe('electron IPC handlers', () => {
     registerElectronIpcHandlers();
     return ipcHandlers;
   }
+
+  async function registerAndGetOnHandlers() {
+    const { registerElectronIpcHandlers } = await import('./electron.js');
+    registerElectronIpcHandlers();
+    return ipcOnHandlers;
+  }
+
+  describe('electron:quit', () => {
+    it('calls app.quit()', async () => {
+      const handlers = await registerAndGetOnHandlers();
+      handlers.get('electron:quit')!(null);
+      expect(mockAppQuit).toHaveBeenCalled();
+    });
+  });
 
   describe('electron:is-dev', () => {
     it('returns true when app is not packaged', async () => {

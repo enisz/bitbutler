@@ -52,6 +52,7 @@ const api: BitButlerAPI = {
     checkForUpdate: () => ipcRenderer.invoke('electron:check-for-update'),
     setLoginItem: (settings) => ipcRenderer.invoke('electron:set-login-item', settings),
     getDownloadsPath: () => ipcRenderer.invoke('electron:get-downloads-path'),
+    quit: () => ipcRenderer.send('electron:quit'),
   },
 
   updater: {
@@ -76,6 +77,10 @@ const api: BitButlerAPI = {
         qbVersion,
       }),
     setActive: (id) => ipcRenderer.send('server:set-active', id),
+  },
+
+  view: {
+    setActive: (viewId: string) => ipcRenderer.send('view:set-active', viewId),
   },
 
   qb: {
