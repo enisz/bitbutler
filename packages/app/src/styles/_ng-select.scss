@@ -119,6 +119,13 @@ ng-select.ng-select .ng-select-container .ng-input input {
   font-weight: normal !important;
 }
 
+// The library's default optgroup color is a hardcoded rgba(0, 0, 0, 0.54) - unreadable against a
+// dark dropdown background, so it needs its own theme-aware override rather than falling through.
+.ng-dropdown-panel .ng-dropdown-panel-items .ng-optgroup {
+  color: color-mix(in srgb, var(--bb-ng-text) 65%, transparent) !important;
+  background-color: transparent !important;
+}
+
 .ng-dropdown-panel .ng-dropdown-panel-items {
   border-bottom: none !important;
 }
