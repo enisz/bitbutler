@@ -106,6 +106,10 @@ export class PieChartWidget extends BaseWidget {
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        // Live-polling ticks push new (content-changed) data roughly every 2s - Chart.js's
+        // default update animation would replay its ~1s arc-rotate tween on every one of those,
+        // reading as the whole ring getting redrawn. Disabling it makes updates apply instantly.
+        animation: false,
         cutout: '75%',
         backgroundColor: 'transparent',
         // 'right' rather than the default 'top' - a categorical field with many distinct values

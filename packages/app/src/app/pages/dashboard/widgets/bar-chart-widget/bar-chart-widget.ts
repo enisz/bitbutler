@@ -77,6 +77,9 @@ export class BarChartWidget extends BaseWidget {
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        // Same reasoning as pie-chart-widget.ts: live-polling ticks push new data roughly every
+        // 2s, and Chart.js's default update animation would replay on every one of those.
+        animation: false,
         backgroundColor: 'transparent',
         scales: {
           x: { ticks: { color: textColor }, grid: { display: false } },

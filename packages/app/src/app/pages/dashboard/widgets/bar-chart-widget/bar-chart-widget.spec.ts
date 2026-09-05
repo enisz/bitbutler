@@ -85,6 +85,17 @@ describe('BarChartWidget', () => {
     expect(config.options.backgroundColor).toBe('transparent');
   });
 
+  // Live-polling ticks push a new (content-changed) `data` @Input roughly every 2s. Chart.js's
+  // default update animation would replay on every one of those, reading as the whole chart
+  // getting redrawn - disabling animation makes updates apply instantly instead.
+  it('should disable animation so live-polling updates apply instantly instead of replaying a redraw animation', () => {
+    component.data = { field: 'category', slices: [] };
+    fixture.detectChanges();
+
+    const config = component.buildConfig();
+    expect(config.options.animation).toBe(false);
+  });
+
   describe('memoization', () => {
     it('should return the same object reference on a second call with content-equal data', () => {
       component.data = { field: 'category', slices: [{ key: 'linux', value: 5 }] };

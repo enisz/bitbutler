@@ -102,6 +102,17 @@ describe('PieChartWidget', () => {
     expect(config.options.cutout).toBe('75%');
   });
 
+  // Live-polling ticks push a new (content-changed) `data` @Input roughly every 2s. Chart.js's
+  // default update animation (~1s tween) would replay on every one of those, reading as the whole
+  // chart getting redrawn - disabling animation makes updates apply instantly instead.
+  it('should disable animation so live-polling updates apply instantly instead of replaying a redraw animation', () => {
+    component.data = { groupBy: 'state', slices: [] };
+    fixture.detectChanges();
+
+    const config = component.buildConfig();
+    expect(config.options.animation).toBe(false);
+  });
+
   it('should place the legend on the right so a long category list grows sideways instead of pushing the ring down', () => {
     component.data = { groupBy: 'state', slices: [] };
     fixture.detectChanges();
