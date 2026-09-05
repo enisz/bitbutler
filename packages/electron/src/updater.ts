@@ -2,7 +2,7 @@ import type { UpdateCapability, UpdaterEvent } from '@bitbutler/shared';
 import { CancellationError, CancellationToken } from 'builder-util-runtime';
 import { app, ipcMain } from 'electron';
 import electronUpdaterPkg from 'electron-updater';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { t } from './i18n.js';
 import { getMainWindow } from './main.js';
@@ -103,7 +103,28 @@ function getUpdateCapability(): UpdateCapability {
   }
 
   if (process.platform === 'linux') {
-    return { supported: Boolean(process.env.APPIMAGE) };
+    if (process.env.APPIMAGE) {
+      return { supported: true };
+    }
+
+    // Deb/rpm builds carry a `package-type` marker file next to the app resources -
+    // the same file electron-updater itself reads (in doLoadAutoUpdater()) to pick
+    // DebUpdater/RpmUpdater at runtime instead of AppImageUpdater. Checking it here
+    // keeps the "check for update" UI in sync with what electron-updater will
+    // actually do. path.posix is explicit for the same determinism reason as the
+    // Windows branch above.
+    //
+    // Both installers always shell out through pkexec (or a gksudo/kdesudo/beesu/sudo
+    // fallback) since the install directory is root-owned, so this path is never
+    // silent, and electron-builder doesn't sign Linux packages, so it's never
+    // signature-verified either - acceptable trade-offs for a desktop app the user
+    // is actively sitting at, not a headless service.
+    const packageTypePath = path.posix.join(process.resourcesPath, 'package-type');
+    if (!existsSync(packageTypePath)) {
+      return { supported: false };
+    }
+    const packageType = readFileSync(packageTypePath, 'utf8').trim();
+    return { supported: packageType === 'deb' || packageType === 'rpm' };
   }
 
   if (process.platform === 'win32') {

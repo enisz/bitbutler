@@ -24,7 +24,7 @@ The **Download for `<OS>`** section lists that release's assets, filtered to the
 BitButler doesn't have a code-signing certificate, so none of its builds are code-signed. What that means depends on your platform:
 
 - **Windows** - Windows SmartScreen doesn't recognize BitButler as a trusted publisher and may flag it. Downloading manually, your browser or Windows may show a "Windows protected your PC" warning before the installer runs - choose **More info > Run anyway** to continue. Updating via **Update Now** launches the downloaded installer without a wizard, so there's no dialog for you to click through if SmartScreen intervenes; it can stall or fail the automatic install, which is a known limitation of running unsigned, not a bug.
-- **Linux** - installing the downloaded package may prompt for your password, or fail depending on your distribution's setup, since it isn't signed.
+- **Linux** - installing an AppImage update needs no elevation, so it applies silently. Updating a deb or rpm install prompts for your password (via `pkexec` or a similar tool), since installing into system directories always needs elevation regardless of signing - if no such tool is available, the automatic install fails and you'll need to download and install the package manually instead.
 
 If the automatic install stalls or fails, download and run one of the assets from the [Downloads](#downloads) list manually instead.
 
@@ -42,9 +42,9 @@ The modal can't be dismissed (via Close, Escape, or clicking the backdrop) while
 
 ### Update Now
 
-Only shown when BitButler can update itself in place - currently a Windows install via the NSIS installer, or a Linux AppImage. Other builds (portable/zip on Windows, deb/rpm/snap/tar.gz on Linux, macOS) don't show this button; use the download links instead.
+Only shown when BitButler can update itself in place - currently a Windows install via the NSIS installer, or a Linux AppImage, deb, or rpm install. Other builds (portable/zip on Windows, snap/tar.gz on Linux, macOS) don't show this button; use the download links instead.
 
-Clicking it starts the in-app flow: the footer switches to a progress row showing the asset name, bytes transferred versus total, and a percentage bar while the latest release downloads. **Cancel** stops the download and returns to the idle footer. Once the download completes, the app quits and reinstalls itself silently (no installer wizard) and relaunches automatically - no further action is needed from you, unless the install is interrupted; see [Code Signing Warnings](#code-signing-warnings).
+Clicking it starts the in-app flow: the footer switches to a progress row showing the asset name, bytes transferred versus total, and a percentage bar while the latest release downloads. **Cancel** stops the download and returns to the idle footer. Once the download completes, the app quits and reinstalls itself and relaunches automatically - on Windows and AppImage this happens silently with no wizard; on deb/rpm you'll see a password prompt first, since installing into system directories always requires it. No further action is needed from you beyond that, unless the install is interrupted; see [Code Signing Warnings](#code-signing-warnings).
 
 ### Skip These Versions
 
