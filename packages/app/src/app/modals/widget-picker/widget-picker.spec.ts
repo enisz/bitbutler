@@ -165,6 +165,15 @@ describe('WidgetPicker', () => {
       expect(toggles.length).toBe(4);
     });
 
+    it('should only offer a filter tab for chart types with at least one catalog entry', () => {
+      const filterButtons = fixture.nativeElement.querySelectorAll(
+        '.widget-picker__filter:not(.widget-picker__filter--text)',
+      );
+      // number, pie, column, table - no 'line' widget yet, so no 'line' filter tab
+      expect(filterButtons.length).toBe(4);
+      expect(component.chartTypeFilters.map((f) => f.type)).not.toContain('line');
+    });
+
     it('should render a flat list with no accordion toggle when a specific chart type is selected', () => {
       component.setFilter('table');
       fixture.detectChanges();

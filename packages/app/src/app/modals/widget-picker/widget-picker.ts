@@ -6,7 +6,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import {
   faChartColumn,
-  faChartLine,
   faChartPie,
   faChevronRight,
   faHashtag,
@@ -38,10 +37,11 @@ export class WidgetPicker {
   private readonly translate = inject(TranslateService);
 
   readonly icon = { faMagnifyingGlass, faChevronRight };
+  // No catalog entry uses chartType 'line' yet - its filter tab would just be a dead end that
+  // always renders the empty state, so it's left out until a line-chart widget exists.
   readonly chartTypeFilters: { type: WidgetChartType; icon: IconDefinition }[] = [
     { type: 'number', icon: faHashtag },
     { type: 'pie', icon: faChartPie },
-    { type: 'line', icon: faChartLine },
     { type: 'column', icon: faChartColumn },
     { type: 'table', icon: faTable },
   ];
