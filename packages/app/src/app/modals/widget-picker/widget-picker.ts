@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
@@ -17,8 +18,8 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { WidgetChartType, WidgetTypeId } from '../../models/dashboard.model';
 import { WIDGET_CATALOG, WidgetCatalogMeta } from '../../pages/dashboard/widget-catalog';
 
-interface WidgetCategoryView {
-  id: string;
+interface WidgetTypeGroupView {
+  id: WidgetChartType;
   labelKey: string;
   items: WidgetCatalogMeta[];
   expanded: boolean;
@@ -27,7 +28,7 @@ interface WidgetCategoryView {
 @Component({
   selector: 'app-widget-picker',
   standalone: true,
-  imports: [TranslatePipe, FontAwesomeModule, NgbTooltipModule, FormsModule],
+  imports: [TranslatePipe, FontAwesomeModule, NgbTooltipModule, FormsModule, NgTemplateOutlet],
   templateUrl: './widget-picker.html',
   styleUrl: './widget-picker.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -47,42 +48,52 @@ export class WidgetPicker {
 
   readonly query = signal('');
   readonly activeFilter = signal<WidgetChartType | 'all'>('all');
-  private readonly collapsedCategories = signal<Set<string>>(new Set());
+  private readonly collapsedTypeGroups = signal<Set<WidgetChartType>>(new Set());
 
   // Re-evaluated on language change so a search match against the translated widget label stays
   // correct after a runtime language switch - `languageChanged()` itself is unused beyond
   // registering TranslateService.onLangChange as a reactive dependency of this computed.
   private readonly languageChanged = toSignal(this.translate.onLangChange);
 
-  private readonly matches = computed<Map<string, WidgetCatalogMeta[]>>(() => {
+  // Grouped by chart type rather than a catalog "category" field (every entry used to share the
+  // single 'transfers' value, so that field added a level of grouping without adding any actual
+  // information) - the chart-type filter row above doubles as this grouping's own labels, so
+  // switching to it removes a whole redundant field from WidgetCatalogMeta.
+  private readonly matches = computed<Map<WidgetChartType, WidgetCatalogMeta[]>>(() => {
     this.languageChanged();
     const q = this.query().trim().toLowerCase();
     const filter = this.activeFilter();
-    const byCategory = new Map<string, WidgetCatalogMeta[]>();
+    const byType = new Map<WidgetChartType, WidgetCatalogMeta[]>();
 
     for (const meta of Object.values(WIDGET_CATALOG)) {
       if (filter !== 'all' && meta.chartType !== filter) continue;
       if (q && !this.translate.instant(meta.labelKey).toLowerCase().includes(q)) continue;
 
-      const list = byCategory.get(meta.category) ?? [];
+      const list = byType.get(meta.chartType) ?? [];
       list.push(meta);
-      byCategory.set(meta.category, list);
+      byType.set(meta.chartType, list);
     }
 
-    return byCategory;
+    return byType;
   });
 
-  readonly categories = computed<WidgetCategoryView[]>(() => {
+  readonly typeGroups = computed<WidgetTypeGroupView[]>(() => {
     const hasQuery = this.query().trim().length > 0;
-    const collapsed = this.collapsedCategories();
+    const collapsed = this.collapsedTypeGroups();
 
     return Array.from(this.matches().entries()).map(([id, items]) => ({
       id,
-      labelKey: `pages.dashboard.category.${id}`,
+      labelKey: `pages.dashboard.chart-type.${id}`,
       items,
       expanded: hasQuery || !collapsed.has(id),
     }));
   });
+
+  // With a specific chart-type filter active, every match already shares that one type, so the
+  // accordion grouping (and its now-redundant single header) is dropped in favor of a plain list.
+  readonly flatItems = computed<WidgetCatalogMeta[]>(() =>
+    Array.from(this.matches().values()).flat(),
+  );
 
   readonly isEmpty = computed(() => this.matches().size === 0);
 
@@ -94,8 +105,8 @@ export class WidgetPicker {
     this.activeFilter.set(type);
   }
 
-  toggleCategory(id: string): void {
-    this.collapsedCategories.update((current) => {
+  toggleTypeGroup(id: WidgetChartType): void {
+    this.collapsedTypeGroups.update((current) => {
       const next = new Set(current);
       if (next.has(id)) next.delete(id);
       else next.add(id);

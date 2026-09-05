@@ -133,6 +133,12 @@
   flex-direction: column;
   gap: 0.375rem;
   padding: 0 0.5rem 0.75rem;
+
+  // No accordion header above it (a specific chart-type filter is active) - give it the same
+  // top spacing a category header would otherwise have provided.
+  &--flat {
+    padding-top: 0.8125rem;
+  }
 }
 
 .widget-picker__item {

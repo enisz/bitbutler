@@ -47,11 +47,10 @@ describe('WIDGET_CATALOG', () => {
     expect(WIDGET_CATALOG['active-downloads'].defaultConfig).toEqual({ count: 5 });
   });
 
-  it('should give every entry an icon, a chart type and a category', () => {
+  it('should give every entry an icon and a chart type', () => {
     for (const entry of Object.values(WIDGET_CATALOG)) {
       expect(entry.icon).toBeTruthy();
       expect(entry.chartType).toBeTruthy();
-      expect(entry.category).toBeTruthy();
     }
   });
 });

@@ -1348,9 +1348,6 @@
         "column": "Column",
         "table": "Table"
       },
-      "category": {
-        "transfers": "Transfers"
-      },
       "live-toggle": {
         "label": "Live",
         "paused-label": "Paused",

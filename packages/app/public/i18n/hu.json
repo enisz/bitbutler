@@ -1348,9 +1348,6 @@
         "column": "Oszlop",
         "table": "Táblázat"
       },
-      "category": {
-        "transfers": "Átvitelek"
-      },
       "live-toggle": {
         "label": "Élő",
         "paused-label": "Szüneteltetve",

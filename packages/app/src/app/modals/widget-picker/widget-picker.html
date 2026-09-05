@@ -52,36 +52,40 @@
   </div>
 
   <div class="widget-picker__list">
-    @for (cat of categories(); track cat.id) {
-      <div class="widget-picker__category">
-        <button
-          type="button"
-          class="widget-picker__category-toggle"
-          (click)="toggleCategory(cat.id)"
-        >
-          <fa-icon
-            [icon]="icon.faChevronRight"
-            class="widget-picker__category-caret"
-            [class.widget-picker__category-caret--expanded]="cat.expanded"
+    @if (activeFilter() === 'all') {
+      @for (group of typeGroups(); track group.id) {
+        <div class="widget-picker__category">
+          <button
+            type="button"
+            class="widget-picker__category-toggle"
+            (click)="toggleTypeGroup(group.id)"
+          >
+            <fa-icon
+              [icon]="icon.faChevronRight"
+              class="widget-picker__category-caret"
+              [class.widget-picker__category-caret--expanded]="group.expanded"
+            />
+            <span>{{ group.labelKey | translate }}</span>
+          </button>
+          @if (group.expanded) {
+            <div class="widget-picker__items">
+              @for (entry of group.items; track entry.id) {
+                <ng-container
+                  [ngTemplateOutlet]="item"
+                  [ngTemplateOutletContext]="{ $implicit: entry }"
+                />
+              }
+            </div>
+          }
+        </div>
+      }
+    } @else {
+      <div class="widget-picker__items widget-picker__items--flat">
+        @for (entry of flatItems(); track entry.id) {
+          <ng-container
+            [ngTemplateOutlet]="item"
+            [ngTemplateOutletContext]="{ $implicit: entry }"
           />
-          <span>{{ cat.labelKey | translate }}</span>
-        </button>
-        @if (cat.expanded) {
-          <div class="widget-picker__items">
-            @for (entry of cat.items; track entry.id) {
-              <button type="button" class="widget-picker__item" (click)="choose(entry.id)">
-                <span class="widget-picker__icon">
-                  <fa-icon [icon]="entry.icon" />
-                </span>
-                <span class="widget-picker__text">
-                  <span class="widget-picker__label">{{ entry.labelKey | translate }}</span>
-                  <span class="widget-picker__type text-body-secondary small">{{
-                    'pages.dashboard.chart-type.' + entry.chartType | translate
-                  }}</span>
-                </span>
-              </button>
-            }
-          </div>
         }
       </div>
     }
@@ -92,3 +96,17 @@
     }
   </div>
 </div>
+
+<ng-template #item let-entry>
+  <button type="button" class="widget-picker__item" (click)="choose(entry.id)">
+    <span class="widget-picker__icon">
+      <fa-icon [icon]="entry.icon" />
+    </span>
+    <span class="widget-picker__text">
+      <span class="widget-picker__label">{{ entry.labelKey | translate }}</span>
+      <span class="widget-picker__type text-body-secondary small">{{
+        'pages.dashboard.chart-type.' + entry.chartType | translate
+      }}</span>
+    </span>
+  </button>
+</ng-template>

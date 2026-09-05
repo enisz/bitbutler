@@ -21,7 +21,6 @@ export interface WidgetCatalogMeta {
   id: WidgetTypeId;
   labelKey: string;
   chartType: WidgetChartType;
-  category: string;
   icon: IconDefinition;
   componentSelector: string;
   defaultConfig: WidgetConfig;
@@ -33,7 +32,6 @@ export const WIDGET_CATALOG: Record<WidgetTypeId, WidgetCatalogMeta> = {
     id: 'stat-tile',
     labelKey: 'pages.dashboard.catalog.stat-tile',
     chartType: 'number',
-    category: 'transfers',
     icon: faHashtag,
     componentSelector: 'app-stat-tile',
     defaultConfig: { metric: 'download_speed' } satisfies StatTileConfig,
@@ -43,7 +41,6 @@ export const WIDGET_CATALOG: Record<WidgetTypeId, WidgetCatalogMeta> = {
     id: 'torrent-list',
     labelKey: 'pages.dashboard.catalog.torrent-list',
     chartType: 'table',
-    category: 'transfers',
     icon: faTable,
     componentSelector: 'app-torrent-list-widget',
     defaultConfig: {
@@ -58,7 +55,6 @@ export const WIDGET_CATALOG: Record<WidgetTypeId, WidgetCatalogMeta> = {
     id: 'pie-chart',
     labelKey: 'pages.dashboard.catalog.pie-chart',
     chartType: 'pie',
-    category: 'transfers',
     icon: faChartPie,
     componentSelector: 'app-pie-chart-widget',
     defaultConfig: { groupBy: 'state' } satisfies PieChartConfig,
@@ -68,7 +64,6 @@ export const WIDGET_CATALOG: Record<WidgetTypeId, WidgetCatalogMeta> = {
     id: 'bar-chart',
     labelKey: 'pages.dashboard.catalog.bar-chart',
     chartType: 'column',
-    category: 'transfers',
     icon: faChartColumn,
     componentSelector: 'app-bar-chart-widget',
     defaultConfig: { field: 'state' } satisfies BarChartConfig,
@@ -78,7 +73,6 @@ export const WIDGET_CATALOG: Record<WidgetTypeId, WidgetCatalogMeta> = {
     id: 'active-downloads',
     labelKey: 'pages.dashboard.catalog.active-downloads',
     chartType: 'table',
-    category: 'transfers',
     icon: faDownload,
     componentSelector: 'app-active-downloads-widget',
     defaultConfig: { count: 5 } satisfies ActiveDownloadsConfig,

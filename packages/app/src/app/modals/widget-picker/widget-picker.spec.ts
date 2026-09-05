@@ -29,6 +29,13 @@ describe('WidgetPicker', () => {
             'bar-chart': 'Bar Chart',
             'active-downloads': 'Active Downloads',
           },
+          'chart-type': {
+            number: 'Number',
+            pie: 'Pie',
+            line: 'Line',
+            column: 'Column',
+            table: 'Table',
+          },
         },
       },
     });
@@ -38,12 +45,12 @@ describe('WidgetPicker', () => {
 
   function ids(): string[] {
     return component
-      .categories()
-      .flatMap((c) => c.items.map((i) => i.id))
+      .typeGroups()
+      .flatMap((g) => g.items.map((i) => i.id))
       .sort();
   }
 
-  it('should list every catalog entry across categories', () => {
+  it('should list every catalog entry across type groups', () => {
     expect(ids()).toEqual([
       'active-downloads',
       'bar-chart',
@@ -105,25 +112,68 @@ describe('WidgetPicker', () => {
     });
   });
 
-  describe('category collapse', () => {
+  describe('type group collapse', () => {
     it('should start expanded and collapse on toggle', () => {
-      const id = component.categories()[0].id;
-      expect(component.categories().find((c) => c.id === id)?.expanded).toBe(true);
+      const id = component.typeGroups()[0].id;
+      expect(component.typeGroups().find((g) => g.id === id)?.expanded).toBe(true);
 
-      component.toggleCategory(id);
-      expect(component.categories().find((c) => c.id === id)?.expanded).toBe(false);
+      component.toggleTypeGroup(id);
+      expect(component.typeGroups().find((g) => g.id === id)?.expanded).toBe(false);
 
-      component.toggleCategory(id);
-      expect(component.categories().find((c) => c.id === id)?.expanded).toBe(true);
+      component.toggleTypeGroup(id);
+      expect(component.typeGroups().find((g) => g.id === id)?.expanded).toBe(true);
     });
 
-    it('should force-expand a collapsed category while searching', () => {
-      const id = component.categories()[0].id;
-      component.toggleCategory(id);
+    it('should force-expand a collapsed type group while searching', () => {
+      const pieGroupId = component
+        .typeGroups()
+        .find((g) => g.items.some((i) => i.id === 'pie-chart'))!.id;
+      component.toggleTypeGroup(pieGroupId);
 
       component.onQueryChange('pie');
 
-      expect(component.categories().find((c) => c.id === id)?.expanded).toBe(true);
+      expect(component.typeGroups().find((g) => g.id === pieGroupId)?.expanded).toBe(true);
+    });
+  });
+
+  describe('flatItems', () => {
+    it('should list every match, ungrouped, regardless of the active filter', () => {
+      expect(
+        component
+          .flatItems()
+          .map((i) => i.id)
+          .sort(),
+      ).toEqual(['active-downloads', 'bar-chart', 'pie-chart', 'stat-tile', 'torrent-list']);
+    });
+
+    it('should narrow to a specific chart-type filter', () => {
+      component.setFilter('table');
+      expect(
+        component
+          .flatItems()
+          .map((i) => i.id)
+          .sort(),
+      ).toEqual(['active-downloads', 'torrent-list']);
+    });
+  });
+
+  describe('rendering', () => {
+    it('should render an accordion (category toggle) per chart type when "all" is selected', () => {
+      fixture.detectChanges();
+      const toggles = fixture.nativeElement.querySelectorAll('.widget-picker__category-toggle');
+      // 4 distinct chart types are actually populated: number, table, pie, column (no 'line' widget yet)
+      expect(toggles.length).toBe(4);
+    });
+
+    it('should render a flat list with no accordion toggle when a specific chart type is selected', () => {
+      component.setFilter('table');
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelector('.widget-picker__category-toggle')).toBeFalsy();
+      const items = fixture.nativeElement.querySelectorAll(
+        '.widget-picker__items--flat .widget-picker__item',
+      );
+      expect(items.length).toBe(2);
     });
   });
 });
