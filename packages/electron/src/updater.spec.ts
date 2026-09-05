@@ -14,6 +14,7 @@ const mockAutoUpdater = vi.hoisted(() => ({
   quitAndInstall: vi.fn(),
 }));
 const mockExistsSync = vi.hoisted(() => vi.fn());
+const mockReadFileSync = vi.hoisted(() => vi.fn());
 const mockSend = vi.hoisted(() => vi.fn());
 const mockGetMainWindow = vi.hoisted(() => vi.fn(() => ({ webContents: { send: mockSend } })));
 const mockAppIsPackaged = vi.hoisted(() => ({ value: true }));
@@ -31,13 +32,14 @@ vi.mock('electron', () => ({
   },
 }));
 vi.mock('electron-updater', () => ({ default: { autoUpdater: mockAutoUpdater } }));
-vi.mock('node:fs', () => ({ existsSync: mockExistsSync }));
+vi.mock('node:fs', () => ({ existsSync: mockExistsSync, readFileSync: mockReadFileSync }));
 vi.mock('./main.js', () => ({ getMainWindow: mockGetMainWindow }));
 vi.mock('./i18n.js', () => ({ t: (key: string) => key }));
 
 describe('updater IPC handlers', () => {
   const originalPlatform = process.platform;
   const originalExecPath = process.execPath;
+  const originalResourcesPath = process.resourcesPath;
   const originalAppimageEnv = process.env.APPIMAGE;
 
   beforeEach(() => {
@@ -49,12 +51,20 @@ describe('updater IPC handlers', () => {
       value: 'C:/Program Files/BitButler/BitButler.exe',
       configurable: true,
     });
+    Object.defineProperty(process, 'resourcesPath', {
+      value: '/opt/BitButler/resources',
+      configurable: true,
+    });
   });
 
   afterEach(() => {
     vi.clearAllMocks();
     Object.defineProperty(process, 'platform', { value: originalPlatform, configurable: true });
     Object.defineProperty(process, 'execPath', { value: originalExecPath, configurable: true });
+    Object.defineProperty(process, 'resourcesPath', {
+      value: originalResourcesPath,
+      configurable: true,
+    });
     if (originalAppimageEnv === undefined) {
       delete process.env.APPIMAGE;
     } else {
@@ -105,9 +115,39 @@ describe('updater IPC handlers', () => {
       expect(await handlers.get('updater:get-capability')!(null)).toEqual({ supported: true });
     });
 
-    it('is unsupported on Linux when APPIMAGE is unset (deb/rpm/snap/tar.gz)', async () => {
+    it('is supported on Linux for a deb install (package-type marker present)', async () => {
       Object.defineProperty(process, 'platform', { value: 'linux', configurable: true });
       delete process.env.APPIMAGE;
+      mockExistsSync.mockReturnValue(true);
+      mockReadFileSync.mockReturnValue('deb');
+      const handlers = await registerAndGetHandlers();
+      expect(await handlers.get('updater:get-capability')!(null)).toEqual({ supported: true });
+      expect(mockExistsSync).toHaveBeenCalledWith('/opt/BitButler/resources/package-type');
+    });
+
+    it('is supported on Linux for an rpm install (package-type marker present)', async () => {
+      Object.defineProperty(process, 'platform', { value: 'linux', configurable: true });
+      delete process.env.APPIMAGE;
+      mockExistsSync.mockReturnValue(true);
+      mockReadFileSync.mockReturnValue('rpm\n');
+      const handlers = await registerAndGetHandlers();
+      expect(await handlers.get('updater:get-capability')!(null)).toEqual({ supported: true });
+    });
+
+    it('is unsupported on Linux when no package-type marker exists (snap/tar.gz)', async () => {
+      Object.defineProperty(process, 'platform', { value: 'linux', configurable: true });
+      delete process.env.APPIMAGE;
+      mockExistsSync.mockReturnValue(false);
+      const handlers = await registerAndGetHandlers();
+      expect(await handlers.get('updater:get-capability')!(null)).toEqual({ supported: false });
+      expect(mockReadFileSync).not.toHaveBeenCalled();
+    });
+
+    it('is unsupported on Linux for an unrecognized package-type value', async () => {
+      Object.defineProperty(process, 'platform', { value: 'linux', configurable: true });
+      delete process.env.APPIMAGE;
+      mockExistsSync.mockReturnValue(true);
+      mockReadFileSync.mockReturnValue('pacman');
       const handlers = await registerAndGetHandlers();
       expect(await handlers.get('updater:get-capability')!(null)).toEqual({ supported: false });
     });
