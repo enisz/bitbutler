@@ -10,11 +10,11 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import type { LogEntry } from '@bitbutler/shared';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faSquare, faSquareCheck } from '@fortawesome/free-regular-svg-icons';
 import {
   faArrowsRotate,
   faChevronLeft,
   faFileExport,
+  faHighlighter,
   faTrashCan,
 } from '@fortawesome/free-solid-svg-icons';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
@@ -47,8 +47,7 @@ export class Logs implements OnInit {
     faChevronLeft,
     faArrowsRotate,
     faTrashCan,
-    faSquare,
-    faSquareCheck,
+    faHighlighter,
     faFileExport,
   };
   public readonly logs = signal<LogEntry[]>([]);

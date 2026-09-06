@@ -24,6 +24,7 @@
       <button
         type="button"
         class="bb-tool"
+        [class.bb-tool--primary]="colorCodingEnabled()"
         (click)="toggleColorCoding(); colorCodingTooltip.close()"
         [ngbTooltip]="'pages.logs.color-coding' | translate"
         placement="bottom"
@@ -32,7 +33,7 @@
         #colorCodingTooltip="ngbTooltip"
       >
         <span class="bb-tool__icon" aria-hidden="true">
-          <fa-icon [icon]="colorCodingEnabled() ? icons.faSquareCheck : icons.faSquare" />
+          <fa-icon [icon]="icons.faHighlighter" />
         </span>
         <span class="bb-tool__label">{{ 'pages.logs.color-coding' | translate }}</span>
       </button>
