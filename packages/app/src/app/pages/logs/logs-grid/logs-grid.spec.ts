@@ -46,7 +46,7 @@ describe('LogsGrid', () => {
     applyColumnState: ReturnType<typeof vi.fn>;
     redrawRows: ReturnType<typeof vi.fn>;
     getSelectedRows: ReturnType<typeof vi.fn>;
-    forEachNodeAfterFilter: ReturnType<typeof vi.fn>;
+    forEachNodeAfterFilterAndSort: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(async () => {
@@ -69,7 +69,7 @@ describe('LogsGrid', () => {
       applyColumnState: vi.fn(),
       redrawRows: vi.fn(),
       getSelectedRows: vi.fn().mockReturnValue([]),
-      forEachNodeAfterFilter: vi.fn(),
+      forEachNodeAfterFilterAndSort: vi.fn(),
     };
 
     await TestBed.configureTestingModule({
@@ -218,9 +218,11 @@ describe('LogsGrid', () => {
 
     it('collects every row visible after filtering once the grid is ready', async () => {
       const rows = [makeLog({ id: 1 }), makeLog({ id: 2 })];
-      mockApi.forEachNodeAfterFilter.mockImplementation((cb: (node: { data: unknown }) => void) => {
-        rows.forEach((data) => cb({ data }));
-      });
+      mockApi.forEachNodeAfterFilterAndSort.mockImplementation(
+        (cb: (node: { data: unknown }) => void) => {
+          rows.forEach((data) => cb({ data }));
+        },
+      );
       await component.gridOptions.onGridReady!({ api: mockApi } as any);
 
       expect(component.getFilteredRows()).toEqual(rows);
