@@ -119,23 +119,39 @@ export class DatepickerRangeFilter implements IFilterAngularComp, OnInit, OnDest
       value: i + 1,
       label: this.i18n.getMonthFullName(i + 1),
     }));
-    const currentYear = this.today.year;
-    const startYear = this.minDate?.year ?? currentYear - 20;
-    const endYear = this.maxDate?.year ?? currentYear + 10;
-    for (let i = startYear; i <= endYear; i++) {
-      this.years.push(i);
-    }
+    this.buildYears();
   }
 
   agInit(params: DatepickerRangeFilterParams): void {
     this.params = params;
-    const min = params.getMinDate?.() ?? null;
-    const max = params.getMaxDate?.() ?? null;
-    this.minDate = min ? this.dateToNgb(min) : null;
-    this.maxDate = max ? this.dateToNgb(max) : null;
+    this.refreshDateBounds();
 
     this.monthPopupPortal = this.createPopupPortal(this.monthPopupPortalSelector);
     this.yearPopupPortal = this.createPopupPortal(this.yearPopupPortalSelector);
+  }
+
+  /**
+   * The underlying data (e.g. the torrent list) can change between filter popup openings, so the
+   * min/max bounds computed at agInit time can go stale - re-derive them on every reopen too,
+   * otherwise a newly-added row's date can end up permanently disabled.
+   */
+  private refreshDateBounds(): void {
+    const min = this.params.getMinDate?.() ?? null;
+    const max = this.params.getMaxDate?.() ?? null;
+    this.minDate = min ? this.dateToNgb(min) : null;
+    this.maxDate = max ? this.dateToNgb(max) : null;
+    this.buildYears();
+    this.visibleMonthsCacheYear = null;
+  }
+
+  private buildYears(): void {
+    const currentYear = this.today.year;
+    const startYear = this.minDate?.year ?? currentYear - 20;
+    const endYear = this.maxDate?.year ?? currentYear + 10;
+    this.years = [];
+    for (let i = startYear; i <= endYear; i++) {
+      this.years.push(i);
+    }
   }
 
   ngOnDestroy(): void {
@@ -205,6 +221,7 @@ export class DatepickerRangeFilter implements IFilterAngularComp, OnInit, OnDest
     this.toDate = this.appliedTo;
   }
   afterGuiAttached(_params?: IAfterGuiAttachedParams): void {
+    this.refreshDateBounds();
     this.fromDate = this.appliedFrom;
     this.toDate = this.appliedTo;
     this.hoveredDate = null;

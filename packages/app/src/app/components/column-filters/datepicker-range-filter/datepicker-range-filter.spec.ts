@@ -494,6 +494,34 @@ describe('DatepickerRangeFilter', () => {
       });
     });
 
+    describe('refreshing bounds on reopen', () => {
+      it('recomputes minDate/maxDate from the latest getMinDate/getMaxDate each time the filter is reopened', async () => {
+        let max: Date | null = new Date(2024, 0, 10);
+        const boundedParams: any = {
+          filterChangedCallback: vi.fn(),
+          api: { hidePopupMenu: vi.fn() },
+          getValue: vi.fn(),
+          getMinDate: () => null,
+          getMaxDate: () => max,
+        };
+
+        await TestBed.resetTestingModule()
+          .configureTestingModule({ imports: [DatepickerRangeFilter] })
+          .compileComponents();
+        const boundedFixture = TestBed.createComponent(DatepickerRangeFilter);
+        const c = boundedFixture.componentInstance;
+        c.agInit(boundedParams);
+        boundedFixture.detectChanges();
+
+        expect(c.isOutOfRange(new NgbDate(2024, 1, 20))).toBe(true);
+
+        max = new Date(2024, 0, 25);
+        c.afterGuiAttached();
+
+        expect(c.isOutOfRange(new NgbDate(2024, 1, 20))).toBe(false);
+      });
+    });
+
     describe('years dropdown', () => {
       it('is trimmed to the configured min/max year range', async () => {
         const c = await createWithBounds(new Date(2022, 0, 1), new Date(2025, 0, 1));
