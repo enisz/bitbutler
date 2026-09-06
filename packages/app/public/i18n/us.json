@@ -1246,6 +1246,35 @@
         "message": "Are you sure you want to delete {{name}}?"
       }
     },
+    "logs": {
+      "title": "Logs",
+      "back-button": "Back",
+      "color-coding": "Color Coding",
+      "clear-confirm": {
+        "title": "Clear Logs",
+        "message": "Are you sure you want to permanently delete all logs?"
+      },
+      "toast": {
+        "refresh-failed": {
+          "title": "Failed to Load Logs"
+        },
+        "clear-failed": {
+          "title": "Failed to Clear Logs"
+        }
+      },
+      "grid": {
+        "col-def": {
+          "timestamp": "Timestamp",
+          "process": "Process",
+          "level": "Level",
+          "message": "Message",
+          "context": "Context",
+          "filename": "Filename",
+          "line": "Line",
+          "id": "ID"
+        }
+      }
+    },
     "main": {
       "button-bar": {
         "button": {

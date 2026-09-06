@@ -12,6 +12,7 @@ import {
 import {
   NgbCalendar,
   NgbDate,
+  NgbDateStruct,
   NgbDatepicker,
   NgbDatepickerI18n,
   NgbDatepickerModule,
@@ -28,6 +29,11 @@ import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
 interface DateRangeFilterModel {
   from: NgbDate | null;
   to: NgbDate | null;
+}
+
+export interface DatepickerRangeFilterParams extends IFilterParams {
+  getMinDate?: () => Date | null;
+  getMaxDate?: () => Date | null;
 }
 
 /** The subset of `NgbDatepicker` this component actually drives. */
@@ -53,7 +59,7 @@ export class DatepickerRangeFilter implements IFilterAngularComp, OnInit {
   readonly calendarService = inject(NgbCalendar);
   private readonly i18n = inject(NgbDatepickerI18n);
   readonly dateFormatService = inject(DateFormatService);
-  private params!: IFilterParams;
+  private params!: DatepickerRangeFilterParams;
   public icons = { faChevronLeft, faChevronRight, faCalendarDay, faEraser, faCheck };
   fromDate: NgbDate | null = null;
   toDate: NgbDate | null = null;
@@ -64,6 +70,15 @@ export class DatepickerRangeFilter implements IFilterAngularComp, OnInit {
   viewDate: { month: number; year: number };
   months: { value: number; label: string }[] = [];
   years: number[] = [];
+  minDate: NgbDate | null = null;
+  maxDate: NgbDate | null = null;
+
+  isOutOfRange = (date: NgbDateStruct): boolean => {
+    const ngbDate = new NgbDate(date.year, date.month, date.day);
+    if (this.minDate && ngbDate.before(this.minDate)) return true;
+    if (this.maxDate && ngbDate.after(this.maxDate)) return true;
+    return false;
+  };
 
   constructor() {
     this.today = this.calendarService.getToday();
@@ -76,20 +91,38 @@ export class DatepickerRangeFilter implements IFilterAngularComp, OnInit {
       label: this.i18n.getMonthFullName(i + 1),
     }));
     const currentYear = this.today.year;
-    for (let i = currentYear - 20; i <= currentYear + 10; i++) {
+    const startYear = this.minDate?.year ?? currentYear - 20;
+    const endYear = this.maxDate?.year ?? currentYear + 10;
+    for (let i = startYear; i <= endYear; i++) {
       this.years.push(i);
     }
   }
 
-  agInit(params: IFilterParams): void {
+  agInit(params: DatepickerRangeFilterParams): void {
     this.params = params;
+    const min = params.getMinDate?.() ?? null;
+    const max = params.getMaxDate?.() ?? null;
+    this.minDate = min ? this.dateToNgb(min) : null;
+    this.maxDate = max ? this.dateToNgb(max) : null;
   }
   isFilterActive(): boolean {
     return this.appliedFrom !== null;
   }
+  visibleMonths(): { value: number; label: string }[] {
+    return this.months.filter((m) => {
+      if (this.minDate && this.viewDate.year === this.minDate.year && m.value < this.minDate.month)
+        return false;
+      if (this.maxDate && this.viewDate.year === this.maxDate.year && m.value > this.maxDate.month)
+        return false;
+      return true;
+    });
+  }
+  private dateToNgb(d: Date): NgbDate {
+    return new NgbDate(d.getFullYear(), d.getMonth() + 1, d.getDate());
+  }
   doesFilterPass(params: IDoesFilterPassParams): boolean {
     if (!this.appliedFrom) return true;
-    const rawValue = params.data?.added_on;
+    const rawValue = this.params.getValue(params.node);
     if (rawValue == null) return false;
     const cellDate = new Date(Number(rawValue) * 1000);
     const cellLocalMidnight = new Date(

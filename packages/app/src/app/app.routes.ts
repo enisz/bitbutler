@@ -12,6 +12,10 @@ export const routes: Routes = [
         path: 'torrent-list',
         loadComponent: () => import('./pages/main/main').then((mod) => mod.Main),
       },
+      {
+        path: 'logs',
+        loadComponent: () => import('./pages/logs/logs').then((mod) => mod.Logs),
+      },
     ],
   },
   {

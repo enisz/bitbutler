@@ -1246,6 +1246,35 @@
         "message": "Biztosan törölni szeretnéd a következőt: {{name}}?"
       }
     },
+    "logs": {
+      "title": "Naplók",
+      "back-button": "Vissza",
+      "color-coding": "Színkódolás",
+      "clear-confirm": {
+        "title": "Naplók törlése",
+        "message": "Biztosan véglegesen törölni szeretnéd az összes naplóbejegyzést?"
+      },
+      "toast": {
+        "refresh-failed": {
+          "title": "A naplók betöltése sikertelen"
+        },
+        "clear-failed": {
+          "title": "A naplók törlése sikertelen"
+        }
+      },
+      "grid": {
+        "col-def": {
+          "timestamp": "Időbélyeg",
+          "process": "Folyamat",
+          "level": "Szint",
+          "message": "Üzenet",
+          "context": "Kontextus",
+          "filename": "Fájlnév",
+          "line": "Sor",
+          "id": "Azonosító"
+        }
+      }
+    },
     "main": {
       "button-bar": {
         "button": {

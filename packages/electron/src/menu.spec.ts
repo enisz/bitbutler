@@ -328,6 +328,17 @@ describe('rebuildMenu', () => {
       expect(mainWindow.webContents.openDevTools).toHaveBeenCalledWith({ mode: 'detach' });
     });
 
+    it('sends view.select for the logs view when Logs is clicked', async () => {
+      const mainWindow = createFakeWindow();
+      const template = await buildMenu(mainWindow);
+      const item = findItem(template, byLabel('Logs'))!;
+      (item.click as () => void)();
+      expect(mainWindow.webContents.send).toHaveBeenCalledWith(
+        'menu:clicked',
+        expect.objectContaining({ action: 'view.select', viewId: 'logs' }),
+      );
+    });
+
     it('reloads the window using the built-in reload role instead of an unhandled IPC action', async () => {
       const template = await buildMenu();
       const item = findItem(template, byLabel('Reload'))!;

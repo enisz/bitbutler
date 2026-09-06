@@ -1,5 +1,5 @@
 import type { HostPlatform, UpdateCheckResponse } from './models/electron.model.js';
-import type { RendererLogEntry } from './models/log.model.js';
+import type { LogEntry, RendererLogEntry } from './models/log.model.js';
 import type { NewServer, ServerRecord } from './models/server.model.js';
 import type { TorrentDraft, TorrentDraftSource } from './models/torrent-draft.model.js';
 import type { UpdateCapability, UpdaterEvent } from './models/updater.model.js';
@@ -257,6 +257,8 @@ export interface BitButlerAPI {
 
   log: {
     write(entry: RendererLogEntry): void;
+    list(): Promise<LogEntry[]>;
+    clear(): Promise<{ ok: true }>;
   };
 
   settings: {
