@@ -13,6 +13,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faArrowsRotate,
   faChevronLeft,
+  faCompress,
   faFileExport,
   faHighlighter,
   faTrashCan,
@@ -48,12 +49,20 @@ export class Logs implements OnInit {
     faArrowsRotate,
     faTrashCan,
     faHighlighter,
+    faCompress,
     faFileExport,
   };
   public readonly logs = signal<LogEntry[]>([]);
   public readonly colorCodingEnabled = toSignal(
     this.logGridSettingsService.asObservable().pipe(
       map((s) => s.colorCodingEnabled),
+      distinctUntilChanged(),
+    ),
+    { initialValue: false },
+  );
+  public readonly compactRowsEnabled = toSignal(
+    this.logGridSettingsService.asObservable().pipe(
+      map((s) => s.compactRows),
       distinctUntilChanged(),
     ),
     { initialValue: false },
@@ -117,6 +126,14 @@ export class Logs implements OnInit {
     await this.logGridSettingsService.save({
       ...settings,
       colorCodingEnabled: !settings.colorCodingEnabled,
+    });
+  }
+
+  async toggleCompactRows(): Promise<void> {
+    const settings = await firstValueFrom(this.logGridSettingsService.asObservable());
+    await this.logGridSettingsService.save({
+      ...settings,
+      compactRows: !settings.compactRows,
     });
   }
 }

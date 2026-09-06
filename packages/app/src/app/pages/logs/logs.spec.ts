@@ -58,6 +58,7 @@ describe('Logs', () => {
     settings$ = new BehaviorSubject<LogGridSettings>({
       columnState: null,
       colorCodingEnabled: false,
+      compactRows: false,
     });
     logServiceMock = {
       list: vi.fn().mockResolvedValue([makeLog()]),
@@ -161,13 +162,18 @@ describe('Logs', () => {
   describe('toggleColorCoding', () => {
     it('flips the persisted colorCodingEnabled while preserving columnState', async () => {
       fixture.detectChanges();
-      settings$.next({ columnState: [{ colId: 'message' }] as any, colorCodingEnabled: false });
+      settings$.next({
+        columnState: [{ colId: 'message' }] as any,
+        colorCodingEnabled: false,
+        compactRows: false,
+      });
 
       await component.toggleColorCoding();
 
       expect(logGridSettingsServiceMock.save).toHaveBeenCalledWith({
         columnState: [{ colId: 'message' }],
         colorCodingEnabled: true,
+        compactRows: false,
       });
     });
   });
@@ -175,8 +181,31 @@ describe('Logs', () => {
   describe('colorCodingEnabled', () => {
     it('reflects the value from LogGridSettingsService', () => {
       fixture.detectChanges();
-      settings$.next({ columnState: null, colorCodingEnabled: true });
+      settings$.next({ columnState: null, colorCodingEnabled: true, compactRows: false });
       expect(component.colorCodingEnabled()).toBe(true);
+    });
+  });
+
+  describe('toggleCompactRows', () => {
+    it('flips the persisted compactRows while preserving other settings', async () => {
+      fixture.detectChanges();
+      settings$.next({ columnState: null, colorCodingEnabled: true, compactRows: false });
+
+      await component.toggleCompactRows();
+
+      expect(logGridSettingsServiceMock.save).toHaveBeenCalledWith({
+        columnState: null,
+        colorCodingEnabled: true,
+        compactRows: true,
+      });
+    });
+  });
+
+  describe('compactRowsEnabled', () => {
+    it('reflects the value from LogGridSettingsService', () => {
+      fixture.detectChanges();
+      settings$.next({ columnState: null, colorCodingEnabled: false, compactRows: true });
+      expect(component.compactRowsEnabled()).toBe(true);
     });
   });
 

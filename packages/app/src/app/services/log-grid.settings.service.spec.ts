@@ -24,14 +24,19 @@ describe('LogGridSettingsService', () => {
 
   it('returns default settings with expected shape when nothing is stored', async () => {
     const settings = await service.load();
-    expect(settings).toEqual({ columnState: null, colorCodingEnabled: false });
+    expect(settings).toEqual({ columnState: null, colorCodingEnabled: false, compactRows: false });
   });
 
   it('persists settings under the LogGridSettingsService id', async () => {
-    await service.save({ columnState: [{ colId: 'message' }], colorCodingEnabled: true } as any);
+    await service.save({
+      columnState: [{ colId: 'message' }],
+      colorCodingEnabled: true,
+      compactRows: false,
+    } as any);
     expect(mockSettingsService.set).toHaveBeenCalledWith('LogGridSettingsService', {
       columnState: [{ colId: 'message' }],
       colorCodingEnabled: true,
+      compactRows: false,
     });
   });
 

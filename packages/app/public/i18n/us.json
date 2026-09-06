@@ -1250,6 +1250,7 @@
       "title": "Logs",
       "back-button": "Back",
       "color-coding": "Color Coding",
+      "compact-rows": "Compact Rows",
       "clear-confirm": {
         "title": "Clear Logs",
         "message": "Are you sure you want to permanently delete all logs?"

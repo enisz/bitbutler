@@ -1250,6 +1250,7 @@
       "title": "Naplók",
       "back-button": "Vissza",
       "color-coding": "Színkódolás",
+      "compact-rows": "Kompakt sorok",
       "clear-confirm": {
         "title": "Naplók törlése",
         "message": "Biztosan véglegesen törölni szeretnéd az összes naplóbejegyzést?"

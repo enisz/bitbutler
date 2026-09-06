@@ -41,6 +41,23 @@
       <button
         type="button"
         class="bb-tool"
+        [class.bb-tool--primary]="compactRowsEnabled()"
+        (click)="toggleCompactRows(); compactRowsTooltip.close()"
+        [ngbTooltip]="'pages.logs.compact-rows' | translate"
+        placement="bottom"
+        container="body"
+        [disableTooltip]="!compact"
+        #compactRowsTooltip="ngbTooltip"
+      >
+        <span class="bb-tool__icon" aria-hidden="true">
+          <fa-icon [icon]="icons.faCompress" />
+        </span>
+        <span class="bb-tool__label">{{ 'pages.logs.compact-rows' | translate }}</span>
+      </button>
+
+      <button
+        type="button"
+        class="bb-tool"
         (click)="refresh(); refreshTooltip.close()"
         [ngbTooltip]="'general.button.refresh' | translate"
         placement="bottom"
