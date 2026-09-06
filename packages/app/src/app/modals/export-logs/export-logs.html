@@ -1,0 +1,148 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ 'components.modals.export-logs.title' | translate }}</h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
+</div>
+
+<div class="modal-body">
+  <form [formGroup]="exportForm" class="d-flex flex-column gap-3">
+    <fieldset class="bb-fieldset">
+      <legend>{{ 'components.modals.export-logs.label.scope' | translate }}</legend>
+
+      <div class="btn-group w-100 mb-1" role="group">
+        <input
+          type="radio"
+          class="btn-check"
+          formControlName="scope"
+          id="export-logs-scope-all"
+          value="all"
+        />
+        <label class="btn btn-outline-secondary" for="export-logs-scope-all">
+          {{ ('components.modals.export-logs.scope.all' | translate) + ' (' + allCount() + ')' }}
+        </label>
+        <input
+          type="radio"
+          class="btn-check"
+          formControlName="scope"
+          id="export-logs-scope-filtered"
+          value="filtered"
+          [attr.disabled]="!hasFiltered() || null"
+        />
+        <label class="btn btn-outline-secondary" for="export-logs-scope-filtered">
+          {{
+            ('components.modals.export-logs.scope.filtered' | translate) +
+              ' (' +
+              filteredCount() +
+              ')'
+          }}
+        </label>
+        <input
+          type="radio"
+          class="btn-check"
+          formControlName="scope"
+          id="export-logs-scope-selected"
+          value="selected"
+          [attr.disabled]="!hasSelection() || null"
+        />
+        <label class="btn btn-outline-secondary" for="export-logs-scope-selected">
+          {{
+            ('components.modals.export-logs.scope.selected' | translate) +
+              ' (' +
+              selectedCount() +
+              ')'
+          }}
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset class="bb-fieldset">
+      <legend>{{ 'components.modals.export-logs.label.format' | translate }}</legend>
+
+      <div class="form-floating mb-2">
+        <input
+          type="text"
+          class="form-control"
+          id="export-logs-format"
+          formControlName="format"
+          [placeholder]="'components.modals.export-logs.placeholder.format' | translate"
+        />
+        <label for="export-logs-format">{{
+          'components.modals.export-logs.label.format' | translate
+        }}</label>
+      </div>
+
+      <div class="d-flex justify-content-end mb-2">
+        <button type="button" class="btn btn-sm btn-link btn-split" (click)="toggleVariableGuide()">
+          <bb-btn-content
+            [icon]="variableGuideExpanded() ? icons.faChevronUp : icons.faChevronDown"
+            [text]="'components.modals.export-logs.variable-guide.toggle' | translate"
+          ></bb-btn-content>
+        </button>
+      </div>
+
+      <div [ngbCollapse]="!variableGuideExpanded()">
+        <div class="row mb-2">
+          <div class="col-12 text-muted small">
+            {{ 'components.modals.export-logs.variable-guide.hint' | translate }}
+          </div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-12">
+            <table
+              id="export-logs-variable-guide"
+              class="table table-sm table-striped table-hover mb-0"
+            >
+              <thead>
+                <tr>
+                  <th>
+                    {{ 'components.modals.export-logs.variable-guide.column-token' | translate }}
+                  </th>
+                  <th>
+                    {{
+                      'components.modals.export-logs.variable-guide.column-description' | translate
+                    }}
+                  </th>
+                  <th>
+                    {{ 'components.modals.export-logs.variable-guide.column-example' | translate }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of variableGuide(); track row.token) {
+                  <tr>
+                    <td>
+                      <code>{{ '{{' }}{{ row.token }}{{ '}}' }}</code>
+                    </td>
+                    <td>{{ row.description }}</td>
+                    <td>{{ row.example }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button
+    type="button"
+    class="btn btn-primary btn-sm bb-pill-btn"
+    (click)="startExport()"
+    [disabled]="exportForm.invalid || exporting()"
+  >
+    <bb-btn-content
+      [icon]="icons.faFileExport"
+      [text]="'components.modals.export-logs.button.export' | translate"
+      position="end"
+    ></bb-btn-content>
+  </button>
+  <button type="button" class="btn btn-sm btn-split" (click)="close()" autofocus>
+    <bb-btn-content
+      [icon]="icons.faXmark"
+      [text]="'general.button.cancel' | translate"
+      position="end"
+    ></bb-btn-content>
+  </button>
+</div>
