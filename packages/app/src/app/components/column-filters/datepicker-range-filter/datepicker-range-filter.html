@@ -16,6 +16,7 @@
         [searchable]="false"
         [(ngModel)]="viewDate.month"
         (change)="updateView(dp)"
+        [appendTo]="monthPopupPortalSelector"
         class="bb-select-month"
       >
       </ng-select>
@@ -28,6 +29,7 @@
         [searchable]="true"
         [(ngModel)]="viewDate.year"
         (change)="updateView(dp)"
+        [appendTo]="yearPopupPortalSelector"
         class="bb-select-year"
       >
       </ng-select>

@@ -1,5 +1,5 @@
 import { formatDate } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
@@ -25,6 +25,8 @@ import { IAfterGuiAttachedParams, IDoesFilterPassParams, IFilterParams } from 'a
 import { CustomDatepickerI18n } from '../../../services/custom-datepicker-i18n.service';
 import { DateFormatService } from '../../../services/date-format.service';
 import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
+import { createFilterInstanceId } from '../filter-instance-id.utils';
+import { AG_GRID_CUSTOM_POPUP_CLASS } from '../operator-filter-base';
 
 interface DateRangeFilterModel {
   from: NgbDate | null;
@@ -55,11 +57,20 @@ type NavigableDatepicker = Pick<NgbDatepicker, 'navigateTo'>;
   styleUrl: './datepicker-range-filter.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DatepickerRangeFilter implements IFilterAngularComp, OnInit {
+export class DatepickerRangeFilter implements IFilterAngularComp, OnInit, OnDestroy {
   readonly calendarService = inject(NgbCalendar);
   private readonly i18n = inject(NgbDatepickerI18n);
   readonly dateFormatService = inject(DateFormatService);
   private params!: DatepickerRangeFilterParams;
+  public readonly instanceId = createFilterInstanceId('datepicker-range-filter');
+  /**
+   * The month and year selects each need their own portal element. ng-select's overlay/Popover
+   * machinery gets confused when two independent select instances share a single appendTo host -
+   * opening one after the other can leave a stale, invisible overlay layer behind that swallows
+   * clicks on the second select's options (they appear normal but do nothing).
+   */
+  private monthPopupPortal?: HTMLElement;
+  private yearPopupPortal?: HTMLElement;
   public icons = { faChevronLeft, faChevronRight, faCalendarDay, faEraser, faCheck };
   fromDate: NgbDate | null = null;
   toDate: NgbDate | null = null;
@@ -72,6 +83,24 @@ export class DatepickerRangeFilter implements IFilterAngularComp, OnInit {
   years: number[] = [];
   minDate: NgbDate | null = null;
   maxDate: NgbDate | null = null;
+  /**
+   * `visibleMonths()` is bound directly in the template ([items]="visibleMonths()"), which is
+   * ng-select's `items` signal input - a new array reference on every call re-fires ng-select's
+   * internal items effect even while its dropdown is open, resetting the hovered/marked option
+   * mid-interaction (hover highlight never sticks, clicks land on a just-rebuilt item list).
+   * Caching by viewed year keeps the reference stable across change-detection passes that don't
+   * actually change which months should be visible.
+   */
+  private visibleMonthsCache: { value: number; label: string }[] = [];
+  private visibleMonthsCacheYear: number | null = null;
+
+  get monthPopupPortalSelector(): string {
+    return `#${this.instanceId}-month-popup-portal`;
+  }
+
+  get yearPopupPortalSelector(): string {
+    return `#${this.instanceId}-year-popup-portal`;
+  }
 
   isOutOfRange = (date: NgbDateStruct): boolean => {
     const ngbDate = new NgbDate(date.year, date.month, date.day);
@@ -104,18 +133,47 @@ export class DatepickerRangeFilter implements IFilterAngularComp, OnInit {
     const max = params.getMaxDate?.() ?? null;
     this.minDate = min ? this.dateToNgb(min) : null;
     this.maxDate = max ? this.dateToNgb(max) : null;
+
+    this.monthPopupPortal = this.createPopupPortal(this.monthPopupPortalSelector);
+    this.yearPopupPortal = this.createPopupPortal(this.yearPopupPortalSelector);
+  }
+
+  ngOnDestroy(): void {
+    this.monthPopupPortal?.remove();
+    this.yearPopupPortal?.remove();
+  }
+
+  private createPopupPortal(idSelector: string): HTMLElement {
+    const portal = document.createElement('div');
+    portal.id = idSelector.slice(1);
+    portal.className = AG_GRID_CUSTOM_POPUP_CLASS;
+    portal.style.position = 'relative';
+    document.body.appendChild(portal);
+    return portal;
   }
   isFilterActive(): boolean {
     return this.appliedFrom !== null;
   }
   visibleMonths(): { value: number; label: string }[] {
-    return this.months.filter((m) => {
-      if (this.minDate && this.viewDate.year === this.minDate.year && m.value < this.minDate.month)
-        return false;
-      if (this.maxDate && this.viewDate.year === this.maxDate.year && m.value > this.maxDate.month)
-        return false;
-      return true;
-    });
+    if (this.viewDate.year !== this.visibleMonthsCacheYear) {
+      this.visibleMonthsCacheYear = this.viewDate.year;
+      this.visibleMonthsCache = this.months.filter((m) => {
+        if (
+          this.minDate &&
+          this.viewDate.year === this.minDate.year &&
+          m.value < this.minDate.month
+        )
+          return false;
+        if (
+          this.maxDate &&
+          this.viewDate.year === this.maxDate.year &&
+          m.value > this.maxDate.month
+        )
+          return false;
+        return true;
+      });
+    }
+    return this.visibleMonthsCache;
   }
   private dateToNgb(d: Date): NgbDate {
     return new NgbDate(d.getFullYear(), d.getMonth() + 1, d.getDate());

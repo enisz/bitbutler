@@ -30,6 +30,43 @@ describe('DatepickerRangeFilter', () => {
     expect(component).toBeTruthy();
   });
 
+  describe('ag-grid popup containment', () => {
+    it('appends separate popup portal elements for the month and year selects, each tagged for ag-grid to treat as part of the filter popup', () => {
+      const monthPortal = document.querySelector(component.monthPopupPortalSelector);
+      const yearPortal = document.querySelector(component.yearPopupPortalSelector);
+      expect(monthPortal).not.toBeNull();
+      expect(yearPortal).not.toBeNull();
+      expect(monthPortal).not.toBe(yearPortal);
+      expect(monthPortal!.classList.contains('ag-custom-component-popup')).toBe(true);
+      expect(yearPortal!.classList.contains('ag-custom-component-popup')).toBe(true);
+    });
+
+    it('gives each filter instance its own portal ids', async () => {
+      await TestBed.resetTestingModule()
+        .configureTestingModule({ imports: [DatepickerRangeFilter] })
+        .compileComponents();
+      const otherFixture = TestBed.createComponent(DatepickerRangeFilter);
+      const other = otherFixture.componentInstance;
+      other.agInit(mockParams);
+
+      expect(other.monthPopupPortalSelector).not.toBe(component.monthPopupPortalSelector);
+      expect(other.yearPopupPortalSelector).not.toBe(component.yearPopupPortalSelector);
+      other.ngOnDestroy();
+    });
+
+    it('removes both popup portal elements on destroy', () => {
+      const monthSelector = component.monthPopupPortalSelector;
+      const yearSelector = component.yearPopupPortalSelector;
+      expect(document.querySelector(monthSelector)).not.toBeNull();
+      expect(document.querySelector(yearSelector)).not.toBeNull();
+
+      component.ngOnDestroy();
+
+      expect(document.querySelector(monthSelector)).toBeNull();
+      expect(document.querySelector(yearSelector)).toBeNull();
+    });
+  });
+
   describe('isFilterActive', () => {
     it('should return false when no applied from-date is set', () => {
       component.appliedFrom = null;
@@ -483,6 +520,19 @@ describe('DatepickerRangeFilter', () => {
         const c = await createWithBounds(new Date(2024, 2, 1), new Date(2024, 5, 1));
         c.viewDate = { month: 1, year: 2023 };
         expect(c.visibleMonths().length).toBe(12);
+      });
+
+      it('returns the same array reference on repeated calls when the viewed year has not changed', () => {
+        const first = component.visibleMonths();
+        const second = component.visibleMonths();
+        expect(second).toBe(first);
+      });
+
+      it('returns a new array reference once the viewed year changes', () => {
+        const first = component.visibleMonths();
+        component.viewDate = { ...component.viewDate, year: component.viewDate.year + 1 };
+        const second = component.visibleMonths();
+        expect(second).not.toBe(first);
       });
     });
   });
