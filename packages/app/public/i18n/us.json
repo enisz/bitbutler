@@ -938,6 +938,49 @@
           "failed-title": "Export Failed"
         }
       },
+      "export-logs": {
+        "title": "Export Logs",
+        "label": {
+          "scope": "Export scope",
+          "format": "Format"
+        },
+        "placeholder": {
+          "format": "[{{date}}] [{{process}}] [{{level}}] ({{filename}}:{{line}}) - {{message}}"
+        },
+        "scope": {
+          "all": "All",
+          "filtered": "Filtered",
+          "selected": "Selected"
+        },
+        "variable-guide": {
+          "toggle": "Variable guide",
+          "hint": "Wrap a variable name in double curly braces, e.g. {{message}}, to include its value.",
+          "column-token": "Variable",
+          "column-description": "Description",
+          "column-example": "Example",
+          "token": {
+            "date": "Formatted timestamp, using the app's configured date/time format",
+            "process": "The process that produced the entry (main or renderer)",
+            "level": "The log level (debug, info, warn, or error)",
+            "message": "The log message",
+            "context": "Additional context attached to the entry, if any",
+            "filename": "The source filename the entry originated from, if known",
+            "line": "The source line number the entry originated from, if known",
+            "id": "The entry's numeric ID"
+          }
+        },
+        "button": {
+          "export": "Export"
+        },
+        "toast": {
+          "success": {
+            "title": "Logs Exported"
+          },
+          "error": {
+            "title": "Failed to Export Logs"
+          }
+        }
+      },
       "import-torrents": {
         "title": "Import Torrents",
         "label": {

@@ -938,6 +938,49 @@
           "failed-title": "Export sikertelen"
         }
       },
+      "export-logs": {
+        "title": "Naplók exportálása",
+        "label": {
+          "scope": "Exportálás hatóköre",
+          "format": "Formátum"
+        },
+        "placeholder": {
+          "format": "[{{date}}] [{{process}}] [{{level}}] ({{filename}}:{{line}}) - {{message}}"
+        },
+        "scope": {
+          "all": "Összes",
+          "filtered": "Szűrt",
+          "selected": "Kijelölt"
+        },
+        "variable-guide": {
+          "toggle": "Változók súgója",
+          "hint": "Írj egy változónevet dupla kapcsos zárójelbe, pl. {{message}}, hogy beillessze az értékét.",
+          "column-token": "Változó",
+          "column-description": "Leírás",
+          "column-example": "Példa",
+          "token": {
+            "date": "Formázott időbélyeg, az alkalmazás beállított dátum-/időformátuma szerint",
+            "process": "A bejegyzést létrehozó folyamat (main vagy renderer)",
+            "level": "A napló szintje (debug, info, warn vagy error)",
+            "message": "A napló üzenete",
+            "context": "A bejegyzéshez csatolt további kontextus, ha van",
+            "filename": "A bejegyzés forrás fájlneve, ha ismert",
+            "line": "A bejegyzés forrás sorszáma, ha ismert",
+            "id": "A bejegyzés numerikus azonosítója"
+          }
+        },
+        "button": {
+          "export": "Exportálás"
+        },
+        "toast": {
+          "success": {
+            "title": "Naplók exportálva"
+          },
+          "error": {
+            "title": "Naplók exportálása sikertelen"
+          }
+        }
+      },
       "import-torrents": {
         "title": "Torrentek importálása",
         "label": {
