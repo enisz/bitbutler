@@ -45,6 +45,8 @@ describe('LogsGrid', () => {
     getColumnState: ReturnType<typeof vi.fn>;
     applyColumnState: ReturnType<typeof vi.fn>;
     redrawRows: ReturnType<typeof vi.fn>;
+    getSelectedRows: ReturnType<typeof vi.fn>;
+    forEachNodeAfterFilter: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(async () => {
@@ -66,6 +68,8 @@ describe('LogsGrid', () => {
       getColumnState: vi.fn().mockReturnValue([{ colId: 'message' }]),
       applyColumnState: vi.fn(),
       redrawRows: vi.fn(),
+      getSelectedRows: vi.fn().mockReturnValue([]),
+      forEachNodeAfterFilter: vi.fn(),
     };
 
     await TestBed.configureTestingModule({
@@ -118,13 +122,21 @@ describe('LogsGrid', () => {
   });
 
   describe('onCellContextMenu', () => {
-    it('opens a context menu with a copy-row-as-json action that copies the row data', () => {
+    it('opens a context menu with a copy-row-as-json action that copies the row data when only one row is selected', () => {
       const row = makeLog({ id: 42 });
-      const event = { data: row };
+      const nodeMock = { setSelected: vi.fn() };
+      const apiMock = { getSelectedRows: vi.fn().mockReturnValue([row]) };
+      const event = { data: row, node: nodeMock, api: apiMock };
       component.gridOptions.onCellContextMenu!(event as any);
 
+      expect(nodeMock.setSelected).not.toHaveBeenCalled();
       expect(contextMenuServiceMock.open).toHaveBeenCalledWith({
-        items: [expect.objectContaining({ id: 'copy.json' })],
+        items: [
+          expect.objectContaining({
+            id: 'copy.json',
+            label: 'pages.main.grid.context-menu.item.copy-row-as-json',
+          }),
+        ],
       });
 
       const [{ items }] = contextMenuServiceMock.open.mock.calls[0];
@@ -136,9 +148,82 @@ describe('LogsGrid', () => {
       );
     });
 
+    it('collapses the grid selection to the right-clicked row when it is outside the current selection', () => {
+      const selectedRow = makeLog({ id: 1 });
+      const clickedRow = makeLog({ id: 2 });
+      const nodeMock = { setSelected: vi.fn() };
+      const apiMock = {
+        getSelectedRows: vi
+          .fn()
+          .mockReturnValueOnce([selectedRow])
+          .mockReturnValueOnce([clickedRow]),
+      };
+      const event = { data: clickedRow, node: nodeMock, api: apiMock };
+      component.gridOptions.onCellContextMenu!(event as any);
+
+      expect(nodeMock.setSelected).toHaveBeenCalledWith(true, true);
+    });
+
+    it('copies every selected row as a JSON array, with a plural label, when multiple rows are selected', () => {
+      const row1 = makeLog({ id: 1 });
+      const row2 = makeLog({ id: 2 });
+      const nodeMock = { setSelected: vi.fn() };
+      const apiMock = { getSelectedRows: vi.fn().mockReturnValue([row1, row2]) };
+      const event = { data: row1, node: nodeMock, api: apiMock };
+      component.gridOptions.onCellContextMenu!(event as any);
+
+      expect(nodeMock.setSelected).not.toHaveBeenCalled();
+      expect(contextMenuServiceMock.open).toHaveBeenCalledWith({
+        items: [
+          expect.objectContaining({
+            id: 'copy.json',
+            label: 'pages.main.grid.context-menu.item.copy-rows-as-json',
+          }),
+        ],
+      });
+
+      const [{ items }] = contextMenuServiceMock.open.mock.calls[0];
+      items[0].action();
+
+      expect(gridContextMenuServiceMock.copyToClipboard).toHaveBeenCalledWith(
+        JSON.stringify([row1, row2], null, 2),
+        '',
+      );
+    });
+
     it('opens an empty menu when there is no row data', () => {
       component.gridOptions.onCellContextMenu!({ data: undefined } as any);
       expect(contextMenuServiceMock.open).toHaveBeenCalledWith({ items: [] });
+    });
+  });
+
+  describe('getSelectedRows', () => {
+    it('returns an empty array before the grid is ready', () => {
+      expect(component.getSelectedRows()).toEqual([]);
+    });
+
+    it('returns the grid selected rows once the grid is ready', async () => {
+      const rows = [makeLog({ id: 5 })];
+      mockApi.getSelectedRows.mockReturnValue(rows);
+      await component.gridOptions.onGridReady!({ api: mockApi } as any);
+
+      expect(component.getSelectedRows()).toEqual(rows);
+    });
+  });
+
+  describe('getFilteredRows', () => {
+    it('returns an empty array before the grid is ready', () => {
+      expect(component.getFilteredRows()).toEqual([]);
+    });
+
+    it('collects every row visible after filtering once the grid is ready', async () => {
+      const rows = [makeLog({ id: 1 }), makeLog({ id: 2 })];
+      mockApi.forEachNodeAfterFilter.mockImplementation((cb: (node: { data: unknown }) => void) => {
+        rows.forEach((data) => cb({ data }));
+      });
+      await component.gridOptions.onGridReady!({ api: mockApi } as any);
+
+      expect(component.getFilteredRows()).toEqual(rows);
     });
   });
 
