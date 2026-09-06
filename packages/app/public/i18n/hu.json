@@ -2096,7 +2096,8 @@
       "open-details": "Részletek megnyitása",
       "edit": "Szerkesztés",
       "refresh": "Frissítés",
-      "retry": "Újra"
+      "retry": "Újra",
+      "export": "Exportálás"
     },
     "form": {
       "feedback": {

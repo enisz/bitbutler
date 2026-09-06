@@ -37,7 +37,10 @@ describe('LogsGrid', () => {
     save: ReturnType<typeof vi.fn>;
   };
   let contextMenuServiceMock: { open: ReturnType<typeof vi.fn> };
-  let gridContextMenuServiceMock: { buildHeaderMenu: ReturnType<typeof vi.fn> };
+  let gridContextMenuServiceMock: {
+    buildHeaderMenu: ReturnType<typeof vi.fn>;
+    copyToClipboard: ReturnType<typeof vi.fn>;
+  };
   let mockApi: {
     getColumnState: ReturnType<typeof vi.fn>;
     applyColumnState: ReturnType<typeof vi.fn>;
@@ -54,7 +57,10 @@ describe('LogsGrid', () => {
       save: vi.fn().mockResolvedValue(undefined),
     };
     contextMenuServiceMock = { open: vi.fn() };
-    gridContextMenuServiceMock = { buildHeaderMenu: vi.fn().mockReturnValue(['item']) };
+    gridContextMenuServiceMock = {
+      buildHeaderMenu: vi.fn().mockReturnValue(['item']),
+      copyToClipboard: vi.fn(),
+    };
     mockApi = {
       getColumnState: vi.fn().mockReturnValue([{ colId: 'message' }]),
       applyColumnState: vi.fn(),
@@ -107,6 +113,31 @@ describe('LogsGrid', () => {
 
       expect(gridContextMenuServiceMock.buildHeaderMenu).toHaveBeenCalledWith(event);
       expect(contextMenuServiceMock.open).toHaveBeenCalledWith({ items: ['item'] });
+    });
+  });
+
+  describe('onCellContextMenu', () => {
+    it('opens a context menu with a copy-row-as-json action that copies the row data', () => {
+      const row = makeLog({ id: 42 });
+      const event = { data: row };
+      component.gridOptions.onCellContextMenu!(event as any);
+
+      expect(contextMenuServiceMock.open).toHaveBeenCalledWith({
+        items: [expect.objectContaining({ id: 'copy.json' })],
+      });
+
+      const [{ items }] = contextMenuServiceMock.open.mock.calls[0];
+      items[0].action();
+
+      expect(gridContextMenuServiceMock.copyToClipboard).toHaveBeenCalledWith(
+        JSON.stringify(row, null, 2),
+        '',
+      );
+    });
+
+    it('opens an empty menu when there is no row data', () => {
+      component.gridOptions.onCellContextMenu!({ data: undefined } as any);
+      expect(contextMenuServiceMock.open).toHaveBeenCalledWith({ items: [] });
     });
   });
 

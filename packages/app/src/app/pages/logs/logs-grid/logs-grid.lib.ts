@@ -64,10 +64,12 @@ export function getLogGridColDefs(
       } satisfies Partial<DatepickerRangeFilterParams>,
       sort: 'desc',
       cellClass: 'tabular-nums',
+      tooltipValueGetter: (params) => params.valueFormatted ?? '',
     },
     {
       colId: 'process',
       field: 'process',
+      tooltipField: 'process',
       headerName: translateService.instant('pages.logs.grid.col-def.process'),
       headerTooltip: translateService.instant('pages.logs.grid.col-def.process'),
       minWidth: 50,
@@ -80,6 +82,7 @@ export function getLogGridColDefs(
     {
       colId: 'level',
       field: 'level',
+      tooltipField: 'level',
       headerName: translateService.instant('pages.logs.grid.col-def.level'),
       headerTooltip: translateService.instant('pages.logs.grid.col-def.level'),
       minWidth: 50,
@@ -122,6 +125,7 @@ export function getLogGridColDefs(
     {
       colId: 'line',
       field: 'line',
+      tooltipField: 'line',
       headerName: translateService.instant('pages.logs.grid.col-def.line'),
       headerTooltip: translateService.instant('pages.logs.grid.col-def.line'),
       minWidth: 50,
@@ -131,11 +135,13 @@ export function getLogGridColDefs(
     {
       colId: 'id',
       field: 'id',
+      tooltipField: 'id',
       headerName: translateService.instant('pages.logs.grid.col-def.id'),
       headerTooltip: translateService.instant('pages.logs.grid.col-def.id'),
       minWidth: 50,
       width: 90,
       filter: NumberColumnFilter,
+      hide: true,
     },
   ];
 }

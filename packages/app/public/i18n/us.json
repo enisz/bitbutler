@@ -2097,7 +2097,8 @@
       "open-details": "Open Details",
       "edit": "Edit",
       "refresh": "Refresh",
-      "retry": "Retry"
+      "retry": "Retry",
+      "export": "Export"
     },
     "form": {
       "feedback": {
