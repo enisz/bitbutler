@@ -160,7 +160,7 @@ export class LogsGrid implements AfterViewInit {
 
   public getFilteredRows(): LogEntry[] {
     const rows: LogEntry[] = [];
-    this.api?.forEachNodeAfterFilter((node) => {
+    this.api?.forEachNodeAfterFilterAndSort((node) => {
       if (node.data) rows.push(node.data);
     });
     return rows;

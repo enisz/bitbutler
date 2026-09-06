@@ -5,6 +5,8 @@ const mockInsertLog = vi.hoisted(() => vi.fn());
 const mockResolveOriginalLocation = vi.hoisted(() => vi.fn());
 const mockAll = vi.hoisted(() => vi.fn(() => []));
 const mockRun = vi.hoisted(() => vi.fn());
+const mockShowSaveDialog = vi.hoisted(() => vi.fn());
+const mockWriteFile = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
 
 vi.mock('electron', () => ({
   ipcMain: {
@@ -287,9 +289,6 @@ describe('log:clear (via IPC handler)', () => {
 });
 
 describe('log:export (via IPC handler)', () => {
-  const mockShowSaveDialog = vi.hoisted(() => vi.fn());
-  const mockWriteFile = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
-
   beforeEach(() => {
     vi.resetModules();
     ipcHandlers.clear();
