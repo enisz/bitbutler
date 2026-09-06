@@ -285,3 +285,68 @@ describe('log:clear (via IPC handler)', () => {
     expect(mockRun).toHaveBeenCalled();
   });
 });
+
+describe('log:export (via IPC handler)', () => {
+  const mockShowSaveDialog = vi.hoisted(() => vi.fn());
+  const mockWriteFile = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
+
+  beforeEach(() => {
+    vi.resetModules();
+    ipcHandlers.clear();
+    vi.doMock('electron', () => ({
+      ipcMain: {
+        handle: vi.fn((channel: string, handler: (...args: unknown[]) => unknown) => {
+          ipcHandlers.set(channel, handler);
+        }),
+        on: vi.fn(),
+      },
+      dialog: { showSaveDialog: mockShowSaveDialog },
+    }));
+    vi.doMock('node:fs', () => ({
+      default: { promises: { writeFile: mockWriteFile } },
+      promises: { writeFile: mockWriteFile },
+    }));
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.doUnmock('node:fs');
+  });
+
+  async function getHandler() {
+    const { registerLogIpcHandlers } = await import('./log.js');
+    registerLogIpcHandlers();
+    return ipcHandlers.get('log:export')!;
+  }
+
+  it('returns cancelled when the user dismisses the save dialog', async () => {
+    mockShowSaveDialog.mockResolvedValue({ canceled: true, filePath: undefined });
+    const handler = await getHandler();
+
+    const result = await handler(null, { content: 'hello', defaultFilename: 'bitbutler.log' });
+
+    expect(result).toEqual({ cancelled: true });
+    expect(mockWriteFile).not.toHaveBeenCalled();
+  });
+
+  it('writes the content to the chosen path and returns it', async () => {
+    mockShowSaveDialog.mockResolvedValue({ canceled: false, filePath: '/home/user/bitbutler.log' });
+    const handler = await getHandler();
+
+    const result = await handler(null, { content: 'hello', defaultFilename: 'bitbutler.log' });
+
+    expect(mockWriteFile).toHaveBeenCalledWith('/home/user/bitbutler.log', 'hello', 'utf-8');
+    expect(result).toEqual({ cancelled: false, path: '/home/user/bitbutler.log' });
+  });
+
+  it('defaults the save dialog filename to bitbutler.log when none is given', async () => {
+    mockShowSaveDialog.mockResolvedValue({ canceled: false, filePath: '/home/user/custom.log' });
+    const handler = await getHandler();
+
+    await handler(null, { content: 'hello' });
+
+    expect(mockShowSaveDialog).toHaveBeenCalledWith(
+      expect.objectContaining({ defaultPath: 'bitbutler.log' }),
+    );
+  });
+});

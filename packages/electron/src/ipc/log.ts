@@ -1,5 +1,6 @@
 import type { LogEntry } from '@bitbutler/shared';
-import { ipcMain } from 'electron';
+import { dialog, ipcMain } from 'electron';
+import fs from 'node:fs';
 import db from '../db.js';
 import { insertLog } from '../logger.js';
 import { resolveOriginalLocation } from '../source-map-resolver.js';
@@ -33,6 +34,10 @@ function asNullableInt(v: unknown): number | null {
 export function registerLogIpcHandlers(): void {
   ipcMain.handle('log:list', async () => logList());
   ipcMain.handle('log:clear', async () => logClear());
+  ipcMain.handle(
+    'log:export',
+    async (_event, payload: { content: string; defaultFilename?: string }) => logExport(payload),
+  );
 
   ipcMain.on('log:write', (_event, entry: unknown) => {
     const e = entry && typeof entry === 'object' ? (entry as Record<string, unknown>) : {};
@@ -66,4 +71,18 @@ function logList(): LogEntry[] {
 function logClear(): { ok: true } {
   stmtClear.run();
   return { ok: true };
+}
+
+async function logExport(payload: {
+  content: string;
+  defaultFilename?: string;
+}): Promise<{ cancelled: boolean; path?: string }> {
+  const { canceled, filePath } = await dialog.showSaveDialog({
+    defaultPath: payload.defaultFilename ?? 'bitbutler.log',
+    filters: [{ name: 'Log files', extensions: ['log'] }],
+  });
+  if (canceled || !filePath) return { cancelled: true };
+
+  await fs.promises.writeFile(filePath, payload.content, 'utf-8');
+  return { cancelled: false, path: filePath };
 }
