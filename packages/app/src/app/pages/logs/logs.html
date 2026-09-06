@@ -74,10 +74,12 @@
       <button
         type="button"
         class="bb-tool"
+        (click)="exportLogs(); exportTooltip.close()"
         [ngbTooltip]="'general.button.export' | translate"
         placement="bottom"
         container="body"
         [disableTooltip]="!compact"
+        #exportTooltip="ngbTooltip"
       >
         <span class="bb-tool__icon" aria-hidden="true">
           <fa-icon [icon]="icons.faFileExport" />

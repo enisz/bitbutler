@@ -2,6 +2,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import type { LogEntry } from '@bitbutler/shared';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 import { BehaviorSubject } from 'rxjs';
 import { LogGridSettings } from '../../models/log-grid.model';
@@ -37,6 +38,7 @@ describe('Logs', () => {
   let confirmServiceMock: { confirm: ReturnType<typeof vi.fn> };
   let toastServiceMock: { danger: ReturnType<typeof vi.fn> };
   let routerMock: { navigate: ReturnType<typeof vi.fn> };
+  let ngbModalMock: { open: ReturnType<typeof vi.fn> };
 
   beforeAll(() => {
     Object.defineProperty(window, 'matchMedia', {
@@ -71,6 +73,12 @@ describe('Logs', () => {
     confirmServiceMock = { confirm: vi.fn().mockResolvedValue(true) };
     toastServiceMock = { danger: vi.fn() };
     routerMock = { navigate: vi.fn() };
+    ngbModalMock = {
+      open: vi.fn().mockReturnValue({
+        componentInstance: {},
+        result: Promise.resolve(),
+      }),
+    };
 
     await TestBed.configureTestingModule({
       imports: [Logs, TranslateModule.forRoot()],
@@ -80,6 +88,7 @@ describe('Logs', () => {
         { provide: ConfirmService, useValue: confirmServiceMock },
         { provide: ToastService, useValue: toastServiceMock },
         { provide: Router, useValue: routerMock },
+        { provide: NgbModal, useValue: ngbModalMock },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
@@ -244,6 +253,20 @@ describe('Logs', () => {
       component.onResize();
 
       expect(component.compact).toBe(true);
+    });
+  });
+
+  describe('exportLogs', () => {
+    it('opens the Export Logs modal with the current logs, filtered rows, and selected rows', () => {
+      fixture.detectChanges();
+      component.logs.set([makeLog({ id: 1 })]);
+
+      component.exportLogs();
+
+      expect(ngbModalMock.open).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ size: 'lg', scrollable: true, centered: false }),
+      );
     });
   });
 });
