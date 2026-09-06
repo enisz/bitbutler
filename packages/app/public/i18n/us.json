@@ -1340,6 +1340,7 @@
             "copy-as-json": "Copy as JSON",
             "copy-cell-value": "Copy Cell Value",
             "copy-row-as-json": "Copy Row as JSON",
+            "copy-rows-as-json": "Copy Rows as JSON",
             "export-torrent-file": "Export .torrent",
             "export-torrent-files": "Export .torrent Files",
             "torrent-details": "Torrent details",
@@ -1414,7 +1415,8 @@
             "save-path": "Save Path",
             "save-paths": "Save Paths",
             "json": "JSON",
-            "row-as-json": "Row as JSON"
+            "row-as-json": "Row as JSON",
+            "rows-as-json": "Rows as JSON"
           }
         },
         "overlays": {

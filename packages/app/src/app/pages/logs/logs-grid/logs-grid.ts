@@ -13,7 +13,7 @@ import type { LogEntry } from '@bitbutler/shared';
 import { faCode } from '@fortawesome/free-solid-svg-icons';
 import { TranslateService } from '@ngx-translate/core';
 import { AgGridAngular } from 'ag-grid-angular';
-import type { CellContextMenuEvent, GridApi, GridOptions } from 'ag-grid-community';
+import type { GridApi, GridOptions } from 'ag-grid-community';
 import { Subject, distinctUntilChanged, firstValueFrom, map, throttleTime } from 'rxjs';
 import { GRID_DARK_THEME, GRID_LIGHT_THEME } from '../../../app.const';
 import { ContextMenuService } from '../../../services/context-menu.service';
@@ -76,8 +76,27 @@ export class LogsGrid implements AfterViewInit {
       columnDefs: getLogGridColDefs(this.uiFormatService, this.translateService, () => this.logs()),
       rowClassRules: getLogRowClassRules(() => this.colorCodingEnabled()),
       getRowId: (params) => String(params.data.id),
+      rowSelection: {
+        mode: 'multiRow',
+        checkboxes: false,
+        headerCheckbox: false,
+        enableClickSelection: true,
+      },
       onCellContextMenu: (event) => {
-        this.contextMenuService.open({ items: this.buildRowMenu(event) });
+        const row = event.data;
+        if (!row) {
+          this.contextMenuService.open({ items: [] });
+          return;
+        }
+
+        const currentSelection = event.api.getSelectedRows();
+        const isRowSelected = currentSelection.some((r) => r.id === row.id);
+        if (!isRowSelected) {
+          event.node.setSelected(true, true);
+        }
+
+        const selection = event.api.getSelectedRows();
+        this.contextMenuService.open({ items: this.buildRowMenu(row, selection) });
       },
       onColumnHeaderContextMenu: (event) => {
         this.contextMenuService.open({ items: this.gridContextMenuService.buildHeaderMenu(event) });
@@ -107,20 +126,25 @@ export class LogsGrid implements AfterViewInit {
       .subscribe(() => void this.saveColumnState());
   }
 
-  private buildRowMenu(event: CellContextMenuEvent<LogEntry>): ContextMenuEntry[] {
-    const row = event.data;
-    if (!row) return [];
+  private buildRowMenu(row: LogEntry, selection: LogEntry[]): ContextMenuEntry[] {
+    const isMulti = selection.length > 1;
 
     return [
       {
         kind: 'item',
         id: 'copy.json',
-        label: 'pages.main.grid.context-menu.item.copy-row-as-json',
+        label: isMulti
+          ? 'pages.main.grid.context-menu.item.copy-rows-as-json'
+          : 'pages.main.grid.context-menu.item.copy-row-as-json',
         icon: faCode,
         action: () =>
           this.gridContextMenuService.copyToClipboard(
-            JSON.stringify(row, null, 2),
-            this.translateService.instant('pages.main.grid.context-menu.field.row-as-json'),
+            JSON.stringify(isMulti ? selection : row, null, 2),
+            this.translateService.instant(
+              isMulti
+                ? 'pages.main.grid.context-menu.field.rows-as-json'
+                : 'pages.main.grid.context-menu.field.row-as-json',
+            ),
           ),
       },
     ];
@@ -128,6 +152,18 @@ export class LogsGrid implements AfterViewInit {
 
   private queueSave(): void {
     this.saveState$.next();
+  }
+
+  public getSelectedRows(): LogEntry[] {
+    return this.api?.getSelectedRows() ?? [];
+  }
+
+  public getFilteredRows(): LogEntry[] {
+    const rows: LogEntry[] = [];
+    this.api?.forEachNodeAfterFilter((node) => {
+      if (node.data) rows.push(node.data);
+    });
+    return rows;
   }
 
   private async restoreColumnState(): Promise<void> {

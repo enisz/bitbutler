@@ -1340,6 +1340,7 @@
             "copy-as-json": "Másolás JSON-ként",
             "copy-cell-value": "Cella értékének másolása",
             "copy-row-as-json": "Sor másolása JSON-ként",
+            "copy-rows-as-json": "Sorok másolása JSON-ként",
             "export-torrent-file": "Exportálás .torrent fájlba",
             "export-torrent-files": "Exportálás .torrent fájlokba",
             "torrent-details": "Torrent részletei",
@@ -1414,7 +1415,8 @@
             "save-path": "Mentési Útvonal",
             "save-paths": "Mentési Útvonalak",
             "json": "JSON",
-            "row-as-json": "Sor JSON-ként"
+            "row-as-json": "Sor JSON-ként",
+            "rows-as-json": "Sorok JSON-ként"
           }
         },
         "overlays": {
