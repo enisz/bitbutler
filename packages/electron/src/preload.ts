@@ -164,6 +164,10 @@ const api: BitButlerAPI = {
 
   log: {
     write: (entry: RendererLogEntry) => ipcRenderer.send('log:write', entry),
+    list: () => ipcRenderer.invoke('log:list'),
+    clear: () => ipcRenderer.invoke('log:clear'),
+    export: (payload: { content: string; defaultFilename?: string }) =>
+      ipcRenderer.invoke('log:export', payload),
   },
 
   settings: {

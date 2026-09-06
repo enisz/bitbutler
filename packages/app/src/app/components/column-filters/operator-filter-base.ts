@@ -9,7 +9,7 @@ import { IAfterGuiAttachedParams, IDoesFilterPassParams, IFilterParams } from 'a
  * contain it inside an element tagged with this class instead - otherwise a click inside the
  * dropdown would register as "outside" and ag-grid would close the filter popup.
  */
-const AG_GRID_CUSTOM_POPUP_CLASS = 'ag-custom-component-popup';
+export const AG_GRID_CUSTOM_POPUP_CLASS = 'ag-custom-component-popup';
 
 @Injectable()
 export abstract class OperatorFilterBase<TValue> implements IFilterAngularComp, OnDestroy {

@@ -1,0 +1,198 @@
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  effect,
+  inject,
+  input,
+} from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import type { LogEntry } from '@bitbutler/shared';
+import { faCode } from '@fortawesome/free-solid-svg-icons';
+import { TranslateService } from '@ngx-translate/core';
+import { AgGridAngular } from 'ag-grid-angular';
+import type { GridApi, GridOptions } from 'ag-grid-community';
+import { Subject, distinctUntilChanged, firstValueFrom, map, throttleTime } from 'rxjs';
+import { GRID_DARK_THEME, GRID_LIGHT_THEME, GRID_SHARED_OPTIONS } from '../../../app.const';
+import { ContextMenuService } from '../../../services/context-menu.service';
+import { LogGridSettingsService } from '../../../services/log-grid.settings.service';
+import { ThemeService } from '../../../services/theme.service';
+import { UiFormatService } from '../../../services/ui-format.service';
+import { ContextMenuEntry } from '../../main/grid/context-menu/context-menu.types';
+import { GridContextMenuService } from '../../main/grid/context-menu/grid-context-menu.service';
+import { getLogGridColDefs, getLogRowClassRules } from './logs-grid.lib';
+
+@Component({
+  selector: 'app-logs-grid',
+  standalone: true,
+  imports: [AgGridAngular],
+  templateUrl: './logs-grid.html',
+  styleUrl: './logs-grid.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class LogsGrid implements AfterViewInit {
+  logs = input<LogEntry[]>([]);
+
+  private readonly contextMenuService = inject(ContextMenuService);
+  private readonly gridContextMenuService = inject(GridContextMenuService);
+  private readonly themeService = inject(ThemeService);
+  private readonly uiFormatService = inject(UiFormatService);
+  private readonly translateService = inject(TranslateService);
+  private readonly logGridSettingsService = inject(LogGridSettingsService);
+  private readonly destroyRef = inject(DestroyRef);
+
+  private readonly saveState$ = new Subject<void>();
+  private api: GridApi<LogEntry> | null = null;
+
+  public readonly theme = this.themeService.effectiveMode;
+
+  public readonly colorCodingEnabled = toSignal(
+    this.logGridSettingsService.asObservable().pipe(
+      map((s) => s.colorCodingEnabled),
+      distinctUntilChanged(),
+    ),
+    { initialValue: false },
+  );
+
+  public readonly compactRowsEnabled = toSignal(
+    this.logGridSettingsService.asObservable().pipe(
+      map((s) => s.compactRows),
+      distinctUntilChanged(),
+    ),
+    { initialValue: false },
+  );
+
+  public readonly currentTheme = computed(() => {
+    const base = this.theme() === 'dark' ? GRID_DARK_THEME : GRID_LIGHT_THEME;
+    return this.compactRowsEnabled() ? base.withParams({ spacing: 4, rowHeight: 32 }) : base;
+  });
+
+  public gridOptions: GridOptions<LogEntry>;
+
+  constructor() {
+    this.gridOptions = {
+      ...GRID_SHARED_OPTIONS,
+      columnDefs: getLogGridColDefs(this.uiFormatService, this.translateService, () => this.logs()),
+      rowClassRules: getLogRowClassRules(() => this.colorCodingEnabled()),
+      getRowId: (params) => String(params.data.id),
+      rowSelection: {
+        mode: 'multiRow',
+        checkboxes: false,
+        headerCheckbox: false,
+        enableClickSelection: true,
+      },
+      onCellContextMenu: (event) => {
+        const row = event.data;
+        if (!row) {
+          this.contextMenuService.open({ items: [] });
+          return;
+        }
+
+        const currentSelection = event.api.getSelectedRows();
+        const isRowSelected = currentSelection.some((r) => r.id === row.id);
+        if (!isRowSelected) {
+          event.node.setSelected(true, true);
+        }
+
+        const selection = event.api.getSelectedRows();
+        this.contextMenuService.open({ items: this.buildRowMenu(row, selection) });
+      },
+      onColumnHeaderContextMenu: (event) => {
+        this.contextMenuService.open({ items: this.gridContextMenuService.buildHeaderMenu(event) });
+      },
+      onGridReady: (event) => {
+        this.api = event.api;
+        void this.restoreColumnState();
+      },
+      onColumnResized: (e) => {
+        if (e.finished) this.queueSave();
+      },
+      onColumnMoved: () => this.queueSave(),
+      onColumnPinned: () => this.queueSave(),
+      onColumnVisible: () => this.queueSave(),
+      onSortChanged: () => this.queueSave(),
+    };
+
+    effect(() => {
+      this.colorCodingEnabled();
+      this.api?.redrawRows();
+    });
+  }
+
+  ngAfterViewInit(): void {
+    this.saveState$
+      .pipe(throttleTime(500, undefined, { trailing: true }), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => void this.saveColumnState());
+  }
+
+  private buildRowMenu(row: LogEntry, selection: LogEntry[]): ContextMenuEntry[] {
+    const isMulti = selection.length > 1;
+
+    return [
+      {
+        kind: 'item',
+        id: 'copy.json',
+        label: isMulti
+          ? 'pages.main.grid.context-menu.item.copy-rows-as-json'
+          : 'pages.main.grid.context-menu.item.copy-row-as-json',
+        icon: faCode,
+        action: () =>
+          this.gridContextMenuService.copyToClipboard(
+            JSON.stringify(isMulti ? selection : row, null, 2),
+            this.translateService.instant(
+              isMulti
+                ? 'pages.main.grid.context-menu.field.rows-as-json'
+                : 'pages.main.grid.context-menu.field.row-as-json',
+            ),
+          ),
+      },
+    ];
+  }
+
+  private queueSave(): void {
+    this.saveState$.next();
+  }
+
+  public getSelectedRows(): LogEntry[] {
+    if (!this.api) return [];
+    const selected = this.api.getSelectedRows();
+    const selectedIds = new Set(selected.map((row) => row.id));
+    const sorted = this.sortedRows((data) => selectedIds.has(data.id));
+    const seen = new Set(sorted.map((row) => row.id));
+    return [...sorted, ...selected.filter((row) => !seen.has(row.id))];
+  }
+
+  public getFilteredRows(): LogEntry[] {
+    return this.sortedRows();
+  }
+
+  public getAllRows(): LogEntry[] {
+    const all = this.logs();
+    const sorted = this.sortedRows();
+    const seen = new Set(sorted.map((row) => row.id));
+    return [...sorted, ...all.filter((row) => !seen.has(row.id))];
+  }
+
+  private sortedRows(predicate: (data: LogEntry) => boolean = () => true): LogEntry[] {
+    const rows: LogEntry[] = [];
+    this.api?.forEachNodeAfterFilterAndSort((node) => {
+      if (node.data && predicate(node.data)) rows.push(node.data);
+    });
+    return rows;
+  }
+
+  private async restoreColumnState(): Promise<void> {
+    const settings = await firstValueFrom(this.logGridSettingsService.asObservable());
+    if (settings.columnState && this.api) {
+      this.api.applyColumnState({ state: settings.columnState, applyOrder: true });
+    }
+  }
+
+  private async saveColumnState(): Promise<void> {
+    if (!this.api) return;
+    const settings = await firstValueFrom(this.logGridSettingsService.asObservable());
+    await this.logGridSettingsService.save({ ...settings, columnState: this.api.getColumnState() });
+  }
+}

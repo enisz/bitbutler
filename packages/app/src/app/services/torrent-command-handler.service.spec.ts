@@ -117,6 +117,19 @@ describe('TorrentCommandHandlerService', () => {
     expect(commandBusEmit).toHaveBeenCalledWith({ type: 'TORRENT_DELETED', hash: 'hash2' });
   });
 
+  it('should not log an unhandled-command error for the TORRENT_DELETED events it emits', async () => {
+    // The real CommandBusService.emit() feeds back into the same commands$ stream
+    // this service subscribes to, so the TORRENT_DELETED events emitted below are
+    // replicated here to reach this service's own switch statement.
+    commandBusEmit.mockImplementation((cmd) => commands$.next(cmd));
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    commands$.next({ type: 'TORRENT_DELETE_CONFIRM', removeFiles: false });
+    await flushPromises();
+
+    expect(errorSpy).not.toHaveBeenCalled();
+  });
+
   it('should show danger toast when delete fails', async () => {
     qbService.torrents.delete.mockRejectedValueOnce(new Error('network error'));
     commands$.next({ type: 'TORRENT_DELETE_CONFIRM', removeFiles: false });
