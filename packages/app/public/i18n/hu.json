@@ -2186,7 +2186,8 @@
       "new": "Új",
       "edit": "Szerkesztés",
       "refresh": "Frissítés",
-      "retry": "Újra"
+      "retry": "Újra",
+      "export": "Exportálás"
     },
     "form": {
       "feedback": {

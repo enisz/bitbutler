@@ -10,15 +10,17 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import type { LogEntry } from '@bitbutler/shared';
+import { faCode } from '@fortawesome/free-solid-svg-icons';
 import { TranslateService } from '@ngx-translate/core';
 import { AgGridAngular } from 'ag-grid-angular';
-import type { GridApi, GridOptions } from 'ag-grid-community';
+import type { CellContextMenuEvent, GridApi, GridOptions } from 'ag-grid-community';
 import { Subject, distinctUntilChanged, firstValueFrom, map, throttleTime } from 'rxjs';
 import { GRID_DARK_THEME, GRID_LIGHT_THEME } from '../../../app.const';
 import { ContextMenuService } from '../../../services/context-menu.service';
 import { LogGridSettingsService } from '../../../services/log-grid.settings.service';
 import { ThemeService } from '../../../services/theme.service';
 import { UiFormatService } from '../../../services/ui-format.service';
+import { ContextMenuEntry } from '../../main/grid/context-menu/context-menu.types';
 import { GridContextMenuService } from '../../main/grid/context-menu/grid-context-menu.service';
 import { getLogGridColDefs, getLogRowClassRules } from './logs-grid.lib';
 
@@ -64,6 +66,9 @@ export class LogsGrid implements AfterViewInit {
       columnDefs: getLogGridColDefs(this.uiFormatService, this.translateService, () => this.logs()),
       rowClassRules: getLogRowClassRules(() => this.colorCodingEnabled()),
       getRowId: (params) => String(params.data.id),
+      onCellContextMenu: (event) => {
+        this.contextMenuService.open({ items: this.buildRowMenu(event) });
+      },
       onColumnHeaderContextMenu: (event) => {
         this.contextMenuService.open({ items: this.gridContextMenuService.buildHeaderMenu(event) });
       },
@@ -90,6 +95,25 @@ export class LogsGrid implements AfterViewInit {
     this.saveState$
       .pipe(throttleTime(500, undefined, { trailing: true }), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => void this.saveColumnState());
+  }
+
+  private buildRowMenu(event: CellContextMenuEvent<LogEntry>): ContextMenuEntry[] {
+    const row = event.data;
+    if (!row) return [];
+
+    return [
+      {
+        kind: 'item',
+        id: 'copy.json',
+        label: 'pages.main.grid.context-menu.item.copy-row-as-json',
+        icon: faCode,
+        action: () =>
+          this.gridContextMenuService.copyToClipboard(
+            JSON.stringify(row, null, 2),
+            this.translateService.instant('pages.main.grid.context-menu.field.row-as-json'),
+          ),
+      },
+    ];
   }
 
   private queueSave(): void {

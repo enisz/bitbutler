@@ -55,6 +55,20 @@
 
       <button
         type="button"
+        class="bb-tool"
+        [ngbTooltip]="'general.button.export' | translate"
+        placement="bottom"
+        container="body"
+        [disableTooltip]="!compact"
+      >
+        <span class="bb-tool__icon" aria-hidden="true">
+          <fa-icon [icon]="icons.faFileExport" />
+        </span>
+        <span class="bb-tool__label">{{ 'general.button.export' | translate }}</span>
+      </button>
+
+      <button
+        type="button"
         class="bb-tool bb-tool--danger"
         (click)="clear(); clearTooltip.close()"
         [ngbTooltip]="'general.button.clear' | translate"

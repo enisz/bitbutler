@@ -11,7 +11,12 @@ import { Router } from '@angular/router';
 import type { LogEntry } from '@bitbutler/shared';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faSquare, faSquareCheck } from '@fortawesome/free-regular-svg-icons';
-import { faArrowsRotate, faChevronLeft, faTrashCan } from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowsRotate,
+  faChevronLeft,
+  faFileExport,
+  faTrashCan,
+} from '@fortawesome/free-solid-svg-icons';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
@@ -38,7 +43,14 @@ export class Logs implements OnInit {
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
 
-  public readonly icons = { faChevronLeft, faArrowsRotate, faTrashCan, faSquare, faSquareCheck };
+  public readonly icons = {
+    faChevronLeft,
+    faArrowsRotate,
+    faTrashCan,
+    faSquare,
+    faSquareCheck,
+    faFileExport,
+  };
   public readonly logs = signal<LogEntry[]>([]);
   public readonly colorCodingEnabled = toSignal(
     this.logGridSettingsService.asObservable().pipe(

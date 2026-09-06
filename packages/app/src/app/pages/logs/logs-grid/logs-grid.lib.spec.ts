@@ -103,8 +103,17 @@ describe('getLogGridColDefs', () => {
     );
   });
 
-  it('shows every column by default', () => {
+  it('hides the id column by default and shows every other column', () => {
     const defs = getLogGridColDefs(uiFormatService, translateService, () => []);
-    expect(defs.every((d) => !d.hide)).toBe(true);
+    expect(defs.find((d) => d.colId === 'id')!.hide).toBe(true);
+    expect(defs.filter((d) => d.colId !== 'id').every((d) => !d.hide)).toBe(true);
+  });
+
+  it('sets a headerTooltip and a tooltip source for every column', () => {
+    const defs = getLogGridColDefs(uiFormatService, translateService, () => []);
+    for (const def of defs) {
+      expect(def.headerTooltip).toBeTruthy();
+      expect(def.tooltipField != null || typeof def.tooltipValueGetter === 'function').toBe(true);
+    }
   });
 });
