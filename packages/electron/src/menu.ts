@@ -149,6 +149,11 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
             },
             { type: 'separator' },
             {
+              label: 'Logs',
+              click: () => sendMenuAction(mainWindow, 'view.select', { viewId: 'logs' }),
+            },
+            { type: 'separator' },
+            {
               label: 'Reload',
               accelerator: 'CmdOrCtrl+R',
               role: 'reload',

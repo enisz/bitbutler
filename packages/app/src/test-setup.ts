@@ -138,6 +138,8 @@ window.bitbutler = {
   },
   log: {
     write: noop,
+    list: () => Promise.resolve([]),
+    clear: () => Promise.resolve({ ok: true as const }),
   },
   settings: {
     get: () => Promise.resolve(null),

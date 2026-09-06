@@ -11,6 +11,12 @@
   color: var(--bb-dp-text);
   transition: all 0.15s ease;
 
+  &--disabled {
+    cursor: not-allowed;
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
   &--today {
     font-weight: 800;
     color: var(--bs-primary) !important;

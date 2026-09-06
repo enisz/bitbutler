@@ -1,0 +1,77 @@
+<div class="logs">
+  <header class="logs__header">
+    <button
+      type="button"
+      class="bb-tool"
+      (click)="goBack(); backTooltip.close()"
+      [ngbTooltip]="'pages.logs.back-button' | translate"
+      placement="bottom"
+      container="body"
+      [disableTooltip]="!compact"
+      #backTooltip="ngbTooltip"
+    >
+      <span class="bb-tool__icon" aria-hidden="true">
+        <fa-icon [icon]="icons.faChevronLeft" />
+      </span>
+      <span class="bb-tool__label">{{ 'pages.logs.back-button' | translate }}</span>
+    </button>
+
+    <div class="logs__heading">
+      <h1>{{ 'pages.logs.title' | translate }}</h1>
+    </div>
+
+    <div class="logs__actions">
+      <button
+        type="button"
+        class="bb-tool"
+        (click)="toggleColorCoding(); colorCodingTooltip.close()"
+        [ngbTooltip]="'pages.logs.color-coding' | translate"
+        placement="bottom"
+        container="body"
+        [disableTooltip]="!compact"
+        #colorCodingTooltip="ngbTooltip"
+      >
+        <span class="bb-tool__icon" aria-hidden="true">
+          <fa-icon [icon]="colorCodingEnabled() ? icons.faSquareCheck : icons.faSquare" />
+        </span>
+        <span class="bb-tool__label">{{ 'pages.logs.color-coding' | translate }}</span>
+      </button>
+
+      <button
+        type="button"
+        class="bb-tool"
+        (click)="refresh(); refreshTooltip.close()"
+        [ngbTooltip]="'general.button.refresh' | translate"
+        placement="bottom"
+        container="body"
+        [disableTooltip]="!compact"
+        #refreshTooltip="ngbTooltip"
+      >
+        <span class="bb-tool__icon" aria-hidden="true">
+          <fa-icon [icon]="icons.faArrowsRotate" />
+        </span>
+        <span class="bb-tool__label">{{ 'general.button.refresh' | translate }}</span>
+      </button>
+
+      <button
+        type="button"
+        class="bb-tool bb-tool--danger"
+        (click)="clear(); clearTooltip.close()"
+        [ngbTooltip]="'general.button.clear' | translate"
+        placement="bottom"
+        container="body"
+        [disableTooltip]="!compact"
+        #clearTooltip="ngbTooltip"
+      >
+        <span class="bb-tool__icon" aria-hidden="true">
+          <fa-icon [icon]="icons.faTrashCan" />
+        </span>
+        <span class="bb-tool__label">{{ 'general.button.clear' | translate }}</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="logs__grid">
+    <app-logs-grid [logs]="logs()" />
+  </div>
+</div>

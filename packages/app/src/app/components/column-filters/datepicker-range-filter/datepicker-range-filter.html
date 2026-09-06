@@ -9,7 +9,7 @@
         <fa-icon [icon]="icons.faChevronLeft"></fa-icon>
       </button>
       <ng-select
-        [items]="months"
+        [items]="visibleMonths()"
         bindLabel="label"
         bindValue="value"
         [clearable]="false"
@@ -43,6 +43,7 @@
     [dayTemplate]="t"
     [outsideDays]="'collapsed'"
     [navigation]="'none'"
+    [markDisabled]="isOutOfRange"
     [firstDayOfWeek]="dateFormatService.resolved().firstDayOfWeek"
     (navigate)="onNavigate($event)"
     (dateSelect)="onSelect($event)"
@@ -57,6 +58,7 @@
       [class.bb-day--to]="isTo(date)"
       [class.bb-day--between]="isInside(date) || isHovered(date)"
       [class.bb-day--today]="isToday(date)"
+      [class.bb-day--disabled]="isOutOfRange(date)"
       (mouseenter)="hoveredDate = date"
       (mouseleave)="hoveredDate = null"
     >
