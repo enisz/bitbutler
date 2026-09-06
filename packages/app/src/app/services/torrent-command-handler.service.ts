@@ -29,6 +29,11 @@ export class TorrentCommandHandlerService {
           case 'TORRENT_DELETE_CONFIRM':
             void this.handleDelete(cmd.removeFiles, cmd.hashes);
             break;
+          case 'TORRENT_DELETED':
+            // Notification only, emitted by handleDelete() below and consumed by
+            // other subscribers (e.g. torrent-details.ts closes itself when its
+            // own torrent is deleted) - nothing for this handler to do.
+            break;
           case 'TORRENT_PAUSE':
             void this.handlePause();
             break;
