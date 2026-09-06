@@ -259,6 +259,10 @@ export interface BitButlerAPI {
     write(entry: RendererLogEntry): void;
     list(): Promise<LogEntry[]>;
     clear(): Promise<{ ok: true }>;
+    export(payload: {
+      content: string;
+      defaultFilename?: string;
+    }): Promise<{ cancelled: boolean; path?: string }>;
   };
 
   settings: {
