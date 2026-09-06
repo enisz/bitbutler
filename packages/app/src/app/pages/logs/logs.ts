@@ -5,6 +5,7 @@ import {
   OnInit,
   inject,
   signal,
+  viewChild,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
@@ -18,14 +19,16 @@ import {
   faHighlighter,
   faTrashCan,
 } from '@fortawesome/free-solid-svg-icons';
-import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
+import { ExportLogs } from '../../modals/export-logs/export-logs';
 import { ConfirmService } from '../../services/confirm.service';
 import { LogGridSettingsService } from '../../services/log-grid.settings.service';
 import { LogService } from '../../services/log.service';
 import { ToastService } from '../../services/toast.service';
+import { setModalInput } from '../../utils/modal-input';
 import { LogsGrid } from './logs-grid/logs-grid';
 
 @Component({
@@ -43,6 +46,8 @@ export class Logs implements OnInit {
   private readonly confirmService = inject(ConfirmService);
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
+  private readonly modalService = inject(NgbModal);
+  private readonly logsGrid = viewChild(LogsGrid);
 
   public readonly icons = {
     faChevronLeft,
@@ -135,5 +140,18 @@ export class Logs implements OnInit {
       ...settings,
       compactRows: !settings.compactRows,
     });
+  }
+
+  exportLogs(): void {
+    const grid = this.logsGrid();
+    const modalRef = this.modalService.open(ExportLogs, {
+      size: 'lg',
+      scrollable: true,
+      centered: false,
+    });
+    setModalInput(modalRef, 'all', this.logs());
+    setModalInput(modalRef, 'filtered', grid?.getFilteredRows() ?? []);
+    setModalInput(modalRef, 'selected', grid?.getSelectedRows() ?? []);
+    modalRef.result.catch(() => {});
   }
 }
