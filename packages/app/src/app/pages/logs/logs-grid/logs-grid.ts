@@ -47,9 +47,6 @@ export class LogsGrid implements AfterViewInit {
   private api: GridApi<LogEntry> | null = null;
 
   public readonly theme = this.themeService.effectiveMode;
-  public readonly currentTheme = computed(() =>
-    this.theme() === 'dark' ? GRID_DARK_THEME : GRID_LIGHT_THEME,
-  );
 
   public readonly colorCodingEnabled = toSignal(
     this.logGridSettingsService.asObservable().pipe(
@@ -58,6 +55,19 @@ export class LogsGrid implements AfterViewInit {
     ),
     { initialValue: false },
   );
+
+  public readonly compactRowsEnabled = toSignal(
+    this.logGridSettingsService.asObservable().pipe(
+      map((s) => s.compactRows),
+      distinctUntilChanged(),
+    ),
+    { initialValue: false },
+  );
+
+  public readonly currentTheme = computed(() => {
+    const base = this.theme() === 'dark' ? GRID_DARK_THEME : GRID_LIGHT_THEME;
+    return this.compactRowsEnabled() ? base.withParams({ spacing: 4, rowHeight: 32 }) : base;
+  });
 
   public gridOptions: GridOptions<LogEntry>;
 

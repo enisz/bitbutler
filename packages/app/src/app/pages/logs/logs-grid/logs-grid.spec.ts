@@ -51,6 +51,7 @@ describe('LogsGrid', () => {
     settings$ = new BehaviorSubject<LogGridSettings>({
       columnState: null,
       colorCodingEnabled: false,
+      compactRows: false,
     });
     logGridSettingsServiceMock = {
       asObservable: vi.fn().mockReturnValue(settings$.asObservable()),
@@ -143,7 +144,11 @@ describe('LogsGrid', () => {
 
   describe('restoring column state on grid ready', () => {
     it('applies the persisted column state once the grid becomes ready', async () => {
-      settings$.next({ columnState: [{ colId: 'message' }] as any, colorCodingEnabled: false });
+      settings$.next({
+        columnState: [{ colId: 'message' }] as any,
+        colorCodingEnabled: false,
+        compactRows: false,
+      });
 
       await component.gridOptions.onGridReady!({ api: mockApi } as any);
 
@@ -174,6 +179,7 @@ describe('LogsGrid', () => {
       expect(logGridSettingsServiceMock.save).toHaveBeenCalledWith({
         columnState: [{ colId: 'message' }],
         colorCodingEnabled: false,
+        compactRows: false,
       });
     });
 
@@ -193,16 +199,35 @@ describe('LogsGrid', () => {
 
   describe('colorCodingEnabled reactivity', () => {
     it('reflects the value from LogGridSettingsService', () => {
-      settings$.next({ columnState: null, colorCodingEnabled: true });
+      settings$.next({ columnState: null, colorCodingEnabled: true, compactRows: false });
       expect(component.colorCodingEnabled()).toBe(true);
     });
 
     it('redraws the grid rows when the setting changes', async () => {
       await component.gridOptions.onGridReady!({ api: mockApi } as any);
-      settings$.next({ columnState: null, colorCodingEnabled: true });
+      settings$.next({ columnState: null, colorCodingEnabled: true, compactRows: false });
       fixture.detectChanges();
 
       expect(mockApi.redrawRows).toHaveBeenCalled();
+    });
+  });
+
+  describe('compactRowsEnabled reactivity', () => {
+    it('reflects the value from LogGridSettingsService', () => {
+      settings$.next({ columnState: null, colorCodingEnabled: false, compactRows: true });
+      expect(component.compactRowsEnabled()).toBe(true);
+    });
+
+    it('applies compact spacing/rowHeight params to the grid theme when enabled', () => {
+      settings$.next({ columnState: null, colorCodingEnabled: false, compactRows: true });
+      const params = (component.currentTheme() as any)._getModeParams()['$default'];
+      expect(params.spacing).toBe(4);
+      expect(params.rowHeight).toBe(32);
+    });
+
+    it('returns the base theme when compactRows is disabled', () => {
+      settings$.next({ columnState: null, colorCodingEnabled: false, compactRows: false });
+      expect(component.currentTheme()).toBe(GRID_DARK_THEME);
     });
   });
 });
