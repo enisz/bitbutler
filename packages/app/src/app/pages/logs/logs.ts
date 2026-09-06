@@ -149,7 +149,7 @@ export class Logs implements OnInit {
       scrollable: true,
       centered: false,
     });
-    setModalInput(modalRef, 'all', this.logs());
+    setModalInput(modalRef, 'all', grid?.getAllRows() ?? this.logs());
     setModalInput(modalRef, 'filtered', grid?.getFilteredRows() ?? []);
     setModalInput(modalRef, 'selected', grid?.getSelectedRows() ?? []);
     modalRef.result.catch(() => {});
