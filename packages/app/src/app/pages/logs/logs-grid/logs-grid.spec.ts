@@ -101,6 +101,10 @@ describe('LogsGrid', () => {
     expect(component.currentTheme()).toBe(GRID_DARK_THEME);
   });
 
+  it('disables cell focus so only row selection is highlighted', () => {
+    expect(component.gridOptions.suppressCellFocus).toBe(true);
+  });
+
   it('passes the logs input through to the grid as rowData', () => {
     const logs = [makeLog({ id: 1 }), makeLog({ id: 2 })];
     fixture.componentRef.setInput('logs', logs);

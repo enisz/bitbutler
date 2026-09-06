@@ -15,7 +15,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import type { GridApi, GridOptions } from 'ag-grid-community';
 import { Subject, distinctUntilChanged, firstValueFrom, map, throttleTime } from 'rxjs';
-import { GRID_DARK_THEME, GRID_LIGHT_THEME } from '../../../app.const';
+import { GRID_DARK_THEME, GRID_LIGHT_THEME, GRID_SHARED_OPTIONS } from '../../../app.const';
 import { ContextMenuService } from '../../../services/context-menu.service';
 import { LogGridSettingsService } from '../../../services/log-grid.settings.service';
 import { ThemeService } from '../../../services/theme.service';
@@ -73,6 +73,7 @@ export class LogsGrid implements AfterViewInit {
 
   constructor() {
     this.gridOptions = {
+      ...GRID_SHARED_OPTIONS,
       columnDefs: getLogGridColDefs(this.uiFormatService, this.translateService, () => this.logs()),
       rowClassRules: getLogRowClassRules(() => this.colorCodingEnabled()),
       getRowId: (params) => String(params.data.id),
