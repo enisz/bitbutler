@@ -202,12 +202,33 @@ describe('LogsGrid', () => {
       expect(component.getSelectedRows()).toEqual([]);
     });
 
-    it('returns the grid selected rows once the grid is ready', async () => {
-      const rows = [makeLog({ id: 5 })];
-      mockApi.getSelectedRows.mockReturnValue(rows);
+    it("returns the selected rows in the grid's current sort order", async () => {
+      const row1 = makeLog({ id: 1 });
+      const row2 = makeLog({ id: 2 });
+      mockApi.getSelectedRows.mockReturnValue([row1, row2]);
+      // Sorted (display) order is the reverse of selection order.
+      mockApi.forEachNodeAfterFilterAndSort.mockImplementation(
+        (cb: (node: { data: unknown }) => void) => {
+          [row2, row1].forEach((data) => cb({ data }));
+        },
+      );
       await component.gridOptions.onGridReady!({ api: mockApi } as any);
 
-      expect(component.getSelectedRows()).toEqual(rows);
+      expect(component.getSelectedRows()).toEqual([row2, row1]);
+    });
+
+    it('appends selected rows that are currently filtered out, after the sorted/visible ones', async () => {
+      const visible = makeLog({ id: 1 });
+      const filteredOut = makeLog({ id: 2 });
+      mockApi.getSelectedRows.mockReturnValue([filteredOut, visible]);
+      mockApi.forEachNodeAfterFilterAndSort.mockImplementation(
+        (cb: (node: { data: unknown }) => void) => {
+          cb({ data: visible });
+        },
+      );
+      await component.gridOptions.onGridReady!({ api: mockApi } as any);
+
+      expect(component.getSelectedRows()).toEqual([visible, filteredOut]);
     });
   });
 
@@ -226,6 +247,46 @@ describe('LogsGrid', () => {
       await component.gridOptions.onGridReady!({ api: mockApi } as any);
 
       expect(component.getFilteredRows()).toEqual(rows);
+    });
+  });
+
+  describe('getAllRows', () => {
+    it('returns the logs input before the grid is ready', () => {
+      const logs = [makeLog({ id: 1 })];
+      fixture.componentRef.setInput('logs', logs);
+      fixture.detectChanges();
+
+      expect(component.getAllRows()).toEqual(logs);
+    });
+
+    it("returns every row in the grid's current sort order once the grid is ready", async () => {
+      const row1 = makeLog({ id: 1 });
+      const row2 = makeLog({ id: 2 });
+      fixture.componentRef.setInput('logs', [row1, row2]);
+      fixture.detectChanges();
+      mockApi.forEachNodeAfterFilterAndSort.mockImplementation(
+        (cb: (node: { data: unknown }) => void) => {
+          [row2, row1].forEach((data) => cb({ data }));
+        },
+      );
+      await component.gridOptions.onGridReady!({ api: mockApi } as any);
+
+      expect(component.getAllRows()).toEqual([row2, row1]);
+    });
+
+    it('appends rows currently hidden by a filter, after the sorted/visible ones', async () => {
+      const visible = makeLog({ id: 1 });
+      const hidden = makeLog({ id: 2 });
+      fixture.componentRef.setInput('logs', [hidden, visible]);
+      fixture.detectChanges();
+      mockApi.forEachNodeAfterFilterAndSort.mockImplementation(
+        (cb: (node: { data: unknown }) => void) => {
+          cb({ data: visible });
+        },
+      );
+      await component.gridOptions.onGridReady!({ api: mockApi } as any);
+
+      expect(component.getAllRows()).toEqual([visible, hidden]);
     });
   });
 

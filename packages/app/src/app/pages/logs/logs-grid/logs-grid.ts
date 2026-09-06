@@ -155,13 +155,29 @@ export class LogsGrid implements AfterViewInit {
   }
 
   public getSelectedRows(): LogEntry[] {
-    return this.api?.getSelectedRows() ?? [];
+    if (!this.api) return [];
+    const selected = this.api.getSelectedRows();
+    const selectedIds = new Set(selected.map((row) => row.id));
+    const sorted = this.sortedRows((data) => selectedIds.has(data.id));
+    const seen = new Set(sorted.map((row) => row.id));
+    return [...sorted, ...selected.filter((row) => !seen.has(row.id))];
   }
 
   public getFilteredRows(): LogEntry[] {
+    return this.sortedRows();
+  }
+
+  public getAllRows(): LogEntry[] {
+    const all = this.logs();
+    const sorted = this.sortedRows();
+    const seen = new Set(sorted.map((row) => row.id));
+    return [...sorted, ...all.filter((row) => !seen.has(row.id))];
+  }
+
+  private sortedRows(predicate: (data: LogEntry) => boolean = () => true): LogEntry[] {
     const rows: LogEntry[] = [];
     this.api?.forEachNodeAfterFilterAndSort((node) => {
-      if (node.data) rows.push(node.data);
+      if (node.data && predicate(node.data)) rows.push(node.data);
     });
     return rows;
   }
