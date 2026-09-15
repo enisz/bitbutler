@@ -47,6 +47,10 @@ describe('SavePathSelect', () => {
     it('should return the typed term as-is', () => {
       expect(component.addTag('/new/custom/path')).toBe('/new/custom/path');
     });
+
+    it('should trim leading and trailing whitespace', () => {
+      expect(component.addTag('  /new/custom/path  ')).toBe('/new/custom/path');
+    });
   });
 
   describe('writeValue', () => {

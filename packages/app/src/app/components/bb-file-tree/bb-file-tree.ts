@@ -11,7 +11,13 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormControl,
+  FormsModule,
+  ReactiveFormsModule,
+  ValidationErrors,
+} from '@angular/forms';
 import { TorrentFileEntry } from '@bitbutler/shared';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
@@ -261,7 +267,7 @@ export class BbFileTree {
         node.fullPath,
         new FormControl(node.name, {
           nonNullable: true,
-          validators: [Validators.required, Validators.pattern(INVALID_FILENAME_CHARS)],
+          validators: [trimmedFilenameValidator],
         }),
       );
       if (node.children) this.addControlsForNodes(node.children);
@@ -271,7 +277,7 @@ export class BbFileTree {
   private applyControlValues(nodes: BbFileTreeNode[]): void {
     for (const node of nodes) {
       const control = this.nameControls.get(node.fullPath);
-      if (control) node.name = control.value;
+      if (control) node.name = control.value.trim();
       if (node.children) this.applyControlValues(node.children);
     }
   }
@@ -549,6 +555,13 @@ export class BbFileTree {
       }
     }
   }
+}
+
+function trimmedFilenameValidator(control: AbstractControl<string>): ValidationErrors | null {
+  const trimmed = (control.value ?? '').trim();
+  if (!trimmed) return { required: true };
+  if (!INVALID_FILENAME_CHARS.test(trimmed)) return { pattern: true };
+  return null;
 }
 
 function normalizePath(path: string | undefined): string {

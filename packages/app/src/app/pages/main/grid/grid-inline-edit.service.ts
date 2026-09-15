@@ -68,16 +68,16 @@ export class GridInlineEditService {
     try {
       switch (colId) {
         case 'name':
-          await this.qb.torrents.rename(serverId, hash, String(newValue ?? ''));
+          await this.qb.torrents.rename(serverId, hash, String(newValue ?? '').trim());
           break;
         case 'save_path':
-          await this.qb.torrents.setLocation(serverId, [hash], String(newValue ?? ''));
+          await this.qb.torrents.setLocation(serverId, [hash], String(newValue ?? '').trim());
           break;
         case 'download_path':
-          await this.qb.torrents.setDownloadPath(serverId, [hash], String(newValue ?? ''));
+          await this.qb.torrents.setDownloadPath(serverId, [hash], String(newValue ?? '').trim());
           break;
         case 'category':
-          await this.qb.torrents.setCategory(serverId, [hash], String(newValue ?? ''));
+          await this.qb.torrents.setCategory(serverId, [hash], String(newValue ?? '').trim());
           break;
         case 'tags': {
           await this.qb.torrents.removeAllTags(serverId, [hash]);
