@@ -90,10 +90,10 @@ export class ServerEditor implements OnInit {
   });
 
   get name(): string {
-    return this.editorForm.get('name')?.value || '';
+    return (this.editorForm.get('name')?.value || '').trim();
   }
   get host(): string {
-    return this.editorForm.get('host')?.value || '';
+    return (this.editorForm.get('host')?.value || '').trim();
   }
   get protocol(): ServerProtocol {
     return this.editorForm.get('protocol')?.value || 'http';
@@ -102,7 +102,7 @@ export class ServerEditor implements OnInit {
     return this.editorForm.get('port')?.value || 9999;
   }
   get username(): string {
-    return this.editorForm.get('username')?.value || '';
+    return (this.editorForm.get('username')?.value || '').trim();
   }
   get password(): string {
     return this.editorForm.get('password')?.value || '';

@@ -251,6 +251,22 @@ describe('BbFileTree', () => {
       );
     });
 
+    it('should trim leading/trailing whitespace from a renamed file before saving', () => {
+      component.enterEditMode();
+      const fileNode = component.data[0].children![0];
+      component.getControl(fileNode).setValue('  z.txt  ');
+
+      const spy = vi.fn();
+      component.saved.subscribe(spy);
+      component.saveEdit();
+
+      expect(spy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          renames: [{ oldPath: 'dir/a.txt', newPath: 'dir/z.txt' }],
+        }),
+      );
+    });
+
     it('should emit correct rename after two edit sessions (multi-session bug)', () => {
       fixture.componentRef.setInput('files', [makeFile('a.txt')]);
       fixture.detectChanges();

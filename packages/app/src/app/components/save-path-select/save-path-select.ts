@@ -128,7 +128,7 @@ export class SavePathSelect implements ControlValueAccessor {
     }
   }
 
-  addTag = (term: string): string => term;
+  addTag = (term: string): string => term.trim();
 
   public clearValue(): void {
     this.selectControl.setValue(null);
