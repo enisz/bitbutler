@@ -29,6 +29,10 @@
   margin-bottom: 10px;
 }
 
+.bb-hero-pct {
+  flex-shrink: 0;
+}
+
 .bb-hero-pct__value {
   font-size: 1.625rem;
   font-weight: 600;
@@ -37,9 +41,10 @@
 }
 
 .bb-hero-state {
+  flex: 1 1 auto;
+  min-width: 0;
   font-weight: 600;
   font-size: 0.9375rem;
-  max-width: 40%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
