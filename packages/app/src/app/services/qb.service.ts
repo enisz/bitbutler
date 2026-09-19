@@ -140,7 +140,7 @@ export class QbService {
         query: { withData: true },
       });
       if (res.ok) return res.body;
-      throw new HttpError(res.status, res.statusText, `Failed to get RSS items`);
+      throw new HttpError(res.status, res.statusText, this.rssErrorReason(res));
     },
 
     addFeed: async (serverId: string, url: string, path?: string): Promise<void> => {
@@ -149,7 +149,7 @@ export class QbService {
         method: 'POST',
         form: path ? { url, path } : { url },
       });
-      if (!res.ok) throw new HttpError(res.status, res.statusText, `Failed to add RSS feed`);
+      if (!res.ok) throw new HttpError(res.status, res.statusText, this.rssErrorReason(res));
     },
 
     removeItem: async (serverId: string, path: string): Promise<void> => {
@@ -158,7 +158,7 @@ export class QbService {
         method: 'POST',
         form: { path },
       });
-      if (!res.ok) throw new HttpError(res.status, res.statusText, `Failed to remove RSS item`);
+      if (!res.ok) throw new HttpError(res.status, res.statusText, this.rssErrorReason(res));
     },
 
     moveItem: async (serverId: string, itemPath: string, destPath: string): Promise<void> => {
@@ -167,7 +167,7 @@ export class QbService {
         method: 'POST',
         form: { itemPath, destPath },
       });
-      if (!res.ok) throw new HttpError(res.status, res.statusText, `Failed to rename RSS item`);
+      if (!res.ok) throw new HttpError(res.status, res.statusText, this.rssErrorReason(res));
     },
 
     refreshItem: async (serverId: string, itemPath: string): Promise<void> => {
@@ -176,7 +176,7 @@ export class QbService {
         method: 'POST',
         form: { itemPath },
       });
-      if (!res.ok) throw new HttpError(res.status, res.statusText, `Failed to refresh RSS item`);
+      if (!res.ok) throw new HttpError(res.status, res.statusText, this.rssErrorReason(res));
     },
 
     markAsRead: async (serverId: string, itemPath: string, articleId?: string): Promise<void> => {
@@ -185,7 +185,7 @@ export class QbService {
         method: 'POST',
         form: articleId ? { itemPath, articleId } : { itemPath },
       });
-      if (!res.ok) throw new HttpError(res.status, res.statusText, `Failed to mark RSS as read`);
+      if (!res.ok) throw new HttpError(res.status, res.statusText, this.rssErrorReason(res));
     },
   };
 
@@ -960,6 +960,12 @@ export class QbService {
 
   private cleanHashList(hashes: string[] | undefined): string[] {
     return (hashes ?? []).map((h) => (h ?? '').trim()).filter(Boolean);
+  }
+
+  // Prefer qB's response body text (e.g. "RSS feed with given URL already exists: ...") over a
+  // static English phrase, so callers (RssStoreService toasts) surface qB's actual reason.
+  private rssErrorReason<T>(res: QbResponse<T>): string {
+    return typeof res.body === 'string' && res.body.trim() ? res.body.trim() : res.statusText;
   }
 
   private extractIpcStatus(err: unknown): number | null {

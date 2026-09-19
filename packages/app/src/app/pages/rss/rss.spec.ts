@@ -149,6 +149,23 @@ describe('Rss page', () => {
     expect(qb.rss.items).toHaveBeenCalledTimes(1);
   });
 
+  it('resets and reloads the store when the connected server changes', async () => {
+    await create();
+    const store = TestBed.inject(RssStoreService);
+    await vi.waitFor(() => expect(store.feeds().length).toBe(1));
+
+    qb.rss.items.mockClear();
+    qb.app.preferences.mockClear();
+
+    serverId.set('s2');
+    fixture.detectChanges();
+
+    expect(store.feeds()).toEqual([]);
+    await vi.waitFor(() => expect(qb.rss.items).toHaveBeenCalledWith('s2'));
+    expect(qb.app.preferences).toHaveBeenCalledWith('s2');
+    await vi.waitFor(() => expect(store.feeds().length).toBe(1));
+  });
+
   it('clears the store when the page is destroyed', async () => {
     await create();
     const store = TestBed.inject(RssStoreService);

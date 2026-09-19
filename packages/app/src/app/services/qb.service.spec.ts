@@ -374,16 +374,36 @@ describe('QbService', () => {
       );
     });
 
-    it('rejects with HttpError when qB answers 409', async () => {
+    it('rejects with HttpError using the qB response body as the reason when qB answers 409', async () => {
       vi.spyOn(service, 'request').mockResolvedValue({
         ok: false,
         status: 409,
         statusText: 'Conflict',
+        body: 'RSS feed with given URL already exists: https://a/rss',
       } as any);
 
-      await expect(service.rss.addFeed('server-1', 'https://a/rss')).rejects.toBeInstanceOf(
-        HttpError,
-      );
+      const error = (await service.rss
+        .addFeed('server-1', 'https://a/rss')
+        .catch((e: unknown) => e)) as HttpError;
+
+      expect(error).toBeInstanceOf(HttpError);
+      expect(error.message).toBe('RSS feed with given URL already exists: https://a/rss');
+    });
+
+    it('falls back to statusText when the 409 response has no body text', async () => {
+      vi.spyOn(service, 'request').mockResolvedValue({
+        ok: false,
+        status: 409,
+        statusText: 'Conflict',
+        body: '',
+      } as any);
+
+      const error = (await service.rss
+        .addFeed('server-1', 'https://a/rss')
+        .catch((e: unknown) => e)) as HttpError;
+
+      expect(error).toBeInstanceOf(HttpError);
+      expect(error.message).toBe('Conflict');
     });
   });
 });
