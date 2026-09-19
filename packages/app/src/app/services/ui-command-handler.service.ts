@@ -161,6 +161,9 @@ export class UiCommandHandlerService {
             scrollable: true,
             beforeDismiss: () => qbSettingsModalRef.componentInstance.canDeactivate(),
           });
+          if (command.tabToOpen) {
+            setModalInput(qbSettingsModalRef, 'tabToOpen', command.tabToOpen);
+          }
           qbSettingsModalRef.result.catch(() => {});
           break;
         }
@@ -192,6 +195,9 @@ export class UiCommandHandlerService {
             keyboard: false,
           });
 
+          if (command.urls?.length) {
+            setModalInput(addTorrentModalRef, 'initialLinks', command.urls);
+          }
           addTorrentModalRef.result.catch(() => {});
           break;
         }
@@ -515,6 +521,28 @@ export class UiCommandHandlerService {
           setModalInput(torrentExistsModalRef, 'hash', command.hash);
           setModalInput(torrentExistsModalRef, 'originalPath', command.originalPath);
           torrentExistsModalRef.result.catch(() => {});
+          break;
+        }
+
+        case 'UI_RSS_ADD_SUBSCRIPTION': {
+          const { AddSubscription } = await import('../modals/add-subscription/add-subscription');
+          if (this.isModalOpen(AddSubscription)) break;
+          const addSubscriptionModalRef = this.modalService.open(AddSubscription, {
+            centered: false,
+          });
+          addSubscriptionModalRef.result.catch(() => {});
+          break;
+        }
+
+        case 'UI_RSS_RENAME_SUBSCRIPTION': {
+          const { RenameSubscription } =
+            await import('../modals/rename-subscription/rename-subscription');
+          if (this.isModalOpen(RenameSubscription)) break;
+          const renameSubscriptionModalRef = this.modalService.open(RenameSubscription, {
+            centered: false,
+          });
+          setModalInput(renameSubscriptionModalRef, 'feed', command.feed);
+          renameSubscriptionModalRef.result.catch(() => {});
           break;
         }
 
