@@ -1,0 +1,67 @@
+<div class="modal-header bb-modal-header">
+  <div class="bb-modal-header__text">
+    <h5 class="modal-title bb-title-clamp">{{ 'pages.rss.modal.add.title' | translate }}</h5>
+  </div>
+
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="activeModal.dismiss()"
+  ></button>
+</div>
+<div class="modal-body">
+  <form [formGroup]="form" (submit)="handleSubmit()">
+    <div class="container-fluid">
+      <div class="row g-3">
+        <div class="col-12">
+          <div class="form-floating">
+            <input
+              type="url"
+              class="form-control"
+              id="rss-feed-url"
+              placeholder="https://"
+              formControlName="url"
+              autofocus
+            />
+            <label for="rss-feed-url">{{ 'pages.rss.modal.add.url' | translate }}</label>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="form-floating">
+            <input
+              type="text"
+              class="form-control"
+              id="rss-feed-name"
+              placeholder="Name"
+              formControlName="name"
+            />
+            <label for="rss-feed-name">{{ 'pages.rss.modal.add.name' | translate }}</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button type="submit" hidden [disabled]="!canSave()"></button>
+  </form>
+</div>
+<div class="modal-footer">
+  <button
+    type="button"
+    class="btn btn-primary btn-sm btn-split"
+    (click)="handleSubmit()"
+    [disabled]="!canSave()"
+  >
+    <bb-btn-content
+      [icon]="icons.faPlus"
+      [text]="'general.button.add' | translate"
+      position="end"
+    ></bb-btn-content>
+  </button>
+  <button type="button" class="btn btn-sm btn-split" (click)="activeModal.dismiss()">
+    <bb-btn-content
+      [icon]="icons.faXmark"
+      [text]="'general.button.cancel' | translate"
+      position="end"
+    ></bb-btn-content>
+  </button>
+</div>

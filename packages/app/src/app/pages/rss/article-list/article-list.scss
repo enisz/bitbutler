@@ -1,0 +1,104 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.rss-items {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+
+  &__heading {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 0.875rem 1.25rem 0.5rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--bs-secondary-color);
+  }
+
+  &__list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.25rem;
+    color: var(--bs-secondary-color);
+  }
+}
+
+.rss-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.6875rem 1.25rem;
+  border: 0;
+  border-bottom: 1px solid var(--bs-border-color);
+  border-left: 2px solid transparent;
+  background: transparent;
+  color: var(--bs-secondary-color);
+  text-align: left;
+
+  &:hover {
+    background: color-mix(in srgb, var(--bs-body-color) 5%, transparent);
+  }
+
+  &--unread {
+    color: var(--bs-body-color);
+    font-weight: 600;
+  }
+
+  &--active {
+    border-left-color: var(--bb-accent);
+    background: color-mix(in srgb, var(--bb-accent) 12%, transparent);
+  }
+
+  &__dot {
+    flex: 0 0 auto;
+    width: 0.4375rem;
+    height: 0.4375rem;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--bs-body-color) 25%, transparent);
+  }
+
+  &--unread &__dot {
+    background: var(--bb-accent);
+  }
+
+  &__chip {
+    flex: 0 0 auto;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--bs-secondary-color);
+  }
+
+  &__title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__age {
+    flex: 0 0 auto;
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--bs-secondary-color);
+  }
+}

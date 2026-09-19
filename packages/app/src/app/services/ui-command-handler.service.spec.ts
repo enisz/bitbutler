@@ -3,6 +3,8 @@ import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { BehaviorSubject, Subject } from 'rxjs';
+import { AddSubscription } from '../modals/add-subscription/add-subscription';
+import { RenameSubscription } from '../modals/rename-subscription/rename-subscription';
 import { CommandBusService } from './command-bus.service';
 import { ConfirmService } from './confirm.service';
 import { ElectronService } from './electron.service';
@@ -69,6 +71,8 @@ describe('UiCommandHandlerService', () => {
       import('../modals/import-torrents/import-torrents'),
       import('../modals/torrent-exists/torrent-exists'),
       import('../modals/credential-prompt/credential-prompt'),
+      import('../modals/add-subscription/add-subscription'),
+      import('../modals/rename-subscription/rename-subscription'),
     ]);
   });
 
@@ -239,6 +243,38 @@ describe('UiCommandHandlerService', () => {
     commands$.next({ type: 'UI_OPEN_QB_SETTINGS' });
     await flushPromises();
     expect(mockModalService.open).toHaveBeenCalled();
+  });
+
+  it('should pass the requested tab to the QbSettings modal', async () => {
+    commands$.next({ type: 'UI_OPEN_QB_SETTINGS', tabToOpen: 'rss' });
+    await flushPromises();
+    expect(setInputSpy).toHaveBeenCalledWith('tabToOpen', 'rss');
+  });
+
+  it('should hand the urls of UI_ADD_TORRENT to the modal as initialLinks', async () => {
+    commands$.next({ type: 'UI_ADD_TORRENT', urls: ['magnet:?xt=urn:btih:abc'] });
+    await flushPromises();
+    expect(setInputSpy).toHaveBeenCalledWith('initialLinks', ['magnet:?xt=urn:btih:abc']);
+  });
+
+  it('should not set initialLinks for a plain UI_ADD_TORRENT', async () => {
+    commands$.next({ type: 'UI_ADD_TORRENT' });
+    await flushPromises();
+    expect(setInputSpy).not.toHaveBeenCalledWith('initialLinks', expect.anything());
+  });
+
+  it('should open the AddSubscription modal for UI_RSS_ADD_SUBSCRIPTION', async () => {
+    commands$.next({ type: 'UI_RSS_ADD_SUBSCRIPTION' });
+    await flushPromises();
+    expect(mockModalService.open).toHaveBeenCalledWith(AddSubscription, expect.anything());
+  });
+
+  it('should open RenameSubscription with the feed for UI_RSS_RENAME_SUBSCRIPTION', async () => {
+    const feed = { path: 'F', name: 'F', url: 'u', isLoading: false, hasError: false };
+    commands$.next({ type: 'UI_RSS_RENAME_SUBSCRIPTION', feed });
+    await flushPromises();
+    expect(mockModalService.open).toHaveBeenCalledWith(RenameSubscription, expect.anything());
+    expect(setInputSpy).toHaveBeenCalledWith('feed', feed);
   });
 
   it('should open About modal for UI_OPEN_ABOUT', async () => {

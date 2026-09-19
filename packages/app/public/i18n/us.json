@@ -1224,6 +1224,92 @@
     }
   },
   "pages": {
+    "rss": {
+      "title": "RSS",
+      "subtitle": "Subscriptions and their latest items. Double-click an item to download it.",
+      "back-button": "Back to torrents",
+      "action": {
+        "update-all": "Update all",
+        "mark-all-read": "Mark all read",
+        "add-subscription": "Add subscription",
+        "settings": "RSS settings"
+      },
+      "filter": {
+        "placeholder": "Filter feed items",
+        "clear": "Clear filter"
+      },
+      "feeds": {
+        "heading": "Feeds",
+        "unread": "Unread",
+        "error": "This feed failed to update",
+        "loading": "Updating…",
+        "menu": "Subscription actions",
+        "refresh": "Refresh",
+        "rename": "Rename",
+        "remove": "Remove"
+      },
+      "items": {
+        "heading": "Feed items",
+        "count": "{{ shown }} of {{ total }}",
+        "empty": "No items to show.",
+        "unread-dot": "Unread"
+      },
+      "age": {
+        "now": "now",
+        "minute": "{{ value }}m",
+        "hour": "{{ value }}h",
+        "day": "{{ value }}d",
+        "week": "{{ value }}w",
+        "year": "{{ value }}y"
+      },
+      "details": {
+        "empty": "Select an item to see its details.",
+        "date": "Date",
+        "author": "Author",
+        "size": "Size",
+        "link": "Link",
+        "download": "Download",
+        "open-link": "Open link",
+        "no-torrent": "This item has no torrent or magnet link."
+      },
+      "banner": {
+        "disabled": "RSS fetching is disabled on this server.",
+        "enable": "Enable"
+      },
+      "empty": {
+        "no-feeds": "No subscriptions yet. Add one to get started.",
+        "load-failed": "Could not load the RSS feeds."
+      },
+      "modal": {
+        "add": {
+          "title": "Add Subscription",
+          "url": "Feed URL",
+          "name": "Name (optional)"
+        },
+        "rename": {
+          "title": "Rename Subscription",
+          "name": "Name"
+        }
+      },
+      "remove-confirm": {
+        "title": "Remove Subscription",
+        "message": "Remove the subscription \"{{ name }}\"? Its items are deleted from the server."
+      },
+      "toast": {
+        "added": "Subscription Added",
+        "add-failed": "Failed to Add Subscription",
+        "removed": "Subscription Removed",
+        "remove-failed": "Failed to Remove Subscription",
+        "renamed": "Subscription Renamed",
+        "rename-failed": "Failed to Rename Subscription",
+        "refresh-failed": "Failed to Refresh Subscriptions",
+        "read-failed": "Failed to Mark as Read",
+        "load-failed": "Failed to Load RSS Feeds",
+        "enabled": "RSS Fetching Enabled",
+        "enabled-message": "Feeds will now refresh automatically.",
+        "enable-failed": "Failed to Enable RSS Fetching"
+      }
+    },
     "login": {
       "tagline": "qBittorrent-nox Remote Client",
       "form-title": "Connect to Server",
@@ -1919,6 +2005,18 @@
             "add-to-top-of-queue": "Add new torrents to the top of the queue"
           }
         },
+        "rss": {
+          "title": "RSS",
+          "description": "Control how the server fetches and keeps RSS feeds.",
+          "label": {
+            "fetching": "Feed Fetching"
+          },
+          "field": {
+            "processing-enabled": "Enable fetching RSS feeds",
+            "refresh-interval": "Feeds refresh interval (minutes)",
+            "max-articles": "Maximum articles per feed"
+          }
+        },
         "seeding-ratios": {
           "title": "Seeding Ratios",
           "description": "Set automatic limits to stop seeding based on share ratio targets or time thresholds.",
@@ -2161,6 +2259,7 @@
       "quit": "Quit",
       "view-menu": "View",
       "view-torrent-list": "Torrent List",
+      "view-rss": "RSS",
       "servers": "Servers",
       "add-new": "Add new…",
       "settings-menu": "Settings",

@@ -1,0 +1,65 @@
+<nav class="rss-feeds" [attr.aria-label]="'pages.rss.feeds.heading' | translate">
+  <div class="rss-feeds__heading">
+    <span>{{ 'pages.rss.feeds.heading' | translate }}</span>
+    <span class="rss-feeds__count">{{ feeds().length }}</span>
+  </div>
+
+  <div class="rss-feed" [class.rss-feed--active]="selectedFeedPath() === null">
+    <button type="button" class="rss-feed__main" (click)="selectFeed(null)">
+      <fa-icon class="rss-feed__icon" [icon]="icons.faEnvelope" />
+      <span class="rss-feed__name">{{ 'pages.rss.feeds.unread' | translate }}</span>
+      <span class="rss-feed__badge">{{ totalUnread() }}</span>
+    </button>
+  </div>
+
+  @for (feed of feeds(); track feed.path) {
+    <div class="rss-feed" [class.rss-feed--active]="selectedFeedPath() === feed.path">
+      <button type="button" class="rss-feed__main" (click)="selectFeed(feed.path)">
+        <fa-icon class="rss-feed__icon" [icon]="icons.faRss" />
+        <span class="rss-feed__name" [title]="feed.url">{{ feed.name }}</span>
+        @if (feed.hasError) {
+          <fa-icon
+            class="rss-feed__error"
+            [icon]="icons.faTriangleExclamation"
+            [ngbTooltip]="'pages.rss.feeds.error' | translate"
+            container="body"
+          />
+        } @else if (feed.isLoading) {
+          <fa-icon
+            class="rss-feed__loading"
+            [icon]="icons.faArrowsRotate"
+            [animation]="'spin'"
+            [title]="'pages.rss.feeds.loading' | translate"
+          />
+        }
+        <span class="rss-feed__badge">{{ feed.unread }}</span>
+      </button>
+
+      <div ngbDropdown container="body" placement="bottom-end" class="rss-feed__menu">
+        <button
+          type="button"
+          class="rss-feed__kebab"
+          ngbDropdownToggle
+          [attr.aria-label]="'pages.rss.feeds.menu' | translate"
+        >
+          <fa-icon [icon]="icons.faEllipsis" />
+        </button>
+        <div ngbDropdownMenu>
+          <button type="button" ngbDropdownItem (click)="refresh(feed)">
+            <fa-icon class="me-2" [icon]="icons.faArrowsRotate" />{{
+              'pages.rss.feeds.refresh' | translate
+            }}
+          </button>
+          <button type="button" ngbDropdownItem (click)="rename(feed)">
+            <fa-icon class="me-2" [icon]="icons.faPen" />{{ 'pages.rss.feeds.rename' | translate }}
+          </button>
+          <button type="button" ngbDropdownItem class="text-danger" (click)="remove(feed)">
+            <fa-icon class="me-2" [icon]="icons.faTrashCan" />{{
+              'pages.rss.feeds.remove' | translate
+            }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</nav>

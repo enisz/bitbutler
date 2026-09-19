@@ -1,5 +1,7 @@
 import type { SelectedTorrentInput, TorrentDraft, UpdateCheckResponse } from '@bitbutler/shared';
+import { QbSettingsTabId } from '../modals/qb-settings/qb-settings.interface';
 import { SettingsTabId } from '../modals/settings/settings.interface';
+import type { RssFeed } from './rss.model';
 import { Torrent } from './torrent.model';
 
 export type { SelectedTorrentInput };
@@ -10,13 +12,16 @@ export type UiCommand =
   | { type: 'UI_SERVER_EDITOR_OPEN'; id?: string }
   | { type: 'UI_TORRENT_DELETE_REQUEST'; defaultRemoveFiles?: boolean; hashes?: string[] }
   | { type: 'UI_OPEN_SETTINGS'; tabToOpen?: SettingsTabId }
-  | { type: 'UI_OPEN_QB_SETTINGS' }
+  | { type: 'UI_OPEN_QB_SETTINGS'; tabToOpen?: QbSettingsTabId }
   | { type: 'UI_OPEN_TORRENT_DETAILS'; hash: string }
   | {
       type: 'UI_ADD_TORRENT';
       draft?: TorrentDraft;
       selected?: SelectedTorrentInput;
+      urls?: string[];
     }
+  | { type: 'UI_RSS_ADD_SUBSCRIPTION' }
+  | { type: 'UI_RSS_RENAME_SUBSCRIPTION'; feed: RssFeed }
   | { type: 'UI_OPEN_ABOUT' }
   | { type: 'UI_SET_SAVE_PATH'; torrent: Torrent; hashes?: string[] }
   | { type: 'UI_SET_DOWNLOAD_PATH'; torrent: Torrent; hashes?: string[] }

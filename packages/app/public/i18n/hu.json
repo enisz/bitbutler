@@ -1224,6 +1224,92 @@
     }
   },
   "pages": {
+    "rss": {
+      "title": "RSS",
+      "subtitle": "Feliratkozások és a legújabb elemeik. Elem letöltéséhez kattints rá duplán.",
+      "back-button": "Vissza a torrentekhez",
+      "action": {
+        "update-all": "Összes frissítése",
+        "mark-all-read": "Összes olvasottnak jelölése",
+        "add-subscription": "Feliratkozás hozzáadása",
+        "settings": "RSS beállítások"
+      },
+      "filter": {
+        "placeholder": "Elemek szűrése",
+        "clear": "Szűrő törlése"
+      },
+      "feeds": {
+        "heading": "Csatornák",
+        "unread": "Olvasatlan",
+        "error": "A csatorna frissítése sikertelen",
+        "loading": "Frissítés…",
+        "menu": "Feliratkozás műveletei",
+        "refresh": "Frissítés",
+        "rename": "Átnevezés",
+        "remove": "Eltávolítás"
+      },
+      "items": {
+        "heading": "Csatorna elemei",
+        "count": "{{ shown }} / {{ total }}",
+        "empty": "Nincs megjeleníthető elem.",
+        "unread-dot": "Olvasatlan"
+      },
+      "age": {
+        "now": "most",
+        "minute": "{{ value }}p",
+        "hour": "{{ value }}ó",
+        "day": "{{ value }}n",
+        "week": "{{ value }}h",
+        "year": "{{ value }}é"
+      },
+      "details": {
+        "empty": "Válassz ki egy elemet a részletek megtekintéséhez.",
+        "date": "Dátum",
+        "author": "Szerző",
+        "size": "Méret",
+        "link": "Hivatkozás",
+        "download": "Letöltés",
+        "open-link": "Hivatkozás megnyitása",
+        "no-torrent": "Ehhez az elemhez nem tartozik torrent vagy magnet hivatkozás."
+      },
+      "banner": {
+        "disabled": "Az RSS-lekérés le van tiltva ezen a szerveren.",
+        "enable": "Engedélyezés"
+      },
+      "empty": {
+        "no-feeds": "Még nincs feliratkozás. Adj hozzá egyet a kezdéshez.",
+        "load-failed": "Az RSS csatornák betöltése sikertelen."
+      },
+      "modal": {
+        "add": {
+          "title": "Feliratkozás hozzáadása",
+          "url": "Csatorna URL",
+          "name": "Név (opcionális)"
+        },
+        "rename": {
+          "title": "Feliratkozás átnevezése",
+          "name": "Név"
+        }
+      },
+      "remove-confirm": {
+        "title": "Feliratkozás eltávolítása",
+        "message": "Eltávolítod a(z) \"{{ name }}\" feliratkozást? Az elemei törlődnek a szerverről."
+      },
+      "toast": {
+        "added": "Feliratkozás hozzáadva",
+        "add-failed": "Nem sikerült hozzáadni a feliratkozást",
+        "removed": "Feliratkozás eltávolítva",
+        "remove-failed": "Nem sikerült eltávolítani a feliratkozást",
+        "renamed": "Feliratkozás átnevezve",
+        "rename-failed": "Nem sikerült átnevezni a feliratkozást",
+        "refresh-failed": "Nem sikerült frissíteni a feliratkozásokat",
+        "read-failed": "Nem sikerült olvasottnak jelölni",
+        "load-failed": "Nem sikerült betölteni az RSS csatornákat",
+        "enabled": "RSS-lekérés engedélyezve",
+        "enabled-message": "A csatornák mostantól automatikusan frissülnek.",
+        "enable-failed": "Nem sikerült engedélyezni az RSS-lekérést"
+      }
+    },
     "login": {
       "tagline": "qBittorrent-nox távoli kliens",
       "form-title": "Csatlakozás",
@@ -1919,6 +2005,18 @@
             "add-to-top-of-queue": "Új torrentek hozzáadása a sor elejéhez"
           }
         },
+        "rss": {
+          "title": "RSS",
+          "description": "Beállíthatod, hogyan kéri le és tárolja a szerver az RSS csatornákat.",
+          "label": {
+            "fetching": "Csatornák lekérése"
+          },
+          "field": {
+            "processing-enabled": "RSS csatornák lekérésének engedélyezése",
+            "refresh-interval": "Csatornák frissítési időköze (perc)",
+            "max-articles": "Csatornánkénti cikkek maximális száma"
+          }
+        },
         "seeding-ratios": {
           "title": "Terjesztési Arányok",
           "description": "Állítson be automatikus korlátokat a feltöltési arány vagy az idő alapján a terjesztés leállításához.",
@@ -2160,6 +2258,7 @@
       "quit": "Kilépés",
       "view-menu": "Nézet",
       "view-torrent-list": "Torrent lista",
+      "view-rss": "RSS",
       "servers": "Szerverek",
       "add-new": "Új hozzáadása…",
       "settings-menu": "Beállítások",

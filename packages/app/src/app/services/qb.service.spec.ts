@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { HttpError } from '../models/http.model';
 import { QbService } from './qb.service';
 import { ServerStoreService } from './server-store.service';
 import { ToastService } from './toast.service';
@@ -284,6 +285,125 @@ describe('QbService', () => {
       const spy = vi.spyOn(service, 'request');
       await service.torrents.removeAllTags('server-1', []);
       expect(spy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('rss', () => {
+    it('items() requests the tree with article data', async () => {
+      const tree = { Feed: { uid: '{1}', url: 'https://a/rss', articles: [] } };
+      const spy = vi.spyOn(window.bitbutler.qb, 'request').mockResolvedValue(tree as any);
+
+      const result = await service.rss.items('server-1');
+
+      expect(spy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'server-1',
+          path: '/api/v2/rss/items',
+          method: 'GET',
+          query: { withData: true },
+        }),
+      );
+      expect(result).toEqual(tree);
+    });
+
+    it('addFeed() posts the url and the optional path', async () => {
+      const spy = vi.spyOn(window.bitbutler.qb, 'request').mockResolvedValue(undefined as any);
+
+      await service.rss.addFeed('server-1', 'https://a/rss', 'My Feed');
+      await service.rss.addFeed('server-1', 'https://b/rss');
+
+      expect(spy).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({
+          path: '/api/v2/rss/addFeed',
+          method: 'POST',
+          form: { url: 'https://a/rss', path: 'My Feed' },
+        }),
+      );
+      expect(spy).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({ form: { url: 'https://b/rss' } }),
+      );
+    });
+
+    it('removeItem(), moveItem() and refreshItem() post their parameters', async () => {
+      const spy = vi.spyOn(window.bitbutler.qb, 'request').mockResolvedValue(undefined as any);
+
+      await service.rss.removeItem('server-1', 'Folder\\Feed');
+      await service.rss.moveItem('server-1', 'Old', 'New');
+      await service.rss.refreshItem('server-1', 'Feed');
+
+      expect(spy).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({
+          path: '/api/v2/rss/removeItem',
+          method: 'POST',
+          form: { path: 'Folder\\Feed' },
+        }),
+      );
+      expect(spy).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({
+          path: '/api/v2/rss/moveItem',
+          form: { itemPath: 'Old', destPath: 'New' },
+        }),
+      );
+      expect(spy).toHaveBeenNthCalledWith(
+        3,
+        expect.objectContaining({ path: '/api/v2/rss/refreshItem', form: { itemPath: 'Feed' } }),
+      );
+    });
+
+    it('markAsRead() includes articleId only when given', async () => {
+      const spy = vi.spyOn(window.bitbutler.qb, 'request').mockResolvedValue(undefined as any);
+
+      await service.rss.markAsRead('server-1', 'Feed', 'a1');
+      await service.rss.markAsRead('server-1', 'Feed');
+
+      expect(spy).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({
+          path: '/api/v2/rss/markAsRead',
+          method: 'POST',
+          form: { itemPath: 'Feed', articleId: 'a1' },
+        }),
+      );
+      expect(spy).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({ form: { itemPath: 'Feed' } }),
+      );
+    });
+
+    it('rejects with HttpError using the qB response body as the reason when qB answers 409', async () => {
+      vi.spyOn(service, 'request').mockResolvedValue({
+        ok: false,
+        status: 409,
+        statusText: 'Conflict',
+        body: 'RSS feed with given URL already exists: https://a/rss',
+      } as any);
+
+      const error = (await service.rss
+        .addFeed('server-1', 'https://a/rss')
+        .catch((e: unknown) => e)) as HttpError;
+
+      expect(error).toBeInstanceOf(HttpError);
+      expect(error.message).toBe('RSS feed with given URL already exists: https://a/rss');
+    });
+
+    it('falls back to statusText when the 409 response has no body text', async () => {
+      vi.spyOn(service, 'request').mockResolvedValue({
+        ok: false,
+        status: 409,
+        statusText: 'Conflict',
+        body: '',
+      } as any);
+
+      const error = (await service.rss
+        .addFeed('server-1', 'https://a/rss')
+        .catch((e: unknown) => e)) as HttpError;
+
+      expect(error).toBeInstanceOf(HttpError);
+      expect(error.message).toBe('Conflict');
     });
   });
 });
