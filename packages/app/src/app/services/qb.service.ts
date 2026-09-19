@@ -11,6 +11,7 @@ import {
   QbTorrentProperties,
   QbTorrentTracker,
 } from '../models/qbittorrent.model';
+import { QbRssItems } from '../models/rss.model';
 import {
   Maindata,
   QbCategory,
@@ -128,6 +129,63 @@ export class QbService {
       });
       if (res.ok) return res.body;
       throw new HttpError(res.status, res.statusText, `Failed to get peer log`);
+    },
+  };
+
+  readonly rss = {
+    items: async (serverId: string): Promise<QbRssItems> => {
+      const res = await this.request<QbRssItems>(serverId, {
+        path: '/api/v2/rss/items',
+        method: 'GET',
+        query: { withData: true },
+      });
+      if (res.ok) return res.body;
+      throw new HttpError(res.status, res.statusText, `Failed to get RSS items`);
+    },
+
+    addFeed: async (serverId: string, url: string, path?: string): Promise<void> => {
+      const res = await this.request<void>(serverId, {
+        path: '/api/v2/rss/addFeed',
+        method: 'POST',
+        form: path ? { url, path } : { url },
+      });
+      if (!res.ok) throw new HttpError(res.status, res.statusText, `Failed to add RSS feed`);
+    },
+
+    removeItem: async (serverId: string, path: string): Promise<void> => {
+      const res = await this.request<void>(serverId, {
+        path: '/api/v2/rss/removeItem',
+        method: 'POST',
+        form: { path },
+      });
+      if (!res.ok) throw new HttpError(res.status, res.statusText, `Failed to remove RSS item`);
+    },
+
+    moveItem: async (serverId: string, itemPath: string, destPath: string): Promise<void> => {
+      const res = await this.request<void>(serverId, {
+        path: '/api/v2/rss/moveItem',
+        method: 'POST',
+        form: { itemPath, destPath },
+      });
+      if (!res.ok) throw new HttpError(res.status, res.statusText, `Failed to rename RSS item`);
+    },
+
+    refreshItem: async (serverId: string, itemPath: string): Promise<void> => {
+      const res = await this.request<void>(serverId, {
+        path: '/api/v2/rss/refreshItem',
+        method: 'POST',
+        form: { itemPath },
+      });
+      if (!res.ok) throw new HttpError(res.status, res.statusText, `Failed to refresh RSS item`);
+    },
+
+    markAsRead: async (serverId: string, itemPath: string, articleId?: string): Promise<void> => {
+      const res = await this.request<void>(serverId, {
+        path: '/api/v2/rss/markAsRead',
+        method: 'POST',
+        form: articleId ? { itemPath, articleId } : { itemPath },
+      });
+      if (!res.ok) throw new HttpError(res.status, res.statusText, `Failed to mark RSS as read`);
     },
   };
 
