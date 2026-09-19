@@ -40,6 +40,7 @@ describe('QbSettings', () => {
         storage: false,
         'queue-limits': false,
         'seeding-ratios': false,
+        rss: false,
       }),
       preferences: signal(null),
       saveAll: vi.fn().mockResolvedValue(undefined),
@@ -84,8 +85,8 @@ describe('QbSettings', () => {
   });
 
   describe('tabs', () => {
-    it('should define exactly 4 tabs', () => {
-      expect(component.tabs).toHaveLength(4);
+    it('should define exactly 5 tabs', () => {
+      expect(component.tabs).toHaveLength(5);
     });
 
     it('should contain bandwidth, storage, queue-limits and seeding-ratios tabs', () => {
