@@ -16,10 +16,10 @@ A new **RSS** view, opened from the View menu, for browsing and downloading from
 
 ## Key facts about qB's RSS API
 
-Verified against the API wiki (5.0) and qBittorrent source (master). The wiki does **not** document the `withData` response, so the shapes below come from `rss_feed.cpp` / `rss_article.cpp` / `rss_parser.cpp` and must be confirmed against a real response from a v5.2.3 server before the types are written (first implementation task).
+Verified against the API wiki (5.0) and qBittorrent source (master). The wiki does **not** document the `withData` response, so the shapes below come from `rss_feed.cpp` / `rss_article.cpp` / `rss_parser.cpp` and were **confirmed against a real qBittorrent 5.2.3 response on 2026-09-19** (see `docs/superpowers/test-env/sample-rss-items.json`). Confirmed details: unknown XML elements pass through under their local names (`category`, `contentLength` from `torrent:contentLength`, `size` from `nyaa:size`); `isRead` is absent until read; for a magnet `<link>` qB omits `link` and puts the magnet in `torrentURL`; `author` is absent when the feed has none; a successful login returns HTTP 204 with an empty body.
 
-- `rss/items?withData=true` returns a tree. Keys are item names. A **feed** node is an object with `uid`, `url`, optional `refreshInterval`, and with data `title`, `lastBuildDate`, `isLoading`, `hasError`, `articles[]`. A **folder** node is an object without `uid` whose values are child nodes. Without `withData`, a feed node is only its URL string.
-- An article is the raw parsed hash: `id` (guid), `date` (RFC 2822 string), `title`, `author`, `description`, `torrentURL`, `link`, `isRead`. `isRead` is **absent until the article is read**. Any other XML element in the item is also passed through under its local name (`category`, `size`, `contentLength`, ...), so those are best-effort.
+- `rss/items?withData=true` returns a tree. Keys are item names. A **feed** node is an object with `uid`, `url`, optional `refreshInterval`, and with data `title`, `lastBuildDate`, `isLoading`, `hasError`, `articles[]`. A **folder** node is an object without `uid` whose values are child nodes. In qB 5.2.3 a feed node is an object (`uid`, `url`) even without `withData`; older docs show a bare URL string.
+- An article is the raw parsed hash: `id` (guid), `date` (string like `18 Sep 2026 22:57:42 +0000`, always UTC, no weekday; `new Date(...)` parses it), `title`, `author`, `description`, `torrentURL`, `link`, `isRead`. `isRead` is **absent until the article is read**. Any other XML element in the item is also passed through under its local name (`category`, `size`, `contentLength`, ...), so those are best-effort.
 - `torrentURL` is never empty: if the item has no torrent enclosure and no magnet `<link>`, qB copies `link` into it. The API response does not say whether it came from an enclosure.
 - Read state: `markAsRead(itemPath, articleId?)`. Omitting `articleId` marks the whole feed. There is no mark-unread.
 - Other calls used: `addFeed(url, path?)`, `removeItem(path)`, `moveItem(itemPath, destPath)` (rename), `refreshItem(itemPath)`. Errors are 409 for add/remove/move.
@@ -159,6 +159,6 @@ Vitest, matching the repo. Unit tests first for `rss.lib.ts` (flattening with fo
 
 ## Open verification items (first plan task)
 
-1. Capture a real `rss/items?withData=true` response from the v5.2.3 server and confirm field names and the `isRead`-absent behavior before finalizing `rss.model.ts`.
+1. Resolved (2026-09-19): the `rss/items?withData=true` shape was confirmed against a real qB 5.2.3, see "Key facts about qB's RSS API" above.
 2. Confirm how the torrent list page reports the active view so the RSS page does the same.
 3. Confirm whether `hasError` / `isLoading` need dedicated UI or just a subtle indicator.

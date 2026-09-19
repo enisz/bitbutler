@@ -1,0 +1,63 @@
+{
+  "Test Feed": {
+    "articles": [
+      {
+        "date": "17 Sep 2026 12:00:00 +0000",
+        "description": "Item with a textual size element.",
+        "id": "bb-test-5",
+        "link": "http://feed/page/nyaa-style",
+        "size": "1.2 GiB",
+        "title": "[Anime] - Nyaa Style Size",
+        "torrentURL": "http://feed/nyaa.torrent"
+      },
+      {
+        "author": "@BitButler",
+        "date": "19 Sep 2026 07:00:00 +0000",
+        "description": "News-style item: the link is a web page, not a torrent.",
+        "id": "bb-test-3",
+        "link": "https://example.com/news/plain-web-link",
+        "title": "[Distribution] - Plain Web Link",
+        "torrentURL": "https://example.com/news/plain-web-link"
+      },
+      {
+        "date": "19 Sep 2026 08:00:00 +0000",
+        "description": "Item whose link is a magnet URI.",
+        "id": "bb-test-2",
+        "title": "Magnet Item",
+        "torrentURL": "magnet:?xt=urn:btih:0123456789abcdef0123456789abcdef01234567&dn=Magnet+Item"
+      },
+      {
+        "category": "Movies",
+        "contentLength": "1073741824",
+        "date": "19 Sep 2026 09:00:00 +0000",
+        "description": "Item with an enclosure, a category and a byte size.",
+        "id": "bb-test-1",
+        "link": "http://feed/page/enclosure",
+        "title": "Enclosure Item",
+        "torrentURL": "http://feed/sample.torrent"
+      },
+      {
+        "date": "14 Sep 2026 10:00:00 +0000",
+        "description": "<p>Hello <b>world</b> &amp; friends</p><p>Second paragraph<br/>after a break</p><script>alert(1)</script>",
+        "id": "bb-test-6",
+        "link": "http://feed/page/html-description",
+        "title": "HTML Description",
+        "torrentURL": "http://feed/page/html-description"
+      },
+      {
+        "date": "18 Sep 2026 22:00:00 +0000",
+        "description": "Item whose link ends in .torrent and has no enclosure.",
+        "id": "bb-test-4",
+        "link": "http://feed/link-only.torrent",
+        "title": "Link Only Torrent",
+        "torrentURL": "http://feed/link-only.torrent"
+      }
+    ],
+    "hasError": false,
+    "isLoading": false,
+    "lastBuildDate": "",
+    "title": "BitButler Test Feed",
+    "uid": "{00000000-0000-0000-0000-000000000000}",
+    "url": "http://feed/torrents.xml"
+  }
+}
