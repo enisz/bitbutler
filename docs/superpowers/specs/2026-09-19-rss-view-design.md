@@ -48,10 +48,10 @@ Angular (`packages/app/src/app/`)
 - `services/qb.service.ts`: new `readonly rss = { items, addFeed, removeItem, moveItem, refreshItem, markAsRead }` namespace, same style as `app` / `log` / `sync` (throws `HttpError` on non-ok).
 - `services/rss-store.service.ts`: signal store for the page (see below).
 - `pages/rss/rss.ts|html|scss` (page shell and header), `pages/rss/feed-list/`, `pages/rss/article-list/`, `pages/rss/article-details/`.
-- `pages/rss/rss.lib.ts`: pure helpers (tree flattening, article view-model mapping, torrent-URL classification, title-prefix chip parsing, relative time). No Angular imports, so they are trivially unit-tested.
+- `utils/rss.utils.ts`: pure helpers (tree flattening, article view-model mapping, torrent-URL classification, title-prefix chip parsing, HTML-to-text, relative age). No Angular imports, so they are trivially unit-tested.
 - `modals/add-torrent/`: accept an optional prefilled link (below).
 - `modals/qb-settings/rss/`: new **RSS** tab (below). `qb-settings.interface.ts`, `qb-settings-state.service.ts` (`INITIAL_DIRTY`), `qb-settings.ts` (`tabs`) get the `'rss'` id.
-- `models/command.model.ts` / `services/ui-command-handler.service.ts`: `UI_ADD_TORRENT` gets optional `urls?: string[]`; `UI_OPEN_QB_SETTINGS` gets optional `tab?: QbSettingsTabId`, passed to the modal's `tabToOpen` input.
+- `models/command.model.ts` / `services/ui-command-handler.service.ts`: `UI_ADD_TORRENT` gets optional `urls?: string[]` (passed to the modal's new `initialLinks` input); `UI_OPEN_QB_SETTINGS` gets optional `tabToOpen?: QbSettingsTabId` (same name as `UI_OPEN_SETTINGS`); new `UI_RSS_ADD_SUBSCRIPTION` and `UI_RSS_RENAME_SUBSCRIPTION` (carries the feed) open the two small modals `modals/add-subscription` and `modals/rename-subscription`.
 - Global styles: `.bb-tool` / `.bb-search` are currently component-scoped in `pages/main/button-bar/button-bar.scss`. Move them to `styles/_toolbar-button.scss` (imported from `styles.scss`) and have both the torrent-list button bar and the RSS header use them. The logs branch (#330) makes the same extraction; whichever branch lands second resolves a small conflict by dropping its copy.
 
 ## Data model and mapping
@@ -90,7 +90,11 @@ Otherwise the article is treated as a plain web link: Download is disabled with 
 
 ### Description
 
-Rendered through Angular's built-in `[innerHTML]` sanitizer, or as plain text with tags stripped; never bypassed with `DomSanitizer.bypassSecurityTrust*`. Links in the description are not clickable inside the app (plain text).
+Converted to plain text (`<br>`, `</p>`, `</div>`, `</li>` become newlines, remaining tags dropped, entities decoded via `DOMParser`) and rendered with interpolation, so no HTML ever reaches the DOM.
+
+### Link
+
+Only `http:`/`https:` links are kept for the Link row and Open link; anything else is treated as no link.
 
 ## RssStoreService
 
@@ -100,7 +104,7 @@ Methods: `load()`, `addFeed(url, name?)`, `removeFeed(path)`, `renameFeed(path, 
 
 - Scoped to `ServerStoreService.currentServerId()`; reloads and clears selection when the server changes.
 - **Refresh cadence:** loads on entering the view, after every mutating action, and every 30 s while the view is open (RxJS `timer`, torn down with the page). `refreshItem` triggers a qB fetch, which is asynchronous on the server, so the store re-reads shortly after (feed nodes report `isLoading`); no client-side waiting logic beyond the normal poll.
-- Read state is optimistic: `markRead` updates the signal immediately and reverts with an error toast if the call fails.
+- Read state is optimistic: `markRead` updates the signal immediately and reverts with an error toast if the call fails. In the **Unread** scope the currently selected item stays visible even after it is marked read, until the selection changes.
 - `processingEnabled` comes from `qb.app.preferences` on load.
 
 ## UI
@@ -111,7 +115,7 @@ Header (mirrors the logs view header: back chevron, title with subtitle, actions
 
 Body is three columns, as in the design mockup:
 
-1. **Feeds** (`FEEDS n`): virtual **Unread** first, then feeds. Each row shows the unread count. Feed rows have a context menu (Refresh, Rename, Remove) and show a subtle error/loading indicator from `hasError` / `isLoading`.
+1. **Feeds** (`FEEDS n`): virtual **Unread** first, then feeds. Each row shows the unread count. Feed rows have a kebab dropdown menu (Refresh, Rename, Remove) and show a subtle error/loading indicator from `hasError` / `isLoading`.
 2. **Feed items** (`n OF m`): chip, title, relative time (`1h`, `3h`, `1d`), unread dot and bold weight for unread. Selecting an item marks it read (like the qB WebUI). Double-click runs Download.
 3. **Details**: chip, title, then rows for Date (existing `DateFormatService`), Author, Size (only when present), Link (opens in the external browser via `ElectronService.openExternalUrl`), then the description. Footer: **Download** (disabled with tooltip when not downloadable) and **Open link**. The mockup's "Mark as unread" is removed.
 
@@ -130,7 +134,7 @@ Back chevron navigates to `/pages/torrent-list`. The page reports itself as the 
 - **Rename / Remove:** rename uses a small prompt modal; remove uses the existing `ConfirmService`.
 - **Update all:** `refreshItem` for every feed, then reload.
 - **Mark all read:** as above. No confirm.
-- **Download:** `commandBus.emit({ type: 'UI_ADD_TORRENT', urls: [torrentUrl] })`; the modal opens with the link field prefilled. The article is marked read after the modal reports a successful add. If wiring "after successful add" through the command bus turns out to be invasive, fall back to marking read on Download click (decision at planning time).
+- **Download:** `commandBus.emit({ type: 'UI_ADD_TORRENT', urls: [torrentUrl] })`; the modal opens with the link field prefilled. Selecting an item already marks it read, so no extra mark-read step is needed after Download.
 - **Settings button:** `commandBus.emit({ type: 'UI_OPEN_QB_SETTINGS', tab: 'rss' })`.
 
 ### Toasts (per CLAUDE.md)
@@ -160,5 +164,5 @@ Vitest, matching the repo. Unit tests first for `rss.lib.ts` (flattening with fo
 ## Open verification items (first plan task)
 
 1. Resolved (2026-09-19): the `rss/items?withData=true` shape was confirmed against a real qB 5.2.3, see "Key facts about qB's RSS API" above.
-2. Confirm how the torrent list page reports the active view so the RSS page does the same.
-3. Confirm whether `hasError` / `isLoading` need dedicated UI or just a subtle indicator.
+2. Resolved: `app.ts` reports the active view from the router URL (`/pages/<id>`), so the RSS route needs no extra wiring.
+3. Resolved: `hasError` shows a warning icon with tooltip on the feed row, `isLoading` a spinning refresh icon.
