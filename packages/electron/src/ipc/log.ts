@@ -1,9 +1,26 @@
-import { ipcMain } from 'electron';
+import type { LogEntry } from '@bitbutler/shared';
+import { dialog, ipcMain } from 'electron';
+import fs from 'node:fs';
+import db from '../db.js';
 import { insertLog } from '../logger.js';
 import { resolveOriginalLocation } from '../source-map-resolver.js';
 
 const VALID_LEVELS = ['debug', 'info', 'warn', 'error'] as const;
 type LevelStr = (typeof VALID_LEVELS)[number];
+
+interface LogRow {
+  id: number;
+  timestamp: number;
+  process: 'main' | 'renderer';
+  level: LevelStr;
+  message: string;
+  context: string | null;
+  filename: string | null;
+  line: number | null;
+}
+
+const stmtList = db.prepare<[], LogRow>('SELECT * FROM logs');
+const stmtClear = db.prepare('DELETE FROM logs');
 
 function asNullableString(v: unknown, maxLen: number): string | null {
   if (typeof v !== 'string' || !v) return null;
@@ -15,6 +32,13 @@ function asNullableInt(v: unknown): number | null {
 }
 
 export function registerLogIpcHandlers(): void {
+  ipcMain.handle('log:list', async () => logList());
+  ipcMain.handle('log:clear', async () => logClear());
+  ipcMain.handle(
+    'log:export',
+    async (_event, payload: { content: string; defaultFilename?: string }) => logExport(payload),
+  );
+
   ipcMain.on('log:write', (_event, entry: unknown) => {
     const e = entry && typeof entry === 'object' ? (entry as Record<string, unknown>) : {};
     const level = VALID_LEVELS.includes(e['level'] as LevelStr) ? (e['level'] as LevelStr) : null;
@@ -38,4 +62,27 @@ export function registerLogIpcHandlers(): void {
       resolved?.line ?? line,
     );
   });
+}
+
+function logList(): LogEntry[] {
+  return stmtList.all().map((row) => ({ ...row, timestamp: Math.floor(row.timestamp / 1000) }));
+}
+
+function logClear(): { ok: true } {
+  stmtClear.run();
+  return { ok: true };
+}
+
+async function logExport(payload: {
+  content: string;
+  defaultFilename?: string;
+}): Promise<{ cancelled: boolean; path?: string }> {
+  const { canceled, filePath } = await dialog.showSaveDialog({
+    defaultPath: payload.defaultFilename ?? 'bitbutler.log',
+    filters: [{ name: 'Log files', extensions: ['log'] }],
+  });
+  if (canceled || !filePath) return { cancelled: true };
+
+  await fs.promises.writeFile(filePath, payload.content, 'utf-8');
+  return { cancelled: false, path: filePath };
 }

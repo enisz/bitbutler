@@ -938,6 +938,49 @@
           "failed-title": "Export Failed"
         }
       },
+      "export-logs": {
+        "title": "Export Logs",
+        "label": {
+          "scope": "Export scope",
+          "format": "Format"
+        },
+        "placeholder": {
+          "format": "[{{date}}] [{{process}}] [{{level}}] ({{filename}}:{{line}}) - {{message}}"
+        },
+        "scope": {
+          "all": "All",
+          "filtered": "Filtered",
+          "selected": "Selected"
+        },
+        "variable-guide": {
+          "toggle": "Variable guide",
+          "hint": "Wrap a variable name in double curly braces, e.g. {{message}}, to include its value.",
+          "column-token": "Variable",
+          "column-description": "Description",
+          "column-example": "Example",
+          "token": {
+            "date": "Formatted timestamp, using the app's configured date/time format",
+            "process": "The process that produced the entry (main or renderer)",
+            "level": "The log level (debug, info, warn, or error)",
+            "message": "The log message",
+            "context": "Additional context attached to the entry, if any",
+            "filename": "The source filename the entry originated from, if known",
+            "line": "The source line number the entry originated from, if known",
+            "id": "The entry's numeric ID"
+          }
+        },
+        "button": {
+          "export": "Export"
+        },
+        "toast": {
+          "success": {
+            "title": "Logs Exported"
+          },
+          "error": {
+            "title": "Failed to Export Logs"
+          }
+        }
+      },
       "import-torrents": {
         "title": "Import Torrents",
         "label": {
@@ -1246,6 +1289,36 @@
         "message": "Are you sure you want to delete {{name}}?"
       }
     },
+    "logs": {
+      "title": "Logs",
+      "back-button": "Back",
+      "color-coding": "Color Coding",
+      "compact-rows": "Compact Rows",
+      "clear-confirm": {
+        "title": "Clear Logs",
+        "message": "Are you sure you want to permanently delete all logs?"
+      },
+      "toast": {
+        "refresh-failed": {
+          "title": "Failed to Load Logs"
+        },
+        "clear-failed": {
+          "title": "Failed to Clear Logs"
+        }
+      },
+      "grid": {
+        "col-def": {
+          "timestamp": "Timestamp",
+          "process": "Process",
+          "level": "Level",
+          "message": "Message",
+          "context": "Context",
+          "filename": "Filename",
+          "line": "Line",
+          "id": "ID"
+        }
+      }
+    },
     "main": {
       "button-bar": {
         "button": {
@@ -1310,6 +1383,7 @@
             "copy-as-json": "Copy as JSON",
             "copy-cell-value": "Copy Cell Value",
             "copy-row-as-json": "Copy Row as JSON",
+            "copy-rows-as-json": "Copy Rows as JSON",
             "export-torrent-file": "Export .torrent",
             "export-torrent-files": "Export .torrent Files",
             "torrent-details": "Torrent details",
@@ -1384,7 +1458,8 @@
             "save-path": "Save Path",
             "save-paths": "Save Paths",
             "json": "JSON",
-            "row-as-json": "Row as JSON"
+            "row-as-json": "Row as JSON",
+            "rows-as-json": "Rows as JSON"
           }
         },
         "overlays": {
@@ -2068,7 +2143,8 @@
       "open-details": "Open Details",
       "edit": "Edit",
       "refresh": "Refresh",
-      "retry": "Retry"
+      "retry": "Retry",
+      "export": "Export"
     },
     "form": {
       "feedback": {

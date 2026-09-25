@@ -7,7 +7,7 @@ export type {
   UpdateCheckResponse,
 } from './models/electron.model.js';
 export type { UpdateCapability, UpdaterEvent } from './models/updater.model.js';
-export type { LogLevel, RendererLogEntry } from './models/log.model.js';
+export type { LogEntry, LogLevel, LogProcess, RendererLogEntry } from './models/log.model.js';
 export type { NewServer, ServerProtocol, ServerRecord } from './models/server.model.js';
 export type {
   TorrentDraft,

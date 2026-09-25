@@ -1,6 +1,7 @@
 @use 'bootstrap/scss/bootstrap' as *;
 @use '@ng-select/ng-select/themes/default.theme.css';
 @use './styles/ng-select';
+@use './styles/toolbar-button';
 @use './styles/themes/theme-utils' as bb;
 
 @use 'flag-icons/sass/flag-icons' with (

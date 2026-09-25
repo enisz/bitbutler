@@ -20,7 +20,10 @@ import {
 import { GRID_ROW_MUTED_CLASS, GRID_SHARED_OPTIONS } from '../../../app.const';
 import { formatProgressPercent } from '../../../components/bb-progress/format-progress-percent';
 import { BooleanColumnFilter } from '../../../components/column-filters/boolean-column-filter/boolean-column-filter';
-import { DatepickerRangeFilter } from '../../../components/column-filters/datepicker-range-filter/datepicker-range-filter';
+import {
+  DatepickerRangeFilter,
+  DatepickerRangeFilterParams,
+} from '../../../components/column-filters/datepicker-range-filter/datepicker-range-filter';
 import { DurationColumnFilter } from '../../../components/column-filters/duration-column-filter/duration-column-filter';
 import { NumberColumnFilter } from '../../../components/column-filters/number-column-filter/number-column-filter';
 import { RatioLimitColumnFilter } from '../../../components/column-filters/ratio-limit-column-filter/ratio-limit-column-filter';
@@ -48,6 +51,23 @@ import { StatusDotCellRenderer } from './renderers/status-dot-cell-renderer/stat
 
 const tooltipFormattedValue: TooltipValueGetterFunc<Torrent, unknown> = (params) =>
   params.valueFormatted ?? '';
+
+type TorrentDateField = 'added_on' | 'last_activity' | 'seen_complete' | 'completion_on';
+
+/** qBittorrent uses <= 0 as a "not applicable" sentinel for these fields (e.g. an incomplete torrent's `completion_on`). */
+function torrentDateValues(torrents: readonly Torrent[], field: TorrentDateField): number[] {
+  return torrents.map((t) => t[field]).filter((v) => v > 0);
+}
+
+export function minTorrentDate(torrents: readonly Torrent[], field: TorrentDateField): Date | null {
+  const values = torrentDateValues(torrents, field);
+  return values.length === 0 ? null : new Date(Math.min(...values) * 1000);
+}
+
+export function maxTorrentDate(torrents: readonly Torrent[], field: TorrentDateField): Date | null {
+  const values = torrentDateValues(torrents, field);
+  return values.length === 0 ? null : new Date(Math.max(...values) * 1000);
+}
 
 export function getGridColDefs(
   uiFormatService: UiFormatService,
@@ -464,6 +484,10 @@ export function getGridColDefs(
       width: 170,
       valueFormatter: uiFormatService.localTimestamp,
       filter: DatepickerRangeFilter,
+      filterParams: {
+        getMinDate: () => minTorrentDate(torrentStoreService.torrentsArray(), 'added_on'),
+        getMaxDate: () => maxTorrentDate(torrentStoreService.torrentsArray(), 'added_on'),
+      } satisfies Partial<DatepickerRangeFilterParams>,
       sort: 'desc',
       cellClass: 'tabular-nums',
     },
@@ -740,6 +764,10 @@ export function getGridColDefs(
       width: 185,
       valueFormatter: uiFormatService.localTimestamp,
       filter: DatepickerRangeFilter,
+      filterParams: {
+        getMinDate: () => minTorrentDate(torrentStoreService.torrentsArray(), 'last_activity'),
+        getMaxDate: () => maxTorrentDate(torrentStoreService.torrentsArray(), 'last_activity'),
+      } satisfies Partial<DatepickerRangeFilterParams>,
       cellClass: 'tabular-nums',
       hide: true,
     },
@@ -753,6 +781,10 @@ export function getGridColDefs(
       width: 185,
       valueFormatter: uiFormatService.localTimestamp,
       filter: DatepickerRangeFilter,
+      filterParams: {
+        getMinDate: () => minTorrentDate(torrentStoreService.torrentsArray(), 'seen_complete'),
+        getMaxDate: () => maxTorrentDate(torrentStoreService.torrentsArray(), 'seen_complete'),
+      } satisfies Partial<DatepickerRangeFilterParams>,
       cellClass: 'tabular-nums',
       hide: true,
     },
@@ -766,6 +798,10 @@ export function getGridColDefs(
       width: 165,
       valueFormatter: uiFormatService.localTimestamp,
       filter: DatepickerRangeFilter,
+      filterParams: {
+        getMinDate: () => minTorrentDate(torrentStoreService.torrentsArray(), 'completion_on'),
+        getMaxDate: () => maxTorrentDate(torrentStoreService.torrentsArray(), 'completion_on'),
+      } satisfies Partial<DatepickerRangeFilterParams>,
       cellClass: 'tabular-nums',
       hide: true,
     },

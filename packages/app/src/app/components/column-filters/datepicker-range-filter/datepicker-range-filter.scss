@@ -11,6 +11,12 @@
   color: var(--bb-dp-text);
   transition: all 0.15s ease;
 
+  &--disabled {
+    cursor: not-allowed;
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
   &--today {
     font-weight: 800;
     color: var(--bs-primary) !important;
@@ -166,17 +172,6 @@
         color: var(--bb-dp-text) !important;
         font-size: 0.85rem;
         font-weight: 500;
-      }
-    }
-    .ng-dropdown-panel {
-      background-color: var(--bb-dp-bg) !important;
-      border: 1px solid var(--bb-dp-border) !important;
-      z-index: 1200 !important;
-      .ng-option {
-        color: var(--bb-dp-text) !important;
-        &.ng-option-marked {
-          background-color: var(--bb-ng-hover-bg) !important;
-        }
       }
     }
   }

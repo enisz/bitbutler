@@ -1,5 +1,5 @@
 import { formatDate } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
@@ -12,6 +12,7 @@ import {
 import {
   NgbCalendar,
   NgbDate,
+  NgbDateStruct,
   NgbDatepicker,
   NgbDatepickerI18n,
   NgbDatepickerModule,
@@ -24,10 +25,17 @@ import { IAfterGuiAttachedParams, IDoesFilterPassParams, IFilterParams } from 'a
 import { CustomDatepickerI18n } from '../../../services/custom-datepicker-i18n.service';
 import { DateFormatService } from '../../../services/date-format.service';
 import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
+import { createFilterInstanceId } from '../filter-instance-id.utils';
+import { AG_GRID_CUSTOM_POPUP_CLASS } from '../operator-filter-base';
 
 interface DateRangeFilterModel {
   from: NgbDate | null;
   to: NgbDate | null;
+}
+
+export interface DatepickerRangeFilterParams extends IFilterParams {
+  getMinDate?: () => Date | null;
+  getMaxDate?: () => Date | null;
 }
 
 /** The subset of `NgbDatepicker` this component actually drives. */
@@ -49,11 +57,20 @@ type NavigableDatepicker = Pick<NgbDatepicker, 'navigateTo'>;
   styleUrl: './datepicker-range-filter.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DatepickerRangeFilter implements IFilterAngularComp, OnInit {
+export class DatepickerRangeFilter implements IFilterAngularComp, OnInit, OnDestroy {
   readonly calendarService = inject(NgbCalendar);
   private readonly i18n = inject(NgbDatepickerI18n);
   readonly dateFormatService = inject(DateFormatService);
-  private params!: IFilterParams;
+  private params!: DatepickerRangeFilterParams;
+  public readonly instanceId = createFilterInstanceId('datepicker-range-filter');
+  /**
+   * The month and year selects each need their own portal element. ng-select's overlay/Popover
+   * machinery gets confused when two independent select instances share a single appendTo host -
+   * opening one after the other can leave a stale, invisible overlay layer behind that swallows
+   * clicks on the second select's options (they appear normal but do nothing).
+   */
+  private monthPopupPortal?: HTMLElement;
+  private yearPopupPortal?: HTMLElement;
   public icons = { faChevronLeft, faChevronRight, faCalendarDay, faEraser, faCheck };
   fromDate: NgbDate | null = null;
   toDate: NgbDate | null = null;
@@ -64,6 +81,33 @@ export class DatepickerRangeFilter implements IFilterAngularComp, OnInit {
   viewDate: { month: number; year: number };
   months: { value: number; label: string }[] = [];
   years: number[] = [];
+  minDate: NgbDate | null = null;
+  maxDate: NgbDate | null = null;
+  /**
+   * `visibleMonths()` is bound directly in the template ([items]="visibleMonths()"), which is
+   * ng-select's `items` signal input - a new array reference on every call re-fires ng-select's
+   * internal items effect even while its dropdown is open, resetting the hovered/marked option
+   * mid-interaction (hover highlight never sticks, clicks land on a just-rebuilt item list).
+   * Caching by viewed year keeps the reference stable across change-detection passes that don't
+   * actually change which months should be visible.
+   */
+  private visibleMonthsCache: { value: number; label: string }[] = [];
+  private visibleMonthsCacheYear: number | null = null;
+
+  get monthPopupPortalSelector(): string {
+    return `#${this.instanceId}-month-popup-portal`;
+  }
+
+  get yearPopupPortalSelector(): string {
+    return `#${this.instanceId}-year-popup-portal`;
+  }
+
+  isOutOfRange = (date: NgbDateStruct): boolean => {
+    const ngbDate = new NgbDate(date.year, date.month, date.day);
+    if (this.minDate && ngbDate.before(this.minDate)) return true;
+    if (this.maxDate && ngbDate.after(this.maxDate)) return true;
+    return false;
+  };
 
   constructor() {
     this.today = this.calendarService.getToday();
@@ -75,21 +119,84 @@ export class DatepickerRangeFilter implements IFilterAngularComp, OnInit {
       value: i + 1,
       label: this.i18n.getMonthFullName(i + 1),
     }));
+    this.buildYears();
+  }
+
+  agInit(params: DatepickerRangeFilterParams): void {
+    this.params = params;
+    this.refreshDateBounds();
+
+    this.monthPopupPortal = this.createPopupPortal(this.monthPopupPortalSelector);
+    this.yearPopupPortal = this.createPopupPortal(this.yearPopupPortalSelector);
+  }
+
+  /**
+   * The underlying data (e.g. the torrent list) can change between filter popup openings, so the
+   * min/max bounds computed at agInit time can go stale - re-derive them on every reopen too,
+   * otherwise a newly-added row's date can end up permanently disabled.
+   */
+  private refreshDateBounds(): void {
+    const min = this.params.getMinDate?.() ?? null;
+    const max = this.params.getMaxDate?.() ?? null;
+    this.minDate = min ? this.dateToNgb(min) : null;
+    this.maxDate = max ? this.dateToNgb(max) : null;
+    this.buildYears();
+    this.visibleMonthsCacheYear = null;
+  }
+
+  private buildYears(): void {
     const currentYear = this.today.year;
-    for (let i = currentYear - 20; i <= currentYear + 10; i++) {
+    const startYear = this.minDate?.year ?? currentYear - 20;
+    const endYear = this.maxDate?.year ?? currentYear + 10;
+    this.years = [];
+    for (let i = startYear; i <= endYear; i++) {
       this.years.push(i);
     }
   }
 
-  agInit(params: IFilterParams): void {
-    this.params = params;
+  ngOnDestroy(): void {
+    this.monthPopupPortal?.remove();
+    this.yearPopupPortal?.remove();
+  }
+
+  private createPopupPortal(idSelector: string): HTMLElement {
+    const portal = document.createElement('div');
+    portal.id = idSelector.slice(1);
+    portal.className = AG_GRID_CUSTOM_POPUP_CLASS;
+    portal.style.position = 'relative';
+    document.body.appendChild(portal);
+    return portal;
   }
   isFilterActive(): boolean {
     return this.appliedFrom !== null;
   }
+  visibleMonths(): { value: number; label: string }[] {
+    if (this.viewDate.year !== this.visibleMonthsCacheYear) {
+      this.visibleMonthsCacheYear = this.viewDate.year;
+      this.visibleMonthsCache = this.months.filter((m) => {
+        if (
+          this.minDate &&
+          this.viewDate.year === this.minDate.year &&
+          m.value < this.minDate.month
+        )
+          return false;
+        if (
+          this.maxDate &&
+          this.viewDate.year === this.maxDate.year &&
+          m.value > this.maxDate.month
+        )
+          return false;
+        return true;
+      });
+    }
+    return this.visibleMonthsCache;
+  }
+  private dateToNgb(d: Date): NgbDate {
+    return new NgbDate(d.getFullYear(), d.getMonth() + 1, d.getDate());
+  }
   doesFilterPass(params: IDoesFilterPassParams): boolean {
     if (!this.appliedFrom) return true;
-    const rawValue = params.data?.added_on;
+    const rawValue = this.params.getValue(params.node);
     if (rawValue == null) return false;
     const cellDate = new Date(Number(rawValue) * 1000);
     const cellLocalMidnight = new Date(
@@ -114,6 +221,7 @@ export class DatepickerRangeFilter implements IFilterAngularComp, OnInit {
     this.toDate = this.appliedTo;
   }
   afterGuiAttached(_params?: IAfterGuiAttachedParams): void {
+    this.refreshDateBounds();
     this.fromDate = this.appliedFrom;
     this.toDate = this.appliedTo;
     this.hoveredDate = null;

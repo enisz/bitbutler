@@ -938,6 +938,49 @@
           "failed-title": "Export sikertelen"
         }
       },
+      "export-logs": {
+        "title": "Naplók exportálása",
+        "label": {
+          "scope": "Exportálás hatóköre",
+          "format": "Formátum"
+        },
+        "placeholder": {
+          "format": "[{{date}}] [{{process}}] [{{level}}] ({{filename}}:{{line}}) - {{message}}"
+        },
+        "scope": {
+          "all": "Összes",
+          "filtered": "Szűrt",
+          "selected": "Kijelölt"
+        },
+        "variable-guide": {
+          "toggle": "Változók súgója",
+          "hint": "Írj egy változónevet dupla kapcsos zárójelbe, pl. {{message}}, hogy beillessze az értékét.",
+          "column-token": "Változó",
+          "column-description": "Leírás",
+          "column-example": "Példa",
+          "token": {
+            "date": "Formázott időbélyeg, az alkalmazás beállított dátum-/időformátuma szerint",
+            "process": "A bejegyzést létrehozó folyamat (main vagy renderer)",
+            "level": "A napló szintje (debug, info, warn vagy error)",
+            "message": "A napló üzenete",
+            "context": "A bejegyzéshez csatolt további kontextus, ha van",
+            "filename": "A bejegyzés forrás fájlneve, ha ismert",
+            "line": "A bejegyzés forrás sorszáma, ha ismert",
+            "id": "A bejegyzés numerikus azonosítója"
+          }
+        },
+        "button": {
+          "export": "Exportálás"
+        },
+        "toast": {
+          "success": {
+            "title": "Naplók exportálva"
+          },
+          "error": {
+            "title": "Naplók exportálása sikertelen"
+          }
+        }
+      },
       "import-torrents": {
         "title": "Torrentek importálása",
         "label": {
@@ -1246,6 +1289,36 @@
         "message": "Biztosan törölni szeretnéd a következőt: {{name}}?"
       }
     },
+    "logs": {
+      "title": "Naplók",
+      "back-button": "Vissza",
+      "color-coding": "Színkódolás",
+      "compact-rows": "Kompakt sorok",
+      "clear-confirm": {
+        "title": "Naplók törlése",
+        "message": "Biztosan véglegesen törölni szeretnéd az összes naplóbejegyzést?"
+      },
+      "toast": {
+        "refresh-failed": {
+          "title": "A naplók betöltése sikertelen"
+        },
+        "clear-failed": {
+          "title": "A naplók törlése sikertelen"
+        }
+      },
+      "grid": {
+        "col-def": {
+          "timestamp": "Időbélyeg",
+          "process": "Folyamat",
+          "level": "Szint",
+          "message": "Üzenet",
+          "context": "Kontextus",
+          "filename": "Fájlnév",
+          "line": "Sor",
+          "id": "Azonosító"
+        }
+      }
+    },
     "main": {
       "button-bar": {
         "button": {
@@ -1310,6 +1383,7 @@
             "copy-as-json": "Másolás JSON-ként",
             "copy-cell-value": "Cella értékének másolása",
             "copy-row-as-json": "Sor másolása JSON-ként",
+            "copy-rows-as-json": "Sorok másolása JSON-ként",
             "export-torrent-file": "Exportálás .torrent fájlba",
             "export-torrent-files": "Exportálás .torrent fájlokba",
             "torrent-details": "Torrent részletei",
@@ -1384,7 +1458,8 @@
             "save-path": "Mentési Útvonal",
             "save-paths": "Mentési Útvonalak",
             "json": "JSON",
-            "row-as-json": "Sor JSON-ként"
+            "row-as-json": "Sor JSON-ként",
+            "rows-as-json": "Sorok JSON-ként"
           }
         },
         "overlays": {
@@ -2067,7 +2142,8 @@
       "open-details": "Részletek megnyitása",
       "edit": "Szerkesztés",
       "refresh": "Frissítés",
-      "retry": "Újra"
+      "retry": "Újra",
+      "export": "Exportálás"
     },
     "form": {
       "feedback": {
