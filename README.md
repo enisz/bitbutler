@@ -114,12 +114,26 @@ If you're a developer and want to play with the code or build a custom version:
 - **Node.js** (v20 or higher)
 - **npm**
 - _(Linux Only)_: `rpm` tools installed (`sudo apt-get install rpm`) to build the `.rpm` package.
+- _(Windows Only)_: a working native build toolchain for `better-sqlite3`, which compiles from source via `node-gyp` when no prebuilt binary matches your Node.js version. Without it, `npm ci`/`npm install` fails with an error like `missing any VC++ toolset`. Install:
+  - **Python** 3.x
+  - **Visual Studio Build Tools 2022**, with the **Desktop development with C++** workload selected (this pulls in the MSVC v143 build tools and the Windows 10/11 SDK - installing Build Tools alone is not enough)
+
+  Verify the C++ toolset is present with:
+
+  ```powershell
+  & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+  ```
+
+  If this returns no output, open the Visual Studio Installer, choose **Build Tools 2022 → Modify**, and add the **Desktop development with C++** workload.
 
 ### Setup
 
 ```bash
 # Clone the repo
 git clone https://github.com/enisz/bitbutler.git
+
+# (Optional) Use the project's Node.js version via nvm
+nvm use
 
 # Install dependencies
 npm install
