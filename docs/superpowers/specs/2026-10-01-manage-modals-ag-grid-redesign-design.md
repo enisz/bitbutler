@@ -32,6 +32,7 @@ Because all three grids need identical mechanics, the following is built once an
 
 - **Footer layout**: action buttons grouped on the left (New / Edit / Delete for Tags and Categories; New / Edit / Connect / Delete for Servers), Close on the right, via `ms-auto` on the Close button (the same CSS mechanism Torrent Details uses to separate its left action group from its right-aligned Delete/Close, just applied to a different button grouping here).
 - **Modal positioning**: no code change needed - omitting `centered: true` on `NgbModal.open()` already top-aligns, as it does today for these three modals and for Torrent Details.
+- **Modal size**: today's `UI_MANAGE_TAGS`/`UI_MANAGE_CATEGORIES`/`UI_MANAGE_SERVERS` handlers in `ui-command-handler.service.ts` open with no explicit `size` (ng-bootstrap's default width), sized for the old narrow list UIs. All three grid modals move to `size: 'xl'` (matching Torrent Details) to give the grid room for its columns, checkboxes, and filters. The two new create-only modals (`TagEditor`, `CategoryEditor`) keep a small/default size, same as `ServerEditor`'s `size: 'lg'` - only the three grid-hosting modals grow.
 
 ## Manage Servers grid
 
