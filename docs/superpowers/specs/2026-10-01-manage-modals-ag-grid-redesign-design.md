@@ -12,16 +12,16 @@ ag-grid in this app is Community edition only (no Enterprise license). The main 
 
 Because all three grids need identical mechanics, the following is built once and reused by all three, rather than duplicated:
 
-- **Header column-context-menu**: `GridContextMenuService.buildHeaderMenu()` (`packages/app/src/app/pages/main/grid/context-menu/grid-context-menu.service.ts`) already operates only on `GridApi`/column state (sort asc/desc/clear, pin left/right/unpin, autosize, hide/show columns) with no torrent-specific logic. Extract it into a new grid-agnostic service (e.g. `packages/app/src/app/components/grid-header-context-menu/grid-header-context-menu.service.ts`) that any grid, including the main torrent grid, can call with a `ColumnApi`/column id. Wire it via the same `ContextMenuService.open()` CDK-overlay mechanism used today, triggered from each new grid's `onColumnHeaderContextMenu`.
-- **Row context menu**: each of the three modals builds its own small 2-entry menu (Edit/Delete, or just Delete for Tags) directly against `ContextMenuService.open()` - too small to warrant a shared builder.
-- **Selection + footer enable rules**: a shared helper (e.g. `packages/app/src/app/components/management-grid/management-grid-selection.util.ts`) exposing computed enable rules from a `signal<T[]>` of selected rows: New always enabled, Edit enabled iff exactly one selected, Delete enabled iff one or more selected. Each modal uses ag-grid's built-in checkbox selection (`rowSelection: { mode: 'multiRow', checkboxes: true, headerCheckbox: true }`) and syncs `onSelectionChanged` into its own local selection signal, following the pattern already used for `SelectionStoreService` in the main grid (a plain signal, not the store itself - these modals don't need cross-component selection state).
-- **Custom filters**: reuse the existing per-column filter components unchanged from `packages/app/src/app/components/column-filters/`: `TextColumnFilter` (name/host/username/save-path), `NumberColumnFilter` (port/usage-count), `SetColumnFilter` (protocol), `BooleanColumnFilter` (auto-login).
-- **Persisted grid state**: one `BaseSettingsService<T>` subclass per grid, following the existing `TrackersGridSettingsService`/`PeersGridSettingsService` pattern exactly (`packages/app/src/app/services/`):
+- **Header column-context-menu**: `GridContextMenuService.buildHeaderMenu<TData>(event: ColumnHeaderContextMenuEvent<TData>): ContextMenuEntry[]` (`packages/app/src/app/pages/main/grid/context-menu/grid-context-menu.service.ts`) is already fully generic - it only reads `event.api`/`event.column` (sort asc/desc/clear, pin left/right/unpin, autosize, hide/show columns) with zero torrent-specific references, and the `Trackers` component (`packages/app/src/app/modals/torrent-details/trackers/trackers.ts`) already calls it directly and unmodified. No extraction needed: each new grid injects the existing `GridContextMenuService` and `ContextMenuService` and wires `onColumnHeaderContextMenu` the same way `Trackers` does today.
+- **Row context menu**: each of the three modals builds its own small menu (Edit/Delete, or just Delete for Tags, or Connect/Set as Default/Edit/Delete for Servers - see below) directly against `ContextMenuService.open()` - too small to warrant a shared builder.
+- **Selection + footer enable rules**: each grid uses ag-grid's built-in checkbox selection (`rowSelection: { mode: 'multiRow', checkboxes: true, headerCheckbox: true }`), syncs `onSelectionChanged` into its own local `signal<T[]>`, and computes its own three `computed()` enable flags (New always enabled, Edit enabled iff exactly one selected, Delete enabled iff one or more selected) directly - this is ~3 lines per grid and differs slightly per grid (Tags has no Edit at all), so no shared utility file is introduced for it.
+- **Custom filters**: reuse the existing per-column filter components unchanged from `packages/app/src/app/components/column-filters/`: `TextColumnFilter` (name/host/username/save-path), `NumberColumnFilter` (port/usage-count), `SetColumnFilter` (protocol), `BooleanColumnFilter` (auto-login/default).
+- **Persisted grid state**: `GridStateService` is hardcoded to the main torrent grid's `TorrentListGridSettingsService` and isn't reusable as-is. Instead, follow the existing precedent in `Trackers` (`packages/app/src/app/modals/torrent-details/trackers/trackers.ts`, `restoreColumnState()`/`persistColumnState()`/`queueSave()`), which talks to its own small settings service directly with no shared restore/save service. Each new grid gets its own `BaseSettingsService<T>` subclass, following `TrackersGridSettingsService`'s pattern exactly (`packages/app/src/app/services/`):
   - `ManageServersGridSettingsService` (`SETTINGS_ID = 'ManageServersGridSettingsService'`)
   - `ManageTagsGridSettingsService` (`SETTINGS_ID = 'ManageTagsGridSettingsService'`)
   - `ManageCategoriesGridSettingsService` (`SETTINGS_ID = 'ManageCategoriesGridSettingsService'`)
 
-  Each stores `columnState`/`filterModel` (matching `TorrentListGridSettings`'s shape, minus the pinned-row/pagination fields those modals don't need) as one global row via the existing generic `settings` IPC channel - no new IPC contract needed. All three are global (not per-server): column layout is a personal UI preference, and this explicitly includes Tags/Categories even though their _data_ is server-scoped.
+  Each settings model is `{ columnState: ColumnState[]; filterModel: FilterModel | null }`, stored as one global row via the existing generic `settings` IPC channel - no new IPC contract needed. All three are global (not per-server): column layout is a personal UI preference, and this explicitly includes Tags/Categories even though their _data_ is server-scoped.
 
 - **Batch delete confirmation**: reuse `ConfirmService.confirm(...)` (`packages/app/src/app/services/confirm.service.ts`) unchanged, with a count-aware message aggregating affected-torrent counts across all selected rows, same pattern as today's single-item confirms in `manage-tags.ts`/`manage-categories.ts`.
 - **Command bus additions** (`packages/app/src/app/models/command.model.ts`):
@@ -30,23 +30,26 @@ Because all three grids need identical mechanics, the following is built once an
 
   New handler services mirroring `ServerCommandHandlerService` (`packages/app/src/app/services/server-command-handler.service.ts`): `TagCommandHandlerService`, `CategoryCommandHandlerService`, each filtering `commands$` by type prefix, performing the toast + local-state refresh, started via `.start()` in `app.ts` alongside the existing handler services. Per the CLAUDE.md toast rule, `CATEGORY_UPDATED`'s handler shows **no toast on success** (the inline-edited cell already shows the new value) - only on failure.
 
-- **Footer layout**: New / Edit / Delete grouped on the left, Close on the right, via `ms-auto` on the Close button (the same CSS mechanism Torrent Details uses to separate its left action group from its right-aligned Delete/Close, just applied to a different button grouping here).
+- **Footer layout**: action buttons grouped on the left (New / Edit / Delete for Tags and Categories; New / Edit / Connect / Delete for Servers), Close on the right, via `ms-auto` on the Close button (the same CSS mechanism Torrent Details uses to separate its left action group from its right-aligned Delete/Close, just applied to a different button grouping here).
 - **Modal positioning**: no code change needed - omitting `centered: true` on `NgbModal.open()` already top-aligns, as it does today for these three modals and for Torrent Details.
 
 ## Manage Servers grid
 
-File: `packages/app/src/app/modals/manage-servers/manage-servers.ts` (+ `.html`, `.scss`) - rewritten in place, same modal identity/invocation (`UI_MANAGE_SERVERS` command, unchanged).
+File: `packages/app/src/app/modals/manage-servers/manage-servers.ts` (+ `.html`, `.scss`) - rewritten in place, same modal identity/invocation (`UI_MANAGE_SERVERS` command, unchanged). Today's component also carries a `hideConnect = input(false)` used by the login page (`login.ts` opens it via `setModalInput(ref, 'hideConnect', true)`) to hide the connect affordance entirely when the modal is opened just to manage servers, not to switch the active connection - **this input is preserved unchanged** and gates the new Connect footer button, the Connect/Set-as-Default context-menu entries, and the active-orb "active" styling exactly as it gates today's connect button/orb.
 
-**Columns** (in order): checkbox → active-status orb (custom cell renderer: filled green dot when `server.id === activeServerId`, empty outline otherwise; sortable/pinnable/hideable like any column, but not text-filterable - a small boolean-style filter using the existing `BooleanColumnFilter` is sufficient) → name (`TextColumnFilter`) → host (`TextColumnFilter`) → port (`NumberColumnFilter`) → protocol (`SetColumnFilter`: http/https) → username (`TextColumnFilter`) → auto-login (`BooleanColumnFilter`, checkmark renderer) → id (the server's database row id/uuid from `ServerModel.id`; `TextColumnFilter`; hidden by default, revealable via the header "show column" menu).
+**Columns** (in order): checkbox → active-status orb (custom cell renderer: filled green dot when `server.id === currentServerId()`, empty outline otherwise, suppressed to always-empty when `hideConnect()` is true; sortable/pinnable/hideable like any column, but not text-filterable - a small boolean-style filter using the existing `BooleanColumnFilter` is sufficient) → name (`TextColumnFilter`) → host (`TextColumnFilter`) → port (`NumberColumnFilter`) → protocol (`SetColumnFilter`: http/https) → username (`TextColumnFilter`) → default (`auto_login`; `BooleanColumnFilter`; custom **click-to-toggle cell renderer** - see below) → id (the server's database row id from `ServerModel.id`; `TextColumnFilter`; hidden by default, revealable via the header "show column" menu).
+
+**Default (auto_login) column behavior**: a custom cell renderer (not a full ag-grid cell editor - no edit-mode lifecycle needed for a boolean flip) shows a checkmark/star icon and toggles on click, calling the same logic as today's `ManageServers.toggleAutoLogin()` (`serverService.update(server.id, { auto_login: !server.auto_login })`), then emitting `SERVER_UPDATED` so `ServerCommandHandlerService` refreshes the store and toasts, matching today's behavior exactly.
 
 **Actions:**
 
-- **New** → dynamic-import + open the existing `ServerEditor` modal unchanged (`packages/app/src/app/modals/server-editor/server-editor.ts`), create mode.
+- **New** → dynamic-import + open the existing `ServerEditor` modal unchanged (`packages/app/src/app/modals/server-editor/server-editor.ts`), create mode. Per `ServerEditor.handleSave()`'s existing contract, it only emits `SERVER_UPDATED` itself on the edit path and closes with the new id on the create path without emitting - so the grid's "New" handler must emit `SERVER_ADDED` itself after a successful create result, exactly as `ManageServers.openEditor()` does today.
 - **Edit** (enabled iff exactly one row selected, including the active server - editing connection details is allowed for the active server, only deletion is blocked) → open `ServerEditor` pre-filled via its existing `id` input.
-- **Delete** (enabled iff one or more selected) → the active server's row checkbox is rendered disabled (via ag-grid's per-row `checkboxSelection` predicate checking `server.id === activeServerId`), so it can never be part of the selection → `ConfirmService.confirm` with a count-aware message → on confirm, emit `SERVER_DELETED` once per selected id (existing `ServerCommandHandlerService` already handles one id per command unchanged - no handler changes needed).
+- **Connect** (hidden/disabled when `hideConnect()` is true; enabled iff exactly one row selected - which can never be the active server's row, since its checkbox is disabled) → same logic as today's `ManageServers.switchTo()`, **except it no longer dismisses the modal on success** - the modal stays open after connecting. The existing `CredentialPromptService.resolve(server)` flow (opens a stacked modal when credentials aren't saved) is unchanged and continues to stack correctly over the still-open manage-servers modal.
+- **Delete** (enabled iff one or more selected) → the active server's row checkbox is rendered disabled (via ag-grid's per-row `checkboxSelection` predicate checking `server.id === currentServerId()`), so it can never be part of the selection → `ConfirmService.confirm` with a count-aware message → on confirm, emit `SERVER_DELETED` once per selected id (existing `ServerCommandHandlerService` already handles one id per command unchanged - no handler changes needed).
 - **Row double-click** → same as Edit, on any row including active.
-- **Row right-click** → Edit / Delete (Delete entry omitted for the active server's row).
-- **Header right-click** → shared header-context-menu service.
+- **Row right-click** → Connect / Set as Default / Edit / Delete (Connect and Set as Default omitted when `hideConnect()` is true; Delete omitted for the active server's row).
+- **Header right-click** → `GridContextMenuService.buildHeaderMenu()` via `ContextMenuService.open()`, same call pattern as `Trackers`.
 
 ## Manage Tags grid
 
@@ -63,7 +66,7 @@ File: `packages/app/src/app/modals/manage-tags/manage-tags.ts` (+ `.html`, `.scs
 - **Delete** (enabled iff one or more selected) → `ConfirmService.confirm` with a count-aware message aggregating affected-torrent counts across all selected tags → one batched call `qbService.torrents.deleteTags(serverId, selectedNames)` (existing API already accepts an array) → emit `TAG_DELETED` with the deleted names.
 - **Row double-click** → no-op.
 - **Row right-click** → Delete only.
-- **Header right-click** → shared header-context-menu service.
+- **Header right-click** → `GridContextMenuService.buildHeaderMenu()` via `ContextMenuService.open()`, same call pattern as `Trackers`.
 
 ## Manage Categories grid
 
@@ -82,7 +85,7 @@ File: `packages/app/src/app/modals/manage-categories/manage-categories.ts` (+ `.
 - **Delete** (enabled iff one or more selected) → `ConfirmService.confirm` with a count-aware message aggregating affected-torrent counts across all selected categories → one batched call `qbService.torrents.removeCategories(serverId, selectedNames)` (existing API already accepts an array) → emit `CATEGORY_DELETED` with the deleted names.
 - **Row double-click** → same as Edit: starts inline cell-edit on the save-path cell.
 - **Row right-click** → Edit (start inline edit) / Delete.
-- **Header right-click** → shared header-context-menu service.
+- **Header right-click** → `GridContextMenuService.buildHeaderMenu()` via `ContextMenuService.open()`, same call pattern as `Trackers`.
 
 ## i18n
 
@@ -94,9 +97,12 @@ New/changed components and services get colocated `.spec.ts` files following exi
 
 - Comma-separated tag creation splitting (Tag Editor)
 - Batch-delete confirm message aggregation across multiple selected rows (all three grids)
-- Active-server checkbox-disable logic and Delete-menu-entry omission (Manage Servers)
+- Active-server checkbox-disable logic and Delete/Connect/Set-as-Default-menu-entry omission for the active row (Manage Servers)
+- Click-to-toggle Default (auto_login) cell renderer (Manage Servers)
+- `hideConnect()` gating of the Connect button, context-menu entries, and orb styling (Manage Servers)
+- Connect no longer dismissing the modal on success (Manage Servers)
 - Inline save-path cell editor commit and error/revert paths (Manage Categories)
-- Footer button enable rules: New always enabled, Edit exactly-one-selected, Delete one-or-more-selected (all three grids, Tags excluded from Edit)
+- Footer button enable rules: New always enabled, Edit exactly-one-selected, Delete one-or-more-selected, Connect exactly-one-selected (Servers only, Tags excluded from Edit)
 - Command-handler toast/refresh behavior for `TAG_*`/`CATEGORY_*`, including the no-toast-on-success rule for `CATEGORY_UPDATED`
 
 ag-grid interaction itself (persistence across reopen, drag-reorder, live filtering, context menu rendering) is verified manually in the running app rather than unit-tested, consistent with how the main grid's equivalent behavior is verified today.
