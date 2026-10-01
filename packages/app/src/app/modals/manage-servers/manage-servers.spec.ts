@@ -46,11 +46,14 @@ describe('ManageServers', () => {
   let gridContextMenuService: { buildHeaderMenu: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
+    const currentServerIdSignal = signal<string | null>(null);
     serverStoreService = {
       servers: signal([]),
-      currentServerId: signal(null),
+      currentServerId: currentServerIdSignal,
       loading: signal(false),
-      select: vi.fn(),
+      // Mirrors the real ServerStoreService.select(), which sets currentServerId - needed
+      // so the Finding 1 grid-refresh effect (which reacts to currentServerId) fires in tests.
+      select: vi.fn((id: string | null) => currentServerIdSignal.set(id)),
     };
     manageServersGridSettingsService = {
       load: vi.fn().mockResolvedValue({ columnState: [], filterModel: null }),
@@ -239,6 +242,63 @@ describe('ManageServers', () => {
       expect(serverStoreService.select).toHaveBeenCalledWith('srv-2');
     });
 
+    it('refreshes the grid and deselects the newly-active server after connecting (Finding 1: prevent deleting the server you just connected to)', async () => {
+      const node = { isSelected: () => true };
+      const api = {
+        refreshCells: vi.fn(),
+        redrawRows: vi.fn(),
+        getRowNode: vi.fn().mockReturnValue(node),
+        setNodesSelected: vi.fn(),
+        getSelectedRows: vi.fn().mockReturnValue([{ id: 'srv-2', name: 'Away' }]),
+      };
+      component.onGridReady({ api } as never);
+      component.selectedServers.set([{ id: 'srv-2', name: 'Away' } as never]);
+
+      await component.connectSelected();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(api.refreshCells).toHaveBeenCalledWith({ columns: ['orb'], force: true });
+      expect(api.redrawRows).toHaveBeenCalled();
+      expect(api.setNodesSelected).toHaveBeenCalledWith({ nodes: [node], newValue: false });
+      expect(component.selectedServers()).not.toContainEqual(
+        expect.objectContaining({ id: 'srv-2' }),
+      );
+    });
+
+    it('refreshes the grid without touching selection when the active server changes but was not selected', async () => {
+      const api = {
+        refreshCells: vi.fn(),
+        redrawRows: vi.fn(),
+        getRowNode: vi.fn(),
+        setNodesSelected: vi.fn(),
+        getSelectedRows: vi.fn().mockReturnValue([]),
+      };
+      component.onGridReady({ api } as never);
+
+      serverStoreService.currentServerId.set('srv-9');
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(api.refreshCells).toHaveBeenCalledWith({ columns: ['orb'], force: true });
+      expect(api.redrawRows).toHaveBeenCalled();
+      expect(api.setNodesSelected).not.toHaveBeenCalled();
+    });
+
+    it('never deletes the active server even if it is still present in selectedServers (defense in depth for Finding 1)', async () => {
+      confirmService.confirm.mockResolvedValue(true);
+      serverStoreService.currentServerId.set('srv-2');
+      component.selectedServers.set([{ id: 'srv-2' } as never, { id: 'srv-3' } as never]);
+
+      await component.deleteSelected();
+
+      expect(commandBusService.emit).not.toHaveBeenCalledWith({
+        type: 'SERVER_DELETED',
+        id: 'srv-2',
+      });
+      expect(commandBusService.emit).toHaveBeenCalledWith({ type: 'SERVER_DELETED', id: 'srv-3' });
+    });
+
     it("toggles a server's auto_login flag and emits SERVER_UPDATED", async () => {
       serverService.update.mockResolvedValue(undefined);
       const server = { id: 'srv-2', auto_login: false } as never;
@@ -281,6 +341,76 @@ describe('ManageServers', () => {
         { items: { label: string }[] },
       ];
       expect(items.some((i) => i.label === 'general.button.delete')).toBe(false);
+    });
+
+    describe('row actions do not overwrite the footer selection (Finding 2)', () => {
+      it('editing a different row via the context menu does not change what the footer Delete/Edit would act on', async () => {
+        modalService.open.mockReturnValue({ result: Promise.reject('dismissed') } as never);
+        component.selectedServers.set([{ id: 'srv-9', name: 'Kept' } as never]);
+        contextMenuService.open.mockClear();
+
+        component['onCellContextMenu']({ data: { id: 'srv-2', name: 'Away' } } as never);
+        const [{ items }] = contextMenuService.open.mock.calls.at(-1) as [
+          { items: { label: string; action: () => void }[] },
+        ];
+        items.find((i) => i.label === 'general.button.edit')?.action();
+        await Promise.resolve();
+        await Promise.resolve();
+
+        expect(component.selectedServers()).toEqual([{ id: 'srv-9', name: 'Kept' }]);
+      });
+
+      it('connecting from the context menu does not change what the footer would act on', async () => {
+        component.selectedServers.set([{ id: 'srv-9', name: 'Kept' } as never]);
+        contextMenuService.open.mockClear();
+
+        component['onCellContextMenu']({ data: { id: 'srv-2', name: 'Away' } } as never);
+        const [{ items }] = contextMenuService.open.mock.calls.at(-1) as [
+          { items: { label: string; action: () => void }[] },
+        ];
+        items.find((i) => i.label === 'general.button.connect')?.action();
+        await Promise.resolve();
+        await Promise.resolve();
+
+        expect(component.selectedServers()).toEqual([{ id: 'srv-9', name: 'Kept' }]);
+        expect(serverStoreService.select).toHaveBeenCalledWith('srv-2');
+      });
+
+      it('deleting from the context menu does not change what the footer would act on, and does not require the row to ever be selected', async () => {
+        confirmService.confirm.mockResolvedValue(false);
+        component.selectedServers.set([{ id: 'srv-9', name: 'Kept' } as never]);
+        contextMenuService.open.mockClear();
+
+        component['onCellContextMenu']({ data: { id: 'srv-2', name: 'Away' } } as never);
+        const [{ items }] = contextMenuService.open.mock.calls.at(-1) as [
+          { items: { label: string; action: () => void }[] },
+        ];
+        items.find((i) => i.label === 'general.button.delete')?.action();
+        await Promise.resolve();
+        await Promise.resolve();
+
+        expect(component.selectedServers()).toEqual([{ id: 'srv-9', name: 'Kept' }]);
+      });
+
+      it('double-clicking a row to edit it does not change what the footer would act on, including for the active server row', async () => {
+        modalService.open.mockReturnValue({ result: Promise.reject('dismissed') } as never);
+        serverStoreService.currentServerId.set('srv-2');
+        component.selectedServers.set([{ id: 'srv-9', name: 'Kept' } as never]);
+
+        component.gridOptions.onRowDoubleClicked?.({
+          data: { id: 'srv-2', name: 'Away' },
+        } as never);
+        await Promise.resolve();
+        await Promise.resolve();
+
+        expect(component.selectedServers()).toEqual([{ id: 'srv-9', name: 'Kept' }]);
+        // Even though double-click opened the editor for the active server, it must
+        // never become deletable through the footer as a result.
+        await component.deleteSelected();
+        expect(commandBusService.emit).not.toHaveBeenCalledWith(
+          expect.objectContaining({ type: 'SERVER_DELETED', id: 'srv-2' }),
+        );
+      });
     });
   });
 });

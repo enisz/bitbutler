@@ -1,4 +1,13 @@
-import { Component, OnDestroy, computed, inject, input, signal } from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  computed,
+  effect,
+  inject,
+  input,
+  signal,
+  untracked,
+} from '@angular/core';
 import type { ServerRecord } from '@bitbutler/shared';
 import { faPenToSquare, faPlug, faStar, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -153,6 +162,39 @@ export class ManageServers implements OnDestroy {
     },
   ]);
 
+  constructor() {
+    // Finding 1: connecting to a server only updates `currentServerId`; ag-grid's
+    // `valueGetter`/`rowClassRules`/`isRowSelectable` closures are only re-evaluated
+    // when the grid is explicitly told to refresh/redraw. Without this, the orb stays
+    // on the old server, the old row stays selectable, and the newly-active row (which
+    // was selected to be connected to) stays checked - letting Delete target the server
+    // you just connected to.
+    effect(() => {
+      const currentId = this.serverStoreService.currentServerId();
+      this.hideConnect();
+      const api = this.gridApi;
+      if (!api) return;
+
+      api.refreshCells({ columns: ['orb'], force: true });
+      api.redrawRows();
+
+      if (!currentId) return;
+      const stillSelected = api.getSelectedRows().some((row) => row.id === currentId);
+      if (!stillSelected) return;
+
+      const node = api.getRowNode(currentId);
+      if (node) {
+        api.setNodesSelected({ nodes: [node], newValue: false });
+      }
+      // Read/write selectedServers untracked - selectedServers is not meant to be a
+      // dependency of this effect, and tracking it here would make this effect
+      // re-trigger itself every time it writes (infinite loop).
+      untracked(() => {
+        this.selectedServers.set(this.selectedServers().filter((s) => s.id !== currentId));
+      });
+    });
+  }
+
   readonly gridOptions: GridOptions<ServerRecord> = {
     ...GRID_SHARED_OPTIONS,
     rowSelection: {
@@ -176,8 +218,7 @@ export class ManageServers implements OnDestroy {
     onColumnHeaderContextMenu: (event) => this.onColumnHeaderContextMenu(event),
     onRowDoubleClicked: (event) => {
       if (!event.data) return;
-      this.selectedServers.set([event.data]);
-      void this.openEdit();
+      void this.openEditFor(event.data);
     },
   };
 
@@ -218,6 +259,10 @@ export class ManageServers implements OnDestroy {
   async openEdit(): Promise<void> {
     const [server] = this.selectedServers();
     if (!server) return;
+    await this.openEditFor(server);
+  }
+
+  private async openEditFor(server: ServerRecord): Promise<void> {
     const { ServerEditor } = await import('../server-editor/server-editor');
     const ref = this.modalService.open(ServerEditor, { size: 'lg' });
     setModalInput(ref, 'id', server.id);
@@ -232,7 +277,10 @@ export class ManageServers implements OnDestroy {
   async connectSelected(): Promise<void> {
     const [server] = this.selectedServers();
     if (!server) return;
+    await this.connectServer(server);
+  }
 
+  private async connectServer(server: ServerRecord): Promise<void> {
     try {
       const hasSession = await this.qbService.auth.hasCookie(server.id);
 
@@ -270,9 +318,16 @@ export class ManageServers implements OnDestroy {
   }
 
   async deleteSelected(): Promise<void> {
-    const servers = this.selectedServers();
+    // Defense in depth for Finding 1: the active server's row is non-selectable and row
+    // actions no longer mutate `selectedServers` (Finding 2), but if the UI ever briefly
+    // shows it selected, the active server must never be deletable through this path.
+    const currentId = this.serverStoreService.currentServerId();
+    const servers = this.selectedServers().filter((s) => s.id !== currentId);
     if (!servers.length) return;
+    await this.deleteServers(servers);
+  }
 
+  private async deleteServers(servers: ServerRecord[]): Promise<void> {
     const confirmed = await this.confirmService.confirm(
       'components.modals.manage-servers.delete-confirm.title',
       servers.length === 1
@@ -310,10 +365,7 @@ export class ManageServers implements OnDestroy {
               id: 'connect',
               label: 'general.button.connect',
               icon: faPlug,
-              action: () => {
-                this.selectedServers.set([server]);
-                void this.connectSelected();
-              },
+              action: () => void this.connectServer(server),
             },
             {
               kind: 'item',
@@ -331,10 +383,7 @@ export class ManageServers implements OnDestroy {
         id: 'edit',
         label: 'general.button.edit',
         icon: faPenToSquare,
-        action: () => {
-          this.selectedServers.set([server]);
-          void this.openEdit();
-        },
+        action: () => void this.openEditFor(server),
       },
       ...(isActiveServer
         ? []
@@ -345,10 +394,7 @@ export class ManageServers implements OnDestroy {
               label: 'general.button.delete',
               icon: faTrashCan,
               variant: 'danger',
-              action: () => {
-                this.selectedServers.set([server]);
-                void this.deleteSelected();
-              },
+              action: () => void this.deleteServers([server]),
             },
           ] satisfies ContextMenuEntry[])),
     ];
