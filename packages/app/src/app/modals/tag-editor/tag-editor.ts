@@ -1,10 +1,11 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CommandBusService } from '../../services/command-bus.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-tag-editor',
@@ -16,7 +17,13 @@ export class TagEditor {
   private readonly qbService = inject(QbService);
   private readonly commandBusService = inject(CommandBusService);
   private readonly serverStoreService = inject(ServerStoreService);
+  private readonly toastService = inject(ToastService);
+  private readonly translateService = inject(TranslateService);
   protected readonly activeModal = inject(NgbActiveModal);
+
+  /** Tag names already present in the grid, so a resubmitted existing name is not
+   * treated as newly created (Finding 5). */
+  readonly existingNames = input<string[]>([]);
 
   readonly nameControl = new FormControl('', { nonNullable: true });
 
@@ -24,7 +31,7 @@ export class TagEditor {
     const raw = this.nameControl.value.trim();
     if (!raw) return;
 
-    const names = Array.from(
+    const dedupedNames = Array.from(
       new Set(
         raw
           .split(',')
@@ -32,13 +39,28 @@ export class TagEditor {
           .filter(Boolean),
       ),
     );
-    if (!names.length) return;
+    if (!dedupedNames.length) return;
 
-    const serverId = this.serverStoreService.currentServerId();
-    if (!serverId) return;
+    const existing = new Set(this.existingNames());
+    const names = dedupedNames.filter((name) => !existing.has(name));
 
-    await this.qbService.torrents.createTags(serverId, names);
-    this.commandBusService.emit({ type: 'TAG_ADDED', names });
+    if (names.length) {
+      const serverId = this.serverStoreService.currentServerId();
+      if (!serverId) return;
+
+      try {
+        await this.qbService.torrents.createTags(serverId, names);
+      } catch (err) {
+        console.error(TagEditor.name, 'save', err);
+        this.toastService.danger(
+          this.translateService.instant('components.modals.tag-editor.toast.create-failed'),
+          this.translateService.instant('components.modals.tag-editor.toast.create-failed-title'),
+        );
+        return;
+      }
+      this.commandBusService.emit({ type: 'TAG_ADDED', names });
+    }
+
     this.activeModal.close();
   }
 }
