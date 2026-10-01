@@ -23,6 +23,12 @@ describe('SavePathCellEditor', () => {
     expect(component.getValue()).toBe('/data/movies-2');
   });
 
+  it('reflects a change to pathControl.setValue through to getValue (exercises the real valueChanges subscription)', () => {
+    component.agInit({ value: '/data/movies' } as ICellEditorParams<unknown, string>);
+    component.pathControl.setValue('/data/movies-2');
+    expect(component.getValue()).toBe('/data/movies-2');
+  });
+
   it('exposes isPopup as true so the embedded save-path select is not clipped by the cell bounds', () => {
     expect(component.isPopup()).toBe(true);
     // ag-grid itself handles editor teardown when a row is removed mid-edit (destroyPopupEditor
