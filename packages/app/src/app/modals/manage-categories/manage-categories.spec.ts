@@ -209,99 +209,66 @@ describe('ManageCategories', () => {
     });
   });
 
-  describe('inline save-path editing', () => {
-    it('commits an inline save-path edit by calling editCategory, updating local state, and emitting CATEGORY_UPDATED without showing a toast', async () => {
-      qbService.torrents.editCategory.mockResolvedValue(undefined);
+  describe('grid layout auto-sizing', () => {
+    it('auto-sizes all columns to content then stretches them to fill the grid on first render when no column widths were stored', async () => {
+      const autoSizeAllColumns = vi.fn();
+      const sizeColumnsToFit = vi.fn();
+      await component.onGridReady({ api: {} } as never);
 
-      await component.onCellValueChanged({
-        data: { name: 'movies', savePath: '/data/movies-2', usageCount: 2 },
-        oldValue: '/data/movies',
-        newValue: '/data/movies-2',
-        colDef: { field: 'savePath' },
+      component.gridOptions.onFirstDataRendered?.({
+        api: { autoSizeAllColumns, sizeColumnsToFit },
       } as never);
 
-      expect(qbService.torrents.editCategory).toHaveBeenCalledWith(
-        'srv-1',
-        'movies',
-        '/data/movies-2',
-      );
-      expect(component.categories().find((c) => c.name === 'movies')?.savePath).toBe(
-        '/data/movies-2',
-      );
-      expect(commandBusService.emit).toHaveBeenCalledWith({
-        type: 'CATEGORY_UPDATED',
-        name: 'movies',
-        savePath: '/data/movies-2',
+      expect(autoSizeAllColumns).toHaveBeenCalled();
+      expect(sizeColumnsToFit).toHaveBeenCalled();
+    });
+
+    it('does not auto-size or fit when a stored column layout was applied', async () => {
+      manageCategoriesGridSettingsService.load.mockResolvedValue({
+        columnState: [{ colId: 'name', width: 200 }],
+        filterModel: null,
       });
-      expect(toastService.danger).not.toHaveBeenCalled();
-    });
-
-    it('does nothing when the save-path value did not change', async () => {
-      await component.onCellValueChanged({
-        data: { name: 'movies', savePath: '/data/movies', usageCount: 2 },
-        oldValue: '/data/movies',
-        newValue: '/data/movies',
-        colDef: { field: 'savePath' },
+      const autoSizeAllColumns = vi.fn();
+      const sizeColumnsToFit = vi.fn();
+      await component.onGridReady({
+        api: { applyColumnState: vi.fn(), setFilterModel: vi.fn() },
       } as never);
 
-      expect(qbService.torrents.editCategory).not.toHaveBeenCalled();
-    });
-
-    it('ignores cell value changes for columns other than savePath', async () => {
-      await component.onCellValueChanged({
-        data: { name: 'movies', savePath: '/data/movies', usageCount: 2 },
-        oldValue: 'movies',
-        newValue: 'movies-renamed',
-        colDef: { field: 'name' },
+      component.gridOptions.onFirstDataRendered?.({
+        api: { autoSizeAllColumns, sizeColumnsToFit },
       } as never);
 
-      expect(qbService.torrents.editCategory).not.toHaveBeenCalled();
-    });
-
-    it('reverts the cell and shows an error toast when the inline save-path edit fails', async () => {
-      qbService.torrents.editCategory.mockRejectedValue(new Error('network error'));
-      const api = { applyTransaction: vi.fn() };
-
-      await component.onCellValueChanged({
-        api,
-        data: { name: 'movies', savePath: '/data/movies-2', usageCount: 2 },
-        oldValue: '/data/movies',
-        newValue: '/data/movies-2',
-        colDef: { field: 'savePath' },
-      } as never);
-
-      expect(toastService.danger).toHaveBeenCalled();
-      expect(api.applyTransaction).toHaveBeenCalledWith({
-        update: [{ name: 'movies', savePath: '/data/movies', usageCount: 2 }],
-      });
-      expect(component.categories().find((c) => c.name === 'movies')?.savePath).toBe(
-        '/data/movies',
-      );
+      expect(autoSizeAllColumns).not.toHaveBeenCalled();
+      expect(sizeColumnsToFit).not.toHaveBeenCalled();
     });
   });
 
   describe('startEditSelected', () => {
-    it('starts inline editing on the save-path cell of the single selected row', () => {
-      const getRowNode = vi.fn().mockReturnValue({ rowIndex: 3 });
-      const startEditingCell = vi.fn();
-      component.onGridReady({ api: { getRowNode, startEditingCell } } as never);
-      component.selectedCategories.set([
-        { name: 'movies', savePath: '/data/movies', usageCount: 0 },
-      ]);
+    it('opens CategoryEditor prefilled with the single selected row and reloads categories on success', async () => {
+      modalService.open.mockReturnValue({ result: Promise.resolve(undefined) } as never);
+      qbService.torrents.categories.mockClear();
 
-      component.startEditSelected();
+      await component['startEditCategory']({ name: 'movies', savePath: '/data/movies' });
 
-      expect(getRowNode).toHaveBeenCalledWith('movies');
-      expect(startEditingCell).toHaveBeenCalledWith({ rowIndex: 3, colKey: 'savePath' });
+      expect(modalService.open).toHaveBeenCalled();
+      expect(qbService.torrents.categories).toHaveBeenCalledWith('srv-1');
     });
 
     it('does nothing when no row is selected', () => {
-      const startEditingCell = vi.fn();
-      component.onGridReady({ api: { startEditingCell } } as never);
+      component.selectedCategories.set([]);
 
       component.startEditSelected();
 
-      expect(startEditingCell).not.toHaveBeenCalled();
+      expect(modalService.open).not.toHaveBeenCalled();
+    });
+
+    it('does not reload categories when the editor is dismissed', async () => {
+      modalService.open.mockReturnValue({ result: Promise.reject('dismissed') } as never);
+      qbService.torrents.categories.mockClear();
+
+      await component['startEditCategory']({ name: 'movies', savePath: '/data/movies' });
+
+      expect(qbService.torrents.categories).not.toHaveBeenCalled();
     });
   });
 
@@ -379,24 +346,8 @@ describe('ManageCategories', () => {
       expect(qbService.torrents.removeCategories).not.toHaveBeenCalled();
     });
 
-    it('does not throw when deleting a category whose row is currently being inline-edited', async () => {
-      confirmService.confirm.mockResolvedValue(true);
-      qbService.torrents.removeCategories.mockResolvedValue(undefined);
-      component.categories.set([{ name: 'movies', savePath: '/data/movies' }]);
-      component.selectedCategories.set([
-        { name: 'movies', savePath: '/data/movies', usageCount: 0 },
-      ]);
-
-      // ag-grid's own row-removal handling cancels any open cell editor for a removed row;
-      // this test pins that deleteSelected() itself has no dependency on editor state.
-      await expect(component.deleteSelected()).resolves.toBeUndefined();
-      expect(component.categories()).toEqual([]);
-    });
-
-    it('opens a single-category edit from the row context menu', () => {
-      const getRowNode = vi.fn().mockReturnValue({ rowIndex: 0 });
-      const startEditingCell = vi.fn();
-      component.onGridReady({ api: { getRowNode, startEditingCell } } as never);
+    it('opens a single-category edit from the row context menu', async () => {
+      modalService.open.mockReturnValue({ result: Promise.resolve(undefined) } as never);
       contextMenuService.open.mockClear();
 
       component['onCellContextMenu']({
@@ -409,7 +360,10 @@ describe('ManageCategories', () => {
       expect(items.map((i) => i.label)).toEqual(['general.button.edit', 'general.button.delete']);
 
       items[0].action();
-      expect(startEditingCell).toHaveBeenCalledWith({ rowIndex: 0, colKey: 'savePath' });
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(modalService.open).toHaveBeenCalled();
     });
 
     it('opens a single-category delete confirmation from the row context menu', async () => {
@@ -436,10 +390,8 @@ describe('ManageCategories', () => {
       expect(contextMenuService.open).toHaveBeenCalledWith({ items: [] });
     });
 
-    it('editing a different row via the context menu does not change what the footer Edit/Delete would act on (Finding 2)', () => {
-      const getRowNode = vi.fn().mockReturnValue({ rowIndex: 0 });
-      const startEditingCell = vi.fn();
-      component.onGridReady({ api: { getRowNode, startEditingCell } } as never);
+    it('editing a different row via the context menu does not change what the footer Edit/Delete would act on (Finding 2)', async () => {
+      modalService.open.mockReturnValue({ result: Promise.reject('dismissed') } as never);
       component.selectedCategories.set([{ name: 'tv', savePath: '/data/tv', usageCount: 1 }]);
       contextMenuService.open.mockClear();
 
@@ -450,6 +402,8 @@ describe('ManageCategories', () => {
         { items: { label: string; action: () => void }[] },
       ];
       items[0].action();
+      await Promise.resolve();
+      await Promise.resolve();
 
       expect(component.selectedCategories()).toEqual([
         { name: 'tv', savePath: '/data/tv', usageCount: 1 },
@@ -503,50 +457,6 @@ describe('ManageCategories', () => {
       expect(commandBusService.emit).not.toHaveBeenCalledWith(
         expect.objectContaining({ type: 'CATEGORY_DELETED' }),
       );
-    });
-  });
-
-  describe('inline edit commit on close/delete (Finding 6)', () => {
-    it('commits any pending inline edit before deleting', async () => {
-      const stopEditing = vi.fn();
-      component.onGridReady({ api: { stopEditing } } as never);
-      confirmService.confirm.mockResolvedValue(true);
-      component.selectedCategories.set([
-        { name: 'movies', savePath: '/data/movies', usageCount: 0 },
-      ]);
-
-      await component.deleteSelected();
-
-      expect(stopEditing).toHaveBeenCalled();
-    });
-
-    it('commits any pending inline edit when the footer Close button is clicked', () => {
-      const stopEditing = vi.fn();
-      component.onGridReady({ api: { stopEditing } } as never);
-
-      component.close();
-
-      expect(stopEditing).toHaveBeenCalled();
-      expect(activeModal.close).toHaveBeenCalled();
-    });
-
-    it('commits any pending inline edit when dismissed via the header close button', () => {
-      const stopEditing = vi.fn();
-      component.onGridReady({ api: { stopEditing } } as never);
-
-      component.dismiss();
-
-      expect(stopEditing).toHaveBeenCalled();
-      expect(activeModal.dismiss).toHaveBeenCalled();
-    });
-
-    it('commits any pending inline edit on destroy, as a safety net for other dismissal paths', () => {
-      const stopEditing = vi.fn();
-      component.onGridReady({ api: { stopEditing } } as never);
-
-      component.ngOnDestroy();
-
-      expect(stopEditing).toHaveBeenCalled();
     });
   });
 });

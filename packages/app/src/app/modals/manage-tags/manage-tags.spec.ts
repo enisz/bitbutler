@@ -222,45 +222,44 @@ describe('ManageTags', () => {
       expect(qbService.torrents.deleteTags).not.toHaveBeenCalled();
     });
 
-    it('opens a single-tag delete confirmation from the row context menu', async () => {
-      confirmService.confirm.mockResolvedValue(true);
-      contextMenuService.open.mockClear();
-
-      component['onCellContextMenu']({ data: { name: 'linux', usageCount: 2 } } as never);
-
-      const [{ items }] = contextMenuService.open.mock.calls.at(-1) as [
-        { items: { label: string; action: () => void }[] },
-      ];
-      expect(items).toHaveLength(1);
-      expect(items[0].label).toBe('general.button.delete');
-
-      items[0].action();
-      await Promise.resolve();
-      await Promise.resolve();
-
-      expect(qbService.torrents.deleteTags).toHaveBeenCalledWith('srv-1', ['linux']);
-    });
-
     it('builds the header context menu via GridContextMenuService', () => {
       component['onColumnHeaderContextMenu']({ column: {} } as never);
       expect(gridContextMenuService.buildHeaderMenu).toHaveBeenCalled();
       expect(contextMenuService.open).toHaveBeenCalledWith({ items: [] });
     });
+  });
 
-    it('deleting a tag from the row context menu does not change what the footer Delete would act on (Finding 2)', async () => {
-      confirmService.confirm.mockResolvedValue(false);
-      component.selectedTags.set([{ name: 'ubuntu', usageCount: 1 }]);
-      contextMenuService.open.mockClear();
+  describe('grid layout auto-sizing', () => {
+    it('auto-sizes all columns to content then stretches them to fill the grid on first render when no column widths were stored', async () => {
+      const autoSizeAllColumns = vi.fn();
+      const sizeColumnsToFit = vi.fn();
+      await component.onGridReady({ api: {} } as never);
 
-      component['onCellContextMenu']({ data: { name: 'linux', usageCount: 2 } } as never);
-      const [{ items }] = contextMenuService.open.mock.calls.at(-1) as [
-        { items: { label: string; action: () => void }[] },
-      ];
-      items[0].action();
-      await Promise.resolve();
-      await Promise.resolve();
+      component.gridOptions.onFirstDataRendered?.({
+        api: { autoSizeAllColumns, sizeColumnsToFit },
+      } as never);
 
-      expect(component.selectedTags()).toEqual([{ name: 'ubuntu', usageCount: 1 }]);
+      expect(autoSizeAllColumns).toHaveBeenCalled();
+      expect(sizeColumnsToFit).toHaveBeenCalled();
+    });
+
+    it('does not auto-size or fit when a stored column layout was applied', async () => {
+      manageTagsGridSettingsService.load.mockResolvedValue({
+        columnState: [{ colId: 'name', width: 200 }],
+        filterModel: null,
+      });
+      const autoSizeAllColumns = vi.fn();
+      const sizeColumnsToFit = vi.fn();
+      await component.onGridReady({
+        api: { applyColumnState: vi.fn(), setFilterModel: vi.fn() },
+      } as never);
+
+      component.gridOptions.onFirstDataRendered?.({
+        api: { autoSizeAllColumns, sizeColumnsToFit },
+      } as never);
+
+      expect(autoSizeAllColumns).not.toHaveBeenCalled();
+      expect(sizeColumnsToFit).not.toHaveBeenCalled();
     });
   });
 

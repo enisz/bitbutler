@@ -14,17 +14,28 @@
     />
     <label for="tagEditorName">{{ 'components.modals.tag-editor.name-label' | translate }}</label>
   </div>
+  <div class="form-text mt-1">
+    {{ 'components.modals.tag-editor.hint' | translate }}
+  </div>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-secondary btn-sm" (click)="activeModal.dismiss()">
-    {{ 'general.button.cancel' | translate }}
-  </button>
   <button
     type="button"
-    class="btn btn-primary btn-sm"
+    class="btn btn-primary btn-sm btn-split"
     [disabled]="!nameControl.value.trim()"
     (click)="save()"
   >
-    {{ 'general.button.save' | translate }}
+    <bb-btn-content
+      [icon]="icon.faPlus"
+      [text]="'general.button.add' | translate"
+      position="end"
+    ></bb-btn-content>
+  </button>
+  <button type="button" class="btn btn-sm btn-split" (click)="activeModal.dismiss()">
+    <bb-btn-content
+      [icon]="icon.faXmark"
+      [text]="'general.button.cancel' | translate"
+      position="end"
+    ></bb-btn-content>
   </button>
 </div>

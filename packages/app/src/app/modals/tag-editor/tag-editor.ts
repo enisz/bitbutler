@@ -1,7 +1,9 @@
 import { Component, inject, input } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { faPlus, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { CommandBusService } from '../../services/command-bus.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
@@ -10,7 +12,7 @@ import { ToastService } from '../../services/toast.service';
 @Component({
   selector: 'app-tag-editor',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslateModule],
+  imports: [ReactiveFormsModule, TranslateModule, BbBtnContent],
   templateUrl: './tag-editor.html',
 })
 export class TagEditor {
@@ -20,6 +22,8 @@ export class TagEditor {
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
   protected readonly activeModal = inject(NgbActiveModal);
+
+  readonly icon = { faPlus, faXmark };
 
   /** Tag names already present in the grid, so a resubmitted existing name is not
    * treated as newly created (Finding 5). */

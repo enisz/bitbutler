@@ -11,7 +11,9 @@ import { CategoryEditor } from './category-editor';
 describe('CategoryEditor', () => {
   let fixture: ComponentFixture<CategoryEditor>;
   let component: CategoryEditor;
-  let qbService: { torrents: { createCategory: ReturnType<typeof vi.fn> } };
+  let qbService: {
+    torrents: { createCategory: ReturnType<typeof vi.fn>; editCategory: ReturnType<typeof vi.fn> };
+  };
   let commandBusService: { emit: ReturnType<typeof vi.fn> };
   let activeModal: { close: ReturnType<typeof vi.fn>; dismiss: ReturnType<typeof vi.fn> };
   let toastService: { danger: ReturnType<typeof vi.fn> };
@@ -20,6 +22,7 @@ describe('CategoryEditor', () => {
     qbService = {
       torrents: {
         createCategory: vi.fn(),
+        editCategory: vi.fn(),
       },
     };
     commandBusService = { emit: vi.fn() };
@@ -88,11 +91,91 @@ describe('CategoryEditor', () => {
     expect(activeModal.close).toHaveBeenCalled();
   });
 
+  describe('duplicate name validation', () => {
+    it('flags the name as invalid when it matches an existing category', () => {
+      fixture.componentRef.setInput('existingNames', ['movies', 'tv']);
+      component.nameControl.setValue('movies');
+
+      expect(component.nameControl.hasError('duplicateName')).toBe(true);
+    });
+
+    it('is valid when the name does not match any existing category', () => {
+      fixture.componentRef.setInput('existingNames', ['movies', 'tv']);
+      component.nameControl.setValue('software');
+
+      expect(component.nameControl.valid).toBe(true);
+    });
+
+    it('does not flag an empty value as a duplicate', () => {
+      fixture.componentRef.setInput('existingNames', ['movies']);
+      component.nameControl.setValue('  ');
+
+      expect(component.nameControl.hasError('duplicateName')).toBe(false);
+    });
+
+    it('does not save a duplicate name', async () => {
+      fixture.componentRef.setInput('existingNames', ['movies']);
+      component.nameControl.setValue('movies');
+      component.savePathControl.setValue('/data/movies');
+
+      await component.save();
+
+      expect(qbService.torrents.createCategory).not.toHaveBeenCalled();
+      expect(activeModal.close).not.toHaveBeenCalled();
+    });
+  });
+
   describe('error handling (Finding 3)', () => {
     it('shows a danger toast and keeps the modal open when createCategory fails', async () => {
       component.nameControl.setValue('movies');
       component.savePathControl.setValue('/data/movies');
       qbService.torrents.createCategory.mockRejectedValue(new Error('409 conflict'));
+
+      await component.save();
+
+      expect(toastService.danger).toHaveBeenCalled();
+      expect(commandBusService.emit).not.toHaveBeenCalled();
+      expect(activeModal.close).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('edit mode', () => {
+    it('prefills the name and save path, and disables the name field, since qBittorrent has no rename API', () => {
+      fixture.componentRef.setInput('category', { name: 'movies', savePath: '/data/movies' });
+
+      fixture.detectChanges();
+
+      expect(component.nameControl.value).toBe('movies');
+      expect(component.nameControl.disabled).toBe(true);
+      expect(component.savePathControl.value).toBe('/data/movies');
+    });
+
+    it('updates the save path via editCategory, emits CATEGORY_UPDATED, and closes', async () => {
+      fixture.componentRef.setInput('category', { name: 'movies', savePath: '/data/movies' });
+      fixture.detectChanges();
+      component.savePathControl.setValue('/data/movies-2');
+      qbService.torrents.editCategory.mockResolvedValue(undefined);
+
+      await component.save();
+
+      expect(qbService.torrents.editCategory).toHaveBeenCalledWith(
+        'srv-1',
+        'movies',
+        '/data/movies-2',
+      );
+      expect(qbService.torrents.createCategory).not.toHaveBeenCalled();
+      expect(commandBusService.emit).toHaveBeenCalledWith({
+        type: 'CATEGORY_UPDATED',
+        name: 'movies',
+        savePath: '/data/movies-2',
+      });
+      expect(activeModal.close).toHaveBeenCalled();
+    });
+
+    it('shows a danger toast and keeps the modal open when editCategory fails', async () => {
+      fixture.componentRef.setInput('category', { name: 'movies', savePath: '/data/movies' });
+      fixture.detectChanges();
+      qbService.torrents.editCategory.mockRejectedValue(new Error('409 conflict'));
 
       await component.save();
 

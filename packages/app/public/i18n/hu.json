@@ -358,6 +358,7 @@
         "title": "Új címke",
         "name-label": "Címke neve",
         "name-placeholder": "Címke neve",
+        "hint": "Vesszővel elválasztott lista használatával egyszerre több cimkét is hozzáadhatsz",
         "toast": {
           "create-failed-title": "Nem sikerült létrehozni a címkét",
           "create-failed": "Nem sikerült létrehozni a címké(ke)t."
@@ -365,12 +366,18 @@
       },
       "category-editor": {
         "title": "Új kategória",
+        "title-edit": "Kategória szerkesztése",
         "name-label": "Kategória neve",
         "name-placeholder": "Kategória neve",
         "save-path-label": "Mentési útvonal (opcionális)",
+        "error": {
+          "duplicate-name": "Már létezik kategória ezzel a névvel."
+        },
         "toast": {
           "create-failed-title": "Nem sikerült létrehozni a kategóriát",
-          "create-failed": "Nem sikerült létrehozni a kategóriát."
+          "create-failed": "Nem sikerült létrehozni a kategóriát.",
+          "update-failed-title": "Nem sikerült frissíteni a kategóriát",
+          "update-failed": "Nem sikerült frissíteni a kategóriát."
         }
       },
       "credential-prompt": {

@@ -1,12 +1,12 @@
 import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
-import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTrashCan, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import type {
-  CellContextMenuEvent,
   ColDef,
   ColumnHeaderContextMenuEvent,
+  FirstDataRenderedEvent,
   GetRowIdParams,
   GridApi,
   GridOptions,
@@ -14,10 +14,10 @@ import type {
   SelectionChangedEvent,
 } from 'ag-grid-community';
 import { GRID_DARK_THEME, GRID_LIGHT_THEME, GRID_SHARED_OPTIONS } from '../../app.const';
+import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { NumberColumnFilter } from '../../components/column-filters/number-column-filter/number-column-filter';
 import { TextColumnFilter } from '../../components/column-filters/text-column-filter/text-column-filter';
 import type { ManageTagsGridSettings } from '../../models/manage-tags-grid.model';
-import type { ContextMenuEntry } from '../../pages/main/grid/context-menu/context-menu.types';
 import { GridContextMenuService } from '../../pages/main/grid/context-menu/grid-context-menu.service';
 import { CommandBusService } from '../../services/command-bus.service';
 import { ConfirmService } from '../../services/confirm.service';
@@ -38,7 +38,7 @@ export interface TagRow {
 @Component({
   selector: 'app-manage-tags',
   standalone: true,
-  imports: [AgGridAngular, TranslatePipe],
+  imports: [AgGridAngular, TranslatePipe, BbBtnContent],
   templateUrl: './manage-tags.html',
   styleUrl: './manage-tags.scss',
 })
@@ -59,10 +59,13 @@ export class ManageTags implements OnInit, OnDestroy {
 
   private gridApi?: GridApi<TagRow>;
   private saveTimer?: ReturnType<typeof setTimeout>;
+  private isDefaultLayout = true;
 
   readonly bbDark = GRID_DARK_THEME;
   readonly bbLight = GRID_LIGHT_THEME;
   readonly theme = this.themeService.effectiveMode;
+
+  readonly icon = { faPlus, faTrashCan, faXmark };
 
   readonly tagNames = signal<string[]>([]);
   readonly selectedTags = signal<TagRow[]>([]);
@@ -86,12 +89,18 @@ export class ManageTags implements OnInit, OnDestroy {
       colId: 'name',
       field: 'name',
       headerName: this.translateService.instant('components.modals.manage-tags.column.name'),
+      headerTooltip: this.translateService.instant('components.modals.manage-tags.column.name'),
+      tooltipField: 'name',
       filter: TextColumnFilter,
     },
     {
       colId: 'usageCount',
       field: 'usageCount',
       headerName: this.translateService.instant('components.modals.manage-tags.column.usage-count'),
+      headerTooltip: this.translateService.instant(
+        'components.modals.manage-tags.column.usage-count',
+      ),
+      tooltipField: 'usageCount',
       filter: NumberColumnFilter,
     },
   ];
@@ -115,8 +124,14 @@ export class ManageTags implements OnInit, OnDestroy {
     onColumnVisible: () => this.onColumnChanged(),
     onSortChanged: () => this.onColumnChanged(),
     onFilterChanged: () => this.onFilterChanged(),
-    onCellContextMenu: (event) => this.onCellContextMenu(event),
     onColumnHeaderContextMenu: (event) => this.onColumnHeaderContextMenu(event),
+    onFirstDataRendered: (event: FirstDataRenderedEvent<TagRow>) => {
+      if (!this.isDefaultLayout) return;
+      // Fit columns to their content first, then stretch to fill the remaining grid
+      // width - content-fit alone leaves a large empty gap for a grid this narrow.
+      event.api.autoSizeAllColumns();
+      event.api.sizeColumnsToFit();
+    },
   };
 
   async ngOnInit(): Promise<void> {
@@ -141,6 +156,7 @@ export class ManageTags implements OnInit, OnDestroy {
   async onGridReady(event: GridReadyEvent<TagRow>): Promise<void> {
     this.gridApi = event.api;
     const settings = await this.settingsService.load();
+    this.isDefaultLayout = settings.columnState.length === 0;
     if (settings.columnState.length) {
       event.api.applyColumnState({ state: settings.columnState, applyOrder: true });
     }
@@ -208,24 +224,6 @@ export class ManageTags implements OnInit, OnDestroy {
         this.translateService.instant('components.modals.manage-tags.toast.delete-failed-title'),
       );
     }
-  }
-
-  private onCellContextMenu(event: CellContextMenuEvent<TagRow>): void {
-    if (!event.data) return;
-    const tag = event.data;
-
-    const items: ContextMenuEntry[] = [
-      {
-        kind: 'item',
-        id: 'delete',
-        label: 'general.button.delete',
-        icon: faTrashCan,
-        variant: 'danger',
-        action: () => void this.deleteTags([tag]),
-      },
-    ];
-
-    this.contextMenuService.open({ items });
   }
 
   private onColumnHeaderContextMenu(event: ColumnHeaderContextMenuEvent<TagRow>): void {

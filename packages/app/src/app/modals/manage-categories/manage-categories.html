@@ -1,6 +1,11 @@
 <div class="modal-header">
   <h5 class="modal-title">{{ 'components.modals.manage-categories.title' | translate }}</h5>
-  <button type="button" class="btn-close" aria-label="Close" (click)="dismiss()"></button>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="activeModal.dismiss()"
+  ></button>
 </div>
 
 <div class="modal-body">
@@ -15,26 +20,42 @@
 </div>
 
 <div class="modal-footer">
-  <button type="button" class="btn btn-secondary btn-sm" (click)="openNew()">
-    {{ 'general.button.new' | translate }}
+  <button type="button" class="btn btn-primary btn-sm btn-split" (click)="openNew()">
+    <bb-btn-content
+      [icon]="icon.faPlus"
+      [text]="'general.button.new' | translate"
+      position="end"
+    ></bb-btn-content>
   </button>
   <button
     type="button"
-    class="btn btn-secondary btn-sm"
+    class="btn btn-primary btn-sm btn-split"
     [disabled]="!canEdit()"
     (click)="startEditSelected()"
   >
-    {{ 'general.button.edit' | translate }}
+    <bb-btn-content
+      [icon]="icon.faPenToSquare"
+      [text]="'general.button.edit' | translate"
+      position="end"
+    ></bb-btn-content>
   </button>
   <button
     type="button"
-    class="btn btn-danger btn-sm"
+    class="btn btn-danger btn-sm btn-split"
     [disabled]="!canDelete()"
     (click)="deleteSelected()"
   >
-    {{ 'general.button.delete' | translate }}
+    <bb-btn-content
+      [icon]="icon.faTrashCan"
+      [text]="'general.button.delete' | translate"
+      position="end"
+    ></bb-btn-content>
   </button>
-  <button type="button" class="btn btn-secondary btn-sm ms-auto" (click)="close()">
-    {{ 'general.button.close' | translate }}
+  <button type="button" class="btn btn-sm btn-split ms-auto" (click)="activeModal.close()">
+    <bb-btn-content
+      [icon]="icon.faXmark"
+      [text]="'general.button.close' | translate"
+      position="end"
+    ></bb-btn-content>
   </button>
 </div>

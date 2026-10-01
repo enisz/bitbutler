@@ -358,6 +358,7 @@
         "title": "New Tag",
         "name-label": "Tag Name",
         "name-placeholder": "Tag Name",
+        "hint": "Use comma separated list to add multiple tags in one go",
         "toast": {
           "create-failed-title": "Failed to Create Tag",
           "create-failed": "Could not create the tag(s)."
@@ -365,12 +366,18 @@
       },
       "category-editor": {
         "title": "New Category",
+        "title-edit": "Edit Category",
         "name-label": "Category Name",
         "name-placeholder": "Category Name",
         "save-path-label": "Save Path (optional)",
+        "error": {
+          "duplicate-name": "A category with this name already exists."
+        },
         "toast": {
           "create-failed-title": "Failed to Create Category",
-          "create-failed": "Could not create the category."
+          "create-failed": "Could not create the category.",
+          "update-failed-title": "Failed to Update Category",
+          "update-failed": "Could not update the category."
         }
       },
       "credential-prompt": {
