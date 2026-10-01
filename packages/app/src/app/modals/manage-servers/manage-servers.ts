@@ -9,12 +9,20 @@ import {
   untracked,
 } from '@angular/core';
 import type { ServerRecord } from '@bitbutler/shared';
-import { faPenToSquare, faPlug, faStar, faTrashCan } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCheck,
+  faPenToSquare,
+  faPlug,
+  faPlus,
+  faTrashCan,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import type {
   CellContextMenuEvent,
+  CellValueChangedEvent,
   ColDef,
   ColumnHeaderContextMenuEvent,
   GetRowIdParams,
@@ -26,6 +34,7 @@ import type {
   SelectionChangedEvent,
 } from 'ag-grid-community';
 import { GRID_DARK_THEME, GRID_LIGHT_THEME, GRID_SHARED_OPTIONS } from '../../app.const';
+import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { BooleanColumnFilter } from '../../components/column-filters/boolean-column-filter/boolean-column-filter';
 import { NumberColumnFilter } from '../../components/column-filters/number-column-filter/number-column-filter';
 import {
@@ -48,12 +57,11 @@ import { ThemeService } from '../../services/theme.service';
 import { ToastService } from '../../services/toast.service';
 import { setModalInput } from '../../utils/modal-input';
 import { ActiveOrbRenderer } from './active-orb-renderer';
-import { DefaultToggleRenderer } from './default-toggle-renderer';
 
 @Component({
   selector: 'app-manage-servers',
   standalone: true,
-  imports: [AgGridAngular, TranslatePipe],
+  imports: [AgGridAngular, TranslatePipe, BbBtnContent],
   templateUrl: './manage-servers.html',
   styleUrl: './manage-servers.scss',
 })
@@ -82,6 +90,8 @@ export class ManageServers implements OnDestroy {
   readonly bbLight = GRID_LIGHT_THEME;
   readonly theme = this.themeService.effectiveMode;
 
+  readonly icon = { faPlus, faPenToSquare, faPlug, faTrashCan, faXmark };
+
   readonly servers = this.serverStoreService.servers;
   readonly loading = this.serverStoreService.loading;
   readonly selectedServers = signal<ServerRecord[]>([]);
@@ -91,7 +101,14 @@ export class ManageServers implements OnDestroy {
   readonly canDelete = computed(() => this.selectedServers().length >= 1);
 
   readonly isRowSelectable: IsRowSelectable<ServerRecord> = (row) =>
-    row.data?.id !== this.serverStoreService.currentServerId();
+    this.hideConnect() || row.data?.id !== this.serverStoreService.currentServerId();
+
+  // The active server's connection details (host/port/protocol/credentials) must not be
+  // edited out from under its live session - same protection as Delete. hideConnect means
+  // there is no live connection here (e.g. the login screen), so nothing is "active".
+  private isActiveServer(id: string): boolean {
+    return !this.hideConnect() && id === this.serverStoreService.currentServerId();
+  }
 
   readonly getRowId = (params: GetRowIdParams<ServerRecord>) => params.data.id;
 
@@ -116,24 +133,34 @@ export class ManageServers implements OnDestroy {
       colId: 'name',
       field: 'name',
       headerName: this.translateService.instant('components.modals.manage-servers.column.name'),
+      headerTooltip: this.translateService.instant('components.modals.manage-servers.column.name'),
+      tooltipField: 'name',
       filter: TextColumnFilter,
     },
     {
       colId: 'host',
       field: 'host',
       headerName: this.translateService.instant('components.modals.manage-servers.column.host'),
+      headerTooltip: this.translateService.instant('components.modals.manage-servers.column.host'),
+      tooltipField: 'host',
       filter: TextColumnFilter,
     },
     {
       colId: 'port',
       field: 'port',
       headerName: this.translateService.instant('components.modals.manage-servers.column.port'),
+      headerTooltip: this.translateService.instant('components.modals.manage-servers.column.port'),
+      tooltipField: 'port',
       filter: NumberColumnFilter,
     },
     {
       colId: 'protocol',
       field: 'protocol',
       headerName: this.translateService.instant('components.modals.manage-servers.column.protocol'),
+      headerTooltip: this.translateService.instant(
+        'components.modals.manage-servers.column.protocol',
+      ),
+      tooltipField: 'protocol',
       filter: SetColumnFilter,
       filterParams: { getItems: () => buildValueCounts(this.servers(), (s) => s.protocol) },
     },
@@ -141,22 +168,28 @@ export class ManageServers implements OnDestroy {
       colId: 'username',
       field: 'username',
       headerName: this.translateService.instant('components.modals.manage-servers.column.username'),
+      headerTooltip: this.translateService.instant(
+        'components.modals.manage-servers.column.username',
+      ),
+      tooltipField: 'username',
       filter: TextColumnFilter,
     },
     {
       colId: 'auto_login',
       field: 'auto_login',
       headerName: this.translateService.instant('components.modals.manage-servers.column.default'),
+      headerTooltip: this.translateService.instant(
+        'components.modals.manage-servers.column.default',
+      ),
       filter: BooleanColumnFilter,
-      cellRenderer: DefaultToggleRenderer,
-      cellRendererParams: {
-        onToggle: (server: ServerRecord) => this.toggleDefault(server),
-      },
+      cellRenderer: 'agCheckboxCellRenderer',
+      editable: true,
     },
     {
       colId: 'id',
       field: 'id',
       headerName: this.translateService.instant('components.modals.manage-servers.column.id'),
+      headerTooltip: this.translateService.instant('components.modals.manage-servers.column.id'),
       filter: TextColumnFilter,
       hide: true,
     },
@@ -171,14 +204,17 @@ export class ManageServers implements OnDestroy {
     // you just connected to.
     effect(() => {
       const currentId = this.serverStoreService.currentServerId();
-      this.hideConnect();
+      const hideConnect = this.hideConnect();
       const api = this.gridApi;
       if (!api) return;
 
       api.refreshCells({ columns: ['orb'], force: true });
       api.redrawRows();
 
-      if (!currentId) return;
+      // hideConnect means there is no live connection here (e.g. the login screen) -
+      // currentServerId is just the form's pre-selected server, so there is no
+      // "just connected to" row to protect from staying selected.
+      if (hideConnect || !currentId) return;
       const stillSelected = api.getSelectedRows().some((row) => row.id === currentId);
       if (!stillSelected) return;
 
@@ -216,8 +252,9 @@ export class ManageServers implements OnDestroy {
     onFilterChanged: () => this.onFilterChanged(),
     onCellContextMenu: (event) => this.onCellContextMenu(event),
     onColumnHeaderContextMenu: (event) => this.onColumnHeaderContextMenu(event),
+    onCellValueChanged: (event) => void this.onCellValueChanged(event),
     onRowDoubleClicked: (event) => {
-      if (!event.data) return;
+      if (!event.data || this.isActiveServer(event.data.id)) return;
       void this.openEditFor(event.data);
     },
   };
@@ -270,7 +307,16 @@ export class ManageServers implements OnDestroy {
   }
 
   async toggleDefault(server: ServerRecord): Promise<void> {
-    await this.serverService.update(server.id, { auto_login: !server.auto_login });
+    await this.setDefault(server, !server.auto_login);
+  }
+
+  async onCellValueChanged(event: CellValueChangedEvent<ServerRecord>): Promise<void> {
+    if (event.colDef.field !== 'auto_login' || event.newValue === event.oldValue) return;
+    await this.setDefault(event.data, event.newValue);
+  }
+
+  private async setDefault(server: ServerRecord, autoLogin: boolean): Promise<void> {
+    await this.serverService.update(server.id, { auto_login: autoLogin });
     this.commandBusService.emit({ type: 'SERVER_UPDATED', id: server.id });
   }
 
@@ -321,7 +367,10 @@ export class ManageServers implements OnDestroy {
     // Defense in depth for Finding 1: the active server's row is non-selectable and row
     // actions no longer mutate `selectedServers` (Finding 2), but if the UI ever briefly
     // shows it selected, the active server must never be deletable through this path.
-    const currentId = this.serverStoreService.currentServerId();
+    // hideConnect means there is no live connection to protect (e.g. the login screen,
+    // where currentServerId is just the form's pre-selected server, not one you're
+    // actually connected to), so every selected server is fair game there.
+    const currentId = this.hideConnect() ? null : this.serverStoreService.currentServerId();
     const servers = this.selectedServers().filter((s) => s.id !== currentId);
     if (!servers.length) return;
     await this.deleteServers(servers);
@@ -354,7 +403,7 @@ export class ManageServers implements OnDestroy {
   private onCellContextMenu(event: CellContextMenuEvent<ServerRecord>): void {
     if (!event.data) return;
     const server = event.data;
-    const isActiveServer = server.id === this.serverStoreService.currentServerId();
+    const isActiveServer = this.isActiveServer(server.id);
 
     const items: ContextMenuEntry[] = [
       ...(this.hideConnect()
@@ -373,21 +422,21 @@ export class ManageServers implements OnDestroy {
               label: server.auto_login
                 ? 'components.modals.manage-servers.tooltip.unset-default'
                 : 'components.modals.manage-servers.tooltip.set-as-default',
-              icon: faStar,
+              icon: server.auto_login ? faCheck : undefined,
               action: () => void this.toggleDefault(server),
             },
             { kind: 'divider' },
           ] satisfies ContextMenuEntry[])),
-      {
-        kind: 'item',
-        id: 'edit',
-        label: 'general.button.edit',
-        icon: faPenToSquare,
-        action: () => void this.openEditFor(server),
-      },
       ...(isActiveServer
         ? []
         : ([
+            {
+              kind: 'item',
+              id: 'edit',
+              label: 'general.button.edit',
+              icon: faPenToSquare,
+              action: () => void this.openEditFor(server),
+            },
             {
               kind: 'item',
               id: 'delete',

@@ -142,6 +142,13 @@ describe('ManageServers', () => {
       expect(component.isRowSelectable({ data: { id: 'srv-1' } } as never)).toBe(false);
       expect(component.isRowSelectable({ data: { id: 'srv-2' } } as never)).toBe(true);
     });
+
+    it('allows selecting the current server when hideConnect is true (e.g. the login screen, where currentServerId is only the pre-selected form value, not a live connection)', () => {
+      fixture.componentRef.setInput('hideConnect', true);
+      serverStoreService.currentServerId.set('srv-1');
+
+      expect(component.isRowSelectable({ data: { id: 'srv-1' } } as never)).toBe(true);
+    });
   });
 
   describe('enable flags', () => {
@@ -331,7 +338,7 @@ describe('ManageServers', () => {
       ).toBe(false);
     });
 
-    it('excludes Delete from the row context menu for the active server, regardless of hideConnect', () => {
+    it('excludes Edit and Delete from the row context menu for the active server (its connection details must not be edited out from under the live session)', () => {
       serverStoreService.currentServerId.set('srv-2');
       contextMenuService.open.mockClear();
 
@@ -340,7 +347,33 @@ describe('ManageServers', () => {
       const [{ items }] = contextMenuService.open.mock.calls.at(-1) as [
         { items: { label: string }[] },
       ];
+      expect(items.some((i) => i.label === 'general.button.edit')).toBe(false);
       expect(items.some((i) => i.label === 'general.button.delete')).toBe(false);
+    });
+
+    it('includes Edit and Delete from the row context menu for the "current" server when hideConnect is true (login screen: currentServerId is not a live connection)', () => {
+      fixture.componentRef.setInput('hideConnect', true);
+      serverStoreService.currentServerId.set('srv-2');
+      contextMenuService.open.mockClear();
+
+      component['onCellContextMenu']({ data: { id: 'srv-2' } } as never);
+
+      const [{ items }] = contextMenuService.open.mock.calls.at(-1) as [
+        { items: { label: string }[] },
+      ];
+      expect(items.some((i) => i.label === 'general.button.edit')).toBe(true);
+      expect(items.some((i) => i.label === 'general.button.delete')).toBe(true);
+    });
+
+    it('does not filter out the "current" server from deleteSelected when hideConnect is true', async () => {
+      fixture.componentRef.setInput('hideConnect', true);
+      confirmService.confirm.mockResolvedValue(true);
+      serverStoreService.currentServerId.set('srv-2');
+      component.selectedServers.set([{ id: 'srv-2' } as never]);
+
+      await component.deleteSelected();
+
+      expect(commandBusService.emit).toHaveBeenCalledWith({ type: 'SERVER_DELETED', id: 'srv-2' });
     });
 
     describe('row actions do not overwrite the footer selection (Finding 2)', () => {
@@ -392,8 +425,7 @@ describe('ManageServers', () => {
         expect(component.selectedServers()).toEqual([{ id: 'srv-9', name: 'Kept' }]);
       });
 
-      it('double-clicking a row to edit it does not change what the footer would act on, including for the active server row', async () => {
-        modalService.open.mockReturnValue({ result: Promise.reject('dismissed') } as never);
+      it('does not open the editor on double-click for the active server row (its connection details must not be edited out from under the live session)', async () => {
         serverStoreService.currentServerId.set('srv-2');
         component.selectedServers.set([{ id: 'srv-9', name: 'Kept' } as never]);
 
@@ -403,13 +435,25 @@ describe('ManageServers', () => {
         await Promise.resolve();
         await Promise.resolve();
 
+        expect(modalService.open).not.toHaveBeenCalled();
         expect(component.selectedServers()).toEqual([{ id: 'srv-9', name: 'Kept' }]);
-        // Even though double-click opened the editor for the active server, it must
-        // never become deletable through the footer as a result.
         await component.deleteSelected();
         expect(commandBusService.emit).not.toHaveBeenCalledWith(
           expect.objectContaining({ type: 'SERVER_DELETED', id: 'srv-2' }),
         );
+      });
+
+      it('still opens the editor on double-click for a non-active server row', async () => {
+        modalService.open.mockReturnValue({ result: Promise.reject('dismissed') } as never);
+        serverStoreService.currentServerId.set('srv-2');
+
+        component.gridOptions.onRowDoubleClicked?.({
+          data: { id: 'srv-9', name: 'Kept' },
+        } as never);
+        await Promise.resolve();
+        await Promise.resolve();
+
+        expect(modalService.open).toHaveBeenCalled();
       });
     });
   });
