@@ -20,4 +20,37 @@
   />
 </div>
 
-<div class="modal-footer"></div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary btn-sm" (click)="openNew()">
+    {{ 'general.button.new' | translate }}
+  </button>
+  <button
+    type="button"
+    class="btn btn-secondary btn-sm"
+    [disabled]="!canEdit()"
+    (click)="openEdit()"
+  >
+    {{ 'general.button.edit' | translate }}
+  </button>
+  @if (!hideConnect()) {
+    <button
+      type="button"
+      class="btn btn-secondary btn-sm"
+      [disabled]="!canConnect()"
+      (click)="connectSelected()"
+    >
+      {{ 'general.button.connect' | translate }}
+    </button>
+  }
+  <button
+    type="button"
+    class="btn btn-danger btn-sm"
+    [disabled]="!canDelete()"
+    (click)="deleteSelected()"
+  >
+    {{ 'general.button.delete' | translate }}
+  </button>
+  <button type="button" class="btn btn-secondary btn-sm ms-auto" (click)="activeModal.close()">
+    {{ 'general.button.close' | translate }}
+  </button>
+</div>

@@ -846,7 +846,8 @@
         },
         "delete-confirm": {
           "title": "Szerver törlése",
-          "message": "Biztosan törölni szeretnéd a \"{{ name }}\" szervert?"
+          "message": "Biztosan törölni szeretnéd a \"{{ name }}\" szervert?",
+          "message-plural": "Biztosan törölni szeretnél {{ count }} szervert?"
         },
         "column": {
           "name": "Név",
@@ -2090,6 +2091,7 @@
       "update": "Frissítés",
       "show": "Megjelenítés",
       "open-details": "Részletek megnyitása",
+      "new": "Új",
       "edit": "Szerkesztés",
       "refresh": "Frissítés",
       "retry": "Újra"

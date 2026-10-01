@@ -846,7 +846,8 @@
         },
         "delete-confirm": {
           "title": "Delete Server",
-          "message": "Are you sure you want to delete the server \"{{ name }}\"?"
+          "message": "Are you sure you want to delete the server \"{{ name }}\"?",
+          "message-plural": "Are you sure you want to delete {{ count }} servers?"
         },
         "column": {
           "name": "Name",
@@ -2091,6 +2092,7 @@
       "update": "Update",
       "show": "Show",
       "open-details": "Open Details",
+      "new": "New",
       "edit": "Edit",
       "refresh": "Refresh",
       "retry": "Retry"

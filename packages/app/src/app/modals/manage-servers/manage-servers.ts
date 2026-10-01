@@ -1,10 +1,13 @@
 import { Component, OnDestroy, computed, inject, input, signal } from '@angular/core';
 import type { ServerRecord } from '@bitbutler/shared';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { faPenToSquare, faPlug, faStar, faTrashCan } from '@fortawesome/free-solid-svg-icons';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import type {
+  CellContextMenuEvent,
   ColDef,
+  ColumnHeaderContextMenuEvent,
   GetRowIdParams,
   GridApi,
   GridOptions,
@@ -22,9 +25,21 @@ import {
 } from '../../components/column-filters/set-column-filter/set-column-filter';
 import { TextColumnFilter } from '../../components/column-filters/text-column-filter/text-column-filter';
 import type { ManageServersGridSettings } from '../../models/manage-servers-grid.model';
+import type { ContextMenuEntry } from '../../pages/main/grid/context-menu/context-menu.types';
+import { GridContextMenuService } from '../../pages/main/grid/context-menu/grid-context-menu.service';
+import { CommandBusService } from '../../services/command-bus.service';
+import { ConfirmService } from '../../services/confirm.service';
+import { ContextMenuService } from '../../services/context-menu.service';
+import { CredentialPromptService } from '../../services/credential-prompt.service';
 import { ManageServersGridSettingsService } from '../../services/manage-servers-grid.settings.service';
+import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
+import { ServerService } from '../../services/server.service';
 import { ThemeService } from '../../services/theme.service';
+import { ToastService } from '../../services/toast.service';
+import { setModalInput } from '../../utils/modal-input';
+import { ActiveOrbRenderer } from './active-orb-renderer';
+import { DefaultToggleRenderer } from './default-toggle-renderer';
 
 @Component({
   selector: 'app-manage-servers',
@@ -40,6 +55,15 @@ export class ManageServers implements OnDestroy {
   private readonly settingsService = inject(ManageServersGridSettingsService);
   private readonly themeService = inject(ThemeService);
   private readonly translateService = inject(TranslateService);
+  private readonly modalService = inject(NgbModal);
+  private readonly commandBusService = inject(CommandBusService);
+  private readonly confirmService = inject(ConfirmService);
+  private readonly serverService = inject(ServerService);
+  private readonly qbService = inject(QbService);
+  private readonly credentialPromptService = inject(CredentialPromptService);
+  private readonly toastService = inject(ToastService);
+  private readonly contextMenuService = inject(ContextMenuService);
+  private readonly gridContextMenuService = inject(GridContextMenuService);
   protected readonly activeModal = inject(NgbActiveModal);
 
   private gridApi?: GridApi<ServerRecord>;
@@ -77,8 +101,7 @@ export class ManageServers implements OnDestroy {
       filter: BooleanColumnFilter,
       valueGetter: (p) =>
         !this.hideConnect() && p.data?.id === this.serverStoreService.currentServerId(),
-      // Placeholder renderer - replaced by a dedicated active-server orb renderer in Task 6.
-      cellRenderer: 'agCheckboxCellRenderer',
+      cellRenderer: ActiveOrbRenderer,
     },
     {
       colId: 'name',
@@ -116,8 +139,10 @@ export class ManageServers implements OnDestroy {
       field: 'auto_login',
       headerName: this.translateService.instant('components.modals.manage-servers.column.default'),
       filter: BooleanColumnFilter,
-      // Placeholder renderer - replaced by the click-to-toggle default renderer in Task 6.
-      cellRenderer: 'agCheckboxCellRenderer',
+      cellRenderer: DefaultToggleRenderer,
+      cellRendererParams: {
+        onToggle: (server: ServerRecord) => this.toggleDefault(server),
+      },
     },
     {
       colId: 'id',
@@ -147,6 +172,13 @@ export class ManageServers implements OnDestroy {
     onColumnVisible: () => this.onColumnChanged(),
     onSortChanged: () => this.onColumnChanged(),
     onFilterChanged: () => this.onFilterChanged(),
+    onCellContextMenu: (event) => this.onCellContextMenu(event),
+    onColumnHeaderContextMenu: (event) => this.onColumnHeaderContextMenu(event),
+    onRowDoubleClicked: (event) => {
+      if (!event.data) return;
+      this.selectedServers.set([event.data]);
+      void this.openEdit();
+    },
   };
 
   async onGridReady(event: GridReadyEvent<ServerRecord>): Promise<void> {
@@ -170,6 +202,163 @@ export class ManageServers implements OnDestroy {
 
   onSelectionChanged(event: SelectionChangedEvent<ServerRecord>): void {
     this.selectedServers.set(event.api.getSelectedRows());
+  }
+
+  async openNew(): Promise<void> {
+    const { ServerEditor } = await import('../server-editor/server-editor');
+    const ref = this.modalService.open(ServerEditor, { size: 'lg' });
+    try {
+      const id: string = await ref.result;
+      this.commandBusService.emit({ type: 'SERVER_ADDED', id });
+    } catch {
+      // dismissed - no-op
+    }
+  }
+
+  async openEdit(): Promise<void> {
+    const [server] = this.selectedServers();
+    if (!server) return;
+    const { ServerEditor } = await import('../server-editor/server-editor');
+    const ref = this.modalService.open(ServerEditor, { size: 'lg' });
+    setModalInput(ref, 'id', server.id);
+    await ref.result.catch(() => {});
+  }
+
+  async toggleDefault(server: ServerRecord): Promise<void> {
+    await this.serverService.update(server.id, { auto_login: !server.auto_login });
+    this.commandBusService.emit({ type: 'SERVER_UPDATED', id: server.id });
+  }
+
+  async connectSelected(): Promise<void> {
+    const [server] = this.selectedServers();
+    if (!server) return;
+
+    try {
+      const hasSession = await this.qbService.auth.hasCookie(server.id);
+
+      if (!hasSession) {
+        let runtimeUsername: string | undefined;
+        let runtimePassword: string | undefined;
+
+        if (this.credentialPromptService.needsPrompt(server)) {
+          const resolved = await this.credentialPromptService.resolve(server);
+          if (resolved === null) return;
+          runtimeUsername = resolved.username;
+          runtimePassword = resolved.password;
+        }
+
+        const loginRes = await this.qbService.auth.login(
+          server.id,
+          runtimeUsername,
+          runtimePassword,
+        );
+        if (!loginRes.loggedIn) throw new Error('Login failed');
+      }
+
+      this.serverStoreService.select(server.id);
+      // Deliberately no activeModal.dismiss() here - the manage servers grid
+      // stays open after connecting, unlike the pre-redesign flow.
+    } catch (err) {
+      console.error(ManageServers.name, 'connectSelected', err);
+      this.toastService.danger(
+        `"${server.name || server.host}"`,
+        this.translateService.instant(
+          'services.menu-bar-command-handler.error.failed-to-connect-title',
+        ),
+      );
+    }
+  }
+
+  async deleteSelected(): Promise<void> {
+    const servers = this.selectedServers();
+    if (!servers.length) return;
+
+    const confirmed = await this.confirmService.confirm(
+      'components.modals.manage-servers.delete-confirm.title',
+      servers.length === 1
+        ? {
+            text: 'components.modals.manage-servers.delete-confirm.message',
+            data: { name: servers[0].name || servers[0].host },
+          }
+        : {
+            text: 'components.modals.manage-servers.delete-confirm.message-plural',
+            data: { count: servers.length },
+          },
+      'general.button.delete',
+      undefined,
+      undefined,
+      faTrashCan,
+    );
+    if (!confirmed) return;
+
+    for (const server of servers) {
+      this.commandBusService.emit({ type: 'SERVER_DELETED', id: server.id });
+    }
+  }
+
+  private onCellContextMenu(event: CellContextMenuEvent<ServerRecord>): void {
+    if (!event.data) return;
+    const server = event.data;
+    const isActiveServer = server.id === this.serverStoreService.currentServerId();
+
+    const items: ContextMenuEntry[] = [
+      ...(this.hideConnect()
+        ? []
+        : ([
+            {
+              kind: 'item',
+              id: 'connect',
+              label: 'general.button.connect',
+              icon: faPlug,
+              action: () => {
+                this.selectedServers.set([server]);
+                void this.connectSelected();
+              },
+            },
+            {
+              kind: 'item',
+              id: 'toggle-default',
+              label: server.auto_login
+                ? 'components.modals.manage-servers.tooltip.unset-default'
+                : 'components.modals.manage-servers.tooltip.set-as-default',
+              icon: faStar,
+              action: () => void this.toggleDefault(server),
+            },
+            { kind: 'divider' },
+          ] satisfies ContextMenuEntry[])),
+      {
+        kind: 'item',
+        id: 'edit',
+        label: 'general.button.edit',
+        icon: faPenToSquare,
+        action: () => {
+          this.selectedServers.set([server]);
+          void this.openEdit();
+        },
+      },
+      ...(isActiveServer
+        ? []
+        : ([
+            {
+              kind: 'item',
+              id: 'delete',
+              label: 'general.button.delete',
+              icon: faTrashCan,
+              variant: 'danger',
+              action: () => {
+                this.selectedServers.set([server]);
+                void this.deleteSelected();
+              },
+            },
+          ] satisfies ContextMenuEntry[])),
+    ];
+
+    this.contextMenuService.open({ items });
+  }
+
+  private onColumnHeaderContextMenu(event: ColumnHeaderContextMenuEvent<ServerRecord>): void {
+    if (!event.column) return;
+    this.contextMenuService.open({ items: this.gridContextMenuService.buildHeaderMenu(event) });
   }
 
   private queueSave(): void {
