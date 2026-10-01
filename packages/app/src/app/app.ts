@@ -16,6 +16,7 @@ import { MenuBarCommandHandlerService } from './services/menu-bar-command-handle
 import { NotificationService } from './services/notification.service';
 import { OpenFilesService, PendingAddTorrent } from './services/open-files.service';
 import { ServerCommandHandlerService } from './services/server-command-handler.service';
+import { TagCommandHandlerService } from './services/tag-command-handler.service';
 import { ToastService } from './services/toast.service';
 import { TorrentCommandHandlerService } from './services/torrent-command-handler.service';
 import { TorrentFinishedEvent, TorrentStoreService } from './services/torrent-store.service';
@@ -48,6 +49,7 @@ export class App {
   private readonly transferLimitcommandHandlerService = inject(TransferLimitCommandHandlerService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly serverCommandHandlerService = inject(ServerCommandHandlerService);
+  private readonly tagCommandHandlerService = inject(TagCommandHandlerService);
   private readonly updateCommandHandlerService = inject(UpdateCommandHandlerService);
   private readonly translateService = inject(TranslateService);
   private readonly timeagoIntl = inject(TimeagoIntl);
@@ -114,6 +116,7 @@ export class App {
     this.torrentCommandHandlerService.start();
     this.transferLimitcommandHandlerService.start();
     this.serverCommandHandlerService.start();
+    this.tagCommandHandlerService.start();
     this.updateCommandHandlerService.start();
 
     this.translateService.onLangChange
