@@ -26,7 +26,9 @@ import { ManageTagsGridSettingsService } from '../../services/manage-tags-grid.s
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { ThemeService } from '../../services/theme.service';
+import { ToastService } from '../../services/toast.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
+import { setModalInput } from '../../utils/modal-input';
 
 export interface TagRow {
   name: string;
@@ -52,6 +54,7 @@ export class ManageTags implements OnInit, OnDestroy {
   private readonly modalService = inject(NgbModal);
   private readonly contextMenuService = inject(ContextMenuService);
   private readonly gridContextMenuService = inject(GridContextMenuService);
+  private readonly toastService = inject(ToastService);
   protected readonly activeModal = inject(NgbActiveModal);
 
   private gridApi?: GridApi<TagRow>;
@@ -119,8 +122,20 @@ export class ManageTags implements OnInit, OnDestroy {
   async ngOnInit(): Promise<void> {
     const serverId = this.serverStoreService.currentServerId();
     if (!serverId) return;
-    const tags = await this.qbService.torrents.tags(serverId);
-    this.tagNames.set([...tags].sort((a, b) => a.localeCompare(b)));
+    await this.loadTags(serverId);
+  }
+
+  private async loadTags(serverId: string): Promise<void> {
+    try {
+      const tags = await this.qbService.torrents.tags(serverId);
+      this.tagNames.set([...tags].sort((a, b) => a.localeCompare(b)));
+    } catch (err) {
+      console.error(ManageTags.name, 'loadTags', err);
+      this.toastService.danger(
+        this.translateService.instant('components.modals.manage-tags.toast.load-failed'),
+        this.translateService.instant('components.modals.manage-tags.toast.load-failed-title'),
+      );
+    }
   }
 
   async onGridReady(event: GridReadyEvent<TagRow>): Promise<void> {
@@ -149,6 +164,7 @@ export class ManageTags implements OnInit, OnDestroy {
   async openNew(): Promise<void> {
     const { TagEditor } = await import('../tag-editor/tag-editor');
     const ref = this.modalService.open(TagEditor);
+    setModalInput(ref, 'existingNames', this.tagNames());
     try {
       await ref.result;
     } catch {
@@ -156,14 +172,16 @@ export class ManageTags implements OnInit, OnDestroy {
     }
     const serverId = this.serverStoreService.currentServerId();
     if (!serverId) return;
-    const tags = await this.qbService.torrents.tags(serverId);
-    this.tagNames.set([...tags].sort((a, b) => a.localeCompare(b)));
+    await this.loadTags(serverId);
   }
 
   async deleteSelected(): Promise<void> {
     const tags = this.selectedTags();
     if (!tags.length) return;
+    await this.deleteTags(tags);
+  }
 
+  private async deleteTags(tags: TagRow[]): Promise<void> {
     const count = tags.reduce((sum, t) => sum + t.usageCount, 0);
     const confirmed = await this.confirmService.confirm(
       'components.modals.manage-tags.delete-confirm.title',
@@ -179,9 +197,17 @@ export class ManageTags implements OnInit, OnDestroy {
     if (!serverId) return;
 
     const names = tags.map((t) => t.name);
-    await this.qbService.torrents.deleteTags(serverId, names);
-    this.tagNames.set(this.tagNames().filter((n) => !names.includes(n)));
-    this.commandBusService.emit({ type: 'TAG_DELETED', names });
+    try {
+      await this.qbService.torrents.deleteTags(serverId, names);
+      this.tagNames.set(this.tagNames().filter((n) => !names.includes(n)));
+      this.commandBusService.emit({ type: 'TAG_DELETED', names });
+    } catch (err) {
+      console.error(ManageTags.name, 'deleteTags', err);
+      this.toastService.danger(
+        this.translateService.instant('components.modals.manage-tags.toast.delete-failed'),
+        this.translateService.instant('components.modals.manage-tags.toast.delete-failed-title'),
+      );
+    }
   }
 
   private onCellContextMenu(event: CellContextMenuEvent<TagRow>): void {
@@ -195,10 +221,7 @@ export class ManageTags implements OnInit, OnDestroy {
         label: 'general.button.delete',
         icon: faTrashCan,
         variant: 'danger',
-        action: () => {
-          this.selectedTags.set([tag]);
-          void this.deleteSelected();
-        },
+        action: () => void this.deleteTags([tag]),
       },
     ];
 

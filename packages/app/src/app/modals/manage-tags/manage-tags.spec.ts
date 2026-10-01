@@ -11,6 +11,7 @@ import { ManageTagsGridSettingsService } from '../../services/manage-tags-grid.s
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { ThemeService } from '../../services/theme.service';
+import { ToastService } from '../../services/toast.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
 import { mockTranslateService } from '../../test-utils/translate.mock';
 import { ManageTags } from './manage-tags';
@@ -33,6 +34,7 @@ describe('ManageTags', () => {
   };
   let contextMenuService: { open: ReturnType<typeof vi.fn> };
   let gridContextMenuService: { buildHeaderMenu: ReturnType<typeof vi.fn> };
+  let toastService: { danger: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     serverStoreService = { currentServerId: signal('srv-1') };
@@ -59,6 +61,7 @@ describe('ManageTags', () => {
     };
     contextMenuService = { open: vi.fn() };
     gridContextMenuService = { buildHeaderMenu: vi.fn().mockReturnValue([]) };
+    toastService = { danger: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [ManageTags],
@@ -75,6 +78,7 @@ describe('ManageTags', () => {
         { provide: QbService, useValue: qbService },
         { provide: ContextMenuService, useValue: contextMenuService },
         { provide: GridContextMenuService, useValue: gridContextMenuService },
+        { provide: ToastService, useValue: toastService },
       ],
     }).compileComponents();
 
@@ -241,6 +245,49 @@ describe('ManageTags', () => {
       component['onColumnHeaderContextMenu']({ column: {} } as never);
       expect(gridContextMenuService.buildHeaderMenu).toHaveBeenCalled();
       expect(contextMenuService.open).toHaveBeenCalledWith({ items: [] });
+    });
+
+    it('deleting a tag from the row context menu does not change what the footer Delete would act on (Finding 2)', async () => {
+      confirmService.confirm.mockResolvedValue(false);
+      component.selectedTags.set([{ name: 'ubuntu', usageCount: 1 }]);
+      contextMenuService.open.mockClear();
+
+      component['onCellContextMenu']({ data: { name: 'linux', usageCount: 2 } } as never);
+      const [{ items }] = contextMenuService.open.mock.calls.at(-1) as [
+        { items: { label: string; action: () => void }[] },
+      ];
+      items[0].action();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(component.selectedTags()).toEqual([{ name: 'ubuntu', usageCount: 1 }]);
+    });
+  });
+
+  describe('error handling (Finding 3)', () => {
+    it('shows a danger toast (and does not throw) when the initial tag load fails', async () => {
+      qbService.torrents.tags.mockRejectedValue(new Error('network error'));
+
+      const freshFixture = TestBed.createComponent(ManageTags);
+      freshFixture.detectChanges();
+      await freshFixture.whenStable();
+
+      expect(toastService.danger).toHaveBeenCalled();
+      expect(freshFixture.componentInstance.tagNames()).toEqual([]);
+    });
+
+    it('shows a danger toast and does not optimistically update local state when deleting tags fails', async () => {
+      confirmService.confirm.mockResolvedValue(true);
+      qbService.torrents.deleteTags.mockRejectedValue(new Error('409 conflict'));
+      component.selectedTags.set([{ name: 'linux', usageCount: 2 }]);
+
+      await component.deleteSelected();
+
+      expect(toastService.danger).toHaveBeenCalled();
+      expect(component.tagNames()).toContain('linux');
+      expect(commandBusService.emit).not.toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'TAG_DELETED' }),
+      );
     });
   });
 });
