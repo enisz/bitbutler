@@ -425,7 +425,7 @@ export class UiCommandHandlerService {
           if (this.isModalOpen(ManageTags)) break;
           const manageTagsModalRef = this.modalService.open(ManageTags, {
             scrollable: true,
-            beforeDismiss: () => manageTagsModalRef.componentInstance.canDeactivate(),
+            size: 'xl',
           });
           manageTagsModalRef.result.catch(() => {});
           break;

@@ -812,26 +812,13 @@
       },
       "manage-tags": {
         "title": "Cimkék kezelése",
-        "add-form": {
-          "name": "Cimke neve",
-          "hint": "Vesszővel elválasztott lista használatával egyszerre több cimkét is hozzáadhatsz"
+        "column": {
+          "name": "Név",
+          "usage-count": "Használat"
         },
-        "filter": {
-          "placeholder": "Cimkék szűrése...",
-          "no-match": "Egy cimke sem felel meg a szűrőnek."
-        },
-        "empty": "Még nincsenek cimkék.",
         "delete-confirm": {
           "title": "Cimke törlése",
-          "message": "Biztosan törölni szeretnéd a \"{{ name }}\" cimkét? {{ count }} torrent használja."
-        },
-        "toast": {
-          "added": "{{ count }} cimke",
-          "added-one-title": "Cimke hozzáadva",
-          "added-title": "Cimkék hozzáadva",
-          "deleted-title": "Cimke törölve",
-          "add-failed-title": "Nem sikerült hozzáadni a cimké(ke)t",
-          "delete-failed-title": "Nem sikerült törölni a cimkét"
+          "message": "Biztosan törölni szeretnéd a kijelölt cimké(ke)t? {{ count }} torrent használja őket."
         }
       },
       "manage-servers": {
