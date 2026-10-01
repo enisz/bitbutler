@@ -2031,6 +2031,14 @@
         "toggle-first-last-piece-prio-failed-title": "Nem sikerült átváltani az első/utolsó szelet prioritást"
       }
     },
+    "tag-command-handler": {
+      "success": {
+        "added-title": "Címke hozzáadva"
+      },
+      "info": {
+        "deleted-title": "Címke törölve"
+      }
+    },
     "qb": {
       "warning": {
         "connection-retry-title": "Kapcsolódási probléma",

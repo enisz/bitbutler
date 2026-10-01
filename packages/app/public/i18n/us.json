@@ -2031,6 +2031,14 @@
         "toggle-first-last-piece-prio-failed-title": "Failed to Toggle First/Last Piece Priority"
       }
     },
+    "tag-command-handler": {
+      "success": {
+        "added-title": "Tag Added"
+      },
+      "info": {
+        "deleted-title": "Tag Deleted"
+      }
+    },
     "qb": {
       "warning": {
         "connection-retry-title": "Connection Issue",
