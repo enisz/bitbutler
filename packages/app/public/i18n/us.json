@@ -359,6 +359,11 @@
         "name-label": "Tag Name",
         "name-placeholder": "Tag Name"
       },
+      "category-editor": {
+        "title": "New Category",
+        "name-label": "Category Name",
+        "name-placeholder": "Category Name"
+      },
       "credential-prompt": {
         "title": "Connect",
         "save-credentials": "Save credentials",

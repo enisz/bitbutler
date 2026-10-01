@@ -359,6 +359,11 @@
         "name-label": "Címke neve",
         "name-placeholder": "Címke neve"
       },
+      "category-editor": {
+        "title": "Új kategória",
+        "name-label": "Kategória neve",
+        "name-placeholder": "Kategória neve"
+      },
       "credential-prompt": {
         "title": "Csatlakozás",
         "save-credentials": "Hitelesítő adatok mentése",
