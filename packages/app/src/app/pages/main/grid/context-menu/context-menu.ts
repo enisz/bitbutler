@@ -57,7 +57,13 @@ export class ContextMenu implements OnDestroy {
   }
 
   get items(): ContextMenuEntry[] {
-    return this.config.items;
+    const items = this.config.items;
+    let end = items.length;
+    // Entries are built from conditionally-included groups (e.g. a group followed by a
+    // divider), so the group after it can end up omitted at render time, leaving a
+    // trailing divider with nothing below it.
+    while (end > 0 && items[end - 1].kind === 'divider') end--;
+    return end === items.length ? items : items.slice(0, end);
   }
 
   close(): void {

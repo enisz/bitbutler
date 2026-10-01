@@ -425,7 +425,7 @@ export class UiCommandHandlerService {
           if (this.isModalOpen(ManageTags)) break;
           const manageTagsModalRef = this.modalService.open(ManageTags, {
             scrollable: true,
-            size: 'xl',
+            size: 'lg',
           });
           manageTagsModalRef.result.catch(() => {});
           break;
@@ -437,7 +437,7 @@ export class UiCommandHandlerService {
           if (this.isModalOpen(ManageCategories)) break;
           const manageCategoriesModalRef = this.modalService.open(ManageCategories, {
             scrollable: true,
-            size: 'xl',
+            size: 'lg',
           });
           manageCategoriesModalRef.result.catch(() => {});
           break;

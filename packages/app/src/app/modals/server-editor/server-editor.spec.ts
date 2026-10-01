@@ -67,6 +67,28 @@ describe('ServerEditor', () => {
     expect(component.autoLogin).toBe(true);
   });
 
+  describe('connectionSubtitle', () => {
+    it('renders protocol://host:port using the field defaults when nothing has been entered yet', () => {
+      expect(component.connectionSubtitle()).toBe('http://:8080');
+    });
+
+    it('updates in real time as the protocol, host, or port fields change', () => {
+      component.editorForm.get('host')?.setValue('example.com');
+      expect(component.connectionSubtitle()).toBe('http://example.com:8080');
+
+      component.editorForm.get('protocol')?.setValue('https');
+      expect(component.connectionSubtitle()).toBe('https://example.com:8080');
+
+      component.editorForm.get('port')?.setValue(9090);
+      expect(component.connectionSubtitle()).toBe('https://example.com:9090');
+    });
+
+    it('trims surrounding whitespace from the host', () => {
+      component.editorForm.get('host')?.setValue('  example.com  ');
+      expect(component.connectionSubtitle()).toBe('http://example.com:8080');
+    });
+  });
+
   describe('canSave signal', () => {
     it('should be false when form is invalid', () => {
       component.editorForm.reset();

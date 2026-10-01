@@ -51,6 +51,57 @@ describe('ContextMenu', () => {
     expect(component.items).toBe(items);
   });
 
+  describe('trailing dividers', () => {
+    async function createWithItems(configItems: ContextMenuEntry[]): Promise<ContextMenu> {
+      TestBed.resetTestingModule();
+      await TestBed.configureTestingModule({
+        imports: [ContextMenu, OverlayModule],
+        providers: [
+          { provide: OverlayRef, useValue: makeOverlayRefMock() },
+          { provide: CONTEXT_MENU_CONFIG, useValue: { items: configItems } },
+        ],
+      }).compileComponents();
+      const localFixture = TestBed.createComponent(ContextMenu);
+      localFixture.detectChanges();
+      return localFixture.componentInstance;
+    }
+
+    it('strips a single trailing divider', async () => {
+      const trailing: ContextMenuEntry[] = [
+        { kind: 'item', id: 'connect', label: 'Connect', action: vi.fn<() => void>() },
+        { kind: 'divider' },
+      ];
+
+      expect((await createWithItems(trailing)).items).toEqual([trailing[0]]);
+    });
+
+    it('strips multiple consecutive trailing dividers', async () => {
+      const trailing: ContextMenuEntry[] = [
+        { kind: 'item', id: 'connect', label: 'Connect', action: vi.fn<() => void>() },
+        { kind: 'divider' },
+        { kind: 'divider' },
+      ];
+
+      expect((await createWithItems(trailing)).items).toEqual([trailing[0]]);
+    });
+
+    it('leaves a divider in the middle untouched', async () => {
+      const middle: ContextMenuEntry[] = [
+        { kind: 'item', id: 'connect', label: 'Connect', action: vi.fn<() => void>() },
+        { kind: 'divider' },
+        { kind: 'item', id: 'edit', label: 'Edit', action: vi.fn<() => void>() },
+      ];
+
+      expect((await createWithItems(middle)).items).toEqual(middle);
+    });
+
+    it('returns an empty array when every item is a divider', async () => {
+      const allDividers: ContextMenuEntry[] = [{ kind: 'divider' }, { kind: 'divider' }];
+
+      expect((await createWithItems(allDividers)).items).toEqual([]);
+    });
+  });
+
   it('close should call overlayRef.dispose', () => {
     component.close();
     expect(overlayRefMock.dispose).toHaveBeenCalled();

@@ -1,12 +1,17 @@
-<div class="modal-header">
-  <h4 class="modal-title">
-    {{
-      (editMode()
-        ? 'components.modals.server-editor.title-edit'
-        : 'components.modals.server-editor.title-new'
-      ) | translate
-    }}
-  </h4>
+<div class="modal-header bb-modal-header">
+  <div class="bb-modal-header__text">
+    <h4 class="modal-title bb-title-clamp">
+      {{
+        (editMode()
+          ? 'components.modals.server-editor.title-edit'
+          : 'components.modals.server-editor.title-new'
+        ) | translate
+      }}
+    </h4>
+    <div class="small text-body-secondary mt-1 bb-hash-clamp">
+      {{ connectionSubtitle() }}
+    </div>
+  </div>
   <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
 </div>
 <div class="modal-body">
@@ -145,8 +150,8 @@
     [disabled]="!canSave() || processing()"
   >
     <bb-btn-content
-      [icon]="icons.faFloppyDisk"
-      [text]="(editMode() ? 'general.button.update' : 'general.button.save') | translate"
+      [icon]="editMode() ? icons.faFloppyDisk : icons.faPlus"
+      [text]="(editMode() ? 'general.button.update' : 'general.button.add') | translate"
       position="end"
     ></bb-btn-content>
   </button>
