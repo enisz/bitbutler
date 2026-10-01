@@ -354,6 +354,11 @@
           "load-failed": "Nem sikerült betölteni a szerver adatait."
         }
       },
+      "tag-editor": {
+        "title": "Új címke",
+        "name-label": "Címke neve",
+        "name-placeholder": "Címke neve"
+      },
       "credential-prompt": {
         "title": "Csatlakozás",
         "save-credentials": "Hitelesítő adatok mentése",

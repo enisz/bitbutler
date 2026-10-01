@@ -354,6 +354,11 @@
           "load-failed": "Could not load this server's details."
         }
       },
+      "tag-editor": {
+        "title": "New Tag",
+        "name-label": "Tag Name",
+        "name-placeholder": "Tag Name"
+      },
       "credential-prompt": {
         "title": "Connect",
         "save-credentials": "Save credentials",
