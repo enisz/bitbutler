@@ -448,6 +448,7 @@ export class UiCommandHandlerService {
           if (this.isModalOpen(ManageServers)) break;
           const manageServersModalRef = this.modalService.open(ManageServers, {
             scrollable: true,
+            size: 'xl',
           });
           manageServersModalRef.result.catch(() => {});
           break;

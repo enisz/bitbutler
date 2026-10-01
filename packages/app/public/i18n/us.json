@@ -847,6 +847,15 @@
         "delete-confirm": {
           "title": "Delete Server",
           "message": "Are you sure you want to delete the server \"{{ name }}\"?"
+        },
+        "column": {
+          "name": "Name",
+          "host": "Host",
+          "port": "Port",
+          "protocol": "Protocol",
+          "username": "Username",
+          "default": "Default",
+          "id": "ID"
         }
       },
       "export-torrents": {

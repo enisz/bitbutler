@@ -9,147 +9,15 @@
 </div>
 
 <div class="modal-body">
-  @if (hasServers()) {
-    <div class="mb-3">
-      <div class="bb-filter-input">
-        <input
-          type="text"
-          class="form-control"
-          [placeholder]="'components.modals.manage-servers.filter.placeholder' | translate"
-          [formControl]="filterControl"
-        />
-        @if (filterControl.value) {
-          <button
-            type="button"
-            class="bb-filter-clear"
-            (click)="clearFilter()"
-            aria-label="Clear filter"
-          >
-            <fa-icon [icon]="icon.faXmark"></fa-icon>
-          </button>
-        }
-      </div>
-    </div>
-  }
-
-  @if (filteredServers().length > 0) {
-    <ul class="list-group list-group-flush bb-server-list">
-      @for (server of filteredServers(); track server.id) {
-        <li class="list-group-item bb-server-row d-flex align-items-center justify-content-between">
-          <div class="overflow-hidden me-2 d-flex align-items-center gap-3">
-            <span
-              class="bb-server-orb flex-shrink-0 ms-2"
-              [class.bb-server-orb-active]="!hideConnect() && currentServerId() === server.id"
-              [ngbTooltip]="
-                !hideConnect() && currentServerId() === server.id
-                  ? ('components.modals.manage-servers.tooltip.active' | translate)
-                  : null
-              "
-              container="body"
-            ></span>
-            <div class="overflow-hidden">
-              <div
-                class="fw-medium text-truncate"
-                [ngbTooltip]="server.name || server.host"
-                bbTooltipOverflow
-              >
-                {{ server.name || server.host }}
-              </div>
-              <div
-                class="text-body-secondary small text-truncate"
-                [ngbTooltip]="server.protocol + '://' + server.host + ':' + server.port"
-                bbTooltipOverflow
-              >
-                {{ server.protocol }}://{{ server.host }}:{{ server.port }}
-              </div>
-            </div>
-          </div>
-
-          <div class="d-flex gap-1 flex-shrink-0 align-items-center">
-            @if (hideConnect() || currentServerId() !== server.id) {
-              @if (!hideConnect()) {
-                <button
-                  type="button"
-                  class="btn btn-link p-1 connect-btn"
-                  [ngbTooltip]="'components.modals.manage-servers.button.connect' | translate"
-                  (click)="switchTo(server)"
-                  [disabled]="busy()"
-                >
-                  @if (connectingId() === server.id) {
-                    <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-                  } @else {
-                    <fa-icon [icon]="icon.faPlug" />
-                  }
-                </button>
-              }
-            }
-            <button
-              type="button"
-              class="btn btn-link p-1"
-              [ngbTooltip]="
-                (server.auto_login
-                  ? 'components.modals.manage-servers.tooltip.unset-default'
-                  : 'components.modals.manage-servers.tooltip.set-as-default'
-                ) | translate
-              "
-              (click)="toggleAutoLogin(server)"
-              [disabled]="busy()"
-            >
-              <fa-icon [icon]="server.auto_login ? icon.faSquareCheck : icon.faSquare" />
-            </button>
-            @if (hideConnect() || currentServerId() !== server.id) {
-              <button
-                type="button"
-                class="btn btn-link p-1"
-                [ngbTooltip]="'general.button.edit' | translate"
-                (click)="openEditor(server.id)"
-                [disabled]="busy()"
-              >
-                <fa-icon [icon]="icon.faPenToSquare" />
-              </button>
-              <button
-                type="button"
-                class="btn btn-link text-danger p-1"
-                [ngbTooltip]="'general.button.delete' | translate"
-                (click)="delete(server)"
-                [disabled]="busy()"
-              >
-                <fa-icon [icon]="icon.faTrashCan" />
-              </button>
-            }
-          </div>
-        </li>
-      }
-    </ul>
-  } @else {
-    <p class="text-body-secondary small mb-0">
-      @if (filterControl.value) {
-        {{ 'components.modals.manage-servers.filter.no-match' | translate }}
-      } @else {
-        {{ 'components.modals.manage-servers.empty' | translate }}
-      }
-    </p>
-  }
+  <ag-grid-angular
+    class="w-100 d-block bb-manage-servers-grid"
+    (gridReady)="onGridReady($event)"
+    [loading]="loading()"
+    [rowData]="servers()"
+    [columnDefs]="colDefs()"
+    [gridOptions]="gridOptions"
+    [theme]="theme() === 'dark' ? bbDark : bbLight"
+  />
 </div>
 
-<div class="modal-footer">
-  <button
-    type="button"
-    class="btn btn-primary btn-sm btn-split"
-    (click)="openEditor()"
-    [disabled]="busy()"
-  >
-    <bb-btn-content
-      [icon]="icon.faPlus"
-      [text]="'general.button.add-server' | translate"
-      position="end"
-    ></bb-btn-content>
-  </button>
-  <button type="button" class="btn btn-sm btn-split" (click)="activeModal.dismiss()" autofocus>
-    <bb-btn-content
-      [icon]="icon.faXmark"
-      [text]="'general.button.close' | translate"
-      position="end"
-    ></bb-btn-content>
-  </button>
-</div>
+<div class="modal-footer"></div>

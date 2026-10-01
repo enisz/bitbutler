@@ -847,6 +847,15 @@
         "delete-confirm": {
           "title": "Szerver törlése",
           "message": "Biztosan törölni szeretnéd a \"{{ name }}\" szervert?"
+        },
+        "column": {
+          "name": "Név",
+          "host": "Host",
+          "port": "Port",
+          "protocol": "Protokoll",
+          "username": "Felhasználónév",
+          "default": "Alapértelmezett",
+          "id": "Azonosító"
         }
       },
       "export-torrents": {
