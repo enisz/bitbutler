@@ -2039,6 +2039,14 @@
         "deleted-title": "Címke törölve"
       }
     },
+    "category-command-handler": {
+      "success": {
+        "added-title": "Kategória hozzáadva"
+      },
+      "info": {
+        "deleted-title": "Kategória törölve"
+      }
+    },
     "qb": {
       "warning": {
         "connection-retry-title": "Kapcsolódási probléma",

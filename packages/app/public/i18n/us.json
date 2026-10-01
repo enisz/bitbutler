@@ -2039,6 +2039,14 @@
         "deleted-title": "Tag Deleted"
       }
     },
+    "category-command-handler": {
+      "success": {
+        "added-title": "Category Added"
+      },
+      "info": {
+        "deleted-title": "Category Deleted"
+      }
+    },
     "qb": {
       "warning": {
         "connection-retry-title": "Connection Issue",

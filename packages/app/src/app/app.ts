@@ -9,6 +9,7 @@ import { strings as usStrings } from 'ngx-timeago/language-strings/en.js';
 import { strings as huStrings } from 'ngx-timeago/language-strings/hu.js';
 import { filter, from } from 'rxjs';
 import { GeneralSettings } from './models/general-settings.model';
+import { CategoryCommandHandlerService } from './services/category-command-handler.service';
 import { CommandBusService } from './services/command-bus.service';
 import { ElectronService } from './services/electron.service';
 import { GeneralSettingsService } from './services/general-settings.service';
@@ -50,6 +51,7 @@ export class App {
   private readonly destroyRef = inject(DestroyRef);
   private readonly serverCommandHandlerService = inject(ServerCommandHandlerService);
   private readonly tagCommandHandlerService = inject(TagCommandHandlerService);
+  private readonly categoryCommandHandlerService = inject(CategoryCommandHandlerService);
   private readonly updateCommandHandlerService = inject(UpdateCommandHandlerService);
   private readonly translateService = inject(TranslateService);
   private readonly timeagoIntl = inject(TimeagoIntl);
@@ -117,6 +119,7 @@ export class App {
     this.transferLimitcommandHandlerService.start();
     this.serverCommandHandlerService.start();
     this.tagCommandHandlerService.start();
+    this.categoryCommandHandlerService.start();
     this.updateCommandHandlerService.start();
 
     this.translateService.onLangChange
