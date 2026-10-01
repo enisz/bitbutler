@@ -357,12 +357,21 @@
       "tag-editor": {
         "title": "Új címke",
         "name-label": "Címke neve",
-        "name-placeholder": "Címke neve"
+        "name-placeholder": "Címke neve",
+        "toast": {
+          "create-failed-title": "Nem sikerült létrehozni a címkét",
+          "create-failed": "Nem sikerült létrehozni a címké(ke)t."
+        }
       },
       "category-editor": {
         "title": "Új kategória",
         "name-label": "Kategória neve",
-        "name-placeholder": "Kategória neve"
+        "name-placeholder": "Kategória neve",
+        "save-path-label": "Mentési útvonal (opcionális)",
+        "toast": {
+          "create-failed-title": "Nem sikerült létrehozni a kategóriát",
+          "create-failed": "Nem sikerült létrehozni a kategóriát."
+        }
       },
       "credential-prompt": {
         "title": "Csatlakozás",
@@ -824,6 +833,12 @@
         "delete-confirm": {
           "title": "Cimke törlése",
           "message": "Biztosan törölni szeretnéd a kijelölt cimké(ke)t? {{ count }} torrent használja őket."
+        },
+        "toast": {
+          "load-failed-title": "Nem sikerült betölteni a címkéket",
+          "load-failed": "Nem sikerült betölteni a címkéket a szerverről.",
+          "delete-failed-title": "Nem sikerült törölni a címkét",
+          "delete-failed": "Nem sikerült törölni a kijelölt címké(ke)t."
         }
       },
       "manage-servers": {
@@ -1118,7 +1133,11 @@
         },
         "toast": {
           "update-failed-title": "Nem sikerült frissíteni a kategóriát",
-          "update-failed": "\"{{ name }}\""
+          "update-failed": "\"{{ name }}\"",
+          "load-failed-title": "Nem sikerült betölteni a kategóriákat",
+          "load-failed": "Nem sikerült betölteni a kategóriákat a szerverről.",
+          "delete-failed-title": "Nem sikerült törölni a kategóriát",
+          "delete-failed": "Nem sikerült törölni a kijelölt kategóriákat."
         }
       }
     },

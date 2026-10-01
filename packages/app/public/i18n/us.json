@@ -357,12 +357,21 @@
       "tag-editor": {
         "title": "New Tag",
         "name-label": "Tag Name",
-        "name-placeholder": "Tag Name"
+        "name-placeholder": "Tag Name",
+        "toast": {
+          "create-failed-title": "Failed to Create Tag",
+          "create-failed": "Could not create the tag(s)."
+        }
       },
       "category-editor": {
         "title": "New Category",
         "name-label": "Category Name",
-        "name-placeholder": "Category Name"
+        "name-placeholder": "Category Name",
+        "save-path-label": "Save Path (optional)",
+        "toast": {
+          "create-failed-title": "Failed to Create Category",
+          "create-failed": "Could not create the category."
+        }
       },
       "credential-prompt": {
         "title": "Connect",
@@ -824,6 +833,12 @@
         "delete-confirm": {
           "title": "Delete Tag",
           "message": "Are you sure you want to delete the selected tag(s)? They are used by {{ count }} torrent(s)."
+        },
+        "toast": {
+          "load-failed-title": "Failed to Load Tags",
+          "load-failed": "Could not load the tags from the server.",
+          "delete-failed-title": "Failed to Delete Tag",
+          "delete-failed": "Could not delete the selected tag(s)."
         }
       },
       "manage-servers": {
@@ -1118,7 +1133,11 @@
         },
         "toast": {
           "update-failed-title": "Failed to Update Category",
-          "update-failed": "\"{{ name }}\""
+          "update-failed": "\"{{ name }}\"",
+          "load-failed-title": "Failed to Load Categories",
+          "load-failed": "Could not load the categories from the server.",
+          "delete-failed-title": "Failed to Delete Category",
+          "delete-failed": "Could not delete the selected categories."
         }
       }
     },
