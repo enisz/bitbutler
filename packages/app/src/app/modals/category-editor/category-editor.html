@@ -15,7 +15,12 @@
       'components.modals.category-editor.name-label' | translate
     }}</label>
   </div>
-  <app-save-path-select [clearable]="true" [placeholder]="''" [formControl]="savePathControl" />
+  <app-save-path-select
+    [clearable]="true"
+    [placeholder]="''"
+    [label]="'components.modals.category-editor.save-path-label' | translate"
+    [formControl]="savePathControl"
+  />
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-secondary btn-sm" (click)="activeModal.dismiss()">
@@ -24,7 +29,7 @@
   <button
     type="button"
     class="btn btn-primary btn-sm"
-    [disabled]="!nameControl.value.trim() || !savePathControl.value.trim()"
+    [disabled]="!nameControl.value.trim()"
     (click)="save()"
   >
     {{ 'general.button.save' | translate }}
