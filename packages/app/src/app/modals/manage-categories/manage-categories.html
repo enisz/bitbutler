@@ -1,11 +1,6 @@
 <div class="modal-header">
   <h5 class="modal-title">{{ 'components.modals.manage-categories.title' | translate }}</h5>
-  <button
-    type="button"
-    class="btn-close"
-    aria-label="Close"
-    (click)="activeModal.dismiss()"
-  ></button>
+  <button type="button" class="btn-close" aria-label="Close" (click)="dismiss()"></button>
 </div>
 
 <div class="modal-body">
@@ -39,7 +34,7 @@
   >
     {{ 'general.button.delete' | translate }}
   </button>
-  <button type="button" class="btn btn-secondary btn-sm ms-auto" (click)="activeModal.close()">
+  <button type="button" class="btn btn-secondary btn-sm ms-auto" (click)="close()">
     {{ 'general.button.close' | translate }}
   </button>
 </div>

@@ -435,5 +435,118 @@ describe('ManageCategories', () => {
       expect(gridContextMenuService.buildHeaderMenu).toHaveBeenCalled();
       expect(contextMenuService.open).toHaveBeenCalledWith({ items: [] });
     });
+
+    it('editing a different row via the context menu does not change what the footer Edit/Delete would act on (Finding 2)', () => {
+      const getRowNode = vi.fn().mockReturnValue({ rowIndex: 0 });
+      const startEditingCell = vi.fn();
+      component.onGridReady({ api: { getRowNode, startEditingCell } } as never);
+      component.selectedCategories.set([{ name: 'tv', savePath: '/data/tv', usageCount: 1 }]);
+      contextMenuService.open.mockClear();
+
+      component['onCellContextMenu']({
+        data: { name: 'movies', savePath: '/data/movies', usageCount: 2 },
+      } as never);
+      const [{ items }] = contextMenuService.open.mock.calls.at(-1) as [
+        { items: { label: string; action: () => void }[] },
+      ];
+      items[0].action();
+
+      expect(component.selectedCategories()).toEqual([
+        { name: 'tv', savePath: '/data/tv', usageCount: 1 },
+      ]);
+    });
+
+    it('deleting a different row via the context menu does not change what the footer Edit/Delete would act on (Finding 2)', async () => {
+      confirmService.confirm.mockResolvedValue(false);
+      component.selectedCategories.set([{ name: 'tv', savePath: '/data/tv', usageCount: 1 }]);
+      contextMenuService.open.mockClear();
+
+      component['onCellContextMenu']({
+        data: { name: 'movies', savePath: '/data/movies', usageCount: 2 },
+      } as never);
+      const [{ items }] = contextMenuService.open.mock.calls.at(-1) as [
+        { items: { label: string; action: () => void }[] },
+      ];
+      items[1].action();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(component.selectedCategories()).toEqual([
+        { name: 'tv', savePath: '/data/tv', usageCount: 1 },
+      ]);
+    });
+  });
+
+  describe('error handling (Finding 3)', () => {
+    it('shows a danger toast when the initial categories load fails', async () => {
+      qbService.torrents.categories.mockRejectedValue(new Error('network error'));
+
+      const freshFixture = TestBed.createComponent(ManageCategories);
+      freshFixture.detectChanges();
+      await freshFixture.whenStable();
+
+      expect(toastService.danger).toHaveBeenCalled();
+      expect(freshFixture.componentInstance.categories()).toEqual([]);
+    });
+
+    it('shows a danger toast and does not optimistically update local state when deleting categories fails', async () => {
+      confirmService.confirm.mockResolvedValue(true);
+      qbService.torrents.removeCategories.mockRejectedValue(new Error('409 conflict'));
+      component.selectedCategories.set([
+        { name: 'movies', savePath: '/data/movies', usageCount: 2 },
+      ]);
+
+      await component.deleteSelected();
+
+      expect(toastService.danger).toHaveBeenCalled();
+      expect(component.categories().map((c) => c.name)).toContain('movies');
+      expect(commandBusService.emit).not.toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'CATEGORY_DELETED' }),
+      );
+    });
+  });
+
+  describe('inline edit commit on close/delete (Finding 6)', () => {
+    it('commits any pending inline edit before deleting', async () => {
+      const stopEditing = vi.fn();
+      component.onGridReady({ api: { stopEditing } } as never);
+      confirmService.confirm.mockResolvedValue(true);
+      component.selectedCategories.set([
+        { name: 'movies', savePath: '/data/movies', usageCount: 0 },
+      ]);
+
+      await component.deleteSelected();
+
+      expect(stopEditing).toHaveBeenCalled();
+    });
+
+    it('commits any pending inline edit when the footer Close button is clicked', () => {
+      const stopEditing = vi.fn();
+      component.onGridReady({ api: { stopEditing } } as never);
+
+      component.close();
+
+      expect(stopEditing).toHaveBeenCalled();
+      expect(activeModal.close).toHaveBeenCalled();
+    });
+
+    it('commits any pending inline edit when dismissed via the header close button', () => {
+      const stopEditing = vi.fn();
+      component.onGridReady({ api: { stopEditing } } as never);
+
+      component.dismiss();
+
+      expect(stopEditing).toHaveBeenCalled();
+      expect(activeModal.dismiss).toHaveBeenCalled();
+    });
+
+    it('commits any pending inline edit on destroy, as a safety net for other dismissal paths', () => {
+      const stopEditing = vi.fn();
+      component.onGridReady({ api: { stopEditing } } as never);
+
+      component.ngOnDestroy();
+
+      expect(stopEditing).toHaveBeenCalled();
+    });
   });
 });

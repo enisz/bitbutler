@@ -212,7 +212,12 @@ export class ManageCategories implements OnInit, OnDestroy {
 
   startEditSelected(): void {
     const [category] = this.selectedCategories();
-    if (!category || !this.gridApi) return;
+    if (!category) return;
+    this.startEditCategory(category);
+  }
+
+  private startEditCategory(category: CategoryRow): void {
+    if (!this.gridApi) return;
     const rowIndex = this.gridApi.getRowNode(category.name)?.rowIndex;
     if (rowIndex === null || rowIndex === undefined) return;
     this.gridApi.startEditingCell({ rowIndex, colKey: 'savePath' });
@@ -221,6 +226,13 @@ export class ManageCategories implements OnInit, OnDestroy {
   async deleteSelected(): Promise<void> {
     const categories = this.selectedCategories();
     if (!categories.length) return;
+    await this.deleteCategories(categories);
+  }
+
+  private async deleteCategories(categories: CategoryRow[]): Promise<void> {
+    // Finding 6: commit any pending inline save-path edit before the delete proceeds,
+    // rather than silently discarding it (ag-grid does not commit on focus loss by default).
+    this.gridApi?.stopEditing?.();
 
     const count = categories.reduce((sum, c) => sum + c.usageCount, 0);
     const confirmed = await this.confirmService.confirm(
@@ -237,18 +249,50 @@ export class ManageCategories implements OnInit, OnDestroy {
     if (!serverId) return;
 
     const names = categories.map((c) => c.name);
-    await this.qbService.torrents.removeCategories(serverId, names);
-    this.categories.set(this.categories().filter((c) => !names.includes(c.name)));
-    this.commandBusService.emit({ type: 'CATEGORY_DELETED', names });
+    try {
+      await this.qbService.torrents.removeCategories(serverId, names);
+      this.categories.set(this.categories().filter((c) => !names.includes(c.name)));
+      this.commandBusService.emit({ type: 'CATEGORY_DELETED', names });
+    } catch (err) {
+      console.error(ManageCategories.name, 'deleteCategories', err);
+      this.toastService.danger(
+        this.translateService.instant('components.modals.manage-categories.toast.delete-failed'),
+        this.translateService.instant(
+          'components.modals.manage-categories.toast.delete-failed-title',
+        ),
+      );
+    }
   }
 
   private async reloadCategories(serverId: string): Promise<void> {
-    const raw = await this.qbService.torrents.categories(serverId);
-    this.categories.set(
-      Object.values(raw)
-        .map((c) => ({ name: c.name, savePath: c.savePath ?? '' }))
-        .sort((a, b) => a.name.localeCompare(b.name)),
-    );
+    try {
+      const raw = await this.qbService.torrents.categories(serverId);
+      this.categories.set(
+        Object.values(raw)
+          .map((c) => ({ name: c.name, savePath: c.savePath ?? '' }))
+          .sort((a, b) => a.name.localeCompare(b.name)),
+      );
+    } catch (err) {
+      console.error(ManageCategories.name, 'reloadCategories', err);
+      this.toastService.danger(
+        this.translateService.instant('components.modals.manage-categories.toast.load-failed'),
+        this.translateService.instant(
+          'components.modals.manage-categories.toast.load-failed-title',
+        ),
+      );
+    }
+  }
+
+  close(): void {
+    // Finding 6: ngOnDestroy may run too late relative to the modal's own close
+    // animation, so commit any pending inline edit here too, before activeModal.close().
+    this.gridApi?.stopEditing?.();
+    this.activeModal.close();
+  }
+
+  dismiss(): void {
+    this.gridApi?.stopEditing?.();
+    this.activeModal.dismiss();
   }
 
   private onCellContextMenu(event: CellContextMenuEvent<CategoryRow>): void {
@@ -261,10 +305,7 @@ export class ManageCategories implements OnInit, OnDestroy {
         id: 'edit',
         label: 'general.button.edit',
         icon: faPenToSquare,
-        action: () => {
-          this.selectedCategories.set([category]);
-          this.startEditSelected();
-        },
+        action: () => this.startEditCategory(category),
       },
       {
         kind: 'item',
@@ -272,10 +313,7 @@ export class ManageCategories implements OnInit, OnDestroy {
         label: 'general.button.delete',
         icon: faTrashCan,
         variant: 'danger',
-        action: () => {
-          this.selectedCategories.set([category]);
-          void this.deleteSelected();
-        },
+        action: () => void this.deleteCategories([category]),
       },
     ];
 
@@ -302,6 +340,9 @@ export class ManageCategories implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    // Finding 6: safety net for any dismissal path that doesn't go through close()/dismiss()
+    // (e.g. Esc or a backdrop click) - commit rather than silently lose a pending edit.
+    this.gridApi?.stopEditing?.();
     if (this.saveTimer) {
       clearTimeout(this.saveTimer);
       this.persist();
