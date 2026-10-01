@@ -292,7 +292,7 @@ describe('Login', () => {
   describe('openManageServers', () => {
     it('should open the ManageServers modal', async () => {
       await component.openManageServers();
-      expect(modalMock.open).toHaveBeenCalledWith(expect.anything());
+      expect(modalMock.open).toHaveBeenCalledWith(expect.anything(), { size: 'xl' });
     });
 
     it('should set hideConnect to true on the opened modal', async () => {
