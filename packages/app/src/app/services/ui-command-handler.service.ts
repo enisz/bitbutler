@@ -437,7 +437,7 @@ export class UiCommandHandlerService {
           if (this.isModalOpen(ManageCategories)) break;
           const manageCategoriesModalRef = this.modalService.open(ManageCategories, {
             scrollable: true,
-            beforeDismiss: () => manageCategoriesModalRef.componentInstance.canDeactivate(),
+            size: 'xl',
           });
           manageCategoriesModalRef.result.catch(() => {});
           break;

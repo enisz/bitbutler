@@ -1107,29 +1107,18 @@
       },
       "manage-categories": {
         "title": "Manage Categories",
-        "add-form": {
-          "name": "Category name",
-          "save-path": "Save path (optional)"
+        "column": {
+          "name": "Name",
+          "save-path": "Save Path",
+          "usage-count": "Usage Count"
         },
-        "filter": {
-          "placeholder": "Filter categories...",
-          "no-match": "No categories match your filter."
-        },
-        "list": {
-          "no-save-path": "No save path"
-        },
-        "empty": "No categories yet.",
         "delete-confirm": {
           "title": "Delete Category",
-          "message": "Are you sure you want to delete the category \"{{ name }}\"? It is assigned to {{ count }} torrent(s)."
+          "message": "Are you sure you want to delete the selected categories? They are assigned to {{ count }} torrent(s)."
         },
         "toast": {
-          "added-title": "Category Added",
-          "updated-title": "Category Updated",
-          "deleted-title": "Category Deleted",
-          "add-failed-title": "Failed to Add Category",
-          "edit-failed-title": "Failed to Update Category",
-          "delete-failed-title": "Failed to Delete Category"
+          "update-failed-title": "Failed to Update Category",
+          "update-failed": "\"{{ name }}\""
         }
       }
     },

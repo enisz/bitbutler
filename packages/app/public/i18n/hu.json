@@ -1107,29 +1107,18 @@
       },
       "manage-categories": {
         "title": "Kategóriák kezelése",
-        "add-form": {
-          "name": "Kategória neve",
-          "save-path": "Mentési útvonal (opcionális)"
+        "column": {
+          "name": "Név",
+          "save-path": "Mentési útvonal",
+          "usage-count": "Használat"
         },
-        "filter": {
-          "placeholder": "Kategóriák szűrése...",
-          "no-match": "Egy kategória sem felel meg a szűrőnek."
-        },
-        "list": {
-          "no-save-path": "Nincs mentési útvonal"
-        },
-        "empty": "Még nincsenek kategóriák.",
         "delete-confirm": {
           "title": "Kategória törlése",
-          "message": "Biztosan törölni szeretnéd a \"{{ name }}\" kategóriát? {{ count }} torrenthez van hozzárendelve."
+          "message": "Biztosan törölni szeretnéd a kijelölt kategóriákat? {{ count }} torrenthez vannak hozzárendelve."
         },
         "toast": {
-          "added-title": "Kategória hozzáadva",
-          "updated-title": "Kategória frissítve",
-          "deleted-title": "Kategória törölve",
-          "add-failed-title": "Nem sikerült hozzáadni a kategóriát",
-          "edit-failed-title": "Nem sikerült frissíteni a kategóriát",
-          "delete-failed-title": "Nem sikerült törölni a kategóriát"
+          "update-failed-title": "Nem sikerült frissíteni a kategóriát",
+          "update-failed": "\"{{ name }}\""
         }
       }
     },
