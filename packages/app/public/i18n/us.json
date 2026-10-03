@@ -2017,6 +2017,9 @@
       "error": {
         "check-failed-title": "Update Check Failed"
       },
+      "info": {
+        "update-available-title": "Update Available"
+      },
       "success": {
         "up-to-date-title": "Up to Date",
         "up-to-date": "You're running the latest version."

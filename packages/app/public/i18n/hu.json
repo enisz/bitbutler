@@ -2017,6 +2017,9 @@
       "error": {
         "check-failed-title": "Frissítés ellenőrzése sikertelen"
       },
+      "info": {
+        "update-available-title": "Frissítés érhető el"
+      },
       "success": {
         "up-to-date": "A legújabb verziót használod!",
         "up-to-date-title": "Naprakész verzió"

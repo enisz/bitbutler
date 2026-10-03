@@ -53,6 +53,13 @@ export class UpdateCommandHandlerService {
       }
 
       this.commandBusService.emit({ type: 'UI_UPDATE_AVAILABLE', update: response });
+      this.toastService.showText(response.releases?.[0]?.tag_name ?? '', {
+        title: this.translateService.instant(
+          'services.update-command-handler.info.update-available-title',
+        ),
+        type: 'info',
+        category: 'updates',
+      });
       return;
     }
 
