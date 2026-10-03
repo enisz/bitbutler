@@ -79,6 +79,11 @@ export class QbSettings implements OnInit, GuardableModal {
       label: 'pages.qb-settings.tab.seeding-ratios.title',
       loadComponent: () => import('./seeding-ratios/seeding-ratios').then((m) => m.SeedingRatios),
     },
+    {
+      id: 'rss',
+      label: 'pages.qb-settings.tab.rss.title',
+      loadComponent: () => import('./rss/rss').then((m) => m.RssSettings),
+    },
   ];
 
   public async ngOnInit(): Promise<void> {

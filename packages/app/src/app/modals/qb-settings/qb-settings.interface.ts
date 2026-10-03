@@ -1,6 +1,6 @@
 import { Type } from '@angular/core';
 
-export type QbSettingsTabId = 'bandwidth' | 'storage' | 'queue-limits' | 'seeding-ratios';
+export type QbSettingsTabId = 'bandwidth' | 'storage' | 'queue-limits' | 'seeding-ratios' | 'rss';
 
 export interface QbSettingsTab {
   id: QbSettingsTabId;

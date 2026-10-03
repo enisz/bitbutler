@@ -1,0 +1,68 @@
+<section class="rss-details">
+  @if (article(); as a) {
+    <div class="rss-details__body">
+      @if (a.chip) {
+        <div class="rss-details__chip">{{ a.chip }}</div>
+      }
+      <h2 class="rss-details__title">{{ a.title }}</h2>
+
+      <dl class="rss-details__meta">
+        @if (formattedDate(); as date) {
+          <div class="rss-details__row">
+            <dt>{{ 'pages.rss.details.date' | translate }}</dt>
+            <dd>{{ date }}</dd>
+          </div>
+        }
+        @if (a.author) {
+          <div class="rss-details__row">
+            <dt>{{ 'pages.rss.details.author' | translate }}</dt>
+            <dd>{{ a.author }}</dd>
+          </div>
+        }
+        @if (sizeLabel(); as size) {
+          <div class="rss-details__row rss-details__row--size">
+            <dt>{{ 'pages.rss.details.size' | translate }}</dt>
+            <dd>{{ size }}</dd>
+          </div>
+        }
+        @if (a.link) {
+          <div class="rss-details__row">
+            <dt>{{ 'pages.rss.details.link' | translate }}</dt>
+            <dd class="text-break">{{ a.link }}</dd>
+          </div>
+        }
+      </dl>
+
+      @if (a.description) {
+        <p class="rss-details__description">{{ a.description }}</p>
+      }
+    </div>
+
+    <footer class="rss-details__footer">
+      <span
+        [ngbTooltip]="a.torrentUrl ? null : ('pages.rss.details.no-torrent' | translate)"
+        container="body"
+      >
+        <button
+          type="button"
+          class="btn btn-primary btn-sm rss-details__download"
+          [disabled]="!a.torrentUrl"
+          (click)="download()"
+        >
+          <fa-icon class="me-2" [icon]="icons.faDownload" />{{
+            'pages.rss.details.download' | translate
+          }}
+        </button>
+      </span>
+      @if (a.link) {
+        <button type="button" class="btn btn-sm rss-details__open" (click)="openLink()">
+          <fa-icon class="me-2" [icon]="icons.faArrowUpRightFromSquare" />{{
+            'pages.rss.details.open-link' | translate
+          }}
+        </button>
+      }
+    </footer>
+  } @else {
+    <div class="rss-details__empty">{{ 'pages.rss.details.empty' | translate }}</div>
+  }
+</section>

@@ -1268,4 +1268,25 @@ describe('AddTorrent', () => {
       );
     });
   });
+
+  describe('initialLinks', () => {
+    it('starts in link mode with the links prefilled', async () => {
+      const linkFixture = TestBed.createComponent(AddTorrent);
+      linkFixture.componentRef.setInput('initialLinks', [
+        'magnet:?xt=urn:btih:abc',
+        'https://x/a.torrent',
+      ]);
+      linkFixture.detectChanges();
+      const linkComponent = linkFixture.componentInstance;
+
+      await vi.waitFor(() => expect(linkComponent.inputMode()).toBe('link'));
+      expect(linkComponent.addForm.controls.linkGroup.controls.magnetLinks.value).toBe(
+        'magnet:?xt=urn:btih:abc\nhttps://x/a.torrent',
+      );
+    });
+
+    it('stays in file mode without initial links', () => {
+      expect(component.inputMode()).toBe('file');
+    });
+  });
 });

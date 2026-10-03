@@ -6,6 +6,7 @@ import {
   computed,
   effect,
   inject,
+  input,
   signal,
   viewChild,
 } from '@angular/core';
@@ -93,6 +94,9 @@ export class AddTorrent implements OnInit {
   public pending = this.openFilesService.pendingDrafts;
   public queueCount = computed(() => this.pending().length);
   public currentDraftNumber = computed(() => this.initialQueueCount() - this.queueCount() + 1);
+
+  /** Links to prefill (used by the RSS view). When non-empty the modal opens in link mode. */
+  public readonly initialLinks = input<string[]>([]);
 
   public manualDraft = signal<TorrentDraft | null>(null);
   public inputMode = signal<'file' | 'link' | 'folder'>('file');
@@ -282,6 +286,12 @@ export class AddTorrent implements OnInit {
       this.addForm.controls.folderGroup.controls.recursive.setValue(settings.recursive, {
         emitEvent: false,
       });
+    }
+
+    const initialLinks = this.initialLinks();
+    if (initialLinks.length > 0) {
+      this.switchInputMode('link');
+      this.addForm.controls.linkGroup.controls.magnetLinks.setValue(initialLinks.join('\n'));
     }
 
     // Fetch free space when modal opens - pre-emptive call to get server state faster
