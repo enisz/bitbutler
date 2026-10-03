@@ -1251,7 +1251,7 @@ this.applyMasterSwitch(notificationGroups.app);
 
 - [ ] **Step 4: Replace the Appearance position control with the Notifications fieldset in `general.html`**
 
-Delete the whole `<div class="container" formGroupName="notifications">` block that Task 1 left at the end of the Appearance fieldset (the position select). Then, after the Appearance `</fieldset>`, add:
+Delete the whole `<div class="container" formGroupName="notifications">` block that Task 1 left at the end of the Appearance fieldset (the position select). Then add the new fieldset directly after the Startup `</fieldset>` (the first fieldset, just before the Torrent Handling one, so Notifications sits below Startup), containing:
 
 ```html
 <fieldset class="bb-fieldset">
@@ -1506,7 +1506,9 @@ Delete the whole `<div class="container" formGroupName="notifications">` block t
 
 - [ ] **Step 5: Add the styles**
 
-Append to `packages/app/src/app/modals/settings/general/general.scss`:
+The existing rule at the top of `general.scss`, `.bb-options--grid .bb-option:nth-child(3)`, is meant for the Startup grid only, but the notification grids use the same `bb-options--grid` class and would lose a divider. Scope it: in `general.html` add the class `bb-startup-grid` to the Startup grid (`<div class="bb-options bb-options--grid bb-startup-grid">`) and change the selector to `.bb-startup-grid .bb-option:nth-child(3)`.
+
+Then append to `packages/app/src/app/modals/settings/general/general.scss`:
 
 ```scss
 // Notification sections: the master switch reads as the section header, the two sections are
@@ -1600,7 +1602,7 @@ Expected: all PASS, zero lint warnings, Prettier clean (run `npm run format` and
 
 Run `npm start` and check:
 
-- Settings > General shows the Notifications group below Appearance; the dropdown is gone from Appearance; both master switches have a description; the "Show only when the app is minimized" row is full width.
+- Settings > General shows the Notifications group directly below Startup; the dropdown is gone from Appearance; both master switches have a description; the "Show only when the app is minimized" row is full width.
 - Turning a master off greys its children and keeps their values after turning it back on; Save, close and reopen settings: values and disabled state persist.
 - With defaults, finishing a torrent shows an OS notification and a toast while the window is visible; with "Show only when the app is minimized" on, only the toast; minimized, only the OS notification.
 - Stopping the qBittorrent server and triggering a failing action while minimized produces one OS notification, not a burst.
