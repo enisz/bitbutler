@@ -8,7 +8,7 @@ Let the user decide which notifications they see, per channel (OS level and app 
 
 ## Settings UI
 
-A new **Notifications** fieldset in the general settings (`packages/app/src/app/modals/settings/general/general.html`), using the existing `bb-option` pattern. It has two sections. Each section's master switch has a description under its label and acts as the section header.
+A new **Notifications** fieldset in the general settings, placed directly below Startup (`packages/app/src/app/modals/settings/general/general.html`), using the existing `bb-option` pattern. It has two sections. Each section's master switch has a description under its label and acts as the section header.
 
 **OS level notifications**
 
@@ -46,43 +46,37 @@ Defaults:
 
 **Migration.** Stored settings without a `notifications` block get the defaults above, with `position` taken from the old `behavior.toastPosition`. Existing users therefore start receiving OS notifications while the window is visible. This is an intentional change from the previous minimized-only behavior and can be turned off with "Show only when the app is minimized" or the master switch.
 
-## Dispatcher
+## Policy service
 
-`NotificationDispatcher` is a root service in the renderer. The decision is made there because it already has the window state and the settings.
+`NotificationPolicyService` is a root service in the renderer. It holds the current notification settings (from `GeneralSettingsService`, defaults until loaded) and reads the window state from `WindowService`. It has no dependency on `ToastService`, which avoids a circular dependency.
 
-```
-notify({ category, title, body, toastType })
-```
-
-- Categories: `finished`, `errors`, `updates`, `confirmations`.
-- **OS channel** fires when `os.enabled`, the category switch is on, and either `onlyWhenMinimized` is false or the window is minimized. `confirmations` never goes to the OS channel.
-- **App channel** fires when `app.enabled` and the category switch is on.
+- `allowApp(category)`: `app.enabled` and the category switch.
+- `allowOs(category, title, body)`: false for `confirmations`; otherwise `os.enabled`, the category switch, and either `onlyWhenMinimized` is false or the window is minimized; finally the dedupe check.
+- **Dedupe.** An identical OS notification (same title and body) within 5 s (`OS_DEDUPE_WINDOW_MS`) is shown once. Only a call that would otherwise be allowed is recorded. Dedupe applies to the OS channel only.
 - The channels are independent: with both on and a visible window, the user gets an OS notification and a toast.
-- OS delivery goes through the existing `NotificationService.send`.
 
-**Dedupe.** An identical OS notification (same title and body) within a short window (5 s) is shown once. The window is a named constant. Dedupe applies to the OS channel only.
+## ToastService routing
 
-## ToastService integration
+`ToastService.showHtml` is the single routing point; the 126 existing call sites do not change.
 
-The 126 existing toast call sites stay unchanged. `ToastService` derives the category from the toast type and routes through the dispatcher:
+- The category is `opts.category`, else derived from the toast type: `danger`, `warning` -> `errors`; all other types -> `confirmations`.
+- If `allowOs(category, title, plainText)` is true it sends an OS notification through `NotificationService.send` (the message HTML is reduced to plain text, `<br>` becoming a newline).
+- If `allowApp(category)` is false the toast is not shown and `showHtml` returns `''`.
+- The toast position is read from `notifications.app.position`.
 
-- `danger`, `warning` -> `errors`
-- all other types -> `confirmations`
-
-Only the torrent-finished and update-available events pass an explicit category.
-
-`ToastService` reads the toast position from `notifications.app.position`.
+Explicit categories: the torrent-finished event (`finished`) and a new info toast "Update Available" shown on top of the update modal whenever an update is found (`updates`).
 
 ## app.ts
 
-The `finished$` handler collapses to a single `notify({ category: 'finished', ... })` call. The `isMinimized` branching moves into the dispatcher.
+The `finished$` handler becomes a single `toastService.showText(name, { title, type: 'success', category: 'finished' })` call. The `isMinimized` branching moves into the policy service.
 
 ## Testing
 
-- Dispatcher unit tests: the matrix of channel, category, master switch, `onlyWhenMinimized` and minimized state; `confirmations` never reaching the OS; dedupe within and after the window.
+- Policy service unit tests: the matrix of channel, category, master switch, `onlyWhenMinimized` and minimized state; `confirmations` never reaching the OS; dedupe within and after the window.
 - Settings tests: defaults, migration of a stored settings object without `notifications`, and `toastPosition` carry-over.
-- `ToastService` tests: type to category mapping, and drop when the app category is off.
-- `app.ts` test: the finished handler makes one dispatcher call.
+- `ToastService` tests: category derivation and override, gating, OS send with plain text, `dismiss('')` safety.
+- `app.ts` test: the finished handler passes the `finished` category.
+- Update handler test: the info toast is shown with the `updates` category when an update is found, and not for a skipped version.
 - General settings component: child controls disable with their master switch.
 
 ## Out of scope
