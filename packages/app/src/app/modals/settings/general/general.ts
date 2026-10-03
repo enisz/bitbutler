@@ -8,7 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   IconDefinition,
@@ -247,6 +247,20 @@ export class General implements SettingsTabComponent {
     );
   });
 
+  // A master switch disables its children without resetting them, so turning it back on
+  // restores the choices the user had made.
+  private applyMasterSwitch(group: FormGroup): void {
+    const enabled = group.controls['enabled'].value;
+    for (const [name, control] of Object.entries(group.controls) as [string, AbstractControl][]) {
+      if (name === 'enabled') continue;
+      if (enabled) {
+        control.enable({ emitEvent: false });
+      } else {
+        control.disable({ emitEvent: false });
+      }
+    }
+  }
+
   public resetCustomPattern(): void {
     this.generalSettingsForm.controls.dateFormat.controls.customPattern.setValue(
       DEFAULT_GENERAL_SETTINGS.dateFormat.customPattern,
@@ -369,6 +383,14 @@ export class General implements SettingsTabComponent {
         }
       });
 
+    const { os, app } = this.generalSettingsForm.controls.notifications.controls;
+
+    for (const group of [os, app]) {
+      group.controls.enabled.valueChanges
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(() => this.applyMasterSwitch(group));
+    }
+
     this.stateService.registerSave('general', () => this.save());
 
     this.generalSettingsForm.valueChanges
@@ -396,6 +418,9 @@ export class General implements SettingsTabComponent {
             emitEvent: false,
           });
         }
+        const notificationGroups = this.generalSettingsForm.controls.notifications.controls;
+        this.applyMasterSwitch(notificationGroups.os);
+        this.applyMasterSwitch(notificationGroups.app);
       }),
     ),
     { initialValue: null },

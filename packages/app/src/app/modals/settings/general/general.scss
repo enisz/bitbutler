@@ -1,5 +1,5 @@
 // Startup grid: the automatic-update row is the last row, so drop its divider.
-.bb-options--grid .bb-option:nth-child(3) {
+.bb-startup-grid .bb-option:nth-child(3) {
   border-bottom: none;
 }
 
@@ -8,4 +8,23 @@
 // breathing room the control has against its own border.
 .bb-select-selected-value-example {
   margin-right: 0.75rem;
+}
+
+// Notification sections: the master switch reads as the section header, the two sections are
+// separated, and the last row of the app grid (two category rows) drops its divider.
+.bb-option--master .bb-option__label {
+  font-weight: 600;
+}
+
+.bb-notification-section + .bb-notification-section {
+  margin-top: 1rem;
+}
+
+.bb-notification-section--app .bb-option:nth-last-child(-n + 2) {
+  border-bottom: none;
+}
+
+.bb-option__select {
+  flex-shrink: 0;
+  width: 16rem;
 }
