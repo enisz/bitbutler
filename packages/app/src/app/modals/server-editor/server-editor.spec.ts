@@ -2,6 +2,7 @@
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject } from 'rxjs';
 import { CommandBusService } from '../../services/command-bus.service';
+import { ConfirmService } from '../../services/confirm.service';
 import { ServerService } from '../../services/server.service';
 import { ServerEditor } from './server-editor';
 
@@ -11,6 +12,7 @@ describe('ServerEditor', () => {
   let mockActiveModal: Partial<NgbActiveModal>;
   let mockServerService: Partial<ServerService>;
   let mockCommandBus: Partial<CommandBusService>;
+  let mockConfirmService: { confirm: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     mockActiveModal = { close: vi.fn(), dismiss: vi.fn() };
@@ -23,6 +25,7 @@ describe('ServerEditor', () => {
       commands$: new Subject<any>().asObservable(),
       emit: vi.fn(),
     };
+    mockConfirmService = { confirm: vi.fn().mockResolvedValue(true) };
 
     await TestBed.configureTestingModule({
       imports: [ServerEditor],
@@ -30,6 +33,7 @@ describe('ServerEditor', () => {
         { provide: NgbActiveModal, useValue: mockActiveModal },
         { provide: ServerService, useValue: mockServerService },
         { provide: CommandBusService, useValue: mockCommandBus },
+        { provide: ConfirmService, useValue: mockConfirmService },
       ],
     }).compileComponents();
 
@@ -68,24 +72,64 @@ describe('ServerEditor', () => {
   });
 
   describe('connectionSubtitle', () => {
-    it('renders protocol://host:port using the field defaults when nothing has been entered yet', () => {
-      expect(component.connectionSubtitle()).toBe('http://:8080');
+    it('renders <protocol://host:port> using the field defaults when nothing has been entered yet', () => {
+      expect(component.connectionSubtitle()).toBe('<http://:8080>');
     });
 
-    it('updates in real time as the protocol, host, or port fields change', () => {
+    it('updates in real time as the name, protocol, host, or port fields change', () => {
+      // Set the name first - in add mode it mirrors into an untouched host field.
+      component.editorForm.get('name')?.setValue('My Server');
       component.editorForm.get('host')?.setValue('example.com');
-      expect(component.connectionSubtitle()).toBe('http://example.com:8080');
+      expect(component.connectionSubtitle()).toBe('My Server <http://example.com:8080>');
 
       component.editorForm.get('protocol')?.setValue('https');
-      expect(component.connectionSubtitle()).toBe('https://example.com:8080');
+      expect(component.connectionSubtitle()).toBe('My Server <https://example.com:8080>');
 
       component.editorForm.get('port')?.setValue(9090);
-      expect(component.connectionSubtitle()).toBe('https://example.com:9090');
+      expect(component.connectionSubtitle()).toBe('My Server <https://example.com:9090>');
     });
 
-    it('trims surrounding whitespace from the host', () => {
+    it('trims surrounding whitespace from the name and host', () => {
+      component.editorForm.get('name')?.setValue('  My Server  ');
       component.editorForm.get('host')?.setValue('  example.com  ');
-      expect(component.connectionSubtitle()).toBe('http://example.com:8080');
+      expect(component.connectionSubtitle()).toBe('My Server <http://example.com:8080>');
+    });
+  });
+
+  describe('delete button', () => {
+    const deleteButton = (): HTMLButtonElement | null =>
+      fixture.nativeElement.querySelector('.modal-footer .btn-danger');
+
+    it('is hidden in add mode', () => {
+      expect(deleteButton()).toBeNull();
+    });
+
+    it('is shown in edit mode', async () => {
+      fixture.componentRef.setInput('id', 'server-1');
+      await component.ngOnInit();
+      fixture.detectChanges();
+      expect(deleteButton()).not.toBeNull();
+    });
+  });
+
+  describe('handleDelete', () => {
+    beforeEach(() => {
+      fixture.componentRef.setInput('id', 'server-1');
+    });
+
+    it('deletes the server and dismisses the modal once confirmed', async () => {
+      await component.handleDelete();
+      expect(mockConfirmService.confirm).toHaveBeenCalled();
+      expect(mockCommandBus.emit).toHaveBeenCalledWith({ type: 'SERVER_DELETED', id: 'server-1' });
+      expect(mockActiveModal.dismiss).toHaveBeenCalled();
+      expect(mockActiveModal.close).not.toHaveBeenCalled();
+    });
+
+    it('does nothing when the confirmation is cancelled', async () => {
+      mockConfirmService.confirm.mockResolvedValue(false);
+      await component.handleDelete();
+      expect(mockCommandBus.emit).not.toHaveBeenCalled();
+      expect(mockActiveModal.dismiss).not.toHaveBeenCalled();
     });
   });
 
