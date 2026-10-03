@@ -6,8 +6,11 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastOverlay } from '../components/toast-overlay/toast-overlay';
 import { GeneralSettings, ToastPosition } from '../models/general-settings.model';
+import { NotificationCategory, categoryForToastType } from '../models/notification.model';
 import { Toast, ToastType } from '../models/toast.model';
 import { GeneralSettingsService } from './general-settings.service';
+import { NotificationPolicyService } from './notification-policy.service';
+import { NotificationService } from './notification.service';
 import { ThemeService } from './theme.service';
 
 type TimerState = {
@@ -25,6 +28,8 @@ export class ToastService {
   private readonly generalSettingsService = inject(GeneralSettingsService);
   private readonly translateService = inject(TranslateService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly notificationPolicy = inject(NotificationPolicyService);
+  private readonly notificationService = inject(NotificationService);
 
   private overlayRef?: OverlayRef;
   private container?: ToastOverlay;
@@ -96,15 +101,30 @@ export class ToastService {
       title?: string;
       type?: ToastType;
       duration?: number;
+      category?: NotificationCategory;
     } = {},
   ): string {
+    const type = opts.type ?? 'info';
+    const title = opts.title ?? this.translateService.instant('general.toast.notification');
+    const category = opts.category ?? categoryForToastType(type);
+    const safeHtml = this.sanitizeHtml(html);
+
+    const plainText = this.htmlToText(safeHtml);
+    if (this.notificationPolicy.allowOs(category, title, plainText)) {
+      void this.notificationService.send(title, plainText);
+    }
+
+    if (!this.notificationPolicy.allowApp(category)) {
+      return '';
+    }
+
     this.ensureContainer();
 
     const toast: Toast = {
       id: crypto.randomUUID(),
-      title: opts.title ?? this.translateService.instant('general.toast.notification'),
-      html: this.sanitizeHtml(html),
-      type: opts.type ?? 'info',
+      title,
+      html: safeHtml,
+      type,
       duration: opts.duration ?? 6000,
     };
 
@@ -118,7 +138,12 @@ export class ToastService {
 
   showText(
     message: string,
-    opts: { title?: string; type?: ToastType; duration?: number } = {},
+    opts: {
+      title?: string;
+      type?: ToastType;
+      duration?: number;
+      category?: NotificationCategory;
+    } = {},
   ): string {
     const html = message
       .replaceAll('&', '&amp;')
@@ -126,6 +151,11 @@ export class ToastService {
       .replaceAll('>', '&gt;')
       .replaceAll('\n', '<br>');
     return this.showHtml(html, opts);
+  }
+
+  private htmlToText(html: string): string {
+    const withBreaks = html.replace(/<br\s*\/?>/gi, '\n');
+    return new DOMParser().parseFromString(withBreaks, 'text/html').body.textContent ?? '';
   }
 
   dismiss(id: string) {
