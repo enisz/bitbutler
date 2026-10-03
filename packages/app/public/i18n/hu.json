@@ -1586,7 +1586,7 @@
                 "only-when-minimized": "Csak minimalizált ablaknál jelenjen meg"
               },
               "app": {
-                "description": "Válaszd ki, mely események jelenjenek meg felugró üzenetként az alkalmazásban.",
+                "description": "Válaszd ki, mely események jelenjenek meg felugró üzenetként a BitButlerben.",
                 "enabled": "Alkalmazáson belüli értesítések engedélyezése",
                 "position": "Alkalmazáson belüli értesítések helye"
               },
