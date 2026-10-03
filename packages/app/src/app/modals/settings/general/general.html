@@ -90,6 +90,16 @@
       <legend>{{ 'pages.settings.tab.general.label.notifications' | translate }}</legend>
 
       <div formGroupName="notifications">
+        <div class="container">
+          <div class="row mb-3">
+            <div class="col-12">
+              {{
+                'pages.settings.tab.general.general-settings-form.notifications.os.description'
+                  | translate
+              }}
+            </div>
+          </div>
+        </div>
         <div class="bb-options bb-options--grid bb-notification-section" formGroupName="os">
           <div class="bb-option bb-option--wide bb-option--master">
             <div class="bb-option__text">
@@ -204,6 +214,16 @@
           </div>
         </div>
 
+        <div class="container">
+          <div class="row mb-3">
+            <div class="col-12">
+              {{
+                'pages.settings.tab.general.general-settings-form.notifications.app.description'
+                  | translate
+              }}
+            </div>
+          </div>
+        </div>
         <div
           class="bb-options bb-options--grid bb-notification-section bb-notification-section--app"
           formGroupName="app"

@@ -1581,10 +1581,12 @@
             },
             "notifications": {
               "os": {
+                "description": "Válaszd ki, mely események jelenjenek meg rendszerértesítésként.",
                 "enabled": "Operációs rendszer szintű értesítések engedélyezése",
                 "only-when-minimized": "Csak minimalizált ablaknál jelenjen meg"
               },
               "app": {
+                "description": "Válaszd ki, mely események jelenjenek meg felugró üzenetként a BitButlerben.",
                 "enabled": "Alkalmazáson belüli értesítések engedélyezése",
                 "position": "Alkalmazáson belüli értesítések helye"
               },

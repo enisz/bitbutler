@@ -1581,10 +1581,12 @@
             },
             "notifications": {
               "os": {
+                "description": "Choose which events show a system notification.",
                 "enabled": "Enable OS level notifications",
                 "only-when-minimized": "Show only when the app is minimized"
               },
               "app": {
+                "description": "Choose which events show a pop-up message inside BitButler.",
                 "enabled": "Enable app level notifications",
                 "position": "In-application notification position"
               },
