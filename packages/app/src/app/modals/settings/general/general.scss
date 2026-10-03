@@ -24,7 +24,8 @@
   border-bottom: none;
 }
 
+// Same footprint as the other selects in this tab (col-6): half of the row.
 .bb-option__select {
-  flex-shrink: 0;
-  width: 16rem;
+  flex: 0 0 50%;
+  min-width: 0;
 }
