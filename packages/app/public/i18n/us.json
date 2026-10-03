@@ -1586,7 +1586,7 @@
                 "only-when-minimized": "Show only when the app is minimized"
               },
               "app": {
-                "description": "Choose which events show a pop-up message inside BitButler.",
+                "description": "Choose which events show a pop-up message inside the app.",
                 "enabled": "Enable app level notifications",
                 "position": "In-application notification position"
               },
