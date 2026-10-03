@@ -1577,8 +1577,25 @@
             "behavior": {
               "delete-torrent-after-added": "Torrent fájlok törlése a listához adás után.",
               "delete-torrent-on-duplicate": "A torrent fájlok törlése, ha a torrent már szerepel a listában.",
-              "automatic-update": "Automatikus frissítés",
-              "notification-position": "Alkalmazáson belüli értesítések helye"
+              "automatic-update": "Automatikus frissítés"
+            },
+            "notifications": {
+              "os": {
+                "description": "Válaszd ki, mely események jelenjenek meg rendszerértesítésként.",
+                "enabled": "Operációs rendszer szintű értesítések engedélyezése",
+                "only-when-minimized": "Csak minimalizált ablaknál jelenjen meg"
+              },
+              "app": {
+                "description": "Válaszd ki, mely események jelenjenek meg felugró üzenetként a BitButlerben.",
+                "enabled": "Alkalmazáson belüli értesítések engedélyezése",
+                "position": "Alkalmazáson belüli értesítések helye"
+              },
+              "category": {
+                "finished": "Letöltés befejezve",
+                "errors": "Hibák",
+                "updates": "Elérhető frissítés",
+                "confirmations": "Művelet visszaigazolások"
+              }
             },
             "language": {
               "language": "A felület nyelve"
@@ -1649,7 +1666,8 @@
             "appearance": "Megjelenés",
             "startup": "Indítás",
             "torrent-handling": "Torrentkezelés",
-            "localization": "Nyelv és dátumformátum"
+            "localization": "Nyelv és dátumformátum",
+            "notifications": "Értesítések"
           },
           "position": {
             "top-left": "Bal felül",
@@ -1666,6 +1684,31 @@
             "saved": "Általános beállítások mentve"
           },
           "popover": {
+            "notifications": {
+              "os": {
+                "enabled": {
+                  "sub": "Rendszerértesítéseket jelenít meg, akkor is, ha a BitButler a háttérben fut"
+                },
+                "only-when-minimized": {
+                  "sub": "Nem jelenít meg rendszerértesítést, amíg a BitButler ablaka látható"
+                }
+              },
+              "app": {
+                "enabled": {
+                  "sub": "Felugró üzeneteket jelenít meg a BitButler ablakában"
+                }
+              },
+              "category": {
+                "finished": {
+                  "sub": "Akkor jelenik meg, amikor egy torrent letöltése befejeződött"
+                },
+                "errors": { "sub": "Sikertelen műveletek és kapcsolódási hibák" },
+                "updates": { "sub": "Akkor jelenik meg, amikor új verzió érhető el" },
+                "confirmations": {
+                  "sub": "Rövid üzenetek egy művelet sikeréről, például egy címke hozzáadásáról"
+                }
+              }
+            },
             "deleting-torrent-file": {
               "sub": "A forrás .torrent fájl eltávolítása, miután bekerült a listába"
             },
@@ -2016,6 +2059,9 @@
     "update-command-handler": {
       "error": {
         "check-failed-title": "Frissítés ellenőrzése sikertelen"
+      },
+      "info": {
+        "update-available-title": "Frissítés érhető el"
       },
       "success": {
         "up-to-date": "A legújabb verziót használod!",

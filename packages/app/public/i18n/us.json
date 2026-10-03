@@ -1577,8 +1577,25 @@
             "behavior": {
               "delete-torrent-after-added": "Delete torrent files after adding them to the list.",
               "delete-torrent-on-duplicate": "Delete torrent files when the torrent already exists in the list.",
-              "automatic-update": "Automatic updates",
-              "notification-position": "In-application notification position"
+              "automatic-update": "Automatic updates"
+            },
+            "notifications": {
+              "os": {
+                "description": "Choose which events show a system notification.",
+                "enabled": "Enable OS level notifications",
+                "only-when-minimized": "Show only when the app is minimized"
+              },
+              "app": {
+                "description": "Choose which events show a pop-up message in BitButler.",
+                "enabled": "Enable app level notifications",
+                "position": "In-application notification position"
+              },
+              "category": {
+                "finished": "Torrent finished",
+                "errors": "Errors",
+                "updates": "Update available",
+                "confirmations": "Action confirmations"
+              }
             },
             "language": {
               "language": "Language of the UI"
@@ -1649,7 +1666,8 @@
             "appearance": "Appearance",
             "startup": "Startup",
             "torrent-handling": "Torrent Handling",
-            "localization": "Localization"
+            "localization": "Localization",
+            "notifications": "Notifications"
           },
           "position": {
             "top-left": "Top Left",
@@ -1666,6 +1684,29 @@
             "saved": "General Settings Saved"
           },
           "popover": {
+            "notifications": {
+              "os": {
+                "enabled": {
+                  "sub": "Shows system notifications, even while BitButler is in the background"
+                },
+                "only-when-minimized": {
+                  "sub": "Skips system notifications while the BitButler window is visible"
+                }
+              },
+              "app": {
+                "enabled": {
+                  "sub": "Shows pop-up messages inside the BitButler window"
+                }
+              },
+              "category": {
+                "finished": { "sub": "Shown when a torrent finishes downloading" },
+                "errors": { "sub": "Failed actions and connection problems" },
+                "updates": { "sub": "Shown when a new version is available" },
+                "confirmations": {
+                  "sub": "Short messages confirming an action, such as a tag being added"
+                }
+              }
+            },
             "deleting-torrent-file": {
               "sub": "Removes the source .torrent file once it has been added to the list"
             },
@@ -2016,6 +2057,9 @@
     "update-command-handler": {
       "error": {
         "check-failed-title": "Update Check Failed"
+      },
+      "info": {
+        "update-available-title": "Update Available"
       },
       "success": {
         "up-to-date-title": "Up to Date",

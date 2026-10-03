@@ -4,11 +4,13 @@ import { Router, provideRouter } from '@angular/router';
 import { NgSelectConfig } from '@ng-select/ng-select';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TimeagoIntl, provideTimeago } from 'ngx-timeago';
+import { Subject } from 'rxjs';
 import { App } from './app';
 import { Maindata } from './models/torrent.model';
 import { CommandBusService } from './services/command-bus.service';
 import { OpenFilesService, PendingAddTorrent } from './services/open-files.service';
-import { TorrentStoreService } from './services/torrent-store.service';
+import { ToastService } from './services/toast.service';
+import { TorrentFinishedEvent, TorrentStoreService } from './services/torrent-store.service';
 import { UiCommandHandlerService } from './services/ui-command-handler.service';
 
 const makeMaindata = (opts: Partial<Maindata>): Maindata =>
@@ -58,6 +60,26 @@ describe('App', () => {
   it('should create the app', () => {
     const fixture = TestBed.createComponent(App);
     expect(fixture.componentInstance).toBeTruthy();
+  });
+
+  it('should show the finished toast with the finished category', () => {
+    const finished$ = new Subject<TorrentFinishedEvent>();
+    const torrentStore = TestBed.inject(TorrentStoreService);
+    Object.defineProperty(torrentStore, 'finished$', { value: finished$.asObservable() });
+    const showText = vi.spyOn(TestBed.inject(ToastService), 'showText').mockReturnValue('');
+
+    TestBed.createComponent(App);
+    finished$.next({
+      hash: 'abc',
+      torrent: { name: 'Movie' },
+      ts: Date.now(),
+    } as TorrentFinishedEvent);
+
+    expect(showText).toHaveBeenCalledWith('Movie', {
+      title: 'app.success.finished-downloading',
+      type: 'success',
+      category: 'finished',
+    });
   });
 
   it('should configure ng-select labels from translations', () => {

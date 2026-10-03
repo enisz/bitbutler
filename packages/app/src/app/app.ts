@@ -14,7 +14,6 @@ import { CommandBusService } from './services/command-bus.service';
 import { ElectronService } from './services/electron.service';
 import { GeneralSettingsService } from './services/general-settings.service';
 import { MenuBarCommandHandlerService } from './services/menu-bar-command-handler.service';
-import { NotificationService } from './services/notification.service';
 import { OpenFilesService, PendingAddTorrent } from './services/open-files.service';
 import { ServerCommandHandlerService } from './services/server-command-handler.service';
 import { TagCommandHandlerService } from './services/tag-command-handler.service';
@@ -24,7 +23,6 @@ import { TorrentFinishedEvent, TorrentStoreService } from './services/torrent-st
 import { TransferLimitCommandHandlerService } from './services/transfer-limit-command-handler.service';
 import { UiCommandHandlerService } from './services/ui-command-handler.service';
 import { UpdateCommandHandlerService } from './services/update-command-handler.service';
-import { WindowService } from './services/window.service';
 
 @Component({
   selector: 'app-root',
@@ -38,7 +36,6 @@ export class App {
   private readonly modalConfigService = inject(NgbModalConfig);
   private readonly openFilesService = inject(OpenFilesService);
   private readonly commandBusService = inject(CommandBusService);
-  private readonly notificationService = inject(NotificationService);
   private readonly torrentStoreService = inject(TorrentStoreService);
   private readonly uiCommandHandlerService = inject(UiCommandHandlerService);
   private readonly menuBarCommandHandlerService = inject(MenuBarCommandHandlerService);
@@ -55,7 +52,6 @@ export class App {
   private readonly updateCommandHandlerService = inject(UpdateCommandHandlerService);
   private readonly translateService = inject(TranslateService);
   private readonly timeagoIntl = inject(TimeagoIntl);
-  private readonly windowService = inject(WindowService);
   private readonly router = inject(Router);
 
   public readonly isDev = toSignal(from(this.electronService.isDev()), { initialValue: false });
@@ -133,13 +129,11 @@ export class App {
     this.torrentStoreService.finished$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((event: TorrentFinishedEvent) => {
-        const message = this.translateService.instant('app.success.finished-downloading');
-
-        if (this.windowService.state().isMinimized) {
-          this.notificationService.send(message, event.torrent.name);
-        } else {
-          this.toastService.success(event.torrent.name, message);
-        }
+        this.toastService.showText(event.torrent.name, {
+          title: this.translateService.instant('app.success.finished-downloading'),
+          type: 'success',
+          category: 'finished',
+        });
       });
 
     this.generalSettingsService

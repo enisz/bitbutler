@@ -15,6 +15,7 @@ describe('UpdateCommandHandlerService', () => {
   let checkForUpdate: ReturnType<typeof vi.fn>;
   let toastSuccess: ReturnType<typeof vi.fn>;
   let toastDanger: ReturnType<typeof vi.fn>;
+  let toastShowText: ReturnType<typeof vi.fn>;
   let commandBusEmit: ReturnType<typeof vi.fn>;
   let translateService: { instant: ReturnType<typeof vi.fn> };
   let updateSettingsLoad: ReturnType<typeof vi.fn>;
@@ -24,6 +25,7 @@ describe('UpdateCommandHandlerService', () => {
     checkForUpdate = vi.fn().mockResolvedValue({ updateAvailable: false, error: null });
     toastSuccess = vi.fn();
     toastDanger = vi.fn();
+    toastShowText = vi.fn();
     commandBusEmit = vi.fn();
     translateService = { instant: vi.fn((key: string) => key) };
     updateSettingsLoad = vi.fn().mockResolvedValue({ skippedVersion: null });
@@ -36,7 +38,10 @@ describe('UpdateCommandHandlerService', () => {
           useValue: { commands$: commands$.asObservable(), emit: commandBusEmit },
         },
         { provide: ElectronService, useValue: { checkForUpdate } },
-        { provide: ToastService, useValue: { success: toastSuccess, danger: toastDanger } },
+        {
+          provide: ToastService,
+          useValue: { success: toastSuccess, danger: toastDanger, showText: toastShowText },
+        },
         { provide: TranslateService, useValue: translateService },
         { provide: UpdateSettingsService, useValue: { load: updateSettingsLoad } },
       ],
@@ -65,6 +70,50 @@ describe('UpdateCommandHandlerService', () => {
     commands$.next({ type: 'UPDATE_CHECK_FOR_UPDATE', trigger: 'automatic' });
     await flushPromises();
     expect(commandBusEmit).toHaveBeenCalledWith({ type: 'UI_UPDATE_AVAILABLE', update });
+  });
+
+  it('should show an info toast with the updates category on top of the modal when an update is found', async () => {
+    checkForUpdate.mockResolvedValueOnce({
+      updateAvailable: true,
+      error: null,
+      releases: [{ tag_name: 'v2.0.0' }],
+    });
+    commands$.next({ type: 'UPDATE_CHECK_FOR_UPDATE', trigger: 'automatic' });
+    await flushPromises();
+    expect(toastShowText).toHaveBeenCalledWith('v2.0.0', {
+      title: 'services.update-command-handler.info.update-available-title',
+      type: 'info',
+      category: 'updates',
+    });
+  });
+
+  it('should show the update toast for a manual check as well', async () => {
+    checkForUpdate.mockResolvedValueOnce({
+      updateAvailable: true,
+      error: null,
+      releases: [{ tag_name: 'v2.0.0' }],
+    });
+    commands$.next({ type: 'UPDATE_CHECK_FOR_UPDATE', trigger: 'manual' });
+    await flushPromises();
+    expect(toastShowText).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not show the update toast when no update is available', async () => {
+    commands$.next({ type: 'UPDATE_CHECK_FOR_UPDATE', trigger: 'automatic' });
+    await flushPromises();
+    expect(toastShowText).not.toHaveBeenCalled();
+  });
+
+  it('should not show the update toast when the latest release was skipped on an automatic check', async () => {
+    updateSettingsLoad.mockResolvedValue({ skippedVersion: '2.0.0' });
+    checkForUpdate.mockResolvedValueOnce({
+      updateAvailable: true,
+      error: null,
+      releases: [{ tag_name: 'v2.0.0' }],
+    });
+    commands$.next({ type: 'UPDATE_CHECK_FOR_UPDATE', trigger: 'automatic' });
+    await flushPromises();
+    expect(toastShowText).not.toHaveBeenCalled();
   });
 
   it('should ignore second check while first is in-flight (exhaustMap)', async () => {

@@ -772,9 +772,16 @@ export class QbService {
             }
           } else {
             if (!options?.suppressErrors) {
-              this.toastService.warning(
+              // A transient in-progress message: shown in the app, never as an OS notification.
+              this.toastService.showText(
                 this.translateService.instant('services.qb.warning.connection-retry-message'),
-                this.translateService.instant('services.qb.warning.connection-retry-title'),
+                {
+                  type: 'warning',
+                  title: this.translateService.instant(
+                    'services.qb.warning.connection-retry-title',
+                  ),
+                  notifyOs: false,
+                },
               );
             }
             console.error(
