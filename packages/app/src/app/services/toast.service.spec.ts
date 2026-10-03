@@ -217,6 +217,14 @@ describe('ToastService - showText()', () => {
       expect(mockNotificationService.send).not.toHaveBeenCalled();
     });
 
+    it('keeps a toast out of the OS channel when notifyOs is false, but still shows it in the app', () => {
+      mockPolicy.allowOs.mockReturnValue(true);
+      service.showText('retrying', { type: 'warning', title: 'Connection Issue', notifyOs: false });
+      expect(mockPolicy.allowOs).not.toHaveBeenCalled();
+      expect(mockNotificationService.send).not.toHaveBeenCalled();
+      expect(mockContainer.add).toHaveBeenCalledTimes(1);
+    });
+
     it('sends the message to the OS as plain text, not markup', () => {
       mockPolicy.allowOs.mockReturnValue(true);
       service.showHtml('<b>Done</b><br>now &amp; later', { title: 'T', type: 'danger' });

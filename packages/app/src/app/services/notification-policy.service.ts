@@ -5,7 +5,9 @@ import { NotificationCategory } from '../models/notification.model';
 import { GeneralSettingsService } from './general-settings.service';
 import { WindowService } from './window.service';
 
-export const OS_DEDUPE_WINDOW_MS = 5000;
+// Long enough that a server which stays down (failing poll after poll) raises a handful of OS
+// notifications an hour, not hundreds.
+export const OS_DEDUPE_WINDOW_MS = 5 * 60 * 1000;
 
 @Injectable({ providedIn: 'root' })
 export class NotificationPolicyService {

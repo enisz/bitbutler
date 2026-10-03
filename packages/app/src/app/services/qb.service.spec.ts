@@ -6,12 +6,14 @@ import { ToastService } from './toast.service';
 
 describe('QbService', () => {
   let service: QbService;
+  let toastMock: { danger: ReturnType<typeof vi.fn>; showText: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
+    toastMock = { danger: vi.fn(), showText: vi.fn() };
     TestBed.configureTestingModule({
       providers: [
         QbService,
-        { provide: ToastService, useValue: { danger: vi.fn() } },
+        { provide: ToastService, useValue: toastMock },
         { provide: ServerStoreService, useValue: {} },
         { provide: Router, useValue: { navigate: vi.fn() } },
       ],
@@ -110,6 +112,30 @@ describe('QbService', () => {
     await expect(service.torrents.clearCategory('server-1', ['hash1'])).rejects.toThrow(
       'Failed to clear category',
     );
+  });
+
+  describe('request() retries', () => {
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('shows the connection retry warning in the app only, never as an OS notification', async () => {
+      vi.useFakeTimers();
+      vi.spyOn(window.bitbutler.qb, 'request').mockRejectedValue(new Error('connect ECONNREFUSED'));
+
+      const pending = service.request('server-1', { method: 'GET', path: '/api/v2/sync/maindata' });
+      const settled = pending.catch(() => undefined);
+      await vi.advanceTimersByTimeAsync(1000 + 2000 + 3000);
+      await settled;
+
+      const retryToasts = toastMock.showText.mock.calls.filter(
+        ([, opts]) => opts.type === 'warning',
+      );
+      expect(retryToasts).toHaveLength(3);
+      for (const [, opts] of retryToasts) {
+        expect(opts.notifyOs).toBe(false);
+      }
+    });
   });
 
   describe('torrents.info()', () => {

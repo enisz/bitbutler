@@ -102,6 +102,7 @@ export class ToastService {
       type?: ToastType;
       duration?: number;
       category?: NotificationCategory;
+      notifyOs?: boolean;
     } = {},
   ): string {
     const type = opts.type ?? 'info';
@@ -110,7 +111,7 @@ export class ToastService {
     const safeHtml = this.sanitizeHtml(html);
 
     const plainText = this.htmlToText(safeHtml);
-    if (this.notificationPolicy.allowOs(category, title, plainText)) {
+    if (opts.notifyOs !== false && this.notificationPolicy.allowOs(category, title, plainText)) {
       void this.notificationService.send(title, plainText);
     }
 
@@ -143,6 +144,7 @@ export class ToastService {
       type?: ToastType;
       duration?: number;
       category?: NotificationCategory;
+      notifyOs?: boolean;
     } = {},
   ): string {
     const html = message

@@ -52,7 +52,7 @@ Defaults:
 
 - `allowApp(category)`: `app.enabled` and the category switch.
 - `allowOs(category, title, body)`: false for `confirmations`; otherwise `os.enabled`, the category switch, and either `onlyWhenMinimized` is false or the window is minimized; finally the dedupe check.
-- **Dedupe.** An identical OS notification (same title and body) within 5 s (`OS_DEDUPE_WINDOW_MS`) is shown once. Only a call that would otherwise be allowed is recorded. Dedupe applies to the OS channel only.
+- **Dedupe.** An identical OS notification (same title and body) within 5 minutes (`OS_DEDUPE_WINDOW_MS`, long enough that a server that stays down does not flood the OS) is shown once. A toast can opt out of the OS channel with `notifyOs: false`; the connection-retry warning does. Only a call that would otherwise be allowed is recorded. Dedupe applies to the OS channel only.
 - The channels are independent: with both on and a visible window, the user gets an OS notification and a toast.
 
 ## ToastService routing

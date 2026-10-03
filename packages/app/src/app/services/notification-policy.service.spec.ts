@@ -120,6 +120,12 @@ describe('NotificationPolicyService', () => {
       expect(service.allowOs('errors', 'Failed', 'timeout')).toBe(true);
     });
 
+    it('keeps suppressing an identical notification for minutes, so a server that stays down does not flood the OS', () => {
+      expect(service.allowOs('errors', 'Request Failed', 'ECONNREFUSED')).toBe(true);
+      vi.advanceTimersByTime(4 * 60 * 1000);
+      expect(service.allowOs('errors', 'Request Failed', 'ECONNREFUSED')).toBe(false);
+    });
+
     it('treats a different body as a different notification', () => {
       expect(service.allowOs('errors', 'Failed', 'timeout')).toBe(true);
       expect(service.allowOs('errors', 'Failed', 'refused')).toBe(true);
