@@ -143,9 +143,23 @@
   </form>
 </div>
 <div class="modal-footer">
+  @if (editMode()) {
+    <button
+      type="button"
+      class="btn btn-danger btn-sm btn-split"
+      (click)="handleDelete()"
+      [disabled]="processing()"
+    >
+      <bb-btn-content
+        [icon]="icons.faTrashCan"
+        [text]="'general.button.delete' | translate"
+        position="end"
+      ></bb-btn-content>
+    </button>
+  }
   <button
     type="button"
-    class="btn btn-primary btn-sm btn-split"
+    class="btn btn-primary btn-sm btn-split ms-auto"
     (click)="handleSave()"
     [disabled]="!canSave() || processing()"
   >

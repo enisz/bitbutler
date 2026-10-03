@@ -42,3 +42,5 @@ Marking a connection as default (the checkbox icon next to each server in the li
 ![Manage Servers dialog with multiple servers listed](/screenshots/manage/servers/multiple-servers.png)
 
 From the Manage Servers list, use the pencil icon to reopen a connection in the editor, or the trash icon to delete it. Deleting asks for confirmation first, since the action can't be undone - any [Path Mappings](../settings/bitbutler-settings#path-mappings) or polling settings configured for that connection no longer apply once it's gone.
+
+While editing a connection, the editor's header shows its name and address (`My Server <http://192.168.1.10:8080>`), and a **Delete** button on the left of the footer lets you delete it right from there, with the same confirmation.

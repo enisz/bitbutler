@@ -18,6 +18,7 @@ import {
   faPlus,
   faThumbsDown,
   faThumbsUp,
+  faTrashCan,
   faX,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
@@ -28,6 +29,7 @@ import { filter, firstValueFrom } from 'rxjs';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { AutofocusDirective } from '../../directives/autofocus';
 import { CommandBusService } from '../../services/command-bus.service';
+import { ConfirmService } from '../../services/confirm.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { ServerService } from '../../services/server.service';
 import { ToastService } from '../../services/toast.service';
@@ -54,6 +56,7 @@ export class ServerEditor implements OnInit {
   private readonly commandBusService = inject(CommandBusService);
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
+  private readonly confirmService = inject(ConfirmService);
 
   readonly id = input<string | null>(null);
 
@@ -66,6 +69,7 @@ export class ServerEditor implements OnInit {
     faFloppyDisk,
     faPlus,
     faXmark,
+    faTrashCan,
   };
 
   public protocols = [
@@ -99,6 +103,9 @@ export class ServerEditor implements OnInit {
     autoLogin: new FormControl<boolean>(true, { nonNullable: true }),
   });
 
+  private readonly rawName = toSignal(this.editorForm.controls.name.valueChanges, {
+    initialValue: this.editorForm.controls.name.value,
+  });
   private readonly rawProtocol = toSignal(this.editorForm.controls.protocol.valueChanges, {
     initialValue: this.editorForm.controls.protocol.value,
   });
@@ -111,8 +118,8 @@ export class ServerEditor implements OnInit {
 
   // Protocol and port always have a value, so this is never blank - no need to fall
   // back to a placeholder to keep the header subtitle line from collapsing.
-  public readonly connectionSubtitle = computed(
-    () => `${this.rawProtocol()}://${this.rawHost().trim()}:${this.rawPort() ?? ''}`,
+  public readonly connectionSubtitle = computed(() =>
+    `${(this.rawName() ?? '').trim()} <${this.rawProtocol()}://${(this.rawHost() ?? '').trim()}:${this.rawPort() ?? ''}>`.trim(),
   );
 
   get name(): string {
@@ -235,6 +242,28 @@ export class ServerEditor implements OnInit {
         );
       })
       .finally(() => this.processing.set(false));
+  }
+
+  public async handleDelete(): Promise<void> {
+    const id = this.id();
+    if (!id || this.processing()) return;
+
+    const confirmed = await this.confirmService.confirm(
+      'components.modals.manage-servers.delete-confirm.title',
+      {
+        text: 'components.modals.manage-servers.delete-confirm.message',
+        data: { name: this.name || this.host },
+      },
+      'general.button.delete',
+      undefined,
+      undefined,
+      faTrashCan,
+    );
+    if (!confirmed) return;
+
+    this.commandBusService.emit({ type: 'SERVER_DELETED', id });
+    // Dismiss rather than close - callers treat a close result as a saved server id.
+    this.activeModal.dismiss();
   }
 
   public close(): void {

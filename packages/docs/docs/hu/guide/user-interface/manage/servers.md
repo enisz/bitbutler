@@ -42,3 +42,5 @@ Egy kapcsolat alapértelmezettként való megjelölése (a jelölőnégyzet ikon
 ![Szerverek kezelése párbeszédablak több szerverrel](/screenshots/manage/servers/multiple-servers.png)
 
 A Szerverek kezelése listából használd a ceruzaikont egy kapcsolat szerkesztőben való újranyitásához, vagy a kukaikont a törléséhez. A törlés előbb megerősítést kér, mivel a művelet nem vonható vissza - az adott kapcsolathoz beállított [útvonal-hozzárendelések](../settings/bitbutler-settings#utvonal-hozzarendelesek) vagy lekérdezési beállítások a törlés után már nem érvényesek.
+
+Egy kapcsolat szerkesztése közben a szerkesztő fejléce mutatja annak nevét és címét (`Szerverem <http://192.168.1.10:8080>`), a lábléc bal oldalán lévő **Törlés** gombbal pedig közvetlenül onnan is törölheted, ugyanazzal a megerősítéssel.
