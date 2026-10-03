@@ -24,12 +24,29 @@ export const LANGUAGE_LOCALE_MAP: Record<string, string> = {
 
 export const DEFAULT_LOCALE = 'en-US';
 
+export interface NotificationSettings {
+  os: {
+    enabled: boolean;
+    onlyWhenMinimized: boolean;
+    finished: boolean;
+    errors: boolean;
+    updates: boolean;
+  };
+  app: {
+    enabled: boolean;
+    position: ToastPosition;
+    finished: boolean;
+    errors: boolean;
+    updates: boolean;
+    confirmations: boolean;
+  };
+}
+
 export interface GeneralSettings {
   behavior: {
     deleteTorrentFile: boolean;
     deleteTorrentFileOnDuplicate: boolean;
     automaticUpdate: boolean;
-    toastPosition: ToastPosition;
   };
   language: {
     language: string;
@@ -50,6 +67,7 @@ export interface GeneralSettings {
   savePath: {
     inputType: SavePathInputType;
   };
+  notifications: NotificationSettings;
 }
 
 export const DEFAULT_GENERAL_SETTINGS: GeneralSettings = {
@@ -57,7 +75,6 @@ export const DEFAULT_GENERAL_SETTINGS: GeneralSettings = {
     deleteTorrentFile: true,
     deleteTorrentFileOnDuplicate: true,
     automaticUpdate: true,
-    toastPosition: 'bottom-right',
   },
   language: {
     language: 'us',
@@ -77,6 +94,23 @@ export const DEFAULT_GENERAL_SETTINGS: GeneralSettings = {
   },
   savePath: {
     inputType: 'select',
+  },
+  notifications: {
+    os: {
+      enabled: true,
+      onlyWhenMinimized: false,
+      finished: true,
+      errors: true,
+      updates: true,
+    },
+    app: {
+      enabled: true,
+      position: 'bottom-right',
+      finished: true,
+      errors: true,
+      updates: true,
+      confirmations: true,
+    },
   },
 };
 

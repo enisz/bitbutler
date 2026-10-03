@@ -59,7 +59,7 @@ export abstract class BaseSettingsService<T> {
       try {
         const stored = await this.settings.get<Partial<T>>(this.SETTINGS_ID);
 
-        const rawSettings = deepMergeDefaults(this.DEFAULT_SETTINGS, stored ?? {});
+        const rawSettings = deepMergeDefaults(this.DEFAULT_SETTINGS, this.migrate(stored ?? {}));
         const settings = this.normalize(rawSettings);
 
         if (!stored) {
@@ -92,5 +92,11 @@ export abstract class BaseSettingsService<T> {
 
   protected normalize(settings: T): T {
     return settings;
+  }
+
+  // Runs on the stored value before it is merged over the defaults, so a renamed or moved key
+  // can still be read from its old location.
+  protected migrate(stored: Partial<T>): Partial<T> {
+    return stored;
   }
 }

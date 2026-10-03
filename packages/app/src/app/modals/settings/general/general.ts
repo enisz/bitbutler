@@ -298,7 +298,6 @@ export class General implements SettingsTabComponent {
         { nonNullable: true },
       ),
       automaticUpdate: new FormControl(true, { nonNullable: true }),
-      toastPosition: new FormControl<ToastPosition>('bottom-right', { nonNullable: true }),
     }),
     language: new FormGroup({
       language: new FormControl('us', { nonNullable: true }),
@@ -318,6 +317,23 @@ export class General implements SettingsTabComponent {
     }),
     savePath: new FormGroup({
       inputType: new FormControl<SavePathInputType>('select', { nonNullable: true }),
+    }),
+    notifications: new FormGroup({
+      os: new FormGroup({
+        enabled: new FormControl(true, { nonNullable: true }),
+        onlyWhenMinimized: new FormControl(false, { nonNullable: true }),
+        finished: new FormControl(true, { nonNullable: true }),
+        errors: new FormControl(true, { nonNullable: true }),
+        updates: new FormControl(true, { nonNullable: true }),
+      }),
+      app: new FormGroup({
+        enabled: new FormControl(true, { nonNullable: true }),
+        position: new FormControl<ToastPosition>('bottom-right', { nonNullable: true }),
+        finished: new FormControl(true, { nonNullable: true }),
+        errors: new FormControl(true, { nonNullable: true }),
+        updates: new FormControl(true, { nonNullable: true }),
+        confirmations: new FormControl(true, { nonNullable: true }),
+      }),
     }),
   });
 

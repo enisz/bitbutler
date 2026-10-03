@@ -482,8 +482,8 @@
         </div>
       </div>
 
-      <div class="container" formGroupName="behavior">
-        <div class="row mt-2 mb-3">
+      <div class="container" formGroupName="notifications">
+        <div class="row mt-2 mb-3" formGroupName="app">
           <div class="col-6 d-flex align-items-center">
             {{
               'pages.settings.tab.general.general-settings-form.behavior.notification-position'
@@ -500,7 +500,7 @@
               [searchable]="false"
               bindLabel="label"
               bindValue="value"
-              formControlName="toastPosition"
+              formControlName="position"
             >
             </ng-select>
           </div>

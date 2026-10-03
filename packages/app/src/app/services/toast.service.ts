@@ -38,7 +38,7 @@ export class ToastService {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((settings) => {
         this.settings = settings;
-        this.updatePosition(settings.behavior.toastPosition);
+        this.updatePosition(settings.notifications.app.position);
       });
   }
 
@@ -53,11 +53,11 @@ export class ToastService {
 
     const ref = this.overlayRef.attach(new ComponentPortal(ToastOverlay));
     this.container = ref.instance;
-    this.container.position.set(this.settings?.behavior.toastPosition ?? 'bottom-right');
+    this.container.position.set(this.settings?.notifications.app.position ?? 'bottom-right');
   }
 
   private getPositionStrategy(position?: ToastPosition): GlobalPositionStrategy {
-    const toastPosition = position ?? this.settings?.behavior.toastPosition ?? 'bottom-right';
+    const toastPosition = position ?? this.settings?.notifications.app.position ?? 'bottom-right';
 
     const positionStrategy = this.overlay.position().global();
     switch (toastPosition) {
