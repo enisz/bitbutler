@@ -9,6 +9,7 @@ import { strings as usStrings } from 'ngx-timeago/language-strings/en.js';
 import { strings as huStrings } from 'ngx-timeago/language-strings/hu.js';
 import { filter, from } from 'rxjs';
 import { GeneralSettings } from './models/general-settings.model';
+import { CategoryCommandHandlerService } from './services/category-command-handler.service';
 import { CommandBusService } from './services/command-bus.service';
 import { ElectronService } from './services/electron.service';
 import { GeneralSettingsService } from './services/general-settings.service';
@@ -16,6 +17,7 @@ import { MenuBarCommandHandlerService } from './services/menu-bar-command-handle
 import { NotificationService } from './services/notification.service';
 import { OpenFilesService, PendingAddTorrent } from './services/open-files.service';
 import { ServerCommandHandlerService } from './services/server-command-handler.service';
+import { TagCommandHandlerService } from './services/tag-command-handler.service';
 import { ToastService } from './services/toast.service';
 import { TorrentCommandHandlerService } from './services/torrent-command-handler.service';
 import { TorrentFinishedEvent, TorrentStoreService } from './services/torrent-store.service';
@@ -48,6 +50,8 @@ export class App {
   private readonly transferLimitcommandHandlerService = inject(TransferLimitCommandHandlerService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly serverCommandHandlerService = inject(ServerCommandHandlerService);
+  private readonly tagCommandHandlerService = inject(TagCommandHandlerService);
+  private readonly categoryCommandHandlerService = inject(CategoryCommandHandlerService);
   private readonly updateCommandHandlerService = inject(UpdateCommandHandlerService);
   private readonly translateService = inject(TranslateService);
   private readonly timeagoIntl = inject(TimeagoIntl);
@@ -114,6 +118,8 @@ export class App {
     this.torrentCommandHandlerService.start();
     this.transferLimitcommandHandlerService.start();
     this.serverCommandHandlerService.start();
+    this.tagCommandHandlerService.start();
+    this.categoryCommandHandlerService.start();
     this.updateCommandHandlerService.start();
 
     this.translateService.onLangChange

@@ -257,7 +257,7 @@ export class Login implements OnInit {
 
   public async openManageServers(): Promise<void> {
     const { ManageServers } = await import('../../modals/manage-servers/manage-servers');
-    const ref = this.modalService.open(ManageServers);
+    const ref = this.modalService.open(ManageServers, { size: 'xl' });
     setModalInput(ref, 'hideConnect', true);
   }
 

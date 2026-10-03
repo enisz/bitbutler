@@ -246,7 +246,7 @@
 
   <button
     type="button"
-    class="btn btn-danger btn-sm btn-split ms-auto"
+    class="btn btn-danger btn-sm btn-split"
     (click)="actionsService.deleteTorrent()"
   >
     <bb-btn-content
@@ -256,7 +256,12 @@
     ></bb-btn-content>
   </button>
 
-  <button type="button" class="btn btn-sm btn-split" (click)="activeModal.dismiss()" autofocus>
+  <button
+    type="button"
+    class="btn btn-sm btn-split ms-auto"
+    (click)="activeModal.dismiss()"
+    autofocus
+  >
     <bb-btn-content
       [icon]="icon.faXmark"
       [text]="'general.button.close' | translate"

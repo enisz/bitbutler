@@ -1,111 +1,332 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { ServerRecord } from '@bitbutler/shared';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faSquare, faSquareCheck } from '@fortawesome/free-regular-svg-icons';
 import {
+  Component,
+  OnDestroy,
+  computed,
+  effect,
+  inject,
+  input,
+  signal,
+  untracked,
+} from '@angular/core';
+import type { ServerRecord } from '@bitbutler/shared';
+import {
+  faCheck,
   faPenToSquare,
   faPlug,
   faPlus,
   faTrashCan,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
-import { NgbActiveModal, NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { AgGridAngular } from 'ag-grid-angular';
+import type {
+  CellContextMenuEvent,
+  CellValueChangedEvent,
+  ColDef,
+  ColumnHeaderContextMenuEvent,
+  GetRowIdParams,
+  GridApi,
+  GridOptions,
+  GridReadyEvent,
+  IsRowSelectable,
+  RowClassParams,
+  SelectionChangedEvent,
+} from 'ag-grid-community';
+import { GRID_DARK_THEME, GRID_LIGHT_THEME, GRID_SHARED_OPTIONS } from '../../app.const';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
-import { TooltipOverflow } from '../../directives/tooltip-overflow';
+import { BooleanColumnFilter } from '../../components/column-filters/boolean-column-filter/boolean-column-filter';
+import { NumberColumnFilter } from '../../components/column-filters/number-column-filter/number-column-filter';
+import {
+  SetColumnFilter,
+  buildValueCounts,
+} from '../../components/column-filters/set-column-filter/set-column-filter';
+import { TextColumnFilter } from '../../components/column-filters/text-column-filter/text-column-filter';
+import type { ManageServersGridSettings } from '../../models/manage-servers-grid.model';
+import type { ContextMenuEntry } from '../../pages/main/grid/context-menu/context-menu.types';
+import { GridContextMenuService } from '../../pages/main/grid/context-menu/grid-context-menu.service';
 import { CommandBusService } from '../../services/command-bus.service';
 import { ConfirmService } from '../../services/confirm.service';
+import { ContextMenuService } from '../../services/context-menu.service';
 import { CredentialPromptService } from '../../services/credential-prompt.service';
+import { ManageServersGridSettingsService } from '../../services/manage-servers-grid.settings.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { ServerService } from '../../services/server.service';
+import { ThemeService } from '../../services/theme.service';
 import { ToastService } from '../../services/toast.service';
 import { setModalInput } from '../../utils/modal-input';
+import { ActiveOrbRenderer } from './active-orb-renderer';
 
 @Component({
   selector: 'app-manage-servers',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    TranslatePipe,
-    FontAwesomeModule,
-    NgbTooltipModule,
-    TooltipOverflow,
-    BbBtnContent,
-  ],
+  imports: [AgGridAngular, TranslatePipe, BbBtnContent],
   templateUrl: './manage-servers.html',
   styleUrl: './manage-servers.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ManageServers {
+export class ManageServers implements OnDestroy {
+  readonly hideConnect = input(false);
+
   private readonly serverStoreService = inject(ServerStoreService);
+  private readonly settingsService = inject(ManageServersGridSettingsService);
+  private readonly themeService = inject(ThemeService);
+  private readonly translateService = inject(TranslateService);
+  private readonly modalService = inject(NgbModal);
   private readonly commandBusService = inject(CommandBusService);
   private readonly confirmService = inject(ConfirmService);
   private readonly serverService = inject(ServerService);
   private readonly qbService = inject(QbService);
-  private readonly toastService = inject(ToastService);
-  private readonly translateService = inject(TranslateService);
-  private readonly modalService = inject(NgbModal);
   private readonly credentialPromptService = inject(CredentialPromptService);
-  public readonly activeModal = inject(NgbActiveModal);
+  private readonly toastService = inject(ToastService);
+  private readonly contextMenuService = inject(ContextMenuService);
+  private readonly gridContextMenuService = inject(GridContextMenuService);
+  protected readonly activeModal = inject(NgbActiveModal);
 
-  public readonly icon = {
-    faPenToSquare,
-    faTrashCan,
-    faXmark,
-    faPlug,
-    faSquare,
-    faSquareCheck,
-    faPlus,
-  };
-  readonly hideConnect = input(false);
-  public readonly currentServerId = this.serverStoreService.currentServerId;
+  private gridApi?: GridApi<ServerRecord>;
+  private saveTimer?: ReturnType<typeof setTimeout>;
 
-  public filterControl = new FormControl('');
-  public editing = signal(false);
-  public connectingId = signal<string | null>(null);
+  readonly bbDark = GRID_DARK_THEME;
+  readonly bbLight = GRID_LIGHT_THEME;
+  readonly theme = this.themeService.effectiveMode;
 
-  private readonly filterValue = toSignal(this.filterControl.valueChanges, { initialValue: '' });
+  readonly icon = { faPlus, faPenToSquare, faPlug, faTrashCan, faXmark };
 
-  public readonly filteredServers = computed(() => {
-    const filter = (this.filterValue() ?? '').toLowerCase();
-    const servers = this.serverStoreService.servers();
-    if (!filter) return servers;
-    return servers.filter(
-      (s) => s.name.toLowerCase().includes(filter) || s.host.toLowerCase().includes(filter),
-    );
-  });
+  readonly servers = this.serverStoreService.servers;
+  readonly loading = this.serverStoreService.loading;
+  readonly selectedServers = signal<ServerRecord[]>([]);
 
-  public readonly hasServers = computed(() => this.serverStoreService.servers().length > 0);
+  readonly canEdit = computed(() => this.selectedServers().length === 1);
+  readonly canConnect = computed(() => !this.hideConnect() && this.selectedServers().length === 1);
+  readonly canDelete = computed(() => this.selectedServers().length >= 1);
 
-  public readonly busy = computed(() => this.editing() || !!this.connectingId());
+  readonly isRowSelectable: IsRowSelectable<ServerRecord> = (row) =>
+    this.hideConnect() || row.data?.id !== this.serverStoreService.currentServerId();
 
-  public clearFilter(): void {
-    this.filterControl.reset();
+  // The active server's connection details (host/port/protocol/credentials) must not be
+  // edited out from under its live session - same protection as Delete. hideConnect means
+  // there is no live connection here (e.g. the login screen), so nothing is "active".
+  private isActiveServer(id: string): boolean {
+    return !this.hideConnect() && id === this.serverStoreService.currentServerId();
   }
 
-  public async openEditor(id?: string): Promise<void> {
-    if (this.busy()) return;
-    this.editing.set(true);
-    const { ServerEditor } = await import('../server-editor/server-editor');
-    const ref = this.modalService.open(ServerEditor, { size: 'lg' });
-    if (id) setModalInput(ref, 'id', id);
-    try {
-      const newId: string = await ref.result;
-      if (!id) {
-        this.commandBusService.emit({ type: 'SERVER_ADDED', id: newId });
+  readonly getRowId = (params: GetRowIdParams<ServerRecord>) => params.data.id;
+
+  readonly rowClassRules = {
+    'bb-row-active': (params: RowClassParams<ServerRecord>) =>
+      !this.hideConnect() && params.data?.id === this.serverStoreService.currentServerId(),
+  };
+
+  readonly colDefs = computed<ColDef<ServerRecord>[]>(() => [
+    {
+      colId: 'orb',
+      headerName: '',
+      width: 44,
+      sortable: false,
+      resizable: false,
+      filter: BooleanColumnFilter,
+      valueGetter: (p) =>
+        !this.hideConnect() && p.data?.id === this.serverStoreService.currentServerId(),
+      cellRenderer: ActiveOrbRenderer,
+    },
+    {
+      colId: 'name',
+      field: 'name',
+      headerName: this.translateService.instant('components.modals.manage-servers.column.name'),
+      headerTooltip: this.translateService.instant('components.modals.manage-servers.column.name'),
+      tooltipField: 'name',
+      filter: TextColumnFilter,
+    },
+    {
+      colId: 'host',
+      field: 'host',
+      headerName: this.translateService.instant('components.modals.manage-servers.column.host'),
+      headerTooltip: this.translateService.instant('components.modals.manage-servers.column.host'),
+      tooltipField: 'host',
+      filter: TextColumnFilter,
+    },
+    {
+      colId: 'port',
+      field: 'port',
+      headerName: this.translateService.instant('components.modals.manage-servers.column.port'),
+      headerTooltip: this.translateService.instant('components.modals.manage-servers.column.port'),
+      tooltipField: 'port',
+      filter: NumberColumnFilter,
+    },
+    {
+      colId: 'protocol',
+      field: 'protocol',
+      headerName: this.translateService.instant('components.modals.manage-servers.column.protocol'),
+      headerTooltip: this.translateService.instant(
+        'components.modals.manage-servers.column.protocol',
+      ),
+      tooltipField: 'protocol',
+      filter: SetColumnFilter,
+      filterParams: { getItems: () => buildValueCounts(this.servers(), (s) => s.protocol) },
+    },
+    {
+      colId: 'username',
+      field: 'username',
+      headerName: this.translateService.instant('components.modals.manage-servers.column.username'),
+      headerTooltip: this.translateService.instant(
+        'components.modals.manage-servers.column.username',
+      ),
+      tooltipField: 'username',
+      filter: TextColumnFilter,
+    },
+    {
+      colId: 'auto_login',
+      field: 'auto_login',
+      headerName: this.translateService.instant('components.modals.manage-servers.column.default'),
+      headerTooltip: this.translateService.instant(
+        'components.modals.manage-servers.column.default',
+      ),
+      filter: BooleanColumnFilter,
+      cellRenderer: 'agCheckboxCellRenderer',
+      editable: true,
+    },
+    {
+      colId: 'id',
+      field: 'id',
+      headerName: this.translateService.instant('components.modals.manage-servers.column.id'),
+      headerTooltip: this.translateService.instant('components.modals.manage-servers.column.id'),
+      filter: TextColumnFilter,
+      hide: true,
+    },
+  ]);
+
+  constructor() {
+    // Finding 1: connecting to a server only updates `currentServerId`; ag-grid's
+    // `valueGetter`/`rowClassRules`/`isRowSelectable` closures are only re-evaluated
+    // when the grid is explicitly told to refresh/redraw. Without this, the orb stays
+    // on the old server, the old row stays selectable, and the newly-active row (which
+    // was selected to be connected to) stays checked - letting Delete target the server
+    // you just connected to.
+    effect(() => {
+      const currentId = this.serverStoreService.currentServerId();
+      const hideConnect = this.hideConnect();
+      const api = this.gridApi;
+      if (!api) return;
+
+      api.refreshCells({ columns: ['orb'], force: true });
+      api.redrawRows();
+
+      // hideConnect means there is no live connection here (e.g. the login screen) -
+      // currentServerId is just the form's pre-selected server, so there is no
+      // "just connected to" row to protect from staying selected.
+      if (hideConnect || !currentId) return;
+      const stillSelected = api.getSelectedRows().some((row) => row.id === currentId);
+      if (!stillSelected) return;
+
+      const node = api.getRowNode(currentId);
+      if (node) {
+        api.setNodesSelected({ nodes: [node], newValue: false });
       }
-    } catch (_e) {
-    } finally {
-      this.editing.set(false);
+      // Read/write selectedServers untracked - selectedServers is not meant to be a
+      // dependency of this effect, and tracking it here would make this effect
+      // re-trigger itself every time it writes (infinite loop).
+      untracked(() => {
+        this.selectedServers.set(this.selectedServers().filter((s) => s.id !== currentId));
+      });
+    });
+  }
+
+  readonly gridOptions: GridOptions<ServerRecord> = {
+    ...GRID_SHARED_OPTIONS,
+    rowSelection: {
+      mode: 'multiRow',
+      checkboxes: true,
+      headerCheckbox: true,
+      isRowSelectable: this.isRowSelectable,
+    },
+    getRowId: this.getRowId,
+    rowClassRules: this.rowClassRules,
+    onSelectionChanged: (event) => this.onSelectionChanged(event),
+    onColumnResized: (event) => {
+      if (event.finished) this.onColumnChanged();
+    },
+    onColumnMoved: () => this.onColumnChanged(),
+    onColumnPinned: () => this.onColumnChanged(),
+    onColumnVisible: () => this.onColumnChanged(),
+    onSortChanged: () => this.onColumnChanged(),
+    onFilterChanged: () => this.onFilterChanged(),
+    onCellContextMenu: (event) => this.onCellContextMenu(event),
+    onColumnHeaderContextMenu: (event) => this.onColumnHeaderContextMenu(event),
+    onCellValueChanged: (event) => void this.onCellValueChanged(event),
+    onRowDoubleClicked: (event) => {
+      if (!event.data || this.isActiveServer(event.data.id)) return;
+      void this.openEditFor(event.data);
+    },
+  };
+
+  async onGridReady(event: GridReadyEvent<ServerRecord>): Promise<void> {
+    this.gridApi = event.api;
+    const settings = await this.settingsService.load();
+    if (settings.columnState.length) {
+      event.api.applyColumnState({ state: settings.columnState, applyOrder: true });
+    }
+    if (settings.filterModel) {
+      event.api.setFilterModel(settings.filterModel);
     }
   }
 
-  public async switchTo(server: ServerRecord): Promise<void> {
-    if (this.busy()) return;
-    this.connectingId.set(server.id);
+  onColumnChanged(): void {
+    this.queueSave();
+  }
+
+  onFilterChanged(): void {
+    this.queueSave();
+  }
+
+  onSelectionChanged(event: SelectionChangedEvent<ServerRecord>): void {
+    this.selectedServers.set(event.api.getSelectedRows());
+  }
+
+  async openNew(): Promise<void> {
+    const { ServerEditor } = await import('../server-editor/server-editor');
+    const ref = this.modalService.open(ServerEditor, { size: 'lg' });
+    try {
+      const id: string = await ref.result;
+      this.commandBusService.emit({ type: 'SERVER_ADDED', id });
+    } catch {
+      // dismissed - no-op
+    }
+  }
+
+  async openEdit(): Promise<void> {
+    const [server] = this.selectedServers();
+    if (!server) return;
+    await this.openEditFor(server);
+  }
+
+  private async openEditFor(server: ServerRecord): Promise<void> {
+    const { ServerEditor } = await import('../server-editor/server-editor');
+    const ref = this.modalService.open(ServerEditor, { size: 'lg' });
+    setModalInput(ref, 'id', server.id);
+    await ref.result.catch(() => {});
+  }
+
+  async toggleDefault(server: ServerRecord): Promise<void> {
+    await this.setDefault(server, !server.auto_login);
+  }
+
+  async onCellValueChanged(event: CellValueChangedEvent<ServerRecord>): Promise<void> {
+    if (event.colDef.field !== 'auto_login' || event.newValue === event.oldValue) return;
+    await this.setDefault(event.data, event.newValue);
+  }
+
+  private async setDefault(server: ServerRecord, autoLogin: boolean): Promise<void> {
+    await this.serverService.update(server.id, { auto_login: autoLogin });
+    this.commandBusService.emit({ type: 'SERVER_UPDATED', id: server.id });
+  }
+
+  async connectSelected(): Promise<void> {
+    const [server] = this.selectedServers();
+    if (!server) return;
+    await this.connectServer(server);
+  }
+
+  private async connectServer(server: ServerRecord): Promise<void> {
     try {
       const hasSession = await this.qbService.auth.hasCookie(server.id);
 
@@ -129,32 +350,44 @@ export class ManageServers {
       }
 
       this.serverStoreService.select(server.id);
-      this.activeModal.dismiss();
+      // Deliberately no activeModal.dismiss() here - the manage servers grid
+      // stays open after connecting, unlike the pre-redesign flow.
     } catch (err) {
-      console.error(ManageServers.name, 'switchTo', err);
+      console.error(ManageServers.name, 'connectSelected', err);
       this.toastService.danger(
         `"${server.name || server.host}"`,
         this.translateService.instant(
           'services.menu-bar-command-handler.error.failed-to-connect-title',
         ),
       );
-    } finally {
-      this.connectingId.set(null);
     }
   }
 
-  public async toggleAutoLogin(server: ServerRecord): Promise<void> {
-    await this.serverService.update(server.id, { auto_login: !server.auto_login });
-    this.commandBusService.emit({ type: 'SERVER_UPDATED', id: server.id });
+  async deleteSelected(): Promise<void> {
+    // Defense in depth for Finding 1: the active server's row is non-selectable and row
+    // actions no longer mutate `selectedServers` (Finding 2), but if the UI ever briefly
+    // shows it selected, the active server must never be deletable through this path.
+    // hideConnect means there is no live connection to protect (e.g. the login screen,
+    // where currentServerId is just the form's pre-selected server, not one you're
+    // actually connected to), so every selected server is fair game there.
+    const currentId = this.hideConnect() ? null : this.serverStoreService.currentServerId();
+    const servers = this.selectedServers().filter((s) => s.id !== currentId);
+    if (!servers.length) return;
+    await this.deleteServers(servers);
   }
 
-  public async delete(server: ServerRecord): Promise<void> {
+  private async deleteServers(servers: ServerRecord[]): Promise<void> {
     const confirmed = await this.confirmService.confirm(
       'components.modals.manage-servers.delete-confirm.title',
-      {
-        text: 'components.modals.manage-servers.delete-confirm.message',
-        data: { name: server.name || server.host },
-      },
+      servers.length === 1
+        ? {
+            text: 'components.modals.manage-servers.delete-confirm.message',
+            data: { name: servers[0].name || servers[0].host },
+          }
+        : {
+            text: 'components.modals.manage-servers.delete-confirm.message-plural',
+            data: { count: servers.length },
+          },
       'general.button.delete',
       undefined,
       undefined,
@@ -162,6 +395,85 @@ export class ManageServers {
     );
     if (!confirmed) return;
 
-    this.commandBusService.emit({ type: 'SERVER_DELETED', id: server.id });
+    for (const server of servers) {
+      this.commandBusService.emit({ type: 'SERVER_DELETED', id: server.id });
+    }
+  }
+
+  private onCellContextMenu(event: CellContextMenuEvent<ServerRecord>): void {
+    if (!event.data) return;
+    const server = event.data;
+    const isActiveServer = this.isActiveServer(server.id);
+
+    const items: ContextMenuEntry[] = [
+      ...(this.hideConnect()
+        ? []
+        : ([
+            {
+              kind: 'item',
+              id: 'connect',
+              label: 'general.button.connect',
+              icon: faPlug,
+              action: () => void this.connectServer(server),
+            },
+            {
+              kind: 'item',
+              id: 'toggle-default',
+              label: server.auto_login
+                ? 'components.modals.manage-servers.tooltip.unset-default'
+                : 'components.modals.manage-servers.tooltip.set-as-default',
+              icon: server.auto_login ? faCheck : undefined,
+              action: () => void this.toggleDefault(server),
+            },
+            { kind: 'divider' },
+          ] satisfies ContextMenuEntry[])),
+      ...(isActiveServer
+        ? []
+        : ([
+            {
+              kind: 'item',
+              id: 'edit',
+              label: 'general.button.edit',
+              icon: faPenToSquare,
+              action: () => void this.openEditFor(server),
+            },
+            {
+              kind: 'item',
+              id: 'delete',
+              label: 'general.button.delete',
+              icon: faTrashCan,
+              variant: 'danger',
+              action: () => void this.deleteServers([server]),
+            },
+          ] satisfies ContextMenuEntry[])),
+    ];
+
+    this.contextMenuService.open({ items });
+  }
+
+  private onColumnHeaderContextMenu(event: ColumnHeaderContextMenuEvent<ServerRecord>): void {
+    if (!event.column) return;
+    this.contextMenuService.open({ items: this.gridContextMenuService.buildHeaderMenu(event) });
+  }
+
+  private queueSave(): void {
+    if (this.saveTimer) clearTimeout(this.saveTimer);
+    this.saveTimer = setTimeout(() => this.persist(), 500);
+  }
+
+  private persist(): void {
+    if (!this.gridApi) return;
+    const settings: ManageServersGridSettings = {
+      columnState: this.gridApi.getColumnState(),
+      filterModel: this.gridApi.getFilterModel(),
+    };
+    void this.settingsService.save(settings);
+  }
+
+  ngOnDestroy(): void {
+    if (this.saveTimer) {
+      clearTimeout(this.saveTimer);
+      this.persist();
+    }
   }
 }

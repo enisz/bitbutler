@@ -425,7 +425,7 @@ export class UiCommandHandlerService {
           if (this.isModalOpen(ManageTags)) break;
           const manageTagsModalRef = this.modalService.open(ManageTags, {
             scrollable: true,
-            beforeDismiss: () => manageTagsModalRef.componentInstance.canDeactivate(),
+            size: 'lg',
           });
           manageTagsModalRef.result.catch(() => {});
           break;
@@ -437,7 +437,7 @@ export class UiCommandHandlerService {
           if (this.isModalOpen(ManageCategories)) break;
           const manageCategoriesModalRef = this.modalService.open(ManageCategories, {
             scrollable: true,
-            beforeDismiss: () => manageCategoriesModalRef.componentInstance.canDeactivate(),
+            size: 'lg',
           });
           manageCategoriesModalRef.result.catch(() => {});
           break;
@@ -448,6 +448,7 @@ export class UiCommandHandlerService {
           if (this.isModalOpen(ManageServers)) break;
           const manageServersModalRef = this.modalService.open(ManageServers, {
             scrollable: true,
+            size: 'xl',
           });
           manageServersModalRef.result.catch(() => {});
           break;

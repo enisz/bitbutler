@@ -354,6 +354,32 @@
           "load-failed": "Could not load this server's details."
         }
       },
+      "tag-editor": {
+        "title": "New Tag",
+        "name-label": "Tag Name",
+        "name-placeholder": "Tag Name",
+        "hint": "Use comma separated list to add multiple tags in one go",
+        "toast": {
+          "create-failed-title": "Failed to Create Tag",
+          "create-failed": "Could not create the tag(s)."
+        }
+      },
+      "category-editor": {
+        "title": "New Category",
+        "title-edit": "Edit Category",
+        "name-label": "Category Name",
+        "name-placeholder": "Category Name",
+        "save-path-label": "Save Path (optional)",
+        "error": {
+          "duplicate-name": "A category with this name already exists."
+        },
+        "toast": {
+          "create-failed-title": "Failed to Create Category",
+          "create-failed": "Could not create the category.",
+          "update-failed-title": "Failed to Update Category",
+          "update-failed": "Could not update the category."
+        }
+      },
       "credential-prompt": {
         "title": "Connect",
         "save-credentials": "Save credentials",
@@ -807,26 +833,19 @@
       },
       "manage-tags": {
         "title": "Manage Tags",
-        "add-form": {
-          "name": "Tag name",
-          "hint": "Use comma separated list to add multiple tags in one go"
+        "column": {
+          "name": "Name",
+          "usage-count": "Usage Count"
         },
-        "filter": {
-          "placeholder": "Filter tags...",
-          "no-match": "No tags match your filter."
-        },
-        "empty": "No tags yet.",
         "delete-confirm": {
           "title": "Delete Tag",
-          "message": "Are you sure you want to delete the tag \"{{ name }}\"? It is used by {{ count }} torrent(s)."
+          "message": "Are you sure you want to delete the selected tag(s)? They are used by {{ count }} torrent(s)."
         },
         "toast": {
-          "added-one-title": "Tag Added",
-          "added-title": "Tags Added",
-          "added": "{{ count }} tag(s)",
-          "deleted-title": "Tag Deleted",
-          "add-failed-title": "Failed to Add Tag(s)",
-          "delete-failed-title": "Failed to Delete Tag"
+          "load-failed-title": "Failed to Load Tags",
+          "load-failed": "Could not load the tags from the server.",
+          "delete-failed-title": "Failed to Delete Tag",
+          "delete-failed": "Could not delete the selected tag(s)."
         }
       },
       "manage-servers": {
@@ -846,7 +865,17 @@
         },
         "delete-confirm": {
           "title": "Delete Server",
-          "message": "Are you sure you want to delete the server \"{{ name }}\"?"
+          "message": "Are you sure you want to delete the server \"{{ name }}\"?",
+          "message-plural": "Are you sure you want to delete {{ count }} servers?"
+        },
+        "column": {
+          "name": "Name",
+          "host": "Host",
+          "port": "Port",
+          "protocol": "Protocol",
+          "username": "Username",
+          "default": "Default",
+          "id": "ID"
         }
       },
       "export-torrents": {
@@ -1100,29 +1129,22 @@
       },
       "manage-categories": {
         "title": "Manage Categories",
-        "add-form": {
-          "name": "Category name",
-          "save-path": "Save path (optional)"
+        "column": {
+          "name": "Name",
+          "save-path": "Save Path",
+          "usage-count": "Usage Count"
         },
-        "filter": {
-          "placeholder": "Filter categories...",
-          "no-match": "No categories match your filter."
-        },
-        "list": {
-          "no-save-path": "No save path"
-        },
-        "empty": "No categories yet.",
         "delete-confirm": {
           "title": "Delete Category",
-          "message": "Are you sure you want to delete the category \"{{ name }}\"? It is assigned to {{ count }} torrent(s)."
+          "message": "Are you sure you want to delete the selected categories? They are assigned to {{ count }} torrent(s)."
         },
         "toast": {
-          "added-title": "Category Added",
-          "updated-title": "Category Updated",
-          "deleted-title": "Category Deleted",
-          "add-failed-title": "Failed to Add Category",
-          "edit-failed-title": "Failed to Update Category",
-          "delete-failed-title": "Failed to Delete Category"
+          "update-failed-title": "Failed to Update Category",
+          "update-failed": "\"{{ name }}\"",
+          "load-failed-title": "Failed to Load Categories",
+          "load-failed": "Could not load the categories from the server.",
+          "delete-failed-title": "Failed to Delete Category",
+          "delete-failed": "Could not delete the selected categories."
         }
       }
     },
@@ -2031,6 +2053,22 @@
         "toggle-first-last-piece-prio-failed-title": "Failed to Toggle First/Last Piece Priority"
       }
     },
+    "tag-command-handler": {
+      "success": {
+        "added-title": "Tag Added"
+      },
+      "info": {
+        "deleted-title": "Tag Deleted"
+      }
+    },
+    "category-command-handler": {
+      "success": {
+        "added-title": "Category Added"
+      },
+      "info": {
+        "deleted-title": "Category Deleted"
+      }
+    },
     "qb": {
       "warning": {
         "connection-retry-title": "Connection Issue",
@@ -2066,6 +2104,7 @@
       "update": "Update",
       "show": "Show",
       "open-details": "Open Details",
+      "new": "New",
       "edit": "Edit",
       "refresh": "Refresh",
       "retry": "Retry"

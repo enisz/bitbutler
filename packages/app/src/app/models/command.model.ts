@@ -69,6 +69,15 @@ export type ServerCommand =
   | { type: 'SERVER_DELETED'; id: string }
   | { type: 'SERVER_UPDATED'; id: string };
 
+export type TagCommand =
+  | { type: 'TAG_ADDED'; names: string[] }
+  | { type: 'TAG_DELETED'; names: string[] };
+
+export type CategoryCommand =
+  | { type: 'CATEGORY_ADDED'; name: string; savePath: string }
+  | { type: 'CATEGORY_UPDATED'; name: string; savePath: string }
+  | { type: 'CATEGORY_DELETED'; names: string[] };
+
 export type TransferLimitCommand = { type: 'TRANSFER_LIMIT_ALTERNATIVE_TOGGLE' };
 
 export type UpdateCommand = {
@@ -82,4 +91,6 @@ export type AppCommand =
   | MenuCommand
   | TransferLimitCommand
   | ServerCommand
+  | TagCommand
+  | CategoryCommand
   | UpdateCommand;

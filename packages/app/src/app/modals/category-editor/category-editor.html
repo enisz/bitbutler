@@ -1,0 +1,58 @@
+<div class="modal-header">
+  <h5 class="modal-title">
+    {{
+      (isEditMode()
+        ? 'components.modals.category-editor.title-edit'
+        : 'components.modals.category-editor.title'
+      ) | translate
+    }}
+  </h5>
+  <button type="button" class="btn-close" (click)="activeModal.dismiss()"></button>
+</div>
+<div class="modal-body">
+  <div class="form-floating mb-3">
+    <input
+      type="text"
+      id="categoryEditorName"
+      class="form-control"
+      [class.is-invalid]="nameControl.invalid"
+      [formControl]="nameControl"
+      placeholder="{{ 'components.modals.category-editor.name-placeholder' | translate }}"
+    />
+    <label for="categoryEditorName">{{
+      'components.modals.category-editor.name-label' | translate
+    }}</label>
+    @if (nameControl.hasError('duplicateName')) {
+      <div class="invalid-feedback d-block">
+        {{ 'components.modals.category-editor.error.duplicate-name' | translate }}
+      </div>
+    }
+  </div>
+  <app-save-path-select
+    [clearable]="true"
+    [placeholder]="''"
+    [label]="'components.modals.category-editor.save-path-label' | translate"
+    [formControl]="savePathControl"
+  />
+</div>
+<div class="modal-footer">
+  <button
+    type="button"
+    class="btn btn-primary btn-sm btn-split"
+    [disabled]="!nameControl.value.trim() || nameControl.invalid"
+    (click)="save()"
+  >
+    <bb-btn-content
+      [icon]="isEditMode() ? icon.faFloppyDisk : icon.faPlus"
+      [text]="(isEditMode() ? 'general.button.update' : 'general.button.add') | translate"
+      position="end"
+    ></bb-btn-content>
+  </button>
+  <button type="button" class="btn btn-sm btn-split" (click)="activeModal.dismiss()">
+    <bb-btn-content
+      [icon]="icon.faXmark"
+      [text]="'general.button.cancel' | translate"
+      position="end"
+    ></bb-btn-content>
+  </button>
+</div>

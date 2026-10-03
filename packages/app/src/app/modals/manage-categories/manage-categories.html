@@ -9,164 +9,49 @@
 </div>
 
 <div class="modal-body">
-  <form [formGroup]="addForm">
-    <div class="input-group mb-2">
-      <div class="form-floating">
-        <input
-          type="text"
-          class="form-control"
-          id="category-name"
-          placeholder="Category name"
-          formControlName="name"
-          (keydown.enter)="add()"
-          autofocus
-        />
-        <label for="category-name">
-          {{ 'components.modals.manage-categories.add-form.name' | translate }}
-        </label>
-      </div>
-      <button
-        class="btn btn-outline-primary btn-split"
-        type="button"
-        (click)="add()"
-        [disabled]="!(addForm.get('name')?.value ?? '').trim() || adding()"
-      >
-        <bb-btn-content
-          [icon]="icon.faPlus"
-          [text]="'general.button.add' | translate"
-          position="end"
-        ></bb-btn-content>
-      </button>
-    </div>
-    <div class="mb-3">
-      <app-save-path-select
-        [clearable]="true"
-        [placeholder]="''"
-        formControlName="savePath"
-      ></app-save-path-select>
-    </div>
-  </form>
-
-  @if (!loading()) {
-    <div class="mb-3">
-      <div class="bb-filter-input">
-        <input
-          type="text"
-          class="form-control"
-          [placeholder]="'components.modals.manage-categories.filter.placeholder' | translate"
-          [formControl]="filterControl"
-        />
-        @if (filterControl.value) {
-          <button
-            type="button"
-            class="bb-filter-clear"
-            (click)="clearFilter()"
-            aria-label="Clear filter"
-          >
-            <fa-icon [icon]="icon.faXmark"></fa-icon>
-          </button>
-        }
-      </div>
-    </div>
-  }
-
-  @if (loading()) {
-    <div class="d-flex justify-content-center py-3">
-      <app-bb-spinner></app-bb-spinner>
-    </div>
-  } @else if (filteredCategories().length > 0) {
-    <ul class="list-group list-group-flush bb-category-list">
-      @for (item of filteredCategories(); track item.name) {
-        @if (item.editing) {
-          <li
-            class="list-group-item bb-category-row"
-            (keydown.enter)="saveEdit(item)"
-            (keydown.escape)="cancelEdit()"
-          >
-            <div class="d-flex gap-2 align-items-center">
-              <app-save-path-select
-                class="flex-grow-1"
-                [clearable]="true"
-                [placeholder]="''"
-                [label]="item.name"
-                [formControl]="editSavePathControl"
-              ></app-save-path-select>
-              <div class="d-flex gap-1">
-                <button
-                  type="button"
-                  class="btn btn-link text-success p-1"
-                  [ngbTooltip]="'general.button.save' | translate"
-                  tooltipClass="single-line-tooltip"
-                  (click)="saveEdit(item)"
-                >
-                  <fa-icon [icon]="icon.faCheck"></fa-icon>
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-link text-danger p-1"
-                  [ngbTooltip]="'general.button.cancel' | translate"
-                  tooltipClass="single-line-tooltip"
-                  (click)="cancelEdit()"
-                >
-                  <fa-icon [icon]="icon.faX"></fa-icon>
-                </button>
-              </div>
-            </div>
-          </li>
-        } @else {
-          <li
-            class="list-group-item bb-category-row d-flex align-items-center justify-content-between"
-          >
-            <div class="overflow-hidden me-2">
-              <div class="fw-semibold text-truncate" [ngbTooltip]="item.name" bbTooltipOverflow>
-                {{ item.name }}
-              </div>
-              <div
-                class="small text-body-secondary text-truncate"
-                [ngbTooltip]="item.savePath"
-                bbTooltipOverflow
-              >
-                {{
-                  item.savePath ||
-                    ('components.modals.manage-categories.list.no-save-path' | translate)
-                }}
-              </div>
-            </div>
-            <div class="d-flex gap-1 flex-shrink-0">
-              <button
-                type="button"
-                class="btn btn-link p-1"
-                [ngbTooltip]="'general.button.edit' | translate"
-                (click)="startEdit(item)"
-              >
-                <fa-icon [icon]="icon.faEdit" />
-              </button>
-              <button
-                type="button"
-                class="btn btn-link text-danger p-1"
-                [ngbTooltip]="'general.button.delete' | translate"
-                (click)="delete(item)"
-              >
-                <fa-icon [icon]="icon.faTrashCan" />
-              </button>
-            </div>
-          </li>
-        }
-      }
-    </ul>
-  } @else {
-    <p class="text-body-secondary small mb-0">
-      @if (filterControl.value) {
-        {{ 'components.modals.manage-categories.filter.no-match' | translate }}
-      } @else {
-        {{ 'components.modals.manage-categories.empty' | translate }}
-      }
-    </p>
-  }
+  <ag-grid-angular
+    class="w-100 d-block bb-manage-categories-grid"
+    (gridReady)="onGridReady($event)"
+    [rowData]="rows()"
+    [columnDefs]="colDefs"
+    [gridOptions]="gridOptions"
+    [theme]="theme() === 'dark' ? bbDark : bbLight"
+  />
 </div>
 
 <div class="modal-footer">
-  <button type="button" class="btn btn-sm btn-split" (click)="activeModal.dismiss()" autofocus>
+  <button type="button" class="btn btn-primary btn-sm btn-split" (click)="openNew()">
+    <bb-btn-content
+      [icon]="icon.faPlus"
+      [text]="'general.button.new' | translate"
+      position="end"
+    ></bb-btn-content>
+  </button>
+  <button
+    type="button"
+    class="btn btn-primary btn-sm btn-split"
+    [disabled]="!canEdit()"
+    (click)="startEditSelected()"
+  >
+    <bb-btn-content
+      [icon]="icon.faPenToSquare"
+      [text]="'general.button.edit' | translate"
+      position="end"
+    ></bb-btn-content>
+  </button>
+  <button
+    type="button"
+    class="btn btn-danger btn-sm btn-split"
+    [disabled]="!canDelete()"
+    (click)="deleteSelected()"
+  >
+    <bb-btn-content
+      [icon]="icon.faTrashCan"
+      [text]="'general.button.delete' | translate"
+      position="end"
+    ></bb-btn-content>
+  </button>
+  <button type="button" class="btn btn-sm btn-split ms-auto" (click)="activeModal.close()">
     <bb-btn-content
       [icon]="icon.faXmark"
       [text]="'general.button.close' | translate"

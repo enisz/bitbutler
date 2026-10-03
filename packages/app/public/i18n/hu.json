@@ -354,6 +354,32 @@
           "load-failed": "Nem sikerült betölteni a szerver adatait."
         }
       },
+      "tag-editor": {
+        "title": "Új címke",
+        "name-label": "Címke neve",
+        "name-placeholder": "Címke neve",
+        "hint": "Vesszővel elválasztott lista használatával egyszerre több cimkét is hozzáadhatsz",
+        "toast": {
+          "create-failed-title": "Nem sikerült létrehozni a címkét",
+          "create-failed": "Nem sikerült létrehozni a címké(ke)t."
+        }
+      },
+      "category-editor": {
+        "title": "Új kategória",
+        "title-edit": "Kategória szerkesztése",
+        "name-label": "Kategória neve",
+        "name-placeholder": "Kategória neve",
+        "save-path-label": "Mentési útvonal (opcionális)",
+        "error": {
+          "duplicate-name": "Már létezik kategória ezzel a névvel."
+        },
+        "toast": {
+          "create-failed-title": "Nem sikerült létrehozni a kategóriát",
+          "create-failed": "Nem sikerült létrehozni a kategóriát.",
+          "update-failed-title": "Nem sikerült frissíteni a kategóriát",
+          "update-failed": "Nem sikerült frissíteni a kategóriát."
+        }
+      },
       "credential-prompt": {
         "title": "Csatlakozás",
         "save-credentials": "Hitelesítő adatok mentése",
@@ -807,26 +833,19 @@
       },
       "manage-tags": {
         "title": "Cimkék kezelése",
-        "add-form": {
-          "name": "Cimke neve",
-          "hint": "Vesszővel elválasztott lista használatával egyszerre több cimkét is hozzáadhatsz"
+        "column": {
+          "name": "Név",
+          "usage-count": "Használat"
         },
-        "filter": {
-          "placeholder": "Cimkék szűrése...",
-          "no-match": "Egy cimke sem felel meg a szűrőnek."
-        },
-        "empty": "Még nincsenek cimkék.",
         "delete-confirm": {
           "title": "Cimke törlése",
-          "message": "Biztosan törölni szeretnéd a \"{{ name }}\" cimkét? {{ count }} torrent használja."
+          "message": "Biztosan törölni szeretnéd a kijelölt cimké(ke)t? {{ count }} torrent használja őket."
         },
         "toast": {
-          "added": "{{ count }} cimke",
-          "added-one-title": "Cimke hozzáadva",
-          "added-title": "Cimkék hozzáadva",
-          "deleted-title": "Cimke törölve",
-          "add-failed-title": "Nem sikerült hozzáadni a cimké(ke)t",
-          "delete-failed-title": "Nem sikerült törölni a cimkét"
+          "load-failed-title": "Nem sikerült betölteni a címkéket",
+          "load-failed": "Nem sikerült betölteni a címkéket a szerverről.",
+          "delete-failed-title": "Nem sikerült törölni a címkét",
+          "delete-failed": "Nem sikerült törölni a kijelölt címké(ke)t."
         }
       },
       "manage-servers": {
@@ -846,7 +865,17 @@
         },
         "delete-confirm": {
           "title": "Szerver törlése",
-          "message": "Biztosan törölni szeretnéd a \"{{ name }}\" szervert?"
+          "message": "Biztosan törölni szeretnéd a \"{{ name }}\" szervert?",
+          "message-plural": "Biztosan törölni szeretnél {{ count }} szervert?"
+        },
+        "column": {
+          "name": "Név",
+          "host": "Host",
+          "port": "Port",
+          "protocol": "Protokoll",
+          "username": "Felhasználónév",
+          "default": "Alapértelmezett",
+          "id": "Azonosító"
         }
       },
       "export-torrents": {
@@ -1100,29 +1129,22 @@
       },
       "manage-categories": {
         "title": "Kategóriák kezelése",
-        "add-form": {
-          "name": "Kategória neve",
-          "save-path": "Mentési útvonal (opcionális)"
+        "column": {
+          "name": "Név",
+          "save-path": "Mentési útvonal",
+          "usage-count": "Használat"
         },
-        "filter": {
-          "placeholder": "Kategóriák szűrése...",
-          "no-match": "Egy kategória sem felel meg a szűrőnek."
-        },
-        "list": {
-          "no-save-path": "Nincs mentési útvonal"
-        },
-        "empty": "Még nincsenek kategóriák.",
         "delete-confirm": {
           "title": "Kategória törlése",
-          "message": "Biztosan törölni szeretnéd a \"{{ name }}\" kategóriát? {{ count }} torrenthez van hozzárendelve."
+          "message": "Biztosan törölni szeretnéd a kijelölt kategóriákat? {{ count }} torrenthez vannak hozzárendelve."
         },
         "toast": {
-          "added-title": "Kategória hozzáadva",
-          "updated-title": "Kategória frissítve",
-          "deleted-title": "Kategória törölve",
-          "add-failed-title": "Nem sikerült hozzáadni a kategóriát",
-          "edit-failed-title": "Nem sikerült frissíteni a kategóriát",
-          "delete-failed-title": "Nem sikerült törölni a kategóriát"
+          "update-failed-title": "Nem sikerült frissíteni a kategóriát",
+          "update-failed": "\"{{ name }}\"",
+          "load-failed-title": "Nem sikerült betölteni a kategóriákat",
+          "load-failed": "Nem sikerült betölteni a kategóriákat a szerverről.",
+          "delete-failed-title": "Nem sikerült törölni a kategóriát",
+          "delete-failed": "Nem sikerült törölni a kijelölt kategóriákat."
         }
       }
     },
@@ -2031,6 +2053,22 @@
         "toggle-first-last-piece-prio-failed-title": "Nem sikerült átváltani az első/utolsó szelet prioritást"
       }
     },
+    "tag-command-handler": {
+      "success": {
+        "added-title": "Címke hozzáadva"
+      },
+      "info": {
+        "deleted-title": "Címke törölve"
+      }
+    },
+    "category-command-handler": {
+      "success": {
+        "added-title": "Kategória hozzáadva"
+      },
+      "info": {
+        "deleted-title": "Kategória törölve"
+      }
+    },
     "qb": {
       "warning": {
         "connection-retry-title": "Kapcsolódási probléma",
@@ -2065,6 +2103,7 @@
       "update": "Frissítés",
       "show": "Megjelenítés",
       "open-details": "Részletek megnyitása",
+      "new": "Új",
       "edit": "Szerkesztés",
       "refresh": "Frissítés",
       "retry": "Újra"

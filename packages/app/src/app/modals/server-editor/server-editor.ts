@@ -1,12 +1,21 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, inject, input, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NewServer, ServerProtocol, ServerRecord } from '@bitbutler/shared';
 import {
   faCheck,
   faCircleNotch,
   faFloppyDisk,
+  faPlus,
   faThumbsDown,
   faThumbsUp,
   faX,
@@ -55,6 +64,7 @@ export class ServerEditor implements OnInit {
     faCheck,
     faX,
     faFloppyDisk,
+    faPlus,
     faXmark,
   };
 
@@ -88,6 +98,22 @@ export class ServerEditor implements OnInit {
     password: new FormControl<string>('', { nonNullable: true }),
     autoLogin: new FormControl<boolean>(true, { nonNullable: true }),
   });
+
+  private readonly rawProtocol = toSignal(this.editorForm.controls.protocol.valueChanges, {
+    initialValue: this.editorForm.controls.protocol.value,
+  });
+  private readonly rawHost = toSignal(this.editorForm.controls.host.valueChanges, {
+    initialValue: this.editorForm.controls.host.value,
+  });
+  private readonly rawPort = toSignal(this.editorForm.controls.port.valueChanges, {
+    initialValue: this.editorForm.controls.port.value,
+  });
+
+  // Protocol and port always have a value, so this is never blank - no need to fall
+  // back to a placeholder to keep the header subtitle line from collapsing.
+  public readonly connectionSubtitle = computed(
+    () => `${this.rawProtocol()}://${this.rawHost().trim()}:${this.rawPort() ?? ''}`,
+  );
 
   get name(): string {
     return (this.editorForm.get('name')?.value || '').trim();
