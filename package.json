@@ -143,6 +143,9 @@
       ],
       "icon": "packages/app/public/bitbutler.png"
     },
+    "appImage": {
+      "artifactName": "${name}.${ext}"
+    },
     "deb": {
       "depends": [
         "libgtk-3-0",
