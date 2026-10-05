@@ -97,6 +97,8 @@ const api: BitButlerAPI = {
   torrentQueue: {
     enqueue: (payload: TorrentAddJobPayload) => ipcRenderer.invoke('qb:enqueueTorrentAdd', payload),
     list: () => ipcRenderer.invoke('qb:listTorrentAddJobs'),
+    retry: (jobId) => ipcRenderer.invoke('qb:retryTorrentAddJob', jobId),
+    dismiss: (jobId) => ipcRenderer.invoke('qb:dismissTorrentAddJob', jobId),
     onUpdate: (callback) =>
       makeIpcSubscription('qb:torrentAddJobUpdate', (job) => job as TorrentAddJob, callback),
   },

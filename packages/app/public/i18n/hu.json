@@ -2010,9 +2010,19 @@
         "duplicate": {
           "title": "A torrent már létezik"
         },
-        "job-failed": {
-          "title": "Torrent feldolgozása sikertelen"
+        "add-failed": {
+          "title": "A torrent hozzáadása sikertelen"
+        },
+        "setup-failed": {
+          "title": "A torrent beállítása sikertelen"
+        },
+        "session-expired": {
+          "title": "A munkamenet lejárt"
         }
+      },
+      "action": {
+        "retry": "Újra",
+        "log-in": "Bejelentkezés"
       }
     },
     "ui-command-handler": {

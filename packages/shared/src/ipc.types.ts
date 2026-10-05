@@ -222,6 +222,8 @@ export interface BitButlerAPI {
   torrentQueue: {
     enqueue(payload: TorrentAddJobPayload): Promise<{ jobId: string }>;
     list(): Promise<TorrentAddJob[]>;
+    retry(jobId: string): Promise<void>;
+    dismiss(jobId: string): Promise<void>;
     onUpdate(callback: (job: TorrentAddJob) => void): () => void;
   };
 

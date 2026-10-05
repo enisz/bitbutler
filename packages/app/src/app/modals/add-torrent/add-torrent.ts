@@ -404,7 +404,8 @@ export class AddTorrent implements OnInit {
               torrents: [{ name: entry.name, path: entry.path }],
               options: { ...sharedOptions, rename: entry.name },
             },
-            name: entry.name,
+            displayName: entry.name,
+            duplicateAs: 'toast',
             originalPath: entry.path,
             deleteOriginalOnSuccess: generalSettings.behavior.deleteTorrentFile,
           });
@@ -430,10 +431,12 @@ export class AddTorrent implements OnInit {
 
         return;
       } else {
+        const selectedFile = this.selectedTorrentFile()!;
         const generalSettings = await this.generalSettingsService.load();
         await this.torrentAddQueueService.enqueue({
           serverId,
-          add: { torrents: [this.selectedTorrentFile()!], options: sharedOptions },
+          add: { torrents: [selectedFile], options: sharedOptions },
+          displayName: this.effectiveDraft()?.torrent?.name ?? selectedFile.name,
           infoHash: this.effectiveDraft()?.torrent?.infoHashV1?.trim().toLowerCase(),
           originalPath: this.effectiveDraft()?.originalPath,
           deleteOriginalOnSuccess: generalSettings.behavior.deleteTorrentFile,

@@ -243,4 +243,100 @@ describe('ToastService - showText()', () => {
       expect(mockContainer.position.set).toHaveBeenCalledWith('top-left');
     });
   });
+
+  describe('actions', () => {
+    const action = (label: string, kind?: 'primary' | 'outline' | 'text') => ({
+      label,
+      kind,
+      onClick: vi.fn(),
+    });
+    const addedToast = () => mockContainer.add.mock.calls[0][0];
+
+    it('passes actions through to the toast', () => {
+      const retry = action('Retry', 'primary');
+      service.showText('boom', { type: 'danger', actions: [retry] });
+
+      expect(addedToast().actions).toEqual([retry]);
+    });
+
+    it('keeps at most two actions', () => {
+      service.showText('x', { actions: [action('a'), action('b'), action('c')] });
+
+      expect(addedToast().actions.map((a: any) => a.label)).toEqual(['a', 'b']);
+    });
+
+    it('does not auto-dismiss a danger toast that has actions', () => {
+      service.showText('boom', { type: 'danger', actions: [action('Retry')] });
+
+      expect(addedToast().duration).toBe(0);
+    });
+
+    it('gives other toasts with actions a longer window than the plain default', () => {
+      service.showText('hmm', { type: 'warning', actions: [action('Undo')] });
+
+      expect(addedToast().duration).toBe(8000);
+    });
+
+    it('keeps the plain default for toasts without actions, including danger', () => {
+      service.showText('hmm', { type: 'danger' });
+
+      expect(addedToast().duration).toBe(6000);
+    });
+
+    it('lets an explicit duration win', () => {
+      service.showText('hmm', { type: 'danger', actions: [action('Retry')], duration: 3000 });
+
+      expect(addedToast().duration).toBe(3000);
+    });
+
+    it('danger() forwards actions and applies the no-auto-dismiss default', () => {
+      service.danger('boom', 'Failed', undefined, [action('Retry')]);
+
+      expect(addedToast().duration).toBe(0);
+    });
+
+    it('runs onDismiss when the toast is closed without an action', () => {
+      vi.useFakeTimers();
+      const onDismiss = vi.fn();
+      const id = service.showText('boom', {
+        type: 'danger',
+        actions: [action('Retry')],
+        onDismiss,
+      });
+      mockContainer.toasts = () => [{ id, onDismiss }];
+
+      service.dismiss(id);
+
+      expect(onDismiss).toHaveBeenCalledTimes(1);
+      vi.useRealTimers();
+    });
+
+    it('does not run onDismiss when an action was chosen', () => {
+      vi.useFakeTimers();
+      const onDismiss = vi.fn();
+      const id = service.showText('boom', {
+        type: 'danger',
+        actions: [action('Retry')],
+        onDismiss,
+      });
+      mockContainer.toasts = () => [{ id, onDismiss }];
+
+      service.dismiss(id, { actionChosen: true });
+
+      expect(onDismiss).not.toHaveBeenCalled();
+      vi.useRealTimers();
+    });
+
+    it('does not run onDismiss twice for a toast that is already closing', () => {
+      vi.useFakeTimers();
+      const onDismiss = vi.fn();
+      mockContainer.toasts = () => [{ id: 't1', onDismiss, isClosing: true }];
+      service.showText('x');
+
+      service.dismiss('t1');
+
+      expect(onDismiss).not.toHaveBeenCalled();
+      vi.useRealTimers();
+    });
+  });
 });

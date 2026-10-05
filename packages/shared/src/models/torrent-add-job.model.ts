@@ -43,11 +43,13 @@ export interface TorrentAddJobPayload {
   serverId: string;
   add: TorrentAddJobAdd;
   infoHash?: string;
+  /** Shown in failure/duplicate toasts so the user can tell which torrent a message is about. */
+  displayName?: string;
   /**
-   * Display name. When set, a duplicate (409) is reported with a toast naming it; when absent
-   * the renderer raises the "torrent already exists" dialog instead.
+   * How a duplicate (409) is reported: with the "torrent already exists" dialog (default), or
+   * with a toast - for batches, where one dialog per file would be too much.
    */
-  name?: string;
+  duplicateAs?: 'dialog' | 'toast';
   /** Source .torrent file on disk, passed on to the "torrent already exists" dialog. */
   originalPath?: string;
   /** Delete `originalPath` once qBittorrent has accepted the torrent. */
@@ -57,10 +59,21 @@ export interface TorrentAddJobPayload {
   shareLimits?: TorrentAddJobShareLimits;
 }
 
+/**
+ * `add` failures mean the torrent never reached qBittorrent; `setup` failures mean it was added
+ * but a follow-up step (rename, priorities, share limits) failed.
+ */
+export type TorrentAddJobFailedStage = 'add' | 'setup';
+
 export interface TorrentAddJob {
   id: string;
   status: TorrentAddJobStatus;
   error?: string;
+  failedStage?: TorrentAddJobFailedStage;
+  /** The failure was an auth problem that re-logging in could not fix. */
+  authExpired?: boolean;
+  /** Set once qBittorrent has accepted the torrent, so a retry skips the add. */
+  addAccepted?: boolean;
   createdAt: number;
   payload: TorrentAddJobPayload;
 }

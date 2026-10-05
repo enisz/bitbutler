@@ -11,6 +11,7 @@ export type { LogLevel, RendererLogEntry } from './models/log.model.js';
 export type { NewServer, ServerProtocol, ServerRecord } from './models/server.model.js';
 export type {
   TorrentAddJob,
+  TorrentAddJobFailedStage,
   TorrentAddJobFilePriority,
   TorrentAddJobPayload,
   TorrentAddJobRename,

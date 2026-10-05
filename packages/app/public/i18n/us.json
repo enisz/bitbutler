@@ -2008,9 +2008,19 @@
         "duplicate": {
           "title": "Torrent Already Exists"
         },
-        "job-failed": {
-          "title": "Failed to Process Torrent"
+        "add-failed": {
+          "title": "Failed to Add Torrent"
+        },
+        "setup-failed": {
+          "title": "Failed to Finish Torrent Setup"
+        },
+        "session-expired": {
+          "title": "Session Expired"
         }
+      },
+      "action": {
+        "retry": "Retry",
+        "log-in": "Log In"
       }
     },
     "ui-command-handler": {

@@ -534,6 +534,7 @@ describe('AddTorrent', () => {
           add: expect.objectContaining({
             torrents: [{ name: 'test.torrent', path: '/tmp/test.torrent' }],
           }),
+          displayName: 'test-torrent',
           infoHash: 'abc123',
           originalPath: '/tmp/test.torrent',
           deleteOriginalOnSuccess: true,
@@ -889,7 +890,8 @@ describe('AddTorrent', () => {
             torrents: [{ path: '/downloads/a.torrent', name: 'A' }],
             options: expect.objectContaining({ rename: 'A' }),
           }),
-          name: 'A',
+          displayName: 'A',
+          duplicateAs: 'toast',
           originalPath: '/downloads/a.torrent',
           deleteOriginalOnSuccess: false,
         }),
@@ -900,7 +902,7 @@ describe('AddTorrent', () => {
           add: expect.objectContaining({
             torrents: [{ path: '/downloads/b.torrent', name: 'B' }],
           }),
-          name: 'B',
+          displayName: 'B',
         }),
       );
       expect(addTorrentSettingsService.save).toHaveBeenCalledWith(

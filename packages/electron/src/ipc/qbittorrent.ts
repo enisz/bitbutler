@@ -121,12 +121,13 @@ function qbLogout(payload: unknown): { loggedOut: boolean } {
   return { loggedOut: true };
 }
 
-async function qbLogin(payload: unknown): Promise<{ loggedIn: boolean }> {
-  const p = payload as Record<string, unknown>;
-  const id = requireString(p?.id, 'id');
-  const runtimeUsername = typeof p?.username === 'string' ? p.username : undefined;
-  const runtimePassword = typeof p?.password === 'string' ? p.password : undefined;
-
+// Logs in with the stored (or supplied) credentials and refreshes the cookie jar, without touching
+// the active server or the menus - so background work can recover a dead session for any server.
+async function loginAndStoreCookie(
+  id: string,
+  runtimeUsername?: string,
+  runtimePassword?: string,
+): Promise<void> {
   const server = stmtGetByIdFull.get(id);
   if (!server) throw new Error('Server not found.');
 
@@ -162,6 +163,20 @@ async function qbLogin(payload: unknown): Promise<{ loggedIn: boolean }> {
   }
 
   cookieJar.set(id, cookie);
+}
+
+export async function qbRelogin(id: string): Promise<void> {
+  await loginAndStoreCookie(id);
+}
+
+async function qbLogin(payload: unknown): Promise<{ loggedIn: boolean }> {
+  const p = payload as Record<string, unknown>;
+  const id = requireString(p?.id, 'id');
+  await loginAndStoreCookie(
+    id,
+    typeof p?.username === 'string' ? p.username : undefined,
+    typeof p?.password === 'string' ? p.password : undefined,
+  );
   console.info(`[BitButler][qbittorrent] Logged in to server ${id}.`);
   ipcMain.emit('server:set-active', null, id);
   rebuildMenu();

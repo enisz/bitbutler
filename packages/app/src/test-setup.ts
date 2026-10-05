@@ -106,6 +106,8 @@ window.bitbutler = {
   torrentQueue: {
     enqueue: () => Promise.resolve({ jobId: '' }),
     list: () => Promise.resolve([]),
+    retry: noopVoidAsync,
+    dismiss: noopVoidAsync,
     onUpdate: noopSubscription,
   },
   window: {
