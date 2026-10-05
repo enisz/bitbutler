@@ -18,6 +18,7 @@ import { OpenFilesService, PendingAddTorrent } from './services/open-files.servi
 import { ServerCommandHandlerService } from './services/server-command-handler.service';
 import { TagCommandHandlerService } from './services/tag-command-handler.service';
 import { ToastService } from './services/toast.service';
+import { TorrentAddQueueService } from './services/torrent-add-queue.service';
 import { TorrentCommandHandlerService } from './services/torrent-command-handler.service';
 import { TorrentFinishedEvent, TorrentStoreService } from './services/torrent-store.service';
 import { TransferLimitCommandHandlerService } from './services/transfer-limit-command-handler.service';
@@ -40,6 +41,7 @@ export class App {
   private readonly uiCommandHandlerService = inject(UiCommandHandlerService);
   private readonly menuBarCommandHandlerService = inject(MenuBarCommandHandlerService);
   private readonly torrentCommandHandlerService = inject(TorrentCommandHandlerService);
+  private readonly torrentAddQueueService = inject(TorrentAddQueueService);
   private readonly tooltipConfigService = inject(NgbTooltipConfig);
   private readonly ngSelectConfigService = inject(NgSelectConfig);
   private readonly toastService = inject(ToastService);
@@ -112,6 +114,7 @@ export class App {
     this.uiCommandHandlerService.start();
     this.menuBarCommandHandlerService.start();
     this.torrentCommandHandlerService.start();
+    this.torrentAddQueueService.start();
     this.transferLimitcommandHandlerService.start();
     this.serverCommandHandlerService.start();
     this.tagCommandHandlerService.start();

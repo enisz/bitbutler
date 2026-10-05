@@ -10,6 +10,15 @@ export type { UpdateCapability, UpdaterEvent } from './models/updater.model.js';
 export type { LogLevel, RendererLogEntry } from './models/log.model.js';
 export type { NewServer, ServerProtocol, ServerRecord } from './models/server.model.js';
 export type {
+  TorrentAddJob,
+  TorrentAddJobFailedStage,
+  TorrentAddJobFilePriority,
+  TorrentAddJobPayload,
+  TorrentAddJobRename,
+  TorrentAddJobShareLimits,
+  TorrentAddJobStatus,
+} from './models/torrent-add-job.model.js';
+export type {
   TorrentDraft,
   TorrentDraftError,
   TorrentDraftSource,

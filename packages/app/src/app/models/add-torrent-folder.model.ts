@@ -1,4 +1,4 @@
-export type ScannedTorrentState = 'new' | 'exists' | 'error' | 'added' | 'failed';
+export type ScannedTorrentState = 'new' | 'exists' | 'error';
 
 export interface ScannedTorrentEntry {
   path: string;

@@ -123,12 +123,66 @@
       color: color-mix(in srgb, var(--bs-body-color) 80%, transparent);
       overflow-wrap: anywhere;
     }
+
+    .bb-toast-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+      padding: 0 1rem 0.85rem 1rem;
+    }
+
+    .bb-toast-action {
+      height: 30px;
+      padding: 0 0.875rem;
+      border-radius: var(--bb-control-radius);
+      border: 1px solid var(--bb-toast-color, var(--bs-border-color));
+      background: transparent;
+      color: var(--bb-toast-color, var(--bs-body-color));
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: background-color 120ms ease;
+
+      &:hover {
+        background: color-mix(in srgb, var(--bb-toast-color, currentColor) 14%, transparent);
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--bb-toast-color, currentColor);
+        outline-offset: 2px;
+      }
+    }
+
+    .bb-toast-action-primary {
+      background: var(--bb-toast-color, var(--bs-primary));
+      color: var(--bb-black);
+
+      &:hover {
+        background: color-mix(
+          in srgb,
+          var(--bb-toast-color, var(--bs-primary)) 85%,
+          var(--bb-black)
+        );
+      }
+    }
+
+    .bb-toast-action-text {
+      border-color: transparent;
+      color: color-mix(in srgb, var(--bs-body-color) 80%, transparent);
+
+      &:hover {
+        color: var(--bs-body-color);
+        background: color-mix(in srgb, var(--bs-body-color) 10%, transparent);
+      }
+    }
   }
 
   @each $v in $variants {
     $c: bb-bs-var($v);
 
     .bb-toast-#{$v} {
+      --bb-toast-color: #{$c};
       border-top: 4px solid #{$c} !important;
       .bb-toast-type-icon,
       .bb-toast-title {

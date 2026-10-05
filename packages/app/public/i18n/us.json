@@ -201,19 +201,14 @@
         "state": {
           "new": "New",
           "exists": "Exists",
-          "error": "Error",
-          "added": "Added",
-          "failed": "Failed"
-        },
-        "error": {
-          "duplicate": "Already in the list"
+          "error": "Error"
         },
         "note-title": "Good to know",
         "description": {
           "line1": "Files are parsed locally - nothing is sent anywhere until you click Add.",
           "line2": "Toggle Recursive or use Refresh to re-scan after files change on disk.",
           "line3": "Double-click a row's Name to rename it - press Enter to save, or Esc to cancel.",
-          "line4": "Only new and previously-failed torrents can be selected."
+          "line4": "Only new torrents can be selected."
         },
         "grid": {
           "no-rows": {
@@ -233,16 +228,6 @@
       "feedback": {
         "no-server-selected": "No server is selected. Choose a server before adding this torrent.",
         "add-failed": "Adding the torrent failed. Please try again."
-      },
-      "toast": {
-        "folder-added": {
-          "title": "Torrents Added",
-          "message": "Added {{count}} torrent(s)."
-        },
-        "folder-partial": {
-          "title": "Some Torrents Failed",
-          "message": "Added {{succeeded}} of {{total}} torrent(s)."
-        }
       }
     },
     "app-loader": {
@@ -2016,6 +2001,26 @@
       },
       "info": {
         "switching-server": "Switching to {{name}}"
+      }
+    },
+    "torrent-add-queue": {
+      "toast": {
+        "duplicate": {
+          "title": "Torrent Already Exists"
+        },
+        "add-failed": {
+          "title": "Failed to Add Torrent"
+        },
+        "setup-failed": {
+          "title": "Failed to Finish Torrent Setup"
+        },
+        "session-expired": {
+          "title": "Session Expired"
+        }
+      },
+      "action": {
+        "retry": "Retry",
+        "log-in": "Log In"
       }
     },
     "ui-command-handler": {

@@ -3,6 +3,7 @@
     <div class="bb-toast-wrapper" [class.bb-toast-closing]="toast.isClosing">
       <div
         class="bb-toast"
+        [attr.role]="toast.type === 'danger' || toast.type === 'warning' ? 'alert' : 'status'"
         [class]="'bb-toast-' + toast.type"
         (mouseenter)="onEnter(toast.id)"
         (mouseleave)="onLeave(toast.id)"
@@ -15,6 +16,20 @@
           </button>
         </div>
         <div class="bb-toast-body" [innerHTML]="toast.html"></div>
+        @if (toast.actions?.length) {
+          <div class="bb-toast-actions">
+            @for (action of toast.actions; track action.label) {
+              <button
+                type="button"
+                class="bb-toast-action"
+                [class]="'bb-toast-action-' + (action.kind ?? 'outline')"
+                (click)="runAction(toast, action)"
+              >
+                {{ action.label }}
+              </button>
+            }
+          </div>
+        }
       </div>
     </div>
   }

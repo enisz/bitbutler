@@ -9,7 +9,7 @@ import {
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { ToastPosition } from '../../models/general-settings.model';
-import { Toast, ToastType } from '../../models/toast.model';
+import { Toast, ToastAction, ToastType } from '../../models/toast.model';
 import { ToastService } from '../../services/toast.service';
 
 @Component({
@@ -53,6 +53,11 @@ export class ToastOverlay {
 
   dismiss(id: string) {
     this.toastService.dismiss(id);
+  }
+
+  runAction(toast: Toast, action: ToastAction) {
+    this.toastService.dismiss(toast.id, { actionChosen: true });
+    action.onClick();
   }
 
   iconFor(type: ToastType) {

@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { ToastType } from '../models/toast.model';
+import { ToastAction, ToastType } from '../models/toast.model';
 import { CommandBusService } from './command-bus.service';
 import { MenuBarService, MenuClick } from './menu-bar.service';
 import { NotificationService } from './notification.service';
@@ -8,6 +8,19 @@ import { ToastService } from './toast.service';
 
 const loremIpsum =
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum consequat elementum neque ut rhoncus.';
+
+const DEBUG_TOAST_ACTIONS_PREFIX = 'debug.toast.actions.';
+
+const TOAST_TYPES: ToastType[] = [
+  'primary',
+  'secondary',
+  'success',
+  'danger',
+  'warning',
+  'info',
+  'light',
+  'dark',
+];
 
 @Injectable({ providedIn: 'root' })
 export class MenuBarCommandHandlerService {
@@ -20,6 +33,11 @@ export class MenuBarCommandHandlerService {
   public start(): void {
     this.menuBarService.clicks$.subscribe((payload: MenuClick) => {
       const { action } = payload;
+
+      if (action.startsWith(DEBUG_TOAST_ACTIONS_PREFIX)) {
+        this.showDebugToastsWithActions(action.slice(DEBUG_TOAST_ACTIONS_PREFIX.length));
+        return;
+      }
 
       switch (action) {
         case 'file.addTorrent':
@@ -129,17 +147,8 @@ export class MenuBarCommandHandlerService {
           break;
 
         case 'debug.toast.random': {
-          const types: ToastType[] = [
-            'primary',
-            'secondary',
-            'success',
-            'danger',
-            'warning',
-            'info',
-            'light',
-            'dark',
-          ];
-          const type = types[Math.floor(Math.random() * (types.length - 1))];
+          const types = TOAST_TYPES;
+          const type = types[Math.floor(Math.random() * types.length)];
           this.toastService.showText('A random toast from debug menu', {
             title: 'Random Toast',
             type,
@@ -175,6 +184,39 @@ export class MenuBarCommandHandlerService {
           );
       }
     });
+  }
+
+  // Debug > Toasts > With Actions: the same kinds as the plain list, each with a secondary and a
+  // primary action so the footer layout and per-type colors can be checked.
+  private showDebugToastsWithActions(kind: string): void {
+    const toastTypes: ToastType[] =
+      kind === 'all'
+        ? TOAST_TYPES
+        : kind === 'random'
+          ? [TOAST_TYPES[Math.floor(Math.random() * TOAST_TYPES.length)]]
+          : kind === 'adaptive'
+            ? [this.toastService.adaptiveType()]
+            : TOAST_TYPES.includes(kind as ToastType)
+              ? [kind as ToastType]
+              : [];
+
+    for (const type of toastTypes) {
+      this.toastService.showText(loremIpsum, {
+        type,
+        title: `${type[0].toUpperCase()}${type.slice(1)} with actions`,
+        actions: this.debugToastActions(),
+      });
+    }
+  }
+
+  private debugToastActions(): ToastAction[] {
+    const clicked = (label: string) => () =>
+      this.toastService.info(`Action clicked: ${label}`, 'Debug', 2000);
+
+    return [
+      { label: 'Details', kind: 'text', onClick: clicked('Details') },
+      { label: 'Retry', kind: 'primary', onClick: clicked('Retry') },
+    ];
   }
 
   private handleServerSwitch(serverId: string): void {

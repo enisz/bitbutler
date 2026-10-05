@@ -19,6 +19,7 @@ describe('MenuBarCommandHandlerService', () => {
   let toastSuccess: ReturnType<typeof vi.fn>;
   let toastDanger: ReturnType<typeof vi.fn>;
   let toastWarning: ReturnType<typeof vi.fn>;
+  let toastShowText: ReturnType<typeof vi.fn>;
   let serverStoreService: any;
 
   beforeEach(() => {
@@ -29,6 +30,7 @@ describe('MenuBarCommandHandlerService', () => {
     toastSuccess = vi.fn();
     toastDanger = vi.fn();
     toastWarning = vi.fn();
+    toastShowText = vi.fn();
 
     serverStoreService = {
       currentServerId: signal('server-1'),
@@ -58,8 +60,9 @@ describe('MenuBarCommandHandlerService', () => {
             warning: toastWarning,
             light: vi.fn(),
             dark: vi.fn(),
+            showText: toastShowText,
+            adaptiveType: vi.fn().mockReturnValue('dark'),
             adaptive: vi.fn(),
-            showText: vi.fn(),
           },
         },
         { provide: ServerStoreService, useValue: serverStoreService },
@@ -159,5 +162,66 @@ describe('MenuBarCommandHandlerService', () => {
 
   it('should not crash on unknown action', () => {
     expect(() => clicks$.next({ action: 'unknown.action', ts: 1 })).not.toThrow();
+  });
+
+  describe('debug toasts with actions', () => {
+    const shown = () => toastShowText.mock.calls.map(([, opts]) => opts);
+
+    it('shows a toast of the clicked type with a secondary and a primary action', () => {
+      clicks$.next({ action: 'debug.toast.actions.danger', ts: 1 });
+
+      expect(shown()).toEqual([
+        expect.objectContaining({
+          type: 'danger',
+          title: 'Danger with actions',
+          actions: [
+            expect.objectContaining({ label: 'Details', kind: 'text' }),
+            expect.objectContaining({ label: 'Retry', kind: 'primary' }),
+          ],
+        }),
+      ]);
+      expect(toastDanger).not.toHaveBeenCalled();
+    });
+
+    it('resolves adaptive to the type opposite the current theme', () => {
+      clicks$.next({ action: 'debug.toast.actions.adaptive', ts: 1 });
+
+      expect(shown().map((o) => o.type)).toEqual(['dark']);
+    });
+
+    it('shows one toast of every type for "all"', () => {
+      clicks$.next({ action: 'debug.toast.actions.all', ts: 1 });
+
+      expect(shown().map((o) => o.type)).toEqual([
+        'primary',
+        'secondary',
+        'success',
+        'danger',
+        'warning',
+        'info',
+        'light',
+        'dark',
+      ]);
+    });
+
+    it('shows exactly one toast for "random"', () => {
+      clicks$.next({ action: 'debug.toast.actions.random', ts: 1 });
+
+      expect(toastShowText).toHaveBeenCalledTimes(1);
+    });
+
+    it('ignores an unknown kind', () => {
+      clicks$.next({ action: 'debug.toast.actions.bogus', ts: 1 });
+
+      expect(toastShowText).not.toHaveBeenCalled();
+    });
+
+    it('gives clicking an action visible feedback', () => {
+      clicks$.next({ action: 'debug.toast.actions.info', ts: 1 });
+
+      shown()[0].actions[1].onClick();
+
+      expect(toastInfo).toHaveBeenCalledWith('Action clicked: Retry', 'Debug', 2000);
+    });
   });
 });

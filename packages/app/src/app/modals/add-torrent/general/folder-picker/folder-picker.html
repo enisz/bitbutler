@@ -77,7 +77,7 @@
     (gridReady)="onGridReady($event)"
     (keydown)="onGridKeyDown($event)"
     [loading]="loading()"
-    [rowData]="visibleRows()"
+    [rowData]="rows()"
     [columnDefs]="colDefs"
     [gridOptions]="gridOptions"
     [theme]="theme() === 'dark' ? bbDark : bbLight"

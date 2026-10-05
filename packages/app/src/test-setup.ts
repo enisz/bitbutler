@@ -103,6 +103,13 @@ window.bitbutler = {
     request: <TResponse = unknown>(_payload: unknown) => Promise.resolve(null as TResponse),
     torrentsAdd: noopAsync,
   },
+  torrentQueue: {
+    enqueue: () => Promise.resolve({ jobId: '' }),
+    list: () => Promise.resolve([]),
+    retry: noopVoidAsync,
+    dismiss: noopVoidAsync,
+    onUpdate: noopSubscription,
+  },
   window: {
     maximize: noopVoidAsync,
     unmaximize: noopVoidAsync,

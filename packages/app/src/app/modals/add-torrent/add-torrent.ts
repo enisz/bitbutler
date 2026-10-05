@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   HostListener,
   OnInit,
   computed,
@@ -11,7 +12,7 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { SelectedTorrentInput, TorrentDraft } from '@bitbutler/shared';
+import { SelectedTorrentInput, TorrentAddJobPayload, TorrentDraft } from '@bitbutler/shared';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faCircleInfo,
@@ -34,7 +35,6 @@ import {
   AddTorrentSettings,
   RootFolderMode,
 } from '../../models/add-torrent.model';
-import { HttpError } from '../../models/http.model';
 import { AddTorrentSettingsService } from '../../services/add-torrent-settings.service';
 import { CommandBusService } from '../../services/command-bus.service';
 import { GeneralSettingsService } from '../../services/general-settings.service';
@@ -42,6 +42,7 @@ import { OpenFilesService, PendingAddTorrent } from '../../services/open-files.s
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { ToastService } from '../../services/toast.service';
+import { TorrentAddQueueService } from '../../services/torrent-add-queue.service';
 import { AddTorrentFiles } from './files/files';
 import { AddTorrentGeneral } from './general/general';
 import { AddTorrentLimits } from './limits/limits';
@@ -73,8 +74,12 @@ interface AddTorrentTab {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddTorrent implements OnInit {
-  @HostListener('document:keydown.escape')
-  onEscapeKey(): void {
+  @HostListener('document:keydown.escape', ['$event'])
+  onEscapeKey(event: Event): void {
+    // ng-select calls preventDefault() on this same event when Escape closes its own dropdown;
+    // since this listener only runs after the event has bubbled past the target, that flag is
+    // already set by the time we see it - so a dropdown-close never also cancels the modal.
+    if (event.defaultPrevented) return;
     this.handleCancel();
   }
   public readonly activeModal = inject(NgbActiveModal);
@@ -87,8 +92,10 @@ export class AddTorrent implements OnInit {
   private readonly commandBusService = inject(CommandBusService);
   private readonly translateService = inject(TranslateService);
   private readonly toastService = inject(ToastService);
+  private readonly torrentAddQueueService = inject(TorrentAddQueueService);
 
   private readonly generalTab = viewChild(AddTorrentGeneral);
+  private readonly addButton = viewChild<ElementRef<HTMLButtonElement>>('addButton');
 
   public pending = this.openFilesService.pendingDrafts;
   public queueCount = computed(() => this.pending().length);
@@ -313,6 +320,9 @@ export class AddTorrent implements OnInit {
 
   public onTreeSaved(event: FileTreeSaveEvent): void {
     this.savedFileState = event;
+    // Enter-to-save leaves focus on the now-read-only rename input; move it to the modal's
+    // primary action so the whole add-torrent flow stays keyboard-only.
+    this.addButton()?.nativeElement.focus();
   }
 
   public selectTab(tabId: AddTorrentTabId): void {
@@ -379,58 +389,26 @@ export class AddTorrent implements OnInit {
 
     try {
       if (this.inputMode() === 'link') {
-        await window.bitbutler.qb.torrentsAdd({
-          id: serverId,
-          urls: this.getMagnetLinks(),
-          torrents: [],
-          options: sharedOptions,
+        await this.torrentAddQueueService.enqueue({
+          serverId,
+          add: { urls: this.getMagnetLinks(), torrents: [], options: sharedOptions },
         });
       } else if (this.inputMode() === 'folder') {
         const entries = this.getSelectedFolderEntries();
         const generalSettings = await this.generalSettingsService.load();
-        let succeeded = 0;
 
         for (const entry of entries) {
-          try {
-            await window.bitbutler.qb.torrentsAdd({
-              id: serverId,
+          await this.torrentAddQueueService.enqueue({
+            serverId,
+            add: {
               torrents: [{ name: entry.name, path: entry.path }],
               options: { ...sharedOptions, rename: entry.name },
-            });
-            succeeded++;
-            this.generalTab()?.markFolderEntryAdded(entry.path);
-            if (generalSettings.behavior.deleteTorrentFile) {
-              try {
-                const result = await window.bitbutler.torrent.deleteFile({ path: entry.path });
-                if (!result?.ok) {
-                  console.error(
-                    AddTorrent.name,
-                    'handleSubmit',
-                    'folder torrent file delete failed',
-                    entry.path,
-                    result?.error,
-                  );
-                }
-              } catch (deleteError) {
-                console.error(
-                  AddTorrent.name,
-                  'handleSubmit',
-                  'folder torrent file delete failed',
-                  entry.path,
-                  deleteError,
-                );
-              }
-            }
-          } catch (e) {
-            console.error(
-              AddTorrent.name,
-              'handleSubmit',
-              'folder torrent add failed',
-              entry.path,
-              e,
-            );
-            this.generalTab()?.markFolderEntryFailed(entry.path, this.describeFolderAddError(e));
-          }
+            },
+            displayName: entry.name,
+            duplicateAs: 'toast',
+            originalPath: entry.path,
+            deleteOriginalOnSuccess: generalSettings.behavior.deleteTorrentFile,
+          });
         }
 
         await this.addTorrentSettings.save({
@@ -449,42 +427,21 @@ export class AddTorrent implements OnInit {
           recursive: raw.folderGroup.recursive,
         });
 
-        if (succeeded === entries.length) {
-          this.toastService.success(
-            this.translateService.instant('components.add-torrent.toast.folder-added.message', {
-              count: succeeded,
-            }),
-            this.translateService.instant('components.add-torrent.toast.folder-added.title'),
-          );
-          this.activeModal.close(true);
-        } else {
-          this.toastService.danger(
-            this.translateService.instant('components.add-torrent.toast.folder-partial.message', {
-              succeeded,
-              total: entries.length,
-            }),
-            this.translateService.instant('components.add-torrent.toast.folder-partial.title'),
-          );
-        }
+        this.activeModal.close(true);
 
         return;
       } else {
         const selectedFile = this.selectedTorrentFile()!;
-        await window.bitbutler.qb.torrentsAdd({
-          id: serverId,
-          torrents: [selectedFile],
-          options: sharedOptions,
+        const generalSettings = await this.generalSettingsService.load();
+        await this.torrentAddQueueService.enqueue({
+          serverId,
+          add: { torrents: [selectedFile], options: sharedOptions },
+          displayName: this.effectiveDraft()?.torrent?.name ?? selectedFile.name,
+          infoHash: this.effectiveDraft()?.torrent?.infoHashV1?.trim().toLowerCase(),
+          originalPath: this.effectiveDraft()?.originalPath,
+          deleteOriginalOnSuccess: generalSettings.behavior.deleteTorrentFile,
+          ...this.buildPostAddFields(raw.shareLimits),
         });
-
-        const state = this.savedFileState;
-        const hasTreeCustomizations =
-          state != null &&
-          (state.renames.length > 0 || state.files.some((f) => (f.priority ?? 1) !== 1));
-        const inactiveLimit = raw.shareLimits?.inactiveSeedingTimeLimit ?? null;
-        const needsInactivePost = inactiveLimit !== null && inactiveLimit !== -2;
-        if (hasTreeCustomizations || needsInactivePost) {
-          await this.tryRenameContentAfterAdd(serverId, raw.shareLimits);
-        }
       }
 
       await this.addTorrentSettings.save({
@@ -506,55 +463,11 @@ export class AddTorrent implements OnInit {
       if (this.inputMode() === 'link') {
         this.activeModal.close(true);
       } else {
-        const originalPath = this.effectiveDraft()?.originalPath;
-        if (originalPath) {
-          const generalSettings = await this.generalSettingsService.load();
-          if (generalSettings.behavior.deleteTorrentFile) {
-            try {
-              const result = await window.bitbutler.torrent.deleteFile({ path: originalPath });
-              if (!result?.ok) {
-                console.error(
-                  AddTorrent.name,
-                  'handleSubmit',
-                  'file delete failed',
-                  originalPath,
-                  result?.error,
-                );
-              }
-            } catch (deleteError) {
-              console.error(
-                AddTorrent.name,
-                'handleSubmit',
-                'file delete failed',
-                originalPath,
-                deleteError,
-              );
-            }
-          }
-        }
         this.openFilesService.consumeCurrentDraft();
       }
     } catch (e) {
-      let parsed: { name?: string; status?: number } = {};
-      try {
-        const msg = String((e as Error)?.message ?? e);
-        const idx = msg.indexOf('{');
-        if (idx !== -1) parsed = JSON.parse(msg.slice(idx));
-      } catch {}
-
-      if (parsed.name === 'QbHttpError' && parsed.status === 409) {
-        const draft = this.effectiveDraft();
-        const hash = draft?.torrent?.infoHashV1?.toLowerCase() ?? null;
-        this.commandBusService.emit({
-          type: 'UI_TORRENT_EXISTS',
-          hash,
-          originalPath: draft?.originalPath ?? null,
-        });
-        this.openFilesService.consumeCurrentDraft();
-      } else {
-        console.error(AddTorrent.name, 'handleSubmit', '[AddTorrent] qb add failed', e);
-        this.addForm.setErrors({ addFailed: true });
-      }
+      console.error(AddTorrent.name, 'handleSubmit', '[AddTorrent] enqueue failed', e);
+      this.addForm.setErrors({ addFailed: true });
     } finally {
       this.isSubmitting.set(false);
     }
@@ -691,86 +604,28 @@ export class AddTorrent implements OnInit {
     }
   }
 
-  private describeFolderAddError(e: unknown): string {
-    const raw = String((e as Error)?.message ?? e);
-    let parsed: { name?: string; status?: number; statusText?: string } = {};
-    try {
-      const idx = raw.indexOf('{');
-      if (idx !== -1) parsed = JSON.parse(raw.slice(idx));
-    } catch {}
+  // Renames/priorities/share-limits all need the torrent registered server-side first, which can
+  // take a few seconds - queued to the main process instead of awaited here so the modal can
+  // advance to the next draft (or close) immediately after the add itself succeeds.
+  private buildPostAddFields(
+    shareLimits: ShareLimitValue | null | undefined,
+  ): Pick<TorrentAddJobPayload, 'renames' | 'priorities' | 'shareLimits'> {
+    const state = this.savedFileState;
+    const inactiveLimit = shareLimits?.inactiveSeedingTimeLimit ?? null;
+    const needsInactivePost = inactiveLimit !== null && inactiveLimit !== -2;
 
-    if (parsed.name === 'QbHttpError') {
-      if (parsed.status === 409) {
-        return this.translateService.instant(
-          'components.add-torrent.folder-picker.error.duplicate',
-        );
-      }
-      return `HTTP ${parsed.status}${parsed.statusText ? ' - ' + parsed.statusText : ''}`;
-    }
-
-    return raw;
-  }
-
-  private async tryRenameContentAfterAdd(
-    serverId: string,
-    shareLimits?: ShareLimitValue | null,
-  ): Promise<void> {
-    const hash = this.effectiveDraft()?.torrent?.infoHashV1?.trim();
-    if (!hash) return;
-
-    const pollForTorrent = async (): Promise<void> => {
-      const maxRetries = 10;
-      const delay = 500;
-      for (let i = 0; i < maxRetries; i++) {
-        try {
-          const contents = await this.qbService.torrents.files(serverId, hash, {
-            suppressErrors: true,
-          });
-          if (contents && contents.length > 0) return;
-        } catch (e) {
-          if (!(e instanceof HttpError && e.status === 404)) throw e;
-        }
-        await new Promise((resolve) => setTimeout(resolve, delay));
-      }
-      throw new Error(`Torrent ${hash} not found after ${maxRetries * delay}ms`);
-    };
-
-    try {
-      await pollForTorrent();
-
-      for (const item of this.savedFileState?.renames ?? []) {
-        await this.qbService.torrents.renameFile(serverId, hash, item.oldPath, item.newPath);
-      }
-
-      const savedFiles = this.savedFileState?.files ?? null;
-      if (savedFiles) {
-        const nonDefault = savedFiles.filter((f) => (f.priority ?? 1) !== 1);
-        if (nonDefault.length > 0) {
-          const contents = await this.qbService.torrents.files(serverId, hash);
-          const pathToIndex = new Map(contents.map((c) => [c.name, c.index]));
-          for (const f of nonDefault) {
-            const index = pathToIndex.get(f.path);
-            if (index !== undefined) {
-              await this.qbService.torrents.filePrio(serverId, hash, [index], f.priority ?? 0);
-            }
+    return {
+      renames: state?.renames ?? [],
+      priorities: (state?.files ?? [])
+        .filter((f) => (f.priority ?? 1) !== 1)
+        .map((f) => ({ path: f.path, priority: f.priority ?? 0 })),
+      shareLimits: needsInactivePost
+        ? {
+            ratioLimit: shareLimits?.ratioLimit ?? -2,
+            seedingTimeLimit: shareLimits?.seedingTimeLimit ?? -2,
+            inactiveSeedingTimeLimit: inactiveLimit,
           }
-        }
-      }
-
-      if (shareLimits != null) {
-        const inactiveLimit = shareLimits.inactiveSeedingTimeLimit;
-        if (inactiveLimit !== null && inactiveLimit !== -2) {
-          await this.qbService.torrents.setShareLimits(
-            serverId,
-            [hash],
-            shareLimits.ratioLimit ?? -2,
-            shareLimits.seedingTimeLimit ?? -2,
-            inactiveLimit,
-          );
-        }
-      }
-    } catch (error) {
-      console.error(AddTorrent.name, 'tryRenameContentAfterAdd', error);
-    }
+        : undefined,
+    };
   }
 }

@@ -132,4 +132,63 @@ describe('ToastOverlay', () => {
       expect(component.position()).toBe('top-left');
     });
   });
+
+  describe('actions', () => {
+    const withActions = (onClick = vi.fn()): Toast => ({
+      ...makeToast('t1', 'danger'),
+      actions: [
+        { label: 'Details', kind: 'text', onClick: vi.fn() },
+        { label: 'Retry', kind: 'primary', onClick },
+      ],
+    });
+    const buttons = () =>
+      Array.from<HTMLButtonElement>(
+        fixture.nativeElement.querySelectorAll('.bb-toast-actions button'),
+      );
+
+    it('renders no action row for a toast without actions', () => {
+      component.add(makeToast('t1'));
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelector('.bb-toast-actions')).toBeNull();
+    });
+
+    it('renders one button per action, in order, with its kind as a class', () => {
+      component.add(withActions());
+      fixture.detectChanges();
+
+      expect(buttons().map((b) => b.textContent?.trim())).toEqual(['Details', 'Retry']);
+      expect(buttons()[0].classList).toContain('bb-toast-action-text');
+      expect(buttons()[1].classList).toContain('bb-toast-action-primary');
+    });
+
+    it('defaults an action without a kind to outline', () => {
+      component.add({ ...makeToast('t1'), actions: [{ label: 'Go', onClick: vi.fn() }] });
+      fixture.detectChanges();
+
+      expect(buttons()[0].classList).toContain('bb-toast-action-outline');
+    });
+
+    it('runs the action and dismisses the toast without treating it as a plain close', () => {
+      const onClick = vi.fn();
+      component.add(withActions(onClick));
+      fixture.detectChanges();
+
+      buttons()[1].click();
+
+      expect(onClick).toHaveBeenCalledTimes(1);
+      expect(mockToastService.dismiss).toHaveBeenCalledWith('t1', { actionChosen: true });
+    });
+
+    it('uses role=alert for danger toasts and role=status otherwise', () => {
+      component.add(makeToast('t1', 'danger'));
+      component.add(makeToast('t2', 'success'));
+      fixture.detectChanges();
+
+      const roles = Array.from<HTMLElement>(
+        fixture.nativeElement.querySelectorAll('.bb-toast'),
+      ).map((e) => e.getAttribute('role'));
+      expect(roles).toEqual(['alert', 'status']);
+    });
+  });
 });

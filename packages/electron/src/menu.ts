@@ -21,6 +21,33 @@ function sendMenuAction(
   mainWindow.webContents.send('menu:clicked', { action, ts: Date.now(), ...extraPayload });
 }
 
+// The same list backs both Debug > Toasts submenus; only the action prefix differs, so the
+// renderer can tell a plain toast from one with actions.
+function debugToastItems(
+  mainWindow: Electron.BrowserWindow | null,
+  prefix: string,
+): Electron.MenuItemConstructorOptions[] {
+  const item = (label: string, kind: string): Electron.MenuItemConstructorOptions => ({
+    label,
+    click: () => sendMenuAction(mainWindow, `${prefix}.${kind}`),
+  });
+
+  return [
+    item('Primary', 'primary'),
+    item('Secondary', 'secondary'),
+    item('Success', 'success'),
+    item('Danger', 'danger'),
+    item('Warning', 'warning'),
+    item('Info', 'info'),
+    item('Light', 'light'),
+    item('Dark', 'dark'),
+    item('Adaptive', 'adaptive'),
+    { type: 'separator' },
+    item('Random', 'random'),
+    item('One of each', 'all'),
+  ];
+}
+
 export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void {
   const isDev = !app.isPackaged;
   const mainWindow = mainWindowArg ?? getMainWindow();
@@ -104,56 +131,25 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
             },
             { type: 'separator' },
             {
-              label: 'Show a Notification',
+              label: 'Notifications',
               submenu: [
                 {
-                  label: 'Notification from Renderer',
+                  label: 'From Renderer',
                   click: () => sendMenuAction(mainWindow, 'debug.notification'),
                 },
                 {
-                  label: 'Notification from Main',
+                  label: 'From Main',
                   click: () => notify('Notification Test', 'A notification from the Main process'),
                 },
               ],
             },
             {
-              label: 'Show a toast',
+              label: 'Toasts',
               submenu: [
+                { label: 'Without Actions', submenu: debugToastItems(mainWindow, 'debug.toast') },
                 {
-                  label: 'Primary',
-                  click: () => sendMenuAction(mainWindow, 'debug.toast.primary'),
-                },
-                {
-                  label: 'Secondary',
-                  click: () => sendMenuAction(mainWindow, 'debug.toast.secondary'),
-                },
-                {
-                  label: 'Success',
-                  click: () => sendMenuAction(mainWindow, 'debug.toast.success'),
-                },
-                {
-                  label: 'Danger',
-                  click: () => sendMenuAction(mainWindow, 'debug.toast.danger'),
-                },
-                {
-                  label: 'Warning',
-                  click: () => sendMenuAction(mainWindow, 'debug.toast.warning'),
-                },
-                { label: 'Info', click: () => sendMenuAction(mainWindow, 'debug.toast.info') },
-                { label: 'Light', click: () => sendMenuAction(mainWindow, 'debug.toast.light') },
-                { label: 'Dark', click: () => sendMenuAction(mainWindow, 'debug.toast.dark') },
-                {
-                  label: 'Adaptive',
-                  click: () => sendMenuAction(mainWindow, 'debug.toast.adaptive'),
-                },
-                { type: 'separator' },
-                {
-                  label: 'Random',
-                  click: () => sendMenuAction(mainWindow, 'debug.toast.random'),
-                },
-                {
-                  label: 'One of each',
-                  click: () => sendMenuAction(mainWindow, 'debug.toast.all'),
+                  label: 'With Actions',
+                  submenu: debugToastItems(mainWindow, 'debug.toast.actions'),
                 },
               ],
             },

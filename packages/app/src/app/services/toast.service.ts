@@ -7,11 +7,16 @@ import { TranslateService } from '@ngx-translate/core';
 import { ToastOverlay } from '../components/toast-overlay/toast-overlay';
 import { GeneralSettings, ToastPosition } from '../models/general-settings.model';
 import { NotificationCategory, categoryForToastType } from '../models/notification.model';
-import { Toast, ToastType } from '../models/toast.model';
+import { Toast, ToastAction, ToastType } from '../models/toast.model';
 import { GeneralSettingsService } from './general-settings.service';
 import { NotificationPolicyService } from './notification-policy.service';
 import { NotificationService } from './notification.service';
 import { ThemeService } from './theme.service';
+
+// A toast with actions has to outlive a glance: errors stay until dismissed, anything else gets
+// a longer window than a plain toast. Hover/focus still pauses the timer.
+const ACTION_TOAST_DURATION_MS = 8000;
+const MAX_TOAST_ACTIONS = 2;
 
 type TimerState = {
   timeoutId: number | null;
@@ -101,6 +106,8 @@ export class ToastService {
       title?: string;
       type?: ToastType;
       duration?: number;
+      actions?: ToastAction[];
+      onDismiss?: () => void;
       category?: NotificationCategory;
       notifyOs?: boolean;
     } = {},
@@ -109,6 +116,7 @@ export class ToastService {
     const title = opts.title ?? this.translateService.instant('general.toast.notification');
     const category = opts.category ?? categoryForToastType(type);
     const safeHtml = this.sanitizeHtml(html);
+    const actions = opts.actions?.slice(0, MAX_TOAST_ACTIONS);
 
     const plainText = this.htmlToText(safeHtml);
     if (opts.notifyOs !== false && this.notificationPolicy.allowOs(category, title, plainText)) {
@@ -126,7 +134,9 @@ export class ToastService {
       title,
       html: safeHtml,
       type,
-      duration: opts.duration ?? 6000,
+      duration: opts.duration ?? this.defaultDuration(type, actions),
+      actions,
+      onDismiss: opts.onDismiss,
     };
 
     this.container!.add(toast);
@@ -143,6 +153,8 @@ export class ToastService {
       title?: string;
       type?: ToastType;
       duration?: number;
+      actions?: ToastAction[];
+      onDismiss?: () => void;
       category?: NotificationCategory;
       notifyOs?: boolean;
     } = {},
@@ -155,12 +167,23 @@ export class ToastService {
     return this.showHtml(html, opts);
   }
 
+  private defaultDuration(type: ToastType, actions?: ToastAction[]): number {
+    if (!actions?.length) return 6000;
+    return type === 'danger' ? 0 : ACTION_TOAST_DURATION_MS;
+  }
+
   private htmlToText(html: string): string {
     const withBreaks = html.replace(/<br\s*\/?>/gi, '\n');
     return new DOMParser().parseFromString(withBreaks, 'text/html').body.textContent ?? '';
   }
 
-  dismiss(id: string) {
+  dismiss(id: string, opts: { actionChosen?: boolean } = {}) {
+    if (!opts.actionChosen) {
+      this.container
+        ?.toasts()
+        .find((t) => t.id === id && !t.isClosing)
+        ?.onDismiss?.();
+    }
     this.clearTimer(id);
     this.container?.beginDismiss(id);
 
@@ -244,11 +267,12 @@ export class ToastService {
     });
   }
 
-  danger(html: string, title?: string, duration = 6000): string {
+  danger(html: string, title?: string, duration?: number, actions?: ToastAction[]): string {
     return this.showHtml(html, {
       type: 'danger',
       title: title ?? this.translateService.instant('general.toast.error'),
-      duration,
+      duration: duration ?? (actions?.length ? undefined : 6000),
+      actions,
     });
   }
 
@@ -276,17 +300,20 @@ export class ToastService {
     return this.showHtml(html, { type: 'dark', title, duration });
   }
 
-  adaptive(html: string, title: string, duration = 6000): string {
+  // The inverse of the current mode, so the toast stands out from the surface behind it.
+  adaptiveType(): 'light' | 'dark' {
     let mode = this.themeService.mode();
 
     if (mode === 'system') {
       mode = this.themeService.getSystemMode();
     }
 
-    if (mode === 'light') {
-      return this.dark(html, title, duration);
-    } else {
-      return this.light(html, title, duration);
-    }
+    return mode === 'light' ? 'dark' : 'light';
+  }
+
+  adaptive(html: string, title: string, duration = 6000): string {
+    return this.adaptiveType() === 'dark'
+      ? this.dark(html, title, duration)
+      : this.light(html, title, duration);
   }
 }
