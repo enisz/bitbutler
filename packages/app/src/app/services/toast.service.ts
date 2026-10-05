@@ -300,17 +300,20 @@ export class ToastService {
     return this.showHtml(html, { type: 'dark', title, duration });
   }
 
-  adaptive(html: string, title: string, duration = 6000): string {
+  // The inverse of the current mode, so the toast stands out from the surface behind it.
+  adaptiveType(): 'light' | 'dark' {
     let mode = this.themeService.mode();
 
     if (mode === 'system') {
       mode = this.themeService.getSystemMode();
     }
 
-    if (mode === 'light') {
-      return this.dark(html, title, duration);
-    } else {
-      return this.light(html, title, duration);
-    }
+    return mode === 'light' ? 'dark' : 'light';
+  }
+
+  adaptive(html: string, title: string, duration = 6000): string {
+    return this.adaptiveType() === 'dark'
+      ? this.dark(html, title, duration)
+      : this.light(html, title, duration);
   }
 }
