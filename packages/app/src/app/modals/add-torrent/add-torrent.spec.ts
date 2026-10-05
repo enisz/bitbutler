@@ -13,6 +13,7 @@ import { OpenFilesService } from '../../services/open-files.service';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
 import { ToastService } from '../../services/toast.service';
+import { TorrentAddQueueService } from '../../services/torrent-add-queue.service';
 import { AddTorrent } from './add-torrent';
 
 const draftWithFiles: TorrentDraft = {
@@ -58,6 +59,10 @@ describe('AddTorrent', () => {
         {
           provide: ToastService,
           useValue: { success: vi.fn(), danger: vi.fn() },
+        },
+        {
+          provide: TorrentAddQueueService,
+          useValue: { enqueue: vi.fn().mockResolvedValue({ jobId: 'job-1' }) },
         },
         {
           provide: GeneralSettingsService,
@@ -365,142 +370,76 @@ describe('AddTorrent', () => {
     });
   });
 
-  describe('tryRenameContentAfterAdd', () => {
-    let mockQbService: any;
+  describe('enqueuePostAddJob', () => {
+    let mockTorrentAddQueueService: any;
     const hash = 'abcdef1234567890';
     const draft: Partial<TorrentDraft> = { torrent: { infoHashV1: hash } as any };
 
     beforeEach(() => {
-      mockQbService = TestBed.inject(QbService) as any;
+      mockTorrentAddQueueService = TestBed.inject(TorrentAddQueueService) as any;
       component.manualDraft.set(draft as TorrentDraft);
-      mockQbService.torrents.files.mockResolvedValue([{ name: 'file.mkv', index: 0 }]);
     });
 
-    it('should call setShareLimits when inactiveSeedingTimeLimit is no-limit (-1)', async () => {
-      await (component as any).tryRenameContentAfterAdd('server-1', {
-        ratioLimit: -2,
-        seedingTimeLimit: -2,
-        inactiveSeedingTimeLimit: -1,
-      });
-      expect(mockQbService.torrents.setShareLimits).toHaveBeenCalledWith(
-        'server-1',
-        [hash],
-        -2,
-        -2,
-        -1,
-      );
-    });
-
-    it('should call setShareLimits when inactiveSeedingTimeLimit is a custom value', async () => {
-      await (component as any).tryRenameContentAfterAdd('server-1', {
-        ratioLimit: 2,
-        seedingTimeLimit: 120,
-        inactiveSeedingTimeLimit: 60,
-      });
-      expect(mockQbService.torrents.setShareLimits).toHaveBeenCalledWith(
-        'server-1',
-        [hash],
-        2,
-        120,
-        60,
-      );
-    });
-
-    it('should not call setShareLimits when inactiveSeedingTimeLimit is global (-2)', async () => {
-      await (component as any).tryRenameContentAfterAdd('server-1', {
-        ratioLimit: -2,
-        seedingTimeLimit: -2,
-        inactiveSeedingTimeLimit: -2,
-      });
-      expect(mockQbService.torrents.setShareLimits).not.toHaveBeenCalled();
-    });
-
-    it('should not call setShareLimits when shareLimits is null', async () => {
-      await (component as any).tryRenameContentAfterAdd('server-1', null);
-      expect(mockQbService.torrents.setShareLimits).not.toHaveBeenCalled();
-    });
-
-    it('should do nothing when the effective draft has no infoHashV1', async () => {
+    it('should do nothing when the effective draft has no infoHashV1', () => {
       component.manualDraft.set({
         source: 'manual',
         receivedAt: Date.now(),
         torrent: { name: 'x', totalSize: 1, files: [] },
       });
 
-      await (component as any).tryRenameContentAfterAdd('server-1', null);
+      (component as any).enqueuePostAddJob('server-1', null, null, false);
 
-      expect(mockQbService.torrents.files).not.toHaveBeenCalled();
+      expect(mockTorrentAddQueueService.enqueue).not.toHaveBeenCalled();
     });
 
-    it('should apply saved file renames via renameTorrentFile', async () => {
-      (component as any).savedFileState = {
-        files: [],
+    it('should enqueue renames and non-default file priorities from the saved file state', () => {
+      const state: FileTreeSaveEvent = {
         renames: [{ oldPath: 'old.txt', newPath: 'new.txt' }],
-      };
-
-      await (component as any).tryRenameContentAfterAdd('server-1', null);
-
-      expect(mockQbService.torrents.renameFile).toHaveBeenCalledWith(
-        'server-1',
-        hash,
-        'old.txt',
-        'new.txt',
-      );
-    });
-
-    it('should apply non-default file priorities using the path-to-index map from torrentContents', async () => {
-      (component as any).savedFileState = {
         files: [
           { path: 'file.mkv', length: 100, priority: 7 },
           { path: 'subtitle.srt', length: 10, priority: 0 },
           { path: 'readme.txt', length: 5, priority: 1 },
         ],
-        renames: [],
       };
 
-      mockQbService.torrents.files
-        .mockResolvedValueOnce([{ name: 'file.mkv', index: 0 }])
-        .mockResolvedValueOnce([
-          { name: 'file.mkv', index: 0 },
-          { name: 'subtitle.srt', index: 1 },
-        ]);
+      (component as any).enqueuePostAddJob('server-1', state, null, false);
 
-      await (component as any).tryRenameContentAfterAdd('server-1', null);
-
-      expect(mockQbService.torrents.filePrio).toHaveBeenCalledWith('server-1', hash, [0], 7);
-      expect(mockQbService.torrents.filePrio).toHaveBeenCalledWith('server-1', hash, [1], 0);
-      expect(mockQbService.torrents.filePrio).toHaveBeenCalledTimes(2);
-    });
-
-    it('should skip files that are not found in the torrent contents response', async () => {
-      (component as any).savedFileState = {
-        files: [{ path: 'missing.mkv', length: 100, priority: 7 }],
-        renames: [],
-      };
-
-      mockQbService.torrents.files
-        .mockResolvedValueOnce([{ name: 'file.mkv', index: 0 }])
-        .mockResolvedValueOnce([{ name: 'file.mkv', index: 0 }]);
-
-      await (component as any).tryRenameContentAfterAdd('server-1', null);
-
-      expect(mockQbService.torrents.filePrio).not.toHaveBeenCalled();
-    });
-
-    it('should log and swallow errors instead of throwing', async () => {
-      (component as any).savedFileState = {
-        files: [],
+      expect(mockTorrentAddQueueService.enqueue).toHaveBeenCalledWith({
+        serverId: 'server-1',
+        infoHash: hash,
         renames: [{ oldPath: 'old.txt', newPath: 'new.txt' }],
-      };
-      mockQbService.torrents.renameFile.mockRejectedValueOnce(new Error('rename failed'));
-      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        priorities: [
+          { path: 'file.mkv', priority: 7 },
+          { path: 'subtitle.srt', priority: 0 },
+        ],
+        shareLimits: undefined,
+      });
+    });
 
-      await (component as any).tryRenameContentAfterAdd('server-1', null);
+    it('should not include shareLimits when needsInactivePost is false', () => {
+      (component as any).enqueuePostAddJob(
+        'server-1',
+        null,
+        { ratioLimit: 2, seedingTimeLimit: 120, inactiveSeedingTimeLimit: -2 },
+        false,
+      );
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        AddTorrent.name,
-        'tryRenameContentAfterAdd',
-        expect.any(Error),
+      const payload = mockTorrentAddQueueService.enqueue.mock.calls[0][0];
+      expect(payload.shareLimits).toBeUndefined();
+    });
+
+    it('should include shareLimits when needsInactivePost is true', () => {
+      (component as any).enqueuePostAddJob(
+        'server-1',
+        null,
+        { ratioLimit: 2, seedingTimeLimit: 120, inactiveSeedingTimeLimit: 60 },
+        true,
+      );
+
+      expect(mockTorrentAddQueueService.enqueue).toHaveBeenCalledWith(
+        expect.objectContaining({
+          shareLimits: { ratioLimit: 2, seedingTimeLimit: 120, inactiveSeedingTimeLimit: 60 },
+        }),
       );
     });
   });

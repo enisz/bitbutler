@@ -2020,6 +2020,13 @@
         "switching-server": "Váltás a(z) {{name}} szerverre"
       }
     },
+    "torrent-add-queue": {
+      "toast": {
+        "job-failed": {
+          "title": "Torrent feldolgozása sikertelen"
+        }
+      }
+    },
     "ui-command-handler": {
       "error": {
         "remote-path-missing": "Nincs megadva távoli elérési út.",

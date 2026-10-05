@@ -2018,6 +2018,13 @@
         "switching-server": "Switching to {{name}}"
       }
     },
+    "torrent-add-queue": {
+      "toast": {
+        "job-failed": {
+          "title": "Failed to Process Torrent"
+        }
+      }
+    },
     "ui-command-handler": {
       "error": {
         "remote-path-missing": "Remote path not provided.",

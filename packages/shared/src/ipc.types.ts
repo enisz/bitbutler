@@ -1,6 +1,7 @@
 import type { HostPlatform, UpdateCheckResponse } from './models/electron.model.js';
 import type { RendererLogEntry } from './models/log.model.js';
 import type { NewServer, ServerRecord } from './models/server.model.js';
+import type { TorrentAddJob, TorrentAddJobPayload } from './models/torrent-add-job.model.js';
 import type { TorrentDraft, TorrentDraftSource } from './models/torrent-draft.model.js';
 import type { UpdateCapability, UpdaterEvent } from './models/updater.model.js';
 import type { WindowState } from './models/window.model.js';
@@ -216,6 +217,12 @@ export interface BitButlerAPI {
       payload: BitButlerQbRequest<TBody>,
     ): Promise<TResponse>;
     torrentsAdd(payload: BitButlerQbTorrentsAddPayload): Promise<unknown>;
+  };
+
+  torrentQueue: {
+    enqueue(payload: TorrentAddJobPayload): Promise<{ jobId: string }>;
+    list(): Promise<TorrentAddJob[]>;
+    onUpdate(callback: (job: TorrentAddJob) => void): () => void;
   };
 
   window: {

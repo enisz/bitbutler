@@ -11,6 +11,8 @@ import type {
   ImportStartPayload,
   MenuClickPayload,
   RendererLogEntry,
+  TorrentAddJob,
+  TorrentAddJobPayload,
   TorrentDraft,
   UpdaterEvent,
   WindowState,
@@ -90,6 +92,13 @@ const api: BitButlerAPI = {
     hasCookie: ({ id }) => ipcRenderer.invoke('qb:has-cookie', { id }),
     request: (payload) => ipcRenderer.invoke('qb:request', payload),
     torrentsAdd: (payload) => ipcRenderer.invoke('qb:torrentsAdd', payload),
+  },
+
+  torrentQueue: {
+    enqueue: (payload: TorrentAddJobPayload) => ipcRenderer.invoke('qb:enqueueTorrentAdd', payload),
+    list: () => ipcRenderer.invoke('qb:listTorrentAddJobs'),
+    onUpdate: (callback) =>
+      makeIpcSubscription('qb:torrentAddJobUpdate', (job) => job as TorrentAddJob, callback),
   },
 
   window: {
