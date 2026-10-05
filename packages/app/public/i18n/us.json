@@ -201,19 +201,14 @@
         "state": {
           "new": "New",
           "exists": "Exists",
-          "error": "Error",
-          "added": "Added",
-          "failed": "Failed"
-        },
-        "error": {
-          "duplicate": "Already in the list"
+          "error": "Error"
         },
         "note-title": "Good to know",
         "description": {
           "line1": "Files are parsed locally - nothing is sent anywhere until you click Add.",
           "line2": "Toggle Recursive or use Refresh to re-scan after files change on disk.",
           "line3": "Double-click a row's Name to rename it - press Enter to save, or Esc to cancel.",
-          "line4": "Only new and previously-failed torrents can be selected."
+          "line4": "Only new torrents can be selected."
         },
         "grid": {
           "no-rows": {

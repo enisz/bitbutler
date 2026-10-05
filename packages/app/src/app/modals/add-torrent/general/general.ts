@@ -93,14 +93,6 @@ export class AddTorrentGeneral {
     return this.folderPicker()?.selectedEntries() ?? [];
   }
 
-  public markFolderEntryAdded(path: string): void {
-    this.folderPicker()?.markAdded(path);
-  }
-
-  public markFolderEntryFailed(path: string, error: string): void {
-    this.folderPicker()?.markFailed(path, error);
-  }
-
   public onMagnetLinksInput(event: Event): void {
     const value = (event.target as HTMLTextAreaElement).value;
     const count = value

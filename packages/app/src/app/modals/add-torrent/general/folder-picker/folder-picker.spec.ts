@@ -258,60 +258,6 @@ describe('AddTorrentFolderPicker', () => {
     expect(component.rows()[0].name).toBe('Custom Name');
   });
 
-  it('markAdded moves the entry out of visibleRows but keeps it cached as added', async () => {
-    vi.spyOn(window.bitbutler.torrent, 'scanFolder').mockResolvedValue([
-      { path: '/downloads/a.torrent', relativePath: 'a.torrent' },
-    ]);
-    vi.spyOn(window.bitbutler.torrent, 'parse').mockResolvedValue(draft());
-
-    init('/downloads');
-    await fixture.whenStable();
-
-    component.markAdded('/downloads/a.torrent');
-
-    expect(component.visibleRows()).toEqual([]);
-    expect(component.rows()).toEqual([
-      expect.objectContaining({ path: '/downloads/a.torrent', state: 'added' }),
-    ]);
-  });
-
-  it('markFailed sets state failed with the error message and keeps the row visible', async () => {
-    vi.spyOn(window.bitbutler.torrent, 'scanFolder').mockResolvedValue([
-      { path: '/downloads/a.torrent', relativePath: 'a.torrent' },
-    ]);
-    vi.spyOn(window.bitbutler.torrent, 'parse').mockResolvedValue(draft());
-
-    init('/downloads');
-    await fixture.whenStable();
-
-    component.markFailed('/downloads/a.torrent', 'HTTP 500');
-
-    expect(component.visibleRows()).toEqual([
-      expect.objectContaining({
-        path: '/downloads/a.torrent',
-        state: 'failed',
-        errorMessage: 'HTTP 500',
-      }),
-    ]);
-  });
-
-  it('a second scan reuses the cached added/failed state for an unchanged path', async () => {
-    vi.spyOn(window.bitbutler.torrent, 'scanFolder').mockResolvedValue([
-      { path: '/downloads/a.torrent', relativePath: 'a.torrent' },
-    ]);
-    vi.spyOn(window.bitbutler.torrent, 'parse').mockResolvedValue(draft());
-
-    init('/downloads');
-    await fixture.whenStable();
-
-    component.markFailed('/downloads/a.torrent', 'HTTP 500');
-    await component.refresh();
-
-    expect(component.rows()[0]).toEqual(
-      expect.objectContaining({ state: 'failed', errorMessage: 'HTTP 500' }),
-    );
-  });
-
   it('should set scanError and clear rows when scanFolder rejects', async () => {
     vi.spyOn(window.bitbutler.torrent, 'scanFolder').mockRejectedValue(new Error('ENOENT'));
 
@@ -433,15 +379,13 @@ describe('AddTorrentFolderPicker', () => {
       };
     }
 
-    it('marks new-state and failed-state rows as selectable via rowSelection.isRowSelectable', () => {
+    it('marks only new-state rows as selectable via rowSelection.isRowSelectable', () => {
       init('/downloads');
       const isRowSelectable = (component.gridOptions.rowSelection as any).isRowSelectable!;
 
       expect(isRowSelectable({ data: { state: 'new' } } as any)).toBe(true);
-      expect(isRowSelectable({ data: { state: 'failed' } } as any)).toBe(true);
       expect(isRowSelectable({ data: { state: 'exists' } } as any)).toBe(false);
       expect(isRowSelectable({ data: { state: 'error' } } as any)).toBe(false);
-      expect(isRowSelectable({ data: { state: 'added' } } as any)).toBe(false);
     });
 
     it('applies the muted row class to exists-state rows only', () => {
@@ -453,10 +397,9 @@ describe('AddTorrentFolderPicker', () => {
       expect(isMuted({ data: { state: 'new' } } as any)).toBe(false);
       expect(isMuted({ data: { state: 'exists' } } as any)).toBe(true);
       expect(isMuted({ data: { state: 'error' } } as any)).toBe(false);
-      expect(isMuted({ data: { state: 'failed' } } as any)).toBe(false);
     });
 
-    it('applies the danger row class to error-state and failed-state rows', () => {
+    it('applies the danger row class to error-state rows', () => {
       init('/downloads');
       const isDanger = component.gridOptions.rowClassRules!['text-danger bg-danger-subtle'] as (
         params: any,
@@ -465,7 +408,6 @@ describe('AddTorrentFolderPicker', () => {
       expect(isDanger({ data: { state: 'new' } } as any)).toBe(false);
       expect(isDanger({ data: { state: 'exists' } } as any)).toBe(false);
       expect(isDanger({ data: { state: 'error' } } as any)).toBe(true);
-      expect(isDanger({ data: { state: 'failed' } } as any)).toBe(true);
     });
 
     it('onSelectionChanged updates selectedPaths from the grid API', () => {
@@ -478,18 +420,17 @@ describe('AddTorrentFolderPicker', () => {
       expect(component.selectedPaths()).toEqual(new Set(['/downloads/a.torrent']));
     });
 
-    it('onRowDataUpdated selects new-state and failed-state rows via the grid API', () => {
+    it('onRowDataUpdated selects only new-state rows via the grid API', () => {
       init('/downloads');
       const rows = [
         { path: '/downloads/a.torrent', state: 'new' },
         { path: '/downloads/b.torrent', state: 'exists' },
-        { path: '/downloads/c.torrent', state: 'failed' },
       ];
       const api = makeApiWithRows(rows);
 
       component.gridOptions.onRowDataUpdated!({ api } as unknown as RowDataUpdatedEvent<any>);
 
-      expect(api.getSelectedRows()).toEqual([rows[0], rows[2]]);
+      expect(api.getSelectedRows()).toEqual([rows[0]]);
     });
 
     it('onCellValueChanged renames the row when the name column changes', () => {
@@ -543,61 +484,9 @@ describe('AddTorrentFolderPicker', () => {
 
       expect(component.rows()[0].name).toBe('Old Name');
     });
-
-    it('excludes added-state rows from the state column filter items', async () => {
-      vi.spyOn(window.bitbutler.torrent, 'scanFolder').mockResolvedValue([
-        { path: '/downloads/a.torrent', relativePath: 'a.torrent' },
-      ]);
-      vi.spyOn(window.bitbutler.torrent, 'parse').mockResolvedValue(draft());
-
-      init('/downloads');
-      await fixture.whenStable();
-
-      component.markAdded('/downloads/a.torrent');
-
-      const stateColumn = component.colDefs.find((c) => c.colId === 'state')!;
-      const items = (stateColumn.filterParams as any).getItems();
-
-      expect(items).toEqual([]);
-    });
   });
 
   describe('error column visibility', () => {
-    it('markFailed reveals the errorMessage column', async () => {
-      vi.spyOn(window.bitbutler.torrent, 'scanFolder').mockResolvedValue([
-        { path: '/downloads/a.torrent', relativePath: 'a.torrent' },
-      ]);
-      vi.spyOn(window.bitbutler.torrent, 'parse').mockResolvedValue(draft());
-
-      init('/downloads');
-      await fixture.whenStable();
-
-      const mockApi = { setColumnsVisible: vi.fn() };
-      (component as any).gridApi = mockApi;
-
-      component.markFailed('/downloads/a.torrent', 'HTTP 500');
-
-      expect(mockApi.setColumnsVisible).toHaveBeenCalledWith(['errorMessage'], true);
-    });
-
-    it('markAdded hides the errorMessage column again once no row has an error', async () => {
-      vi.spyOn(window.bitbutler.torrent, 'scanFolder').mockResolvedValue([
-        { path: '/downloads/a.torrent', relativePath: 'a.torrent' },
-      ]);
-      vi.spyOn(window.bitbutler.torrent, 'parse').mockResolvedValue(draft());
-
-      init('/downloads');
-      await fixture.whenStable();
-
-      const mockApi = { setColumnsVisible: vi.fn() };
-      (component as any).gridApi = mockApi;
-
-      component.markFailed('/downloads/a.torrent', 'HTTP 500');
-      component.markAdded('/downloads/a.torrent');
-
-      expect(mockApi.setColumnsVisible).toHaveBeenLastCalledWith(['errorMessage'], false);
-    });
-
     it('a rescan that finds a parse error reveals the errorMessage column', async () => {
       vi.spyOn(window.bitbutler.torrent, 'scanFolder').mockResolvedValue([
         { path: '/downloads/a.torrent', relativePath: 'a.torrent' },
@@ -673,7 +562,7 @@ describe('AddTorrentFolderPicker', () => {
       };
       (component as any).gridApi = mockApi;
 
-      expect(() => component.markFailed('/downloads/a.torrent', 'HTTP 500')).toThrow('boom');
+      expect(() => (component as any).syncErrorColumnVisibility()).toThrow('boom');
       expect((component as any).isSyncingErrorColumnVisibility).toBe(false);
     });
   });

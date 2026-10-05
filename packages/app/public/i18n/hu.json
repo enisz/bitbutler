@@ -201,19 +201,14 @@
         "state": {
           "new": "Új",
           "exists": "Létezik",
-          "error": "Hiba",
-          "added": "Hozzáadva",
-          "failed": "Sikertelen"
-        },
-        "error": {
-          "duplicate": "Már szerepel a listában"
+          "error": "Hiba"
         },
         "note-title": "Jó tudni",
         "description": {
           "line1": "A fájlok helyben kerülnek feldolgozásra - semmi nem kerül elküldésre a Hozzáadás gombra kattintásig.",
           "line2": "Kapcsolja be a Rekurzív opciót vagy használja a Frissítés gombot a mappa újbóli beolvasásához, ha fájlokat módosított a lemezen.",
           "line3": "Egy sor Nevére duplán kattintva átnevezheti azt - az Enter menti, az Esc visszavonja a módosítást.",
-          "line4": "Csak az új és korábban sikertelen torrentek választhatók ki."
+          "line4": "Csak az új torrentek választhatók ki."
         },
         "grid": {
           "no-rows": {

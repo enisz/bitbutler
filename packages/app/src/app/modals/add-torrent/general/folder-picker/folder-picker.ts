@@ -107,7 +107,6 @@ export class AddTorrentFolderPicker implements OnInit {
   public form = input.required<AddTorrentFormGroup>();
 
   public readonly rows = signal<ScannedTorrentEntry[]>([]);
-  public readonly visibleRows = computed(() => this.rows().filter((r) => r.state !== 'added'));
   public readonly loading = signal(false);
   public readonly scanError = signal<string | null>(null);
   public readonly selectedPaths = signal<Set<string>>(new Set());
@@ -215,28 +214,9 @@ export class AddTorrentFolderPicker implements OnInit {
     this.rows.update((rows) => rows.map((r) => (r.path === path ? { ...r, name: newName } : r)));
   }
 
-  public markAdded(path: string): void {
-    const cached = this.cache.get(path);
-    if (cached) cached.state = 'added';
-    this.rows.update((rows) => rows.map((r) => (r.path === path ? { ...r, state: 'added' } : r)));
-    this.syncErrorColumnVisibility();
-  }
-
-  public markFailed(path: string, error: string): void {
-    const cached = this.cache.get(path);
-    if (cached) {
-      cached.state = 'failed';
-      cached.errorMessage = error;
-    }
-    this.rows.update((rows) =>
-      rows.map((r) => (r.path === path ? { ...r, state: 'failed', errorMessage: error } : r)),
-    );
-    this.syncErrorColumnVisibility();
-  }
-
   private syncErrorColumnVisibility(): void {
     if (!this.gridApi) return;
-    const hasError = this.rows().some((r) => r.state === 'error' || r.state === 'failed');
+    const hasError = this.rows().some((r) => r.state === 'error');
     this.isSyncingErrorColumnVisibility = true;
     try {
       this.gridApi.setColumnsVisible(['errorMessage'], hasError);
@@ -324,14 +304,14 @@ export class AddTorrentFolderPicker implements OnInit {
       checkboxes: true,
       headerCheckbox: true,
       enableClickSelection: false,
-      isRowSelectable: (node) => node.data?.state === 'new' || node.data?.state === 'failed',
+      isRowSelectable: (node) => node.data?.state === 'new',
     },
     getRowId: (params: GetRowIdParams<ScannedTorrentEntry>) => params.data.path,
     rowClassRules: {
       [GRID_ROW_MUTED_CLASS]: (params: RowClassParams<ScannedTorrentEntry>): boolean =>
         params.data?.state === 'exists',
       'text-danger bg-danger-subtle': (params: RowClassParams<ScannedTorrentEntry>): boolean =>
-        params.data?.state === 'error' || params.data?.state === 'failed',
+        params.data?.state === 'error',
     },
     overlayComponentSelector: (params: IOverlayParams<ScannedTorrentEntry>) => {
       if (params.overlayType === 'noRows' || params.overlayType === 'noMatchingRows') {
@@ -349,9 +329,7 @@ export class AddTorrentFolderPicker implements OnInit {
     onSelectionChanged: (e: SelectionChangedEvent<ScannedTorrentEntry>) =>
       this.selectedPaths.set(new Set(e.api.getSelectedRows().map((r) => r.path))),
     onRowDataUpdated: (e: RowDataUpdatedEvent<ScannedTorrentEntry>) => {
-      e.api.forEachNode((node) =>
-        node.setSelected(node.data?.state === 'new' || node.data?.state === 'failed'),
-      );
+      e.api.forEachNode((node) => node.setSelected(node.data?.state === 'new'));
     },
     onCellValueChanged: (e: CellValueChangedEvent<ScannedTorrentEntry>) => {
       if (e.colDef.colId === 'name') this.renameEntry(e.data.path, e.newValue ?? e.data.name);
@@ -392,7 +370,7 @@ export class AddTorrentFolderPicker implements OnInit {
 
   private getColDefs(): ColDef<ScannedTorrentEntry>[] {
     const stateItems = computed(() =>
-      buildValueCounts(this.visibleRows(), (r) => this.stateLabel(r.state)),
+      buildValueCounts(this.rows(), (r) => this.stateLabel(r.state)),
     );
 
     return [
