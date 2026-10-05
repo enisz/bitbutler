@@ -54,7 +54,7 @@ export function registerQbIpcHandlers(): void {
   );
 }
 
-async function qbTorrentsAdd(payload: BitButlerQbTorrentsAddPayload): Promise<unknown> {
+export async function qbTorrentsAdd(payload: BitButlerQbTorrentsAddPayload): Promise<unknown> {
   const { id, torrents, urls, options } = payload;
 
   const fd = new FormData();

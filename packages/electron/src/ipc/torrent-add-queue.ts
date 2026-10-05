@@ -1,8 +1,9 @@
 import type { TorrentAddJob, TorrentAddJobPayload } from '@bitbutler/shared';
 import { ipcMain } from 'electron';
 import { randomUUID } from 'node:crypto';
+import fs from 'node:fs';
 import { getMainWindow } from '../main.js';
-import { qbRequest } from './qbittorrent.js';
+import { qbRequest, qbTorrentsAdd } from './qbittorrent.js';
 
 const jobs = new Map<string, TorrentAddJob>();
 const drainingServers = new Set<string>();
@@ -58,9 +59,32 @@ function nextPending(serverId: string): TorrentAddJob | undefined {
 }
 
 async function processJob(job: TorrentAddJob): Promise<void> {
-  const { serverId, infoHash, renames, priorities, shareLimits } = job.payload;
+  const { serverId, add, infoHash, originalPath, deleteOriginalOnSuccess } = job.payload;
+  const { renames, priorities, shareLimits } = job.payload;
 
   try {
+    setStatus(job, 'adding');
+    try {
+      await qbTorrentsAdd({ id: serverId, ...add });
+    } catch (error) {
+      if (parseQbError(error)?.status === 409) {
+        setStatus(job, 'duplicate');
+        return;
+      }
+      throw error;
+    }
+
+    if (originalPath && deleteOriginalOnSuccess) {
+      await fs.promises.unlink(originalPath).catch((error) => {
+        console.error(`[BitButler][torrent-add-queue] Could not delete ${originalPath}.`, error);
+      });
+    }
+
+    if (!infoHash || !(renames?.length || priorities?.length || shareLimits)) {
+      setStatus(job, 'done');
+      return;
+    }
+
     setStatus(job, 'awaiting-registration');
     await waitForTorrentRegistered(serverId, infoHash);
 
@@ -142,8 +166,11 @@ async function waitForTorrentRegistered(serverId: string, hash: string): Promise
 // qbRequest() throws the JSON.stringify()'d QbHttpError payload directly (as a string, not an
 // Error) when called in-process like this, rather than via the IPC boundary.
 function parseQbError(error: unknown): { status?: number } | null {
+  const raw = String((error as Error)?.message ?? error);
+  const idx = raw.indexOf('{');
+  if (idx === -1) return null;
   try {
-    return JSON.parse(String(error));
+    return JSON.parse(raw.slice(idx));
   } catch {
     return null;
   }

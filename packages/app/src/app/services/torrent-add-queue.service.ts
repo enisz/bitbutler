@@ -1,6 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import type { TorrentAddJob, TorrentAddJobPayload } from '@bitbutler/shared';
 import { TranslateService } from '@ngx-translate/core';
+import { CommandBusService } from './command-bus.service';
 import { ToastService } from './toast.service';
 
 /**
@@ -11,6 +12,7 @@ import { ToastService } from './toast.service';
  */
 @Injectable({ providedIn: 'root' })
 export class TorrentAddQueueService {
+  private readonly commandBusService = inject(CommandBusService);
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
 
@@ -33,7 +35,21 @@ export class TorrentAddQueueService {
         return next;
       });
 
-      if (job.status === 'error') {
+      if (job.status === 'duplicate') {
+        const { name, infoHash, originalPath } = job.payload;
+        if (name) {
+          this.toastService.danger(
+            name,
+            this.translateService.instant('services.torrent-add-queue.toast.duplicate.title'),
+          );
+        } else {
+          this.commandBusService.emit({
+            type: 'UI_TORRENT_EXISTS',
+            hash: infoHash?.toLowerCase() ?? null,
+            originalPath: originalPath ?? null,
+          });
+        }
+      } else if (job.status === 'error') {
         this.toastService.danger(
           job.error ?? this.translateService.instant('general.toast.error'),
           this.translateService.instant('services.torrent-add-queue.toast.job-failed.title'),

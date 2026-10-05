@@ -233,16 +233,6 @@
       "feedback": {
         "no-server-selected": "Nincs kiválasztva szerver. Válassz szervert a torrent hozzáadása előtt.",
         "add-failed": "A torrent hozzáadása sikertelen. Próbáld újra."
-      },
-      "toast": {
-        "folder-added": {
-          "title": "Torrentek hozzáadva",
-          "message": "{{count}} torrent hozzáadva."
-        },
-        "folder-partial": {
-          "title": "Néhány torrent sikertelen",
-          "message": "{{succeeded}} / {{total}} torrent hozzáadva."
-        }
       }
     },
     "app-loader": {
@@ -2022,6 +2012,9 @@
     },
     "torrent-add-queue": {
       "toast": {
+        "duplicate": {
+          "title": "A torrent már létezik"
+        },
         "job-failed": {
           "title": "Torrent feldolgozása sikertelen"
         }

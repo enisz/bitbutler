@@ -14,7 +14,14 @@ next starts; renaming has to wait for the add to finish first.
 
 Separately, two keyboard-ergonomics (not screen-reader) fixes were requested for the same modal.
 
-## Status: keyboard fixes are DONE. The queue work is PARTIALLY done - the core problem is still open.
+## Status: IMPLEMENTED (uncommitted at time of writing) - only manual verification remains
+
+`torrentsAdd` now runs inside the main-process queue for link, single-file and folder modes.
+Decisions taken: folder mode enqueues every entry and closes immediately (no per-entry markers or
+summary toast; `markFolderEntry*` in general.ts are now unused); the source .torrent is deleted in
+main only after a successful add (`deleteOriginalOnSuccess`); a 409 sets job status `duplicate`
+(named/folder jobs toast, unnamed jobs raise `UI_TORRENT_EXISTS`). Lint, builds, and all tests pass.
+The sections below describe the earlier partial state and are kept for history.
 
 ### Done and verified (lint clean, `npm run build`/`build:electron` clean, full `npm test` passing - 2543 app tests + 351 electron tests)
 

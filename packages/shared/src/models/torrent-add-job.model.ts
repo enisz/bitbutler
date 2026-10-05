@@ -1,9 +1,13 @@
+import type { SelectedTorrentInput } from '../ipc.types.js';
+
 export type TorrentAddJobStatus =
   | 'pending'
+  | 'adding'
   | 'awaiting-registration'
   | 'renaming'
   | 'applying-priorities'
   | 'done'
+  | 'duplicate'
   | 'error';
 
 export interface TorrentAddJobRename {
@@ -22,16 +26,32 @@ export interface TorrentAddJobShareLimits {
   inactiveSeedingTimeLimit: number;
 }
 
+export interface TorrentAddJobAdd {
+  torrents: SelectedTorrentInput[];
+  urls?: string[];
+  options?: Record<string, unknown>;
+}
+
 /**
- * Describes the post-add work for a torrent that has already been handed to qBittorrent via
- * `qb.torrentsAdd` - renaming files/folders, setting non-default file priorities, and/or applying
- * share limits. This is queued separately because every one of these calls needs the torrent to
- * be registered server-side first, which can take a few seconds and previously blocked the
- * add-torrent modal from advancing to the next queued draft.
+ * Describes everything that happens after the user submits the add-torrent modal: the
+ * `torrents/add` call itself, then (when infoHash is known and any are set) renaming files/folders,
+ * setting non-default file priorities, and/or applying share limits - those need the torrent to
+ * be registered server-side first, which can take a few seconds. All of it runs in the main
+ * process queue so the modal never waits on qBittorrent.
  */
 export interface TorrentAddJobPayload {
   serverId: string;
-  infoHash: string;
+  add: TorrentAddJobAdd;
+  infoHash?: string;
+  /**
+   * Display name. When set, a duplicate (409) is reported with a toast naming it; when absent
+   * the renderer raises the "torrent already exists" dialog instead.
+   */
+  name?: string;
+  /** Source .torrent file on disk, passed on to the "torrent already exists" dialog. */
+  originalPath?: string;
+  /** Delete `originalPath` once qBittorrent has accepted the torrent. */
+  deleteOriginalOnSuccess?: boolean;
   renames?: TorrentAddJobRename[];
   priorities?: TorrentAddJobFilePriority[];
   shareLimits?: TorrentAddJobShareLimits;

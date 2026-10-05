@@ -233,16 +233,6 @@
       "feedback": {
         "no-server-selected": "No server is selected. Choose a server before adding this torrent.",
         "add-failed": "Adding the torrent failed. Please try again."
-      },
-      "toast": {
-        "folder-added": {
-          "title": "Torrents Added",
-          "message": "Added {{count}} torrent(s)."
-        },
-        "folder-partial": {
-          "title": "Some Torrents Failed",
-          "message": "Added {{succeeded}} of {{total}} torrent(s)."
-        }
       }
     },
     "app-loader": {
@@ -2020,6 +2010,9 @@
     },
     "torrent-add-queue": {
       "toast": {
+        "duplicate": {
+          "title": "Torrent Already Exists"
+        },
         "job-failed": {
           "title": "Failed to Process Torrent"
         }
