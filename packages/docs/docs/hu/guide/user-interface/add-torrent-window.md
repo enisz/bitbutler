@@ -53,3 +53,18 @@ A **Beállítások** fülön torrentenkénti viselkedést állíthatsz be. Minde
 ![Torrent hozzáadása ablak - Korlátok fül](/screenshots/add-torrent-dialog/add-torrent-limits.png)
 
 A **Korlátok** fülön átviteli sebességkorlátokat (letöltési/feltöltési sebesség) és megosztási korlátokat (arány és seedelési idő) állíthatsz be a torrenthez.
+
+## Mi történik a Hozzáadás után
+
+A Torrent hozzáadása ablak nem vár a qBittorrentre. A **Hozzáadás** gombra kattintva a torrent egy háttérsorba kerül, az ablak pedig azonnal továbblép - a következő torrentre, ha egyszerre több fájlt nyitottál meg, vagy bezárul. Mappa esetén minden bejelölt sor sorba kerül, és az ablak bezárul.
+
+A háttérben a BitButler sorban hozzáadja a torrenteket, majd - miután a qBittorrent regisztrálta őket - alkalmazza a beállított fájlátnevezéseket, fájlprioritásokat és megosztási korlátokat. Ha a **Torrentfájlok törlése a listához adás után** beállítás be van kapcsolva, a forrás `.torrent` fájl csak azután törlődik, hogy a qBittorrent elfogadta a torrentet.
+
+A sikeres hozzáadásról nem érkezik üzenet - a torrent egyszerűen megjelenik a listában. Ha valamire figyelned kell, értesítést (toast) kapsz:
+
+- **A torrent már létezik** - a torrent már a szerveren van. Egy fájl vagy mágneslink esetén a [Torrent már létezik ablak](./torrent-exists-window) jelenik meg; mappa esetén minden duplikátumot egy értesítés nevez meg. A forrásfájl a lemezen marad (kivéve, ha a duplikátumok törlése be van kapcsolva a beállításokban, és az ablak megjelenik).
+- **A torrent hozzáadása sikertelen** - a torrent nem jutott el a qBittorrenthez. Az értesítés megnevezi a torrentet és az okot, és addig marad, amíg be nem zárod. Kattints az **Újra** gombra az újrapróbáláshoz, az átnevezések és beállítások megtartásával. A forrásfájl a lemezen marad.
+- **A torrent beállítása sikertelen** - a torrent hozzáadódott, de egy átnevezést, fájlprioritást vagy megosztási korlátot nem sikerült alkalmazni. Az **Újra** csak a beállítást ismétli meg.
+- **A munkamenet lejárt** - a BitButler nem tudott újra bejelentkezni a szerverre. Kattints a **Bejelentkezés** gombra, majd használd az **Újra** gombot.
+
+A BitButler a rövid kapcsolati problémákat és a lejárt munkameneteket automatikusan újrapróbálja a hibaüzenet előtt, így ezek az értesítések azt jelentik, hogy az automatikus próbálkozás nem sikerült.

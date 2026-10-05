@@ -53,3 +53,18 @@ The **Options** tab lets you configure per-torrent behavior. Each setting is rem
 ![Add Torrent dialog - Limits tab](/screenshots/add-torrent-dialog/add-torrent-limits.png)
 
 The **Limits** tab lets you set transfer rate limits (download/upload speed) and share limits (ratio and seeding time) for the torrent.
+
+## After You Click Add
+
+The Add Torrent window does not wait for qBittorrent. Clicking **Add** hands the torrent to a background queue and the window moves on straight away - to the next torrent if you opened several files at once, or closes. For a folder, every checked row is queued and the window closes.
+
+In the background, BitButler adds each torrent in order, then applies any file renames, file priorities and share limits you set once qBittorrent has registered it. If the **Delete torrent files after adding them to the list** setting is on, the source `.torrent` file is removed only after qBittorrent has accepted the torrent.
+
+A successful add shows no message - the torrent simply appears in the list. When something needs your attention you get a toast:
+
+- **Already exists** - the torrent is already on the server. For a single file or magnet link you get the [Torrent Exists Window](./torrent-exists-window); for a folder, each duplicate is named in a toast instead. The source file is left on disk (unless the window removes it, per the "already exists" delete setting).
+- **Failed to Add Torrent** - the torrent never reached qBittorrent. The toast names the torrent and the reason, and stays until you close it. Click **Retry** to try again, with all your renames and options intact. The source file is left on disk.
+- **Failed to Finish Torrent Setup** - the torrent was added, but a rename, file priority or share limit could not be applied. **Retry** repeats only the setup.
+- **Session Expired** - BitButler could not log back in to the server. Click **Log In** to sign in again, then use **Retry**.
+
+BitButler retries brief connection problems and expired sessions automatically before showing an error, so these toasts mean the automatic attempts did not work.
