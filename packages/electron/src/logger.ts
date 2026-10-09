@@ -1,9 +1,14 @@
+import log from 'electron-log/main';
+import fs from 'node:fs';
+import path from 'node:path';
 import { format as utilFormat } from 'node:util';
-import db from './db.js';
 import { resolveOriginalLocation } from './source-map-resolver.js';
 
-type LevelStr = 'debug' | 'info' | 'warn' | 'error';
-type ProcessName = 'main' | 'renderer';
+export type LevelStr = 'debug' | 'info' | 'warn' | 'error';
+export type ProcessName = 'main' | 'renderer';
+
+export const MAX_LOG_FILE_SIZE = 5 * 1024 * 1024;
+export const ROLLED_LOG_FILES = 4;
 
 const CONSOLE_TO_LEVEL: Record<string, LevelStr> = {
   log: 'debug',
@@ -13,26 +18,65 @@ const CONSOLE_TO_LEVEL: Record<string, LevelStr> = {
   error: 'error',
 };
 
-const stmtInsertLog = db.prepare<
-  [number, ProcessName, LevelStr, string, string | null, string | null, number | null]
->(`
-  INSERT INTO logs (timestamp, process, level, message, context, filename, line)
-  VALUES (?, ?, ?, ?, ?, ?, ?)
-`);
+/**
+ * Shifts `<name>.log` -> `<name>.1.log` -> ... -> `<name>.<rolledFiles>.log`, dropping the
+ * oldest. electron-log only keeps a single `.old.log` by default.
+ */
+export function rotateLogFile(filePath: string, rolledFiles = ROLLED_LOG_FILES): void {
+  const { dir, name, ext } = path.parse(filePath);
+  const rolled = (n: number): string => path.join(dir, `${name}.${n}${ext}`);
 
-export function insertLog(
+  fs.rmSync(rolled(rolledFiles), { force: true });
+  for (let n = rolledFiles - 1; n >= 1; n--) {
+    if (fs.existsSync(rolled(n))) fs.renameSync(rolled(n), rolled(n + 1));
+  }
+  fs.renameSync(filePath, rolled(1));
+}
+
+type ElectronLogger = typeof log;
+
+function configure(logger: ElectronLogger, fileName: string): ElectronLogger {
+  logger.transports.file.fileName = fileName;
+  logger.transports.file.maxSize = MAX_LOG_FILE_SIZE;
+  logger.transports.file.archiveLogFn = (file) => {
+    try {
+      rotateLogFile(file.toString());
+    } catch (error) {
+      process.stderr.write(
+        `[logger] failed to rotate ${file.path}: ${error instanceof Error ? error.message : String(error)}\n`,
+      );
+      // Without this the oversized file would trigger a rotation attempt on every write.
+      file.clear();
+    }
+  };
+  // Our console wrappers already call the original console.*; ipc forwarding is not used.
+  logger.transports.console.level = false;
+  logger.transports.ipc.level = false;
+  return logger;
+}
+
+const mainLog = configure(log, 'main.log');
+// Renderer entries reach us over IPC and are written by the main process, so electron-log's
+// own processType is 'browser' for both; a second logger instance gives them their own file.
+const rendererLog = configure(log.create({ logId: 'renderer' }), 'renderer.log');
+
+export function getLogDirectory(): string {
+  return path.dirname(mainLog.transports.file.getFile().path);
+}
+
+export function writeLog(
   processName: ProcessName,
   level: LevelStr,
   message: string,
-  context: string | null = null,
   filename: string | null = null,
   line: number | null = null,
 ): void {
   try {
-    stmtInsertLog.run(Date.now(), processName, level, message, context, filename, line);
+    const location = filename ? `[${filename}${line === null ? '' : `:${line}`}] ` : '';
+    (processName === 'renderer' ? rendererLog : mainLog)[level](`${location}${message}`);
   } catch (error) {
     process.stderr.write(
-      `[logger] failed to write log row: ${error instanceof Error ? error.message : String(error)}\n`,
+      `[logger] failed to write log: ${error instanceof Error ? error.message : String(error)}\n`,
     );
   }
 }
@@ -64,11 +108,10 @@ export function initLogger(): void {
       const resolved = location
         ? resolveOriginalLocation(location.filename, location.line, location.column, 'electron')
         : null;
-      insertLog(
+      writeLog(
         'main',
         levelStr,
         utilFormat(...args),
-        null,
         resolved?.filename ?? location?.filename ?? null,
         resolved?.line ?? location?.line ?? null,
       );
@@ -76,12 +119,12 @@ export function initLogger(): void {
   }
 
   process.on('uncaughtException', (error: Error) => {
-    insertLog('main', 'error', `Uncaught exception: ${error.stack ?? error.message}`);
+    writeLog('main', 'error', `Uncaught exception: ${error.stack ?? error.message}`);
     throw error;
   });
 
   process.on('unhandledRejection', (reason: unknown) => {
     const msg = reason instanceof Error ? (reason.stack ?? reason.message) : String(reason);
-    insertLog('main', 'error', `Unhandled rejection: ${msg}`);
+    writeLog('main', 'error', `Unhandled rejection: ${msg}`);
   });
 }

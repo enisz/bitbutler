@@ -1,26 +1,11 @@
-import type { LogEntry } from '@bitbutler/shared';
-import { dialog, ipcMain } from 'electron';
-import fs from 'node:fs';
-import db from '../db.js';
-import { insertLog } from '../logger.js';
+import { ipcMain, shell } from 'electron';
+import { getLogDirectory, writeLog } from '../logger.js';
 import { resolveOriginalLocation } from '../source-map-resolver.js';
 
 const VALID_LEVELS = ['debug', 'info', 'warn', 'error'] as const;
 type LevelStr = (typeof VALID_LEVELS)[number];
 
-interface LogRow {
-  id: number;
-  timestamp: number;
-  process: 'main' | 'renderer';
-  level: LevelStr;
-  message: string;
-  context: string | null;
-  filename: string | null;
-  line: number | null;
-}
-
-const stmtList = db.prepare<[], LogRow>('SELECT * FROM logs');
-const stmtClear = db.prepare('DELETE FROM logs');
+const MAX_MESSAGE_LENGTH = 20000;
 
 function asNullableString(v: unknown, maxLen: number): string | null {
   if (typeof v !== 'string' || !v) return null;
@@ -32,17 +17,10 @@ function asNullableInt(v: unknown): number | null {
 }
 
 export function registerLogIpcHandlers(): void {
-  ipcMain.handle('log:list', async () => logList());
-  ipcMain.handle('log:clear', async () => logClear());
-  ipcMain.handle(
-    'log:export',
-    async (_event, payload: { content: string; defaultFilename?: string }) => logExport(payload),
-  );
-
   ipcMain.on('log:write', (_event, entry: unknown) => {
     const e = entry && typeof entry === 'object' ? (entry as Record<string, unknown>) : {};
     const level = VALID_LEVELS.includes(e['level'] as LevelStr) ? (e['level'] as LevelStr) : null;
-    const message = asNullableString(e['message'], 2000);
+    const message = asNullableString(e['message'], MAX_MESSAGE_LENGTH);
     if (!level || !message) return;
 
     const filename = asNullableString(e['filename'], 500);
@@ -53,36 +31,17 @@ export function registerLogIpcHandlers(): void {
         ? resolveOriginalLocation(filename, line, column, 'app')
         : null;
 
-    insertLog(
+    writeLog(
       'renderer',
       level,
       message,
-      asNullableString(e['context'], 20000),
       resolved ? asNullableString(resolved.filename, 500) : filename,
       resolved?.line ?? line,
     );
   });
-}
 
-function logList(): LogEntry[] {
-  return stmtList.all().map((row) => ({ ...row, timestamp: Math.floor(row.timestamp / 1000) }));
-}
-
-function logClear(): { ok: true } {
-  stmtClear.run();
-  return { ok: true };
-}
-
-async function logExport(payload: {
-  content: string;
-  defaultFilename?: string;
-}): Promise<{ cancelled: boolean; path?: string }> {
-  const { canceled, filePath } = await dialog.showSaveDialog({
-    defaultPath: payload.defaultFilename ?? 'bitbutler.log',
-    filters: [{ name: 'Log files', extensions: ['log'] }],
+  ipcMain.handle('log:open-folder', async (): Promise<{ ok: boolean; error?: string }> => {
+    const error = await shell.openPath(getLogDirectory());
+    return error ? { ok: false, error } : { ok: true };
   });
-  if (canceled || !filePath) return { cancelled: true };
-
-  await fs.promises.writeFile(filePath, payload.content, 'utf-8');
-  return { cancelled: false, path: filePath };
 }
