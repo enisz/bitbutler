@@ -1317,6 +1317,7 @@
             "copy-as-json": "Másolás JSON-ként",
             "copy-cell-value": "Cella értékének másolása",
             "copy-row-as-json": "Sor másolása JSON-ként",
+            "copy-rows-as-json": "Sorok másolása JSON-ként",
             "export-torrent-file": "Exportálás .torrent fájlba",
             "export-torrent-files": "Exportálás .torrent fájlokba",
             "torrent-details": "Torrent részletei",
@@ -1391,7 +1392,8 @@
             "save-path": "Mentési Útvonal",
             "save-paths": "Mentési Útvonalak",
             "json": "JSON",
-            "row-as-json": "Sor JSON-ként"
+            "row-as-json": "Sor JSON-ként",
+            "rows-as-json": "Sorok JSON-ként"
           }
         },
         "overlays": {
@@ -1687,8 +1689,12 @@
                 "finished": {
                   "sub": "Akkor jelenik meg, amikor egy torrent letöltése befejeződött"
                 },
-                "errors": { "sub": "Sikertelen műveletek és kapcsolódási hibák" },
-                "updates": { "sub": "Akkor jelenik meg, amikor új verzió érhető el" },
+                "errors": {
+                  "sub": "Sikertelen műveletek és kapcsolódási hibák"
+                },
+                "updates": {
+                  "sub": "Akkor jelenik meg, amikor új verzió érhető el"
+                },
                 "confirmations": {
                   "sub": "Rövid üzenetek egy művelet sikeréről, például egy címke hozzáadásáról"
                 }
@@ -2260,6 +2266,8 @@
       "manage-servers": "Szerverek kezelése",
       "help": "Súgó",
       "check-for-updates": "Frissítések keresése",
+      "open-logs-folder": "Naplómappa megnyitása",
+      "open-logs-folder-failed": "A naplómappa megnyitása sikertelen",
       "about": "A BitButlerről",
       "export-torrents": "Torrentek exportálása",
       "import-torrents": "Torrentek importálása"

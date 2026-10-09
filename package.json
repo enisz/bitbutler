@@ -11,7 +11,7 @@
   "homepage": "https://github.com/enisz/bitbutler",
   "repository": "github:enisz/bitbutler",
   "type": "module",
-  "main": "packages/electron/dist/main.js",
+  "main": "packages/electron/dist/index.js",
   "workspaces": [
     "packages/*"
   ],
@@ -22,7 +22,7 @@
     "serve": "npm run serve --workspace=packages/app",
     "electron-dev": "wait-on http://localhost:4200 && npm run build:electron && electron .",
     "electron-ts:watch": "rimraf packages/electron/dist && wait-on http://localhost:4200 && npm run --silent watch --workspace=packages/electron",
-    "electron-hot": "wait-on http://localhost:4200 packages/electron/dist/main.js && nodemon --watch packages/electron/dist --ext js --delay 2 --exec \"electron .\"",
+    "electron-hot": "wait-on http://localhost:4200 packages/electron/dist/index.js && nodemon --watch packages/electron/dist --ext js --delay 2 --exec \"electron .\"",
     "prestart": "electron-builder install-app-deps",
     "start": "concurrently -n \"angular,ts,electron\" -c \"red,blue,magenta\" \"npm:serve\" \"npm:electron-ts:watch\" \"npm:electron-hot\"",
     "prestart:once": "electron-builder install-app-deps",
@@ -76,7 +76,7 @@
       "**/*.node"
     ],
     "extraMetadata": {
-      "main": "packages/electron/dist/main.js"
+      "main": "packages/electron/dist/index.js"
     },
     "files": [
       "dist/bitbutler/**",
@@ -233,6 +233,7 @@
     "better-sqlite3": "^13.0.3",
     "bootstrap": "^5.3.8",
     "builder-util-runtime": "9.7.0",
+    "electron-log": "^5.4.4",
     "electron-updater": "^6.8.9",
     "filesize": "^11.0.13",
     "flag-icons": "^7.5.0",

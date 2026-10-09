@@ -16,7 +16,6 @@ import { registerTorrentAddQueueHandlers } from './ipc/torrent-add-queue.js';
 import { registerTorrentIpcHandlers } from './ipc/torrent.js';
 import { registerViewIpcHandlers } from './ipc/view.js';
 import { handleSecondInstanceArgv, registerWindowIpcHandlers } from './ipc/window.js';
-import { initLogger } from './logger.js';
 import { createMainWindow } from './main-window.js';
 import { installMenu } from './menu.js';
 import { notify } from './notification.js';
@@ -84,7 +83,6 @@ function createOrRestoreMainWindow(): Electron.BrowserWindow {
   return mainWindow;
 }
 
-initLogger();
 console.info(`[BitButler] Starting (platform=${process.platform}).`);
 
 const gotLock = app.requestSingleInstanceLock();

@@ -5,7 +5,8 @@
   "type": "module",
   "dependencies": {
     "@bitbutler/shared": "*",
-    "@jridgewell/trace-mapping": "^0.3.31"
+    "@jridgewell/trace-mapping": "^0.3.31",
+    "electron-log": "^5.4.4"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json && tsc -p tsconfig.preload.json",

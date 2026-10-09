@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const ipcHandlers = vi.hoisted(() => new Map<string, (...args: unknown[]) => unknown>());
-const mockInsertLog = vi.hoisted(() => vi.fn());
+const mockWriteLog = vi.hoisted(() => vi.fn());
 const mockResolveOriginalLocation = vi.hoisted(() => vi.fn());
 
 vi.mock('electron', () => ({
@@ -9,13 +9,14 @@ vi.mock('electron', () => ({
     on: vi.fn((channel: string, handler: (...args: unknown[]) => unknown) => {
       ipcHandlers.set(channel, handler);
     }),
+    handle: vi.fn((channel: string, handler: (...args: unknown[]) => unknown) => {
+      ipcHandlers.set(channel, handler);
+    }),
   },
 }));
-
 vi.mock('../logger.js', () => ({
-  insertLog: mockInsertLog,
+  writeLog: mockWriteLog,
 }));
-
 vi.mock('../source-map-resolver.js', () => ({
   resolveOriginalLocation: mockResolveOriginalLocation,
 }));
@@ -24,7 +25,7 @@ describe('log IPC handlers', () => {
   beforeEach(() => {
     vi.resetModules();
     ipcHandlers.clear();
-    mockResolveOriginalLocation.mockReset();
+    vi.clearAllMocks();
     mockResolveOriginalLocation.mockReturnValue(null);
   });
 
@@ -32,154 +33,94 @@ describe('log IPC handlers', () => {
     vi.clearAllMocks();
   });
 
-  async function registerAndGetHandler() {
+  async function register() {
     const { registerLogIpcHandlers } = await import('./log.js');
     registerLogIpcHandlers();
-    return ipcHandlers.get('log:write')!;
   }
 
-  it('inserts a fully populated renderer log entry', async () => {
-    const handler = await registerAndGetHandler();
+  describe('log:write', () => {
+    it('writes a renderer entry through writeLog', async () => {
+      await register();
 
-    handler(null, {
-      level: 'error',
-      message: 'Unhandled command',
-      context: '[{"type":"UI_ADD_TORRENT"}]',
-      filename: 'http://localhost:4200/main.js',
-      line: 471,
+      ipcHandlers.get('log:write')!(null, {
+        level: 'error',
+        message: 'Unhandled command',
+        filename: 'app.js',
+        line: 12,
+        column: 3,
+      });
+
+      expect(mockWriteLog).toHaveBeenCalledWith(
+        'renderer',
+        'error',
+        'Unhandled command',
+        'app.js',
+        12,
+      );
     });
 
-    expect(mockInsertLog).toHaveBeenCalledWith(
-      'renderer',
-      'error',
-      'Unhandled command',
-      '[{"type":"UI_ADD_TORRENT"}]',
-      'http://localhost:4200/main.js',
-      471,
-    );
-  });
+    it('prefers the source-map-resolved location', async () => {
+      mockResolveOriginalLocation.mockReturnValue({
+        filename: 'packages/app/src/a.ts',
+        line: 9,
+      });
+      await register();
 
-  it('defaults missing optional fields to null', async () => {
-    const handler = await registerAndGetHandler();
+      ipcHandlers.get('log:write')!(null, {
+        level: 'info',
+        message: 'x',
+        filename: 'main.js',
+        line: 1,
+        column: 2,
+      });
 
-    handler(null, { level: 'info', message: 'hello' });
-
-    expect(mockInsertLog).toHaveBeenCalledWith('renderer', 'info', 'hello', null, null, null);
-  });
-
-  it('drops an entry with an invalid level', async () => {
-    const handler = await registerAndGetHandler();
-
-    handler(null, { level: 'verbose', message: 'hello' });
-
-    expect(mockInsertLog).not.toHaveBeenCalled();
-  });
-
-  it('drops an entry with a missing message', async () => {
-    const handler = await registerAndGetHandler();
-
-    handler(null, { level: 'info' });
-
-    expect(mockInsertLog).not.toHaveBeenCalled();
-  });
-
-  it('drops a malformed (non-object) entry', async () => {
-    const handler = await registerAndGetHandler();
-
-    handler(null, 'not an object');
-
-    expect(mockInsertLog).not.toHaveBeenCalled();
-  });
-
-  it('resolves the original TypeScript location via source maps when a column is given', async () => {
-    const handler = await registerAndGetHandler();
-    mockResolveOriginalLocation.mockReturnValue({
-      filename: 'packages/app/src/app/services/updater.service.ts',
-      line: 42,
+      expect(mockResolveOriginalLocation).toHaveBeenCalledWith('main.js', 1, 2, 'app');
+      expect(mockWriteLog).toHaveBeenCalledWith(
+        'renderer',
+        'info',
+        'x',
+        'packages/app/src/a.ts',
+        9,
+      );
     });
 
-    handler(null, {
-      level: 'error',
-      message: 'Unhandled command',
-      filename: 'http://localhost:4200/main.js',
-      line: 471,
-      column: 12,
+    it('accepts entries without a location', async () => {
+      await register();
+
+      ipcHandlers.get('log:write')!(null, { level: 'warn', message: 'no loc' });
+
+      expect(mockWriteLog).toHaveBeenCalledWith('renderer', 'warn', 'no loc', null, null);
     });
 
-    expect(mockResolveOriginalLocation).toHaveBeenCalledWith(
-      'http://localhost:4200/main.js',
-      471,
-      12,
-      'app',
-    );
-    expect(mockInsertLog).toHaveBeenCalledWith(
-      'renderer',
-      'error',
-      'Unhandled command',
-      null,
-      'packages/app/src/app/services/updater.service.ts',
-      42,
-    );
+    it('caps very long messages instead of dropping them', async () => {
+      await register();
+
+      ipcHandlers.get('log:write')!(null, { level: 'info', message: 'a'.repeat(50000) });
+
+      const message = mockWriteLog.mock.calls[0][2] as string;
+      expect(message).toHaveLength(20000);
+    });
+
+    it.each([
+      ['unknown level', { level: 'trace', message: 'x' }],
+      ['missing message', { level: 'info' }],
+      ['empty message', { level: 'info', message: '' }],
+      ['non-object payload', 'nope'],
+      ['null payload', null],
+    ])('ignores an invalid entry (%s)', async (_label, payload) => {
+      await register();
+
+      ipcHandlers.get('log:write')!(null, payload);
+
+      expect(mockWriteLog).not.toHaveBeenCalled();
+    });
   });
 
-  it('does not attempt resolution when no column is given', async () => {
-    const handler = await registerAndGetHandler();
-
-    handler(null, {
-      level: 'error',
-      message: 'Unhandled command',
-      filename: 'http://localhost:4200/main.js',
-      line: 471,
-    });
-
-    expect(mockResolveOriginalLocation).not.toHaveBeenCalled();
-    expect(mockInsertLog).toHaveBeenCalledWith(
-      'renderer',
-      'error',
-      'Unhandled command',
-      null,
-      'http://localhost:4200/main.js',
-      471,
-    );
-  });
-
-  it('falls back to the compiled location when resolution finds no source map', async () => {
-    const handler = await registerAndGetHandler();
-    mockResolveOriginalLocation.mockReturnValue(null);
-
-    handler(null, {
-      level: 'error',
-      message: 'Unhandled command',
-      filename: 'http://localhost:4200/main.js',
-      line: 471,
-      column: 12,
-    });
-
-    expect(mockInsertLog).toHaveBeenCalledWith(
-      'renderer',
-      'error',
-      'Unhandled command',
-      null,
-      'http://localhost:4200/main.js',
-      471,
-    );
-  });
-
-  it('truncates an overly long message, context and filename', async () => {
-    const handler = await registerAndGetHandler();
-
-    handler(null, {
-      level: 'debug',
-      message: 'a'.repeat(3000),
-      context: 'b'.repeat(30000),
-      filename: 'c'.repeat(1000),
-      line: 1.5,
-    });
-
-    const [, , message, context, filename, line] = mockInsertLog.mock.calls[0];
-    expect(message).toHaveLength(2000);
-    expect(context).toHaveLength(20000);
-    expect(filename).toHaveLength(500);
-    expect(line).toBeNull();
+  it('no longer registers the list, clear, export and open-folder channels', async () => {
+    await register();
+    expect(ipcHandlers.has('log:list')).toBe(false);
+    expect(ipcHandlers.has('log:clear')).toBe(false);
+    expect(ipcHandlers.has('log:export')).toBe(false);
+    expect(ipcHandlers.has('log:open-folder')).toBe(false);
   });
 });

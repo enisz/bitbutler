@@ -13,6 +13,9 @@ const mockServerList = vi.hoisted(() =>
 );
 const mockGetMainWindow = vi.hoisted(() => vi.fn());
 const mockNotify = vi.hoisted(() => vi.fn());
+const mockShowErrorBox = vi.hoisted(() => vi.fn());
+const mockOpenPath = vi.hoisted(() => vi.fn(() => Promise.resolve('')));
+const mockGetLogDirectory = vi.hoisted(() => vi.fn(() => '/fake/logs'));
 
 const appMock = vi.hoisted(() => ({ isPackaged: false }));
 
@@ -22,7 +25,11 @@ vi.mock('electron', () => ({
     setApplicationMenu: mockSetApplicationMenu,
   },
   app: appMock,
+  dialog: { showErrorBox: mockShowErrorBox },
+  shell: { openPath: mockOpenPath },
 }));
+
+vi.mock('./logger.js', () => ({ getLogDirectory: mockGetLogDirectory }));
 
 vi.mock('./i18n.js', () => ({
   t: (key: string) => key,
@@ -280,6 +287,34 @@ describe('rebuildMenu', () => {
       );
       expect(findItem(template, byLabel('electron.menu.about'))?.accelerator).toBe('F1');
     });
+
+    it('opens the log folder from Help > Open Logs Folder, even when logged out', async () => {
+      const template = await buildMenu(createFakeWindow());
+      const item = findItem(template, byLabel('electron.menu.open-logs-folder'))!;
+      expect(item).toBeDefined();
+
+      (item.click as () => void)();
+
+      expect(mockOpenPath).toHaveBeenCalledWith('/fake/logs');
+    });
+
+    it('shows an error box and logs when the folder cannot be opened', async () => {
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+      mockOpenPath.mockResolvedValueOnce('Failed to open path');
+      const template = await buildMenu(createFakeWindow());
+      const item = findItem(template, byLabel('electron.menu.open-logs-folder'))!;
+
+      (item.click as () => void)();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('Failed to open path'));
+      expect(mockShowErrorBox).toHaveBeenCalledWith(
+        'electron.menu.open-logs-folder-failed',
+        'Failed to open path',
+      );
+      errorSpy.mockRestore();
+    });
   });
 
   describe('Debug menu', () => {
@@ -302,6 +337,11 @@ describe('rebuildMenu', () => {
       expect(item.accelerator).toBe('F12');
       (item.click as () => void)();
       expect(mainWindow.webContents.openDevTools).toHaveBeenCalledWith({ mode: 'detach' });
+    });
+
+    it('no longer has a Logs item', async () => {
+      const template = await buildMenu(createFakeWindow());
+      expect(findItem(template, byLabel('Logs'))).toBeUndefined();
     });
 
     it('reloads the window using the built-in reload role instead of an unhandled IPC action', async () => {

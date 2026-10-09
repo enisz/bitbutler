@@ -1,87 +1,88 @@
+import { type Mock, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { initRendererLogger } from './renderer-logger';
 
+type ConsoleFn = (...args: unknown[]) => void;
+const consoleOf = () => console as unknown as Record<string, ConsoleFn>;
+
 describe('initRendererLogger', () => {
-  let originalConsole: Record<string, (...args: unknown[]) => void>;
-  let writeSpy: ReturnType<typeof vi.spyOn>;
+  let original: Record<string, ConsoleFn>;
+  let originals: Record<string, Mock<ConsoleFn>>;
+  let write: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    originalConsole = {
+    original = {
       log: console.log,
       debug: console.debug,
       info: console.info,
       warn: console.warn,
       error: console.error,
     };
-    writeSpy = vi.spyOn(window.bitbutler.log, 'write').mockImplementation(() => {});
+    write = vi.spyOn(window.bitbutler.log, 'write');
+    originals = {};
+    for (const m of Object.keys(original)) {
+      originals[m] = vi.fn<ConsoleFn>();
+      consoleOf()[m] = originals[m];
+    }
+    initRendererLogger();
   });
 
   afterEach(() => {
-    Object.assign(console, originalConsole);
+    Object.assign(console, original);
+    write.mockRestore();
   });
 
+  const lastEntry = () => write.mock.calls.at(-1)![0] as Record<string, unknown>;
+
   it.each([
+    ['log', 'debug'],
     ['debug', 'debug'],
     ['info', 'info'],
     ['warn', 'warn'],
     ['error', 'error'],
-  ])('forwards console.%s as level "%s" and preserves terminal output', (method, expectedLevel) => {
-    const spy = vi.fn();
-    (console as unknown as Record<string, unknown>)[method] = spy;
-    initRendererLogger();
-
-    (console as unknown as Record<string, (...args: unknown[]) => void>)[method]('hello', 42);
-
-    expect(spy).toHaveBeenCalledWith('hello', 42);
-    expect(writeSpy).toHaveBeenCalledWith(
-      expect.objectContaining({ level: expectedLevel, message: 'hello 42' }),
-    );
+  ])('maps console.%s to level %s', (method, level) => {
+    consoleOf()[method]('hello');
+    expect(lastEntry()).toMatchObject({ level, message: 'hello' });
   });
 
-  it('serializes an object argument into context and keeps the message readable', () => {
-    initRendererLogger();
-    const command = { type: 'UI_ADD_TORRENT' };
-    console.error('CommandHandler', 'start', 'Unhandled command', command);
-
-    expect(writeSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        level: 'error',
-        message: 'CommandHandler start Unhandled command [object]',
-        context: JSON.stringify([command]),
-      }),
-    );
+  it('joins primitives and keeps null/undefined readable', () => {
+    console.info('a', 1, true, null, undefined);
+    expect(lastEntry()['message']).toBe('a 1 true null undefined');
   });
 
-  it('serializes an Error argument with its stack in the context', () => {
-    initRendererLogger();
-    const error = new Error('boom');
-    console.error('failed', error);
-
-    const entry = writeSpy.mock.calls[0][0] as { message: string; context: string | null };
-    expect(entry.message).toBe('failed Error: boom');
-    expect(JSON.parse(entry.context!)).toEqual([
-      { name: 'Error', message: 'boom', stack: error.stack },
-    ]);
+  it('renders Errors as their stack', () => {
+    const err = new Error('boom');
+    console.error('failed:', err);
+    expect(lastEntry()['message']).toContain('failed: ');
+    expect(lastEntry()['message']).toContain('Error: boom');
   });
 
-  it('captures the caller filename, line and column', () => {
-    initRendererLogger();
-    console.info('hello');
-
-    const entry = writeSpy.mock.calls[0][0] as {
-      filename: string | null;
-      line: number | null;
-      column: number | null;
-    };
-    expect(entry.filename).toContain('renderer-logger.spec.ts');
-    expect(entry.line).toBeGreaterThan(0);
-    expect(entry.column).toBeGreaterThan(0);
+  it('renders objects as JSON instead of [object]', () => {
+    console.info('state', { a: 1, b: [2] });
+    expect(lastEntry()['message']).toBe('state {"a":1,"b":[2]}');
   });
 
-  it('reports null context when no structured arguments are passed', () => {
-    initRendererLogger();
-    console.info('just a string', 1, true, null, undefined);
+  it('survives circular objects', () => {
+    const o: Record<string, unknown> = { name: 'x' };
+    o['self'] = o;
+    expect(() => console.info('c', o)).not.toThrow();
+    expect(lastEntry()['message']).toContain('[Circular]');
+  });
 
-    const entry = writeSpy.mock.calls[0][0] as { context: string | null };
-    expect(entry.context).toBeNull();
+  it('survives BigInt and functions', () => {
+    expect(() => console.info('n', 10n, () => 1)).not.toThrow();
+    expect(lastEntry()['message']).toContain('10');
+  });
+
+  it('sends the caller location of the console call', () => {
+    console.info('where');
+    expect(String(lastEntry()['filename'])).toContain('renderer-logger.spec');
+    expect(lastEntry()['line']).toEqual(expect.any(Number));
+    expect(lastEntry()['column']).toEqual(expect.any(Number));
+    expect(lastEntry()).not.toHaveProperty('context');
+  });
+
+  it('still calls the original console method with the same arguments', () => {
+    console.info('forwarded', 1);
+    expect(originals['info']).toHaveBeenCalledWith('forwarded', 1);
   });
 });

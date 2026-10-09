@@ -1317,6 +1317,7 @@
             "copy-as-json": "Copy as JSON",
             "copy-cell-value": "Copy Cell Value",
             "copy-row-as-json": "Copy Row as JSON",
+            "copy-rows-as-json": "Copy Rows as JSON",
             "export-torrent-file": "Export .torrent",
             "export-torrent-files": "Export .torrent Files",
             "torrent-details": "Torrent details",
@@ -1391,7 +1392,8 @@
             "save-path": "Save Path",
             "save-paths": "Save Paths",
             "json": "JSON",
-            "row-as-json": "Row as JSON"
+            "row-as-json": "Row as JSON",
+            "rows-as-json": "Rows as JSON"
           }
         },
         "overlays": {
@@ -1684,9 +1686,15 @@
                 }
               },
               "category": {
-                "finished": { "sub": "Shown when a torrent finishes downloading" },
-                "errors": { "sub": "Failed actions and connection problems" },
-                "updates": { "sub": "Shown when a new version is available" },
+                "finished": {
+                  "sub": "Shown when a torrent finishes downloading"
+                },
+                "errors": {
+                  "sub": "Failed actions and connection problems"
+                },
+                "updates": {
+                  "sub": "Shown when a new version is available"
+                },
                 "confirmations": {
                   "sub": "Short messages confirming an action, such as a tag being added"
                 }
@@ -2259,6 +2267,8 @@
       "manage-servers": "Manage Servers",
       "help": "Help",
       "check-for-updates": "Check for Updates",
+      "open-logs-folder": "Open Logs Folder",
+      "open-logs-folder-failed": "Failed to Open Logs Folder",
       "about": "About BitButler",
       "export-torrents": "Export Torrents",
       "import-torrents": "Import Torrents"

@@ -5,17 +5,23 @@
 >
   <div class="d-flex bb-datepicker-header mb-1">
     <div class="bb-header-side d-flex justify-content-between align-items-center ps-1">
-      <button type="button" class="btn btn-link bb-dp-nav-btn" (click)="moveMonth(dp, -1)">
+      <button
+        type="button"
+        class="btn btn-link bb-dp-nav-btn"
+        [disabled]="!canMoveMonth(-1)"
+        (click)="moveMonth(dp, -1)"
+      >
         <fa-icon [icon]="icons.faChevronLeft"></fa-icon>
       </button>
       <ng-select
-        [items]="months"
+        [items]="visibleMonths()"
         bindLabel="label"
         bindValue="value"
         [clearable]="false"
         [searchable]="false"
         [(ngModel)]="viewDate.month"
         (change)="updateView(dp)"
+        [appendTo]="monthPopupPortalSelector"
         class="bb-select-month"
       >
       </ng-select>
@@ -25,13 +31,19 @@
       <ng-select
         [items]="years"
         [clearable]="false"
-        [searchable]="true"
+        [searchable]="false"
         [(ngModel)]="viewDate.year"
         (change)="updateView(dp)"
+        [appendTo]="yearPopupPortalSelector"
         class="bb-select-year"
       >
       </ng-select>
-      <button type="button" class="btn btn-link bb-dp-nav-btn" (click)="moveMonth(dp, 1)">
+      <button
+        type="button"
+        class="btn btn-link bb-dp-nav-btn"
+        [disabled]="!canMoveMonth(1)"
+        (click)="moveMonth(dp, 1)"
+      >
         <fa-icon [icon]="icons.faChevronRight"></fa-icon>
       </button>
     </div>
@@ -43,6 +55,7 @@
     [dayTemplate]="t"
     [outsideDays]="'collapsed'"
     [navigation]="'none'"
+    [markDisabled]="isOutOfRange"
     [firstDayOfWeek]="dateFormatService.resolved().firstDayOfWeek"
     (navigate)="onNavigate($event)"
     (dateSelect)="onSelect($event)"
@@ -57,6 +70,7 @@
       [class.bb-day--to]="isTo(date)"
       [class.bb-day--between]="isInside(date) || isHovered(date)"
       [class.bb-day--today]="isToday(date)"
+      [class.bb-day--disabled]="isOutOfRange(date)"
       (mouseenter)="hoveredDate = date"
       (mouseleave)="hoveredDate = null"
     >

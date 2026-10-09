@@ -1,9 +1,11 @@
 import { ipcMain } from 'electron';
-import { insertLog } from '../logger.js';
+import { writeLog } from '../logger.js';
 import { resolveOriginalLocation } from '../source-map-resolver.js';
 
 const VALID_LEVELS = ['debug', 'info', 'warn', 'error'] as const;
 type LevelStr = (typeof VALID_LEVELS)[number];
+
+const MAX_MESSAGE_LENGTH = 20000;
 
 function asNullableString(v: unknown, maxLen: number): string | null {
   if (typeof v !== 'string' || !v) return null;
@@ -18,7 +20,7 @@ export function registerLogIpcHandlers(): void {
   ipcMain.on('log:write', (_event, entry: unknown) => {
     const e = entry && typeof entry === 'object' ? (entry as Record<string, unknown>) : {};
     const level = VALID_LEVELS.includes(e['level'] as LevelStr) ? (e['level'] as LevelStr) : null;
-    const message = asNullableString(e['message'], 2000);
+    const message = asNullableString(e['message'], MAX_MESSAGE_LENGTH);
     if (!level || !message) return;
 
     const filename = asNullableString(e['filename'], 500);
@@ -29,11 +31,10 @@ export function registerLogIpcHandlers(): void {
         ? resolveOriginalLocation(filename, line, column, 'app')
         : null;
 
-    insertLog(
+    writeLog(
       'renderer',
       level,
       message,
-      asNullableString(e['context'], 20000),
       resolved ? asNullableString(resolved.filename, 500) : filename,
       resolved?.line ?? line,
     );
