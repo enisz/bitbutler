@@ -49,8 +49,8 @@ describe('UiCommandHandlerService', () => {
     // import for each module requires async I/O which completes after flushPromises resolves.
     await Promise.all([
       import('../modals/delete-torrent/delete-torrent'),
-      import('../modals/settings/settings'),
-      import('../modals/qb-settings/qb-settings'),
+      import('../pages/settings/settings'),
+      import('../pages/qb-settings/qb-settings'),
       import('../modals/torrent-details/torrent-details'),
       import('../modals/add-torrent/add-torrent'),
       import('../components/about/about'),

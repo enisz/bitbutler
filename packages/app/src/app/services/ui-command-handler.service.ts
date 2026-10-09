@@ -135,7 +135,7 @@ export class UiCommandHandlerService {
         }
 
         case 'UI_OPEN_SETTINGS': {
-          const { Settings } = await import('../modals/settings/settings');
+          const { Settings } = await import('../pages/settings/settings');
           if (this.isModalOpen(Settings)) break;
           const settingsModalRef = this.modalService.open(Settings, {
             size: 'xl',
@@ -153,7 +153,7 @@ export class UiCommandHandlerService {
         }
 
         case 'UI_OPEN_QB_SETTINGS': {
-          const { QbSettings } = await import('../modals/qb-settings/qb-settings');
+          const { QbSettings } = await import('../pages/qb-settings/qb-settings');
           if (this.isModalOpen(QbSettings)) break;
           const qbSettingsModalRef = this.modalService.open(QbSettings, {
             size: 'xl',

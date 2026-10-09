@@ -655,7 +655,7 @@ export class ImportTorrents implements OnInit {
   }
 
   async openQbSettings(): Promise<void> {
-    const { QbSettings } = await import('../qb-settings/qb-settings');
+    const { QbSettings } = await import('../../pages/qb-settings/qb-settings');
     const ref = this.modalService.open(QbSettings, {
       size: 'xl',
       centered: false,
