@@ -24,8 +24,10 @@ view. Users reach the logs through an "Open Logs Folder" action.
 - Transport/rotation: `electron-log` (v5), size-based rotation. No hourly rotation.
 - Separate files: `main.log` and `renderer.log`, routed with `transports.file.resolvePathFn`
   using `message.variables.processType` (`'renderer'` -> `renderer.log`, otherwise `main.log`).
-- Rotation: `maxSize` 5 MB, default archive behaviour (`main.old.log` / `renderer.old.log`),
-  i.e. roughly 10 MB of history per process.
+- Rotation: `maxSize` 5 MB per file, keeping 5 files per process (1 active + 4 rolled), i.e. at
+  most about 25 MB per process. `electron-log` only keeps a single `.old.log` by default, so a
+  small `archiveLogFn` shifts the rolled files: `main.log` -> `main.1.log` -> ... -> `main.4.log`
+  (oldest deleted), same for `renderer`.
 - Keep the existing extended logging: console wrappers, caller `file:line` from the stack frame
   resolved through `source-map-resolver.ts`, `uncaughtException` / `unhandledRejection` handlers.
   `electron-log` has no caller-location support, so it is used only as the file transport.
@@ -40,7 +42,8 @@ view. Users reach the logs through an "Open Logs Folder" action.
 - Configure `electron-log/main`:
   - `transports.file.resolvePathFn`: `renderer.log` when `message?.variables?.processType ===
 'renderer'`, else `main.log`, both in the default log directory.
-  - `transports.file.maxSize = 5 * 1024 * 1024`.
+  - `transports.file.maxSize = 5 * 1024 * 1024` and `transports.file.archiveLogFn` that shifts
+    rolled files (`<name>.1.log` ... `<name>.4.log`), dropping the oldest.
   - File line format: `YYYY-MM-DD HH:mm:ss.SSS LEVEL [file:line] message`. The `file:line`
     segment is omitted when no location is available.
   - Console transport disabled (the original `console.*` is still called by our wrapper).
@@ -126,6 +129,6 @@ PR creation.
 
 ## Out of scope
 
-- Hourly/daily rotation or keeping more than one archive.
+- Hourly/daily rotation or a configurable archive count.
 - Log level setting, log export/zip, in-app viewing.
 - Changes to what is logged.
