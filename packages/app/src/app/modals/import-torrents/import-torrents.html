@@ -273,17 +273,16 @@
               <span
                 class="mt-3"
                 [innerHTML]="
-                  'components.modals.import-torrents.category-path-mapping.note-prefix' | translate
+                  'components.modals.import-torrents.category-path-mapping.note-prefix'
+                    | translate
+                      : {
+                          location:
+                            ('pages.qb-settings.title' | translate) +
+                            ' - ' +
+                            ('pages.qb-settings.tab.storage.title' | translate),
+                        }
                 "
               ></span>
-              <button
-                type="button"
-                class="btn btn-link btn-sm p-0 align-baseline"
-                (click)="openQbSettings()"
-              >
-                {{ 'pages.qb-settings.title' | translate }} -
-                {{ 'pages.qb-settings.tab.storage.title' | translate }}</button
-              >.
             </bb-callout>
             <div formArrayName="categoryPathMappings">
               @for (group of categoryPathMappings.controls; track $index; let i = $index) {

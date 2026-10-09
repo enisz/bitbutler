@@ -30,7 +30,7 @@ import {
   faTriangleExclamation,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
-import { NgbActiveModal, NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import {
@@ -73,7 +73,6 @@ import { ServerStoreService } from '../../services/server-store.service';
 import { ThemeService } from '../../services/theme.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
 import { UiFormatService } from '../../services/ui-format.service';
-import { setModalInput } from '../../utils/modal-input';
 
 export type ImportRowStatus = 'pending' | 'duplicate' | 'imported' | 'failed' | 'skipped';
 type ImportGridRow = BbeTorrentEntry & { importState: ImportRowStatus };
@@ -106,7 +105,6 @@ export class ImportTorrents implements OnInit {
   private loadedBbePath = '';
 
   private readonly activeModal = inject(NgbActiveModal);
-  private readonly modalService = inject(NgbModal);
   private readonly exportService = inject(ExportService);
   private readonly injector = inject(Injector);
   readonly serverStore = inject(ServerStoreService);
@@ -652,18 +650,6 @@ export class ImportTorrents implements OnInit {
     } else {
       array.removeAt(i);
     }
-  }
-
-  async openQbSettings(): Promise<void> {
-    const { QbSettings } = await import('../../pages/qb-settings/qb-settings');
-    const ref = this.modalService.open(QbSettings, {
-      size: 'xl',
-      centered: false,
-      scrollable: true,
-      beforeDismiss: () => ref.componentInstance.canDeactivate(),
-    });
-    setModalInput(ref, 'tabToOpen', 'storage');
-    ref.result.catch(() => {});
   }
 
   async loadBbe(bbePath: string): Promise<void> {
