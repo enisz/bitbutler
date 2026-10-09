@@ -3,7 +3,6 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IconDefinition, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
-import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
@@ -16,7 +15,6 @@ import { SettingsTabComponent } from '../settings.interface';
     CommonModule,
     ReactiveFormsModule,
     FontAwesomeModule,
-    NgbTooltip,
     BbSpinner,
     BbPopover,
     TranslatePipe,

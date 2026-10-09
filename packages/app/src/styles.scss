@@ -1459,3 +1459,36 @@ body {
     color: var(--bs-body-color);
   }
 }
+
+// Settings page card grid. The grid reacts to the width of the settings content area
+// (container queries), not the viewport, because the sidebar takes a fixed 268px of it.
+.bb-cards {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 1.5rem;
+  max-width: 1800px;
+
+  > .bb-fieldset,
+  > .bb-cards__group > .bb-fieldset {
+    margin: 0;
+  }
+
+  // Lets a wrapper keep a form path (formGroupName) without becoming a grid item itself.
+  > .bb-cards__group {
+    display: contents;
+  }
+
+  > .bb-card--wide {
+    grid-column: 1 / -1;
+  }
+}
+
+// Content width at which cards go from one column to two. One tunable value.
+$bb-cards-two-column-min: 1500px;
+
+@container bb-settings-content (min-width: #{$bb-cards-two-column-min}) {
+  .bb-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

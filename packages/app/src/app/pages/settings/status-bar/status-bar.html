@@ -1,12 +1,5 @@
 @if (settingsLoaded()) {
   <div class="row">
-    <div class="col-12">
-      <p>
-        {{ 'pages.settings.tab.status-bar.description' | translate }}
-      </p>
-    </div>
-  </div>
-  <div class="row">
     <div class="col-12 d-flex justify-content-end">
       <button type="button" class="btn btn-sm btn-split" (click)="reset()">
         <bb-btn-content
@@ -17,8 +10,8 @@
       </button>
     </div>
   </div>
-  <div cdkDropListGroup class="status-bar-config">
-    <fieldset class="bb-fieldset mt-2 mb-1 pb-3">
+  <div cdkDropListGroup class="status-bar-config bb-cards">
+    <fieldset class="bb-fieldset bb-card--wide pb-3">
       <legend>
         {{ 'pages.settings.tab.status-bar.label.widget-pool' | translate }}
         <bb-popover
@@ -42,7 +35,7 @@
       </div>
     </fieldset>
 
-    <fieldset class="bb-fieldset mt-0">
+    <fieldset class="bb-fieldset bb-card--wide">
       <legend>
         {{ 'pages.settings.tab.status-bar.label.widgets' | translate }}
         <bb-popover

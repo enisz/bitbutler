@@ -1,14 +1,6 @@
 @if (loaded()) {
-  <form [formGroup]="torrentListGridForm">
-    <div class="row">
-      <div class="col-12">
-        <p>
-          {{ 'pages.settings.tab.torrent-list-grid.description' | translate }}
-        </p>
-      </div>
-    </div>
-
-    <fieldset class="bb-fieldset mt-2">
+  <form [formGroup]="torrentListGridForm" class="bb-cards">
+    <fieldset class="bb-fieldset">
       <legend>{{ 'pages.settings.tab.torrent-list-grid.label.grid-options' | translate }}</legend>
       <div class="bb-options bb-options--grid">
         <div class="bb-option">
@@ -151,7 +143,7 @@
         </div>
       </div>
     </fieldset>
-    <fieldset class="bb-fieldset">
+    <fieldset class="bb-fieldset bb-card--wide">
       <legend>{{ 'pages.settings.tab.torrent-list-grid.label.columns' | translate }}</legend>
 
       <div class="row mt-3 mb-3">
