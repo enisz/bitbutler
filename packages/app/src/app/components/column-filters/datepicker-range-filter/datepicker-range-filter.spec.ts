@@ -1,3 +1,4 @@
+import { ChangeDetectorRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
 import { DEFAULT_GENERAL_SETTINGS } from '../../../models/general-settings.model';
@@ -462,6 +463,8 @@ describe('DatepickerRangeFilter', () => {
   });
 
   describe('min/max date bounds', () => {
+    let boundedFixtureRef: ComponentFixture<DatepickerRangeFilter>;
+
     async function createWithBounds(min: Date | null, max: Date | null) {
       const boundedParams: any = {
         filterChangedCallback: vi.fn(),
@@ -479,6 +482,7 @@ describe('DatepickerRangeFilter', () => {
       const boundedComponent = boundedFixture.componentInstance;
       boundedComponent.agInit(boundedParams);
       boundedFixture.detectChanges();
+      boundedFixtureRef = boundedFixture;
       return boundedComponent;
     }
 
@@ -537,6 +541,108 @@ describe('DatepickerRangeFilter', () => {
       it('is trimmed to the configured min/max year range', async () => {
         const c = await createWithBounds(new Date(2022, 0, 1), new Date(2025, 0, 1));
         expect(c.years).toEqual([2022, 2023, 2024, 2025]);
+      });
+    });
+
+    describe('month navigation', () => {
+      const navigable = () => ({ navigateTo: vi.fn() });
+
+      it('allows moving in both directions when there are no bounds', async () => {
+        const c = await createWithBounds(null, null);
+        expect(c.canMoveMonth(-1)).toBe(true);
+        expect(c.canMoveMonth(1)).toBe(true);
+      });
+
+      it('does not allow moving before the minimum month', async () => {
+        const c = await createWithBounds(new Date(2024, 2, 15), null); // March 2024
+        c.viewDate = { month: 3, year: 2024 };
+        expect(c.canMoveMonth(-1)).toBe(false);
+        expect(c.canMoveMonth(1)).toBe(true);
+      });
+
+      it('does not allow moving after the maximum month', async () => {
+        const c = await createWithBounds(null, new Date(2024, 5, 15)); // June 2024
+        c.viewDate = { month: 6, year: 2024 };
+        expect(c.canMoveMonth(1)).toBe(false);
+        expect(c.canMoveMonth(-1)).toBe(true);
+      });
+
+      it('treats the boundary across a year change correctly', async () => {
+        const c = await createWithBounds(new Date(2025, 0, 1), null); // January 2025
+        c.viewDate = { month: 1, year: 2025 };
+        expect(c.canMoveMonth(-1)).toBe(false);
+        c.viewDate = { month: 2, year: 2025 };
+        expect(c.canMoveMonth(-1)).toBe(true);
+      });
+
+      it('moveMonth does nothing when the move is not allowed', async () => {
+        const c = await createWithBounds(null, new Date(2024, 9, 31)); // October 2024
+        c.viewDate = { month: 10, year: 2024 };
+        const dp = navigable();
+
+        c.moveMonth(dp, 1);
+
+        expect(c.viewDate).toEqual({ month: 10, year: 2024 });
+        expect(dp.navigateTo).not.toHaveBeenCalled();
+      });
+
+      it('moveMonth still moves when the move is allowed', async () => {
+        const c = await createWithBounds(null, new Date(2024, 9, 31));
+        c.viewDate = { month: 9, year: 2024 };
+        const dp = navigable();
+
+        c.moveMonth(dp, 1);
+
+        expect(c.viewDate).toEqual({ month: 10, year: 2024 });
+        expect(dp.navigateTo).toHaveBeenCalledWith({ month: 10, year: 2024 });
+      });
+
+      it('disables the prev and next buttons at the range edges', async () => {
+        const c = await createWithBounds(new Date(2024, 1, 1), new Date(2024, 9, 31));
+        const cdr = boundedFixtureRef.componentRef.injector.get(ChangeDetectorRef);
+        const buttons = () =>
+          Array.from(
+            boundedFixtureRef.nativeElement.querySelectorAll('.bb-dp-nav-btn'),
+          ) as HTMLButtonElement[];
+        const render = (view: { month: number; year: number }) => {
+          c.viewDate = view;
+          cdr.markForCheck();
+          boundedFixtureRef.detectChanges();
+        };
+
+        render({ month: 2, year: 2024 });
+        expect(buttons().map((b) => b.disabled)).toEqual([true, false]);
+
+        render({ month: 10, year: 2024 });
+        expect(buttons().map((b) => b.disabled)).toEqual([false, true]);
+
+        render({ month: 6, year: 2024 });
+        expect(buttons().map((b) => b.disabled)).toEqual([false, false]);
+      });
+
+      it('clamps the month into range when the year select lands on a boundary year', async () => {
+        const c = await createWithBounds(new Date(2024, 2, 1), new Date(2025, 5, 30)); // Mar 2024 - Jun 2025
+        const dp = navigable();
+
+        c.viewDate = { month: 1, year: 2024 };
+        c.updateView(dp);
+        expect(c.viewDate).toEqual({ month: 3, year: 2024 });
+        expect(dp.navigateTo).toHaveBeenLastCalledWith({ month: 3, year: 2024 });
+
+        c.viewDate = { month: 12, year: 2025 };
+        c.updateView(dp);
+        expect(c.viewDate).toEqual({ month: 6, year: 2025 });
+        expect(dp.navigateTo).toHaveBeenLastCalledWith({ month: 6, year: 2025 });
+      });
+
+      it('leaves an in-range month untouched on a year change', async () => {
+        const c = await createWithBounds(new Date(2024, 2, 1), new Date(2025, 5, 30));
+        const dp = navigable();
+        c.viewDate = { month: 7, year: 2024 };
+
+        c.updateView(dp);
+
+        expect(c.viewDate).toEqual({ month: 7, year: 2024 });
       });
     });
 

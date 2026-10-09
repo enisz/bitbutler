@@ -227,9 +227,38 @@ export class DatepickerRangeFilter implements IFilterAngularComp, OnInit, OnDest
     this.hoveredDate = null;
   }
   updateView(dp: NavigableDatepicker) {
+    this.clampViewMonth();
     dp.navigateTo(this.viewDate);
   }
+  /**
+   * Picking a boundary year can leave the viewed month outside the (trimmed) month list, which
+   * would render the month select blank - pull it to the nearest month that is in range.
+   */
+  private clampViewMonth(): void {
+    const months = this.visibleMonths().map((m) => m.value);
+    if (months.length === 0 || months.includes(this.viewDate.month)) return;
+    this.viewDate = {
+      ...this.viewDate,
+      month: this.viewDate.month < months[0] ? months[0] : months[months.length - 1],
+    };
+  }
+  /** Whether stepping `step` months from the viewed month stays inside the min/max range. */
+  canMoveMonth(step: number): boolean {
+    const target = this.calendarService.getNext(
+      new NgbDate(this.viewDate.year, this.viewDate.month, 1),
+      'm',
+      step,
+    );
+    if (this.minDate && target.before(new NgbDate(this.minDate.year, this.minDate.month, 1))) {
+      return false;
+    }
+    if (this.maxDate && target.after(new NgbDate(this.maxDate.year, this.maxDate.month, 1))) {
+      return false;
+    }
+    return true;
+  }
   moveMonth(dp: NavigableDatepicker, step: number) {
+    if (!this.canMoveMonth(step)) return;
     const nextDate = this.calendarService.getNext(
       new NgbDate(this.viewDate.year, this.viewDate.month, 1),
       'm',

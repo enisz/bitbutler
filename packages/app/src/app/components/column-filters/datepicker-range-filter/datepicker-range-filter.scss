@@ -182,6 +182,11 @@
       transform: scale(1.15);
       color: var(--bs-link-hover-color) !important;
     }
+    &:disabled {
+      opacity: 0.35;
+      transform: none;
+      pointer-events: none;
+    }
   }
   .bb-date-chip {
     background: var(--bb-control-bg);
