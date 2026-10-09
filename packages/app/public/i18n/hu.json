@@ -2266,6 +2266,7 @@
       "manage-servers": "Szerverek kezelése",
       "help": "Súgó",
       "check-for-updates": "Frissítések keresése",
+      "open-logs-folder": "Naplómappa megnyitása",
       "about": "A BitButlerről",
       "export-torrents": "Torrentek exportálása",
       "import-torrents": "Torrentek importálása"

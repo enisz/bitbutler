@@ -1,8 +1,9 @@
-import { Menu, app } from 'electron';
+import { Menu, app, shell } from 'electron';
 import { t } from './i18n.js';
 import { getCookieJar } from './ipc/qbittorrent.js';
 import { getActiveServerId, serverList } from './ipc/server.js';
 import { getActiveViewId } from './ipc/view.js';
+import { getLogDirectory } from './logger.js';
 import { getMainWindow } from './main.js';
 import { notify } from './notification.js';
 
@@ -40,6 +41,12 @@ function debugToastItems(
     item('Random', 'random'),
     item('One of each', 'all'),
   ];
+}
+
+function openLogsFolder(): void {
+  void shell.openPath(getLogDirectory()).then((error) => {
+    if (error) console.error(`[menu] failed to open the logs folder: ${error}`);
+  });
 }
 
 export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void {
@@ -149,11 +156,6 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
             },
             { type: 'separator' },
             {
-              label: 'Logs',
-              click: () => sendMenuAction(mainWindow, 'view.select', { viewId: 'logs' }),
-            },
-            { type: 'separator' },
-            {
               label: 'Reload',
               accelerator: 'CmdOrCtrl+R',
               role: 'reload',
@@ -209,6 +211,10 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
           label: t('electron.menu.check-for-updates'),
           accelerator: 'CmdOrCtrl+U',
           click: () => sendMenuAction(mainWindow, 'help.checkForUpdates'),
+        },
+        {
+          label: t('electron.menu.open-logs-folder'),
+          click: openLogsFolder,
         },
         { type: 'separator' },
         {

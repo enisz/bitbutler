@@ -2267,6 +2267,7 @@
       "manage-servers": "Manage Servers",
       "help": "Help",
       "check-for-updates": "Check for Updates",
+      "open-logs-folder": "Open Logs Folder",
       "about": "About BitButler",
       "export-torrents": "Export Torrents",
       "import-torrents": "Import Torrents"
