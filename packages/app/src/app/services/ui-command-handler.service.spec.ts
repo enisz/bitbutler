@@ -312,6 +312,31 @@ describe('UiCommandHandlerService', () => {
       expect(routerNavigate).toHaveBeenCalledWith(['/login']);
     });
 
+    it('leaves a settings page first and logs out only once leaving is allowed', async () => {
+      confirmServiceConfirm.mockResolvedValue(true);
+      (TestBed.inject(Router) as any).url = '/pages/qb-settings/storage';
+
+      commands$.next({ type: 'UI_DISCONNECT' });
+      await flushPromises();
+
+      expect(routerNavigate.mock.calls[0]).toEqual([['/pages', 'torrent-list']]);
+      expect(qbAuthLogout).toHaveBeenCalledWith('server-1');
+      expect(routerNavigate).toHaveBeenLastCalledWith(['/login']);
+    });
+
+    it('keeps the session when the unsaved-changes guard keeps the user on the settings page', async () => {
+      confirmServiceConfirm.mockResolvedValue(true);
+      (TestBed.inject(Router) as any).url = '/pages/settings/general';
+      routerNavigate.mockResolvedValueOnce(false);
+
+      commands$.next({ type: 'UI_DISCONNECT' });
+      await flushPromises();
+
+      expect(qbAuthLogout).not.toHaveBeenCalled();
+      expect(serverStoreService.clearSelection).not.toHaveBeenCalled();
+      expect(routerNavigate).not.toHaveBeenCalledWith(['/login']);
+    });
+
     it('should do nothing when the confirmation is declined', async () => {
       confirmServiceConfirm.mockResolvedValue(false);
 
@@ -553,6 +578,33 @@ describe('UiCommandHandlerService', () => {
       qbAuthMock = (TestBed.inject(QbService) as any).auth;
       serverStoreMock = TestBed.inject(ServerStoreService) as any;
       toastMock = TestBed.inject(ToastService) as any;
+    });
+
+    it('leaves a settings page before switching servers', async () => {
+      setServer();
+      qbAuthMock.hasCookie.mockResolvedValue(true);
+      mockModalService.open.mockReturnValueOnce(loaderRef());
+      (TestBed.inject(Router) as any).url = '/pages/qb-settings/bandwidth';
+
+      commands$.next({ type: 'UI_SERVER_SWITCH', id: 'server-1' });
+      await flushPromises();
+
+      expect(routerNavigate).toHaveBeenCalledWith(['/pages', 'torrent-list']);
+      expect(serverStoreMock.select).toHaveBeenCalledWith('server-1');
+    });
+
+    it('does not switch servers when the user stays on an unsaved settings page', async () => {
+      setServer();
+      qbAuthMock.hasCookie.mockResolvedValue(true);
+      (TestBed.inject(Router) as any).url = '/pages/settings/polling';
+      routerNavigate.mockResolvedValueOnce(false);
+
+      commands$.next({ type: 'UI_SERVER_SWITCH', id: 'server-1' });
+      await flushPromises();
+
+      expect(serverStoreMock.select).not.toHaveBeenCalled();
+      expect(qbAuthMock.hasCookie).not.toHaveBeenCalled();
+      expect(mockModalService.open).not.toHaveBeenCalled();
     });
 
     it('opens the credential prompt when there is no session and credentials are missing', async () => {

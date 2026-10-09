@@ -485,6 +485,7 @@ export class UiCommandHandlerService {
           );
           if (!confirmed) break;
 
+          if (!(await this.leaveSettingsPage())) break;
           await this.disconnect();
           break;
         }
@@ -529,6 +530,8 @@ export class UiCommandHandlerService {
   }
 
   private async handleServerSwitch(serverId: string): Promise<void> {
+    if (!(await this.leaveSettingsPage())) return;
+
     const server = this.serverStoreService.servers().find((s) => s.id === serverId);
     const name = server?.name || '';
 
@@ -605,6 +608,18 @@ export class UiCommandHandlerService {
     } finally {
       appLoaderModal?.close();
     }
+  }
+
+  // The settings pages hold unsaved state and per-server data. Anything that ends or replaces the
+  // session must leave them first: the unsaved-changes guard can veto that, and then nothing
+  // about the session may change.
+  private async leaveSettingsPage(): Promise<boolean> {
+    const url = this.router.url ?? '';
+    const onSettingsPage =
+      url.startsWith('/pages/settings/') || url.startsWith('/pages/qb-settings/');
+    if (!onSettingsPage) return true;
+
+    return this.router.navigate(['/pages', 'torrent-list']);
   }
 
   private async disconnect(): Promise<void> {
