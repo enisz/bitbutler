@@ -45,8 +45,11 @@ function configure(logger: ElectronLogger, fileName: string): ElectronLogger {
       process.stderr.write(
         `[logger] failed to rotate ${file.path}: ${error instanceof Error ? error.message : String(error)}\n`,
       );
-      // Without this the oversized file would trigger a rotation attempt on every write.
-      file.clear();
+      // Keep the recent tail (as electron-log's own default does) so a failed rename, e.g. a
+      // file locked by antivirus on Windows, doesn't erase the log. Cropping also stops the
+      // oversized file from triggering a rotation attempt on every write. `crop` exists at
+      // runtime but is missing from electron-log's LogFile typings.
+      (file as typeof file & { crop(bytesAfter: number): void }).crop(256 * 1024);
     }
   };
   // Our console wrappers already call the original console.*; ipc forwarding is not used.

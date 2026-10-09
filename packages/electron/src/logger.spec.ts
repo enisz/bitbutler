@@ -68,6 +68,25 @@ describe('logger', () => {
       }
     });
 
+    it('crops the file instead of wiping it when rotation fails', async () => {
+      const stderr = vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
+      await import('./logger.js');
+      const archive = fakes.mainLog.transports.file.archiveLogFn as (file: unknown) => void;
+      const file = {
+        path: '/nonexistent-dir/main.log',
+        toString: () => '/nonexistent-dir/main.log',
+        crop: vi.fn(),
+        clear: vi.fn(),
+      };
+
+      archive(file);
+
+      expect(file.crop).toHaveBeenCalledWith(256 * 1024);
+      expect(file.clear).not.toHaveBeenCalled();
+      expect(stderr).toHaveBeenCalledWith(expect.stringContaining('[logger] failed to rotate'));
+      stderr.mockRestore();
+    });
+
     it('getLogDirectory returns the directory of the main log file', async () => {
       const { getLogDirectory } = await import('./logger.js');
       expect(getLogDirectory().replace(/\\/g, '/')).toBe('/fake/logs');

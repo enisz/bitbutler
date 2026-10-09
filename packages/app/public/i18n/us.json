@@ -2279,6 +2279,7 @@
       "help": "Help",
       "check-for-updates": "Check for Updates",
       "open-logs-folder": "Open Logs Folder",
+      "open-logs-folder-failed": "Failed to Open Logs Folder",
       "about": "About BitButler",
       "export-torrents": "Export Torrents",
       "import-torrents": "Import Torrents"

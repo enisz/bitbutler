@@ -1,4 +1,4 @@
-import { Menu, app, shell } from 'electron';
+import { Menu, app, dialog, shell } from 'electron';
 import { t } from './i18n.js';
 import { getCookieJar } from './ipc/qbittorrent.js';
 import { getActiveServerId, serverList } from './ipc/server.js';
@@ -45,7 +45,9 @@ function debugToastItems(
 
 function openLogsFolder(): void {
   void shell.openPath(getLogDirectory()).then((error) => {
-    if (error) console.error(`[menu] failed to open the logs folder: ${error}`);
+    if (!error) return;
+    console.error(`[menu] failed to open the logs folder: ${error}`);
+    dialog.showErrorBox(t('electron.menu.open-logs-folder-failed'), error);
   });
 }
 

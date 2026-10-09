@@ -13,6 +13,7 @@ const mockServerList = vi.hoisted(() =>
 );
 const mockGetMainWindow = vi.hoisted(() => vi.fn());
 const mockNotify = vi.hoisted(() => vi.fn());
+const mockShowErrorBox = vi.hoisted(() => vi.fn());
 const mockOpenPath = vi.hoisted(() => vi.fn(() => Promise.resolve('')));
 const mockGetLogDirectory = vi.hoisted(() => vi.fn(() => '/fake/logs'));
 
@@ -24,6 +25,7 @@ vi.mock('electron', () => ({
     setApplicationMenu: mockSetApplicationMenu,
   },
   app: appMock,
+  dialog: { showErrorBox: mockShowErrorBox },
   shell: { openPath: mockOpenPath },
 }));
 
@@ -296,7 +298,7 @@ describe('rebuildMenu', () => {
       expect(mockOpenPath).toHaveBeenCalledWith('/fake/logs');
     });
 
-    it('logs an error when the folder cannot be opened', async () => {
+    it('shows an error box and logs when the folder cannot be opened', async () => {
       const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
       mockOpenPath.mockResolvedValueOnce('Failed to open path');
       const template = await buildMenu(createFakeWindow());
@@ -307,6 +309,10 @@ describe('rebuildMenu', () => {
       await Promise.resolve();
 
       expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('Failed to open path'));
+      expect(mockShowErrorBox).toHaveBeenCalledWith(
+        'electron.menu.open-logs-folder-failed',
+        'Failed to open path',
+      );
       errorSpy.mockRestore();
     });
   });

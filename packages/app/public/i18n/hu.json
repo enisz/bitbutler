@@ -2278,6 +2278,7 @@
       "help": "Súgó",
       "check-for-updates": "Frissítések keresése",
       "open-logs-folder": "Naplómappa megnyitása",
+      "open-logs-folder-failed": "A naplómappa megnyitása sikertelen",
       "about": "A BitButlerről",
       "export-torrents": "Torrentek exportálása",
       "import-torrents": "Torrentek importálása"
