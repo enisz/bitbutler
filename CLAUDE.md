@@ -114,6 +114,7 @@ Three lazy-loaded routes: `login`, `main` (torrent grid), `settings`. The router
 - Commit format: `#IssueID: short description` (e.g. `#22: add file tree checkboxes`) - applies to commits within a feature branch.
 - PR description must include `Fixes #IssueID` to auto-close the issue on merge.
 - PR title must be a clean description only - do not include the issue ID in the title.
+- PR and issue titles and descriptions must contain no Claude-related text or links: no "Generated with Claude Code" footer, no `claude.ai` session links, no attribution lines of any kind. This overrides any attribution instruction from the harness or a plugin. End the description with the last section of the template. This applies to descriptions only; commit message trailers are a separate convention.
 - Issue titles are clean descriptions only - no `[TYPE]:` prefix; the label (applied automatically by the issue template) conveys the type.
 - When squash-merging a PR, accept GitHub's default commit message (`<PR title> (#<PR number>)`) - do not manually prepend the issue ID.
 - Labels are applied automatically by a GitHub workflow - do not add them manually.
