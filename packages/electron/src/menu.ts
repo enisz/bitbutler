@@ -1,16 +1,10 @@
-import { Menu, app, shell } from 'electron';
-import { getCurrentLanguage, t } from './i18n.js';
+import { Menu, app } from 'electron';
+import { t } from './i18n.js';
 import { getCookieJar } from './ipc/qbittorrent.js';
 import { getActiveServerId, serverList } from './ipc/server.js';
 import { getActiveViewId } from './ipc/view.js';
 import { getMainWindow } from './main.js';
 import { notify } from './notification.js';
-
-const DOCS_BASE_URL = 'https://enisz.github.io/bitbutler/';
-
-function getDocsUrl(): string {
-  return getCurrentLanguage() === 'hu' ? `${DOCS_BASE_URL}hu/` : DOCS_BASE_URL;
-}
 
 function sendMenuAction(
   mainWindow: Electron.BrowserWindow | null,
@@ -210,11 +204,6 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
           label: t('electron.menu.check-for-updates'),
           accelerator: 'CmdOrCtrl+U',
           click: () => sendMenuAction(mainWindow, 'help.checkForUpdates'),
-        },
-        {
-          label: t('electron.menu.user-guide'),
-          accelerator: 'CmdOrCtrl+Shift+,',
-          click: () => shell.openExternal(getDocsUrl()),
         },
         { type: 'separator' },
         {
