@@ -2,9 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const ipcHandlers = vi.hoisted(() => new Map<string, (...args: unknown[]) => unknown>());
 const mockWriteLog = vi.hoisted(() => vi.fn());
-const mockGetLogDirectory = vi.hoisted(() => vi.fn(() => '/fake/logs'));
 const mockResolveOriginalLocation = vi.hoisted(() => vi.fn());
-const mockOpenPath = vi.hoisted(() => vi.fn());
 
 vi.mock('electron', () => ({
   ipcMain: {
@@ -15,11 +13,9 @@ vi.mock('electron', () => ({
       ipcHandlers.set(channel, handler);
     }),
   },
-  shell: { openPath: mockOpenPath },
 }));
 vi.mock('../logger.js', () => ({
   writeLog: mockWriteLog,
-  getLogDirectory: mockGetLogDirectory,
 }));
 vi.mock('../source-map-resolver.js', () => ({
   resolveOriginalLocation: mockResolveOriginalLocation,
@@ -31,7 +27,6 @@ describe('log IPC handlers', () => {
     ipcHandlers.clear();
     vi.clearAllMocks();
     mockResolveOriginalLocation.mockReturnValue(null);
-    mockGetLogDirectory.mockReturnValue('/fake/logs');
   });
 
   afterEach(() => {
@@ -121,31 +116,11 @@ describe('log IPC handlers', () => {
     });
   });
 
-  describe('log:open-folder', () => {
-    it('opens the log directory and reports success', async () => {
-      mockOpenPath.mockResolvedValue('');
-      await register();
-
-      const result = await ipcHandlers.get('log:open-folder')!(null);
-
-      expect(mockOpenPath).toHaveBeenCalledWith('/fake/logs');
-      expect(result).toEqual({ ok: true });
-    });
-
-    it('reports the error string when the folder cannot be opened', async () => {
-      mockOpenPath.mockResolvedValue('Failed to open path');
-      await register();
-
-      const result = await ipcHandlers.get('log:open-folder')!(null);
-
-      expect(result).toEqual({ ok: false, error: 'Failed to open path' });
-    });
-  });
-
-  it('no longer registers the list, clear and export channels', async () => {
+  it('no longer registers the list, clear, export and open-folder channels', async () => {
     await register();
     expect(ipcHandlers.has('log:list')).toBe(false);
     expect(ipcHandlers.has('log:clear')).toBe(false);
     expect(ipcHandlers.has('log:export')).toBe(false);
+    expect(ipcHandlers.has('log:open-folder')).toBe(false);
   });
 });

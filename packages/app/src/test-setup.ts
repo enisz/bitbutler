@@ -138,7 +138,6 @@ window.bitbutler = {
   },
   log: {
     write: noop,
-    openFolder: () => Promise.resolve({ ok: true }),
   },
   settings: {
     get: () => Promise.resolve(null),

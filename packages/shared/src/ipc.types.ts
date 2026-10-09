@@ -266,7 +266,6 @@ export interface BitButlerAPI {
 
   log: {
     write(entry: RendererLogEntry): void;
-    openFolder(): Promise<{ ok: boolean; error?: string }>;
   };
 
   settings: {

@@ -1,5 +1,5 @@
-import { ipcMain, shell } from 'electron';
-import { getLogDirectory, writeLog } from '../logger.js';
+import { ipcMain } from 'electron';
+import { writeLog } from '../logger.js';
 import { resolveOriginalLocation } from '../source-map-resolver.js';
 
 const VALID_LEVELS = ['debug', 'info', 'warn', 'error'] as const;
@@ -38,10 +38,5 @@ export function registerLogIpcHandlers(): void {
       resolved ? asNullableString(resolved.filename, 500) : filename,
       resolved?.line ?? line,
     );
-  });
-
-  ipcMain.handle('log:open-folder', async (): Promise<{ ok: boolean; error?: string }> => {
-    const error = await shell.openPath(getLogDirectory());
-    return error ? { ok: false, error } : { ok: true };
   });
 }

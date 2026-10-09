@@ -1654,8 +1654,7 @@
             "startup": "Startup",
             "torrent-handling": "Torrent Handling",
             "localization": "Localization",
-            "notifications": "Notifications",
-            "logs": "Logs"
+            "notifications": "Notifications"
           },
           "position": {
             "top-left": "Top Left",
@@ -1715,16 +1714,6 @@
             },
             "automatic-update": {
               "sub": "Checks for a new version on every launch"
-            }
-          },
-          "logs": {
-            "open-folder": {
-              "label": "Log files",
-              "sub": "BitButler writes main.log and renderer.log, rotated at 5 MB, keeping up to 5 files each.",
-              "button": "Open Logs Folder"
-            },
-            "toast": {
-              "open-failed-title": "Failed to Open Logs Folder"
             }
           }
         },

@@ -175,7 +175,6 @@ const api: BitButlerAPI = {
 
   log: {
     write: (entry: RendererLogEntry) => ipcRenderer.send('log:write', entry),
-    openFolder: () => ipcRenderer.invoke('log:open-folder'),
   },
 
   settings: {
