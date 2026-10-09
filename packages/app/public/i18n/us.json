@@ -1654,7 +1654,10 @@
             "startup": "Startup",
             "torrent-handling": "Torrent Handling",
             "localization": "Localization",
-            "notifications": "Notifications"
+            "notifications": "Notifications",
+            "date-format": "Date Format",
+            "notifications-os": "System Notifications",
+            "notifications-app": "In-app Notifications"
           },
           "position": {
             "top-left": "Top Left",
@@ -1877,6 +1880,32 @@
             "search-columns": "Search and select columns..."
           }
         }
+      },
+      "nav": {
+        "back": "Back",
+        "footer-note": "Changes apply to this device only.",
+        "group": {
+          "application": "Application",
+          "server": "Server",
+          "interface": "Interface"
+        },
+        "pane": {
+          "appearance": {
+            "description": "Theme family and light/dark mode for the application."
+          },
+          "startup": {
+            "description": "How BitButler behaves when your system starts."
+          },
+          "notifications": {
+            "description": "Which events notify you, and how."
+          },
+          "polling": {
+            "description": "Server level settings. These are handled separately for each added server."
+          },
+          "path-mappings": {
+            "description": "Map remote server paths to local paths so files resolve on this device."
+          }
+        }
       }
     },
     "qb-settings": {
@@ -1887,7 +1916,8 @@
       },
       "error": {
         "save-failed-title": "Failed to Save Settings",
-        "save-failed": "Your changes could not be saved."
+        "save-failed": "Your changes could not be saved.",
+        "load-failed": "The qBittorrent preferences could not be loaded."
       },
       "tab": {
         "bandwidth": {
@@ -1994,6 +2024,12 @@
             "remove": "Remove torrent"
           }
         }
+      },
+      "nav": {
+        "group": {
+          "preferences": "Preferences"
+        },
+        "footer-note": "Changes are saved on the connected qBittorrent server."
       }
     }
   },
@@ -2164,7 +2200,8 @@
       "new": "New",
       "edit": "Edit",
       "refresh": "Refresh",
-      "retry": "Retry"
+      "retry": "Retry",
+      "discard": "Discard"
     },
     "form": {
       "feedback": {

@@ -1654,7 +1654,10 @@
             "startup": "Indítás",
             "torrent-handling": "Torrentkezelés",
             "localization": "Nyelv és dátumformátum",
-            "notifications": "Értesítések"
+            "notifications": "Értesítések",
+            "date-format": "Dátumformátum",
+            "notifications-os": "Rendszerértesítések",
+            "notifications-app": "Alkalmazáson belüli értesítések"
           },
           "position": {
             "top-left": "Bal felül",
@@ -1877,6 +1880,32 @@
             "search-columns": "Oszlopok keresése és kijelölése..."
           }
         }
+      },
+      "nav": {
+        "back": "Vissza",
+        "footer-note": "A módosítások csak erre az eszközre vonatkoznak.",
+        "group": {
+          "application": "Alkalmazás",
+          "server": "Kiszolgáló",
+          "interface": "Felület"
+        },
+        "pane": {
+          "appearance": {
+            "description": "Az alkalmazás témacsaládja és világos/sötét módja."
+          },
+          "startup": {
+            "description": "A BitButler viselkedése a rendszer indulásakor."
+          },
+          "notifications": {
+            "description": "Mely eseményekről és hogyan kapsz értesítést."
+          },
+          "polling": {
+            "description": "Kiszolgálószintű beállítások. Minden hozzáadott kiszolgálóra külön érvényesek."
+          },
+          "path-mappings": {
+            "description": "Rendeld a távoli kiszolgáló útvonalait helyi útvonalakhoz, hogy a fájlok ezen az eszközön elérhetők legyenek."
+          }
+        }
       }
     },
     "qb-settings": {
@@ -1887,7 +1916,8 @@
       },
       "error": {
         "save-failed-title": "Beállítások mentése sikertelen",
-        "save-failed": "A módosításaid nem menthetők."
+        "save-failed": "A módosításaid nem menthetők.",
+        "load-failed": "A qBittorrent beállításait nem sikerült betölteni."
       },
       "tab": {
         "bandwidth": {
@@ -1994,6 +2024,12 @@
             "remove": "Torrent eltávolítása"
           }
         }
+      },
+      "nav": {
+        "group": {
+          "preferences": "Beállítások"
+        },
+        "footer-note": "A módosítások a csatlakoztatott qBittorrent kiszolgálón mentődnek."
       }
     }
   },
@@ -2163,7 +2199,8 @@
       "new": "Új",
       "edit": "Szerkesztés",
       "refresh": "Frissítés",
-      "retry": "Újra"
+      "retry": "Újra",
+      "discard": "Elvetés"
     },
     "form": {
       "feedback": {
