@@ -43,7 +43,7 @@ One `SettingsShell` component takes a page config: title key, nav groups (each w
 
 - **Sidebar:** back button, title, grouped nav with per-item unsaved marker, version footer (version from the app build).
 - **Main area:** pane title and description, "Unsaved changes" pill, the panes, sticky footer with Discard and Save.
-- **Panes without a save bar** are supported by a route data flag (unused in this PR, used by the Manage follow-up).
+- Panes without a save bar are left to the Manage follow-up PR, which adds whatever flag it needs.
 
 Page components (`pages/settings`, `pages/qb-settings`) are thin: they declare their config, provide their state service, and pass the pane list (id and lazy `loadComponent`) to the shell.
 
@@ -108,6 +108,12 @@ Existing controls and styles are reused and restyled, not rebuilt: `bb-fieldset`
 ## Import Torrents link
 
 The category path mapping note in `import-torrents` currently opens QbSettings (Storage) as a stacked modal. A page cannot stack on a modal, and navigating would lose the in-progress import. The link is removed: the callout stays, the text is reworded to name the setting without linking, and `openQbSettings()` and its `QbSettings` import are deleted.
+
+## Known behavior: polling pauses on settings pages
+
+The torrent list page owns the maindata polling subscription and unsubscribes when it is destroyed. Navigating to a settings page therefore pauses polling, and with it the polling-driven notifications (finished downloads, poll failures), until the user returns. The modals did not have this effect because they sat on top of a live torrent list. This is accepted for this PR; `QbPollingService` resumes from its last position on return. Lifting polling out of the torrent list page is a possible follow-up.
+
+Because of this, an open settings or qBittorrent settings command is ignored while any modal is open (`NgbModal.hasOpenModals()`), so it can never navigate away from a dialog that holds unsaved state.
 
 ## i18n
 
