@@ -1,0 +1,127 @@
+@if (settingsLoaded()) {
+  <form [formGroup]="serverSettingsForm" class="bb-cards">
+    <fieldset class="bb-fieldset bb-card--wide">
+      <legend>{{ 'pages.settings.tab.server.label.path-mappings' | translate }}</legend>
+
+      <p class="mt-3">
+        {{ 'pages.settings.tab.server.server-settings-form.path-mapping.title' | translate }}
+        <bb-popover
+          [subject]="'pages.settings.tab.server.popover.path-mapping.title' | translate"
+          [description]="pathMappingsPopover"
+        ></bb-popover>
+      </p>
+
+      <div formArrayName="pathMappings">
+        @for (group of pathMappings.controls; track $index; let i = $index) {
+          <div class="row mb-3" [formGroupName]="i">
+            <div class="col-5">
+              <app-save-path-select
+                [clearable]="true"
+                [label]="
+                  'pages.settings.tab.server.server-settings-form.path-mapping.remote-path'
+                    | translate
+                "
+                [placeholder]="defaultRemotePath()"
+                formControlName="remote"
+              ></app-save-path-select>
+            </div>
+
+            <div class="col-5">
+              <div class="form-floating">
+                <div class="input-group">
+                  <div class="form-floating">
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="local_{{ i }}"
+                      [placeholder]="
+                        'pages.settings.tab.server.server-settings-form.path-mapping.local-path'
+                          | translate
+                      "
+                      formControlName="local"
+                    />
+
+                    <label for="local_{{ i }}">{{
+                      'pages.settings.tab.server.server-settings-form.path-mapping.local-path'
+                        | translate
+                    }}</label>
+                  </div>
+
+                  <button
+                    type="button"
+                    class="btn btn-outline-primary btn-split"
+                    (click)="onBrowse(i)"
+                    [disabled]="group.disabled"
+                  >
+                    <bb-btn-content
+                      [icon]="icons['faFolderOpen']"
+                      [text]="'general.button.browse' | translate"
+                      position="end"
+                    ></bb-btn-content>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-2 d-flex align-items-center justify-content-center">
+              <button
+                class="btn btn-lg btn-link"
+                placement="top"
+                [ngbTooltip]="
+                  'pages.settings.tab.server.server-settings-form.path-mapping.button.test-mapping'
+                    | translate
+                "
+                (click)="testMapping(group.value.local)"
+                [disabled]="!group.value.remote || !group.value.local"
+              >
+                <fa-icon [icon]="icons['faFolderOpen']" />
+              </button>
+              @if (
+                !(pathMappings.controls.length === 1 && !group.value.remote && !group.value.local)
+              ) {
+                <button
+                  class="btn btn-lg btn-link text-danger"
+                  placement="top"
+                  [ngbTooltip]="
+                    (pathMappings.controls.length === 1
+                      ? 'pages.settings.tab.server.server-settings-form.path-mapping.button.clear-mapping'
+                      : 'pages.settings.tab.server.server-settings-form.path-mapping.button.remove-mapping'
+                    ) | translate
+                  "
+                  (click)="removePathMapping(i)"
+                >
+                  <fa-icon [icon]="icons['faMinus']" />
+                </button>
+              }
+              @if ($last) {
+                <button
+                  class="btn btn-lg btn-link text-success"
+                  placement="top"
+                  [ngbTooltip]="
+                    'pages.settings.tab.server.server-settings-form.path-mapping.button.add-mapping'
+                      | translate
+                  "
+                  (click)="addPathMapping()"
+                  [disabled]="i > 0 && (!group.value.remote || !group.value.local)"
+                >
+                  <fa-icon [icon]="icons['faPlus']" />
+                </button>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </fieldset>
+  </form>
+} @else {
+  <app-bb-spinner></app-bb-spinner>
+}
+
+<ng-template #pathMappingsPopover>
+  <p>
+    {{ 'pages.settings.tab.server.popover.path-mapping.description.line1' | translate }}
+  </p>
+  <p>
+    {{ 'pages.settings.tab.server.popover.path-mapping.description.line2' | translate }}
+  </p>
+</ng-template>
