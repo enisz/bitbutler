@@ -9,6 +9,7 @@ const INITIAL_DIRTY: DirtyMap = {
   storage: false,
   'queue-limits': false,
   'seeding-ratios': false,
+  rss: false,
 };
 
 @Injectable()

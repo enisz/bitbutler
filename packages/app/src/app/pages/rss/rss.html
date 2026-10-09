@@ -1,0 +1,82 @@
+<div class="rss">
+  <header class="rss__header">
+    <button
+      type="button"
+      class="bb-tool rss__back"
+      (click)="goBack(); backTooltip.close()"
+      [ngbTooltip]="'pages.rss.back-button' | translate"
+      placement="bottom"
+      container="body"
+      [disableTooltip]="!compact()"
+      #backTooltip="ngbTooltip"
+    >
+      <span class="bb-tool__icon" aria-hidden="true">
+        <fa-icon [icon]="icons.faChevronLeft" />
+      </span>
+      <span class="bb-tool__label">{{ 'pages.rss.back-button' | translate }}</span>
+    </button>
+
+    <div class="rss__heading">
+      <h1>{{ 'pages.rss.title' | translate }}</h1>
+      <p>{{ 'pages.rss.subtitle' | translate }}</p>
+    </div>
+
+    <div class="rss__actions">
+      @for (action of actions; track action.id) {
+        <button
+          type="button"
+          class="bb-tool"
+          (click)="action.run(); tooltip.close()"
+          [ngbTooltip]="action.label | translate"
+          placement="bottom"
+          container="body"
+          [disableTooltip]="!compact()"
+          #tooltip="ngbTooltip"
+        >
+          <span class="bb-tool__icon" aria-hidden="true">
+            <fa-icon [icon]="action.icon" />
+          </span>
+          <span class="bb-tool__label">{{ action.label | translate }}</span>
+        </button>
+      }
+
+      <div class="input-group bb-search rss__search" role="search">
+        <span class="input-group-text bb-search__addon" aria-hidden="true">
+          <fa-icon [icon]="icons.faMagnifyingGlass" />
+        </span>
+        <input
+          type="text"
+          class="form-control bb-search__input"
+          [value]="filterText()"
+          (input)="onFilterInput($event)"
+          [placeholder]="'pages.rss.filter.placeholder' | translate"
+          [attr.aria-label]="'pages.rss.filter.placeholder' | translate"
+        />
+        <button
+          type="button"
+          class="input-group-text bb-search__addon bb-search__clear"
+          [class.bb-search__clear--hidden]="!filterText()"
+          [attr.aria-label]="'pages.rss.filter.clear' | translate"
+          (click)="clearFilter()"
+        >
+          <fa-icon [icon]="icons.faXmark" />
+        </button>
+      </div>
+    </div>
+  </header>
+
+  @if (processingEnabled() === false) {
+    <div class="rss__banner" role="status">
+      <span>{{ 'pages.rss.banner.disabled' | translate }}</span>
+      <button type="button" class="btn btn-sm btn-primary" (click)="enableProcessing()">
+        {{ 'pages.rss.banner.enable' | translate }}
+      </button>
+    </div>
+  }
+
+  <div class="rss__body">
+    <app-rss-feed-list class="rss__feeds" />
+    <app-rss-article-list class="rss__items" />
+    <app-rss-article-details class="rss__details" />
+  </div>
+</div>
