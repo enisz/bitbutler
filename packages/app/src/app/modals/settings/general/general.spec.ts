@@ -5,6 +5,7 @@ import { DEFAULT_GENERAL_SETTINGS } from '../../../models/general-settings.model
 import { DateFormatService } from '../../../services/date-format.service';
 import { GeneralSettingsService } from '../../../services/general-settings.service';
 import { ServerStoreService } from '../../../services/server-store.service';
+import { ToastService } from '../../../services/toast.service';
 import { SettingsStateService } from '../settings-state.service';
 import { General } from './general';
 
@@ -18,8 +19,10 @@ describe('General', () => {
   };
   let serverStoreMock: { servers: ReturnType<typeof signal<ServerRecord[]>> };
   let dateFormatServiceMock: { applyFromSettings: ReturnType<typeof vi.fn> };
+  let toastServiceMock: { danger: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
+    toastServiceMock = { danger: vi.fn() };
     stateServiceMock = { registerSave: vi.fn(), markDirty: vi.fn() };
     serverStoreMock = { servers: signal([]) };
     dateFormatServiceMock = { applyFromSettings: vi.fn() };
@@ -30,6 +33,7 @@ describe('General', () => {
         { provide: SettingsStateService, useValue: stateServiceMock },
         { provide: ServerStoreService, useValue: serverStoreMock },
         { provide: DateFormatService, useValue: dateFormatServiceMock },
+        { provide: ToastService, useValue: toastServiceMock },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
@@ -42,6 +46,39 @@ describe('General', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  describe('open logs folder', () => {
+    it('opens the folder without a toast on success', async () => {
+      const open = vi.spyOn(window.bitbutler.log, 'openFolder').mockResolvedValue({ ok: true });
+
+      await component.openLogsFolder();
+
+      expect(open).toHaveBeenCalledTimes(1);
+      expect(toastServiceMock.danger).not.toHaveBeenCalled();
+    });
+
+    it('shows an error toast with the error string on failure', async () => {
+      vi.spyOn(window.bitbutler.log, 'openFolder').mockResolvedValue({
+        ok: false,
+        error: 'Failed to open path',
+      });
+
+      await component.openLogsFolder();
+
+      expect(toastServiceMock.danger).toHaveBeenCalledWith(
+        'Failed to open path',
+        expect.any(String),
+      );
+    });
+
+    it('shows an error toast when the call itself rejects', async () => {
+      vi.spyOn(window.bitbutler.log, 'openFolder').mockRejectedValue(new Error('ipc down'));
+
+      await component.openLogsFolder();
+
+      expect(toastServiceMock.danger).toHaveBeenCalledWith('ipc down', expect.any(String));
+    });
   });
 
   describe('startup form controls', () => {
@@ -484,6 +521,7 @@ describe('General - stored notification settings', () => {
         { provide: ServerStoreService, useValue: { servers: signal([]) } },
         { provide: DateFormatService, useValue: { applyFromSettings: vi.fn() } },
         { provide: GeneralSettingsService, useValue: { load: () => Promise.resolve(stored) } },
+        { provide: ToastService, useValue: { danger: vi.fn() } },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();

@@ -1654,7 +1654,8 @@
             "startup": "Indítás",
             "torrent-handling": "Torrentkezelés",
             "localization": "Nyelv és dátumformátum",
-            "notifications": "Értesítések"
+            "notifications": "Értesítések",
+            "logs": "Naplók"
           },
           "position": {
             "top-left": "Bal felül",
@@ -1714,6 +1715,16 @@
             },
             "automatic-update": {
               "sub": "Új verzió keresése minden induláskor"
+            }
+          },
+          "logs": {
+            "open-folder": {
+              "label": "Naplófájlok",
+              "sub": "A BitButler main.log és renderer.log fájlokat ír, 5 MB-onként forgatva, processzenként legfeljebb 5 fájlt megtartva.",
+              "button": "Naplómappa megnyitása"
+            },
+            "toast": {
+              "open-failed-title": "A naplómappa megnyitása sikertelen"
             }
           }
         },

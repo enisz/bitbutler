@@ -755,6 +755,29 @@
         </div>
       </div>
     </fieldset>
+
+    <fieldset class="bb-fieldset">
+      <legend>{{ 'pages.settings.tab.general.label.logs' | translate }}</legend>
+
+      <div class="bb-options">
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">{{
+              'pages.settings.tab.general.logs.open-folder.label' | translate
+            }}</span>
+            <span class="bb-option__sub">{{
+              'pages.settings.tab.general.logs.open-folder.sub' | translate
+            }}</span>
+          </div>
+          <button type="button" class="btn btn-sm btn-secondary" (click)="openLogsFolder()">
+            <bb-btn-content
+              [icon]="icons['faFolderOpen']"
+              [text]="'pages.settings.tab.general.logs.open-folder.button' | translate"
+            ></bb-btn-content>
+          </button>
+        </div>
+      </div>
+    </fieldset>
   </form>
 } @else {
   <app-bb-spinner></app-bb-spinner>

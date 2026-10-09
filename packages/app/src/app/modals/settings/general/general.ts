@@ -15,6 +15,7 @@ import {
   faChevronDown,
   faChevronUp,
   faCircleQuestion,
+  faFolderOpen,
   faRotateLeft,
   faTriangleExclamation,
 } from '@fortawesome/free-solid-svg-icons';
@@ -52,6 +53,7 @@ import {
   ThemeMode,
   ThemeService,
 } from '../../../services/theme.service';
+import { ToastService } from '../../../services/toast.service';
 import { SettingsStateService } from '../settings-state.service';
 import { SettingsTabComponent } from '../settings.interface';
 
@@ -120,6 +122,7 @@ export class General implements SettingsTabComponent {
   private readonly stateService = inject(SettingsStateService);
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly dateFormatService = inject(DateFormatService);
+  private readonly toastService = inject(ToastService);
 
   private languageChanged = toSignal(this.translateService.onLangChange);
 
@@ -296,7 +299,21 @@ export class General implements SettingsTabComponent {
     faRotateLeft,
     faChevronDown,
     faChevronUp,
+    faFolderOpen,
   };
+
+  public async openLogsFolder(): Promise<void> {
+    try {
+      const result = await window.bitbutler.log.openFolder();
+      if (!result.ok) throw new Error(result.error);
+    } catch (err) {
+      console.error(General.name, 'openLogsFolder', err);
+      this.toastService.danger(
+        err instanceof Error ? err.message : String(err),
+        this.translateService.instant('pages.settings.tab.general.logs.toast.open-failed-title'),
+      );
+    }
+  }
 
   public tokenGuideExpanded = signal(false);
 
