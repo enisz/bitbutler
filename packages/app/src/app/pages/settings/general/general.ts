@@ -1,14 +1,7 @@
 import { CommonModule, formatDate } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   IconDefinition,
@@ -25,9 +18,7 @@ import {
   NgSelectComponent,
 } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { firstValueFrom, from, tap } from 'rxjs';
 import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content';
-import { BbLogo } from '../../../components/bb-logo/bb-logo';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { SavePathSelect } from '../../../components/save-path-select/save-path-select';
 import {
@@ -36,29 +27,11 @@ import {
   DEFAULT_LOCALE,
   DateFormatPreset,
   FIRST_DAY_OF_WEEK_OPTIONS,
-  FirstDayOfWeek,
-  GeneralSettings,
   LANGUAGE_LOCALE_MAP,
-  SavePathInputType,
-  ToastPosition,
   resolveDateFormat,
 } from '../../../models/general-settings.model';
-import { DateFormatService } from '../../../services/date-format.service';
-import { GeneralSettingsService } from '../../../services/general-settings.service';
-import { ServerStoreService } from '../../../services/server-store.service';
-import {
-  THEME_FAMILIES,
-  ThemeFamily,
-  ThemeMode,
-  ThemeService,
-} from '../../../services/theme.service';
-import { SettingsStateService } from '../settings-state.service';
-import { SettingsTabComponent } from '../settings.interface';
-
-interface NgSelectItem {
-  value: string;
-  label: string;
-}
+import { GeneralSettingsFormService } from '../general-settings-form.service';
+import { NgSelectItem, SettingsTabComponent } from '../settings.interface';
 
 interface DateFormatPresetItem {
   value: DateFormatPreset;
@@ -105,7 +78,6 @@ const DATE_FORMAT_TOKENS = [
     TranslatePipe,
     SavePathSelect,
     BbBtnContent,
-    BbLogo,
     NgbCollapse,
   ],
   templateUrl: './general.html',
@@ -113,24 +85,14 @@ const DATE_FORMAT_TOKENS = [
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class General implements SettingsTabComponent {
-  private readonly themeService = inject(ThemeService);
-  private readonly generalSettingsService = inject(GeneralSettingsService);
-  private readonly destroyRef = inject(DestroyRef);
   private readonly translateService = inject(TranslateService);
-  private readonly stateService = inject(SettingsStateService);
-  private readonly serverStoreService = inject(ServerStoreService);
-  private readonly dateFormatService = inject(DateFormatService);
+  private readonly formService = inject(GeneralSettingsFormService);
 
   private languageChanged = toSignal(this.translateService.onLangChange);
 
-  public readonly hasDefaultServer = computed(() =>
-    this.serverStoreService.servers().some((s) => s.auto_login),
-  );
-
-  private readonly openAtLoginValue = signal(false);
-  public readonly showNoDefaultHostHint = computed(
-    () => this.openAtLoginValue() && !this.hasDefaultServer(),
-  );
+  public readonly generalSettingsForm = this.formService.form;
+  public readonly settingsLoaded = this.formService.loaded;
+  private readonly formSnapshot = this.formService.formSnapshot;
 
   public languages = computed<NgSelectItem[]>(() => {
     this.languageChanged();
@@ -145,50 +107,6 @@ export class General implements SettingsTabComponent {
         label: this.translateService.instant('language.hu'),
       },
     ].sort((a, b) => a.label.localeCompare(b.label));
-  });
-
-  public toastPositions = computed<NgSelectItem[]>(() => {
-    this.languageChanged();
-
-    return [
-      {
-        value: 'top-left',
-        label: this.translateService.instant('pages.settings.tab.general.position.top-left'),
-      },
-      {
-        value: 'top-right',
-        label: this.translateService.instant('pages.settings.tab.general.position.top-right'),
-      },
-      {
-        value: 'bottom-right',
-        label: this.translateService.instant('pages.settings.tab.general.position.bottom-right'),
-      },
-      {
-        value: 'bottom-left',
-        label: this.translateService.instant('pages.settings.tab.general.position.bottom-left'),
-      },
-    ];
-  });
-
-  public families = THEME_FAMILIES;
-
-  public modes = computed<NgSelectItem[]>(() => {
-    this.languageChanged();
-
-    return [
-      {
-        value: 'light',
-        label: this.translateService.instant('pages.settings.tab.general.mode.light'),
-      },
-      {
-        value: 'dark',
-        label: this.translateService.instant('pages.settings.tab.general.mode.dark'),
-      },
-      {
-        value: 'system',
-        label: this.translateService.instant('pages.settings.tab.general.mode.system'),
-      },
-    ];
   });
 
   private previewDateFormat(
@@ -247,20 +165,6 @@ export class General implements SettingsTabComponent {
     );
   });
 
-  // A master switch disables its children without resetting them, so turning it back on
-  // restores the choices the user had made.
-  private applyMasterSwitch(group: FormGroup): void {
-    const enabled = group.controls['enabled'].value;
-    for (const [name, control] of Object.entries(group.controls) as [string, AbstractControl][]) {
-      if (name === 'enabled') continue;
-      if (enabled) {
-        control.enable({ emitEvent: false });
-      } else {
-        control.disable({ emitEvent: false });
-      }
-    }
-  }
-
   public resetCustomPattern(): void {
     this.generalSettingsForm.controls.dateFormat.controls.customPattern.setValue(
       DEFAULT_GENERAL_SETTINGS.dateFormat.customPattern,
@@ -302,148 +206,5 @@ export class General implements SettingsTabComponent {
 
   public toggleTokenGuide(): void {
     this.tokenGuideExpanded.update((v) => !v);
-  }
-
-  public generalSettingsForm = new FormGroup({
-    behavior: new FormGroup({
-      deleteTorrentFile: new FormControl(true, { nonNullable: true }),
-      deleteTorrentFileOnDuplicate: new FormControl(
-        { value: true, disabled: true },
-        { nonNullable: true },
-      ),
-      automaticUpdate: new FormControl(true, { nonNullable: true }),
-    }),
-    language: new FormGroup({
-      language: new FormControl('us', { nonNullable: true }),
-    }),
-    dateFormat: new FormGroup({
-      preset: new FormControl<DateFormatPreset>('iso', { nonNullable: true }),
-      customPattern: new FormControl('yyyy-MM-dd HH:mm', { nonNullable: true }),
-      firstDayOfWeek: new FormControl<FirstDayOfWeek>('auto', { nonNullable: true }),
-    }),
-    appearance: new FormGroup({
-      family: new FormControl<ThemeFamily>('bitbutler', { nonNullable: true }),
-      mode: new FormControl<ThemeMode>('system', { nonNullable: true }),
-    }),
-    startup: new FormGroup({
-      openAtLogin: new FormControl(false, { nonNullable: true }),
-      startMinimized: new FormControl({ value: false, disabled: true }, { nonNullable: true }),
-    }),
-    savePath: new FormGroup({
-      inputType: new FormControl<SavePathInputType>('select', { nonNullable: true }),
-    }),
-    notifications: new FormGroup({
-      os: new FormGroup({
-        enabled: new FormControl(true, { nonNullable: true }),
-        onlyWhenMinimized: new FormControl(false, { nonNullable: true }),
-        finished: new FormControl(true, { nonNullable: true }),
-        errors: new FormControl(true, { nonNullable: true }),
-        updates: new FormControl(true, { nonNullable: true }),
-      }),
-      app: new FormGroup({
-        enabled: new FormControl(true, { nonNullable: true }),
-        position: new FormControl<ToastPosition>('bottom-right', { nonNullable: true }),
-        finished: new FormControl(true, { nonNullable: true }),
-        errors: new FormControl(true, { nonNullable: true }),
-        updates: new FormControl(true, { nonNullable: true }),
-        confirmations: new FormControl(true, { nonNullable: true }),
-      }),
-    }),
-  });
-
-  private readonly formSnapshot = signal(this.generalSettingsForm.getRawValue());
-
-  constructor() {
-    const startupGroup = this.generalSettingsForm.controls.startup;
-
-    startupGroup.controls.openAtLogin.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((value) => {
-        this.openAtLoginValue.set(value);
-        const ctrl = startupGroup.controls.startMinimized;
-        if (value) {
-          ctrl.enable({ emitEvent: false });
-        } else {
-          ctrl.setValue(false, { emitEvent: false });
-          ctrl.disable({ emitEvent: false });
-        }
-      });
-
-    const behaviorGroup = this.generalSettingsForm.controls.behavior;
-
-    behaviorGroup.controls.deleteTorrentFile.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((value) => {
-        const ctrl = behaviorGroup.controls.deleteTorrentFileOnDuplicate;
-        if (value) {
-          ctrl.enable({ emitEvent: false });
-        } else {
-          ctrl.setValue(false, { emitEvent: false });
-          ctrl.disable({ emitEvent: false });
-        }
-      });
-
-    const { os, app } = this.generalSettingsForm.controls.notifications.controls;
-
-    for (const group of [os, app]) {
-      group.controls.enabled.valueChanges
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(() => this.applyMasterSwitch(group));
-    }
-
-    this.stateService.registerSave('general', () => this.save());
-
-    this.generalSettingsForm.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.stateService.markDirty('general', true);
-        this.formSnapshot.set(this.generalSettingsForm.getRawValue());
-      });
-  }
-
-  public readonly settingsLoaded = toSignal(
-    from(this.generalSettingsService.load()).pipe(
-      tap((settings: GeneralSettings) => {
-        this.generalSettingsForm.patchValue(settings, { emitEvent: false });
-        this.formSnapshot.set(this.generalSettingsForm.getRawValue());
-        const openAtLogin = settings.startup?.openAtLogin ?? false;
-        this.openAtLoginValue.set(openAtLogin);
-        const startupGroup = this.generalSettingsForm.controls.startup;
-        if (openAtLogin) {
-          startupGroup.controls.startMinimized.enable({ emitEvent: false });
-        }
-        const deleteTorrentFile = settings.behavior?.deleteTorrentFile ?? false;
-        if (deleteTorrentFile) {
-          this.generalSettingsForm.controls.behavior.controls.deleteTorrentFileOnDuplicate.enable({
-            emitEvent: false,
-          });
-        }
-        const notificationGroups = this.generalSettingsForm.controls.notifications.controls;
-        this.applyMasterSwitch(notificationGroups.os);
-        this.applyMasterSwitch(notificationGroups.app);
-      }),
-    ),
-    { initialValue: null },
-  );
-
-  private async save(): Promise<void> {
-    const settings = this.generalSettingsForm.getRawValue();
-
-    if (!settings.startup.openAtLogin) settings.startup.startMinimized = false;
-    if (!settings.behavior.deleteTorrentFile)
-      settings.behavior.deleteTorrentFileOnDuplicate = false;
-
-    const newLang = settings.language.language;
-    const currentLang = this.translateService.getCurrentLang();
-
-    await this.generalSettingsService.save(settings);
-    await window.bitbutler.electron.setLoginItem({ openAtLogin: settings.startup.openAtLogin });
-
-    if (newLang !== currentLang) {
-      await firstValueFrom(this.translateService.use(newLang));
-    }
-
-    this.themeService.applyFromSettings(settings.appearance.family, settings.appearance.mode);
-    this.dateFormatService.applyFromSettings(settings);
   }
 }
