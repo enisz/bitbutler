@@ -1,0 +1,128 @@
+<div class="bb-settings">
+  <aside class="bb-settings__sidebar">
+    <div class="bb-settings__sidebar-top">
+      <button
+        type="button"
+        class="bb-settings__icon-btn bb-settings__back"
+        [attr.aria-label]="'pages.settings.nav.back' | translate"
+        (click)="back.emit()"
+      >
+        <fa-icon [icon]="icons.faChevronLeft"></fa-icon>
+      </button>
+      <div class="bb-settings__title-block">
+        <h1 class="bb-settings__title">{{ config().titleKey | translate }}</h1>
+        @if (subtitle()) {
+          <div class="bb-settings__subtitle">{{ subtitle() }}</div>
+        }
+      </div>
+    </div>
+
+    <nav class="bb-settings__nav">
+      @for (group of config().groups; track group.labelKey) {
+        <div class="bb-settings__group">
+          <div class="bb-settings__group-label">{{ group.labelKey | translate }}</div>
+          @for (pane of group.panes; track pane.id) {
+            <a
+              class="bb-settings__nav-item"
+              [class.active]="pane.id === activePane().id"
+              [routerLink]="[config().basePath, pane.id]"
+            >
+              <fa-icon [icon]="pane.icon" [fixedWidth]="true"></fa-icon>
+              <span class="bb-settings__nav-label">{{ pane.labelKey | translate }}</span>
+              @if (dirtyMap()[pane.formId]) {
+                <span
+                  class="bb-settings__dirty-dot"
+                  [title]="'components.modals.guard.unsaved-indicator' | translate"
+                ></span>
+              }
+            </a>
+          }
+        </div>
+      }
+    </nav>
+
+    <div class="bb-settings__sidebar-footer">
+      <app-bb-logo [size]="26"></app-bb-logo>
+      <div class="bb-settings__app">
+        <div class="bb-settings__app-name">BitButler</div>
+        @if (version) {
+          <div class="bb-settings__app-version">v{{ version }}</div>
+        }
+      </div>
+    </div>
+  </aside>
+
+  <section class="bb-settings__main">
+    <header class="bb-settings__header">
+      <div>
+        <h2 class="bb-settings__pane-title">{{ activePane().labelKey | translate }}</h2>
+        <p class="bb-settings__pane-description">{{ activePane().descriptionKey | translate }}</p>
+      </div>
+      @if (isDirty()) {
+        <span class="bb-settings__pill">
+          {{ 'components.modals.guard.unsaved-indicator' | translate }}
+        </span>
+      }
+    </header>
+
+    <div #content class="bb-settings__content">
+      @switch (status()) {
+        @case ('loading') {
+          <app-bb-spinner></app-bb-spinner>
+        }
+        @case ('error') {
+          <div class="bb-settings__error">
+            <p>{{ errorKey() | translate }}</p>
+            <button type="button" class="btn btn-sm bb-settings__retry" (click)="retry.emit()">
+              {{ 'general.button.retry' | translate }}
+            </button>
+          </div>
+        }
+        @default {
+          @if (loadedComponents().size > 0) {
+            <!-- A one-item loop keyed on paneVersion: changing the version rebuilds every pane. -->
+            @for (paneKey of [paneVersion()]; track paneKey) {
+              @for (pane of panes(); track pane.id) {
+                <div class="bb-settings__pane" [class.d-none]="pane.id !== activePane().id">
+                  <ng-container *ngComponentOutlet="loadedComponents().get(pane.id) ?? null" />
+                </div>
+              }
+            }
+          } @else {
+            <app-bb-spinner></app-bb-spinner>
+          }
+        }
+      }
+    </div>
+
+    <footer class="bb-settings__footer">
+      <span class="bb-settings__footer-note">{{ config().footerNoteKey | translate }}</span>
+      <div class="bb-settings__actions">
+        <button
+          type="button"
+          class="btn btn-sm btn-split bb-settings__discard"
+          [disabled]="!isDirty()"
+          (click)="discard.emit()"
+        >
+          <bb-btn-content
+            [icon]="icons.faRotateLeft"
+            [text]="'general.button.discard' | translate"
+            position="end"
+          ></bb-btn-content>
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary btn-sm btn-split bb-settings__save"
+          [disabled]="!isDirty()"
+          (click)="save.emit()"
+        >
+          <bb-btn-content
+            [icon]="icons.faFloppyDisk"
+            [text]="'general.button.save' | translate"
+            position="end"
+          ></bb-btn-content>
+        </button>
+      </div>
+    </footer>
+  </section>
+</div>
