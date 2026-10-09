@@ -30,6 +30,17 @@ describe('DatepickerRangeFilter', () => {
     expect(component).toBeTruthy();
   });
 
+  describe('year and month selects', () => {
+    it.each(['.bb-select-year', '.bb-select-month'])(
+      'does not let the user type into the %s select',
+      (selector) => {
+        const input = fixture.nativeElement.querySelector(`${selector} input`) as HTMLInputElement;
+        expect(input).not.toBeNull();
+        expect(input.readOnly).toBe(true);
+      },
+    );
+  });
+
   describe('ag-grid popup containment', () => {
     it('appends separate popup portal elements for the month and year selects, each tagged for ag-grid to treat as part of the filter popup', () => {
       const monthPortal = document.querySelector(component.monthPopupPortalSelector);
