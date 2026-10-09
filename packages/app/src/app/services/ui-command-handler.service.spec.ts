@@ -49,7 +49,6 @@ describe('UiCommandHandlerService', () => {
     // import for each module requires async I/O which completes after flushPromises resolves.
     await Promise.all([
       import('../modals/delete-torrent/delete-torrent'),
-      import('../pages/qb-settings/qb-settings'),
       import('../modals/torrent-details/torrent-details'),
       import('../modals/add-torrent/add-torrent'),
       import('../components/about/about'),
@@ -253,10 +252,28 @@ describe('UiCommandHandlerService', () => {
     expect(routerNavigate).toHaveBeenCalledWith(['/pages', 'torrent-list']);
   });
 
-  it('should open QbSettings modal for UI_OPEN_QB_SETTINGS', async () => {
+  it('navigates to the default qBittorrent settings pane for UI_OPEN_QB_SETTINGS', async () => {
     commands$.next({ type: 'UI_OPEN_QB_SETTINGS' });
     await flushPromises();
-    expect(mockModalService.open).toHaveBeenCalled();
+
+    expect(routerNavigate).toHaveBeenCalledWith(['/pages', 'qb-settings', 'bandwidth']);
+    expect(mockModalService.open).not.toHaveBeenCalled();
+  });
+
+  it('navigates to the requested pane for UI_OPEN_QB_SETTINGS', async () => {
+    commands$.next({ type: 'UI_OPEN_QB_SETTINGS', pane: 'storage' });
+    await flushPromises();
+
+    expect(routerNavigate).toHaveBeenCalledWith(['/pages', 'qb-settings', 'storage']);
+  });
+
+  it('ignores UI_OPEN_QB_SETTINGS while a modal is open', async () => {
+    mockModalService.hasOpenModals.mockReturnValue(true);
+
+    commands$.next({ type: 'UI_OPEN_QB_SETTINGS' });
+    await flushPromises();
+
+    expect(routerNavigate).not.toHaveBeenCalled();
   });
 
   it('should open About modal for UI_OPEN_ABOUT', async () => {
@@ -393,7 +410,7 @@ describe('UiCommandHandlerService', () => {
       });
 
       commands$.next({ type: 'UI_OPEN_ABOUT' });
-      commands$.next({ type: 'UI_OPEN_QB_SETTINGS' });
+      commands$.next({ type: 'UI_OPEN_ABOUT' });
       await flushPromises();
 
       expect(mockModalService.open).toHaveBeenCalledTimes(2);

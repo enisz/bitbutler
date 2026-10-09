@@ -20,6 +20,13 @@ export const routes: Routes = [
           import('./pages/settings/settings-page').then((mod) => mod.SettingsPage),
         canDeactivate: [unsavedChangesGuard],
       },
+      { path: 'qb-settings', pathMatch: 'full', redirectTo: 'qb-settings/bandwidth' },
+      {
+        path: 'qb-settings/:pane',
+        loadComponent: () =>
+          import('./pages/qb-settings/qb-settings-page').then((mod) => mod.QbSettingsPage),
+        canDeactivate: [unsavedChangesGuard],
+      },
     ],
   },
   {

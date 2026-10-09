@@ -1,0 +1,14 @@
+<app-settings-shell
+  [config]="config"
+  [activePaneId]="activePaneId()"
+  [status]="status()"
+  [errorKey]="'pages.qb-settings.error.load-failed'"
+  [subtitle]="currentServer()?.name ?? null"
+  [isDirty]="stateService.isDirty()"
+  [dirtyMap]="stateService.isDirtyMap()"
+  [paneVersion]="paneVersion()"
+  (save)="onSave()"
+  (discard)="onDiscard()"
+  (back)="onBack()"
+  (retry)="onRetry()"
+/>

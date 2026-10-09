@@ -142,15 +142,8 @@ export class UiCommandHandlerService {
         }
 
         case 'UI_OPEN_QB_SETTINGS': {
-          const { QbSettings } = await import('../pages/qb-settings/qb-settings');
-          if (this.isModalOpen(QbSettings)) break;
-          const qbSettingsModalRef = this.modalService.open(QbSettings, {
-            size: 'xl',
-            centered: false,
-            scrollable: true,
-            beforeDismiss: () => qbSettingsModalRef.componentInstance.canDeactivate(),
-          });
-          qbSettingsModalRef.result.catch(() => {});
+          if (this.modalService.hasOpenModals()) break;
+          await this.router.navigate(['/pages', 'qb-settings', command.pane ?? 'bandwidth']);
           break;
         }
 
