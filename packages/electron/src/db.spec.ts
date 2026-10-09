@@ -4,6 +4,10 @@ vi.mock('electron', () => ({
   app: { getPath: () => '/fake' },
 }));
 
+const legacySetup = vi.hoisted(() => ({
+  run: null as null | ((db: { exec: (sql: string) => void }) => void),
+}));
+
 vi.mock('better-sqlite3', async () => {
   const actual = await vi.importActual<typeof import('better-sqlite3')>('better-sqlite3');
   const RealDatabase = actual.default;
@@ -11,123 +15,58 @@ vi.mock('better-sqlite3', async () => {
     default: class extends RealDatabase {
       constructor() {
         super(':memory:');
+        legacySetup.run?.(this);
       }
     },
   };
 });
 
-describe('logs table', () => {
+interface QueryableDb {
+  prepare: (sql: string) => { all: (...params: unknown[]) => unknown[] };
+}
+
+const namesOf = (db: QueryableDb, type: string): string[] =>
+  (db.prepare('SELECT name FROM sqlite_master WHERE type = ?').all(type) as { name: string }[]).map(
+    (r) => r.name,
+  );
+
+describe('legacy logs table', () => {
   beforeEach(() => {
     vi.resetModules();
+    legacySetup.run = null;
   });
 
   afterEach(() => {
     vi.clearAllMocks();
   });
 
-  it('accepts a row with a valid process and level', async () => {
+  it('does not create a logs table on a fresh database', async () => {
     const { default: db } = await import('./db.js');
-    expect(() =>
-      db
-        .prepare('INSERT INTO logs (timestamp, process, level, message) VALUES (?, ?, ?, ?)')
-        .run(Date.now(), 'main', 'info', 'hello'),
-    ).not.toThrow();
+    expect(namesOf(db, 'table')).not.toContain('logs');
+    expect(namesOf(db, 'trigger')).not.toContain('trg_logs_retention');
   });
 
-  it('rejects an invalid process value', async () => {
+  it('drops the logs table, index and retention trigger left by older versions', async () => {
+    legacySetup.run = (legacy) =>
+      legacy.exec(`
+        CREATE TABLE logs (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          timestamp INTEGER NOT NULL,
+          process TEXT NOT NULL,
+          level TEXT NOT NULL,
+          message TEXT NOT NULL,
+          context TEXT, filename TEXT, line INTEGER
+        );
+        CREATE INDEX idx_logs_timestamp ON logs(timestamp);
+        CREATE TRIGGER trg_logs_retention AFTER INSERT ON logs BEGIN SELECT 1; END;
+        INSERT INTO logs (timestamp, process, level, message) VALUES (1, 'main', 'info', 'old');
+      `);
+
     const { default: db } = await import('./db.js');
-    expect(() =>
-      db
-        .prepare('INSERT INTO logs (timestamp, process, level, message) VALUES (?, ?, ?, ?)')
-        .run(Date.now(), 'worker', 'info', 'hello'),
-    ).toThrow();
-  });
 
-  it('rejects an invalid level value', async () => {
-    const { default: db } = await import('./db.js');
-    expect(() =>
-      db
-        .prepare('INSERT INTO logs (timestamp, process, level, message) VALUES (?, ?, ?, ?)')
-        .run(Date.now(), 'main', 'verbose', 'hello'),
-    ).toThrow();
-  });
-
-  it('accepts context, filename and line, and leaves them null when omitted', async () => {
-    const { default: db } = await import('./db.js');
-    db.prepare(
-      'INSERT INTO logs (timestamp, process, level, message, context, filename, line) VALUES (?, ?, ?, ?, ?, ?, ?)',
-    ).run(Date.now(), 'renderer', 'error', 'boom', '["ctx"]', 'app.ts', 12);
-    db.prepare('INSERT INTO logs (timestamp, process, level, message) VALUES (?, ?, ?, ?)').run(
-      Date.now(),
-      'main',
-      'info',
-      'no extra columns',
-    );
-
-    const rows = db.prepare('SELECT context, filename, line FROM logs ORDER BY id ASC').all() as {
-      context: string | null;
-      filename: string | null;
-      line: number | null;
-    }[];
-
-    expect(rows[0]).toEqual({ context: '["ctx"]', filename: 'app.ts', line: 12 });
-    expect(rows[1]).toEqual({ context: null, filename: null, line: null });
-  });
-});
-
-describe('logs retention trigger', () => {
-  beforeEach(() => {
-    vi.resetModules();
-  });
-
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it('deletes rows older than 30 days when a new row is inserted', async () => {
-    const { default: db } = await import('./db.js');
-    const insert = db.prepare(
-      'INSERT INTO logs (timestamp, process, level, message) VALUES (?, ?, ?, ?)',
-    );
-    const THIRTY_ONE_DAYS_MS = 31 * 24 * 60 * 60 * 1000;
-    insert.run(Date.now() - THIRTY_ONE_DAYS_MS, 'main', 'info', 'old entry');
-
-    insert.run(Date.now(), 'main', 'info', 'new entry');
-
-    const rows = db.prepare('SELECT message FROM logs').all() as { message: string }[];
-    expect(rows).toEqual([{ message: 'new entry' }]);
-  });
-
-  it('keeps rows within the retention window', async () => {
-    const { default: db } = await import('./db.js');
-    const insert = db.prepare(
-      'INSERT INTO logs (timestamp, process, level, message) VALUES (?, ?, ?, ?)',
-    );
-    const TWENTY_NINE_DAYS_MS = 29 * 24 * 60 * 60 * 1000;
-    insert.run(Date.now() - TWENTY_NINE_DAYS_MS, 'main', 'info', 'recent entry');
-
-    insert.run(Date.now(), 'main', 'info', 'new entry');
-
-    const rows = db.prepare('SELECT message FROM logs').all() as { message: string }[];
-    expect(rows).toHaveLength(2);
-  });
-
-  it('caps the logs table at 100000 rows', async () => {
-    const { default: db } = await import('./db.js');
-    const insert = db.prepare(
-      'INSERT INTO logs (timestamp, process, level, message) VALUES (?, ?, ?, ?)',
-    );
-    const insertMany = db.transaction((count: number) => {
-      for (let i = 0; i < count; i++) {
-        insert.run(Date.now(), 'main', 'info', 'row');
-      }
-    });
-
-    insertMany(100005);
-
-    const { count } = db.prepare('SELECT COUNT(*) AS count FROM logs').get() as {
-      count: number;
-    };
-    expect(count).toBeLessThanOrEqual(100000);
+    expect(namesOf(db, 'table')).not.toContain('logs');
+    expect(namesOf(db, 'index')).not.toContain('idx_logs_timestamp');
+    expect(namesOf(db, 'trigger')).not.toContain('trg_logs_retention');
+    expect(namesOf(db, 'table')).toContain('servers');
   });
 });

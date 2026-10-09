@@ -129,45 +129,14 @@ for (const row of stmtSelectServerIds.all()) {
   stmtRenameId.run(newId, row.id);
 }
 
-db.exec(`
-  CREATE TABLE IF NOT EXISTS logs (
-    id        INTEGER PRIMARY KEY AUTOINCREMENT,
-    timestamp INTEGER NOT NULL,
-    process   TEXT NOT NULL CHECK (process IN ('main','renderer')),
-    level     TEXT NOT NULL CHECK (level IN ('debug','info','warn','error')),
-    message   TEXT NOT NULL
-  );
-`);
-
-db.exec(`
-  CREATE INDEX IF NOT EXISTS idx_logs_timestamp
-  ON logs(timestamp);
-`);
-
-// Migrate: add context/filename/line columns (nullable - populated only when available).
-const logCols = db.pragma('table_info(logs)') as ColInfo[];
-if (!logCols.find((c) => c.name === 'context')) {
-  db.exec(`ALTER TABLE logs ADD COLUMN context TEXT`);
-}
-if (!logCols.find((c) => c.name === 'filename')) {
-  db.exec(`ALTER TABLE logs ADD COLUMN filename TEXT`);
-}
-if (!logCols.find((c) => c.name === 'line')) {
-  db.exec(`ALTER TABLE logs ADD COLUMN line INTEGER`);
-}
-
+// Logs now live in rotating files (see logger.ts). Older versions stored them here, so drop the
+// leftovers and reclaim the space (the table could hold up to 100000 rows).
+const hadLogsTable = db
+  .prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'logs'")
+  .get();
 db.exec(`DROP TRIGGER IF EXISTS trg_logs_retention`);
-
-db.exec(`
-  CREATE TRIGGER trg_logs_retention
-  AFTER INSERT ON logs
-  BEGIN
-    DELETE FROM logs
-    WHERE timestamp < (CAST(strftime('%s','now') AS INTEGER) - 30*24*60*60) * 1000;
-
-    DELETE FROM logs
-    WHERE id <= (SELECT MAX(id) FROM logs) - 100000;
-  END;
-`);
+db.exec(`DROP INDEX IF EXISTS idx_logs_timestamp`);
+db.exec(`DROP TABLE IF EXISTS logs`);
+if (hadLogsTable) db.exec('VACUUM');
 
 export default db;
