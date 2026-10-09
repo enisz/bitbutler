@@ -22,16 +22,10 @@ function callerLocation(
   return match ? { filename: match[1], line: Number(match[2]), column: Number(match[3]) } : null;
 }
 
-function serializeArg(arg: unknown): unknown {
-  if (arg instanceof Error) {
-    return { name: arg.name, message: arg.message, stack: arg.stack };
-  }
-  return arg;
-}
-
-function safeStringify(value: unknown): string {
+function safeStringify(value: unknown): string | undefined {
   const seen = new WeakSet<object>();
   return JSON.stringify(value, (_key, val) => {
+    if (typeof val === 'bigint') return val.toString();
     if (typeof val === 'object' && val !== null) {
       if (seen.has(val)) return '[Circular]';
       seen.add(val);
@@ -40,22 +34,15 @@ function safeStringify(value: unknown): string {
   });
 }
 
-function buildLogPayload(args: unknown[]): { message: string; context: string | null } {
-  const structured: unknown[] = [];
-
-  const messageParts = args.map((arg) => {
-    if (arg === null || arg === undefined) return String(arg);
-    if (typeof arg === 'string' || typeof arg === 'number' || typeof arg === 'boolean') {
-      return String(arg);
-    }
-    structured.push(serializeArg(arg));
-    return arg instanceof Error ? `${arg.name}: ${arg.message}` : '[object]';
-  });
-
-  return {
-    message: messageParts.join(' '),
-    context: structured.length > 0 ? safeStringify(structured) : null,
-  };
+function formatArg(arg: unknown): string {
+  if (typeof arg === 'string') return arg;
+  if (arg instanceof Error) return arg.stack ?? `${arg.name}: ${arg.message}`;
+  if (arg === null || arg === undefined || typeof arg !== 'object') return String(arg);
+  try {
+    return safeStringify(arg) ?? String(arg);
+  } catch {
+    return String(arg);
+  }
 }
 
 export function initRendererLogger(): void {
@@ -66,11 +53,9 @@ export function initRendererLogger(): void {
     (console as unknown as Record<string, unknown>)[method] = (...args: unknown[]): void => {
       original.apply(console, args);
       const location = callerLocation(new Error().stack);
-      const { message, context } = buildLogPayload(args);
       window.bitbutler.log.write({
         level,
-        message,
-        context,
+        message: args.map(formatArg).join(' '),
         filename: location?.filename ?? null,
         line: location?.line ?? null,
         column: location?.column ?? null,
