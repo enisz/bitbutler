@@ -22,8 +22,10 @@ view. Users reach the logs through an "Open Logs Folder" action.
 ## Decisions
 
 - Transport/rotation: `electron-log` (v5), size-based rotation. No hourly rotation.
-- Separate files: `main.log` and `renderer.log`, routed with `transports.file.resolvePathFn`
-  using `message.variables.processType` (`'renderer'` -> `renderer.log`, otherwise `main.log`).
+- Separate files: `main.log` and `renderer.log`. Renderer entries are written by the main process
+  (they arrive over IPC), so electron-log's `processType` is `browser` for both. Routing therefore
+  uses two logger instances: the default one (`main.log`) and `log.create({ logId: 'renderer' })`
+  with `transports.file.fileName = 'renderer.log'`.
 - Rotation: `maxSize` 5 MB per file, keeping 5 files per process (1 active + 4 rolled), i.e. at
   most about 25 MB per process. `electron-log` only keeps a single `.old.log` by default, so a
   small `archiveLogFn` shifts the rolled files: `main.log` -> `main.1.log` -> ... -> `main.4.log`
@@ -39,14 +41,14 @@ view. Users reach the logs through an "Open Logs Folder" action.
 
 ### 1. Main-process logger (`packages/electron/src/logger.ts`, rewritten)
 
-- Configure `electron-log/main`:
-  - `transports.file.resolvePathFn`: `renderer.log` when `message?.variables?.processType ===
-'renderer'`, else `main.log`, both in the default log directory.
-  - `transports.file.maxSize = 5 * 1024 * 1024` and `transports.file.archiveLogFn` that shifts
-    rolled files (`<name>.1.log` ... `<name>.4.log`), dropping the oldest.
-  - File line format: `YYYY-MM-DD HH:mm:ss.SSS LEVEL [file:line] message`. The `file:line`
-    segment is omitted when no location is available.
-  - Console transport disabled (the original `console.*` is still called by our wrapper).
+- Two `electron-log/main` logger instances: `mainLog` (the default logger, `main.log`) and
+  `rendererLog = log.create({ logId: 'renderer' })` (`transports.file.fileName = 'renderer.log'`).
+  On both: `transports.file.maxSize = 5 * 1024 * 1024`, `transports.file.archiveLogFn` that shifts
+  rolled files (`<name>.1.log` ... `<name>.4.log`, oldest dropped, with a crop fallback if the
+  rename fails), and the console and ipc transports disabled (our console wrapper still calls the
+  original `console.*`).
+- Line format is electron-log's default, `[YYYY-MM-DD HH:mm:ss.SSS] [level] text`, where `text` is
+  `[file:line] message` (the `[file:line] ` prefix is omitted when no location is available).
 - `initLogger()` keeps wrapping `console.log/debug/info/warn/error`:
   - Call the original console method.
   - Compute the caller location (`callerLocation`) and resolve it with
@@ -59,9 +61,14 @@ view. Users reach the logs through an "Open Logs Folder" action.
   must never throw (failures go to `process.stderr`, as today).
 - Exports `getLogDirectory(): string` (dirname of the active main log file) for the
   open-folder action.
-- Import order: `main.ts` imports `./logger.js` before any module that imports `./db.js`, so DB
-  initialization errors are captured. `initLogger()` is called at the top of startup, before
-  `registerLogIpcHandlers()`.
+- Startup order: a new entry file `packages/electron/src/index.ts` contains
+  `import './logger-bootstrap.js'; import './main.js';`. `logger-bootstrap.ts` calls
+  `initLogger()` when evaluated, so the console wrappers and crash handlers exist before `db.js`
+  (and `better-sqlite3`) load and DB initialization errors are captured. The Electron entry
+  (`main` in the root `package.json`, the `electron-hot` script and the electron-builder config)
+  points at `packages/electron/dist/index.js`. `main.ts` no longer calls `initLogger()`. (A
+  side-effect import placed first in `main.ts` is not an option: the repo's import sorter reorders
+  it.)
 
 ### 2. Renderer -> main
 
