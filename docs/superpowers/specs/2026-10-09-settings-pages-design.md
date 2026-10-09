@@ -23,16 +23,18 @@ Success criteria:
 
 ## Routes
 
-Two lazy parents under `pages/`, one child route per pane:
+Two lazy routes under `pages/`, each with a `:pane` parameter that selects the visible pane:
 
 ```
-pages/settings/{general|appearance|startup|notifications|polling|path-mappings|torrent-list-grid|status-bar}
-pages/qb-settings/{bandwidth|storage|queue-limits|seeding-ratios}
+pages/settings/:pane      general|appearance|startup|notifications|polling|path-mappings|torrent-list-grid|status-bar
+pages/qb-settings/:pane   bandwidth|storage|queue-limits|seeding-ratios
 ```
+
+Every pane has its own URL. An unknown or missing `:pane` redirects to the page's first pane.
 
 - `UI_OPEN_SETTINGS` and `UI_OPEN_QB_SETTINGS` keep their names. Both gain an optional `pane` field (replacing `tabToOpen`). Their handlers navigate to the page (default pane when none given) instead of opening a modal.
 - The back button in the sidebar navigates to `pages/torrent-list`.
-- A `canDeactivate` guard sits on each **parent** route only, so switching panes does not trigger it but leaving the page does. It reuses `ConfirmService` and the existing `components.modals.guard.*` strings.
+- A `canDeactivate` guard sits on each route. It receives the next URL and allows navigation without prompting when the next URL is still inside the same page (switching panes changes only `:pane`), and prompts only when leaving the page with unsaved changes. It reuses `ConfirmService` and the existing `components.modals.guard.*` strings.
 - The guard lets navigation through when it carries a `force` flag. `forceLogout` in `qb.service.ts` (the 401/403 path) sets it, so an expired session never asks the user to stay on a page whose session is gone. A deliberate Disconnect still prompts.
 
 ## Shell
@@ -40,10 +42,12 @@ pages/qb-settings/{bandwidth|storage|queue-limits|seeding-ratios}
 One `SettingsShell` component takes a page config: title key, nav groups (each with items: id, label key, icon, route), footer note key, and a reference to the page's state service. It renders:
 
 - **Sidebar:** back button, title, grouped nav with per-item unsaved marker, version footer (version from the app build).
-- **Main area:** pane title and description, "Unsaved changes" pill, `<router-outlet>`, sticky footer with Discard and Save.
+- **Main area:** pane title and description, "Unsaved changes" pill, the panes, sticky footer with Discard and Save.
 - **Panes without a save bar** are supported by a route data flag (unused in this PR, used by the Manage follow-up).
 
-Page components (`pages/settings`, `pages/qb-settings`) are thin: they declare their config and provide their state service on the route, so state outlives pane navigation. Routed panes are destroyed on navigation, which is why form state lives in services (below).
+Page components (`pages/settings`, `pages/qb-settings`) are thin: they declare their config, provide their state service, and pass the pane list (id and lazy `loadComponent`) to the shell.
+
+**All panes of a page stay mounted** and the shell shows only the active one (selected by the `:pane` route parameter), exactly as the modals do today with `ngComponentOutlet` and a `bb-tab-panel--active` class. This is deliberate: Torrent List Grid, Status Bar and the four qBittorrent panes each own a local `FormGroup` and register their save function from their constructor, so destroying a pane on navigation would lose its unsaved edits. Keeping panes mounted leaves those six components untouched and preserves edits when switching panes. Panes load lazily and in parallel, and the shell shows a spinner until they are ready.
 
 Removed: both modal components with their `.html`/`.scss`, the `Settings` and `QbSettings` branches of `ui-command-handler.service.ts`, and their `isModalOpen` handling.
 
@@ -66,13 +70,13 @@ Page-scoped state services replace `SettingsStateService` and `QbSettingsStateSe
 | Notifications | Notifications (OS and in-app groups)                       |
 
 - `ServerSettingsFormService` does the same for the server form. Polling and Path Mappings are the two panes. It still reloads when `currentServerId` changes and resets dirty when it does.
-- Torrent List Grid and Status Bar move onto the shell as they are.
+- Torrent List Grid and Status Bar keep their own forms and move onto the shell unchanged apart from the state service import.
 - Dirty is tracked per form, so the sidebar marker shows on every pane of a form that is dirty.
 
 ### qBittorrent settings
 
-- `QbSettingsStateService` stays, with the preferences load moved to the parent route so panes do not re-fetch when switching.
-- The four panes (Bandwidth, Storage, Queue Limits, Seeding Ratios) move onto the shell unchanged.
+- `QbSettingsStateService` stays, and the page loads the preferences before it creates the panes, because each pane reads `preferences()` once in its constructor.
+- The four panes (Bandwidth, Storage, Queue Limits, Seeding Ratios) move onto the shell unchanged apart from the state service import.
 - The page shows a spinner while loading preferences and an inline error with a Retry button if the load fails.
 
 ## Visual layer
@@ -121,7 +125,7 @@ New keys in `us.json` and `hu.json`: nav group labels (Application, Server, Inte
 Specs sit next to the code.
 
 - **Shell:** nav groups and items render, active route is marked, pill and button states follow dirty, footer note renders.
-- **Guard:** prompts when leaving the parent route, not when switching panes, and does not prompt when the `force` flag is set.
+- **Guard:** prompts when leaving the page with unsaved changes, does not prompt when only `:pane` changes, and does not prompt when the `force` flag is set.
 - **State services:** existing specs move over, plus `allSettled` partial-failure behavior.
 - **Form services:** most of `general.spec.ts` and `server.spec.ts` port here since the logic moves with the form. Pane specs reduce to binding checks.
 - **Command handler:** both commands navigate to the right pane, with and without `pane`.
