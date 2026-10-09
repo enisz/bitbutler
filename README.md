@@ -19,11 +19,11 @@ _The digital butler for your torrents._
 
 </div>
 
-![Main View](packages/docs/docs/public/screenshots/torrent-list-view/overview.png)
+![Main View](readme/overview.png)
 
 BitButler is a desktop remote client specifically designed to connect to and manage **qBittorrent-nox** instances. Instead of dealing with clunky web interfaces or browser tabs, BitButler gives you a dedicated, professional space to keep your downloads organized.
 
-![Torrent Detail View](packages/docs/docs/public/screenshots/torrent-details-view/general.png)
+![Torrent Detail View](readme/torrent-details.png)
 
 It’s fast, it’s modern, and it works where you do.
 
@@ -43,7 +43,6 @@ Using with newer versions of the API may be possible, but can be buggy as there 
 - [Localization](#localization)
   - [Help the Butler Learn!](#help-the-butler-learn)
 - [Quick Start](#quick-start)
-- [User Guide](#user-guide)
 - [For the Developers](#for-the-developers)
   - [Prerequisites](#prerequisites)
   - [Setup](#setup)
@@ -98,12 +97,6 @@ Check our [Contributing Guide](.github/CONTRIBUTING.md) for more details on how 
 3.  **Manage:** Start organizing your torrents immediately.
 
 Note: On Windows, you may see a "Windows protected your PC" warning. This is because the app is not signed with an expensive developer certificate. You can click "More info" and then "Run anyway" to start the Butler.
-
-## User Guide
-
-![User Guide](readme/user-guide.png)
-
-Want the full walkthrough? The [User Guide](https://enisz.github.io/bitbutler/) covers installation, connecting servers, managing torrents, settings, and troubleshooting - available in English and Hungarian.
 
 ## For the Developers
 

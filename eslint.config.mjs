@@ -102,13 +102,4 @@ export default tseslint.config(
       '@typescript-eslint/no-explicit-any': 'off',
     },
   },
-  {
-    files: ['packages/docs/docs/.vitepress/**/*.ts'],
-    languageOptions: {
-      parser: tseslint.parser,
-      ecmaVersion: 'latest',
-      sourceType: 'module',
-    },
-    extends: [eslintPluginPrettierRecommended],
-  },
 );
