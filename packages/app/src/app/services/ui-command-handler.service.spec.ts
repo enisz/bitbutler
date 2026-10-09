@@ -49,7 +49,6 @@ describe('UiCommandHandlerService', () => {
     // import for each module requires async I/O which completes after flushPromises resolves.
     await Promise.all([
       import('../modals/delete-torrent/delete-torrent'),
-      import('../pages/settings/settings'),
       import('../pages/qb-settings/qb-settings'),
       import('../modals/torrent-details/torrent-details'),
       import('../modals/add-torrent/add-torrent'),
@@ -88,6 +87,7 @@ describe('UiCommandHandlerService', () => {
 
     mockModalService = {
       activeInstances: new Subject(),
+      hasOpenModals: vi.fn().mockReturnValue(false),
       open: vi.fn().mockReturnValue({
         componentInstance: {},
         _contentRef: { componentRef: { setInput: setInputSpy } },
@@ -223,10 +223,28 @@ describe('UiCommandHandlerService', () => {
     expect(hashesCalls).toHaveLength(0);
   });
 
-  it('should open Settings modal for UI_OPEN_SETTINGS', async () => {
+  it('navigates to the default settings pane for UI_OPEN_SETTINGS', async () => {
     commands$.next({ type: 'UI_OPEN_SETTINGS' });
     await flushPromises();
-    expect(mockModalService.open).toHaveBeenCalled();
+
+    expect(routerNavigate).toHaveBeenCalledWith(['/pages', 'settings', 'general']);
+    expect(mockModalService.open).not.toHaveBeenCalled();
+  });
+
+  it('navigates to the requested pane for UI_OPEN_SETTINGS', async () => {
+    commands$.next({ type: 'UI_OPEN_SETTINGS', pane: 'notifications' });
+    await flushPromises();
+
+    expect(routerNavigate).toHaveBeenCalledWith(['/pages', 'settings', 'notifications']);
+  });
+
+  it('ignores UI_OPEN_SETTINGS while a modal is open', async () => {
+    mockModalService.hasOpenModals.mockReturnValue(true);
+
+    commands$.next({ type: 'UI_OPEN_SETTINGS' });
+    await flushPromises();
+
+    expect(routerNavigate).not.toHaveBeenCalled();
   });
 
   it('should navigate to the selected view for UI_VIEW_SELECT', async () => {

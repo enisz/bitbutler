@@ -135,20 +135,9 @@ export class UiCommandHandlerService {
         }
 
         case 'UI_OPEN_SETTINGS': {
-          const { Settings } = await import('../pages/settings/settings');
-          if (this.isModalOpen(Settings)) break;
-          const settingsModalRef = this.modalService.open(Settings, {
-            size: 'xl',
-            centered: false,
-            scrollable: true,
-            beforeDismiss: () => settingsModalRef.componentInstance.canDeactivate(),
-          });
-
-          if (command.tabToOpen) {
-            setModalInput(settingsModalRef, 'tabToOpen', command.tabToOpen);
-          }
-
-          settingsModalRef.result.catch(() => {});
+          // Navigating would tear down an open dialog and whatever unsaved state it holds.
+          if (this.modalService.hasOpenModals()) break;
+          await this.router.navigate(['/pages', 'settings', command.pane ?? 'general']);
           break;
         }
 

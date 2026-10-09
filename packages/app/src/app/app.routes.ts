@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { unsavedChangesGuard } from './guards/unsaved-changes.guard';
 
 export const routes: Routes = [
   {
@@ -11,6 +12,13 @@ export const routes: Routes = [
       {
         path: 'torrent-list',
         loadComponent: () => import('./pages/main/main').then((mod) => mod.Main),
+      },
+      { path: 'settings', pathMatch: 'full', redirectTo: 'settings/general' },
+      {
+        path: 'settings/:pane',
+        loadComponent: () =>
+          import('./pages/settings/settings-page').then((mod) => mod.SettingsPage),
+        canDeactivate: [unsavedChangesGuard],
       },
     ],
   },
