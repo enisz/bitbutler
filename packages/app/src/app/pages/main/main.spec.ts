@@ -108,6 +108,37 @@ describe('Main', () => {
       await createComponent();
       expect(component.serverState()).toBeNull();
     });
+
+    it('keeps the connection status when the page is recreated for the same server', async () => {
+      const poll$ = new Subject<any>();
+      qbPollingMock.startMaindataPolling.mockReturnValue(poll$);
+      serverStoreMock.currentServerId.set('server-1');
+      await createComponent();
+      poll$.next({ server_state: { connection_status: 'connected' } });
+      expect(component.connectionStatus()).toBe('connected');
+
+      // Leaving for the settings pages destroys the page; coming back recreates it while
+      // polling resumes without resending the unchanged connection status.
+      fixture.destroy();
+      fixture = TestBed.createComponent(Main);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+
+      expect(component.connectionStatus()).toBe('connected');
+    });
+
+    it('forgets the connection status when another server is polled', async () => {
+      const poll$ = new Subject<any>();
+      qbPollingMock.startMaindataPolling.mockReturnValue(poll$);
+      serverStoreMock.currentServerId.set('server-1');
+      await createComponent();
+      poll$.next({ server_state: { connection_status: 'connected' } });
+
+      serverStoreMock.currentServerId.set('server-2');
+      fixture.detectChanges();
+
+      expect(component.connectionStatus()).toBe('offline');
+    });
   });
 
   describe('polling', () => {
