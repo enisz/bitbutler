@@ -2200,8 +2200,7 @@
       "new": "New",
       "edit": "Edit",
       "refresh": "Refresh",
-      "retry": "Retry",
-      "discard": "Discard"
+      "retry": "Retry"
     },
     "form": {
       "feedback": {
