@@ -21,9 +21,9 @@ import {
   faTags,
   faUpload,
 } from '@fortawesome/free-solid-svg-icons';
-import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content';
+import { BbTooltip } from '../../../directives/bb-tooltip';
 import {
   DEFAULT_SIDEBAR_SETTINGS,
   SidebarActiveFilters,
@@ -58,7 +58,7 @@ type StatusKey =
     FilterGroupComponent,
     TranslatePipe,
     BbBtnContent,
-    NgbTooltip,
+    BbTooltip,
   ],
   templateUrl: './status.html',
   styleUrl: './status.scss',

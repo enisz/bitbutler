@@ -135,33 +135,15 @@ export class UiCommandHandlerService {
         }
 
         case 'UI_OPEN_SETTINGS': {
-          const { Settings } = await import('../modals/settings/settings');
-          if (this.isModalOpen(Settings)) break;
-          const settingsModalRef = this.modalService.open(Settings, {
-            size: 'xl',
-            centered: false,
-            scrollable: true,
-            beforeDismiss: () => settingsModalRef.componentInstance.canDeactivate(),
-          });
-
-          if (command.tabToOpen) {
-            setModalInput(settingsModalRef, 'tabToOpen', command.tabToOpen);
-          }
-
-          settingsModalRef.result.catch(() => {});
+          // Navigating would tear down an open dialog and whatever unsaved state it holds.
+          if (this.modalService.hasOpenModals()) break;
+          await this.router.navigate(['/pages', 'settings', command.pane ?? 'general']);
           break;
         }
 
         case 'UI_OPEN_QB_SETTINGS': {
-          const { QbSettings } = await import('../modals/qb-settings/qb-settings');
-          if (this.isModalOpen(QbSettings)) break;
-          const qbSettingsModalRef = this.modalService.open(QbSettings, {
-            size: 'xl',
-            centered: false,
-            scrollable: true,
-            beforeDismiss: () => qbSettingsModalRef.componentInstance.canDeactivate(),
-          });
-          qbSettingsModalRef.result.catch(() => {});
+          if (this.modalService.hasOpenModals()) break;
+          await this.router.navigate(['/pages', 'qb-settings', command.pane ?? 'bandwidth']);
           break;
         }
 
@@ -503,6 +485,7 @@ export class UiCommandHandlerService {
           );
           if (!confirmed) break;
 
+          if (!(await this.leaveSettingsPage())) break;
           await this.disconnect();
           break;
         }
@@ -547,6 +530,8 @@ export class UiCommandHandlerService {
   }
 
   private async handleServerSwitch(serverId: string): Promise<void> {
+    if (!(await this.leaveSettingsPage())) return;
+
     const server = this.serverStoreService.servers().find((s) => s.id === serverId);
     const name = server?.name || '';
 
@@ -623,6 +608,18 @@ export class UiCommandHandlerService {
     } finally {
       appLoaderModal?.close();
     }
+  }
+
+  // The settings pages hold unsaved state and per-server data. Anything that ends or replaces the
+  // session must leave them first: the unsaved-changes guard can veto that, and then nothing
+  // about the session may change.
+  private async leaveSettingsPage(): Promise<boolean> {
+    const url = this.router.url ?? '';
+    const onSettingsPage =
+      url.startsWith('/pages/settings/') || url.startsWith('/pages/qb-settings/');
+    if (!onSettingsPage) return true;
+
+    return this.router.navigate(['/pages', 'torrent-list']);
   }
 
   private async disconnect(): Promise<void> {

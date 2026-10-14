@@ -13,10 +13,10 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { BbTooltip } from '../../../../directives/bb-tooltip';
 import { AppCommand } from '../../../../models/command.model';
 import { CommandBusService } from '../../../../services/command-bus.service';
 import { CANCEL_ANCESTOR_CLOSE, CLOSE_ROOT, CONTEXT_MENU_CONFIG } from './context-menu.tokens';
@@ -25,7 +25,7 @@ import type { ContextMenuConfig, ContextMenuEntry } from './context-menu.types';
 @Component({
   selector: 'app-context-menu',
   standalone: true,
-  imports: [CommonModule, FontAwesomeModule, NgbTooltipModule, TranslatePipe],
+  imports: [CommonModule, FontAwesomeModule, BbTooltip, TranslatePipe],
   templateUrl: './context-menu.html',
   styleUrl: './context-menu.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,0 +1,19 @@
+// Notification sections: the master switch reads as the section header, the two sections are
+// separated, and the last row of the app grid (two category rows) drops its divider.
+.bb-option--master .bb-option__label {
+  font-weight: 600;
+}
+
+.bb-notification-section + .bb-notification-section {
+  margin-top: 1rem;
+}
+
+.bb-notification-section--app .bb-option:nth-last-child(-n + 2) {
+  border-bottom: none;
+}
+
+// Description above the category switches: spans the whole grid, with room above and below.
+.bb-notification-hint {
+  grid-column: 1 / -1;
+  padding: 1rem 0 0.5rem;
+}

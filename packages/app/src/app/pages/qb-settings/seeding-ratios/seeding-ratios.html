@@ -1,0 +1,98 @@
+<form [formGroup]="form">
+  <div class="bb-cards">
+    <app-bb-section-card
+      [title]="'pages.qb-settings.tab.seeding-ratios.label.share-ratio' | translate"
+    >
+      <div class="bb-options">
+        <div class="bb-options mb-3">
+          <div class="bb-option">
+            <div class="bb-option__text">
+              <label class="bb-option__label" for="max-ratio-enabled">
+                {{ 'pages.qb-settings.tab.seeding-ratios.field.max-ratio-enabled' | translate }}
+              </label>
+            </div>
+            <span class="bb-option__toggle form-switch">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="max-ratio-enabled"
+                formControlName="max_ratio_enabled"
+              />
+            </span>
+          </div>
+        </div>
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'pages.qb-settings.tab.seeding-ratios.field.max-ratio' | translate }}
+            </span>
+          </div>
+          <div class="bb-option__control">
+            <input
+              type="number"
+              class="form-control"
+              formControlName="max_ratio"
+              min="0"
+              step="0.1"
+            />
+          </div>
+        </div>
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'pages.qb-settings.tab.seeding-ratios.field.max-ratio-act' | translate }}
+            </span>
+          </div>
+          <div class="bb-option__control">
+            <ng-select
+              [items]="ratioActOptions"
+              [clearable]="false"
+              [searchable]="false"
+              bindLabel="label"
+              bindValue="value"
+              formControlName="max_ratio_act"
+            ></ng-select>
+          </div>
+        </div>
+      </div>
+    </app-bb-section-card>
+
+    <app-bb-section-card
+      [title]="'pages.qb-settings.tab.seeding-ratios.label.seeding-time' | translate"
+    >
+      <div class="bb-options">
+        <div class="bb-options mb-3">
+          <div class="bb-option">
+            <div class="bb-option__text">
+              <label class="bb-option__label" for="max-seeding-time-enabled">
+                {{
+                  'pages.qb-settings.tab.seeding-ratios.field.max-seeding-time-enabled' | translate
+                }}
+              </label>
+            </div>
+            <span class="bb-option__toggle form-switch">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="max-seeding-time-enabled"
+                formControlName="max_seeding_time_enabled"
+              />
+            </span>
+          </div>
+        </div>
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'pages.qb-settings.tab.seeding-ratios.field.max-seeding-time' | translate }}
+            </span>
+          </div>
+          <div class="bb-option__control">
+            <input type="number" class="form-control" formControlName="max_seeding_time" min="0" />
+          </div>
+        </div>
+      </div>
+    </app-bb-section-card>
+  </div>
+</form>

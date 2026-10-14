@@ -54,7 +54,7 @@ describe('AddTorrentOptions', () => {
 
   it('should wrap the root folder field and the switches in separate fieldsets', () => {
     const fieldsets: NodeListOf<HTMLElement> =
-      fixture.nativeElement.querySelectorAll('fieldset.bb-fieldset');
+      fixture.nativeElement.querySelectorAll('app-bb-section-card');
 
     expect(fieldsets.length).toBe(2);
     expect(fieldsets[0].querySelector('#root_folder')).toBeTruthy();

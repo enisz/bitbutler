@@ -29,8 +29,8 @@
       <button
         type="button"
         class="btn btn-sm btn-link text-secondary"
-        [ngbTooltip]="'components.bb-file-tree.toolbar.expand-all' | translate"
-        tooltipClass="single-line-tooltip"
+        [bbTooltip]="'components.bb-file-tree.toolbar.expand-all' | translate"
+        singleLine
         placement="top"
         (click)="expandAllNodes()"
       >
@@ -39,8 +39,8 @@
       <button
         type="button"
         class="btn btn-sm btn-link text-secondary"
-        [ngbTooltip]="'components.bb-file-tree.toolbar.collapse-all' | translate"
-        tooltipClass="single-line-tooltip"
+        [bbTooltip]="'components.bb-file-tree.toolbar.collapse-all' | translate"
+        singleLine
         placement="top"
         (click)="collapseAllNodes()"
       >
@@ -50,8 +50,8 @@
         <button
           type="button"
           class="btn btn-sm btn-link text-secondary"
-          [ngbTooltip]="'general.button.edit' | translate"
-          tooltipClass="single-line-tooltip"
+          [bbTooltip]="'general.button.edit' | translate"
+          singleLine
           placement="top"
           [disabled]="hasNoMatches()"
           (click)="enterEditMode()"
@@ -62,8 +62,8 @@
         <button
           type="button"
           class="btn btn-sm btn-link text-success"
-          [ngbTooltip]="'general.button.save' | translate"
-          tooltipClass="single-line-tooltip"
+          [bbTooltip]="'general.button.save' | translate"
+          singleLine
           placement="top"
           (click)="saveEdit()"
         >
@@ -72,8 +72,8 @@
         <button
           type="button"
           class="btn btn-sm btn-link text-danger"
-          [ngbTooltip]="'general.button.cancel' | translate"
-          tooltipClass="single-line-tooltip"
+          [bbTooltip]="'general.button.cancel' | translate"
+          singleLine
           placement="top"
           (click)="cancelEdit()"
         >
@@ -100,8 +100,8 @@
           class="input-group-text bb-search__addon bb-search__clear"
           [class.bb-search__clear--hidden]="!filterText()"
           [disabled]="editMode()"
-          [ngbTooltip]="'general.button.clear' | translate"
-          tooltipClass="single-line-tooltip"
+          [bbTooltip]="'general.button.clear' | translate"
+          singleLine
           placement="top"
           (click)="clearFilter()"
         >
@@ -162,8 +162,9 @@
                 <fa-icon
                   class="bb-input-error-icon"
                   [icon]="icon.faCircleExclamation"
-                  [ngbTooltip]="getControlError(getControl(node))"
-                  tooltipClass="single-line-tooltip danger"
+                  [bbTooltip]="getControlError(getControl(node))"
+                  singleLine
+                  variant="danger"
                   placement="top"
                 />
               }
@@ -208,9 +209,9 @@
           @if (!editMode()) {
             <span
               class="bb-name"
-              [ngbTooltip]="node.name"
-              tooltipClass="single-line-tooltip"
-              bbTooltipOverflow
+              [bbTooltip]="node.name"
+              singleLine
+              overflowOnly
               placement="top"
               [openDelay]="500"
               >{{ node.name }}</span
@@ -228,8 +229,9 @@
                 <fa-icon
                   class="bb-input-error-icon"
                   [icon]="icon.faCircleExclamation"
-                  [ngbTooltip]="getControlError(getControl(node))"
-                  tooltipClass="single-line-tooltip danger"
+                  [bbTooltip]="getControlError(getControl(node))"
+                  singleLine
+                  variant="danger"
                   placement="top"
                 />
               }

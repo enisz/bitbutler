@@ -31,11 +31,10 @@ import {
   faMagnifyingGlass,
   faX,
 } from '@fortawesome/free-solid-svg-icons';
-import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { INVALID_FILENAME_CHARS } from '../../app.const';
-import { TooltipOverflow } from '../../directives/tooltip-overflow';
+import { BbTooltip } from '../../directives/bb-tooltip';
 import { FilesizePipe } from '../../pipes/filesize-pipe';
 import { ConfirmService } from '../../services/confirm.service';
 import { BbProgress } from '../bb-progress/bb-progress';
@@ -65,8 +64,7 @@ export type FileTreeStats = { totalSize: number; selectedSize: number };
     ReactiveFormsModule,
     FilesizePipe,
     BbProgress,
-    NgbTooltipModule,
-    TooltipOverflow,
+    BbTooltip,
     FontAwesomeModule,
     TranslatePipe,
     CommonModule,

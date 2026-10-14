@@ -5,11 +5,19 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
+import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
 import { AddTorrentFormGroup } from '../../../models/add-torrent.model';
 
 @Component({
   selector: 'app-add-torrent-options',
-  imports: [ReactiveFormsModule, FontAwesomeModule, BbPopover, TranslatePipe, NgSelectModule],
+  imports: [
+    BbSectionCard,
+    ReactiveFormsModule,
+    FontAwesomeModule,
+    BbPopover,
+    TranslatePipe,
+    NgSelectModule,
+  ],
   templateUrl: './options.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -1069,7 +1069,7 @@
         "category-path-mapping": {
           "description": "Rewrite category save paths when the source and destination servers use different directory structures. Each rule replaces a matching path prefix - the first match wins.",
           "note-title": "Keep in mind",
-          "note-prefix": "If <strong>When category save path changes</strong> is set to <em>Switch to Manual mode</em>, changing a category's save path will disable Auto TMM on every torrent currently assigned to it - not just the ones being imported. You can review this setting in ",
+          "note-prefix": "If <strong>When category save path changes</strong> is set to <em>Switch to Manual mode</em>, changing a category's save path will disable Auto TMM on every torrent currently assigned to it - not just the ones being imported. You can review this setting in <strong>{{location}}</strong>.",
           "overwrite": "Overwrite existing categories",
           "overwrite-description": "Updates the save path of existing categories using qBittorrent's edit endpoint. This preserves existing torrent assignments but may trigger Auto TMM behavior depending on your 'When category save path changes' setting. If disabled, existing categories are left untouched."
         },
@@ -1654,7 +1654,10 @@
             "startup": "Startup",
             "torrent-handling": "Torrent Handling",
             "localization": "Localization",
-            "notifications": "Notifications"
+            "notifications": "Notifications",
+            "date-format": "Date Format",
+            "notifications-os": "System Notifications",
+            "notifications-app": "In-app Notifications"
           },
           "position": {
             "top-left": "Top Left",
@@ -1877,6 +1880,32 @@
             "search-columns": "Search and select columns..."
           }
         }
+      },
+      "nav": {
+        "back": "Back",
+        "footer-note": "Changes apply to this device only.",
+        "group": {
+          "application": "Application",
+          "server": "Server",
+          "interface": "Interface"
+        },
+        "pane": {
+          "appearance": {
+            "description": "Theme family and light/dark mode for the application."
+          },
+          "startup": {
+            "description": "How BitButler behaves when your system starts."
+          },
+          "notifications": {
+            "description": "Which events notify you, and how."
+          },
+          "polling": {
+            "description": "Server level settings. These are handled separately for each added server."
+          },
+          "path-mappings": {
+            "description": "Map remote server paths to local paths so files resolve on this device."
+          }
+        }
       }
     },
     "qb-settings": {
@@ -1887,7 +1916,8 @@
       },
       "error": {
         "save-failed-title": "Failed to Save Settings",
-        "save-failed": "Your changes could not be saved."
+        "save-failed": "Your changes could not be saved.",
+        "load-failed": "The qBittorrent preferences could not be loaded."
       },
       "tab": {
         "bandwidth": {
@@ -1899,10 +1929,10 @@
             "scheduler": "Speed Scheduler"
           },
           "field": {
-            "dl-limit": "Download Limit (KB/s)",
-            "up-limit": "Upload Limit (KB/s)",
-            "alt-dl-limit": "Alternative Download Limit (KB/s)",
-            "alt-up-limit": "Alternative Upload Limit (KB/s)",
+            "dl-limit": "Download Limit",
+            "up-limit": "Upload Limit",
+            "alt-dl-limit": "Alternative Download Limit",
+            "alt-up-limit": "Alternative Upload Limit",
             "scheduler-enabled": "Enable speed scheduler",
             "schedule-from": "From",
             "schedule-to": "To",
@@ -1994,6 +2024,12 @@
             "remove": "Remove torrent"
           }
         }
+      },
+      "nav": {
+        "group": {
+          "preferences": "Preferences"
+        },
+        "footer-note": "Changes are saved on the connected qBittorrent server."
       }
     }
   },

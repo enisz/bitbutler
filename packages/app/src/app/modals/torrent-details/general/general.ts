@@ -8,14 +8,15 @@ import {
   faCircleExclamation,
   faCopy,
 } from '@fortawesome/free-solid-svg-icons';
-import { NgbCollapse, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
+import { NgbCollapse } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TimeagoPipe } from 'ngx-timeago';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbProgress } from '../../../components/bb-progress/bb-progress';
 import { variantForTorrentState } from '../../../components/bb-progress/torrent-state-variant';
+import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
-import { TooltipOverflow } from '../../../directives/tooltip-overflow';
+import { BbTooltip } from '../../../directives/bb-tooltip';
 import { QbLogEntry } from '../../../models/qbittorrent.model';
 import { FileSizePerSecPipe } from '../../../pipes/filesize-per-sec-pipe';
 import { FilesizePipe } from '../../../pipes/filesize-pipe';
@@ -33,6 +34,7 @@ import { TorrentDetailTabComponent } from '../torrent-details.interface';
 @Component({
   selector: 'app-general',
   imports: [
+    BbSectionCard,
     BbSpinner,
     DecimalPipe,
     LocalTimestampPipe,
@@ -44,13 +46,12 @@ import { TorrentDetailTabComponent } from '../torrent-details.interface';
     BbProgress,
     FontAwesomeModule,
     NgbCollapse,
-    NgbTooltip,
+    BbTooltip,
     RatioLimitPipe,
     RatioPipe,
     TimeLimitPipe,
     BbPopover,
     TranslatePipe,
-    TooltipOverflow,
   ],
   templateUrl: './general.html',
   styleUrl: './general.scss',

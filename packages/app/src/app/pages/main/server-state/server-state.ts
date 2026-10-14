@@ -26,9 +26,9 @@ import {
   faTachometerAlt,
   faUpload,
 } from '@fortawesome/free-solid-svg-icons';
-import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { animationFrameScheduler, interval, map, switchMap } from 'rxjs';
+import { BbTooltip } from '../../../directives/bb-tooltip';
 import { QbServerState } from '../../../models/torrent.model';
 import { FilesizePipe } from '../../../pipes/filesize-pipe';
 import { CommandBusService } from '../../../services/command-bus.service';
@@ -45,7 +45,7 @@ export enum MouseClickButton {
 @Component({
   selector: 'app-server-state',
   standalone: true,
-  imports: [FontAwesomeModule, CommonModule, FilesizePipe, NgbTooltipModule, TranslatePipe],
+  imports: [FontAwesomeModule, CommonModule, FilesizePipe, BbTooltip, TranslatePipe],
   templateUrl: './server-state.html',
   styleUrl: './server-state.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

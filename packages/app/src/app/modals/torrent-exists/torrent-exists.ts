@@ -11,13 +11,14 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faArrowDown, faArrowUp, faCircleInfo, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TimeagoPipe } from 'ngx-timeago';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { BbProgress } from '../../components/bb-progress/bb-progress';
+import { BbSectionCard } from '../../components/bb-section-card/bb-section-card';
 import { AutofocusDirective } from '../../directives/autofocus';
-import { TooltipOverflow } from '../../directives/tooltip-overflow';
+import { BbTooltip } from '../../directives/bb-tooltip';
 import { TorrentState } from '../../models/torrent.model';
 import { FilesizePipe } from '../../pipes/filesize-pipe';
 import { LocalTimestampPipe } from '../../pipes/local-timestamp-pipe';
@@ -34,14 +35,14 @@ import { TorrentStoreService } from '../../services/torrent-store.service';
   selector: 'app-torrent-exists',
   standalone: true,
   imports: [
+    BbSectionCard,
     FilesizePipe,
     PercentPipe,
     RatioPipe,
     LocalTimestampPipe,
     TimeagoPipe,
     AutofocusDirective,
-    TooltipOverflow,
-    NgbTooltip,
+    BbTooltip,
     TranslatePipe,
     BbProgress,
     BbBtnContent,
