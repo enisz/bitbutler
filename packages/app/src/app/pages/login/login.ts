@@ -21,13 +21,14 @@ import {
   faPlus,
   faServer,
 } from '@fortawesome/free-solid-svg-icons';
-import { NgbDropdownModule, NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDropdownModule, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgLabelTemplateDirective, NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { debounceTime, firstValueFrom, fromEvent } from 'rxjs';
 import { AppLoader } from '../../components/app-loader/app-loader';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { BbLogo } from '../../components/bb-logo/bb-logo';
+import { BbTooltip } from '../../directives/bb-tooltip';
 import { CommandBusService } from '../../services/command-bus.service';
 import { CredentialPromptService } from '../../services/credential-prompt.service';
 import { ElectronService } from '../../services/electron.service';
@@ -45,7 +46,7 @@ import { setModalInput } from '../../utils/modal-input';
   imports: [
     NgClass,
     ReactiveFormsModule,
-    NgbTooltipModule,
+    BbTooltip,
     NgbDropdownModule,
     FontAwesomeModule,
     NgSelectComponent,

@@ -126,7 +126,7 @@
                   <label
                     class="bb-option__label"
                     [for]="'rf-' + field"
-                    [ngbTooltip]="
+                    [bbTooltip]="
                       isLegacyUnsupported(field) && metadata()?.export_mode === 'legacy'
                         ? ('components.modals.import-torrents.legacy-unsupported' | translate)
                         : null

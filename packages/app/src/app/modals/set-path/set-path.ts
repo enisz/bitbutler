@@ -9,12 +9,12 @@ import {
 } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { faFloppyDisk, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { BbPopover } from '../../components/bb-popover/bb-popover';
 import { SavePathSelect } from '../../components/save-path-select/save-path-select';
-import { TooltipOverflow } from '../../directives/tooltip-overflow';
+import { BbTooltip } from '../../directives/bb-tooltip';
 import { Torrent } from '../../models/torrent.model';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
@@ -24,15 +24,7 @@ export type SetPathType = 'save' | 'download';
 
 @Component({
   selector: 'app-set-path',
-  imports: [
-    ReactiveFormsModule,
-    SavePathSelect,
-    NgbTooltip,
-    TranslatePipe,
-    TooltipOverflow,
-    BbBtnContent,
-    BbPopover,
-  ],
+  imports: [ReactiveFormsModule, SavePathSelect, BbTooltip, TranslatePipe, BbBtnContent, BbPopover],
   templateUrl: './set-path.html',
   styleUrl: './set-path.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

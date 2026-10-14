@@ -43,8 +43,8 @@
         <div
           class="bb-hero-state"
           [class]="'text-' + stateVariant()"
-          [ngbTooltip]="'torrent.state.' + torrent()!.data.state | translate"
-          bbTooltipOverflow
+          [bbTooltip]="'torrent.state.' + torrent()!.data.state | translate"
+          overflowOnly
           placement="bottom"
         >
           {{ 'torrent.state.' + torrent()!.data.state | translate }}
@@ -139,8 +139,8 @@
           }}</span>
           <span
             class="bb-row__value"
-            [ngbTooltip]="torrent()!.data.name"
-            bbTooltipOverflow
+            [bbTooltip]="torrent()!.data.name"
+            overflowOnly
             placement="bottom"
             >{{ torrent()!.data.name }}</span
           >
@@ -148,7 +148,7 @@
             <button
               class="btn btn-sm btn-link bb-row__copy"
               placement="top"
-              [ngbTooltip]="
+              [bbTooltip]="
                 'components.modals.torrent-details.general.copy-to-clipboard' | translate
               "
               (click)="toClipboard('name', torrent()!.data.name)"
@@ -163,8 +163,8 @@
           }}</span>
           <span
             class="bb-row__value"
-            [ngbTooltip]="torrent()!.data.save_path"
-            bbTooltipOverflow
+            [bbTooltip]="torrent()!.data.save_path"
+            overflowOnly
             placement="bottom"
             >{{ torrent()!.data.save_path }}</span
           >
@@ -172,7 +172,7 @@
             <button
               class="btn btn-sm btn-link bb-row__copy"
               placement="top"
-              [ngbTooltip]="
+              [bbTooltip]="
                 'components.modals.torrent-details.general.copy-to-clipboard' | translate
               "
               (click)="toClipboard('save-path', torrent()!.data.save_path)"
@@ -187,8 +187,8 @@
           }}</span>
           <span
             class="bb-row__value"
-            [ngbTooltip]="torrent()!.data.content_path"
-            bbTooltipOverflow
+            [bbTooltip]="torrent()!.data.content_path"
+            overflowOnly
             placement="bottom"
             >{{ torrent()!.data.content_path }}</span
           >
@@ -196,7 +196,7 @@
             <button
               class="btn btn-sm btn-link bb-row__copy"
               placement="top"
-              [ngbTooltip]="
+              [bbTooltip]="
                 'components.modals.torrent-details.general.copy-to-clipboard' | translate
               "
               (click)="toClipboard('remote-path', torrent()!.data.content_path)"
@@ -210,18 +210,14 @@
             <span class="bb-row__label">{{
               'components.modals.torrent-details.general.local-path' | translate
             }}</span>
-            <span
-              class="bb-row__value"
-              [ngbTooltip]="localPath()"
-              bbTooltipOverflow
-              placement="bottom"
-              >{{ localPath() }}</span
-            >
+            <span class="bb-row__value" [bbTooltip]="localPath()" overflowOnly placement="bottom">{{
+              localPath()
+            }}</span>
             @if (torrent()!.data.save_path) {
               <button
                 class="btn btn-sm btn-link bb-row__copy"
                 placement="top"
-                [ngbTooltip]="
+                [bbTooltip]="
                   'components.modals.torrent-details.general.copy-to-clipboard' | translate
                 "
                 (click)="toClipboard('local-path', torrent()!.data.save_path)"
@@ -237,8 +233,8 @@
           }}</span>
           <span
             class="bb-row__value"
-            [ngbTooltip]="torrent()!.data.category || '-'"
-            bbTooltipOverflow
+            [bbTooltip]="torrent()!.data.category || '-'"
+            overflowOnly
             placement="bottom"
             >{{ torrent()!.data.category || '-' }}</span
           >
@@ -246,7 +242,7 @@
             <button
               class="btn btn-sm btn-link bb-row__copy"
               placement="top"
-              [ngbTooltip]="
+              [bbTooltip]="
                 'components.modals.torrent-details.general.copy-to-clipboard' | translate
               "
               (click)="toClipboard('category', torrent()!.data.category)"
@@ -274,7 +270,7 @@
             <button
               class="btn btn-sm btn-link bb-row__copy"
               placement="top"
-              [ngbTooltip]="
+              [bbTooltip]="
                 'components.modals.torrent-details.general.copy-to-clipboard' | translate
               "
               (click)="toClipboard('tags', torrent()!.data.tags)"
@@ -289,8 +285,8 @@
           </span>
           <span
             class="bb-row__value"
-            [ngbTooltip]="torrent()!.properties.comment"
-            bbTooltipOverflow
+            [bbTooltip]="torrent()!.properties.comment"
+            overflowOnly
             placement="bottom"
           >
             @if (torrent()!.properties.comment) {
@@ -303,7 +299,7 @@
             <button
               class="btn btn-sm btn-link bb-row__copy"
               placement="top"
-              [ngbTooltip]="
+              [bbTooltip]="
                 'components.modals.torrent-details.general.copy-to-clipboard' | translate
               "
               (click)="toClipboard('comment', torrent()!.properties.comment)"
@@ -455,10 +451,8 @@
           </span>
           <span
             class="bb-cell__value"
-            [ngbTooltip]="
-              (torrent()!.data.time_active * 1000 | humanizeDuration: 'long' : 2) || '-'
-            "
-            bbTooltipOverflow
+            [bbTooltip]="(torrent()!.data.time_active * 1000 | humanizeDuration: 'long' : 2) || '-'"
+            overflowOnly
             placement="bottom"
             >{{ (torrent()!.data.time_active * 1000 | humanizeDuration: 'long' : 2) || '-' }}</span
           >
@@ -476,12 +470,12 @@
           </span>
           <span
             class="bb-cell__value"
-            [ngbTooltip]="
+            [bbTooltip]="
               isDownloading()
                 ? (torrent()!.data.eta * 1000 | humanizeDuration: 'long' : 2) || '-'
                 : '-'
             "
-            bbTooltipOverflow
+            overflowOnly
             placement="bottom"
           >
             {{
@@ -528,10 +522,10 @@
           </span>
           <span
             class="bb-cell__value"
-            [ngbTooltip]="
+            [bbTooltip]="
               torrent()!.data.downloaded > 0 ? (torrent()!.data.downloaded | fileSize) : '-'
             "
-            bbTooltipOverflow
+            overflowOnly
             placement="bottom"
             >{{
               torrent()!.data.downloaded > 0 ? (torrent()!.data.downloaded | fileSize) : '-'
@@ -553,10 +547,8 @@
           </span>
           <span
             class="bb-cell__value"
-            [ngbTooltip]="
-              torrent()!.data.uploaded > 0 ? (torrent()!.data.uploaded | fileSize) : '-'
-            "
-            bbTooltipOverflow
+            [bbTooltip]="torrent()!.data.uploaded > 0 ? (torrent()!.data.uploaded | fileSize) : '-'"
+            overflowOnly
             placement="bottom"
             >{{ torrent()!.data.uploaded > 0 ? (torrent()!.data.uploaded | fileSize) : '-' }}</span
           >
@@ -613,8 +605,8 @@
           </span>
           <span
             class="bb-cell__value"
-            [ngbTooltip]="(torrent()!.data.dlspeed | fileSizePerSec) || '-'"
-            bbTooltipOverflow
+            [bbTooltip]="(torrent()!.data.dlspeed | fileSizePerSec) || '-'"
+            overflowOnly
             placement="bottom"
             >{{ (torrent()!.data.dlspeed | fileSizePerSec) || '-' }}</span
           >
@@ -635,8 +627,8 @@
           </span>
           <span
             class="bb-cell__value"
-            [ngbTooltip]="(torrent()!.data.upspeed | fileSizePerSec) || '-'"
-            bbTooltipOverflow
+            [bbTooltip]="(torrent()!.data.upspeed | fileSizePerSec) || '-'"
+            overflowOnly
             placement="bottom"
             >{{ (torrent()!.data.upspeed | fileSizePerSec) || '-' }}</span
           >
@@ -657,8 +649,8 @@
           </span>
           <span
             class="bb-cell__value"
-            [ngbTooltip]="torrent()!.data.dl_limit | speedLimit"
-            bbTooltipOverflow
+            [bbTooltip]="torrent()!.data.dl_limit | speedLimit"
+            overflowOnly
             placement="bottom"
             >{{ torrent()!.data.dl_limit | speedLimit }}</span
           >
@@ -679,8 +671,8 @@
           </span>
           <span
             class="bb-cell__value"
-            [ngbTooltip]="torrent()!.data.up_limit | speedLimit"
-            bbTooltipOverflow
+            [bbTooltip]="torrent()!.data.up_limit | speedLimit"
+            overflowOnly
             placement="bottom"
             >{{ torrent()!.data.up_limit | speedLimit }}</span
           >
@@ -700,12 +692,12 @@
           </span>
           <span
             class="bb-cell__value"
-            [ngbTooltip]="
+            [bbTooltip]="
               torrent()!.properties.total_wasted > 0
                 ? (torrent()!.properties.total_wasted | fileSize)
                 : '-'
             "
-            bbTooltipOverflow
+            overflowOnly
             placement="bottom"
             >{{
               torrent()!.properties.total_wasted > 0
@@ -730,8 +722,8 @@
           </span>
           <span
             class="bb-cell__value"
-            [ngbTooltip]="torrent()!.data.ratio | ratio"
-            bbTooltipOverflow
+            [bbTooltip]="torrent()!.data.ratio | ratio"
+            overflowOnly
             placement="bottom"
           >
             {{ torrent()!.data.ratio | ratio }}
@@ -753,12 +745,12 @@
           </span>
           <span
             class="bb-cell__value"
-            [ngbTooltip]="
+            [bbTooltip]="
               torrent()!.properties.reannounce
                 ? (torrent()!.properties.reannounce * 1000 | humanizeDuration: 'long' : 2)
                 : '-'
             "
-            bbTooltipOverflow
+            overflowOnly
             placement="bottom"
             >{{
               torrent()!.properties.reannounce
@@ -784,8 +776,8 @@
           </span>
           <span
             class="bb-cell__value"
-            [ngbTooltip]="torrent()!.data.last_activity | localTimestamp"
-            bbTooltipOverflow
+            [bbTooltip]="torrent()!.data.last_activity | localTimestamp"
+            overflowOnly
             placement="bottom"
             >{{ torrent()!.data.last_activity | localTimestamp }}</span
           >
@@ -806,8 +798,8 @@
           </span>
           <span
             class="bb-cell__value"
-            [ngbTooltip]="torrent()!.data.ratio_limit | ratioLimit"
-            bbTooltipOverflow
+            [bbTooltip]="torrent()!.data.ratio_limit | ratioLimit"
+            overflowOnly
             placement="bottom"
             >{{ torrent()!.data.ratio_limit | ratioLimit }}</span
           >
@@ -829,8 +821,8 @@
           </span>
           <span
             class="bb-cell__value"
-            [ngbTooltip]="(torrent()!.data.seeding_time_limit | timeLimit) || '-'"
-            bbTooltipOverflow
+            [bbTooltip]="(torrent()!.data.seeding_time_limit | timeLimit) || '-'"
+            overflowOnly
             placement="bottom"
             >{{ (torrent()!.data.seeding_time_limit | timeLimit) || '-' }}</span
           >
@@ -854,8 +846,8 @@
           </span>
           <span
             class="bb-cell__value"
-            [ngbTooltip]="(torrent()!.data.inactive_seeding_time_limit | timeLimit) || '-'"
-            bbTooltipOverflow
+            [bbTooltip]="(torrent()!.data.inactive_seeding_time_limit | timeLimit) || '-'"
+            overflowOnly
             placement="bottom"
             >{{ (torrent()!.data.inactive_seeding_time_limit | timeLimit) || '-' }}</span
           >
@@ -884,10 +876,10 @@
           </span>
           <span
             class="bb-cell__value"
-            [ngbTooltip]="
+            [bbTooltip]="
               torrent()!.data.total_size > 0 ? (torrent()!.data.total_size | fileSize) : '-'
             "
-            bbTooltipOverflow
+            overflowOnly
             placement="bottom"
             >{{
               torrent()!.data.total_size > 0 ? (torrent()!.data.total_size | fileSize) : '-'
@@ -931,8 +923,8 @@
           </span>
           <span
             class="bb-cell__value"
-            [ngbTooltip]="torrent()!.properties.created_by"
-            bbTooltipOverflow
+            [bbTooltip]="torrent()!.properties.created_by"
+            overflowOnly
             placement="bottom"
             >{{ torrent()!.properties.created_by }}</span
           >
@@ -952,8 +944,8 @@
           </span>
           <span
             class="bb-cell__value"
-            [ngbTooltip]="torrent()!.data.added_on | localTimestamp"
-            bbTooltipOverflow
+            [bbTooltip]="torrent()!.data.added_on | localTimestamp"
+            overflowOnly
             placement="bottom"
             >{{ torrent()!.data.added_on | localTimestamp }}</span
           >
@@ -1000,8 +992,8 @@
           </span>
           <span
             class="bb-cell__value"
-            [ngbTooltip]="torrent()!.properties.creation_date | localTimestamp"
-            bbTooltipOverflow
+            [bbTooltip]="torrent()!.properties.creation_date | localTimestamp"
+            overflowOnly
             placement="bottom"
             >{{ torrent()!.properties.creation_date | localTimestamp }}</span
           >
@@ -1026,8 +1018,8 @@
           <div class="bb-cell__value-row">
             <span
               class="bb-cell__value"
-              [ngbTooltip]="torrent()!.data.infohash_v1"
-              bbTooltipOverflow
+              [bbTooltip]="torrent()!.data.infohash_v1"
+              overflowOnly
               placement="bottom"
             >
               @if (torrent()!.data.infohash_v1) {
@@ -1040,7 +1032,7 @@
               <button
                 class="btn btn-sm btn-link bb-cell__copy"
                 placement="top"
-                [ngbTooltip]="
+                [bbTooltip]="
                   'components.modals.torrent-details.general.copy-to-clipboard' | translate
                 "
                 (click)="toClipboard('info-hash-v1', torrent()!.data.infohash_v1)"
@@ -1067,8 +1059,8 @@
           <div class="bb-cell__value-row">
             <span
               class="bb-cell__value"
-              [ngbTooltip]="torrent()!.data.infohash_v2"
-              bbTooltipOverflow
+              [bbTooltip]="torrent()!.data.infohash_v2"
+              overflowOnly
               placement="bottom"
             >
               @if (torrent()!.data.infohash_v2) {
@@ -1081,7 +1073,7 @@
               <button
                 class="btn btn-sm btn-link bb-cell__copy"
                 placement="top"
-                [ngbTooltip]="
+                [bbTooltip]="
                   'components.modals.torrent-details.general.copy-to-clipboard' | translate
                 "
                 (click)="toClipboard('info-hash-v2', torrent()!.data.infohash_v2)"

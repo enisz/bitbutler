@@ -20,7 +20,6 @@ import {
   faTriangleExclamation,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
-import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { type ColDef, type ColumnState } from 'ag-grid-community';
@@ -28,7 +27,7 @@ import { firstValueFrom, take, tap } from 'rxjs';
 import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
-import { TooltipOverflow } from '../../../directives/tooltip-overflow';
+import { BbTooltip } from '../../../directives/bb-tooltip';
 import {
   DEFAULT_TORRENT_LIST_GRID_SETTINGS,
   RowDoubleClickAction,
@@ -69,8 +68,7 @@ const FOCUS_FALLBACKS: Record<ColumnAction, ColumnAction[]> = {
     BbBtnContent,
     FontAwesomeModule,
     TranslatePipe,
-    NgbTooltipModule,
-    TooltipOverflow,
+    BbTooltip,
   ],
   templateUrl: './torrent-list-grid.html',
   styleUrl: './torrent-list-grid.scss',

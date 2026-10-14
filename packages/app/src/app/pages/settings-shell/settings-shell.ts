@@ -15,11 +15,11 @@ import {
 import { RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faChevronLeft, faFloppyDisk, faRotateLeft } from '@fortawesome/free-solid-svg-icons';
-import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { BbLogo } from '../../components/bb-logo/bb-logo';
 import { BbSpinner } from '../../components/bb-spinner/bb-spinner';
+import { BbTooltip } from '../../directives/bb-tooltip';
 import { ElectronService } from '../../services/electron.service';
 import { SettingsPageConfig, SettingsPageStatus, SettingsPaneDef } from './settings-shell.model';
 
@@ -36,7 +36,7 @@ import { SettingsPageConfig, SettingsPageStatus, SettingsPaneDef } from './setti
     NgComponentOutlet,
     RouterLink,
     FontAwesomeModule,
-    NgbTooltip,
+    BbTooltip,
     TranslatePipe,
     BbBtnContent,
     BbLogo,

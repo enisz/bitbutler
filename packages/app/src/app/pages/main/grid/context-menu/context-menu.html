@@ -18,7 +18,7 @@
         [class.bb-info]="entry.variant === 'info'"
         [class.bb-item--disabled]="entry.disabled"
         [attr.aria-disabled]="entry.disabled ? 'true' : null"
-        [ngbTooltip]="entry.tooltip ? (entry.tooltip | translate) : null"
+        [bbTooltip]="entry.tooltip ? (entry.tooltip | translate) : null"
         [disableTooltip]="!(entry.disabled && entry.tooltip)"
         [placement]="entry.id === 'files.openDestination' ? 'top' : 'right'"
         container="body"

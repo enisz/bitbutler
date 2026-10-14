@@ -31,7 +31,7 @@ import {
   faTrashCan,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
-import { NgbActiveModal, NgbDropdownModule, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TimeagoPipe } from 'ngx-timeago';
 import { filter } from 'rxjs';
@@ -39,7 +39,7 @@ import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { variantForTorrentState } from '../../components/bb-progress/torrent-state-variant';
 import { BbSpinner } from '../../components/bb-spinner/bb-spinner';
 import { AutofocusDirective } from '../../directives/autofocus';
-import { TooltipOverflow } from '../../directives/tooltip-overflow';
+import { BbTooltip } from '../../directives/bb-tooltip';
 import { AppCommand, TorrentCommand } from '../../models/command.model';
 import { GuardableModal } from '../../models/guardable-modal.interface';
 import { Torrent } from '../../models/torrent.model';
@@ -61,8 +61,7 @@ import { Tab, TorrentDetailTabComponent, TorrentDetailTabId } from './torrent-de
     BbSpinner,
     NgComponentOutlet,
     AutofocusDirective,
-    TooltipOverflow,
-    NgbTooltip,
+    BbTooltip,
     NgbDropdownModule,
     TranslatePipe,
     FontAwesomeModule,

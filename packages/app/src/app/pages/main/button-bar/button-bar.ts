@@ -35,9 +35,10 @@ import {
   faTrashCan,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
-import { NgbDropdownModule, NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDropdownModule, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { BbTooltip } from '../../../directives/bb-tooltip';
 import { CommandBusService } from '../../../services/command-bus.service';
 import { FilterService } from '../../../services/filter.service';
 import { SelectionStoreService } from '../../../services/selection-store.service';
@@ -52,7 +53,7 @@ import { ToolbarEntry } from './button-bar.menu';
     FontAwesomeModule,
     ReactiveFormsModule,
     NgbDropdownModule,
-    NgbTooltipModule,
+    BbTooltip,
     TranslatePipe,
   ],
   templateUrl: './button-bar.html',

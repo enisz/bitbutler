@@ -10,11 +10,11 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { faEraser, faFloppyDisk, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { TagSelect } from '../../components/tag-select/tag-select';
-import { TooltipOverflow } from '../../directives/tooltip-overflow';
+import { BbTooltip } from '../../directives/bb-tooltip';
 import { Torrent } from '../../models/torrent.model';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
@@ -22,14 +22,7 @@ import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-set-torrent-tags',
-  imports: [
-    ReactiveFormsModule,
-    TagSelect,
-    NgbTooltip,
-    TranslatePipe,
-    TooltipOverflow,
-    BbBtnContent,
-  ],
+  imports: [ReactiveFormsModule, TagSelect, BbTooltip, TranslatePipe, BbBtnContent],
   templateUrl: './set-torrent-tags.html',
   styleUrl: './set-torrent-tags.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

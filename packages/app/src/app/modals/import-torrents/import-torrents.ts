@@ -30,7 +30,7 @@ import {
   faTriangleExclamation,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
-import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import {
@@ -66,6 +66,7 @@ import { SizeColumnFilter } from '../../components/column-filters/size-column-fi
 import { TextColumnFilter } from '../../components/column-filters/text-column-filter/text-column-filter';
 import { TimeLimitColumnFilter } from '../../components/column-filters/time-limit-column-filter/time-limit-column-filter';
 import { AutofocusDirective } from '../../directives/autofocus';
+import { BbTooltip } from '../../directives/bb-tooltip';
 import { NoRowOverlay } from '../../pages/main/grid/overlays/no-row-overlay/no-row-overlay';
 import { LocalTimestampPipe } from '../../pipes/local-timestamp-pipe';
 import { ExportService } from '../../services/export.service';
@@ -90,7 +91,7 @@ type ImportGridRow = BbeTorrentEntry & { importState: ImportRowStatus };
     BbCallout,
     LocalTimestampPipe,
     TimeagoPipe,
-    NgbTooltip,
+    BbTooltip,
     BbBtnContent,
     AgGridAngular,
     AutofocusDirective,

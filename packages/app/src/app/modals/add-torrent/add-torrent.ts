@@ -21,7 +21,7 @@ import {
   faTriangleExclamation,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
-import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { merge, scan } from 'rxjs';
 import { INVALID_FILENAME_CHARS } from '../../app.const';
@@ -30,6 +30,7 @@ import { FileTreeSaveEvent, FileTreeStats } from '../../components/bb-file-tree/
 import { ShareLimitValue } from '../../components/share-limit/share-limit';
 import { TransferLimitValue } from '../../components/transfer-limit/transfer-limit';
 import { AutofocusDirective } from '../../directives/autofocus';
+import { BbTooltip } from '../../directives/bb-tooltip';
 import {
   AddTorrentFormGroup,
   AddTorrentSettings,
@@ -61,7 +62,7 @@ interface AddTorrentTab {
     ReactiveFormsModule,
     AutofocusDirective,
     FontAwesomeModule,
-    NgbTooltip,
+    BbTooltip,
     TranslatePipe,
     AddTorrentFiles,
     AddTorrentGeneral,

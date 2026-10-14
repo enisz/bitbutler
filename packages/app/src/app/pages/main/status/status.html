@@ -9,7 +9,7 @@
             item.key === 'all' ? activeStatusKeys().size === 0 : activeStatusKeys().has(item.key)
           "
           (click)="setGroup(item.key)"
-          [ngbTooltip]="item.label"
+          [bbTooltip]="item.label"
           placement="end"
         >
           <fa-icon [icon]="item.icon"></fa-icon>
@@ -23,7 +23,7 @@
           type="button"
           class="collapsed-status-item collapsed-clear-all"
           (click)="clearAll()"
-          [ngbTooltip]="'pages.main.status.clear-all' | translate"
+          [bbTooltip]="'pages.main.status.clear-all' | translate"
           placement="end"
         >
           <fa-icon [icon]="icon.faEraser"></fa-icon>

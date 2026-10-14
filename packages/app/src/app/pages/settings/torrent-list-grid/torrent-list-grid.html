@@ -171,13 +171,9 @@
                   <div class="drag-handle" cdkDragHandle>
                     <fa-icon [icon]="faGripVertical"></fa-icon>
                   </div>
-                  <span
-                    class="column-label"
-                    [ngbTooltip]="column.label"
-                    tooltipClass="single-line-tooltip"
-                    bbTooltipOverflow
-                    >{{ column.label }}</span
-                  >
+                  <span class="column-label" [bbTooltip]="column.label" singleLine overflowOnly>{{
+                    column.label
+                  }}</span>
                   <div class="column-actions ms-auto">
                     <button
                       type="button"
@@ -189,11 +185,11 @@
                         'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-to-top'
                           | translate
                       "
-                      [ngbTooltip]="
+                      [bbTooltip]="
                         'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-to-top'
                           | translate
                       "
-                      tooltipClass="single-line-tooltip"
+                      singleLine
                       triggers="mouseenter:mouseleave"
                     >
                       <fa-icon [icon]="faArrowsUpToLine"></fa-icon>
@@ -208,11 +204,11 @@
                         'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-up'
                           | translate
                       "
-                      [ngbTooltip]="
+                      [bbTooltip]="
                         'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-up'
                           | translate
                       "
-                      tooltipClass="single-line-tooltip"
+                      singleLine
                       triggers="mouseenter:mouseleave"
                     >
                       <fa-icon [icon]="faArrowUp"></fa-icon>
@@ -227,11 +223,11 @@
                         'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-down'
                           | translate
                       "
-                      [ngbTooltip]="
+                      [bbTooltip]="
                         'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-down'
                           | translate
                       "
-                      tooltipClass="single-line-tooltip"
+                      singleLine
                       triggers="mouseenter:mouseleave"
                     >
                       <fa-icon [icon]="faArrowDown"></fa-icon>
@@ -246,11 +242,11 @@
                         'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-to-bottom'
                           | translate
                       "
-                      [ngbTooltip]="
+                      [bbTooltip]="
                         'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.move-to-bottom'
                           | translate
                       "
-                      tooltipClass="single-line-tooltip"
+                      singleLine
                       triggers="mouseenter:mouseleave"
                     >
                       <fa-icon [icon]="faArrowsDownToLine"></fa-icon>
@@ -264,11 +260,11 @@
                         'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.remove'
                           | translate
                       "
-                      [ngbTooltip]="
+                      [bbTooltip]="
                         'pages.settings.tab.torrent-list-grid.torrent-list-grid-form.column-actions.remove'
                           | translate
                       "
-                      tooltipClass="single-line-tooltip"
+                      singleLine
                       triggers="mouseenter:mouseleave"
                     >
                       <fa-icon [icon]="faXmark"></fa-icon>

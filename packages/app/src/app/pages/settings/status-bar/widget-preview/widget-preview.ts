@@ -11,14 +11,14 @@ import {
   faShareAlt,
   faUpload,
 } from '@fortawesome/free-solid-svg-icons';
-import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
+import { BbTooltip } from '../../../../directives/bb-tooltip';
 import { FilesizePipe } from '../../../../pipes/filesize-pipe';
 
 @Component({
   selector: 'app-status-bar-widget-preview',
   standalone: true,
-  imports: [FaIconComponent, NgbTooltipModule, FilesizePipe, TranslatePipe],
+  imports: [FaIconComponent, BbTooltip, FilesizePipe, TranslatePipe],
   templateUrl: './widget-preview.html',
   styleUrl: './widget-preview.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

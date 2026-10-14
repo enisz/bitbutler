@@ -10,11 +10,11 @@ import {
 } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { faFloppyDisk, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { CategorySelect } from '../../components/category-select/category-select';
-import { TooltipOverflow } from '../../directives/tooltip-overflow';
+import { BbTooltip } from '../../directives/bb-tooltip';
 import { Torrent } from '../../models/torrent.model';
 import { QbService } from '../../services/qb.service';
 import { ServerStoreService } from '../../services/server-store.service';
@@ -27,9 +27,8 @@ import { ToastService } from '../../services/toast.service';
     ReactiveFormsModule,
     CommonModule,
     CategorySelect,
-    NgbTooltip,
+    BbTooltip,
     TranslatePipe,
-    TooltipOverflow,
     BbBtnContent,
   ],
   templateUrl: './set-torrent-category.html',

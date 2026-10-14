@@ -9,12 +9,12 @@ import {
   faPlus,
   faTriangleExclamation,
 } from '@fortawesome/free-solid-svg-icons';
-import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { SavePathSelect } from '../../../components/save-path-select/save-path-select';
+import { BbTooltip } from '../../../directives/bb-tooltip';
 import { ElectronService } from '../../../services/electron.service';
 import { ServerSettingsFormService } from '../server-settings-form.service';
 import { SettingsTabComponent } from '../settings.interface';
@@ -25,7 +25,7 @@ import { SettingsTabComponent } from '../settings.interface';
     CommonModule,
     ReactiveFormsModule,
     FontAwesomeModule,
-    NgbTooltip,
+    BbTooltip,
     BbSpinner,
     BbPopover,
     TranslatePipe,

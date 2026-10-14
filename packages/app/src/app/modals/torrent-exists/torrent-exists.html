@@ -7,10 +7,10 @@
 
       <div
         class="small text-body-secondary mt-1 text-truncate"
-        [ngbTooltip]="t.name"
-        bbTooltipOverflow
+        [bbTooltip]="t.name"
+        overflowOnly
         placement="bottom"
-        tooltipClass="single-line-tooltip"
+        singleLine
       >
         {{ t.name }}
       </div>
@@ -43,7 +43,7 @@
         <div class="bb-te-rates-left">
           <span
             class="bb-te-rate bb-te-rate--dl"
-            [ngbTooltip]="'components.modals.torrent-details.general.download-speed' | translate"
+            [bbTooltip]="'components.modals.torrent-details.general.download-speed' | translate"
             placement="bottom"
           >
             <fa-icon [icon]="icons.faArrowDown"></fa-icon>
@@ -51,7 +51,7 @@
           </span>
           <span
             class="bb-te-rate bb-te-rate--ul"
-            [ngbTooltip]="'components.modals.torrent-details.general.upload-speed' | translate"
+            [bbTooltip]="'components.modals.torrent-details.general.upload-speed' | translate"
             placement="bottom"
           >
             <fa-icon [icon]="icons.faArrowUp"></fa-icon>
@@ -59,7 +59,7 @@
           </span>
           <span
             class="text-body-secondary bb-te-ratio-value"
-            [ngbTooltip]="'components.modals.torrent-details.general.share-ratio' | translate"
+            [bbTooltip]="'components.modals.torrent-details.general.share-ratio' | translate"
             placement="bottom"
           >
             {{ t.ratio | ratio: 1 }}
@@ -91,10 +91,10 @@
           }}</span>
           <span
             class="bb-te-row__value text-truncate"
-            [ngbTooltip]="t.name"
-            bbTooltipOverflow
+            [bbTooltip]="t.name"
+            overflowOnly
             placement="bottom"
-            tooltipClass="single-line-tooltip"
+            singleLine
             >{{ t.name }}</span
           >
         </div>
@@ -110,10 +110,10 @@
           }}</span>
           <span
             class="bb-te-row__value text-truncate"
-            [ngbTooltip]="t.save_path"
-            bbTooltipOverflow
+            [bbTooltip]="t.save_path"
+            overflowOnly
             placement="bottom"
-            tooltipClass="single-line-tooltip"
+            singleLine
             >{{ t.save_path }}</span
           >
         </div>
@@ -123,10 +123,10 @@
           }}</span>
           <span
             class="bb-te-row__value text-truncate"
-            [ngbTooltip]="t.content_path"
-            bbTooltipOverflow
+            [bbTooltip]="t.content_path"
+            overflowOnly
             placement="bottom"
-            tooltipClass="single-line-tooltip"
+            singleLine
             >{{ t.content_path }}</span
           >
         </div>
@@ -137,10 +137,10 @@
             }}</span>
             <span
               class="bb-te-row__value text-truncate"
-              [ngbTooltip]="lp"
-              bbTooltipOverflow
+              [bbTooltip]="lp"
+              overflowOnly
               placement="bottom"
-              tooltipClass="single-line-tooltip"
+              singleLine
               >{{ lp }}</span
             >
           </div>
@@ -151,10 +151,10 @@
           }}</span>
           <span
             class="bb-te-row__value text-truncate"
-            [ngbTooltip]="t.category || '-'"
-            bbTooltipOverflow
+            [bbTooltip]="t.category || '-'"
+            overflowOnly
             placement="bottom"
-            tooltipClass="single-line-tooltip"
+            singleLine
             >{{ t.category || '-' }}</span
           >
         </div>
@@ -164,10 +164,10 @@
           }}</span>
           <span
             class="bb-te-row__value text-truncate"
-            [ngbTooltip]="t.tags || '-'"
-            bbTooltipOverflow
+            [bbTooltip]="t.tags || '-'"
+            overflowOnly
             placement="bottom"
-            tooltipClass="single-line-tooltip"
+            singleLine
             >{{ t.tags || '-' }}</span
           >
         </div>
@@ -177,12 +177,10 @@
           }}</span>
           <span
             class="bb-te-row__value text-truncate"
-            [ngbTooltip]="
-              (t.added_on | localTimestamp) + ' (' + (t.added_on * 1000 | timeago) + ')'
-            "
-            bbTooltipOverflow
+            [bbTooltip]="(t.added_on | localTimestamp) + ' (' + (t.added_on * 1000 | timeago) + ')'"
+            overflowOnly
             placement="bottom"
-            tooltipClass="single-line-tooltip"
+            singleLine
             >{{ t.added_on | localTimestamp }}
             <span class="bb-te-row__value-sub">({{ t.added_on * 1000 | timeago }})</span></span
           >

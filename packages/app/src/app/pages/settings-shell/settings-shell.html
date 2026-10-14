@@ -32,8 +32,8 @@
               @if (isPaneDirty(pane)) {
                 <span
                   class="bb-settings__dirty-dot"
-                  [ngbTooltip]="'components.modals.guard.unsaved-indicator' | translate"
-                  tooltipClass="single-line-tooltip"
+                  [bbTooltip]="'components.modals.guard.unsaved-indicator' | translate"
+                  singleLine
                   placement="right"
                 ></span>
               }
