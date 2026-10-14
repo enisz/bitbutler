@@ -169,28 +169,6 @@
   color: color-mix(in srgb, var(--bs-body-color) 70%, transparent);
 }
 
-.bb-settings__pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 14px 6px 12px;
-  border-radius: 99px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  white-space: nowrap;
-  color: var(--bb-accent);
-  background-color: color-mix(in srgb, var(--bb-accent) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--bb-accent) 30%, transparent);
-
-  &::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    border-radius: 99px;
-    background-color: var(--bb-accent);
-  }
-}
-
 .bb-settings__content {
   flex: 1;
   min-height: 0;

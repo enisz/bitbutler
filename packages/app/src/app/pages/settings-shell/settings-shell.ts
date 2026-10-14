@@ -14,7 +14,7 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faChevronLeft, faFloppyDisk, faRotateLeft } from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft, faFloppyDisk, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { BbLogo } from '../../components/bb-logo/bb-logo';
@@ -65,7 +65,7 @@ export class SettingsShell {
   public readonly retry = output<void>();
 
   public readonly version = inject(ElectronService).getBitButlerVersion();
-  public readonly icons = { faChevronLeft, faFloppyDisk, faRotateLeft };
+  public readonly icons = { faChevronLeft, faFloppyDisk, faXmark };
 
   public readonly panes = computed<SettingsPaneDef[]>(() =>
     this.config().groups.flatMap((group) => group.panes),

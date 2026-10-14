@@ -60,11 +60,6 @@
         <h2 class="bb-settings__pane-title">{{ activePane().labelKey | translate }}</h2>
         <p class="bb-settings__pane-description">{{ activePane().descriptionKey | translate }}</p>
       </div>
-      @if (isDirty()) {
-        <span class="bb-settings__pill">
-          {{ 'components.modals.guard.unsaved-indicator' | translate }}
-        </span>
-      }
     </header>
 
     <div #content class="bb-settings__content">
@@ -102,18 +97,6 @@
       <div class="bb-settings__actions">
         <button
           type="button"
-          class="btn btn-sm btn-split bb-settings__discard"
-          [disabled]="!isDirty()"
-          (click)="discard.emit()"
-        >
-          <bb-btn-content
-            [icon]="icons.faRotateLeft"
-            [text]="'general.button.cancel' | translate"
-            position="end"
-          ></bb-btn-content>
-        </button>
-        <button
-          type="button"
           class="btn btn-primary btn-sm btn-split bb-settings__save"
           [disabled]="!isDirty()"
           (click)="save.emit()"
@@ -121,6 +104,18 @@
           <bb-btn-content
             [icon]="icons.faFloppyDisk"
             [text]="'general.button.save' | translate"
+            position="end"
+          ></bb-btn-content>
+        </button>
+        <button
+          type="button"
+          class="btn btn-sm btn-split bb-settings__discard"
+          [disabled]="!isDirty()"
+          (click)="discard.emit()"
+        >
+          <bb-btn-content
+            [icon]="icons.faXmark"
+            [text]="'general.button.cancel' | translate"
             position="end"
           ></bb-btn-content>
         </button>

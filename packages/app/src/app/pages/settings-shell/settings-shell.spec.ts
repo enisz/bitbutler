@@ -124,13 +124,22 @@ describe('SettingsShell', () => {
     expect(dots[0].closest('.bb-settings__nav-item')).toBe(queryAll('.bb-settings__nav-item')[0]);
   });
 
-  it('disables Save and Discard and hides the pill while clean', () => {
+  it('disables Save and Discard while clean', () => {
     expect(query<HTMLButtonElement>('.bb-settings__save')?.disabled).toBe(true);
     expect(query<HTMLButtonElement>('.bb-settings__discard')?.disabled).toBe(true);
-    expect(query('.bb-settings__pill')).toBeNull();
   });
 
-  it('enables Save and Discard and shows the pill while dirty, and emits their events', async () => {
+  it('puts Cancel last in the footer, like the dialogs', () => {
+    const buttons = queryAll('.bb-settings__actions button');
+
+    expect(buttons.map((button) => button.className.includes('bb-settings__save'))).toEqual([
+      true,
+      false,
+    ]);
+    expect(buttons[1].classList).toContain('bb-settings__discard');
+  });
+
+  it('enables Save and Discard while dirty, and emits their events', async () => {
     await setInputs({ isDirty: true });
     const saved = vi.fn();
     const discarded = vi.fn();
@@ -140,7 +149,6 @@ describe('SettingsShell', () => {
     query<HTMLButtonElement>('.bb-settings__save')?.click();
     query<HTMLButtonElement>('.bb-settings__discard')?.click();
 
-    expect(query('.bb-settings__pill')).not.toBeNull();
     expect(saved).toHaveBeenCalledOnce();
     expect(discarded).toHaveBeenCalledOnce();
   });
