@@ -30,9 +30,9 @@
 
 :root {
   --bb-header-height: 61px;
-  // Surface of the app chrome (sidebars, footer bars): darker than the page, which is in
-  // turn darker than the cards.
-  --bb-chrome: color-mix(in srgb, var(--bs-body-bg) 90%, var(--bb-black));
+  // Surface of the app chrome (sidebars, footer bars): halfway between the page and the
+  // cards, so the order page < chrome < card holds in every theme.
+  --bb-chrome: color-mix(in srgb, var(--bs-body-bg) 50%, var(--bs-card-bg));
 }
 
 .btn {
