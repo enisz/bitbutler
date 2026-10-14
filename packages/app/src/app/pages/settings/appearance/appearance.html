@@ -1,13 +1,14 @@
 @if (settingsLoaded()) {
   <form [formGroup]="generalSettingsForm" class="bb-cards">
     <app-bb-section-card [title]="'pages.settings.tab.general.label.appearance' | translate">
-      <div class="container" formGroupName="appearance">
-        <div class="row mt-2 mb-3">
-          <div class="col-6 d-flex align-items-center">
-            {{ 'pages.settings.tab.general.general-settings-form.appearance.family' | translate }}
+      <div class="bb-options" formGroupName="appearance">
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'pages.settings.tab.general.general-settings-form.appearance.family' | translate }}
+            </span>
           </div>
-
-          <div class="col-6">
+          <div class="bb-option__control">
             <ng-select
               [items]="families"
               [clearable]="false"
@@ -35,12 +36,13 @@
           </div>
         </div>
 
-        <div class="row mt-2 mb-3">
-          <div class="col-6 d-flex align-items-center">
-            {{ 'pages.settings.tab.general.general-settings-form.appearance.mode' | translate }}
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'pages.settings.tab.general.general-settings-form.appearance.mode' | translate }}
+            </span>
           </div>
-
-          <div class="col-6">
+          <div class="bb-option__control">
             <ng-select
               [items]="modes()"
               [clearable]="false"

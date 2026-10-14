@@ -48,53 +48,54 @@
         </div>
       </div>
 
-      <div class="container mt-3" formGroupName="savePath">
-        <div class="row mb-3">
-          <div class="col-12">
-            {{
-              'pages.settings.tab.general.general-settings-form.save-path.description' | translate
-            }}
-          </div>
+      <div class="bb-options mt-3" formGroupName="savePath">
+        <div class="bb-option__note">
+          {{ 'pages.settings.tab.general.general-settings-form.save-path.description' | translate }}
         </div>
-        <div class="row mb-3">
-          <div class="col-6 d-flex align-items-center">
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                type="radio"
-                id="save-path-select-radio"
-                value="select"
-                formControlName="inputType"
-              />
-              <label class="form-check-label" for="save-path-select-radio">
-                {{
-                  'pages.settings.tab.general.general-settings-form.save-path.select' | translate
-                }}
-              </label>
-            </div>
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  id="save-path-select-radio"
+                  value="select"
+                  formControlName="inputType"
+                />
+                <label class="form-check-label" for="save-path-select-radio">
+                  {{
+                    'pages.settings.tab.general.general-settings-form.save-path.select' | translate
+                  }}
+                </label>
+              </div>
+            </span>
           </div>
-          <div class="col-6">
+          <div class="bb-option__control">
             <app-save-path-select [inputType]="'select'" [clearable]="true" />
           </div>
         </div>
-        <div class="row mb-3">
-          <div class="col-6 d-flex align-items-center">
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                type="radio"
-                id="save-path-typeahead-radio"
-                value="typeahead"
-                formControlName="inputType"
-              />
-              <label class="form-check-label" for="save-path-typeahead-radio">
-                {{
-                  'pages.settings.tab.general.general-settings-form.save-path.typeahead' | translate
-                }}
-              </label>
-            </div>
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  id="save-path-typeahead-radio"
+                  value="typeahead"
+                  formControlName="inputType"
+                />
+                <label class="form-check-label" for="save-path-typeahead-radio">
+                  {{
+                    'pages.settings.tab.general.general-settings-form.save-path.typeahead'
+                      | translate
+                  }}
+                </label>
+              </div>
+            </span>
           </div>
-          <div class="col-6">
+          <div class="bb-option__control">
             <app-save-path-select [inputType]="'typeahead'" />
           </div>
         </div>
@@ -102,13 +103,14 @@
     </app-bb-section-card>
 
     <app-bb-section-card [title]="'pages.settings.tab.general.label.language' | translate">
-      <div class="container" formGroupName="language">
-        <div class="row mb-3">
-          <div class="col-6 d-flex align-items-center">
-            {{ 'pages.settings.tab.general.general-settings-form.language.language' | translate }}
+      <div class="bb-options" formGroupName="language">
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'pages.settings.tab.general.general-settings-form.language.language' | translate }}
+            </span>
           </div>
-
-          <div class="col-6">
+          <div class="bb-option__control">
             <ng-select
               [items]="languages()"
               [clearable]="false"
@@ -142,16 +144,17 @@
       [title]="'pages.settings.tab.general.label.date-format' | translate"
       class="bb-card--wide"
     >
-      <div class="container" formGroupName="dateFormat">
-        <div class="row mb-3">
-          <div class="col-6 d-flex align-items-center">
-            {{
-              'pages.settings.tab.general.general-settings-form.date-format.preset-label'
-                | translate
-            }}
+      <div class="bb-options" formGroupName="dateFormat">
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{
+                'pages.settings.tab.general.general-settings-form.date-format.preset-label'
+                  | translate
+              }}
+            </span>
           </div>
-
-          <div class="col-6">
+          <div class="bb-option__control">
             <ng-select
               [items]="dateFormatPresets()"
               [clearable]="false"
@@ -181,15 +184,16 @@
           </div>
         </div>
 
-        <div class="row mb-3">
-          <div class="col-6 d-flex align-items-center">
-            {{
-              'pages.settings.tab.general.general-settings-form.date-format.first-day-of-week-label'
-                | translate
-            }}
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{
+                'pages.settings.tab.general.general-settings-form.date-format.first-day-of-week-label'
+                  | translate
+              }}
+            </span>
           </div>
-
-          <div class="col-6">
+          <div class="bb-option__control">
             <ng-select
               [items]="firstDayOfWeekOptions()"
               [clearable]="false"
@@ -205,15 +209,16 @@
         </div>
 
         @if (isCustomDateFormat()) {
-          <div class="row mb-3">
-            <div class="col-6 d-flex align-items-center">
-              {{
-                'pages.settings.tab.general.general-settings-form.date-format.custom-pattern-label'
-                  | translate
-              }}
+          <div class="bb-option">
+            <div class="bb-option__text">
+              <span class="bb-option__label">
+                {{
+                  'pages.settings.tab.general.general-settings-form.date-format.custom-pattern-label'
+                    | translate
+                }}
+              </span>
             </div>
-
-            <div class="col-6">
+            <div class="bb-option__control">
               <div class="bb-filter-input">
                 <input
                   type="text"
@@ -235,13 +240,13 @@
               </div>
             </div>
           </div>
-          <div class="row mb-3">
-            <div class="col-6 d-flex align-items-center text-muted">
+          <div class="bb-option">
+            <div class="bb-option__text text-muted">
               {{
                 'pages.settings.tab.general.general-settings-form.date-format.preview' | translate
               }}: {{ customPatternPreview() }}
             </div>
-            <div class="col-6 d-flex justify-content-end">
+            <div class="bb-option__control bb-option__control--end">
               <button
                 type="button"
                 class="btn btn-sm btn-link btn-split"
@@ -259,16 +264,14 @@
           </div>
 
           <div [ngbCollapse]="!tokenGuideExpanded()">
-            <div class="row mb-2">
-              <div class="col-12 text-muted small">
-                {{
-                  'pages.settings.tab.general.general-settings-form.date-format.token-guide.hint'
-                    | translate
-                }}
-              </div>
+            <div class="bb-option__note">
+              {{
+                'pages.settings.tab.general.general-settings-form.date-format.token-guide.hint'
+                  | translate
+              }}
             </div>
-            <div class="row mb-3">
-              <div class="col-12">
+            <div class="pt-2 pb-3">
+              <div>
                 <table
                   id="date-format-token-guide"
                   class="table table-sm table-striped table-hover mb-0"

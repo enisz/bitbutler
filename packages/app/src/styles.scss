@@ -1174,6 +1174,24 @@ ngb-typeahead-window.dropdown-menu {
   }
 }
 
+// Control on the right of an option row (select, input, slider): half of the row.
+.bb-option__control {
+  flex: 0 0 50%;
+  min-width: 0;
+}
+
+.bb-option__control--end {
+  display: flex;
+  justify-content: flex-end;
+}
+
+// Explanatory text row inside .bb-options
+.bb-option__note {
+  padding: 0.25rem 0 0.75rem;
+  color: var(--bb-control-placeholder);
+  border-bottom: 1px solid color-mix(in srgb, var(--bs-border-color) 60%, transparent);
+}
+
 // Two-column variant of .bb-options, with an optional full-width row
 
 .bb-options--grid {

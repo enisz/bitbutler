@@ -12,12 +12,6 @@
   border-bottom: none;
 }
 
-// Same footprint as the other selects: half of the row.
-.bb-option__select {
-  flex: 0 0 50%;
-  min-width: 0;
-}
-
 // Description above the category switches: spans the whole grid, with room above and below.
 .bb-notification-hint {
   grid-column: 1 / -1;
