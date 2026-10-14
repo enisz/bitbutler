@@ -130,8 +130,9 @@
       </div>
     </div>
 
-    <fieldset class="bb-fieldset">
-      <legend>{{ 'components.modals.torrent-details.general.labels.title' | translate }}</legend>
+    <app-bb-section-card
+      [title]="'components.modals.torrent-details.general.labels.title' | translate"
+    >
       <div class="bb-rows">
         <div class="bb-row">
           <span class="bb-row__label">{{
@@ -309,10 +310,11 @@
           }
         </div>
       </div>
-    </fieldset>
+    </app-bb-section-card>
 
-    <fieldset class="bb-fieldset">
-      <legend>{{ 'components.modals.torrent-details.general.labels.options' | translate }}</legend>
+    <app-bb-section-card
+      [title]="'components.modals.torrent-details.general.labels.options' | translate"
+    >
       <div class="bb-options bb-options--grid">
         <div class="bb-option">
           <div class="bb-option__text">
@@ -429,11 +431,11 @@
           </span>
         </div>
       </div>
-    </fieldset>
+    </app-bb-section-card>
 
-    <fieldset class="bb-fieldset">
-      <legend>{{ 'components.modals.torrent-details.general.labels.transfer' | translate }}</legend>
-
+    <app-bb-section-card
+      [title]="'components.modals.torrent-details.general.labels.transfer' | translate"
+    >
       <div class="bb-cells">
         <div class="bb-cell">
           <span class="bb-cell__label">
@@ -853,12 +855,11 @@
           >
         </div>
       </div>
-    </fieldset>
+    </app-bb-section-card>
 
-    <fieldset class="bb-fieldset">
-      <legend>
-        {{ 'components.modals.torrent-details.general.labels.information' | translate }}
-      </legend>
+    <app-bb-section-card
+      [title]="'components.modals.torrent-details.general.labels.information' | translate"
+    >
       <div class="bb-cells">
         <div class="bb-cell">
           <span class="bb-cell__label">
@@ -1084,6 +1085,6 @@
           </div>
         </div>
       </div>
-    </fieldset>
+    </app-bb-section-card>
   </div>
 }

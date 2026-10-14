@@ -82,8 +82,10 @@
       </div>
     </div>
 
-    <fieldset class="bb-fieldset bb-te-fieldset">
-      <legend>{{ 'components.modals.torrent-exists.labels.details' | translate }}</legend>
+    <app-bb-section-card
+      [title]="'components.modals.torrent-exists.labels.details' | translate"
+      class="bb-te-fieldset"
+    >
       <div class="bb-te-rows">
         <div class="bb-te-row">
           <span class="bb-te-row__label">{{
@@ -186,7 +188,7 @@
           >
         </div>
       </div>
-    </fieldset>
+    </app-bb-section-card>
   </div>
 
   <div class="modal-footer">

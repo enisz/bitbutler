@@ -16,6 +16,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { TimeagoPipe } from 'ngx-timeago';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { BbProgress } from '../../components/bb-progress/bb-progress';
+import { BbSectionCard } from '../../components/bb-section-card/bb-section-card';
 import { AutofocusDirective } from '../../directives/autofocus';
 import { BbTooltip } from '../../directives/bb-tooltip';
 import { TorrentState } from '../../models/torrent.model';
@@ -34,6 +35,7 @@ import { TorrentStoreService } from '../../services/torrent-store.service';
   selector: 'app-torrent-exists',
   standalone: true,
   imports: [
+    BbSectionCard,
     FilesizePipe,
     PercentPipe,
     RatioPipe,

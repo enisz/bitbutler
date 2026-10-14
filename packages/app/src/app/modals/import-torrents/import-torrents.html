@@ -16,8 +16,7 @@
   }
   @if (isReady() || isRunning() || isDone()) {
     <form [formGroup]="importForm" class="d-flex flex-column gap-3">
-      <fieldset class="bb-fieldset">
-        <legend>{{ 'components.modals.import-torrents.label.archive' | translate }}</legend>
+      <app-bb-section-card [title]="'components.modals.import-torrents.label.archive' | translate">
         @if (metadata()) {
           <div class="bb-rows bb-rows--cols-2">
             <div class="bb-row">
@@ -94,11 +93,13 @@
             </div>
           </div>
         }
-      </fieldset>
+      </app-bb-section-card>
 
       @if (isReady() || isRunning() || isDone()) {
-        <fieldset class="bb-fieldset import-grid-fieldset">
-          <legend>{{ 'components.modals.import-torrents.label.grid' | translate }}</legend>
+        <app-bb-section-card
+          [title]="'components.modals.import-torrents.label.grid' | translate"
+          class="import-grid-fieldset"
+        >
           <p class="small mb-3 mt-3">
             {{ 'components.modals.import-torrents.grid.description' | translate }}
           </p>
@@ -111,14 +112,14 @@
             [gridOptions]="importGridOptions"
             [theme]="theme() === 'dark' ? bbDark : bbLight"
           />
-        </fieldset>
+        </app-bb-section-card>
       }
 
       @if (isReady()) {
-        <fieldset class="bb-fieldset" formGroupName="restoreFields">
-          <legend>
-            {{ 'components.modals.import-torrents.label.restore-options' | translate }}
-          </legend>
+        <app-bb-section-card
+          [title]="'components.modals.import-torrents.label.restore-options' | translate"
+          formGroupName="restoreFields"
+        >
           <div class="bb-options bb-options--grid mt-3">
             @for (field of restoreFieldKeys; track field) {
               <div class="bb-option">
@@ -151,11 +152,13 @@
               </div>
             }
           </div>
-        </fieldset>
+        </app-bb-section-card>
 
         @if (showPathRemap()) {
-          <fieldset class="bb-fieldset" formArrayName="pathMappings">
-            <legend>{{ 'components.modals.import-torrents.label.path-remap' | translate }}</legend>
+          <app-bb-section-card
+            [title]="'components.modals.import-torrents.label.path-remap' | translate"
+            formArrayName="pathMappings"
+          >
             <p class="small mt-3">
               {{ 'components.modals.import-torrents.path-remap.description' | translate }}
             </p>
@@ -217,14 +220,13 @@
                 </div>
               </div>
             }
-          </fieldset>
+          </app-bb-section-card>
         }
 
         @if (showCategoryPathMapping()) {
-          <fieldset class="bb-fieldset">
-            <legend>
-              {{ 'components.modals.import-torrents.label.category-path-mapping' | translate }}
-            </legend>
+          <app-bb-section-card
+            [title]="'components.modals.import-torrents.label.category-path-mapping' | translate"
+          >
             <div class="bb-options mb-3">
               <div class="bb-option">
                 <div class="bb-option__text">
@@ -344,11 +346,12 @@
                 </div>
               }
             </div>
-          </fieldset>
+          </app-bb-section-card>
         }
 
-        <fieldset class="bb-fieldset">
-          <legend>{{ 'components.modals.import-torrents.label.after-import' | translate }}</legend>
+        <app-bb-section-card
+          [title]="'components.modals.import-torrents.label.after-import' | translate"
+        >
           <div class="btn-group w-100 mb-1 mt-3" role="group">
             <input
               type="radio"
@@ -382,13 +385,13 @@
             </label>
           </div>
           <div class="small text-body-secondary">{{ startModeHint() | translate }}</div>
-        </fieldset>
+        </app-bb-section-card>
       }
 
       @if (isRunning()) {
-        <fieldset class="bb-fieldset">
-          <legend>{{ 'components.modals.import-torrents.label.progress' | translate }}</legend>
-
+        <app-bb-section-card
+          [title]="'components.modals.import-torrents.label.progress' | translate"
+        >
           <div class="bb-progress-top">
             <span class="bb-progress-pct">{{ progressPct() * 100 | number: '1.0-1' }}%</span>
             <span class="text-body-secondary fw-semibold"
@@ -401,13 +404,11 @@
           <div class="text-body-secondary small mt-2 d-flex min-w-0">
             <em class="text-truncate">{{ state().name }}</em>
           </div>
-        </fieldset>
+        </app-bb-section-card>
       }
 
       @if (isDone() || isError()) {
-        <fieldset class="bb-fieldset">
-          <legend>{{ 'components.modals.import-torrents.label.report' | translate }}</legend>
-
+        <app-bb-section-card [title]="'components.modals.import-torrents.label.report' | translate">
           <div class="bb-rows">
             <div class="bb-row">
               <span class="bb-row__label">{{
@@ -465,7 +466,7 @@
           @if (isError()) {
             <div class="alert alert-danger mb-0 mt-3 py-2">{{ state().error }}</div>
           }
-        </fieldset>
+        </app-bb-section-card>
       }
     </form>
   }

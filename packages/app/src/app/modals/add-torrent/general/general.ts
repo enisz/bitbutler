@@ -14,6 +14,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content';
 import { FileTreeStats } from '../../../components/bb-file-tree/bb-file-tree';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
+import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
 import { CategorySelect } from '../../../components/category-select/category-select';
 import { SavePathSelect } from '../../../components/save-path-select/save-path-select';
 import { TagSelect } from '../../../components/tag-select/tag-select';
@@ -28,6 +29,7 @@ import { AddTorrentFolderPicker } from './folder-picker/folder-picker';
 @Component({
   selector: 'app-add-torrent-general',
   imports: [
+    BbSectionCard,
     ReactiveFormsModule,
     AutofocusDirective,
     BbPopover,

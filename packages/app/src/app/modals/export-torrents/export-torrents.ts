@@ -24,6 +24,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { BbPopover } from '../../components/bb-popover/bb-popover';
 import { BbProgress } from '../../components/bb-progress/bb-progress';
+import { BbSectionCard } from '../../components/bb-section-card/bb-section-card';
 import { BbSpinner } from '../../components/bb-spinner/bb-spinner';
 import { AutofocusDirective } from '../../directives/autofocus';
 import { FilesizePipe } from '../../pipes/filesize-pipe';
@@ -37,6 +38,7 @@ import { TorrentStoreService } from '../../services/torrent-store.service';
   selector: 'app-export-torrents',
   standalone: true,
   imports: [
+    BbSectionCard,
     ReactiveFormsModule,
     TranslatePipe,
     DecimalPipe,

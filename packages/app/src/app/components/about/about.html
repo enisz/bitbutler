@@ -14,8 +14,7 @@
   </div>
 
   <div class="p-4 pt-3 pb-3 bb-about__body">
-    <fieldset class="bb-fieldset">
-      <legend>{{ 'components.about.labels.release' | translate }}</legend>
+    <app-bb-section-card [title]="'components.about.labels.release' | translate">
       <div class="bb-rows">
         <div class="bb-row">
           <span class="bb-row__label">{{ 'components.about.released' | translate }}</span>
@@ -27,10 +26,9 @@
           </span>
         </div>
       </div>
-    </fieldset>
+    </app-bb-section-card>
 
-    <fieldset class="bb-fieldset">
-      <legend>{{ 'components.about.labels.stack' | translate }}</legend>
+    <app-bb-section-card [title]="'components.about.labels.stack' | translate">
       <div class="bb-rows">
         @for (item of techStack; track item.name) {
           <div class="bb-row">
@@ -42,7 +40,7 @@
           </div>
         }
       </div>
-    </fieldset>
+    </app-bb-section-card>
   </div>
 </div>
 

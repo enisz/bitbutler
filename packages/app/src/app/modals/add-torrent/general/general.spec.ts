@@ -207,7 +207,7 @@ describe('AddTorrentGeneral', () => {
   describe('fieldset layout', () => {
     it('should render the Input and Torrent fieldsets with their legends', () => {
       const legends: NodeListOf<HTMLElement> = fixture.nativeElement.querySelectorAll(
-        'fieldset.bb-fieldset > legend',
+        'app-bb-section-card .bb-section-card__title',
       );
 
       expect(legends.length).toBe(2);

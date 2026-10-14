@@ -1,20 +1,20 @@
 <div [formGroup]="form()">
   <div class="row">
     <div class="col-12 mb-3">
-      <fieldset class="bb-fieldset my-0 pb-4">
-        <legend>{{ 'components.add-torrent.label.transfer-rate-limits' | translate }}</legend>
+      <app-bb-section-card
+        [title]="'components.add-torrent.label.transfer-rate-limits' | translate"
+      >
         <app-transfer-limit
           class="d-block mt-3"
           formControlName="transferRateLimits"
         ></app-transfer-limit>
-      </fieldset>
+      </app-bb-section-card>
     </div>
 
     <div class="col-12">
-      <fieldset class="bb-fieldset my-0">
-        <legend>{{ 'components.add-torrent.label.share-limits' | translate }}</legend>
+      <app-bb-section-card [title]="'components.add-torrent.label.share-limits' | translate">
         <app-share-limit class="d-block mt-3" formControlName="shareLimits"></app-share-limit>
-      </fieldset>
+      </app-bb-section-card>
     </div>
   </div>
 </div>

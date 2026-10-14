@@ -55,6 +55,7 @@ import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { BbCallout } from '../../components/bb-callout/bb-callout';
 import { BbPopover } from '../../components/bb-popover/bb-popover';
 import { BbProgress } from '../../components/bb-progress/bb-progress';
+import { BbSectionCard } from '../../components/bb-section-card/bb-section-card';
 import { BooleanColumnFilter } from '../../components/column-filters/boolean-column-filter/boolean-column-filter';
 import { RatioLimitColumnFilter } from '../../components/column-filters/ratio-limit-column-filter/ratio-limit-column-filter';
 import {
@@ -82,6 +83,7 @@ type ImportGridRow = BbeTorrentEntry & { importState: ImportRowStatus };
   selector: 'app-import-torrents',
   standalone: true,
   imports: [
+    BbSectionCard,
     ReactiveFormsModule,
     TranslatePipe,
     DecimalPipe,

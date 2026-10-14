@@ -1,7 +1,5 @@
 <div [formGroup]="form()">
-  <fieldset class="bb-fieldset mt-0">
-    <legend>{{ 'components.add-torrent.label.input' | translate }}</legend>
-
+  <app-bb-section-card class="mb-4" [title]="'components.add-torrent.label.input' | translate">
     <div class="row mt-3">
       <div class="col-11 mb-3">
         <div class="btn-group w-100" role="group">
@@ -152,11 +150,9 @@
         </div>
       }
     </div>
-  </fieldset>
+  </app-bb-section-card>
 
-  <fieldset class="bb-fieldset mb-0">
-    <legend>{{ 'components.add-torrent.label.torrent' | translate }}</legend>
-
+  <app-bb-section-card [title]="'components.add-torrent.label.torrent' | translate">
     <div class="row mt-3">
       @if (inputMode() !== 'folder') {
         <div class="col-11">
@@ -304,7 +300,7 @@
         </div>
       </div>
     </div>
-  </fieldset>
+  </app-bb-section-card>
 </div>
 
 <ng-template #filePopover>

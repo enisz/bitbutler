@@ -14,6 +14,7 @@ import { TimeagoPipe } from 'ngx-timeago';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbProgress } from '../../../components/bb-progress/bb-progress';
 import { variantForTorrentState } from '../../../components/bb-progress/torrent-state-variant';
+import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { BbTooltip } from '../../../directives/bb-tooltip';
 import { QbLogEntry } from '../../../models/qbittorrent.model';
@@ -33,6 +34,7 @@ import { TorrentDetailTabComponent } from '../torrent-details.interface';
 @Component({
   selector: 'app-general',
   imports: [
+    BbSectionCard,
     BbSpinner,
     DecimalPipe,
     LocalTimestampPipe,
