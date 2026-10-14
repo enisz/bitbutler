@@ -1929,10 +1929,10 @@
             "scheduler": "Sebesség Ütemező"
           },
           "field": {
-            "dl-limit": "Letöltési Korlát (KB/s)",
-            "up-limit": "Feltöltési Korlát (KB/s)",
-            "alt-dl-limit": "Alternatív Letöltési Korlát (KB/s)",
-            "alt-up-limit": "Alternatív Feltöltési Korlát (KB/s)",
+            "dl-limit": "Letöltési Korlát",
+            "up-limit": "Feltöltési Korlát",
+            "alt-dl-limit": "Alternatív Letöltési Korlát",
+            "alt-up-limit": "Alternatív Feltöltési Korlát",
             "scheduler-enabled": "Sebesség ütemező engedélyezése",
             "schedule-from": "Tól",
             "schedule-to": "Ig",

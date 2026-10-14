@@ -1929,10 +1929,10 @@
             "scheduler": "Speed Scheduler"
           },
           "field": {
-            "dl-limit": "Download Limit (KB/s)",
-            "up-limit": "Upload Limit (KB/s)",
-            "alt-dl-limit": "Alternative Download Limit (KB/s)",
-            "alt-up-limit": "Alternative Upload Limit (KB/s)",
+            "dl-limit": "Download Limit",
+            "up-limit": "Upload Limit",
+            "alt-dl-limit": "Alternative Download Limit",
+            "alt-up-limit": "Alternative Upload Limit",
             "scheduler-enabled": "Enable speed scheduler",
             "schedule-from": "From",
             "schedule-to": "To",
