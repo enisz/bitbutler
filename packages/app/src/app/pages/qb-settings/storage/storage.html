@@ -1,12 +1,14 @@
 <form [formGroup]="form">
   <div class="bb-cards">
     <app-bb-section-card [title]="'pages.qb-settings.tab.storage.label.default-paths' | translate">
-      <div class="container mt-3">
-        <div class="row mb-3">
-          <div class="col-4 d-flex align-items-center">
-            {{ 'pages.qb-settings.tab.storage.field.save-path' | translate }}
+      <div class="bb-options">
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'pages.qb-settings.tab.storage.field.save-path' | translate }}
+            </span>
           </div>
-          <div class="col-8">
+          <div class="bb-option__control">
             <input type="text" class="form-control" formControlName="save_path" />
           </div>
         </div>
@@ -15,7 +17,7 @@
 
     @if (hasTempPath()) {
       <app-bb-section-card [title]="'pages.qb-settings.tab.storage.label.temp-files' | translate">
-        <div class="container mt-3">
+        <div class="bb-options">
           <div class="bb-options mb-3">
             <div class="bb-option">
               <div class="bb-option__text">
@@ -34,11 +36,13 @@
               </span>
             </div>
           </div>
-          <div class="row mb-3">
-            <div class="col-4 d-flex align-items-center">
-              {{ 'pages.qb-settings.tab.storage.field.temp-path' | translate }}
+          <div class="bb-option">
+            <div class="bb-option__text">
+              <span class="bb-option__label">
+                {{ 'pages.qb-settings.tab.storage.field.temp-path' | translate }}
+              </span>
             </div>
-            <div class="col-8">
+            <div class="bb-option__control">
               <input type="text" class="form-control" formControlName="temp_path" />
             </div>
           </div>
@@ -49,7 +53,7 @@
     <app-bb-section-card
       [title]="'pages.qb-settings.tab.storage.label.file-management' | translate"
     >
-      <div class="container mt-3">
+      <div class="bb-options">
         <div class="bb-options mb-3">
           <div class="bb-option">
             <div class="bb-option__text">
@@ -69,11 +73,13 @@
           </div>
         </div>
         @if (hasContentLayout()) {
-          <div class="row mb-3">
-            <div class="col-6 d-flex align-items-center">
-              {{ 'pages.qb-settings.tab.storage.field.torrent-content-layout' | translate }}
+          <div class="bb-option">
+            <div class="bb-option__text">
+              <span class="bb-option__label">
+                {{ 'pages.qb-settings.tab.storage.field.torrent-content-layout' | translate }}
+              </span>
             </div>
-            <div class="col-6">
+            <div class="bb-option__control">
               <ng-select
                 [items]="contentLayouts"
                 [clearable]="false"
@@ -91,12 +97,14 @@
     <app-bb-section-card
       [title]="'pages.qb-settings.tab.storage.label.save-management' | translate"
     >
-      <div class="container mt-3">
-        <div class="row mb-3">
-          <div class="col-6 d-flex align-items-center">
-            {{ 'pages.qb-settings.tab.storage.field.auto-tmm-enabled' | translate }}
+      <div class="bb-options">
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'pages.qb-settings.tab.storage.field.auto-tmm-enabled' | translate }}
+            </span>
           </div>
-          <div class="col-6">
+          <div class="bb-option__control">
             <ng-select
               [items]="autoTmmModes"
               [clearable]="false"
@@ -107,11 +115,13 @@
             ></ng-select>
           </div>
         </div>
-        <div class="row mb-3">
-          <div class="col-6 d-flex align-items-center">
-            {{ 'pages.qb-settings.tab.storage.field.torrent-changed-tmm-enabled' | translate }}
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'pages.qb-settings.tab.storage.field.torrent-changed-tmm-enabled' | translate }}
+            </span>
           </div>
-          <div class="col-6">
+          <div class="bb-option__control">
             <ng-select
               [items]="tmmChangeBehaviors"
               [clearable]="false"
@@ -122,11 +132,13 @@
             ></ng-select>
           </div>
         </div>
-        <div class="row mb-3">
-          <div class="col-6 d-flex align-items-center">
-            {{ 'pages.qb-settings.tab.storage.field.category-changed-tmm-enabled' | translate }}
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'pages.qb-settings.tab.storage.field.category-changed-tmm-enabled' | translate }}
+            </span>
           </div>
-          <div class="col-6">
+          <div class="bb-option__control">
             <ng-select
               [items]="tmmChangeBehaviors"
               [clearable]="false"
@@ -137,11 +149,13 @@
             ></ng-select>
           </div>
         </div>
-        <div class="row">
-          <div class="col-6 d-flex align-items-center">
-            {{ 'pages.qb-settings.tab.storage.field.save-path-changed-tmm-enabled' | translate }}
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'pages.qb-settings.tab.storage.field.save-path-changed-tmm-enabled' | translate }}
+            </span>
           </div>
-          <div class="col-6">
+          <div class="bb-option__control">
             <ng-select
               [items]="tmmChangeBehaviors"
               [clearable]="false"

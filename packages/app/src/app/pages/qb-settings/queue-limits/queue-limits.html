@@ -3,7 +3,7 @@
     <app-bb-section-card
       [title]="'pages.qb-settings.tab.queue-limits.label.active-torrents' | translate"
     >
-      <div class="container mt-3">
+      <div class="bb-options">
         <div class="bb-options mb-3">
           <div class="bb-option">
             <div class="bb-option__text">
@@ -22,11 +22,13 @@
             </span>
           </div>
         </div>
-        <div class="row mb-3">
-          <div class="col-6 d-flex align-items-center">
-            {{ 'pages.qb-settings.tab.queue-limits.field.max-active-downloads' | translate }}
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'pages.qb-settings.tab.queue-limits.field.max-active-downloads' | translate }}
+            </span>
           </div>
-          <div class="col-6">
+          <div class="bb-option__control">
             <input
               type="number"
               class="form-control"
@@ -35,11 +37,13 @@
             />
           </div>
         </div>
-        <div class="row mb-3">
-          <div class="col-6 d-flex align-items-center">
-            {{ 'pages.qb-settings.tab.queue-limits.field.max-active-uploads' | translate }}
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'pages.qb-settings.tab.queue-limits.field.max-active-uploads' | translate }}
+            </span>
           </div>
-          <div class="col-6">
+          <div class="bb-option__control">
             <input
               type="number"
               class="form-control"
@@ -48,11 +52,13 @@
             />
           </div>
         </div>
-        <div class="row mb-3">
-          <div class="col-6 d-flex align-items-center">
-            {{ 'pages.qb-settings.tab.queue-limits.field.max-active-torrents' | translate }}
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'pages.qb-settings.tab.queue-limits.field.max-active-torrents' | translate }}
+            </span>
           </div>
-          <div class="col-6">
+          <div class="bb-option__control">
             <input
               type="number"
               class="form-control"
@@ -68,7 +74,7 @@
       <app-bb-section-card
         [title]="'pages.qb-settings.tab.queue-limits.label.download-behavior' | translate"
       >
-        <div class="container mt-3">
+        <div class="bb-options">
           <div class="bb-options mb-3">
             <div class="bb-option">
               <div class="bb-option__text">

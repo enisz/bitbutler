@@ -3,7 +3,7 @@
     <app-bb-section-card
       [title]="'pages.qb-settings.tab.seeding-ratios.label.share-ratio' | translate"
     >
-      <div class="container mt-3">
+      <div class="bb-options">
         <div class="bb-options mb-3">
           <div class="bb-option">
             <div class="bb-option__text">
@@ -22,11 +22,13 @@
             </span>
           </div>
         </div>
-        <div class="row mb-3">
-          <div class="col-6 d-flex align-items-center">
-            {{ 'pages.qb-settings.tab.seeding-ratios.field.max-ratio' | translate }}
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'pages.qb-settings.tab.seeding-ratios.field.max-ratio' | translate }}
+            </span>
           </div>
-          <div class="col-6">
+          <div class="bb-option__control">
             <input
               type="number"
               class="form-control"
@@ -36,11 +38,13 @@
             />
           </div>
         </div>
-        <div class="row mb-3">
-          <div class="col-6 d-flex align-items-center">
-            {{ 'pages.qb-settings.tab.seeding-ratios.field.max-ratio-act' | translate }}
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'pages.qb-settings.tab.seeding-ratios.field.max-ratio-act' | translate }}
+            </span>
           </div>
-          <div class="col-6">
+          <div class="bb-option__control">
             <ng-select
               [items]="ratioActOptions"
               [clearable]="false"
@@ -57,7 +61,7 @@
     <app-bb-section-card
       [title]="'pages.qb-settings.tab.seeding-ratios.label.seeding-time' | translate"
     >
-      <div class="container mt-3">
+      <div class="bb-options">
         <div class="bb-options mb-3">
           <div class="bb-option">
             <div class="bb-option__text">
@@ -78,11 +82,13 @@
             </span>
           </div>
         </div>
-        <div class="row mb-3">
-          <div class="col-6 d-flex align-items-center">
-            {{ 'pages.qb-settings.tab.seeding-ratios.field.max-seeding-time' | translate }}
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'pages.qb-settings.tab.seeding-ratios.field.max-seeding-time' | translate }}
+            </span>
           </div>
-          <div class="col-6">
+          <div class="bb-option__control">
             <input type="number" class="form-control" formControlName="max_seeding_time" min="0" />
           </div>
         </div>
