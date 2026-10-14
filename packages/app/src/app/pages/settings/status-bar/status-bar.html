@@ -1,5 +1,5 @@
 @if (settingsLoaded()) {
-  <div class="row">
+  <div class="row mb-4">
     <div class="col-12 d-flex justify-content-end">
       <button type="button" class="btn btn-sm btn-split" (click)="reset()">
         <bb-btn-content
@@ -10,7 +10,7 @@
       </button>
     </div>
   </div>
-  <div cdkDropListGroup class="status-bar-config bb-cards">
+  <div cdkDropListGroup class="bb-cards">
     <app-bb-section-card
       class="bb-card--wide"
       [title]="'pages.settings.tab.status-bar.label.widget-pool' | translate"
