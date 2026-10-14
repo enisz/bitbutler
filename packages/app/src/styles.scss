@@ -1469,11 +1469,6 @@ body {
   gap: 1.5rem;
   max-width: 1800px;
 
-  > .bb-fieldset,
-  > .bb-cards__group > .bb-fieldset {
-    margin: 0;
-  }
-
   // Lets a wrapper keep a form path (formGroupName) without becoming a grid item itself.
   > .bb-cards__group {
     display: contents;

@@ -19,6 +19,7 @@ import {
 } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content';
+import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { SavePathSelect } from '../../../components/save-path-select/save-path-select';
 import {
@@ -68,6 +69,7 @@ const DATE_FORMAT_TOKENS = [
 @Component({
   selector: 'app-general',
   imports: [
+    BbSectionCard,
     CommonModule,
     NgSelectComponent,
     NgOptionTemplateDirective,

@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { QbSettingsStateService } from '../qb-settings-state.service';
@@ -16,7 +17,7 @@ interface RatioActOption {
 
 @Component({
   selector: 'app-qb-settings-seeding-ratios',
-  imports: [CommonModule, ReactiveFormsModule, NgSelectComponent, TranslatePipe],
+  imports: [BbSectionCard, CommonModule, ReactiveFormsModule, NgSelectComponent, TranslatePipe],
   templateUrl: './seeding-ratios.html',
   styleUrl: './seeding-ratios.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

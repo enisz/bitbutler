@@ -44,7 +44,7 @@ describe('General', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('behavior fieldset template', () => {
+  describe('behavior card template', () => {
     it('renders the delete-on-duplicate switch, enabled because deleteTorrentFile defaults to true', () => {
       fixture.detectChanges();
 
@@ -191,7 +191,7 @@ describe('General', () => {
     });
   });
 
-  describe('date format fieldset', () => {
+  describe('date format card', () => {
     it('hides the custom pattern input when preset is iso', () => {
       component.generalSettingsForm.controls.dateFormat.controls.preset.setValue('iso');
       fixture.detectChanges();

@@ -1,8 +1,9 @@
 @if (settingsLoaded()) {
   <form [formGroup]="generalSettingsForm" class="bb-cards">
     <div class="bb-cards__group" formGroupName="notifications">
-      <fieldset class="bb-fieldset">
-        <legend>{{ 'pages.settings.tab.general.label.notifications-os' | translate }}</legend>
+      <app-bb-section-card
+        [title]="'pages.settings.tab.general.label.notifications-os' | translate"
+      >
         <div class="bb-options bb-options--grid bb-notification-section" formGroupName="os">
           <div class="bb-option bb-option--wide bb-option--master">
             <div class="bb-option__text">
@@ -122,10 +123,11 @@
             </span>
           </div>
         </div>
-      </fieldset>
+      </app-bb-section-card>
 
-      <fieldset class="bb-fieldset">
-        <legend>{{ 'pages.settings.tab.general.label.notifications-app' | translate }}</legend>
+      <app-bb-section-card
+        [title]="'pages.settings.tab.general.label.notifications-app' | translate"
+      >
         <div
           class="bb-options bb-options--grid bb-notification-section bb-notification-section--app"
           formGroupName="app"
@@ -272,7 +274,7 @@
             </span>
           </div>
         </div>
-      </fieldset>
+      </app-bb-section-card>
     </div>
   </form>
 } @else {

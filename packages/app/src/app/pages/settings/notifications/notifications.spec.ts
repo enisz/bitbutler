@@ -29,7 +29,7 @@ describe('Notifications', () => {
   it('renders the system and in-app notification cards', () => {
     const root: HTMLElement = fixture.nativeElement;
 
-    expect(root.querySelectorAll('fieldset.bb-fieldset')).toHaveLength(2);
+    expect(root.querySelectorAll('app-bb-section-card')).toHaveLength(2);
     expect(root.querySelector('#notifications-os-enabled')).not.toBeNull();
     expect(root.querySelector('#notifications-app-enabled')).not.toBeNull();
   });

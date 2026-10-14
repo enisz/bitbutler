@@ -28,7 +28,7 @@ describe('Appearance', () => {
 
   it('creates and renders the appearance card once the settings are loaded', () => {
     expect(fixture.componentInstance).toBeTruthy();
-    expect(fixture.nativeElement.querySelectorAll('fieldset.bb-fieldset')).toHaveLength(1);
+    expect(fixture.nativeElement.querySelectorAll('app-bb-section-card')).toHaveLength(1);
   });
 
   it('offers light, dark and system modes', () => {

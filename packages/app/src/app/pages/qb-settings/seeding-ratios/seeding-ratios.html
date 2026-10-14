@@ -1,7 +1,8 @@
 <form [formGroup]="form">
   <div class="bb-cards">
-    <fieldset class="bb-fieldset">
-      <legend>{{ 'pages.qb-settings.tab.seeding-ratios.label.share-ratio' | translate }}</legend>
+    <app-bb-section-card
+      [title]="'pages.qb-settings.tab.seeding-ratios.label.share-ratio' | translate"
+    >
       <div class="container mt-3">
         <div class="bb-options mb-3">
           <div class="bb-option">
@@ -51,10 +52,11 @@
           </div>
         </div>
       </div>
-    </fieldset>
+    </app-bb-section-card>
 
-    <fieldset class="bb-fieldset">
-      <legend>{{ 'pages.qb-settings.tab.seeding-ratios.label.seeding-time' | translate }}</legend>
+    <app-bb-section-card
+      [title]="'pages.qb-settings.tab.seeding-ratios.label.seeding-time' | translate"
+    >
       <div class="container mt-3">
         <div class="bb-options mb-3">
           <div class="bb-option">
@@ -85,6 +87,6 @@
           </div>
         </div>
       </div>
-    </fieldset>
+    </app-bb-section-card>
   </div>
 </form>

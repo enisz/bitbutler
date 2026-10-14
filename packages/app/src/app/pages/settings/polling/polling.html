@@ -1,8 +1,9 @@
 @if (settingsLoaded()) {
   <form [formGroup]="serverSettingsForm" class="bb-cards">
-    <fieldset class="bb-fieldset" formGroupName="polling">
-      <legend>{{ 'pages.settings.tab.server.label.polling' | translate }}</legend>
-
+    <app-bb-section-card
+      [title]="'pages.settings.tab.server.label.polling' | translate"
+      formGroupName="polling"
+    >
       <p class="mt-3">
         {{ 'pages.settings.tab.server.server-settings-form.polling.title' | translate }}
         <bb-popover
@@ -118,7 +119,7 @@
           </div>
         </div>
       </div>
-    </fieldset>
+    </app-bb-section-card>
   </form>
 } @else {
   <app-bb-spinner></app-bb-spinner>

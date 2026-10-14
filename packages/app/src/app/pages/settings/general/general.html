@@ -1,8 +1,6 @@
 @if (settingsLoaded()) {
   <form [formGroup]="generalSettingsForm" class="bb-cards">
-    <fieldset class="bb-fieldset">
-      <legend>{{ 'pages.settings.tab.general.label.torrent-handling' | translate }}</legend>
-
+    <app-bb-section-card [title]="'pages.settings.tab.general.label.torrent-handling' | translate">
       <div class="bb-options">
         <div class="bb-option" formGroupName="behavior">
           <div class="bb-option__text">
@@ -101,10 +99,9 @@
           </div>
         </div>
       </div>
-    </fieldset>
+    </app-bb-section-card>
 
-    <fieldset class="bb-fieldset">
-      <legend>{{ 'pages.settings.tab.general.label.language' | translate }}</legend>
+    <app-bb-section-card [title]="'pages.settings.tab.general.label.language' | translate">
       <div class="container" formGroupName="language">
         <div class="row mb-3">
           <div class="col-6 d-flex align-items-center">
@@ -139,10 +136,12 @@
           </div>
         </div>
       </div>
-    </fieldset>
+    </app-bb-section-card>
 
-    <fieldset class="bb-fieldset bb-card--wide">
-      <legend>{{ 'pages.settings.tab.general.label.date-format' | translate }}</legend>
+    <app-bb-section-card
+      [title]="'pages.settings.tab.general.label.date-format' | translate"
+      class="bb-card--wide"
+    >
       <div class="container" formGroupName="dateFormat">
         <div class="row mb-3">
           <div class="col-6 d-flex align-items-center">
@@ -313,7 +312,7 @@
           </div>
         }
       </div>
-    </fieldset>
+    </app-bb-section-card>
   </form>
 } @else {
   <app-bb-spinner></app-bb-spinner>

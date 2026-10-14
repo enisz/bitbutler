@@ -12,6 +12,7 @@ import {
 import { TranslatePipe } from '@ngx-translate/core';
 import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
+import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { SavePathSelect } from '../../../components/save-path-select/save-path-select';
 import { BbTooltip } from '../../../directives/bb-tooltip';
@@ -22,6 +23,7 @@ import { SettingsTabComponent } from '../settings.interface';
 @Component({
   selector: 'app-path-mappings',
   imports: [
+    BbSectionCard,
     CommonModule,
     ReactiveFormsModule,
     FontAwesomeModule,

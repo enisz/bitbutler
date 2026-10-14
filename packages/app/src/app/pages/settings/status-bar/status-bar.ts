@@ -13,6 +13,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { switchMap, tap } from 'rxjs';
 import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
+import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import {
   DEFAULT_STATUS_BAR_SETTINGS,
@@ -32,6 +33,7 @@ interface Widget {
   selector: 'app-status-bar',
   standalone: true,
   imports: [
+    BbSectionCard,
     CdkDrag,
     CdkDropList,
     CdkDropListGroup,

@@ -9,6 +9,7 @@ import {
 } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BbLogo } from '../../../components/bb-logo/bb-logo';
+import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { THEME_FAMILIES } from '../../../services/theme.service';
 import { GeneralSettingsFormService } from '../general-settings-form.service';
@@ -17,6 +18,7 @@ import { NgSelectItem, SettingsTabComponent } from '../settings.interface';
 @Component({
   selector: 'app-appearance',
   imports: [
+    BbSectionCard,
     CommonModule,
     NgSelectComponent,
     NgOptionTemplateDirective,

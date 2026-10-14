@@ -1,7 +1,8 @@
 <form [formGroup]="form">
   <div class="bb-cards">
-    <fieldset class="bb-fieldset">
-      <legend>{{ 'pages.qb-settings.tab.queue-limits.label.active-torrents' | translate }}</legend>
+    <app-bb-section-card
+      [title]="'pages.qb-settings.tab.queue-limits.label.active-torrents' | translate"
+    >
       <div class="container mt-3">
         <div class="bb-options mb-3">
           <div class="bb-option">
@@ -61,13 +62,12 @@
           </div>
         </div>
       </div>
-    </fieldset>
+    </app-bb-section-card>
 
     @if (hasAddToTop()) {
-      <fieldset class="bb-fieldset">
-        <legend>
-          {{ 'pages.qb-settings.tab.queue-limits.label.download-behavior' | translate }}
-        </legend>
+      <app-bb-section-card
+        [title]="'pages.qb-settings.tab.queue-limits.label.download-behavior' | translate"
+      >
         <div class="container mt-3">
           <div class="bb-options mb-3">
             <div class="bb-option">
@@ -88,7 +88,7 @@
             </div>
           </div>
         </div>
-      </fieldset>
+      </app-bb-section-card>
     }
   </div>
 </form>

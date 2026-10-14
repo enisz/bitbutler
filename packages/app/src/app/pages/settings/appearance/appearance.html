@@ -1,8 +1,6 @@
 @if (settingsLoaded()) {
   <form [formGroup]="generalSettingsForm" class="bb-cards">
-    <fieldset class="bb-fieldset">
-      <legend>{{ 'pages.settings.tab.general.label.appearance' | translate }}</legend>
-
+    <app-bb-section-card [title]="'pages.settings.tab.general.label.appearance' | translate">
       <div class="container" formGroupName="appearance">
         <div class="row mt-2 mb-3">
           <div class="col-6 d-flex align-items-center">
@@ -82,7 +80,7 @@
           </div>
         </div>
       </div>
-    </fieldset>
+    </app-bb-section-card>
   </form>
 } @else {
   <app-bb-spinner></app-bb-spinner>

@@ -1,7 +1,8 @@
 @if (loaded()) {
   <form [formGroup]="torrentListGridForm" class="bb-cards">
-    <fieldset class="bb-fieldset">
-      <legend>{{ 'pages.settings.tab.torrent-list-grid.label.grid-options' | translate }}</legend>
+    <app-bb-section-card
+      [title]="'pages.settings.tab.torrent-list-grid.label.grid-options' | translate"
+    >
       <div class="bb-options bb-options--grid">
         <div class="bb-option">
           <div class="bb-option__text">
@@ -142,10 +143,11 @@
           </ng-select>
         </div>
       </div>
-    </fieldset>
-    <fieldset class="bb-fieldset bb-card--wide">
-      <legend>{{ 'pages.settings.tab.torrent-list-grid.label.columns' | translate }}</legend>
-
+    </app-bb-section-card>
+    <app-bb-section-card
+      [title]="'pages.settings.tab.torrent-list-grid.label.columns' | translate"
+      class="bb-card--wide"
+    >
       <div class="row mt-3 mb-3">
         <div class="col-6">
           <p>
@@ -323,7 +325,7 @@
           </div>
         </div>
       </div>
-    </fieldset>
+    </app-bb-section-card>
   </form>
 } @else {
   <app-bb-spinner></app-bb-spinner>

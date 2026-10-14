@@ -1,9 +1,8 @@
 <form [formGroup]="form">
   <div class="bb-cards">
-    <fieldset class="bb-fieldset">
-      <legend>
-        {{ 'pages.qb-settings.tab.bandwidth.label.global-rate-limits' | translate }}
-      </legend>
+    <app-bb-section-card
+      [title]="'pages.qb-settings.tab.bandwidth.label.global-rate-limits' | translate"
+    >
       <div class="row mt-3 mb-3">
         <div class="col-12">
           {{ 'pages.qb-settings.tab.bandwidth.hint.global-rate-limits' | translate }}
@@ -41,12 +40,11 @@
           </div>
         </div>
       </div>
-    </fieldset>
+    </app-bb-section-card>
 
-    <fieldset class="bb-fieldset">
-      <legend>
-        {{ 'pages.qb-settings.tab.bandwidth.label.alt-rate-limits' | translate }}
-      </legend>
+    <app-bb-section-card
+      [title]="'pages.qb-settings.tab.bandwidth.label.alt-rate-limits' | translate"
+    >
       <div class="row mt-3 mb-3">
         <div class="col-12">
           {{ 'pages.qb-settings.tab.bandwidth.hint.alt-rate-limits' | translate }}
@@ -84,13 +82,10 @@
           </div>
         </div>
       </div>
-    </fieldset>
+    </app-bb-section-card>
 
     @if (hasScheduler()) {
-      <fieldset class="bb-fieldset">
-        <legend>
-          {{ 'pages.qb-settings.tab.bandwidth.label.scheduler' | translate }}
-        </legend>
+      <app-bb-section-card [title]="'pages.qb-settings.tab.bandwidth.label.scheduler' | translate">
         <div class="row mt-3 mb-3">
           <div class="col-12">
             {{ 'pages.qb-settings.tab.bandwidth.hint.scheduler' | translate }}
@@ -193,7 +188,7 @@
             </div>
           </div>
         </div>
-      </fieldset>
+      </app-bb-section-card>
     }
   </div>
 </form>

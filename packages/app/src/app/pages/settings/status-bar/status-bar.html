@@ -11,16 +11,15 @@
     </div>
   </div>
   <div cdkDropListGroup class="status-bar-config bb-cards">
-    <fieldset class="bb-fieldset bb-card--wide pb-3">
-      <legend>
-        {{ 'pages.settings.tab.status-bar.label.widget-pool' | translate }}
-        <bb-popover
-          [subject]="'pages.settings.tab.status-bar.label.widget-pool' | translate"
-          [description]="
-            'pages.settings.tab.status-bar.popover.widget-pool.description' | translate
-          "
-        ></bb-popover>
-      </legend>
+    <app-bb-section-card
+      class="bb-card--wide"
+      [title]="'pages.settings.tab.status-bar.label.widget-pool' | translate"
+    >
+      <bb-popover
+        bbCardTitleExtra
+        [subject]="'pages.settings.tab.status-bar.label.widget-pool' | translate"
+        [description]="'pages.settings.tab.status-bar.popover.widget-pool.description' | translate"
+      ></bb-popover>
       <div
         cdkDropList
         #availableList="cdkDropList"
@@ -33,16 +32,17 @@
           <span class="badge status-pill" cdkDrag>{{ widget.label }}</span>
         }
       </div>
-    </fieldset>
+    </app-bb-section-card>
 
-    <fieldset class="bb-fieldset bb-card--wide">
-      <legend>
-        {{ 'pages.settings.tab.status-bar.label.widgets' | translate }}
-        <bb-popover
-          [subject]="'pages.settings.tab.status-bar.label.widgets' | translate"
-          [description]="'pages.settings.tab.status-bar.popover.widgets.description' | translate"
-        ></bb-popover>
-      </legend>
+    <app-bb-section-card
+      class="bb-card--wide"
+      [title]="'pages.settings.tab.status-bar.label.widgets' | translate"
+    >
+      <bb-popover
+        bbCardTitleExtra
+        [subject]="'pages.settings.tab.status-bar.label.widgets' | translate"
+        [description]="'pages.settings.tab.status-bar.popover.widgets.description' | translate"
+      ></bb-popover>
       <div class="mb-3">
         <p class="mb-1">{{ 'pages.settings.tab.status-bar.label.left' | translate }}</p>
         <div
@@ -74,7 +74,7 @@
           }
         </div>
       </div>
-    </fieldset>
+    </app-bb-section-card>
   </div>
 } @else {
   <app-bb-spinner></app-bb-spinner>

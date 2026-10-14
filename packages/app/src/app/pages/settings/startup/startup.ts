@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IconDefinition, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe } from '@ngx-translate/core';
+import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { GeneralSettingsFormService } from '../general-settings-form.service';
@@ -11,7 +12,14 @@ import { SettingsTabComponent } from '../settings.interface';
 
 @Component({
   selector: 'app-startup',
-  imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule, BbSpinner, TranslatePipe],
+  imports: [
+    BbSectionCard,
+    CommonModule,
+    ReactiveFormsModule,
+    FontAwesomeModule,
+    BbSpinner,
+    TranslatePipe,
+  ],
   templateUrl: './startup.html',
   styleUrl: './startup.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

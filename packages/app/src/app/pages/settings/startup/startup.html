@@ -1,8 +1,6 @@
 @if (settingsLoaded()) {
   <form [formGroup]="generalSettingsForm" class="bb-cards">
-    <fieldset class="bb-fieldset">
-      <legend>{{ 'pages.settings.tab.general.label.startup' | translate }}</legend>
-
+    <app-bb-section-card [title]="'pages.settings.tab.general.label.startup' | translate">
       <div class="bb-options bb-options--grid bb-startup-grid">
         <div class="bb-option" formGroupName="startup">
           <div class="bb-option__text">
@@ -80,7 +78,7 @@
           }}
         </small>
       }
-    </fieldset>
+    </app-bb-section-card>
   </form>
 } @else {
   <app-bb-spinner></app-bb-spinner>

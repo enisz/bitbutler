@@ -44,6 +44,6 @@ describe('Polling', () => {
 
   it('renders the polling card once the settings are loaded', () => {
     expect(fixture.componentInstance).toBeTruthy();
-    expect(fixture.nativeElement.querySelectorAll('fieldset.bb-fieldset')).toHaveLength(1);
+    expect(fixture.nativeElement.querySelectorAll('app-bb-section-card')).toHaveLength(1);
   });
 });

@@ -1,7 +1,6 @@
 <form [formGroup]="form">
   <div class="bb-cards">
-    <fieldset class="bb-fieldset">
-      <legend>{{ 'pages.qb-settings.tab.storage.label.default-paths' | translate }}</legend>
+    <app-bb-section-card [title]="'pages.qb-settings.tab.storage.label.default-paths' | translate">
       <div class="container mt-3">
         <div class="row mb-3">
           <div class="col-4 d-flex align-items-center">
@@ -12,11 +11,10 @@
           </div>
         </div>
       </div>
-    </fieldset>
+    </app-bb-section-card>
 
     @if (hasTempPath()) {
-      <fieldset class="bb-fieldset">
-        <legend>{{ 'pages.qb-settings.tab.storage.label.temp-files' | translate }}</legend>
+      <app-bb-section-card [title]="'pages.qb-settings.tab.storage.label.temp-files' | translate">
         <div class="container mt-3">
           <div class="bb-options mb-3">
             <div class="bb-option">
@@ -45,11 +43,12 @@
             </div>
           </div>
         </div>
-      </fieldset>
+      </app-bb-section-card>
     }
 
-    <fieldset class="bb-fieldset">
-      <legend>{{ 'pages.qb-settings.tab.storage.label.file-management' | translate }}</legend>
+    <app-bb-section-card
+      [title]="'pages.qb-settings.tab.storage.label.file-management' | translate"
+    >
       <div class="container mt-3">
         <div class="bb-options mb-3">
           <div class="bb-option">
@@ -87,10 +86,11 @@
           </div>
         }
       </div>
-    </fieldset>
+    </app-bb-section-card>
 
-    <fieldset class="bb-fieldset">
-      <legend>{{ 'pages.qb-settings.tab.storage.label.save-management' | translate }}</legend>
+    <app-bb-section-card
+      [title]="'pages.qb-settings.tab.storage.label.save-management' | translate"
+    >
       <div class="container mt-3">
         <div class="row mb-3">
           <div class="col-6 d-flex align-items-center">
@@ -153,6 +153,6 @@
           </div>
         </div>
       </div>
-    </fieldset>
+    </app-bb-section-card>
   </div>
 </form>
