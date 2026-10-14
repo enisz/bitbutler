@@ -148,10 +148,6 @@
 }
 
 .bb-settings__header {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px;
   padding: 26px 34px 18px;
   border-bottom: 1px solid var(--bs-border-color);
 }
@@ -164,7 +160,6 @@
 }
 
 .bb-settings__pane-description {
-  max-width: 640px;
   margin: 4px 0 0;
   color: color-mix(in srgb, var(--bs-body-color) 70%, transparent);
 }
