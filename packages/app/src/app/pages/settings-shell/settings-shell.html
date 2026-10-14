@@ -109,13 +109,12 @@
         </button>
         <button
           type="button"
-          class="btn btn-sm btn-split bb-settings__discard"
-          [disabled]="!isDirty()"
-          (click)="discard.emit()"
+          class="btn btn-sm btn-split bb-settings__cancel"
+          (click)="back.emit()"
         >
           <bb-btn-content
             [icon]="icons.faXmark"
-            [text]="'general.button.cancel' | translate"
+            [text]="(isDirty() ? 'general.button.cancel' : 'general.button.close') | translate"
             position="end"
           ></bb-btn-content>
         </button>

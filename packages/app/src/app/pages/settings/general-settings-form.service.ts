@@ -156,11 +156,6 @@ export class GeneralSettingsFormService {
     this.loaded.set(true);
   }
 
-  public async discard(): Promise<void> {
-    await this.load();
-    this.stateService.markDirty('general', false);
-  }
-
   public async save(): Promise<void> {
     const settings = this.form.getRawValue();
 

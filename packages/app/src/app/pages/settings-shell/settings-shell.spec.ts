@@ -124,9 +124,17 @@ describe('SettingsShell', () => {
     expect(dots[0].closest('.bb-settings__nav-item')).toBe(queryAll('.bb-settings__nav-item')[0]);
   });
 
-  it('disables Save and Discard while clean', () => {
+  it('disables Save but keeps the leave button enabled while clean', () => {
     expect(query<HTMLButtonElement>('.bb-settings__save')?.disabled).toBe(true);
-    expect(query<HTMLButtonElement>('.bb-settings__discard')?.disabled).toBe(true);
+    expect(query<HTMLButtonElement>('.bb-settings__cancel')?.disabled).toBe(false);
+  });
+
+  it('labels the leave button Close while clean and Cancel while dirty', async () => {
+    expect(query('.bb-settings__cancel')?.textContent).toContain('general.button.close');
+
+    await setInputs({ isDirty: true });
+
+    expect(query('.bb-settings__cancel')?.textContent).toContain('general.button.cancel');
   });
 
   it('puts Cancel last in the footer, like the dialogs', () => {
@@ -136,21 +144,21 @@ describe('SettingsShell', () => {
       true,
       false,
     ]);
-    expect(buttons[1].classList).toContain('bb-settings__discard');
+    expect(buttons[1].classList).toContain('bb-settings__cancel');
   });
 
-  it('enables Save and Discard while dirty, and emits their events', async () => {
+  it('enables Save while dirty, and emits save and back from the footer buttons', async () => {
     await setInputs({ isDirty: true });
     const saved = vi.fn();
-    const discarded = vi.fn();
+    const back = vi.fn();
     fixture.componentInstance.save.subscribe(saved);
-    fixture.componentInstance.discard.subscribe(discarded);
+    fixture.componentInstance.back.subscribe(back);
 
     query<HTMLButtonElement>('.bb-settings__save')?.click();
-    query<HTMLButtonElement>('.bb-settings__discard')?.click();
+    query<HTMLButtonElement>('.bb-settings__cancel')?.click();
 
     expect(saved).toHaveBeenCalledOnce();
-    expect(discarded).toHaveBeenCalledOnce();
+    expect(back).toHaveBeenCalledOnce();
   });
 
   it('emits back from the back button', () => {

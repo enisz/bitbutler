@@ -103,14 +103,14 @@ describe('GeneralSettingsFormService', () => {
       expect(service.paneDirty().general).toBe(false);
     });
 
-    it('clears after save and after discard', async () => {
+    it('clears after save and when the value is reverted', async () => {
       service.form.controls.startup.controls.openAtLogin.setValue(true);
       await service.save();
       expect(service.paneDirty().startup).toBe(false);
 
       service.form.controls.notifications.controls.os.controls.errors.setValue(false);
       expect(service.paneDirty().notifications).toBe(true);
-      await service.discard();
+      service.form.controls.notifications.controls.os.controls.errors.setValue(true);
       expect(service.paneDirty().notifications).toBe(false);
     });
   });
@@ -167,26 +167,6 @@ describe('GeneralSettingsFormService', () => {
         startup: expect.objectContaining({ openAtLogin: false, startMinimized: false }),
       }),
     );
-  });
-
-  it('discard restores the persisted values and clears the dirty flag', async () => {
-    service.form.controls.language.controls.language.setValue('hu');
-    stateMock.markDirty.mockClear();
-
-    await service.discard();
-
-    expect(service.form.controls.language.controls.language.value).toBe(
-      persisted.language.language,
-    );
-    expect(stateMock.markDirty).toHaveBeenLastCalledWith('general', false);
-  });
-
-  it('discard re-applies the master-switch state of the persisted notification groups', async () => {
-    persisted.notifications.os.enabled = false;
-
-    await service.discard();
-
-    expect(service.form.controls.notifications.controls.os.controls.finished.disabled).toBe(true);
   });
 
   describe('startup form controls', () => {

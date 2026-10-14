@@ -93,11 +93,6 @@ export class QbSettingsPage implements OnInit, UnsavedChangesGuardable {
     await this.loadPreferences();
   }
 
-  public async onDiscard(): Promise<void> {
-    this.stateService.resetDirty();
-    await this.loadPreferences();
-  }
-
   public onBack(): void {
     void this.router.navigate(['/pages/torrent-list']);
   }

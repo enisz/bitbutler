@@ -13,8 +13,6 @@ describe('SettingsPage', () => {
   let paramMap$: BehaviorSubject<ReturnType<typeof convertToParamMap>>;
   let navigate: ReturnType<typeof vi.fn>;
   let toast: { success: ReturnType<typeof vi.fn>; danger: ReturnType<typeof vi.fn> };
-  let generalForm: { discard: ReturnType<typeof vi.fn> };
-  let serverForm: { load: ReturnType<typeof vi.fn> };
   let state: SettingsStateService;
 
   const createPage = (pane: string | null): SettingsPage => {
@@ -26,15 +24,13 @@ describe('SettingsPage', () => {
     paramMap$ = new BehaviorSubject(convertToParamMap({}));
     navigate = vi.fn().mockResolvedValue(true);
     toast = { success: vi.fn(), danger: vi.fn() };
-    generalForm = { discard: vi.fn().mockResolvedValue(undefined) };
-    serverForm = { load: vi.fn().mockResolvedValue(undefined) };
     state = new SettingsStateService();
 
     TestBed.configureTestingModule({
       providers: [
         { provide: SettingsStateService, useValue: state },
-        { provide: GeneralSettingsFormService, useValue: generalForm },
-        { provide: ServerSettingsFormService, useValue: serverForm },
+        { provide: GeneralSettingsFormService, useValue: {} },
+        { provide: ServerSettingsFormService, useValue: {} },
         { provide: Router, useValue: { navigate } },
         { provide: ActivatedRoute, useValue: { paramMap: paramMap$.asObservable() } },
         { provide: ToastService, useValue: toast },
@@ -93,19 +89,6 @@ describe('SettingsPage', () => {
       'pages.settings.error.save-failed-title',
     );
     expect(state.isDirty()).toBe(true);
-  });
-
-  it('discard reloads both forms, clears dirty and rebuilds the panes', async () => {
-    const page = createPage('general');
-    state.markDirty('general', true);
-    const before = page.paneVersion();
-
-    await page.onDiscard();
-
-    expect(generalForm.discard).toHaveBeenCalledOnce();
-    expect(serverForm.load).toHaveBeenCalledOnce();
-    expect(state.isDirty()).toBe(false);
-    expect(page.paneVersion()).toBe(before + 1);
   });
 
   it('back navigates to the torrent list', () => {

@@ -93,7 +93,7 @@ describe('QbSettingsPage', () => {
     });
   });
 
-  it('refetches preferences after save so a later discard never shows stale values', async () => {
+  it('refetches preferences after save so the panes show the saved values', async () => {
     const page = await createPage();
     vi.spyOn(state, 'saveAll').mockResolvedValue(undefined);
     preferences.mockClear();
@@ -125,19 +125,6 @@ describe('QbSettingsPage', () => {
     );
     expect(preferences).not.toHaveBeenCalled();
     expect(state.isDirty()).toBe(true);
-  });
-
-  it('refetches preferences on discard, clears dirty and rebuilds the panes', async () => {
-    const page = await createPage();
-    state.markDirty('bandwidth', true);
-    preferences.mockClear();
-    const before = page.paneVersion();
-
-    await page.onDiscard();
-
-    expect(preferences).toHaveBeenCalledOnce();
-    expect(state.isDirty()).toBe(false);
-    expect(page.paneVersion()).toBe(before + 1);
   });
 
   it('back navigates to the torrent list', async () => {

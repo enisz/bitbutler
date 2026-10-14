@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  inject,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -37,8 +30,6 @@ export class SettingsPage implements UnsavedChangesGuardable {
   private readonly route = inject(ActivatedRoute);
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
-
-  public readonly paneVersion = signal(0);
 
   /** Panes that share a form are marked individually, by the sections they own. */
   public readonly paneDirtyMap = computed<Record<string, boolean>>(() => ({
@@ -80,13 +71,6 @@ export class SettingsPage implements UnsavedChangesGuardable {
         this.translateService.instant('pages.settings.error.save-failed-title'),
       );
     }
-  }
-
-  public async onDiscard(): Promise<void> {
-    await Promise.all([this.generalForm.discard(), this.serverForm.load()]);
-    this.stateService.resetDirty();
-    // Panes that own their form (grid, status bar) re-read their persisted values on rebuild.
-    this.paneVersion.update((version) => version + 1);
   }
 
   public onBack(): void {

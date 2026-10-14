@@ -24,7 +24,7 @@ import { ElectronService } from '../../services/electron.service';
 import { SettingsPageConfig, SettingsPageStatus, SettingsPaneDef } from './settings-shell.model';
 
 /**
- * Layout for a settings page: sidebar nav, pane header, pane host and the Save/Discard bar.
+ * Layout for a settings page: sidebar nav, pane header, pane host and the Save/Cancel bar.
  * Presentational only; the page component owns state, saving and navigation.
  *
  * Every pane of the page stays mounted and only the active one is shown, so edits made in a
@@ -60,7 +60,6 @@ export class SettingsShell {
   public readonly errorKey = input('');
 
   public readonly save = output<void>();
-  public readonly discard = output<void>();
   public readonly back = output<void>();
   public readonly retry = output<void>();
 
