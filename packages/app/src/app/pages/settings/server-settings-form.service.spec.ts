@@ -88,6 +88,27 @@ describe('ServerSettingsFormService', () => {
     expect(stateMock.markDirty).toHaveBeenCalledWith('server', true);
   });
 
+  it('flags only the pane that owns the edited section, and clears it after save', async () => {
+    expect(service.paneDirty()).toEqual({ polling: false, 'path-mappings': false });
+
+    service.form.controls.polling.controls.foreground.setValue(3000);
+    expect(service.paneDirty()).toEqual({ polling: true, 'path-mappings': false });
+
+    await service.save();
+    expect(service.paneDirty()).toEqual({ polling: false, 'path-mappings': false });
+
+    service.form.controls.pathMappings.at(0).patchValue({ local: 'E:\\y' });
+    expect(service.paneDirty()).toEqual({ polling: false, 'path-mappings': true });
+  });
+
+  it('clears the server dirty flag when a change is reverted by hand', () => {
+    const foreground = service.form.controls.polling.controls.foreground;
+    foreground.setValue(3000);
+    foreground.setValue(2000);
+
+    expect(stateMock.markDirty).toHaveBeenLastCalledWith('server', false);
+  });
+
   it('save fills an empty remote path with the default remote path', async () => {
     service.form.controls.pathMappings.at(0).patchValue({ remote: null, local: 'D:\\x' });
 

@@ -29,10 +29,12 @@
             >
               <fa-icon [icon]="pane.icon" [fixedWidth]="true"></fa-icon>
               <span class="bb-settings__nav-label">{{ pane.labelKey | translate }}</span>
-              @if (dirtyMap()[pane.formId]) {
+              @if (isPaneDirty(pane)) {
                 <span
                   class="bb-settings__dirty-dot"
-                  [title]="'components.modals.guard.unsaved-indicator' | translate"
+                  [ngbTooltip]="'components.modals.guard.unsaved-indicator' | translate"
+                  tooltipClass="single-line-tooltip"
+                  placement="right"
                 ></span>
               }
             </a>

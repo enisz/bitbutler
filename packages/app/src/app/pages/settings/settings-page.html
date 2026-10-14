@@ -3,6 +3,7 @@
   [activePaneId]="activePaneId()"
   [isDirty]="stateService.isDirty()"
   [dirtyMap]="stateService.isDirtyMap()"
+  [paneDirtyMap]="paneDirtyMap()"
   [paneVersion]="paneVersion()"
   (save)="onSave()"
   (discard)="onDiscard()"

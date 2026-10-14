@@ -113,6 +113,17 @@ describe('SettingsShell', () => {
     expect(dots[0].closest('.bb-settings__nav-item')).toBe(queryAll('.bb-settings__nav-item')[1]);
   });
 
+  it('lets paneDirtyMap override the form flag for a single pane', async () => {
+    await setInputs({
+      dirtyMap: { 'form-a': true, 'form-b': true },
+      paneDirtyMap: { one: true, two: false },
+    });
+
+    const dots = queryAll('.bb-settings__dirty-dot');
+    expect(dots).toHaveLength(1);
+    expect(dots[0].closest('.bb-settings__nav-item')).toBe(queryAll('.bb-settings__nav-item')[0]);
+  });
+
   it('disables Save and Discard and hides the pill while clean', () => {
     expect(query<HTMLButtonElement>('.bb-settings__save')?.disabled).toBe(true);
     expect(query<HTMLButtonElement>('.bb-settings__discard')?.disabled).toBe(true);

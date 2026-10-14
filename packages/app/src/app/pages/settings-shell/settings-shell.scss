@@ -115,6 +115,8 @@
 .bb-settings__dirty-dot {
   width: 6px;
   height: 6px;
+  flex: none;
+  margin-right: 6px;
   border-radius: 99px;
   background-color: var(--bb-accent);
 }
@@ -170,8 +172,8 @@
 .bb-settings__pill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 5px 10px;
+  gap: 8px;
+  padding: 6px 14px 6px 12px;
   border-radius: 99px;
   font-size: 0.72rem;
   font-weight: 600;

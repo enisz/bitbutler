@@ -77,6 +77,52 @@ describe('GeneralSettingsFormService', () => {
     expect(stateMock.markDirty).toHaveBeenCalledWith('general', true);
   });
 
+  describe('paneDirty', () => {
+    it('is clean after load', () => {
+      expect(Object.values(service.paneDirty()).some(Boolean)).toBe(false);
+    });
+
+    it('flags only the pane that owns the edited section', () => {
+      service.form.controls.appearance.controls.family.setValue('aurora');
+
+      expect(service.paneDirty()).toEqual({
+        general: false,
+        appearance: true,
+        startup: false,
+        notifications: false,
+      });
+    });
+
+    it('clears the pane when the value is changed back', () => {
+      const language = service.form.controls.language.controls.language;
+      language.setValue('hu');
+      expect(service.paneDirty().general).toBe(true);
+
+      language.setValue(persisted.language.language);
+
+      expect(service.paneDirty().general).toBe(false);
+    });
+
+    it('clears after save and after discard', async () => {
+      service.form.controls.startup.controls.openAtLogin.setValue(true);
+      await service.save();
+      expect(service.paneDirty().startup).toBe(false);
+
+      service.form.controls.notifications.controls.os.controls.errors.setValue(false);
+      expect(service.paneDirty().notifications).toBe(true);
+      await service.discard();
+      expect(service.paneDirty().notifications).toBe(false);
+    });
+  });
+
+  it('clears the general dirty flag when a change is reverted by hand', () => {
+    const language = service.form.controls.language.controls.language;
+    language.setValue('hu');
+    language.setValue(persisted.language.language);
+
+    expect(stateMock.markDirty).toHaveBeenLastCalledWith('general', false);
+  });
+
   it('keeps startMinimized disabled until openAtLogin is on', () => {
     const { openAtLogin, startMinimized } = service.form.controls.startup.controls;
 

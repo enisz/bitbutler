@@ -1,4 +1,4 @@
-import { DestroyRef, Injectable, inject, signal } from '@angular/core';
+import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { from, switchMap } from 'rxjs';
@@ -6,6 +6,7 @@ import { ServerSettings } from '../../models/server-settings.model';
 import { QbService } from '../../services/qb.service';
 import { ServerSettingsService } from '../../services/server-settings.service';
 import { ServerStoreService } from '../../services/server-store.service';
+import { hasChangedSections } from '../settings-shell/section-changed';
 import { SettingsStateService } from './settings-state.service';
 
 /**
@@ -38,12 +39,26 @@ export class ServerSettingsFormService {
     ]),
   });
 
+  private readonly formSnapshot = signal(this.form.getRawValue());
+  /** The last loaded or saved values; panes count as changed when their sections differ. */
+  private readonly baseline = signal(this.form.getRawValue());
+
+  public readonly paneDirty = computed(() => {
+    const current = this.formSnapshot();
+    const baseline = this.baseline();
+    return {
+      polling: hasChangedSections(current, baseline, ['polling']),
+      'path-mappings': hasChangedSections(current, baseline, ['pathMappings']),
+    };
+  });
+
   constructor() {
     this.stateService.registerSave('server', () => this.save());
 
-    this.form.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.stateService.markDirty('server', true));
+    this.form.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.formSnapshot.set(this.form.getRawValue());
+      this.stateService.markDirty('server', Object.values(this.paneDirty()).some(Boolean));
+    });
 
     toObservable(this.serverStoreService.currentServerId)
       .pipe(
@@ -74,6 +89,8 @@ export class ServerSettingsFormService {
       );
     });
 
+    this.formSnapshot.set(this.form.getRawValue());
+    this.baseline.set(this.formSnapshot());
     this.loaded.set(true);
     this.stateService.markDirty('server', false);
     this.loadDefaultRemotePath();
@@ -89,6 +106,7 @@ export class ServerSettingsFormService {
       })),
     };
     await this.serverSettingsService.save(settings);
+    this.baseline.set(this.form.getRawValue());
   }
 
   private loadDefaultRemotePath(): void {

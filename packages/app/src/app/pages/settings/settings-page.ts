@@ -40,6 +40,12 @@ export class SettingsPage implements UnsavedChangesGuardable {
 
   public readonly paneVersion = signal(0);
 
+  /** Panes that share a form are marked individually, by the sections they own. */
+  public readonly paneDirtyMap = computed<Record<string, boolean>>(() => ({
+    ...this.generalForm.paneDirty(),
+    ...this.serverForm.paneDirty(),
+  }));
+
   private readonly paneParam = toSignal(this.route.paramMap.pipe(map((p) => p.get('pane'))), {
     initialValue: null,
   });

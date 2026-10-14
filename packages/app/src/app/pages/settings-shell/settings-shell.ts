@@ -15,6 +15,7 @@ import {
 import { RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faChevronLeft, faFloppyDisk, faRotateLeft } from '@fortawesome/free-solid-svg-icons';
+import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { BbLogo } from '../../components/bb-logo/bb-logo';
@@ -35,6 +36,7 @@ import { SettingsPageConfig, SettingsPageStatus, SettingsPaneDef } from './setti
     NgComponentOutlet,
     RouterLink,
     FontAwesomeModule,
+    NgbTooltip,
     TranslatePipe,
     BbBtnContent,
     BbLogo,
@@ -50,6 +52,8 @@ export class SettingsShell {
   public readonly status = input<SettingsPageStatus>('ready');
   public readonly isDirty = input(false);
   public readonly dirtyMap = input<Record<string, boolean>>({});
+  /** Per-pane override of `dirtyMap`, for panes that share a form; keyed by pane id. */
+  public readonly paneDirtyMap = input<Record<string, boolean>>({});
   /** Bumping this value rebuilds every pane, so they re-read their persisted values. */
   public readonly paneVersion = input(0);
   public readonly subtitle = input<string | null>(null);
@@ -70,6 +74,10 @@ export class SettingsShell {
     () => this.panes().find((pane) => pane.id === this.activePaneId()) ?? this.panes()[0],
   );
   public readonly loadedComponents = signal<ReadonlyMap<string, Type<unknown>>>(new Map());
+
+  public isPaneDirty(pane: SettingsPaneDef): boolean {
+    return this.paneDirtyMap()[pane.id] ?? this.dirtyMap()[pane.formId] ?? false;
+  }
 
   private readonly content = viewChild<ElementRef<HTMLElement>>('content');
 

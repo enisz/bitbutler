@@ -1,4 +1,4 @@
-import { DestroyRef, Injectable, inject, signal } from '@angular/core';
+import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
@@ -13,6 +13,7 @@ import {
 import { DateFormatService } from '../../services/date-format.service';
 import { GeneralSettingsService } from '../../services/general-settings.service';
 import { ThemeFamily, ThemeMode, ThemeService } from '../../services/theme.service';
+import { hasChangedSections } from '../settings-shell/section-changed';
 import { SettingsStateService } from './settings-state.service';
 
 /**
@@ -79,6 +80,25 @@ export class GeneralSettingsFormService {
   public readonly openAtLoginValue = signal(false);
   public readonly loaded = signal(false);
 
+  /** The last loaded or saved values; panes count as changed when their sections differ. */
+  private readonly baseline = signal(this.form.getRawValue());
+
+  public readonly paneDirty = computed(() => {
+    const current = this.formSnapshot();
+    const baseline = this.baseline();
+    return {
+      general: hasChangedSections(current, baseline, [
+        'behavior',
+        'savePath',
+        'language',
+        'dateFormat',
+      ]),
+      appearance: hasChangedSections(current, baseline, ['appearance']),
+      startup: hasChangedSections(current, baseline, ['startup']),
+      notifications: hasChangedSections(current, baseline, ['notifications']),
+    };
+  });
+
   constructor() {
     const startupGroup = this.form.controls.startup;
 
@@ -120,8 +140,8 @@ export class GeneralSettingsFormService {
     this.stateService.registerSave('general', () => this.save());
 
     this.form.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-      this.stateService.markDirty('general', true);
       this.formSnapshot.set(this.form.getRawValue());
+      this.stateService.markDirty('general', Object.values(this.paneDirty()).some(Boolean));
     });
 
     void this.load();
@@ -130,8 +150,9 @@ export class GeneralSettingsFormService {
   public async load(): Promise<void> {
     const settings = await this.generalSettingsService.load();
     this.form.patchValue(settings, { emitEvent: false });
-    this.formSnapshot.set(this.form.getRawValue());
     this.applyDependentControlStates(settings);
+    this.formSnapshot.set(this.form.getRawValue());
+    this.baseline.set(this.formSnapshot());
     this.loaded.set(true);
   }
 
@@ -159,6 +180,7 @@ export class GeneralSettingsFormService {
 
     this.themeService.applyFromSettings(settings.appearance.family, settings.appearance.mode);
     this.dateFormatService.applyFromSettings(settings);
+    this.baseline.set(this.form.getRawValue());
   }
 
   // A master switch disables its children without resetting them, so turning it back on
