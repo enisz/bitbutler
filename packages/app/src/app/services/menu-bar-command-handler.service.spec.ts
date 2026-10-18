@@ -142,22 +142,34 @@ describe('MenuBarCommandHandlerService', () => {
 
   it('should show primary toast for debug.toast.primary', () => {
     clicks$.next({ action: 'debug.toast.primary', ts: 1 });
-    expect(toastPrimary).toHaveBeenCalled();
+    expect(toastShowText).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ type: 'primary', notifyOs: false }),
+    );
   });
 
   it('should show success toast for debug.toast.success', () => {
     clicks$.next({ action: 'debug.toast.success', ts: 1 });
-    expect(toastSuccess).toHaveBeenCalled();
+    expect(toastShowText).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ type: 'success', notifyOs: false }),
+    );
   });
 
   it('should show danger toast for debug.toast.danger', () => {
     clicks$.next({ action: 'debug.toast.danger', ts: 1 });
-    expect(toastDanger).toHaveBeenCalled();
+    expect(toastShowText).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ type: 'danger', notifyOs: false }),
+    );
   });
 
   it('should show warning toast for debug.toast.warning', () => {
     clicks$.next({ action: 'debug.toast.warning', ts: 1 });
-    expect(toastWarning).toHaveBeenCalled();
+    expect(toastShowText).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ type: 'warning', notifyOs: false }),
+    );
   });
 
   it('should not crash on unknown action', () => {
@@ -167,7 +179,7 @@ describe('MenuBarCommandHandlerService', () => {
   describe('debug toasts with actions', () => {
     const shown = () => toastShowText.mock.calls.map(([, opts]) => opts);
 
-    it('shows a toast of the clicked type with a secondary and a primary action', () => {
+    it('shows a toast of the clicked type with a primary and a close action', () => {
       clicks$.next({ action: 'debug.toast.actions.danger', ts: 1 });
 
       expect(shown()).toEqual([
@@ -175,12 +187,11 @@ describe('MenuBarCommandHandlerService', () => {
           type: 'danger',
           title: 'Danger with actions',
           actions: [
-            expect.objectContaining({ label: 'Details', kind: 'text' }),
             expect.objectContaining({ label: 'Retry', kind: 'primary' }),
+            expect.objectContaining({ label: 'Close', kind: 'text' }),
           ],
         }),
       ]);
-      expect(toastDanger).not.toHaveBeenCalled();
     });
 
     it('resolves adaptive to the type opposite the current theme', () => {
@@ -219,9 +230,12 @@ describe('MenuBarCommandHandlerService', () => {
     it('gives clicking an action visible feedback', () => {
       clicks$.next({ action: 'debug.toast.actions.info', ts: 1 });
 
-      shown()[0].actions[1].onClick();
+      shown()[0].actions[0].onClick();
 
-      expect(toastInfo).toHaveBeenCalledWith('Action clicked: Retry', 'Debug', 2000);
+      expect(toastShowText).toHaveBeenLastCalledWith(
+        'Action clicked: Retry',
+        expect.objectContaining({ type: 'info', notifyOs: false }),
+      );
     });
   });
 });

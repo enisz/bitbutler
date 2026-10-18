@@ -128,8 +128,17 @@ describe('TorrentAddQueueService', () => {
       expect(opts.type).toBe('danger');
       expect(opts.title).toBe(`${PREFIX}toast.add-failed.title`);
       expect(opts.actions.map((a: any) => [a.label, a.kind])).toEqual([
-        [`${PREFIX}action.retry`, 'primary'],
+        ['general.button.retry', 'primary'],
+        ['general.button.close', 'text'],
       ]);
+    });
+
+    it('abandons the job when Close is clicked', () => {
+      emitUpdate(job({ status: 'error', error: 'HTTP 500', failedStage: 'add' }));
+
+      failureToast()[1].actions[1].onClick();
+
+      expect(window.bitbutler.torrentQueue.dismiss).toHaveBeenCalledWith('job-1');
     });
 
     it('omits the name when there is none', () => {
@@ -152,8 +161,9 @@ describe('TorrentAddQueueService', () => {
       const [, opts] = failureToast();
       expect(opts.title).toBe(`${PREFIX}toast.session-expired.title`);
       expect(opts.actions.map((a: any) => [a.label, a.kind])).toEqual([
-        [`${PREFIX}action.retry`, 'text'],
+        ['general.button.retry', 'text'],
         [`${PREFIX}action.log-in`, 'primary'],
+        ['general.button.close', 'text'],
       ]);
 
       opts.actions[1].onClick();

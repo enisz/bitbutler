@@ -32,7 +32,6 @@
   "components": {
     "about": {
       "tagline": "A torrentjeid digitális komornyikja",
-      "description": "A BitButler egy modern, többplatformos asztali kliens qBittorrent szerverek távoli kezeléséhez. Angular és Electron alapokon.",
       "released": "Kiadva",
       "labels": {
         "release": "Kiadás",
@@ -56,7 +55,6 @@
         "magnet-links": "Linkek (soronként egy)",
         "no-links": "Nincs link",
         "link-count": "{{ count }} link(ek)",
-        "save-path": "Mentési útvonal",
         "rename": "Név",
         "skip-hash-checking": "Hash-ellenőrzés kihagyása",
         "paused": "Hozzáadás felfüggesztett állapotban",
@@ -71,9 +69,6 @@
         "auto-tmm": "Automatikus Torrentkezelés (TMM) használata",
         "sequential-download": "Sorrendi letöltés engedélyezése",
         "first-last-piece-prio": "Első és utolsó szelet priorizálása",
-        "ratio-limit": "Arány korlát",
-        "seeding-time-limit": "Seedelési időkorlát",
-        "seeding-time-limit-unit": "perc",
         "size": "Méret",
         "free-space": "Szabad hely"
       },
@@ -405,7 +400,6 @@
         "content": {
           "loading": "Torrent tartalmának a betöltése...",
           "error": {
-            "failed-to-load-title": "Nem sikerült betölteni a torrent tartalmát",
             "failed-to-save-title": "Nem sikerült menteni a változtatásokat"
           }
         },
@@ -639,7 +633,6 @@
             "transfer-limits": "Átviteli korlátok",
             "control": "Vezérlés",
             "files": "Fájlok",
-            "manage": "Kezelés",
             "export-torrent-file": "Torrent fájl exportálása",
             "transfer": "Korlátok",
             "maintenance": "Karbantartás",
@@ -835,14 +828,6 @@
       },
       "manage-servers": {
         "title": "Szerverek kezelése",
-        "filter": {
-          "placeholder": "Szűrés név vagy host alapján...",
-          "no-match": "Egy szerver sem felel meg a szűrőnek."
-        },
-        "empty": "Nincsenek konfigurált szerverek.",
-        "button": {
-          "connect": "Csatlakozás"
-        },
         "tooltip": {
           "active": "Jelenleg aktív szerver",
           "set-as-default": "Beállítás alapértelmezett szerverként",
@@ -1083,14 +1068,6 @@
             "all": "Minden importált torrent azonnal elindul, az előző állapotától függetlenül."
           }
         },
-        "progress": {
-          "importing": "Torrentek importálása...",
-          "done": "Import kész",
-          "imported": "importálva",
-          "already-existed": "már létezett",
-          "skipped": "kihagyva",
-          "failed": "sikertelen"
-        },
         "report": {
           "status": "Állapot",
           "success": "Sikeres",
@@ -1124,8 +1101,6 @@
           "message": "Biztosan törölni szeretnéd a kijelölt kategóriákat? {{ count }} torrenthez vannak hozzárendelve."
         },
         "toast": {
-          "update-failed-title": "Nem sikerült frissíteni a kategóriát",
-          "update-failed": "\"{{ name }}\"",
           "load-failed-title": "Nem sikerült betölteni a kategóriákat",
           "load-failed": "Nem sikerült betölteni a kategóriákat a szerverről.",
           "delete-failed-title": "Nem sikerült törölni a kategóriát",
@@ -1240,24 +1215,14 @@
       "server-form": {
         "host": "Gép (Host)"
       },
-      "action": {
-        "remove-default": "Alapértelmezés törlése",
-        "make-default": "Legyen alapértelmezett"
-      },
       "error": {
-        "connection-failed": "A csatlakozás sikertelen.",
-        "update-server-failed": "Nem sikerült frissíteni a {{name}} hostot!"
-      },
-      "delete-confirm": {
-        "title": "Host törlése",
-        "message": "Biztosan törölni szeretnéd a következőt: {{name}}?"
+        "connection-failed": "A csatlakozás sikertelen."
       }
     },
     "main": {
       "button-bar": {
         "button": {
           "add": "Torrent hozzáadása",
-          "delete": "Törlés",
           "start": "Indítás",
           "stop": "Leállítás",
           "start-all": "Összes indítása",
@@ -1267,7 +1232,6 @@
           "down": "Le",
           "bottom": "Legalulra",
           "settings-group": "Beállítások",
-          "manage-group": "Kezelés",
           "manage-servers": "Szerverek",
           "manage-tags": "Cimkék",
           "manage-categories": "Kategóriák",
@@ -1280,18 +1244,6 @@
       },
       "grid": {
         "context-menu": {
-          "header": {
-            "cell": "Cella",
-            "row": "Sor",
-            "torrent": "Torrent",
-            "control": "Vezérlés",
-            "files": "Fájlok",
-            "transfer": "Átvitel",
-            "maintenance": "Karbantartás",
-            "queue": "Sorrend",
-            "fields": "Mezők",
-            "visibility": "Láthatóság"
-          },
           "submenu": {
             "copy": "Másolás",
             "pin-row": "Sor rögzítése",
@@ -1317,7 +1269,6 @@
             "copy-as-json": "Másolás JSON-ként",
             "copy-cell-value": "Cella értékének másolása",
             "copy-row-as-json": "Sor másolása JSON-ként",
-            "copy-rows-as-json": "Sorok másolása JSON-ként",
             "export-torrent-file": "Exportálás .torrent fájlba",
             "export-torrent-files": "Exportálás .torrent fájlokba",
             "torrent-details": "Torrent részletei",
@@ -1392,8 +1343,7 @@
             "save-path": "Mentési Útvonal",
             "save-paths": "Mentési Útvonalak",
             "json": "JSON",
-            "row-as-json": "Sor JSON-ként",
-            "rows-as-json": "Sorok JSON-ként"
+            "row-as-json": "Sor JSON-ként"
           }
         },
         "overlays": {
@@ -1653,7 +1603,6 @@
             "appearance": "Megjelenés",
             "startup": "Indítás",
             "torrent-handling": "Torrentkezelés",
-            "localization": "Nyelv és dátumformátum",
             "notifications": "Értesítések",
             "date-format": "Dátumformátum",
             "notifications-os": "Rendszerértesítések",
@@ -1669,9 +1618,6 @@
             "light": "Világos",
             "dark": "Sötét",
             "system": "Rendszerszintű"
-          },
-          "success": {
-            "saved": "Általános beállítások mentve"
           },
           "popover": {
             "notifications": {
@@ -1721,8 +1667,6 @@
           }
         },
         "server": {
-          "title": "Szerver",
-          "description": "Szerverszintű, szerverrel kapcsolatos beállítások. Ezek minden egyes hozzáadott szervernél eltérőek lehetnek.",
           "server-settings-form": {
             "polling": {
               "title": "Adatlekérdezés gyakorisága a qBittorrent API-ból",
@@ -1807,9 +1751,6 @@
             "session-stats": "Munkamenet statisztikák",
             "selection": "Kijelölési infó",
             "polling-indicator": "Lekérdezés jelző"
-          },
-          "success": {
-            "save": "Állapotsor beállításai mentve!"
           }
         },
         "torrent-list-grid": {
@@ -2063,7 +2004,6 @@
         }
       },
       "action": {
-        "retry": "Újra",
         "log-in": "Bejelentkezés"
       }
     },
@@ -2087,9 +2027,7 @@
     },
     "transfer-limit-command-handler": {
       "info": {
-        "alternative-limit-on-title": "Alternatív sebességkorlát bekapcsolva",
         "alternative-limit-on": "Az alternatív sebességkorlátok most aktívak.",
-        "alternative-limit-off-title": "Alternatív sebességkorlát kikapcsolva",
         "alternative-limit-off": "Az alternatív sebességkorlátok már nem aktívak."
       }
     },
@@ -2191,10 +2129,8 @@
       "manage-servers": "Szerverek kezelése",
       "delete": "Törlés",
       "ok": "OK",
-      "set": "Beállítás",
       "save": "Mentés",
       "update": "Frissítés",
-      "show": "Megjelenítés",
       "open-details": "Részletek megnyitása",
       "new": "Új",
       "edit": "Szerkesztés",
@@ -2293,7 +2229,6 @@
       "view-menu": "Nézet",
       "view-torrent-list": "Torrent lista",
       "servers": "Szerverek",
-      "add-new": "Új hozzáadása…",
       "settings-menu": "Beállítások",
       "app-settings": "BitButler beállítások",
       "qb-settings": "qBittorrent beállítások",

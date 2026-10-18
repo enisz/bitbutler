@@ -32,7 +32,6 @@
   "components": {
     "about": {
       "tagline": "The digital butler for your torrents",
-      "description": "BitButler is a modern cross-platform desktop client for managing qBittorrent servers remotely. Built with Angular and Electron.",
       "released": "Released",
       "labels": {
         "release": "Release",
@@ -56,7 +55,6 @@
         "magnet-links": "Links (one per line)",
         "no-links": "No links",
         "link-count": "{{ count }} link(s)",
-        "save-path": "Save Path",
         "rename": "Name",
         "skip-hash-checking": "Skip hash checking",
         "paused": "Add torrents in the paused state",
@@ -71,9 +69,6 @@
         "auto-tmm": "Use Auto TMM",
         "sequential-download": "Enable sequential download",
         "first-last-piece-prio": "Prioritize download first last piece",
-        "ratio-limit": "Ratio Limit",
-        "seeding-time-limit": "Seeding Time Limit",
-        "seeding-time-limit-unit": "minute",
         "size": "Size",
         "free-space": "Free Space"
       },
@@ -405,7 +400,6 @@
         "content": {
           "loading": "Loading Torrent Contents...",
           "error": {
-            "failed-to-load-title": "Failed to Load Torrent Contents",
             "failed-to-save-title": "Failed to Save Changes"
           }
         },
@@ -639,7 +633,6 @@
             "transfer-limits": "Transfer Limits",
             "control": "Control",
             "files": "Files",
-            "manage": "Manage",
             "export-torrent-file": "Export .torrent File",
             "transfer": "Limits",
             "maintenance": "Maintenance",
@@ -835,14 +828,6 @@
       },
       "manage-servers": {
         "title": "Manage Servers",
-        "filter": {
-          "placeholder": "Filter by name or host...",
-          "no-match": "No servers match your filter."
-        },
-        "empty": "No servers configured.",
-        "button": {
-          "connect": "Connect"
-        },
         "tooltip": {
           "active": "Currently active server",
           "set-as-default": "Set as default server",
@@ -1083,14 +1068,6 @@
             "all": "All imported torrents will start immediately regardless of their previous state."
           }
         },
-        "progress": {
-          "importing": "Importing torrents...",
-          "done": "Import complete",
-          "imported": "imported",
-          "already-existed": "already existed",
-          "skipped": "skipped",
-          "failed": "failed"
-        },
         "report": {
           "status": "Status",
           "success": "Success",
@@ -1124,8 +1101,6 @@
           "message": "Are you sure you want to delete the selected categories? They are assigned to {{ count }} torrent(s)."
         },
         "toast": {
-          "update-failed-title": "Failed to Update Category",
-          "update-failed": "\"{{ name }}\"",
           "load-failed-title": "Failed to Load Categories",
           "load-failed": "Could not load the categories from the server.",
           "delete-failed-title": "Failed to Delete Category",
@@ -1240,24 +1215,14 @@
       "server-form": {
         "host": "Host"
       },
-      "action": {
-        "remove-default": "Remove Default",
-        "make-default": "Make Default"
-      },
       "error": {
-        "connection-failed": "Connection Failed",
-        "update-server-failed": "Failed to update the host {{name}}!"
-      },
-      "delete-confirm": {
-        "title": "Delete Host",
-        "message": "Are you sure you want to delete {{name}}?"
+        "connection-failed": "Connection Failed"
       }
     },
     "main": {
       "button-bar": {
         "button": {
           "add": "Add Torrent",
-          "delete": "Delete",
           "start": "Start",
           "stop": "Stop",
           "start-all": "Start All",
@@ -1269,7 +1234,6 @@
           "settings-group": "Settings",
           "settings": "BitButler",
           "qb-settings": "qBittorrent",
-          "manage-group": "Manage",
           "manage-servers": "Servers",
           "manage-tags": "Tags",
           "manage-categories": "Categories"
@@ -1280,18 +1244,6 @@
       },
       "grid": {
         "context-menu": {
-          "header": {
-            "cell": "Cell",
-            "row": "Row",
-            "torrent": "Torrent",
-            "control": "Control",
-            "files": "Files",
-            "transfer": "Transfer",
-            "maintenance": "Maintenance",
-            "queue": "Queue",
-            "fields": "Fields",
-            "visibility": "Visibility"
-          },
           "submenu": {
             "copy": "Copy",
             "pin-row": "Pin Row",
@@ -1317,7 +1269,6 @@
             "copy-as-json": "Copy as JSON",
             "copy-cell-value": "Copy Cell Value",
             "copy-row-as-json": "Copy Row as JSON",
-            "copy-rows-as-json": "Copy Rows as JSON",
             "export-torrent-file": "Export .torrent",
             "export-torrent-files": "Export .torrent Files",
             "torrent-details": "Torrent details",
@@ -1392,8 +1343,7 @@
             "save-path": "Save Path",
             "save-paths": "Save Paths",
             "json": "JSON",
-            "row-as-json": "Row as JSON",
-            "rows-as-json": "Rows as JSON"
+            "row-as-json": "Row as JSON"
           }
         },
         "overlays": {
@@ -1653,7 +1603,6 @@
             "appearance": "Appearance",
             "startup": "Startup",
             "torrent-handling": "Torrent Handling",
-            "localization": "Localization",
             "notifications": "Notifications",
             "date-format": "Date Format",
             "notifications-os": "System Notifications",
@@ -1669,9 +1618,6 @@
             "light": "Light",
             "dark": "Dark",
             "system": "System"
-          },
-          "success": {
-            "saved": "General Settings Saved"
           },
           "popover": {
             "notifications": {
@@ -1721,8 +1667,6 @@
           }
         },
         "server": {
-          "title": "Server",
-          "description": "Server level, server related settings. These settings are handled different for each added server.",
           "server-settings-form": {
             "polling": {
               "title": "The frequency of polling data from the qBittorrent API",
@@ -1807,9 +1751,6 @@
             "session-stats": "Session Stats",
             "selection": "Selection Info",
             "polling-indicator": "Polling Indicator"
-          },
-          "success": {
-            "save": "Status Bar Settings Saved!"
           }
         },
         "torrent-list-grid": {
@@ -2063,7 +2004,6 @@
         }
       },
       "action": {
-        "retry": "Retry",
         "log-in": "Log In"
       }
     },
@@ -2087,9 +2027,7 @@
     },
     "transfer-limit-command-handler": {
       "info": {
-        "alternative-limit-on-title": "Alternative Speed Limit On",
         "alternative-limit-on": "Alternative speed limits are now active.",
-        "alternative-limit-off-title": "Alternative Speed Limit Off",
         "alternative-limit-off": "Alternative speed limits are no longer active."
       }
     },
@@ -2192,10 +2130,8 @@
       "manage-servers": "Manage Servers",
       "delete": "Delete",
       "ok": "OK",
-      "set": "Set",
       "save": "Save",
       "update": "Update",
-      "show": "Show",
       "open-details": "Open Details",
       "new": "New",
       "edit": "Edit",
@@ -2294,7 +2230,6 @@
       "view-menu": "View",
       "view-torrent-list": "Torrent List",
       "servers": "Servers",
-      "add-new": "Add new…",
       "settings-menu": "Settings",
       "app-settings": "BitButler Settings",
       "qb-settings": "qBittorrent Settings",

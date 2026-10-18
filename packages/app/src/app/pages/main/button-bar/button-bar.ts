@@ -94,7 +94,7 @@ export class ButtonBar implements OnInit {
       {
         kind: 'action',
         id: 'delete.deleteTorrent',
-        label: 'pages.main.button-bar.button.delete',
+        label: 'general.button.delete',
         icon: faTrashCan,
         variant: 'danger',
         disabled: !this.hasSelection(),
@@ -197,7 +197,7 @@ export class ButtonBar implements OnInit {
       {
         kind: 'group',
         id: 'manage',
-        label: 'pages.main.button-bar.button.manage-group',
+        label: 'general.button.manage',
         icon: faSliders,
         variant: 'default',
         items: [
