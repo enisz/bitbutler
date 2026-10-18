@@ -12,11 +12,10 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IconDefinition, faChevronDown, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { debounceTime, startWith } from 'rxjs/operators';
 import { BbProgressVariant } from '../../../../components/bb-progress/bb-progress.types';
-import { TooltipOverflow } from '../../../../directives/tooltip-overflow';
+import { BbTooltip } from '../../../../directives/bb-tooltip';
 
 const FILTER_DEBOUNCE_MS = 150;
 
@@ -36,15 +35,7 @@ export interface FilterItem {
 @Component({
   selector: 'app-filter-group',
   standalone: true,
-  imports: [
-    NgClass,
-    FontAwesomeModule,
-    FormsModule,
-    ReactiveFormsModule,
-    NgbTooltip,
-    TranslatePipe,
-    TooltipOverflow,
-  ],
+  imports: [NgClass, FontAwesomeModule, FormsModule, ReactiveFormsModule, BbTooltip, TranslatePipe],
   templateUrl: './filter-group.html',
   styleUrl: './filter-group.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

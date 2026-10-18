@@ -12,7 +12,7 @@
     <div
       class="bb-widget bb-alt-speed"
       [class.active]="useAltSpeedLimits()"
-      [ngbTooltip]="
+      [bbTooltip]="
         (useAltSpeedLimits()
           ? 'pages.main.server-state.alt-speed-on'
           : 'pages.main.server-state.alt-speed-off'
@@ -37,7 +37,7 @@
     @case ('connection-status') {
       <div
         class="bb-widget"
-        [ngbTooltip]="'pages.main.server-state.network-status' | translate"
+        [bbTooltip]="'pages.main.server-state.network-status' | translate"
         placement="top"
         container="body"
       >
@@ -50,7 +50,7 @@
     @case ('nodes') {
       <div
         class="bb-widget"
-        [ngbTooltip]="'pages.main.server-state.dht-nodes' | translate"
+        [bbTooltip]="'pages.main.server-state.dht-nodes' | translate"
         placement="top"
         container="body"
       >
@@ -61,7 +61,7 @@
     @case ('ratio') {
       <div
         class="bb-widget cursor-pointer"
-        [ngbTooltip]="tipRatioGlobal"
+        [bbTooltip]="tipRatioGlobal"
         placement="top"
         container="body"
         (click)="setGlobalShareLimit()"
@@ -73,7 +73,7 @@
     @case ('alltime-ratio') {
       <div
         class="bb-widget cursor-pointer"
-        [ngbTooltip]="tipAlltimeRatio"
+        [bbTooltip]="tipAlltimeRatio"
         placement="top"
         container="body"
         (click)="setGlobalShareLimit()"
@@ -83,7 +83,7 @@
       </div>
     }
     @case ('global-down') {
-      <div class="bb-widget" [ngbTooltip]="tipGlobalDl" placement="top" container="body">
+      <div class="bb-widget" [bbTooltip]="tipGlobalDl" placement="top" container="body">
         <fa-icon [icon]="icons.faCloudDownloadAlt" class="icon-dl opacity-75"></fa-icon>
         <span class="bb-value bb-fixed-num bb-width-size">{{
           state()?.dl_info_data ?? 0 | fileSize
@@ -91,13 +91,13 @@
       </div>
     }
     @case ('alltime-down') {
-      <div class="bb-widget" [ngbTooltip]="tipAlltimeDl" placement="top" container="body">
+      <div class="bb-widget" [bbTooltip]="tipAlltimeDl" placement="top" container="body">
         <fa-icon [icon]="icons.faCloudDownloadAlt" class="icon-dl opacity-75"></fa-icon>
         <span class="bb-value bb-fixed-num bb-width-size">{{ allTimeDl() | fileSize }}</span>
       </div>
     }
     @case ('global-up') {
-      <div class="bb-widget" [ngbTooltip]="tipGlobalUl" placement="top" container="body">
+      <div class="bb-widget" [bbTooltip]="tipGlobalUl" placement="top" container="body">
         <fa-icon [icon]="icons.faCloudUploadAlt" class="icon-ul opacity-75"></fa-icon>
         <span class="bb-value bb-fixed-num bb-width-size">{{
           state()?.up_info_data ?? 0 | fileSize
@@ -105,7 +105,7 @@
       </div>
     }
     @case ('alltime-up') {
-      <div class="bb-widget" [ngbTooltip]="tipAlltimeUl" placement="top" container="body">
+      <div class="bb-widget" [bbTooltip]="tipAlltimeUl" placement="top" container="body">
         <fa-icon [icon]="icons.faCloudUploadAlt" class="icon-ul opacity-75"></fa-icon>
         <span class="bb-value bb-fixed-num bb-width-size">{{ allTimeUl() | fileSize }}</span>
       </div>
@@ -113,7 +113,7 @@
     @case ('download-speed') {
       <div
         class="bb-widget cursor-pointer"
-        [ngbTooltip]="tipLiveDl"
+        [bbTooltip]="tipLiveDl"
         placement="top"
         container="body"
         (click)="setGlobalTransferLimit()"
@@ -130,7 +130,7 @@
     @case ('upload-speed') {
       <div
         class="bb-widget cursor-pointer"
-        [ngbTooltip]="tipLiveUl"
+        [bbTooltip]="tipLiveUl"
         placement="top"
         container="body"
         (click)="setGlobalTransferLimit()"
@@ -147,7 +147,7 @@
     @case ('free-space') {
       <div
         class="bb-widget"
-        [ngbTooltip]="'pages.main.server-state.free-space' | translate"
+        [bbTooltip]="'pages.main.server-state.free-space' | translate"
         placement="top"
         container="body"
       >
@@ -158,7 +158,7 @@
     @case ('selection') {
       <div
         class="bb-widget"
-        [ngbTooltip]="'pages.main.server-state.current-selection' | translate"
+        [bbTooltip]="'pages.main.server-state.current-selection' | translate"
         placement="top"
         container="body"
       >
@@ -180,7 +180,7 @@
     @case ('polling-indicator') {
       <div
         class="bb-widget cursor-pointer"
-        [ngbTooltip]="
+        [bbTooltip]="
           isPaused()
             ? ('pages.main.server-state.polling-paused' | translate)
             : ('pages.main.server-state.server-polling'

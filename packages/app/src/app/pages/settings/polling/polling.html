@@ -1,0 +1,117 @@
+@if (settingsLoaded()) {
+  <form [formGroup]="serverSettingsForm" class="bb-cards">
+    <app-bb-section-card
+      [title]="'pages.settings.tab.server.label.polling' | translate"
+      formGroupName="polling"
+    >
+      <div class="bb-options">
+        <div class="bb-option__note">
+          {{ 'pages.settings.tab.server.server-settings-form.polling.title' | translate }}
+          <bb-popover
+            [subject]="'pages.settings.tab.server.popover.api-polling.title' | translate"
+            [description]="'pages.settings.tab.server.popover.api-polling.description' | translate"
+          ></bb-popover>
+        </div>
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'pages.settings.tab.server.server-settings-form.polling.foreground' | translate }}
+              <bb-popover
+                [subject]="'pages.settings.tab.server.popover.foreground-polling.title' | translate"
+                [description]="
+                  'pages.settings.tab.server.popover.foreground-polling.description' | translate
+                "
+              ></bb-popover>
+            </span>
+            <small class="bb-option__sub text-warning">
+              @if (serverSettingsForm.controls.polling.controls.foreground.value < 2000) {
+                <fa-icon [icon]="icons['faTriangleExclamation']" class="me-1" />
+                {{ 'pages.settings.tab.server.warning.too-low-polling-frequency' | translate }}
+              }
+            </small>
+          </div>
+
+          <div class="bb-option__control d-flex align-items-center gap-3">
+            <input
+              type="range"
+              class="form-range"
+              id="foreground-polling-range"
+              formControlName="foreground"
+              min="1000"
+              max="10000"
+              step="500"
+              [class.form-range-warning]="
+                serverSettingsForm.controls.polling.controls.foreground.value < 2000
+              "
+            />
+            <div class="form-floating flex-shrink-0" style="width: 5.5rem">
+              <input
+                type="number"
+                class="form-control"
+                id="foreground-polling-frequency"
+                placeholder="Seconds"
+                [value]="serverSettingsForm.controls.polling.controls.foreground.value / 1000"
+                disabled
+              />
+              <label for="foreground-polling-frequency">{{
+                'pages.settings.tab.server.server-settings-form.polling.unit' | translate
+              }}</label>
+            </div>
+          </div>
+        </div>
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'pages.settings.tab.server.server-settings-form.polling.background' | translate }}
+              <bb-popover
+                [subject]="'pages.settings.tab.server.popover.background-polling.title' | translate"
+                [description]="backgroundPollingPopover"
+              ></bb-popover>
+            </span>
+            <small class="bb-option__sub text-warning">
+              @if (serverSettingsForm.controls.polling.controls.background.value < 2000) {
+                <fa-icon [icon]="icons['faTriangleExclamation']" class="me-1" />
+                {{ 'pages.settings.tab.server.warning.too-low-polling-frequency' | translate }}
+              }
+            </small>
+          </div>
+
+          <div class="bb-option__control d-flex align-items-center gap-3">
+            <input
+              type="range"
+              class="form-range"
+              id="polling-frequencyc"
+              formControlName="background"
+              min="1000"
+              max="10000"
+              step="500"
+              [class.form-range-warning]="
+                serverSettingsForm.controls.polling.controls.background.value < 2000
+              "
+            />
+            <div class="form-floating flex-shrink-0" style="width: 5.5rem">
+              <input
+                type="number"
+                class="form-control"
+                id="background-polling-frequency"
+                placeholder="Seconds"
+                [value]="serverSettingsForm.controls.polling.controls.background.value / 1000"
+                disabled
+              />
+              <label for="background-polling-frequency">{{
+                'pages.settings.tab.server.server-settings-form.polling.unit' | translate
+              }}</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </app-bb-section-card>
+  </form>
+} @else {
+  <app-bb-spinner></app-bb-spinner>
+}
+
+<ng-template #backgroundPollingPopover>
+  <p>{{ 'pages.settings.tab.server.popover.background-polling.description.line1' | translate }}</p>
+  <p>{{ 'pages.settings.tab.server.popover.background-polling.description.line2' | translate }}</p>
+</ng-template>

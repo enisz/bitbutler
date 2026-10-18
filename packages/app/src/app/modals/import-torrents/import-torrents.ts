@@ -30,7 +30,7 @@ import {
   faTriangleExclamation,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
-import { NgbActiveModal, NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import {
@@ -55,6 +55,7 @@ import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { BbCallout } from '../../components/bb-callout/bb-callout';
 import { BbPopover } from '../../components/bb-popover/bb-popover';
 import { BbProgress } from '../../components/bb-progress/bb-progress';
+import { BbSectionCard } from '../../components/bb-section-card/bb-section-card';
 import { BooleanColumnFilter } from '../../components/column-filters/boolean-column-filter/boolean-column-filter';
 import { RatioLimitColumnFilter } from '../../components/column-filters/ratio-limit-column-filter/ratio-limit-column-filter';
 import {
@@ -66,6 +67,7 @@ import { SizeColumnFilter } from '../../components/column-filters/size-column-fi
 import { TextColumnFilter } from '../../components/column-filters/text-column-filter/text-column-filter';
 import { TimeLimitColumnFilter } from '../../components/column-filters/time-limit-column-filter/time-limit-column-filter';
 import { AutofocusDirective } from '../../directives/autofocus';
+import { BbTooltip } from '../../directives/bb-tooltip';
 import { NoRowOverlay } from '../../pages/main/grid/overlays/no-row-overlay/no-row-overlay';
 import { LocalTimestampPipe } from '../../pipes/local-timestamp-pipe';
 import { ExportService } from '../../services/export.service';
@@ -73,7 +75,6 @@ import { ServerStoreService } from '../../services/server-store.service';
 import { ThemeService } from '../../services/theme.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
 import { UiFormatService } from '../../services/ui-format.service';
-import { setModalInput } from '../../utils/modal-input';
 
 export type ImportRowStatus = 'pending' | 'duplicate' | 'imported' | 'failed' | 'skipped';
 type ImportGridRow = BbeTorrentEntry & { importState: ImportRowStatus };
@@ -82,6 +83,7 @@ type ImportGridRow = BbeTorrentEntry & { importState: ImportRowStatus };
   selector: 'app-import-torrents',
   standalone: true,
   imports: [
+    BbSectionCard,
     ReactiveFormsModule,
     TranslatePipe,
     DecimalPipe,
@@ -91,7 +93,7 @@ type ImportGridRow = BbeTorrentEntry & { importState: ImportRowStatus };
     BbCallout,
     LocalTimestampPipe,
     TimeagoPipe,
-    NgbTooltip,
+    BbTooltip,
     BbBtnContent,
     AgGridAngular,
     AutofocusDirective,
@@ -106,7 +108,6 @@ export class ImportTorrents implements OnInit {
   private loadedBbePath = '';
 
   private readonly activeModal = inject(NgbActiveModal);
-  private readonly modalService = inject(NgbModal);
   private readonly exportService = inject(ExportService);
   private readonly injector = inject(Injector);
   readonly serverStore = inject(ServerStoreService);
@@ -652,18 +653,6 @@ export class ImportTorrents implements OnInit {
     } else {
       array.removeAt(i);
     }
-  }
-
-  async openQbSettings(): Promise<void> {
-    const { QbSettings } = await import('../qb-settings/qb-settings');
-    const ref = this.modalService.open(QbSettings, {
-      size: 'xl',
-      centered: false,
-      scrollable: true,
-      beforeDismiss: () => ref.componentInstance.canDeactivate(),
-    });
-    setModalInput(ref, 'tabToOpen', 'storage');
-    ref.result.catch(() => {});
   }
 
   async loadBbe(bbePath: string): Promise<void> {

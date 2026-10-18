@@ -12,9 +12,9 @@
     <div
       #element
       class="small text-body-secondary mt-1 bb-hash-clamp"
-      [ngbTooltip]="selected() === 1 ? torrent().name : null"
-      bbTooltipOverflow
-      tooltipClass="single-line-tooltip"
+      [bbTooltip]="selected() === 1 ? torrent().name : null"
+      overflowOnly
+      singleLine
       placement="bottom"
     >
       @if (selected() > 1) {

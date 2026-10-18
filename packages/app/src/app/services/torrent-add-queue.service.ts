@@ -96,9 +96,19 @@ export class TorrentAddQueueService {
         : t('toast.add-failed.title');
 
     const retry: ToastAction = {
-      label: t('action.retry'),
+      label: this.translateService.instant('general.button.retry'),
       kind: job.authExpired ? 'text' : 'primary',
       onClick: () => void this.retry(job.id),
+    };
+    // Closing the toast without retrying abandons the job; main keeps failed jobs only for retry.
+    const abandon = () => {
+      this.remove(job.id);
+      void window.bitbutler.torrentQueue.dismiss(job.id);
+    };
+    const close: ToastAction = {
+      label: this.translateService.instant('general.button.close'),
+      kind: 'text',
+      onClick: abandon,
     };
     const actions: ToastAction[] = job.authExpired
       ? [
@@ -108,18 +118,15 @@ export class TorrentAddQueueService {
             kind: 'primary',
             onClick: () => this.router.navigate(['/login']),
           },
+          close,
         ]
-      : [retry];
+      : [retry, close];
 
     this.toastService.showText(displayName ? `"${displayName}": ${reason}` : reason, {
       type: 'danger',
       title,
       actions,
-      // Closing the toast without acting abandons the job; main keeps failed jobs only for retry.
-      onDismiss: () => {
-        this.remove(job.id);
-        void window.bitbutler.torrentQueue.dismiss(job.id);
-      },
+      onDismiss: abandon,
     });
   }
 }

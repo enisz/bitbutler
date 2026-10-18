@@ -1,5 +1,6 @@
 import type { SelectedTorrentInput, TorrentDraft, UpdateCheckResponse } from '@bitbutler/shared';
-import { SettingsTabId } from '../modals/settings/settings.interface';
+import { QbSettingsPaneId } from '../pages/qb-settings/qb-settings.interface';
+import { SettingsPaneId } from '../pages/settings/settings.interface';
 import { Torrent } from './torrent.model';
 
 export type { SelectedTorrentInput };
@@ -9,8 +10,8 @@ export type LimitTargetType = 'global' | 'torrent';
 export type UiCommand =
   | { type: 'UI_SERVER_EDITOR_OPEN'; id?: string }
   | { type: 'UI_TORRENT_DELETE_REQUEST'; defaultRemoveFiles?: boolean; hashes?: string[] }
-  | { type: 'UI_OPEN_SETTINGS'; tabToOpen?: SettingsTabId }
-  | { type: 'UI_OPEN_QB_SETTINGS' }
+  | { type: 'UI_OPEN_SETTINGS'; pane?: SettingsPaneId }
+  | { type: 'UI_OPEN_QB_SETTINGS'; pane?: QbSettingsPaneId }
   | { type: 'UI_OPEN_TORRENT_DETAILS'; hash: string }
   | {
       type: 'UI_ADD_TORRENT';

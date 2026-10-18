@@ -1,0 +1,81 @@
+@if (settingsLoaded()) {
+  <div class="row mb-4">
+    <div class="col-12 d-flex justify-content-end">
+      <button type="button" class="btn btn-sm btn-split" (click)="reset()">
+        <bb-btn-content
+          [icon]="faRotateLeft"
+          [text]="'pages.settings.tab.status-bar.label.reset' | translate"
+          position="end"
+        ></bb-btn-content>
+      </button>
+    </div>
+  </div>
+  <div cdkDropListGroup class="bb-cards">
+    <app-bb-section-card
+      class="bb-card--wide"
+      [title]="'pages.settings.tab.status-bar.label.widget-pool' | translate"
+    >
+      <bb-popover
+        bbCardTitleExtra
+        [subject]="'pages.settings.tab.status-bar.label.widget-pool' | translate"
+        [description]="'pages.settings.tab.status-bar.popover.widget-pool.description' | translate"
+      ></bb-popover>
+      <div
+        cdkDropList
+        #availableList="cdkDropList"
+        [cdkDropListData]="available"
+        cdkDropListOrientation="horizontal"
+        class="widget-container horizontal"
+        (cdkDropListDropped)="drop($event)"
+      >
+        @for (widget of available; track widget.id) {
+          <span class="badge status-pill" cdkDrag>{{ widget.label }}</span>
+        }
+      </div>
+    </app-bb-section-card>
+
+    <app-bb-section-card
+      class="bb-card--wide"
+      [title]="'pages.settings.tab.status-bar.label.widgets' | translate"
+    >
+      <bb-popover
+        bbCardTitleExtra
+        [subject]="'pages.settings.tab.status-bar.label.widgets' | translate"
+        [description]="'pages.settings.tab.status-bar.popover.widgets.description' | translate"
+      ></bb-popover>
+      <div class="mb-3">
+        <p class="mb-1">{{ 'pages.settings.tab.status-bar.label.left' | translate }}</p>
+        <div
+          cdkDropList
+          #leftList="cdkDropList"
+          [cdkDropListData]="left"
+          cdkDropListOrientation="horizontal"
+          class="widget-container preview-row"
+          (cdkDropListDropped)="drop($event)"
+        >
+          @for (widget of left; track widget.id) {
+            <app-status-bar-widget-preview [id]="widget.id" cdkDrag></app-status-bar-widget-preview>
+          }
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <p class="mb-1">{{ 'pages.settings.tab.status-bar.label.right' | translate }}</p>
+        <div
+          cdkDropList
+          #rightList="cdkDropList"
+          [cdkDropListData]="right"
+          cdkDropListOrientation="horizontal"
+          class="widget-container preview-row align-end"
+          (cdkDropListDropped)="drop($event)"
+        >
+          @for (widget of right; track widget.id) {
+            <app-status-bar-widget-preview [id]="widget.id" cdkDrag></app-status-bar-widget-preview>
+          }
+        </div>
+      </div>
+    </app-bb-section-card>
+  </div>
+} @else {
+  <app-bb-spinner></app-bb-spinner>
+}

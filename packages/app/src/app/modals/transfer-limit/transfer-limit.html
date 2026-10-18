@@ -6,9 +6,9 @@
 
     <div
       class="small text-body-secondary mt-1 bb-hash-clamp"
-      [ngbTooltip]="tooltipText()"
-      bbTooltipOverflow
-      tooltipClass="single-line-tooltip"
+      [bbTooltip]="tooltipText()"
+      overflowOnly
+      singleLine
       placement="bottom"
     >
       @if (target() === 'global') {

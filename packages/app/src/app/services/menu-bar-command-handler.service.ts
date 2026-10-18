@@ -111,68 +111,70 @@ export class MenuBarCommandHandlerService {
           break;
 
         case 'debug.toast.primary':
-          this.toastService.primary(loremIpsum, 'Primary');
+          this.showDebugToast('primary', 'Primary');
           break;
 
         case 'debug.toast.secondary':
-          this.toastService.secondary(loremIpsum, 'Secondary');
+          this.showDebugToast('secondary', 'Secondary');
           break;
 
         case 'debug.toast.success':
-          this.toastService.success(loremIpsum, 'Success');
+          this.showDebugToast('success', 'Success');
           break;
 
         case 'debug.toast.danger':
-          this.toastService.danger(loremIpsum);
+          this.showDebugToast('danger', 'Error');
           break;
 
         case 'debug.toast.warning':
-          this.toastService.warning(loremIpsum);
+          this.showDebugToast('warning', 'Warning');
           break;
 
         case 'debug.toast.info':
-          this.toastService.info(loremIpsum);
+          this.showDebugToast('info', 'Info');
           break;
 
         case 'debug.toast.light':
-          this.toastService.light(loremIpsum, 'Light');
+          this.showDebugToast('light', 'Light');
           break;
 
         case 'debug.toast.dark':
-          this.toastService.dark(loremIpsum, 'Dark');
+          this.showDebugToast('dark', 'Dark');
           break;
 
         case 'debug.toast.adaptive':
-          this.toastService.adaptive(loremIpsum, 'Adaptive');
+          this.showDebugToast(this.toastService.adaptiveType(), 'Adaptive');
           break;
 
         case 'debug.toast.random': {
           const types = TOAST_TYPES;
           const type = types[Math.floor(Math.random() * types.length)];
-          this.toastService.showText('A random toast from debug menu', {
-            title: 'Random Toast',
-            type,
-            duration: 5000,
-          });
+          this.showDebugToast(type, 'Random Toast', 'A random toast from debug menu', 5000);
           break;
         }
 
         case 'debug.toast.all':
-          this.toastService.primary('This is a primary system message.', 'Primary');
-          this.toastService.secondary('This is a secondary system message.', 'Secondary');
-          this.toastService.light(
-            'This message uses the light theme styling.',
+          this.showDebugToast('primary', 'Primary', 'This is a primary system message.');
+          this.showDebugToast('secondary', 'Secondary', 'This is a secondary system message.');
+          this.showDebugToast(
+            'light',
             'Light Notification',
+            'This message uses the light theme styling.',
           );
-          this.toastService.dark('This message uses the dark theme styling.', 'Dark Notification');
-          this.toastService.adaptive(
-            'This automatically matches your current light/dark mode.',
+          this.showDebugToast(
+            'dark',
+            'Dark Notification',
+            'This message uses the dark theme styling.',
+          );
+          this.showDebugToast(
+            this.toastService.adaptiveType(),
             'Adaptive Mode',
+            'This automatically matches your current light/dark mode.',
           );
-          this.toastService.success('The operation was completed successfully.');
-          this.toastService.danger('A critical failure occurred during the process.');
-          this.toastService.warning('Please review your inputs before continuing.');
-          this.toastService.info('There is a new update available for your profile.');
+          this.showDebugToast('success', 'Success', 'The operation was completed successfully.');
+          this.showDebugToast('danger', 'Error', 'A critical failure occurred during the process.');
+          this.showDebugToast('warning', 'Warning', 'Please review your inputs before continuing.');
+          this.showDebugToast('info', 'Info', 'There is a new update available for your profile.');
           break;
 
         default:
@@ -201,21 +203,34 @@ export class MenuBarCommandHandlerService {
               : [];
 
     for (const type of toastTypes) {
-      this.toastService.showText(loremIpsum, {
+      this.showDebugToast(
         type,
-        title: `${type[0].toUpperCase()}${type.slice(1)} with actions`,
-        actions: this.debugToastActions(),
-      });
+        `${type[0].toUpperCase()}${type.slice(1)} with actions`,
+        loremIpsum,
+        undefined,
+        this.debugToastActions(),
+      );
     }
+  }
+
+  // Debug toasts only exercise the in-app toast, so they never raise an OS notification.
+  private showDebugToast(
+    type: ToastType,
+    title: string,
+    message = loremIpsum,
+    duration?: number,
+    actions?: ToastAction[],
+  ): void {
+    this.toastService.showText(message, { type, title, duration, actions, notifyOs: false });
   }
 
   private debugToastActions(): ToastAction[] {
     const clicked = (label: string) => () =>
-      this.toastService.info(`Action clicked: ${label}`, 'Debug', 2000);
+      this.showDebugToast('info', 'Debug', `Action clicked: ${label}`, 2000);
 
     return [
-      { label: 'Details', kind: 'text', onClick: clicked('Details') },
       { label: 'Retry', kind: 'primary', onClick: clicked('Retry') },
+      { label: 'Close', kind: 'text', onClick: clicked('Close') },
     ];
   }
 

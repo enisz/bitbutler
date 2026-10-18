@@ -506,6 +506,36 @@ describe('ImportTorrents', () => {
     });
   });
 
+  describe('category path mapping note', () => {
+    it('renders the note without a link to the qBittorrent settings', () => {
+      mockExportService.importPhase.set('ready');
+      mockExportService.importState.set({
+        phase: 'ready',
+        current: 0,
+        total: 0,
+        name: '',
+        failed: 0,
+        alreadyExisted: 0,
+        results: new Map(),
+        metadata: {
+          version: 1,
+          exported_at: 1700000000,
+          source_server: 'srv',
+          export_mode: 'full',
+          torrents: [{ hash: 'aaa', name: 'A', failed: false }],
+        },
+      } as any);
+      component.importForm.get('restoreFields.categories')?.setValue(true);
+
+      fixture.detectChanges();
+
+      const callout = (fixture.nativeElement as HTMLElement).querySelector('bb-callout');
+      expect(callout).not.toBeNull();
+      expect(callout?.querySelector('button')).toBeNull();
+      expect(callout?.querySelector('span.mt-3')).not.toBeNull();
+    });
+  });
+
   describe('done summary', () => {
     function setDone(failed: number, alreadyExisted: number, torrents: BbeTorrentEntry[] = []) {
       // `component.phase` captured a direct reference to this exact signal at

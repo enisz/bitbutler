@@ -49,8 +49,6 @@ describe('UiCommandHandlerService', () => {
     // import for each module requires async I/O which completes after flushPromises resolves.
     await Promise.all([
       import('../modals/delete-torrent/delete-torrent'),
-      import('../modals/settings/settings'),
-      import('../modals/qb-settings/qb-settings'),
       import('../modals/torrent-details/torrent-details'),
       import('../modals/add-torrent/add-torrent'),
       import('../components/about/about'),
@@ -88,6 +86,7 @@ describe('UiCommandHandlerService', () => {
 
     mockModalService = {
       activeInstances: new Subject(),
+      hasOpenModals: vi.fn().mockReturnValue(false),
       open: vi.fn().mockReturnValue({
         componentInstance: {},
         _contentRef: { componentRef: { setInput: setInputSpy } },
@@ -223,10 +222,28 @@ describe('UiCommandHandlerService', () => {
     expect(hashesCalls).toHaveLength(0);
   });
 
-  it('should open Settings modal for UI_OPEN_SETTINGS', async () => {
+  it('navigates to the default settings pane for UI_OPEN_SETTINGS', async () => {
     commands$.next({ type: 'UI_OPEN_SETTINGS' });
     await flushPromises();
-    expect(mockModalService.open).toHaveBeenCalled();
+
+    expect(routerNavigate).toHaveBeenCalledWith(['/pages', 'settings', 'general']);
+    expect(mockModalService.open).not.toHaveBeenCalled();
+  });
+
+  it('navigates to the requested pane for UI_OPEN_SETTINGS', async () => {
+    commands$.next({ type: 'UI_OPEN_SETTINGS', pane: 'notifications' });
+    await flushPromises();
+
+    expect(routerNavigate).toHaveBeenCalledWith(['/pages', 'settings', 'notifications']);
+  });
+
+  it('ignores UI_OPEN_SETTINGS while a modal is open', async () => {
+    mockModalService.hasOpenModals.mockReturnValue(true);
+
+    commands$.next({ type: 'UI_OPEN_SETTINGS' });
+    await flushPromises();
+
+    expect(routerNavigate).not.toHaveBeenCalled();
   });
 
   it('should navigate to the selected view for UI_VIEW_SELECT', async () => {
@@ -235,10 +252,28 @@ describe('UiCommandHandlerService', () => {
     expect(routerNavigate).toHaveBeenCalledWith(['/pages', 'torrent-list']);
   });
 
-  it('should open QbSettings modal for UI_OPEN_QB_SETTINGS', async () => {
+  it('navigates to the default qBittorrent settings pane for UI_OPEN_QB_SETTINGS', async () => {
     commands$.next({ type: 'UI_OPEN_QB_SETTINGS' });
     await flushPromises();
-    expect(mockModalService.open).toHaveBeenCalled();
+
+    expect(routerNavigate).toHaveBeenCalledWith(['/pages', 'qb-settings', 'bandwidth']);
+    expect(mockModalService.open).not.toHaveBeenCalled();
+  });
+
+  it('navigates to the requested pane for UI_OPEN_QB_SETTINGS', async () => {
+    commands$.next({ type: 'UI_OPEN_QB_SETTINGS', pane: 'storage' });
+    await flushPromises();
+
+    expect(routerNavigate).toHaveBeenCalledWith(['/pages', 'qb-settings', 'storage']);
+  });
+
+  it('ignores UI_OPEN_QB_SETTINGS while a modal is open', async () => {
+    mockModalService.hasOpenModals.mockReturnValue(true);
+
+    commands$.next({ type: 'UI_OPEN_QB_SETTINGS' });
+    await flushPromises();
+
+    expect(routerNavigate).not.toHaveBeenCalled();
   });
 
   it('should open About modal for UI_OPEN_ABOUT', async () => {
@@ -275,6 +310,31 @@ describe('UiCommandHandlerService', () => {
       expect(serverStoreService.suppressAutoLoginUntilManualConnect).toHaveBeenCalled();
       expect(serverStoreService.clearSelection).toHaveBeenCalled();
       expect(routerNavigate).toHaveBeenCalledWith(['/login']);
+    });
+
+    it('leaves a settings page first and logs out only once leaving is allowed', async () => {
+      confirmServiceConfirm.mockResolvedValue(true);
+      (TestBed.inject(Router) as any).url = '/pages/qb-settings/storage';
+
+      commands$.next({ type: 'UI_DISCONNECT' });
+      await flushPromises();
+
+      expect(routerNavigate.mock.calls[0]).toEqual([['/pages', 'torrent-list']]);
+      expect(qbAuthLogout).toHaveBeenCalledWith('server-1');
+      expect(routerNavigate).toHaveBeenLastCalledWith(['/login']);
+    });
+
+    it('keeps the session when the unsaved-changes guard keeps the user on the settings page', async () => {
+      confirmServiceConfirm.mockResolvedValue(true);
+      (TestBed.inject(Router) as any).url = '/pages/settings/general';
+      routerNavigate.mockResolvedValueOnce(false);
+
+      commands$.next({ type: 'UI_DISCONNECT' });
+      await flushPromises();
+
+      expect(qbAuthLogout).not.toHaveBeenCalled();
+      expect(serverStoreService.clearSelection).not.toHaveBeenCalled();
+      expect(routerNavigate).not.toHaveBeenCalledWith(['/login']);
     });
 
     it('should do nothing when the confirmation is declined', async () => {
@@ -375,7 +435,7 @@ describe('UiCommandHandlerService', () => {
       });
 
       commands$.next({ type: 'UI_OPEN_ABOUT' });
-      commands$.next({ type: 'UI_OPEN_QB_SETTINGS' });
+      commands$.next({ type: 'UI_OPEN_ABOUT' });
       await flushPromises();
 
       expect(mockModalService.open).toHaveBeenCalledTimes(2);
@@ -518,6 +578,33 @@ describe('UiCommandHandlerService', () => {
       qbAuthMock = (TestBed.inject(QbService) as any).auth;
       serverStoreMock = TestBed.inject(ServerStoreService) as any;
       toastMock = TestBed.inject(ToastService) as any;
+    });
+
+    it('leaves a settings page before switching servers', async () => {
+      setServer();
+      qbAuthMock.hasCookie.mockResolvedValue(true);
+      mockModalService.open.mockReturnValueOnce(loaderRef());
+      (TestBed.inject(Router) as any).url = '/pages/qb-settings/bandwidth';
+
+      commands$.next({ type: 'UI_SERVER_SWITCH', id: 'server-1' });
+      await flushPromises();
+
+      expect(routerNavigate).toHaveBeenCalledWith(['/pages', 'torrent-list']);
+      expect(serverStoreMock.select).toHaveBeenCalledWith('server-1');
+    });
+
+    it('does not switch servers when the user stays on an unsaved settings page', async () => {
+      setServer();
+      qbAuthMock.hasCookie.mockResolvedValue(true);
+      (TestBed.inject(Router) as any).url = '/pages/settings/polling';
+      routerNavigate.mockResolvedValueOnce(false);
+
+      commands$.next({ type: 'UI_SERVER_SWITCH', id: 'server-1' });
+      await flushPromises();
+
+      expect(serverStoreMock.select).not.toHaveBeenCalled();
+      expect(qbAuthMock.hasCookie).not.toHaveBeenCalled();
+      expect(mockModalService.open).not.toHaveBeenCalled();
     });
 
     it('opens the credential prompt when there is no session and credentials are missing', async () => {

@@ -1,0 +1,9 @@
+<app-settings-shell
+  [config]="config"
+  [activePaneId]="activePaneId()"
+  [isDirty]="stateService.isDirty()"
+  [dirtyMap]="stateService.isDirtyMap()"
+  [paneDirtyMap]="paneDirtyMap()"
+  (save)="onSave()"
+  (back)="onBack()"
+/>

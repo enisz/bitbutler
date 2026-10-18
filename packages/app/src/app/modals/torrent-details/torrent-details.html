@@ -3,15 +3,15 @@
     <div class="d-flex align-items-center gap-3 min-w-0">
       <span
         class="bb-header-status-dot bg-{{ stateVariant() }}"
-        [ngbTooltip]="'torrent.state.' + $safeNavigationMigration(torrent()?.state) | translate"
+        [bbTooltip]="'torrent.state.' + $safeNavigationMigration(torrent()?.state) | translate"
         placement="bottom"
       ></span>
       <h5
         class="modal-title bb-title-clamp"
-        [ngbTooltip]="$safeNavigationMigration(torrent()?.name)"
-        bbTooltipOverflow
+        [bbTooltip]="$safeNavigationMigration(torrent()?.name)"
+        overflowOnly
         placement="bottom"
-        tooltipClass="single-line-tooltip"
+        singleLine
       >
         {{ torrent()?.name }}
       </h5>
@@ -48,7 +48,7 @@
                 [icon]="icon.faAsterisk"
                 [size]="'2xs'"
                 class="ms-2"
-                [ngbTooltip]="'components.modals.guard.unsaved-indicator' | translate"
+                [bbTooltip]="'components.modals.guard.unsaved-indicator' | translate"
               ></fa-icon>
             }
           </button>
@@ -126,7 +126,7 @@
         type="button"
         [class.bb-dropdown-item--disabled]="!dataService.localPath()"
         [attr.aria-disabled]="!dataService.localPath() ? 'true' : null"
-        [ngbTooltip]="
+        [bbTooltip]="
           'components.modals.torrent-details.general.tooltip.open-destination-unresolved'
             | translate
         "
@@ -170,7 +170,7 @@
     <button type="button" class="btn btn-secondary btn-sm btn-split" ngbDropdownToggle>
       <bb-btn-content
         [icon]="icon.faChevronUp"
-        [text]="'components.modals.torrent-details.general.footer.manage' | translate"
+        [text]="'general.button.manage' | translate"
         position="end"
       ></bb-btn-content>
     </button>

@@ -81,7 +81,7 @@ Handler services are: `UiCommandHandlerService`, `TorrentCommandHandlerService`,
 
 ### Routing & pages
 
-Three lazy-loaded routes: `login`, `main` (torrent grid), `settings`. The router navigates to `login` on 401/403 from the qBittorrent API.
+Lazy-loaded routes: `login`, `pages/torrent-list` (torrent grid), and two settings pages that share one `SettingsShell` layout: `pages/settings/:pane` (app settings) and `pages/qb-settings/:pane` (qBittorrent preferences). Every pane of a settings page stays mounted and the `:pane` parameter only selects which one is visible. The router navigates to `login` on 401/403 from the qBittorrent API.
 
 ### Theming & i18n
 

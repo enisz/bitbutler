@@ -1,0 +1,100 @@
+<form [formGroup]="form">
+  <div class="bb-cards">
+    <app-bb-section-card
+      [title]="'pages.qb-settings.tab.queue-limits.label.active-torrents' | translate"
+    >
+      <div class="bb-options">
+        <div class="bb-options mb-3">
+          <div class="bb-option">
+            <div class="bb-option__text">
+              <label class="bb-option__label" for="queueing-enabled">
+                {{ 'pages.qb-settings.tab.queue-limits.field.queueing-enabled' | translate }}
+              </label>
+            </div>
+            <span class="bb-option__toggle form-switch">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="queueing-enabled"
+                formControlName="queueing_enabled"
+              />
+            </span>
+          </div>
+        </div>
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'pages.qb-settings.tab.queue-limits.field.max-active-downloads' | translate }}
+            </span>
+          </div>
+          <div class="bb-option__control">
+            <input
+              type="number"
+              class="form-control"
+              formControlName="max_active_downloads"
+              min="0"
+            />
+          </div>
+        </div>
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'pages.qb-settings.tab.queue-limits.field.max-active-uploads' | translate }}
+            </span>
+          </div>
+          <div class="bb-option__control">
+            <input
+              type="number"
+              class="form-control"
+              formControlName="max_active_uploads"
+              min="0"
+            />
+          </div>
+        </div>
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'pages.qb-settings.tab.queue-limits.field.max-active-torrents' | translate }}
+            </span>
+          </div>
+          <div class="bb-option__control">
+            <input
+              type="number"
+              class="form-control"
+              formControlName="max_active_torrents"
+              min="0"
+            />
+          </div>
+        </div>
+      </div>
+    </app-bb-section-card>
+
+    @if (hasAddToTop()) {
+      <app-bb-section-card
+        [title]="'pages.qb-settings.tab.queue-limits.label.download-behavior' | translate"
+      >
+        <div class="bb-options">
+          <div class="bb-options mb-3">
+            <div class="bb-option">
+              <div class="bb-option__text">
+                <label class="bb-option__label" for="add-to-top-of-queue">
+                  {{ 'pages.qb-settings.tab.queue-limits.field.add-to-top-of-queue' | translate }}
+                </label>
+              </div>
+              <span class="bb-option__toggle form-switch">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  id="add-to-top-of-queue"
+                  formControlName="add_to_top_of_queue"
+                />
+              </span>
+            </div>
+          </div>
+        </div>
+      </app-bb-section-card>
+    }
+  </div>
+</form>

@@ -7,9 +7,9 @@
     <div
       #element
       class="small text-body-secondary mt-1 bb-hash-clamp"
-      [ngbTooltip]="torrent().name"
-      bbTooltipOverflow
-      tooltipClass="single-line-tooltip"
+      [bbTooltip]="torrent().name"
+      overflowOnly
+      singleLine
       placement="bottom"
     >
       {{ torrent().name }}

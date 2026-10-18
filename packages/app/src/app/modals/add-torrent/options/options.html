@@ -1,7 +1,5 @@
 <div [formGroup]="form()">
-  <fieldset class="bb-fieldset mt-0">
-    <legend>{{ 'components.add-torrent.label.layout' | translate }}</legend>
-
+  <app-bb-section-card class="mb-4" [title]="'components.add-torrent.label.layout' | translate">
     <div class="row mt-3">
       <div class="col-11">
         <div class="form-floating mb-3">
@@ -29,11 +27,9 @@
         ></bb-popover>
       </div>
     </div>
-  </fieldset>
+  </app-bb-section-card>
 
-  <fieldset class="bb-fieldset mb-0">
-    <legend>{{ 'components.add-torrent.label.behaviour' | translate }}</legend>
-
+  <app-bb-section-card [title]="'components.add-torrent.label.behaviour' | translate">
     <div class="bb-options">
       <div class="bb-option">
         <div class="bb-option__text">
@@ -145,7 +141,7 @@
         </span>
       </div>
     </div>
-  </fieldset>
+  </app-bb-section-card>
 </div>
 
 <ng-template #skipChecking>

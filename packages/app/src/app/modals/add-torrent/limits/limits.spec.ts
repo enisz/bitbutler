@@ -62,14 +62,14 @@ describe('AddTorrentLimits', () => {
 
   it('should wrap each limit control in a bb-fieldset with the correct legend', () => {
     const fieldsets: NodeListOf<HTMLElement> =
-      fixture.nativeElement.querySelectorAll('fieldset.bb-fieldset');
+      fixture.nativeElement.querySelectorAll('app-bb-section-card');
 
     expect(fieldsets.length).toBe(2);
-    expect(fieldsets[0].querySelector('legend')?.textContent).toContain(
+    expect(fieldsets[0].querySelector('.bb-section-card__title')?.textContent).toContain(
       'components.add-torrent.label.transfer-rate-limits',
     );
     expect(fieldsets[0].querySelector('app-transfer-limit')).toBeTruthy();
-    expect(fieldsets[1].querySelector('legend')?.textContent).toContain(
+    expect(fieldsets[1].querySelector('.bb-section-card__title')?.textContent).toContain(
       'components.add-torrent.label.share-limits',
     );
     expect(fieldsets[1].querySelector('app-share-limit')).toBeTruthy();

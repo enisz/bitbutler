@@ -1,0 +1,10 @@
+<header class="bb-section-card__header">
+  <h3 class="bb-section-card__title" [id]="titleId">{{ title() }}</h3>
+  <ng-content select="[bbCardTitleExtra]"></ng-content>
+  <div class="bb-section-card__action">
+    <ng-content select="[bbCardAction]"></ng-content>
+  </div>
+</header>
+<div class="bb-section-card__body">
+  <ng-content></ng-content>
+</div>

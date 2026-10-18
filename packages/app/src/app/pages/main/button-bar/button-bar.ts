@@ -35,9 +35,10 @@ import {
   faTrashCan,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
-import { NgbDropdownModule, NgbModal, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDropdownModule, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { BbTooltip } from '../../../directives/bb-tooltip';
 import { CommandBusService } from '../../../services/command-bus.service';
 import { FilterService } from '../../../services/filter.service';
 import { SelectionStoreService } from '../../../services/selection-store.service';
@@ -52,7 +53,7 @@ import { ToolbarEntry } from './button-bar.menu';
     FontAwesomeModule,
     ReactiveFormsModule,
     NgbDropdownModule,
-    NgbTooltipModule,
+    BbTooltip,
     TranslatePipe,
   ],
   templateUrl: './button-bar.html',
@@ -93,7 +94,7 @@ export class ButtonBar implements OnInit {
       {
         kind: 'action',
         id: 'delete.deleteTorrent',
-        label: 'pages.main.button-bar.button.delete',
+        label: 'general.button.delete',
         icon: faTrashCan,
         variant: 'danger',
         disabled: !this.hasSelection(),
@@ -196,7 +197,7 @@ export class ButtonBar implements OnInit {
       {
         kind: 'group',
         id: 'manage',
-        label: 'pages.main.button-bar.button.manage-group',
+        label: 'general.button.manage',
         icon: faSliders,
         variant: 'default',
         items: [

@@ -1,0 +1,85 @@
+@if (settingsLoaded()) {
+  <form [formGroup]="generalSettingsForm" class="bb-cards">
+    <app-bb-section-card [title]="'pages.settings.tab.general.label.startup' | translate">
+      <div class="bb-options bb-options--grid bb-startup-grid">
+        <div class="bb-option" formGroupName="startup">
+          <div class="bb-option__text">
+            <label class="bb-option__label" for="open-at-login">
+              {{
+                'pages.settings.tab.general.general-settings-form.startup.open-at-login' | translate
+              }}
+            </label>
+            <span class="bb-option__sub">{{
+              'pages.settings.tab.general.popover.open-at-login.sub' | translate
+            }}</span>
+          </div>
+          <span class="bb-option__toggle form-switch">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="open-at-login"
+              formControlName="openAtLogin"
+            />
+          </span>
+        </div>
+        <div class="bb-option" formGroupName="startup">
+          <div class="bb-option__text">
+            <label class="bb-option__label" for="start-minimized">
+              {{
+                'pages.settings.tab.general.general-settings-form.startup.start-minimized'
+                  | translate
+              }}
+            </label>
+            <span class="bb-option__sub">{{
+              'pages.settings.tab.general.popover.start-minimized.sub' | translate
+            }}</span>
+          </div>
+          <span class="bb-option__toggle form-switch">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="start-minimized"
+              formControlName="startMinimized"
+            />
+          </span>
+        </div>
+        <div class="bb-option" formGroupName="behavior">
+          <div class="bb-option__text">
+            <label class="bb-option__label" for="automatic-update">
+              {{
+                'pages.settings.tab.general.general-settings-form.behavior.automatic-update'
+                  | translate
+              }}
+            </label>
+            <span class="bb-option__sub">{{
+              'pages.settings.tab.general.popover.automatic-update.sub' | translate
+            }}</span>
+          </div>
+          <span class="bb-option__toggle form-switch">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="automatic-update"
+              formControlName="automaticUpdate"
+            />
+          </span>
+        </div>
+      </div>
+
+      @if (showNoDefaultHostHint()) {
+        <small class="text-warning d-block mt-2">
+          <fa-icon [icon]="icons['faTriangleExclamation']" class="me-1" />
+          {{
+            'pages.settings.tab.general.general-settings-form.startup.no-default-host-hint'
+              | translate
+          }}
+        </small>
+      }
+    </app-bb-section-card>
+  </form>
+} @else {
+  <app-bb-spinner></app-bb-spinner>
+}

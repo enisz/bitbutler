@@ -1,0 +1,172 @@
+<form [formGroup]="form">
+  <div class="bb-cards">
+    <app-bb-section-card [title]="'pages.qb-settings.tab.storage.label.default-paths' | translate">
+      <div class="bb-options">
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'pages.qb-settings.tab.storage.field.save-path' | translate }}
+            </span>
+          </div>
+          <div class="bb-option__control">
+            <input type="text" class="form-control" formControlName="save_path" />
+          </div>
+        </div>
+      </div>
+    </app-bb-section-card>
+
+    @if (hasTempPath()) {
+      <app-bb-section-card [title]="'pages.qb-settings.tab.storage.label.temp-files' | translate">
+        <div class="bb-options">
+          <div class="bb-options mb-3">
+            <div class="bb-option">
+              <div class="bb-option__text">
+                <label class="bb-option__label" for="temp-path-enabled">
+                  {{ 'pages.qb-settings.tab.storage.field.temp-path-enabled' | translate }}
+                </label>
+              </div>
+              <span class="bb-option__toggle form-switch">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  id="temp-path-enabled"
+                  formControlName="temp_path_enabled"
+                />
+              </span>
+            </div>
+          </div>
+          <div class="bb-option">
+            <div class="bb-option__text">
+              <span class="bb-option__label">
+                {{ 'pages.qb-settings.tab.storage.field.temp-path' | translate }}
+              </span>
+            </div>
+            <div class="bb-option__control">
+              <input type="text" class="form-control" formControlName="temp_path" />
+            </div>
+          </div>
+        </div>
+      </app-bb-section-card>
+    }
+
+    <app-bb-section-card
+      [title]="'pages.qb-settings.tab.storage.label.file-management' | translate"
+    >
+      <div class="bb-options">
+        <div class="bb-options mb-3">
+          <div class="bb-option">
+            <div class="bb-option__text">
+              <label class="bb-option__label" for="incomplete-files-ext">
+                {{ 'pages.qb-settings.tab.storage.field.incomplete-files-ext' | translate }}
+              </label>
+            </div>
+            <span class="bb-option__toggle form-switch">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="incomplete-files-ext"
+                formControlName="incomplete_files_ext"
+              />
+            </span>
+          </div>
+        </div>
+        @if (hasContentLayout()) {
+          <div class="bb-option">
+            <div class="bb-option__text">
+              <span class="bb-option__label">
+                {{ 'pages.qb-settings.tab.storage.field.torrent-content-layout' | translate }}
+              </span>
+            </div>
+            <div class="bb-option__control">
+              <ng-select
+                [items]="contentLayouts"
+                [clearable]="false"
+                [searchable]="false"
+                bindLabel="label"
+                bindValue="value"
+                formControlName="torrent_content_layout"
+              ></ng-select>
+            </div>
+          </div>
+        }
+      </div>
+    </app-bb-section-card>
+
+    <app-bb-section-card
+      [title]="'pages.qb-settings.tab.storage.label.save-management' | translate"
+    >
+      <div class="bb-options">
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'pages.qb-settings.tab.storage.field.auto-tmm-enabled' | translate }}
+            </span>
+          </div>
+          <div class="bb-option__control">
+            <ng-select
+              [items]="autoTmmModes"
+              [clearable]="false"
+              [searchable]="false"
+              bindLabel="label"
+              bindValue="value"
+              formControlName="auto_tmm_enabled"
+            ></ng-select>
+          </div>
+        </div>
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'pages.qb-settings.tab.storage.field.torrent-changed-tmm-enabled' | translate }}
+            </span>
+          </div>
+          <div class="bb-option__control">
+            <ng-select
+              [items]="tmmChangeBehaviors"
+              [clearable]="false"
+              [searchable]="false"
+              bindLabel="label"
+              bindValue="value"
+              formControlName="torrent_changed_tmm_enabled"
+            ></ng-select>
+          </div>
+        </div>
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'pages.qb-settings.tab.storage.field.category-changed-tmm-enabled' | translate }}
+            </span>
+          </div>
+          <div class="bb-option__control">
+            <ng-select
+              [items]="tmmChangeBehaviors"
+              [clearable]="false"
+              [searchable]="false"
+              bindLabel="label"
+              bindValue="value"
+              formControlName="category_changed_tmm_enabled"
+            ></ng-select>
+          </div>
+        </div>
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{ 'pages.qb-settings.tab.storage.field.save-path-changed-tmm-enabled' | translate }}
+            </span>
+          </div>
+          <div class="bb-option__control">
+            <ng-select
+              [items]="tmmChangeBehaviors"
+              [clearable]="false"
+              [searchable]="false"
+              bindLabel="label"
+              bindValue="value"
+              formControlName="save_path_changed_tmm_enabled"
+            ></ng-select>
+          </div>
+        </div>
+      </div>
+    </app-bb-section-card>
+  </div>
+</form>

@@ -9,6 +9,7 @@ import { LocalTimestampPipe } from '../../pipes/local-timestamp-pipe';
 import { ElectronService } from '../../services/electron.service';
 import { BbBtnContent } from '../bb-btn-content/bb-btn-content';
 import { BbLogo } from '../bb-logo/bb-logo';
+import { BbSectionCard } from '../bb-section-card/bb-section-card';
 
 interface TechStackItem {
   name: string;
@@ -19,6 +20,7 @@ interface TechStackItem {
 @Component({
   selector: 'app-about',
   imports: [
+    BbSectionCard,
     LocalTimestampPipe,
     TimeagoPipe,
     AutofocusDirective,

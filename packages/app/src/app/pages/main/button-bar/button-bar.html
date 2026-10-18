@@ -19,11 +19,11 @@
           [class.bb-tool--info]="e.variant === 'info'"
           [class.bb-tool--warning]="e.variant === 'warning'"
           [class.bb-tool--danger]="e.variant === 'danger'"
-          [ngbTooltip]="e.label | translate"
+          [bbTooltip]="e.label | translate"
           placement="bottom"
           container="body"
           [disableTooltip]="!compact"
-          #actionTooltip="ngbTooltip"
+          #actionTooltip="bbTooltip"
           (click)="onClick(e.id); actionTooltip.close()"
         >
           <span class="bb-tool__icon" aria-hidden="true">
@@ -97,11 +97,11 @@
       [class.bb-tool--info]="e.variant === 'info'"
       [class.bb-tool--warning]="e.variant === 'warning'"
       [class.bb-tool--danger]="e.variant === 'danger'"
-      [ngbTooltip]="e.label | translate"
+      [bbTooltip]="e.label | translate"
       placement="bottom"
       container="body"
       [disableTooltip]="!compact"
-      #groupTooltip="ngbTooltip"
+      #groupTooltip="bbTooltip"
       (click)="groupTooltip.close()"
     >
       <span class="bb-tool__icon" aria-hidden="true">

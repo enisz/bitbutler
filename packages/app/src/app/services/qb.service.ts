@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { FORCE_LEAVE_STATE_KEY } from '../guards/unsaved-changes.guard';
 import { HttpError } from '../models/http.model';
 import {
   QbAppPreferences,
@@ -847,7 +848,7 @@ export class QbService {
       this.serverStoreService.clearSelection();
     } catch {}
 
-    this.router.navigate(['/login']);
+    this.router.navigate(['/login'], { state: { [FORCE_LEAVE_STATE_KEY]: true } });
   }
 
   private async runTorrents(
