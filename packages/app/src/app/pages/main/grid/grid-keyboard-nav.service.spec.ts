@@ -39,40 +39,6 @@ describe('GridKeyboardNavService', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('anchorIndex', () => {
-    it('should be null initially', () => {
-      expect(service.anchorIndex).toBeNull();
-    });
-
-    it('should set and return the value', () => {
-      service.anchorIndex = 3;
-      expect(service.anchorIndex).toBe(3);
-    });
-
-    it('should accept null', () => {
-      service.anchorIndex = 3;
-      service.anchorIndex = null;
-      expect(service.anchorIndex).toBeNull();
-    });
-  });
-
-  describe('leadIndex', () => {
-    it('should be null initially', () => {
-      expect(service.leadIndex).toBeNull();
-    });
-
-    it('should set and return the value', () => {
-      service.leadIndex = 7;
-      expect(service.leadIndex).toBe(7);
-    });
-
-    it('should accept null', () => {
-      service.leadIndex = 7;
-      service.leadIndex = null;
-      expect(service.leadIndex).toBeNull();
-    });
-  });
-
   describe('onKeyUp', () => {
     it('should emit UI_TORRENT_DELETE_REQUEST when Delete is pressed', () => {
       const event = new KeyboardEvent('keyup', { code: 'Delete' });

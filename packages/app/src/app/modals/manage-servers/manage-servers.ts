@@ -42,6 +42,7 @@ import {
   buildValueCounts,
 } from '../../components/column-filters/set-column-filter/set-column-filter';
 import { TextColumnFilter } from '../../components/column-filters/text-column-filter/text-column-filter';
+import { GridRowNavigationDirective } from '../../directives/grid-row-navigation';
 import type { ManageServersGridSettings } from '../../models/manage-servers-grid.model';
 import type { ContextMenuEntry } from '../../pages/main/grid/context-menu/context-menu.types';
 import { GridContextMenuService } from '../../pages/main/grid/context-menu/grid-context-menu.service';
@@ -61,7 +62,7 @@ import { ActiveOrbRenderer } from './active-orb-renderer';
 @Component({
   selector: 'app-manage-servers',
   standalone: true,
-  imports: [AgGridAngular, TranslatePipe, BbBtnContent],
+  imports: [AgGridAngular, GridRowNavigationDirective, TranslatePipe, BbBtnContent],
   templateUrl: './manage-servers.html',
   styleUrl: './manage-servers.scss',
 })

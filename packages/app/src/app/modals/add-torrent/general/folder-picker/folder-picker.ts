@@ -50,6 +50,7 @@ import {
 } from '../../../../components/column-filters/set-column-filter/set-column-filter';
 import { SizeColumnFilter } from '../../../../components/column-filters/size-column-filter/size-column-filter';
 import { TextColumnFilter } from '../../../../components/column-filters/text-column-filter/text-column-filter';
+import { GridRowNavigationDirective } from '../../../../directives/grid-row-navigation';
 import {
   ScannedTorrentEntry,
   ScannedTorrentState,
@@ -77,6 +78,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 @Component({
   selector: 'app-add-torrent-folder-picker',
   imports: [
+    GridRowNavigationDirective,
     ReactiveFormsModule,
     FontAwesomeModule,
     TranslatePipe,

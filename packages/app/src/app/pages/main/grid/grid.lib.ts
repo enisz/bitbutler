@@ -1115,10 +1115,6 @@ export function getGridOptions(
     setHasLoadedInitialState: (v: boolean) => void;
     queueSave: () => void;
     updateInViewCount: () => void;
-    getSelectionAnchorIndex: () => number | null;
-    getSelectionLeadIndex: () => number | null;
-    setSelectionAnchorIndex: (v: number | null) => void;
-    setSelectionLeadIndex: (v: number | null) => void;
     getLatestFilters: () => typeof GRID_FILTER_INITIAL.external;
     getIsApplyingFilterFromService: () => boolean;
     setIsApplyingFilterFromService: (v: boolean) => void;
@@ -1223,22 +1219,6 @@ export function getGridOptions(
           }, 0);
         }
       })();
-    },
-
-    onRowClicked: (e) => {
-      const ev = e.event as MouseEvent | KeyboardEvent | undefined;
-      const shift = !!ev?.shiftKey;
-      const ctrl = !!(ev as MouseEvent)?.ctrlKey;
-      const meta = !!(ev as MouseEvent)?.metaKey;
-
-      if (shift) return;
-
-      if (!ctrl && !meta) {
-        opts.setSelectionAnchorIndex(e.rowIndex ?? null);
-        opts.setSelectionLeadIndex(e.rowIndex ?? null);
-      } else {
-        opts.setSelectionLeadIndex(e.rowIndex ?? opts.getSelectionLeadIndex());
-      }
     },
 
     onFilterChanged: (e) => {

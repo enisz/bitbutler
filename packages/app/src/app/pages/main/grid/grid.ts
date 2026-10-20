@@ -23,6 +23,7 @@ import {
 } from 'ag-grid-community';
 import { Subject, filter, firstValueFrom, skip, throttleTime } from 'rxjs';
 import { GRID_DARK_THEME, GRID_LIGHT_THEME } from '../../../app.const';
+import { GridRowNavigationDirective } from '../../../directives/grid-row-navigation';
 import { TorrentListGridSettings } from '../../../models/torrent-list-grid.model';
 import { Torrent } from '../../../models/torrent.model';
 import { CommandBusService } from '../../../services/command-bus.service';
@@ -48,7 +49,7 @@ import { getGridColDefs, getGridOptions } from './grid.lib';
 @Component({
   selector: 'app-grid',
   standalone: true,
-  imports: [AgGridAngular],
+  imports: [AgGridAngular, GridRowNavigationDirective],
   providers: [
     GridStateService,
     GridContextMenuService,
@@ -127,10 +128,6 @@ export class Grid implements AfterViewInit {
         setHasLoadedInitialState: (v) => (this.hasLoadedInitialState = v),
         queueSave: this.queueSave,
         updateInViewCount: this.updateInViewCount,
-        getSelectionAnchorIndex: () => this.keyboardNavService.anchorIndex,
-        getSelectionLeadIndex: () => this.keyboardNavService.leadIndex,
-        setSelectionAnchorIndex: (v) => (this.keyboardNavService.anchorIndex = v),
-        setSelectionLeadIndex: (v) => (this.keyboardNavService.leadIndex = v),
         getLatestFilters: () => this.filterService.external(),
         getIsApplyingFilterFromService: () => this.isApplyingFilterFromService,
         setIsApplyingFilterFromService: (v) => (this.isApplyingFilterFromService = v),
@@ -142,31 +139,6 @@ export class Grid implements AfterViewInit {
           this.keyboardNavService.init(api);
           this.gridPinService.init(api);
           this.api = api;
-
-          api.setGridOption('onRowClicked', (event) => {
-            const mouseEvent = event.event as MouseEvent;
-            if (event.rowIndex !== null && !mouseEvent?.shiftKey) {
-              this.keyboardNavService.anchorIndex = event.rowIndex;
-              this.keyboardNavService.leadIndex = event.rowIndex;
-            }
-          });
-
-          api.setGridOption('onCellClicked', (event) => {
-            const mouseEvent = event.event as MouseEvent;
-            if (
-              mouseEvent?.shiftKey &&
-              this.keyboardNavService.anchorIndex !== null &&
-              event.rowIndex !== null
-            ) {
-              const start = Math.min(this.keyboardNavService.anchorIndex, event.rowIndex);
-              const end = Math.max(this.keyboardNavService.anchorIndex, event.rowIndex);
-
-              api.deselectAll();
-              for (let i = start; i <= end; i++) {
-                api.getDisplayedRowAtIndex(i)?.setSelected(true);
-              }
-            }
-          });
         },
         getIsProgrammaticSelection: () => this.isProgrammaticSelection,
         applyDbSettings: async () => {
