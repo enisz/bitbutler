@@ -68,6 +68,7 @@ import { TextColumnFilter } from '../../components/column-filters/text-column-fi
 import { TimeLimitColumnFilter } from '../../components/column-filters/time-limit-column-filter/time-limit-column-filter';
 import { AutofocusDirective } from '../../directives/autofocus';
 import { BbTooltip } from '../../directives/bb-tooltip';
+import { GridRowNavigationDirective } from '../../directives/grid-row-navigation';
 import { NoRowOverlay } from '../../pages/main/grid/overlays/no-row-overlay/no-row-overlay';
 import { LocalTimestampPipe } from '../../pipes/local-timestamp-pipe';
 import { ExportService } from '../../services/export.service';
@@ -83,6 +84,7 @@ type ImportGridRow = BbeTorrentEntry & { importState: ImportRowStatus };
   selector: 'app-import-torrents',
   standalone: true,
   imports: [
+    GridRowNavigationDirective,
     BbSectionCard,
     ReactiveFormsModule,
     TranslatePipe,

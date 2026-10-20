@@ -18,6 +18,7 @@ import { GRID_DARK_THEME, GRID_LIGHT_THEME, GRID_SHARED_OPTIONS } from '../../ap
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { NumberColumnFilter } from '../../components/column-filters/number-column-filter/number-column-filter';
 import { TextColumnFilter } from '../../components/column-filters/text-column-filter/text-column-filter';
+import { GridRowNavigationDirective } from '../../directives/grid-row-navigation';
 import type { ManageCategoriesGridSettings } from '../../models/manage-categories-grid.model';
 import type { ContextMenuEntry } from '../../pages/main/grid/context-menu/context-menu.types';
 import { GridContextMenuService } from '../../pages/main/grid/context-menu/grid-context-menu.service';
@@ -44,7 +45,7 @@ export interface CategoryRow extends CategoryEntry {
 @Component({
   selector: 'app-manage-categories',
   standalone: true,
-  imports: [AgGridAngular, TranslatePipe, BbBtnContent],
+  imports: [AgGridAngular, GridRowNavigationDirective, TranslatePipe, BbBtnContent],
   templateUrl: './manage-categories.html',
   styleUrl: './manage-categories.scss',
 })

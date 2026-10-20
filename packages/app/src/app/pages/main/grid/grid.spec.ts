@@ -29,8 +29,6 @@ describe('Grid', () => {
   let keyboardNavServiceMock: {
     onKeyUp: ReturnType<typeof vi.fn>;
     onKeyDown: ReturnType<typeof vi.fn>;
-    anchorIndex: number | null;
-    leadIndex: number | null;
     init: ReturnType<typeof vi.fn>;
   };
   let themeServiceMock: { effectiveMode: ReturnType<typeof signal<'dark' | 'light'>> };
@@ -60,8 +58,6 @@ describe('Grid', () => {
     keyboardNavServiceMock = {
       onKeyUp: vi.fn(),
       onKeyDown: vi.fn(),
-      anchorIndex: null,
-      leadIndex: null,
       init: vi.fn(),
     };
 
