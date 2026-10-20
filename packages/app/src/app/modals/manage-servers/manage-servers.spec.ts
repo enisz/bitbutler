@@ -457,4 +457,20 @@ describe('ManageServers', () => {
       });
     });
   });
+
+  describe('row selection', () => {
+    it('selects rows by clicking them, without a checkbox column', () => {
+      expect(component.gridOptions.rowSelection).toMatchObject({
+        mode: 'multiRow',
+        checkboxes: false,
+        headerCheckbox: false,
+        enableClickSelection: true,
+      });
+    });
+
+    it('keeps the isRowSelectable guard', () => {
+      const selection = component.gridOptions.rowSelection as { isRowSelectable?: unknown };
+      expect(selection.isRowSelectable).toBe(component.isRowSelectable);
+    });
+  });
 });

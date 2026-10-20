@@ -130,8 +130,9 @@ export class ManageCategories implements OnInit, OnDestroy {
     ...GRID_SHARED_OPTIONS,
     rowSelection: {
       mode: 'multiRow',
-      checkboxes: true,
-      headerCheckbox: true,
+      checkboxes: false,
+      headerCheckbox: false,
+      enableClickSelection: true,
     },
     getRowId: this.getRowId,
     onSelectionChanged: (event) => this.onSelectionChanged(event),

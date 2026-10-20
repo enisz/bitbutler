@@ -236,8 +236,9 @@ export class ManageServers implements OnDestroy {
     ...GRID_SHARED_OPTIONS,
     rowSelection: {
       mode: 'multiRow',
-      checkboxes: true,
-      headerCheckbox: true,
+      checkboxes: false,
+      headerCheckbox: false,
+      enableClickSelection: true,
       isRowSelectable: this.isRowSelectable,
     },
     getRowId: this.getRowId,

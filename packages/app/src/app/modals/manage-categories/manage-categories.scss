@@ -1,3 +1,7 @@
 .bb-manage-categories-grid {
   height: 500px;
 }
+
+.bb-manage-categories-grid ::ng-deep .ag-row-selected {
+  box-shadow: inset 2px 0 0 0 var(--bb-accent);
+}
