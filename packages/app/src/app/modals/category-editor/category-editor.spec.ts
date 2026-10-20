@@ -172,6 +172,24 @@ describe('CategoryEditor', () => {
       expect(activeModal.close).toHaveBeenCalled();
     });
 
+    it('clears the save path when the select emits null', async () => {
+      fixture.componentRef.setInput('category', { name: 'movies', savePath: '/data/movies' });
+      fixture.detectChanges();
+      // The save path select emits null when the user clears it.
+      component.savePathControl.setValue(null as unknown as string);
+      qbService.torrents.editCategory.mockResolvedValue(undefined);
+
+      await component.save();
+
+      expect(qbService.torrents.editCategory).toHaveBeenCalledWith('srv-1', 'movies', '');
+      expect(commandBusService.emit).toHaveBeenCalledWith({
+        type: 'CATEGORY_UPDATED',
+        name: 'movies',
+        savePath: '',
+      });
+      expect(activeModal.close).toHaveBeenCalled();
+    });
+
     it('shows a danger toast and keeps the modal open when editCategory fails', async () => {
       fixture.componentRef.setInput('category', { name: 'movies', savePath: '/data/movies' });
       fixture.detectChanges();
