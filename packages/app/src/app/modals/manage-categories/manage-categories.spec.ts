@@ -459,4 +459,15 @@ describe('ManageCategories', () => {
       );
     });
   });
+
+  describe('row selection', () => {
+    it('selects rows by clicking them, without a checkbox column', () => {
+      expect(component.gridOptions.rowSelection).toMatchObject({
+        mode: 'multiRow',
+        checkboxes: false,
+        headerCheckbox: false,
+        enableClickSelection: true,
+      });
+    });
+  });
 });

@@ -5,3 +5,7 @@
 .bb-row-active {
   font-weight: 600;
 }
+
+.bb-manage-servers-grid ::ng-deep .ag-row-selected {
+  box-shadow: inset 2px 0 0 0 var(--bb-accent);
+}
