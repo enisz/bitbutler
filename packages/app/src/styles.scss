@@ -35,6 +35,13 @@
   --bb-chrome: color-mix(in srgb, var(--bs-body-bg) 50%, var(--bs-card-bg));
 }
 
+// A clicked grid row keeps the browser focus while the keyboard moves the selection away from
+// it, which makes ag-grid draw its focus ring on the stale row. The selected row is the
+// focus indicator, so rows get no ring - inputs, menus and the pager keep theirs.
+.ag-row:focus-visible:not(.ag-row-selected) {
+  box-shadow: none;
+}
+
 .btn {
   font-weight: 500;
   letter-spacing: 0.02em;

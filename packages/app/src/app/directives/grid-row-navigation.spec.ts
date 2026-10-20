@@ -122,11 +122,65 @@ describe('GridRowNavigationDirective', () => {
       expect(selectedIndexes()).toEqual([11]);
     });
 
-    it('does nothing when nothing is selected', () => {
-      const event = press('ArrowDown');
+    describe('when nothing is selected', () => {
+      it.each([
+        ['ArrowDown', 0],
+        ['PageDown', 0],
+        ['Home', 0],
+        ['ArrowUp', 99],
+        ['PageUp', 99],
+        ['End', 99],
+      ])('%s selects row %i', (code, expected) => {
+        const event = press(code);
 
-      expect(selectedIndexes()).toEqual([]);
-      expect(event.defaultPrevented).toBe(false);
+        expect(selectedIndexes()).toEqual([expected]);
+        expect(directive.leadIndex).toBe(expected);
+        expect(directive.anchorIndex).toBe(expected);
+        expect(event.defaultPrevented).toBe(true);
+        expect(api['ensureIndexVisible']).toHaveBeenCalledWith(expected);
+      });
+
+      it('selects a single row with Shift as well', () => {
+        press('ArrowDown', { shiftKey: true });
+
+        expect(selectedIndexes()).toEqual([0]);
+      });
+
+      it('skips rows that cannot be selected', () => {
+        nodes = createNodes(10, (i) => i !== 0 && i !== 9);
+
+        press('ArrowDown');
+        expect(selectedIndexes()).toEqual([1]);
+
+        nodes.forEach((n) => (n.selected = false));
+        directive.leadIndex = null;
+        press('ArrowUp');
+        expect(selectedIndexes()).toEqual([8]);
+      });
+
+      it('starts over when the previous selection was cleared', () => {
+        directive.leadIndex = 40;
+        directive.anchorIndex = 40;
+
+        press('ArrowDown');
+
+        expect(selectedIndexes()).toEqual([0]);
+      });
+
+      it('does nothing when no row can be selected', () => {
+        nodes = createNodes(3, () => false);
+
+        const event = press('ArrowDown');
+
+        expect(selectedIndexes()).toEqual([]);
+        expect(event.defaultPrevented).toBe(false);
+      });
+
+      it('does nothing when the grid has no rows', () => {
+        nodes = [];
+
+        expect(press('ArrowDown').defaultPrevented).toBe(false);
+      });
     });
 
     it('stays on the first and last row at the edges', () => {
@@ -343,12 +397,42 @@ describe('GridRowNavigationDirective', () => {
       expect(selectedIndexes()).toEqual([5]);
     });
 
-    it('ignores keys when another part of the page was clicked last', () => {
+    it.each(['.ag-popup', '[role="menu"]', '[role="listbox"]', '[role="tablist"]'])(
+      'ignores keys inside %s',
+      (selector) => {
+        const container = document.createElement('div');
+        if (selector.startsWith('.')) container.className = selector.slice(1);
+        else container.setAttribute('role', selector.slice(7, -2));
+        const item = document.createElement('button');
+        container.appendChild(item);
+        document.body.appendChild(container);
+
+        press('ArrowDown', {}, item);
+
+        expect(selectedIndexes()).toEqual([5]);
+        container.remove();
+      },
+    );
+
+    it('keeps reacting after a click outside of any grid', () => {
       document.body.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
 
       press('ArrowDown');
 
+      expect(selectedIndexes()).toEqual([6]);
+    });
+
+    it('stops reacting once another grid was clicked', () => {
+      const otherGrid = document.createElement('ag-grid-angular');
+      const cell = document.createElement('div');
+      otherGrid.appendChild(cell);
+      document.body.appendChild(otherGrid);
+
+      cell.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+      press('ArrowDown');
+
       expect(selectedIndexes()).toEqual([5]);
+      otherGrid.remove();
     });
 
     it('ignores keys when a modal is open and the grid is not inside it', () => {
@@ -368,6 +452,44 @@ describe('GridRowNavigationDirective', () => {
       press('ArrowDown');
 
       expect(selectedIndexes()).toEqual([6]);
+    });
+
+    describe('before the grid was ever clicked', () => {
+      beforeEach(() => {
+        TestBed.resetTestingModule();
+        element.remove();
+        element = document.createElement('div');
+        document.body.appendChild(element);
+        TestBed.configureTestingModule({
+          providers: [
+            { provide: AgGridAngular, useValue: { gridReady } },
+            { provide: ElementRef, useValue: new ElementRef(element) },
+          ],
+        });
+        directive = runInInjectionContext(
+          TestBed.inject(Injector),
+          () => new GridRowNavigationDirective(),
+        );
+        gridReady.next({ api });
+        select(5);
+        directive.leadIndex = 5;
+      });
+
+      it('ignores a grid on the page', () => {
+        press('ArrowDown');
+
+        expect(selectedIndexes()).toEqual([5]);
+      });
+
+      it('reacts in a grid inside the topmost modal', () => {
+        const modal = document.createElement('ngb-modal-window');
+        document.body.appendChild(modal);
+        modal.appendChild(element);
+
+        press('ArrowDown');
+
+        expect(selectedIndexes()).toEqual([6]);
+      });
     });
 
     it('ignores grids that are not in multi-row selection mode', () => {

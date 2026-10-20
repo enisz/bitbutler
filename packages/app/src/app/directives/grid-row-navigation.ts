@@ -15,8 +15,9 @@ const ROWS_VIEWPORT_SELECTOR = '.ag-body-vertical-scroll-viewport';
  * ag-grid's own keyboard navigation is not available - this keeps the selection and the
  * anchor/lead rows in sync instead.
  *
- * The directive only reacts while its grid is the one the user last clicked, and, when a
- * modal is open, only if the grid lives in the topmost modal.
+ * The directive only reacts while its grid is the active one: the grid the user last clicked,
+ * or, until a grid was clicked, the grid of a modal. Clicking anything that is not a grid keeps
+ * the active grid. When a modal is open, only a grid in the topmost modal reacts.
  */
 @Directive({
   selector: 'ag-grid-angular',
@@ -28,7 +29,8 @@ export class GridRowNavigationDirective {
   private readonly destroyRef = inject(DestroyRef);
 
   private api: GridApi | null = null;
-  private active = false;
+  /** `null` until the user clicked a grid or something else took the focus from it. */
+  private active: boolean | null = null;
 
   anchorIndex: number | null = null;
   leadIndex: number | null = null;
@@ -42,8 +44,14 @@ export class GridRowNavigationDirective {
     fromEvent<MouseEvent>(document, 'mousedown', { capture: true })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((event) => {
-        this.active =
-          event.target instanceof Node && this.elementRef.nativeElement.contains(event.target);
+        const target = event.target;
+        if (!(target instanceof Node)) return;
+
+        if (this.elementRef.nativeElement.contains(target)) {
+          this.active = true;
+        } else if (target instanceof Element && target.closest('ag-grid-angular')) {
+          this.active = false;
+        }
       });
 
     fromEvent<KeyboardEvent>(document, 'keydown')
@@ -93,15 +101,21 @@ export class GridRowNavigationDirective {
     return typeof selection === 'object' && selection.mode === 'multiRow';
   }
 
+  /** Typing in a field, or using a menu, a popup, a list or tabs - those own the arrow keys. */
   private isTypingTarget(target: EventTarget | null): boolean {
     if (!(target instanceof HTMLElement)) return false;
-    return ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName) || target.isContentEditable;
+    return (
+      ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName) ||
+      target.isContentEditable ||
+      target.closest('.ag-popup, [role="menu"], [role="listbox"], [role="tablist"]') !== null
+    );
   }
 
   /** Whether this grid is allowed to react to the keyboard right now. */
   private isActive(): boolean {
     const element = this.elementRef.nativeElement;
-    if (!this.active || !element.isConnected) return false;
+    const active = this.active ?? element.closest('ngb-modal-window') !== null;
+    if (!active || !element.isConnected) return false;
 
     const modals = document.querySelectorAll('ngb-modal-window');
     if (modals.length === 0) return true;
@@ -133,18 +147,22 @@ export class GridRowNavigationDirective {
     if (!['ArrowDown', 'ArrowUp', 'Home', 'End', 'PageDown', 'PageUp'].includes(code)) return;
 
     const selectedNodes = api.getSelectedNodes();
-    const leadIndex =
-      this.leadIndex ??
-      (selectedNodes.length ? selectedNodes[selectedNodes.length - 1].rowIndex : null);
-    if (leadIndex == null) return;
+    // Nothing selected: like in a file list, the first key press selects the first row (or the
+    // last one when moving backwards) instead of doing nothing.
+    const startFromEdge = selectedNodes.length === 0;
+    const leadIndex = startFromEdge
+      ? null
+      : (this.leadIndex ?? selectedNodes[selectedNodes.length - 1].rowIndex);
+    if (!startFromEdge && leadIndex == null) return;
 
-    const nextIndex = this.nextIndex(api, code, leadIndex);
+    const nextIndex =
+      leadIndex == null ? this.edgeIndex(api, code) : this.nextIndex(api, code, leadIndex);
     if (nextIndex == null || nextIndex === leadIndex) return;
 
     event.preventDefault();
     const colId = api.getAllDisplayedColumns()?.[0]?.getColId();
 
-    if (shiftKey) {
+    if (shiftKey && leadIndex != null) {
       if (this.anchorIndex == null) this.anchorIndex = leadIndex;
       this.leadIndex = nextIndex;
       if (!ctrlKey) api.deselectAll();
@@ -186,6 +204,15 @@ export class GridRowNavigationDirective {
       const node = api.getDisplayedRowAtIndex(i);
       if (node?.selectable) node.setSelected(true);
     }
+  }
+
+  /** The row to start from when nothing is selected. */
+  private edgeIndex(api: GridApi, code: string): number | null {
+    const rowCount = api.getDisplayedRowCount();
+    if (rowCount <= 0) return null;
+
+    const backwards = code === 'ArrowUp' || code === 'PageUp' || code === 'End';
+    return backwards ? this.findSelectable(api, rowCount - 1, -1) : this.findSelectable(api, 0, 1);
   }
 
   private nextIndex(api: GridApi, code: string, leadIndex: number): number | null {
