@@ -7,6 +7,16 @@ import { CommandBusService } from '../../../services/command-bus.service';
 import { SelectionStoreService } from '../../../services/selection-store.service';
 import { TorrentListGridSettingsService } from '../../../services/torrent-list-grid.settings.service';
 
+const QUEUE_HOTKEYS: Record<
+  string,
+  'QUEUE_MOVE_TOP' | 'QUEUE_MOVE_UP' | 'QUEUE_MOVE_DOWN' | 'QUEUE_MOVE_BOTTOM'
+> = {
+  Home: 'QUEUE_MOVE_TOP',
+  ArrowUp: 'QUEUE_MOVE_UP',
+  ArrowDown: 'QUEUE_MOVE_DOWN',
+  End: 'QUEUE_MOVE_BOTTOM',
+};
+
 @Injectable()
 export class GridKeyboardNavService {
   private readonly commandBusService = inject(CommandBusService);
@@ -33,6 +43,7 @@ export class GridKeyboardNavService {
     if (this.modalService.hasOpenModals()) return;
     this.handleStartStopForceResume(event);
     this.handleRenameHotkey(event);
+    this.handleQueueHotkeys(event);
   }
 
   private isTypingTarget(target: EventTarget | null): boolean {
@@ -54,6 +65,17 @@ export class GridKeyboardNavService {
       event.preventDefault();
       this.commandBusService.emit({ type: 'TORRENT_PAUSE' });
     }
+  }
+
+  private handleQueueHotkeys(event: KeyboardEvent): void {
+    const { code, ctrlKey, metaKey, altKey, shiftKey } = event;
+    if (!(ctrlKey || metaKey) || altKey || shiftKey || this.isTypingTarget(event.target)) return;
+
+    const type = QUEUE_HOTKEYS[code];
+    if (!type || this.selectionStoreService.selected().length === 0) return;
+
+    event.preventDefault();
+    this.commandBusService.emit({ type });
   }
 
   private handleRenameHotkey(event: KeyboardEvent): void {

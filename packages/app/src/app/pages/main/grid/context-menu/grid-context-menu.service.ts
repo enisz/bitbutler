@@ -277,6 +277,7 @@ export class GridContextMenuService {
             icon: faArrowsUpToLine,
             variant: 'info',
             action: () => this.commandBusService.emit({ type: 'QUEUE_MOVE_TOP' }),
+            hint: 'Ctrl + Home',
           },
           {
             kind: 'item',
@@ -285,6 +286,7 @@ export class GridContextMenuService {
             icon: faArrowUp,
             variant: 'info',
             action: () => this.commandBusService.emit({ type: 'QUEUE_MOVE_UP' }),
+            hint: 'Ctrl + Up',
           },
           {
             kind: 'item',
@@ -293,6 +295,7 @@ export class GridContextMenuService {
             icon: faArrowDown,
             variant: 'info',
             action: () => this.commandBusService.emit({ type: 'QUEUE_MOVE_DOWN' }),
+            hint: 'Ctrl + Down',
           },
           {
             kind: 'item',
@@ -301,6 +304,7 @@ export class GridContextMenuService {
             icon: faArrowsDownToLine,
             variant: 'info',
             action: () => this.commandBusService.emit({ type: 'QUEUE_MOVE_BOTTOM' }),
+            hint: 'Ctrl + End',
           },
         ],
       },
