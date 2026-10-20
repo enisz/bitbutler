@@ -140,6 +140,72 @@ describe('GridKeyboardNavService', () => {
       document.body.removeChild(input);
     });
 
+    describe('queue hotkeys', () => {
+      const torrent = { hash: 'abc' } as Torrent;
+
+      beforeEach(() => {
+        selectionStoreService.selected.mockReturnValue([torrent]);
+      });
+
+      it.each([
+        ['ArrowUp', 'QUEUE_MOVE_UP'],
+        ['ArrowDown', 'QUEUE_MOVE_DOWN'],
+        ['Home', 'QUEUE_MOVE_TOP'],
+        ['End', 'QUEUE_MOVE_BOTTOM'],
+      ])('should emit the queue command for Ctrl+%s', (code, type) => {
+        const event = new KeyboardEvent('keydown', { code, ctrlKey: true, cancelable: true });
+        service.onKeyDown(event);
+        expect(commandBusService.emit).toHaveBeenCalledWith({ type });
+        expect(event.defaultPrevented).toBe(true);
+      });
+
+      it('should also accept the meta key', () => {
+        service.onKeyDown(new KeyboardEvent('keydown', { code: 'ArrowUp', metaKey: true }));
+        expect(commandBusService.emit).toHaveBeenCalledWith({ type: 'QUEUE_MOVE_UP' });
+      });
+
+      it('should not emit without Ctrl', () => {
+        service.onKeyDown(new KeyboardEvent('keydown', { code: 'ArrowUp' }));
+        expect(commandBusService.emit).not.toHaveBeenCalled();
+      });
+
+      it('should not emit when Shift or Alt is held', () => {
+        service.onKeyDown(
+          new KeyboardEvent('keydown', { code: 'ArrowUp', ctrlKey: true, shiftKey: true }),
+        );
+        service.onKeyDown(
+          new KeyboardEvent('keydown', { code: 'ArrowUp', ctrlKey: true, altKey: true }),
+        );
+        expect(commandBusService.emit).not.toHaveBeenCalled();
+      });
+
+      it('should not emit or prevent the default when nothing is selected', () => {
+        selectionStoreService.selected.mockReturnValue([]);
+        const event = new KeyboardEvent('keydown', {
+          code: 'ArrowUp',
+          ctrlKey: true,
+          cancelable: true,
+        });
+        service.onKeyDown(event);
+        expect(commandBusService.emit).not.toHaveBeenCalled();
+        expect(event.defaultPrevented).toBe(false);
+      });
+
+      it('should not emit when pressed in an INPUT element', () => {
+        const input = document.createElement('input');
+        const event = new KeyboardEvent('keydown', { code: 'Home', ctrlKey: true });
+        Object.defineProperty(event, 'target', { value: input, configurable: true });
+        service.onKeyDown(event);
+        expect(commandBusService.emit).not.toHaveBeenCalled();
+      });
+
+      it('should not emit when a modal is open', () => {
+        modalService.hasOpenModals.mockReturnValue(true);
+        service.onKeyDown(new KeyboardEvent('keydown', { code: 'ArrowUp', ctrlKey: true }));
+        expect(commandBusService.emit).not.toHaveBeenCalled();
+      });
+    });
+
     describe('F2 rename hotkey', () => {
       const torrent = { hash: 'abc123' } as Torrent;
 

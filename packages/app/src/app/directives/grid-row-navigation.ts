@@ -128,6 +128,8 @@ export class GridRowNavigationDirective {
   private navigate(api: GridApi, event: KeyboardEvent): void {
     const { code, shiftKey } = event;
     const ctrlKey = event.ctrlKey || event.metaKey;
+    // Ctrl without Shift is left to the page, e.g. the torrent list queue hotkeys.
+    if (ctrlKey && !shiftKey) return;
     if (!['ArrowDown', 'ArrowUp', 'Home', 'End', 'PageDown', 'PageUp'].includes(code)) return;
 
     const selectedNodes = api.getSelectedNodes();
@@ -147,7 +149,7 @@ export class GridRowNavigationDirective {
       this.leadIndex = nextIndex;
       if (!ctrlKey) api.deselectAll();
       this.selectRange(api, this.anchorIndex, nextIndex);
-    } else if (!ctrlKey) {
+    } else {
       api.deselectAll();
       api.getDisplayedRowAtIndex(nextIndex)?.setSelected(true, true);
       this.anchorIndex = nextIndex;

@@ -174,14 +174,19 @@ describe('GridRowNavigationDirective', () => {
       expect(selectedIndexes()).toEqual([1, 5, 6]);
     });
 
-    it('does not change the selection with Ctrl alone', () => {
-      select(5);
-      directive.leadIndex = 5;
+    it.each(['ArrowDown', 'ArrowUp', 'Home', 'End', 'PageDown', 'PageUp'])(
+      'leaves Ctrl+%s alone',
+      (code) => {
+        select(5);
+        directive.leadIndex = 5;
 
-      press('ArrowDown', { ctrlKey: true });
+        const event = press(code, { ctrlKey: true });
 
-      expect(selectedIndexes()).toEqual([5]);
-    });
+        expect(selectedIndexes()).toEqual([5]);
+        expect(event.defaultPrevented).toBe(false);
+        expect(api['ensureIndexVisible']).not.toHaveBeenCalled();
+      },
+    );
   });
 
   describe('Home, End and paging', () => {

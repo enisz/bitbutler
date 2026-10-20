@@ -569,6 +569,16 @@ describe('GridContextMenuService', () => {
         });
       });
 
+      it.each([
+        ['queue.moveTop', 'Ctrl + Home'],
+        ['queue.moveUp', 'Ctrl + Up'],
+        ['queue.moveDown', 'Ctrl + Down'],
+        ['queue.moveBottom', 'Ctrl + End'],
+      ])('%s shows the %s hotkey hint', async (id, hint) => {
+        const entries = await service.buildTorrentMenu(makeData());
+        expect(findItem(entries, id)!.hint).toBe(hint);
+      });
+
       it('manage.renameTorrent shows the F2 hotkey hint', async () => {
         const entries = await service.buildTorrentMenu(makeData());
         expect(findItem(entries, 'manage.renameTorrent')!.hint).toBe('F2');
