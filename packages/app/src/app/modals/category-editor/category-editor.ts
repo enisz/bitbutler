@@ -65,7 +65,8 @@ export class CategoryEditor implements OnInit {
   async save(): Promise<void> {
     const name = this.nameControl.value.trim();
     // Finding 4: save path is optional - qBittorrent falls back to its default when blank.
-    const savePath = this.savePathControl.value.trim();
+    // The save path select emits null when cleared, despite the non-nullable control.
+    const savePath = (this.savePathControl.value ?? '').trim();
     if (!name || this.nameControl.invalid) return;
 
     const serverId = this.serverStoreService.currentServerId();
