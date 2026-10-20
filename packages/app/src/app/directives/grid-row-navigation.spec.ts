@@ -381,6 +381,85 @@ describe('GridRowNavigationDirective', () => {
     });
   });
 
+  describe('Delete key', () => {
+    let deleted: () => void;
+
+    const release = (code: string, init: KeyboardEventInit = {}, target: HTMLElement = element) => {
+      target.dispatchEvent(new KeyboardEvent('keyup', { code, bubbles: true, ...init }));
+    };
+
+    beforeEach(() => {
+      deleted = vi.fn();
+      directive.gridDelete.subscribe(deleted);
+      select(5);
+    });
+
+    it('emits when Delete is released with a selection', () => {
+      release('Delete');
+
+      expect(deleted).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not emit without a selection', () => {
+      select();
+
+      release('Delete');
+
+      expect(deleted).not.toHaveBeenCalled();
+    });
+
+    it('does not emit on key down, so holding the key does not repeat it', () => {
+      press('Delete');
+
+      expect(deleted).not.toHaveBeenCalled();
+    });
+
+    it.each([{ shiftKey: true }, { ctrlKey: true }, { altKey: true }, { metaKey: true }])(
+      'ignores Delete combined with %o',
+      (init) => {
+        release('Delete', init);
+
+        expect(deleted).not.toHaveBeenCalled();
+      },
+    );
+
+    it('ignores Delete while typing in an input', () => {
+      const input = document.createElement('input');
+      element.appendChild(input);
+
+      release('Delete', {}, input);
+
+      expect(deleted).not.toHaveBeenCalled();
+    });
+
+    it('ignores Delete when another grid was clicked last', () => {
+      const otherGrid = document.createElement('ag-grid-angular');
+      document.body.appendChild(otherGrid);
+      otherGrid.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+
+      release('Delete');
+
+      expect(deleted).not.toHaveBeenCalled();
+      otherGrid.remove();
+    });
+
+    it('ignores Delete when a modal is open and the grid is not inside it', () => {
+      document.body.appendChild(document.createElement('ngb-modal-window'));
+
+      release('Delete');
+
+      expect(deleted).not.toHaveBeenCalled();
+    });
+
+    it('ignores Delete for grids that are not in multi-row selection mode', () => {
+      rowSelection = undefined;
+
+      release('Delete');
+
+      expect(deleted).not.toHaveBeenCalled();
+    });
+  });
+
   describe('when the grid must not react', () => {
     beforeEach(() => {
       select(5);

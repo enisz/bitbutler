@@ -1,8 +1,10 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
+import { GridRowNavigationDirective } from '../../directives/grid-row-navigation';
 import { GridContextMenuService } from '../../pages/main/grid/context-menu/grid-context-menu.service';
 import { CommandBusService } from '../../services/command-bus.service';
 import { ConfirmService } from '../../services/confirm.service';
@@ -355,9 +357,10 @@ describe('ManageCategories', () => {
       } as never);
 
       const [{ items }] = contextMenuService.open.mock.calls.at(-1) as [
-        { items: { label: string; action: () => void }[] },
+        { items: { label: string; hint?: string; action: () => void }[] },
       ];
       expect(items.map((i) => i.label)).toEqual(['general.button.edit', 'general.button.delete']);
+      expect((items[1] as { hint?: string }).hint).toBe('Del');
 
       items[0].action();
       await Promise.resolve();
@@ -461,6 +464,17 @@ describe('ManageCategories', () => {
   });
 
   describe('row selection', () => {
+    it('deletes the selection when the grid reports a Delete key press', () => {
+      const deleteSelected = vi.spyOn(component, 'deleteSelected').mockResolvedValue();
+      const directive = fixture.debugElement
+        .query(By.directive(GridRowNavigationDirective))
+        .injector.get(GridRowNavigationDirective);
+
+      directive.gridDelete.emit();
+
+      expect(deleteSelected).toHaveBeenCalledTimes(1);
+    });
+
     it('selects rows by clicking them, without a checkbox column', () => {
       expect(component.gridOptions.rowSelection).toMatchObject({
         mode: 'multiRow',

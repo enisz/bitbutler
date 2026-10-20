@@ -1,8 +1,10 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
+import { GridRowNavigationDirective } from '../../directives/grid-row-navigation';
 import { GridContextMenuService } from '../../pages/main/grid/context-menu/grid-context-menu.service';
 import { CommandBusService } from '../../services/command-bus.service';
 import { ConfirmService } from '../../services/confirm.service';
@@ -291,6 +293,17 @@ describe('ManageTags', () => {
   });
 
   describe('row selection', () => {
+    it('deletes the selection when the grid reports a Delete key press', () => {
+      const deleteSelected = vi.spyOn(component, 'deleteSelected').mockResolvedValue();
+      const directive = fixture.debugElement
+        .query(By.directive(GridRowNavigationDirective))
+        .injector.get(GridRowNavigationDirective);
+
+      directive.gridDelete.emit();
+
+      expect(deleteSelected).toHaveBeenCalledTimes(1);
+    });
+
     it('selects rows by clicking them, without a checkbox column', () => {
       expect(component.gridOptions.rowSelection).toMatchObject({
         mode: 'multiRow',

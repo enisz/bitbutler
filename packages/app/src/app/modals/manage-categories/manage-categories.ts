@@ -302,6 +302,7 @@ export class ManageCategories implements OnInit, OnDestroy {
         icon: faTrashCan,
         variant: 'danger',
         action: () => void this.deleteCategories([category]),
+        hint: 'Del',
       },
     ];
 
