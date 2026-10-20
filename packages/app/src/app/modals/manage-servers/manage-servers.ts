@@ -397,9 +397,7 @@ export class ManageServers implements OnDestroy {
     );
     if (!confirmed) return;
 
-    for (const server of servers) {
-      this.commandBusService.emit({ type: 'SERVER_DELETED', id: server.id });
-    }
+    this.commandBusService.emit({ type: 'SERVER_DELETED', ids: servers.map((s) => s.id) });
   }
 
   private onCellContextMenu(event: CellContextMenuEvent<ServerRecord>): void {

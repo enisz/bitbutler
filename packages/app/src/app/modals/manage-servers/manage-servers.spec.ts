@@ -223,14 +223,17 @@ describe('ManageServers', () => {
       expect(commandBusService.emit).not.toHaveBeenCalled();
     });
 
-    it('deletes all selected servers after confirmation, one SERVER_DELETED per id', async () => {
+    it('deletes all selected servers after confirmation, with a single SERVER_DELETED', async () => {
       confirmService.confirm.mockResolvedValue(true);
       component.selectedServers.set([{ id: 'srv-2' } as never, { id: 'srv-3' } as never]);
 
       await component.deleteSelected();
 
-      expect(commandBusService.emit).toHaveBeenCalledWith({ type: 'SERVER_DELETED', id: 'srv-2' });
-      expect(commandBusService.emit).toHaveBeenCalledWith({ type: 'SERVER_DELETED', id: 'srv-3' });
+      expect(commandBusService.emit).toHaveBeenCalledTimes(1);
+      expect(commandBusService.emit).toHaveBeenCalledWith({
+        type: 'SERVER_DELETED',
+        ids: ['srv-2', 'srv-3'],
+      });
     });
 
     it('does not delete when confirmation is declined', async () => {
@@ -301,11 +304,10 @@ describe('ManageServers', () => {
 
       await component.deleteSelected();
 
-      expect(commandBusService.emit).not.toHaveBeenCalledWith({
+      expect(commandBusService.emit).toHaveBeenCalledWith({
         type: 'SERVER_DELETED',
-        id: 'srv-2',
+        ids: ['srv-3'],
       });
-      expect(commandBusService.emit).toHaveBeenCalledWith({ type: 'SERVER_DELETED', id: 'srv-3' });
     });
 
     it("toggles a server's auto_login flag and emits SERVER_UPDATED", async () => {
@@ -387,7 +389,10 @@ describe('ManageServers', () => {
 
       await component.deleteSelected();
 
-      expect(commandBusService.emit).toHaveBeenCalledWith({ type: 'SERVER_DELETED', id: 'srv-2' });
+      expect(commandBusService.emit).toHaveBeenCalledWith({
+        type: 'SERVER_DELETED',
+        ids: ['srv-2'],
+      });
     });
 
     describe('row actions do not overwrite the footer selection (Finding 2)', () => {
@@ -453,7 +458,7 @@ describe('ManageServers', () => {
         expect(component.selectedServers()).toEqual([{ id: 'srv-9', name: 'Kept' }]);
         await component.deleteSelected();
         expect(commandBusService.emit).not.toHaveBeenCalledWith(
-          expect.objectContaining({ type: 'SERVER_DELETED', id: 'srv-2' }),
+          expect.objectContaining({ type: 'SERVER_DELETED', ids: ['srv-2'] }),
         );
       });
 

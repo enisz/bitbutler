@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
 import { EMPTY, catchError, concatMap, filter, from } from 'rxjs';
 import { AppCommand, ServerCommand } from '../models/command.model';
+import { deletedToast } from '../utils/deleted-toast';
 import { CommandBusService } from './command-bus.service';
 import { ServerStoreService } from './server-store.service';
 import { ServerService } from './server.service';
@@ -43,7 +44,7 @@ export class ServerCommandHandlerService {
         await this.handleServerUpdated(command.id);
         break;
       case 'SERVER_DELETED':
-        await this.handleServerDeleted(command.id);
+        await this.handleServersDeleted(command.ids);
         break;
     }
   }
@@ -72,13 +73,27 @@ export class ServerCommandHandlerService {
     );
   }
 
-  private async handleServerDeleted(id: string): Promise<void> {
-    const server = this.serverStoreService.servers().find((s) => s.id === id);
-    await this.serverService.delete(id);
+  private async handleServersDeleted(ids: string[]): Promise<void> {
+    const deletedNames: string[] = [];
+
+    // One failing server must not keep the others from being deleted.
+    for (const id of ids) {
+      const server = this.serverStoreService.servers().find((s) => s.id === id);
+      try {
+        await this.serverService.delete(id);
+        deletedNames.push(server?.name ?? '');
+      } catch (err) {
+        console.error(ServerCommandHandlerService.name, 'handleServersDeleted', err);
+      }
+    }
+    if (deletedNames.length === 0) return;
+
     await this.serverStoreService.refresh();
-    this.toastService.info(
-      `"${server?.name ?? ''}"`,
-      this.translateService.instant('services.server-command-handler.info.deleted-title'),
+    const { message, title } = deletedToast(
+      this.translateService,
+      'services.server-command-handler.info',
+      deletedNames,
     );
+    this.toastService.info(message, title);
   }
 }

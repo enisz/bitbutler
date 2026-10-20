@@ -2038,7 +2038,9 @@
       },
       "info": {
         "updated-title": "Szerver frissítve",
-        "deleted-title": "Szerver törölve"
+        "deleted-title": "Szerver törölve",
+        "deleted-title-plural": "Szerverek törölve",
+        "deleted-count": "{{ count }} szerver"
       }
     },
     "update-command-handler": {
@@ -2089,7 +2091,9 @@
         "added-title": "Címke hozzáadva"
       },
       "info": {
-        "deleted-title": "Címke törölve"
+        "deleted-title": "Címke törölve",
+        "deleted-title-plural": "Címkék törölve",
+        "deleted-count": "{{ count }} címke"
       }
     },
     "category-command-handler": {
@@ -2097,7 +2101,9 @@
         "added-title": "Kategória hozzáadva"
       },
       "info": {
-        "deleted-title": "Kategória törölve"
+        "deleted-title": "Kategória törölve",
+        "deleted-title-plural": "Kategóriák törölve",
+        "deleted-count": "{{ count }} kategória"
       }
     },
     "qb": {

@@ -59,8 +59,22 @@ describe('CategoryCommandHandlerService', () => {
     expect(toastInfo).not.toHaveBeenCalled();
   });
 
+  it('should show one toast with the count when several categories are deleted', async () => {
+    commands$.next({ type: 'CATEGORY_DELETED', names: ['a', 'b', 'c'] });
+    await flushPromises();
+    expect(toastInfo).toHaveBeenCalledTimes(1);
+    expect(toastInfo).toHaveBeenCalledWith(
+      'services.category-command-handler.info.deleted-count',
+      'services.category-command-handler.info.deleted-title-plural',
+    );
+    expect(translateService.instant).toHaveBeenCalledWith(
+      'services.category-command-handler.info.deleted-count',
+      { count: 3 },
+    );
+  });
+
   it('should ignore unrelated commands', async () => {
-    commands$.next({ type: 'SERVER_DELETED', id: 'srv-1' });
+    commands$.next({ type: 'SERVER_DELETED', ids: ['srv-1'] });
     await flushPromises();
     expect(toastSuccess).not.toHaveBeenCalled();
     expect(toastInfo).not.toHaveBeenCalled();

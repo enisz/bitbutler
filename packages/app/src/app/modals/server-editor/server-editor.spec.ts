@@ -120,7 +120,10 @@ describe('ServerEditor', () => {
     it('deletes the server and dismisses the modal once confirmed', async () => {
       await component.handleDelete();
       expect(mockConfirmService.confirm).toHaveBeenCalled();
-      expect(mockCommandBus.emit).toHaveBeenCalledWith({ type: 'SERVER_DELETED', id: 'server-1' });
+      expect(mockCommandBus.emit).toHaveBeenCalledWith({
+        type: 'SERVER_DELETED',
+        ids: ['server-1'],
+      });
       expect(mockActiveModal.dismiss).toHaveBeenCalled();
       expect(mockActiveModal.close).not.toHaveBeenCalled();
     });
