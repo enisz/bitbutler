@@ -595,8 +595,8 @@ describe('GridRowNavigationDirective', () => {
   });
 
   describe('mouse tracking', () => {
-    const click = (rowIndex: number, shiftKey = false) => {
-      const event = { rowIndex, event: { shiftKey } };
+    const click = (rowIndex: number, shiftKey = false, ctrlKey = false) => {
+      const event = { rowIndex, node: nodes[rowIndex], event: { shiftKey, ctrlKey } };
       listeners['rowClicked'](event);
       listeners['cellClicked'](event);
     };
@@ -626,6 +626,52 @@ describe('GridRowNavigationDirective', () => {
       click(13, true);
 
       expect(selectedIndexes()).toEqual([10]);
+    });
+
+    describe('clicking a row that cannot be selected', () => {
+      beforeEach(() => {
+        nodes[5].selectable = false;
+        click(2);
+        select(2);
+      });
+
+      it('clears the selection and the anchor and lead rows', () => {
+        click(5);
+
+        expect(selectedIndexes()).toEqual([]);
+        expect(directive.anchorIndex).toBeNull();
+        expect(directive.leadIndex).toBeNull();
+      });
+
+      it('keeps the selection on a Ctrl click', () => {
+        click(5, false, true);
+
+        expect(selectedIndexes()).toEqual([2]);
+        expect(directive.leadIndex).toBe(2);
+      });
+
+      it('keeps the selection on a Shift click', () => {
+        click(5, true);
+
+        expect(selectedIndexes()).toContain(2);
+        expect(directive.anchorIndex).toBe(2);
+      });
+
+      it('keeps the selection when click selection is disabled', () => {
+        rowSelection = { mode: 'multiRow', enableClickSelection: false };
+
+        click(5);
+
+        expect(selectedIndexes()).toEqual([2]);
+      });
+
+      it('lets the arrow keys start from an empty selection afterwards', () => {
+        click(5);
+
+        press('ArrowDown');
+
+        expect(selectedIndexes()).toEqual([0]);
+      });
     });
 
     it('follows the last checkbox toggled', () => {

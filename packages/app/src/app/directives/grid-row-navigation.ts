@@ -70,6 +70,20 @@ export class GridRowNavigationDirective {
   private trackClicks(api: GridApi): void {
     api.addEventListener('rowClicked', (event) => {
       const mouseEvent = event.event as MouseEvent | null | undefined;
+
+      // A row that cannot be selected (e.g. the active server) takes no part in the selection. A
+      // plain click on it still replaces the selection like on any other row, so the rows that
+      // are left selected are not deleted by a later key press without the user noticing.
+      if (!event.node.selectable) {
+        const plainClick = !mouseEvent?.shiftKey && !mouseEvent?.ctrlKey && !mouseEvent?.metaKey;
+        if (plainClick && this.hasClickSelection(api)) {
+          api.deselectAll();
+          this.anchorIndex = null;
+          this.leadIndex = null;
+        }
+        return;
+      }
+
       if (event.rowIndex !== null && !mouseEvent?.shiftKey) {
         this.anchorIndex = event.rowIndex;
         this.leadIndex = event.rowIndex;
