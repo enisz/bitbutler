@@ -30,6 +30,7 @@ export class GridKeyboardNavService {
   }
 
   onKeyUp(event: KeyboardEvent): void {
+    if (this.modalService.hasOpenModals()) return;
     const { shiftKey, code, target } = event;
     if (code === 'Delete' && !this.isTypingTarget(target)) {
       this.commandBusService.emit({
