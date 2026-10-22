@@ -848,6 +848,20 @@
           "id": "ID"
         }
       },
+      "export-configuration": {
+        "title": "Export Configuration",
+        "contents": "The configuration file will contain:",
+        "app-settings": "Application settings",
+        "servers": "{{ count }} server(s) and their settings",
+        "credentials-note": "Usernames and passwords are not included. You will be asked for them the first time you connect to an imported server.",
+        "button": {
+          "export": "Export..."
+        },
+        "toast": {
+          "exported-title": "Configuration Exported",
+          "export-failed-title": "Failed to Export Configuration"
+        }
+      },
       "export-torrents": {
         "title": "Export Torrents",
         "label": {

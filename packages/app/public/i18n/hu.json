@@ -848,6 +848,20 @@
           "id": "Azonosító"
         }
       },
+      "export-configuration": {
+        "title": "Konfiguráció exportálása",
+        "contents": "A konfigurációs fájl tartalma:",
+        "app-settings": "Alkalmazásbeállítások",
+        "servers": "{{ count }} szerver és a hozzájuk tartozó beállítások",
+        "credentials-note": "A felhasználónevek és jelszavak nem kerülnek exportálásra. Importált szerverhez való első csatlakozáskor meg kell adnod őket.",
+        "button": {
+          "export": "Exportálás..."
+        },
+        "toast": {
+          "exported-title": "Konfiguráció exportálva",
+          "export-failed-title": "A konfiguráció exportálása sikertelen"
+        }
+      },
       "export-torrents": {
         "title": "Torrentek exportálása",
         "label": {
