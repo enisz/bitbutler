@@ -187,6 +187,13 @@ const api: BitButlerAPI = {
     languageChanged: (lang) => ipcRenderer.send('i18n:language-changed', { lang }),
   },
 
+  config: {
+    exportToFile: () => ipcRenderer.invoke('config:export'),
+    openPicker: () => ipcRenderer.invoke('config:open-picker'),
+    read: (payload) => ipcRenderer.invoke('config:read', payload),
+    importFile: (payload) => ipcRenderer.invoke('config:import', payload),
+  },
+
   export: {
     start: (payload: ExportStartPayload) => ipcRenderer.send('export:start', payload),
     cancel: () => ipcRenderer.send('export:cancel'),
