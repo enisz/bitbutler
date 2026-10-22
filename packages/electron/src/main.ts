@@ -1,5 +1,6 @@
 import { app } from 'electron';
 import { loadTranslations } from './i18n.js';
+import { registerConfigurationIpcHandlers } from './ipc/configuration.js';
 import { registerElectronIpcHandlers } from './ipc/electron.js';
 import { registerExportIpcHandlers } from './ipc/export.js';
 import { registerI18nIpcHandlers } from './ipc/i18n.js';
@@ -49,6 +50,7 @@ function registerAppIpcHandlers(): void {
   registerElectronIpcHandlers();
   registerUpdaterIpcHandlers();
   registerExportIpcHandlers();
+  registerConfigurationIpcHandlers();
   registerLogIpcHandlers();
 }
 

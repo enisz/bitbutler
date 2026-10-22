@@ -15,6 +15,7 @@ import { ServerRecord } from '@bitbutler/shared';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faCircleHalfStroke,
+  faFileImport,
   faLanguage,
   faPalette,
   faPlug,
@@ -30,6 +31,7 @@ import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { BbLogo } from '../../components/bb-logo/bb-logo';
 import { BbTooltip } from '../../directives/bb-tooltip';
 import { CommandBusService } from '../../services/command-bus.service';
+import { ConfigurationService } from '../../services/configuration.service';
 import { CredentialPromptService } from '../../services/credential-prompt.service';
 import { ElectronService } from '../../services/electron.service';
 import { GeneralSettingsService } from '../../services/general-settings.service';
@@ -71,11 +73,20 @@ export class Login implements OnInit {
   private readonly electronService = inject(ElectronService);
   private readonly commandBusService = inject(CommandBusService);
   private readonly translateService = inject(TranslateService);
+  private readonly configurationService = inject(ConfigurationService);
   private readonly generalSettingsService = inject(GeneralSettingsService);
 
   private readonly languageChanged = toSignal(this.translateService.onLangChange);
 
-  public readonly icons = { faLanguage, faPalette, faCircleHalfStroke, faPlug, faPlus, faServer };
+  public readonly icons = {
+    faLanguage,
+    faPalette,
+    faCircleHalfStroke,
+    faFileImport,
+    faPlug,
+    faPlus,
+    faServer,
+  };
 
   public readonly families = THEME_FAMILIES;
 
@@ -260,6 +271,10 @@ export class Login implements OnInit {
     const { ManageServers } = await import('../../modals/manage-servers/manage-servers');
     const ref = this.modalService.open(ManageServers, { size: 'xl' });
     setModalInput(ref, 'hideConnect', true);
+  }
+
+  public async importConfiguration(): Promise<void> {
+    await this.configurationService.pickAndImport();
   }
 
   public async addNewServer(): Promise<void> {

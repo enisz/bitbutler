@@ -848,6 +848,20 @@
           "id": "Azonosító"
         }
       },
+      "export-configuration": {
+        "title": "Konfiguráció exportálása",
+        "contents": "A konfigurációs fájl tartalma:",
+        "app-settings": "Alkalmazásbeállítások",
+        "servers": "{{ count }} szerver és a hozzájuk tartozó beállítások",
+        "credentials-note": "A felhasználónevek és jelszavak nem kerülnek exportálásra. Importált szerverhez való első csatlakozáskor meg kell adnod őket.",
+        "button": {
+          "export": "Exportálás..."
+        },
+        "toast": {
+          "exported-title": "Konfiguráció exportálva",
+          "export-failed-title": "A konfiguráció exportálása sikertelen"
+        }
+      },
       "export-torrents": {
         "title": "Torrentek exportálása",
         "label": {
@@ -935,6 +949,20 @@
           "success-title": "Export kész",
           "success-message": "{{count}} torrent exportálva.",
           "failed-title": "Export sikertelen"
+        }
+      },
+      "import-configuration": {
+        "title": "Konfiguráció importálása",
+        "app-settings": "Alkalmazásbeállítások",
+        "app-settings-sub": "Felülírja a jelenlegi alkalmazásbeállításokat.",
+        "servers": "Szerverek",
+        "badge-exists": "már létezik - felülírásra kerül",
+        "badge-new": "új",
+        "button": {
+          "import": "Importálás"
+        },
+        "toast": {
+          "import-failed-title": "A konfiguráció importálása sikertelen"
         }
       },
       "import-torrents": {
@@ -1211,6 +1239,8 @@
       "form-title": "Csatlakozás",
       "form-subtitle": "Válassz gazdagépet a csatlakozáshoz.",
       "form-subtitle-empty": "Adj hozzá egy szervert a kezdéshez.",
+      "import-configuration": "Konfiguráció importálása",
+      "import-configuration-hint": "Vagy importálj egy konfigurációt.",
       "connecting": "Csatlakozás...",
       "server-form": {
         "host": "Gép (Host)"
@@ -2086,6 +2116,13 @@
         "toggle-first-last-piece-prio-failed-title": "Nem sikerült átváltani az első/utolsó szelet prioritást"
       }
     },
+    "configuration": {
+      "success": {
+        "imported-title": "Konfiguráció importálva",
+        "settings": "Alkalmazásbeállítások",
+        "servers": "Szerverek: {{ count }}"
+      }
+    },
     "tag-command-handler": {
       "success": {
         "added-title": "Címke hozzáadva"
@@ -2240,6 +2277,8 @@
       "qb-settings": "qBittorrent beállítások",
       "manage-tags": "Cimkék kezelése",
       "manage-categories": "Kategóriák kezelése",
+      "export-configuration": "Konfiguráció exportálása",
+      "import-configuration": "Konfiguráció importálása",
       "manage-servers": "Szerverek kezelése",
       "help": "Súgó",
       "check-for-updates": "Frissítések keresése",

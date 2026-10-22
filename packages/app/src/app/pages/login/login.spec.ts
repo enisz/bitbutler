@@ -6,6 +6,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { CommandBusService } from '../../services/command-bus.service';
+import { ConfigurationService } from '../../services/configuration.service';
 import { ElectronService } from '../../services/electron.service';
 import { GeneralSettingsService } from '../../services/general-settings.service';
 import { QbService } from '../../services/qb.service';
@@ -45,6 +46,7 @@ describe('Login', () => {
     goToRelease: ReturnType<typeof vi.fn>;
   };
   let modalMock: { open: ReturnType<typeof vi.fn> };
+  let pickAndImport: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
     serverStoreMock = {
@@ -74,6 +76,7 @@ describe('Login', () => {
       getBitButlerVersion: vi.fn().mockReturnValue('1.0.0'),
       goToRelease: vi.fn(),
     };
+    pickAndImport = vi.fn().mockResolvedValue(undefined);
     const rejectedResult = Promise.reject<void>(undefined);
     rejectedResult.catch(() => {});
     modalMock = {
@@ -91,6 +94,7 @@ describe('Login', () => {
         { provide: TranslateService, useValue: translateMock },
         { provide: GeneralSettingsService, useValue: generalSettingsMock },
         { provide: ToastService, useValue: { danger: vi.fn() } },
+        { provide: ConfigurationService, useValue: { pickAndImport } },
         { provide: ElectronService, useValue: electronMock },
         { provide: CommandBusService, useValue: { emit: vi.fn() } },
         { provide: Router, useValue: { navigate: vi.fn() } },
@@ -264,6 +268,42 @@ describe('Login', () => {
       fixture.debugElement.query(By.css('.add-server-cta')).nativeElement.click();
 
       expect(addSpy).toHaveBeenCalled();
+    });
+
+    it('should show the import hint and button below the add-server CTA when there are no servers', () => {
+      serverStoreMock.servers.set([]);
+      fixture.detectChanges();
+
+      const add = fixture.debugElement.query(By.css('.add-server-cta')).nativeElement;
+      const importButton = fixture.debugElement.query(
+        By.css('.import-configuration-cta'),
+      ).nativeElement;
+      expect(fixture.nativeElement.textContent).toContain('pages.login.import-configuration-hint');
+      expect(
+        add.compareDocumentPosition(importButton) & Node.DOCUMENT_POSITION_FOLLOWING,
+      ).toBeTruthy();
+    });
+
+    it('should show the import button after the manage-servers button when a server exists', () => {
+      serverStoreMock.servers.set([{ id: '1', name: 'Local' }] as any);
+      fixture.detectChanges();
+
+      const buttons = Array.from(
+        fixture.nativeElement.querySelectorAll('.form-wrapper button.btn-lg'),
+      ) as HTMLElement[];
+      expect(buttons.at(-1)?.classList.contains('import-configuration-cta')).toBe(true);
+      expect(fixture.nativeElement.textContent).not.toContain(
+        'pages.login.import-configuration-hint',
+      );
+    });
+
+    it('should start the import flow when the import button is clicked', () => {
+      serverStoreMock.servers.set([]);
+      fixture.detectChanges();
+
+      fixture.debugElement.query(By.css('.import-configuration-cta')).nativeElement.click();
+
+      expect(pickAndImport).toHaveBeenCalledTimes(1);
     });
 
     it('should show the get-started subtitle when there are no servers', () => {

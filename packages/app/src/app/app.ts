@@ -11,6 +11,7 @@ import { filter, from } from 'rxjs';
 import { GeneralSettings } from './models/general-settings.model';
 import { CategoryCommandHandlerService } from './services/category-command-handler.service';
 import { CommandBusService } from './services/command-bus.service';
+import { ConfigurationService } from './services/configuration.service';
 import { ElectronService } from './services/electron.service';
 import { GeneralSettingsService } from './services/general-settings.service';
 import { MenuBarCommandHandlerService } from './services/menu-bar-command-handler.service';
@@ -52,6 +53,7 @@ export class App {
   private readonly tagCommandHandlerService = inject(TagCommandHandlerService);
   private readonly categoryCommandHandlerService = inject(CategoryCommandHandlerService);
   private readonly updateCommandHandlerService = inject(UpdateCommandHandlerService);
+  private readonly configurationService = inject(ConfigurationService);
   private readonly translateService = inject(TranslateService);
   private readonly timeagoIntl = inject(TimeagoIntl);
   private readonly router = inject(Router);
@@ -120,6 +122,7 @@ export class App {
     this.tagCommandHandlerService.start();
     this.categoryCommandHandlerService.start();
     this.updateCommandHandlerService.start();
+    this.configurationService.showImportedToastIfPending();
 
     this.translateService.onLangChange
       .pipe(takeUntilDestroyed(this.destroyRef))

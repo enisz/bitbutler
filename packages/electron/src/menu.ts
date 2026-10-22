@@ -117,6 +117,15 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
               accelerator: 'CmdOrCtrl+Shift+C',
               click: () => sendMenuAction(mainWindow, 'settings.manage-categories'),
             },
+            { type: 'separator' },
+            {
+              label: t('electron.menu.export-configuration'),
+              click: () => sendMenuAction(mainWindow, 'settings.export-configuration'),
+            },
+            {
+              label: t('electron.menu.import-configuration'),
+              click: () => sendMenuAction(mainWindow, 'settings.import-configuration'),
+            },
           ],
         },
       ]

@@ -4,6 +4,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { CommandBusService } from './command-bus.service';
+import { ConfigurationService } from './configuration.service';
 import { MenuBarCommandHandlerService } from './menu-bar-command-handler.service';
 import { MenuBarService } from './menu-bar.service';
 import { NotificationService } from './notification.service';
@@ -21,6 +22,7 @@ describe('MenuBarCommandHandlerService', () => {
   let toastWarning: ReturnType<typeof vi.fn>;
   let toastShowText: ReturnType<typeof vi.fn>;
   let serverStoreService: any;
+  let pickAndImport: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     clicks$ = new Subject();
@@ -31,6 +33,7 @@ describe('MenuBarCommandHandlerService', () => {
     toastDanger = vi.fn();
     toastWarning = vi.fn();
     toastShowText = vi.fn();
+    pickAndImport = vi.fn();
 
     serverStoreService = {
       currentServerId: signal('server-1'),
@@ -48,6 +51,7 @@ describe('MenuBarCommandHandlerService', () => {
           provide: CommandBusService,
           useValue: { commands$: new Subject().asObservable(), emit: commandBusEmit },
         },
+        { provide: ConfigurationService, useValue: { pickAndImport } },
         { provide: NotificationService, useValue: { send: vi.fn() } },
         {
           provide: ToastService,
@@ -97,6 +101,16 @@ describe('MenuBarCommandHandlerService', () => {
   it('should emit UI_OPEN_QB_SETTINGS for settings.qb', () => {
     clicks$.next({ action: 'settings.qb', ts: 1 });
     expect(commandBusEmit).toHaveBeenCalledWith({ type: 'UI_OPEN_QB_SETTINGS' });
+  });
+
+  it('should emit UI_EXPORT_CONFIGURATION for settings.export-configuration', () => {
+    clicks$.next({ action: 'settings.export-configuration', ts: 1 });
+    expect(commandBusEmit).toHaveBeenCalledWith({ type: 'UI_EXPORT_CONFIGURATION' });
+  });
+
+  it('should start the import picker flow for settings.import-configuration', () => {
+    clicks$.next({ action: 'settings.import-configuration', ts: 1 });
+    expect(pickAndImport).toHaveBeenCalledTimes(1);
   });
 
   it('should emit UI_SERVER_EDITOR_OPEN for server.add', () => {

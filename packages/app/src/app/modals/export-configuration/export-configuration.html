@@ -1,0 +1,37 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ 'components.modals.export-configuration.title' | translate }}</h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
+</div>
+<div class="modal-body">
+  <p class="mb-2">{{ 'components.modals.export-configuration.contents' | translate }}</p>
+  <ul class="mb-3">
+    <li>{{ 'components.modals.export-configuration.app-settings' | translate }}</li>
+    <li>
+      {{ 'components.modals.export-configuration.servers' | translate: { count: serverCount() } }}
+    </li>
+  </ul>
+  <p class="small text-body-secondary mb-0">
+    {{ 'components.modals.export-configuration.credentials-note' | translate }}
+  </p>
+</div>
+<div class="modal-footer">
+  <button
+    type="button"
+    class="btn btn-primary btn-sm btn-split"
+    (click)="export()"
+    [disabled]="exporting()"
+  >
+    <bb-btn-content
+      [icon]="icons.faFileExport"
+      [text]="'components.modals.export-configuration.button.export' | translate"
+      position="end"
+    ></bb-btn-content>
+  </button>
+  <button type="button" class="btn btn-sm btn-split" (click)="cancel()">
+    <bb-btn-content
+      [icon]="icons.faXmark"
+      [text]="'general.button.cancel' | translate"
+      position="end"
+    ></bb-btn-content>
+  </button>
+</div>

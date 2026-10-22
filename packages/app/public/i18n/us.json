@@ -848,6 +848,20 @@
           "id": "ID"
         }
       },
+      "export-configuration": {
+        "title": "Export Configuration",
+        "contents": "The configuration file will contain:",
+        "app-settings": "Application settings",
+        "servers": "{{ count }} server(s) and their settings",
+        "credentials-note": "Usernames and passwords are not included. You will be asked for them the first time you connect to an imported server.",
+        "button": {
+          "export": "Export..."
+        },
+        "toast": {
+          "exported-title": "Configuration Exported",
+          "export-failed-title": "Failed to Export Configuration"
+        }
+      },
       "export-torrents": {
         "title": "Export Torrents",
         "label": {
@@ -935,6 +949,20 @@
           "success-title": "Export Complete",
           "success-message": "{{count}} torrent(s) exported.",
           "failed-title": "Export Failed"
+        }
+      },
+      "import-configuration": {
+        "title": "Import Configuration",
+        "app-settings": "Application settings",
+        "app-settings-sub": "Overwrites the current application settings.",
+        "servers": "Servers",
+        "badge-exists": "already exists - will overwrite",
+        "badge-new": "new",
+        "button": {
+          "import": "Import"
+        },
+        "toast": {
+          "import-failed-title": "Failed to Import Configuration"
         }
       },
       "import-torrents": {
@@ -1211,6 +1239,8 @@
       "form-title": "Connect to Server",
       "form-subtitle": "Select a host to connect to.",
       "form-subtitle-empty": "Add a server to get started.",
+      "import-configuration": "Import configuration",
+      "import-configuration-hint": "Or import a configuration.",
       "connecting": "Connecting...",
       "server-form": {
         "host": "Host"
@@ -2086,6 +2116,13 @@
         "toggle-first-last-piece-prio-failed-title": "Failed to Toggle First/Last Piece Priority"
       }
     },
+    "configuration": {
+      "success": {
+        "imported-title": "Configuration Imported",
+        "settings": "Application settings",
+        "servers": "Servers: {{ count }}"
+      }
+    },
     "tag-command-handler": {
       "success": {
         "added-title": "Tag Added"
@@ -2241,6 +2278,8 @@
       "qb-settings": "qBittorrent Settings",
       "manage-tags": "Manage Tags",
       "manage-categories": "Manage Categories",
+      "export-configuration": "Export Configuration",
+      "import-configuration": "Import Configuration",
       "manage-servers": "Manage Servers",
       "help": "Help",
       "check-for-updates": "Check for Updates",
