@@ -79,7 +79,6 @@ JSON, extension `.bbc`.
   - Servers on the machine that are not in the file (or not selected) are untouched. Import never deletes.
   - **Single auto-login server:** the database enforces at most one server with `auto_login = 1` (`uq_servers_auto_login`). If an imported server has `auto_login` true, every other server's flag is cleared first. The imported one wins.
   - If the file marks more than one selected server as `auto_login`, only the first one (file order) keeps the flag.
-  - A selected server whose `host` equals the host of a different local server (the `servers.host` column is unique) makes the whole import fail and roll back with the existing "A server with the same host already exists." error.
   - `auto_login` is kept in the file. At startup `login.ts` auto-connects the auto-login server and `connect()` opens the credentials modal when the server lacks credentials, so an imported auto-login server leads straight to the credentials prompt.
 - The whole apply runs in one database transaction. Any failure rolls back and shows an error toast.
 - After a successful import the renderer reloads so all settings services and the server store re-read the database (language and theme take effect immediately).

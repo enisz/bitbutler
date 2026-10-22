@@ -25,7 +25,7 @@
 
 ## Review Focus
 
-- Selected server's `host` equals a different local server's host (unique column): whole import rolls back with "A server with the same host already exists.", settings not applied either. (Task 3)
+- A selected server that has no settings rows in the file keeps its local settings rows untouched; unselected servers' rows are never touched. (Task 3)
 - Hostile or hand-edited file: not JSON, `servers` an array, port 0 or 70000, server id containing `.`, top-level `settings` key containing `.`, `__proto__` keys, non-object settings blob: rejected, DB untouched. (Task 2)
 - `version` newer than 1, or 0, negative, fractional, missing: rejected. (Task 2)
 - File with two `auto_login` servers both selected: import succeeds, only the first keeps the flag; an existing local auto-login server loses it. (Task 3)
@@ -107,7 +107,6 @@
   - `overwriting a server whose host/port/protocol changed resets webapi_version, qb_version, export_available to NULL and drops its cookie`; unchanged connection fields keep them.
   - `imported auto_login server clears the flag on every other local server`.
   - `two selected auto_login servers: only the first in file order keeps auto_login`.
-  - `host collision with a different local server throws 'A server with the same host already exists.' and nothing is applied` (assert settings row and other selected server unchanged).
   - `unknown serverId throws before any write`.
   - `calls rebuildMenu once after success, not on failure`.
 - [ ] **Step 2: Run** `npm test -w @bitbutler/electron -- src/configuration-apply.spec.ts`. Expected: FAIL.
