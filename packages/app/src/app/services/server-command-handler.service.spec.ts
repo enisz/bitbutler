@@ -14,6 +14,7 @@ describe('ServerCommandHandlerService', () => {
   let service: ServerCommandHandlerService;
   let commands$: Subject<any>;
   let serverStoreRefresh: ReturnType<typeof vi.fn>;
+  let serverDelete: ReturnType<typeof vi.fn>;
   let toastSuccess: ReturnType<typeof vi.fn>;
   let toastInfo: ReturnType<typeof vi.fn>;
   let translateService: { instant: ReturnType<typeof vi.fn> };
@@ -21,6 +22,7 @@ describe('ServerCommandHandlerService', () => {
   beforeEach(() => {
     commands$ = new Subject();
     serverStoreRefresh = vi.fn().mockResolvedValue(undefined);
+    serverDelete = vi.fn().mockResolvedValue(undefined);
     toastSuccess = vi.fn();
     toastInfo = vi.fn();
     translateService = { instant: vi.fn((key: string) => key) };
@@ -33,14 +35,18 @@ describe('ServerCommandHandlerService', () => {
           provide: ServerStoreService,
           useValue: {
             refresh: serverStoreRefresh,
-            servers: signal([{ id: '1', name: 'Test Server' }]),
+            servers: signal([
+              { id: '1', name: 'Test Server' },
+              { id: '2', name: 'Second Server' },
+              { id: '3', name: 'Third Server' },
+            ]),
             currentServerId: signal(null),
             select: vi.fn(),
           },
         },
         {
           provide: ServerService,
-          useValue: { delete: vi.fn().mockResolvedValue(undefined) },
+          useValue: { delete: serverDelete },
         },
         { provide: ToastService, useValue: { success: toastSuccess, info: toastInfo } },
         { provide: TranslateService, useValue: translateService },
@@ -85,13 +91,51 @@ describe('ServerCommandHandlerService', () => {
     );
   });
 
-  it('should show info toast after SERVER_DELETED', async () => {
-    commands$.next({ type: 'SERVER_DELETED', id: '1' });
+  it('should show info toast with the name after SERVER_DELETED for one server', async () => {
+    commands$.next({ type: 'SERVER_DELETED', ids: ['1'] });
     await flushPromises();
+    expect(serverDelete).toHaveBeenCalledWith('1');
+    expect(toastInfo).toHaveBeenCalledTimes(1);
     expect(toastInfo).toHaveBeenCalledWith(
       '"Test Server"',
       'services.server-command-handler.info.deleted-title',
     );
+  });
+
+  it('should delete every server but show a single toast with the count', async () => {
+    commands$.next({ type: 'SERVER_DELETED', ids: ['1', '2', '3'] });
+    await flushPromises();
+    expect(serverDelete).toHaveBeenCalledTimes(3);
+    expect(serverStoreRefresh).toHaveBeenCalledTimes(1);
+    expect(toastInfo).toHaveBeenCalledTimes(1);
+    expect(toastInfo).toHaveBeenCalledWith(
+      'services.server-command-handler.info.deleted-count',
+      'services.server-command-handler.info.deleted-title-plural',
+    );
+    expect(translateService.instant).toHaveBeenCalledWith(
+      'services.server-command-handler.info.deleted-count',
+      { count: 3 },
+    );
+  });
+
+  it('should only report the servers that were actually deleted', async () => {
+    serverDelete.mockRejectedValueOnce(new Error('locked'));
+    commands$.next({ type: 'SERVER_DELETED', ids: ['1', '2'] });
+    await flushPromises();
+    expect(serverDelete).toHaveBeenCalledTimes(2);
+    expect(serverStoreRefresh).toHaveBeenCalledTimes(1);
+    expect(toastInfo).toHaveBeenCalledTimes(1);
+    expect(toastInfo).toHaveBeenCalledWith(
+      '"Second Server"',
+      'services.server-command-handler.info.deleted-title',
+    );
+  });
+
+  it('should not show a toast when no server could be deleted', async () => {
+    serverDelete.mockRejectedValue(new Error('locked'));
+    commands$.next({ type: 'SERVER_DELETED', ids: ['1'] });
+    await flushPromises();
+    expect(toastInfo).not.toHaveBeenCalled();
   });
 
   it('should not crash the subscription if a command throws', async () => {

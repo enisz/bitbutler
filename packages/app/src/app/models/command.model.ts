@@ -67,7 +67,7 @@ export type MenuCommand = { type: 'MENU_FILE_LOGOUT' };
 
 export type ServerCommand =
   | { type: 'SERVER_ADDED'; id: string }
-  | { type: 'SERVER_DELETED'; id: string }
+  | { type: 'SERVER_DELETED'; ids: string[] }
   | { type: 'SERVER_UPDATED'; id: string };
 
 export type TagCommand =

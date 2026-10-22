@@ -261,7 +261,7 @@ export class ServerEditor implements OnInit {
     );
     if (!confirmed) return;
 
-    this.commandBusService.emit({ type: 'SERVER_DELETED', id });
+    this.commandBusService.emit({ type: 'SERVER_DELETED', ids: [id] });
     // Dismiss rather than close - callers treat a close result as a saved server id.
     this.activeModal.dismiss();
   }

@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
 import { EMPTY, catchError, concatMap, filter, from } from 'rxjs';
 import { AppCommand, TagCommand } from '../models/command.model';
+import { deletedToast } from '../utils/deleted-toast';
 import { CommandBusService } from './command-bus.service';
 import { ToastService } from './toast.service';
 
@@ -49,9 +50,11 @@ export class TagCommandHandlerService {
   }
 
   private handleTagDeleted(names: string[]): void {
-    this.toastService.info(
-      `"${names.join(', ')}"`,
-      this.translateService.instant('services.tag-command-handler.info.deleted-title'),
+    const { message, title } = deletedToast(
+      this.translateService,
+      'services.tag-command-handler.info',
+      names,
     );
+    this.toastService.info(message, title);
   }
 }

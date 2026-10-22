@@ -2038,7 +2038,9 @@
       },
       "info": {
         "updated-title": "Server Updated",
-        "deleted-title": "Server Deleted"
+        "deleted-title": "Server Deleted",
+        "deleted-title-plural": "Servers Deleted",
+        "deleted-count": "{{ count }} servers"
       }
     },
     "update-command-handler": {
@@ -2089,7 +2091,9 @@
         "added-title": "Tag Added"
       },
       "info": {
-        "deleted-title": "Tag Deleted"
+        "deleted-title": "Tag Deleted",
+        "deleted-title-plural": "Tags Deleted",
+        "deleted-count": "{{ count }} tags"
       }
     },
     "category-command-handler": {
@@ -2097,7 +2101,9 @@
         "added-title": "Category Added"
       },
       "info": {
-        "deleted-title": "Category Deleted"
+        "deleted-title": "Category Deleted",
+        "deleted-title-plural": "Categories Deleted",
+        "deleted-count": "{{ count }} categories"
       }
     },
     "qb": {
