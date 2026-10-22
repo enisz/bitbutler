@@ -951,6 +951,20 @@
           "failed-title": "Export sikertelen"
         }
       },
+      "import-configuration": {
+        "title": "Konfiguráció importálása",
+        "app-settings": "Alkalmazásbeállítások",
+        "app-settings-sub": "Felülírja a jelenlegi alkalmazásbeállításokat.",
+        "servers": "Szerverek",
+        "badge-exists": "már létezik - felülírásra kerül",
+        "badge-new": "új",
+        "button": {
+          "import": "Importálás"
+        },
+        "toast": {
+          "import-failed-title": "A konfiguráció importálása sikertelen"
+        }
+      },
       "import-torrents": {
         "title": "Torrentek importálása",
         "label": {

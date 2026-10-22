@@ -951,6 +951,20 @@
           "failed-title": "Export Failed"
         }
       },
+      "import-configuration": {
+        "title": "Import Configuration",
+        "app-settings": "Application settings",
+        "app-settings-sub": "Overwrites the current application settings.",
+        "servers": "Servers",
+        "badge-exists": "already exists - will overwrite",
+        "badge-new": "new",
+        "button": {
+          "import": "Import"
+        },
+        "toast": {
+          "import-failed-title": "Failed to Import Configuration"
+        }
+      },
       "import-torrents": {
         "title": "Import Torrents",
         "label": {

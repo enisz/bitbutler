@@ -1,0 +1,95 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ 'components.modals.import-configuration.title' | translate }}</h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
+</div>
+<div class="modal-body">
+  @if (loading()) {
+    <div class="d-flex justify-content-center align-items-center gap-2 text-body-secondary small">
+      <app-bb-spinner></app-bb-spinner>
+    </div>
+  } @else if (error()) {
+    <div class="text-danger small">{{ error() }}</div>
+  } @else if (metadata(); as meta) {
+    @if (meta.hasSettings) {
+      <div class="bb-options mb-3">
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <label class="bb-option__label" for="import-app-settings">
+              {{ 'components.modals.import-configuration.app-settings' | translate }}
+            </label>
+            <span class="bb-option__sub">{{
+              'components.modals.import-configuration.app-settings-sub' | translate
+            }}</span>
+          </div>
+          <span class="bb-option__toggle form-switch">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="import-app-settings"
+              [checked]="applySettings()"
+              (change)="setApplySettings($any($event.target).checked)"
+            />
+          </span>
+        </div>
+      </div>
+    }
+
+    @if (meta.servers.length > 0) {
+      <h6 class="text-body-secondary small text-uppercase">
+        {{ 'components.modals.import-configuration.servers' | translate }}
+      </h6>
+      <div class="bb-options">
+        @for (server of meta.servers; track server.id) {
+          <div class="bb-option">
+            <div class="bb-option__text">
+              <label class="bb-option__label" [for]="'import-server-' + server.id">
+                {{ server.name }}
+              </label>
+              <span class="bb-option__sub">
+                {{ server.host }}:{{ server.port }} -
+                {{
+                  (server.exists
+                    ? 'components.modals.import-configuration.badge-exists'
+                    : 'components.modals.import-configuration.badge-new'
+                  ) | translate
+                }}
+              </span>
+            </div>
+            <span class="bb-option__toggle form-switch">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                [id]="'import-server-' + server.id"
+                [checked]="selectedServerIds().has(server.id)"
+                (change)="toggleServer(server.id)"
+              />
+            </span>
+          </div>
+        }
+      </div>
+    }
+  }
+</div>
+<div class="modal-footer">
+  <button
+    type="button"
+    class="btn btn-primary btn-sm btn-split"
+    (click)="import()"
+    [disabled]="!canImport()"
+  >
+    <bb-btn-content
+      [icon]="icons.faFileImport"
+      [text]="'components.modals.import-configuration.button.import' | translate"
+      position="end"
+    ></bb-btn-content>
+  </button>
+  <button type="button" class="btn btn-sm btn-split" (click)="cancel()">
+    <bb-btn-content
+      [icon]="icons.faXmark"
+      [text]="'general.button.cancel' | translate"
+      position="end"
+    ></bb-btn-content>
+  </button>
+</div>
