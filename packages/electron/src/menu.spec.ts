@@ -183,6 +183,30 @@ describe('rebuildMenu', () => {
       expect(findItem(template, byLabel('electron.menu.settings-menu'))).toBeUndefined();
     });
 
+    it('sends the export and import configuration actions when logged in', async () => {
+      mockGetCookieJar.mockReturnValue(new Map([['srv-1', 'SID=abc']]));
+      const mainWindow = createFakeWindow();
+      const template = await buildMenu(mainWindow);
+      const settingsMenu = findItem(template, byLabel('electron.menu.settings-menu'))!;
+      const labels = (settingsMenu.submenu as MenuItemConstructorOptions[]).map((i) => i.label);
+
+      expect(labels.slice(-2)).toEqual([
+        'electron.menu.export-configuration',
+        'electron.menu.import-configuration',
+      ]);
+
+      (findItem(template, byLabel('electron.menu.export-configuration'))!.click as () => void)();
+      (findItem(template, byLabel('electron.menu.import-configuration'))!.click as () => void)();
+      expect(mainWindow.webContents.send).toHaveBeenCalledWith(
+        'menu:clicked',
+        expect.objectContaining({ action: 'settings.export-configuration' }),
+      );
+      expect(mainWindow.webContents.send).toHaveBeenCalledWith(
+        'menu:clicked',
+        expect.objectContaining({ action: 'settings.import-configuration' }),
+      );
+    });
+
     it('is shown with the expected accelerators when logged in', async () => {
       mockGetCookieJar.mockReturnValue(new Map([['srv-1', 'SID=abc']]));
       const template = await buildMenu();

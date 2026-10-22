@@ -2240,6 +2240,8 @@
       "qb-settings": "qBittorrent beállítások",
       "manage-tags": "Cimkék kezelése",
       "manage-categories": "Kategóriák kezelése",
+      "export-configuration": "Konfiguráció exportálása",
+      "import-configuration": "Konfiguráció importálása",
       "manage-servers": "Szerverek kezelése",
       "help": "Súgó",
       "check-for-updates": "Frissítések keresése",

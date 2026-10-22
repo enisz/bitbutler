@@ -2241,6 +2241,8 @@
       "qb-settings": "qBittorrent Settings",
       "manage-tags": "Manage Tags",
       "manage-categories": "Manage Categories",
+      "export-configuration": "Export Configuration",
+      "import-configuration": "Import Configuration",
       "manage-servers": "Manage Servers",
       "help": "Help",
       "check-for-updates": "Check for Updates",
