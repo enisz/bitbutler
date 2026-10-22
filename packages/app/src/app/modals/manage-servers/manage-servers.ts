@@ -446,6 +446,7 @@ export class ManageServers implements OnDestroy {
               icon: faTrashCan,
               variant: 'danger',
               action: () => void this.deleteServers([server]),
+              hint: 'Del',
             },
           ] satisfies ContextMenuEntry[])),
     ];

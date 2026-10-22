@@ -58,6 +58,13 @@ describe('GridKeyboardNavService', () => {
       });
     });
 
+    it('should not emit when a modal is open', () => {
+      modalService.hasOpenModals.mockReturnValue(true);
+      const event = new KeyboardEvent('keyup', { code: 'Delete' });
+      service.onKeyUp(event);
+      expect(commandBusService.emit).not.toHaveBeenCalled();
+    });
+
     it('should not emit when Delete is pressed in an INPUT element', () => {
       const input = document.createElement('input');
       document.body.appendChild(input);

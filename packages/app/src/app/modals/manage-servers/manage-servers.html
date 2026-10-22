@@ -12,6 +12,7 @@
   <ag-grid-angular
     class="w-100 d-block bb-manage-servers-grid"
     (gridReady)="onGridReady($event)"
+    (gridDelete)="deleteSelected()"
     [loading]="loading()"
     [rowData]="servers()"
     [columnDefs]="colDefs()"

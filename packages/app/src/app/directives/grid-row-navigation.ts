@@ -1,4 +1,4 @@
-import { DestroyRef, Directive, ElementRef, inject } from '@angular/core';
+import { DestroyRef, Directive, ElementRef, inject, output } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AgGridAngular } from 'ag-grid-angular';
 import type { GridApi, IRowNode } from 'ag-grid-community';
@@ -35,6 +35,9 @@ export class GridRowNavigationDirective {
   anchorIndex: number | null = null;
   leadIndex: number | null = null;
 
+  /** The Delete key was pressed while rows are selected in the active grid. */
+  readonly gridDelete = output<void>();
+
   constructor() {
     this.grid.gridReady.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
       this.api = event.api;
@@ -57,11 +60,30 @@ export class GridRowNavigationDirective {
     fromEvent<KeyboardEvent>(document, 'keydown')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((event) => this.onKeyDown(event));
+
+    // Key up, so holding the key down does not repeat the request.
+    fromEvent<KeyboardEvent>(document, 'keyup')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event) => this.onKeyUp(event));
   }
 
   private trackClicks(api: GridApi): void {
     api.addEventListener('rowClicked', (event) => {
       const mouseEvent = event.event as MouseEvent | null | undefined;
+
+      // A row that cannot be selected (e.g. the active server) takes no part in the selection. A
+      // plain click on it still replaces the selection like on any other row, so the rows that
+      // are left selected are not deleted by a later key press without the user noticing.
+      if (!event.node.selectable) {
+        const plainClick = !mouseEvent?.shiftKey && !mouseEvent?.ctrlKey && !mouseEvent?.metaKey;
+        if (plainClick && this.hasClickSelection(api)) {
+          api.deselectAll();
+          this.anchorIndex = null;
+          this.leadIndex = null;
+        }
+        return;
+      }
+
       if (event.rowIndex !== null && !mouseEvent?.shiftKey) {
         this.anchorIndex = event.rowIndex;
         this.leadIndex = event.rowIndex;
@@ -120,6 +142,19 @@ export class GridRowNavigationDirective {
     const modals = document.querySelectorAll('ngb-modal-window');
     if (modals.length === 0) return true;
     return modals[modals.length - 1].contains(element);
+  }
+
+  private onKeyUp(event: KeyboardEvent): void {
+    const { code, shiftKey, ctrlKey, altKey, metaKey } = event;
+    if (code !== 'Delete' || shiftKey || ctrlKey || altKey || metaKey) return;
+
+    const api = this.api;
+    if (!api || !this.isActive() || !this.isMultiRow(api) || this.isTypingTarget(event.target)) {
+      return;
+    }
+    if (api.getSelectedNodes().length === 0) return;
+
+    this.gridDelete.emit();
   }
 
   private onKeyDown(event: KeyboardEvent): void {

@@ -1,7 +1,9 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
+import { GridRowNavigationDirective } from '../../directives/grid-row-navigation';
 import { GridContextMenuService } from '../../pages/main/grid/context-menu/grid-context-menu.service';
 import { CommandBusService } from '../../services/command-bus.service';
 import { ConfirmService } from '../../services/confirm.service';
@@ -351,6 +353,18 @@ describe('ManageServers', () => {
       expect(items.some((i) => i.label === 'general.button.delete')).toBe(false);
     });
 
+    it('shows the Del hotkey hint on the Delete item of the row context menu', () => {
+      serverStoreService.currentServerId.set('srv-1');
+      contextMenuService.open.mockClear();
+
+      component['onCellContextMenu']({ data: { id: 'srv-2' } } as never);
+
+      const [{ items }] = contextMenuService.open.mock.calls.at(-1) as [
+        { items: { label: string; hint?: string }[] },
+      ];
+      expect(items.find((i) => i.label === 'general.button.delete')?.hint).toBe('Del');
+    });
+
     it('includes Edit and Delete from the row context menu for the "current" server when hideConnect is true (login screen: currentServerId is not a live connection)', () => {
       fixture.componentRef.setInput('hideConnect', true);
       serverStoreService.currentServerId.set('srv-2');
@@ -459,6 +473,17 @@ describe('ManageServers', () => {
   });
 
   describe('row selection', () => {
+    it('deletes the selection when the grid reports a Delete key press', () => {
+      const deleteSelected = vi.spyOn(component, 'deleteSelected').mockResolvedValue();
+      const directive = fixture.debugElement
+        .query(By.directive(GridRowNavigationDirective))
+        .injector.get(GridRowNavigationDirective);
+
+      directive.gridDelete.emit();
+
+      expect(deleteSelected).toHaveBeenCalledTimes(1);
+    });
+
     it('selects rows by clicking them, without a checkbox column', () => {
       expect(component.gridOptions.rowSelection).toMatchObject({
         mode: 'multiRow',

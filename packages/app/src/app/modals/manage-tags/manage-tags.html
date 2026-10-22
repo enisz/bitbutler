@@ -12,6 +12,7 @@
   <ag-grid-angular
     class="w-100 d-block bb-manage-tags-grid"
     (gridReady)="onGridReady($event)"
+    (gridDelete)="deleteSelected()"
     [rowData]="rows()"
     [columnDefs]="colDefs"
     [gridOptions]="gridOptions"
