@@ -1239,6 +1239,8 @@
       "form-title": "Csatlakozás",
       "form-subtitle": "Válassz gazdagépet a csatlakozáshoz.",
       "form-subtitle-empty": "Adj hozzá egy szervert a kezdéshez.",
+      "import-configuration": "Konfiguráció importálása",
+      "import-configuration-hint": "Vagy importálj egy konfigurációt.",
       "connecting": "Csatlakozás...",
       "server-form": {
         "host": "Gép (Host)"

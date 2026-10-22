@@ -80,6 +80,16 @@
               [text]="'general.button.manage-servers' | translate"
             ></bb-btn-content>
           </button>
+          <button
+            type="button"
+            class="btn btn-lg btn-outline-secondary btn-pill-cta btn-split import-configuration-cta"
+            (click)="importConfiguration()"
+          >
+            <bb-btn-content
+              [icon]="icons.faFileImport"
+              [text]="'pages.login.import-configuration' | translate"
+            ></bb-btn-content>
+          </button>
         </div>
       } @else {
         <div class="d-flex flex-column gap-3 mb-4">
@@ -92,6 +102,19 @@
             <bb-btn-content
               [icon]="icons.faPlus"
               [text]="'general.button.add-server' | translate"
+            ></bb-btn-content>
+          </button>
+          <p class="text-body-secondary small text-center mb-0 import-configuration-hint">
+            {{ 'pages.login.import-configuration-hint' | translate }}
+          </p>
+          <button
+            type="button"
+            class="btn btn-lg btn-outline-secondary btn-pill-cta btn-split import-configuration-cta"
+            (click)="importConfiguration()"
+          >
+            <bb-btn-content
+              [icon]="icons.faFileImport"
+              [text]="'pages.login.import-configuration' | translate"
             ></bb-btn-content>
           </button>
         </div>
