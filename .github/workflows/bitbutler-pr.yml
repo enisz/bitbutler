@@ -50,6 +50,16 @@ jobs:
               }
             } catch (error) {
               core.setFailed(`Error processing Issue #${issueNumber}: ${error.message}`);
+              return;
+            }
+
+            // Release notes are grouped by PR label, so an unlabeled PR is misfiled.
+            const { data: prLabels } = await github.rest.issues.listLabelsOnIssue({
+              owner, repo, issue_number: pr.number
+            });
+
+            if (prLabels.length === 0) {
+              core.setFailed(`ERROR: PR #${pr.number} has no labels. Label Issue #${issueNumber} (labels are synced to the PR) or label the PR directly, then re-run this check.`);
             }
 
   detect-changes:
