@@ -65,6 +65,8 @@ describe('UiCommandHandlerService', () => {
       import('../modals/manage-servers/manage-servers'),
       import('../modals/export-torrents/export-torrents'),
       import('../modals/import-torrents/import-torrents'),
+      import('../modals/export-configuration/export-configuration'),
+      import('../modals/import-configuration/import-configuration'),
       import('../modals/torrent-exists/torrent-exists'),
       import('../modals/credential-prompt/credential-prompt'),
     ]);
@@ -449,6 +451,46 @@ describe('UiCommandHandlerService', () => {
       expect.anything(),
       expect.objectContaining({ size: 'xl', scrollable: true }),
     );
+  });
+
+  it('should open ExportConfiguration modal for UI_EXPORT_CONFIGURATION', async () => {
+    const { ExportConfiguration } =
+      await import('../modals/export-configuration/export-configuration');
+
+    commands$.next({ type: 'UI_EXPORT_CONFIGURATION' });
+    await flushPromises();
+
+    expect(mockModalService.open).toHaveBeenCalledWith(
+      ExportConfiguration,
+      expect.objectContaining({ size: 'md' }),
+    );
+  });
+
+  it('should open ImportConfiguration modal with the bbcPath input for UI_IMPORT_CONFIGURATION', async () => {
+    const { ImportConfiguration } =
+      await import('../modals/import-configuration/import-configuration');
+
+    commands$.next({ type: 'UI_IMPORT_CONFIGURATION', bbcPath: '/tmp/a.bbc' });
+    await flushPromises();
+
+    expect(mockModalService.open).toHaveBeenCalledWith(
+      ImportConfiguration,
+      expect.objectContaining({ size: 'lg', scrollable: true }),
+    );
+    expect(setInputSpy).toHaveBeenCalledWith('bbcPath', '/tmp/a.bbc');
+  });
+
+  it('should not open a second ImportConfiguration modal while one is already open', async () => {
+    const { ImportConfiguration } =
+      await import('../modals/import-configuration/import-configuration');
+    mockModalService.activeInstances.next([
+      { componentInstance: Object.create(ImportConfiguration.prototype) },
+    ]);
+
+    commands$.next({ type: 'UI_IMPORT_CONFIGURATION', bbcPath: '/tmp/a.bbc' });
+    await flushPromises();
+
+    expect(mockModalService.open).not.toHaveBeenCalled();
   });
 
   it('logs the error and shows a danger toast when opening the destination fails', async () => {

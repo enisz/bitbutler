@@ -107,6 +107,18 @@ describe('config:read', () => {
   });
 });
 
+describe('path hardening', () => {
+  it.each(['config:read', 'config:import'])(
+    '%s rejects a path without the .bbc extension',
+    async (channel) => {
+      const payload = { path: '/etc/passwd', applySettings: true, serverIds: [] };
+
+      await expect(invoke(channel, payload)).rejects.toThrow(/\.bbc/);
+      expect(mockReadFile).not.toHaveBeenCalled();
+    },
+  );
+});
+
 describe('config:import', () => {
   it('re-reads and parses the file, then applies the selection', async () => {
     mockReadFile.mockResolvedValue('raw');

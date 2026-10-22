@@ -2086,6 +2086,13 @@
         "toggle-first-last-piece-prio-failed-title": "Failed to Toggle First/Last Piece Priority"
       }
     },
+    "configuration": {
+      "success": {
+        "imported-title": "Configuration Imported",
+        "settings": "Application settings",
+        "servers": "Servers: {{ count }}"
+      }
+    },
     "tag-command-handler": {
       "success": {
         "added-title": "Tag Added"

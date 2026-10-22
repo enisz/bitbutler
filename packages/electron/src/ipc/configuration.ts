@@ -37,6 +37,10 @@ function requirePath(value: unknown): string {
   if (typeof value !== 'string' || value.length === 0) {
     throw new Error("Field 'path' is required.");
   }
+  // The renderer supplies this path, so only configuration files are ever read from it.
+  if (!value.toLowerCase().endsWith('.bbc')) {
+    throw new Error('Only .bbc configuration files can be read.');
+  }
   return value;
 }
 

@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { ToastAction, ToastType } from '../models/toast.model';
 import { CommandBusService } from './command-bus.service';
+import { ConfigurationService } from './configuration.service';
 import { MenuBarService, MenuClick } from './menu-bar.service';
 import { NotificationService } from './notification.service';
 import { ServerStoreService } from './server-store.service';
@@ -29,6 +30,7 @@ export class MenuBarCommandHandlerService {
   private readonly notificationService = inject(NotificationService);
   private readonly toastService = inject(ToastService);
   private readonly serverStoreService = inject(ServerStoreService);
+  private readonly configurationService = inject(ConfigurationService);
 
   public start(): void {
     this.menuBarService.clicks$.subscribe((payload: MenuClick) => {
@@ -60,6 +62,14 @@ export class MenuBarCommandHandlerService {
           void window.bitbutler.export.openBbePicker().then((bbePath) => {
             if (bbePath) this.commandBusService.emit({ type: 'UI_IMPORT_TORRENTS', bbePath });
           });
+          break;
+
+        case 'settings.export-configuration':
+          this.commandBusService.emit({ type: 'UI_EXPORT_CONFIGURATION' });
+          break;
+
+        case 'settings.import-configuration':
+          void this.configurationService.pickAndImport();
           break;
 
         case 'file.disconnect':

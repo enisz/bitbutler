@@ -2086,6 +2086,13 @@
         "toggle-first-last-piece-prio-failed-title": "Nem sikerült átváltani az első/utolsó szelet prioritást"
       }
     },
+    "configuration": {
+      "success": {
+        "imported-title": "Konfiguráció importálva",
+        "settings": "Alkalmazásbeállítások",
+        "servers": "Szerverek: {{ count }}"
+      }
+    },
     "tag-command-handler": {
       "success": {
         "added-title": "Címke hozzáadva"
