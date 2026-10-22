@@ -121,6 +121,19 @@ describe('buildConfiguration', () => {
     expect(JSON.stringify(buildConfiguration())).not.toContain('ghost');
   });
 
+  it('skips dotted settings rows that belong to no server and still round-trips', () => {
+    addServer('s1');
+    addSetting('GeneralSettingsService', { a: 1 });
+    addSetting('ServerSettingsService.', { orphan: true });
+    addSetting('AddTorrentSettingsService.', { orphan: true });
+    addSetting('ServerSettingsService.ghost', { orphan: true });
+
+    const file = buildConfiguration();
+
+    expect(Object.keys(file.settings)).toEqual(['GeneralSettingsService']);
+    expect(parseConfiguration(JSON.stringify(file))).toEqual(file);
+  });
+
   it('never emits credentials or detected connection info', () => {
     addServer('s1', { auto_login: 1 });
 

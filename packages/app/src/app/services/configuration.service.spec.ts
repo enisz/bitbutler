@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { TranslateService } from '@ngx-translate/core';
+import { of } from 'rxjs';
 import { CommandBusService } from './command-bus.service';
 import { ConfigurationService } from './configuration.service';
 import { ToastService } from './toast.service';
@@ -23,7 +24,9 @@ describe('ConfigurationService', () => {
         {
           provide: TranslateService,
           useValue: {
-            instant: (key: string, params?: object) => key + JSON.stringify(params ?? {}),
+            // get() waits for the language to load, instant() would return the bare key after a reload
+            get: (keys: string[], params?: object) =>
+              of(Object.fromEntries(keys.map((key) => [key, key + JSON.stringify(params ?? {})]))),
           },
         },
       ],

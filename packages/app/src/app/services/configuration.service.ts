@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { BbcImportResult } from '@bitbutler/shared';
 import { TranslateService } from '@ngx-translate/core';
+import { take } from 'rxjs';
 import { CommandBusService } from './command-bus.service';
 import { ToastService } from './toast.service';
 
@@ -42,25 +43,24 @@ export class ConfigurationService {
     }
   }
 
+  // After the reload the language may not be loaded yet: get() waits for it, instant() would
+  // return the bare keys.
   public showImportedToastIfPending(): void {
     const result = this.consumeImportToast();
     if (!result) return;
 
-    const parts: string[] = [];
-    if (result.settings) {
-      parts.push(this.translateService.instant('services.configuration.success.settings'));
-    }
-    if (result.servers > 0) {
-      parts.push(
-        this.translateService.instant('services.configuration.success.servers', {
-          count: result.servers,
-        }),
-      );
-    }
-    this.toastService.success(
-      parts.join(', '),
-      this.translateService.instant('services.configuration.success.imported-title'),
-    );
+    const base = 'services.configuration.success';
+    this.translateService
+      .get([`${base}.imported-title`, `${base}.settings`, `${base}.servers`], {
+        count: result.servers,
+      })
+      .pipe(take(1))
+      .subscribe((texts: Record<string, string>) => {
+        const parts: string[] = [];
+        if (result.settings) parts.push(texts[`${base}.settings`]);
+        if (result.servers > 0) parts.push(texts[`${base}.servers`]);
+        this.toastService.success(parts.join(', '), texts[`${base}.imported-title`]);
+      });
   }
 
   protected reloadWindow(): void {

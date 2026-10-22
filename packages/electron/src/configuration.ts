@@ -56,7 +56,8 @@ export function buildConfiguration(): BbcFile {
     const scoped = SERVER_SCOPED_ID.exec(row.id);
     if (scoped && Object.hasOwn(servers, scoped[2])) {
       servers[scoped[2]].settings[scoped[1]] = value;
-    } else if (!scoped) {
+    } else if (!row.id.includes('.')) {
+      // Dotted ids that match no server (empty or deleted server id) are leftovers, not settings.
       settings[row.id] = value;
     }
   }
