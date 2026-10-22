@@ -32,6 +32,11 @@ vi.mock('../configuration-apply.js', () => ({ applyConfiguration: mockApply }));
 const invoke = (channel: string, payload?: unknown): unknown =>
   ipcHandlers.get(channel)!({}, payload);
 
+async function pick(path: string): Promise<void> {
+  mockOpenDialog.mockResolvedValueOnce({ canceled: false, filePaths: [path] });
+  await invoke('config:open-picker');
+}
+
 beforeEach(() => {
   vi.clearAllMocks();
   ipcHandlers.clear();
@@ -80,6 +85,7 @@ describe('config:open-picker', () => {
 
 describe('config:read', () => {
   it('returns the description of the parsed file', async () => {
+    await pick('/tmp/in.bbc');
     mockReadFile.mockResolvedValue('raw');
     mockParse.mockReturnValue({ parsed: true });
     mockDescribe.mockReturnValue({ version: 1 });
@@ -91,6 +97,7 @@ describe('config:read', () => {
   });
 
   it('rejects with the parse error message', async () => {
+    await pick('/tmp/in.bbc');
     mockReadFile.mockResolvedValue('raw');
     mockParse.mockImplementation(() => {
       throw new Error('Invalid configuration file.');
@@ -109,18 +116,43 @@ describe('config:read', () => {
 
 describe('path hardening', () => {
   it.each(['config:read', 'config:import'])(
-    '%s rejects a path without the .bbc extension',
+    '%s rejects a path that was not picked through the dialog',
     async (channel) => {
-      const payload = { path: '/etc/passwd', applySettings: true, serverIds: [] };
+      await pick('/tmp/picked.bbc');
+      const payload = { path: '/tmp/other.bbc', applySettings: true, serverIds: [] };
 
-      await expect(invoke(channel, payload)).rejects.toThrow(/\.bbc/);
+      await expect(invoke(channel, payload)).rejects.toThrow(/picked/i);
       expect(mockReadFile).not.toHaveBeenCalled();
     },
   );
+
+  it.each(['config:read', 'config:import'])(
+    '%s rejects a UNC path even if it ends in .bbc',
+    async (channel) => {
+      const unc = ['', '', 'evil', 'share', 'x.bbc'].join(String.fromCharCode(92));
+      const payload = { path: unc, applySettings: true, serverIds: [] };
+
+      await expect(invoke(channel, payload)).rejects.toThrow();
+      expect(mockReadFile).not.toHaveBeenCalled();
+    },
+  );
+
+  it('forgets a picked path after a successful import', async () => {
+    await pick('/tmp/in.bbc');
+    mockReadFile.mockResolvedValue('raw');
+    mockParse.mockReturnValue({});
+    mockApply.mockReturnValue({ settings: false, servers: 0 });
+    const payload = { path: '/tmp/in.bbc', applySettings: false, serverIds: [] };
+
+    await invoke('config:import', payload);
+
+    await expect(invoke('config:read', { path: '/tmp/in.bbc' })).rejects.toThrow(/picked/i);
+  });
 });
 
 describe('config:import', () => {
   it('re-reads and parses the file, then applies the selection', async () => {
+    await pick('/tmp/in.bbc');
     mockReadFile.mockResolvedValue('raw');
     mockParse.mockReturnValue({ parsed: true });
     mockApply.mockReturnValue({ settings: true, servers: 1 });

@@ -6,7 +6,12 @@ import { buildConfiguration, describeConfiguration, parseConfiguration } from '.
 
 const BBC_FILTER = { name: 'BitButler Configuration', extensions: ['bbc'] };
 
+// Paths the user chose in the open dialog. The renderer can only ask to read or import one of
+// these, never an arbitrary path (including UNC paths that would reach out to another machine).
+const pickedPaths = new Set<string>();
+
 export function registerConfigurationIpcHandlers(): void {
+  pickedPaths.clear();
   ipcMain.handle('config:export', async () => exportToFile());
   ipcMain.handle('config:open-picker', async () => openPicker());
   ipcMain.handle('config:read', async (_event, payload: unknown) => readConfiguration(payload));
@@ -30,14 +35,19 @@ async function openPicker(): Promise<string | undefined> {
     properties: ['openFile'],
     filters: [BBC_FILTER],
   });
-  return filePaths[0];
+  const picked = filePaths[0];
+  if (picked) pickedPaths.add(picked);
+  return picked;
 }
 
 function requirePath(value: unknown): string {
   if (typeof value !== 'string' || value.length === 0) {
     throw new Error("Field 'path' is required.");
   }
-  // The renderer supplies this path, so only configuration files are ever read from it.
+  if (!pickedPaths.has(value)) {
+    throw new Error('Only a file picked in the open dialog can be read.');
+  }
+  // Defense in depth: even a picked path must be a configuration file.
   if (!value.toLowerCase().endsWith('.bbc')) {
     throw new Error('Only .bbc configuration files can be read.');
   }
@@ -62,8 +72,10 @@ async function importConfiguration(payload: unknown): Promise<BbcImportResult> {
 
   // The file is read again here instead of trusting anything the renderer parsed earlier.
   const raw = await fs.promises.readFile(path, 'utf8');
-  return applyConfiguration(parseConfiguration(raw), {
+  const result = applyConfiguration(parseConfiguration(raw), {
     applySettings: p.applySettings,
     serverIds: p.serverIds,
   });
+  pickedPaths.delete(path);
+  return result;
 }
