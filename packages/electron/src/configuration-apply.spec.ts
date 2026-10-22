@@ -150,25 +150,36 @@ describe('applyConfiguration servers', () => {
     expect(result.servers).toBe(1);
   });
 
-  it('keeps username and password of an existing server but takes the file connection fields', () => {
-    addServer('e1');
+  it('keeps username and password of an existing server when the connection target is unchanged', () => {
+    addServer('e1', { host: 'same.example', protocol: 'https', port: 443 });
 
-    applyConfiguration(file([fileServer('e1', { auto_login: true })]), {
-      applySettings: false,
-      serverIds: ['e1'],
-    });
+    applyConfiguration(
+      file([fileServer('e1', { host: 'same.example', auto_login: true, name: 'renamed' })]),
+      { applySettings: false, serverIds: ['e1'] },
+    );
 
     const row = server('e1')!;
     expect(row).toMatchObject({
-      name: 'file-e1',
-      host: 'file-e1.example',
-      protocol: 'https',
-      port: 443,
+      name: 'renamed',
       auto_login: 1,
       username: 'keep-user',
       created_at: '2020-01-01T00:00:00.000Z',
     });
     expect((row['password'] as Buffer).toString()).toBe('keep-pass');
+  });
+
+  it('clears username and password when the file points the server at a different host', () => {
+    addServer('e1');
+
+    applyConfiguration(file([fileServer('e1')]), { applySettings: false, serverIds: ['e1'] });
+
+    expect(server('e1')).toMatchObject({
+      host: 'file-e1.example',
+      port: 443,
+      protocol: 'https',
+      username: '',
+      password: null,
+    });
   });
 
   it('writes server settings as <Service>.<id> for selected servers only', () => {

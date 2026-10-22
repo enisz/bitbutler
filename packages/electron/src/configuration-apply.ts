@@ -26,8 +26,12 @@ const stmtUpdateServer = db.prepare(`
   WHERE id = @id
 `);
 
-const stmtResetConnectionInfo = db.prepare<[string]>(`
-  UPDATE servers SET export_available = NULL, webapi_version = NULL, qb_version = NULL WHERE id = ?
+// A server that is pointed somewhere else must not carry its old credentials along.
+const stmtResetConnection = db.prepare<[string]>(`
+  UPDATE servers SET
+    export_available = NULL, webapi_version = NULL, qb_version = NULL,
+    username = '', password = NULL
+  WHERE id = ?
 `);
 
 // Imported servers carry no credentials: empty username, NULL password.
@@ -77,7 +81,7 @@ export function applyConfiguration(
           existing.port !== server.port ||
           existing.protocol !== server.protocol
         ) {
-          stmtResetConnectionInfo.run(server.id);
+          stmtResetConnection.run(server.id);
           droppedCookies.push(server.id);
         }
       } else {
