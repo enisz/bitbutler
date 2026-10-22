@@ -1,3 +1,8 @@
+import type {
+  BbcImportPayload,
+  BbcImportResult,
+  BbcMetadata,
+} from './models/configuration.model.js';
 import type { HostPlatform, UpdateCheckResponse } from './models/electron.model.js';
 import type { RendererLogEntry } from './models/log.model.js';
 import type { NewServer, ServerRecord } from './models/server.model.js';
@@ -276,6 +281,13 @@ export interface BitButlerAPI {
 
   i18n: {
     languageChanged(lang: string): void;
+  };
+
+  config: {
+    exportToFile(): Promise<{ canceled: boolean; path?: string }>;
+    openPicker(): Promise<string | undefined>;
+    read(payload: { path: string }): Promise<BbcMetadata>;
+    importFile(payload: BbcImportPayload): Promise<BbcImportResult>;
   };
 
   export: {
