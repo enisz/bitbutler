@@ -10,7 +10,7 @@
   } @else if (error()) {
     <div class="text-danger small">{{ error() }}</div>
   } @else if (metadata(); as meta) {
-    @if (meta.hasSettings) {
+    @if (meta.hasSettings && !serversOnly()) {
       <div class="bb-options mb-3">
         <div class="bb-option">
           <div class="bb-option__text">
@@ -54,6 +54,9 @@
                     : 'components.modals.import-configuration.badge-new'
                   ) | translate
                 }}
+                @if (server.id === currentServerId()) {
+                  - {{ 'components.modals.import-configuration.badge-current' | translate }}
+                }
               </span>
             </div>
             <span class="bb-option__toggle form-switch">

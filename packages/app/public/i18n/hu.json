@@ -958,8 +958,14 @@
         "servers": "Szerverek",
         "badge-exists": "már létezik - felülírásra kerül",
         "badge-new": "új",
+        "badge-current": "ez a jelenlegi szervered",
         "button": {
-          "import": "Importálás"
+          "import": "Importálás",
+          "restore-and-log-out": "Visszaállítás és kijelentkezés"
+        },
+        "logout-confirm": {
+          "title": "Kijelentkezés a visszaállítás után",
+          "message": "A(z) \"{{name}}\" visszaállítása kijelentkeztet. Újra be kell jelentkezned."
         },
         "toast": {
           "import-failed-title": "A konfiguráció importálása sikertelen"

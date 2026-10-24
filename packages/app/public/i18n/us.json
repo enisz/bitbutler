@@ -958,8 +958,14 @@
         "servers": "Servers",
         "badge-exists": "already exists - will overwrite",
         "badge-new": "new",
+        "badge-current": "this is your current server",
         "button": {
-          "import": "Import"
+          "import": "Import",
+          "restore-and-log-out": "Restore and log out"
+        },
+        "logout-confirm": {
+          "title": "Log Out After Restore",
+          "message": "Restoring \"{{name}}\" will log you out. You will need to sign in again."
         },
         "toast": {
           "import-failed-title": "Failed to Import Configuration"

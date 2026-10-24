@@ -1,9 +1,13 @@
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BbcMetadata } from '@bitbutler/shared';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { ConfigurationService } from '../../services/configuration.service';
+import { ConfirmService } from '../../services/confirm.service';
+import { QbService } from '../../services/qb.service';
+import { ServerStoreService } from '../../services/server-store.service';
 import { ToastService } from '../../services/toast.service';
 import { ImportConfiguration } from './import-configuration';
 
@@ -23,6 +27,9 @@ describe('ImportConfiguration', () => {
   let activeModal: { close: ReturnType<typeof vi.fn>; dismiss: ReturnType<typeof vi.fn> };
   let toast: { danger: ReturnType<typeof vi.fn> };
   let finishImport: ReturnType<typeof vi.fn>;
+  let confirm: ReturnType<typeof vi.fn>;
+  let forceLogout: ReturnType<typeof vi.fn>;
+  let currentServerId: ReturnType<typeof signal<string | null>>;
   let read: ReturnType<typeof vi.spyOn>;
   let importFile: ReturnType<typeof vi.spyOn>;
 
@@ -45,6 +52,9 @@ describe('ImportConfiguration', () => {
     activeModal = { close: vi.fn(), dismiss: vi.fn() };
     toast = { danger: vi.fn() };
     finishImport = vi.fn();
+    confirm = vi.fn().mockResolvedValue(true);
+    forceLogout = vi.fn().mockResolvedValue(undefined);
+    currentServerId = signal<string | null>(null);
     read = vi.spyOn((window as any).bitbutler.config, 'read');
     importFile = vi.spyOn((window as any).bitbutler.config, 'importFile');
 
@@ -74,6 +84,15 @@ describe('ImportConfiguration', () => {
         { provide: NgbActiveModal, useValue: activeModal },
         { provide: ToastService, useValue: toast },
         { provide: ConfigurationService, useValue: { finishImport } },
+        { provide: ConfirmService, useValue: { confirm } },
+        { provide: QbService, useValue: { forceLogout } },
+        {
+          provide: ServerStoreService,
+          useValue: {
+            currentServerId,
+            servers: signal([{ id: 's1', name: 'threadripper', host: 'tr.example' }]),
+          },
+        },
       ],
     }).compileComponents();
     TestBed.inject(TranslateService).use('us');
@@ -175,5 +194,76 @@ describe('ImportConfiguration', () => {
     component.cancel();
 
     expect(activeModal.dismiss).toHaveBeenCalled();
+  });
+
+  it('hides the settings switch and does not apply settings in servers-only mode', async () => {
+    fixture = TestBed.createComponent(ImportConfiguration);
+    component = fixture.componentInstance;
+    read.mockResolvedValue(META);
+    fixture.componentRef.setInput('bbcPath', '/tmp/a.bbc');
+    fixture.componentRef.setInput('serversOnly', true);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(switches()).toHaveLength(2);
+    expect(component.applySettings()).toBe(false);
+  });
+
+  describe('importing over the current server', () => {
+    beforeEach(() => {
+      currentServerId.set('s1');
+      importFile.mockResolvedValue({ settings: true, servers: 2 });
+    });
+
+    it('marks the current server in the list', async () => {
+      await create();
+
+      expect(fixture.nativeElement.textContent).toContain(
+        'components.modals.import-configuration.badge-current',
+      );
+    });
+
+    it('asks for confirmation, imports, then logs out before finishing', async () => {
+      await create();
+
+      await component.import();
+
+      expect(confirm).toHaveBeenCalled();
+      expect(forceLogout).toHaveBeenCalledWith('s1');
+      expect(forceLogout.mock.invocationCallOrder[0]).toBeGreaterThan(
+        importFile.mock.invocationCallOrder[0],
+      );
+      expect(finishImport).toHaveBeenCalled();
+    });
+
+    it('does nothing when the confirmation is declined', async () => {
+      await create();
+      confirm.mockResolvedValue(false);
+
+      await component.import();
+
+      expect(importFile).not.toHaveBeenCalled();
+      expect(forceLogout).not.toHaveBeenCalled();
+    });
+
+    it('stays logged in when the import fails', async () => {
+      await create();
+      importFile.mockRejectedValue(new Error('boom'));
+
+      await component.import();
+
+      expect(forceLogout).not.toHaveBeenCalled();
+    });
+
+    it('neither asks nor logs out when the current server is not selected', async () => {
+      await create();
+      component.toggleServer('s1');
+
+      await component.import();
+
+      expect(confirm).not.toHaveBeenCalled();
+      expect(forceLogout).not.toHaveBeenCalled();
+    });
   });
 });
