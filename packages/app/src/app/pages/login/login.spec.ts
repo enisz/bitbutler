@@ -284,14 +284,11 @@ describe('Login', () => {
       ).toBeTruthy();
     });
 
-    it('should show the import button after the manage-servers button when a server exists', () => {
+    it('should hide the import button and hint when a server exists', () => {
       serverStoreMock.servers.set([{ id: '1', name: 'Local' }] as any);
       fixture.detectChanges();
 
-      const buttons = Array.from(
-        fixture.nativeElement.querySelectorAll('.form-wrapper button.btn-lg'),
-      ) as HTMLElement[];
-      expect(buttons.at(-1)?.classList.contains('import-configuration-cta')).toBe(true);
+      expect(fixture.debugElement.query(By.css('.import-configuration-cta'))).toBeNull();
       expect(fixture.nativeElement.textContent).not.toContain(
         'pages.login.import-configuration-hint',
       );
