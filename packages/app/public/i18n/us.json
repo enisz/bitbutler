@@ -1576,6 +1576,14 @@
             "language": {
               "language": "Language of the UI"
             },
+            "configuration": {
+              "export": "Export configuration",
+              "export-sub": "Save the application settings and servers to a file.",
+              "export-button": "Export...",
+              "import": "Import configuration",
+              "import-sub": "Restore settings and servers from a file.",
+              "import-button": "Import..."
+            },
             "date-format": {
               "preset-label": "Date format",
               "custom-pattern-label": "Custom pattern",
@@ -1643,6 +1651,7 @@
             "startup": "Startup",
             "torrent-handling": "Torrent Handling",
             "notifications": "Notifications",
+            "configuration": "Configuration",
             "date-format": "Date Format",
             "notifications-os": "System Notifications",
             "notifications-app": "In-app Notifications"

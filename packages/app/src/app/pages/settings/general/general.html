@@ -140,6 +140,69 @@
       </div>
     </app-bb-section-card>
 
+    <app-bb-section-card [title]="'pages.settings.tab.general.label.configuration' | translate">
+      <div class="bb-options">
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{
+                'pages.settings.tab.general.general-settings-form.configuration.export' | translate
+              }}
+            </span>
+            <span class="bb-option__sub">{{
+              'pages.settings.tab.general.general-settings-form.configuration.export-sub'
+                | translate
+            }}</span>
+          </div>
+          <div class="bb-option__control bb-option__control--end">
+            <button
+              type="button"
+              class="btn btn-sm btn-primary btn-split export-configuration-button"
+              (click)="exportConfiguration()"
+            >
+              <bb-btn-content
+                [icon]="icons['faFileExport']"
+                [text]="
+                  'pages.settings.tab.general.general-settings-form.configuration.export-button'
+                    | translate
+                "
+                position="end"
+              ></bb-btn-content>
+            </button>
+          </div>
+        </div>
+        <div class="bb-option">
+          <div class="bb-option__text">
+            <span class="bb-option__label">
+              {{
+                'pages.settings.tab.general.general-settings-form.configuration.import' | translate
+              }}
+            </span>
+            <span class="bb-option__sub">{{
+              'pages.settings.tab.general.general-settings-form.configuration.import-sub'
+                | translate
+            }}</span>
+          </div>
+          <div class="bb-option__control bb-option__control--end">
+            <button
+              type="button"
+              class="btn btn-sm btn-primary btn-split import-configuration-button"
+              (click)="importConfiguration()"
+            >
+              <bb-btn-content
+                [icon]="icons['faFileImport']"
+                [text]="
+                  'pages.settings.tab.general.general-settings-form.configuration.import-button'
+                    | translate
+                "
+                position="end"
+              ></bb-btn-content>
+            </button>
+          </div>
+        </div>
+      </div>
+    </app-bb-section-card>
+
     <app-bb-section-card
       [title]="'pages.settings.tab.general.label.date-format' | translate"
       class="bb-card--wide"

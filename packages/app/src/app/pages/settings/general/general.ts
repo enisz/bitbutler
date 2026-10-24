@@ -8,6 +8,8 @@ import {
   faChevronDown,
   faChevronUp,
   faCircleQuestion,
+  faFileExport,
+  faFileImport,
   faRotateLeft,
   faTriangleExclamation,
 } from '@fortawesome/free-solid-svg-icons';
@@ -31,6 +33,8 @@ import {
   LANGUAGE_LOCALE_MAP,
   resolveDateFormat,
 } from '../../../models/general-settings.model';
+import { CommandBusService } from '../../../services/command-bus.service';
+import { ConfigurationService } from '../../../services/configuration.service';
 import { GeneralSettingsFormService } from '../general-settings-form.service';
 import { NgSelectItem, SettingsTabComponent } from '../settings.interface';
 
@@ -89,6 +93,8 @@ const DATE_FORMAT_TOKENS = [
 export class General implements SettingsTabComponent {
   private readonly translateService = inject(TranslateService);
   private readonly formService = inject(GeneralSettingsFormService);
+  private readonly commandBusService = inject(CommandBusService);
+  private readonly configurationService = inject(ConfigurationService);
 
   private languageChanged = toSignal(this.translateService.onLangChange);
 
@@ -200,9 +206,19 @@ export class General implements SettingsTabComponent {
     faTriangleExclamation,
     faCircleQuestion,
     faRotateLeft,
+    faFileExport,
+    faFileImport,
     faChevronDown,
     faChevronUp,
   };
+
+  public exportConfiguration(): void {
+    this.commandBusService.emit({ type: 'UI_EXPORT_CONFIGURATION' });
+  }
+
+  public importConfiguration(): void {
+    void this.configurationService.pickAndImport();
+  }
 
   public tokenGuideExpanded = signal(false);
 
