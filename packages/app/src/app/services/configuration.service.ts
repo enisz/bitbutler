@@ -13,9 +13,14 @@ export class ConfigurationService {
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
 
-  public async pickAndImport(): Promise<void> {
+  public async pickAndImport(serversOnly = false): Promise<void> {
     const bbcPath = await window.bitbutler.config.openPicker();
-    if (bbcPath) this.commandBusService.emit({ type: 'UI_IMPORT_CONFIGURATION', bbcPath });
+    if (!bbcPath) return;
+    this.commandBusService.emit(
+      serversOnly
+        ? { type: 'UI_IMPORT_CONFIGURATION', bbcPath, serversOnly }
+        : { type: 'UI_IMPORT_CONFIGURATION', bbcPath },
+    );
   }
 
   // The renderer reloads after an import so every settings service and the server store re-read

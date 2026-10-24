@@ -46,6 +46,18 @@ describe('ConfigurationService', () => {
     });
   });
 
+  it('pickAndImport flags a servers-only import', async () => {
+    vi.spyOn((window as any).bitbutler.config, 'openPicker').mockResolvedValue('/tmp/a.bbc');
+
+    await service.pickAndImport(true);
+
+    expect(commandBusEmit).toHaveBeenCalledWith({
+      type: 'UI_IMPORT_CONFIGURATION',
+      bbcPath: '/tmp/a.bbc',
+      serversOnly: true,
+    });
+  });
+
   it('pickAndImport does nothing when the picker is cancelled', async () => {
     vi.spyOn((window as any).bitbutler.config, 'openPicker').mockResolvedValue(undefined);
 

@@ -39,7 +39,7 @@ export type UiCommand =
   | { type: 'UI_EXPORT_TORRENTS' }
   | { type: 'UI_IMPORT_TORRENTS'; bbePath?: string }
   | { type: 'UI_EXPORT_CONFIGURATION' }
-  | { type: 'UI_IMPORT_CONFIGURATION'; bbcPath: string }
+  | { type: 'UI_IMPORT_CONFIGURATION'; bbcPath: string; serversOnly?: boolean }
   | { type: 'UI_SCROLL_TO_TORRENT'; hash: string }
   | { type: 'UI_TORRENT_EXISTS'; hash: string | null; originalPath: string | null }
   | { type: 'UI_DISCONNECT' }

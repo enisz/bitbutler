@@ -833,6 +833,9 @@
           "set-as-default": "Beállítás alapértelmezett szerverként",
           "unset-default": "Alapértelmezett szerver megszüntetése"
         },
+        "button": {
+          "import-servers": "Szerverek importálása"
+        },
         "delete-confirm": {
           "title": "Szerver törlése",
           "message": "Biztosan törölni szeretnéd a \"{{ name }}\" szervert?",

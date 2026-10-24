@@ -6,6 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { GridRowNavigationDirective } from '../../directives/grid-row-navigation';
 import { GridContextMenuService } from '../../pages/main/grid/context-menu/grid-context-menu.service';
 import { CommandBusService } from '../../services/command-bus.service';
+import { ConfigurationService } from '../../services/configuration.service';
 import { ConfirmService } from '../../services/confirm.service';
 import { ContextMenuService } from '../../services/context-menu.service';
 import { CredentialPromptService } from '../../services/credential-prompt.service';
@@ -35,6 +36,7 @@ describe('ManageServers', () => {
   let modalService: { open: ReturnType<typeof vi.fn> };
   let commandBusService: { emit: ReturnType<typeof vi.fn> };
   let confirmService: { confirm: ReturnType<typeof vi.fn> };
+  let configurationService: { pickAndImport: ReturnType<typeof vi.fn> };
   let serverService: { update: ReturnType<typeof vi.fn> };
   let qbService: {
     auth: { hasCookie: ReturnType<typeof vi.fn>; login: ReturnType<typeof vi.fn> };
@@ -65,6 +67,7 @@ describe('ManageServers', () => {
     modalService = { open: vi.fn() };
     commandBusService = { emit: vi.fn() };
     confirmService = { confirm: vi.fn().mockResolvedValue(true) };
+    configurationService = { pickAndImport: vi.fn().mockResolvedValue(undefined) };
     serverService = { update: vi.fn().mockResolvedValue(true) };
     qbService = {
       auth: {
@@ -91,6 +94,7 @@ describe('ManageServers', () => {
         { provide: NgbModal, useValue: modalService },
         { provide: CommandBusService, useValue: commandBusService },
         { provide: ConfirmService, useValue: confirmService },
+        { provide: ConfigurationService, useValue: configurationService },
         { provide: ServerService, useValue: serverService },
         { provide: QbService, useValue: qbService },
         { provide: CredentialPromptService, useValue: credentialPromptService },
@@ -107,6 +111,20 @@ describe('ManageServers', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  describe('import servers', () => {
+    it('starts a servers-only import from the footer button', () => {
+      const buttons = Array.from(
+        fixture.nativeElement.querySelectorAll('.modal-footer button'),
+      ) as HTMLButtonElement[];
+      // Footer order ends with Import servers, then Close.
+      const button = buttons.at(-2);
+
+      button?.click();
+
+      expect(configurationService.pickAndImport).toHaveBeenCalledWith(true);
+    });
   });
 
   describe('hideConnect', () => {

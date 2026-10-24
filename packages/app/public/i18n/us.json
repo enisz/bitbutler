@@ -833,6 +833,9 @@
           "set-as-default": "Set as default server",
           "unset-default": "Unset default server"
         },
+        "button": {
+          "import-servers": "Import Servers"
+        },
         "delete-confirm": {
           "title": "Delete Server",
           "message": "Are you sure you want to delete the server \"{{ name }}\"?",

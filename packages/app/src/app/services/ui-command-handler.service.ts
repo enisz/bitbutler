@@ -485,6 +485,7 @@ export class UiCommandHandlerService {
             scrollable: true,
           });
           setModalInput(importConfigRef, 'bbcPath', command.bbcPath);
+          if (command.serversOnly) setModalInput(importConfigRef, 'serversOnly', true);
           importConfigRef.result.catch(() => {});
           break;
         }

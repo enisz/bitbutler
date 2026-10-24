@@ -480,6 +480,20 @@ describe('UiCommandHandlerService', () => {
     expect(setInputSpy).toHaveBeenCalledWith('bbcPath', '/tmp/a.bbc');
   });
 
+  it('should pass serversOnly to the ImportConfiguration modal when requested', async () => {
+    commands$.next({ type: 'UI_IMPORT_CONFIGURATION', bbcPath: '/tmp/a.bbc', serversOnly: true });
+    await flushPromises();
+
+    expect(setInputSpy).toHaveBeenCalledWith('serversOnly', true);
+  });
+
+  it('should not set serversOnly for a full import', async () => {
+    commands$.next({ type: 'UI_IMPORT_CONFIGURATION', bbcPath: '/tmp/a.bbc' });
+    await flushPromises();
+
+    expect(setInputSpy).not.toHaveBeenCalledWith('serversOnly', expect.anything());
+  });
+
   it('should not open a second ImportConfiguration modal while one is already open', async () => {
     const { ImportConfiguration } =
       await import('../modals/import-configuration/import-configuration');

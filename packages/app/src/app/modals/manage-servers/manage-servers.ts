@@ -11,6 +11,7 @@ import {
 import type { ServerRecord } from '@bitbutler/shared';
 import {
   faCheck,
+  faFileImport,
   faPenToSquare,
   faPlug,
   faPlus,
@@ -47,6 +48,7 @@ import type { ManageServersGridSettings } from '../../models/manage-servers-grid
 import type { ContextMenuEntry } from '../../pages/main/grid/context-menu/context-menu.types';
 import { GridContextMenuService } from '../../pages/main/grid/context-menu/grid-context-menu.service';
 import { CommandBusService } from '../../services/command-bus.service';
+import { ConfigurationService } from '../../services/configuration.service';
 import { ConfirmService } from '../../services/confirm.service';
 import { ContextMenuService } from '../../services/context-menu.service';
 import { CredentialPromptService } from '../../services/credential-prompt.service';
@@ -75,6 +77,7 @@ export class ManageServers implements OnDestroy {
   private readonly translateService = inject(TranslateService);
   private readonly modalService = inject(NgbModal);
   private readonly commandBusService = inject(CommandBusService);
+  private readonly configurationService = inject(ConfigurationService);
   private readonly confirmService = inject(ConfirmService);
   private readonly serverService = inject(ServerService);
   private readonly qbService = inject(QbService);
@@ -91,7 +94,7 @@ export class ManageServers implements OnDestroy {
   readonly bbLight = GRID_LIGHT_THEME;
   readonly theme = this.themeService.effectiveMode;
 
-  readonly icon = { faPlus, faPenToSquare, faPlug, faTrashCan, faXmark };
+  readonly icon = { faPlus, faPenToSquare, faPlug, faTrashCan, faXmark, faFileImport };
 
   readonly servers = this.serverStoreService.servers;
   readonly loading = this.serverStoreService.loading;
@@ -282,6 +285,10 @@ export class ManageServers implements OnDestroy {
 
   onSelectionChanged(event: SelectionChangedEvent<ServerRecord>): void {
     this.selectedServers.set(event.api.getSelectedRows());
+  }
+
+  async importServers(): Promise<void> {
+    await this.configurationService.pickAndImport(true);
   }
 
   async openNew(): Promise<void> {
