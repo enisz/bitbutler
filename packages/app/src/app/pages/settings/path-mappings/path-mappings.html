@@ -1,9 +1,6 @@
 @if (settingsLoaded()) {
   <form [formGroup]="serverSettingsForm" class="bb-cards">
-    <app-bb-section-card
-      [title]="'pages.settings.tab.server.label.path-mappings' | translate"
-      class="bb-card--wide"
-    >
+    <app-bb-section-card [title]="'pages.settings.tab.server.label.path-mappings' | translate">
       <p class="mt-3">
         {{ 'pages.settings.tab.server.server-settings-form.path-mapping.title' | translate }}
         <bb-popover
