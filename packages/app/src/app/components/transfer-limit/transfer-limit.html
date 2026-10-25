@@ -16,12 +16,12 @@
       <app-bb-radio
         value="no-limit"
         [label]="'general.limit.no-limit' | translate"
-        [sub]="'general.limit.sub.no-limit' | translate"
+        [sub]="noLimitSub() ?? ('general.limit.sub.no-limit' | translate)"
       />
       <app-bb-radio
         value="custom"
         [label]="'general.limit.custom' | translate"
-        [sub]="'general.limit.sub.custom' | translate"
+        [sub]="customSub() ?? ('general.limit.sub.custom' | translate)"
       />
     </app-bb-radio-group>
     @if (downloadMode() === 'custom') {
@@ -62,12 +62,12 @@
       <app-bb-radio
         value="no-limit"
         [label]="'general.limit.no-limit' | translate"
-        [sub]="'general.limit.sub.no-limit' | translate"
+        [sub]="noLimitSub() ?? ('general.limit.sub.no-limit' | translate)"
       />
       <app-bb-radio
         value="custom"
         [label]="'general.limit.custom' | translate"
-        [sub]="'general.limit.sub.custom' | translate"
+        [sub]="customSub() ?? ('general.limit.sub.custom' | translate)"
       />
     </app-bb-radio-group>
     @if (uploadMode() === 'custom') {

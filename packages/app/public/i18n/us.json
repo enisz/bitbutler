@@ -1946,8 +1946,12 @@
           },
           "hint": {
             "global-rate-limits": "Sets the maximum combined download and upload speed across all torrents.",
-            "alt-rate-limits": "Throttled speed limits used when Turtle Mode is manually enabled or activated by the scheduler.",
+            "alt-rate-limits": "Speeds used while Turtle Mode is on. Switch it on or off with the turtle button in the status bar, or let the scheduler below do it.",
             "scheduler": "Automatically switches to alternative rate limits during a configured time window on selected days."
+          },
+          "alt-limit-sub": {
+            "no-limit": "Turtle Mode won't slow anything",
+            "custom": "Slow to this speed while on"
           }
         },
         "storage": {

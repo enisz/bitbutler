@@ -5,6 +5,7 @@ import {
   WritableSignal,
   forwardRef,
   inject,
+  input,
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -53,6 +54,10 @@ let nextId = 0;
 export class TransferLimit implements ControlValueAccessor {
   // Unique element ids, as a page can hold more than one (global and alternative limits).
   protected readonly idPrefix = `transfer-limit-${nextId++}-`;
+
+  /** Sub-texts of the No limit / Custom cards, when the generic ones do not fit the context. */
+  public readonly noLimitSub = input<string>();
+  public readonly customSub = input<string>();
 
   private readonly cdr = inject(ChangeDetectorRef);
 

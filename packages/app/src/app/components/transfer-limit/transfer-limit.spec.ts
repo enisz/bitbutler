@@ -19,6 +19,26 @@ describe('TransferLimit', () => {
     expect(component).toBeTruthy();
   });
 
+  it('uses the generic card sub-texts unless the context gives its own', () => {
+    const subs = () =>
+      Array.from(fixture.nativeElement.querySelectorAll('.bb-radio__sub')).map((sub) =>
+        (sub as HTMLElement).textContent?.trim(),
+      );
+
+    expect(subs()).toEqual([
+      'general.limit.sub.no-limit',
+      'general.limit.sub.custom',
+      'general.limit.sub.no-limit',
+      'general.limit.sub.custom',
+    ]);
+
+    fixture.componentRef.setInput('noLimitSub', 'Never slows');
+    fixture.componentRef.setInput('customSub', 'Slows to this');
+    fixture.detectChanges();
+
+    expect(subs()).toEqual(['Never slows', 'Slows to this', 'Never slows', 'Slows to this']);
+  });
+
   describe('writeValue', () => {
     it('should patch form with provided values', () => {
       component.writeValue({ uploadLimit: 500, downloadLimit: 1000 });

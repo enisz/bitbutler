@@ -15,7 +15,11 @@
       <div class="bb-option__note">
         {{ 'pages.qb-settings.tab.bandwidth.hint.alt-rate-limits' | translate }}
       </div>
-      <app-transfer-limit formControlName="altLimits"></app-transfer-limit>
+      <app-transfer-limit
+        formControlName="altLimits"
+        [noLimitSub]="'pages.qb-settings.tab.bandwidth.alt-limit-sub.no-limit' | translate"
+        [customSub]="'pages.qb-settings.tab.bandwidth.alt-limit-sub.custom' | translate"
+      ></app-transfer-limit>
     </app-bb-section-card>
 
     @if (hasScheduler()) {

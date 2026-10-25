@@ -1946,8 +1946,12 @@
           },
           "hint": {
             "global-rate-limits": "Beállítja az összes torrent kombinált maximális le- és feltöltési sebességét.",
-            "alt-rate-limits": "Csökkentett sebességkorlátok, amelyek manuálisan (Teknős Mód) vagy az ütemező által aktiválhatók.",
+            "alt-rate-limits": "A Teknős Mód bekapcsolt állapotában érvényes sebességek. Az állapotsor teknős gombjával kapcsolható, vagy az alábbi ütemező kapcsolja automatikusan.",
             "scheduler": "Automatikusan az alternatív sebességkorlátokra vált egy beállított időablakban, a kiválasztott napokon."
+          },
+          "alt-limit-sub": {
+            "no-limit": "A Teknős Mód nem lassít",
+            "custom": "Bekapcsolva erre lassít"
           }
         },
         "storage": {
