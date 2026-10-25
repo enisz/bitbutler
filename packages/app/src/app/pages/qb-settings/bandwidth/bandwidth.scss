@@ -11,12 +11,4 @@ ng-select.flex-grow-1 {
     text-align: right;
     font-variant-numeric: tabular-nums;
   }
-
-  .input-group-text {
-    background-color: color-mix(
-      in srgb,
-      var(--bb-control-bg) 88%,
-      var(--bs-body-color) 12%
-    ) !important;
-  }
 }
