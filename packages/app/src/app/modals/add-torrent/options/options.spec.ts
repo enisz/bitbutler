@@ -66,21 +66,23 @@ describe('AddTorrentOptions', () => {
   });
 
   describe('root folder field', () => {
-    it('should render the ng-select with a floating label and a popover beside it', () => {
-      const select: HTMLElement = fixture.nativeElement.querySelector('#root_folder');
-      const floatingGroup = select.closest('.form-floating');
+    it('should render option cards with a popover beside them', () => {
+      const group: HTMLElement = fixture.nativeElement.querySelector('#root_folder');
 
-      expect(floatingGroup?.querySelector('label[for="root_folder"]')).toBeTruthy();
-      expect(floatingGroup?.closest('.col-11')).toBeTruthy();
+      expect(group.classList).toContain('bb-radio-group--cards');
+      expect(group.closest('.col-11')).toBeTruthy();
       expect(fixture.nativeElement.querySelector('.col-1 bb-popover')).toBeTruthy();
     });
 
-    it('should expose three root folder options', () => {
-      expect(component.rootFolderOptions.map((option) => option.value)).toEqual([
-        'unset',
-        'true',
-        'false',
-      ]);
+    it('should offer the three root folder modes and write the chosen one to the form', () => {
+      const radios: HTMLInputElement[] = Array.from(
+        fixture.nativeElement.querySelectorAll('#root_folder input'),
+      );
+
+      expect(radios).toHaveLength(3);
+      radios[2].click();
+
+      expect(component.form().controls.root_folder.value).toBe('false');
     });
   });
 
