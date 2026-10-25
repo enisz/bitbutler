@@ -1189,15 +1189,10 @@ $bb-options-grid-breakpoint: 991.98px;
   grid-column: 1 / -1;
 }
 
-// A row whose control reveals a detail line below it (e.g. a limit picker's value field): the
-// `.bb-option__detail` child wraps onto its own line under the label and the control.
-.bb-option--wrap {
-  flex-wrap: wrap;
-}
-
+// A value field revealed under a stacked row's cards (e.g. a limit's custom value), with its
+// helper text beside it.
 .bb-option__detail {
   display: flex;
-  flex: 1 0 100%;
   align-items: center;
   gap: 12px;
 

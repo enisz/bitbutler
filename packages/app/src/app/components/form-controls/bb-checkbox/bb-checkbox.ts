@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { BbTooltip } from '../../../directives/bb-tooltip';
 import { BbBooleanControl } from '../bb-boolean-control';
 
 /**
@@ -14,6 +15,7 @@ import { BbBooleanControl } from '../bb-boolean-control';
 @Component({
   selector: 'app-bb-checkbox',
   templateUrl: './bb-checkbox.html',
+  imports: [BbTooltip],
   styleUrl: './bb-checkbox.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {

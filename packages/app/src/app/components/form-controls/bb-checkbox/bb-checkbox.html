@@ -18,10 +18,26 @@
 </span>
 <span class="bb-checkbox__text">
   <span class="bb-checkbox__line">
-    <label class="bb-ctl-label" [for]="id()">{{ label() }}<ng-content></ng-content></label>
+    <label
+      class="bb-ctl-label"
+      [for]="id()"
+      [bbTooltip]="label()"
+      singleLine
+      overflowOnly
+      placement="top"
+      >{{ label() }}<ng-content></ng-content
+    ></label>
     <ng-content select="[bbLabelExtra]"></ng-content>
   </span>
   @if (sub()) {
-    <label class="bb-ctl-sub" [for]="id()">{{ sub() }}</label>
+    <label
+      class="bb-ctl-sub"
+      [for]="id()"
+      [bbTooltip]="sub()"
+      singleLine
+      overflowOnly
+      placement="bottom"
+      >{{ sub() }}</label
+    >
   }
 </span>

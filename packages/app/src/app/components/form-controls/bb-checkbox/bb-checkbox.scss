@@ -25,7 +25,9 @@
   min-width: 0;
 }
 
-.bb-ctl-label {
+// Single line each, ellipsized; a cut-off line shows its full text in a tooltip.
+.bb-ctl-label,
+.bb-ctl-sub {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;

@@ -20,7 +20,8 @@ import { BbOptionText } from '../../directives/bb-option-text';
 import { RatioLimitPipe } from '../../pipes/ratio-limit-pipe';
 import { TimeLimitPipe } from '../../pipes/time-limit-pipe';
 import { BbPopover } from '../bb-popover/bb-popover';
-import { BbSegmented } from '../form-controls/bb-segmented/bb-segmented';
+import { BbRadio } from '../form-controls/bb-radio-group/bb-radio';
+import { BbRadioGroup } from '../form-controls/bb-radio-group/bb-radio-group';
 
 export type LimitMode = 'custom' | 'global' | 'no-limit';
 
@@ -33,7 +34,8 @@ export type ShareLimitValue = {
 @Component({
   selector: 'app-share-limit',
   imports: [
-    BbSegmented,
+    BbRadioGroup,
+    BbRadio,
     BbOptionText,
     ReactiveFormsModule,
     TranslatePipe,

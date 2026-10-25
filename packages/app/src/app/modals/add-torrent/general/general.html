@@ -2,17 +2,29 @@
   <app-bb-section-card class="mb-4" [title]="'components.add-torrent.label.input' | translate">
     <div class="row mt-3">
       <div class="col-11 mb-3">
-        <app-bb-segmented
-          class="w-100"
+        <app-bb-radio-group
+          class="bb-input-mode"
+          appearance="cards"
           [attr.aria-label]="'components.add-torrent.label.input' | translate"
-          [options]="[
-            { value: 'file', label: 'components.add-torrent.input-mode.file' | translate },
-            { value: 'link', label: 'components.add-torrent.input-mode.link' | translate },
-            { value: 'folder', label: 'components.add-torrent.input-mode.folder' | translate },
-          ]"
           [value]="inputMode()"
           (valueChange)="inputModeChange.emit($any($event))"
-        />
+        >
+          <app-bb-radio
+            value="file"
+            [label]="'components.add-torrent.input-mode.file' | translate"
+            [sub]="'components.add-torrent.input-mode.sub.file' | translate"
+          />
+          <app-bb-radio
+            value="link"
+            [label]="'components.add-torrent.input-mode.link' | translate"
+            [sub]="'components.add-torrent.input-mode.sub.link' | translate"
+          />
+          <app-bb-radio
+            value="folder"
+            [label]="'components.add-torrent.input-mode.folder' | translate"
+            [sub]="'components.add-torrent.input-mode.sub.folder' | translate"
+          />
+        </app-bb-radio-group>
       </div>
 
       <div class="col-1 d-flex align-items-center mb-3">

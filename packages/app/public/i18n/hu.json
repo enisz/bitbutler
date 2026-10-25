@@ -218,7 +218,12 @@
       "input-mode": {
         "file": "Fájl",
         "link": "Link",
-        "folder": "Mappa"
+        "folder": "Mappa",
+        "sub": {
+          "file": "Erről a gépről",
+          "link": "Magnet link vagy URL",
+          "folder": "Egy mappa összes fájlja"
+        }
       },
       "feedback": {
         "no-server-selected": "Nincs kiválasztva szerver. Válassz szervert a torrent hozzáadása előtt.",
@@ -2267,7 +2272,12 @@
     "limit": {
       "global": "Globális korlát",
       "no-limit": "Nincs korlát",
-      "custom": "Egyéni"
+      "custom": "Egyéni",
+      "sub": {
+        "global": "A szerver beállítása szerint",
+        "no-limit": "Nincs korlátozva",
+        "custom": "Saját érték megadása lent"
+      }
     },
     "toast": {
       "success": "Siker",

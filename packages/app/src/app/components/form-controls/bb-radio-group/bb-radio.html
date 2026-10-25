@@ -16,9 +16,23 @@
     <span class="bb-ctl-circle"></span>
   </span>
   <span class="bb-radio__text">
-    <span class="bb-ctl-label bb-radio__label">{{ label() }}<ng-content></ng-content></span>
+    <span
+      class="bb-ctl-label bb-radio__label"
+      [bbTooltip]="label()"
+      singleLine
+      overflowOnly
+      placement="top"
+      >{{ label() }}<ng-content></ng-content
+    ></span>
     @if (showSub()) {
-      <span class="bb-ctl-sub bb-radio__sub">{{ sub() }}</span>
+      <span
+        class="bb-ctl-sub bb-radio__sub"
+        [bbTooltip]="sub()"
+        singleLine
+        overflowOnly
+        placement="bottom"
+        >{{ sub() }}</span
+      >
     }
   </span>
 </label>

@@ -1,5 +1,5 @@
 <div [formGroup]="form" class="bb-options">
-  <div class="bb-option bb-option--wrap">
+  <div class="bb-option bb-option--stacked">
     <div class="bb-option__text" bbOptionText>
       <span class="bb-option__label">
         <span class="bb-option__label-text" id="downloadLimit-label">{{
@@ -12,16 +12,23 @@
         ></bb-popover>
       </span>
     </div>
-    <app-bb-segmented
-      size="sm"
-      [options]="[
-        { value: 'no-limit', label: 'general.limit.no-limit' | translate },
-        { value: 'custom', label: 'general.limit.custom' | translate },
-      ]"
+    <app-bb-radio-group
+      appearance="cards"
       [value]="downloadMode()"
       aria-labelledby="downloadLimit-label"
       (valueChange)="setDownloadMode($any($event))"
-    />
+    >
+      <app-bb-radio
+        value="no-limit"
+        [label]="'general.limit.no-limit' | translate"
+        [sub]="'general.limit.sub.no-limit' | translate"
+      />
+      <app-bb-radio
+        value="custom"
+        [label]="'general.limit.custom' | translate"
+        [sub]="'general.limit.sub.custom' | translate"
+      />
+    </app-bb-radio-group>
     @if (downloadMode() === 'custom') {
       <div class="bb-option__detail">
         <input
@@ -40,7 +47,7 @@
       </div>
     }
   </div>
-  <div class="bb-option bb-option--wrap">
+  <div class="bb-option bb-option--stacked">
     <div class="bb-option__text" bbOptionText>
       <span class="bb-option__label">
         <span class="bb-option__label-text" id="uploadLimit-label">{{
@@ -53,16 +60,23 @@
         ></bb-popover>
       </span>
     </div>
-    <app-bb-segmented
-      size="sm"
-      [options]="[
-        { value: 'no-limit', label: 'general.limit.no-limit' | translate },
-        { value: 'custom', label: 'general.limit.custom' | translate },
-      ]"
+    <app-bb-radio-group
+      appearance="cards"
       [value]="uploadMode()"
       aria-labelledby="uploadLimit-label"
       (valueChange)="setUploadMode($any($event))"
-    />
+    >
+      <app-bb-radio
+        value="no-limit"
+        [label]="'general.limit.no-limit' | translate"
+        [sub]="'general.limit.sub.no-limit' | translate"
+      />
+      <app-bb-radio
+        value="custom"
+        [label]="'general.limit.custom' | translate"
+        [sub]="'general.limit.sub.custom' | translate"
+      />
+    </app-bb-radio-group>
     @if (uploadMode() === 'custom') {
       <div class="bb-option__detail">
         <input

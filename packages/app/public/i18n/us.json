@@ -218,7 +218,12 @@
       "input-mode": {
         "file": "File",
         "link": "Link",
-        "folder": "Folder"
+        "folder": "Folder",
+        "sub": {
+          "file": "From this computer",
+          "link": "Magnet link or URL",
+          "folder": "Every file in a folder"
+        }
       },
       "feedback": {
         "no-server-selected": "No server is selected. Choose a server before adding this torrent.",
@@ -2268,7 +2273,12 @@
     "limit": {
       "global": "Global Limit",
       "no-limit": "No Limit",
-      "custom": "Custom"
+      "custom": "Custom",
+      "sub": {
+        "global": "Same as the server setting",
+        "no-limit": "Never limited",
+        "custom": "Set your own value below"
+      }
     },
     "toast": {
       "success": "Success",

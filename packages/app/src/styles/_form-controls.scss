@@ -1,4 +1,4 @@
-// Form controls - checkbox, radio, switch, option card and segmented control visuals, shared by the
+// Form controls - checkbox, radio, switch and option card visuals, shared by the
 // components in `app/components/form-controls/`. Colors come only from the tokens below, which
 // are derived from tokens every theme already defines, so no theme file restyles a control.
 //
@@ -269,80 +269,4 @@ $bb-check-tick: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg
     cursor: default;
     opacity: 0.6;
   }
-}
-
-// --- Segmented control ---
-
-// Each segment draws its own border, overlapping its neighbour by 1px, so the chosen one can
-// take the accent border on all four sides, like a chosen option card. Equal-width segments,
-// as wide as the longest label (or sharing the full width when the host is stretched).
-.bb-ctl-segments {
-  display: inline-grid;
-  grid-auto-columns: minmax(max-content, 1fr);
-  grid-auto-flow: column;
-}
-
-.bb-ctl-segment {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem 1rem;
-  border: 1px solid var(--bb-control-border);
-  background-color: var(--bb-control-bg);
-  font-weight: 500;
-  white-space: nowrap;
-  color: var(--bb-control-placeholder);
-  cursor: pointer;
-  transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease,
-    box-shadow 0.15s ease;
-
-  & + & {
-    margin-left: -1px;
-  }
-
-  &:first-child {
-    border-top-left-radius: var(--bb-control-radius);
-    border-bottom-left-radius: var(--bb-control-radius);
-  }
-
-  &:last-child {
-    border-top-right-radius: var(--bb-control-radius);
-    border-bottom-right-radius: var(--bb-control-radius);
-  }
-
-  &:hover:not(.bb-ctl-disabled):not(:has(.bb-ctl-input:checked)) {
-    z-index: 1;
-    border-color: var(--bb-control-hover-border);
-    color: var(--bb-control-text);
-  }
-
-  // Accent shows in the border and tint only; the label keeps the text color, as on a chosen
-  // option card, so it stays readable on the light themes' pale accents.
-  &:has(.bb-ctl-input:checked) {
-    z-index: 2;
-    border-color: var(--bb-check-on-bg);
-    background-color: color-mix(in srgb, var(--bb-check-on-bg) 16%, var(--bb-control-bg));
-    color: var(--bb-control-text);
-    font-weight: 600;
-  }
-
-  &:has(.bb-ctl-input:focus-visible) {
-    z-index: 3;
-    box-shadow: 0 0 0 3px var(--bb-check-focus-ring);
-  }
-
-  &.bb-ctl-disabled {
-    opacity: var(--bb-check-disabled-opacity);
-    cursor: default;
-  }
-}
-
-.bb-ctl-segments--sm .bb-ctl-segment {
-  padding: 0.5rem 0.875rem;
-  font-size: 0.8125rem;
-  font-weight: 600;
 }

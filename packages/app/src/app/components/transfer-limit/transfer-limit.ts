@@ -19,7 +19,8 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { BbOptionText } from '../../directives/bb-option-text';
 import { SpeedLimitPipe } from '../../pipes/speed-limit-pipe';
 import { BbPopover } from '../bb-popover/bb-popover';
-import { BbSegmented } from '../form-controls/bb-segmented/bb-segmented';
+import { BbRadio } from '../form-controls/bb-radio-group/bb-radio';
+import { BbRadioGroup } from '../form-controls/bb-radio-group/bb-radio-group';
 
 export type TransferLimitMode = 'custom' | 'no-limit';
 
@@ -31,7 +32,8 @@ export type TransferLimitValue = {
 @Component({
   selector: 'app-transfer-limit',
   imports: [
-    BbSegmented,
+    BbRadioGroup,
+    BbRadio,
     BbOptionText,
     ReactiveFormsModule,
     TranslatePipe,
