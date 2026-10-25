@@ -10,7 +10,10 @@ export interface ResolvedCredentials {
   password?: string;
 }
 
-type PromptableServer = Pick<ServerRecord, 'id' | 'name' | 'username'>;
+type PromptableServer = Pick<
+  ServerRecord,
+  'id' | 'name' | 'username' | 'protocol' | 'host' | 'port'
+>;
 
 @Injectable({ providedIn: 'root' })
 export class CredentialPromptService {
@@ -30,6 +33,7 @@ export class CredentialPromptService {
     const { CredentialPrompt } = await import('../modals/credential-prompt/credential-prompt');
     const credModalRef = this.modalService.open(CredentialPrompt);
     setModalInput(credModalRef, 'serverName', server.name);
+    setModalInput(credModalRef, 'serverUrl', `${server.protocol}://${server.host}:${server.port}`);
     setModalInput(credModalRef, 'prefillUsername', server.username);
 
     let result: { username: string; password: string; save: boolean };

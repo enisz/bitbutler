@@ -26,6 +26,19 @@ describe('CredentialPrompt', () => {
     expect(component).toBeTruthy();
   });
 
+  it('shows only the server name in the subtitle when no url is given', () => {
+    expect(component.subtitle()).toBe('My Server');
+  });
+
+  it('shows the name and url in the subtitle when a url is given', () => {
+    fixture.componentRef.setInput('serverUrl', 'http://my.host:8090');
+    fixture.detectChanges();
+    expect(component.subtitle()).toBe('My Server <http://my.host:8090>');
+    expect(fixture.nativeElement.querySelector('.modal-header').textContent).toContain(
+      'My Server <http://my.host:8090>',
+    );
+  });
+
   it('pre-fills username when prefillUsername input is set', () => {
     fixture.componentRef.setInput('prefillUsername', 'admin');
     fixture.detectChanges();

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { faPlug, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -20,6 +20,10 @@ export class CredentialPrompt {
   public icons = { faPlug, faXmark };
 
   readonly serverName = input.required<string>();
+  readonly serverUrl = input<string>('');
+  readonly subtitle = computed(() =>
+    this.serverUrl() ? `${this.serverName()} <${this.serverUrl()}>` : this.serverName(),
+  );
   readonly prefillUsername = input<string>('');
 
   public credentialForm = new FormGroup({

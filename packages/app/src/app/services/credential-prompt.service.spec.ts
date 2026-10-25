@@ -56,7 +56,15 @@ describe('CredentialPromptService', () => {
   });
 
   describe('resolve', () => {
-    const server = { id: 'srv-1', name: 'My Server', username: '', has_password: false };
+    const server = {
+      id: 'srv-1',
+      name: 'My Server',
+      username: '',
+      has_password: false,
+      protocol: 'http' as const,
+      host: 'my.host',
+      port: 8090,
+    };
 
     it('opens the credential prompt with the server name and prefilled username', async () => {
       const modalRef = makeModalRef(Promise.resolve({ username: '', password: '', save: false }));
@@ -65,6 +73,7 @@ describe('CredentialPromptService', () => {
       await service.resolve(server);
 
       expect(modalRef.componentInstance['serverName']).toBe('My Server');
+      expect(modalRef.componentInstance['serverUrl']).toBe('http://my.host:8090');
       expect(modalRef.componentInstance['prefillUsername']).toBe('');
     });
 
