@@ -22,6 +22,10 @@ import { BbRadioGroup, BbRadioGroupAppearance } from './bb-radio-group';
       <app-bb-radio [value]="3" label="Three" />
       <app-bb-radio [value]="4" label="Four" />
     </app-bb-radio-group>
+    <app-bb-radio-group class="tiles" appearance="tiles" [(value)]="tile">
+      <app-bb-radio value="us" label="English"><span bbRadioIcon class="flag"></span></app-bb-radio>
+      <app-bb-radio value="hu" label="Magyar" />
+    </app-bb-radio-group>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [BbRadioGroup, BbRadio, ReactiveFormsModule],
@@ -30,6 +34,7 @@ class HostComponent {
   public readonly control = new FormControl('normal', { nonNullable: true });
   public readonly appearance = signal<BbRadioGroupAppearance>('list');
   public readonly free = signal<number | null>(null);
+  public readonly tile = signal('us');
 }
 
 describe('BbRadioGroup', () => {
@@ -111,5 +116,17 @@ describe('BbRadioGroup', () => {
     inputs('.free')[1].click();
 
     expect(host.free()).toBe(2);
+  });
+
+  it('draws tiles without a radio circle, the icon before the label, still choosable', () => {
+    const tiles = fixture.nativeElement.querySelectorAll('.tiles .bb-radio--tile');
+
+    expect(tiles).toHaveLength(2);
+    expect(element('.tiles .bb-ctl-circle')).toBeNull();
+    expect(element('.tiles .bb-radio__icon .flag')).not.toBeNull();
+
+    inputs('.tiles')[1].click();
+
+    expect(host.tile()).toBe('hu');
   });
 });

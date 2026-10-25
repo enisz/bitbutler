@@ -12,11 +12,6 @@ import {
   faTriangleExclamation,
 } from '@fortawesome/free-solid-svg-icons';
 import { NgbCollapse } from '@ng-bootstrap/ng-bootstrap';
-import {
-  NgLabelTemplateDirective,
-  NgOptionTemplateDirective,
-  NgSelectComponent,
-} from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content';
 import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
@@ -33,6 +28,7 @@ import {
   DateFormatPreset,
   FIRST_DAY_OF_WEEK_OPTIONS,
   LANGUAGE_LOCALE_MAP,
+  LANGUAGE_NATIVE_NAMES,
   resolveDateFormat,
 } from '../../../models/general-settings.model';
 import { GeneralSettingsFormService } from '../general-settings-form.service';
@@ -79,9 +75,6 @@ const DATE_FORMAT_TOKENS = [
     BbRadioGroup,
     BbRadio,
     CommonModule,
-    NgSelectComponent,
-    NgOptionTemplateDirective,
-    NgLabelTemplateDirective,
     ReactiveFormsModule,
     FontAwesomeModule,
     BbSpinner,
@@ -103,20 +96,9 @@ export class General implements SettingsTabComponent {
   public readonly settingsLoaded = this.formService.loaded;
   private readonly formSnapshot = this.formService.formSnapshot;
 
-  public languages = computed<NgSelectItem[]>(() => {
-    this.languageChanged();
-
-    return [
-      {
-        value: 'us',
-        label: this.translateService.instant('language.us'),
-      },
-      {
-        value: 'hu',
-        label: this.translateService.instant('language.hu'),
-      },
-    ].sort((a, b) => a.label.localeCompare(b.label));
-  });
+  public readonly languages = Object.entries(LANGUAGE_NATIVE_NAMES)
+    .map(([value, label]) => ({ value, label, lang: LANGUAGE_LOCALE_MAP[value] }))
+    .sort((a, b) => a.label.localeCompare(b.label));
 
   private previewDateFormat(
     preset: DateFormatPreset,

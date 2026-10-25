@@ -1,6 +1,7 @@
 <label
   class="bb-radio bb-ctl-hover"
-  [class.bb-ctl-card]="isCard()"
+  [class.bb-ctl-card]="isCard() || isTile()"
+  [class.bb-radio--tile]="isTile()"
   [class.bb-ctl-disabled]="isDisabled()"
 >
   <span class="bb-ctl">
@@ -13,8 +14,11 @@
       (change)="onChange()"
       (blur)="group.touch()"
     />
-    <span class="bb-ctl-circle"></span>
+    @if (!isTile()) {
+      <span class="bb-ctl-circle"></span>
+    }
   </span>
+  <span class="bb-radio__icon"><ng-content select="[bbRadioIcon]"></ng-content></span>
   <span class="bb-radio__text">
     <span
       class="bb-ctl-label bb-radio__label"

@@ -24,6 +24,12 @@ export const LANGUAGE_LOCALE_MAP: Record<string, string> = {
 
 export const DEFAULT_LOCALE = 'en-US';
 
+/** Each UI language in its own language, so it can be found whatever the current one is. */
+export const LANGUAGE_NATIVE_NAMES: Record<string, string> = {
+  us: 'English',
+  hu: 'Magyar',
+};
+
 export interface NotificationSettings {
   os: {
     enabled: boolean;

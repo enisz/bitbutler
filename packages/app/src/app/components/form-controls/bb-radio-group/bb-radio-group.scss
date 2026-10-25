@@ -32,3 +32,8 @@
     }
   }
 }
+
+:host(.bb-radio-group--tiles) .bb-radio-group__items {
+  flex-direction: row;
+  flex-wrap: wrap;
+}

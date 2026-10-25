@@ -73,38 +73,27 @@
 
     <app-bb-section-card [title]="'pages.settings.tab.general.label.language' | translate">
       <div class="bb-options" formGroupName="language">
-        <div class="bb-option">
+        <div class="bb-option bb-option--stacked">
           <div class="bb-option__text" bbOptionText>
-            <span class="bb-option__label">
+            <span class="bb-option__label" id="language-label">
               {{ 'pages.settings.tab.general.general-settings-form.language.language' | translate }}
             </span>
           </div>
-          <div class="bb-option__control">
-            <ng-select
-              [items]="languages()"
-              [clearable]="false"
-              [openOnEnter]="false"
-              [clearSearchOnAdd]="true"
-              [searchable]="false"
-              bindLabel="label"
-              bindValue="value"
-              formControlName="language"
-            >
-              <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
-                <div class="d-flex flex-row align-items-center">
-                  <span class="fi" [ngClass]="'fi-' + item.value"></span>
-                  <span class="ms-3">{{ item.label }}</span>
-                </div>
-              </ng-template>
-
-              <ng-template ng-label-tmp let-item="item">
-                <div class="d-flex flex-row align-items-center">
-                  <span class="fi" [ngClass]="'fi-' + item.value"></span>
-                  <span class="ms-3">{{ item.label }}</span>
-                </div>
-              </ng-template>
-            </ng-select>
-          </div>
+          <app-bb-radio-group
+            appearance="tiles"
+            formControlName="language"
+            aria-labelledby="language-label"
+          >
+            @for (language of languages; track language.value) {
+              <app-bb-radio
+                [value]="language.value"
+                [label]="language.label"
+                [attr.lang]="language.lang"
+              >
+                <span bbRadioIcon class="fi" [ngClass]="'fi-' + language.value"></span>
+              </app-bb-radio>
+            }
+          </app-bb-radio-group>
         </div>
       </div>
     </app-bb-section-card>
