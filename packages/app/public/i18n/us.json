@@ -1152,8 +1152,8 @@
       }
     },
     "transfer-limit": {
-      "upload-limit": "Upload Limit (KiB/s)",
-      "download-limit": "Download Limit (KiB/s)",
+      "upload-limit": "Upload Limit",
+      "download-limit": "Download Limit",
       "popover": {
         "upload-limit": {
           "title": "Upload Limit",
@@ -1163,12 +1163,13 @@
           "title": "Download Limit",
           "description": "Maximum download speed in KiB/s."
         }
-      }
+      },
+      "unit": "KiB/s"
     },
     "share-limit": {
       "ratio-limit": "Ratio Limit",
-      "seeding-time-limit": "Seeding Time Limit (min)",
-      "inactive-seeding-time-limit": "Inactive Seeding Time Limit (min)",
+      "seeding-time-limit": "Seeding Time Limit",
+      "inactive-seeding-time-limit": "Inactive Seeding Time Limit",
       "popover": {
         "ratio-limit": {
           "title": "Ratio Limit",
@@ -1182,7 +1183,8 @@
           "title": "Inactive Seeding Time Limit",
           "description": "Stop seeding after the torrent has been inactive for this many minutes."
         }
-      }
+      },
+      "unit-minutes": "min"
     },
     "tag-select": {
       "label": "Tags",

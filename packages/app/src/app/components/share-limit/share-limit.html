@@ -46,7 +46,9 @@
           aria-labelledby="ratioLimit-label"
         />
         @if (form.controls.ratioLimit.value !== null) {
-          <span class="form-text m-0">{{ form.controls.ratioLimit.value | ratioLimit }}</span>
+          <span class="form-text m-0 ms-auto">{{
+            form.controls.ratioLimit.value | ratioLimit
+          }}</span>
         }
       </div>
     }
@@ -90,16 +92,23 @@
     </app-bb-radio-group>
     @if (seedingMode() === 'custom') {
       <div class="bb-option__detail">
-        <input
-          type="number"
-          class="form-control"
-          id="seedingTimeLimit"
-          min="0"
-          formControlName="seedingTimeLimit"
-          aria-labelledby="seedingTimeLimit-label"
-        />
+        <div class="input-group">
+          <input
+            type="number"
+            class="form-control"
+            id="seedingTimeLimit"
+            min="0"
+            formControlName="seedingTimeLimit"
+            aria-labelledby="seedingTimeLimit-label"
+          />
+          <span class="input-group-text">{{
+            'components.share-limit.unit-minutes' | translate
+          }}</span>
+        </div>
         @if (form.controls.seedingTimeLimit.value !== null) {
-          <span class="form-text m-0">{{ form.controls.seedingTimeLimit.value | timeLimit }}</span>
+          <span class="form-text m-0 ms-auto">{{
+            form.controls.seedingTimeLimit.value | timeLimit
+          }}</span>
         }
       </div>
     }
@@ -143,16 +152,21 @@
     </app-bb-radio-group>
     @if (inactiveMode() === 'custom') {
       <div class="bb-option__detail">
-        <input
-          type="number"
-          class="form-control"
-          id="inactiveSeedingTimeLimit"
-          min="0"
-          formControlName="inactiveSeedingTimeLimit"
-          aria-labelledby="inactiveSeedingTimeLimit-label"
-        />
+        <div class="input-group">
+          <input
+            type="number"
+            class="form-control"
+            id="inactiveSeedingTimeLimit"
+            min="0"
+            formControlName="inactiveSeedingTimeLimit"
+            aria-labelledby="inactiveSeedingTimeLimit-label"
+          />
+          <span class="input-group-text">{{
+            'components.share-limit.unit-minutes' | translate
+          }}</span>
+        </div>
         @if (form.controls.inactiveSeedingTimeLimit.value !== null) {
-          <span class="form-text m-0">{{
+          <span class="form-text m-0 ms-auto">{{
             form.controls.inactiveSeedingTimeLimit.value | timeLimit
           }}</span>
         }

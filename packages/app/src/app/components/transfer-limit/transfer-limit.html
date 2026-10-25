@@ -31,16 +31,19 @@
     </app-bb-radio-group>
     @if (downloadMode() === 'custom') {
       <div class="bb-option__detail">
-        <input
-          type="number"
-          class="form-control"
-          id="downloadLimit"
-          min="0"
-          formControlName="downloadLimit"
-          aria-labelledby="downloadLimit-label"
-        />
+        <div class="input-group">
+          <input
+            type="number"
+            class="form-control"
+            id="downloadLimit"
+            min="0"
+            formControlName="downloadLimit"
+            aria-labelledby="downloadLimit-label"
+          />
+          <span class="input-group-text">{{ 'components.transfer-limit.unit' | translate }}</span>
+        </div>
         @if (form.controls.downloadLimit.value) {
-          <span class="form-text m-0">{{
+          <span class="form-text m-0 ms-auto">{{
             form.controls.downloadLimit.value * 1024 | speedLimit
           }}</span>
         }
@@ -79,16 +82,19 @@
     </app-bb-radio-group>
     @if (uploadMode() === 'custom') {
       <div class="bb-option__detail">
-        <input
-          type="number"
-          class="form-control"
-          id="uploadLimit"
-          min="0"
-          formControlName="uploadLimit"
-          aria-labelledby="uploadLimit-label"
-        />
+        <div class="input-group">
+          <input
+            type="number"
+            class="form-control"
+            id="uploadLimit"
+            min="0"
+            formControlName="uploadLimit"
+            aria-labelledby="uploadLimit-label"
+          />
+          <span class="input-group-text">{{ 'components.transfer-limit.unit' | translate }}</span>
+        </div>
         @if (form.controls.uploadLimit.value) {
-          <span class="form-text m-0">{{
+          <span class="form-text m-0 ms-auto">{{
             form.controls.uploadLimit.value * 1024 | speedLimit
           }}</span>
         }
