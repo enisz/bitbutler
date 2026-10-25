@@ -74,15 +74,12 @@
     <app-bb-section-card [title]="'pages.settings.tab.general.label.language' | translate">
       <div class="bb-options" formGroupName="language">
         <div class="bb-option bb-option--stacked">
-          <div class="bb-option__text" bbOptionText>
-            <span class="bb-option__label" id="language-label">
-              {{ 'pages.settings.tab.general.general-settings-form.language.language' | translate }}
-            </span>
-          </div>
           <app-bb-radio-group
             appearance="tiles"
             formControlName="language"
-            aria-labelledby="language-label"
+            [attr.aria-label]="
+              'pages.settings.tab.general.general-settings-form.language.language' | translate
+            "
           >
             @for (language of languages; track language.value) {
               <app-bb-radio

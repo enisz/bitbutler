@@ -52,7 +52,7 @@
   gap: 10px;
   width: 120px;
   height: 120px;
-  padding: 12px;
+  padding: 8px;
 
   // No box of its own, so the input is laid over the tile and takes no room in the column.
   > .bb-ctl {
@@ -63,8 +63,21 @@
     font-size: 2rem;
   }
 
+  // Full content width, so a long label truncates inside the padding rather than over it.
   .bb-radio__text {
     align-items: center;
+    width: 100%;
+    text-align: center;
+  }
+
+  // Up to two lines (a two-word name breaks onto the second), then an ellipsis.
+  .bb-radio__label {
+    display: -webkit-box;
     max-width: 100%;
+    font-size: 0.875rem;
+    line-height: 1.2;
+    white-space: normal;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
   }
 }

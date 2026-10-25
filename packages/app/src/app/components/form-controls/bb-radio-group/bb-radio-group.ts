@@ -25,7 +25,7 @@ let nextId = 0;
  *   `columns` sets how many fit in a row (default: all of them), and a narrow group falls back
  *   to one per row
  * - `tiles`: fixed-size square tiles without a radio circle, an icon (`[bbRadioIcon]` content
- *   of each radio) above the label, wrapping as needed (the language picker)
+ *   of each radio) above the label, wrapping as needed (language, theme family and mode)
  *
  * The radios share a generated `name`, so arrow keys move the choice natively.
  * Label the group with `aria-label` or `aria-labelledby` on the host.

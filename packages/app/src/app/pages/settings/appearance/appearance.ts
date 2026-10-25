@@ -2,11 +2,6 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule } from '@angular/forms';
-import {
-  NgLabelTemplateDirective,
-  NgOptionTemplateDirective,
-  NgSelectComponent,
-} from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BbLogo } from '../../../components/bb-logo/bb-logo';
 import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
@@ -24,9 +19,6 @@ import { NgSelectItem, SettingsTabComponent } from '../settings.interface';
     BbOptionText,
     BbSectionCard,
     CommonModule,
-    NgSelectComponent,
-    NgOptionTemplateDirective,
-    NgLabelTemplateDirective,
     ReactiveFormsModule,
     BbSpinner,
     BbLogo,
