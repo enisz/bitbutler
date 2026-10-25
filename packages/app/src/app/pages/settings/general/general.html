@@ -121,26 +121,6 @@
           </app-bb-radio-group>
         </div>
 
-        <div class="bb-option bb-option--stacked">
-          <div class="bb-option__text" bbOptionText>
-            <span class="bb-option__label" id="first-day-of-week-label">
-              {{
-                'pages.settings.tab.general.general-settings-form.date-format.first-day-of-week-label'
-                  | translate
-              }}
-            </span>
-          </div>
-          <app-bb-radio-group
-            appearance="cards"
-            formControlName="firstDayOfWeek"
-            aria-labelledby="first-day-of-week-label"
-          >
-            @for (option of firstDayOfWeekOptions(); track option.value) {
-              <app-bb-radio [value]="option.value" [label]="option.label" />
-            }
-          </app-bb-radio-group>
-        </div>
-
         @if (isCustomDateFormat()) {
           <div class="bb-option">
             <div class="bb-option__text" bbOptionText>
@@ -247,6 +227,26 @@
             </div>
           </div>
         }
+
+        <div class="bb-option bb-option--stacked">
+          <div class="bb-option__text" bbOptionText>
+            <span class="bb-option__label" id="first-day-of-week-label">
+              {{
+                'pages.settings.tab.general.general-settings-form.date-format.first-day-of-week-label'
+                  | translate
+              }}
+            </span>
+          </div>
+          <app-bb-radio-group
+            appearance="cards"
+            formControlName="firstDayOfWeek"
+            aria-labelledby="first-day-of-week-label"
+          >
+            @for (option of firstDayOfWeekOptions(); track option.value) {
+              <app-bb-radio [value]="option.value" [label]="option.label" />
+            }
+          </app-bb-radio-group>
+        </div>
       </div>
     </app-bb-section-card>
   </form>
