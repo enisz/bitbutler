@@ -1,0 +1,22 @@
+<div class="bb-option__text" bbOptionText>
+  <label class="bb-option__label bb-ctl-label" [for]="id()">
+    <span class="bb-option__label-text">{{ label() }}</span>
+    <ng-content select="[bbLabelExtra]"></ng-content>
+  </label>
+  @if (sub()) {
+    <label class="bb-option__sub bb-ctl-sub" [for]="id()">{{ sub() }}</label>
+  }
+</div>
+<span class="bb-ctl">
+  <input
+    type="checkbox"
+    role="switch"
+    class="bb-ctl-input"
+    [id]="id()"
+    [checked]="checked()"
+    [disabled]="isDisabled()"
+    (change)="onInputChange($event)"
+    (blur)="onBlur()"
+  />
+  <span class="bb-ctl-switch"></span>
+</span>

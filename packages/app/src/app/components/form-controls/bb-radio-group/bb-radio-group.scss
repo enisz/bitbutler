@@ -1,0 +1,34 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.bb-radio-group__items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+:host(.bb-radio-group--inline) .bb-radio-group__items {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 24px;
+}
+
+:host(.bb-radio-group--cards) {
+  container-type: inline-size;
+
+  .bb-radio-group__items {
+    display: grid;
+    grid-template-columns: repeat(var(--bb-radio-columns), minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  // Too narrow for side-by-side cards to keep a readable title and sub-text.
+  @container (max-width: 420px) {
+    .bb-radio-group__items {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+}

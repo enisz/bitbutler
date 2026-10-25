@@ -2,6 +2,7 @@
 @use '@ng-select/ng-select/themes/default.theme.css';
 @use './styles/ng-select';
 @use './styles/toolbar-button';
+@use './styles/form-controls';
 @use './styles/themes/theme-utils' as bb;
 
 @use 'flag-icons/sass/flag-icons' with (
@@ -1250,6 +1251,17 @@ $bb-options-grid-breakpoint: 991.98px;
 
 .bb-option--wide {
   grid-column: 1 / -1;
+}
+
+// Label and description on top, the control (option cards) across the full width below.
+.bb-option--stacked {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+
+  > .bb-option__control {
+    flex-basis: auto;
+  }
 }
 
 .tooltip {

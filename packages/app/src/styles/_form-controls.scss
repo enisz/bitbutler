@@ -1,0 +1,329 @@
+// Form controls - checkbox, radio, switch, option card and segmented control visuals, shared by the
+// components in `app/components/form-controls/`. Colors come only from the tokens below, which
+// are derived from tokens every theme already defines, so no theme file restyles a control.
+//
+// Every control keeps a real <input> on top of its drawn visual (`.bb-ctl-input`, transparent),
+// so clicks, Space, arrow keys inside radio groups and focus all stay native; the visual sibling
+// that follows it reacts through `:checked`, `:indeterminate`, `:disabled` and `:focus-visible`.
+
+:root {
+  --bb-check-bg: var(--bs-body-bg);
+  --bb-check-border: var(--bb-control-border);
+  --bb-check-hover-border: var(--bb-accent);
+  --bb-check-on-bg: var(--bb-accent);
+  --bb-check-on-ink: var(--bb-secondary-ink);
+  --bb-check-error: var(--bs-danger);
+  --bb-check-focus-ring: var(--bb-control-focus-ring);
+  --bb-check-disabled-opacity: 0.45;
+  --bb-check-disabled-on-bg: color-mix(in srgb, var(--bs-body-color) 45%, var(--bb-check-bg));
+
+  --bb-switch-track-off: var(--bb-control-bg);
+  --bb-switch-knob-off: color-mix(in srgb, var(--bs-body-color) 45%, transparent);
+}
+
+:root[data-bs-theme='dark'] {
+  --bb-switch-track-off: color-mix(in srgb, var(--bb-control-bg) 85%, #000);
+}
+
+$bb-check-tick: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M5.5 10.5l3 3l6-6.5'/%3e%3c/svg%3e");
+
+// The native input, stretched over its visual and transparent.
+.bb-ctl-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 1;
+
+  &:disabled {
+    cursor: default;
+  }
+}
+
+// Holds an input and its visual, sized by the visual.
+.bb-ctl {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+// --- Checkbox box and radio circle ---
+
+.bb-ctl-box,
+.bb-ctl-circle {
+  position: relative;
+  display: block;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--bb-check-border);
+  background-color: var(--bb-check-bg);
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &::after {
+    content: '';
+    position: absolute;
+    opacity: 0;
+    background-color: var(--bb-check-on-ink);
+    transition: opacity 0.15s ease;
+  }
+}
+
+.bb-ctl-box {
+  border-radius: 5px;
+
+  &::after {
+    inset: 0;
+    mask: $bb-check-tick center / 100% no-repeat;
+  }
+}
+
+.bb-ctl-circle {
+  border-radius: 50%;
+
+  &::after {
+    inset: 4px;
+    border-radius: 50%;
+  }
+}
+
+.bb-ctl-input:not(:disabled):hover + .bb-ctl-box,
+.bb-ctl-input:not(:disabled):hover + .bb-ctl-circle,
+.bb-ctl-hover:hover .bb-ctl-input:not(:disabled) + .bb-ctl-box,
+.bb-ctl-hover:hover .bb-ctl-input:not(:disabled) + .bb-ctl-circle {
+  border-color: var(--bb-check-hover-border);
+}
+
+.bb-ctl-input:checked + .bb-ctl-box,
+.bb-ctl-input:indeterminate + .bb-ctl-box,
+.bb-ctl-input:checked + .bb-ctl-circle {
+  background-color: var(--bb-check-on-bg);
+  border-color: var(--bb-check-on-bg);
+
+  &::after {
+    opacity: 1;
+  }
+}
+
+.bb-ctl-input:indeterminate + .bb-ctl-box::after {
+  inset: 50% 4px auto;
+  height: 2px;
+  margin-top: -1px;
+  border-radius: 1px;
+  mask: none;
+}
+
+.bb-ctl-box--error {
+  border-color: var(--bb-check-error) !important;
+}
+
+.bb-ctl-box--danger {
+  --bb-check-on-bg: var(--bb-check-error);
+  --bb-check-on-ink: var(--bb-danger-ink);
+}
+
+.bb-ctl-input:focus-visible + .bb-ctl-box,
+.bb-ctl-input:focus-visible + .bb-ctl-circle,
+.bb-ctl-input:focus-visible + .bb-ctl-switch {
+  border-color: var(--bb-check-hover-border);
+  box-shadow: 0 0 0 3px var(--bb-check-focus-ring);
+}
+
+.bb-ctl-input:disabled + .bb-ctl-box,
+.bb-ctl-input:disabled + .bb-ctl-circle {
+  opacity: var(--bb-check-disabled-opacity);
+}
+
+.bb-ctl-input:disabled:checked + .bb-ctl-box,
+.bb-ctl-input:disabled:indeterminate + .bb-ctl-box,
+.bb-ctl-input:disabled:checked + .bb-ctl-circle {
+  background-color: var(--bb-check-disabled-on-bg);
+  border-color: var(--bb-check-disabled-on-bg);
+
+  &::after {
+    background-color: var(--bb-check-bg);
+  }
+}
+
+// --- Switch ---
+
+.bb-ctl-switch {
+  position: relative;
+  display: block;
+  width: 40px;
+  height: 23px;
+  border: 1px solid var(--bb-check-border);
+  border-radius: 999px;
+  background-color: var(--bb-switch-track-off);
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background-color: var(--bb-switch-knob-off);
+    transition:
+      transform 0.15s ease,
+      background-color 0.15s ease;
+  }
+}
+
+.bb-ctl-input:not(:disabled):hover + .bb-ctl-switch {
+  border-color: var(--bb-check-hover-border);
+}
+
+.bb-ctl-input:checked + .bb-ctl-switch {
+  background-color: var(--bb-check-on-bg);
+  border-color: var(--bb-check-on-bg);
+
+  &::after {
+    transform: translateX(17px);
+    background-color: var(--bb-check-on-ink);
+  }
+}
+
+.bb-ctl-input:disabled + .bb-ctl-switch {
+  opacity: var(--bb-check-disabled-opacity);
+}
+
+// --- Label and sub-text next to a box or circle ---
+
+.bb-ctl-label {
+  font-size: 0.9375rem;
+  line-height: 1.25;
+  cursor: pointer;
+}
+
+.bb-ctl-sub {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.8125rem;
+  color: var(--bb-control-placeholder);
+  cursor: pointer;
+}
+
+.bb-ctl-disabled {
+  .bb-ctl-label,
+  .bb-ctl-sub {
+    opacity: var(--bb-check-disabled-opacity);
+    cursor: default;
+  }
+}
+
+// Row of compact checkboxes or radios, no sub-text (Start / Skip hash check / Sequential).
+.bb-inline-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 24px;
+}
+
+// --- Option card ---
+
+.bb-ctl-card {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--bb-control-border);
+  border-radius: var(--bb-control-radius);
+  background-color: var(--bb-control-bg);
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+
+  .bb-ctl-circle {
+    margin-top: 1px;
+  }
+
+  &:hover:not(.bb-ctl-disabled) {
+    border-color: var(--bb-control-hover-border);
+  }
+
+  &:has(.bb-ctl-input:checked) {
+    border-color: var(--bb-check-on-bg);
+    background-color: color-mix(in srgb, var(--bb-check-on-bg) 7%, var(--bb-control-bg));
+  }
+
+  &:has(.bb-ctl-input:focus-visible) {
+    box-shadow: 0 0 0 3px var(--bb-check-focus-ring);
+  }
+
+  &.bb-ctl-disabled {
+    cursor: default;
+    opacity: 0.6;
+  }
+}
+
+// --- Segmented control ---
+
+.bb-ctl-segments {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--bb-control-border);
+  border-radius: var(--bb-control-radius);
+  background-color: var(--bb-control-bg);
+  overflow: hidden;
+}
+
+.bb-ctl-segment {
+  position: relative;
+  display: inline-flex;
+  flex: 1 1 0;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--bb-control-placeholder);
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease;
+
+  & + & {
+    border-left: 1px solid var(--bb-control-border);
+  }
+
+  &:hover:not(.bb-ctl-disabled):not(:has(.bb-ctl-input:checked)) {
+    background-color: var(--bb-control-hover-bg);
+    color: var(--bb-control-text);
+  }
+
+  &:has(.bb-ctl-input:checked) {
+    background-color: var(--bb-check-on-bg);
+    color: var(--bb-check-on-ink);
+  }
+
+  &:has(.bb-ctl-input:focus-visible) {
+    box-shadow: inset 0 0 0 3px var(--bb-check-focus-ring);
+  }
+
+  &.bb-ctl-disabled {
+    opacity: var(--bb-check-disabled-opacity);
+    cursor: default;
+  }
+}
+
+.bb-ctl-segments--sm .bb-ctl-segment {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+}

@@ -1,0 +1,24 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.bb-check-tree__items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-left: 32px;
+}
+
+.bb-check-tree__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.bb-check-tree__check {
+  flex: 1 1 auto;
+}
