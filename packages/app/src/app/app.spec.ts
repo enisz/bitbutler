@@ -8,6 +8,7 @@ import { Subject } from 'rxjs';
 import { App } from './app';
 import { Maindata } from './models/torrent.model';
 import { CommandBusService } from './services/command-bus.service';
+import { ConfigurationService } from './services/configuration.service';
 import { OpenFilesService, PendingAddTorrent } from './services/open-files.service';
 import { ToastService } from './services/toast.service';
 import { TorrentFinishedEvent, TorrentStoreService } from './services/torrent-store.service';
@@ -80,6 +81,17 @@ describe('App', () => {
       type: 'success',
       category: 'finished',
     });
+  });
+
+  it('should show the pending import confirmation toast on startup', () => {
+    const configurationService = TestBed.inject(ConfigurationService);
+    const showPending = vi
+      .spyOn(configurationService, 'showImportedToastIfPending')
+      .mockImplementation(() => {});
+
+    TestBed.createComponent(App);
+
+    expect(showPending).toHaveBeenCalledTimes(1);
   });
 
   it('should configure ng-select labels from translations', () => {

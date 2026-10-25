@@ -467,6 +467,29 @@ export class UiCommandHandlerService {
           break;
         }
 
+        case 'UI_EXPORT_CONFIGURATION': {
+          const { ExportConfiguration } =
+            await import('../modals/export-configuration/export-configuration');
+          if (this.isModalOpen(ExportConfiguration)) break;
+          const exportConfigRef = this.modalService.open(ExportConfiguration, { size: 'md' });
+          exportConfigRef.result.catch(() => {});
+          break;
+        }
+
+        case 'UI_IMPORT_CONFIGURATION': {
+          const { ImportConfiguration } =
+            await import('../modals/import-configuration/import-configuration');
+          if (this.isModalOpen(ImportConfiguration)) break;
+          const importConfigRef = this.modalService.open(ImportConfiguration, {
+            size: 'lg',
+            scrollable: true,
+          });
+          setModalInput(importConfigRef, 'bbcPath', command.bbcPath);
+          if (command.serversOnly) setModalInput(importConfigRef, 'serversOnly', true);
+          importConfigRef.result.catch(() => {});
+          break;
+        }
+
         case 'UI_SCROLL_TO_TORRENT':
           break;
 

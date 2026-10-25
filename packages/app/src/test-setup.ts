@@ -147,6 +147,12 @@ window.bitbutler = {
   i18n: {
     languageChanged: noop,
   },
+  config: {
+    exportToFile: () => Promise.resolve({ canceled: true }),
+    openPicker: () => Promise.resolve(undefined),
+    read: () => Promise.resolve({ version: 1, exportedAt: 0, hasSettings: false, servers: [] }),
+    importFile: () => Promise.resolve({ settings: false, servers: 0 }),
+  },
   export: {
     start: noop,
     cancel: noop,

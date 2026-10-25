@@ -833,6 +833,9 @@
           "set-as-default": "Beállítás alapértelmezett szerverként",
           "unset-default": "Alapértelmezett szerver megszüntetése"
         },
+        "button": {
+          "import-servers": "Szerverek importálása"
+        },
         "delete-confirm": {
           "title": "Szerver törlése",
           "message": "Biztosan törölni szeretnéd a \"{{ name }}\" szervert?",
@@ -846,6 +849,20 @@
           "username": "Felhasználónév",
           "default": "Alapértelmezett",
           "id": "Azonosító"
+        }
+      },
+      "export-configuration": {
+        "title": "Konfiguráció exportálása",
+        "contents": "A konfigurációs fájl tartalma:",
+        "app-settings": "Alkalmazásbeállítások",
+        "servers": "{{ count }} szerver és a hozzájuk tartozó beállítások",
+        "credentials-note": "A felhasználónevek és jelszavak nem kerülnek exportálásra. Importált szerverhez való első csatlakozáskor meg kell adnod őket.",
+        "button": {
+          "export": "Exportálás..."
+        },
+        "toast": {
+          "exported-title": "Konfiguráció exportálva",
+          "export-failed-title": "A konfiguráció exportálása sikertelen"
         }
       },
       "export-torrents": {
@@ -935,6 +952,26 @@
           "success-title": "Export kész",
           "success-message": "{{count}} torrent exportálva.",
           "failed-title": "Export sikertelen"
+        }
+      },
+      "import-configuration": {
+        "title": "Konfiguráció importálása",
+        "app-settings": "Alkalmazásbeállítások",
+        "app-settings-sub": "Felülírja a jelenlegi alkalmazásbeállításokat.",
+        "servers": "Szerverek",
+        "badge-exists": "már létezik - felülírásra kerül",
+        "badge-new": "új",
+        "badge-current": "ez a jelenlegi szervered",
+        "button": {
+          "import": "Importálás",
+          "restore-and-log-out": "Visszaállítás és kijelentkezés"
+        },
+        "logout-confirm": {
+          "title": "Kijelentkezés a visszaállítás után",
+          "message": "A(z) \"{{name}}\" visszaállítása kijelentkeztet. Újra be kell jelentkezned."
+        },
+        "toast": {
+          "import-failed-title": "A konfiguráció importálása sikertelen"
         }
       },
       "import-torrents": {
@@ -1211,6 +1248,8 @@
       "form-title": "Csatlakozás",
       "form-subtitle": "Válassz gazdagépet a csatlakozáshoz.",
       "form-subtitle-empty": "Adj hozzá egy szervert a kezdéshez.",
+      "import-configuration": "Konfiguráció importálása",
+      "import-configuration-hint": "Vagy importálj egy konfigurációt.",
       "connecting": "Csatlakozás...",
       "server-form": {
         "host": "Gép (Host)"
@@ -2086,6 +2125,13 @@
         "toggle-first-last-piece-prio-failed-title": "Nem sikerült átváltani az első/utolsó szelet prioritást"
       }
     },
+    "configuration": {
+      "success": {
+        "imported-title": "Konfiguráció importálva",
+        "settings": "Alkalmazásbeállítások",
+        "servers": "Szerverek: {{ count }}"
+      }
+    },
     "tag-command-handler": {
       "success": {
         "added-title": "Címke hozzáadva"
@@ -2246,8 +2292,10 @@
       "open-logs-folder": "Naplómappa megnyitása",
       "open-logs-folder-failed": "A naplómappa megnyitása sikertelen",
       "about": "A BitButlerről",
-      "export-torrents": "Torrentek exportálása",
-      "import-torrents": "Torrentek importálása"
+      "export-menu": "Exportálás",
+      "import-menu": "Importálás",
+      "torrents": "Torrentek",
+      "configuration": "Konfiguráció"
     }
   }
 }

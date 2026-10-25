@@ -836,7 +836,7 @@ export class QbService {
     }
   }
 
-  private async forceLogout(serverId: string): Promise<void> {
+  public async forceLogout(serverId: string): Promise<void> {
     try {
       await window.bitbutler.window.setOpenFilesEnabled(false);
     } catch {}
@@ -848,7 +848,7 @@ export class QbService {
       this.serverStoreService.clearSelection();
     } catch {}
 
-    this.router.navigate(['/login'], { state: { [FORCE_LEAVE_STATE_KEY]: true } });
+    await this.router.navigate(['/login'], { state: { [FORCE_LEAVE_STATE_KEY]: true } });
   }
 
   private async runTorrents(

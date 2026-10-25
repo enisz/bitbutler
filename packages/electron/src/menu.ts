@@ -179,16 +179,32 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
         },
         { type: 'separator' },
         {
-          label: t('electron.menu.export-torrents'),
-          enabled: loggedIn,
-          accelerator: 'CmdOrCtrl+E',
-          click: () => sendMenuAction(mainWindow, 'file.exportTorrents'),
+          label: t('electron.menu.export-menu'),
+          submenu: [
+            {
+              label: t('electron.menu.torrents'),
+              enabled: loggedIn,
+              click: () => sendMenuAction(mainWindow, 'file.exportTorrents'),
+            },
+            {
+              label: t('electron.menu.configuration'),
+              click: () => sendMenuAction(mainWindow, 'file.exportConfiguration'),
+            },
+          ],
         },
         {
-          label: t('electron.menu.import-torrents'),
-          enabled: loggedIn,
-          accelerator: 'CmdOrCtrl+I',
-          click: () => sendMenuAction(mainWindow, 'file.importTorrents'),
+          label: t('electron.menu.import-menu'),
+          submenu: [
+            {
+              label: t('electron.menu.torrents'),
+              enabled: loggedIn,
+              click: () => sendMenuAction(mainWindow, 'file.importTorrents'),
+            },
+            {
+              label: t('electron.menu.configuration'),
+              click: () => sendMenuAction(mainWindow, 'file.importConfiguration'),
+            },
+          ],
         },
         { type: 'separator' },
         {

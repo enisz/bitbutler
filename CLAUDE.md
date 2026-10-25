@@ -44,7 +44,7 @@ Pre-commit hooks (Husky + lint-staged) enforce linting and formatting automatica
 Angular (renderer) ──→ window.bitbutler.* ──→ packages/electron/src/preload.ts ──→ ipcMain.handle() ──→ packages/electron/src/ipc/*.ts
 ```
 
-- `packages/electron/src/preload.ts` is the only bridge. It exposes `window.bitbutler` with namespaces: `qb`, `server`, `settings`, `window`, `electron`, `notification`, `torrent`.
+- `packages/electron/src/preload.ts` is the only bridge. It exposes `window.bitbutler` with namespaces: `qb`, `server`, `settings`, `window`, `electron`, `notification`, `torrent`, `config`.
 - Angular services call `window.bitbutler.*` directly - never `fetch()` or Node APIs.
 - `packages/electron/src/ipc/qbittorrent.ts` proxies all qBittorrent API calls via **axios** from the main process (avoids CORS and handles HTTP streaming for maindata).
 - `packages/electron/src/db.ts` holds a **better-sqlite3** database: `servers` table (passwords encrypted with Electron `safeStorage`) and `settings` table (JSON blobs).

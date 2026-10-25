@@ -833,6 +833,9 @@
           "set-as-default": "Set as default server",
           "unset-default": "Unset default server"
         },
+        "button": {
+          "import-servers": "Import Servers"
+        },
         "delete-confirm": {
           "title": "Delete Server",
           "message": "Are you sure you want to delete the server \"{{ name }}\"?",
@@ -846,6 +849,20 @@
           "username": "Username",
           "default": "Default",
           "id": "ID"
+        }
+      },
+      "export-configuration": {
+        "title": "Export Configuration",
+        "contents": "The configuration file will contain:",
+        "app-settings": "Application settings",
+        "servers": "{{ count }} server(s) and their settings",
+        "credentials-note": "Usernames and passwords are not included. You will be asked for them the first time you connect to an imported server.",
+        "button": {
+          "export": "Export..."
+        },
+        "toast": {
+          "exported-title": "Configuration Exported",
+          "export-failed-title": "Failed to Export Configuration"
         }
       },
       "export-torrents": {
@@ -935,6 +952,26 @@
           "success-title": "Export Complete",
           "success-message": "{{count}} torrent(s) exported.",
           "failed-title": "Export Failed"
+        }
+      },
+      "import-configuration": {
+        "title": "Import Configuration",
+        "app-settings": "Application settings",
+        "app-settings-sub": "Overwrites the current application settings.",
+        "servers": "Servers",
+        "badge-exists": "already exists - will overwrite",
+        "badge-new": "new",
+        "badge-current": "this is your current server",
+        "button": {
+          "import": "Import",
+          "restore-and-log-out": "Restore and log out"
+        },
+        "logout-confirm": {
+          "title": "Log Out After Restore",
+          "message": "Restoring \"{{name}}\" will log you out. You will need to sign in again."
+        },
+        "toast": {
+          "import-failed-title": "Failed to Import Configuration"
         }
       },
       "import-torrents": {
@@ -1211,6 +1248,8 @@
       "form-title": "Connect to Server",
       "form-subtitle": "Select a host to connect to.",
       "form-subtitle-empty": "Add a server to get started.",
+      "import-configuration": "Import configuration",
+      "import-configuration-hint": "Or import a configuration.",
       "connecting": "Connecting...",
       "server-form": {
         "host": "Host"
@@ -2086,6 +2125,13 @@
         "toggle-first-last-piece-prio-failed-title": "Failed to Toggle First/Last Piece Priority"
       }
     },
+    "configuration": {
+      "success": {
+        "imported-title": "Configuration Imported",
+        "settings": "Application settings",
+        "servers": "Servers: {{ count }}"
+      }
+    },
     "tag-command-handler": {
       "success": {
         "added-title": "Tag Added"
@@ -2247,8 +2293,10 @@
       "open-logs-folder": "Open Logs Folder",
       "open-logs-folder-failed": "Failed to Open Logs Folder",
       "about": "About BitButler",
-      "export-torrents": "Export Torrents",
-      "import-torrents": "Import Torrents"
+      "export-menu": "Export",
+      "import-menu": "Import",
+      "torrents": "Torrents",
+      "configuration": "Configuration"
     }
   }
 }

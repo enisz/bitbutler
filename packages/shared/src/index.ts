@@ -1,4 +1,12 @@
 export type {
+  BbcFile,
+  BbcImportPayload,
+  BbcImportResult,
+  BbcMetadata,
+  BbcServer,
+  BbcServerSummary,
+} from './models/configuration.model.js';
+export type {
   HostPlatform,
   ReactionRollup,
   Release,

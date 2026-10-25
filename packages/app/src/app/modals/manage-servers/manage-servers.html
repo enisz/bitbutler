@@ -67,6 +67,13 @@
       position="end"
     ></bb-btn-content>
   </button>
+  <button type="button" class="btn btn-primary btn-sm btn-split" (click)="importServers()">
+    <bb-btn-content
+      [icon]="icon.faFileImport"
+      [text]="'components.modals.manage-servers.button.import-servers' | translate"
+      position="end"
+    ></bb-btn-content>
+  </button>
   <button type="button" class="btn btn-sm btn-split ms-auto" (click)="activeModal.close()">
     <bb-btn-content
       [icon]="icon.faXmark"

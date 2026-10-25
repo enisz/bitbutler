@@ -21,19 +21,17 @@
     }
 
     <div class="form-wrapper">
-      @if (showHero()) {
-        <div class="mb-4">
-          <h3 class="form-title">
-            {{ 'pages.login.form-title' | translate }}
-          </h3>
-          <p class="text-body-secondary small mb-0">
-            {{
-              (hasServers() ? 'pages.login.form-subtitle' : 'pages.login.form-subtitle-empty')
-                | translate
-            }}
-          </p>
-        </div>
-      }
+      <div class="form-intro mb-4">
+        <h3 class="form-title">
+          {{ 'pages.login.form-title' | translate }}
+        </h3>
+        <p class="text-body-secondary small mb-0">
+          {{
+            (hasServers() ? 'pages.login.form-subtitle' : 'pages.login.form-subtitle-empty')
+              | translate
+          }}
+        </p>
+      </div>
 
       @if (hasServers()) {
         <div class="mb-4">
@@ -92,6 +90,19 @@
             <bb-btn-content
               [icon]="icons.faPlus"
               [text]="'general.button.add-server' | translate"
+            ></bb-btn-content>
+          </button>
+          <p class="text-body-secondary small mb-0 import-configuration-hint">
+            {{ 'pages.login.import-configuration-hint' | translate }}
+          </p>
+          <button
+            type="button"
+            class="btn btn-lg btn-outline-secondary btn-pill-cta btn-split import-configuration-cta"
+            (click)="importConfiguration()"
+          >
+            <bb-btn-content
+              [icon]="icons.faFileImport"
+              [text]="'pages.login.import-configuration' | translate"
             ></bb-btn-content>
           </button>
         </div>

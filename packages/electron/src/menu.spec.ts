@@ -74,6 +74,24 @@ function findItem(
   return undefined;
 }
 
+// The Export and Import submenus each hold a "Torrents" and a "Configuration" item, so these
+// are looked up through their parent submenu.
+function inSubmenu(
+  template: MenuItemConstructorOptions[],
+  menuLabel: string,
+  itemLabel: string,
+): MenuItemConstructorOptions | undefined {
+  const menu = findItem(template, (item) => item.label === menuLabel);
+  return (menu?.submenu as MenuItemConstructorOptions[] | undefined)?.find(
+    (item) => item.label === itemLabel,
+  );
+}
+
+const exportItem = (template: MenuItemConstructorOptions[], label: string) =>
+  inSubmenu(template, 'electron.menu.export-menu', label);
+const importItem = (template: MenuItemConstructorOptions[], label: string) =>
+  inSubmenu(template, 'electron.menu.import-menu', label);
+
 function byLabel(label: string) {
   return (item: MenuItemConstructorOptions) => item.label === label;
 }
@@ -112,12 +130,8 @@ describe('rebuildMenu', () => {
       expect(findItem(template, byLabel('electron.menu.add-torrent'))?.accelerator).toBe(
         'CmdOrCtrl+N',
       );
-      expect(findItem(template, byLabel('electron.menu.export-torrents'))?.accelerator).toBe(
-        'CmdOrCtrl+E',
-      );
-      expect(findItem(template, byLabel('electron.menu.import-torrents'))?.accelerator).toBe(
-        'CmdOrCtrl+I',
-      );
+      expect(exportItem(template, 'electron.menu.torrents')?.accelerator).toBeUndefined();
+      expect(importItem(template, 'electron.menu.torrents')?.accelerator).toBeUndefined();
       expect(findItem(template, byLabel('electron.menu.disconnect'))?.accelerator).toBe(
         'CmdOrCtrl+L',
       );
@@ -139,9 +153,41 @@ describe('rebuildMenu', () => {
     it('disables actions requiring a connection when logged out', async () => {
       const template = await buildMenu();
       expect(findItem(template, byLabel('electron.menu.add-torrent'))?.enabled).toBe(false);
-      expect(findItem(template, byLabel('electron.menu.export-torrents'))?.enabled).toBe(false);
-      expect(findItem(template, byLabel('electron.menu.import-torrents'))?.enabled).toBe(false);
+      expect(exportItem(template, 'electron.menu.torrents')?.enabled).toBe(false);
+      expect(importItem(template, 'electron.menu.torrents')?.enabled).toBe(false);
       expect(findItem(template, byLabel('electron.menu.disconnect'))?.enabled).toBe(false);
+    });
+
+    it('keeps the configuration export and import enabled when logged out', async () => {
+      const template = await buildMenu();
+      expect(exportItem(template, 'electron.menu.configuration')?.enabled).not.toBe(false);
+      expect(importItem(template, 'electron.menu.configuration')?.enabled).not.toBe(false);
+    });
+
+    it('sends the configuration export and import actions', async () => {
+      const mainWindow = createFakeWindow();
+      const template = await buildMenu(mainWindow);
+
+      (exportItem(template, 'electron.menu.configuration')!.click as () => void)();
+      (importItem(template, 'electron.menu.configuration')!.click as () => void)();
+
+      expect(mainWindow.webContents.send).toHaveBeenCalledWith(
+        'menu:clicked',
+        expect.objectContaining({ action: 'file.exportConfiguration' }),
+      );
+      expect(mainWindow.webContents.send).toHaveBeenCalledWith(
+        'menu:clicked',
+        expect.objectContaining({ action: 'file.importConfiguration' }),
+      );
+    });
+
+    it('no longer lists the configuration items in the Settings menu', async () => {
+      mockGetCookieJar.mockReturnValue(new Map([['srv-1', 'SID=abc']]));
+      const template = await buildMenu();
+      const settingsMenu = findItem(template, byLabel('electron.menu.settings-menu'))!;
+      const labels = (settingsMenu.submenu as MenuItemConstructorOptions[]).map((i) => i.label);
+
+      expect(labels).not.toContain('electron.menu.configuration');
     });
 
     it('enables actions requiring a connection when logged in', async () => {
