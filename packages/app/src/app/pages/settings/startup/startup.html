@@ -3,7 +3,7 @@
     <app-bb-section-card [title]="'pages.settings.tab.general.label.startup' | translate">
       <div class="bb-options bb-options--grid bb-startup-grid">
         <div class="bb-option" formGroupName="startup">
-          <div class="bb-option__text">
+          <div class="bb-option__text" bbOptionText>
             <label class="bb-option__label" for="open-at-login">
               {{
                 'pages.settings.tab.general.general-settings-form.startup.open-at-login' | translate
@@ -24,7 +24,7 @@
           </span>
         </div>
         <div class="bb-option" formGroupName="startup">
-          <div class="bb-option__text">
+          <div class="bb-option__text" bbOptionText>
             <label class="bb-option__label" for="start-minimized">
               {{
                 'pages.settings.tab.general.general-settings-form.startup.start-minimized'
@@ -46,7 +46,7 @@
           </span>
         </div>
         <div class="bb-option" formGroupName="behavior">
-          <div class="bb-option__text">
+          <div class="bb-option__text" bbOptionText>
             <label class="bb-option__label" for="automatic-update">
               {{
                 'pages.settings.tab.general.general-settings-form.behavior.automatic-update'

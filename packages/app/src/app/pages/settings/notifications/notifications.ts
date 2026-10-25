@@ -6,12 +6,14 @@ import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
+import { BbOptionText } from '../../../directives/bb-option-text';
 import { GeneralSettingsFormService } from '../general-settings-form.service';
 import { NgSelectItem, SettingsTabComponent } from '../settings.interface';
 
 @Component({
   selector: 'app-notifications',
   imports: [
+    BbOptionText,
     BbSectionCard,
     CommonModule,
     NgSelectComponent,

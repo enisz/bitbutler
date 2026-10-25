@@ -3,7 +3,7 @@
     <app-bb-section-card [title]="'pages.settings.tab.general.label.torrent-handling' | translate">
       <div class="bb-options">
         <div class="bb-option" formGroupName="behavior">
-          <div class="bb-option__text">
+          <div class="bb-option__text" bbOptionText>
             <label class="bb-option__label" for="delete-torrent-file">
               {{
                 'pages.settings.tab.general.general-settings-form.behavior.delete-torrent-after-added'
@@ -25,7 +25,7 @@
           </span>
         </div>
         <div class="bb-option" formGroupName="behavior">
-          <div class="bb-option__text">
+          <div class="bb-option__text" bbOptionText>
             <label class="bb-option__label" for="delete-torrent-on-duplicate">
               {{
                 'pages.settings.tab.general.general-settings-form.behavior.delete-torrent-on-duplicate'
@@ -53,7 +53,7 @@
           {{ 'pages.settings.tab.general.general-settings-form.save-path.description' | translate }}
         </div>
         <div class="bb-option">
-          <div class="bb-option__text">
+          <div class="bb-option__text" bbOptionText>
             <span class="bb-option__label">
               <div class="form-check">
                 <input
@@ -76,7 +76,7 @@
           </div>
         </div>
         <div class="bb-option">
-          <div class="bb-option__text">
+          <div class="bb-option__text" bbOptionText>
             <span class="bb-option__label">
               <div class="form-check">
                 <input
@@ -105,7 +105,7 @@
     <app-bb-section-card [title]="'pages.settings.tab.general.label.language' | translate">
       <div class="bb-options" formGroupName="language">
         <div class="bb-option">
-          <div class="bb-option__text">
+          <div class="bb-option__text" bbOptionText>
             <span class="bb-option__label">
               {{ 'pages.settings.tab.general.general-settings-form.language.language' | translate }}
             </span>
@@ -146,7 +146,7 @@
     >
       <div class="bb-options" formGroupName="dateFormat">
         <div class="bb-option">
-          <div class="bb-option__text">
+          <div class="bb-option__text" bbOptionText>
             <span class="bb-option__label">
               {{
                 'pages.settings.tab.general.general-settings-form.date-format.preset-label'
@@ -185,7 +185,7 @@
         </div>
 
         <div class="bb-option">
-          <div class="bb-option__text">
+          <div class="bb-option__text" bbOptionText>
             <span class="bb-option__label">
               {{
                 'pages.settings.tab.general.general-settings-form.date-format.first-day-of-week-label'
@@ -210,7 +210,7 @@
 
         @if (isCustomDateFormat()) {
           <div class="bb-option">
-            <div class="bb-option__text">
+            <div class="bb-option__text" bbOptionText>
               <span class="bb-option__label">
                 {{
                   'pages.settings.tab.general.general-settings-form.date-format.custom-pattern-label'
@@ -241,7 +241,7 @@
             </div>
           </div>
           <div class="bb-option">
-            <div class="bb-option__text text-muted">
+            <div class="bb-option__text text-muted" bbOptionText>
               {{
                 'pages.settings.tab.general.general-settings-form.date-format.preview' | translate
               }}: {{ customPatternPreview() }}

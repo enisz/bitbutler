@@ -7,12 +7,14 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
+import { BbOptionText } from '../../../directives/bb-option-text';
 import { ServerSettingsFormService } from '../server-settings-form.service';
 import { SettingsTabComponent } from '../settings.interface';
 
 @Component({
   selector: 'app-polling',
   imports: [
+    BbOptionText,
     BbSectionCard,
     CommonModule,
     ReactiveFormsModule,

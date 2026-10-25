@@ -67,6 +67,7 @@ import { SizeColumnFilter } from '../../components/column-filters/size-column-fi
 import { TextColumnFilter } from '../../components/column-filters/text-column-filter/text-column-filter';
 import { TimeLimitColumnFilter } from '../../components/column-filters/time-limit-column-filter/time-limit-column-filter';
 import { AutofocusDirective } from '../../directives/autofocus';
+import { BbOptionText } from '../../directives/bb-option-text';
 import { BbTooltip } from '../../directives/bb-tooltip';
 import { GridRowNavigationDirective } from '../../directives/grid-row-navigation';
 import { NoRowOverlay } from '../../pages/main/grid/overlays/no-row-overlay/no-row-overlay';
@@ -84,6 +85,7 @@ type ImportGridRow = BbeTorrentEntry & { importState: ImportRowStatus };
   selector: 'app-import-torrents',
   standalone: true,
   imports: [
+    BbOptionText,
     GridRowNavigationDirective,
     BbSectionCard,
     ReactiveFormsModule,
