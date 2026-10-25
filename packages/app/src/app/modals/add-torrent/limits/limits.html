@@ -4,16 +4,13 @@
       <app-bb-section-card
         [title]="'components.add-torrent.label.transfer-rate-limits' | translate"
       >
-        <app-transfer-limit
-          class="d-block mt-3"
-          formControlName="transferRateLimits"
-        ></app-transfer-limit>
+        <app-transfer-limit formControlName="transferRateLimits"></app-transfer-limit>
       </app-bb-section-card>
     </div>
 
     <div class="col-12">
       <app-bb-section-card [title]="'components.add-torrent.label.share-limits' | translate">
-        <app-share-limit class="d-block mt-3" formControlName="shareLimits"></app-share-limit>
+        <app-share-limit formControlName="shareLimits"></app-share-limit>
       </app-bb-section-card>
     </div>
   </div>

@@ -1189,6 +1189,23 @@ $bb-options-grid-breakpoint: 991.98px;
   grid-column: 1 / -1;
 }
 
+// A row whose control reveals a detail line below it (e.g. a limit picker's value field): the
+// `.bb-option__detail` child wraps onto its own line under the label and the control.
+.bb-option--wrap {
+  flex-wrap: wrap;
+}
+
+.bb-option__detail {
+  display: flex;
+  flex: 1 0 100%;
+  align-items: center;
+  gap: 12px;
+
+  > .form-control {
+    max-width: 200px;
+  }
+}
+
 // Label and description on top, the control (option cards) across the full width below.
 .bb-option--stacked {
   flex-direction: column;
