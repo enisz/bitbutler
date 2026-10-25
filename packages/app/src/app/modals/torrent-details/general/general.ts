@@ -16,6 +16,7 @@ import { BbProgress } from '../../../components/bb-progress/bb-progress';
 import { variantForTorrentState } from '../../../components/bb-progress/torrent-state-variant';
 import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
+import { BbOptionText } from '../../../directives/bb-option-text';
 import { BbTooltip } from '../../../directives/bb-tooltip';
 import { QbLogEntry } from '../../../models/qbittorrent.model';
 import { FileSizePerSecPipe } from '../../../pipes/filesize-per-sec-pipe';
@@ -34,6 +35,7 @@ import { TorrentDetailTabComponent } from '../torrent-details.interface';
 @Component({
   selector: 'app-general',
   imports: [
+    BbOptionText,
     BbSectionCard,
     BbSpinner,
     DecimalPipe,

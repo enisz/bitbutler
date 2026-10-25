@@ -13,9 +13,11 @@
           ></bb-popover>
         </div>
         <div class="bb-option">
-          <div class="bb-option__text">
+          <div class="bb-option__text" bbOptionText>
             <span class="bb-option__label">
-              {{ 'pages.settings.tab.server.server-settings-form.polling.foreground' | translate }}
+              <span class="bb-option__label-text">{{
+                'pages.settings.tab.server.server-settings-form.polling.foreground' | translate
+              }}</span>
               <bb-popover
                 [subject]="'pages.settings.tab.server.popover.foreground-polling.title' | translate"
                 [description]="
@@ -60,9 +62,11 @@
           </div>
         </div>
         <div class="bb-option">
-          <div class="bb-option__text">
+          <div class="bb-option__text" bbOptionText>
             <span class="bb-option__label">
-              {{ 'pages.settings.tab.server.server-settings-form.polling.background' | translate }}
+              <span class="bb-option__label-text">{{
+                'pages.settings.tab.server.server-settings-form.polling.background' | translate
+              }}</span>
               <bb-popover
                 [subject]="'pages.settings.tab.server.popover.background-polling.title' | translate"
                 [description]="backgroundPollingPopover"

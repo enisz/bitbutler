@@ -5,11 +5,19 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { AutofocusDirective } from '../../directives/autofocus';
+import { BbOptionText } from '../../directives/bb-option-text';
 import { BbTooltip } from '../../directives/bb-tooltip';
 
 @Component({
   selector: 'app-credential-prompt',
-  imports: [ReactiveFormsModule, TranslatePipe, AutofocusDirective, BbBtnContent, BbTooltip],
+  imports: [
+    BbOptionText,
+    ReactiveFormsModule,
+    TranslatePipe,
+    AutofocusDirective,
+    BbBtnContent,
+    BbTooltip,
+  ],
   templateUrl: './credential-prompt.html',
   styleUrl: './credential-prompt.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

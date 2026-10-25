@@ -12,6 +12,7 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
+import { BbOptionText } from '../../../directives/bb-option-text';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { QbSettingsStateService } from '../qb-settings-state.service';
@@ -29,7 +30,14 @@ interface TmmOption {
 
 @Component({
   selector: 'app-qb-settings-storage',
-  imports: [BbSectionCard, CommonModule, ReactiveFormsModule, NgSelectComponent, TranslatePipe],
+  imports: [
+    BbOptionText,
+    BbSectionCard,
+    CommonModule,
+    ReactiveFormsModule,
+    NgSelectComponent,
+    TranslatePipe,
+  ],
   templateUrl: './storage.html',
   styleUrl: './storage.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -28,6 +28,7 @@ import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content'
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
+import { BbOptionText } from '../../../directives/bb-option-text';
 import { BbTooltip } from '../../../directives/bb-tooltip';
 import {
   DEFAULT_TORRENT_LIST_GRID_SETTINGS,
@@ -60,6 +61,7 @@ const FOCUS_FALLBACKS: Record<ColumnAction, ColumnAction[]> = {
   selector: 'app-torrent-list-grid',
   standalone: true,
   imports: [
+    BbOptionText,
     BbSectionCard,
     BbSpinner,
     ReactiveFormsModule,

@@ -317,7 +317,7 @@
     >
       <div class="bb-options bb-options--grid">
         <div class="bb-option">
-          <div class="bb-option__text">
+          <div class="bb-option__text" bbOptionText>
             <span class="bb-option__label">
               {{ 'components.modals.torrent-details.general.auto-tmm' | translate }}
             </span>
@@ -335,7 +335,7 @@
           </span>
         </div>
         <div class="bb-option">
-          <div class="bb-option__text">
+          <div class="bb-option__text" bbOptionText>
             <span class="bb-option__label">
               {{ 'components.modals.torrent-details.general.sequential-download' | translate }}
             </span>
@@ -354,7 +354,7 @@
           </span>
         </div>
         <div class="bb-option">
-          <div class="bb-option__text">
+          <div class="bb-option__text" bbOptionText>
             <span class="bb-option__label">
               {{ 'components.modals.torrent-details.general.force-start' | translate }}
             </span>
@@ -372,9 +372,11 @@
           </span>
         </div>
         <div class="bb-option">
-          <div class="bb-option__text">
+          <div class="bb-option__text" bbOptionText>
             <span class="bb-option__label">
-              {{ 'components.modals.torrent-details.general.super-seeding' | translate }}
+              <span class="bb-option__label-text">{{
+                'components.modals.torrent-details.general.super-seeding' | translate
+              }}</span>
               <bb-popover
                 placement="top"
                 [subject]="
@@ -401,9 +403,11 @@
           </span>
         </div>
         <div class="bb-option">
-          <div class="bb-option__text">
+          <div class="bb-option__text" bbOptionText>
             <span class="bb-option__label">
-              {{ 'components.modals.torrent-details.general.first-last-piece-prio' | translate }}
+              <span class="bb-option__label-text">{{
+                'components.modals.torrent-details.general.first-last-piece-prio' | translate
+              }}</span>
               <bb-popover
                 placement="top"
                 [subject]="

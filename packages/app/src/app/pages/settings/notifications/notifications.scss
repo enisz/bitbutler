@@ -8,8 +8,12 @@
   margin-top: 1rem;
 }
 
-.bb-notification-section--app .bb-option:nth-last-child(-n + 2) {
-  border-bottom: none;
+// The second to last row shares the last row only while the grid has two columns (min-width
+// mirrors $bb-options-grid-breakpoint in styles.scss).
+@media (min-width: 992px) {
+  .bb-notification-section--app .bb-option:nth-last-child(2) {
+    border-bottom: none;
+  }
 }
 
 // Description above the category switches: spans the whole grid, with room above and below.

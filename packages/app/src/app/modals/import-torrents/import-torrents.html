@@ -123,7 +123,7 @@
           <div class="bb-options bb-options--grid mt-3">
             @for (field of restoreFieldKeys; track field) {
               <div class="bb-option">
-                <div class="bb-option__text">
+                <div class="bb-option__text" bbOptionText>
                   <label
                     class="bb-option__label"
                     [for]="'rf-' + field"
@@ -229,12 +229,12 @@
           >
             <div class="bb-options mb-3">
               <div class="bb-option">
-                <div class="bb-option__text">
+                <div class="bb-option__text" bbOptionText>
                   <label class="bb-option__label" for="overwrite-categories">
-                    {{
+                    <span class="bb-option__label-text">{{
                       'components.modals.import-torrents.category-path-mapping.overwrite'
                         | translate
-                    }}
+                    }}</span>
                     <bb-popover
                       [subject]="
                         'components.modals.import-torrents.category-path-mapping.overwrite'

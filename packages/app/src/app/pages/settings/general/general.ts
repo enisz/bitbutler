@@ -22,6 +22,7 @@ import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content'
 import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
 import { SavePathSelect } from '../../../components/save-path-select/save-path-select';
+import { BbOptionText } from '../../../directives/bb-option-text';
 import {
   DATE_FORMAT_PRESETS,
   DEFAULT_GENERAL_SETTINGS,
@@ -69,6 +70,7 @@ const DATE_FORMAT_TOKENS = [
 @Component({
   selector: 'app-general',
   imports: [
+    BbOptionText,
     BbSectionCard,
     CommonModule,
     NgSelectComponent,

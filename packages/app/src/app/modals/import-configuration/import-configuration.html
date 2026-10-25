@@ -13,7 +13,7 @@
     @if (meta.hasSettings && !serversOnly()) {
       <div class="bb-options mb-3">
         <div class="bb-option">
-          <div class="bb-option__text">
+          <div class="bb-option__text" bbOptionText>
             <label class="bb-option__label" for="import-app-settings">
               {{ 'components.modals.import-configuration.app-settings' | translate }}
             </label>
@@ -42,24 +42,11 @@
       <div class="bb-options">
         @for (server of meta.servers; track server.id) {
           <div class="bb-option">
-            <div class="bb-option__text bb-option__text--truncate">
-              <label
-                class="bb-option__label"
-                [for]="'import-server-' + server.id"
-                [bbTooltip]="server.name"
-                overflowOnly
-                singleLine
-                placement="bottom"
-              >
+            <div class="bb-option__text" bbOptionText>
+              <label class="bb-option__label" [for]="'import-server-' + server.id">
                 {{ server.name }}
               </label>
-              <span
-                class="bb-option__sub"
-                [bbTooltip]="serverDetail(server)"
-                overflowOnly
-                singleLine
-                placement="bottom"
-              >
+              <span class="bb-option__sub">
                 {{ serverDetail(server) }}
               </span>
             </div>

@@ -32,9 +32,11 @@
   <app-bb-section-card [title]="'components.add-torrent.label.behaviour' | translate">
     <div class="bb-options">
       <div class="bb-option">
-        <div class="bb-option__text">
+        <div class="bb-option__text" bbOptionText>
           <label class="bb-option__label" for="skip_checking">
-            {{ 'components.add-torrent.add-form.skip-hash-checking' | translate }}
+            <span class="bb-option__label-text">{{
+              'components.add-torrent.add-form.skip-hash-checking' | translate
+            }}</span>
             <bb-popover
               [subject]="'components.add-torrent.popover.skip-hash-checking.title' | translate"
               [description]="skipChecking"
@@ -57,7 +59,7 @@
       </div>
 
       <div class="bb-option">
-        <div class="bb-option__text">
+        <div class="bb-option__text" bbOptionText>
           <label class="bb-option__label" for="paused">
             {{ 'components.add-torrent.add-form.paused' | translate }}
           </label>
@@ -77,7 +79,7 @@
       </div>
 
       <div class="bb-option">
-        <div class="bb-option__text">
+        <div class="bb-option__text" bbOptionText>
           <label class="bb-option__label" for="autoTMM">
             {{ 'components.add-torrent.add-form.auto-tmm' | translate }}
           </label>
@@ -97,7 +99,7 @@
       </div>
 
       <div class="bb-option">
-        <div class="bb-option__text">
+        <div class="bb-option__text" bbOptionText>
           <label class="bb-option__label" for="sequentialDownload">
             {{ 'components.add-torrent.add-form.sequential-download' | translate }}
           </label>
@@ -117,9 +119,11 @@
       </div>
 
       <div class="bb-option">
-        <div class="bb-option__text">
+        <div class="bb-option__text" bbOptionText>
           <label class="bb-option__label" for="firstLastPiecePrio">
-            {{ 'components.add-torrent.add-form.first-last-piece-prio' | translate }}
+            <span class="bb-option__label-text">{{
+              'components.add-torrent.add-form.first-last-piece-prio' | translate
+            }}</span>
             <bb-popover
               [subject]="'components.add-torrent.popover.first-last-piece-prio.title' | translate"
               [description]="firstLastPiecePrio"

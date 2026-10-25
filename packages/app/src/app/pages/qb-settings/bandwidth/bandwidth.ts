@@ -12,6 +12,7 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
+import { BbOptionText } from '../../../directives/bb-option-text';
 import { SpeedLimitPipe } from '../../../pipes/speed-limit-pipe';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
@@ -26,6 +27,7 @@ interface SchedulerDayOption {
 @Component({
   selector: 'app-qb-settings-bandwidth',
   imports: [
+    BbOptionText,
     BbSectionCard,
     CommonModule,
     ReactiveFormsModule,
