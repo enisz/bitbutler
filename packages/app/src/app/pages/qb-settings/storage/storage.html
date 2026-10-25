@@ -110,74 +110,68 @@
             />
           </app-bb-radio-group>
         </div>
-        <div class="bb-option">
+        <div class="bb-option bb-option--stacked">
           <div class="bb-option__text" bbOptionText>
             <span class="bb-option__label" id="torrent-changed-tmm-enabled-label">
               {{ 'pages.qb-settings.tab.storage.field.torrent-changed-tmm-enabled' | translate }}
             </span>
           </div>
-          <div class="bb-option__control">
-            <app-bb-radio-group
-              appearance="inline"
-              formControlName="torrent_changed_tmm_enabled"
-              aria-labelledby="torrent-changed-tmm-enabled-label"
-            >
-              <app-bb-radio
-                [value]="false"
-                [label]="'pages.qb-settings.tab.storage.tmm-behavior.relocate' | translate"
-              />
-              <app-bb-radio
-                [value]="true"
-                [label]="'pages.qb-settings.tab.storage.tmm-behavior.manual' | translate"
-              />
-            </app-bb-radio-group>
-          </div>
+          <app-bb-radio-group
+            appearance="cards"
+            formControlName="torrent_changed_tmm_enabled"
+            aria-labelledby="torrent-changed-tmm-enabled-label"
+          >
+            <app-bb-radio
+              [value]="false"
+              [label]="'pages.qb-settings.tab.storage.tmm-behavior.relocate' | translate"
+            />
+            <app-bb-radio
+              [value]="true"
+              [label]="'pages.qb-settings.tab.storage.tmm-behavior.manual' | translate"
+            />
+          </app-bb-radio-group>
         </div>
-        <div class="bb-option">
+        <div class="bb-option bb-option--stacked">
           <div class="bb-option__text" bbOptionText>
             <span class="bb-option__label" id="category-changed-tmm-enabled-label">
               {{ 'pages.qb-settings.tab.storage.field.category-changed-tmm-enabled' | translate }}
             </span>
           </div>
-          <div class="bb-option__control">
-            <app-bb-radio-group
-              appearance="inline"
-              formControlName="category_changed_tmm_enabled"
-              aria-labelledby="category-changed-tmm-enabled-label"
-            >
-              <app-bb-radio
-                [value]="false"
-                [label]="'pages.qb-settings.tab.storage.tmm-behavior.relocate' | translate"
-              />
-              <app-bb-radio
-                [value]="true"
-                [label]="'pages.qb-settings.tab.storage.tmm-behavior.manual' | translate"
-              />
-            </app-bb-radio-group>
-          </div>
+          <app-bb-radio-group
+            appearance="cards"
+            formControlName="category_changed_tmm_enabled"
+            aria-labelledby="category-changed-tmm-enabled-label"
+          >
+            <app-bb-radio
+              [value]="false"
+              [label]="'pages.qb-settings.tab.storage.tmm-behavior.relocate' | translate"
+            />
+            <app-bb-radio
+              [value]="true"
+              [label]="'pages.qb-settings.tab.storage.tmm-behavior.manual' | translate"
+            />
+          </app-bb-radio-group>
         </div>
-        <div class="bb-option">
+        <div class="bb-option bb-option--stacked">
           <div class="bb-option__text" bbOptionText>
             <span class="bb-option__label" id="save-path-changed-tmm-enabled-label">
               {{ 'pages.qb-settings.tab.storage.field.save-path-changed-tmm-enabled' | translate }}
             </span>
           </div>
-          <div class="bb-option__control">
-            <app-bb-radio-group
-              appearance="inline"
-              formControlName="save_path_changed_tmm_enabled"
-              aria-labelledby="save-path-changed-tmm-enabled-label"
-            >
-              <app-bb-radio
-                [value]="false"
-                [label]="'pages.qb-settings.tab.storage.tmm-behavior.relocate' | translate"
-              />
-              <app-bb-radio
-                [value]="true"
-                [label]="'pages.qb-settings.tab.storage.tmm-behavior.manual' | translate"
-              />
-            </app-bb-radio-group>
-          </div>
+          <app-bb-radio-group
+            appearance="cards"
+            formControlName="save_path_changed_tmm_enabled"
+            aria-labelledby="save-path-changed-tmm-enabled-label"
+          >
+            <app-bb-radio
+              [value]="false"
+              [label]="'pages.qb-settings.tab.storage.tmm-behavior.relocate' | translate"
+            />
+            <app-bb-radio
+              [value]="true"
+              [label]="'pages.qb-settings.tab.storage.tmm-behavior.manual' | translate"
+            />
+          </app-bb-radio-group>
         </div>
       </div>
     </app-bb-section-card>

@@ -36,23 +36,21 @@
           </div>
         </div>
 
-        <div class="bb-option">
+        <div class="bb-option bb-option--stacked">
           <div class="bb-option__text" bbOptionText>
             <span class="bb-option__label" id="appearance-mode-label">
               {{ 'pages.settings.tab.general.general-settings-form.appearance.mode' | translate }}
             </span>
           </div>
-          <div class="bb-option__control">
-            <app-bb-radio-group
-              appearance="inline"
-              formControlName="mode"
-              aria-labelledby="appearance-mode-label"
-            >
-              @for (mode of modes(); track mode.value) {
-                <app-bb-radio [value]="mode.value" [label]="mode.label" />
-              }
-            </app-bb-radio-group>
-          </div>
+          <app-bb-radio-group
+            appearance="cards"
+            formControlName="mode"
+            aria-labelledby="appearance-mode-label"
+          >
+            @for (mode of modes(); track mode.value) {
+              <app-bb-radio [value]="mode.value" [label]="mode.label" />
+            }
+          </app-bb-radio-group>
         </div>
       </div>
     </app-bb-section-card>
