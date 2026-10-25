@@ -184,7 +184,6 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
             {
               label: t('electron.menu.torrents'),
               enabled: loggedIn,
-              accelerator: 'CmdOrCtrl+E',
               click: () => sendMenuAction(mainWindow, 'file.exportTorrents'),
             },
             {
@@ -199,7 +198,6 @@ export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void
             {
               label: t('electron.menu.torrents'),
               enabled: loggedIn,
-              accelerator: 'CmdOrCtrl+I',
               click: () => sendMenuAction(mainWindow, 'file.importTorrents'),
             },
             {

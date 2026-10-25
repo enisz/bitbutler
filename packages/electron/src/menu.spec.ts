@@ -130,8 +130,8 @@ describe('rebuildMenu', () => {
       expect(findItem(template, byLabel('electron.menu.add-torrent'))?.accelerator).toBe(
         'CmdOrCtrl+N',
       );
-      expect(exportItem(template, 'electron.menu.torrents')?.accelerator).toBe('CmdOrCtrl+E');
-      expect(importItem(template, 'electron.menu.torrents')?.accelerator).toBe('CmdOrCtrl+I');
+      expect(exportItem(template, 'electron.menu.torrents')?.accelerator).toBeUndefined();
+      expect(importItem(template, 'electron.menu.torrents')?.accelerator).toBeUndefined();
       expect(findItem(template, byLabel('electron.menu.disconnect'))?.accelerator).toBe(
         'CmdOrCtrl+L',
       );
