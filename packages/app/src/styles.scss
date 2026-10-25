@@ -96,8 +96,6 @@ html[data-bs-theme] .dropdown-menu,
 html[data-bs-theme] .btn,
 html[data-bs-theme] .form-control,
 html[data-bs-theme] .form-select,
-html[data-bs-theme] .form-check-input,
-html[data-bs-theme] .form-switch .form-check-input,
 html[data-bs-theme] .list-group-item,
 html[data-bs-theme] .modal-content {
   transition-property: background-color, color, border-color, box-shadow;
@@ -1040,56 +1038,6 @@ ngb-typeahead-window.dropdown-menu {
   letter-spacing: 0.01em;
 }
 
-.form-check {
-  width: fit-content;
-  margin-bottom: 0.5rem;
-  cursor: pointer;
-
-  .form-check-label {
-    margin-top: 1px;
-    margin-left: 6px;
-    cursor: pointer;
-    user-select: none;
-  }
-}
-
-.form-check-input {
-  cursor: pointer;
-  transition:
-    background-color 120ms ease,
-    border-color 120ms ease,
-    box-shadow 120ms ease;
-
-  &:not(.form-switch &) {
-    background-color: var(--bb-control-bg) !important;
-    border: 1px solid var(--bb-control-border) !important;
-    border-radius: 4px !important;
-
-    &[type='radio'] {
-      border-radius: 50% !important;
-    }
-  }
-
-  &:hover:not(:disabled):not(:checked) {
-    border-color: var(--bb-control-hover-border) !important;
-  }
-
-  &:focus {
-    border-color: var(--bb-control-focus-border) !important;
-    box-shadow: 0 0 0 0.2rem var(--bb-control-focus-ring) !important;
-  }
-
-  &:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
-
-    ~ .form-check-label {
-      cursor: not-allowed;
-      opacity: 0.6;
-    }
-  }
-}
-
 .cdk-overlay-container,
 .cdk-global-overlay-wrapper {
   z-index: 11000 !important;
@@ -1138,7 +1086,7 @@ ngb-typeahead-window.dropdown-menu {
   }
 }
 
-// Option rows - label/sub-text on the left, switch on the right
+// Option rows - label/sub-text on the left, the control (e.g. a switch) on the right
 
 .bb-options {
   display: flex;
@@ -1199,18 +1147,6 @@ ngb-typeahead-window.dropdown-menu {
     > :not(.bb-option__label-text) {
       flex-shrink: 0;
     }
-  }
-}
-
-.bb-option__toggle {
-  flex-shrink: 0;
-  margin: 0;
-  padding-left: 0;
-
-  .form-check-input {
-    width: 40px;
-    height: 23px;
-    margin: 0;
   }
 }
 
