@@ -103,13 +103,13 @@ describe('MenuBarCommandHandlerService', () => {
     expect(commandBusEmit).toHaveBeenCalledWith({ type: 'UI_OPEN_QB_SETTINGS' });
   });
 
-  it('should emit UI_EXPORT_CONFIGURATION for settings.export-configuration', () => {
-    clicks$.next({ action: 'settings.export-configuration', ts: 1 });
+  it('should emit UI_EXPORT_CONFIGURATION for file.exportConfiguration', () => {
+    clicks$.next({ action: 'file.exportConfiguration', ts: 1 });
     expect(commandBusEmit).toHaveBeenCalledWith({ type: 'UI_EXPORT_CONFIGURATION' });
   });
 
-  it('should start the import picker flow for settings.import-configuration', () => {
-    clicks$.next({ action: 'settings.import-configuration', ts: 1 });
+  it('should start the import picker flow for file.importConfiguration', () => {
+    clicks$.next({ action: 'file.importConfiguration', ts: 1 });
     expect(pickAndImport).toHaveBeenCalledTimes(1);
   });
 

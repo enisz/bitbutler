@@ -2286,16 +2286,16 @@
       "qb-settings": "qBittorrent beállítások",
       "manage-tags": "Cimkék kezelése",
       "manage-categories": "Kategóriák kezelése",
-      "export-configuration": "Konfiguráció exportálása",
-      "import-configuration": "Konfiguráció importálása",
       "manage-servers": "Szerverek kezelése",
       "help": "Súgó",
       "check-for-updates": "Frissítések keresése",
       "open-logs-folder": "Naplómappa megnyitása",
       "open-logs-folder-failed": "A naplómappa megnyitása sikertelen",
       "about": "A BitButlerről",
-      "export-torrents": "Torrentek exportálása",
-      "import-torrents": "Torrentek importálása"
+      "export-menu": "Exportálás",
+      "import-menu": "Importálás",
+      "torrents": "Torrentek",
+      "configuration": "Konfiguráció"
     }
   }
 }

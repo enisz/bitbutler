@@ -64,11 +64,11 @@ export class MenuBarCommandHandlerService {
           });
           break;
 
-        case 'settings.export-configuration':
+        case 'file.exportConfiguration':
           this.commandBusService.emit({ type: 'UI_EXPORT_CONFIGURATION' });
           break;
 
-        case 'settings.import-configuration':
+        case 'file.importConfiguration':
           void this.configurationService.pickAndImport();
           break;
 

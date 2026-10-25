@@ -2287,16 +2287,16 @@
       "qb-settings": "qBittorrent Settings",
       "manage-tags": "Manage Tags",
       "manage-categories": "Manage Categories",
-      "export-configuration": "Export Configuration",
-      "import-configuration": "Import Configuration",
       "manage-servers": "Manage Servers",
       "help": "Help",
       "check-for-updates": "Check for Updates",
       "open-logs-folder": "Open Logs Folder",
       "open-logs-folder-failed": "Failed to Open Logs Folder",
       "about": "About BitButler",
-      "export-torrents": "Export Torrents",
-      "import-torrents": "Import Torrents"
+      "export-menu": "Export",
+      "import-menu": "Import",
+      "torrents": "Torrents",
+      "configuration": "Configuration"
     }
   }
 }
