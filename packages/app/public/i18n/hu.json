@@ -1159,16 +1159,6 @@
     "transfer-limit": {
       "upload-limit": "Feltöltési korlát",
       "download-limit": "Letöltési korlát",
-      "popover": {
-        "upload-limit": {
-          "title": "Feltöltési korlát",
-          "description": "Maximális feltöltési sebesség KiB/s-ban."
-        },
-        "download-limit": {
-          "title": "Letöltési korlát",
-          "description": "Maximális letöltési sebesség KiB/s-ban."
-        }
-      },
       "unit": "KiB/s"
     },
     "share-limit": {

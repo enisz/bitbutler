@@ -18,7 +18,6 @@ import {
 import { TranslatePipe } from '@ngx-translate/core';
 import { BbOptionText } from '../../directives/bb-option-text';
 import { SpeedLimitPipe } from '../../pipes/speed-limit-pipe';
-import { BbPopover } from '../bb-popover/bb-popover';
 import { BbRadio } from '../form-controls/bb-radio-group/bb-radio';
 import { BbRadioGroup } from '../form-controls/bb-radio-group/bb-radio-group';
 
@@ -39,7 +38,6 @@ let nextId = 0;
     BbOptionText,
     ReactiveFormsModule,
     TranslatePipe,
-    BbPopover,
     SpeedLimitPipe,
   ],
   templateUrl: './transfer-limit.html',

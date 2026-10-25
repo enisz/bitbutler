@@ -1159,16 +1159,6 @@
     "transfer-limit": {
       "upload-limit": "Upload Limit",
       "download-limit": "Download Limit",
-      "popover": {
-        "upload-limit": {
-          "title": "Upload Limit",
-          "description": "Maximum upload speed in KiB/s."
-        },
-        "download-limit": {
-          "title": "Download Limit",
-          "description": "Maximum download speed in KiB/s."
-        }
-      },
       "unit": "KiB/s"
     },
     "share-limit": {
