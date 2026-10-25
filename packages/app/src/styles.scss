@@ -1233,11 +1233,19 @@ ngb-typeahead-window.dropdown-menu {
 
 // Two-column variant of .bb-options, with an optional full-width row
 
+// Below this window width the grid collapses to one column so each row gets the full width.
+$bb-options-grid-breakpoint: 991.98px;
+
 .bb-options--grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0 32px;
   padding-bottom: 4px;
+
+  @media (max-width: $bb-options-grid-breakpoint) {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
 }
 
 .bb-option--wide {

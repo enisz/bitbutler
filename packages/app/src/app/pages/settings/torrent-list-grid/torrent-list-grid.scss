@@ -1,6 +1,10 @@
-// Grid-options switches: drop the divider on the last row of the 2-column grid.
-.bb-options--grid .bb-option:nth-last-child(-n + 2) {
-  border-bottom: none;
+// Grid-options switches: drop the divider on the last row of the 2-column grid. The last item
+// loses its divider in every layout (styles.scss), so only the second to last needs this, and
+// only while the grid has two columns (min-width mirrors $bb-options-grid-breakpoint).
+@media (min-width: 992px) {
+  .bb-options--grid .bb-option:nth-last-child(2) {
+    border-bottom: none;
+  }
 }
 
 .column-reorder-container {
