@@ -31,119 +31,54 @@
 
   <app-bb-section-card [title]="'components.add-torrent.label.behaviour' | translate">
     <div class="bb-options">
-      <div class="bb-option">
-        <div class="bb-option__text" bbOptionText>
-          <label class="bb-option__label" for="skip_checking">
-            <span class="bb-option__label-text">{{
-              'components.add-torrent.add-form.skip-hash-checking' | translate
-            }}</span>
-            <bb-popover
-              [subject]="'components.add-torrent.popover.skip-hash-checking.title' | translate"
-              [description]="skipChecking"
-              placement="top"
-            ></bb-popover>
-          </label>
-          <span class="bb-option__sub">{{
-            'components.add-torrent.popover.skip-hash-checking.sub' | translate
-          }}</span>
-        </div>
-        <span class="bb-option__toggle form-switch">
-          <input
-            class="form-check-input"
-            type="checkbox"
-            role="switch"
-            id="skip_checking"
-            formControlName="skip_checking"
-          />
-        </span>
-      </div>
+      <app-bb-switch
+        inputId="skip_checking"
+        formControlName="skip_checking"
+        [label]="'components.add-torrent.add-form.skip-hash-checking' | translate"
+        [sub]="'components.add-torrent.popover.skip-hash-checking.sub' | translate"
+      >
+        <bb-popover
+          bbLabelExtra
+          [subject]="'components.add-torrent.popover.skip-hash-checking.title' | translate"
+          [description]="skipChecking"
+          placement="top"
+        ></bb-popover>
+      </app-bb-switch>
 
-      <div class="bb-option">
-        <div class="bb-option__text" bbOptionText>
-          <label class="bb-option__label" for="paused">
-            {{ 'components.add-torrent.add-form.paused' | translate }}
-          </label>
-          <span class="bb-option__sub">{{
-            'components.add-torrent.popover.paused-state.sub' | translate
-          }}</span>
-        </div>
-        <span class="bb-option__toggle form-switch">
-          <input
-            class="form-check-input"
-            type="checkbox"
-            role="switch"
-            id="paused"
-            formControlName="paused"
-          />
-        </span>
-      </div>
+      <app-bb-switch
+        inputId="paused"
+        formControlName="paused"
+        [label]="'components.add-torrent.add-form.paused' | translate"
+        [sub]="'components.add-torrent.popover.paused-state.sub' | translate"
+      />
 
-      <div class="bb-option">
-        <div class="bb-option__text" bbOptionText>
-          <label class="bb-option__label" for="autoTMM">
-            {{ 'components.add-torrent.add-form.auto-tmm' | translate }}
-          </label>
-          <span class="bb-option__sub">{{
-            'components.add-torrent.popover.auto-tmm.sub' | translate
-          }}</span>
-        </div>
-        <span class="bb-option__toggle form-switch">
-          <input
-            class="form-check-input"
-            type="checkbox"
-            role="switch"
-            id="autoTMM"
-            formControlName="autoTMM"
-          />
-        </span>
-      </div>
+      <app-bb-switch
+        inputId="autoTMM"
+        formControlName="autoTMM"
+        [label]="'components.add-torrent.add-form.auto-tmm' | translate"
+        [sub]="'components.add-torrent.popover.auto-tmm.sub' | translate"
+      />
 
-      <div class="bb-option">
-        <div class="bb-option__text" bbOptionText>
-          <label class="bb-option__label" for="sequentialDownload">
-            {{ 'components.add-torrent.add-form.sequential-download' | translate }}
-          </label>
-          <span class="bb-option__sub">{{
-            'components.add-torrent.popover.sequential-download.sub' | translate
-          }}</span>
-        </div>
-        <span class="bb-option__toggle form-switch">
-          <input
-            class="form-check-input"
-            type="checkbox"
-            role="switch"
-            id="sequentialDownload"
-            formControlName="sequentialDownload"
-          />
-        </span>
-      </div>
+      <app-bb-switch
+        inputId="sequentialDownload"
+        formControlName="sequentialDownload"
+        [label]="'components.add-torrent.add-form.sequential-download' | translate"
+        [sub]="'components.add-torrent.popover.sequential-download.sub' | translate"
+      />
 
-      <div class="bb-option">
-        <div class="bb-option__text" bbOptionText>
-          <label class="bb-option__label" for="firstLastPiecePrio">
-            <span class="bb-option__label-text">{{
-              'components.add-torrent.add-form.first-last-piece-prio' | translate
-            }}</span>
-            <bb-popover
-              [subject]="'components.add-torrent.popover.first-last-piece-prio.title' | translate"
-              [description]="firstLastPiecePrio"
-              placement="top"
-            ></bb-popover>
-          </label>
-          <span class="bb-option__sub">{{
-            'components.add-torrent.popover.first-last-piece-prio.sub' | translate
-          }}</span>
-        </div>
-        <span class="bb-option__toggle form-switch">
-          <input
-            class="form-check-input"
-            type="checkbox"
-            role="switch"
-            id="firstLastPiecePrio"
-            formControlName="firstLastPiecePrio"
-          />
-        </span>
-      </div>
+      <app-bb-switch
+        inputId="firstLastPiecePrio"
+        formControlName="firstLastPiecePrio"
+        [label]="'components.add-torrent.add-form.first-last-piece-prio' | translate"
+        [sub]="'components.add-torrent.popover.first-last-piece-prio.sub' | translate"
+      >
+        <bb-popover
+          bbLabelExtra
+          [subject]="'components.add-torrent.popover.first-last-piece-prio.title' | translate"
+          [description]="firstLastPiecePrio"
+          placement="top"
+        ></bb-popover>
+      </app-bb-switch>
     </div>
   </app-bb-section-card>
 </div>

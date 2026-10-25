@@ -5,22 +5,11 @@
     >
       <div class="bb-options">
         <div class="bb-options mb-3">
-          <div class="bb-option">
-            <div class="bb-option__text" bbOptionText>
-              <label class="bb-option__label" for="queueing-enabled">
-                {{ 'pages.qb-settings.tab.queue-limits.field.queueing-enabled' | translate }}
-              </label>
-            </div>
-            <span class="bb-option__toggle form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                role="switch"
-                id="queueing-enabled"
-                formControlName="queueing_enabled"
-              />
-            </span>
-          </div>
+          <app-bb-switch
+            inputId="queueing-enabled"
+            formControlName="queueing_enabled"
+            [label]="'pages.qb-settings.tab.queue-limits.field.queueing-enabled' | translate"
+          />
         </div>
         <div class="bb-option">
           <div class="bb-option__text" bbOptionText>
@@ -76,22 +65,11 @@
       >
         <div class="bb-options">
           <div class="bb-options mb-3">
-            <div class="bb-option">
-              <div class="bb-option__text" bbOptionText>
-                <label class="bb-option__label" for="add-to-top-of-queue">
-                  {{ 'pages.qb-settings.tab.queue-limits.field.add-to-top-of-queue' | translate }}
-                </label>
-              </div>
-              <span class="bb-option__toggle form-switch">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  role="switch"
-                  id="add-to-top-of-queue"
-                  formControlName="add_to_top_of_queue"
-                />
-              </span>
-            </div>
+            <app-bb-switch
+              inputId="add-to-top-of-queue"
+              formControlName="add_to_top_of_queue"
+              [label]="'pages.qb-settings.tab.queue-limits.field.add-to-top-of-queue' | translate"
+            />
           </div>
         </div>
       </app-bb-section-card>

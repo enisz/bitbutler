@@ -14,29 +14,16 @@
       }}</label>
     </div>
 
-    <div class="btn-group segmented-picker" role="group">
-      <input
-        type="radio"
-        class="btn-check"
-        name="downloadMode"
-        id="downloadModeNoLimit"
-        [checked]="downloadMode() === 'no-limit'"
-        (change)="setDownloadMode('no-limit')"
-      />
-      <label class="btn" for="downloadModeNoLimit">{{
-        'general.limit.no-limit' | translate
-      }}</label>
-
-      <input
-        type="radio"
-        class="btn-check"
-        name="downloadMode"
-        id="downloadModeCustom"
-        [checked]="downloadMode() === 'custom'"
-        (change)="setDownloadMode('custom')"
-      />
-      <label class="btn" for="downloadModeCustom">{{ 'general.limit.custom' | translate }}</label>
-    </div>
+    <app-bb-segmented
+      size="sm"
+      [options]="[
+        { value: 'no-limit', label: 'general.limit.no-limit' | translate },
+        { value: 'custom', label: 'general.limit.custom' | translate },
+      ]"
+      [value]="downloadMode()"
+      [attr.aria-label]="'components.transfer-limit.download-limit' | translate"
+      (valueChange)="setDownloadMode($any($event))"
+    />
 
     <bb-popover
       [subject]="'components.transfer-limit.popover.download-limit.title' | translate"
@@ -64,27 +51,16 @@
       <label for="uploadLimit">{{ 'components.transfer-limit.upload-limit' | translate }}</label>
     </div>
 
-    <div class="btn-group segmented-picker" role="group">
-      <input
-        type="radio"
-        class="btn-check"
-        name="uploadMode"
-        id="uploadModeNoLimit"
-        [checked]="uploadMode() === 'no-limit'"
-        (change)="setUploadMode('no-limit')"
-      />
-      <label class="btn" for="uploadModeNoLimit">{{ 'general.limit.no-limit' | translate }}</label>
-
-      <input
-        type="radio"
-        class="btn-check"
-        name="uploadMode"
-        id="uploadModeCustom"
-        [checked]="uploadMode() === 'custom'"
-        (change)="setUploadMode('custom')"
-      />
-      <label class="btn" for="uploadModeCustom">{{ 'general.limit.custom' | translate }}</label>
-    </div>
+    <app-bb-segmented
+      size="sm"
+      [options]="[
+        { value: 'no-limit', label: 'general.limit.no-limit' | translate },
+        { value: 'custom', label: 'general.limit.custom' | translate },
+      ]"
+      [value]="uploadMode()"
+      [attr.aria-label]="'components.transfer-limit.upload-limit' | translate"
+      (valueChange)="setUploadMode($any($event))"
+    />
 
     <bb-popover
       [subject]="'components.transfer-limit.popover.upload-limit.title' | translate"

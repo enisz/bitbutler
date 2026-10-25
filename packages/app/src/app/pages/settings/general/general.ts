@@ -21,6 +21,9 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content';
 import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
+import { BbRadio } from '../../../components/form-controls/bb-radio-group/bb-radio';
+import { BbRadioGroup } from '../../../components/form-controls/bb-radio-group/bb-radio-group';
+import { BbSwitch } from '../../../components/form-controls/bb-switch/bb-switch';
 import { SavePathSelect } from '../../../components/save-path-select/save-path-select';
 import { BbOptionText } from '../../../directives/bb-option-text';
 import {
@@ -72,6 +75,9 @@ const DATE_FORMAT_TOKENS = [
   imports: [
     BbOptionText,
     BbSectionCard,
+    BbSwitch,
+    BbRadioGroup,
+    BbRadio,
     CommonModule,
     NgSelectComponent,
     NgOptionTemplateDirective,
@@ -85,7 +91,6 @@ const DATE_FORMAT_TOKENS = [
     NgbCollapse,
   ],
   templateUrl: './general.html',
-  styleUrl: './general.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class General implements SettingsTabComponent {
@@ -155,6 +160,8 @@ export class General implements SettingsTabComponent {
       ),
     }));
   });
+
+  public savePathInputType = computed(() => this.formSnapshot().savePath.inputType);
 
   public isCustomDateFormat = computed<boolean>(
     () => this.formSnapshot().dateFormat.preset === 'custom',

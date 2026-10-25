@@ -6,6 +6,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { BbCallout } from '../../components/bb-callout/bb-callout';
+import { BbCheckbox } from '../../components/form-controls/bb-checkbox/bb-checkbox';
 import { AutofocusDirective } from '../../directives/autofocus';
 import { Torrent } from '../../models/torrent.model';
 import { FilesizePipe } from '../../pipes/filesize-pipe';
@@ -16,6 +17,7 @@ import { TorrentStoreService } from '../../services/torrent-store.service';
   selector: 'app-delete-torrent',
   standalone: true,
   imports: [
+    BbCheckbox,
     ReactiveFormsModule,
     CommonModule,
     AutofocusDirective,

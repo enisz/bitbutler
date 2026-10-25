@@ -13,7 +13,11 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { BbSpinner } from '../../components/bb-spinner/bb-spinner';
-import { BbOptionText } from '../../directives/bb-option-text';
+import {
+  BbCheckTree,
+  BbCheckTreeItem,
+} from '../../components/form-controls/bb-check-tree/bb-check-tree';
+import { BbSwitch } from '../../components/form-controls/bb-switch/bb-switch';
 import { ConfigurationService } from '../../services/configuration.service';
 import { ConfirmService } from '../../services/confirm.service';
 import { QbService } from '../../services/qb.service';
@@ -23,7 +27,7 @@ import { ToastService } from '../../services/toast.service';
 @Component({
   selector: 'app-import-configuration',
   standalone: true,
-  imports: [BbOptionText, TranslatePipe, BbBtnContent, BbSpinner],
+  imports: [BbCheckTree, BbSwitch, TranslatePipe, BbBtnContent, BbSpinner],
   templateUrl: './import-configuration.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -50,6 +54,15 @@ export class ImportConfiguration implements OnInit {
   public readonly importing = signal(false);
   public readonly applySettings = signal(false);
   public readonly selectedServerIds = signal<ReadonlySet<string>>(new Set());
+  protected readonly selectedServerIdList = computed(() => [...this.selectedServerIds()]);
+
+  protected readonly serverItems = computed<BbCheckTreeItem<string>[]>(() =>
+    (this.metadata()?.servers ?? []).map((server) => ({
+      key: server.id,
+      label: server.name,
+      sub: this.serverDetail(server),
+    })),
+  );
 
   public readonly canImport = computed(
     () =>
@@ -91,6 +104,10 @@ export class ImportConfiguration implements OnInit {
 
   public setApplySettings(value: boolean): void {
     this.applySettings.set(value);
+  }
+
+  public setSelectedServers(ids: readonly string[]): void {
+    this.selectedServerIds.set(new Set(ids));
   }
 
   public toggleServer(id: string): void {

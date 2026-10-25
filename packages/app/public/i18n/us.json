@@ -905,26 +905,26 @@
           "all": "All",
           "filtered": "Filtered",
           "selected": "Selected",
-          "hint": {
-            "all": "All torrents on the source server will be included in the export.",
-            "filtered": "Only torrents matching the current grid filters will be included in the export.",
-            "selected": "Only the torrents currently selected in the grid will be included in the export."
+          "sub": {
+            "all": "Every torrent on the server",
+            "filtered": "Torrents matching the grid filters",
+            "selected": "Torrents selected in the grid"
           }
         },
         "category-scope": {
           "all": "All",
           "assigned": "Assigned",
-          "hint": {
-            "all": "All categories defined on the source server will be included in the export.",
-            "assigned": "Only categories assigned to at least one of the exported torrents will be included."
+          "sub": {
+            "all": "Every category on the server",
+            "assigned": "Only those the exported torrents use"
           }
         },
         "tag-scope": {
           "all": "All",
           "assigned": "Assigned",
-          "hint": {
-            "all": "All tags defined on the source server will be included in the export.",
-            "assigned": "Only tags assigned to at least one of the exported torrents will be included."
+          "sub": {
+            "all": "Every tag on the server",
+            "assigned": "Only those the exported torrents use"
           }
         },
         "progress": {
@@ -972,7 +972,8 @@
         },
         "toast": {
           "import-failed-title": "Failed to Import Configuration"
-        }
+        },
+        "all-servers": "All servers"
       },
       "import-torrents": {
         "title": "Import Torrents",
@@ -1099,10 +1100,10 @@
           "paused": "Keep paused",
           "active": "Start active ones",
           "all": "Start all",
-          "hint": {
-            "paused": "All torrents will remain paused - start them manually when ready.",
-            "active": "Torrents that were active when exported will resume automatically.",
-            "all": "All imported torrents will start immediately regardless of their previous state."
+          "sub": {
+            "paused": "Start them manually when ready",
+            "active": "Resume the ones active at export",
+            "all": "Start every torrent right away"
           }
         },
         "report": {
@@ -1225,7 +1226,8 @@
       },
       "set": {
         "filter-placeholder": "Filter...",
-        "no-matches": "No matching values"
+        "no-matches": "No matching values",
+        "select-all": "Select all"
       },
       "boolean": {
         "true": "True",
@@ -1633,8 +1635,12 @@
             },
             "save-path": {
               "description": "Choose how save path fields behave when adding or moving torrents.",
-              "select": "ng-select",
-              "typeahead": "ngb-typeahead"
+              "select": "Dropdown",
+              "typeahead": "Typeahead",
+              "label": "Save path field",
+              "select-sub": "Pick a known path, or add a new one",
+              "typeahead-sub": "Type freely, with suggestions from known paths",
+              "preview": "Preview"
             }
           },
           "label": {
@@ -1807,6 +1813,12 @@
                 "details": "Open Torrent Details",
                 "nothing": "Do nothing",
                 "inline-edit": "Inline Edit"
+              },
+              "sub": {
+                "show": "Reveal the torrent's files on this computer",
+                "details": "Open the details window of the torrent",
+                "inline-edit": "Edit the double-clicked cell in place",
+                "nothing": "Double-clicking a row has no effect"
               }
             },
             "column-actions": {
@@ -1959,11 +1971,16 @@
           "content-layout": {
             "original": "Original",
             "subfolder": "Create subfolder",
-            "no-subfolder": "Don't create subfolder"
+            "no-subfolder": "Don't create subfolder",
+            "original-sub": "Keep the layout of the torrent as it is",
+            "subfolder-sub": "Always put the files in their own folder",
+            "no-subfolder-sub": "Save the files without the torrent's top folder"
           },
           "tmm-mode": {
             "automatic": "Automatic",
-            "manual": "Manual"
+            "manual": "Manual",
+            "manual-sub": "Each torrent keeps the save path it was added with",
+            "automatic-sub": "The category decides where a torrent is saved"
           },
           "tmm-behavior": {
             "relocate": "Relocate torrents",
@@ -2001,7 +2018,9 @@
           },
           "ratio-act": {
             "pause": "Pause torrent",
-            "remove": "Remove torrent"
+            "remove": "Remove torrent",
+            "pause-sub": "Stop seeding, keep the torrent in the list",
+            "remove-sub": "Remove the torrent from the list, keep its files"
           }
         }
       },

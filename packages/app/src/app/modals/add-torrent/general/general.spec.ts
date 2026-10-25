@@ -101,8 +101,9 @@ describe('AddTorrentGeneral', () => {
   it('should emit inputModeChange when the link toggle is selected', () => {
     const emitSpy = vi.spyOn(component.inputModeChange, 'emit');
 
-    const linkRadio: HTMLInputElement = fixture.nativeElement.querySelector('#inputMode_link');
-    linkRadio.dispatchEvent(new Event('change'));
+    const linkRadio: HTMLInputElement =
+      fixture.nativeElement.querySelectorAll('app-bb-segmented input')[1];
+    linkRadio.click();
 
     expect(emitSpy).toHaveBeenCalledWith('link');
   });
@@ -216,7 +217,7 @@ describe('AddTorrentGeneral', () => {
     });
 
     it('should make the input-mode toggle full width and show a popover beside it', () => {
-      const toggle: HTMLElement = fixture.nativeElement.querySelector('.btn-group');
+      const toggle: HTMLElement = fixture.nativeElement.querySelector('app-bb-segmented');
 
       expect(toggle.classList.contains('w-100')).toBe(true);
 
@@ -226,8 +227,8 @@ describe('AddTorrentGeneral', () => {
     });
 
     it('should render the input-mode toggle as plain text with no icons', () => {
-      const toggle: HTMLElement = fixture.nativeElement.querySelector('.btn-group');
-      const labels: HTMLLabelElement[] = Array.from(toggle.querySelectorAll('label.btn'));
+      const toggle: HTMLElement = fixture.nativeElement.querySelector('app-bb-segmented');
+      const labels: HTMLLabelElement[] = Array.from(toggle.querySelectorAll('label'));
 
       expect(labels.length).toBe(3);
       expect(toggle.querySelectorAll('bb-btn-content, fa-icon').length).toBe(0);
@@ -372,8 +373,9 @@ describe('AddTorrentGeneral', () => {
   it('should emit inputModeChange(folder) when the folder toggle is selected', () => {
     const emitSpy = vi.spyOn(component.inputModeChange, 'emit');
 
-    const folderRadio: HTMLInputElement = fixture.nativeElement.querySelector('#inputMode_folder');
-    folderRadio.dispatchEvent(new Event('change'));
+    const folderRadio: HTMLInputElement =
+      fixture.nativeElement.querySelectorAll('app-bb-segmented input')[2];
+    folderRadio.click();
 
     expect(emitSpy).toHaveBeenCalledWith('folder');
   });

@@ -5,22 +5,11 @@
     >
       <div class="bb-options">
         <div class="bb-options mb-3">
-          <div class="bb-option">
-            <div class="bb-option__text" bbOptionText>
-              <label class="bb-option__label" for="max-ratio-enabled">
-                {{ 'pages.qb-settings.tab.seeding-ratios.field.max-ratio-enabled' | translate }}
-              </label>
-            </div>
-            <span class="bb-option__toggle form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                role="switch"
-                id="max-ratio-enabled"
-                formControlName="max_ratio_enabled"
-              />
-            </span>
-          </div>
+          <app-bb-switch
+            inputId="max-ratio-enabled"
+            formControlName="max_ratio_enabled"
+            [label]="'pages.qb-settings.tab.seeding-ratios.field.max-ratio-enabled' | translate"
+          />
         </div>
         <div class="bb-option">
           <div class="bb-option__text" bbOptionText>
@@ -38,22 +27,28 @@
             />
           </div>
         </div>
-        <div class="bb-option">
+        <div class="bb-option bb-option--stacked">
           <div class="bb-option__text" bbOptionText>
-            <span class="bb-option__label">
+            <span class="bb-option__label" id="max-ratio-act-label">
               {{ 'pages.qb-settings.tab.seeding-ratios.field.max-ratio-act' | translate }}
             </span>
           </div>
-          <div class="bb-option__control">
-            <ng-select
-              [items]="ratioActOptions"
-              [clearable]="false"
-              [searchable]="false"
-              bindLabel="label"
-              bindValue="value"
-              formControlName="max_ratio_act"
-            ></ng-select>
-          </div>
+          <app-bb-radio-group
+            appearance="cards"
+            formControlName="max_ratio_act"
+            aria-labelledby="max-ratio-act-label"
+          >
+            <app-bb-radio
+              [value]="0"
+              [label]="'pages.qb-settings.tab.seeding-ratios.ratio-act.pause' | translate"
+              [sub]="'pages.qb-settings.tab.seeding-ratios.ratio-act.pause-sub' | translate"
+            />
+            <app-bb-radio
+              [value]="1"
+              [label]="'pages.qb-settings.tab.seeding-ratios.ratio-act.remove' | translate"
+              [sub]="'pages.qb-settings.tab.seeding-ratios.ratio-act.remove-sub' | translate"
+            />
+          </app-bb-radio-group>
         </div>
       </div>
     </app-bb-section-card>
@@ -63,24 +58,13 @@
     >
       <div class="bb-options">
         <div class="bb-options mb-3">
-          <div class="bb-option">
-            <div class="bb-option__text" bbOptionText>
-              <label class="bb-option__label" for="max-seeding-time-enabled">
-                {{
-                  'pages.qb-settings.tab.seeding-ratios.field.max-seeding-time-enabled' | translate
-                }}
-              </label>
-            </div>
-            <span class="bb-option__toggle form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                role="switch"
-                id="max-seeding-time-enabled"
-                formControlName="max_seeding_time_enabled"
-              />
-            </span>
-          </div>
+          <app-bb-switch
+            inputId="max-seeding-time-enabled"
+            formControlName="max_seeding_time_enabled"
+            [label]="
+              'pages.qb-settings.tab.seeding-ratios.field.max-seeding-time-enabled' | translate
+            "
+          />
         </div>
         <div class="bb-option">
           <div class="bb-option__text" bbOptionText>

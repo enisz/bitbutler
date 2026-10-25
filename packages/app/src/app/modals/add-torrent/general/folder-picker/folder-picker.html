@@ -32,25 +32,12 @@
   </div>
 
   <div formGroupName="folderGroup" class="bb-options mb-3">
-    <div class="bb-option">
-      <div class="bb-option__text" bbOptionText>
-        <label class="bb-option__label" for="folder_recursive">
-          {{ 'components.add-torrent.add-form.recursive' | translate }}
-        </label>
-        <span class="bb-option__sub">{{
-          'components.add-torrent.popover.recursive.sub' | translate
-        }}</span>
-      </div>
-      <span class="bb-option__toggle form-switch">
-        <input
-          class="form-check-input"
-          type="checkbox"
-          role="switch"
-          id="folder_recursive"
-          formControlName="recursive"
-        />
-      </span>
-    </div>
+    <app-bb-switch
+      inputId="folder_recursive"
+      formControlName="recursive"
+      [label]="'components.add-torrent.add-form.recursive' | translate"
+      [sub]="'components.add-torrent.popover.recursive.sub' | translate"
+    />
   </div>
 
   <bb-callout

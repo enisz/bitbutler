@@ -13,37 +13,17 @@
       <label for="ratioLimit">{{ 'components.share-limit.ratio-limit' | translate }}</label>
     </div>
 
-    <div class="btn-group segmented-picker" role="group">
-      <input
-        type="radio"
-        class="btn-check"
-        name="ratioMode"
-        id="ratioModeGlobal"
-        [checked]="ratioMode() === 'global'"
-        (change)="setRatioMode('global')"
-      />
-      <label class="btn" for="ratioModeGlobal">{{ 'general.limit.global' | translate }}</label>
-
-      <input
-        type="radio"
-        class="btn-check"
-        name="ratioMode"
-        id="ratioModeNoLimit"
-        [checked]="ratioMode() === 'no-limit'"
-        (change)="setRatioMode('no-limit')"
-      />
-      <label class="btn" for="ratioModeNoLimit">{{ 'general.limit.no-limit' | translate }}</label>
-
-      <input
-        type="radio"
-        class="btn-check"
-        name="ratioMode"
-        id="ratioModeCustom"
-        [checked]="ratioMode() === 'custom'"
-        (change)="setRatioMode('custom')"
-      />
-      <label class="btn" for="ratioModeCustom">{{ 'general.limit.custom' | translate }}</label>
-    </div>
+    <app-bb-segmented
+      size="sm"
+      [options]="[
+        { value: 'global', label: 'general.limit.global' | translate },
+        { value: 'no-limit', label: 'general.limit.no-limit' | translate },
+        { value: 'custom', label: 'general.limit.custom' | translate },
+      ]"
+      [value]="ratioMode()"
+      [attr.aria-label]="'components.share-limit.ratio-limit' | translate"
+      (valueChange)="setRatioMode($any($event))"
+    />
 
     <bb-popover
       [subject]="'components.share-limit.popover.ratio-limit.title' | translate"
@@ -73,37 +53,17 @@
       </label>
     </div>
 
-    <div class="btn-group segmented-picker" role="group">
-      <input
-        type="radio"
-        class="btn-check"
-        name="seedingMode"
-        id="seedingModeGlobal"
-        [checked]="seedingMode() === 'global'"
-        (change)="setSeedingMode('global')"
-      />
-      <label class="btn" for="seedingModeGlobal">{{ 'general.limit.global' | translate }}</label>
-
-      <input
-        type="radio"
-        class="btn-check"
-        name="seedingMode"
-        id="seedingModeNoLimit"
-        [checked]="seedingMode() === 'no-limit'"
-        (change)="setSeedingMode('no-limit')"
-      />
-      <label class="btn" for="seedingModeNoLimit">{{ 'general.limit.no-limit' | translate }}</label>
-
-      <input
-        type="radio"
-        class="btn-check"
-        name="seedingMode"
-        id="seedingModeCustom"
-        [checked]="seedingMode() === 'custom'"
-        (change)="setSeedingMode('custom')"
-      />
-      <label class="btn" for="seedingModeCustom">{{ 'general.limit.custom' | translate }}</label>
-    </div>
+    <app-bb-segmented
+      size="sm"
+      [options]="[
+        { value: 'global', label: 'general.limit.global' | translate },
+        { value: 'no-limit', label: 'general.limit.no-limit' | translate },
+        { value: 'custom', label: 'general.limit.custom' | translate },
+      ]"
+      [value]="seedingMode()"
+      [attr.aria-label]="'components.share-limit.seeding-time-limit' | translate"
+      (valueChange)="setSeedingMode($any($event))"
+    />
 
     <bb-popover
       [subject]="'components.share-limit.popover.seeding-time-limit.title' | translate"
@@ -133,39 +93,17 @@
       </label>
     </div>
 
-    <div class="btn-group segmented-picker" role="group">
-      <input
-        type="radio"
-        class="btn-check"
-        name="inactiveMode"
-        id="inactiveModeGlobal"
-        [checked]="inactiveMode() === 'global'"
-        (change)="setInactiveMode('global')"
-      />
-      <label class="btn" for="inactiveModeGlobal">{{ 'general.limit.global' | translate }}</label>
-
-      <input
-        type="radio"
-        class="btn-check"
-        name="inactiveMode"
-        id="inactiveModeNoLimit"
-        [checked]="inactiveMode() === 'no-limit'"
-        (change)="setInactiveMode('no-limit')"
-      />
-      <label class="btn" for="inactiveModeNoLimit">{{
-        'general.limit.no-limit' | translate
-      }}</label>
-
-      <input
-        type="radio"
-        class="btn-check"
-        name="inactiveMode"
-        id="inactiveModeCustom"
-        [checked]="inactiveMode() === 'custom'"
-        (change)="setInactiveMode('custom')"
-      />
-      <label class="btn" for="inactiveModeCustom">{{ 'general.limit.custom' | translate }}</label>
-    </div>
+    <app-bb-segmented
+      size="sm"
+      [options]="[
+        { value: 'global', label: 'general.limit.global' | translate },
+        { value: 'no-limit', label: 'general.limit.no-limit' | translate },
+        { value: 'custom', label: 'general.limit.custom' | translate },
+      ]"
+      [value]="inactiveMode()"
+      [attr.aria-label]="'components.share-limit.inactive-seeding-time-limit' | translate"
+      (valueChange)="setInactiveMode($any($event))"
+    />
 
     <bb-popover
       [subject]="'components.share-limit.popover.inactive-seeding-time-limit.title' | translate"

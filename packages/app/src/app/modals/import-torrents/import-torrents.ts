@@ -66,8 +66,10 @@ import {
 import { SizeColumnFilter } from '../../components/column-filters/size-column-filter/size-column-filter';
 import { TextColumnFilter } from '../../components/column-filters/text-column-filter/text-column-filter';
 import { TimeLimitColumnFilter } from '../../components/column-filters/time-limit-column-filter/time-limit-column-filter';
+import { BbRadio } from '../../components/form-controls/bb-radio-group/bb-radio';
+import { BbRadioGroup } from '../../components/form-controls/bb-radio-group/bb-radio-group';
+import { BbSwitch } from '../../components/form-controls/bb-switch/bb-switch';
 import { AutofocusDirective } from '../../directives/autofocus';
-import { BbOptionText } from '../../directives/bb-option-text';
 import { BbTooltip } from '../../directives/bb-tooltip';
 import { GridRowNavigationDirective } from '../../directives/grid-row-navigation';
 import { NoRowOverlay } from '../../pages/main/grid/overlays/no-row-overlay/no-row-overlay';
@@ -85,7 +87,9 @@ type ImportGridRow = BbeTorrentEntry & { importState: ImportRowStatus };
   selector: 'app-import-torrents',
   standalone: true,
   imports: [
-    BbOptionText,
+    BbRadio,
+    BbRadioGroup,
+    BbSwitch,
     GridRowNavigationDirective,
     BbSectionCard,
     ReactiveFormsModule,
@@ -121,7 +125,6 @@ export class ImportTorrents implements OnInit {
   private readonly translateService = inject(TranslateService);
 
   importForm!: FormGroup;
-  private startModeValue!: ReturnType<typeof toSignal<ImportStartMode>>;
   private savePathEnabled!: ReturnType<typeof toSignal<boolean>>;
   private categoriesEnabled!: ReturnType<typeof toSignal<boolean>>;
 
@@ -165,16 +168,6 @@ export class ImportTorrents implements OnInit {
   readonly progressPct = computed(() => {
     const s = this.state();
     return s.total > 0 ? s.current / s.total : 0;
-  });
-
-  readonly startModeHint = computed(() => {
-    const mode = this.startModeValue?.() ?? 'active';
-    const hints: Record<ImportStartMode, string> = {
-      paused: 'components.modals.import-torrents.start-mode.hint.paused',
-      active: 'components.modals.import-torrents.start-mode.hint.active',
-      all: 'components.modals.import-torrents.start-mode.hint.all',
-    };
-    return hints[mode as ImportStartMode] ?? hints['active'];
   });
 
   readonly showPathRemap = computed(() => this.savePathEnabled?.() === true);
@@ -616,13 +609,6 @@ export class ImportTorrents implements OnInit {
       categoryPathMappings: new FormArray([this.createMappingRow()]),
       overwriteCategories: new FormControl<boolean>(false, { nonNullable: true }),
     });
-
-    const startModeControl = this.importForm.get('startMode')!;
-    this.startModeValue = runInInjectionContext(this.injector, () =>
-      toSignal(startModeControl.valueChanges, {
-        initialValue: startModeControl.value as ImportStartMode,
-      }),
-    );
 
     const savePathControl = this.importForm.get('restoreFields.save_path')!;
     this.savePathEnabled = runInInjectionContext(this.injector, () =>

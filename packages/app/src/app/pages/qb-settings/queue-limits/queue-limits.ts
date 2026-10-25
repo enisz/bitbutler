@@ -11,6 +11,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
+import { BbSwitch } from '../../../components/form-controls/bb-switch/bb-switch';
 import { BbOptionText } from '../../../directives/bb-option-text';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
@@ -19,7 +20,14 @@ import { QbSettingsTabComponent } from '../qb-settings.interface';
 
 @Component({
   selector: 'app-qb-settings-queue-limits',
-  imports: [BbOptionText, BbSectionCard, CommonModule, ReactiveFormsModule, TranslatePipe],
+  imports: [
+    BbSwitch,
+    BbOptionText,
+    BbSectionCard,
+    CommonModule,
+    ReactiveFormsModule,
+    TranslatePipe,
+  ],
   templateUrl: './queue-limits.html',
   styleUrl: './queue-limits.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

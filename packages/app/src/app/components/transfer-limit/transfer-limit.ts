@@ -18,6 +18,7 @@ import {
 import { TranslatePipe } from '@ngx-translate/core';
 import { SpeedLimitPipe } from '../../pipes/speed-limit-pipe';
 import { BbPopover } from '../bb-popover/bb-popover';
+import { BbSegmented } from '../form-controls/bb-segmented/bb-segmented';
 
 export type TransferLimitMode = 'custom' | 'no-limit';
 
@@ -28,7 +29,7 @@ export type TransferLimitValue = {
 
 @Component({
   selector: 'app-transfer-limit',
-  imports: [ReactiveFormsModule, TranslatePipe, BbPopover, SpeedLimitPipe],
+  imports: [BbSegmented, ReactiveFormsModule, TranslatePipe, BbPopover, SpeedLimitPipe],
   templateUrl: './transfer-limit.html',
   styleUrl: './transfer-limit.scss',
   providers: [

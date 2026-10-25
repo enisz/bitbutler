@@ -6,13 +6,13 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
-import { BbOptionText } from '../../../directives/bb-option-text';
+import { BbSwitch } from '../../../components/form-controls/bb-switch/bb-switch';
 import { AddTorrentFormGroup } from '../../../models/add-torrent.model';
 
 @Component({
   selector: 'app-add-torrent-options',
   imports: [
-    BbOptionText,
+    BbSwitch,
     BbSectionCard,
     ReactiveFormsModule,
     FontAwesomeModule,

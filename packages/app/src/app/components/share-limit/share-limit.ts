@@ -19,6 +19,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { RatioLimitPipe } from '../../pipes/ratio-limit-pipe';
 import { TimeLimitPipe } from '../../pipes/time-limit-pipe';
 import { BbPopover } from '../bb-popover/bb-popover';
+import { BbSegmented } from '../form-controls/bb-segmented/bb-segmented';
 
 export type LimitMode = 'custom' | 'global' | 'no-limit';
 
@@ -30,7 +31,14 @@ export type ShareLimitValue = {
 
 @Component({
   selector: 'app-share-limit',
-  imports: [ReactiveFormsModule, TranslatePipe, BbPopover, TimeLimitPipe, RatioLimitPipe],
+  imports: [
+    BbSegmented,
+    ReactiveFormsModule,
+    TranslatePipe,
+    BbPopover,
+    TimeLimitPipe,
+    RatioLimitPipe,
+  ],
   templateUrl: './share-limit.html',
   styleUrl: './share-limit.scss',
   providers: [

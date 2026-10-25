@@ -38,6 +38,7 @@ import { BbTooltip } from '../../directives/bb-tooltip';
 import { FilesizePipe } from '../../pipes/filesize-pipe';
 import { ConfirmService } from '../../services/confirm.service';
 import { BbProgress } from '../bb-progress/bb-progress';
+import { BbCheckbox } from '../form-controls/bb-checkbox/bb-checkbox';
 import { getFileIcon } from './file-icon';
 
 export type BbFileTreeNode = {
@@ -59,6 +60,7 @@ export type FileTreeStats = { totalSize: number; selectedSize: number };
   selector: 'app-bb-file-tree',
   standalone: true,
   imports: [
+    BbCheckbox,
     ScrollingModule,
     FormsModule,
     ReactiveFormsModule,
@@ -381,8 +383,7 @@ export class BbFileTree {
     return count;
   }
 
-  toggleFolderSelection(node: BbFileTreeNode, event: Event): void {
-    const checked = (event.target as HTMLInputElement).checked;
+  toggleFolderSelection(node: BbFileTreeNode, checked: boolean): void {
     if (checked) {
       const restored = this.folderPriorityMemory.get(node.fullPath) ?? 1;
       this.updateRecursive(node, (f) => (f.priority = restored));
@@ -407,8 +408,7 @@ export class BbFileTree {
     node.children?.forEach((child) => this.updateRecursive(child, action));
   }
 
-  toggleFileSelection(f: TorrentFileEntry, event: Event): void {
-    const checked = (event.target as HTMLInputElement).checked;
+  toggleFileSelection(f: TorrentFileEntry, checked: boolean): void {
     f.priority = checked ? 1 : 0;
     this.sessionDirty = true;
     this.calculateStats();

@@ -6,39 +6,21 @@
   min-width: 360px;
 }
 
+// Room around the checkboxes for their focus ring inside the scroll area.
 .bb-set-filter-list {
   max-height: 240px;
   overflow-y: auto;
+  padding: 4px;
 }
 
-.list-group-item-action {
-  border-color: var(--bs-border-color);
-  cursor: pointer;
+.bb-status-badge {
+  --bs-badge-font-weight: 600;
+  padding: 0.35rem 0.5rem;
+  background-color: var(--bs-tertiary-bg);
+  color: var(--bs-emphasis-color);
 
-  &.active {
-    background-color: var(--bb-active-list-item-bg);
-    color: var(--bs-body-color);
-    border-color: var(--bb-active-list-item-bg) !important;
-
-    .bb-status-badge.bb-status-badge--neutral {
-      background-color: var(--bb-accent);
-      color: var(--bb-primary-ink);
-    }
+  &.bb-status-badge--selected {
+    background-color: var(--bb-accent);
+    color: var(--bb-primary-ink);
   }
-
-  &:not(.active) {
-    .bb-status-badge.bb-status-badge--neutral {
-      background-color: var(--bs-tertiary-bg);
-      color: var(--bs-emphasis-color);
-    }
-  }
-
-  .bb-status-badge {
-    --bs-badge-font-weight: 600;
-    padding: 0.35rem 0.5rem;
-  }
-}
-
-.list-group {
-  --bs-list-group-action-hover-bg: var(--bb-hover-list-item-bg);
 }

@@ -8,6 +8,8 @@ import { IFilterAngularComp } from 'ag-grid-angular';
 import { IAfterGuiAttachedParams, IDoesFilterPassParams, IFilterParams } from 'ag-grid-community';
 import { debounceTime, startWith } from 'rxjs/operators';
 import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
+import { BbCheckTree } from '../../form-controls/bb-check-tree/bb-check-tree';
+import { BbCheckTreeItemTemplate } from '../../form-controls/bb-check-tree/bb-check-tree';
 import { createFilterInstanceId } from '../filter-instance-id.utils';
 
 const FILTER_DEBOUNCE_MS = 150;
@@ -44,7 +46,15 @@ export function buildValueCounts<T>(
 @Component({
   selector: 'app-set-column-filter',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, FontAwesomeModule, TranslateModule, BbBtnContent],
+  imports: [
+    BbCheckTreeItemTemplate,
+    BbCheckTree,
+    FormsModule,
+    ReactiveFormsModule,
+    FontAwesomeModule,
+    TranslateModule,
+    BbBtnContent,
+  ],
   templateUrl: './set-column-filter.html',
   styleUrl: './set-column-filter.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -102,6 +112,14 @@ export class SetColumnFilter implements IFilterAngularComp {
   afterGuiAttached(_params?: IAfterGuiAttachedParams): void {
     this.draftValues = new Set(this.appliedValues);
     this.filterCtrl.reset('');
+  }
+
+  draftKeys(): string[] {
+    return [...this.draftValues];
+  }
+
+  setDraft(keys: readonly string[]): void {
+    this.draftValues = new Set(keys);
   }
 
   toggle(key: string): void {

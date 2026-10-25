@@ -4,14 +4,14 @@ import { faPlug, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
+import { BbSwitch } from '../../components/form-controls/bb-switch/bb-switch';
 import { AutofocusDirective } from '../../directives/autofocus';
-import { BbOptionText } from '../../directives/bb-option-text';
 import { BbTooltip } from '../../directives/bb-tooltip';
 
 @Component({
   selector: 'app-credential-prompt',
   imports: [
-    BbOptionText,
+    BbSwitch,
     ReactiveFormsModule,
     TranslatePipe,
     AutofocusDirective,

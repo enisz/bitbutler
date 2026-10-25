@@ -26,28 +26,24 @@
     }
   </div>
 
-  <div class="bb-set-filter-list list-group list-group-flush mb-2">
-    @for (item of filteredItems(); track item.key; let i = $index) {
-      <label
-        class="list-group-item list-group-item-action d-flex align-items-center gap-2"
-        [class.active]="draftValues.has(item.key)"
-        [for]="instanceId + '-' + i"
-      >
-        <input
-          class="form-check-input mt-0 flex-shrink-0"
-          type="checkbox"
-          [id]="instanceId + '-' + i"
-          [checked]="draftValues.has(item.key)"
-          (change)="toggle(item.key)"
-        />
-        <span class="text-truncate flex-grow-1">{{ item.label }}</span>
-        <span class="badge bb-status-badge bb-status-badge--neutral">{{ item.count }}</span>
-      </label>
-    } @empty {
-      <div class="text-body-secondary small px-1 py-2">
+  <div class="bb-set-filter-list mb-2">
+    <app-bb-check-tree
+      [items]="filteredItems()"
+      [allLabel]="'components.column-filters.set.select-all' | translate"
+      [value]="draftKeys()"
+      (valueChange)="setDraft($event)"
+    >
+      <ng-template bbCheckTreeItem let-item>
+        <span
+          class="badge bb-status-badge"
+          [class.bb-status-badge--selected]="draftValues.has(item.key)"
+          >{{ item.count }}</span
+        >
+      </ng-template>
+      <div bbCheckTreeEmpty class="text-body-secondary small py-1">
         {{ 'components.column-filters.set.no-matches' | translate }}
       </div>
-    }
+    </app-bb-check-tree>
   </div>
 
   <div class="d-flex gap-2">

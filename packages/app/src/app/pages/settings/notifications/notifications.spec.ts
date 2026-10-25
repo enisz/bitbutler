@@ -34,12 +34,12 @@ describe('Notifications', () => {
     expect(root.querySelector('#notifications-app-enabled')).not.toBeNull();
   });
 
-  it('offers the four toast positions', () => {
+  it('offers the four toast positions in screen-corner order for the 2x2 card grid', () => {
     expect(fixture.componentInstance.toastPositions().map((position) => position.value)).toEqual([
       'top-left',
       'top-right',
-      'bottom-right',
       'bottom-left',
+      'bottom-right',
     ]);
   });
 });

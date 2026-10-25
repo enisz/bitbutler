@@ -86,10 +86,6 @@ describe('ImportTorrents', () => {
     expect(Object.values(fields).every(Boolean)).toBe(true);
   });
 
-  it('should compute startModeHint for active', () => {
-    expect(component.startModeHint()).toContain('active');
-  });
-
   it('should expose tagsCount and categoriesCount from metadata', () => {
     mockExportService.importState.set({
       phase: 'ready',

@@ -2,46 +2,17 @@
   <app-bb-section-card class="mb-4" [title]="'components.add-torrent.label.input' | translate">
     <div class="row mt-3">
       <div class="col-11 mb-3">
-        <div class="btn-group w-100" role="group">
-          <input
-            type="radio"
-            class="btn-check"
-            name="inputMode"
-            id="inputMode_file"
-            autocomplete="off"
-            [checked]="inputMode() === 'file'"
-            (change)="inputModeChange.emit('file')"
-          />
-          <label class="btn btn-outline-secondary" for="inputMode_file">
-            {{ 'components.add-torrent.input-mode.file' | translate }}
-          </label>
-
-          <input
-            type="radio"
-            class="btn-check"
-            name="inputMode"
-            id="inputMode_link"
-            autocomplete="off"
-            [checked]="inputMode() === 'link'"
-            (change)="inputModeChange.emit('link')"
-          />
-          <label class="btn btn-outline-secondary" for="inputMode_link">
-            {{ 'components.add-torrent.input-mode.link' | translate }}
-          </label>
-
-          <input
-            type="radio"
-            class="btn-check"
-            name="inputMode"
-            id="inputMode_folder"
-            autocomplete="off"
-            [checked]="inputMode() === 'folder'"
-            (change)="inputModeChange.emit('folder')"
-          />
-          <label class="btn btn-outline-secondary" for="inputMode_folder">
-            {{ 'components.add-torrent.input-mode.folder' | translate }}
-          </label>
-        </div>
+        <app-bb-segmented
+          class="w-100"
+          [attr.aria-label]="'components.add-torrent.label.input' | translate"
+          [options]="[
+            { value: 'file', label: 'components.add-torrent.input-mode.file' | translate },
+            { value: 'link', label: 'components.add-torrent.input-mode.link' | translate },
+            { value: 'folder', label: 'components.add-torrent.input-mode.folder' | translate },
+          ]"
+          [value]="inputMode()"
+          (valueChange)="inputModeChange.emit($any($event))"
+        />
       </div>
 
       <div class="col-1 d-flex align-items-center mb-3">
