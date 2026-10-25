@@ -12,26 +12,13 @@
   } @else if (metadata(); as meta) {
     @if (meta.hasSettings && !serversOnly()) {
       <div class="bb-options mb-3">
-        <div class="bb-option">
-          <div class="bb-option__text" bbOptionText>
-            <label class="bb-option__label" for="import-app-settings">
-              {{ 'components.modals.import-configuration.app-settings' | translate }}
-            </label>
-            <span class="bb-option__sub">{{
-              'components.modals.import-configuration.app-settings-sub' | translate
-            }}</span>
-          </div>
-          <span class="bb-option__toggle form-switch">
-            <input
-              class="form-check-input"
-              type="checkbox"
-              role="switch"
-              id="import-app-settings"
-              [checked]="applySettings()"
-              (change)="setApplySettings($any($event.target).checked)"
-            />
-          </span>
-        </div>
+        <app-bb-switch
+          inputId="import-app-settings"
+          [checked]="applySettings()"
+          (checkedChange)="setApplySettings($event)"
+          [label]="'components.modals.import-configuration.app-settings' | translate"
+          [sub]="'components.modals.import-configuration.app-settings-sub' | translate"
+        />
       </div>
     }
 
@@ -39,30 +26,12 @@
       <h6 class="text-body-secondary small text-uppercase">
         {{ 'components.modals.import-configuration.servers' | translate }}
       </h6>
-      <div class="bb-options">
-        @for (server of meta.servers; track server.id) {
-          <div class="bb-option">
-            <div class="bb-option__text" bbOptionText>
-              <label class="bb-option__label" [for]="'import-server-' + server.id">
-                {{ server.name }}
-              </label>
-              <span class="bb-option__sub">
-                {{ serverDetail(server) }}
-              </span>
-            </div>
-            <span class="bb-option__toggle form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                role="switch"
-                [id]="'import-server-' + server.id"
-                [checked]="selectedServerIds().has(server.id)"
-                (change)="toggleServer(server.id)"
-              />
-            </span>
-          </div>
-        }
-      </div>
+      <app-bb-check-tree
+        [items]="serverItems()"
+        [allLabel]="'components.modals.import-configuration.all-servers' | translate"
+        [value]="selectedServerIdList()"
+        (valueChange)="setSelectedServers($event)"
+      />
     }
   }
 </div>

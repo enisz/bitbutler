@@ -61,9 +61,14 @@
         "root-folder": {
           "title": "Root Folder",
           "option": {
-            "default": "Default (unset)",
-            "create-root-folder": "Create root folder",
-            "do-not-create-root-folder": "Do not create root folder"
+            "default": "Default",
+            "create-root-folder": "Create folder",
+            "do-not-create-root-folder": "No folder"
+          },
+          "sub": {
+            "default": "Server setting",
+            "create-root-folder": "Uses torrent name",
+            "do-not-create-root-folder": "Files go straight in"
           }
         },
         "auto-tmm": "Use Auto TMM",
@@ -85,9 +90,9 @@
           "title": "Root Folder",
           "description": {
             "line1": "Controls whether the torrent's files are nested inside a main folder or placed directly in the download path.",
-            "line2": "<strong>Default (unset):</strong> Uses the global setting defined in your qBittorrent options.",
-            "line3": "<strong>Create root folder:</strong> Forces the creation of a containing folder (based on the torrent's name) inside your download directory.",
-            "line4": "<strong>Do not create root folder:</strong> Places the contents directly into the download directory. This is useful for single-file torrents to avoid unnecessary subfolders."
+            "line2": "<strong>Default:</strong> Uses the global setting defined in your qBittorrent options.",
+            "line3": "<strong>Create folder:</strong> Forces the creation of a containing folder (based on the torrent's name) inside your download directory.",
+            "line4": "<strong>No folder:</strong> Places the contents directly into the download directory. This is useful for single-file torrents to avoid unnecessary subfolders."
           }
         },
         "skip-hash-checking": {
@@ -218,7 +223,12 @@
       "input-mode": {
         "file": "File",
         "link": "Link",
-        "folder": "Folder"
+        "folder": "Folder",
+        "sub": {
+          "file": "From this computer",
+          "link": "Magnet link or URL",
+          "folder": "Every file in a folder"
+        }
       },
       "feedback": {
         "no-server-selected": "No server is selected. Choose a server before adding this torrent.",
@@ -905,26 +915,26 @@
           "all": "All",
           "filtered": "Filtered",
           "selected": "Selected",
-          "hint": {
-            "all": "All torrents on the source server will be included in the export.",
-            "filtered": "Only torrents matching the current grid filters will be included in the export.",
-            "selected": "Only the torrents currently selected in the grid will be included in the export."
+          "sub": {
+            "all": "Every torrent on the server",
+            "filtered": "Torrents matching the grid filters",
+            "selected": "Torrents selected in the grid"
           }
         },
         "category-scope": {
           "all": "All",
           "assigned": "Assigned",
-          "hint": {
-            "all": "All categories defined on the source server will be included in the export.",
-            "assigned": "Only categories assigned to at least one of the exported torrents will be included."
+          "sub": {
+            "all": "Every category on the server",
+            "assigned": "Only those the exported torrents use"
           }
         },
         "tag-scope": {
           "all": "All",
           "assigned": "Assigned",
-          "hint": {
-            "all": "All tags defined on the source server will be included in the export.",
-            "assigned": "Only tags assigned to at least one of the exported torrents will be included."
+          "sub": {
+            "all": "Every tag on the server",
+            "assigned": "Only those the exported torrents use"
           }
         },
         "progress": {
@@ -972,7 +982,8 @@
         },
         "toast": {
           "import-failed-title": "Failed to Import Configuration"
-        }
+        },
+        "all-servers": "All servers"
       },
       "import-torrents": {
         "title": "Import Torrents",
@@ -1099,10 +1110,10 @@
           "paused": "Keep paused",
           "active": "Start active ones",
           "all": "Start all",
-          "hint": {
-            "paused": "All torrents will remain paused - start them manually when ready.",
-            "active": "Torrents that were active when exported will resume automatically.",
-            "all": "All imported torrents will start immediately regardless of their previous state."
+          "sub": {
+            "paused": "Start them manually when ready",
+            "active": "Resume the ones active at export",
+            "all": "Start every torrent right away"
           }
         },
         "report": {
@@ -1146,23 +1157,14 @@
       }
     },
     "transfer-limit": {
-      "upload-limit": "Upload Limit (KiB/s)",
-      "download-limit": "Download Limit (KiB/s)",
-      "popover": {
-        "upload-limit": {
-          "title": "Upload Limit",
-          "description": "Maximum upload speed in KiB/s."
-        },
-        "download-limit": {
-          "title": "Download Limit",
-          "description": "Maximum download speed in KiB/s."
-        }
-      }
+      "upload-limit": "Upload Limit",
+      "download-limit": "Download Limit",
+      "unit": "KiB/s"
     },
     "share-limit": {
       "ratio-limit": "Ratio Limit",
-      "seeding-time-limit": "Seeding Time Limit (min)",
-      "inactive-seeding-time-limit": "Inactive Seeding Time Limit (min)",
+      "seeding-time-limit": "Seeding Time Limit",
+      "inactive-seeding-time-limit": "Inactive Seeding Time Limit",
       "popover": {
         "ratio-limit": {
           "title": "Ratio Limit",
@@ -1176,7 +1178,8 @@
           "title": "Inactive Seeding Time Limit",
           "description": "Stop seeding after the torrent has been inactive for this many minutes."
         }
-      }
+      },
+      "unit-minutes": "min"
     },
     "tag-select": {
       "label": "Tags",
@@ -1225,7 +1228,8 @@
       },
       "set": {
         "filter-placeholder": "Filter...",
-        "no-matches": "No matching values"
+        "no-matches": "No matching values",
+        "select-all": "Select all"
       },
       "boolean": {
         "true": "True",
@@ -1633,8 +1637,12 @@
             },
             "save-path": {
               "description": "Choose how save path fields behave when adding or moving torrents.",
-              "select": "ng-select",
-              "typeahead": "ngb-typeahead"
+              "select": "Dropdown",
+              "typeahead": "Typeahead",
+              "label": "Save path field",
+              "select-sub": "Pick a known path, or add a new one",
+              "typeahead-sub": "Type freely, with suggestions from known paths",
+              "preview": "Preview"
             }
           },
           "label": {
@@ -1807,6 +1815,12 @@
                 "details": "Open Torrent Details",
                 "nothing": "Do nothing",
                 "inline-edit": "Inline Edit"
+              },
+              "sub": {
+                "show": "Reveal the torrent's files on this computer",
+                "details": "Open the details window of the torrent",
+                "inline-edit": "Edit the double-clicked cell in place",
+                "nothing": "Double-clicking a row has no effect"
               }
             },
             "column-actions": {
@@ -1931,9 +1945,13 @@
             "sunday": "Sunday"
           },
           "hint": {
-            "global-rate-limits": "Sets the maximum combined download and upload speed across all torrents. Enter 0 for unlimited.",
-            "alt-rate-limits": "Throttled speed limits used when Turtle Mode is manually enabled or activated by the scheduler.",
+            "global-rate-limits": "Sets the maximum combined download and upload speed across all torrents.",
+            "alt-rate-limits": "Speeds used while Turtle Mode is on. Switch it on or off with the turtle button in the status bar, or let the scheduler below do it.",
             "scheduler": "Automatically switches to alternative rate limits during a configured time window on selected days."
+          },
+          "alt-limit-sub": {
+            "no-limit": "Turtle Mode won't slow anything",
+            "custom": "Slow to this speed while on"
           }
         },
         "storage": {
@@ -1959,11 +1977,16 @@
           "content-layout": {
             "original": "Original",
             "subfolder": "Create subfolder",
-            "no-subfolder": "Don't create subfolder"
+            "no-subfolder": "Don't create subfolder",
+            "original-sub": "Keep the layout of the torrent as it is",
+            "subfolder-sub": "Always put the files in their own folder",
+            "no-subfolder-sub": "Save the files without the torrent's top folder"
           },
           "tmm-mode": {
             "automatic": "Automatic",
-            "manual": "Manual"
+            "manual": "Manual",
+            "manual-sub": "Each torrent keeps the save path it was added with",
+            "automatic-sub": "The category decides where a torrent is saved"
           },
           "tmm-behavior": {
             "relocate": "Relocate torrents",
@@ -1989,19 +2012,23 @@
           "title": "Seeding Ratios",
           "description": "Set automatic limits to stop seeding based on share ratio targets or time thresholds.",
           "label": {
-            "share-ratio": "Share Ratio Limits",
-            "seeding-time": "Seeding Time Limits"
+            "stop-seeding": "Stop Seeding"
           },
           "field": {
-            "max-ratio-enabled": "Enable Share Ratio Limit",
-            "max-ratio": "Stop seeding when ratio reaches",
-            "max-ratio-act": "Action when limit is reached",
-            "max-seeding-time-enabled": "Enable Seeding Time Limit",
-            "max-seeding-time": "Stop seeding after (minutes)"
+            "max-ratio": "Share ratio",
+            "max-ratio-act": "When a limit is reached",
+            "max-seeding-time": "Seeding time"
           },
           "ratio-act": {
             "pause": "Pause torrent",
-            "remove": "Remove torrent"
+            "remove": "Remove torrent",
+            "pause-sub": "Stop seeding, keep the torrent in the list",
+            "remove-sub": "Remove the torrent from the list, keep its files"
+          },
+          "limit-sub": {
+            "no-limit": "Keep seeding",
+            "ratio-custom": "Stop at this ratio",
+            "time-custom": "Stop after this long"
           }
         }
       },
@@ -2249,7 +2276,12 @@
     "limit": {
       "global": "Global Limit",
       "no-limit": "No Limit",
-      "custom": "Custom"
+      "custom": "Custom",
+      "sub": {
+        "global": "Same as the server setting",
+        "no-limit": "Never limited",
+        "custom": "Set your own value below"
+      }
     },
     "toast": {
       "success": "Success",

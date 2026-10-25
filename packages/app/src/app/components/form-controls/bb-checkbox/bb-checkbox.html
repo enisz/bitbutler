@@ -1,0 +1,43 @@
+<span class="bb-ctl">
+  <input
+    type="checkbox"
+    class="bb-ctl-input"
+    [id]="id()"
+    [checked]="checked()"
+    [indeterminate]="mixed()"
+    [disabled]="isDisabled()"
+    [attr.aria-invalid]="showError() || null"
+    (change)="onInputChange($event)"
+    (blur)="onBlur()"
+  />
+  <span
+    class="bb-ctl-box"
+    [class.bb-ctl-box--error]="showError()"
+    [class.bb-ctl-box--danger]="tone() === 'danger'"
+  ></span>
+</span>
+<span class="bb-checkbox__text">
+  <span class="bb-checkbox__line">
+    <label
+      class="bb-ctl-label"
+      [for]="id()"
+      [bbTooltip]="label()"
+      singleLine
+      overflowOnly
+      placement="top"
+      >{{ label() }}<ng-content></ng-content
+    ></label>
+    <ng-content select="[bbLabelExtra]"></ng-content>
+  </span>
+  @if (sub()) {
+    <label
+      class="bb-ctl-sub"
+      [for]="id()"
+      [bbTooltip]="sub()"
+      singleLine
+      overflowOnly
+      placement="bottom"
+      >{{ sub() }}</label
+    >
+  }
+</span>

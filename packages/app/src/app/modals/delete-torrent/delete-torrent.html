@@ -8,23 +8,13 @@
 <div class="modal-body">
   <p>{{ 'components.modals.delete-torrent.message' | translate: { count: selected().length } }}</p>
   <form [formGroup]="deleteForm">
-    <div
-      class="form-check"
-      [ngClass]="{
-        'bb-check-danger': $safeNavigationMigration(deleteForm.get('removeFiles')?.value),
-        'text-danger': $safeNavigationMigration(deleteForm.get('removeFiles')?.value),
-      }"
-    >
-      <input
-        class="form-check-input"
-        type="checkbox"
-        id="remove-files"
-        formControlName="removeFiles"
-      />
-      <label class="form-check-label" for="remove-files">
-        {{ 'components.modals.delete-torrent.delete-form.confirmation' | translate }}</label
-      >
-    </div>
+    <app-bb-checkbox
+      inputId="remove-files"
+      formControlName="removeFiles"
+      tone="danger"
+      [class.text-danger]="deleteForm.get('removeFiles')?.value"
+      [label]="'components.modals.delete-torrent.delete-form.confirmation' | translate"
+    />
     @if (deleteForm.get('removeFiles')?.value) {
       <bb-callout
         class="mt-2 d-block"

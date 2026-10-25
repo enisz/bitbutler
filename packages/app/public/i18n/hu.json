@@ -62,8 +62,13 @@
           "title": "Gyökérmappa",
           "option": {
             "default": "Alapértelmezett",
-            "create-root-folder": "Gyökérmappa létrehozása",
-            "do-not-create-root-folder": "Ne hozzon létre gyökérmappát"
+            "create-root-folder": "Mappa létrehozása",
+            "do-not-create-root-folder": "Nincs mappa"
+          },
+          "sub": {
+            "default": "A szerver beállítása",
+            "create-root-folder": "A torrent nevével",
+            "do-not-create-root-folder": "Közvetlenül a célba"
           }
         },
         "auto-tmm": "Automatikus Torrentkezelés (TMM) használata",
@@ -86,8 +91,8 @@
           "description": {
             "line1": "Meghatározza, hogy a torrent fájljai egy gyűjtőmappába kerüljenek, vagy közvetlenül a letöltési mentési útvonalra.",
             "line2": "<strong>Alapértelmezett:</strong> A qBittorrent globális beállításaiban megadott értéket használja.",
-            "line3": "<strong>Gyökérmappa létrehozása:</strong> Mindenképpen létrehoz egy (a torrent neve alapján elnevezett) mappát a letöltési könyvtáron belül.",
-            "line4": "<strong>Ne hozzon létre gyökérmappát:</strong> A fájlokat közvetlenül a letöltési könyvtárba helyezi. Hasznos egyetlen fájlból álló torrentek esetén a felesleges almappák elkerüléséhez."
+            "line3": "<strong>Mappa létrehozása:</strong> Mindenképpen létrehoz egy (a torrent neve alapján elnevezett) mappát a letöltési könyvtáron belül.",
+            "line4": "<strong>Nincs mappa:</strong> A fájlokat közvetlenül a letöltési könyvtárba helyezi. Hasznos egyetlen fájlból álló torrentek esetén a felesleges almappák elkerüléséhez."
           }
         },
         "skip-hash-checking": {
@@ -218,7 +223,12 @@
       "input-mode": {
         "file": "Fájl",
         "link": "Link",
-        "folder": "Mappa"
+        "folder": "Mappa",
+        "sub": {
+          "file": "Erről a gépről",
+          "link": "Magnet link vagy URL",
+          "folder": "Egy mappa összes fájlja"
+        }
       },
       "feedback": {
         "no-server-selected": "Nincs kiválasztva szerver. Válassz szervert a torrent hozzáadása előtt.",
@@ -905,26 +915,26 @@
           "all": "Összes",
           "filtered": "Szűrt",
           "selected": "Kijelölt",
-          "hint": {
-            "all": "A forrás szerveren található összes torrent bekerül az exportba.",
-            "filtered": "Csak az aktuális szűrőknek megfelelő torrentek kerülnek bele.",
-            "selected": "Csak a táblázatban jelenleg kijelölt torrentek kerülnek bele."
+          "sub": {
+            "all": "A szerver összes torrentje",
+            "filtered": "A szűrőknek megfelelő torrentek",
+            "selected": "A listában kijelölt torrentek"
           }
         },
         "category-scope": {
           "all": "Összes",
           "assigned": "Hozzárendelt",
-          "hint": {
-            "all": "A forrás szerveren definiált összes kategória bekerül az exportba.",
-            "assigned": "Csak azok a kategóriák kerülnek bele, amelyek legalább egy exportált torrenthez hozzá vannak rendelve."
+          "sub": {
+            "all": "A szerver összes kategóriája",
+            "assigned": "Csak az exportált torrentek kategóriái"
           }
         },
         "tag-scope": {
           "all": "Összes",
           "assigned": "Hozzárendelt",
-          "hint": {
-            "all": "A forrás szerveren definiált összes címke bekerül az exportba.",
-            "assigned": "Csak azok a címkék kerülnek bele, amelyek legalább egy exportált torrenthez hozzá vannak rendelve."
+          "sub": {
+            "all": "A szerver összes címkéje",
+            "assigned": "Csak az exportált torrentek címkéi"
           }
         },
         "progress": {
@@ -972,7 +982,8 @@
         },
         "toast": {
           "import-failed-title": "A konfiguráció importálása sikertelen"
-        }
+        },
+        "all-servers": "Összes szerver"
       },
       "import-torrents": {
         "title": "Torrentek importálása",
@@ -1099,10 +1110,10 @@
           "paused": "Szüneteltetve marad",
           "active": "Aktívak elindítása",
           "all": "Összes elindítása",
-          "hint": {
-            "paused": "Minden torrent szüneteltetett állapotban marad - indítsd el őket kézzel, amikor készen állsz.",
-            "active": "Az exportáláskor aktív torrentek automatikusan folytatódnak.",
-            "all": "Minden importált torrent azonnal elindul, az előző állapotától függetlenül."
+          "sub": {
+            "paused": "Később, kézzel indíthatók",
+            "active": "Az exportáláskor aktívak folytatódnak",
+            "all": "Minden torrent azonnal elindul"
           }
         },
         "report": {
@@ -1146,23 +1157,14 @@
       }
     },
     "transfer-limit": {
-      "upload-limit": "Feltöltési korlát (KiB/s)",
-      "download-limit": "Letöltési korlát (KiB/s)",
-      "popover": {
-        "upload-limit": {
-          "title": "Feltöltési korlát",
-          "description": "Maximális feltöltési sebesség KiB/s-ban."
-        },
-        "download-limit": {
-          "title": "Letöltési korlát",
-          "description": "Maximális letöltési sebesség KiB/s-ban."
-        }
-      }
+      "upload-limit": "Feltöltési korlát",
+      "download-limit": "Letöltési korlát",
+      "unit": "KiB/s"
     },
     "share-limit": {
       "ratio-limit": "Arány korlát",
-      "seeding-time-limit": "Seedelési időkorlát (perc)",
-      "inactive-seeding-time-limit": "Inaktív seedelési időkorlát (perc)",
+      "seeding-time-limit": "Seedelési időkorlát",
+      "inactive-seeding-time-limit": "Inaktív seedelési időkorlát",
       "popover": {
         "ratio-limit": {
           "title": "Arány korlát",
@@ -1176,7 +1178,8 @@
           "title": "Inaktív seedelési időkorlát",
           "description": "Seedelés leállítása, ha a torrent ennyi percig inaktív volt."
         }
-      }
+      },
+      "unit-minutes": "perc"
     },
     "tag-select": {
       "label": "Címkék",
@@ -1225,7 +1228,8 @@
       },
       "set": {
         "filter-placeholder": "Szűrés...",
-        "no-matches": "Nincs egyező érték"
+        "no-matches": "Nincs egyező érték",
+        "select-all": "Összes kijelölése"
       },
       "boolean": {
         "true": "Igaz",
@@ -1633,8 +1637,12 @@
             },
             "save-path": {
               "description": "Válaszd ki, hogyan viselkedjenek a mentési útvonal mezők torrentek hozzáadásakor vagy áthelyezésekor.",
-              "select": "ng-select",
-              "typeahead": "ngb-typeahead"
+              "select": "Legördülő lista",
+              "typeahead": "Automatikus kiegészítés",
+              "label": "Mentési útvonal mező",
+              "select-sub": "Válassz egy ismert útvonalat, vagy adj meg újat",
+              "typeahead-sub": "Szabad szöveg, javaslatokkal az ismert útvonalakból",
+              "preview": "Előnézet"
             }
           },
           "label": {
@@ -1807,6 +1815,12 @@
                 "details": "Torrent részleteinek megnyitása",
                 "nothing": "Nincs művelet",
                 "inline-edit": "Helyszíni szerkesztés"
+              },
+              "sub": {
+                "show": "Megmutatja a torrent fájljait ezen a gépen",
+                "details": "Megnyitja a torrent részleteit",
+                "inline-edit": "A cella szerkesztése közvetlenül a táblázatban",
+                "nothing": "A dupla kattintásnak nincs hatása"
               }
             },
             "column-actions": {
@@ -1931,9 +1945,13 @@
             "sunday": "Vasárnap"
           },
           "hint": {
-            "global-rate-limits": "Beállítja az összes torrent kombinált maximális le- és feltöltési sebességét. 0 értéke korlátlan.",
-            "alt-rate-limits": "Csökkentett sebességkorlátok, amelyek manuálisan (Teknős Mód) vagy az ütemező által aktiválhatók.",
+            "global-rate-limits": "Beállítja az összes torrent kombinált maximális le- és feltöltési sebességét.",
+            "alt-rate-limits": "A Teknős Mód bekapcsolt állapotában érvényes sebességek. Az állapotsor teknős gombjával kapcsolható, vagy az alábbi ütemező kapcsolja automatikusan.",
             "scheduler": "Automatikusan az alternatív sebességkorlátokra vált egy beállított időablakban, a kiválasztott napokon."
+          },
+          "alt-limit-sub": {
+            "no-limit": "A Teknős Mód nem lassít",
+            "custom": "Bekapcsolva erre lassít"
           }
         },
         "storage": {
@@ -1959,11 +1977,16 @@
           "content-layout": {
             "original": "Eredeti",
             "subfolder": "Almappa létrehozása",
-            "no-subfolder": "Ne hozzon létre almappát"
+            "no-subfolder": "Ne hozzon létre almappát",
+            "original-sub": "A torrent szerkezete változatlan marad",
+            "subfolder-sub": "A fájlok mindig saját mappába kerülnek",
+            "no-subfolder-sub": "A fájlok a torrent fő mappája nélkül kerülnek mentésre"
           },
           "tmm-mode": {
             "automatic": "Automatikus",
-            "manual": "Kézi"
+            "manual": "Kézi",
+            "manual-sub": "Minden torrent a hozzáadáskor megadott útvonalon marad",
+            "automatic-sub": "A kategória határozza meg, hová kerül a torrent"
           },
           "tmm-behavior": {
             "relocate": "Torrentek áthelyezése",
@@ -1989,19 +2012,23 @@
           "title": "Terjesztési Arányok",
           "description": "Állítson be automatikus korlátokat a feltöltési arány vagy az idő alapján a terjesztés leállításához.",
           "label": {
-            "share-ratio": "Megosztási Arány Korlátok",
-            "seeding-time": "Terjesztési Idő Korlátok"
+            "stop-seeding": "Terjesztés Leállítása"
           },
           "field": {
-            "max-ratio-enabled": "Megosztási Arány Korlát Engedélyezése",
-            "max-ratio": "Terjesztés leállítása, ha az arány eléri",
-            "max-ratio-act": "Teendő korlát elérésekor",
-            "max-seeding-time-enabled": "Terjesztési Idő Korlát Engedélyezése",
-            "max-seeding-time": "Terjesztés leállítása ennyi perc után"
+            "max-ratio": "Megosztási arány",
+            "max-ratio-act": "Ha egy korlát teljesül",
+            "max-seeding-time": "Terjesztési idő"
           },
           "ratio-act": {
             "pause": "Torrent szüneteltetése",
-            "remove": "Torrent eltávolítása"
+            "remove": "Torrent eltávolítása",
+            "pause-sub": "A seedelés leáll, a torrent a listában marad",
+            "remove-sub": "A torrent törlődik a listából, a fájljai megmaradnak"
+          },
+          "limit-sub": {
+            "no-limit": "Terjesztés folytatása",
+            "ratio-custom": "Leállítás ennél az aránynál",
+            "time-custom": "Leállítás ennyi idő után"
           }
         }
       },
@@ -2248,7 +2275,12 @@
     "limit": {
       "global": "Globális korlát",
       "no-limit": "Nincs korlát",
-      "custom": "Egyéni"
+      "custom": "Egyéni",
+      "sub": {
+        "global": "A szerver beállítása szerint",
+        "no-limit": "Nincs korlátozva",
+        "custom": "Saját érték megadása lent"
+      }
     },
     "toast": {
       "success": "Siker",

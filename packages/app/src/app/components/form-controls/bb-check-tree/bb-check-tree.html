@@ -1,0 +1,29 @@
+<app-bb-checkbox
+  class="bb-check-tree__all"
+  [label]="allLabel()"
+  [checked]="allSelected()"
+  [mixed]="someSelected()"
+  [disabled]="isDisabled() || items().length === 0"
+  (checkedChange)="toggleAll($event)"
+  (focusout)="touch()"
+/>
+<div class="bb-check-tree__items" role="group" [attr.aria-label]="allLabel()">
+  @for (item of items(); track item.key) {
+    <div class="bb-check-tree__item">
+      <app-bb-checkbox
+        class="bb-check-tree__check"
+        [label]="item.label"
+        [sub]="item.sub"
+        [checked]="selected().has(item.key)"
+        [disabled]="isDisabled()"
+        (checkedChange)="toggle(item.key, $event)"
+        (focusout)="touch()"
+      />
+      @if (itemTemplate(); as template) {
+        <ng-container *ngTemplateOutlet="template; context: { $implicit: item }" />
+      }
+    </div>
+  } @empty {
+    <ng-content select="[bbCheckTreeEmpty]"></ng-content>
+  }
+</div>

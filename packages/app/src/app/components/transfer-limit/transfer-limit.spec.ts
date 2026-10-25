@@ -19,6 +19,26 @@ describe('TransferLimit', () => {
     expect(component).toBeTruthy();
   });
 
+  it('uses the generic card sub-texts unless the context gives its own', () => {
+    const subs = () =>
+      Array.from(fixture.nativeElement.querySelectorAll('.bb-radio__sub')).map((sub) =>
+        (sub as HTMLElement).textContent?.trim(),
+      );
+
+    expect(subs()).toEqual([
+      'general.limit.sub.no-limit',
+      'general.limit.sub.custom',
+      'general.limit.sub.no-limit',
+      'general.limit.sub.custom',
+    ]);
+
+    fixture.componentRef.setInput('noLimitSub', 'Never slows');
+    fixture.componentRef.setInput('customSub', 'Slows to this');
+    fixture.detectChanges();
+
+    expect(subs()).toEqual(['Never slows', 'Slows to this', 'Never slows', 'Slows to this']);
+  });
+
   describe('writeValue', () => {
     it('should patch form with provided values', () => {
       component.writeValue({ uploadLimit: 500, downloadLimit: 1000 });
@@ -50,6 +70,21 @@ describe('TransferLimit', () => {
     it('should disable the form when true', () => {
       component.setDisabledState(true);
       expect(component.form.disabled).toBe(true);
+    });
+
+    it('should lock the mode cards too, and unlock them again', () => {
+      const cards = () =>
+        Array.from(
+          fixture.nativeElement.querySelectorAll('app-bb-radio-group input'),
+        ) as HTMLInputElement[];
+
+      component.setDisabledState(true);
+      fixture.detectChanges();
+      expect(cards().every((card) => card.disabled)).toBe(true);
+
+      component.setDisabledState(false);
+      fixture.detectChanges();
+      expect(cards().some((card) => card.disabled)).toBe(false);
     });
 
     it('should re-enable custom-mode controls when false', () => {

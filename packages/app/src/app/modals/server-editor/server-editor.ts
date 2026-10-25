@@ -27,8 +27,8 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { filter, firstValueFrom } from 'rxjs';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
+import { BbSwitch } from '../../components/form-controls/bb-switch/bb-switch';
 import { AutofocusDirective } from '../../directives/autofocus';
-import { BbOptionText } from '../../directives/bb-option-text';
 import { CommandBusService } from '../../services/command-bus.service';
 import { ConfirmService } from '../../services/confirm.service';
 import { ServerStoreService } from '../../services/server-store.service';
@@ -38,7 +38,7 @@ import { ToastService } from '../../services/toast.service';
 @Component({
   selector: 'app-server-editor',
   imports: [
-    BbOptionText,
+    BbSwitch,
     ReactiveFormsModule,
     CommonModule,
     TranslatePipe,

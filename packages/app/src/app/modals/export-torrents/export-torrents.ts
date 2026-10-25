@@ -26,6 +26,8 @@ import { BbPopover } from '../../components/bb-popover/bb-popover';
 import { BbProgress } from '../../components/bb-progress/bb-progress';
 import { BbSectionCard } from '../../components/bb-section-card/bb-section-card';
 import { BbSpinner } from '../../components/bb-spinner/bb-spinner';
+import { BbRadio } from '../../components/form-controls/bb-radio-group/bb-radio';
+import { BbRadioGroup } from '../../components/form-controls/bb-radio-group/bb-radio-group';
 import { AutofocusDirective } from '../../directives/autofocus';
 import { FilesizePipe } from '../../pipes/filesize-pipe';
 import { ExportService } from '../../services/export.service';
@@ -38,6 +40,8 @@ import { TorrentStoreService } from '../../services/torrent-store.service';
   selector: 'app-export-torrents',
   standalone: true,
   imports: [
+    BbRadio,
+    BbRadioGroup,
     BbSectionCard,
     ReactiveFormsModule,
     TranslatePipe,
@@ -72,8 +76,6 @@ export class ExportTorrents implements OnInit {
   exportForm!: FormGroup;
 
   private scopeValue!: ReturnType<typeof toSignal<ExportScope>>;
-  private categoryScopeValue!: ReturnType<typeof toSignal<ExportCategoryScope>>;
-  private tagScopeValue!: ReturnType<typeof toSignal<ExportTagScope>>;
 
   readonly serverInfo = signal<BbeServerInfo | null>(null);
   readonly serverInfoLoading = signal(true);
@@ -124,34 +126,6 @@ export class ExportTorrents implements OnInit {
       }
     }
     return tags.size;
-  });
-
-  readonly scopeHint = computed(() => {
-    const mode = this.scopeValue?.() ?? 'all';
-    const hints: Record<ExportScope, string> = {
-      all: 'components.modals.export-torrents.scope.hint.all',
-      filtered: 'components.modals.export-torrents.scope.hint.filtered',
-      selected: 'components.modals.export-torrents.scope.hint.selected',
-    };
-    return hints[mode] ?? hints['all'];
-  });
-
-  readonly categoryScopeHint = computed(() => {
-    const mode = this.categoryScopeValue?.() ?? 'all';
-    const hints: Record<ExportCategoryScope, string> = {
-      all: 'components.modals.export-torrents.category-scope.hint.all',
-      assigned: 'components.modals.export-torrents.category-scope.hint.assigned',
-    };
-    return hints[mode] ?? hints['all'];
-  });
-
-  readonly tagScopeHint = computed(() => {
-    const mode = this.tagScopeValue?.() ?? 'all';
-    const hints: Record<ExportTagScope, string> = {
-      all: 'components.modals.export-torrents.tag-scope.hint.all',
-      assigned: 'components.modals.export-torrents.tag-scope.hint.assigned',
-    };
-    return hints[mode] ?? hints['all'];
   });
 
   readonly phase = this.exportService.exportPhase;
@@ -238,20 +212,6 @@ export class ExportTorrents implements OnInit {
     const scopeControl = this.exportForm.get('scope')!;
     this.scopeValue = runInInjectionContext(this.injector, () =>
       toSignal(scopeControl.valueChanges, { initialValue: scopeControl.value as ExportScope }),
-    );
-
-    const categoryScopeControl = this.exportForm.get('categoryScope')!;
-    this.categoryScopeValue = runInInjectionContext(this.injector, () =>
-      toSignal(categoryScopeControl.valueChanges, {
-        initialValue: categoryScopeControl.value as ExportCategoryScope,
-      }),
-    );
-
-    const tagScopeControl = this.exportForm.get('tagScope')!;
-    this.tagScopeValue = runInInjectionContext(this.injector, () =>
-      toSignal(tagScopeControl.valueChanges, {
-        initialValue: tagScopeControl.value as ExportTagScope,
-      }),
     );
   }
 

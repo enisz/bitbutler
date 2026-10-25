@@ -2,10 +2,12 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule } from '@angular/forms';
-import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
+import { BbRadio } from '../../../components/form-controls/bb-radio-group/bb-radio';
+import { BbRadioGroup } from '../../../components/form-controls/bb-radio-group/bb-radio-group';
+import { BbSwitch } from '../../../components/form-controls/bb-switch/bb-switch';
 import { BbOptionText } from '../../../directives/bb-option-text';
 import { GeneralSettingsFormService } from '../general-settings-form.service';
 import { NgSelectItem, SettingsTabComponent } from '../settings.interface';
@@ -13,10 +15,12 @@ import { NgSelectItem, SettingsTabComponent } from '../settings.interface';
 @Component({
   selector: 'app-notifications',
   imports: [
+    BbRadio,
+    BbRadioGroup,
+    BbSwitch,
     BbOptionText,
     BbSectionCard,
     CommonModule,
-    NgSelectComponent,
     ReactiveFormsModule,
     BbSpinner,
     TranslatePipe,
@@ -46,12 +50,12 @@ export class Notifications implements SettingsTabComponent {
         label: this.translateService.instant('pages.settings.tab.general.position.top-right'),
       },
       {
-        value: 'bottom-right',
-        label: this.translateService.instant('pages.settings.tab.general.position.bottom-right'),
-      },
-      {
         value: 'bottom-left',
         label: this.translateService.instant('pages.settings.tab.general.position.bottom-left'),
+      },
+      {
+        value: 'bottom-right',
+        label: this.translateService.instant('pages.settings.tab.general.position.bottom-right'),
       },
     ];
   });

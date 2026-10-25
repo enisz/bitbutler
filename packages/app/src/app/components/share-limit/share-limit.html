@@ -1,183 +1,178 @@
-<div [formGroup]="form" class="d-flex flex-column gap-3 pb-3">
-  <div class="limit-row">
-    <div class="form-floating limit-row__field">
-      <input
-        type="number"
-        step="0.1"
-        class="form-control"
-        id="ratioLimit"
-        placeholder="0"
-        formControlName="ratioLimit"
-        min="0"
-      />
-      <label for="ratioLimit">{{ 'components.share-limit.ratio-limit' | translate }}</label>
+<div [formGroup]="form" class="bb-options">
+  <div class="bb-option bb-option--stacked">
+    <div class="bb-option__text" bbOptionText>
+      <span class="bb-option__label">
+        <span class="bb-option__label-text" id="ratioLimit-label">{{
+          'components.share-limit.ratio-limit' | translate
+        }}</span>
+        <bb-popover
+          [subject]="'components.share-limit.popover.ratio-limit.title' | translate"
+          [description]="'components.share-limit.popover.ratio-limit.description' | translate"
+          placement="top"
+        ></bb-popover>
+      </span>
     </div>
-
-    <div class="btn-group segmented-picker" role="group">
-      <input
-        type="radio"
-        class="btn-check"
-        name="ratioMode"
-        id="ratioModeGlobal"
-        [checked]="ratioMode() === 'global'"
-        (change)="setRatioMode('global')"
+    <app-bb-radio-group
+      appearance="cards"
+      [disabled]="disabled()"
+      [value]="ratioMode()"
+      aria-labelledby="ratioLimit-label"
+      (valueChange)="setRatioMode($any($event))"
+    >
+      <app-bb-radio
+        value="global"
+        [label]="'general.limit.global' | translate"
+        [sub]="'general.limit.sub.global' | translate"
       />
-      <label class="btn" for="ratioModeGlobal">{{ 'general.limit.global' | translate }}</label>
-
-      <input
-        type="radio"
-        class="btn-check"
-        name="ratioMode"
-        id="ratioModeNoLimit"
-        [checked]="ratioMode() === 'no-limit'"
-        (change)="setRatioMode('no-limit')"
+      <app-bb-radio
+        value="no-limit"
+        [label]="'general.limit.no-limit' | translate"
+        [sub]="'general.limit.sub.no-limit' | translate"
       />
-      <label class="btn" for="ratioModeNoLimit">{{ 'general.limit.no-limit' | translate }}</label>
-
-      <input
-        type="radio"
-        class="btn-check"
-        name="ratioMode"
-        id="ratioModeCustom"
-        [checked]="ratioMode() === 'custom'"
-        (change)="setRatioMode('custom')"
+      <app-bb-radio
+        value="custom"
+        [label]="'general.limit.custom' | translate"
+        [sub]="'general.limit.sub.custom' | translate"
       />
-      <label class="btn" for="ratioModeCustom">{{ 'general.limit.custom' | translate }}</label>
-    </div>
-
-    <bb-popover
-      [subject]="'components.share-limit.popover.ratio-limit.title' | translate"
-      [description]="'components.share-limit.popover.ratio-limit.description' | translate"
-      placement="top"
-    ></bb-popover>
-
-    @if (ratioMode() === 'custom' && form.controls.ratioLimit.value !== null) {
-      <div class="form-text ms-1 limit-row__helper">
-        {{ form.controls.ratioLimit.value | ratioLimit }}
+    </app-bb-radio-group>
+    @if (ratioMode() === 'custom') {
+      <div class="bb-option__detail">
+        <input
+          type="number"
+          step="0.1"
+          class="form-control"
+          id="ratioLimit"
+          min="0"
+          formControlName="ratioLimit"
+          aria-labelledby="ratioLimit-label"
+        />
+        @if (form.controls.ratioLimit.value !== null) {
+          <span class="form-text m-0 ms-auto">{{
+            form.controls.ratioLimit.value | ratioLimit
+          }}</span>
+        }
       </div>
     }
   </div>
-
-  <div class="limit-row">
-    <div class="form-floating limit-row__field">
-      <input
-        type="number"
-        class="form-control"
-        id="seedingTimeLimit"
-        placeholder="0"
-        formControlName="seedingTimeLimit"
-        min="0"
-      />
-      <label for="seedingTimeLimit">
-        {{ 'components.share-limit.seeding-time-limit' | translate }}
-      </label>
+  <div class="bb-option bb-option--stacked">
+    <div class="bb-option__text" bbOptionText>
+      <span class="bb-option__label">
+        <span class="bb-option__label-text" id="seedingTimeLimit-label">{{
+          'components.share-limit.seeding-time-limit' | translate
+        }}</span>
+        <bb-popover
+          [subject]="'components.share-limit.popover.seeding-time-limit.title' | translate"
+          [description]="
+            'components.share-limit.popover.seeding-time-limit.description' | translate
+          "
+          placement="top"
+        ></bb-popover>
+      </span>
     </div>
-
-    <div class="btn-group segmented-picker" role="group">
-      <input
-        type="radio"
-        class="btn-check"
-        name="seedingMode"
-        id="seedingModeGlobal"
-        [checked]="seedingMode() === 'global'"
-        (change)="setSeedingMode('global')"
+    <app-bb-radio-group
+      appearance="cards"
+      [disabled]="disabled()"
+      [value]="seedingMode()"
+      aria-labelledby="seedingTimeLimit-label"
+      (valueChange)="setSeedingMode($any($event))"
+    >
+      <app-bb-radio
+        value="global"
+        [label]="'general.limit.global' | translate"
+        [sub]="'general.limit.sub.global' | translate"
       />
-      <label class="btn" for="seedingModeGlobal">{{ 'general.limit.global' | translate }}</label>
-
-      <input
-        type="radio"
-        class="btn-check"
-        name="seedingMode"
-        id="seedingModeNoLimit"
-        [checked]="seedingMode() === 'no-limit'"
-        (change)="setSeedingMode('no-limit')"
+      <app-bb-radio
+        value="no-limit"
+        [label]="'general.limit.no-limit' | translate"
+        [sub]="'general.limit.sub.no-limit' | translate"
       />
-      <label class="btn" for="seedingModeNoLimit">{{ 'general.limit.no-limit' | translate }}</label>
-
-      <input
-        type="radio"
-        class="btn-check"
-        name="seedingMode"
-        id="seedingModeCustom"
-        [checked]="seedingMode() === 'custom'"
-        (change)="setSeedingMode('custom')"
+      <app-bb-radio
+        value="custom"
+        [label]="'general.limit.custom' | translate"
+        [sub]="'general.limit.sub.custom' | translate"
       />
-      <label class="btn" for="seedingModeCustom">{{ 'general.limit.custom' | translate }}</label>
-    </div>
-
-    <bb-popover
-      [subject]="'components.share-limit.popover.seeding-time-limit.title' | translate"
-      [description]="'components.share-limit.popover.seeding-time-limit.description' | translate"
-      placement="top"
-    ></bb-popover>
-
-    @if (seedingMode() === 'custom' && form.controls.seedingTimeLimit.value !== null) {
-      <div class="form-text ms-1 limit-row__helper">
-        {{ form.controls.seedingTimeLimit.value | timeLimit }}
+    </app-bb-radio-group>
+    @if (seedingMode() === 'custom') {
+      <div class="bb-option__detail">
+        <div class="input-group">
+          <input
+            type="number"
+            class="form-control"
+            id="seedingTimeLimit"
+            min="0"
+            formControlName="seedingTimeLimit"
+            aria-labelledby="seedingTimeLimit-label"
+          />
+          <span class="input-group-text">{{
+            'components.share-limit.unit-minutes' | translate
+          }}</span>
+        </div>
+        @if (form.controls.seedingTimeLimit.value !== null) {
+          <span class="form-text m-0 ms-auto">{{
+            form.controls.seedingTimeLimit.value | timeLimit
+          }}</span>
+        }
       </div>
     }
   </div>
-
-  <div class="limit-row">
-    <div class="form-floating limit-row__field">
-      <input
-        type="number"
-        class="form-control"
-        id="inactiveSeedingTimeLimit"
-        placeholder="0"
-        formControlName="inactiveSeedingTimeLimit"
-        min="0"
-      />
-      <label for="inactiveSeedingTimeLimit">
-        {{ 'components.share-limit.inactive-seeding-time-limit' | translate }}
-      </label>
+  <div class="bb-option bb-option--stacked">
+    <div class="bb-option__text" bbOptionText>
+      <span class="bb-option__label">
+        <span class="bb-option__label-text" id="inactiveSeedingTimeLimit-label">{{
+          'components.share-limit.inactive-seeding-time-limit' | translate
+        }}</span>
+        <bb-popover
+          [subject]="'components.share-limit.popover.inactive-seeding-time-limit.title' | translate"
+          [description]="
+            'components.share-limit.popover.inactive-seeding-time-limit.description' | translate
+          "
+          placement="top"
+        ></bb-popover>
+      </span>
     </div>
-
-    <div class="btn-group segmented-picker" role="group">
-      <input
-        type="radio"
-        class="btn-check"
-        name="inactiveMode"
-        id="inactiveModeGlobal"
-        [checked]="inactiveMode() === 'global'"
-        (change)="setInactiveMode('global')"
+    <app-bb-radio-group
+      appearance="cards"
+      [disabled]="disabled()"
+      [value]="inactiveMode()"
+      aria-labelledby="inactiveSeedingTimeLimit-label"
+      (valueChange)="setInactiveMode($any($event))"
+    >
+      <app-bb-radio
+        value="global"
+        [label]="'general.limit.global' | translate"
+        [sub]="'general.limit.sub.global' | translate"
       />
-      <label class="btn" for="inactiveModeGlobal">{{ 'general.limit.global' | translate }}</label>
-
-      <input
-        type="radio"
-        class="btn-check"
-        name="inactiveMode"
-        id="inactiveModeNoLimit"
-        [checked]="inactiveMode() === 'no-limit'"
-        (change)="setInactiveMode('no-limit')"
+      <app-bb-radio
+        value="no-limit"
+        [label]="'general.limit.no-limit' | translate"
+        [sub]="'general.limit.sub.no-limit' | translate"
       />
-      <label class="btn" for="inactiveModeNoLimit">{{
-        'general.limit.no-limit' | translate
-      }}</label>
-
-      <input
-        type="radio"
-        class="btn-check"
-        name="inactiveMode"
-        id="inactiveModeCustom"
-        [checked]="inactiveMode() === 'custom'"
-        (change)="setInactiveMode('custom')"
+      <app-bb-radio
+        value="custom"
+        [label]="'general.limit.custom' | translate"
+        [sub]="'general.limit.sub.custom' | translate"
       />
-      <label class="btn" for="inactiveModeCustom">{{ 'general.limit.custom' | translate }}</label>
-    </div>
-
-    <bb-popover
-      [subject]="'components.share-limit.popover.inactive-seeding-time-limit.title' | translate"
-      [description]="
-        'components.share-limit.popover.inactive-seeding-time-limit.description' | translate
-      "
-      placement="top"
-    ></bb-popover>
-
-    @if (inactiveMode() === 'custom' && form.controls.inactiveSeedingTimeLimit.value !== null) {
-      <div class="form-text ms-1 limit-row__helper">
-        {{ form.controls.inactiveSeedingTimeLimit.value | timeLimit }}
+    </app-bb-radio-group>
+    @if (inactiveMode() === 'custom') {
+      <div class="bb-option__detail">
+        <div class="input-group">
+          <input
+            type="number"
+            class="form-control"
+            id="inactiveSeedingTimeLimit"
+            min="0"
+            formControlName="inactiveSeedingTimeLimit"
+            aria-labelledby="inactiveSeedingTimeLimit-label"
+          />
+          <span class="input-group-text">{{
+            'components.share-limit.unit-minutes' | translate
+          }}</span>
+        </div>
+        @if (form.controls.inactiveSeedingTimeLimit.value !== null) {
+          <span class="form-text m-0 ms-auto">{{
+            form.controls.inactiveSeedingTimeLimit.value | timeLimit
+          }}</span>
+        }
       </div>
     }
   </div>

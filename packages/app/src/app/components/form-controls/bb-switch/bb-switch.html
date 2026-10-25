@@ -1,0 +1,23 @@
+<div class="bb-option__text" bbOptionText>
+  <!-- The extra (e.g. a help popover) sits outside the <label>, so clicking it does not toggle. -->
+  <span class="bb-option__label">
+    <label class="bb-option__label-text bb-ctl-label" [for]="id()">{{ label() }}</label>
+    <ng-content select="[bbLabelExtra]"></ng-content>
+  </span>
+  @if (sub()) {
+    <label class="bb-option__sub bb-ctl-sub" [for]="id()">{{ sub() }}</label>
+  }
+</div>
+<span class="bb-ctl">
+  <input
+    type="checkbox"
+    role="switch"
+    class="bb-ctl-input"
+    [id]="id()"
+    [checked]="checked()"
+    [disabled]="isDisabled()"
+    (change)="onInputChange($event)"
+    (blur)="onBlur()"
+  />
+  <span class="bb-ctl-switch"></span>
+</span>

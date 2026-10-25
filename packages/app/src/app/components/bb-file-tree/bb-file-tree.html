@@ -131,13 +131,12 @@
           </button>
 
           @if (editMode()) {
-            <input
-              type="checkbox"
-              class="bb-checkbox"
+            <app-bb-checkbox
+              class="bb-row__check"
               [checked]="isFolderSelected(node)"
-              [indeterminate]="isFolderIndeterminate(node)"
+              [mixed]="isFolderIndeterminate(node)"
               (click)="$event.stopPropagation()"
-              (change)="toggleFolderSelection(node, $event)"
+              (checkedChange)="toggleFolderSelection(node, $event)"
             />
           }
 
@@ -195,11 +194,10 @@
 
           @if (editMode()) {
             @if (node.file; as f) {
-              <input
-                type="checkbox"
-                class="bb-checkbox"
+              <app-bb-checkbox
+                class="bb-row__check"
                 [checked]="f.priority !== 0"
-                (change)="toggleFileSelection(f, $event)"
+                (checkedChange)="toggleFileSelection(f, $event)"
               />
             }
           }

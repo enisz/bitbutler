@@ -83,6 +83,27 @@ export class SavePathSelect implements ControlValueAccessor {
     () => this.position() ?? ['bottom-start', 'bottom-end', 'top-start', 'top-end'],
   );
 
+  // The suggestions render on <body> (container="body"): inside a section card, whose
+  // `overflow: hidden` keeps its rounded corners, they would be cut off or flipped above the
+  // field. Out there they no longer size to the input's box, so match the field's width here.
+  public readonly typeaheadPopperOptions = (
+    options: Parameters<NgbTypeahead['popperOptions']>[0],
+  ): Parameters<NgbTypeahead['popperOptions']>[0] => ({
+    ...options,
+    modifiers: [
+      ...(options.modifiers ?? []),
+      {
+        name: 'matchInputWidth',
+        enabled: true,
+        phase: 'beforeWrite',
+        requires: ['computeStyles'],
+        fn: ({ state }) => {
+          state.styles['popper'].minWidth = `${state.rects.reference.width}px`;
+        },
+      },
+    ],
+  });
+
   public paths = this.typeaheadService.paths;
 
   public selectControl = new FormControl<string | null>(null);

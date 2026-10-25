@@ -28,6 +28,9 @@ import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content'
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
+import { BbRadio } from '../../../components/form-controls/bb-radio-group/bb-radio';
+import { BbRadioGroup } from '../../../components/form-controls/bb-radio-group/bb-radio-group';
+import { BbSwitch } from '../../../components/form-controls/bb-switch/bb-switch';
 import { BbOptionText } from '../../../directives/bb-option-text';
 import { BbTooltip } from '../../../directives/bb-tooltip';
 import {
@@ -61,6 +64,9 @@ const FOCUS_FALLBACKS: Record<ColumnAction, ColumnAction[]> = {
   selector: 'app-torrent-list-grid',
   standalone: true,
   imports: [
+    BbRadio,
+    BbRadioGroup,
+    BbSwitch,
     BbOptionText,
     BbSectionCard,
     BbSpinner,

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -8,6 +8,8 @@ import { IFilterAngularComp } from 'ag-grid-angular';
 import { IAfterGuiAttachedParams, IDoesFilterPassParams, IFilterParams } from 'ag-grid-community';
 import { debounceTime, startWith } from 'rxjs/operators';
 import { BbBtnContent } from '../../bb-btn-content/bb-btn-content';
+import { BbCheckTree } from '../../form-controls/bb-check-tree/bb-check-tree';
+import { BbCheckTreeItemTemplate } from '../../form-controls/bb-check-tree/bb-check-tree';
 import { createFilterInstanceId } from '../filter-instance-id.utils';
 
 const FILTER_DEBOUNCE_MS = 150;
@@ -44,7 +46,15 @@ export function buildValueCounts<T>(
 @Component({
   selector: 'app-set-column-filter',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, FontAwesomeModule, TranslateModule, BbBtnContent],
+  imports: [
+    BbCheckTreeItemTemplate,
+    BbCheckTree,
+    FormsModule,
+    ReactiveFormsModule,
+    FontAwesomeModule,
+    TranslateModule,
+    BbBtnContent,
+  ],
   templateUrl: './set-column-filter.html',
   styleUrl: './set-column-filter.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -56,7 +66,9 @@ export class SetColumnFilter implements IFilterAngularComp {
   public filterCtrl = new FormControl('', { nonNullable: true });
   public readonly instanceId = createFilterInstanceId('set-filter');
 
-  draftValues = new Set<string>();
+  /** The selection being edited in the popup; becomes `appliedValues` on Apply. */
+  readonly draftValues = signal<ReadonlySet<string>>(new Set());
+  readonly draftKeys = computed(() => [...this.draftValues()]);
   appliedValues = new Set<string>();
 
   private readonly searchText = toSignal(
@@ -96,37 +108,35 @@ export class SetColumnFilter implements IFilterAngularComp {
 
   setModel(model: SetFilterValue | null): void {
     this.appliedValues = new Set(model?.values ?? []);
-    this.draftValues = new Set(this.appliedValues);
+    this.draftValues.set(new Set(this.appliedValues));
   }
 
   afterGuiAttached(_params?: IAfterGuiAttachedParams): void {
-    this.draftValues = new Set(this.appliedValues);
+    this.draftValues.set(new Set(this.appliedValues));
     this.filterCtrl.reset('');
   }
 
-  toggle(key: string): void {
-    const next = new Set(this.draftValues);
-    if (next.has(key)) next.delete(key);
-    else next.add(key);
-    this.draftValues = next;
+  setDraft(keys: readonly string[]): void {
+    this.draftValues.set(new Set(keys));
   }
 
   apply(): void {
-    this.appliedValues = new Set(this.draftValues);
+    this.appliedValues = new Set(this.draftValues());
     this.params.filterChangedCallback();
     this.params.api.hidePopupMenu();
   }
 
   clear(): void {
-    this.draftValues = new Set();
+    this.draftValues.set(new Set());
     this.appliedValues = new Set();
     this.params.filterChangedCallback();
     this.params.api.hidePopupMenu();
   }
 
   isApplyDisabled(): boolean {
-    if (this.draftValues.size !== this.appliedValues.size) return false;
-    for (const value of this.draftValues) {
+    const draft = this.draftValues();
+    if (draft.size !== this.appliedValues.size) return false;
+    for (const value of draft) {
       if (!this.appliedValues.has(value)) return false;
     }
     return true;

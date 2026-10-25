@@ -310,12 +310,8 @@
   color: var(--bb-control-placeholder);
 }
 
-.bb-checkbox {
-  width: 14px;
-  height: 14px;
+.bb-row__check {
   margin-right: 0.25rem;
-  cursor: pointer;
-  accent-color: var(--bb-accent);
 }
 
 .bb-skipped-label {

@@ -24,6 +24,18 @@ export const LANGUAGE_LOCALE_MAP: Record<string, string> = {
 
 export const DEFAULT_LOCALE = 'en-US';
 
+/** Each UI language in its own language, so it can be found whatever the current one is. */
+export const LANGUAGE_NATIVE_NAMES: Record<string, string> = {
+  us: 'English',
+  hu: 'Magyar',
+};
+
+/** The UI languages for the pickers (settings, login), by native name. */
+export const LANGUAGE_OPTIONS: readonly { value: string; label: string; lang: string }[] =
+  Object.entries(LANGUAGE_NATIVE_NAMES)
+    .map(([value, label]) => ({ value, label, lang: LANGUAGE_LOCALE_MAP[value] }))
+    .sort((a, b) => a.label.localeCompare(b.label));
+
 export interface NotificationSettings {
   os: {
     enabled: boolean;

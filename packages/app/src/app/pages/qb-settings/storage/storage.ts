@@ -9,33 +9,27 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { NgSelectComponent } from '@ng-select/ng-select';
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
+import { BbRadio } from '../../../components/form-controls/bb-radio-group/bb-radio';
+import { BbRadioGroup } from '../../../components/form-controls/bb-radio-group/bb-radio-group';
+import { BbSwitch } from '../../../components/form-controls/bb-switch/bb-switch';
 import { BbOptionText } from '../../../directives/bb-option-text';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { QbSettingsStateService } from '../qb-settings-state.service';
 import { QbSettingsTabComponent } from '../qb-settings.interface';
 
-interface ContentLayoutOption {
-  value: string;
-  label: string;
-}
-
-interface TmmOption {
-  value: boolean;
-  label: string;
-}
-
 @Component({
   selector: 'app-qb-settings-storage',
   imports: [
+    BbRadio,
+    BbRadioGroup,
+    BbSwitch,
     BbOptionText,
     BbSectionCard,
     CommonModule,
     ReactiveFormsModule,
-    NgSelectComponent,
     TranslatePipe,
   ],
   templateUrl: './storage.html',
@@ -47,7 +41,6 @@ export class Storage implements QbSettingsTabComponent, OnInit {
   private readonly qbService = inject(QbService);
   private readonly serverStoreService = inject(ServerStoreService);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly translateService = inject(TranslateService);
 
   public readonly hasTempPath = computed(
     () => 'temp_path_enabled' in (this.stateService.preferences() ?? {}),
@@ -56,47 +49,6 @@ export class Storage implements QbSettingsTabComponent, OnInit {
   public readonly hasContentLayout = computed(
     () => 'torrent_content_layout' in (this.stateService.preferences() ?? {}),
   );
-
-  public readonly contentLayouts: ContentLayoutOption[] = [
-    {
-      value: 'Original',
-      label: this.translateService.instant('pages.qb-settings.tab.storage.content-layout.original'),
-    },
-    {
-      value: 'Subfolder',
-      label: this.translateService.instant(
-        'pages.qb-settings.tab.storage.content-layout.subfolder',
-      ),
-    },
-    {
-      value: 'NoSubfolder',
-      label: this.translateService.instant(
-        'pages.qb-settings.tab.storage.content-layout.no-subfolder',
-      ),
-    },
-  ];
-
-  public readonly autoTmmModes: TmmOption[] = [
-    {
-      value: true,
-      label: this.translateService.instant('pages.qb-settings.tab.storage.tmm-mode.automatic'),
-    },
-    {
-      value: false,
-      label: this.translateService.instant('pages.qb-settings.tab.storage.tmm-mode.manual'),
-    },
-  ];
-
-  public readonly tmmChangeBehaviors: TmmOption[] = [
-    {
-      value: false,
-      label: this.translateService.instant('pages.qb-settings.tab.storage.tmm-behavior.relocate'),
-    },
-    {
-      value: true,
-      label: this.translateService.instant('pages.qb-settings.tab.storage.tmm-behavior.manual'),
-    },
-  ];
 
   public form = new FormGroup({
     save_path: new FormControl<string>('', { nonNullable: true }),

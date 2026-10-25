@@ -12,15 +12,13 @@ import {
   faTriangleExclamation,
 } from '@fortawesome/free-solid-svg-icons';
 import { NgbCollapse } from '@ng-bootstrap/ng-bootstrap';
-import {
-  NgLabelTemplateDirective,
-  NgOptionTemplateDirective,
-  NgSelectComponent,
-} from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content';
 import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
+import { BbRadio } from '../../../components/form-controls/bb-radio-group/bb-radio';
+import { BbRadioGroup } from '../../../components/form-controls/bb-radio-group/bb-radio-group';
+import { BbSwitch } from '../../../components/form-controls/bb-switch/bb-switch';
 import { SavePathSelect } from '../../../components/save-path-select/save-path-select';
 import { BbOptionText } from '../../../directives/bb-option-text';
 import {
@@ -30,6 +28,7 @@ import {
   DateFormatPreset,
   FIRST_DAY_OF_WEEK_OPTIONS,
   LANGUAGE_LOCALE_MAP,
+  LANGUAGE_OPTIONS,
   resolveDateFormat,
 } from '../../../models/general-settings.model';
 import { GeneralSettingsFormService } from '../general-settings-form.service';
@@ -72,10 +71,10 @@ const DATE_FORMAT_TOKENS = [
   imports: [
     BbOptionText,
     BbSectionCard,
+    BbSwitch,
+    BbRadioGroup,
+    BbRadio,
     CommonModule,
-    NgSelectComponent,
-    NgOptionTemplateDirective,
-    NgLabelTemplateDirective,
     ReactiveFormsModule,
     FontAwesomeModule,
     BbSpinner,
@@ -85,7 +84,6 @@ const DATE_FORMAT_TOKENS = [
     NgbCollapse,
   ],
   templateUrl: './general.html',
-  styleUrl: './general.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class General implements SettingsTabComponent {
@@ -98,20 +96,7 @@ export class General implements SettingsTabComponent {
   public readonly settingsLoaded = this.formService.loaded;
   private readonly formSnapshot = this.formService.formSnapshot;
 
-  public languages = computed<NgSelectItem[]>(() => {
-    this.languageChanged();
-
-    return [
-      {
-        value: 'us',
-        label: this.translateService.instant('language.us'),
-      },
-      {
-        value: 'hu',
-        label: this.translateService.instant('language.hu'),
-      },
-    ].sort((a, b) => a.label.localeCompare(b.label));
-  });
+  public readonly languages = LANGUAGE_OPTIONS;
 
   private previewDateFormat(
     preset: DateFormatPreset,
@@ -155,6 +140,8 @@ export class General implements SettingsTabComponent {
       ),
     }));
   });
+
+  public savePathInputType = computed(() => this.formSnapshot().savePath.inputType);
 
   public isCustomDateFormat = computed<boolean>(
     () => this.formSnapshot().dateFormat.preset === 'custom',

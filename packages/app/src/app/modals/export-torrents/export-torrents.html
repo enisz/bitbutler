@@ -87,130 +87,119 @@
 
     @if (phase() === 'idle') {
       <app-bb-section-card [title]="'components.modals.export-torrents.label.scope' | translate">
-        <div class="small text-body-secondary mb-1 mt-3">
-          {{ 'components.modals.export-torrents.scope.torrents' | translate }}
+        <div class="bb-options">
+          <div class="bb-option bb-option--stacked">
+            <div class="bb-option__text">
+              <span class="bb-option__label" id="export-scope-torrents">{{
+                'components.modals.export-torrents.scope.torrents' | translate
+              }}</span>
+            </div>
+            <app-bb-radio-group
+              appearance="cards"
+              formControlName="scope"
+              aria-labelledby="export-scope-torrents"
+            >
+              <app-bb-radio
+                value="all"
+                [label]="
+                  ('components.modals.export-torrents.scope.all' | translate) +
+                  ' (' +
+                  allCount() +
+                  ')'
+                "
+                [sub]="'components.modals.export-torrents.scope.sub.all' | translate"
+              />
+              <app-bb-radio
+                value="filtered"
+                [label]="
+                  ('components.modals.export-torrents.scope.filtered' | translate) +
+                  ' (' +
+                  filteredCount() +
+                  ')'
+                "
+                [sub]="'components.modals.export-torrents.scope.sub.filtered' | translate"
+                [disabled]="!hasFiltered()"
+              />
+              <app-bb-radio
+                value="selected"
+                [label]="
+                  ('components.modals.export-torrents.scope.selected' | translate) +
+                  ' (' +
+                  selectedCount() +
+                  ')'
+                "
+                [sub]="'components.modals.export-torrents.scope.sub.selected' | translate"
+                [disabled]="!hasSelection()"
+              />
+            </app-bb-radio-group>
+          </div>
+          <div class="bb-option bb-option--stacked">
+            <div class="bb-option__text">
+              <span class="bb-option__label" id="export-scope-categories">{{
+                'components.modals.export-torrents.scope.categories' | translate
+              }}</span>
+            </div>
+            <app-bb-radio-group
+              appearance="cards"
+              formControlName="categoryScope"
+              aria-labelledby="export-scope-categories"
+            >
+              <app-bb-radio
+                value="all"
+                [label]="
+                  ('components.modals.export-torrents.category-scope.all' | translate) +
+                  ' (' +
+                  allCategoriesCount() +
+                  ')'
+                "
+                [sub]="'components.modals.export-torrents.category-scope.sub.all' | translate"
+              />
+              <app-bb-radio
+                value="assigned"
+                [label]="
+                  ('components.modals.export-torrents.category-scope.assigned' | translate) +
+                  ' (' +
+                  assignedCategoriesCount() +
+                  ')'
+                "
+                [sub]="'components.modals.export-torrents.category-scope.sub.assigned' | translate"
+              />
+            </app-bb-radio-group>
+          </div>
+          <div class="bb-option bb-option--stacked">
+            <div class="bb-option__text">
+              <span class="bb-option__label" id="export-scope-tags">{{
+                'components.modals.export-torrents.scope.tags' | translate
+              }}</span>
+            </div>
+            <app-bb-radio-group
+              appearance="cards"
+              formControlName="tagScope"
+              aria-labelledby="export-scope-tags"
+            >
+              <app-bb-radio
+                value="all"
+                [label]="
+                  ('components.modals.export-torrents.tag-scope.all' | translate) +
+                  ' (' +
+                  allTagsCount() +
+                  ')'
+                "
+                [sub]="'components.modals.export-torrents.tag-scope.sub.all' | translate"
+              />
+              <app-bb-radio
+                value="assigned"
+                [label]="
+                  ('components.modals.export-torrents.tag-scope.assigned' | translate) +
+                  ' (' +
+                  assignedTagsCount() +
+                  ')'
+                "
+                [sub]="'components.modals.export-torrents.tag-scope.sub.assigned' | translate"
+              />
+            </app-bb-radio-group>
+          </div>
         </div>
-        <div class="btn-group w-100 mb-1" role="group">
-          <input
-            type="radio"
-            class="btn-check"
-            formControlName="scope"
-            id="scope-all"
-            value="all"
-          />
-          <label class="btn btn-outline-secondary" for="scope-all">
-            {{
-              ('components.modals.export-torrents.scope.all' | translate) + ' (' + allCount() + ')'
-            }}
-          </label>
-          <input
-            type="radio"
-            class="btn-check"
-            formControlName="scope"
-            id="scope-filtered"
-            value="filtered"
-            [attr.disabled]="!hasFiltered() || null"
-          />
-          <label class="btn btn-outline-secondary" for="scope-filtered">
-            {{
-              ('components.modals.export-torrents.scope.filtered' | translate) +
-                ' (' +
-                filteredCount() +
-                ')'
-            }}
-          </label>
-          <input
-            type="radio"
-            class="btn-check"
-            formControlName="scope"
-            id="scope-selected"
-            value="selected"
-            [attr.disabled]="!hasSelection() || null"
-          />
-          <label class="btn btn-outline-secondary" for="scope-selected">
-            {{
-              ('components.modals.export-torrents.scope.selected' | translate) +
-                ' (' +
-                selectedCount() +
-                ')'
-            }}
-          </label>
-        </div>
-        <div class="small text-body-secondary mb-3">{{ scopeHint() | translate }}</div>
-
-        <div class="small text-body-secondary mb-1">
-          {{ 'components.modals.export-torrents.scope.categories' | translate }}
-        </div>
-        <div class="btn-group w-100 mb-1" role="group">
-          <input
-            type="radio"
-            class="btn-check"
-            formControlName="categoryScope"
-            id="category-scope-all"
-            value="all"
-          />
-          <label class="btn btn-outline-secondary" for="category-scope-all">
-            {{
-              ('components.modals.export-torrents.category-scope.all' | translate) +
-                ' (' +
-                allCategoriesCount() +
-                ')'
-            }}
-          </label>
-          <input
-            type="radio"
-            class="btn-check"
-            formControlName="categoryScope"
-            id="category-scope-assigned"
-            value="assigned"
-          />
-          <label class="btn btn-outline-secondary" for="category-scope-assigned">
-            {{
-              ('components.modals.export-torrents.category-scope.assigned' | translate) +
-                ' (' +
-                assignedCategoriesCount() +
-                ')'
-            }}
-          </label>
-        </div>
-        <div class="small text-body-secondary mb-3">{{ categoryScopeHint() | translate }}</div>
-
-        <div class="small text-body-secondary mb-1">
-          {{ 'components.modals.export-torrents.scope.tags' | translate }}
-        </div>
-        <div class="btn-group w-100 mb-1" role="group">
-          <input
-            type="radio"
-            class="btn-check"
-            formControlName="tagScope"
-            id="tag-scope-all"
-            value="all"
-          />
-          <label class="btn btn-outline-secondary" for="tag-scope-all">
-            {{
-              ('components.modals.export-torrents.tag-scope.all' | translate) +
-                ' (' +
-                allTagsCount() +
-                ')'
-            }}
-          </label>
-          <input
-            type="radio"
-            class="btn-check"
-            formControlName="tagScope"
-            id="tag-scope-assigned"
-            value="assigned"
-          />
-          <label class="btn btn-outline-secondary" for="tag-scope-assigned">
-            {{
-              ('components.modals.export-torrents.tag-scope.assigned' | translate) +
-                ' (' +
-                assignedTagsCount() +
-                ')'
-            }}
-          </label>
-        </div>
-        <div class="small text-body-secondary mb-3">{{ tagScopeHint() | translate }}</div>
       </app-bb-section-card>
 
       <app-bb-section-card

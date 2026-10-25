@@ -122,34 +122,19 @@
         >
           <div class="bb-options bb-options--grid mt-3">
             @for (field of restoreFieldKeys; track field) {
-              <div class="bb-option">
-                <div class="bb-option__text" bbOptionText>
-                  <label
-                    class="bb-option__label"
-                    [for]="'rf-' + field"
-                    [bbTooltip]="
-                      isLegacyUnsupported(field) && metadata()?.export_mode === 'legacy'
-                        ? ('components.modals.import-torrents.legacy-unsupported' | translate)
-                        : null
-                    "
-                  >
-                    {{ 'components.modals.import-torrents.restore.' + field | translate }}
-                  </label>
-                  <span class="bb-option__sub">{{
-                    'components.modals.import-torrents.restore.popover.' + field + '.sub'
-                      | translate
-                  }}</span>
-                </div>
-                <span class="bb-option__toggle form-switch">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    role="switch"
-                    [id]="'rf-' + field"
-                    [formControlName]="field"
-                  />
-                </span>
-              </div>
+              <app-bb-switch
+                [inputId]="'rf-' + field"
+                [formControlName]="field"
+                [label]="'components.modals.import-torrents.restore.' + field | translate"
+                [sub]="
+                  'components.modals.import-torrents.restore.popover.' + field + '.sub' | translate
+                "
+                [bbTooltip]="
+                  isLegacyUnsupported(field) && metadata()?.export_mode === 'legacy'
+                    ? ('components.modals.import-torrents.legacy-unsupported' | translate)
+                    : null
+                "
+              />
             }
           </div>
         </app-bb-section-card>
@@ -228,36 +213,25 @@
             [title]="'components.modals.import-torrents.label.category-path-mapping' | translate"
           >
             <div class="bb-options mb-3">
-              <div class="bb-option">
-                <div class="bb-option__text" bbOptionText>
-                  <label class="bb-option__label" for="overwrite-categories">
-                    <span class="bb-option__label-text">{{
-                      'components.modals.import-torrents.category-path-mapping.overwrite'
-                        | translate
-                    }}</span>
-                    <bb-popover
-                      [subject]="
-                        'components.modals.import-torrents.category-path-mapping.overwrite'
-                          | translate
-                      "
-                      [description]="
-                        'components.modals.import-torrents.category-path-mapping.overwrite-description'
-                          | translate
-                      "
-                      placement="right"
-                    ></bb-popover>
-                  </label>
-                </div>
-                <span class="bb-option__toggle form-switch">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    role="switch"
-                    id="overwrite-categories"
-                    formControlName="overwriteCategories"
-                  />
-                </span>
-              </div>
+              <app-bb-switch
+                inputId="overwrite-categories"
+                formControlName="overwriteCategories"
+                [label]="
+                  'components.modals.import-torrents.category-path-mapping.overwrite' | translate
+                "
+              >
+                <bb-popover
+                  bbLabelExtra
+                  [subject]="
+                    'components.modals.import-torrents.category-path-mapping.overwrite' | translate
+                  "
+                  [description]="
+                    'components.modals.import-torrents.category-path-mapping.overwrite-description'
+                      | translate
+                  "
+                  placement="right"
+                ></bb-popover>
+              </app-bb-switch>
             </div>
             <p class="small mb-3">
               {{
@@ -352,39 +326,28 @@
         <app-bb-section-card
           [title]="'components.modals.import-torrents.label.after-import' | translate"
         >
-          <div class="btn-group w-100 mb-1 mt-3" role="group">
-            <input
-              type="radio"
-              class="btn-check"
-              formControlName="startMode"
-              id="sm-paused"
+          <app-bb-radio-group
+            class="d-block mt-3 mb-2"
+            appearance="cards"
+            formControlName="startMode"
+            [attr.aria-label]="'components.modals.import-torrents.label.after-import' | translate"
+          >
+            <app-bb-radio
               value="paused"
+              [label]="'components.modals.import-torrents.start-mode.paused' | translate"
+              [sub]="'components.modals.import-torrents.start-mode.sub.paused' | translate"
             />
-            <label class="btn btn-outline-secondary" for="sm-paused">
-              {{ 'components.modals.import-torrents.start-mode.paused' | translate }}
-            </label>
-            <input
-              type="radio"
-              class="btn-check"
-              formControlName="startMode"
-              id="sm-active"
+            <app-bb-radio
               value="active"
+              [label]="'components.modals.import-torrents.start-mode.active' | translate"
+              [sub]="'components.modals.import-torrents.start-mode.sub.active' | translate"
             />
-            <label class="btn btn-outline-secondary" for="sm-active">
-              {{ 'components.modals.import-torrents.start-mode.active' | translate }}
-            </label>
-            <input
-              type="radio"
-              class="btn-check"
-              formControlName="startMode"
-              id="sm-all"
+            <app-bb-radio
               value="all"
+              [label]="'components.modals.import-torrents.start-mode.all' | translate"
+              [sub]="'components.modals.import-torrents.start-mode.sub.all' | translate"
             />
-            <label class="btn btn-outline-secondary" for="sm-all">
-              {{ 'components.modals.import-torrents.start-mode.all' | translate }}
-            </label>
-          </div>
-          <div class="small text-body-secondary">{{ startModeHint() | translate }}</div>
+          </app-bb-radio-group>
         </app-bb-section-card>
       }
 

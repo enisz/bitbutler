@@ -2,6 +2,7 @@
 @use '@ng-select/ng-select/themes/default.theme.css';
 @use './styles/ng-select';
 @use './styles/toolbar-button';
+@use './styles/form-controls';
 @use './styles/themes/theme-utils' as bb;
 
 @use 'flag-icons/sass/flag-icons' with (
@@ -95,8 +96,6 @@ html[data-bs-theme] .dropdown-menu,
 html[data-bs-theme] .btn,
 html[data-bs-theme] .form-control,
 html[data-bs-theme] .form-select,
-html[data-bs-theme] .form-check-input,
-html[data-bs-theme] .form-switch .form-check-input,
 html[data-bs-theme] .list-group-item,
 html[data-bs-theme] .modal-content {
   transition-property: background-color, color, border-color, box-shadow;
@@ -237,6 +236,16 @@ ngb-modal-window {
     background-color 120ms ease,
     border-color 120ms ease,
     box-shadow 120ms ease;
+}
+
+// Input group addons (units, suffixes) are set apart from the field with a slightly tinted
+// background, as in the Bootstrap docs.
+.input-group-text {
+  background-color: color-mix(
+    in srgb,
+    var(--bb-control-bg) 88%,
+    var(--bs-body-color) 12%
+  ) !important;
 }
 
 .form-control::placeholder {
@@ -735,10 +744,6 @@ ngb-typeahead-window .dropdown-item:focus {
   outline: none !important;
 }
 
-ngb-typeahead-window.dropdown-menu {
-  min-width: 100% !important;
-}
-
 .modal-content {
   border-radius: 18px;
   background-color: var(--bs-card-bg);
@@ -1039,56 +1044,6 @@ ngb-typeahead-window.dropdown-menu {
   letter-spacing: 0.01em;
 }
 
-.form-check {
-  width: fit-content;
-  margin-bottom: 0.5rem;
-  cursor: pointer;
-
-  .form-check-label {
-    margin-top: 1px;
-    margin-left: 6px;
-    cursor: pointer;
-    user-select: none;
-  }
-}
-
-.form-check-input {
-  cursor: pointer;
-  transition:
-    background-color 120ms ease,
-    border-color 120ms ease,
-    box-shadow 120ms ease;
-
-  &:not(.form-switch &) {
-    background-color: var(--bb-control-bg) !important;
-    border: 1px solid var(--bb-control-border) !important;
-    border-radius: 4px !important;
-
-    &[type='radio'] {
-      border-radius: 50% !important;
-    }
-  }
-
-  &:hover:not(:disabled):not(:checked) {
-    border-color: var(--bb-control-hover-border) !important;
-  }
-
-  &:focus {
-    border-color: var(--bb-control-focus-border) !important;
-    box-shadow: 0 0 0 0.2rem var(--bb-control-focus-ring) !important;
-  }
-
-  &:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
-
-    ~ .form-check-label {
-      cursor: not-allowed;
-      opacity: 0.6;
-    }
-  }
-}
-
 .cdk-overlay-container,
 .cdk-global-overlay-wrapper {
   z-index: 11000 !important;
@@ -1137,7 +1092,7 @@ ngb-typeahead-window.dropdown-menu {
   }
 }
 
-// Option rows - label/sub-text on the left, switch on the right
+// Option rows - label/sub-text on the left, the control (e.g. a switch) on the right
 
 .bb-options {
   display: flex;
@@ -1201,18 +1156,6 @@ ngb-typeahead-window.dropdown-menu {
   }
 }
 
-.bb-option__toggle {
-  flex-shrink: 0;
-  margin: 0;
-  padding-left: 0;
-
-  .form-check-input {
-    width: 40px;
-    height: 23px;
-    margin: 0;
-  }
-}
-
 // Control on the right of an option row (select, input, slider): half of the row.
 .bb-option__control {
   flex: 0 0 50%;
@@ -1250,6 +1193,30 @@ $bb-options-grid-breakpoint: 991.98px;
 
 .bb-option--wide {
   grid-column: 1 / -1;
+}
+
+// A value field revealed under a stacked row's cards (e.g. a limit's custom value); helper text
+// such as the converted value goes on the right (`ms-auto`).
+.bb-option__detail {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  > .form-control,
+  > .input-group {
+    max-width: 240px;
+  }
+}
+
+// Label and description on top, the control (option cards) across the full width below.
+.bb-option--stacked {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+
+  > .bb-option__control {
+    flex-basis: auto;
+  }
 }
 
 .tooltip {

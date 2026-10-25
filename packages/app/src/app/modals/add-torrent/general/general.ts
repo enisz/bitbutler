@@ -16,6 +16,8 @@ import { FileTreeStats } from '../../../components/bb-file-tree/bb-file-tree';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
 import { CategorySelect } from '../../../components/category-select/category-select';
+import { BbRadio } from '../../../components/form-controls/bb-radio-group/bb-radio';
+import { BbRadioGroup } from '../../../components/form-controls/bb-radio-group/bb-radio-group';
 import { SavePathSelect } from '../../../components/save-path-select/save-path-select';
 import { TagSelect } from '../../../components/tag-select/tag-select';
 import { AutofocusDirective } from '../../../directives/autofocus';
@@ -29,6 +31,8 @@ import { AddTorrentFolderPicker } from './folder-picker/folder-picker';
 @Component({
   selector: 'app-add-torrent-general',
   imports: [
+    BbRadioGroup,
+    BbRadio,
     BbSectionCard,
     ReactiveFormsModule,
     AutofocusDirective,
@@ -42,7 +46,6 @@ import { AddTorrentFolderPicker } from './folder-picker/folder-picker';
     AddTorrentFolderPicker,
   ],
   templateUrl: './general.html',
-  styleUrl: './general.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddTorrentGeneral {

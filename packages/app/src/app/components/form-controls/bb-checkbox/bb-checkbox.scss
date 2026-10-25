@@ -1,0 +1,34 @@
+:host {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+}
+
+.bb-checkbox__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+
+  // A bare box (no label, sub-text or projected content) takes no room next to it.
+  &:not(:has(.bb-ctl-label:not(:empty))):not(:has(.bb-ctl-sub)):not(
+      :has(.bb-checkbox__line > :not(label))
+    ) {
+    display: none;
+  }
+}
+
+.bb-checkbox__line {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+// Single line each, ellipsized; a cut-off line shows its full text in a tooltip.
+.bb-ctl-label,
+.bb-ctl-sub {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

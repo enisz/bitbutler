@@ -47,6 +47,9 @@ describe('ImportConfiguration', () => {
 
   const switches = (): HTMLInputElement[] =>
     Array.from(fixture.nativeElement.querySelectorAll('input[role="switch"]'));
+  // The server checkboxes, without the "all servers" one above them.
+  const serverChecks = (): HTMLInputElement[] =>
+    Array.from(fixture.nativeElement.querySelectorAll('.bb-check-tree__items input'));
 
   beforeEach(async () => {
     activeModal = { close: vi.fn(), dismiss: vi.fn() };
@@ -98,12 +101,27 @@ describe('ImportConfiguration', () => {
     TestBed.inject(TranslateService).use('us');
   });
 
-  it('reads the file on init and renders a switch for settings and one per server, all on', async () => {
+  it('reads the file on init and renders a switch for settings and a checkbox per server, all on', async () => {
     await create();
 
     expect(read).toHaveBeenCalledWith({ path: '/tmp/a.bbc' });
-    expect(switches()).toHaveLength(3);
-    expect(switches().every((s) => s.checked)).toBe(true);
+    expect(switches()).toHaveLength(1);
+    expect(switches()[0].checked).toBe(true);
+    expect(serverChecks()).toHaveLength(2);
+    expect(serverChecks().every((s) => s.checked)).toBe(true);
+  });
+
+  it('selects and clears every server from the all-servers checkbox', async () => {
+    await create();
+    const all = fixture.nativeElement.querySelector(
+      '.bb-check-tree__all input',
+    ) as HTMLInputElement;
+
+    all.click();
+    expect(component.selectedServerIds().size).toBe(0);
+
+    all.click();
+    expect([...component.selectedServerIds()].sort()).toEqual(['s1', 's2']);
   });
 
   it('tags servers as overwriting or new', async () => {
@@ -119,7 +137,8 @@ describe('ImportConfiguration', () => {
   it('hides the settings switch when the file has no settings', async () => {
     await create({ ...META, hasSettings: false });
 
-    expect(switches()).toHaveLength(2);
+    expect(switches()).toHaveLength(0);
+    expect(serverChecks()).toHaveLength(2);
     expect(component.applySettings()).toBe(false);
   });
 
@@ -127,14 +146,14 @@ describe('ImportConfiguration', () => {
     await create({ ...META, servers: [] });
 
     expect(switches()).toHaveLength(1);
+    expect(fixture.nativeElement.querySelector('app-bb-check-tree')).toBeNull();
   });
 
   it('disables Import when every switch is off', async () => {
     await create();
 
     component.setApplySettings(false);
-    component.toggleServer('s1');
-    component.toggleServer('s2');
+    component.setSelectedServers([]);
 
     expect(component.canImport()).toBe(false);
   });
@@ -143,7 +162,7 @@ describe('ImportConfiguration', () => {
     await create();
 
     component.setApplySettings(false);
-    component.toggleServer('s1');
+    component.setSelectedServers(['s2']);
 
     expect(component.canImport()).toBe(true);
   });
@@ -152,7 +171,7 @@ describe('ImportConfiguration', () => {
     await create();
     importFile.mockResolvedValue({ settings: false, servers: 1 });
     component.setApplySettings(false);
-    component.toggleServer('s1');
+    component.setSelectedServers(['s2']);
 
     await component.import();
 
@@ -206,7 +225,8 @@ describe('ImportConfiguration', () => {
     await fixture.whenStable();
     fixture.detectChanges();
 
-    expect(switches()).toHaveLength(2);
+    expect(switches()).toHaveLength(0);
+    expect(serverChecks()).toHaveLength(2);
     expect(component.applySettings()).toBe(false);
   });
 
@@ -258,7 +278,7 @@ describe('ImportConfiguration', () => {
 
     it('neither asks nor logs out when the current server is not selected', async () => {
       await create();
-      component.toggleServer('s1');
+      component.setSelectedServers(['s2']);
 
       await component.import();
 

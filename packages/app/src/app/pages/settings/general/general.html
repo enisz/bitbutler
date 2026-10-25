@@ -1,102 +1,71 @@
 @if (settingsLoaded()) {
   <form [formGroup]="generalSettingsForm" class="bb-cards">
     <app-bb-section-card [title]="'pages.settings.tab.general.label.torrent-handling' | translate">
-      <div class="bb-options">
-        <div class="bb-option" formGroupName="behavior">
-          <div class="bb-option__text" bbOptionText>
-            <label class="bb-option__label" for="delete-torrent-file">
-              {{
-                'pages.settings.tab.general.general-settings-form.behavior.delete-torrent-after-added'
-                  | translate
-              }}
-            </label>
-            <span class="bb-option__sub">{{
-              'pages.settings.tab.general.popover.deleting-torrent-file.sub' | translate
-            }}</span>
-          </div>
-          <span class="bb-option__toggle form-switch">
-            <input
-              class="form-check-input"
-              type="checkbox"
-              role="switch"
-              id="delete-torrent-file"
-              formControlName="deleteTorrentFile"
-            />
-          </span>
-        </div>
-        <div class="bb-option" formGroupName="behavior">
-          <div class="bb-option__text" bbOptionText>
-            <label class="bb-option__label" for="delete-torrent-on-duplicate">
-              {{
-                'pages.settings.tab.general.general-settings-form.behavior.delete-torrent-on-duplicate'
-                  | translate
-              }}
-            </label>
-            <span class="bb-option__sub">{{
-              'pages.settings.tab.general.popover.delete-torrent-on-duplicate.sub' | translate
-            }}</span>
-          </div>
-          <span class="bb-option__toggle form-switch">
-            <input
-              class="form-check-input"
-              type="checkbox"
-              role="switch"
-              id="delete-torrent-on-duplicate"
-              formControlName="deleteTorrentFileOnDuplicate"
-            />
-          </span>
-        </div>
+      <div class="bb-options" formGroupName="behavior">
+        <app-bb-switch
+          inputId="delete-torrent-file"
+          formControlName="deleteTorrentFile"
+          [label]="
+            'pages.settings.tab.general.general-settings-form.behavior.delete-torrent-after-added'
+              | translate
+          "
+          [sub]="'pages.settings.tab.general.popover.deleting-torrent-file.sub' | translate"
+        />
+        <app-bb-switch
+          inputId="delete-torrent-on-duplicate"
+          formControlName="deleteTorrentFileOnDuplicate"
+          [label]="
+            'pages.settings.tab.general.general-settings-form.behavior.delete-torrent-on-duplicate'
+              | translate
+          "
+          [sub]="'pages.settings.tab.general.popover.delete-torrent-on-duplicate.sub' | translate"
+        />
       </div>
 
       <div class="bb-options mt-3" formGroupName="savePath">
-        <div class="bb-option__note">
-          {{ 'pages.settings.tab.general.general-settings-form.save-path.description' | translate }}
+        <div class="bb-option bb-option--stacked">
+          <div class="bb-option__text" bbOptionText>
+            <span class="bb-option__label" id="save-path-input-type-label">
+              {{ 'pages.settings.tab.general.general-settings-form.save-path.label' | translate }}
+            </span>
+            <span class="bb-option__sub">{{
+              'pages.settings.tab.general.general-settings-form.save-path.description' | translate
+            }}</span>
+          </div>
+          <app-bb-radio-group
+            appearance="cards"
+            formControlName="inputType"
+            aria-labelledby="save-path-input-type-label"
+          >
+            <app-bb-radio
+              value="select"
+              [label]="
+                'pages.settings.tab.general.general-settings-form.save-path.select' | translate
+              "
+              [sub]="
+                'pages.settings.tab.general.general-settings-form.save-path.select-sub' | translate
+              "
+            />
+            <app-bb-radio
+              value="typeahead"
+              [label]="
+                'pages.settings.tab.general.general-settings-form.save-path.typeahead' | translate
+              "
+              [sub]="
+                'pages.settings.tab.general.general-settings-form.save-path.typeahead-sub'
+                  | translate
+              "
+            />
+          </app-bb-radio-group>
         </div>
         <div class="bb-option">
           <div class="bb-option__text" bbOptionText>
             <span class="bb-option__label">
-              <div class="form-check">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  id="save-path-select-radio"
-                  value="select"
-                  formControlName="inputType"
-                />
-                <label class="form-check-label" for="save-path-select-radio">
-                  {{
-                    'pages.settings.tab.general.general-settings-form.save-path.select' | translate
-                  }}
-                </label>
-              </div>
+              {{ 'pages.settings.tab.general.general-settings-form.save-path.preview' | translate }}
             </span>
           </div>
           <div class="bb-option__control">
-            <app-save-path-select [inputType]="'select'" [clearable]="true" />
-          </div>
-        </div>
-        <div class="bb-option">
-          <div class="bb-option__text" bbOptionText>
-            <span class="bb-option__label">
-              <div class="form-check">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  id="save-path-typeahead-radio"
-                  value="typeahead"
-                  formControlName="inputType"
-                />
-                <label class="form-check-label" for="save-path-typeahead-radio">
-                  {{
-                    'pages.settings.tab.general.general-settings-form.save-path.typeahead'
-                      | translate
-                  }}
-                </label>
-              </div>
-            </span>
-          </div>
-          <div class="bb-option__control">
-            <app-save-path-select [inputType]="'typeahead'" />
+            <app-save-path-select [inputType]="savePathInputType()" [clearable]="true" />
           </div>
         </div>
       </div>
@@ -104,105 +73,49 @@
 
     <app-bb-section-card [title]="'pages.settings.tab.general.label.language' | translate">
       <div class="bb-options" formGroupName="language">
-        <div class="bb-option">
-          <div class="bb-option__text" bbOptionText>
-            <span class="bb-option__label">
-              {{ 'pages.settings.tab.general.general-settings-form.language.language' | translate }}
-            </span>
-          </div>
-          <div class="bb-option__control">
-            <ng-select
-              [items]="languages()"
-              [clearable]="false"
-              [openOnEnter]="false"
-              [clearSearchOnAdd]="true"
-              [searchable]="false"
-              bindLabel="label"
-              bindValue="value"
-              formControlName="language"
-            >
-              <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
-                <div class="d-flex flex-row align-items-center">
-                  <span class="fi" [ngClass]="'fi-' + item.value"></span>
-                  <span class="ms-3">{{ item.label }}</span>
-                </div>
-              </ng-template>
-
-              <ng-template ng-label-tmp let-item="item">
-                <div class="d-flex flex-row align-items-center">
-                  <span class="fi" [ngClass]="'fi-' + item.value"></span>
-                  <span class="ms-3">{{ item.label }}</span>
-                </div>
-              </ng-template>
-            </ng-select>
-          </div>
+        <div class="bb-option bb-option--stacked">
+          <app-bb-radio-group
+            appearance="tiles"
+            formControlName="language"
+            [attr.aria-label]="
+              'pages.settings.tab.general.general-settings-form.language.language' | translate
+            "
+          >
+            @for (language of languages; track language.value) {
+              <app-bb-radio
+                [value]="language.value"
+                [label]="language.label"
+                [attr.lang]="language.lang"
+              >
+                <span bbRadioIcon class="fi" [ngClass]="'fi-' + language.value"></span>
+              </app-bb-radio>
+            }
+          </app-bb-radio-group>
         </div>
       </div>
     </app-bb-section-card>
 
     <app-bb-section-card [title]="'pages.settings.tab.general.label.date-format' | translate">
       <div class="bb-options" formGroupName="dateFormat">
-        <div class="bb-option">
+        <div class="bb-option bb-option--stacked">
           <div class="bb-option__text" bbOptionText>
-            <span class="bb-option__label">
+            <span class="bb-option__label" id="date-format-preset-label">
               {{
                 'pages.settings.tab.general.general-settings-form.date-format.preset-label'
                   | translate
               }}
             </span>
           </div>
-          <div class="bb-option__control">
-            <ng-select
-              [items]="dateFormatPresets()"
-              [clearable]="false"
-              [openOnEnter]="false"
-              [clearSearchOnAdd]="true"
-              [searchable]="false"
-              bindLabel="label"
-              bindValue="value"
-              formControlName="preset"
-            >
-              <ng-template ng-option-tmp let-item="item">
-                <div class="d-flex justify-content-between align-items-center">
-                  <span>{{ item.label }}</span>
-                  <span class="text-muted ms-3">{{ item.example }}</span>
-                </div>
-              </ng-template>
-
-              <ng-template ng-label-tmp let-item="item">
-                <div class="d-flex justify-content-between align-items-center">
-                  <span>{{ item.label }}</span>
-                  <span class="text-muted ms-3 bb-select-selected-value-example">{{
-                    item.example
-                  }}</span>
-                </div>
-              </ng-template>
-            </ng-select>
-          </div>
-        </div>
-
-        <div class="bb-option">
-          <div class="bb-option__text" bbOptionText>
-            <span class="bb-option__label">
-              {{
-                'pages.settings.tab.general.general-settings-form.date-format.first-day-of-week-label'
-                  | translate
-              }}
-            </span>
-          </div>
-          <div class="bb-option__control">
-            <ng-select
-              [items]="firstDayOfWeekOptions()"
-              [clearable]="false"
-              [openOnEnter]="false"
-              [clearSearchOnAdd]="true"
-              [searchable]="false"
-              bindLabel="label"
-              bindValue="value"
-              formControlName="firstDayOfWeek"
-            >
-            </ng-select>
-          </div>
+          <app-bb-radio-group
+            appearance="cards"
+            [columns]="3"
+            formControlName="preset"
+            aria-labelledby="date-format-preset-label"
+          >
+            @for (preset of dateFormatPresets(); track preset.value) {
+              <app-bb-radio [value]="preset.value" [label]="preset.label" [sub]="preset.example" />
+            }
+          </app-bb-radio-group>
         </div>
 
         @if (isCustomDateFormat()) {
@@ -311,6 +224,26 @@
             </div>
           </div>
         }
+
+        <div class="bb-option bb-option--stacked">
+          <div class="bb-option__text" bbOptionText>
+            <span class="bb-option__label" id="first-day-of-week-label">
+              {{
+                'pages.settings.tab.general.general-settings-form.date-format.first-day-of-week-label'
+                  | translate
+              }}
+            </span>
+          </div>
+          <app-bb-radio-group
+            appearance="cards"
+            formControlName="firstDayOfWeek"
+            aria-labelledby="first-day-of-week-label"
+          >
+            @for (option of firstDayOfWeekOptions(); track option.value) {
+              <app-bb-radio [value]="option.value" [label]="option.label" />
+            }
+          </app-bb-radio-group>
+        </div>
       </div>
     </app-bb-section-card>
   </form>

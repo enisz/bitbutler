@@ -16,9 +16,12 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
+import { BbOptionText } from '../../directives/bb-option-text';
 import { RatioLimitPipe } from '../../pipes/ratio-limit-pipe';
 import { TimeLimitPipe } from '../../pipes/time-limit-pipe';
 import { BbPopover } from '../bb-popover/bb-popover';
+import { BbRadio } from '../form-controls/bb-radio-group/bb-radio';
+import { BbRadioGroup } from '../form-controls/bb-radio-group/bb-radio-group';
 
 export type LimitMode = 'custom' | 'global' | 'no-limit';
 
@@ -30,9 +33,17 @@ export type ShareLimitValue = {
 
 @Component({
   selector: 'app-share-limit',
-  imports: [ReactiveFormsModule, TranslatePipe, BbPopover, TimeLimitPipe, RatioLimitPipe],
+  imports: [
+    BbRadioGroup,
+    BbRadio,
+    BbOptionText,
+    ReactiveFormsModule,
+    TranslatePipe,
+    BbPopover,
+    TimeLimitPipe,
+    RatioLimitPipe,
+  ],
   templateUrl: './share-limit.html',
-  styleUrl: './share-limit.scss',
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -51,6 +62,8 @@ export class ShareLimit implements ControlValueAccessor {
     inactiveSeedingTimeLimit: new FormControl<number | null>({ value: null, disabled: true }),
   });
 
+  /** Disabled from the form: the mode cards are locked along with the value fields. */
+  protected readonly disabled = signal(false);
   public ratioMode = signal<LimitMode>('no-limit');
   public seedingMode = signal<LimitMode>('no-limit');
   public inactiveMode = signal<LimitMode>('no-limit');
@@ -153,6 +166,7 @@ export class ShareLimit implements ControlValueAccessor {
   }
 
   public setDisabledState(isDisabled: boolean): void {
+    this.disabled.set(isDisabled);
     if (isDisabled) {
       this.form.disable({ emitEvent: false });
     } else {

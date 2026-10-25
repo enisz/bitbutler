@@ -19,22 +19,11 @@
       <app-bb-section-card [title]="'pages.qb-settings.tab.storage.label.temp-files' | translate">
         <div class="bb-options">
           <div class="bb-options mb-3">
-            <div class="bb-option">
-              <div class="bb-option__text" bbOptionText>
-                <label class="bb-option__label" for="temp-path-enabled">
-                  {{ 'pages.qb-settings.tab.storage.field.temp-path-enabled' | translate }}
-                </label>
-              </div>
-              <span class="bb-option__toggle form-switch">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  role="switch"
-                  id="temp-path-enabled"
-                  formControlName="temp_path_enabled"
-                />
-              </span>
-            </div>
+            <app-bb-switch
+              inputId="temp-path-enabled"
+              formControlName="temp_path_enabled"
+              [label]="'pages.qb-settings.tab.storage.field.temp-path-enabled' | translate"
+            />
           </div>
           <div class="bb-option">
             <div class="bb-option__text" bbOptionText>
@@ -55,40 +44,40 @@
     >
       <div class="bb-options">
         <div class="bb-options mb-3">
-          <div class="bb-option">
-            <div class="bb-option__text" bbOptionText>
-              <label class="bb-option__label" for="incomplete-files-ext">
-                {{ 'pages.qb-settings.tab.storage.field.incomplete-files-ext' | translate }}
-              </label>
-            </div>
-            <span class="bb-option__toggle form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                role="switch"
-                id="incomplete-files-ext"
-                formControlName="incomplete_files_ext"
-              />
-            </span>
-          </div>
+          <app-bb-switch
+            inputId="incomplete-files-ext"
+            formControlName="incomplete_files_ext"
+            [label]="'pages.qb-settings.tab.storage.field.incomplete-files-ext' | translate"
+          />
         </div>
         @if (hasContentLayout()) {
-          <div class="bb-option">
+          <div class="bb-option bb-option--stacked">
             <div class="bb-option__text" bbOptionText>
-              <span class="bb-option__label">
+              <span class="bb-option__label" id="torrent-content-layout-label">
                 {{ 'pages.qb-settings.tab.storage.field.torrent-content-layout' | translate }}
               </span>
             </div>
-            <div class="bb-option__control">
-              <ng-select
-                [items]="contentLayouts"
-                [clearable]="false"
-                [searchable]="false"
-                bindLabel="label"
-                bindValue="value"
-                formControlName="torrent_content_layout"
-              ></ng-select>
-            </div>
+            <app-bb-radio-group
+              appearance="cards"
+              formControlName="torrent_content_layout"
+              aria-labelledby="torrent-content-layout-label"
+            >
+              <app-bb-radio
+                value="Original"
+                [label]="'pages.qb-settings.tab.storage.content-layout.original' | translate"
+                [sub]="'pages.qb-settings.tab.storage.content-layout.original-sub' | translate"
+              />
+              <app-bb-radio
+                value="Subfolder"
+                [label]="'pages.qb-settings.tab.storage.content-layout.subfolder' | translate"
+                [sub]="'pages.qb-settings.tab.storage.content-layout.subfolder-sub' | translate"
+              />
+              <app-bb-radio
+                value="NoSubfolder"
+                [label]="'pages.qb-settings.tab.storage.content-layout.no-subfolder' | translate"
+                [sub]="'pages.qb-settings.tab.storage.content-layout.no-subfolder-sub' | translate"
+              />
+            </app-bb-radio-group>
           </div>
         }
       </div>
@@ -98,73 +87,91 @@
       [title]="'pages.qb-settings.tab.storage.label.save-management' | translate"
     >
       <div class="bb-options">
-        <div class="bb-option">
+        <div class="bb-option bb-option--stacked">
           <div class="bb-option__text" bbOptionText>
-            <span class="bb-option__label">
+            <span class="bb-option__label" id="auto-tmm-enabled-label">
               {{ 'pages.qb-settings.tab.storage.field.auto-tmm-enabled' | translate }}
             </span>
           </div>
-          <div class="bb-option__control">
-            <ng-select
-              [items]="autoTmmModes"
-              [clearable]="false"
-              [searchable]="false"
-              bindLabel="label"
-              bindValue="value"
-              formControlName="auto_tmm_enabled"
-            ></ng-select>
-          </div>
+          <app-bb-radio-group
+            appearance="cards"
+            formControlName="auto_tmm_enabled"
+            aria-labelledby="auto-tmm-enabled-label"
+          >
+            <app-bb-radio
+              [value]="false"
+              [label]="'pages.qb-settings.tab.storage.tmm-mode.manual' | translate"
+              [sub]="'pages.qb-settings.tab.storage.tmm-mode.manual-sub' | translate"
+            />
+            <app-bb-radio
+              [value]="true"
+              [label]="'pages.qb-settings.tab.storage.tmm-mode.automatic' | translate"
+              [sub]="'pages.qb-settings.tab.storage.tmm-mode.automatic-sub' | translate"
+            />
+          </app-bb-radio-group>
         </div>
-        <div class="bb-option">
+        <div class="bb-option bb-option--stacked">
           <div class="bb-option__text" bbOptionText>
-            <span class="bb-option__label">
+            <span class="bb-option__label" id="torrent-changed-tmm-enabled-label">
               {{ 'pages.qb-settings.tab.storage.field.torrent-changed-tmm-enabled' | translate }}
             </span>
           </div>
-          <div class="bb-option__control">
-            <ng-select
-              [items]="tmmChangeBehaviors"
-              [clearable]="false"
-              [searchable]="false"
-              bindLabel="label"
-              bindValue="value"
-              formControlName="torrent_changed_tmm_enabled"
-            ></ng-select>
-          </div>
+          <app-bb-radio-group
+            appearance="cards"
+            formControlName="torrent_changed_tmm_enabled"
+            aria-labelledby="torrent-changed-tmm-enabled-label"
+          >
+            <app-bb-radio
+              [value]="false"
+              [label]="'pages.qb-settings.tab.storage.tmm-behavior.relocate' | translate"
+            />
+            <app-bb-radio
+              [value]="true"
+              [label]="'pages.qb-settings.tab.storage.tmm-behavior.manual' | translate"
+            />
+          </app-bb-radio-group>
         </div>
-        <div class="bb-option">
+        <div class="bb-option bb-option--stacked">
           <div class="bb-option__text" bbOptionText>
-            <span class="bb-option__label">
+            <span class="bb-option__label" id="category-changed-tmm-enabled-label">
               {{ 'pages.qb-settings.tab.storage.field.category-changed-tmm-enabled' | translate }}
             </span>
           </div>
-          <div class="bb-option__control">
-            <ng-select
-              [items]="tmmChangeBehaviors"
-              [clearable]="false"
-              [searchable]="false"
-              bindLabel="label"
-              bindValue="value"
-              formControlName="category_changed_tmm_enabled"
-            ></ng-select>
-          </div>
+          <app-bb-radio-group
+            appearance="cards"
+            formControlName="category_changed_tmm_enabled"
+            aria-labelledby="category-changed-tmm-enabled-label"
+          >
+            <app-bb-radio
+              [value]="false"
+              [label]="'pages.qb-settings.tab.storage.tmm-behavior.relocate' | translate"
+            />
+            <app-bb-radio
+              [value]="true"
+              [label]="'pages.qb-settings.tab.storage.tmm-behavior.manual' | translate"
+            />
+          </app-bb-radio-group>
         </div>
-        <div class="bb-option">
+        <div class="bb-option bb-option--stacked">
           <div class="bb-option__text" bbOptionText>
-            <span class="bb-option__label">
+            <span class="bb-option__label" id="save-path-changed-tmm-enabled-label">
               {{ 'pages.qb-settings.tab.storage.field.save-path-changed-tmm-enabled' | translate }}
             </span>
           </div>
-          <div class="bb-option__control">
-            <ng-select
-              [items]="tmmChangeBehaviors"
-              [clearable]="false"
-              [searchable]="false"
-              bindLabel="label"
-              bindValue="value"
-              formControlName="save_path_changed_tmm_enabled"
-            ></ng-select>
-          </div>
+          <app-bb-radio-group
+            appearance="cards"
+            formControlName="save_path_changed_tmm_enabled"
+            aria-labelledby="save-path-changed-tmm-enabled-label"
+          >
+            <app-bb-radio
+              [value]="false"
+              [label]="'pages.qb-settings.tab.storage.tmm-behavior.relocate' | translate"
+            />
+            <app-bb-radio
+              [value]="true"
+              [label]="'pages.qb-settings.tab.storage.tmm-behavior.manual' | translate"
+            />
+          </app-bb-radio-group>
         </div>
       </div>
     </app-bb-section-card>

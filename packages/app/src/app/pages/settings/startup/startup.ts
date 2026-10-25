@@ -6,7 +6,7 @@ import { IconDefinition, faTriangleExclamation } from '@fortawesome/free-solid-s
 import { TranslatePipe } from '@ngx-translate/core';
 import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
-import { BbOptionText } from '../../../directives/bb-option-text';
+import { BbSwitch } from '../../../components/form-controls/bb-switch/bb-switch';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { GeneralSettingsFormService } from '../general-settings-form.service';
 import { SettingsTabComponent } from '../settings.interface';
@@ -14,7 +14,7 @@ import { SettingsTabComponent } from '../settings.interface';
 @Component({
   selector: 'app-startup',
   imports: [
-    BbOptionText,
+    BbSwitch,
     BbSectionCard,
     CommonModule,
     ReactiveFormsModule,

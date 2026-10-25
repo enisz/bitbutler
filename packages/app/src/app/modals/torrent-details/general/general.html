@@ -316,124 +316,66 @@
       [title]="'components.modals.torrent-details.general.labels.options' | translate"
     >
       <div class="bb-options bb-options--grid">
-        <div class="bb-option">
-          <div class="bb-option__text" bbOptionText>
-            <span class="bb-option__label">
-              {{ 'components.modals.torrent-details.general.auto-tmm' | translate }}
-            </span>
-            <span class="bb-option__sub">{{
-              'components.modals.torrent-details.general.popover.auto-tmm.sub' | translate
-            }}</span>
-          </div>
-          <span class="bb-option__toggle form-switch">
-            <input
-              type="checkbox"
-              class="form-check-input"
-              [checked]="torrent()!.data.auto_tmm"
-              (change)="actionsService.toggleAutoTmm()"
-            />
-          </span>
-        </div>
-        <div class="bb-option">
-          <div class="bb-option__text" bbOptionText>
-            <span class="bb-option__label">
-              {{ 'components.modals.torrent-details.general.sequential-download' | translate }}
-            </span>
-            <span class="bb-option__sub">{{
-              'components.modals.torrent-details.general.popover.sequential-download.sub'
+        <app-bb-switch
+          [checked]="torrent()!.data.auto_tmm"
+          (checkedChange)="actionsService.toggleAutoTmm()"
+          [label]="'components.modals.torrent-details.general.auto-tmm' | translate"
+          [sub]="'components.modals.torrent-details.general.popover.auto-tmm.sub' | translate"
+        />
+        <app-bb-switch
+          [checked]="torrent()!.data.seq_dl"
+          (checkedChange)="actionsService.toggleSequentialDownload()"
+          [label]="'components.modals.torrent-details.general.sequential-download' | translate"
+          [sub]="
+            'components.modals.torrent-details.general.popover.sequential-download.sub' | translate
+          "
+        />
+        <app-bb-switch
+          [checked]="torrent()!.data.force_start"
+          (checkedChange)="actionsService.toggleForceStart()"
+          [label]="'components.modals.torrent-details.general.force-start' | translate"
+          [sub]="'components.modals.torrent-details.general.popover.force-start.sub' | translate"
+        />
+        <app-bb-switch
+          [checked]="torrent()!.data.super_seeding"
+          (checkedChange)="actionsService.toggleSuperSeeding()"
+          [label]="'components.modals.torrent-details.general.super-seeding' | translate"
+          [sub]="'components.modals.torrent-details.general.popover.super-seeding.sub' | translate"
+        >
+          <bb-popover
+            bbLabelExtra
+            placement="top"
+            [subject]="
+              'components.modals.torrent-details.general.popover.super-seeding.title' | translate
+            "
+            [description]="
+              'components.modals.torrent-details.general.popover.super-seeding.description'
                 | translate
-            }}</span>
-          </div>
-          <span class="bb-option__toggle form-switch">
-            <input
-              type="checkbox"
-              class="form-check-input"
-              [checked]="torrent()!.data.seq_dl"
-              (change)="actionsService.toggleSequentialDownload()"
-            />
-          </span>
-        </div>
-        <div class="bb-option">
-          <div class="bb-option__text" bbOptionText>
-            <span class="bb-option__label">
-              {{ 'components.modals.torrent-details.general.force-start' | translate }}
-            </span>
-            <span class="bb-option__sub">{{
-              'components.modals.torrent-details.general.popover.force-start.sub' | translate
-            }}</span>
-          </div>
-          <span class="bb-option__toggle form-switch">
-            <input
-              type="checkbox"
-              class="form-check-input"
-              [checked]="torrent()!.data.force_start"
-              (change)="actionsService.toggleForceStart()"
-            />
-          </span>
-        </div>
-        <div class="bb-option">
-          <div class="bb-option__text" bbOptionText>
-            <span class="bb-option__label">
-              <span class="bb-option__label-text">{{
-                'components.modals.torrent-details.general.super-seeding' | translate
-              }}</span>
-              <bb-popover
-                placement="top"
-                [subject]="
-                  'components.modals.torrent-details.general.popover.super-seeding.title'
-                    | translate
-                "
-                [description]="
-                  'components.modals.torrent-details.general.popover.super-seeding.description'
-                    | translate
-                "
-              ></bb-popover>
-            </span>
-            <span class="bb-option__sub">{{
-              'components.modals.torrent-details.general.popover.super-seeding.sub' | translate
-            }}</span>
-          </div>
-          <span class="bb-option__toggle form-switch">
-            <input
-              type="checkbox"
-              class="form-check-input"
-              [checked]="torrent()!.data.super_seeding"
-              (change)="actionsService.toggleSuperSeeding()"
-            />
-          </span>
-        </div>
-        <div class="bb-option">
-          <div class="bb-option__text" bbOptionText>
-            <span class="bb-option__label">
-              <span class="bb-option__label-text">{{
-                'components.modals.torrent-details.general.first-last-piece-prio' | translate
-              }}</span>
-              <bb-popover
-                placement="top"
-                [subject]="
-                  'components.modals.torrent-details.general.popover.first-last-piece-prio.title'
-                    | translate
-                "
-                [description]="
-                  'components.modals.torrent-details.general.popover.first-last-piece-prio.description'
-                    | translate
-                "
-              ></bb-popover>
-            </span>
-            <span class="bb-option__sub">{{
-              'components.modals.torrent-details.general.popover.first-last-piece-prio.sub'
+            "
+          ></bb-popover>
+        </app-bb-switch>
+        <app-bb-switch
+          [checked]="torrent()!.data.f_l_piece_prio"
+          (checkedChange)="actionsService.toggleFirstLastPiecePrio()"
+          [label]="'components.modals.torrent-details.general.first-last-piece-prio' | translate"
+          [sub]="
+            'components.modals.torrent-details.general.popover.first-last-piece-prio.sub'
+              | translate
+          "
+        >
+          <bb-popover
+            bbLabelExtra
+            placement="top"
+            [subject]="
+              'components.modals.torrent-details.general.popover.first-last-piece-prio.title'
                 | translate
-            }}</span>
-          </div>
-          <span class="bb-option__toggle form-switch">
-            <input
-              type="checkbox"
-              class="form-check-input"
-              [checked]="torrent()!.data.f_l_piece_prio"
-              (change)="actionsService.toggleFirstLastPiecePrio()"
-            />
-          </span>
-        </div>
+            "
+            [description]="
+              'components.modals.torrent-details.general.popover.first-last-piece-prio.description'
+                | translate
+            "
+          ></bb-popover>
+        </app-bb-switch>
       </div>
     </app-bb-section-card>
 

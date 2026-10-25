@@ -2,21 +2,3 @@ ng-select.flex-grow-1 {
   min-width: 0;
   flex-basis: 0;
 }
-
-.speed-input {
-  flex: 0 0 auto;
-  width: 160px;
-
-  input[type='number'].form-control {
-    text-align: right;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .input-group-text {
-    background-color: color-mix(
-      in srgb,
-      var(--bb-control-bg) 88%,
-      var(--bs-body-color) 12%
-    ) !important;
-  }
-}

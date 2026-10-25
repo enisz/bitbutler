@@ -1,100 +1,95 @@
-<div [formGroup]="form" class="d-flex flex-column gap-3">
-  <div class="limit-row">
-    <div class="form-floating limit-row__field">
-      <input
-        type="number"
-        class="form-control"
-        id="downloadLimit"
-        placeholder="0"
-        formControlName="downloadLimit"
-        min="0"
-      />
-      <label for="downloadLimit">{{
-        'components.transfer-limit.download-limit' | translate
-      }}</label>
+<div [formGroup]="form" class="bb-options">
+  <div class="bb-option bb-option--stacked">
+    <div class="bb-option__text" bbOptionText>
+      <span class="bb-option__label">
+        <span class="bb-option__label-text" [id]="idPrefix + 'downloadLimit-label'">{{
+          'components.transfer-limit.download-limit' | translate
+        }}</span>
+      </span>
     </div>
-
-    <div class="btn-group segmented-picker" role="group">
-      <input
-        type="radio"
-        class="btn-check"
-        name="downloadMode"
-        id="downloadModeNoLimit"
-        [checked]="downloadMode() === 'no-limit'"
-        (change)="setDownloadMode('no-limit')"
+    <app-bb-radio-group
+      appearance="cards"
+      [disabled]="disabled()"
+      [value]="downloadMode()"
+      [attr.aria-labelledby]="idPrefix + 'downloadLimit-label'"
+      (valueChange)="setDownloadMode($any($event))"
+    >
+      <app-bb-radio
+        value="no-limit"
+        [label]="'general.limit.no-limit' | translate"
+        [sub]="noLimitSub() ?? ('general.limit.sub.no-limit' | translate)"
       />
-      <label class="btn" for="downloadModeNoLimit">{{
-        'general.limit.no-limit' | translate
-      }}</label>
-
-      <input
-        type="radio"
-        class="btn-check"
-        name="downloadMode"
-        id="downloadModeCustom"
-        [checked]="downloadMode() === 'custom'"
-        (change)="setDownloadMode('custom')"
+      <app-bb-radio
+        value="custom"
+        [label]="'general.limit.custom' | translate"
+        [sub]="customSub() ?? ('general.limit.sub.custom' | translate)"
       />
-      <label class="btn" for="downloadModeCustom">{{ 'general.limit.custom' | translate }}</label>
-    </div>
-
-    <bb-popover
-      [subject]="'components.transfer-limit.popover.download-limit.title' | translate"
-      [description]="'components.transfer-limit.popover.download-limit.description' | translate"
-      placement="top"
-    ></bb-popover>
-
-    @if (downloadMode() === 'custom' && form.controls.downloadLimit.value) {
-      <div class="form-text ms-1 limit-row__helper">
-        {{ form.controls.downloadLimit.value * 1024 | speedLimit }}
+    </app-bb-radio-group>
+    @if (downloadMode() === 'custom') {
+      <div class="bb-option__detail">
+        <div class="input-group">
+          <input
+            type="number"
+            class="form-control"
+            [id]="idPrefix + 'downloadLimit'"
+            min="0"
+            formControlName="downloadLimit"
+            [attr.aria-labelledby]="idPrefix + 'downloadLimit-label'"
+          />
+          <span class="input-group-text">{{ 'components.transfer-limit.unit' | translate }}</span>
+        </div>
+        @if (form.controls.downloadLimit.value) {
+          <span class="form-text m-0 ms-auto">{{
+            form.controls.downloadLimit.value * 1024 | speedLimit
+          }}</span>
+        }
       </div>
     }
   </div>
-
-  <div class="limit-row">
-    <div class="form-floating limit-row__field">
-      <input
-        type="number"
-        class="form-control"
-        id="uploadLimit"
-        placeholder="0"
-        formControlName="uploadLimit"
-        min="0"
-      />
-      <label for="uploadLimit">{{ 'components.transfer-limit.upload-limit' | translate }}</label>
+  <div class="bb-option bb-option--stacked">
+    <div class="bb-option__text" bbOptionText>
+      <span class="bb-option__label">
+        <span class="bb-option__label-text" [id]="idPrefix + 'uploadLimit-label'">{{
+          'components.transfer-limit.upload-limit' | translate
+        }}</span>
+      </span>
     </div>
-
-    <div class="btn-group segmented-picker" role="group">
-      <input
-        type="radio"
-        class="btn-check"
-        name="uploadMode"
-        id="uploadModeNoLimit"
-        [checked]="uploadMode() === 'no-limit'"
-        (change)="setUploadMode('no-limit')"
+    <app-bb-radio-group
+      appearance="cards"
+      [disabled]="disabled()"
+      [value]="uploadMode()"
+      [attr.aria-labelledby]="idPrefix + 'uploadLimit-label'"
+      (valueChange)="setUploadMode($any($event))"
+    >
+      <app-bb-radio
+        value="no-limit"
+        [label]="'general.limit.no-limit' | translate"
+        [sub]="noLimitSub() ?? ('general.limit.sub.no-limit' | translate)"
       />
-      <label class="btn" for="uploadModeNoLimit">{{ 'general.limit.no-limit' | translate }}</label>
-
-      <input
-        type="radio"
-        class="btn-check"
-        name="uploadMode"
-        id="uploadModeCustom"
-        [checked]="uploadMode() === 'custom'"
-        (change)="setUploadMode('custom')"
+      <app-bb-radio
+        value="custom"
+        [label]="'general.limit.custom' | translate"
+        [sub]="customSub() ?? ('general.limit.sub.custom' | translate)"
       />
-      <label class="btn" for="uploadModeCustom">{{ 'general.limit.custom' | translate }}</label>
-    </div>
-
-    <bb-popover
-      [subject]="'components.transfer-limit.popover.upload-limit.title' | translate"
-      [description]="'components.transfer-limit.popover.upload-limit.description' | translate"
-      placement="top"
-    ></bb-popover>
-
-    @if (uploadMode() === 'custom' && form.controls.uploadLimit.value) {
-      <div class="form-text ms-1 limit-row__helper">
-        {{ form.controls.uploadLimit.value * 1024 | speedLimit }}
+    </app-bb-radio-group>
+    @if (uploadMode() === 'custom') {
+      <div class="bb-option__detail">
+        <div class="input-group">
+          <input
+            type="number"
+            class="form-control"
+            [id]="idPrefix + 'uploadLimit'"
+            min="0"
+            formControlName="uploadLimit"
+            [attr.aria-labelledby]="idPrefix + 'uploadLimit-label'"
+          />
+          <span class="input-group-text">{{ 'components.transfer-limit.unit' | translate }}</span>
+        </div>
+        @if (form.controls.uploadLimit.value) {
+          <span class="form-text m-0 ms-auto">{{
+            form.controls.uploadLimit.value * 1024 | speedLimit
+          }}</span>
+        }
       </div>
     }
   </div>

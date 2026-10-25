@@ -2,84 +2,51 @@
   <form [formGroup]="generalSettingsForm" class="bb-cards">
     <app-bb-section-card [title]="'pages.settings.tab.general.label.appearance' | translate">
       <div class="bb-options" formGroupName="appearance">
-        <div class="bb-option">
+        <div class="bb-option bb-option--stacked">
           <div class="bb-option__text" bbOptionText>
-            <span class="bb-option__label">
+            <span class="bb-option__label" id="appearance-family-label">
               {{ 'pages.settings.tab.general.general-settings-form.appearance.family' | translate }}
             </span>
           </div>
-          <div class="bb-option__control">
-            <ng-select
-              [items]="families"
-              [clearable]="false"
-              [openOnEnter]="false"
-              [clearSearchOnAdd]="true"
-              [searchable]="false"
-              bindLabel="label"
-              bindValue="value"
-              formControlName="family"
-            >
-              <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
-                <div class="d-flex flex-row align-items-center">
-                  <app-bb-logo [family]="item.value" [size]="25" />
-                  <span class="ms-3 mt-1">{{ item.label }}</span>
-                </div>
-              </ng-template>
-
-              <ng-template ng-label-tmp let-item="item">
-                <div class="d-flex flex-row align-items-center">
-                  <app-bb-logo [family]="item.value" [size]="25" />
-                  <span class="ms-3 mt-1">{{ item.label }}</span>
-                </div>
-              </ng-template>
-            </ng-select>
-          </div>
+          <app-bb-radio-group
+            appearance="tiles"
+            formControlName="family"
+            aria-labelledby="appearance-family-label"
+          >
+            @for (family of families; track family.value) {
+              <app-bb-radio [value]="family.value" [label]="family.label">
+                <app-bb-logo bbRadioIcon [family]="family.value" [size]="44" />
+              </app-bb-radio>
+            }
+          </app-bb-radio-group>
         </div>
 
-        <div class="bb-option">
+        <div class="bb-option bb-option--stacked">
           <div class="bb-option__text" bbOptionText>
-            <span class="bb-option__label">
+            <span class="bb-option__label" id="appearance-mode-label">
               {{ 'pages.settings.tab.general.general-settings-form.appearance.mode' | translate }}
             </span>
           </div>
-          <div class="bb-option__control">
-            <ng-select
-              [items]="modes()"
-              [clearable]="false"
-              [openOnEnter]="false"
-              [clearSearchOnAdd]="true"
-              [searchable]="false"
-              bindLabel="label"
-              bindValue="value"
-              formControlName="mode"
-            >
-              <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
-                <div class="d-flex flex-row align-items-center">
-                  <div
-                    class="mode-indicator me-2"
-                    [attr.data-bb-theme]="
-                      generalSettingsForm.controls.appearance.controls.family.value
-                    "
-                    [ngClass]="item.value"
-                  ></div>
-                  <span class="ms-2 mt-1">{{ item.label }}</span>
-                </div>
-              </ng-template>
-
-              <ng-template ng-label-tmp let-item="item">
-                <div class="d-flex flex-row align-items-center">
-                  <div
-                    class="mode-indicator me-2"
-                    [attr.data-bb-theme]="
-                      generalSettingsForm.controls.appearance.controls.family.value
-                    "
-                    [ngClass]="item.value"
-                  ></div>
-                  <span class="ms-2 mt-1">{{ item.label }}</span>
-                </div>
-              </ng-template>
-            </ng-select>
-          </div>
+          <app-bb-radio-group
+            appearance="tiles"
+            formControlName="mode"
+            aria-labelledby="appearance-mode-label"
+          >
+            @for (mode of modes(); track mode.value) {
+              <app-bb-radio [value]="mode.value" [label]="mode.label">
+                <span
+                  bbRadioIcon
+                  class="mode-indicator"
+                  [class]="mode.value"
+                  [attr.data-bb-theme]="
+                    generalSettingsForm.controls.appearance.controls.family.value
+                  "
+                  [style.width.px]="44"
+                  [style.height.px]="44"
+                ></span>
+              </app-bb-radio>
+            }
+          </app-bb-radio-group>
         </div>
       </div>
     </app-bb-section-card>

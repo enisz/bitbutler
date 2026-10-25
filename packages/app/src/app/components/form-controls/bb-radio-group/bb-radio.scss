@@ -1,0 +1,83 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.bb-radio {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+  margin: 0;
+  cursor: pointer;
+
+  &.bb-ctl-disabled {
+    cursor: default;
+  }
+}
+
+.bb-radio__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.bb-radio__label,
+.bb-radio__sub {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.bb-ctl-card .bb-radio__label {
+  font-weight: 500;
+}
+
+.bb-radio__icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+
+  &:empty {
+    display: none;
+  }
+}
+
+// A square tile: no radio circle (the input still covers the whole tile, for clicks, keyboard
+// and screen readers), the icon above a centred label.
+.bb-radio--tile {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 120px;
+  height: 120px;
+  padding: 8px;
+
+  // No box of its own, so the input is laid over the tile and takes no room in the column.
+  > .bb-ctl {
+    display: contents;
+  }
+
+  .bb-radio__icon {
+    font-size: 2rem;
+  }
+
+  // Full content width, so a long label truncates inside the padding rather than over it.
+  .bb-radio__text {
+    align-items: center;
+    width: 100%;
+    text-align: center;
+  }
+
+  // Up to two lines (a two-word name breaks onto the second), then an ellipsis.
+  .bb-radio__label {
+    display: -webkit-box;
+    max-width: 100%;
+    font-size: 0.875rem;
+    line-height: 1.2;
+    white-space: normal;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+}

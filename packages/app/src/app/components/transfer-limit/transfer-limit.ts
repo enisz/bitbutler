@@ -5,6 +5,7 @@ import {
   WritableSignal,
   forwardRef,
   inject,
+  input,
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -16,8 +17,10 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
+import { BbOptionText } from '../../directives/bb-option-text';
 import { SpeedLimitPipe } from '../../pipes/speed-limit-pipe';
-import { BbPopover } from '../bb-popover/bb-popover';
+import { BbRadio } from '../form-controls/bb-radio-group/bb-radio';
+import { BbRadioGroup } from '../form-controls/bb-radio-group/bb-radio-group';
 
 export type TransferLimitMode = 'custom' | 'no-limit';
 
@@ -26,11 +29,19 @@ export type TransferLimitValue = {
   downloadLimit: number | null;
 };
 
+let nextId = 0;
+
 @Component({
   selector: 'app-transfer-limit',
-  imports: [ReactiveFormsModule, TranslatePipe, BbPopover, SpeedLimitPipe],
+  imports: [
+    BbRadioGroup,
+    BbRadio,
+    BbOptionText,
+    ReactiveFormsModule,
+    TranslatePipe,
+    SpeedLimitPipe,
+  ],
   templateUrl: './transfer-limit.html',
-  styleUrl: './transfer-limit.scss',
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -41,6 +52,13 @@ export type TransferLimitValue = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TransferLimit implements ControlValueAccessor {
+  // Unique element ids, as a page can hold more than one (global and alternative limits).
+  protected readonly idPrefix = `transfer-limit-${nextId++}-`;
+
+  /** Sub-texts of the No limit / Custom cards, when the generic ones do not fit the context. */
+  public readonly noLimitSub = input<string>();
+  public readonly customSub = input<string>();
+
   private readonly cdr = inject(ChangeDetectorRef);
 
   public form = new FormGroup({
@@ -48,6 +66,8 @@ export class TransferLimit implements ControlValueAccessor {
     downloadLimit: new FormControl<number | null>({ value: null, disabled: true }),
   });
 
+  /** Disabled from the form: the mode cards are locked along with the value fields. */
+  protected readonly disabled = signal(false);
   public uploadMode = signal<TransferLimitMode>('no-limit');
   public downloadMode = signal<TransferLimitMode>('no-limit');
 
@@ -122,6 +142,7 @@ export class TransferLimit implements ControlValueAccessor {
   }
 
   public setDisabledState(isDisabled: boolean): void {
+    this.disabled.set(isDisabled);
     if (isDisabled) {
       this.form.disable({ emitEvent: false });
     } else {

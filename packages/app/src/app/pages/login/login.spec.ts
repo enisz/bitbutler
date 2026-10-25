@@ -167,7 +167,7 @@ describe('Login', () => {
 
   describe('languages', () => {
     it('should list the available languages', () => {
-      expect(component.languages().map((l) => l.value)).toEqual(['us', 'hu']);
+      expect(component.languages.map((l) => l.value)).toEqual(['us', 'hu']);
     });
   });
 

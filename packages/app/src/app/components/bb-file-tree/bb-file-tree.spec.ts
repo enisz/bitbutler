@@ -340,15 +340,13 @@ describe('BbFileTree', () => {
 
     it('should be true after toggleFileSelection', () => {
       const fileNode = component.data[0].children![0];
-      const event = { target: { checked: false } } as unknown as Event;
-      component.toggleFileSelection(fileNode.file!, event);
+      component.toggleFileSelection(fileNode.file!, false);
       expect((component as any).sessionDirty).toBe(true);
     });
 
     it('should be true after toggleFolderSelection', () => {
       const folderNode = component.data[0];
-      const event = { target: { checked: false } } as unknown as Event;
-      component.toggleFolderSelection(folderNode, event);
+      component.toggleFolderSelection(folderNode, false);
       expect((component as any).sessionDirty).toBe(true);
     });
 

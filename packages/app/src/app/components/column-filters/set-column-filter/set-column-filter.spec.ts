@@ -39,12 +39,13 @@ describe('SetColumnFilter', () => {
     ]);
   });
 
-  describe('toggle', () => {
-    it('adds and removes keys from draftValues', () => {
-      component.toggle('Movies');
-      expect(component.draftValues.has('Movies')).toBe(true);
-      component.toggle('Movies');
-      expect(component.draftValues.has('Movies')).toBe(false);
+  describe('setDraft', () => {
+    it('replaces the draft selection and its key list', () => {
+      component.setDraft(['Movies']);
+      expect(component.draftValues().has('Movies')).toBe(true);
+      expect(component.draftKeys()).toEqual(['Movies']);
+      component.setDraft([]);
+      expect(component.draftValues().has('Movies')).toBe(false);
     });
   });
 
@@ -88,14 +89,14 @@ describe('SetColumnFilter', () => {
     it('round-trips applied values through get/setModel', () => {
       component.setModel({ values: ['Movies', 'Books'] });
       expect(component.appliedValues).toEqual(new Set(['Movies', 'Books']));
-      expect(component.draftValues).toEqual(new Set(['Movies', 'Books']));
+      expect(component.draftValues()).toEqual(new Set(['Movies', 'Books']));
       expect(component.getModel()).toEqual({ values: ['Movies', 'Books'] });
     });
   });
 
   describe('apply / clear', () => {
     it('apply copies draftValues into appliedValues and calls filterChangedCallback', () => {
-      component.toggle('Movies');
+      component.setDraft(['Movies']);
       component.apply();
       expect(component.appliedValues).toEqual(new Set(['Movies']));
       expect(mockParams.filterChangedCallback).toHaveBeenCalled();
@@ -103,23 +104,23 @@ describe('SetColumnFilter', () => {
 
     it('clear resets both draftValues and appliedValues and calls filterChangedCallback', () => {
       component.appliedValues = new Set(['Movies']);
-      component.draftValues = new Set(['Movies']);
+      component.setDraft(['Movies']);
       component.clear();
       expect(component.appliedValues.size).toBe(0);
-      expect(component.draftValues.size).toBe(0);
+      expect(component.draftValues().size).toBe(0);
       expect(mockParams.filterChangedCallback).toHaveBeenCalled();
     });
   });
 
   describe('isApplyDisabled', () => {
     it('is true when draftValues matches appliedValues', () => {
-      component.draftValues = new Set(['Movies']);
+      component.setDraft(['Movies']);
       component.appliedValues = new Set(['Movies']);
       expect(component.isApplyDisabled()).toBe(true);
     });
 
     it('is false when draftValues differs from appliedValues', () => {
-      component.draftValues = new Set(['Movies', 'Books']);
+      component.setDraft(['Movies', 'Books']);
       component.appliedValues = new Set(['Movies']);
       expect(component.isApplyDisabled()).toBe(false);
     });

@@ -5,123 +5,68 @@
         [title]="'pages.settings.tab.general.label.notifications-os' | translate"
       >
         <div class="bb-options bb-options--grid bb-notification-section" formGroupName="os">
-          <div class="bb-option bb-option--wide bb-option--master">
-            <div class="bb-option__text" bbOptionText>
-              <label class="bb-option__label" for="notifications-os-enabled">
-                {{
-                  'pages.settings.tab.general.general-settings-form.notifications.os.enabled'
-                    | translate
-                }}
-              </label>
-              <span class="bb-option__sub">{{
-                'pages.settings.tab.general.popover.notifications.os.enabled.sub' | translate
-              }}</span>
-            </div>
-            <span class="bb-option__toggle form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                role="switch"
-                id="notifications-os-enabled"
-                formControlName="enabled"
-              />
-            </span>
-          </div>
-          <div class="bb-option bb-option--wide">
-            <div class="bb-option__text" bbOptionText>
-              <label class="bb-option__label" for="notifications-os-only-when-minimized">
-                {{
-                  'pages.settings.tab.general.general-settings-form.notifications.os.only-when-minimized'
-                    | translate
-                }}
-              </label>
-              <span class="bb-option__sub">{{
-                'pages.settings.tab.general.popover.notifications.os.only-when-minimized.sub'
-                  | translate
-              }}</span>
-            </div>
-            <span class="bb-option__toggle form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                role="switch"
-                id="notifications-os-only-when-minimized"
-                formControlName="onlyWhenMinimized"
-              />
-            </span>
-          </div>
+          <app-bb-switch
+            class="bb-option--wide bb-option--master"
+            inputId="notifications-os-enabled"
+            formControlName="enabled"
+            [label]="
+              'pages.settings.tab.general.general-settings-form.notifications.os.enabled'
+                | translate
+            "
+            [sub]="'pages.settings.tab.general.popover.notifications.os.enabled.sub' | translate"
+          />
+          <app-bb-switch
+            class="bb-option--wide"
+            inputId="notifications-os-only-when-minimized"
+            formControlName="onlyWhenMinimized"
+            [label]="
+              'pages.settings.tab.general.general-settings-form.notifications.os.only-when-minimized'
+                | translate
+            "
+            [sub]="
+              'pages.settings.tab.general.popover.notifications.os.only-when-minimized.sub'
+                | translate
+            "
+          />
           <div class="bb-notification-hint">
             {{
               'pages.settings.tab.general.general-settings-form.notifications.os.description'
                 | translate
             }}
           </div>
-          <div class="bb-option">
-            <div class="bb-option__text" bbOptionText>
-              <label class="bb-option__label" for="notifications-os-finished">
-                {{
-                  'pages.settings.tab.general.general-settings-form.notifications.category.finished'
-                    | translate
-                }}
-              </label>
-              <span class="bb-option__sub">{{
-                'pages.settings.tab.general.popover.notifications.category.finished.sub' | translate
-              }}</span>
-            </div>
-            <span class="bb-option__toggle form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                role="switch"
-                id="notifications-os-finished"
-                formControlName="finished"
-              />
-            </span>
-          </div>
-          <div class="bb-option">
-            <div class="bb-option__text" bbOptionText>
-              <label class="bb-option__label" for="notifications-os-errors">
-                {{
-                  'pages.settings.tab.general.general-settings-form.notifications.category.errors'
-                    | translate
-                }}
-              </label>
-              <span class="bb-option__sub">{{
-                'pages.settings.tab.general.popover.notifications.category.errors.sub' | translate
-              }}</span>
-            </div>
-            <span class="bb-option__toggle form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                role="switch"
-                id="notifications-os-errors"
-                formControlName="errors"
-              />
-            </span>
-          </div>
-          <div class="bb-option">
-            <div class="bb-option__text" bbOptionText>
-              <label class="bb-option__label" for="notifications-os-updates">
-                {{
-                  'pages.settings.tab.general.general-settings-form.notifications.category.updates'
-                    | translate
-                }}
-              </label>
-              <span class="bb-option__sub">{{
-                'pages.settings.tab.general.popover.notifications.category.updates.sub' | translate
-              }}</span>
-            </div>
-            <span class="bb-option__toggle form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                role="switch"
-                id="notifications-os-updates"
-                formControlName="updates"
-              />
-            </span>
-          </div>
+          <app-bb-switch
+            inputId="notifications-os-finished"
+            formControlName="finished"
+            [label]="
+              'pages.settings.tab.general.general-settings-form.notifications.category.finished'
+                | translate
+            "
+            [sub]="
+              'pages.settings.tab.general.popover.notifications.category.finished.sub' | translate
+            "
+          />
+          <app-bb-switch
+            inputId="notifications-os-errors"
+            formControlName="errors"
+            [label]="
+              'pages.settings.tab.general.general-settings-form.notifications.category.errors'
+                | translate
+            "
+            [sub]="
+              'pages.settings.tab.general.popover.notifications.category.errors.sub' | translate
+            "
+          />
+          <app-bb-switch
+            inputId="notifications-os-updates"
+            formControlName="updates"
+            [label]="
+              'pages.settings.tab.general.general-settings-form.notifications.category.updates'
+                | translate
+            "
+            [sub]="
+              'pages.settings.tab.general.popover.notifications.category.updates.sub' | translate
+            "
+          />
         </div>
       </app-bb-section-card>
 
@@ -132,51 +77,36 @@
           class="bb-options bb-options--grid bb-notification-section bb-notification-section--app"
           formGroupName="app"
         >
-          <div class="bb-option bb-option--wide bb-option--master">
+          <app-bb-switch
+            class="bb-option--wide bb-option--master"
+            inputId="notifications-app-enabled"
+            formControlName="enabled"
+            [label]="
+              'pages.settings.tab.general.general-settings-form.notifications.app.enabled'
+                | translate
+            "
+            [sub]="'pages.settings.tab.general.popover.notifications.app.enabled.sub' | translate"
+          />
+          <div class="bb-option bb-option--wide bb-option--stacked">
             <div class="bb-option__text" bbOptionText>
-              <label class="bb-option__label" for="notifications-app-enabled">
-                {{
-                  'pages.settings.tab.general.general-settings-form.notifications.app.enabled'
-                    | translate
-                }}
-              </label>
-              <span class="bb-option__sub">{{
-                'pages.settings.tab.general.popover.notifications.app.enabled.sub' | translate
-              }}</span>
-            </div>
-            <span class="bb-option__toggle form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                role="switch"
-                id="notifications-app-enabled"
-                formControlName="enabled"
-              />
-            </span>
-          </div>
-          <div class="bb-option bb-option--wide">
-            <div class="bb-option__text" bbOptionText>
-              <label class="bb-option__label" for="notifications-app-position">
+              <span class="bb-option__label" id="notifications-app-position-label">
                 {{
                   'pages.settings.tab.general.general-settings-form.notifications.app.position'
                     | translate
                 }}
-              </label>
+              </span>
             </div>
-            <div class="bb-option__control">
-              <ng-select
-                labelForId="notifications-app-position"
-                [items]="toastPositions()"
-                [clearable]="false"
-                [openOnEnter]="false"
-                [clearSearchOnAdd]="true"
-                [searchable]="false"
-                bindLabel="label"
-                bindValue="value"
-                formControlName="position"
-              >
-              </ng-select>
-            </div>
+            <app-bb-radio-group
+              class="bb-notification-positions"
+              appearance="cards"
+              [columns]="2"
+              formControlName="position"
+              aria-labelledby="notifications-app-position-label"
+            >
+              @for (position of toastPositions(); track position.value) {
+                <app-bb-radio [value]="position.value" [label]="position.label" />
+              }
+            </app-bb-radio-group>
           </div>
           <div class="bb-notification-hint">
             {{
@@ -184,95 +114,51 @@
                 | translate
             }}
           </div>
-          <div class="bb-option">
-            <div class="bb-option__text" bbOptionText>
-              <label class="bb-option__label" for="notifications-app-finished">
-                {{
-                  'pages.settings.tab.general.general-settings-form.notifications.category.finished'
-                    | translate
-                }}
-              </label>
-              <span class="bb-option__sub">{{
-                'pages.settings.tab.general.popover.notifications.category.finished.sub' | translate
-              }}</span>
-            </div>
-            <span class="bb-option__toggle form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                role="switch"
-                id="notifications-app-finished"
-                formControlName="finished"
-              />
-            </span>
-          </div>
-          <div class="bb-option">
-            <div class="bb-option__text" bbOptionText>
-              <label class="bb-option__label" for="notifications-app-errors">
-                {{
-                  'pages.settings.tab.general.general-settings-form.notifications.category.errors'
-                    | translate
-                }}
-              </label>
-              <span class="bb-option__sub">{{
-                'pages.settings.tab.general.popover.notifications.category.errors.sub' | translate
-              }}</span>
-            </div>
-            <span class="bb-option__toggle form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                role="switch"
-                id="notifications-app-errors"
-                formControlName="errors"
-              />
-            </span>
-          </div>
-          <div class="bb-option">
-            <div class="bb-option__text" bbOptionText>
-              <label class="bb-option__label" for="notifications-app-updates">
-                {{
-                  'pages.settings.tab.general.general-settings-form.notifications.category.updates'
-                    | translate
-                }}
-              </label>
-              <span class="bb-option__sub">{{
-                'pages.settings.tab.general.popover.notifications.category.updates.sub' | translate
-              }}</span>
-            </div>
-            <span class="bb-option__toggle form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                role="switch"
-                id="notifications-app-updates"
-                formControlName="updates"
-              />
-            </span>
-          </div>
-          <div class="bb-option">
-            <div class="bb-option__text" bbOptionText>
-              <label class="bb-option__label" for="notifications-app-confirmations">
-                {{
-                  'pages.settings.tab.general.general-settings-form.notifications.category.confirmations'
-                    | translate
-                }}
-              </label>
-              <span class="bb-option__sub">{{
-                'pages.settings.tab.general.popover.notifications.category.confirmations.sub'
-                  | translate
-              }}</span>
-            </div>
-            <span class="bb-option__toggle form-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                role="switch"
-                id="notifications-app-confirmations"
-                formControlName="confirmations"
-              />
-            </span>
-          </div>
+          <app-bb-switch
+            inputId="notifications-app-finished"
+            formControlName="finished"
+            [label]="
+              'pages.settings.tab.general.general-settings-form.notifications.category.finished'
+                | translate
+            "
+            [sub]="
+              'pages.settings.tab.general.popover.notifications.category.finished.sub' | translate
+            "
+          />
+          <app-bb-switch
+            inputId="notifications-app-errors"
+            formControlName="errors"
+            [label]="
+              'pages.settings.tab.general.general-settings-form.notifications.category.errors'
+                | translate
+            "
+            [sub]="
+              'pages.settings.tab.general.popover.notifications.category.errors.sub' | translate
+            "
+          />
+          <app-bb-switch
+            inputId="notifications-app-updates"
+            formControlName="updates"
+            [label]="
+              'pages.settings.tab.general.general-settings-form.notifications.category.updates'
+                | translate
+            "
+            [sub]="
+              'pages.settings.tab.general.popover.notifications.category.updates.sub' | translate
+            "
+          />
+          <app-bb-switch
+            inputId="notifications-app-confirmations"
+            formControlName="confirmations"
+            [label]="
+              'pages.settings.tab.general.general-settings-form.notifications.category.confirmations'
+                | translate
+            "
+            [sub]="
+              'pages.settings.tab.general.popover.notifications.category.confirmations.sub'
+                | translate
+            "
+          />
         </div>
       </app-bb-section-card>
     </div>

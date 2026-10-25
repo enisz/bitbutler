@@ -1,0 +1,42 @@
+<label
+  class="bb-radio bb-ctl-hover"
+  [class.bb-ctl-card]="isCard() || isTile()"
+  [class.bb-radio--tile]="isTile()"
+  [class.bb-ctl-disabled]="isDisabled()"
+>
+  <span class="bb-ctl">
+    <input
+      type="radio"
+      class="bb-ctl-input"
+      [name]="group.name"
+      [checked]="checked()"
+      [disabled]="isDisabled()"
+      (change)="onChange()"
+      (blur)="group.touch()"
+    />
+    @if (!isTile()) {
+      <span class="bb-ctl-circle"></span>
+    }
+  </span>
+  <span class="bb-radio__icon"><ng-content select="[bbRadioIcon]"></ng-content></span>
+  <span class="bb-radio__text">
+    <span
+      class="bb-ctl-label bb-radio__label"
+      [bbTooltip]="label()"
+      singleLine
+      overflowOnly
+      placement="top"
+      >{{ label() }}<ng-content></ng-content
+    ></span>
+    @if (showSub()) {
+      <span
+        class="bb-ctl-sub bb-radio__sub"
+        [bbTooltip]="sub()"
+        singleLine
+        overflowOnly
+        placement="bottom"
+        >{{ sub() }}</span
+      >
+    }
+  </span>
+</label>

@@ -1,6 +1,6 @@
 // Notification sections: the master switch reads as the section header, the two sections are
 // separated, and the last row of the app grid (two category rows) drops its divider.
-.bb-option--master .bb-option__label {
+.bb-option--master ::ng-deep .bb-option__label {
   font-weight: 600;
 }
 

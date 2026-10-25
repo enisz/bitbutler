@@ -12,12 +12,24 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
+import { BbSwitch } from '../../../components/form-controls/bb-switch/bb-switch';
+import {
+  TransferLimit,
+  TransferLimitValue,
+} from '../../../components/transfer-limit/transfer-limit';
 import { BbOptionText } from '../../../directives/bb-option-text';
-import { SpeedLimitPipe } from '../../../pipes/speed-limit-pipe';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { QbSettingsStateService } from '../qb-settings-state.service';
 import { QbSettingsTabComponent } from '../qb-settings.interface';
+
+const NO_LIMITS: TransferLimitValue = { downloadLimit: null, uploadLimit: null };
+
+/** qBittorrent's bytes/s (0 = no limit) to the picker's KiB/s (null = no limit). */
+const toKiB = (bytes: number): number | null => (bytes > 0 ? Math.round(bytes / 1024) : null);
+
+/** The picker's KiB/s (null = no limit) back to qBittorrent's bytes/s (0 = no limit). */
+const toBytes = (kib: number | null): number => (kib ?? 0) * 1024;
 
 interface SchedulerDayOption {
   value: number;
@@ -27,13 +39,14 @@ interface SchedulerDayOption {
 @Component({
   selector: 'app-qb-settings-bandwidth',
   imports: [
+    BbSwitch,
     BbOptionText,
     BbSectionCard,
     CommonModule,
     ReactiveFormsModule,
     NgSelectComponent,
     TranslatePipe,
-    SpeedLimitPipe,
+    TransferLimit,
   ],
   templateUrl: './bandwidth.html',
   styleUrl: './bandwidth.scss',
@@ -111,10 +124,9 @@ export class Bandwidth implements QbSettingsTabComponent, OnInit {
   public readonly minutes = Array.from({ length: 60 }, (_, i) => i);
 
   public form = new FormGroup({
-    dl_limit: new FormControl<number>(0, { nonNullable: true }),
-    up_limit: new FormControl<number>(0, { nonNullable: true }),
-    alt_dl_limit: new FormControl<number>(0, { nonNullable: true }),
-    alt_up_limit: new FormControl<number>(0, { nonNullable: true }),
+    // KiB/s, null for no limit (0 in qBittorrent).
+    limits: new FormControl<TransferLimitValue>(NO_LIMITS, { nonNullable: true }),
+    altLimits: new FormControl<TransferLimitValue>(NO_LIMITS, { nonNullable: true }),
     scheduler_enabled: new FormControl<boolean>(false, { nonNullable: true }),
     schedule_from_hour: new FormControl<number>(0, { nonNullable: true }),
     schedule_from_min: new FormControl<number>(0, { nonNullable: true }),
@@ -128,10 +140,11 @@ export class Bandwidth implements QbSettingsTabComponent, OnInit {
     if (prefs) {
       this.form.patchValue(
         {
-          dl_limit: Math.round(prefs.dl_limit / 1024),
-          up_limit: Math.round(prefs.up_limit / 1024),
-          alt_dl_limit: Math.round(prefs.alt_dl_limit / 1024),
-          alt_up_limit: Math.round(prefs.alt_up_limit / 1024),
+          limits: { downloadLimit: toKiB(prefs.dl_limit), uploadLimit: toKiB(prefs.up_limit) },
+          altLimits: {
+            downloadLimit: toKiB(prefs.alt_dl_limit),
+            uploadLimit: toKiB(prefs.alt_up_limit),
+          },
           scheduler_enabled: prefs.scheduler_enabled,
           schedule_from_hour: prefs.schedule_from_hour,
           schedule_from_min: prefs.schedule_from_min,
@@ -171,10 +184,10 @@ export class Bandwidth implements QbSettingsTabComponent, OnInit {
   private async save(): Promise<void> {
     const v = this.form.getRawValue();
     await this.qbService.app.setPreferences(this.serverStoreService.currentServerId()!, {
-      dl_limit: v.dl_limit * 1024,
-      up_limit: v.up_limit * 1024,
-      alt_dl_limit: v.alt_dl_limit * 1024,
-      alt_up_limit: v.alt_up_limit * 1024,
+      dl_limit: toBytes(v.limits.downloadLimit),
+      up_limit: toBytes(v.limits.uploadLimit),
+      alt_dl_limit: toBytes(v.altLimits.downloadLimit),
+      alt_up_limit: toBytes(v.altLimits.uploadLimit),
       scheduler_enabled: v.scheduler_enabled,
       schedule_from_hour: v.schedule_from_hour,
       schedule_from_min: v.schedule_from_min,

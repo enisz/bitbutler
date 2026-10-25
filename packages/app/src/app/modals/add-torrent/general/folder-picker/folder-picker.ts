@@ -50,7 +50,7 @@ import {
 } from '../../../../components/column-filters/set-column-filter/set-column-filter';
 import { SizeColumnFilter } from '../../../../components/column-filters/size-column-filter/size-column-filter';
 import { TextColumnFilter } from '../../../../components/column-filters/text-column-filter/text-column-filter';
-import { BbOptionText } from '../../../../directives/bb-option-text';
+import { BbSwitch } from '../../../../components/form-controls/bb-switch/bb-switch';
 import { GridRowNavigationDirective } from '../../../../directives/grid-row-navigation';
 import {
   ScannedTorrentEntry,
@@ -79,7 +79,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 @Component({
   selector: 'app-add-torrent-folder-picker',
   imports: [
-    BbOptionText,
+    BbSwitch,
     GridRowNavigationDirective,
     ReactiveFormsModule,
     FontAwesomeModule,

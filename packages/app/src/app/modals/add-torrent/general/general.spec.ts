@@ -101,8 +101,9 @@ describe('AddTorrentGeneral', () => {
   it('should emit inputModeChange when the link toggle is selected', () => {
     const emitSpy = vi.spyOn(component.inputModeChange, 'emit');
 
-    const linkRadio: HTMLInputElement = fixture.nativeElement.querySelector('#inputMode_link');
-    linkRadio.dispatchEvent(new Event('change'));
+    const linkRadio: HTMLInputElement =
+      fixture.nativeElement.querySelectorAll('.bb-input-mode input')[1];
+    linkRadio.click();
 
     expect(emitSpy).toHaveBeenCalledWith('link');
   });
@@ -215,19 +216,19 @@ describe('AddTorrentGeneral', () => {
       expect(legends[1].textContent).toContain('components.add-torrent.label.torrent');
     });
 
-    it('should make the input-mode toggle full width and show a popover beside it', () => {
-      const toggle: HTMLElement = fixture.nativeElement.querySelector('.btn-group');
+    it('should render the input mode as option cards and show a popover beside it', () => {
+      const toggle: HTMLElement = fixture.nativeElement.querySelector('.bb-input-mode');
 
-      expect(toggle.classList.contains('w-100')).toBe(true);
+      expect(toggle.classList.contains('bb-radio-group--cards')).toBe(true);
 
       // 6 popovers defined directly in general.html (input-mode, file/links, name, size,
       // free-space, save-path) plus 1 each from the nested category/tag select components.
       expect(fixture.nativeElement.querySelectorAll('bb-popover').length).toBe(8);
     });
 
-    it('should render the input-mode toggle as plain text with no icons', () => {
-      const toggle: HTMLElement = fixture.nativeElement.querySelector('.btn-group');
-      const labels: HTMLLabelElement[] = Array.from(toggle.querySelectorAll('label.btn'));
+    it('should render one titled card per input mode, with no icons', () => {
+      const toggle: HTMLElement = fixture.nativeElement.querySelector('.bb-input-mode');
+      const labels: HTMLElement[] = Array.from(toggle.querySelectorAll('.bb-radio__label'));
 
       expect(labels.length).toBe(3);
       expect(toggle.querySelectorAll('bb-btn-content, fa-icon').length).toBe(0);
@@ -372,8 +373,9 @@ describe('AddTorrentGeneral', () => {
   it('should emit inputModeChange(folder) when the folder toggle is selected', () => {
     const emitSpy = vi.spyOn(component.inputModeChange, 'emit');
 
-    const folderRadio: HTMLInputElement = fixture.nativeElement.querySelector('#inputMode_folder');
-    folderRadio.dispatchEvent(new Event('change'));
+    const folderRadio: HTMLInputElement =
+      fixture.nativeElement.querySelectorAll('.bb-input-mode input')[2];
+    folderRadio.click();
 
     expect(emitSpy).toHaveBeenCalledWith('folder');
   });
