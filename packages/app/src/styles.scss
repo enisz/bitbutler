@@ -1172,18 +1172,32 @@ ngb-typeahead-window.dropdown-menu {
   margin-top: 2px;
 }
 
-// Opt-in single-line label/sub-text that ellipsizes instead of wrapping. Pair it with
-// bbTooltip overflowOnly so the full text shows on hover; the text column must be able to
-// shrink below its content width for the ellipsis to kick in.
+// Single-line label/sub-text that ellipsizes instead of wrapping. Added by the bbOptionText
+// directive, which also shows the full text in a tooltip on hover; the text column must be able
+// to shrink below its content width for the ellipsis to kick in.
 .bb-option__text--truncate {
   min-width: 0;
 
-  > .bb-option__label,
-  > .bb-option__sub {
+  > .bb-option__label:not(:has(> .bb-option__label-text)),
+  > .bb-option__sub,
+  > .bb-option__label > .bb-option__label-text {
     display: block;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+  }
+
+  // A label that also holds a popover: only its text span truncates, the icon stays visible.
+  > .bb-option__label:has(> .bb-option__label-text) {
+    min-width: 0;
+
+    > .bb-option__label-text {
+      min-width: 0;
+    }
+
+    > :not(.bb-option__label-text) {
+      flex-shrink: 0;
+    }
   }
 }
 
