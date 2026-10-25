@@ -1,8 +1,9 @@
 <div class="bb-option__text" bbOptionText>
-  <label class="bb-option__label bb-ctl-label" [for]="id()">
-    <span class="bb-option__label-text">{{ label() }}</span>
+  <!-- The extra (e.g. a help popover) sits outside the <label>, so clicking it does not toggle. -->
+  <span class="bb-option__label">
+    <label class="bb-option__label-text bb-ctl-label" [for]="id()">{{ label() }}</label>
     <ng-content select="[bbLabelExtra]"></ng-content>
-  </label>
+  </span>
   @if (sub()) {
     <label class="bb-option__sub bb-ctl-sub" [for]="id()">{{ sub() }}</label>
   }

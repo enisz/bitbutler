@@ -49,8 +49,14 @@ describe('BbSwitch', () => {
     expect(element('.form .bb-option__label-text').textContent).toBe('Delete torrent files');
     expect(element('.form .bb-option__sub').textContent).toBe('Removes the source file');
     expect(element('.form .bb-option__label > .extra')).not.toBeNull();
-    expect(element('.form .bb-option__label').getAttribute('for')).toBe(id);
+    expect(element('.form .bb-option__label-text').getAttribute('for')).toBe(id);
     expect(input('.form').getAttribute('role')).toBe('switch');
+  });
+
+  it('does not toggle when the projected extra (a help popover) is clicked', () => {
+    element('.form .extra').click();
+
+    expect(host.control.value).toBe(false);
   });
 
   it('omits the sub-text when none is given', () => {

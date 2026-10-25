@@ -30,6 +30,7 @@ import { AppLoader } from '../../components/app-loader/app-loader';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { BbLogo } from '../../components/bb-logo/bb-logo';
 import { BbTooltip } from '../../directives/bb-tooltip';
+import { LANGUAGE_OPTIONS } from '../../models/general-settings.model';
 import { CommandBusService } from '../../services/command-bus.service';
 import { ConfigurationService } from '../../services/configuration.service';
 import { CredentialPromptService } from '../../services/credential-prompt.service';
@@ -90,14 +91,7 @@ export class Login implements OnInit {
 
   public readonly families = THEME_FAMILIES;
 
-  public readonly languages = computed<{ value: string; label: string }[]>(() => {
-    this.languageChanged();
-
-    return [
-      { value: 'us', label: this.translateService.instant('language.us') },
-      { value: 'hu', label: this.translateService.instant('language.hu') },
-    ].sort((a, b) => a.label.localeCompare(b.label));
-  });
+  public readonly languages = LANGUAGE_OPTIONS;
 
   public readonly modes = computed<{ value: ThemeMode; label: string }[]>(() => {
     this.languageChanged();

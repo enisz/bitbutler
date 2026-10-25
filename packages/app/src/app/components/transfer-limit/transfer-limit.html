@@ -9,6 +9,7 @@
     </div>
     <app-bb-radio-group
       appearance="cards"
+      [disabled]="disabled()"
       [value]="downloadMode()"
       [attr.aria-labelledby]="idPrefix + 'downloadLimit-label'"
       (valueChange)="setDownloadMode($any($event))"
@@ -55,6 +56,7 @@
     </div>
     <app-bb-radio-group
       appearance="cards"
+      [disabled]="disabled()"
       [value]="uploadMode()"
       [attr.aria-labelledby]="idPrefix + 'uploadLimit-label'"
       (valueChange)="setUploadMode($any($event))"

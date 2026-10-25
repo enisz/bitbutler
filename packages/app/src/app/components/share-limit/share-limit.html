@@ -14,6 +14,7 @@
     </div>
     <app-bb-radio-group
       appearance="cards"
+      [disabled]="disabled()"
       [value]="ratioMode()"
       aria-labelledby="ratioLimit-label"
       (valueChange)="setRatioMode($any($event))"
@@ -70,6 +71,7 @@
     </div>
     <app-bb-radio-group
       appearance="cards"
+      [disabled]="disabled()"
       [value]="seedingMode()"
       aria-labelledby="seedingTimeLimit-label"
       (valueChange)="setSeedingMode($any($event))"
@@ -130,6 +132,7 @@
     </div>
     <app-bb-radio-group
       appearance="cards"
+      [disabled]="disabled()"
       [value]="inactiveMode()"
       aria-labelledby="inactiveSeedingTimeLimit-label"
       (valueChange)="setInactiveMode($any($event))"

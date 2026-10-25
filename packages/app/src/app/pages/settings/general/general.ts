@@ -28,7 +28,7 @@ import {
   DateFormatPreset,
   FIRST_DAY_OF_WEEK_OPTIONS,
   LANGUAGE_LOCALE_MAP,
-  LANGUAGE_NATIVE_NAMES,
+  LANGUAGE_OPTIONS,
   resolveDateFormat,
 } from '../../../models/general-settings.model';
 import { GeneralSettingsFormService } from '../general-settings-form.service';
@@ -96,9 +96,7 @@ export class General implements SettingsTabComponent {
   public readonly settingsLoaded = this.formService.loaded;
   private readonly formSnapshot = this.formService.formSnapshot;
 
-  public readonly languages = Object.entries(LANGUAGE_NATIVE_NAMES)
-    .map(([value, label]) => ({ value, label, lang: LANGUAGE_LOCALE_MAP[value] }))
-    .sort((a, b) => a.label.localeCompare(b.label));
+  public readonly languages = LANGUAGE_OPTIONS;
 
   private previewDateFormat(
     preset: DateFormatPreset,

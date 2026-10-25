@@ -30,6 +30,12 @@ export const LANGUAGE_NATIVE_NAMES: Record<string, string> = {
   hu: 'Magyar',
 };
 
+/** The UI languages for the pickers (settings, login), by native name. */
+export const LANGUAGE_OPTIONS: readonly { value: string; label: string; lang: string }[] =
+  Object.entries(LANGUAGE_NATIVE_NAMES)
+    .map(([value, label]) => ({ value, label, lang: LANGUAGE_LOCALE_MAP[value] }))
+    .sort((a, b) => a.label.localeCompare(b.label));
+
 export interface NotificationSettings {
   os: {
     enabled: boolean;

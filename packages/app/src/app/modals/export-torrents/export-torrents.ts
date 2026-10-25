@@ -76,8 +76,6 @@ export class ExportTorrents implements OnInit {
   exportForm!: FormGroup;
 
   private scopeValue!: ReturnType<typeof toSignal<ExportScope>>;
-  private categoryScopeValue!: ReturnType<typeof toSignal<ExportCategoryScope>>;
-  private tagScopeValue!: ReturnType<typeof toSignal<ExportTagScope>>;
 
   readonly serverInfo = signal<BbeServerInfo | null>(null);
   readonly serverInfoLoading = signal(true);
@@ -214,20 +212,6 @@ export class ExportTorrents implements OnInit {
     const scopeControl = this.exportForm.get('scope')!;
     this.scopeValue = runInInjectionContext(this.injector, () =>
       toSignal(scopeControl.valueChanges, { initialValue: scopeControl.value as ExportScope }),
-    );
-
-    const categoryScopeControl = this.exportForm.get('categoryScope')!;
-    this.categoryScopeValue = runInInjectionContext(this.injector, () =>
-      toSignal(categoryScopeControl.valueChanges, {
-        initialValue: categoryScopeControl.value as ExportCategoryScope,
-      }),
-    );
-
-    const tagScopeControl = this.exportForm.get('tagScope')!;
-    this.tagScopeValue = runInInjectionContext(this.injector, () =>
-      toSignal(tagScopeControl.valueChanges, {
-        initialValue: tagScopeControl.value as ExportTagScope,
-      }),
     );
   }
 

@@ -110,14 +110,6 @@ export class ImportConfiguration implements OnInit {
     this.selectedServerIds.set(new Set(ids));
   }
 
-  public toggleServer(id: string): void {
-    this.selectedServerIds.update((current) => {
-      const next = new Set(current);
-      if (!next.delete(id)) next.add(id);
-      return next;
-    });
-  }
-
   public async import(): Promise<void> {
     if (!this.canImport()) return;
 

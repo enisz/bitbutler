@@ -56,6 +56,21 @@ describe('ShareLimit', () => {
       expect(component.form.disabled).toBe(true);
     });
 
+    it('should lock the mode cards too, and unlock them again', () => {
+      const cards = () =>
+        Array.from(
+          fixture.nativeElement.querySelectorAll('app-bb-radio-group input'),
+        ) as HTMLInputElement[];
+
+      component.setDisabledState(true);
+      fixture.detectChanges();
+      expect(cards().every((card) => card.disabled)).toBe(true);
+
+      component.setDisabledState(false);
+      fixture.detectChanges();
+      expect(cards().some((card) => card.disabled)).toBe(false);
+    });
+
     it('should re-enable custom-mode controls when false', () => {
       component.setRatioMode('custom');
       component.setDisabledState(true);

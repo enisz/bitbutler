@@ -153,8 +153,7 @@ describe('ImportConfiguration', () => {
     await create();
 
     component.setApplySettings(false);
-    component.toggleServer('s1');
-    component.toggleServer('s2');
+    component.setSelectedServers([]);
 
     expect(component.canImport()).toBe(false);
   });
@@ -163,7 +162,7 @@ describe('ImportConfiguration', () => {
     await create();
 
     component.setApplySettings(false);
-    component.toggleServer('s1');
+    component.setSelectedServers(['s2']);
 
     expect(component.canImport()).toBe(true);
   });
@@ -172,7 +171,7 @@ describe('ImportConfiguration', () => {
     await create();
     importFile.mockResolvedValue({ settings: false, servers: 1 });
     component.setApplySettings(false);
-    component.toggleServer('s1');
+    component.setSelectedServers(['s2']);
 
     await component.import();
 
@@ -279,7 +278,7 @@ describe('ImportConfiguration', () => {
 
     it('neither asks nor logs out when the current server is not selected', async () => {
       await create();
-      component.toggleServer('s1');
+      component.setSelectedServers(['s2']);
 
       await component.import();
 

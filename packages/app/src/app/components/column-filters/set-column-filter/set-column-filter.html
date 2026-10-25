@@ -36,7 +36,7 @@
       <ng-template bbCheckTreeItem let-item>
         <span
           class="badge bb-status-badge"
-          [class.bb-status-badge--selected]="draftValues.has(item.key)"
+          [class.bb-status-badge--selected]="draftValues().has(item.key)"
           >{{ item.count }}</span
         >
       </ng-template>

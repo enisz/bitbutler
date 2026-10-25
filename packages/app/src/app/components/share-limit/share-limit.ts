@@ -62,6 +62,8 @@ export class ShareLimit implements ControlValueAccessor {
     inactiveSeedingTimeLimit: new FormControl<number | null>({ value: null, disabled: true }),
   });
 
+  /** Disabled from the form: the mode cards are locked along with the value fields. */
+  protected readonly disabled = signal(false);
   public ratioMode = signal<LimitMode>('no-limit');
   public seedingMode = signal<LimitMode>('no-limit');
   public inactiveMode = signal<LimitMode>('no-limit');
@@ -164,6 +166,7 @@ export class ShareLimit implements ControlValueAccessor {
   }
 
   public setDisabledState(isDisabled: boolean): void {
+    this.disabled.set(isDisabled);
     if (isDisabled) {
       this.form.disable({ emitEvent: false });
     } else {

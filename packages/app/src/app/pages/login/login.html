@@ -123,7 +123,7 @@
               <fa-icon [icon]="icons.faLanguage" />
             </button>
             <div ngbDropdownMenu class="bb-toolbar-dropdown">
-              @for (lang of languages(); track lang.value) {
+              @for (lang of languages; track lang.value) {
                 <button
                   ngbDropdownItem
                   type="button"
