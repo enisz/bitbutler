@@ -1576,14 +1576,6 @@
             "language": {
               "language": "A felület nyelve"
             },
-            "configuration": {
-              "export": "Konfiguráció exportálása",
-              "export-sub": "Az alkalmazásbeállítások és a szerverek mentése fájlba.",
-              "export-button": "Exportálás...",
-              "import": "Konfiguráció importálása",
-              "import-sub": "Beállítások és szerverek visszaállítása fájlból.",
-              "import-button": "Importálás..."
-            },
             "date-format": {
               "preset-label": "Dátumformátum",
               "custom-pattern-label": "Egyéni minta",
@@ -1651,7 +1643,6 @@
             "startup": "Indítás",
             "torrent-handling": "Torrentkezelés",
             "notifications": "Értesítések",
-            "configuration": "Konfiguráció",
             "date-format": "Dátumformátum",
             "notifications-os": "Rendszerértesítések",
             "notifications-app": "Alkalmazáson belüli értesítések"

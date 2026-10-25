@@ -1,8 +1,6 @@
 import { NO_ERRORS_SCHEMA, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ServerRecord } from '@bitbutler/shared';
-import { CommandBusService } from '../../../services/command-bus.service';
-import { ConfigurationService } from '../../../services/configuration.service';
 import { DateFormatService } from '../../../services/date-format.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { GeneralSettingsFormService } from '../general-settings-form.service';
@@ -19,15 +17,11 @@ describe('General', () => {
   };
   let serverStoreMock: { servers: ReturnType<typeof signal<ServerRecord[]>> };
   let dateFormatServiceMock: { applyFromSettings: ReturnType<typeof vi.fn> };
-  let commandBusMock: { emit: ReturnType<typeof vi.fn> };
-  let configurationMock: { pickAndImport: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     stateServiceMock = { registerSave: vi.fn(), markDirty: vi.fn() };
     serverStoreMock = { servers: signal([]) };
     dateFormatServiceMock = { applyFromSettings: vi.fn() };
-    commandBusMock = { emit: vi.fn() };
-    configurationMock = { pickAndImport: vi.fn().mockResolvedValue(undefined) };
 
     await TestBed.configureTestingModule({
       imports: [General],
@@ -36,8 +30,6 @@ describe('General', () => {
         { provide: SettingsStateService, useValue: stateServiceMock },
         { provide: ServerStoreService, useValue: serverStoreMock },
         { provide: DateFormatService, useValue: dateFormatServiceMock },
-        { provide: CommandBusService, useValue: commandBusMock },
-        { provide: ConfigurationService, useValue: configurationMock },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
@@ -50,24 +42,6 @@ describe('General', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  describe('configuration card', () => {
-    it('emits UI_EXPORT_CONFIGURATION from the export button', () => {
-      fixture.detectChanges();
-
-      fixture.nativeElement.querySelector('.export-configuration-button').click();
-
-      expect(commandBusMock.emit).toHaveBeenCalledWith({ type: 'UI_EXPORT_CONFIGURATION' });
-    });
-
-    it('starts a full import from the import button', () => {
-      fixture.detectChanges();
-
-      fixture.nativeElement.querySelector('.import-configuration-button').click();
-
-      expect(configurationMock.pickAndImport).toHaveBeenCalledWith();
-    });
   });
 
   describe('behavior card template', () => {
