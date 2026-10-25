@@ -42,21 +42,25 @@
       <div class="bb-options">
         @for (server of meta.servers; track server.id) {
           <div class="bb-option">
-            <div class="bb-option__text">
-              <label class="bb-option__label" [for]="'import-server-' + server.id">
+            <div class="bb-option__text bb-option__text--truncate">
+              <label
+                class="bb-option__label"
+                [for]="'import-server-' + server.id"
+                [bbTooltip]="server.name"
+                overflowOnly
+                singleLine
+                placement="bottom"
+              >
                 {{ server.name }}
               </label>
-              <span class="bb-option__sub">
-                {{ server.host }}:{{ server.port }} -
-                {{
-                  (server.exists
-                    ? 'components.modals.import-configuration.badge-exists'
-                    : 'components.modals.import-configuration.badge-new'
-                  ) | translate
-                }}
-                @if (server.id === currentServerId()) {
-                  - {{ 'components.modals.import-configuration.badge-current' | translate }}
-                }
+              <span
+                class="bb-option__sub"
+                [bbTooltip]="serverDetail(server)"
+                overflowOnly
+                singleLine
+                placement="bottom"
+              >
+                {{ serverDetail(server) }}
               </span>
             </div>
             <span class="bb-option__toggle form-switch">

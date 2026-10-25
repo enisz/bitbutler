@@ -13,6 +13,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { BbSpinner } from '../../components/bb-spinner/bb-spinner';
+import { BbTooltip } from '../../directives/bb-tooltip';
 import { ConfigurationService } from '../../services/configuration.service';
 import { ConfirmService } from '../../services/confirm.service';
 import { QbService } from '../../services/qb.service';
@@ -22,7 +23,7 @@ import { ToastService } from '../../services/toast.service';
 @Component({
   selector: 'app-import-configuration',
   standalone: true,
-  imports: [TranslatePipe, BbBtnContent, BbSpinner],
+  imports: [TranslatePipe, BbBtnContent, BbSpinner, BbTooltip],
   templateUrl: './import-configuration.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -74,6 +75,18 @@ export class ImportConfiguration implements OnInit {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  public serverDetail(server: BbcMetadata['servers'][number]): string {
+    const base = 'components.modals.import-configuration';
+    const parts = [
+      `${server.host}:${server.port}`,
+      this.translateService.instant(`${base}.${server.exists ? 'badge-exists' : 'badge-new'}`),
+    ];
+    if (server.id === this.currentServerId()) {
+      parts.push(this.translateService.instant(`${base}.badge-current`));
+    }
+    return parts.join(' - ');
   }
 
   public setApplySettings(value: boolean): void {

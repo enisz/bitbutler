@@ -1172,6 +1172,21 @@ ngb-typeahead-window.dropdown-menu {
   margin-top: 2px;
 }
 
+// Opt-in single-line label/sub-text that ellipsizes instead of wrapping. Pair it with
+// bbTooltip overflowOnly so the full text shows on hover; the text column must be able to
+// shrink below its content width for the ellipsis to kick in.
+.bb-option__text--truncate {
+  min-width: 0;
+
+  > .bb-option__label,
+  > .bb-option__sub {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
+
 .bb-option__toggle {
   flex-shrink: 0;
   margin: 0;
