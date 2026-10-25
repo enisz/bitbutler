@@ -222,14 +222,6 @@ $bb-check-tick: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg
   }
 }
 
-// Row of compact checkboxes or radios, no sub-text (Start / Skip hash check / Sequential).
-.bb-inline-group {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 24px;
-}
-
 // --- Option card ---
 
 .bb-ctl-card {

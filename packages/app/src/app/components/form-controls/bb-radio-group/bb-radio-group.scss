@@ -9,13 +9,6 @@
   gap: 10px;
 }
 
-:host(.bb-radio-group--inline) .bb-radio-group__items {
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 24px;
-}
-
 :host(.bb-radio-group--cards) {
   container-type: inline-size;
 

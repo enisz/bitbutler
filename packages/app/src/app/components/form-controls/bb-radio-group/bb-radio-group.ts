@@ -11,7 +11,7 @@ import {
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { BbRadio } from './bb-radio';
 
-export type BbRadioGroupAppearance = 'list' | 'inline' | 'cards' | 'tiles';
+export type BbRadioGroupAppearance = 'list' | 'cards' | 'tiles';
 
 let nextId = 0;
 
@@ -20,7 +20,6 @@ let nextId = 0;
  *
  * Appearances:
  * - `list` (default): one radio per row, with optional sub-text
- * - `inline`: a compact wrapping row, no sub-text (Low / Normal / High)
  * - `cards`: option cards - boxed radios with a title and a one-line sub-text, side by side;
  *   `columns` sets how many fit in a row (default: all of them), and a narrow group falls back
  *   to one per row
@@ -41,7 +40,6 @@ let nextId = 0;
   host: {
     role: 'radiogroup',
     '[class.bb-radio-group--list]': "appearance() === 'list'",
-    '[class.bb-radio-group--inline]': "appearance() === 'inline'",
     '[class.bb-radio-group--cards]': "appearance() === 'cards'",
     '[class.bb-radio-group--tiles]': "appearance() === 'tiles'",
     '[style.--bb-radio-columns]': 'columnCount()',

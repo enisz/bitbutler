@@ -85,14 +85,8 @@ describe('BbRadioGroup', () => {
     expect(inputs('.form').every((radio) => radio.disabled)).toBe(true);
   });
 
-  it('shows the sub-text in the list, but not inline', () => {
+  it('shows the sub-text under the label', () => {
     expect(element('.form .bb-radio__sub').textContent).toBe('Slow');
-
-    host.appearance.set('inline');
-    fixture.detectChanges();
-
-    expect(element('.form').classList).toContain('bb-radio-group--inline');
-    expect(element('.form .bb-radio__sub')).toBeNull();
   });
 
   it('draws option cards in the requested number of columns', () => {
