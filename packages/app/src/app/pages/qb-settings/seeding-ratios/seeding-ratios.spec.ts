@@ -72,10 +72,19 @@ describe('SeedingRatios', () => {
     expect(stateServiceMock.markDirty).toHaveBeenCalledWith('seeding-ratios', true);
   });
 
-  it('should disable max_ratio and max_ratio_act when max_ratio_enabled is false', () => {
+  it('should disable max_ratio but keep the action while the seeding time limit is on', () => {
     component.form.controls.max_ratio_enabled.setValue(false);
     expect(component.form.controls.max_ratio.disabled).toBe(true);
+    expect(component.form.controls.max_ratio_act.disabled).toBe(false);
+  });
+
+  it('should disable the action only once both limits are off', () => {
+    component.form.controls.max_ratio_enabled.setValue(false);
+    component.form.controls.max_seeding_time_enabled.setValue(false);
     expect(component.form.controls.max_ratio_act.disabled).toBe(true);
+
+    component.form.controls.max_seeding_time_enabled.setValue(true);
+    expect(component.form.controls.max_ratio_act.disabled).toBe(false);
   });
 
   it('should disable max_seeding_time when max_seeding_time_enabled is false', () => {

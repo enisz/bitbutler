@@ -2012,21 +2012,23 @@
           "title": "Terjesztési Arányok",
           "description": "Állítson be automatikus korlátokat a feltöltési arány vagy az idő alapján a terjesztés leállításához.",
           "label": {
-            "share-ratio": "Megosztási Arány Korlátok",
-            "seeding-time": "Terjesztési Idő Korlátok"
+            "stop-seeding": "Terjesztés Leállítása"
           },
           "field": {
-            "max-ratio-enabled": "Megosztási Arány Korlát Engedélyezése",
-            "max-ratio": "Terjesztés leállítása, ha az arány eléri",
-            "max-ratio-act": "Teendő korlát elérésekor",
-            "max-seeding-time-enabled": "Terjesztési Idő Korlát Engedélyezése",
-            "max-seeding-time": "Terjesztés leállítása ennyi perc után"
+            "max-ratio": "Megosztási arány",
+            "max-ratio-act": "Ha egy korlát teljesül",
+            "max-seeding-time": "Terjesztési idő"
           },
           "ratio-act": {
             "pause": "Torrent szüneteltetése",
             "remove": "Torrent eltávolítása",
             "pause-sub": "A seedelés leáll, a torrent a listában marad",
             "remove-sub": "A torrent törlődik a listából, a fájljai megmaradnak"
+          },
+          "limit-sub": {
+            "no-limit": "Terjesztés folytatása",
+            "ratio-custom": "Leállítás ennél az aránynál",
+            "time-custom": "Leállítás ennyi idő után"
           }
         }
       },

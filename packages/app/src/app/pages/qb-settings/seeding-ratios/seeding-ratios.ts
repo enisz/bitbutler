@@ -6,8 +6,9 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
 import { BbRadio } from '../../../components/form-controls/bb-radio-group/bb-radio';
 import { BbRadioGroup } from '../../../components/form-controls/bb-radio-group/bb-radio-group';
-import { BbSwitch } from '../../../components/form-controls/bb-switch/bb-switch';
 import { BbOptionText } from '../../../directives/bb-option-text';
+import { RatioLimitPipe } from '../../../pipes/ratio-limit-pipe';
+import { TimeLimitPipe } from '../../../pipes/time-limit-pipe';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
 import { QbSettingsStateService } from '../qb-settings-state.service';
@@ -18,15 +19,15 @@ import { QbSettingsTabComponent } from '../qb-settings.interface';
   imports: [
     BbRadio,
     BbRadioGroup,
-    BbSwitch,
     BbOptionText,
     BbSectionCard,
     CommonModule,
     ReactiveFormsModule,
     TranslatePipe,
+    RatioLimitPipe,
+    TimeLimitPipe,
   ],
   templateUrl: './seeding-ratios.html',
-  styleUrl: './seeding-ratios.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SeedingRatios implements QbSettingsTabComponent, OnInit {
@@ -76,16 +77,30 @@ export class SeedingRatios implements QbSettingsTabComponent, OnInit {
   }
 
   private updateRatioState(enabled: boolean): void {
-    [this.form.controls.max_ratio, this.form.controls.max_ratio_act].forEach((c) =>
-      enabled ? c.enable({ emitEvent: false }) : c.disable({ emitEvent: false }),
-    );
+    this.setEnabled(this.form.controls.max_ratio, enabled);
+    this.updateActionState();
   }
 
   private updateSeedingTimeState(enabled: boolean): void {
+    this.setEnabled(this.form.controls.max_seeding_time, enabled);
+    this.updateActionState();
+  }
+
+  // As in qBittorrent, one action applies to whichever limit is reached first, so it is
+  // available while either limit is on.
+  private updateActionState(): void {
+    const { max_ratio_enabled, max_seeding_time_enabled } = this.form.getRawValue();
+    this.setEnabled(
+      this.form.controls.max_ratio_act,
+      max_ratio_enabled || max_seeding_time_enabled,
+    );
+  }
+
+  private setEnabled(control: FormControl, enabled: boolean): void {
     if (enabled) {
-      this.form.controls.max_seeding_time.enable({ emitEvent: false });
+      control.enable({ emitEvent: false });
     } else {
-      this.form.controls.max_seeding_time.disable({ emitEvent: false });
+      control.disable({ emitEvent: false });
     }
   }
 

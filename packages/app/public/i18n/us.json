@@ -2012,21 +2012,23 @@
           "title": "Seeding Ratios",
           "description": "Set automatic limits to stop seeding based on share ratio targets or time thresholds.",
           "label": {
-            "share-ratio": "Share Ratio Limits",
-            "seeding-time": "Seeding Time Limits"
+            "stop-seeding": "Stop Seeding"
           },
           "field": {
-            "max-ratio-enabled": "Enable Share Ratio Limit",
-            "max-ratio": "Stop seeding when ratio reaches",
-            "max-ratio-act": "Action when limit is reached",
-            "max-seeding-time-enabled": "Enable Seeding Time Limit",
-            "max-seeding-time": "Stop seeding after (minutes)"
+            "max-ratio": "Share ratio",
+            "max-ratio-act": "When a limit is reached",
+            "max-seeding-time": "Seeding time"
           },
           "ratio-act": {
             "pause": "Pause torrent",
             "remove": "Remove torrent",
             "pause-sub": "Stop seeding, keep the torrent in the list",
             "remove-sub": "Remove the torrent from the list, keep its files"
+          },
+          "limit-sub": {
+            "no-limit": "Keep seeding",
+            "ratio-custom": "Stop at this ratio",
+            "time-custom": "Stop after this long"
           }
         }
       },
