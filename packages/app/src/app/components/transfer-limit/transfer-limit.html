@@ -2,7 +2,7 @@
   <div class="bb-option bb-option--stacked">
     <div class="bb-option__text" bbOptionText>
       <span class="bb-option__label">
-        <span class="bb-option__label-text" id="downloadLimit-label">{{
+        <span class="bb-option__label-text" [id]="idPrefix + 'downloadLimit-label'">{{
           'components.transfer-limit.download-limit' | translate
         }}</span>
         <bb-popover
@@ -15,7 +15,7 @@
     <app-bb-radio-group
       appearance="cards"
       [value]="downloadMode()"
-      aria-labelledby="downloadLimit-label"
+      [attr.aria-labelledby]="idPrefix + 'downloadLimit-label'"
       (valueChange)="setDownloadMode($any($event))"
     >
       <app-bb-radio
@@ -35,10 +35,10 @@
           <input
             type="number"
             class="form-control"
-            id="downloadLimit"
+            [id]="idPrefix + 'downloadLimit'"
             min="0"
             formControlName="downloadLimit"
-            aria-labelledby="downloadLimit-label"
+            [attr.aria-labelledby]="idPrefix + 'downloadLimit-label'"
           />
           <span class="input-group-text">{{ 'components.transfer-limit.unit' | translate }}</span>
         </div>
@@ -53,7 +53,7 @@
   <div class="bb-option bb-option--stacked">
     <div class="bb-option__text" bbOptionText>
       <span class="bb-option__label">
-        <span class="bb-option__label-text" id="uploadLimit-label">{{
+        <span class="bb-option__label-text" [id]="idPrefix + 'uploadLimit-label'">{{
           'components.transfer-limit.upload-limit' | translate
         }}</span>
         <bb-popover
@@ -66,7 +66,7 @@
     <app-bb-radio-group
       appearance="cards"
       [value]="uploadMode()"
-      aria-labelledby="uploadLimit-label"
+      [attr.aria-labelledby]="idPrefix + 'uploadLimit-label'"
       (valueChange)="setUploadMode($any($event))"
     >
       <app-bb-radio
@@ -86,10 +86,10 @@
           <input
             type="number"
             class="form-control"
-            id="uploadLimit"
+            [id]="idPrefix + 'uploadLimit'"
             min="0"
             formControlName="uploadLimit"
-            aria-labelledby="uploadLimit-label"
+            [attr.aria-labelledby]="idPrefix + 'uploadLimit-label'"
           />
           <span class="input-group-text">{{ 'components.transfer-limit.unit' | translate }}</span>
         </div>

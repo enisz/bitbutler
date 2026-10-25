@@ -6,48 +6,7 @@
       <div class="bb-option__note">
         {{ 'pages.qb-settings.tab.bandwidth.hint.global-rate-limits' | translate }}
       </div>
-      <div class="bb-options">
-        <div class="bb-option">
-          <div class="bb-option__text" bbOptionText>
-            <span class="bb-option__label">
-              {{ 'pages.qb-settings.tab.bandwidth.field.dl-limit' | translate }}
-            </span>
-          </div>
-          <div class="bb-option__control d-flex align-items-center gap-3">
-            <div class="input-group speed-input">
-              <input type="number" class="form-control" formControlName="dl_limit" min="0" />
-              <span class="input-group-text">KB/s</span>
-            </div>
-            <span class="speed-hint">
-              @if (form.controls.dl_limit.value) {
-                {{ form.controls.dl_limit.value * 1024 | speedLimit }}
-              } @else {
-                {{ 'general.limit.no-limit' | translate }}
-              }
-            </span>
-          </div>
-        </div>
-        <div class="bb-option">
-          <div class="bb-option__text" bbOptionText>
-            <span class="bb-option__label">
-              {{ 'pages.qb-settings.tab.bandwidth.field.up-limit' | translate }}
-            </span>
-          </div>
-          <div class="bb-option__control d-flex align-items-center gap-3">
-            <div class="input-group speed-input">
-              <input type="number" class="form-control" formControlName="up_limit" min="0" />
-              <span class="input-group-text">KB/s</span>
-            </div>
-            <span class="speed-hint">
-              @if (form.controls.up_limit.value) {
-                {{ form.controls.up_limit.value * 1024 | speedLimit }}
-              } @else {
-                {{ 'general.limit.no-limit' | translate }}
-              }
-            </span>
-          </div>
-        </div>
-      </div>
+      <app-transfer-limit formControlName="limits"></app-transfer-limit>
     </app-bb-section-card>
 
     <app-bb-section-card
@@ -56,48 +15,7 @@
       <div class="bb-option__note">
         {{ 'pages.qb-settings.tab.bandwidth.hint.alt-rate-limits' | translate }}
       </div>
-      <div class="bb-options">
-        <div class="bb-option">
-          <div class="bb-option__text" bbOptionText>
-            <span class="bb-option__label">
-              {{ 'pages.qb-settings.tab.bandwidth.field.alt-dl-limit' | translate }}
-            </span>
-          </div>
-          <div class="bb-option__control d-flex align-items-center gap-3">
-            <div class="input-group speed-input">
-              <input type="number" class="form-control" formControlName="alt_dl_limit" min="0" />
-              <span class="input-group-text">KB/s</span>
-            </div>
-            <span class="speed-hint">
-              @if (form.controls.alt_dl_limit.value) {
-                {{ form.controls.alt_dl_limit.value * 1024 | speedLimit }}
-              } @else {
-                {{ 'general.limit.no-limit' | translate }}
-              }
-            </span>
-          </div>
-        </div>
-        <div class="bb-option">
-          <div class="bb-option__text" bbOptionText>
-            <span class="bb-option__label">
-              {{ 'pages.qb-settings.tab.bandwidth.field.alt-up-limit' | translate }}
-            </span>
-          </div>
-          <div class="bb-option__control d-flex align-items-center gap-3">
-            <div class="input-group speed-input">
-              <input type="number" class="form-control" formControlName="alt_up_limit" min="0" />
-              <span class="input-group-text">KB/s</span>
-            </div>
-            <span class="speed-hint">
-              @if (form.controls.alt_up_limit.value) {
-                {{ form.controls.alt_up_limit.value * 1024 | speedLimit }}
-              } @else {
-                {{ 'general.limit.no-limit' | translate }}
-              }
-            </span>
-          </div>
-        </div>
-      </div>
+      <app-transfer-limit formControlName="altLimits"></app-transfer-limit>
     </app-bb-section-card>
 
     @if (hasScheduler()) {

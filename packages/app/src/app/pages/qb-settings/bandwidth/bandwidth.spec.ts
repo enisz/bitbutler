@@ -61,11 +61,27 @@ describe('Bandwidth', () => {
     expect(stateServiceMock.registerSave).toHaveBeenCalledWith('bandwidth', expect.any(Function));
   });
 
-  it('should patch form from preferences on init (converting bytes to KB/s)', () => {
-    expect(component.form.getRawValue().dl_limit).toBe(5000);
-    expect(component.form.getRawValue().up_limit).toBe(1000);
-    expect(component.form.getRawValue().alt_dl_limit).toBe(100);
-    expect(component.form.getRawValue().alt_up_limit).toBe(50);
+  it('should patch form from preferences on init (converting bytes to KiB/s)', () => {
+    expect(component.form.getRawValue().limits).toEqual({ downloadLimit: 5000, uploadLimit: 1000 });
+    expect(component.form.getRawValue().altLimits).toEqual({ downloadLimit: 100, uploadLimit: 50 });
+  });
+
+  it('should load a 0 limit as no limit and save it back as 0', async () => {
+    stateServiceMock.registerSave.mockClear();
+    stateServiceMock.preferences.set({ ...MOCK_PREFS, up_limit: 0 });
+    const freshFixture = TestBed.createComponent(Bandwidth);
+    freshFixture.detectChanges();
+    const fresh = freshFixture.componentInstance;
+
+    expect(fresh.form.getRawValue().limits.uploadLimit).toBeNull();
+
+    const save = stateServiceMock.registerSave.mock.calls[0][1] as () => Promise<void>;
+    await save();
+
+    expect(qbMock.app.setPreferences).toHaveBeenCalledWith(
+      'server-1',
+      expect.objectContaining({ dl_limit: 5000 * 1024, up_limit: 0 }),
+    );
   });
 
   it('should patch scheduler fields from preferences', () => {
@@ -79,7 +95,7 @@ describe('Bandwidth', () => {
   });
 
   it('should mark dirty when form value changes', () => {
-    component.form.controls.dl_limit.setValue(9999);
+    component.form.controls.limits.setValue({ downloadLimit: 9999, uploadLimit: null });
     expect(stateServiceMock.markDirty).toHaveBeenCalledWith('bandwidth', true);
   });
 

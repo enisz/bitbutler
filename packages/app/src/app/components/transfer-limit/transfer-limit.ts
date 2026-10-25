@@ -29,6 +29,8 @@ export type TransferLimitValue = {
   downloadLimit: number | null;
 };
 
+let nextId = 0;
+
 @Component({
   selector: 'app-transfer-limit',
   imports: [
@@ -51,6 +53,9 @@ export type TransferLimitValue = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TransferLimit implements ControlValueAccessor {
+  // Unique element ids, as a page can hold more than one (global and alternative limits).
+  protected readonly idPrefix = `transfer-limit-${nextId++}-`;
+
   private readonly cdr = inject(ChangeDetectorRef);
 
   public form = new FormGroup({
