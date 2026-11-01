@@ -11,42 +11,19 @@ import type {
   ImportProgressEvent,
   ImportRestoreField,
   ImportStartPayload,
+  QbTorrentContent,
 } from '@bitbutler/shared';
 import AdmZip from 'adm-zip';
 import archiver from 'archiver';
 import { dialog, ipcMain } from 'electron';
-import FormData from 'form-data';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { QbBridgeError } from '../qb/errors.js';
+import * as labels from '../qb/labels.js';
 import { refreshServerInfo, resolveFullMode } from '../qb/server-info.js';
-import { start } from '../qb/torrents.js';
-import { qbRequest } from './qbittorrent.js';
-
-interface QbTorrentInfo {
-  hash: string;
-  name: string;
-  save_path: string;
-  category: string;
-  tags: string;
-  upLimit: number;
-  dlLimit: number;
-  auto_tmm: boolean;
-  ratio_limit: number;
-  seeding_time_limit: number;
-  inactive_seeding_time_limit: number;
-  super_seeding: boolean;
-  seq_dl: boolean;
-  f_l_piece_prio: boolean;
-  state: string;
-  magnet_uri: string;
-}
-
-interface QbTorrentFile {
-  index: number;
-  name: string;
-  priority: number;
-}
+import * as details from '../qb/torrent-details.js';
+import { setSuperSeeding, start } from '../qb/torrents.js';
 
 let exportCancelled = false;
 let importCancelled = false;
@@ -76,10 +53,8 @@ export async function collectCategoriesAndTags(serverId: string): Promise<{
   tags: string[];
 }> {
   const [categories, tags] = await Promise.all([
-    qbRequest({ id: serverId, path: '/api/v2/torrents/categories' }) as Promise<
-      Record<string, { name: string; savePath: string }>
-    >,
-    qbRequest({ id: serverId, path: '/api/v2/torrents/tags' }) as Promise<string[]>,
+    labels.categories(serverId),
+    labels.tags(serverId),
   ]);
 
   return { categories, tags };
@@ -124,44 +99,28 @@ export async function restoreCategoriesAndTags(
   overwriteCategories: boolean,
 ): Promise<void> {
   if (restoreTags && metadata.tags?.length) {
-    await qbRequest({
-      id: serverId,
-      method: 'POST',
-      path: '/api/v2/torrents/createTags',
-      form: { tags: metadata.tags.join(',') },
-    }).catch((err) => {
+    await labels.createTags(serverId, metadata.tags).catch((err) => {
       console.warn('[BitButler][export] Failed to restore tags during import.', err);
     });
   }
 
   if (restoreCategories && metadata.categories) {
-    const existing = (await qbRequest({
-      id: serverId,
-      path: '/api/v2/torrents/categories',
-    }).catch(() => ({}))) as Record<string, { name: string; savePath: string }>;
+    const existing: Record<string, { name: string; savePath: string }> = await labels
+      .categories(serverId)
+      .catch(() => ({}));
 
     for (const [name, category] of Object.entries(metadata.categories)) {
       const mappedPath = applyPathMappings(category.savePath, categoryPathMappings);
 
       if (!(name in existing)) {
-        await qbRequest({
-          id: serverId,
-          method: 'POST',
-          path: '/api/v2/torrents/createCategory',
-          form: { category: name, savePath: mappedPath },
-        }).catch((err) => {
+        await labels.createCategory(serverId, name, mappedPath).catch((err) => {
           console.warn(
             `[BitButler][export] Failed to create category '${name}' during import.`,
             err,
           );
         });
       } else if (overwriteCategories) {
-        await qbRequest({
-          id: serverId,
-          method: 'POST',
-          path: '/api/v2/torrents/editCategory',
-          form: { category: name, savePath: mappedPath },
-        }).catch((err) => {
+        await labels.editCategory(serverId, name, mappedPath).catch((err) => {
           console.warn(`[BitButler][export] Failed to edit category '${name}' during import.`, err);
         });
       }
@@ -312,18 +271,8 @@ function sanitizeFilename(name: string): string {
 }
 
 function describeExportError(err: unknown): string {
+  if (err instanceof QbBridgeError && err.status) return `${err.status} ${err.message}`;
   if (err instanceof Error) return err.message;
-  if (typeof err === 'string') {
-    try {
-      const parsed = JSON.parse(err) as { status?: number; statusText?: string };
-      if (parsed?.statusText) {
-        return parsed.status ? `${parsed.status} ${parsed.statusText}` : parsed.statusText;
-      }
-    } catch {
-      // not JSON — fall through to returning the raw string
-    }
-    return err;
-  }
   return String(err);
 }
 
@@ -343,12 +292,7 @@ async function saveTorrentFiles(payload: {
     if (canceled || !filePath) return { cancelled: true, savedPaths: [], failed: [] };
 
     try {
-      const buffer = (await qbRequest({
-        id: serverId,
-        path: '/api/v2/torrents/export',
-        query: { hash },
-        responseType: 'buffer',
-      })) as Buffer;
+      const buffer = await details.exportTorrentFile(serverId, hash);
       await fs.promises.writeFile(filePath, buffer);
       return { cancelled: false, savedPaths: [filePath], failed: [] };
     } catch (err) {
@@ -375,12 +319,7 @@ async function saveTorrentFiles(payload: {
     usedNames.add(filename);
 
     try {
-      const buffer = (await qbRequest({
-        id: serverId,
-        path: '/api/v2/torrents/export',
-        query: { hash },
-        responseType: 'buffer',
-      })) as Buffer;
+      const buffer = await details.exportTorrentFile(serverId, hash);
       const fullPath = path.join(dir, filename);
       await fs.promises.writeFile(fullPath, buffer);
       savedPaths.push(fullPath);
@@ -399,18 +338,12 @@ async function buildExportEntry(
   archive: archiver.Archiver,
 ): Promise<BbeTorrentEntry> {
   try {
-    const [infoRes, filesRes] = await Promise.all([
-      qbRequest({
-        id: serverId,
-        path: '/api/v2/torrents/info',
-        query: { hashes: hash },
-      }) as Promise<QbTorrentInfo[]>,
-      qbRequest({ id: serverId, path: '/api/v2/torrents/files', query: { hash } }) as Promise<
-        QbTorrentFile[]
-      >,
+    const [info, filesRes] = await Promise.all([
+      details.info(serverId, hash),
+      details.files(serverId, hash),
     ]);
+    if (!info) throw new Error(`Torrent ${hash} not found.`);
 
-    const info = infoRes[0];
     const files: BbeTorrentFile[] = filesRes.map((f) => ({
       index: f.index,
       name: f.name,
@@ -418,12 +351,7 @@ async function buildExportEntry(
     }));
 
     if (isFullMode) {
-      const torrentBuffer = (await qbRequest({
-        id: serverId,
-        path: '/api/v2/torrents/export',
-        query: { hash },
-        responseType: 'buffer',
-      })) as Buffer;
+      const torrentBuffer = await details.exportTorrentFile(serverId, hash);
       archive.append(torrentBuffer, { name: `torrents/${hash}.torrent` });
     }
 
@@ -434,8 +362,8 @@ async function buildExportEntry(
       save_path: info.save_path,
       category: info.category || undefined,
       tags: info.tags ? info.tags.split(', ').filter(Boolean) : [],
-      up_limit: info.upLimit,
-      dl_limit: info.dlLimit,
+      up_limit: info.up_limit,
+      dl_limit: info.dl_limit,
       auto_tmm: info.auto_tmm,
       ratio_limit: info.ratio_limit,
       seeding_time_limit: info.seeding_time_limit,
@@ -551,11 +479,7 @@ export async function runImport(
       for (let attempt = 0; attempt < 20; attempt++) {
         await sleep(500);
         if (importCancelled) break;
-        const res = (await qbRequest({
-          id: serverId,
-          path: '/api/v2/torrents/info',
-          query: { hashes: addedHashes.join('|') },
-        })) as QbTorrentInfo[];
+        const res = await details.infoByHashes(serverId, addedHashes);
         for (const t of res) confirmedHashes.add(t.hash);
         if (confirmedHashes.size >= addedHashes.length) break;
       }
@@ -591,10 +515,8 @@ async function addTorrent(
       ? applyPathMappings(entry.save_path, pathMappings)
       : undefined;
 
-  const addOptions: Record<string, unknown> = {
-    stopped: 'true',
-    paused: 'true',
-  };
+  // addTorrent mirrors `paused` into `stopped`, so both qBittorrent generations add it stopped.
+  const addOptions: Record<string, unknown> = { paused: 'true' };
 
   if (resolvedSavePath) addOptions['savepath'] = resolvedSavePath;
   if (has('categories') && entry.category) addOptions['category'] = entry.category;
@@ -609,15 +531,16 @@ async function addTorrent(
     const torrentEntry = zip.getEntry(`torrents/${entry.hash}.torrent`);
     if (!torrentEntry) throw new Error(`Missing torrent file for hash ${entry.hash}`);
     const torrentBuffer = torrentEntry.getData();
-    const { headers, body } = buildAddFormData(torrentBuffer, entry.hash, addOptions);
-    await qbRequest({ id: serverId, method: 'POST', path: '/api/v2/torrents/add', headers, body });
+    await details.addTorrent(serverId, {
+      torrents: [{ name: `${entry.hash}.torrent`, bytes: Array.from(torrentBuffer) }],
+      options: addOptions,
+    });
   } else {
     if (!entry.magnet_link) throw new Error(`No magnet link for hash ${entry.hash}`);
-    await qbRequest({
-      id: serverId,
-      method: 'POST',
-      path: '/api/v2/torrents/add',
-      form: { urls: entry.magnet_link, ...flattenStringRecord(addOptions) },
+    await details.addTorrent(serverId, {
+      torrents: [],
+      urls: [entry.magnet_link],
+      options: addOptions,
     });
   }
 }
@@ -633,57 +556,35 @@ async function applyTorrentSettings(
     restoreFields.includes(field);
 
   if (has('save_path') && entry.save_path) {
-    await qbRequest({
-      id: serverId,
-      method: 'POST',
-      path: '/api/v2/torrents/setLocation',
-      form: { hashes: entry.hash, location: applyPathMappings(entry.save_path, pathMappings) },
-    }).catch((err) => {
-      console.warn(`[BitButler][export] Failed to restore save_path for ${entry.hash}.`, err);
-    });
+    await details
+      .setLocation(serverId, [entry.hash], applyPathMappings(entry.save_path, pathMappings))
+      .catch((err) => {
+        console.warn(`[BitButler][export] Failed to restore save_path for ${entry.hash}.`, err);
+      });
   }
 
   if (has('categories') && entry.category) {
-    await qbRequest({
-      id: serverId,
-      method: 'POST',
-      path: '/api/v2/torrents/setCategory',
-      form: { hashes: entry.hash, category: entry.category },
-    }).catch((err) => {
+    await labels.setCategory(serverId, [entry.hash], entry.category).catch((err) => {
       console.warn(`[BitButler][export] Failed to restore category for ${entry.hash}.`, err);
     });
   }
 
   if (has('tags')) {
-    await qbRequest({
-      id: serverId,
-      method: 'POST',
-      path: '/api/v2/torrents/removeTags',
-      form: { hashes: entry.hash },
-    }).catch((err) => {
+    await labels.removeAllTags(serverId, [entry.hash]).catch((err) => {
       console.warn(`[BitButler][export] Failed to clear tags for ${entry.hash}.`, err);
     });
     if (entry.tags?.length) {
-      await qbRequest({
-        id: serverId,
-        method: 'POST',
-        path: '/api/v2/torrents/addTags',
-        form: { hashes: entry.hash, tags: entry.tags.join(',') },
-      }).catch((err) => {
+      await labels.addTags(serverId, [entry.hash], entry.tags).catch((err) => {
         console.warn(`[BitButler][export] Failed to restore tags for ${entry.hash}.`, err);
       });
     }
   }
 
-  let baseFiles: QbTorrentFile[] = [];
+  let baseFiles: QbTorrentContent[] = [];
   if (has('renames') || has('priorities')) {
     for (let attempt = 0; attempt < 5; attempt++) {
       if (attempt > 0) await sleep(300);
-      const res = (await qbRequest({
-        id: serverId,
-        path: '/api/v2/torrents/files',
-        query: { hash: entry.hash },
-      })) as QbTorrentFile[];
+      const res = await details.files(serverId, entry.hash);
       if (res?.length) {
         baseFiles = res;
         break;
@@ -695,12 +596,7 @@ async function applyTorrentSettings(
     for (const saved of entry.files) {
       const base = baseFiles.find((f) => f.index === saved.index);
       if (base && base.name !== saved.name) {
-        await qbRequest({
-          id: serverId,
-          method: 'POST',
-          path: '/api/v2/torrents/renameFile',
-          form: { hash: entry.hash, oldPath: base.name, newPath: saved.name },
-        }).catch((err) => {
+        await details.renameFile(serverId, entry.hash, base.name, saved.name).catch((err) => {
           console.warn(`[BitButler][export] Failed to rename file for ${entry.hash}.`, err);
         });
       }
@@ -715,12 +611,7 @@ async function applyTorrentSettings(
       byPriority.set(f.priority, list);
     }
     for (const [priority, indices] of byPriority) {
-      await qbRequest({
-        id: serverId,
-        method: 'POST',
-        path: '/api/v2/torrents/filePrio',
-        form: { hash: entry.hash, id: indices.join('|'), priority: String(priority) },
-      }).catch((err) => {
+      await details.filePrio(serverId, entry.hash, indices, priority).catch((err) => {
         console.warn(
           `[BitButler][export] Failed to restore file priorities for ${entry.hash}.`,
           err,
@@ -731,22 +622,12 @@ async function applyTorrentSettings(
 
   if (has('speed_limits')) {
     if (entry.up_limit !== undefined) {
-      await qbRequest({
-        id: serverId,
-        method: 'POST',
-        path: '/api/v2/torrents/setUploadLimit',
-        form: { hashes: entry.hash, limit: String(entry.up_limit) },
-      }).catch((err) => {
+      await details.setUploadLimit(serverId, entry.up_limit, [entry.hash]).catch((err) => {
         console.warn(`[BitButler][export] Failed to restore upload limit for ${entry.hash}.`, err);
       });
     }
     if (entry.dl_limit !== undefined) {
-      await qbRequest({
-        id: serverId,
-        method: 'POST',
-        path: '/api/v2/torrents/setDownloadLimit',
-        form: { hashes: entry.hash, limit: String(entry.dl_limit) },
-      }).catch((err) => {
+      await details.setDownloadLimit(serverId, entry.dl_limit, [entry.hash]).catch((err) => {
         console.warn(
           `[BitButler][export] Failed to restore download limit for ${entry.hash}.`,
           err,
@@ -756,28 +637,21 @@ async function applyTorrentSettings(
   }
 
   if (has('share_limits')) {
-    await qbRequest({
-      id: serverId,
-      method: 'POST',
-      path: '/api/v2/torrents/setShareLimits',
-      form: {
-        hashes: entry.hash,
-        ratioLimit: String(entry.ratio_limit ?? -1),
-        seedingTimeLimit: String(entry.seeding_time_limit ?? -1),
-        inactiveSeedingTimeLimit: String(entry.inactive_seeding_time_limit ?? -1),
-      },
-    }).catch((err) => {
-      console.warn(`[BitButler][export] Failed to restore share limits for ${entry.hash}.`, err);
-    });
+    await details
+      .setShareLimits(
+        serverId,
+        [entry.hash],
+        entry.ratio_limit ?? -1,
+        entry.seeding_time_limit ?? -1,
+        entry.inactive_seeding_time_limit ?? -1,
+      )
+      .catch((err) => {
+        console.warn(`[BitButler][export] Failed to restore share limits for ${entry.hash}.`, err);
+      });
   }
 
   if (has('super_seeding') && entry.super_seeding !== undefined) {
-    await qbRequest({
-      id: serverId,
-      method: 'POST',
-      path: '/api/v2/torrents/setSuperSeeding',
-      form: { hashes: entry.hash, value: String(entry.super_seeding) },
-    }).catch((err) => {
+    await setSuperSeeding(serverId, [entry.hash], entry.super_seeding).catch((err) => {
       console.warn(`[BitButler][export] Failed to restore super-seeding for ${entry.hash}.`, err);
     });
   }
@@ -793,30 +667,4 @@ async function applyTorrentSettings(
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function flattenStringRecord(obj: Record<string, unknown>): Record<string, string> {
-  const out: Record<string, string> = {};
-  for (const [k, v] of Object.entries(obj)) {
-    if (v !== undefined && v !== null) out[k] = String(v);
-  }
-  return out;
-}
-
-function buildAddFormData(
-  torrentBuffer: Buffer,
-  hash: string,
-  options: Record<string, unknown>,
-): { headers: Record<string, string>; body: Buffer } {
-  const fd = new FormData();
-  fd.append('torrents', torrentBuffer, { filename: `${hash}.torrent` });
-  for (const [k, v] of Object.entries(options)) {
-    if (v !== undefined && v !== null) fd.append(k, String(v));
-  }
-  const body = fd.getBuffer();
-  const headers = {
-    ...fd.getHeaders(),
-    'Content-Length': String(body.length),
-  };
-  return { headers, body };
 }

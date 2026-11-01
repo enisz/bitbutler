@@ -180,6 +180,21 @@ describe('torrent details domain', () => {
     });
   });
 
+  describe('infoByHashes', () => {
+    it('queries several hashes at once and returns the whole list', async () => {
+      mockQbCall.mockResolvedValueOnce([{ hash: 'a' }, { hash: 'b' }]);
+      await expect(details.infoByHashes('s', [' a ', 'b'])).resolves.toEqual([
+        { hash: 'a' },
+        { hash: 'b' },
+      ]);
+      expect(mockQbCall).toHaveBeenCalledWith('s', {
+        method: 'GET',
+        path: '/api/v2/torrents/info',
+        query: { hashes: 'a|b' },
+      });
+    });
+  });
+
   describe('exportTorrentFile', () => {
     it('requests the file as a buffer', async () => {
       const buf = Buffer.from('x');

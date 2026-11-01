@@ -147,6 +147,10 @@ export async function setDownloadPath(
 
 // Main-process only helpers (not part of the renderer bridge).
 
+// Main-process only: torrents/info for several hashes at once (the whole list, not just the first).
+export const infoByHashes = (serverId: string, hashes: string[]): Promise<Torrent[]> =>
+  get(serverId, 'info', { hashes: cleanHashes(hashes) });
+
 export function exportTorrentFile(serverId: string, hash: string): Promise<Buffer> {
   return qbCall<Buffer>(serverId, {
     path: '/api/v2/torrents/export',
