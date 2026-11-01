@@ -6,7 +6,6 @@ import { registerExportIpcHandlers } from './ipc/export.js';
 import { registerI18nIpcHandlers } from './ipc/i18n.js';
 import { registerLogIpcHandlers } from './ipc/log.js';
 import { registerNotificationIpcHandlers } from './ipc/notification.js';
-import { registerQbIpcHandlers } from './ipc/qbittorrent.js';
 import { registerServerIpcHandlers } from './ipc/server.js';
 import {
   getInitialLanguage,
@@ -20,6 +19,7 @@ import { handleSecondInstanceArgv, registerWindowIpcHandlers } from './ipc/windo
 import { createMainWindow } from './main-window.js';
 import { installMenu } from './menu.js';
 import { notify } from './notification.js';
+import { registerQbBridgeHandlers } from './qb/bridge.js';
 import { createTray } from './tray.js';
 import { registerUpdaterIpcHandlers } from './updater.js';
 
@@ -43,7 +43,7 @@ function registerAppIpcHandlers(): void {
   registerNotificationIpcHandlers();
   registerServerIpcHandlers();
   registerViewIpcHandlers();
-  registerQbIpcHandlers();
+  registerQbBridgeHandlers();
   registerTorrentAddQueueHandlers();
   registerTorrentIpcHandlers();
   registerSettingsIpcHandlers();

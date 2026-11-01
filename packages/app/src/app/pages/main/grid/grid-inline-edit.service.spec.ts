@@ -1,9 +1,11 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { CellValueChangedEvent } from 'ag-grid-community';
+import { QbError } from '../../../models/qb-error.model';
 import { Torrent } from '../../../models/torrent.model';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
+import { ToastService } from '../../../services/toast.service';
 import { GridInlineEditService } from './grid-inline-edit.service';
 
 function makeMockApi(colDefs: any[] = []) {
@@ -24,8 +26,10 @@ function makeEvent(
 describe('GridInlineEditService', () => {
   let service: GridInlineEditService;
   let qb: any;
+  let toast: { danger: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
+    toast = { danger: vi.fn() };
     qb = {
       torrents: {
         rename: vi.fn().mockResolvedValue(undefined),
@@ -49,6 +53,7 @@ describe('GridInlineEditService', () => {
       providers: [
         GridInlineEditService,
         { provide: QbService, useValue: qb },
+        { provide: ToastService, useValue: toast },
         {
           provide: ServerStoreService,
           useValue: { currentServer: signal({ id: 'server-1' }) },
@@ -207,6 +212,20 @@ describe('GridInlineEditService', () => {
     it('calls toggleFirstLastPiecePrio for f_l_piece_prio', async () => {
       await service.handleCellValueChanged(makeEvent('f_l_piece_prio', {}, true));
       expect(qb.torrents.toggleFirstLastPiecePrio).toHaveBeenCalledWith('server-1', ['abc123']);
+    });
+  });
+
+  describe('handleCellValueChanged — errors', () => {
+    it('shows no second toast for a QbError (QbService already toasted)', async () => {
+      qb.torrents.rename.mockRejectedValue(new QbError('FAILED', 'nope'));
+      await service.handleCellValueChanged(makeEvent('name', {}, 'x'));
+      expect(toast.danger).not.toHaveBeenCalled();
+    });
+
+    it('shows a toast for a plain Error', async () => {
+      qb.torrents.rename.mockRejectedValue(new Error('plain'));
+      await service.handleCellValueChanged(makeEvent('name', {}, 'x'));
+      expect(toast.danger).toHaveBeenCalledWith('plain', 'Edit Failed');
     });
   });
 

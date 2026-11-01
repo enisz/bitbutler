@@ -1,9 +1,6 @@
 import type {
   BitButlerAPI,
-  BitButlerHttpMethod,
-  BitButlerQbRequest,
   BitButlerQbTorrentsAddPayload,
-  BitButlerServerIdPayload,
   MenuClickPayload,
   SelectedTorrentInput,
   TorrentParsePayload,
@@ -11,10 +8,7 @@ import type {
 
 export type {
   BitButlerAPI,
-  BitButlerHttpMethod,
-  BitButlerQbRequest,
   BitButlerQbTorrentsAddPayload,
-  BitButlerServerIdPayload,
   MenuClickPayload,
   SelectedTorrentInput,
   TorrentParsePayload,

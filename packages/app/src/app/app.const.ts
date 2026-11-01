@@ -1,7 +1,5 @@
 import { GridOptions, iconSetQuartzLight, themeQuartz } from 'ag-grid-community';
 
-export const API_URL = '/api/v2';
-
 // eslint-disable-next-line no-control-regex -- intentionally strips OS-illegal control characters from filenames
 export const INVALID_FILENAME_CHARS = /^[^<>:"/\\|?*\x00-\x1f]+$/;
 

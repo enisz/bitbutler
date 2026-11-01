@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { CellValueChangedEvent, ColDef, GridApi } from 'ag-grid-community';
-import { HttpError } from '../../../models/http.model';
+import { QbError } from '../../../models/qb-error.model';
 import { Torrent } from '../../../models/torrent.model';
 import { QbService } from '../../../services/qb.service';
 import { ServerStoreService } from '../../../services/server-store.service';
@@ -131,9 +131,9 @@ export class GridInlineEditService {
           break;
       }
     } catch (err) {
-      // HttpError instances are already handled: QbService.request shows their toast before re-throwing.
+      // QbError instances are already handled: QbService shows their toast before re-throwing.
       // For plain errors (e.g. validation failures before the request), show an error toast here.
-      if (!(err instanceof HttpError)) {
+      if (!(err instanceof QbError)) {
         this.toastService.danger(err instanceof Error ? err.message : String(err), 'Edit Failed');
       }
     }

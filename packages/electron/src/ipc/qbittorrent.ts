@@ -1,11 +1,11 @@
-import type { BitButlerQbTorrentsAddPayload } from '@bitbutler/shared';
 import { ipcMain, safeStorage } from 'electron';
-import FormData from 'form-data';
-import fs from 'node:fs';
+import type FormData from 'form-data';
 import db from '../db.js';
 import { rebuildMenu } from '../menu.js';
+import { refreshServerInfo } from '../qb/server-info.js';
+import { clearTorrentRunCache } from '../qb/torrents.js';
 import { rebuildTrayMenu } from '../tray.js';
-import { getActiveServerId } from './server.js';
+import { getActiveServerId, getConnectionInfo } from './server.js';
 
 const cookieJar = new Map<string, string>();
 
@@ -43,143 +43,13 @@ const stmtGetByIdFull = db.prepare<[string], ServerRow>(`
   WHERE id = ?
 `);
 
-export function registerQbIpcHandlers(): void {
-  ipcMain.handle('qb:login', async (_event, payload: unknown) => qbLogin(payload));
-  ipcMain.handle('qb:logout', async (_event, payload: unknown) => qbLogout(payload));
-  ipcMain.handle('qb:has-cookie', async (_event, payload: unknown) => qbHasCookie(payload));
-  ipcMain.handle('qb:request', async (_event, payload: unknown) =>
-    qbRequest(payload as QbRequestPayload),
-  );
-  ipcMain.handle('qb:torrentsAdd', async (_evt, payload: BitButlerQbTorrentsAddPayload) =>
-    qbTorrentsAdd(payload),
-  );
+export function hasCookieFor(id: string): boolean {
+  return cookieJar.has(id);
 }
 
-export async function qbTorrentsAdd(payload: BitButlerQbTorrentsAddPayload): Promise<unknown> {
-  const { id, torrents, urls, options } = payload;
-
-  const fd = new FormData();
-  let appended = 0;
-
-  for (const t of torrents ?? []) {
-    if (!t?.name) continue;
-
-    if ('path' in t && t.path) {
-      const buf = await fs.promises.readFile(t.path);
-      fd.append('torrents', buf, { filename: t.name });
-      appended++;
-    } else if ('bytes' in t && Array.isArray(t.bytes)) {
-      fd.append('torrents', Buffer.from(t.bytes), { filename: t.name });
-      appended++;
-    }
-  }
-
-  if (Array.isArray(urls) && urls.length > 0) {
-    fd.append('urls', urls.join('\n'));
-    appended++;
-  }
-
-  if (!appended) throw new Error('No torrent or URL attached to form-data.');
-
-  console.debug(
-    `[BitButler][qbittorrent] Adding torrents for server ${id}: ${(torrents ?? []).length} file(s), ${(urls ?? []).length} url(s).`,
-  );
-
-  for (const [k, v] of Object.entries(options ?? {})) {
-    if (v === undefined || v === null) continue;
-    if (typeof v === 'string' && v.trim() === '') continue;
-    if (k === 'paused') fd.append('stopped', String(v));
-    fd.append(k, String(v));
-  }
-
-  const bodyBuffer = fd.getBuffer();
-
-  return qbRequest({
-    id,
-    method: 'POST',
-    path: '/api/v2/torrents/add',
-    headers: {
-      ...fd.getHeaders(),
-      'Content-Length': String(bodyBuffer.length),
-    },
-    body: bodyBuffer,
-  });
-}
-
-// qBittorrent 5.0 (WebAPI 2.11) renamed torrents/pause|resume to torrents/stop|start and dropped the
-// old names. The thresholds are not documented, so the version only picks which pair to try first.
-const START_STOP_MIN_WEBAPI = [2, 11, 0];
-
-type RunApi = 'START_STOP' | 'PAUSE_RESUME';
-
-const runApiCache = new Map<string, RunApi>();
-
-function usesStartStop(webapiVersion: string | null): boolean {
-  if (!webapiVersion) return false;
-  const parts = webapiVersion.split('.').map((n) => Number.parseInt(n, 10) || 0);
-  for (let i = 0; i < START_STOP_MIN_WEBAPI.length; i++) {
-    const diff = (parts[i] ?? 0) - START_STOP_MIN_WEBAPI[i];
-    if (diff !== 0) return diff > 0;
-  }
-  return true;
-}
-
-function isNotFound(err: unknown): boolean {
-  try {
-    return (JSON.parse(String(err)) as { status?: number }).status === 404;
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Pauses or resumes torrents on any qBittorrent version. Tries the endpoint pair matching the
- * server's WebAPI version (or the one that worked last time), falls back to the other pair on a 404,
- * and throws if neither works.
- */
-export async function qbRunTorrents(
-  id: string,
-  action: 'pause' | 'resume',
-  hashes: string,
-): Promise<void> {
-  const server = stmtGetByIdFull.get(id);
-  if (!server) throw new Error('Server not found.');
-
-  const first: RunApi =
-    runApiCache.get(id) ?? (usesStartStop(server.webapi_version) ? 'START_STOP' : 'PAUSE_RESUME');
-  const second: RunApi = first === 'START_STOP' ? 'PAUSE_RESUME' : 'START_STOP';
-
-  const pathFor = (api: RunApi): string => {
-    const verb =
-      api === 'START_STOP'
-        ? action === 'resume'
-          ? 'start'
-          : 'stop'
-        : action === 'resume'
-          ? 'resume'
-          : 'pause';
-    return `/api/v2/torrents/${verb}`;
-  };
-
-  for (const api of [first, second]) {
-    try {
-      await qbRequest({ id, method: 'POST', path: pathFor(api), form: { hashes } });
-      runApiCache.set(id, api);
-      return;
-    } catch (err) {
-      if (!isNotFound(err) || api === second) throw err;
-    }
-  }
-}
-
-function qbHasCookie(payload: unknown): { hasCookie: boolean } {
-  const id = requireString((payload as Record<string, unknown>)?.id, 'id');
-  return { hasCookie: cookieJar.has(id) };
-}
-
-function qbLogout(payload: unknown): { loggedOut: boolean } {
-  const id = requireString((payload as Record<string, unknown>)?.id, 'id');
+export function logoutServer(id: string): { loggedOut: boolean } {
   cookieJar.delete(id);
+  clearTorrentRunCache(id);
   if (getActiveServerId() === id) {
     ipcMain.emit('server:set-active', null, null);
   }
@@ -187,6 +57,8 @@ function qbLogout(payload: unknown): { loggedOut: boolean } {
   rebuildTrayMenu();
   return { loggedOut: true };
 }
+
+const LOGIN_FAILED_MESSAGE = 'Login failed. Check username/password and WebUI settings.';
 
 // Logs in with the stored (or supplied) credentials and refreshes the cookie jar, without touching
 // the active server or the menus - so background work can recover a dead session for any server.
@@ -214,9 +86,22 @@ async function loginAndStoreCookie(
   });
 
   const text = await res.text();
-  if (!res.ok || (res.status !== 204 && !/^Ok\./i.test(text.trim()))) {
+  if (!res.ok) {
     console.warn(`[BitButler][qbittorrent] Login failed for server ${id} (status ${res.status}).`);
-    throw new Error('Login failed. Check username/password and WebUI settings.');
+    // Same shape as qbRequest's HTTP errors, so a 403 (IP ban) maps to FORBIDDEN and keeps
+    // qBittorrent's readable ban message. A 401 is a wrong password, so it gets the friendly text.
+    throw JSON.stringify({
+      name: 'QbHttpError',
+      status: res.status,
+      statusText: res.statusText,
+      body: res.status === 401 ? LOGIN_FAILED_MESSAGE : text,
+      path: '/api/v2/auth/login',
+    });
+  }
+  // qBittorrent before 5.0 answers wrong credentials with 200 "Fails.".
+  if (res.status !== 204 && !/^Ok\./i.test(text.trim())) {
+    console.warn(`[BitButler][qbittorrent] Login failed for server ${id} (status ${res.status}).`);
+    throw new Error(LOGIN_FAILED_MESSAGE);
   }
 
   const cookie = extractSidCookie(res);
@@ -236,15 +121,26 @@ export async function qbRelogin(id: string): Promise<void> {
   await loginAndStoreCookie(id);
 }
 
-async function qbLogin(payload: unknown): Promise<{ loggedIn: boolean }> {
-  const p = payload as Record<string, unknown>;
-  const id = requireString(p?.id, 'id');
-  await loginAndStoreCookie(
-    id,
-    typeof p?.username === 'string' ? p.username : undefined,
-    typeof p?.password === 'string' ? p.password : undefined,
-  );
+// Best-effort: a failed probe is logged and never fails the login. Skipped once all three values
+// are stored, so a login against an already-probed server makes no extra requests.
+async function probeServerInfoIfMissing(id: string): Promise<void> {
+  const { exportAvailable, webapiVersion, qbVersion } = getConnectionInfo(id);
+  if (exportAvailable !== null && webapiVersion !== null && qbVersion !== null) return;
+  try {
+    await refreshServerInfo(id);
+  } catch (err) {
+    console.warn(`[BitButler][qbittorrent] Server info probe failed for server ${id}.`, err);
+  }
+}
+
+export async function loginServer(
+  id: string,
+  username?: string,
+  password?: string,
+): Promise<{ loggedIn: boolean }> {
+  await loginAndStoreCookie(id, username, password);
   console.info(`[BitButler][qbittorrent] Logged in to server ${id}.`);
+  await probeServerInfoIfMissing(id);
   ipcMain.emit('server:set-active', null, id);
   rebuildMenu();
   rebuildTrayMenu();

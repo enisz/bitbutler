@@ -1,11 +1,14 @@
 import type { TorrentAddJob, TorrentAddJobPayload } from '@bitbutler/shared';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { QbBridgeError as QbBridgeErrorType } from '../qb/errors.js';
 
 const ipcHandlers = vi.hoisted(() => new Map<string, (...args: unknown[]) => unknown>());
 const mockSend = vi.hoisted(() => vi.fn());
-const mockQbRequest = vi.hoisted(() => vi.fn());
-const mockQbTorrentsAdd = vi.hoisted(() => vi.fn());
-const mockQbRelogin = vi.hoisted(() => vi.fn());
+const mockAddTorrent = vi.hoisted(() => vi.fn());
+const mockRenameFile = vi.hoisted(() => vi.fn());
+const mockFiles = vi.hoisted(() => vi.fn());
+const mockFilePrio = vi.hoisted(() => vi.fn());
+const mockSetShareLimits = vi.hoisted(() => vi.fn());
 const mockUnlink = vi.hoisted(() => vi.fn());
 
 vi.mock('electron', () => ({
@@ -17,14 +20,23 @@ vi.mock('electron', () => ({
 }));
 vi.mock('node:fs', () => ({ default: { promises: { unlink: mockUnlink } } }));
 vi.mock('../main.js', () => ({ getMainWindow: () => ({ webContents: { send: mockSend } }) }));
-vi.mock('./qbittorrent.js', () => ({
-  qbRequest: mockQbRequest,
-  qbTorrentsAdd: mockQbTorrentsAdd,
-  qbRelogin: mockQbRelogin,
+vi.mock('../qb/torrent-details.js', () => ({
+  addTorrent: mockAddTorrent,
+  renameFile: mockRenameFile,
+  files: mockFiles,
+  filePrio: mockFilePrio,
+  setShareLimits: mockSetShareLimits,
 }));
 
-const httpError = (status: number, extra: Record<string, unknown> = {}) =>
-  JSON.stringify({ name: 'QbHttpError', status, ...extra });
+// resetModules() gives the queue a fresh errors module, so the class is imported after each reset
+// to keep the queue's instanceof checks working.
+let QbBridgeError: typeof QbBridgeErrorType;
+
+const conflict = () => new QbBridgeError('CONFLICT', 'Conflict', 409);
+const unreachable = () => new QbBridgeError('UNREACHABLE', 'Service Unavailable', 503);
+const unauthenticated = () => new QbBridgeError('UNAUTHENTICATED', 'Forbidden', 403);
+const notFound = () => new QbBridgeError('NOT_FOUND', 'Not Found', 404);
+const invalid = () => new QbBridgeError('INVALID', 'Bad Request', 400);
 
 describe('torrent-add-queue', () => {
   // The queue mutates one job object, so snapshot every update as it is pushed.
@@ -33,15 +45,18 @@ describe('torrent-add-queue', () => {
   beforeEach(async () => {
     vi.useFakeTimers();
     vi.resetModules();
+    ({ QbBridgeError } = await import('../qb/errors.js'));
     ipcHandlers.clear();
     updates = [];
     mockSend.mockImplementation((channel: string, job: TorrentAddJob) => {
       if (channel === 'qb:torrentAddJobUpdate') updates.push({ ...job });
     });
     mockUnlink.mockResolvedValue(undefined);
-    mockQbTorrentsAdd.mockResolvedValue(undefined);
-    mockQbRequest.mockResolvedValue(undefined);
-    mockQbRelogin.mockResolvedValue(undefined);
+    mockAddTorrent.mockResolvedValue(undefined);
+    mockRenameFile.mockResolvedValue(undefined);
+    mockFiles.mockResolvedValue([{ name: 'a', index: 0 }]);
+    mockFilePrio.mockResolvedValue(undefined);
+    mockSetShareLimits.mockResolvedValue(undefined);
     vi.spyOn(console, 'error').mockImplementation(() => {});
     const { registerTorrentAddQueueHandlers } = await import('./torrent-add-queue.js');
     registerTorrentAddQueueHandlers();
@@ -76,13 +91,13 @@ describe('torrent-add-queue', () => {
     it('adds the torrent and finishes without post-add calls when nothing needs post-processing', async () => {
       const { last } = await run(payload({ infoHash: 'abc' }));
 
-      expect(mockQbTorrentsAdd).toHaveBeenCalledWith({ id: 's1', ...payload().add });
-      expect(mockQbRequest).not.toHaveBeenCalled();
+      expect(mockAddTorrent).toHaveBeenCalledWith('s1', payload().add);
+      expect(mockFiles).not.toHaveBeenCalled();
       expect(last().status).toBe('done');
     });
 
-    it('marks the job duplicate on a 409 and skips deletion and post-add steps', async () => {
-      mockQbTorrentsAdd.mockRejectedValueOnce(httpError(409));
+    it('marks the job duplicate on a CONFLICT and skips deletion and post-add steps', async () => {
+      mockAddTorrent.mockRejectedValueOnce(conflict());
 
       const { last } = await run(
         payload({
@@ -94,9 +109,10 @@ describe('torrent-add-queue', () => {
       );
 
       expect(last().status).toBe('duplicate');
-      expect(mockQbTorrentsAdd).toHaveBeenCalledTimes(1);
+      expect(mockAddTorrent).toHaveBeenCalledTimes(1);
       expect(mockUnlink).not.toHaveBeenCalled();
-      expect(mockQbRequest).not.toHaveBeenCalled();
+      expect(mockFiles).not.toHaveBeenCalled();
+      expect(mockRenameFile).not.toHaveBeenCalled();
     });
 
     it('pushes status updates in order', async () => {
@@ -118,7 +134,7 @@ describe('torrent-add-queue', () => {
     });
 
     it('keeps the source file when the add fails', async () => {
-      mockQbTorrentsAdd.mockRejectedValue(httpError(400));
+      mockAddTorrent.mockRejectedValue(invalid());
 
       await run(payload({ originalPath: '/tmp/a.torrent', deleteOriginalOnSuccess: true }));
 
@@ -138,10 +154,6 @@ describe('torrent-add-queue', () => {
 
   describe('post-add steps', () => {
     it('waits for registration, then renames and sets share limits', async () => {
-      mockQbRequest.mockImplementation(async (req: { path: string }) =>
-        req.path === '/api/v2/torrents/files' ? [{ name: 'a', index: 0 }] : undefined,
-      );
-
       const { last } = await run(
         payload({
           infoHash: 'abc',
@@ -151,101 +163,142 @@ describe('torrent-add-queue', () => {
       );
 
       expect(last().status).toBe('done');
-      expect(mockQbRequest.mock.calls.map(([r]) => r.path)).toEqual([
-        '/api/v2/torrents/files',
-        '/api/v2/torrents/renameFile',
-        '/api/v2/torrents/setShareLimits',
+      expect(mockFiles).toHaveBeenCalledWith('s1', 'abc');
+      expect(mockRenameFile).toHaveBeenCalledWith('s1', 'abc', 'a', 'b');
+      expect(mockSetShareLimits).toHaveBeenCalledWith('s1', ['abc'], 1, 2, 3);
+    });
+
+    it('applies priorities by mapping each path to its file index', async () => {
+      mockFiles.mockResolvedValue([
+        { name: 'a', index: 0 },
+        { name: 'dir/b', index: 5 },
       ]);
+
+      const { last } = await run(
+        payload({
+          infoHash: 'abc',
+          priorities: [
+            { path: 'dir/b', priority: 0 },
+            { path: 'missing', priority: 7 },
+            { path: 'a', priority: 6 },
+          ],
+        }),
+      );
+
+      expect(last().status).toBe('done');
+      expect(mockFilePrio).toHaveBeenCalledTimes(2);
+      expect(mockFilePrio).toHaveBeenCalledWith('s1', 'abc', [5], 0);
+      expect(mockFilePrio).toHaveBeenCalledWith('s1', 'abc', [0], 6);
     });
 
     it('skips post-add steps when the info hash is unknown', async () => {
       const { last } = await run(payload({ renames: [{ oldPath: 'a', newPath: 'b' }] }));
 
       expect(last().status).toBe('done');
-      expect(mockQbRequest).not.toHaveBeenCalled();
+      expect(mockFiles).not.toHaveBeenCalled();
+      expect(mockRenameFile).not.toHaveBeenCalled();
+    });
+
+    it('keeps waiting while the torrent is not registered yet (NOT_FOUND)', async () => {
+      mockFiles
+        .mockRejectedValueOnce(notFound())
+        .mockRejectedValueOnce(notFound())
+        .mockResolvedValue([{ name: 'a', index: 0 }]);
+
+      const { last } = await run(
+        payload({ infoHash: 'abc', renames: [{ oldPath: 'a', newPath: 'b' }] }),
+      );
+
+      expect(mockFiles).toHaveBeenCalledTimes(3);
+      expect(mockRenameFile).toHaveBeenCalledTimes(1);
+      expect(last().status).toBe('done');
+    });
+
+    it('fails the wait on any error other than NOT_FOUND', async () => {
+      mockFiles.mockRejectedValue(invalid());
+
+      const { last } = await run(
+        payload({ infoHash: 'abc', renames: [{ oldPath: 'a', newPath: 'b' }] }),
+      );
+
+      expect(mockFiles).toHaveBeenCalledTimes(1);
+      expect(last()).toMatchObject({ status: 'error', failedStage: 'setup' });
     });
   });
 
   describe('recovery', () => {
-    it('retries a transient 5xx and succeeds without reporting a failure', async () => {
-      mockQbTorrentsAdd.mockRejectedValueOnce(httpError(503)).mockResolvedValueOnce(undefined);
-
-      const { last } = await run(payload());
-
-      expect(mockQbTorrentsAdd).toHaveBeenCalledTimes(2);
-      expect(mockQbRelogin).not.toHaveBeenCalled();
-      expect(last().status).toBe('done');
-    });
-
-    it('retries network-level failures (fetch rejects with a TypeError)', async () => {
-      mockQbTorrentsAdd
-        .mockRejectedValueOnce(new TypeError('fetch failed'))
+    it('retries UNREACHABLE twice and then succeeds without reporting a failure', async () => {
+      mockAddTorrent
+        .mockRejectedValueOnce(unreachable())
+        .mockRejectedValueOnce(unreachable())
         .mockResolvedValueOnce(undefined);
 
       const { last } = await run(payload());
 
+      expect(mockAddTorrent).toHaveBeenCalledTimes(3);
+      expect(last().status).toBe('done');
+      expect(last().error).toBeUndefined();
+    });
+
+    it('retries post-add calls on UNREACHABLE too', async () => {
+      mockRenameFile.mockRejectedValueOnce(unreachable()).mockResolvedValueOnce(undefined);
+
+      const { last } = await run(
+        payload({ infoHash: 'abc', renames: [{ oldPath: 'a', newPath: 'b' }] }),
+      );
+
+      expect(mockRenameFile).toHaveBeenCalledTimes(2);
       expect(last().status).toBe('done');
     });
 
-    it('logs back in and retries on a 403', async () => {
-      mockQbTorrentsAdd.mockRejectedValueOnce(httpError(403)).mockResolvedValueOnce(undefined);
+    it('does not retry other errors', async () => {
+      mockAddTorrent.mockRejectedValue(invalid());
 
       const { last } = await run(payload());
 
-      expect(mockQbRelogin).toHaveBeenCalledWith('s1');
-      expect(last().status).toBe('done');
-    });
-
-    it('logs back in when the session cookie is missing', async () => {
-      mockQbTorrentsAdd
-        .mockRejectedValueOnce(new Error('Not logged in (missing cookie).'))
-        .mockResolvedValueOnce(undefined);
-
-      const { last } = await run(payload());
-
-      expect(mockQbRelogin).toHaveBeenCalledWith('s1');
-      expect(last().status).toBe('done');
-    });
-
-    it('does not retry unrecoverable errors', async () => {
-      mockQbTorrentsAdd.mockRejectedValue(httpError(400));
-
-      const { last } = await run(payload());
-
-      expect(mockQbTorrentsAdd).toHaveBeenCalledTimes(1);
+      expect(mockAddTorrent).toHaveBeenCalledTimes(1);
       expect(last().status).toBe('error');
+    });
+
+    it('does not retry UNAUTHENTICATED (the shared core already re-logged in)', async () => {
+      mockAddTorrent.mockRejectedValue(unauthenticated());
+
+      const { last } = await run(payload());
+
+      expect(mockAddTorrent).toHaveBeenCalledTimes(1);
+      expect(last()).toMatchObject({ status: 'error', failedStage: 'add', authExpired: true });
     });
 
     it('gives up after three retries', async () => {
-      mockQbTorrentsAdd.mockRejectedValue(httpError(500));
+      mockAddTorrent.mockRejectedValue(unreachable());
 
       const { last } = await run(payload());
 
-      expect(mockQbTorrentsAdd).toHaveBeenCalledTimes(4);
-      expect(last().status).toBe('error');
+      expect(mockAddTorrent).toHaveBeenCalledTimes(4);
+      expect(last()).toMatchObject({ status: 'error', failedStage: 'add' });
     });
 
     it('backs off 1s, 2s, 3s between retries', async () => {
-      mockQbTorrentsAdd.mockRejectedValue(httpError(500));
+      mockAddTorrent.mockRejectedValue(unreachable());
       invoke('qb:enqueueTorrentAdd', payload());
 
       await vi.advanceTimersByTimeAsync(0);
-      expect(mockQbTorrentsAdd).toHaveBeenCalledTimes(1);
+      expect(mockAddTorrent).toHaveBeenCalledTimes(1);
       await vi.advanceTimersByTimeAsync(999);
-      expect(mockQbTorrentsAdd).toHaveBeenCalledTimes(1);
+      expect(mockAddTorrent).toHaveBeenCalledTimes(1);
       await vi.advanceTimersByTimeAsync(1);
-      expect(mockQbTorrentsAdd).toHaveBeenCalledTimes(2);
+      expect(mockAddTorrent).toHaveBeenCalledTimes(2);
       await vi.advanceTimersByTimeAsync(2000);
-      expect(mockQbTorrentsAdd).toHaveBeenCalledTimes(3);
+      expect(mockAddTorrent).toHaveBeenCalledTimes(3);
       await vi.advanceTimersByTimeAsync(3000);
-      expect(mockQbTorrentsAdd).toHaveBeenCalledTimes(4);
+      expect(mockAddTorrent).toHaveBeenCalledTimes(4);
     });
   });
 
   describe('failures', () => {
-    it('reports an add failure with the status text and response body', async () => {
-      mockQbTorrentsAdd.mockRejectedValue(
-        httpError(415, { statusText: 'Unsupported Media Type', body: 'Torrent file is not valid' }),
+    it('reports an add failure with the error message', async () => {
+      mockAddTorrent.mockRejectedValue(
+        new QbBridgeError('INVALID', 'Torrent file is not valid', 415),
       );
 
       const { last } = await run(payload());
@@ -253,41 +306,29 @@ describe('torrent-add-queue', () => {
       expect(last()).toMatchObject({
         status: 'error',
         failedStage: 'add',
-        error: 'HTTP 415 - Unsupported Media Type: Torrent file is not valid',
+        error: 'Torrent file is not valid',
       });
       expect(last().authExpired).toBeUndefined();
     });
 
-    it('truncates a long response body', async () => {
-      mockQbTorrentsAdd.mockRejectedValue(httpError(400, { body: 'x'.repeat(500) }));
+    it('truncates a long error message', async () => {
+      mockAddTorrent.mockRejectedValue(new QbBridgeError('INVALID', 'x'.repeat(500), 400));
 
       const { last } = await run(payload());
 
-      expect(last().error).toBe(`HTTP 400: ${'x'.repeat(200)}...`);
+      expect(last().error).toBe(`${'x'.repeat(200)}...`);
     });
 
     it('reports plain errors by message', async () => {
-      mockQbTorrentsAdd.mockRejectedValue(new Error('ENOENT: no such file'));
+      mockAddTorrent.mockRejectedValue(new Error('ENOENT: no such file'));
 
       const { last } = await run(payload());
 
       expect(last()).toMatchObject({ status: 'error', error: 'ENOENT: no such file' });
     });
 
-    it('flags an auth failure that re-login could not fix', async () => {
-      mockQbTorrentsAdd.mockRejectedValue(httpError(403));
-      mockQbRelogin.mockRejectedValue(new Error('Login failed.'));
-
-      const { last } = await run(payload());
-
-      expect(last()).toMatchObject({ status: 'error', failedStage: 'add', authExpired: true });
-    });
-
     it('reports a failure after the add was accepted as a setup failure', async () => {
-      mockQbRequest.mockImplementation(async (req: { path: string }) => {
-        if (req.path === '/api/v2/torrents/files') return [{ name: 'a', index: 0 }];
-        throw httpError(400);
-      });
+      mockRenameFile.mockRejectedValue(invalid());
 
       const { last } = await run(
         payload({ infoHash: 'abc', renames: [{ oldPath: 'a', newPath: 'b' }] }),
@@ -298,9 +339,9 @@ describe('torrent-add-queue', () => {
 
     it('keeps only failed jobs in the list', async () => {
       await run(payload());
-      mockQbTorrentsAdd.mockRejectedValueOnce(httpError(409));
+      mockAddTorrent.mockRejectedValueOnce(conflict());
       await run(payload());
-      mockQbTorrentsAdd.mockRejectedValueOnce(httpError(400));
+      mockAddTorrent.mockRejectedValueOnce(invalid());
       const failed = await run(payload());
 
       expect(listed().map((j) => j.id)).toEqual([failed.jobId]);
@@ -309,24 +350,20 @@ describe('torrent-add-queue', () => {
 
   describe('retry and dismiss', () => {
     it('re-runs a failed add and clears the failure details', async () => {
-      mockQbTorrentsAdd.mockRejectedValueOnce(httpError(400));
+      mockAddTorrent.mockRejectedValueOnce(invalid());
       const { jobId, last } = await run(payload());
       expect(last().status).toBe('error');
 
       invoke('qb:retryTorrentAddJob', jobId);
       await vi.runAllTimersAsync();
 
-      expect(mockQbTorrentsAdd).toHaveBeenCalledTimes(2);
+      expect(mockAddTorrent).toHaveBeenCalledTimes(2);
       expect(last()).toMatchObject({ status: 'done', error: undefined, failedStage: undefined });
       expect(listed()).toEqual([]);
     });
 
     it('skips the add and the file deletion when retrying a setup failure', async () => {
-      let failRename = true;
-      mockQbRequest.mockImplementation(async (req: { path: string }) => {
-        if (req.path === '/api/v2/torrents/files') return [{ name: 'a', index: 0 }];
-        if (failRename) throw httpError(400);
-      });
+      mockRenameFile.mockRejectedValueOnce(invalid());
       const { jobId, last } = await run(
         payload({
           infoHash: 'abc',
@@ -337,28 +374,27 @@ describe('torrent-add-queue', () => {
       );
       expect(last().failedStage).toBe('setup');
 
-      failRename = false;
       invoke('qb:retryTorrentAddJob', jobId);
       await vi.runAllTimersAsync();
 
-      expect(mockQbTorrentsAdd).toHaveBeenCalledTimes(1);
+      expect(mockAddTorrent).toHaveBeenCalledTimes(1);
       expect(mockUnlink).toHaveBeenCalledTimes(1);
       expect(last().status).toBe('done');
     });
 
     it('ignores a retry for a job that is not in the error state', async () => {
-      mockQbTorrentsAdd.mockRejectedValueOnce(httpError(409));
+      mockAddTorrent.mockRejectedValueOnce(conflict());
       const { jobId } = await run(payload());
 
       invoke('qb:retryTorrentAddJob', jobId);
       invoke('qb:retryTorrentAddJob', 'missing');
       await vi.runAllTimersAsync();
 
-      expect(mockQbTorrentsAdd).toHaveBeenCalledTimes(1);
+      expect(mockAddTorrent).toHaveBeenCalledTimes(1);
     });
 
     it('forgets a dismissed failed job so it can no longer be retried', async () => {
-      mockQbTorrentsAdd.mockRejectedValueOnce(httpError(400));
+      mockAddTorrent.mockRejectedValueOnce(invalid());
       const { jobId } = await run(payload());
 
       invoke('qb:dismissTorrentAddJob', jobId);
@@ -366,7 +402,7 @@ describe('torrent-add-queue', () => {
       await vi.runAllTimersAsync();
 
       expect(listed()).toEqual([]);
-      expect(mockQbTorrentsAdd).toHaveBeenCalledTimes(1);
+      expect(mockAddTorrent).toHaveBeenCalledTimes(1);
     });
   });
 });

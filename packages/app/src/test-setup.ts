@@ -1,3 +1,5 @@
+import { type BitButlerQbAPI, type IpcResult, QB_METHODS } from '@bitbutler/shared';
+
 // Vitest 4's `vi.spyOn()` returns the *existing* mock when the target property is already a mock
 // instead of installing a fresh wrapper (Vitest 3 re-wrapped it). Since the `window.bitbutler`
 // stubs below are shared by every test in a file, a spy installed in one test would otherwise keep
@@ -64,6 +66,20 @@ for (const key of ['localStorage', 'sessionStorage'] as const) {
   });
 }
 
+// Every typed bridge method, generated from the shared runtime list so the stub cannot drift
+// from the contract. Each resolves an empty success; tests `vi.spyOn` the ones they care about.
+// The cast is needed because the list is dynamic: TypeScript cannot check a built object
+// against the per-method signatures, but `QB_METHODS` is itself compile-checked to be complete.
+function buildQbBridgeStub(): BitButlerQbAPI {
+  const stub: Record<string, Record<string, () => Promise<IpcResult<undefined>>>> = {};
+  for (const method of QB_METHODS) {
+    const [group, name] = method.split('.');
+    stub[group] ??= {};
+    stub[group][name] = () => Promise.resolve({ ok: true, data: undefined });
+  }
+  return stub as unknown as BitButlerQbAPI;
+}
+
 window.bitbutler = {
   electron: {
     isDev: () => Promise.resolve(false),
@@ -90,18 +106,13 @@ window.bitbutler = {
     delete: () => Promise.resolve({ deleted: false }),
     getById: noopAsync,
     getByHost: noopAsync,
-    setConnectionInfo: () => Promise.resolve({ updated: false }),
     setActive: noop,
   },
   view: {
     setActive: noop,
   },
   qb: {
-    login: () => Promise.resolve({ loggedIn: false }),
-    logout: () => Promise.resolve({ loggedOut: false }),
-    hasCookie: () => Promise.resolve({ hasCookie: false }),
-    request: <TResponse = unknown>(_payload: unknown) => Promise.resolve(null as TResponse),
-    torrentsAdd: noopAsync,
+    ...buildQbBridgeStub(),
   },
   torrentQueue: {
     enqueue: () => Promise.resolve({ jobId: '' }),
