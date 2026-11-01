@@ -1,10 +1,12 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { TranslateService } from '@ngx-translate/core';
 import { Subject, firstValueFrom } from 'rxjs';
 import { QbError } from '../models/qb-error.model';
 import { QbPollingService } from './qb-polling.service';
 import { QbService } from './qb.service';
 import { ServerSettingsService } from './server-settings.service';
+import { ToastService } from './toast.service';
 import { TorrentStoreService } from './torrent-store.service';
 import { WindowService } from './window.service';
 
@@ -14,6 +16,7 @@ describe('QbPollingService', () => {
   let mockWindowService: any;
   let mockServerSettings: any;
   let mockTorrentStore: any;
+  let mockToast: any;
 
   beforeEach(() => {
     mockQbService = {
@@ -21,7 +24,10 @@ describe('QbPollingService', () => {
         maindata: vi.fn().mockResolvedValue({ rid: 1 }),
         torrentPeers: vi.fn().mockResolvedValue({ rid: 1, peers: {} }),
       },
+      forceLogout: vi.fn().mockResolvedValue(undefined),
     };
+
+    mockToast = { success: vi.fn(), warning: vi.fn(), danger: vi.fn() };
 
     mockWindowService = {
       state: signal({
@@ -49,6 +55,8 @@ describe('QbPollingService', () => {
         { provide: WindowService, useValue: mockWindowService },
         { provide: ServerSettingsService, useValue: mockServerSettings },
         { provide: TorrentStoreService, useValue: mockTorrentStore },
+        { provide: ToastService, useValue: mockToast },
+        { provide: TranslateService, useValue: { instant: (key: string) => key } },
       ],
     });
 
@@ -374,6 +382,131 @@ describe('QbPollingService', () => {
 
       service.resume(token);
       sub.unsubscribe();
+    });
+  });
+
+  describe('link state', () => {
+    const unreachable = () => new QbError('UNREACHABLE', 'offline');
+
+    beforeEach(() => {
+      vi.useFakeTimers();
+      vi.spyOn(console, 'warn').mockImplementation(() => {});
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('starts connected', () => {
+      expect(service.linkState()).toBe('connected');
+    });
+
+    it('goes reconnecting with a single toast on the first unreachable poll, then stays quiet', async () => {
+      mockQbService.sync.maindata.mockRejectedValue(unreachable());
+
+      const sub = service.startMaindataPolling('server-1').subscribe();
+      await vi.advanceTimersByTimeAsync(0);
+      expect(service.linkState()).toBe('reconnecting');
+
+      await vi.advanceTimersByTimeAsync(10_000);
+      expect(mockToast.warning).toHaveBeenCalledTimes(1);
+      sub.unsubscribe();
+    });
+
+    it('backs off between attempts (2s, then 5s, then 10s)', async () => {
+      mockQbService.sync.maindata.mockRejectedValue(unreachable());
+
+      const sub = service.startMaindataPolling('server-1').subscribe();
+      await vi.advanceTimersByTimeAsync(0);
+      expect(mockQbService.sync.maindata).toHaveBeenCalledTimes(1);
+
+      await vi.advanceTimersByTimeAsync(2000);
+      expect(mockQbService.sync.maindata).toHaveBeenCalledTimes(2);
+
+      // The next attempt is due 5s after the second failure (t=7s); ticks at 4s and 6s are skipped.
+      await vi.advanceTimersByTimeAsync(4000);
+      expect(mockQbService.sync.maindata).toHaveBeenCalledTimes(2);
+      await vi.advanceTimersByTimeAsync(2000);
+      expect(mockQbService.sync.maindata).toHaveBeenCalledTimes(3);
+      sub.unsubscribe();
+    });
+
+    it('goes back to connected with one toast when a poll succeeds again', async () => {
+      mockQbService.sync.maindata.mockRejectedValueOnce(unreachable());
+      mockQbService.sync.maindata.mockResolvedValue({ rid: 5 });
+
+      const sub = service.startMaindataPolling('server-1').subscribe();
+      await vi.advanceTimersByTimeAsync(0);
+      expect(service.linkState()).toBe('reconnecting');
+
+      await vi.advanceTimersByTimeAsync(2000);
+      expect(service.linkState()).toBe('connected');
+      expect(mockToast.success).toHaveBeenCalledTimes(1);
+      sub.unsubscribe();
+    });
+
+    it('does not toast a recovery when the link never went down', async () => {
+      const sub = service.startMaindataPolling('server-1').subscribe();
+      await vi.advanceTimersByTimeAsync(4000);
+
+      expect(mockToast.success).not.toHaveBeenCalled();
+      expect(mockToast.warning).not.toHaveBeenCalled();
+      sub.unsubscribe();
+    });
+
+    it('logs out with a toast once the server has been unreachable for 2 minutes', async () => {
+      mockQbService.sync.maindata.mockRejectedValue(unreachable());
+      const stopSpy = vi.spyOn(service, 'stopPolling');
+
+      const sub = service.startMaindataPolling('server-1').subscribe();
+      await vi.advanceTimersByTimeAsync(119_000);
+      expect(mockQbService.forceLogout).not.toHaveBeenCalled();
+
+      // The give-up check runs on the first failed attempt past 2 minutes; attempts sit on the 2s
+      // poll ticks and the last backoff step is 15s, so allow for that.
+      await vi.advanceTimersByTimeAsync(15_000);
+      expect(stopSpy).toHaveBeenCalled();
+      expect(mockToast.danger).toHaveBeenCalledTimes(1);
+      expect(mockQbService.forceLogout).toHaveBeenCalledWith('server-1');
+      expect(service.linkState()).toBe('connected');
+      sub.unsubscribe();
+    });
+
+    it('does not treat other errors as a lost link', async () => {
+      mockQbService.sync.maindata.mockRejectedValue(new QbError('FAILED', 'boom'));
+
+      const sub = service.startMaindataPolling('server-1').subscribe();
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(service.linkState()).toBe('connected');
+      expect(mockToast.warning).not.toHaveBeenCalled();
+      sub.unsubscribe();
+    });
+
+    it('keeps polling peers after a failed tick', async () => {
+      mockQbService.sync.torrentPeers.mockRejectedValueOnce(new QbError('FAILED', 'boom'));
+
+      const sub = service.startPeersPolling('server-1', 'abc').subscribe();
+      await vi.advanceTimersByTimeAsync(0);
+      expect(mockQbService.sync.torrentPeers).toHaveBeenCalledTimes(1);
+
+      await vi.advanceTimersByTimeAsync(2000);
+      expect(mockQbService.sync.torrentPeers).toHaveBeenCalledTimes(2);
+      sub.unsubscribe();
+    });
+
+    it('skips peers polling while the link is down', async () => {
+      mockQbService.sync.maindata.mockRejectedValue(unreachable());
+
+      const main = service.startMaindataPolling('server-1').subscribe();
+      await vi.advanceTimersByTimeAsync(0);
+      const peers = service.startPeersPolling('server-1', 'abc').subscribe();
+      await vi.advanceTimersByTimeAsync(2000);
+
+      expect(mockQbService.sync.torrentPeers).not.toHaveBeenCalled();
+      main.unsubscribe();
+      peers.unsubscribe();
     });
   });
 

@@ -7,6 +7,9 @@ import { clearTorrentRunCache } from '../qb/torrents.js';
 import { rebuildTrayMenu } from '../tray.js';
 import { getActiveServerId, getConnectionInfo } from './server.js';
 
+// A host that drops packets never answers, so without a limit a request hangs until the OS gives up.
+const REQUEST_TIMEOUT_MS = 20_000;
+
 const cookieJar = new Map<string, string>();
 
 export function getCookieJar(): Map<string, string> {
@@ -83,6 +86,7 @@ async function loginAndStoreCookie(
       Referer: buildBaseUrl(server),
     },
     body,
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
   });
 
   const text = await res.text();
@@ -220,6 +224,7 @@ export async function qbRequest(payload: QbRequestPayload): Promise<unknown> {
     method,
     headers,
     body: requestBody,
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
   });
 
   if (!res.ok) {

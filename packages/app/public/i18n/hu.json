@@ -2186,6 +2186,14 @@
       },
       "error": {
         "request-failed-title": "Sikertelen kérés"
+      },
+      "connection": {
+        "lost-title": "A kapcsolat megszakadt",
+        "lost-message": "Újracsatlakozás folyamatban.",
+        "restored-title": "A kapcsolat helyreállt",
+        "restored-message": "A szerver újra elérhető.",
+        "gave-up-title": "Szétkapcsolva",
+        "gave-up-message": "A szerver 2 percig nem volt elérhető."
       }
     }
   },

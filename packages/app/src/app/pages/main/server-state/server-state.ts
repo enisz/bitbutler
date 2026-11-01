@@ -90,6 +90,12 @@ export class ServerState {
   );
 
   public isPaused = toSignal(this.pollingService.isPaused$, { initialValue: false });
+
+  // qBittorrent's last reported network status would read as "connected" while the server is
+  // unreachable, so the widget reports the link instead until polling gets through again.
+  public readonly displayStatus = computed(() =>
+    this.pollingService.linkState() === 'reconnecting' ? 'reconnecting' : this.connectionStatus(),
+  );
   private _pauseToken: symbol | null = null;
 
   public icons = {

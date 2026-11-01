@@ -61,7 +61,8 @@
   &.connected {
     color: var(--bs-success);
   }
-  &.firewalled {
+  &.firewalled,
+  &.reconnecting {
     color: var(--bs-warning);
   }
   &.disconnected,

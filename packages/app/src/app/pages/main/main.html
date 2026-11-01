@@ -27,7 +27,7 @@
           <div class="brand-title">BitButler</div>
           @if (currentServer()) {
             <div class="brand-status d-flex flex-row align-items-center gap-2">
-              <span class="status-dot" [class]="connectionStatus()"></span>
+              <span class="status-dot" [class]="statusDotClass()"></span>
               <small>{{ currentServer()?.name }}</small>
             </div>
           }

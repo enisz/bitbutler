@@ -16,6 +16,7 @@ describe('ServerState', () => {
   let filteredCountSignal: ReturnType<typeof signal<number>>;
   let onPoll$: Subject<void>;
   let isPaused$: BehaviorSubject<boolean>;
+  let linkState: ReturnType<typeof signal<'connected' | 'reconnecting'>>;
   let mockPauseToken: symbol;
   let mockPause: ReturnType<typeof vi.fn>;
   let mockResume: ReturnType<typeof vi.fn>;
@@ -31,6 +32,7 @@ describe('ServerState', () => {
     filteredCountSignal = signal<number>(0);
     onPoll$ = new Subject<void>();
     isPaused$ = new BehaviorSubject<boolean>(false);
+    linkState = signal<'connected' | 'reconnecting'>('connected');
     mockPauseToken = Symbol('test-pause-token');
     mockPause = vi.fn().mockReturnValue(mockPauseToken);
     mockResume = vi.fn();
@@ -50,6 +52,7 @@ describe('ServerState', () => {
             onPoll$: onPoll$.asObservable(),
             getPollingInterval: () => 2000,
             isPaused$: isPaused$.asObservable(),
+            linkState,
             pause: mockPause,
             resume: mockResume,
           },
@@ -66,6 +69,15 @@ describe('ServerState', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('shows reconnecting instead of the last network status while the link is down', () => {
+    component.connectionStatus.set('connected');
+    expect(component.displayStatus()).toBe('connected');
+    linkState.set('reconnecting');
+    expect(component.displayStatus()).toBe('reconnecting');
+    linkState.set('connected');
+    expect(component.displayStatus()).toBe('connected');
   });
 
   describe('initial signal values', () => {

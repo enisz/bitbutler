@@ -57,6 +57,11 @@ export class Main implements OnDestroy {
   private readonly serverStateStore = inject(ServerStateStoreService);
   readonly serverState = this.serverStateStore.state;
   readonly connectionStatus = computed(() => this.serverState()?.connection_status || 'offline');
+  // The dot reports the link to the server first; qBittorrent's own network status only counts
+  // while the link is up.
+  readonly statusDotClass = computed(() =>
+    this.qbPollingService.linkState() === 'reconnecting' ? 'reconnecting' : this.connectionStatus(),
+  );
   private readonly _pollEffect = effect((onCleanup) => {
     const serverId = this.serverStoreService.currentServerId();
 

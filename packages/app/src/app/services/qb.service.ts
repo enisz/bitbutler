@@ -22,9 +22,13 @@ import {
 import { ServerStoreService } from './server-store.service';
 import { ToastService } from './toast.service';
 
-type CallOptions = { suppressErrors?: boolean };
+// noRetry: fail on the first UNREACHABLE instead of retrying with toasts - for callers (polling)
+// that run their own reconnect policy.
+type CallOptions = { suppressErrors?: boolean; noRetry?: boolean };
 
 const MAX_RETRIES = 3;
+
+const POLLING_CALL: CallOptions = { suppressErrors: true, noRetry: true };
 
 const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -86,10 +90,10 @@ export class QbService {
 
   readonly sync = {
     maindata: (serverId: string, rid: number): Promise<Maindata> =>
-      this.call(serverId, () => this.qb.sync.maindata(serverId, rid)),
+      this.call(serverId, () => this.qb.sync.maindata(serverId, rid), POLLING_CALL),
 
     torrentPeers: (serverId: string, hash: string, rid?: number): Promise<QbTorrentPeersResponse> =>
-      this.call(serverId, () => this.qb.sync.torrentPeers(serverId, hash, rid)),
+      this.call(serverId, () => this.qb.sync.torrentPeers(serverId, hash, rid), POLLING_CALL),
   };
 
   readonly torrents = {
@@ -284,7 +288,7 @@ export class QbService {
       const result = await this.invoke(fn);
       if (result.ok) return result.data;
 
-      if (result.code === 'UNREACHABLE' && attempt <= MAX_RETRIES) {
+      if (result.code === 'UNREACHABLE' && !options?.noRetry && attempt <= MAX_RETRIES) {
         if (!options?.suppressErrors) {
           // A transient in-progress message: shown in the app, never as an OS notification.
           this.toastService.showText(

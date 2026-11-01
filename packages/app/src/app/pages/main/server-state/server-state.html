@@ -41,9 +41,9 @@
         placement="top"
         container="body"
       >
-        <fa-icon [icon]="icons.faCircle" [class]="'status-dot ' + connectionStatus()"></fa-icon>
+        <fa-icon [icon]="icons.faCircle" [class]="'status-dot ' + displayStatus()"></fa-icon>
         <span class="bb-value ms-1 text-uppercase" style="font-size: 0.7rem">{{
-          connectionStatus()
+          displayStatus()
         }}</span>
       </div>
     }

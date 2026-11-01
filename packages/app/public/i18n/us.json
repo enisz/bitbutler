@@ -2186,6 +2186,14 @@
       },
       "error": {
         "request-failed-title": "Request Failed"
+      },
+      "connection": {
+        "lost-title": "Connection Lost",
+        "lost-message": "Trying to reconnect.",
+        "restored-title": "Connection Restored",
+        "restored-message": "The server is reachable again.",
+        "gave-up-title": "Disconnected",
+        "gave-up-message": "The server has been unreachable for 2 minutes."
       }
     }
   },

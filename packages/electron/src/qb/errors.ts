@@ -59,6 +59,10 @@ export function toQbError(err: unknown, opts: { login?: boolean } = {}): QbBridg
 
   const message = err instanceof Error ? err.message : String(err);
   if (err instanceof TypeError) return new QbBridgeError('UNREACHABLE', message);
+  // AbortSignal.timeout() rejects with a TimeoutError DOMException when the server never answers.
+  if ((err as { name?: string } | null)?.name === 'TimeoutError') {
+    return new QbBridgeError('UNREACHABLE', message);
+  }
   if (message.startsWith('Not logged in')) {
     return new QbBridgeError('UNAUTHENTICATED', message, undefined, 'missing-cookie');
   }
