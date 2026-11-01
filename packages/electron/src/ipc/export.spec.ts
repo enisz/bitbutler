@@ -746,6 +746,54 @@ describe('runImport', () => {
     expect(qb.setLocation).toHaveBeenCalledWith('server-1', [HA], '/p');
   }, 20000);
 
+  it('finishes with import:done when every entry has an invalid hash and post-processing is on', async () => {
+    archive([
+      { hash: 'zz', name: 'One', failed: false, magnet_link: 'magnet:?xt=1' },
+      { hash: 'yy', name: 'Two', failed: false, magnet_link: 'magnet:?xt=2' },
+    ]);
+    const { runImport } = await setup();
+    const event = fakeEvent();
+    await runImport(
+      event as any,
+      basePayload({ restoreFields: ['save_path'], startMode: 'all' }) as any,
+    );
+    expect(qb.infoByHashes).not.toHaveBeenCalled();
+    expect(event.sender.send).toHaveBeenCalledWith('import:done', {
+      total: 2,
+      failed: 2,
+      alreadyExisted: 0,
+    });
+    expect(event.sender.send).not.toHaveBeenCalledWith('import:error', expect.anything());
+  });
+
+  it('finishes with import:done when every addTorrent rejects and post-processing is on', async () => {
+    archive([existing(), existing({ hash: HB })]);
+    qb.addTorrent.mockRejectedValue(new Error('nope'));
+    const { runImport } = await setup();
+    const event = fakeEvent();
+    await runImport(event as any, basePayload({ restoreFields: ['categories'] }) as any);
+    expect(qb.infoByHashes).not.toHaveBeenCalled();
+    expect(event.sender.send).toHaveBeenCalledWith('import:done', {
+      total: 2,
+      failed: 2,
+      alreadyExisted: 0,
+    });
+    expect(event.sender.send).not.toHaveBeenCalledWith('import:error', expect.anything());
+  });
+
+  it('matches an uppercase archive hash against lowercase server rows', async () => {
+    const upper = HA.toUpperCase();
+    archive([existing({ hash: upper, save_path: '/p', category: 'Movies' })]);
+    qb.infoByHashes.mockResolvedValue([{ hash: HA }]);
+    const { runImport } = await setup();
+    await runImport(
+      fakeEvent() as any,
+      basePayload({ restoreFields: ['save_path', 'categories'] }) as any,
+    );
+    expect(qb.setLocation).toHaveBeenCalledWith('server-1', [upper], '/p');
+    expect(qb.setCategory).toHaveBeenCalledWith('server-1', [upper], 'Movies');
+  }, 20000);
+
   it('restores per-torrent limits, share limits and super seeding', async () => {
     archive([
       existing({

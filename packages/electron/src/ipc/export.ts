@@ -485,7 +485,7 @@ export async function runImport(
 
     const confirmedHashes = new Set<string>();
     const addedSet = new Set(addedHashes.map((h) => h.toLowerCase()));
-    if (needsPostProcess && !importCancelled) {
+    if (needsPostProcess && addedHashes.length > 0 && !importCancelled) {
       for (let attempt = 0; attempt < 20; attempt++) {
         await sleep(500);
         if (importCancelled) break;
