@@ -60,7 +60,10 @@ form encoding, re-login and error mapping, once, for every caller.
 
 2. **Own named codes, not HTTP numbers.** Starting set (the set is the user's call to refine; the
    exact members below are a first draft):
-   `UNAUTHENTICATED`, `FORBIDDEN`, `NOT_FOUND`, `UNREACHABLE`, `UNSUPPORTED`, `INVALID`, `FAILED`.
+   `UNAUTHENTICATED`, `FORBIDDEN`, `NOT_FOUND`, `CONFLICT`, `UNREACHABLE`, `UNSUPPORTED`,
+   `INVALID`, `FAILED`. `CONFLICT` (HTTP 409) was added when planning: `torrent-add-queue` detects
+   duplicate adds by 409, and qBittorrent also uses 409 for rename/category state conflicts.
+   `UNREACHABLE` means any transient failure worth retrying (network error, timeout, 408, 429, 5xx).
    The main process maps HTTP statuses and network errors onto them.
 
 3. **`QbService` unwraps and throws.** It becomes a thin wrapper that converts a failed
@@ -94,7 +97,15 @@ form encoding, re-login and error mapping, once, for every caller.
   stored with `webapi_version`/`qb_version`; `server:set-connection-info` and the renderer's
   login-time probe are removed. `export:get-server-info` can keep serving the export modal from
   stored data.
-- **`login`, `logout`, `hasCookie`, `torrentsAdd`** also move to `IpcResult` for consistency.
+- **`login`, `logout`, `hasCookie`** also move to `IpcResult` for consistency. `torrentsAdd` is
+  dropped from the renderer contract: nothing in the renderer calls it (adds go through
+  `torrentQueue`); `qbTorrentsAdd` stays a main-process function.
+- **The contract has 56 methods** (`QbService` today: auth 3, app 2, log 2, sync 2, torrents 41,
+  transfer 6). `pause`/`resume` are `stop`/`start` on the bridge; `QbService` keeps its own
+  `pause`/`resume` names so consumers do not change.
+- **`torrent-add-queue.ts` already has a private re-login + retry layer** (`withRecovery`) because
+  background work in the main process never went through `QbService.request`. The shared core
+  replaces its re-login part; its transient-retry loop stays there (background work has no toast).
 - **Delivery housekeeping:** a `maintenance`-labelled issue; update the CLAUDE.md architecture
   lines that describe `qbittorrent.ts` as a generic axios proxy.
 
