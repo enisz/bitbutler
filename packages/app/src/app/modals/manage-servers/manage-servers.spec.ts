@@ -462,6 +462,50 @@ describe('ManageServers', () => {
         expect(component.selectedServers()).toEqual([{ id: 'srv-9', name: 'Kept' }]);
       });
 
+      it('deleting from the context menu on a selected row deletes the whole selection', async () => {
+        confirmService.confirm.mockResolvedValue(true);
+        component.selectedServers.set([
+          { id: 'srv-2', name: 'Away' } as never,
+          { id: 'srv-3', name: 'Other' } as never,
+        ]);
+        contextMenuService.open.mockClear();
+
+        component['onCellContextMenu']({ data: { id: 'srv-2', name: 'Away' } } as never);
+        const [{ items }] = contextMenuService.open.mock.calls.at(-1) as [
+          { items: { label: string; action: () => void }[] },
+        ];
+        items.find((i) => i.label === 'general.button.delete')?.action();
+        await Promise.resolve();
+        await Promise.resolve();
+
+        expect(commandBusService.emit).toHaveBeenCalledWith({
+          type: 'SERVER_DELETED',
+          ids: ['srv-2', 'srv-3'],
+        });
+      });
+
+      it('deleting from the context menu on an unselected row deletes only that row', async () => {
+        confirmService.confirm.mockResolvedValue(true);
+        component.selectedServers.set([
+          { id: 'srv-3', name: 'Other' } as never,
+          { id: 'srv-4', name: 'More' } as never,
+        ]);
+        contextMenuService.open.mockClear();
+
+        component['onCellContextMenu']({ data: { id: 'srv-2', name: 'Away' } } as never);
+        const [{ items }] = contextMenuService.open.mock.calls.at(-1) as [
+          { items: { label: string; action: () => void }[] },
+        ];
+        items.find((i) => i.label === 'general.button.delete')?.action();
+        await Promise.resolve();
+        await Promise.resolve();
+
+        expect(commandBusService.emit).toHaveBeenCalledWith({
+          type: 'SERVER_DELETED',
+          ids: ['srv-2'],
+        });
+      });
+
       it('does not open the editor on double-click for the active server row (its connection details must not be edited out from under the live session)', async () => {
         serverStoreService.currentServerId.set('srv-2');
         component.selectedServers.set([{ id: 'srv-9', name: 'Kept' } as never]);

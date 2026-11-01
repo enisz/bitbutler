@@ -450,7 +450,10 @@ export class ManageServers implements OnDestroy {
               label: 'general.button.delete',
               icon: faTrashCan,
               variant: 'danger',
-              action: () => void this.deleteServers([server]),
+              action: () => {
+                const inSelection = this.selectedServers().some((s) => s.id === server.id);
+                void (inSelection ? this.deleteSelected() : this.deleteServers([server]));
+              },
               hint: 'Del',
             },
           ] satisfies ContextMenuEntry[])),
