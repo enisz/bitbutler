@@ -20,6 +20,7 @@ import { handleSecondInstanceArgv, registerWindowIpcHandlers } from './ipc/windo
 import { createMainWindow } from './main-window.js';
 import { installMenu } from './menu.js';
 import { notify } from './notification.js';
+import { registerQbBridgeHandlers } from './qb/bridge.js';
 import { createTray } from './tray.js';
 import { registerUpdaterIpcHandlers } from './updater.js';
 
@@ -44,6 +45,7 @@ function registerAppIpcHandlers(): void {
   registerServerIpcHandlers();
   registerViewIpcHandlers();
   registerQbIpcHandlers();
+  registerQbBridgeHandlers();
   registerTorrentAddQueueHandlers();
   registerTorrentIpcHandlers();
   registerSettingsIpcHandlers();

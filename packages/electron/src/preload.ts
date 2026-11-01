@@ -2,6 +2,7 @@ import type {
   BbeMetadata,
   BbeServerInfo,
   BitButlerAPI,
+  BitButlerQbAPI,
   ExportDoneEvent,
   ExportProgressEvent,
   ExportStartPayload,
@@ -41,6 +42,80 @@ function makeIpcSubscription<T>(
 
   ipcRenderer.on(channel, handler);
   return () => ipcRenderer.removeListener(channel, handler);
+}
+
+// Local on purpose: a sandboxed preload cannot load runtime values from @bitbutler/shared.
+// The mapped type makes a missing or misspelled method a compile error.
+const QB_BRIDGE_METHODS: { [G in keyof BitButlerQbAPI]: { [M in keyof BitButlerQbAPI[G]]: true } } =
+  {
+    auth: { login: true, logout: true, hasCookie: true },
+    app: { preferences: true, setPreferences: true },
+    log: { main: true, peers: true },
+    sync: { maindata: true, torrentPeers: true },
+    torrents: {
+      properties: true,
+      info: true,
+      trackers: true,
+      files: true,
+      setLocation: true,
+      rename: true,
+      renameFile: true,
+      renameFolder: true,
+      filePrio: true,
+      increasePrio: true,
+      decreasePrio: true,
+      topPrio: true,
+      bottomPrio: true,
+      delete: true,
+      recheck: true,
+      reannounce: true,
+      stop: true,
+      start: true,
+      setForceStart: true,
+      setSuperSeeding: true,
+      setAutoManagement: true,
+      addTags: true,
+      removeTags: true,
+      removeAllTags: true,
+      tags: true,
+      createTags: true,
+      deleteTags: true,
+      setCategory: true,
+      clearCategory: true,
+      categories: true,
+      createCategory: true,
+      editCategory: true,
+      removeCategories: true,
+      setShareLimits: true,
+      downloadLimit: true,
+      setDownloadLimit: true,
+      uploadLimit: true,
+      setUploadLimit: true,
+      setDownloadPath: true,
+      toggleSequentialDownload: true,
+      toggleFirstLastPiecePrio: true,
+    },
+    transfer: {
+      downloadLimit: true,
+      setDownloadLimit: true,
+      uploadLimit: true,
+      setUploadLimit: true,
+      speedLimitsMode: true,
+      toggleSpeedLimitsMode: true,
+    },
+  };
+
+/** Every bridge method forwards over the single allowlisted `qb:call` channel. */
+function buildQbBridge(): BitButlerQbAPI {
+  const bridge: Record<string, Record<string, (...args: unknown[]) => Promise<unknown>>> = {};
+  for (const [group, methods] of Object.entries(QB_BRIDGE_METHODS)) {
+    bridge[group] = {};
+    for (const method of Object.keys(methods)) {
+      bridge[group][method] = (...args) =>
+        ipcRenderer.invoke('qb:call', `${group}.${method}`, args);
+    }
+  }
+  return bridge as unknown as BitButlerQbAPI;
 }
 
 const api: BitButlerAPI = {
@@ -86,6 +161,7 @@ const api: BitButlerAPI = {
   },
 
   qb: {
+    ...buildQbBridge(),
     login: ({ id, username, password }) =>
       ipcRenderer.invoke('qb:login', { id, username, password }),
     logout: ({ id }) => ipcRenderer.invoke('qb:logout', { id }),
