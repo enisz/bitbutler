@@ -1,5 +1,12 @@
 import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
-import { faPenToSquare, faPlus, faTrashCan, faXmark } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCircleInfo,
+  faEraser,
+  faPenToSquare,
+  faPlus,
+  faTrashCan,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AgGridAngular } from 'ag-grid-angular';
@@ -20,10 +27,11 @@ import { NumberColumnFilter } from '../../components/column-filters/number-colum
 import { TextColumnFilter } from '../../components/column-filters/text-column-filter/text-column-filter';
 import { GridRowNavigationDirective } from '../../directives/grid-row-navigation';
 import type { ManageCategoriesGridSettings } from '../../models/manage-categories-grid.model';
+import type { Torrent } from '../../models/torrent.model';
 import type { ContextMenuEntry } from '../../pages/main/grid/context-menu/context-menu.types';
 import { GridContextMenuService } from '../../pages/main/grid/context-menu/grid-context-menu.service';
 import { CommandBusService } from '../../services/command-bus.service';
-import { ConfirmService } from '../../services/confirm.service';
+import { ConfirmCallout, ConfirmService } from '../../services/confirm.service';
 import { ContextMenuService } from '../../services/context-menu.service';
 import { ManageCategoriesGridSettingsService } from '../../services/manage-categories-grid.settings.service';
 import { QbService } from '../../services/qb.service';
@@ -233,6 +241,70 @@ export class ManageCategories implements OnInit, OnDestroy {
     await this.deleteCategories(categories);
   }
 
+  private torrentsIn(categories: CategoryRow[]): Torrent[] {
+    const names = categories.map((c) => c.name);
+    return this.torrentStoreService.torrentsArray().filter((t) => names.includes(t.category));
+  }
+
+  // With Automatic Torrent Management on, a torrent follows its category's save path, so taking
+  // the category away (or deleting it) moves the files. Without it nothing moves, so no note.
+  private autoTmmCallout(torrents: Torrent[]): ConfirmCallout | undefined {
+    const count = torrents.filter((t) => t.auto_tmm).length;
+    if (!count) return undefined;
+    return {
+      variant: 'info',
+      icon: faCircleInfo,
+      title: this.translateService.instant('components.modals.manage-categories.auto-tmm.title'),
+      message: this.translateService.instant(
+        'components.modals.manage-categories.auto-tmm.message',
+        {
+          count,
+        },
+      ),
+    };
+  }
+
+  private async removeFromTorrents(categories: CategoryRow[]): Promise<void> {
+    const torrents = this.torrentsIn(categories);
+    if (!torrents.length) return;
+
+    const confirmed = await this.confirmService.confirm(
+      'components.modals.manage-categories.remove-confirm.title',
+      {
+        text: 'components.modals.manage-categories.remove-confirm.message',
+        data: { count: torrents.length },
+      },
+      'components.modals.manage-categories.remove-confirm.button',
+      undefined,
+      undefined,
+      faEraser,
+      this.autoTmmCallout(torrents),
+    );
+    if (!confirmed) return;
+
+    const serverId = this.serverStoreService.currentServerId();
+    if (!serverId) return;
+
+    try {
+      await this.qbService.torrents.clearCategory(
+        serverId,
+        torrents.map((t) => t.hash),
+      );
+      this.commandBusService.emit({
+        type: 'CATEGORY_CLEARED',
+        names: categories.map((c) => c.name),
+      });
+    } catch (err) {
+      console.error(ManageCategories.name, 'removeFromTorrents', err);
+      this.toastService.danger(
+        this.translateService.instant('components.modals.manage-categories.toast.clear-failed'),
+        this.translateService.instant(
+          'components.modals.manage-categories.toast.clear-failed-title',
+        ),
+      );
+    }
+  }
+
   private async deleteCategories(categories: CategoryRow[]): Promise<void> {
     const count = categories.reduce((sum, c) => sum + c.usageCount, 0);
     const confirmed = await this.confirmService.confirm(
@@ -242,6 +314,7 @@ export class ManageCategories implements OnInit, OnDestroy {
       undefined,
       undefined,
       faTrashCan,
+      this.autoTmmCallout(this.torrentsIn(categories)),
     );
     if (!confirmed) return;
 
@@ -287,6 +360,12 @@ export class ManageCategories implements OnInit, OnDestroy {
     if (!event.data) return;
     const category = event.data;
 
+    // The whole selection when the clicked row is part of it, otherwise just the clicked row.
+    const targets = (): CategoryRow[] => {
+      const selected = this.selectedCategories();
+      return selected.some((c) => c.name === category.name) ? selected : [category];
+    };
+
     const items: ContextMenuEntry[] = [
       {
         kind: 'item',
@@ -297,15 +376,19 @@ export class ManageCategories implements OnInit, OnDestroy {
       },
       {
         kind: 'item',
+        id: 'remove-from-torrents',
+        label: 'components.modals.manage-categories.menu.remove-from-torrents',
+        icon: faEraser,
+        disabled: !targets().some((c) => c.usageCount > 0),
+        action: () => void this.removeFromTorrents(targets()),
+      },
+      {
+        kind: 'item',
         id: 'delete',
         label: 'general.button.delete',
         icon: faTrashCan,
         variant: 'danger',
-        action: () => {
-          const selected = this.selectedCategories();
-          const inSelection = selected.some((c) => c.name === category.name);
-          void this.deleteCategories(inSelection ? selected : [category]);
-        },
+        action: () => void this.deleteCategories(targets()),
         hint: 'Del',
       },
     ];

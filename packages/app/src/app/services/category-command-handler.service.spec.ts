@@ -73,6 +73,22 @@ describe('CategoryCommandHandlerService', () => {
     );
   });
 
+  it('should show one info toast after CATEGORY_CLEARED, naming one category or counting several', async () => {
+    commands$.next({ type: 'CATEGORY_CLEARED', names: ['movies'] });
+    await flushPromises();
+    expect(toastInfo).toHaveBeenCalledWith(
+      '"movies"',
+      'services.category-command-handler.info.cleared-title',
+    );
+
+    commands$.next({ type: 'CATEGORY_CLEARED', names: ['a', 'b'] });
+    await flushPromises();
+    expect(toastInfo).toHaveBeenLastCalledWith(
+      'services.category-command-handler.info.cleared-count',
+      'services.category-command-handler.info.cleared-title-plural',
+    );
+  });
+
   it('should ignore unrelated commands', async () => {
     commands$.next({ type: 'SERVER_DELETED', ids: ['srv-1'] });
     await flushPromises();

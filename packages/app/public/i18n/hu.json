@@ -829,11 +829,21 @@
           "title": "Cimke törlése",
           "message": "Biztosan törölni szeretnéd a kijelölt cimké(ke)t? {{ count }} torrent használja őket."
         },
+        "menu": {
+          "remove-from-torrents": "Eltávolítás az összes torrentről"
+        },
+        "remove-confirm": {
+          "title": "Címke eltávolítása a torrentekről",
+          "message": "A kijelölt címke(ék) el lesz(nek) távolítva {{ count }} torrentről. Maguk a címkék megmaradnak.",
+          "button": "Eltávolítás"
+        },
         "toast": {
           "load-failed-title": "Nem sikerült betölteni a címkéket",
           "load-failed": "Nem sikerült betölteni a címkéket a szerverről.",
           "delete-failed-title": "Nem sikerült törölni a címkét",
-          "delete-failed": "Nem sikerült törölni a kijelölt címké(ke)t."
+          "delete-failed": "Nem sikerült törölni a kijelölt címké(ke)t.",
+          "clear-failed-title": "Nem sikerült eltávolítani a címkét a torrentekről",
+          "clear-failed": "Nem sikerült eltávolítani a kijelölt címké(ke)t a torrentekről."
         }
       },
       "manage-servers": {
@@ -1148,11 +1158,25 @@
           "title": "Kategória törlése",
           "message": "Biztosan törölni szeretnéd a kijelölt kategóriákat? {{ count }} torrenthez vannak hozzárendelve."
         },
+        "menu": {
+          "remove-from-torrents": "Eltávolítás az összes torrentről"
+        },
+        "remove-confirm": {
+          "title": "Kategória eltávolítása a torrentekről",
+          "message": "A kijelölt kategóriák el lesznek távolítva {{ count }} torrentről. Maguk a kategóriák megmaradnak.",
+          "button": "Eltávolítás"
+        },
+        "auto-tmm": {
+          "title": "Automatikus torrentkezelés",
+          "message": "Az érintett torrentek közül {{ count }} automatikus torrentkezelést használ. A fájljaik az alapértelmezett mentési helyre kerülnek át."
+        },
         "toast": {
           "load-failed-title": "Nem sikerült betölteni a kategóriákat",
           "load-failed": "Nem sikerült betölteni a kategóriákat a szerverről.",
           "delete-failed-title": "Nem sikerült törölni a kategóriát",
-          "delete-failed": "Nem sikerült törölni a kijelölt kategóriákat."
+          "delete-failed": "Nem sikerült törölni a kijelölt kategóriákat.",
+          "clear-failed-title": "Nem sikerült eltávolítani a kategóriát a torrentekről",
+          "clear-failed": "Nem sikerült eltávolítani a kijelölt kategóriákat a torrentekről."
         }
       }
     },
@@ -2166,7 +2190,10 @@
       "info": {
         "deleted-title": "Címke törölve",
         "deleted-title-plural": "Címkék törölve",
-        "deleted-count": "{{ count }} címke"
+        "deleted-count": "{{ count }} címke",
+        "cleared-title": "Címke eltávolítva a torrentekről",
+        "cleared-title-plural": "Címkék eltávolítva a torrentekről",
+        "cleared-count": "{{ count }} címke"
       }
     },
     "category-command-handler": {
@@ -2176,7 +2203,10 @@
       "info": {
         "deleted-title": "Kategória törölve",
         "deleted-title-plural": "Kategóriák törölve",
-        "deleted-count": "{{ count }} kategória"
+        "deleted-count": "{{ count }} kategória",
+        "cleared-title": "Kategória eltávolítva a torrentekről",
+        "cleared-title-plural": "Kategóriák eltávolítva a torrentekről",
+        "cleared-count": "{{ count }} kategória"
       }
     },
     "qb": {

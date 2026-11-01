@@ -36,6 +36,7 @@ describe('ManageCategories', () => {
       categories: ReturnType<typeof vi.fn>;
       editCategory: ReturnType<typeof vi.fn>;
       removeCategories: ReturnType<typeof vi.fn>;
+      clearCategory: ReturnType<typeof vi.fn>;
     };
   };
   let toastService: { danger: ReturnType<typeof vi.fn> };
@@ -67,6 +68,7 @@ describe('ManageCategories', () => {
         }),
         editCategory: vi.fn().mockResolvedValue(undefined),
         removeCategories: vi.fn().mockResolvedValue(undefined),
+        clearCategory: vi.fn().mockResolvedValue(undefined),
       },
     };
     toastService = { danger: vi.fn() };
@@ -323,6 +325,7 @@ describe('ManageCategories', () => {
         undefined,
         undefined,
         faTrashCan,
+        undefined,
       );
       expect(component.categories().map((c) => c.name)).not.toContain('movies');
       expect(component.categories().map((c) => c.name)).not.toContain('tv');
@@ -359,8 +362,12 @@ describe('ManageCategories', () => {
       const [{ items }] = contextMenuService.open.mock.calls.at(-1) as [
         { items: { label: string; hint?: string; action: () => void }[] },
       ];
-      expect(items.map((i) => i.label)).toEqual(['general.button.edit', 'general.button.delete']);
-      expect((items[1] as { hint?: string }).hint).toBe('Del');
+      expect(items.map((i) => i.label)).toEqual([
+        'general.button.edit',
+        'components.modals.manage-categories.menu.remove-from-torrents',
+        'general.button.delete',
+      ]);
+      expect((items[2] as { hint?: string }).hint).toBe('Del');
 
       items[0].action();
       await Promise.resolve();
@@ -380,7 +387,7 @@ describe('ManageCategories', () => {
       const [{ items }] = contextMenuService.open.mock.calls.at(-1) as [
         { items: { label: string; action: () => void }[] },
       ];
-      items[1].action();
+      items[2].action();
       await Promise.resolve();
       await Promise.resolve();
 
@@ -428,7 +435,7 @@ describe('ManageCategories', () => {
       const [{ items }] = contextMenuService.open.mock.calls.at(-1) as [
         { items: { label: string; action: () => void }[] },
       ];
-      items[1].action();
+      items[2].action();
       await Promise.resolve();
       await Promise.resolve();
 
@@ -446,13 +453,130 @@ describe('ManageCategories', () => {
       const [{ items }] = contextMenuService.open.mock.calls.at(-1) as [
         { items: { label: string; action: () => void }[] },
       ];
-      items[1].action();
+      items[2].action();
       await Promise.resolve();
       await Promise.resolve();
 
       expect(component.selectedCategories()).toEqual([
         { name: 'tv', savePath: '/data/tv', usageCount: 1 },
       ]);
+    });
+  });
+
+  describe('remove from all torrents', () => {
+    const movies = { name: 'movies', savePath: '/data/movies', usageCount: 2 };
+    const tv = { name: 'tv', savePath: '/data/tv', usageCount: 1 };
+
+    beforeEach(() => {
+      torrentStoreService.torrentsArray.set([
+        { hash: 'h1', category: 'movies', auto_tmm: false } as never,
+        { hash: 'h2', category: 'movies', auto_tmm: false } as never,
+        { hash: 'h3', category: 'tv', auto_tmm: false } as never,
+      ]);
+    });
+
+    function menuItems(
+      row: typeof movies,
+    ): { id: string; disabled?: boolean; action: () => void }[] {
+      contextMenuService.open.mockClear();
+      component['onCellContextMenu']({ data: row } as never);
+      const [{ items }] = contextMenuService.open.mock.calls.at(-1) as [{ items: never[] }];
+      return items;
+    }
+
+    async function settle(): Promise<void> {
+      for (let i = 0; i < 4; i++) await Promise.resolve();
+    }
+
+    it('clears the category from the torrents that have it, after confirmation', async () => {
+      menuItems(movies)
+        .find((i) => i.id === 'remove-from-torrents')
+        ?.action();
+      await settle();
+
+      expect(confirmService.confirm).toHaveBeenCalled();
+      expect(qbService.torrents.clearCategory).toHaveBeenCalledWith('srv-1', ['h1', 'h2']);
+      expect(qbService.torrents.removeCategories).not.toHaveBeenCalled();
+      expect(commandBusService.emit).toHaveBeenCalledWith({
+        type: 'CATEGORY_CLEARED',
+        names: ['movies'],
+      });
+    });
+
+    it('acts on the whole selection when the clicked row is part of it', async () => {
+      component.selectedCategories.set([movies, tv]);
+
+      menuItems(movies)
+        .find((i) => i.id === 'remove-from-torrents')
+        ?.action();
+      await settle();
+
+      expect(qbService.torrents.clearCategory).toHaveBeenCalledWith('srv-1', ['h1', 'h2', 'h3']);
+    });
+
+    it('does nothing when the confirmation is declined', async () => {
+      confirmService.confirm.mockResolvedValue(false);
+
+      menuItems(movies)
+        .find((i) => i.id === 'remove-from-torrents')
+        ?.action();
+      await settle();
+
+      expect(qbService.torrents.clearCategory).not.toHaveBeenCalled();
+      expect(commandBusService.emit).not.toHaveBeenCalled();
+    });
+
+    it('disables the item when no torrent uses the category', () => {
+      const item = menuItems({ ...movies, usageCount: 0 }).find(
+        (i) => i.id === 'remove-from-torrents',
+      );
+      expect(item?.disabled).toBe(true);
+    });
+
+    it('shows a danger toast and no command when the request fails', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      qbService.torrents.clearCategory.mockRejectedValue(new Error('boom'));
+
+      menuItems(movies)
+        .find((i) => i.id === 'remove-from-torrents')
+        ?.action();
+      await settle();
+
+      expect(toastService.danger).toHaveBeenCalled();
+      expect(commandBusService.emit).not.toHaveBeenCalled();
+    });
+
+    it('warns about Automatic Torrent Management only when an affected torrent uses it', async () => {
+      menuItems(movies)
+        .find((i) => i.id === 'remove-from-torrents')
+        ?.action();
+      await settle();
+      expect(confirmService.confirm.mock.calls.at(-1)?.[6]).toBeUndefined();
+
+      torrentStoreService.torrentsArray.set([
+        { hash: 'h1', category: 'movies', auto_tmm: true } as never,
+        { hash: 'h2', category: 'movies', auto_tmm: false } as never,
+      ]);
+      menuItems(movies)
+        .find((i) => i.id === 'remove-from-torrents')
+        ?.action();
+      await settle();
+      expect(confirmService.confirm.mock.calls.at(-1)?.[6]).toMatchObject({ variant: 'info' });
+      expect(TestBed.inject(TranslateService).instant).toHaveBeenCalledWith(
+        'components.modals.manage-categories.auto-tmm.message',
+        { count: 1 },
+      );
+    });
+
+    it('also warns on the delete confirmation when an affected torrent uses it', async () => {
+      torrentStoreService.torrentsArray.set([
+        { hash: 'h1', category: 'movies', auto_tmm: true } as never,
+      ]);
+      component.selectedCategories.set([movies]);
+
+      await component.deleteSelected();
+
+      expect(confirmService.confirm.mock.calls.at(-1)?.[6]).toMatchObject({ variant: 'info' });
     });
   });
 

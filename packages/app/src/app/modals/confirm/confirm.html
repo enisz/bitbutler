@@ -8,6 +8,16 @@
   ></button>
 </div>
 <div class="modal-body" [innerHTML]="message() | translate: messageParams()"></div>
+@if (callout(); as note) {
+  <div class="px-3 pb-3">
+    <bb-callout
+      [variant]="note.variant"
+      [icon]="note.icon ?? null"
+      [title]="note.title"
+      [message]="note.message"
+    />
+  </div>
+}
 <div class="modal-footer">
   <button
     type="button"

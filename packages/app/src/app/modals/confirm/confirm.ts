@@ -3,12 +3,14 @@ import { IconDefinition, faCheck, faXmark } from '@fortawesome/free-solid-svg-ic
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
+import { BbCallout } from '../../components/bb-callout/bb-callout';
 import { AutofocusDirective } from '../../directives/autofocus';
+import type { ConfirmCallout } from '../../services/confirm.service';
 
 @Component({
   selector: 'app-confirm',
   standalone: true,
-  imports: [TranslatePipe, AutofocusDirective, BbBtnContent],
+  imports: [TranslatePipe, AutofocusDirective, BbBtnContent, BbCallout],
   templateUrl: './confirm.html',
   styleUrl: './confirm.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -24,4 +26,5 @@ export class Confirm {
   readonly btnCancelText = input('general.button.cancel');
   readonly okIcon = input<IconDefinition>(faCheck);
   readonly cancelIcon = input<IconDefinition>(faXmark);
+  readonly callout = input<ConfirmCallout | null>(null);
 }

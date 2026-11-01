@@ -1,9 +1,10 @@
 import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
-import { faPlus, faTrashCan, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faEraser, faPlus, faTrashCan, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import type {
+  CellContextMenuEvent,
   ColDef,
   ColumnHeaderContextMenuEvent,
   FirstDataRenderedEvent,
@@ -19,6 +20,7 @@ import { NumberColumnFilter } from '../../components/column-filters/number-colum
 import { TextColumnFilter } from '../../components/column-filters/text-column-filter/text-column-filter';
 import { GridRowNavigationDirective } from '../../directives/grid-row-navigation';
 import type { ManageTagsGridSettings } from '../../models/manage-tags-grid.model';
+import type { ContextMenuEntry } from '../../pages/main/grid/context-menu/context-menu.types';
 import { GridContextMenuService } from '../../pages/main/grid/context-menu/grid-context-menu.service';
 import { CommandBusService } from '../../services/command-bus.service';
 import { ConfirmService } from '../../services/confirm.service';
@@ -30,6 +32,10 @@ import { ThemeService } from '../../services/theme.service';
 import { ToastService } from '../../services/toast.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
 import { setModalInput } from '../../utils/modal-input';
+
+// qBittorrent reports a torrent's tags as one comma-separated string.
+const torrentTagNames = (tags: string | undefined): string[] =>
+  (tags ?? '').split(',').map((s) => s.trim());
 
 export interface TagRow {
   name: string;
@@ -76,12 +82,7 @@ export class ManageTags implements OnInit, OnDestroy {
     const torrents = this.torrentStoreService.torrentsArray();
     return this.tagNames().map((name) => ({
       name,
-      usageCount: torrents.filter((t) =>
-        (t.tags ?? '')
-          .split(',')
-          .map((s) => s.trim())
-          .includes(name),
-      ).length,
+      usageCount: torrents.filter((t) => torrentTagNames(t.tags).includes(name)).length,
     }));
   });
 
@@ -126,6 +127,7 @@ export class ManageTags implements OnInit, OnDestroy {
     onColumnVisible: () => this.onColumnChanged(),
     onSortChanged: () => this.onColumnChanged(),
     onFilterChanged: () => this.onFilterChanged(),
+    onCellContextMenu: (event) => this.onCellContextMenu(event),
     onColumnHeaderContextMenu: (event) => this.onColumnHeaderContextMenu(event),
     onFirstDataRendered: (event: FirstDataRenderedEvent<TagRow>) => {
       if (!this.isDefaultLayout) return;
@@ -226,6 +228,74 @@ export class ManageTags implements OnInit, OnDestroy {
         this.translateService.instant('components.modals.manage-tags.toast.delete-failed-title'),
       );
     }
+  }
+
+  private async removeFromTorrents(tags: TagRow[]): Promise<void> {
+    const names = tags.map((t) => t.name);
+    const hashes = this.torrentStoreService
+      .torrentsArray()
+      .filter((t) => torrentTagNames(t.tags).some((name) => names.includes(name)))
+      .map((t) => t.hash);
+    if (!hashes.length) return;
+
+    const confirmed = await this.confirmService.confirm(
+      'components.modals.manage-tags.remove-confirm.title',
+      {
+        text: 'components.modals.manage-tags.remove-confirm.message',
+        data: { count: hashes.length },
+      },
+      'components.modals.manage-tags.remove-confirm.button',
+      undefined,
+      undefined,
+      faEraser,
+    );
+    if (!confirmed) return;
+
+    const serverId = this.serverStoreService.currentServerId();
+    if (!serverId) return;
+
+    try {
+      await this.qbService.torrents.removeTags(serverId, hashes, names);
+      this.commandBusService.emit({ type: 'TAG_CLEARED', names });
+    } catch (err) {
+      console.error(ManageTags.name, 'removeFromTorrents', err);
+      this.toastService.danger(
+        this.translateService.instant('components.modals.manage-tags.toast.clear-failed'),
+        this.translateService.instant('components.modals.manage-tags.toast.clear-failed-title'),
+      );
+    }
+  }
+
+  private onCellContextMenu(event: CellContextMenuEvent<TagRow>): void {
+    if (!event.data) return;
+    const tag = event.data;
+    // The whole selection when the clicked row is part of it, otherwise just the clicked row.
+    const targets = (): TagRow[] => {
+      const selected = this.selectedTags();
+      return selected.some((t) => t.name === tag.name) ? selected : [tag];
+    };
+
+    const items: ContextMenuEntry[] = [
+      {
+        kind: 'item',
+        id: 'remove-from-torrents',
+        label: 'components.modals.manage-tags.menu.remove-from-torrents',
+        icon: faEraser,
+        disabled: !targets().some((t) => t.usageCount > 0),
+        action: () => void this.removeFromTorrents(targets()),
+      },
+      {
+        kind: 'item',
+        id: 'delete',
+        label: 'general.button.delete',
+        icon: faTrashCan,
+        variant: 'danger',
+        action: () => void this.deleteTags(targets()),
+        hint: 'Del',
+      },
+    ];
+
+    this.contextMenuService.open({ items });
   }
 
   private onColumnHeaderContextMenu(event: ColumnHeaderContextMenuEvent<TagRow>): void {
