@@ -37,19 +37,13 @@
     @case ('connection-status') {
       <div
         class="bb-widget"
-        [class.bb-stale]="isStale()"
-        [bbTooltip]="
-          (isStale()
-            ? 'pages.main.server-state.network-status-stale'
-            : 'pages.main.server-state.network-status'
-          ) | translate
-        "
+        [bbTooltip]="'pages.main.server-state.network-status' | translate"
         placement="top"
         container="body"
       >
-        <fa-icon [icon]="icons.faCircle" [class]="'status-dot ' + connectionStatus()"></fa-icon>
+        <fa-icon [icon]="icons.faCircle" [class]="'status-dot ' + displayStatus()"></fa-icon>
         <span class="bb-value ms-1 text-uppercase" style="font-size: 0.7rem">{{
-          connectionStatus()
+          displayStatus()
         }}</span>
       </div>
     }

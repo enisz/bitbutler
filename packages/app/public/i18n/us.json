@@ -1506,7 +1506,6 @@
         "server-polling": "Server Polling ({{interval}}s) - Click to Pause",
         "polling-paused": "Polling Paused - Click to Resume",
         "network-status": "Network Status",
-        "network-status-stale": "Network Status (last known)",
         "global-session-ratio": "Global Session Ratio",
         "global-total-ratio": "Global Total Ratio",
         "global-session-downloaded": "Global Session Downloaded",

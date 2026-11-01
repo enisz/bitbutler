@@ -61,7 +61,8 @@
   &.connected {
     color: var(--bs-success);
   }
-  &.firewalled {
+  &.firewalled,
+  &.reconnecting {
     color: var(--bs-warning);
   }
   &.disconnected,
@@ -159,8 +160,4 @@
 .speed-limit-value {
   font-size: 0.7em;
   color: var(--bs-secondary);
-}
-
-.bb-stale {
-  opacity: 0.45;
 }

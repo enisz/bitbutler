@@ -71,12 +71,13 @@ describe('ServerState', () => {
     expect(component).toBeTruthy();
   });
 
-  it('marks the bar stale only while the link is reconnecting', () => {
-    expect(component.isStale()).toBe(false);
+  it('shows reconnecting instead of the last network status while the link is down', () => {
+    component.connectionStatus.set('connected');
+    expect(component.displayStatus()).toBe('connected');
     linkState.set('reconnecting');
-    expect(component.isStale()).toBe(true);
+    expect(component.displayStatus()).toBe('reconnecting');
     linkState.set('connected');
-    expect(component.isStale()).toBe(false);
+    expect(component.displayStatus()).toBe('connected');
   });
 
   describe('initial signal values', () => {
