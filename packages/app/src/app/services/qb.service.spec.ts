@@ -1,12 +1,36 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { type IpcResult, QB_METHODS } from '@bitbutler/shared';
+import { TranslateService } from '@ngx-translate/core';
+import { QbError } from '../models/qb-error.model';
 import { QbService } from './qb.service';
 import { ServerStoreService } from './server-store.service';
 import { ToastService } from './toast.service';
 
+type AnyFn = (...args: unknown[]) => Promise<unknown>;
+type Group = Record<string, AnyFn>;
+
+const ok = <T>(data: T): IpcResult<T> => ({ ok: true, data });
+
+// QbService method names that differ from the bridge method they delegate to.
+const BRIDGE_NAME: Record<string, string> = {
+  'torrents.pause': 'stop',
+  'torrents.resume': 'start',
+};
+
+// Trailing QbService-only parameters (renderer options) that are not forwarded to the bridge.
+const SERVICE_ONLY_PARAMS: Record<string, number> = {
+  'torrents.files': 1,
+};
+
+const GROUPS = ['auth', 'app', 'log', 'sync', 'torrents', 'transfer'] as const;
+
 describe('QbService', () => {
   let service: QbService;
   let toastMock: { danger: ReturnType<typeof vi.fn>; showText: ReturnType<typeof vi.fn> };
+
+  const bridgeGroup = (group: string): Group =>
+    (window.bitbutler.qb as unknown as Record<string, Group>)[group];
 
   beforeEach(() => {
     toastMock = { danger: vi.fn(), showText: vi.fn() };
@@ -14,302 +38,215 @@ describe('QbService', () => {
       providers: [
         QbService,
         { provide: ToastService, useValue: toastMock },
-        { provide: ServerStoreService, useValue: {} },
-        { provide: Router, useValue: { navigate: vi.fn() } },
+        {
+          provide: ServerStoreService,
+          useValue: { suppressAutoLoginUntilManualConnect: vi.fn(), clearSelection: vi.fn() },
+        },
+        { provide: Router, useValue: { navigate: vi.fn().mockResolvedValue(true) } },
+        { provide: TranslateService, useValue: { instant: (key: string) => key } },
       ],
     });
     service = TestBed.inject(QbService);
   });
 
-  it('should delegate login() to window.bitbutler.qb.login', async () => {
-    const spy = vi.spyOn(window.bitbutler.qb, 'login').mockResolvedValue({ loggedIn: true } as any);
-    const result = await service.auth.login('server-1');
-    expect(spy).toHaveBeenCalledWith({ id: 'server-1' });
-    expect(result).toEqual({ loggedIn: true });
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
-  it('should delegate logout() to window.bitbutler.qb.logout', async () => {
-    const spy = vi
-      .spyOn(window.bitbutler.qb, 'logout')
-      .mockResolvedValue({ loggedOut: true } as any);
-    const result = await service.auth.logout('server-1');
-    expect(spy).toHaveBeenCalledWith({ id: 'server-1' });
-    expect(result).toEqual({ loggedOut: true });
+  it('unwraps the data of a successful result', async () => {
+    vi.spyOn(window.bitbutler.qb.torrents, 'tags').mockResolvedValue(ok(['a', 'b']));
+
+    await expect(service.torrents.tags('s1')).resolves.toEqual(['a', 'b']);
+    expect(toastMock.danger).not.toHaveBeenCalled();
   });
 
-  it('should unwrap hasCookie result and return a boolean', async () => {
-    const spy = vi
-      .spyOn(window.bitbutler.qb, 'hasCookie')
-      .mockResolvedValue({ hasCookie: true } as any);
-    const result = await service.auth.hasCookie('server-1');
-    expect(spy).toHaveBeenCalledWith({ id: 'server-1' });
-    expect(result).toBe(true);
-  });
-
-  it('should call login with server id via maindata()', async () => {
-    const spy = vi.spyOn(window.bitbutler.qb, 'request').mockResolvedValue({
-      ok: true,
-      status: 200,
-      statusText: 'OK',
-      body: { rid: 1 },
-    } as any);
-    await service.sync.maindata('server-1', 0);
-    expect(spy).toHaveBeenCalledWith(
-      expect.objectContaining({ id: 'server-1', path: '/api/v2/sync/maindata' }),
-    );
-  });
-
-  it('should call log.main with the normal/info/warning/critical query params', async () => {
-    const spy = vi.spyOn(window.bitbutler.qb, 'request').mockResolvedValue({
-      ok: true,
-      status: 200,
-      statusText: 'OK',
-      body: [],
-    } as any);
-
-    await service.log.main('server-1', {
-      normal: false,
-      info: false,
-      warning: true,
-      critical: true,
-    });
-
-    expect(spy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        id: 'server-1',
-        path: '/api/v2/log/main',
-        query: { normal: false, info: false, warning: true, critical: true },
-      }),
-    );
-  });
-
-  it('should call log.peers with a last_known_id query param', async () => {
-    const spy = vi.spyOn(window.bitbutler.qb, 'request').mockResolvedValue({
-      ok: true,
-      status: 200,
-      statusText: 'OK',
-      body: [],
-    } as any);
-
-    await service.log.peers('server-1', { last_known_id: 5 });
-
-    expect(spy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        id: 'server-1',
-        path: '/api/v2/log/peers',
-        query: { last_known_id: 5 },
-      }),
-    );
-  });
-
-  it('should throw HttpError when clearing the category fails', async () => {
-    vi.spyOn(service, 'request').mockResolvedValue({
+  it('throws a QbError with the same code and message and shows one danger toast', async () => {
+    vi.spyOn(window.bitbutler.qb.torrents, 'createCategory').mockResolvedValue({
       ok: false,
-      status: 409,
-      statusText: 'Conflict',
-    } as any);
+      code: 'CONFLICT',
+      message: 'Category already exists',
+    });
 
-    await expect(service.torrents.clearCategory('server-1', ['hash1'])).rejects.toThrow(
-      'Failed to clear category',
+    const error = await service.torrents.createCategory('s1', 'movies', '/m').catch((e) => e);
+
+    expect(error).toBeInstanceOf(QbError);
+    expect(error).toMatchObject({ code: 'CONFLICT', message: 'Category already exists' });
+    expect(toastMock.danger).toHaveBeenCalledTimes(1);
+    expect(toastMock.danger).toHaveBeenCalledWith(
+      'Category already exists',
+      'services.qb.error.request-failed-title',
     );
   });
 
-  describe('request() retries', () => {
-    afterEach(() => {
-      vi.useRealTimers();
+  it('shows no toast with suppressErrors but still throws', async () => {
+    vi.spyOn(window.bitbutler.qb.torrents, 'files').mockResolvedValue({
+      ok: false,
+      code: 'NOT_FOUND',
+      message: 'Torrent not found',
     });
 
-    it('shows the connection retry warning in the app only, never as an OS notification', async () => {
-      vi.useFakeTimers();
-      vi.spyOn(window.bitbutler.qb, 'request').mockRejectedValue(new Error('connect ECONNREFUSED'));
+    const error = await service.torrents.files('s1', 'h', { suppressErrors: true }).catch((e) => e);
 
-      const pending = service.request('server-1', { method: 'GET', path: '/api/v2/sync/maindata' });
-      const settled = pending.catch(() => undefined);
-      await vi.advanceTimersByTimeAsync(1000 + 2000 + 3000);
-      await settled;
+    expect(error).toBeInstanceOf(QbError);
+    expect(error.code).toBe('NOT_FOUND');
+    expect(toastMock.danger).not.toHaveBeenCalled();
+    expect(toastMock.showText).not.toHaveBeenCalled();
+  });
 
-      const retryToasts = toastMock.showText.mock.calls.filter(
-        ([, opts]) => opts.type === 'warning',
+  it('retries UNREACHABLE with backoff and resolves after 2 retries', async () => {
+    vi.useFakeTimers();
+    const unreachable: IpcResult<never> = { ok: false, code: 'UNREACHABLE', message: 'down' };
+    const spy = vi
+      .spyOn(window.bitbutler.qb.sync, 'maindata')
+      .mockResolvedValueOnce(unreachable)
+      .mockResolvedValueOnce(unreachable)
+      .mockResolvedValueOnce(ok({ rid: 3 } as never));
+
+    const pending = service.sync.maindata('s1', 0);
+    await vi.advanceTimersByTimeAsync(1000 + 2000);
+
+    await expect(pending).resolves.toEqual({ rid: 3 });
+    expect(spy).toHaveBeenCalledTimes(3);
+    expect(toastMock.showText).toHaveBeenCalledTimes(2);
+    for (const [message, opts] of toastMock.showText.mock.calls) {
+      expect(message).toBe('services.qb.warning.connection-retry-message');
+      expect(opts).toEqual({
+        type: 'warning',
+        title: 'services.qb.warning.connection-retry-title',
+        notifyOs: false,
+      });
+    }
+    expect(toastMock.danger).not.toHaveBeenCalled();
+  });
+
+  it('throws after 3 retries when UNREACHABLE persists', async () => {
+    vi.useFakeTimers();
+    const spy = vi
+      .spyOn(window.bitbutler.qb.sync, 'maindata')
+      .mockResolvedValue({ ok: false, code: 'UNREACHABLE', message: 'down' });
+
+    const pending = service.sync.maindata('s1', 0).catch((e) => e);
+    await vi.advanceTimersByTimeAsync(1000 + 2000 + 3000);
+    const error = await pending;
+
+    expect(error).toBeInstanceOf(QbError);
+    expect(error).toMatchObject({ code: 'UNREACHABLE', message: 'down' });
+    expect(spy).toHaveBeenCalledTimes(4);
+    expect(toastMock.showText).toHaveBeenCalledTimes(3);
+    expect(toastMock.danger).toHaveBeenCalledTimes(1);
+  });
+
+  it('logs out once on UNAUTHENTICATED and throws', async () => {
+    vi.spyOn(window.bitbutler.qb.app, 'preferences').mockResolvedValue({
+      ok: false,
+      code: 'UNAUTHENTICATED',
+      message: 'Session expired',
+    });
+    const forceLogout = vi.spyOn(service, 'forceLogout').mockResolvedValue();
+
+    const error = await service.app.preferences('s1').catch((e) => e);
+
+    expect(forceLogout).toHaveBeenCalledTimes(1);
+    expect(forceLogout).toHaveBeenCalledWith('s1');
+    expect(error).toBeInstanceOf(QbError);
+    expect(error.code).toBe('UNAUTHENTICATED');
+  });
+
+  it('delegates torrents.pause to bridge stop and torrents.resume to bridge start', async () => {
+    const stop = vi.spyOn(window.bitbutler.qb.torrents, 'stop').mockResolvedValue(ok(undefined));
+    const start = vi.spyOn(window.bitbutler.qb.torrents, 'start').mockResolvedValue(ok(undefined));
+
+    await service.torrents.pause('s1', ['a']);
+    await service.torrents.resume('s1', ['b']);
+    await service.torrents.pause('s1', 'all');
+
+    expect(stop).toHaveBeenNthCalledWith(1, 's1', ['a']);
+    expect(stop).toHaveBeenNthCalledWith(2, 's1', 'all');
+    expect(start).toHaveBeenCalledWith('s1', ['b']);
+  });
+
+  it('returns the hasCookie boolean', async () => {
+    vi.spyOn(window.bitbutler.qb.auth, 'hasCookie').mockResolvedValue(ok(true));
+
+    await expect(service.auth.hasCookie('s1')).resolves.toBe(true);
+  });
+
+  it('returns the login result', async () => {
+    const spy = vi
+      .spyOn(window.bitbutler.qb.auth, 'login')
+      .mockResolvedValue(ok({ loggedIn: true }));
+
+    await expect(service.auth.login('s1', 'user', 'pass')).resolves.toEqual({ loggedIn: true });
+    expect(spy).toHaveBeenCalledWith('s1', 'user', 'pass');
+  });
+
+  it('throws a QbError from a failed login without any toast, retry or logout', async () => {
+    const spy = vi
+      .spyOn(window.bitbutler.qb.auth, 'login')
+      .mockResolvedValue({ ok: false, code: 'UNREACHABLE', message: 'Connection refused' });
+    const forceLogout = vi.spyOn(service, 'forceLogout');
+
+    const error = await service.auth.login('s1').catch((e) => e);
+
+    expect(error).toBeInstanceOf(QbError);
+    expect(error).toMatchObject({ code: 'UNREACHABLE', message: 'Connection refused' });
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(forceLogout).not.toHaveBeenCalled();
+    expect(toastMock.danger).not.toHaveBeenCalled();
+    expect(toastMock.showText).not.toHaveBeenCalled();
+  });
+
+  it('converts a rejected bridge promise into a FAILED QbError', async () => {
+    vi.spyOn(window.bitbutler.qb.transfer, 'downloadLimit').mockRejectedValue(
+      new Error('IPC broke'),
+    );
+
+    const error = await service.transfer.downloadLimit('s1').catch((e) => e);
+
+    expect(error).toBeInstanceOf(QbError);
+    expect(error).toMatchObject({ code: 'FAILED', message: 'IPC broke' });
+    expect(toastMock.danger).toHaveBeenCalledTimes(1);
+  });
+
+  it('converts a rejected auth bridge promise into a FAILED QbError', async () => {
+    vi.spyOn(window.bitbutler.qb.auth, 'logout').mockRejectedValue(new Error('IPC broke'));
+
+    const error = await service.auth.logout('s1').catch((e) => e);
+
+    expect(error).toBeInstanceOf(QbError);
+    expect(error).toMatchObject({ code: 'FAILED', message: 'IPC broke' });
+  });
+
+  describe('forwards every method to the same-named bridge method', () => {
+    it('covers exactly the bridge methods', () => {
+      const mapped = GROUPS.flatMap((group) =>
+        Object.keys((service as unknown as Record<string, Group>)[group]).map(
+          (name) => `${group}.${BRIDGE_NAME[`${group}.${name}`] ?? name}`,
+        ),
       );
-      expect(retryToasts).toHaveLength(3);
-      for (const [, opts] of retryToasts) {
-        expect(opts.notifyOs).toBe(false);
+      expect([...mapped].sort()).toEqual([...QB_METHODS].sort());
+    });
+
+    it.each(GROUPS)('%s group', async (group) => {
+      const serviceGroup = (service as unknown as Record<string, Group>)[group];
+      const names = Object.keys(serviceGroup);
+      expect(names.length).toBeGreaterThan(0);
+
+      for (const name of names) {
+        const key = `${group}.${name}`;
+        const bridgeName = BRIDGE_NAME[key] ?? name;
+        const bridgeFn = bridgeGroup(group)[bridgeName];
+        expect(bridgeFn, `bridge method for ${key}`).toBeTypeOf('function');
+
+        const spy = vi.spyOn(bridgeGroup(group), bridgeName).mockResolvedValue(ok(`r:${key}`));
+        const forwarded = serviceGroup[name].length - (SERVICE_ONLY_PARAMS[key] ?? 0);
+        const args = ['s1', ...Array.from({ length: forwarded - 1 }, (_, i) => ({ arg: i }))];
+
+        await serviceGroup[name](...args);
+
+        expect(spy, key).toHaveBeenCalledTimes(1);
+        expect(spy, key).toHaveBeenCalledWith(...args);
       }
-    });
-  });
-
-  describe('torrents.info()', () => {
-    it('calls /api/v2/torrents/info with the correct hash and returns the first torrent', async () => {
-      const torrent = { hash: 'abc123', name: 'My Torrent' };
-      vi.spyOn(window.bitbutler.qb, 'request').mockResolvedValue([torrent] as any);
-
-      const result = await service.torrents.info('server-1', 'abc123');
-
-      expect(window.bitbutler.qb.request).toHaveBeenCalledWith(
-        expect.objectContaining({
-          id: 'server-1',
-          path: '/api/v2/torrents/info',
-          method: 'GET',
-          query: { hashes: 'abc123' },
-        }),
-      );
-      expect(result).toEqual(torrent);
-    });
-
-    it('returns null when the response array is empty', async () => {
-      vi.spyOn(window.bitbutler.qb, 'request').mockResolvedValue([] as any);
-      const result = await service.torrents.info('server-1', 'abc123');
-      expect(result).toBeNull();
-    });
-
-    it('rejects when hash is empty', async () => {
-      await expect(service.torrents.info('server-1', '')).rejects.toThrow('hash is required');
-    });
-
-    it('throws HttpError when the response is not ok', async () => {
-      vi.spyOn(service, 'request').mockResolvedValue({
-        ok: false,
-        status: 404,
-        statusText: 'Not Found',
-        body: null,
-      } as any);
-      await expect(service.torrents.info('server-1', 'abc123')).rejects.toThrow(
-        'Failed to get torrent info',
-      );
-    });
-  });
-
-  describe('torrents.setDownloadPath()', () => {
-    it('sends hashes and path to /api/v2/torrents/setDownloadPath', async () => {
-      vi.spyOn(service, 'request').mockResolvedValue({ ok: true } as any);
-      await service.torrents.setDownloadPath('server-1', ['abc', 'def'], '/mnt/data');
-      expect(service.request).toHaveBeenCalledWith(
-        'server-1',
-        expect.objectContaining({
-          path: '/api/v2/torrents/setDownloadPath',
-          method: 'POST',
-          form: { hashes: 'abc|def', path: '/mnt/data' },
-        }),
-      );
-    });
-
-    it('throws HttpError when request fails', async () => {
-      vi.spyOn(service, 'request').mockResolvedValue({
-        ok: false,
-        status: 400,
-        statusText: 'Bad Request',
-      } as any);
-      await expect(
-        service.torrents.setDownloadPath('server-1', ['abc'], '/mnt/data'),
-      ).rejects.toThrow('Failed to set download path');
-    });
-
-    it('rejects when no hashes are provided', async () => {
-      await expect(service.torrents.setDownloadPath('server-1', [], '/mnt/data')).rejects.toThrow(
-        'No hashes provided',
-      );
-    });
-
-    it('rejects when path is empty', async () => {
-      await expect(service.torrents.setDownloadPath('server-1', ['abc'], '  ')).rejects.toThrow(
-        'path is required',
-      );
-    });
-  });
-
-  describe('torrents.toggleSequentialDownload()', () => {
-    it('sends hashes to /api/v2/torrents/toggleSequentialDownload', async () => {
-      vi.spyOn(service, 'request').mockResolvedValue({ ok: true } as any);
-      await service.torrents.toggleSequentialDownload('server-1', ['abc']);
-      expect(service.request).toHaveBeenCalledWith(
-        'server-1',
-        expect.objectContaining({
-          path: '/api/v2/torrents/toggleSequentialDownload',
-          method: 'POST',
-          form: { hashes: 'abc' },
-        }),
-      );
-    });
-
-    it('throws HttpError when request fails', async () => {
-      vi.spyOn(service, 'request').mockResolvedValue({
-        ok: false,
-        status: 500,
-        statusText: 'Server Error',
-      } as any);
-      await expect(service.torrents.toggleSequentialDownload('server-1', ['abc'])).rejects.toThrow(
-        'Failed to toggle sequential download',
-      );
-    });
-
-    it('returns early when hashes list is empty', async () => {
-      const spy = vi.spyOn(service, 'request');
-      await service.torrents.toggleSequentialDownload('server-1', []);
-      expect(spy).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('torrents.toggleFirstLastPiecePrio()', () => {
-    it('sends hashes to /api/v2/torrents/toggleFirstLastPiecePrio', async () => {
-      vi.spyOn(service, 'request').mockResolvedValue({ ok: true } as any);
-      await service.torrents.toggleFirstLastPiecePrio('server-1', ['abc']);
-      expect(service.request).toHaveBeenCalledWith(
-        'server-1',
-        expect.objectContaining({
-          path: '/api/v2/torrents/toggleFirstLastPiecePrio',
-          method: 'POST',
-          form: { hashes: 'abc' },
-        }),
-      );
-    });
-
-    it('throws HttpError when request fails', async () => {
-      vi.spyOn(service, 'request').mockResolvedValue({
-        ok: false,
-        status: 500,
-        statusText: 'Server Error',
-      } as any);
-      await expect(service.torrents.toggleFirstLastPiecePrio('server-1', ['abc'])).rejects.toThrow(
-        'Failed to toggle first/last piece priority',
-      );
-    });
-
-    it('returns early when hashes list is empty', async () => {
-      const spy = vi.spyOn(service, 'request');
-      await service.torrents.toggleFirstLastPiecePrio('server-1', []);
-      expect(spy).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('torrents.removeAllTags()', () => {
-    it('sends hashes with no tags field to /api/v2/torrents/removeTags', async () => {
-      vi.spyOn(service, 'request').mockResolvedValue({ ok: true } as any);
-      await service.torrents.removeAllTags('server-1', ['abc', 'def']);
-      expect(service.request).toHaveBeenCalledWith(
-        'server-1',
-        expect.objectContaining({
-          path: '/api/v2/torrents/removeTags',
-          method: 'POST',
-          form: { hashes: 'abc|def' },
-        }),
-      );
-    });
-
-    it('throws HttpError when request fails', async () => {
-      vi.spyOn(service, 'request').mockResolvedValue({
-        ok: false,
-        status: 500,
-        statusText: 'Server Error',
-      } as any);
-      await expect(service.torrents.removeAllTags('server-1', ['abc'])).rejects.toThrow(
-        'Failed to remove all tags',
-      );
-    });
-
-    it('returns early when hashes list is empty', async () => {
-      const spy = vi.spyOn(service, 'request');
-      await service.torrents.removeAllTags('server-1', []);
-      expect(spy).not.toHaveBeenCalled();
     });
   });
 });
