@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import { faBell, faGear } from '@fortawesome/free-solid-svg-icons';
+import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { ElectronService } from '../../services/electron.service';
 import { SettingsShell } from './settings-shell';
 import { SettingsPageConfig } from './settings-shell.model';
@@ -227,6 +229,21 @@ describe('SettingsShell', () => {
 
       await setInputs({ dirtyMap: { 'form-a': true } });
       expect(discard().disabled).toBe(false);
+    });
+
+    it('shows the discard tooltip only while discard is enabled', async () => {
+      const tooltip = () =>
+        fixture.debugElement.query(By.css('.bb-settings__discard')).injector.get(NgbTooltip)
+          .ngbTooltip;
+
+      await setInputs({ config, activePaneId: 'one', dirtyMap: {} });
+      expect(tooltip()).toBeNull();
+
+      await setInputs({ dirtyMap: { 'form-a': true } });
+      expect(tooltip()).toBe('pages.settings.nav.discard-changes-hint');
+
+      await setInputs({ dirtyMap: {} });
+      expect(tooltip()).toBeNull();
     });
 
     it('follows the per-pane dirty map for panes that share a form', async () => {

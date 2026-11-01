@@ -61,38 +61,33 @@
         <p class="bb-settings__pane-description">{{ activePane().descriptionKey | translate }}</p>
       </div>
       <div class="bb-settings__header-actions">
-        <!-- The tooltip sits on a wrapper because a disabled button receives no mouse events. -->
-        <span
-          class="bb-settings__action-wrap"
-          [bbTooltip]="'pages.settings.nav.discard-changes-hint' | translate"
+        <button
+          type="button"
+          class="bb-settings__action bb-settings__discard"
+          [disabled]="!isPaneDirty(activePane())"
+          [bbTooltip]="
+            isPaneDirty(activePane())
+              ? ('pages.settings.nav.discard-changes-hint' | translate)
+              : null
+          "
           placement="bottom"
+          (click)="discardPane.emit(activePane().id)"
         >
-          <button
-            type="button"
-            class="bb-settings__action bb-settings__discard"
-            [disabled]="!isPaneDirty(activePane())"
-            (click)="discardPane.emit(activePane().id)"
-          >
-            <fa-icon [icon]="icons.faRotateLeft"></fa-icon>
-            <span>{{ 'pages.settings.nav.discard-changes' | translate }}</span>
-          </button>
-        </span>
+          <fa-icon [icon]="icons.faRotateLeft"></fa-icon>
+          <span>{{ 'pages.settings.nav.discard-changes' | translate }}</span>
+        </button>
         @if (activePane().hasDefaults) {
           <span class="bb-settings__action-divider" aria-hidden="true"></span>
-          <span
-            class="bb-settings__action-wrap"
+          <button
+            type="button"
+            class="bb-settings__action bb-settings__restore"
             [bbTooltip]="'pages.settings.nav.restore-defaults-hint' | translate"
             placement="bottom"
+            (click)="restorePaneDefaults.emit(activePane().id)"
           >
-            <button
-              type="button"
-              class="bb-settings__action bb-settings__restore"
-              (click)="restorePaneDefaults.emit(activePane().id)"
-            >
-              <fa-icon [icon]="icons.faArrowsRotate"></fa-icon>
-              <span>{{ 'pages.settings.nav.restore-defaults' | translate }}</span>
-            </button>
-          </span>
+            <fa-icon [icon]="icons.faArrowsRotate"></fa-icon>
+            <span>{{ 'pages.settings.nav.restore-defaults' | translate }}</span>
+          </button>
         }
       </div>
     </header>
