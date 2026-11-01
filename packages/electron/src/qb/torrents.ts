@@ -1,5 +1,6 @@
 import { qbCall } from './client.js';
 import { QbBridgeError } from './errors.js';
+import { cleanHashes } from './hashes.js';
 import { getWebapiVersion } from './server-info.js';
 
 // qBittorrent 5.0 (WebAPI 2.11) renamed torrents/pause|resume to torrents/stop|start and dropped the
@@ -22,13 +23,6 @@ function usesStartStop(webapiVersion: string | null): boolean {
     if (diff !== 0) return diff > 0;
   }
   return true;
-}
-
-function cleanHashes(hashes: string[]): string {
-  return hashes
-    .map((h) => (h ?? '').trim())
-    .filter(Boolean)
-    .join('|');
 }
 
 async function post<T = void>(
