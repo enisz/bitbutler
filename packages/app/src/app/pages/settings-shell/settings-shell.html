@@ -56,9 +56,39 @@
 
   <section class="bb-settings__main">
     <header class="bb-settings__header">
-      <div>
+      <div class="bb-settings__header-text">
         <h2 class="bb-settings__pane-title">{{ activePane().labelKey | translate }}</h2>
         <p class="bb-settings__pane-description">{{ activePane().descriptionKey | translate }}</p>
+      </div>
+      <div class="bb-settings__header-actions">
+        <button
+          type="button"
+          class="bb-settings__action bb-settings__discard"
+          [disabled]="!isPaneDirty(activePane())"
+          [bbTooltip]="
+            isPaneDirty(activePane())
+              ? ('pages.settings.nav.discard-changes-hint' | translate)
+              : null
+          "
+          placement="bottom"
+          (click)="discardPane.emit(activePane().id)"
+        >
+          <fa-icon [icon]="icons.faRotateLeft"></fa-icon>
+          <span>{{ 'pages.settings.nav.discard-changes' | translate }}</span>
+        </button>
+        @if (activePane().hasDefaults) {
+          <span class="bb-settings__action-divider" aria-hidden="true"></span>
+          <button
+            type="button"
+            class="bb-settings__action bb-settings__restore"
+            [bbTooltip]="'pages.settings.nav.restore-defaults-hint' | translate"
+            placement="bottom"
+            (click)="restorePaneDefaults.emit(activePane().id)"
+          >
+            <fa-icon [icon]="icons.faArrowsRotate"></fa-icon>
+            <span>{{ 'pages.settings.nav.restore-defaults' | translate }}</span>
+          </button>
+        }
       </div>
     </header>
 
@@ -77,12 +107,18 @@
         }
         @default {
           @if (loadedComponents().size > 0) {
-            <!-- A one-item loop keyed on paneVersion: changing the version rebuilds every pane. -->
+            <!--
+              One-item loops keyed on a version: changing paneVersion rebuilds every pane, and
+              changing a pane's entry in paneVersions rebuilds just that pane. (A track expression
+              is not re-run when a signal it reads changes, so the key has to come from the loop.)
+            -->
             @for (paneKey of [paneVersion()]; track paneKey) {
               @for (pane of panes(); track pane.id) {
-                <div class="bb-settings__pane" [class.d-none]="pane.id !== activePane().id">
-                  <ng-container *ngComponentOutlet="loadedComponents().get(pane.id) ?? null" />
-                </div>
+                @for (version of [paneVersions()[pane.id] ?? 0]; track version) {
+                  <div class="bb-settings__pane" [class.d-none]="pane.id !== activePane().id">
+                    <ng-container *ngComponentOutlet="loadedComponents().get(pane.id) ?? null" />
+                  </div>
+                }
               }
             }
           } @else {

@@ -1,5 +1,6 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { FormControl, FormGroup } from '@angular/forms';
 import { QbService } from '../../services/qb.service';
 import { ServerSettingsService } from '../../services/server-settings.service';
 import { ServerStoreService } from '../../services/server-store.service';
@@ -11,6 +12,7 @@ describe('ServerSettingsFormService', () => {
   let currentServerId: ReturnType<typeof signal<string | null>>;
   let stateMock: {
     registerSave: ReturnType<typeof vi.fn>;
+    registerPaneActions: ReturnType<typeof vi.fn>;
     markDirty: ReturnType<typeof vi.fn>;
   };
   let serverSettingsMock: {
@@ -30,7 +32,7 @@ describe('ServerSettingsFormService', () => {
 
   beforeEach(async () => {
     currentServerId = signal<string | null>('s1');
-    stateMock = { registerSave: vi.fn(), markDirty: vi.fn() };
+    stateMock = { registerSave: vi.fn(), registerPaneActions: vi.fn(), markDirty: vi.fn() };
     serverSettingsMock = {
       reload: vi.fn().mockResolvedValue(settings(2000)),
       save: vi.fn().mockResolvedValue(undefined),
@@ -157,5 +159,78 @@ describe('ServerSettingsFormService', () => {
     await first;
 
     expect(service.form.controls.polling.controls.foreground.value).toBe(9000);
+  });
+
+  describe('pane actions', () => {
+    type Actions = { discard: () => void; restoreDefaults: () => void };
+    const actions = (paneId: string): Actions =>
+      stateMock.registerPaneActions.mock.calls.find(([id]) => id === paneId)![1] as Actions;
+
+    it('registers discard and restore defaults for the polling and path mappings panes', () => {
+      for (const paneId of ['polling', 'path-mappings']) {
+        expect(actions(paneId).discard).toBeTypeOf('function');
+        expect(actions(paneId).restoreDefaults).toBeTypeOf('function');
+      }
+    });
+
+    it('discards the polling intervals back to the saved ones', () => {
+      service.form.controls.polling.controls.foreground.setValue(9000);
+      expect(service.paneDirty().polling).toBe(true);
+
+      actions('polling').discard();
+
+      expect(service.form.controls.polling.controls.foreground.value).toBe(2000);
+      expect(service.paneDirty().polling).toBe(false);
+    });
+
+    it('restores the default polling intervals and leaves the path mappings alone', () => {
+      service.form.controls.polling.patchValue({ foreground: 9000, background: 12000 });
+      service.form.controls.pathMappings.at(0).controls.local.setValue('D:\\other');
+
+      actions('polling').restoreDefaults();
+
+      expect(service.form.controls.polling.getRawValue()).toEqual({
+        foreground: 2000,
+        background: 5000,
+      });
+      expect(service.form.controls.pathMappings.at(0).controls.local.value).toBe('D:\\other');
+    });
+
+    it('discards edited path mappings back to the saved rows', () => {
+      service.form.controls.pathMappings.at(0).controls.local.setValue('D:\\other');
+      service.form.controls.pathMappings.push(
+        new FormGroup({
+          remote: new FormControl<string | null>('/extra'),
+          local: new FormControl('E:\\extra', { nonNullable: true }),
+        }),
+      );
+      expect(service.paneDirty()['path-mappings']).toBe(true);
+
+      actions('path-mappings').discard();
+
+      expect(service.form.controls.pathMappings.length).toBe(1);
+      expect(service.form.controls.pathMappings.at(0).getRawValue()).toEqual({
+        remote: '/downloads',
+        local: 'C:\\dl',
+      });
+      expect(service.paneDirty()['path-mappings']).toBe(false);
+    });
+
+    it('restores the default path mappings as one empty row, and discard brings the rows back', () => {
+      actions('path-mappings').restoreDefaults();
+
+      expect(service.form.controls.pathMappings.length).toBe(1);
+      expect(service.form.controls.pathMappings.at(0).getRawValue()).toEqual({
+        remote: null,
+        local: '',
+      });
+      expect(service.paneDirty()['path-mappings']).toBe(true);
+      expect(stateMock.markDirty).toHaveBeenLastCalledWith('server', true);
+
+      actions('path-mappings').discard();
+
+      expect(service.form.controls.pathMappings.at(0).getRawValue().local).toBe('C:\\dl');
+      expect(service.paneDirty()['path-mappings']).toBe(false);
+    });
   });
 });

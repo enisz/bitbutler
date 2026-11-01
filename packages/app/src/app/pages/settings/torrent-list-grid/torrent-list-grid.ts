@@ -16,7 +16,6 @@ import {
   faArrowsDownToLine,
   faArrowsUpToLine,
   faGripVertical,
-  faRotateLeft,
   faTriangleExclamation,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
@@ -24,7 +23,6 @@ import { NgSelectComponent } from '@ng-select/ng-select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { type ColDef, type ColumnState } from 'ag-grid-community';
 import { firstValueFrom, take, tap } from 'rxjs';
-import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
@@ -75,7 +73,6 @@ const FOCUS_FALLBACKS: Record<ColumnAction, ColumnAction[]> = {
     DragDropModule,
     FaIconComponent,
     BbPopover,
-    BbBtnContent,
     FontAwesomeModule,
     TranslatePipe,
     BbTooltip,
@@ -125,7 +122,6 @@ export class TorrentListGrid implements SettingsTabComponent {
   public faArrowDown = faArrowDown;
   public faArrowsDownToLine = faArrowsDownToLine;
   public faXmark = faXmark;
-  public faRotateLeft = faRotateLeft;
   public loaded = signal(false);
 
   constructor() {
@@ -149,6 +145,9 @@ export class TorrentListGrid implements SettingsTabComponent {
       });
 
     this.stateService.registerSave('torrent-list-grid', () => this.save());
+    this.stateService.registerPaneActions('torrent-list-grid', {
+      restoreDefaults: () => this.restoreDefaults(),
+    });
 
     this.torrentListGridForm
       .get('columns')
@@ -254,16 +253,25 @@ export class TorrentListGrid implements SettingsTabComponent {
     this.retainActionFocus('remove', neighborColId);
   }
 
-  public reset(): void {
-    const defaultColumnIds = (DEFAULT_TORRENT_LIST_GRID_SETTINGS.columnState ?? []) as string[];
+  // Fills the whole pane with the defaults, columns and options alike; nothing is saved until Save.
+  public restoreDefaults(): void {
+    const defaults = DEFAULT_TORRENT_LIST_GRID_SETTINGS;
+    const defaultColumnIds = (defaults.columnState ?? []) as string[];
     const lookup = new Map(this.columns().map((c) => [c.value, c]));
     const defaultOrdered = defaultColumnIds
       .map((id) => lookup.get(id))
       .filter((c): c is NgSelectColumnItem => !!c);
 
     this.orderedColumns.set(defaultOrdered);
-    this.torrentListGridForm.controls.columns.setValue(
-      defaultOrdered.map((c) => c.value),
+    this.torrentListGridForm.patchValue(
+      {
+        columns: defaultOrdered.map((c) => c.value),
+        pagination: defaults.pagination ?? false,
+        animateRows: defaults.animateRows ?? false,
+        compactRows: defaults.compactRows ?? false,
+        pausePollingOnModal: defaults.pausePollingOnModal ?? false,
+        rowDoubleClickAction: defaults.rowDoubleClickAction,
+      },
       { emitEvent: false },
     );
     this.stateService.markDirty('torrent-list-grid', true);

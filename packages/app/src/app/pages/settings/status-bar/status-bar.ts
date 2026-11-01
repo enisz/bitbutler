@@ -8,10 +8,8 @@ import {
 } from '@angular/cdk/drag-drop';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { faRotateLeft } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { switchMap, tap } from 'rxjs';
-import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content';
 import { BbPopover } from '../../../components/bb-popover/bb-popover';
 import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
@@ -39,7 +37,6 @@ interface Widget {
     CdkDropListGroup,
     StatusBarWidgetPreview,
     BbSpinner,
-    BbBtnContent,
     BbPopover,
     TranslatePipe,
   ],
@@ -51,8 +48,6 @@ export class StatusBar implements SettingsTabComponent {
   private statusBarService = inject(StatusBarSettingsService);
   private readonly translateService = inject(TranslateService);
   private readonly stateService = inject(SettingsStateService);
-
-  public faRotateLeft = faRotateLeft;
 
   private readonly MASTER_WIDGET_KEYS = [
     'connection-status',
@@ -98,6 +93,9 @@ export class StatusBar implements SettingsTabComponent {
 
   constructor() {
     this.stateService.registerSave('status-bar', () => this.save());
+    this.stateService.registerPaneActions('status-bar', {
+      restoreDefaults: () => this.restoreDefaults(),
+    });
   }
 
   private mapIdsToWidgets(ids: string[]): Widget[] {
@@ -106,7 +104,7 @@ export class StatusBar implements SettingsTabComponent {
       .map((id) => ({ id, label: this.MASTER_WIDGETS[id] }));
   }
 
-  public reset(): void {
+  public restoreDefaults(): void {
     this.available = this.mapIdsToWidgets(DEFAULT_STATUS_BAR_SETTINGS.available);
     this.left = this.mapIdsToWidgets(DEFAULT_STATUS_BAR_SETTINGS.left);
     this.right = this.mapIdsToWidgets(DEFAULT_STATUS_BAR_SETTINGS.right);

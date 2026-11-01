@@ -4,6 +4,7 @@ import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import {
+  DEFAULT_GENERAL_SETTINGS,
   DateFormatPreset,
   FirstDayOfWeek,
   GeneralSettings,
@@ -15,6 +16,14 @@ import { GeneralSettingsService } from '../../services/general-settings.service'
 import { ThemeFamily, ThemeMode, ThemeService } from '../../services/theme.service';
 import { hasChangedSections } from '../settings-shell/section-changed';
 import { SettingsStateService } from './settings-state.service';
+
+// The form sections each pane owns, which is what discarding or restoring its defaults touches.
+const PANE_SECTIONS: Record<string, readonly (keyof GeneralSettings)[]> = {
+  general: ['behavior', 'savePath', 'language', 'dateFormat'],
+  appearance: ['appearance'],
+  startup: ['startup'],
+  notifications: ['notifications'],
+};
 
 /**
  * Owns the single General settings form. Several panes (General, Appearance, Startup,
@@ -139,6 +148,13 @@ export class GeneralSettingsFormService {
 
     this.stateService.registerSave('general', () => this.save());
 
+    for (const [paneId, sections] of Object.entries(PANE_SECTIONS)) {
+      this.stateService.registerPaneActions(paneId, {
+        discard: () => this.applySections(this.baseline(), sections),
+        restoreDefaults: () => this.applySections(DEFAULT_GENERAL_SETTINGS, sections),
+      });
+    }
+
     this.form.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.formSnapshot.set(this.form.getRawValue());
       this.stateService.markDirty('general', Object.values(this.paneDirty()).some(Boolean));
@@ -176,6 +192,15 @@ export class GeneralSettingsFormService {
     this.themeService.applyFromSettings(settings.appearance.family, settings.appearance.mode);
     this.dateFormatService.applyFromSettings(settings);
     this.baseline.set(this.form.getRawValue());
+  }
+
+  // Patched with events on, so the dependent control states and the dirty flags follow along.
+  private applySections(values: object, sections: readonly (keyof GeneralSettings)[]): void {
+    for (const section of sections) {
+      (this.form.get(section) as FormGroup | null)?.patchValue(
+        (values as Record<string, Record<string, unknown>>)[section],
+      );
+    }
   }
 
   // A master switch disables its children without resetting them, so turning it back on

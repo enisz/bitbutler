@@ -13,13 +13,14 @@ describe('Startup', () => {
 
   let stateServiceMock: {
     registerSave: ReturnType<typeof vi.fn>;
+    registerPaneActions: ReturnType<typeof vi.fn>;
     markDirty: ReturnType<typeof vi.fn>;
   };
   let serverStoreMock: { servers: ReturnType<typeof signal<ServerRecord[]>> };
   let dateFormatServiceMock: { applyFromSettings: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
-    stateServiceMock = { registerSave: vi.fn(), markDirty: vi.fn() };
+    stateServiceMock = { registerSave: vi.fn(), registerPaneActions: vi.fn(), markDirty: vi.fn() };
     serverStoreMock = { servers: signal([]) };
     dateFormatServiceMock = { applyFromSettings: vi.fn() };
 

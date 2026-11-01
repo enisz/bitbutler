@@ -13,7 +13,10 @@ describe('Notifications', () => {
       imports: [Notifications],
       providers: [
         GeneralSettingsFormService,
-        { provide: SettingsStateService, useValue: { registerSave: vi.fn(), markDirty: vi.fn() } },
+        {
+          provide: SettingsStateService,
+          useValue: { registerSave: vi.fn(), registerPaneActions: vi.fn(), markDirty: vi.fn() },
+        },
         { provide: DateFormatService, useValue: { applyFromSettings: vi.fn() } },
       ],
       schemas: [NO_ERRORS_SCHEMA],

@@ -28,7 +28,10 @@ describe('PathMappings', () => {
       providers: [
         ServerSettingsFormService,
         { provide: ElectronService, useValue: electronMock },
-        { provide: SettingsStateService, useValue: { registerSave: vi.fn(), markDirty: vi.fn() } },
+        {
+          provide: SettingsStateService,
+          useValue: { registerSave: vi.fn(), registerPaneActions: vi.fn(), markDirty: vi.fn() },
+        },
         { provide: ServerStoreService, useValue: { currentServerId: signal(null) } },
         {
           provide: ServerSettingsService,

@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import { faBell, faGear } from '@fortawesome/free-solid-svg-icons';
+import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { ElectronService } from '../../services/electron.service';
 import { SettingsShell } from './settings-shell';
 import { SettingsPageConfig } from './settings-shell.model';
@@ -213,5 +215,86 @@ describe('SettingsShell', () => {
     await setInputs({ subtitle: 'My Server' });
 
     expect(query('.bb-settings__subtitle')?.textContent).toContain('My Server');
+  });
+
+  describe('pane header actions', () => {
+    it('enables discard changes only while the active pane has unsaved changes', async () => {
+      const discard = () => query<HTMLButtonElement>('.bb-settings__discard')!;
+
+      await setInputs({ config, activePaneId: 'one', dirtyMap: {} });
+      expect(discard().disabled).toBe(true);
+
+      await setInputs({ dirtyMap: { 'form-b': true } });
+      expect(discard().disabled).toBe(true);
+
+      await setInputs({ dirtyMap: { 'form-a': true } });
+      expect(discard().disabled).toBe(false);
+    });
+
+    it('shows the discard tooltip only while discard is enabled', async () => {
+      const tooltip = () =>
+        fixture.debugElement.query(By.css('.bb-settings__discard')).injector.get(NgbTooltip)
+          .ngbTooltip;
+
+      await setInputs({ config, activePaneId: 'one', dirtyMap: {} });
+      expect(tooltip()).toBeNull();
+
+      await setInputs({ dirtyMap: { 'form-a': true } });
+      expect(tooltip()).toBe('pages.settings.nav.discard-changes-hint');
+
+      await setInputs({ dirtyMap: {} });
+      expect(tooltip()).toBeNull();
+    });
+
+    it('follows the per-pane dirty map for panes that share a form', async () => {
+      await setInputs({
+        config,
+        activePaneId: 'one',
+        dirtyMap: { 'form-a': true },
+        paneDirtyMap: { one: false },
+      });
+
+      expect(query<HTMLButtonElement>('.bb-settings__discard')!.disabled).toBe(true);
+    });
+
+    it('emits the pane id when discard changes is clicked', async () => {
+      await setInputs({ config, activePaneId: 'one', dirtyMap: { 'form-a': true } });
+      const emitted: string[] = [];
+      fixture.componentInstance.discardPane.subscribe((id) => emitted.push(id));
+
+      query<HTMLButtonElement>('.bb-settings__discard')!.click();
+
+      expect(emitted).toEqual(['one']);
+    });
+
+    it('shows restore defaults only for panes that have defaults and emits the pane id', async () => {
+      const withDefaults: SettingsPageConfig = {
+        ...config,
+        groups: [
+          {
+            ...config.groups[0],
+            panes: [{ ...config.groups[0].panes[0], hasDefaults: true }, config.groups[0].panes[1]],
+          },
+        ],
+      };
+      await setInputs({ config: withDefaults, activePaneId: 'two' });
+      expect(query('.bb-settings__restore')).toBeNull();
+
+      await setInputs({ activePaneId: 'one' });
+      const emitted: string[] = [];
+      fixture.componentInstance.restorePaneDefaults.subscribe((id) => emitted.push(id));
+      query<HTMLButtonElement>('.bb-settings__restore')!.click();
+
+      expect(emitted).toEqual(['one']);
+    });
+
+    it('rebuilds only the pane whose version changed', async () => {
+      await setInputs({ config, activePaneId: 'one' });
+      const before = created;
+
+      await setInputs({ paneVersions: { two: 1 } });
+
+      expect(created - before).toBe(1);
+    });
   });
 });

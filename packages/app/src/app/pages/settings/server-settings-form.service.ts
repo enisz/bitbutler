@@ -2,7 +2,7 @@ import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core'
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { from, switchMap } from 'rxjs';
-import { ServerSettings } from '../../models/server-settings.model';
+import { DEFAULT_SERVER_SETTINGS, ServerSettings } from '../../models/server-settings.model';
 import { QbService } from '../../services/qb.service';
 import { ServerSettingsService } from '../../services/server-settings.service';
 import { ServerStoreService } from '../../services/server-store.service';
@@ -55,6 +55,15 @@ export class ServerSettingsFormService {
   constructor() {
     this.stateService.registerSave('server', () => this.save());
 
+    this.stateService.registerPaneActions('polling', {
+      discard: () => this.form.controls.polling.patchValue(this.baseline().polling),
+      restoreDefaults: () => this.form.controls.polling.patchValue(DEFAULT_SERVER_SETTINGS.polling),
+    });
+    this.stateService.registerPaneActions('path-mappings', {
+      discard: () => this.replacePathMappings(this.baseline().pathMappings),
+      restoreDefaults: () => this.replacePathMappings(DEFAULT_SERVER_SETTINGS.pathMappings),
+    });
+
     this.form.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.formSnapshot.set(this.form.getRawValue());
       this.stateService.markDirty('server', Object.values(this.paneDirty()).some(Boolean));
@@ -76,18 +85,7 @@ export class ServerSettingsFormService {
     const { pathMappings, ...rest } = settings;
     this.form.patchValue(rest, { emitEvent: false });
 
-    const mappingsArray = this.form.controls.pathMappings;
-    mappingsArray.clear({ emitEvent: false });
-    const mappings = pathMappings?.length ? pathMappings : [{ remote: '', local: '' }];
-    mappings.forEach((mapping) => {
-      mappingsArray.push(
-        new FormGroup({
-          remote: new FormControl<string | null>(mapping.remote || null),
-          local: new FormControl(mapping.local, { nonNullable: true }),
-        }),
-        { emitEvent: false },
-      );
-    });
+    this.setPathMappings(pathMappings ?? []);
 
     this.formSnapshot.set(this.form.getRawValue());
     this.baseline.set(this.formSnapshot());
@@ -107,6 +105,27 @@ export class ServerSettingsFormService {
     };
     await this.serverSettingsService.save(settings);
     this.baseline.set(this.form.getRawValue());
+  }
+
+  private setPathMappings(mappings: { remote?: string | null; local: string }[]): void {
+    const mappingsArray = this.form.controls.pathMappings;
+    mappingsArray.clear({ emitEvent: false });
+    const rows = mappings.length ? mappings : [{ remote: '', local: '' }];
+    rows.forEach((mapping) => {
+      mappingsArray.push(
+        new FormGroup({
+          remote: new FormControl<string | null>(mapping.remote || null),
+          local: new FormControl(mapping.local, { nonNullable: true }),
+        }),
+        { emitEvent: false },
+      );
+    });
+  }
+
+  // The rows are replaced silently, so announce the change once for the snapshot and dirty flags.
+  private replacePathMappings(mappings: { remote?: string | null; local: string }[]): void {
+    this.setPathMappings(mappings);
+    this.form.updateValueAndValidity();
   }
 
   private loadDefaultRemotePath(): void {

@@ -1796,8 +1796,7 @@
             "widget-pool": "Elérhető modulok",
             "widgets": "Modulok",
             "left": "Bal oldal",
-            "right": "Jobb oldal",
-            "reset": "Visszaállítás alapértelmezettre"
+            "right": "Jobb oldal"
           },
           "popover": {
             "widget-pool": {
@@ -1860,8 +1859,7 @@
             "columns": "Oszlopok",
             "order": "Sorrend",
             "column-pool": "Oszlopkészlet",
-            "visible-columns": "Látható oszlopok",
-            "reset": "Visszaállítás"
+            "visible-columns": "Látható oszlopok"
           },
           "popover": {
             "animate-rows": {
@@ -1901,6 +1899,10 @@
       },
       "nav": {
         "back": "Vissza",
+        "discard-changes": "Módosítások elvetése",
+        "discard-changes-hint": "Visszaállítja ezt a panelt az utoljára mentett értékekre.",
+        "restore-defaults": "Alapértékek",
+        "restore-defaults-hint": "Feltölti ezt a panelt az alapértelmezett értékekkel. Mentésig semmi sem kerül mentésre.",
         "footer-note": "A módosítások csak erre az eszközre vonatkoznak.",
         "group": {
           "application": "Alkalmazás",
