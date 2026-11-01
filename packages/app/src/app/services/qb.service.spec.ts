@@ -23,7 +23,7 @@ const SERVICE_ONLY_PARAMS: Record<string, number> = {
   'torrents.files': 1,
 };
 
-const GROUPS = ['auth', 'app', 'log', 'sync', 'torrents', 'transfer'] as const;
+const GROUPS = ['auth', 'app', 'log', 'sync', 'poll', 'torrents', 'transfer'] as const;
 
 describe('QbService', () => {
   let service: QbService;
@@ -119,13 +119,37 @@ describe('QbService', () => {
     expect(toastMock.danger).not.toHaveBeenCalled();
   });
 
-  it('does not retry or toast an UNREACHABLE polling call, the poller has its own policy', async () => {
+  it('forwards every poll control with its own arguments', async () => {
+    const poll = window.bitbutler.qb.poll;
+    const spies = {
+      start: vi.spyOn(poll, 'start').mockResolvedValue(ok(undefined)),
+      stop: vi.spyOn(poll, 'stop').mockResolvedValue(ok(undefined)),
+      configure: vi.spyOn(poll, 'configure').mockResolvedValue(ok(undefined)),
+      startPeers: vi.spyOn(poll, 'startPeers').mockResolvedValue(ok(undefined)),
+      stopPeers: vi.spyOn(poll, 'stopPeers').mockResolvedValue(ok(undefined)),
+    };
+
+    await service.poll.start('s1', true);
+    await service.poll.stop();
+    await service.poll.configure({ pollMs: 3000, paused: true });
+    await service.poll.startPeers('s1', 'abc');
+    await service.poll.stopPeers('s1', 'abc');
+
+    expect(spies.start).toHaveBeenCalledWith('s1', true);
+    expect(spies.stop).toHaveBeenCalledWith();
+    expect(spies.configure).toHaveBeenCalledWith({ pollMs: 3000, paused: true });
+    expect(spies.startPeers).toHaveBeenCalledWith('s1', 'abc');
+    expect(spies.stopPeers).toHaveBeenCalledWith('s1', 'abc');
+  });
+
+  it('forwards the poll controls without retry, toast or logout', async () => {
     const unreachable: IpcResult<never> = { ok: false, code: 'UNREACHABLE', message: 'down' };
-    const spy = vi.spyOn(window.bitbutler.qb.sync, 'maindata').mockResolvedValue(unreachable);
+    const start = vi.spyOn(window.bitbutler.qb.poll, 'start').mockResolvedValue(unreachable);
 
-    await expect(service.sync.maindata('s1', 0)).rejects.toMatchObject({ code: 'UNREACHABLE' });
+    await expect(service.poll.start('s1', true)).rejects.toMatchObject({ code: 'UNREACHABLE' });
 
-    expect(spy).toHaveBeenCalledTimes(1);
+    expect(start).toHaveBeenCalledWith('s1', true);
+    expect(start).toHaveBeenCalledTimes(1);
     expect(toastMock.showText).not.toHaveBeenCalled();
     expect(toastMock.danger).not.toHaveBeenCalled();
   });
@@ -238,7 +262,8 @@ describe('QbService', () => {
       expect([...mapped].sort()).toEqual([...QB_METHODS].sort());
     });
 
-    it.each(GROUPS)('%s group', async (group) => {
+    // The poll controls take a different argument shape (no server id on most), so they get their own test.
+    it.each(GROUPS.filter((group) => group !== 'poll'))('%s group', async (group) => {
       const serviceGroup = (service as unknown as Record<string, Group>)[group];
       const names = Object.keys(serviceGroup);
       expect(names.length).toBeGreaterThan(0);

@@ -40,6 +40,7 @@ vi.mock('../qb/torrents.js', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../qb/torrents.js')>()),
   clearTorrentRunCache: mockClearTorrentRunCache,
 }));
+vi.mock('../main.js', () => ({ getMainWindow: () => null }));
 vi.mock('../menu.js', () => ({ rebuildMenu: mockRebuildMenu }));
 vi.mock('../tray.js', () => ({ rebuildTrayMenu: mockRebuildTrayMenu }));
 

@@ -65,6 +65,7 @@ const mocks = vi.hoisted(() => {
       'toggleSpeedLimitsMode',
     ]),
     app: fns(['preferences', 'setPreferences', 'logMain', 'logPeers', 'maindata', 'torrentPeers']),
+    poller: fns(['start', 'stop', 'configure', 'startPeers', 'stopPeers']),
   };
 });
 
@@ -77,6 +78,7 @@ vi.mock('electron', () => ({
 }));
 
 vi.mock('../ipc/qbittorrent.js', () => mocks.auth);
+vi.mock('./poller.js', () => mocks.poller);
 vi.mock('./torrents.js', () => mocks.torrents);
 vi.mock('./torrent-details.js', () => mocks.details);
 vi.mock('./labels.js', () => mocks.labels);
@@ -219,6 +221,11 @@ describe('qb:call IPC handler', () => {
     'torrents.uploadLimit': ['details', 'uploadLimit'],
     'torrents.setUploadLimit': ['details', 'setUploadLimit'],
     'torrents.setDownloadPath': ['details', 'setDownloadPath'],
+    'poll.start': ['poller', 'start', 2],
+    'poll.stop': ['poller', 'stop', 0],
+    'poll.configure': ['poller', 'configure', 1],
+    'poll.startPeers': ['poller', 'startPeers', 2],
+    'poll.stopPeers': ['poller', 'stopPeers', 2],
     'torrents.increasePrio': ['torrents', 'increasePrio'],
     'torrents.decreasePrio': ['torrents', 'decreasePrio'],
     'torrents.topPrio': ['torrents', 'topPrio'],

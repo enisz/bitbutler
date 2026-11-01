@@ -4,6 +4,7 @@ import { hasCookieFor, loginServer, logoutServer } from '../ipc/qbittorrent.js';
 import * as app from './app.js';
 import { toQbError, toResult } from './errors.js';
 import * as labels from './labels.js';
+import * as poller from './poller.js';
 import * as details from './torrent-details.js';
 import * as torrents from './torrents.js';
 import * as transfer from './transfer.js';
@@ -43,6 +44,11 @@ export const qbHandlers: QbHandlers = {
   'log.peers': app.logPeers,
   'sync.maindata': app.maindata,
   'sync.torrentPeers': app.torrentPeers,
+  'poll.start': async (serverId, fresh) => poller.start(serverId, fresh),
+  'poll.stop': async () => poller.stop(),
+  'poll.configure': async (config) => poller.configure(config),
+  'poll.startPeers': async (serverId, hash) => poller.startPeers(serverId, hash),
+  'poll.stopPeers': async (serverId, hash) => poller.stopPeers(serverId, hash),
 
   'torrents.properties': details.properties,
   'torrents.info': details.info,

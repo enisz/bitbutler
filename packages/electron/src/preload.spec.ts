@@ -1,4 +1,5 @@
 import { QB_METHODS } from '@bitbutler/shared';
+import { ipcRenderer } from 'electron';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 const exposed = vi.hoisted(() => new Map<string, unknown>());
@@ -50,5 +51,25 @@ describe('preload qb bridge', () => {
     for (const name of ['login', 'logout', 'hasCookie', 'request', 'torrentsAdd']) {
       expect(qb[name]).toBeUndefined();
     }
+  });
+
+  it('delivers poll events from the qb:pollEvent channel until unsubscribed', () => {
+    const { qbPoll } = exposed.get('bitbutler') as {
+      qbPoll: { onEvent: (callback: (event: unknown) => void) => () => void };
+    };
+    const callback = vi.fn();
+
+    const unsubscribe = qbPoll.onEvent(callback);
+    const [, handler] = vi
+      .mocked(ipcRenderer.on)
+      .mock.calls.find(([channel]) => channel === 'qb:pollEvent') as [
+      string,
+      (event: unknown, payload: unknown) => void,
+    ];
+    handler({}, { type: 'tick' });
+    expect(callback).toHaveBeenCalledWith({ type: 'tick' });
+
+    unsubscribe();
+    expect(ipcRenderer.removeListener).toHaveBeenCalledWith('qb:pollEvent', handler);
   });
 });

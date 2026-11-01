@@ -11,6 +11,7 @@ import type {
   ImportProgressEvent,
   ImportStartPayload,
   MenuClickPayload,
+  QbPollEvent,
   RendererLogEntry,
   TorrentAddJob,
   TorrentAddJobPayload,
@@ -52,6 +53,7 @@ const QB_BRIDGE_METHODS: { [G in keyof BitButlerQbAPI]: { [M in keyof BitButlerQ
     app: { preferences: true, setPreferences: true },
     log: { main: true, peers: true },
     sync: { maindata: true, torrentPeers: true },
+    poll: { start: true, stop: true, configure: true, startPeers: true, stopPeers: true },
     torrents: {
       properties: true,
       info: true,
@@ -155,6 +157,11 @@ const api: BitButlerAPI = {
 
   qb: {
     ...buildQbBridge(),
+  },
+
+  qbPoll: {
+    onEvent: (callback) =>
+      makeIpcSubscription('qb:pollEvent', (event) => event as QbPollEvent, callback),
   },
 
   torrentQueue: {

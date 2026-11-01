@@ -114,6 +114,9 @@ window.bitbutler = {
   qb: {
     ...buildQbBridgeStub(),
   },
+  qbPoll: {
+    onEvent: noopSubscription,
+  },
   torrentQueue: {
     enqueue: () => Promise.resolve({ jobId: '' }),
     list: () => Promise.resolve([]),

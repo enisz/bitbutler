@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import type { IpcResult } from '@bitbutler/shared';
+import type { IpcResult, QbPollConfig } from '@bitbutler/shared';
 import { TranslateService } from '@ngx-translate/core';
 import { FORCE_LEAVE_STATE_KEY } from '../guards/unsaved-changes.guard';
 import { QbError } from '../models/qb-error.model';
@@ -22,13 +22,9 @@ import {
 import { ServerStoreService } from './server-store.service';
 import { ToastService } from './toast.service';
 
-// noRetry: fail on the first UNREACHABLE instead of retrying with toasts - for callers (polling)
-// that run their own reconnect policy.
-type CallOptions = { suppressErrors?: boolean; noRetry?: boolean };
+type CallOptions = { suppressErrors?: boolean };
 
 const MAX_RETRIES = 3;
-
-const POLLING_CALL: CallOptions = { suppressErrors: true, noRetry: true };
 
 const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -88,12 +84,30 @@ export class QbService {
       this.call(serverId, () => this.qb.log.peers(serverId, options)),
   };
 
+  // Controls the poll loops that run in the main process; no retry, toast or logout here - the
+  // loops report their own link problems through `QbPollEvent`s.
+  readonly poll = {
+    start: (serverId: string, fresh: boolean): Promise<void> =>
+      this.unwrap(() => this.qb.poll.start(serverId, fresh)),
+
+    stop: (): Promise<void> => this.unwrap(() => this.qb.poll.stop()),
+
+    configure: (config: QbPollConfig): Promise<void> =>
+      this.unwrap(() => this.qb.poll.configure(config)),
+
+    startPeers: (serverId: string, hash: string): Promise<void> =>
+      this.unwrap(() => this.qb.poll.startPeers(serverId, hash)),
+
+    stopPeers: (serverId: string, hash: string): Promise<void> =>
+      this.unwrap(() => this.qb.poll.stopPeers(serverId, hash)),
+  };
+
   readonly sync = {
     maindata: (serverId: string, rid: number): Promise<Maindata> =>
-      this.call(serverId, () => this.qb.sync.maindata(serverId, rid), POLLING_CALL),
+      this.call(serverId, () => this.qb.sync.maindata(serverId, rid)),
 
     torrentPeers: (serverId: string, hash: string, rid?: number): Promise<QbTorrentPeersResponse> =>
-      this.call(serverId, () => this.qb.sync.torrentPeers(serverId, hash, rid), POLLING_CALL),
+      this.call(serverId, () => this.qb.sync.torrentPeers(serverId, hash, rid)),
   };
 
   readonly torrents = {
@@ -288,7 +302,7 @@ export class QbService {
       const result = await this.invoke(fn);
       if (result.ok) return result.data;
 
-      if (result.code === 'UNREACHABLE' && !options?.noRetry && attempt <= MAX_RETRIES) {
+      if (result.code === 'UNREACHABLE' && attempt <= MAX_RETRIES) {
         if (!options?.suppressErrors) {
           // A transient in-progress message: shown in the app, never as an OS notification.
           this.toastService.showText(
