@@ -413,6 +413,28 @@ describe('ManageCategories', () => {
       ]);
     });
 
+    it('deleting from the context menu on a selected row deletes the whole selection', async () => {
+      confirmService.confirm.mockResolvedValue(true);
+      qbService.torrents.removeCategories.mockResolvedValue(undefined);
+      component.selectedCategories.set([
+        { name: 'movies', savePath: '/data/movies', usageCount: 2 },
+        { name: 'tv', savePath: '/data/tv', usageCount: 1 },
+      ]);
+      contextMenuService.open.mockClear();
+
+      component['onCellContextMenu']({
+        data: { name: 'movies', savePath: '/data/movies', usageCount: 2 },
+      } as never);
+      const [{ items }] = contextMenuService.open.mock.calls.at(-1) as [
+        { items: { label: string; action: () => void }[] },
+      ];
+      items[1].action();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(qbService.torrents.removeCategories).toHaveBeenCalledWith('srv-1', ['movies', 'tv']);
+    });
+
     it('deleting a different row via the context menu does not change what the footer Edit/Delete would act on (Finding 2)', async () => {
       confirmService.confirm.mockResolvedValue(false);
       component.selectedCategories.set([{ name: 'tv', savePath: '/data/tv', usageCount: 1 }]);

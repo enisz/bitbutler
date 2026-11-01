@@ -301,7 +301,11 @@ export class ManageCategories implements OnInit, OnDestroy {
         label: 'general.button.delete',
         icon: faTrashCan,
         variant: 'danger',
-        action: () => void this.deleteCategories([category]),
+        action: () => {
+          const selected = this.selectedCategories();
+          const inSelection = selected.some((c) => c.name === category.name);
+          void this.deleteCategories(inSelection ? selected : [category]);
+        },
         hint: 'Del',
       },
     ];
