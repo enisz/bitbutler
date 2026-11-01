@@ -10,6 +10,7 @@ import type { TorrentAddJob, TorrentAddJobPayload } from './models/torrent-add-j
 import type { TorrentDraft, TorrentDraftSource } from './models/torrent-draft.model.js';
 import type { UpdateCapability, UpdaterEvent } from './models/updater.model.js';
 import type { WindowState } from './models/window.model.js';
+import type { BitButlerQbAPI } from './qb.types.js';
 
 export type BitButlerServerIdPayload = { id: string };
 export type BitButlerQbLoginPayload = { id: string; username?: string; password?: string };
@@ -173,6 +174,17 @@ export interface ImportStartPayload {
   skipHashes: string[];
 }
 
+// The pre-bridge members, kept until the renderer has fully moved to BitButlerQbAPI.
+interface LegacyQb {
+  login(payload: BitButlerQbLoginPayload): Promise<{ loggedIn: boolean }>;
+  logout(payload: BitButlerServerIdPayload): Promise<{ loggedOut: boolean }>;
+  hasCookie(payload: BitButlerServerIdPayload): Promise<{ hasCookie: boolean }>;
+  request<TResponse = unknown, TBody = unknown>(
+    payload: BitButlerQbRequest<TBody>,
+  ): Promise<TResponse>;
+  torrentsAdd(payload: BitButlerQbTorrentsAddPayload): Promise<unknown>;
+}
+
 export interface BitButlerAPI {
   electron: {
     isDev(): Promise<boolean>;
@@ -214,15 +226,7 @@ export interface BitButlerAPI {
     setActive(viewId: string): void;
   };
 
-  qb: {
-    login(payload: BitButlerQbLoginPayload): Promise<{ loggedIn: boolean }>;
-    logout(payload: BitButlerServerIdPayload): Promise<{ loggedOut: boolean }>;
-    hasCookie(payload: BitButlerServerIdPayload): Promise<{ hasCookie: boolean }>;
-    request<TResponse = unknown, TBody = unknown>(
-      payload: BitButlerQbRequest<TBody>,
-    ): Promise<TResponse>;
-    torrentsAdd(payload: BitButlerQbTorrentsAddPayload): Promise<unknown>;
-  };
+  qb: BitButlerQbAPI & LegacyQb;
 
   torrentQueue: {
     enqueue(payload: TorrentAddJobPayload): Promise<{ jobId: string }>;

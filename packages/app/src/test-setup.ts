@@ -102,7 +102,9 @@ window.bitbutler = {
     hasCookie: () => Promise.resolve({ hasCookie: false }),
     request: <TResponse = unknown>(_payload: unknown) => Promise.resolve(null as TResponse),
     torrentsAdd: noopAsync,
-  },
+    // The typed bridge groups (auth, app, log, sync, torrents, transfer) get stubs when the
+    // renderer moves onto them.
+  } as never,
   torrentQueue: {
     enqueue: () => Promise.resolve({ jobId: '' }),
     list: () => Promise.resolve([]),

@@ -34,6 +34,26 @@ export type {
 } from './models/torrent-draft.model.js';
 export type { WindowState } from './models/window.model.js';
 export type {
+  Maindata,
+  QbAppPreferences,
+  QbCategory,
+  QbLogEntry,
+  QbLogPeerEntry,
+  QbPeerId,
+  QbServerState,
+  QbSetAppPreferences,
+  QbTorrentContent,
+  QbTorrentPeer,
+  QbTorrentPeersResponse,
+  QbTorrentProperties,
+  QbTorrentTracker,
+  Torrent,
+  TorrentState,
+} from './models/qb.model.js';
+export { QbLogMessageType, QbTorrentContentPriority, QbTrackerStatus } from './models/qb.model.js';
+export type { BitButlerQbAPI, IpcResult, QbErrorCode, QbMethodName } from './qb.types.js';
+export { QB_METHODS } from './qb.types.js';
+export type {
   BbeMetadata,
   BbePathMapping,
   BbeServerInfo,
