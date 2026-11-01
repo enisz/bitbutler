@@ -20,7 +20,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { refreshServerInfo, resolveFullMode } from '../qb/server-info.js';
-import { qbRequest, qbRunTorrents } from './qbittorrent.js';
+import { start } from '../qb/torrents.js';
+import { qbRequest } from './qbittorrent.js';
 
 interface QbTorrentInfo {
   hash: string;
@@ -784,7 +785,7 @@ async function applyTorrentSettings(
   const shouldResume =
     startMode === 'all' || (startMode === 'active' && isActiveState(entry.state));
   if (shouldResume) {
-    await qbRunTorrents(serverId, 'resume', entry.hash).catch((err) => {
+    await start(serverId, [entry.hash]).catch((err) => {
       console.warn(`[BitButler][export] Failed to resume ${entry.hash} after import.`, err);
     });
   }

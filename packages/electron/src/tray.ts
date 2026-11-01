@@ -1,8 +1,9 @@
 import { Menu, Tray, app } from 'electron';
 import path from 'node:path';
 import { t } from './i18n.js';
-import { getCookieJar, qbRequest, qbRunTorrents } from './ipc/qbittorrent.js';
+import { getCookieJar, qbRequest } from './ipc/qbittorrent.js';
 import { getActiveServerId } from './ipc/server.js';
+import { start, stop } from './qb/torrents.js';
 
 let tray: Tray | null = null;
 let mainWindowRef: Electron.BrowserWindow | null = null;
@@ -46,7 +47,7 @@ async function trayQbRequest(reqPath: string, form: Record<string, string>): Pro
 async function trayRunTorrents(action: 'pause' | 'resume'): Promise<void> {
   const id = getActiveServerId();
   if (!id) return;
-  await qbRunTorrents(id, action, 'all');
+  await (action === 'pause' ? stop : start)(id, 'all');
 }
 
 function buildContextMenu(): Electron.Menu {
