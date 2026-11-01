@@ -158,6 +158,24 @@ describe('torrent lifecycle domain', () => {
       ]);
     });
 
+    it('clearTorrentRunCache forgets the remembered pair for that server only', async () => {
+      mockGetWebapiVersion.mockReturnValue('2.9.3');
+      mockQbCall
+        .mockRejectedValueOnce(new QbBridgeError('NOT_FOUND', 'nf', 404))
+        .mockResolvedValueOnce('')
+        .mockRejectedValueOnce(new QbBridgeError('NOT_FOUND', 'nf', 404))
+        .mockResolvedValue('');
+      // Both servers learn START_STOP despite their old WebAPI version.
+      await torrents.start('srv-1', 'all');
+      await torrents.start('srv-2', 'all');
+      mockQbCall.mockClear();
+
+      torrents.clearTorrentRunCache('srv-1');
+      await torrents.start('srv-1', 'all');
+      await torrents.start('srv-2', 'all');
+      expect(paths()).toEqual(['/api/v2/torrents/resume', '/api/v2/torrents/start']);
+    });
+
     it('throws UNSUPPORTED when both pairs are NOT_FOUND', async () => {
       mockQbCall.mockRejectedValue(new QbBridgeError('NOT_FOUND', 'nf', 404));
       await expect(torrents.start('srv-1', 'all')).rejects.toMatchObject({ code: 'UNSUPPORTED' });

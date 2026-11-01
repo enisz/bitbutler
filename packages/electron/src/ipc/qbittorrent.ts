@@ -3,6 +3,7 @@ import type FormData from 'form-data';
 import db from '../db.js';
 import { rebuildMenu } from '../menu.js';
 import { refreshServerInfo } from '../qb/server-info.js';
+import { clearTorrentRunCache } from '../qb/torrents.js';
 import { rebuildTrayMenu } from '../tray.js';
 import { getActiveServerId, getConnectionInfo } from './server.js';
 
@@ -48,6 +49,7 @@ export function hasCookieFor(id: string): boolean {
 
 export function logoutServer(id: string): { loggedOut: boolean } {
   cookieJar.delete(id);
+  clearTorrentRunCache(id);
   if (getActiveServerId() === id) {
     ipcMain.emit('server:set-active', null, null);
   }
@@ -55,6 +57,8 @@ export function logoutServer(id: string): { loggedOut: boolean } {
   rebuildTrayMenu();
   return { loggedOut: true };
 }
+
+const LOGIN_FAILED_MESSAGE = 'Login failed. Check username/password and WebUI settings.';
 
 // Logs in with the stored (or supplied) credentials and refreshes the cookie jar, without touching
 // the active server or the menus - so background work can recover a dead session for any server.
@@ -82,9 +86,22 @@ async function loginAndStoreCookie(
   });
 
   const text = await res.text();
-  if (!res.ok || (res.status !== 204 && !/^Ok\./i.test(text.trim()))) {
+  if (!res.ok) {
     console.warn(`[BitButler][qbittorrent] Login failed for server ${id} (status ${res.status}).`);
-    throw new Error('Login failed. Check username/password and WebUI settings.');
+    // Same shape as qbRequest's HTTP errors, so a 403 (IP ban) maps to FORBIDDEN and keeps
+    // qBittorrent's readable ban message. A 401 is a wrong password, so it gets the friendly text.
+    throw JSON.stringify({
+      name: 'QbHttpError',
+      status: res.status,
+      statusText: res.statusText,
+      body: res.status === 401 ? LOGIN_FAILED_MESSAGE : text,
+      path: '/api/v2/auth/login',
+    });
+  }
+  // qBittorrent before 5.0 answers wrong credentials with 200 "Fails.".
+  if (res.status !== 204 && !/^Ok\./i.test(text.trim())) {
+    console.warn(`[BitButler][qbittorrent] Login failed for server ${id} (status ${res.status}).`);
+    throw new Error(LOGIN_FAILED_MESSAGE);
   }
 
   const cookie = extractSidCookie(res);

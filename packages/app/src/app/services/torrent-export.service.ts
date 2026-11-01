@@ -35,18 +35,6 @@ export class TorrentExportService {
   }
 
   private describeExportError(err: unknown): string {
-    if (err instanceof Error) return err.message;
-    if (typeof err === 'string') {
-      try {
-        const parsed = JSON.parse(err) as { status?: number; statusText?: string };
-        if (parsed?.statusText) {
-          return parsed.status ? `${parsed.status} ${parsed.statusText}` : parsed.statusText;
-        }
-      } catch {
-        // not JSON - fall through to returning the raw string
-      }
-      return err;
-    }
-    return String(err);
+    return err instanceof Error ? err.message : String(err);
   }
 }

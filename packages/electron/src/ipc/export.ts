@@ -84,7 +84,7 @@ export function partitionImportEntries(
   const toProcess: BbeTorrentEntry[] = [];
   const alreadyExisted: BbeTorrentEntry[] = [];
   for (const entry of torrents) {
-    if (skipSet.has(entry.hash.toLowerCase())) {
+    if (skipSet.has(String(entry.hash ?? '').toLowerCase())) {
       alreadyExisted.push(entry);
     } else {
       toProcess.push(entry);
@@ -334,7 +334,7 @@ async function saveTorrentFiles(payload: {
   return { cancelled: false, savedPaths, failed };
 }
 
-async function buildExportEntry(
+export async function buildExportEntry(
   serverId: string,
   hash: string,
   isFullMode: boolean,
@@ -485,7 +485,7 @@ export async function runImport(
 
     const confirmedHashes = new Set<string>();
     const addedSet = new Set(addedHashes.map((h) => h.toLowerCase()));
-    if (needsPostProcess && addedHashes.length > 0 && !importCancelled) {
+    if (needsPostProcess && !importCancelled) {
       for (let attempt = 0; attempt < 20; attempt++) {
         await sleep(500);
         if (importCancelled) break;
@@ -500,7 +500,7 @@ export async function runImport(
 
     for (const entry of toProcess) {
       if (importCancelled) break;
-      if (!confirmedHashes.has(entry.hash.toLowerCase())) continue;
+      if (!confirmedHashes.has(String(entry.hash ?? '').toLowerCase())) continue;
       await applyTorrentSettings(serverId, entry, restoreFields, startMode, pathMappings).catch(
         () => {},
       );

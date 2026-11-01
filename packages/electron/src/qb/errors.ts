@@ -1,10 +1,18 @@
 import type { IpcResult, QbErrorCode } from '@bitbutler/shared';
 
+/**
+ * Why a failure happened when the code alone is ambiguous. `missing-cookie` marks an UNAUTHENTICATED
+ * error raised locally because no session exists (for example after a logout), as opposed to a real
+ * 401/403 from qBittorrent - only the latter may be recovered by logging in again.
+ */
+export type QbErrorReason = 'missing-cookie';
+
 export class QbBridgeError extends Error {
   constructor(
     public readonly code: QbErrorCode,
     message: string,
     public readonly status?: number,
+    public readonly reason?: QbErrorReason,
   ) {
     super(message);
     this.name = 'QbBridgeError';
@@ -51,8 +59,11 @@ export function toQbError(err: unknown, opts: { login?: boolean } = {}): QbBridg
 
   const message = err instanceof Error ? err.message : String(err);
   if (err instanceof TypeError) return new QbBridgeError('UNREACHABLE', message);
-  if (message.startsWith('Not logged in')) return new QbBridgeError('UNAUTHENTICATED', message);
-  if (message.startsWith('Server not found')) return new QbBridgeError('NOT_FOUND', message);
+  if (message.startsWith('Not logged in')) {
+    return new QbBridgeError('UNAUTHENTICATED', message, undefined, 'missing-cookie');
+  }
+  // INVALID, not NOT_FOUND: that code means an HTTP 404 (a missing torrent or endpoint).
+  if (message.startsWith('Server not found')) return new QbBridgeError('INVALID', message);
   return new QbBridgeError('FAILED', message);
 }
 

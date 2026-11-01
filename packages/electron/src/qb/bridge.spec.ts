@@ -192,6 +192,90 @@ describe('qb:call IPC handler', () => {
     });
   });
 
+  // The expected domain function for every bridge name, written out independently of bridge.ts.
+  // `arity` trims the forwarded args for the auth wrappers, which take a fixed parameter list.
+  const expectedTarget: Record<string, [keyof typeof mocks, string, number?]> = {
+    'auth.login': ['auth', 'loginServer', 3],
+    'auth.logout': ['auth', 'logoutServer', 1],
+    'auth.hasCookie': ['auth', 'hasCookieFor', 1],
+    'app.preferences': ['app', 'preferences'],
+    'app.setPreferences': ['app', 'setPreferences'],
+    'log.main': ['app', 'logMain'],
+    'log.peers': ['app', 'logPeers'],
+    'sync.maindata': ['app', 'maindata'],
+    'sync.torrentPeers': ['app', 'torrentPeers'],
+    'torrents.properties': ['details', 'properties'],
+    'torrents.info': ['details', 'info'],
+    'torrents.trackers': ['details', 'trackers'],
+    'torrents.files': ['details', 'files'],
+    'torrents.setLocation': ['details', 'setLocation'],
+    'torrents.rename': ['details', 'rename'],
+    'torrents.renameFile': ['details', 'renameFile'],
+    'torrents.renameFolder': ['details', 'renameFolder'],
+    'torrents.filePrio': ['details', 'filePrio'],
+    'torrents.setShareLimits': ['details', 'setShareLimits'],
+    'torrents.downloadLimit': ['details', 'downloadLimit'],
+    'torrents.setDownloadLimit': ['details', 'setDownloadLimit'],
+    'torrents.uploadLimit': ['details', 'uploadLimit'],
+    'torrents.setUploadLimit': ['details', 'setUploadLimit'],
+    'torrents.setDownloadPath': ['details', 'setDownloadPath'],
+    'torrents.increasePrio': ['torrents', 'increasePrio'],
+    'torrents.decreasePrio': ['torrents', 'decreasePrio'],
+    'torrents.topPrio': ['torrents', 'topPrio'],
+    'torrents.bottomPrio': ['torrents', 'bottomPrio'],
+    'torrents.delete': ['torrents', 'remove'],
+    'torrents.recheck': ['torrents', 'recheck'],
+    'torrents.reannounce': ['torrents', 'reannounce'],
+    'torrents.stop': ['torrents', 'stop'],
+    'torrents.start': ['torrents', 'start'],
+    'torrents.setForceStart': ['torrents', 'setForceStart'],
+    'torrents.setSuperSeeding': ['torrents', 'setSuperSeeding'],
+    'torrents.setAutoManagement': ['torrents', 'setAutoManagement'],
+    'torrents.toggleSequentialDownload': ['torrents', 'toggleSequentialDownload'],
+    'torrents.toggleFirstLastPiecePrio': ['torrents', 'toggleFirstLastPiecePrio'],
+    'torrents.addTags': ['labels', 'addTags'],
+    'torrents.removeTags': ['labels', 'removeTags'],
+    'torrents.removeAllTags': ['labels', 'removeAllTags'],
+    'torrents.tags': ['labels', 'tags'],
+    'torrents.createTags': ['labels', 'createTags'],
+    'torrents.deleteTags': ['labels', 'deleteTags'],
+    'torrents.setCategory': ['labels', 'setCategory'],
+    'torrents.clearCategory': ['labels', 'clearCategory'],
+    'torrents.categories': ['labels', 'categories'],
+    'torrents.createCategory': ['labels', 'createCategory'],
+    'torrents.editCategory': ['labels', 'editCategory'],
+    'torrents.removeCategories': ['labels', 'removeCategories'],
+    'transfer.downloadLimit': ['transfer', 'downloadLimit'],
+    'transfer.setDownloadLimit': ['transfer', 'setDownloadLimit'],
+    'transfer.uploadLimit': ['transfer', 'uploadLimit'],
+    'transfer.setUploadLimit': ['transfer', 'setUploadLimit'],
+    'transfer.speedLimitsMode': ['transfer', 'speedLimitsMode'],
+    'transfer.toggleSpeedLimitsMode': ['transfer', 'toggleSpeedLimitsMode'],
+  };
+
+  it('has an expected dispatch target for every bridge method', () => {
+    expect(new Set(Object.keys(expectedTarget))).toEqual(new Set(QB_METHODS));
+  });
+
+  it.each(QB_METHODS.map((name) => [name]))(
+    'dispatches %s to its domain function with the args in order',
+    async (name) => {
+      const [group, fn, arity] = expectedTarget[name];
+      const target = mocks[group][fn];
+      target.mockResolvedValue('result');
+      const args = [`${name}#0`, [`${name}#1`], { v: `${name}#2` }];
+      const handler = await setup();
+
+      expect(await handler(null, name, args)).toEqual({ ok: true, data: 'result' });
+      expect(target).toHaveBeenCalledTimes(1);
+      expect(target).toHaveBeenCalledWith(...args.slice(0, arity ?? args.length));
+      const totalCalls = Object.values(mocks)
+        .flatMap((g) => Object.values(g))
+        .reduce((n, m) => n + m.mock.calls.length, 0);
+      expect(totalCalls).toBe(1);
+    },
+  );
+
   it.each([
     ['an unknown name', 'torrents.nope', ['srv-1']],
     ['a non-string method', 42, ['srv-1']],

@@ -19,12 +19,25 @@ describe('toQbError', () => {
     [http(418), 'FAILED'],
     [new TypeError('fetch failed'), 'UNREACHABLE'],
     [new Error('Not logged in (missing cookie).'), 'UNAUTHENTICATED'],
-    [new Error('Server not found.'), 'NOT_FOUND'],
+    [new Error('Server not found.'), 'INVALID'],
     [new Error('boom'), 'FAILED'],
     ['x', 'FAILED'],
     [undefined, 'FAILED'],
   ])('maps %j to %s', (thrown, code) => {
     expect(toQbError(thrown).code).toBe(code);
+  });
+
+  it('marks a missing cookie so it is not mistaken for an expired session', () => {
+    const e = toQbError(new Error('Not logged in (missing cookie).'));
+    expect(e.code).toBe('UNAUTHENTICATED');
+    expect(e.reason).toBe('missing-cookie');
+    expect(e.status).toBeUndefined();
+  });
+
+  it('leaves a real 401 unmarked', () => {
+    const e = toQbError(http(401));
+    expect(e.reason).toBeUndefined();
+    expect(e.status).toBe(401);
   });
 
   it('maps 403 to FORBIDDEN for login', () => {

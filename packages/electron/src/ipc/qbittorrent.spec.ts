@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { toQbError } from '../qb/errors.js';
 
 const ipcHandlers = vi.hoisted(() => new Map<string, (...args: unknown[]) => unknown>());
 const ipcOnHandlers = vi.hoisted(() => new Map<string, (...args: unknown[]) => unknown>());
@@ -9,6 +10,7 @@ const mockRebuildMenu = vi.hoisted(() => vi.fn());
 const mockRebuildTrayMenu = vi.hoisted(() => vi.fn());
 const mockFetch = vi.hoisted(() => vi.fn());
 const mockRefreshServerInfo = vi.hoisted(() => vi.fn());
+const mockClearTorrentRunCache = vi.hoisted(() => vi.fn());
 
 vi.mock('electron', () => ({
   ipcMain: {
@@ -34,6 +36,10 @@ vi.mock('../db.js', () => ({
 }));
 
 vi.mock('../qb/server-info.js', () => ({ refreshServerInfo: mockRefreshServerInfo }));
+vi.mock('../qb/torrents.js', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../qb/torrents.js')>()),
+  clearTorrentRunCache: mockClearTorrentRunCache,
+}));
 vi.mock('../menu.js', () => ({ rebuildMenu: mockRebuildMenu }));
 vi.mock('../tray.js', () => ({ rebuildTrayMenu: mockRebuildTrayMenu }));
 
@@ -125,6 +131,12 @@ describe('logoutServer', () => {
     setActiveServerId('srv-2');
     logoutServer('srv-1');
     expect(mockIpcMainEmit).not.toHaveBeenCalledWith('server:set-active', null, null);
+  });
+
+  it('forgets the start/stop endpoint choice for that server', async () => {
+    const { logoutServer } = await setup();
+    logoutServer('srv-1');
+    expect(mockClearTorrentRunCache).toHaveBeenCalledWith('srv-1');
   });
 
   it('calls rebuildMenu and rebuildTrayMenu', async () => {
@@ -241,30 +253,101 @@ describe('loginServer', () => {
     });
   });
 
-  it('throws on qBittorrent <5 bad credentials (200 + Fails.)', async () => {
+  it('rejects a 200 Fails. with the friendly message, mapped to FAILED', async () => {
     mockGet.mockReturnValue(fakeServerRow);
     mockFetch.mockResolvedValue({
       ok: true,
       status: 200,
+      statusText: 'OK',
       text: () => Promise.resolve('Fails.'),
       headers: { getSetCookie: () => [], get: () => null },
     });
     const { handler } = await setup();
-    await expect(handler('srv-1')).rejects.toThrow('Login failed');
+    const err = await handler('srv-1').catch((e: unknown) => e);
+    const mapped = toQbError(err, { login: true });
+    expect(mapped.code).toBe('FAILED');
+    expect(mapped.message).toBe('Login failed. Check username/password and WebUI settings.');
   });
 
-  it('throws on qBittorrent 5+ bad credentials (401)', async () => {
+  it('rejects a 403 (IP ban) as an HTTP error that maps to FORBIDDEN with the ban text', async () => {
+    const banText =
+      'Your IP address has been banned after too many failed authentication attempts.';
+    mockGet.mockReturnValue(fakeServerRow);
+    mockFetch.mockResolvedValue({
+      ok: false,
+      status: 403,
+      statusText: 'Forbidden',
+      text: () => Promise.resolve(banText),
+      headers: { getSetCookie: () => [], get: () => null },
+    });
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const { handler } = await setup();
+    const err = await handler('srv-1').catch((e: unknown) => e);
+    expect(JSON.parse(err as string)).toMatchObject({
+      name: 'QbHttpError',
+      status: 403,
+      path: '/api/v2/auth/login',
+    });
+    const mapped = toQbError(err, { login: true });
+    expect(mapped.code).toBe('FORBIDDEN');
+    expect(mapped.message).toBe(banText);
+  });
+
+  it('throws on qBittorrent 5+ bad credentials (401) with the friendly message', async () => {
     mockGet.mockReturnValue(fakeServerRow);
     mockFetch.mockResolvedValue({
       ok: false,
       status: 401,
+      statusText: 'Unauthorized',
       text: () => Promise.resolve('Unauthorized'),
       headers: { getSetCookie: () => [], get: () => null },
     });
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const { handler } = await setup();
-    await expect(handler('srv-1')).rejects.toThrow('Login failed');
+    const err = await handler('srv-1').catch((e: unknown) => e);
+    const mapped = toQbError(err, { login: true });
+    expect(mapped.code).toBe('UNAUTHENTICATED');
+    expect(mapped.message).toBe('Login failed. Check username/password and WebUI settings.');
     expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('Login failed for server srv-1'));
+  });
+
+  it('maps a 5xx on login to UNREACHABLE', async () => {
+    mockGet.mockReturnValue(fakeServerRow);
+    mockFetch.mockResolvedValue({
+      ok: false,
+      status: 503,
+      statusText: 'Service Unavailable',
+      text: () => Promise.resolve(''),
+      headers: { getSetCookie: () => [], get: () => null },
+    });
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const { handler } = await setup();
+    const err = await handler('srv-1').catch((e: unknown) => e);
+    const mapped = toQbError(err, { login: true });
+    expect(mapped.code).toBe('UNREACHABLE');
+    expect(mapped.message).toBe('Service Unavailable');
+  });
+
+  it('returns FORBIDDEN from the qb:call bridge for a banned login (end to end)', async () => {
+    const banText =
+      'Your IP address has been banned after too many failed authentication attempts.';
+    mockGet.mockReturnValue(fakeServerRow);
+    mockFetch.mockResolvedValue({
+      ok: false,
+      status: 403,
+      statusText: 'Forbidden',
+      text: () => Promise.resolve(banText),
+      headers: { getSetCookie: () => [], get: () => null },
+    });
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const { registerQbBridgeHandlers } = await import('../qb/bridge.js');
+    registerQbBridgeHandlers();
+    const call = ipcHandlers.get('qb:call')!;
+    expect(await call(null, 'auth.login', ['srv-1', 'u', 'p'])).toEqual({
+      ok: false,
+      code: 'FORBIDDEN',
+      message: banText,
+    });
   });
 
   it('throws when login succeeds but no session cookie is returned', async () => {

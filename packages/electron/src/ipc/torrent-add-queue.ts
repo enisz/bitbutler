@@ -6,7 +6,7 @@ import { getMainWindow } from '../main.js';
 import { QbBridgeError } from '../qb/errors.js';
 import { addTorrent, filePrio, files, renameFile, setShareLimits } from '../qb/torrent-details.js';
 
-// Same budget as QbService.request in the renderer: 3 retries, backing off 1s/2s/3s.
+// withRetry's budget for an unreachable server: up to 3 retries, backing off 1s/2s/3s.
 const MAX_RETRIES = 3;
 const RETRY_BASE_DELAY_MS = 1000;
 
@@ -184,9 +184,11 @@ async function waitForTorrentRegistered(serverId: string, hash: string): Promise
   throw new Error(`Torrent ${hash} not found after ${maxRetries * delay}ms`);
 }
 
-const MAX_BODY_LENGTH = 200;
+const MAX_MESSAGE_LENGTH = 200;
 
 function describeError(error: unknown): string {
   const message = String((error as Error)?.message ?? error).trim();
-  return message.length > MAX_BODY_LENGTH ? `${message.slice(0, MAX_BODY_LENGTH)}...` : message;
+  return message.length > MAX_MESSAGE_LENGTH
+    ? `${message.slice(0, MAX_MESSAGE_LENGTH)}...`
+    : message;
 }

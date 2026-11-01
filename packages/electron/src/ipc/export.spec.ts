@@ -35,6 +35,7 @@ const qb = vi.hoisted(() => ({
   setCategory: vi.fn(),
   addTags: vi.fn(),
   removeAllTags: vi.fn(),
+  info: vi.fn(),
   infoByHashes: vi.fn(),
   files: vi.fn(),
   setLocation: vi.fn(),
@@ -66,6 +67,7 @@ vi.mock('../qb/labels.js', () => ({
   removeAllTags: qb.removeAllTags,
 }));
 vi.mock('../qb/torrent-details.js', () => ({
+  info: qb.info,
   infoByHashes: qb.infoByHashes,
   files: qb.files,
   setLocation: qb.setLocation,
@@ -624,6 +626,29 @@ describe('runImport', () => {
     });
   });
 
+  it('fails only the entry whose archived hash is not a string', async () => {
+    archive([
+      { hash: 123, name: 'Crafted', failed: false, magnet_link: 'magnet:?xt=x' },
+      existing({ save_path: '/p' }),
+    ]);
+    const { runImport } = await setup();
+    const event = fakeEvent();
+    await runImport(event as any, basePayload({ restoreFields: ['save_path'] }) as any);
+
+    expect(event.sender.send).toHaveBeenCalledWith(
+      'import:progress',
+      expect.objectContaining({ name: 'Crafted', success: false }),
+    );
+    expect(event.sender.send).toHaveBeenCalledWith('import:done', {
+      total: 2,
+      failed: 1,
+      alreadyExisted: 0,
+    });
+    expect(event.sender.send).not.toHaveBeenCalledWith('import:error', expect.anything());
+    expect(qb.addTorrent).toHaveBeenCalledTimes(1);
+    expect(qb.setLocation).toHaveBeenCalledWith('server-1', [HA], '/p');
+  }, 20000);
+
   it('reapplies save_path via setLocation so overwriting a duplicate updates its path', async () => {
     archive([existing({ save_path: '/original/path' })]);
 
@@ -998,5 +1023,56 @@ describe('restoreCategoriesAndTags', () => {
     );
 
     expect(qb.createCategory).toHaveBeenCalledWith('server-1', 'Movies', '/data/movies');
+  });
+});
+
+describe('buildExportEntry', () => {
+  const archiveStub = () => ({ append: vi.fn() });
+
+  beforeEach(() => {
+    vi.resetModules();
+  });
+
+  it('maps the per-torrent speed limits from the torrent info row', async () => {
+    qb.info.mockResolvedValue({
+      name: 'Film',
+      save_path: '/data',
+      category: '',
+      tags: 'a, b',
+      up_limit: 111,
+      dl_limit: 222,
+      magnet_uri: 'magnet:?xt=film',
+    });
+    qb.files.mockResolvedValue([{ index: 0, name: 'film.mkv', priority: 1 }]);
+    const { buildExportEntry } = await import('./export.js');
+    const stub = archiveStub();
+    const entry = await buildExportEntry('server-1', HA, false, stub as any);
+
+    expect(entry).toMatchObject({
+      hash: HA,
+      failed: false,
+      up_limit: 111,
+      dl_limit: 222,
+      tags: ['a', 'b'],
+      magnet_link: 'magnet:?xt=film',
+      files: [{ index: 0, name: 'film.mkv', priority: 1 }],
+    });
+    expect(qb.info).toHaveBeenCalledWith('server-1', HA);
+    expect(stub.append).not.toHaveBeenCalled();
+  });
+
+  it('returns a failed entry when the torrent is not found', async () => {
+    qb.info.mockResolvedValue(undefined);
+    qb.files.mockResolvedValue([]);
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const { buildExportEntry } = await import('./export.js');
+    const entry = await buildExportEntry('server-1', HA, false, archiveStub() as any);
+
+    expect(entry).toEqual({
+      hash: HA,
+      name: HA,
+      failed: true,
+      error: `Torrent ${HA} not found.`,
+    });
   });
 });

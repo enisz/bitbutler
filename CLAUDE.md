@@ -57,7 +57,9 @@ Angular (renderer) ──→ window.bitbutler.* ──→ packages/electron/src/
 The `packages/shared` package is the single source of truth for the IPC contract and shared models:
 
 - `packages/shared/src/ipc.types.ts` - the canonical `BitButlerAPI` interface
+- `packages/shared/src/qb.types.ts` - the typed qBittorrent bridge contract: `BitButlerQbAPI`, `IpcResult`, `QbErrorCode`
 - `packages/shared/src/models/` - `ServerModel`, `ElectronModel`, `TorrentDraftModel`, `WindowModel`
+- `packages/shared/src/models/qb.model.ts` - qBittorrent API models
 
 Both `packages/app` and `packages/electron` import from `@bitbutler/shared`. Angular model files re-export from shared; there is no type duplication across the IPC boundary.
 

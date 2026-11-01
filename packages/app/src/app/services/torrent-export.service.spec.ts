@@ -85,24 +85,7 @@ describe('TorrentExportService', () => {
     );
   });
 
-  it('shows a friendly error message when saveTorrentFiles rejects with a QbHttpError', async () => {
-    (window.bitbutler.export.saveTorrentFiles as ReturnType<typeof vi.fn>).mockRejectedValue(
-      JSON.stringify({
-        name: 'QbHttpError',
-        status: 404,
-        statusText: 'Not Found',
-        body: '...',
-        path: '/api/v2/torrents/export',
-      }),
-    );
-    await service.exportTorrentFiles([{ hash: 'a', name: 'Film A' }]);
-    expect(toastService.danger).toHaveBeenCalledWith(
-      '404 Not Found',
-      'pages.main.grid.context-menu.toast.export-failed-title',
-    );
-  });
-
-  it('shows the raw error string when it is not JSON', async () => {
+  it('shows the raw error string when saveTorrentFiles rejects with a string', async () => {
     (window.bitbutler.export.saveTorrentFiles as ReturnType<typeof vi.fn>).mockRejectedValue(
       'plain string error',
     );

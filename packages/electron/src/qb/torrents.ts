@@ -11,6 +11,12 @@ type RunApi = 'START_STOP' | 'PAUSE_RESUME';
 
 const runApiCache = new Map<string, RunApi>();
 
+/** Forgets which start/stop endpoint pair worked for a server (e.g. on logout). */
+export function clearTorrentRunCache(serverId: string): void {
+  runApiCache.delete(serverId);
+}
+
+/** Test helper: forgets the endpoint pair for every server. */
 export function resetTorrentRunCache(): void {
   runApiCache.clear();
 }
