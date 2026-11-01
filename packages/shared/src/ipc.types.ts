@@ -10,7 +10,7 @@ import type { TorrentAddJob, TorrentAddJobPayload } from './models/torrent-add-j
 import type { TorrentDraft, TorrentDraftSource } from './models/torrent-draft.model.js';
 import type { UpdateCapability, UpdaterEvent } from './models/updater.model.js';
 import type { WindowState } from './models/window.model.js';
-import type { BitButlerQbAPI } from './qb.types.js';
+import type { BitButlerQbAPI, QbPollEvent } from './qb.types.js';
 
 export type SelectedTorrentInput =
   | { name: string; path: string }
@@ -196,6 +196,10 @@ export interface BitButlerAPI {
   };
 
   qb: BitButlerQbAPI;
+
+  qbPoll: {
+    onEvent(callback: (event: QbPollEvent) => void): () => void;
+  };
 
   torrentQueue: {
     enqueue(payload: TorrentAddJobPayload): Promise<{ jobId: string }>;

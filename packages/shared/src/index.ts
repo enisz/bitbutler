@@ -51,7 +51,14 @@ export type {
   TorrentState,
 } from './models/qb.model.js';
 export { QbLogMessageType, QbTorrentContentPriority, QbTrackerStatus } from './models/qb.model.js';
-export type { BitButlerQbAPI, IpcResult, QbErrorCode, QbMethodName } from './qb.types.js';
+export type {
+  BitButlerQbAPI,
+  IpcResult,
+  QbErrorCode,
+  QbMethodName,
+  QbPollConfig,
+  QbPollEvent,
+} from './qb.types.js';
 export { QB_METHODS } from './qb.types.js';
 export type {
   BbeMetadata,

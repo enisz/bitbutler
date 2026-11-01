@@ -2,8 +2,8 @@ import { QB_METHODS } from '@bitbutler/shared';
 import { describe, expect, it } from 'vitest';
 
 describe('QB_METHODS', () => {
-  it('lists all 56 bridge methods', () => {
-    expect(QB_METHODS).toHaveLength(56);
+  it('lists all 61 bridge methods', () => {
+    expect(QB_METHODS).toHaveLength(61);
   });
 
   it('uses stop/start rather than pause/resume', () => {

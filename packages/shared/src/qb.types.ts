@@ -28,6 +28,25 @@ export type IpcResult<T> =
 
 type R<T> = Promise<IpcResult<T>>;
 
+/** How the renderer wants the main process to run its poll loops. */
+export interface QbPollConfig {
+  pollMs: number;
+  paused: boolean;
+}
+
+/**
+ * Pushed from the main process while a poll loop runs. `link` events report the connection to the
+ * server: `reconnecting` and `connected` are transitions, `expired` means the session could not
+ * be recovered and `gave-up` means the server stayed unreachable past the grace period - both of
+ * which stop the loop. `failed` is a poll that failed for another reason.
+ */
+export type QbPollEvent =
+  | { type: 'maindata'; serverId: string; data: Maindata }
+  | { type: 'peers'; serverId: string; hash: string; data: QbTorrentPeersResponse }
+  | { type: 'tick' }
+  | { type: 'failed'; serverId: string }
+  | { type: 'link'; serverId: string; state: 'reconnecting' | 'connected' | 'expired' | 'gave-up' };
+
 export interface BitButlerQbAPI {
   auth: {
     login(serverId: string, username?: string, password?: string): R<{ loggedIn: boolean }>;
@@ -57,6 +76,15 @@ export interface BitButlerQbAPI {
   sync: {
     maindata(serverId: string, rid: number): R<Maindata>;
     torrentPeers(serverId: string, hash: string, rid?: number): R<QbTorrentPeersResponse>;
+  };
+
+  poll: {
+    /** Starts the maindata loop for a server; `fresh` restarts its sync cursor from scratch. */
+    start(serverId: string, fresh: boolean): R<void>;
+    stop(): R<void>;
+    configure(config: QbPollConfig): R<void>;
+    startPeers(serverId: string, hash: string): R<void>;
+    stopPeers(serverId: string, hash: string): R<void>;
   };
 
   torrents: {
@@ -135,6 +163,11 @@ const QB_METHOD_MAP: Record<QbMethodName, true> = {
   'log.peers': true,
   'sync.maindata': true,
   'sync.torrentPeers': true,
+  'poll.start': true,
+  'poll.stop': true,
+  'poll.configure': true,
+  'poll.startPeers': true,
+  'poll.stopPeers': true,
   'torrents.properties': true,
   'torrents.info': true,
   'torrents.trackers': true,
