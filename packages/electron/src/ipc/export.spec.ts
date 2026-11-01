@@ -136,49 +136,6 @@ describe('applyPathMappings', () => {
   });
 });
 
-describe('resolveFullMode', () => {
-  const mockGetExportAvailable = vi.fn();
-  const mockQbRequestProbe = vi.fn();
-
-  beforeEach(() => {
-    vi.resetModules();
-    vi.doMock('./server.js', () => ({ getExportAvailable: mockGetExportAvailable }));
-    vi.doMock('./qbittorrent.js', () => ({ qbRequest: mockQbRequestProbe }));
-  });
-
-  afterEach(() => {
-    vi.clearAllMocks();
-    vi.doUnmock('./server.js');
-    vi.doUnmock('./qbittorrent.js');
-  });
-
-  async function setup() {
-    return import('./export.js');
-  }
-
-  it('returns true without probing when cached value is 1', async () => {
-    mockGetExportAvailable.mockReturnValue(1);
-    const { resolveFullMode } = await setup();
-    expect(await resolveFullMode('server-1')).toBe(true);
-    expect(mockQbRequestProbe).not.toHaveBeenCalled();
-  });
-
-  it('returns false without probing when cached value is 0', async () => {
-    mockGetExportAvailable.mockReturnValue(0);
-    const { resolveFullMode } = await setup();
-    expect(await resolveFullMode('server-1')).toBe(false);
-    expect(mockQbRequestProbe).not.toHaveBeenCalled();
-  });
-
-  it('probes live when cached value is null', async () => {
-    mockGetExportAvailable.mockReturnValue(null);
-    mockQbRequestProbe.mockResolvedValue(Buffer.from(''));
-    const { resolveFullMode } = await setup();
-    expect(await resolveFullMode('server-1')).toBe(true);
-    expect(mockQbRequestProbe).toHaveBeenCalled();
-  });
-});
-
 describe('export:save-torrent-files IPC handler', () => {
   const ipcHandlersSave = new Map<string, (...args: unknown[]) => unknown>();
   const mockShowSaveDialog = vi.fn();

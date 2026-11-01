@@ -19,8 +19,8 @@ import FormData from 'form-data';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { refreshServerInfo, resolveFullMode } from '../qb/server-info.js';
 import { qbRequest, qbRunTorrents } from './qbittorrent.js';
-import { getExportAvailable } from './server.js';
 
 interface QbTorrentInfo {
   hash: string;
@@ -186,12 +186,7 @@ export function registerExportIpcHandlers(): void {
   });
 
   ipcMain.handle('export:get-server-info', async (_event, { serverId }: { serverId: string }) => {
-    const [webapiVersion, qbVersion, isFullMode] = await Promise.all([
-      qbRequest({ id: serverId, path: '/api/v2/app/webapiVersion' }) as Promise<string>,
-      qbRequest({ id: serverId, path: '/api/v2/app/version' }) as Promise<string>,
-      resolveFullMode(serverId),
-    ]);
-    return { webapiVersion: webapiVersion.trim(), qbVersion: qbVersion.trim(), isFullMode };
+    return refreshServerInfo(serverId);
   });
 
   ipcMain.handle(
@@ -793,25 +788,6 @@ async function applyTorrentSettings(
       console.warn(`[BitButler][export] Failed to resume ${entry.hash} after import.`, err);
     });
   }
-}
-
-async function probeFullMode(serverId: string): Promise<boolean> {
-  try {
-    await qbRequest({ id: serverId, path: '/api/v2/torrents/export', responseType: 'buffer' });
-    return true;
-  } catch (err) {
-    try {
-      const { status } = JSON.parse(err as string) as { status?: number };
-      return status !== 404;
-    } catch {
-      return false;
-    }
-  }
-}
-
-export async function resolveFullMode(serverId: string): Promise<boolean> {
-  const cached = getExportAvailable(serverId);
-  return cached === null ? probeFullMode(serverId) : cached === 1;
 }
 
 function sleep(ms: number): Promise<void> {

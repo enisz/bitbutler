@@ -4,8 +4,9 @@ import FormData from 'form-data';
 import fs from 'node:fs';
 import db from '../db.js';
 import { rebuildMenu } from '../menu.js';
+import { refreshServerInfo } from '../qb/server-info.js';
 import { rebuildTrayMenu } from '../tray.js';
-import { getActiveServerId } from './server.js';
+import { getActiveServerId, getConnectionInfo } from './server.js';
 
 const cookieJar = new Map<string, string>();
 
@@ -236,6 +237,18 @@ export async function qbRelogin(id: string): Promise<void> {
   await loginAndStoreCookie(id);
 }
 
+// Best-effort: a failed probe is logged and never fails the login. Skipped once all three values
+// are stored, so a login against an already-probed server makes no extra requests.
+async function probeServerInfoIfMissing(id: string): Promise<void> {
+  const { exportAvailable, webapiVersion, qbVersion } = getConnectionInfo(id);
+  if (exportAvailable !== null && webapiVersion !== null && qbVersion !== null) return;
+  try {
+    await refreshServerInfo(id);
+  } catch (err) {
+    console.warn(`[BitButler][qbittorrent] Server info probe failed for server ${id}.`, err);
+  }
+}
+
 async function qbLogin(payload: unknown): Promise<{ loggedIn: boolean }> {
   const p = payload as Record<string, unknown>;
   const id = requireString(p?.id, 'id');
@@ -245,6 +258,7 @@ async function qbLogin(payload: unknown): Promise<{ loggedIn: boolean }> {
     typeof p?.password === 'string' ? p.password : undefined,
   );
   console.info(`[BitButler][qbittorrent] Logged in to server ${id}.`);
+  await probeServerInfoIfMissing(id);
   ipcMain.emit('server:set-active', null, id);
   rebuildMenu();
   rebuildTrayMenu();

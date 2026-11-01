@@ -171,6 +171,19 @@ export function getExportAvailable(id: string): 0 | 1 | null {
   return row ? (row.export_available as 0 | 1 | null) : null;
 }
 
+export function getConnectionInfo(id: string): {
+  exportAvailable: 0 | 1 | null;
+  webapiVersion: string | null;
+  qbVersion: string | null;
+} {
+  const row = stmtGetById.get(id);
+  return {
+    exportAvailable: (row?.export_available ?? null) as 0 | 1 | null,
+    webapiVersion: row?.webapi_version ?? null,
+    qbVersion: row?.qb_version ?? null,
+  };
+}
+
 export function setConnectionInfo(
   id: string,
   info: { exportAvailable: 0 | 1; webapiVersion: string; qbVersion: string },

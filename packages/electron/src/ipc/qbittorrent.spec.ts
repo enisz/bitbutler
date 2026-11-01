@@ -8,6 +8,7 @@ const mockRun = vi.hoisted(() => vi.fn(() => ({ changes: 1 })));
 const mockRebuildMenu = vi.hoisted(() => vi.fn());
 const mockRebuildTrayMenu = vi.hoisted(() => vi.fn());
 const mockFetch = vi.hoisted(() => vi.fn());
+const mockRefreshServerInfo = vi.hoisted(() => vi.fn());
 
 vi.mock('electron', () => ({
   ipcMain: {
@@ -32,6 +33,7 @@ vi.mock('../db.js', () => ({
   },
 }));
 
+vi.mock('../qb/server-info.js', () => ({ refreshServerInfo: mockRefreshServerInfo }));
 vi.mock('../menu.js', () => ({ rebuildMenu: mockRebuildMenu }));
 vi.mock('../tray.js', () => ({ rebuildTrayMenu: mockRebuildTrayMenu }));
 
@@ -220,6 +222,50 @@ describe('qb:login IPC handler', () => {
     const { handler, getCookieJar } = await setup();
     await expect(handler(null, { id: 'srv-1' })).resolves.toEqual({ loggedIn: true });
     expect(getCookieJar().get('srv-1')).toBe('QBT_SID_8080=tok204');
+  });
+
+  describe('server info probe', () => {
+    const okResponse = {
+      ok: true,
+      status: 200,
+      text: () => Promise.resolve('Ok.'),
+      headers: { getSetCookie: () => ['SID=abc123; HttpOnly'], get: () => null },
+    };
+
+    it('probes the server after a successful login when info is missing', async () => {
+      mockGet.mockReturnValue({ ...fakeServerRow, export_available: null });
+      mockFetch.mockResolvedValue(okResponse);
+      mockRefreshServerInfo.mockResolvedValue({});
+      const { handler } = await setup();
+      await handler(null, { id: 'srv-1' });
+      expect(mockRefreshServerInfo).toHaveBeenCalledWith('srv-1');
+    });
+
+    it('makes no extra requests when all three values are stored', async () => {
+      mockGet.mockReturnValue({
+        ...fakeServerRow,
+        export_available: 1,
+        webapi_version: '2.11.2',
+        qb_version: 'v5.0.1',
+      });
+      mockFetch.mockResolvedValue(okResponse);
+      const { handler } = await setup();
+      await handler(null, { id: 'srv-1' });
+      expect(mockRefreshServerInfo).not.toHaveBeenCalled();
+    });
+
+    it('still logs in and logs the error when the probe rejects', async () => {
+      mockGet.mockReturnValue({ ...fakeServerRow, export_available: null });
+      mockFetch.mockResolvedValue(okResponse);
+      mockRefreshServerInfo.mockRejectedValue(new Error('probe boom'));
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const { handler } = await setup();
+      await expect(handler(null, { id: 'srv-1' })).resolves.toEqual({ loggedIn: true });
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Server info probe failed for server srv-1'),
+        expect.any(Error),
+      );
+    });
   });
 
   it('throws on qBittorrent <5 bad credentials (200 + Fails.)', async () => {
