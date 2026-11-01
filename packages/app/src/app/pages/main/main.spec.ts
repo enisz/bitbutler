@@ -44,6 +44,7 @@ describe('Main', () => {
 
   let qbPollingMock: {
     startMaindataPolling: ReturnType<typeof vi.fn>;
+    linkState: ReturnType<typeof signal<'connected' | 'reconnecting'>>;
   };
 
   async function createComponent(): Promise<void> {
@@ -81,6 +82,7 @@ describe('Main', () => {
     };
     qbPollingMock = {
       startMaindataPolling: vi.fn().mockReturnValue(new Subject()),
+      linkState: signal<'connected' | 'reconnecting'>('connected'),
     };
   });
 
@@ -107,6 +109,21 @@ describe('Main', () => {
     it('should be null initially', async () => {
       await createComponent();
       expect(component.serverState()).toBeNull();
+    });
+
+    it('shows the link state in the dot while reconnecting, then qBittorrent status again', async () => {
+      const poll$ = new Subject<any>();
+      qbPollingMock.startMaindataPolling.mockReturnValue(poll$);
+      serverStoreMock.currentServerId.set('server-1');
+      await createComponent();
+      poll$.next({ server_state: { connection_status: 'connected' } });
+      expect(component.statusDotClass()).toBe('connected');
+
+      qbPollingMock.linkState.set('reconnecting');
+      expect(component.statusDotClass()).toBe('reconnecting');
+
+      qbPollingMock.linkState.set('connected');
+      expect(component.statusDotClass()).toBe('connected');
     });
 
     it('keeps the connection status when the page is recreated for the same server', async () => {

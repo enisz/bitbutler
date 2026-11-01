@@ -18,6 +18,7 @@ describe('toQbError', () => {
     [http(503), 'UNREACHABLE'],
     [http(418), 'FAILED'],
     [new TypeError('fetch failed'), 'UNREACHABLE'],
+    [new DOMException('The operation timed out.', 'TimeoutError'), 'UNREACHABLE'],
     [new Error('Not logged in (missing cookie).'), 'UNAUTHENTICATED'],
     [new Error('Server not found.'), 'INVALID'],
     [new Error('boom'), 'FAILED'],

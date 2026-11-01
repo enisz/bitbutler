@@ -523,6 +523,16 @@ describe('qbRequest', () => {
     expect((fetchInit.headers as Record<string, string>)['Cookie']).toBe('SID=mytoken');
   });
 
+  it('gives every request a timeout signal so an unreachable host cannot hang it', async () => {
+    mockGet.mockReturnValue(fakeServer);
+    mockOkResponse('ok');
+    const { qbRequest, getCookieJar } = await import('./qbittorrent.js');
+    getCookieJar().set('srv-1', 'SID=mytoken');
+    await qbRequest({ id: 'srv-1', path: '/api/v2/test' });
+    const [, fetchInit] = mockFetch.mock.calls[0] as [string, RequestInit];
+    expect(fetchInit.signal).toBeInstanceOf(AbortSignal);
+  });
+
   it('returns plain text when content-type is not JSON', async () => {
     mockGet.mockReturnValue(fakeServer);
     mockOkResponse('plain text response');

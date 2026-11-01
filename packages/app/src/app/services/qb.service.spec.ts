@@ -97,15 +97,15 @@ describe('QbService', () => {
     vi.useFakeTimers();
     const unreachable: IpcResult<never> = { ok: false, code: 'UNREACHABLE', message: 'down' };
     const spy = vi
-      .spyOn(window.bitbutler.qb.sync, 'maindata')
+      .spyOn(window.bitbutler.qb.transfer, 'downloadLimit')
       .mockResolvedValueOnce(unreachable)
       .mockResolvedValueOnce(unreachable)
-      .mockResolvedValueOnce(ok({ rid: 3 } as never));
+      .mockResolvedValueOnce(ok(3));
 
-    const pending = service.sync.maindata('s1', 0);
+    const pending = service.transfer.downloadLimit('s1');
     await vi.advanceTimersByTimeAsync(1000 + 2000);
 
-    await expect(pending).resolves.toEqual({ rid: 3 });
+    await expect(pending).resolves.toBe(3);
     expect(spy).toHaveBeenCalledTimes(3);
     expect(toastMock.showText).toHaveBeenCalledTimes(2);
     for (const [message, opts] of toastMock.showText.mock.calls) {
@@ -119,13 +119,24 @@ describe('QbService', () => {
     expect(toastMock.danger).not.toHaveBeenCalled();
   });
 
+  it('does not retry or toast an UNREACHABLE polling call, the poller has its own policy', async () => {
+    const unreachable: IpcResult<never> = { ok: false, code: 'UNREACHABLE', message: 'down' };
+    const spy = vi.spyOn(window.bitbutler.qb.sync, 'maindata').mockResolvedValue(unreachable);
+
+    await expect(service.sync.maindata('s1', 0)).rejects.toMatchObject({ code: 'UNREACHABLE' });
+
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(toastMock.showText).not.toHaveBeenCalled();
+    expect(toastMock.danger).not.toHaveBeenCalled();
+  });
+
   it('throws after 3 retries when UNREACHABLE persists', async () => {
     vi.useFakeTimers();
     const spy = vi
-      .spyOn(window.bitbutler.qb.sync, 'maindata')
+      .spyOn(window.bitbutler.qb.transfer, 'downloadLimit')
       .mockResolvedValue({ ok: false, code: 'UNREACHABLE', message: 'down' });
 
-    const pending = service.sync.maindata('s1', 0).catch((e) => e);
+    const pending = service.transfer.downloadLimit('s1').catch((e) => e);
     await vi.advanceTimersByTimeAsync(1000 + 2000 + 3000);
     const error = await pending;
 

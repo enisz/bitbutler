@@ -90,6 +90,9 @@ export class ServerState {
   );
 
   public isPaused = toSignal(this.pollingService.isPaused$, { initialValue: false });
+
+  // While the link is down every value in the bar is the last one received, not live data.
+  public readonly isStale = computed(() => this.pollingService.linkState() === 'reconnecting');
   private _pauseToken: symbol | null = null;
 
   public icons = {

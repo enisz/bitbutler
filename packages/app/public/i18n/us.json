@@ -1506,6 +1506,7 @@
         "server-polling": "Server Polling ({{interval}}s) - Click to Pause",
         "polling-paused": "Polling Paused - Click to Resume",
         "network-status": "Network Status",
+        "network-status-stale": "Network Status (last known)",
         "global-session-ratio": "Global Session Ratio",
         "global-total-ratio": "Global Total Ratio",
         "global-session-downloaded": "Global Session Downloaded",
@@ -2186,6 +2187,14 @@
       },
       "error": {
         "request-failed-title": "Request Failed"
+      },
+      "connection": {
+        "lost-title": "Connection Lost",
+        "lost-message": "Trying to reconnect.",
+        "restored-title": "Connection Restored",
+        "restored-message": "The server is reachable again.",
+        "gave-up-title": "Disconnected",
+        "gave-up-message": "The server has been unreachable for 2 minutes."
       }
     }
   },

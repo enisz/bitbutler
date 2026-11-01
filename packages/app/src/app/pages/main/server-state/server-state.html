@@ -37,7 +37,13 @@
     @case ('connection-status') {
       <div
         class="bb-widget"
-        [bbTooltip]="'pages.main.server-state.network-status' | translate"
+        [class.bb-stale]="isStale()"
+        [bbTooltip]="
+          (isStale()
+            ? 'pages.main.server-state.network-status-stale'
+            : 'pages.main.server-state.network-status'
+          ) | translate
+        "
         placement="top"
         container="body"
       >

@@ -1,5 +1,6 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
+import { TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject, EMPTY, Observable, Subject, combineLatest, from, interval } from 'rxjs';
 import {
   catchError,
@@ -16,8 +17,16 @@ import { QbError } from '../models/qb-error.model';
 import { Maindata, QbTorrentPeersResponse } from '../models/torrent.model';
 import { QbService } from './qb.service';
 import { ServerSettingsService } from './server-settings.service';
+import { ToastService } from './toast.service';
 import { TorrentStoreService } from './torrent-store.service';
 import { WindowService } from './window.service';
+
+export type LinkState = 'connected' | 'reconnecting';
+
+// Delay before the next attempt after the 1st, 2nd, 3rd... failed poll; the last value repeats.
+const RECONNECT_BACKOFF_MS = [2000, 5000, 10000, 15000];
+// How long the server may stay unreachable before the user is logged out.
+const RECONNECT_GRACE_MS = 2 * 60 * 1000;
 
 @Injectable({ providedIn: 'root' })
 export class QbPollingService {
@@ -25,6 +34,16 @@ export class QbPollingService {
   private readonly serverSettingsService = inject(ServerSettingsService);
   private readonly windowService = inject(WindowService);
   private readonly torrentStore = inject(TorrentStoreService);
+  private readonly toastService = inject(ToastService);
+  private readonly translateService = inject(TranslateService);
+
+  /** Whether the last maindata poll reached the server; 'reconnecting' while polls are failing. */
+  private readonly _linkState = signal<LinkState>('connected');
+  public readonly linkState = this._linkState.asReadonly();
+
+  private failedPolls = 0;
+  private firstFailureAt = 0;
+  private nextAttemptAt = 0;
 
   private maindataRid$ = new BehaviorSubject<number>(0);
   private peersRidByHash = new Map<string, BehaviorSubject<number>>();
@@ -73,6 +92,7 @@ export class QbPollingService {
     this._isInitialLoading$.next(false);
     this._pauseTokens$.next(new Set());
     this.lastPolledServerId = null;
+    this.resetLink();
   }
 
   // The first tick of the returned poll loop (via startWith(0) below) IS the initial load - there
@@ -84,6 +104,7 @@ export class QbPollingService {
 
     this.stopPolling$.next();
     this._pauseTokens$.next(new Set());
+    this.resetLink();
     if (isFreshStart) {
       this.maindataRid$.next(0);
       this.torrentStore.clear();
@@ -102,7 +123,6 @@ export class QbPollingService {
     const windowState$ = this.windowState$.pipe(startWith(null));
 
     return combineLatest([settings$, windowState$, this.isPaused$]).pipe(
-      takeUntil(this.stopPolling$),
       map(([settings, windowState, isPaused]) => {
         const isMinimized = windowState?.isMinimized ?? false;
         const foreground = settings?.polling?.foreground ?? 2000;
@@ -121,26 +141,34 @@ export class QbPollingService {
         return interval(pollMs).pipe(
           startWith(0),
           tap(() => this._onPoll$.next()),
-          exhaustMap(() =>
-            from(this.qb.sync.maindata(serverId, this.maindataRid$.value)).pipe(
+          exhaustMap(() => {
+            // While reconnecting, ticks that fall inside the backoff delay are skipped.
+            if (Date.now() < this.nextAttemptAt) return EMPTY;
+            return from(this.qb.sync.maindata(serverId, this.maindataRid$.value)).pipe(
               tap((res: Maindata) => {
                 if (typeof res?.rid === 'number') this.maindataRid$.next(res.rid);
                 markInitialLoadDone();
+                this.onPollSucceeded();
               }),
               catchError((err) => {
                 markInitialLoadDone();
                 if (err instanceof QbError && err.code === 'UNAUTHENTICATED') {
                   console.warn('[maindata] poll stopped: session expired.');
                   this.stopPolling();
+                } else if (err instanceof QbError && err.code === 'UNREACHABLE') {
+                  console.warn('[maindata] poll failed: server unreachable.');
+                  this.onPollUnreachable(serverId);
                 } else {
                   console.error('[maindata] poll failed', err);
                 }
                 return EMPTY;
               }),
-            ),
-          ),
+            );
+          }),
         );
       }),
+      // Last, so stopPolling() also ends the inner poll loop, not just the settings stream.
+      takeUntil(this.stopPolling$),
     );
   }
 
@@ -149,24 +177,73 @@ export class QbPollingService {
     rid$.next(0);
 
     return this.pollingInterval$.pipe(
-      takeUntil(this.stopPolling$),
       switchMap((ms) => interval(ms)),
       startWith(0),
-      exhaustMap(() => from(this.qb.sync.torrentPeers(serverId, hash, rid$.value))),
-      tap((res) => {
-        if (typeof res?.rid === 'number') rid$.next(res.rid);
-      }),
-      catchError((err) => {
-        console.error(
-          QbPollingService.name,
-          'startPeersPolling',
-          `[peers] poll failed hash=${hash}`,
-          err,
+      exhaustMap(() => {
+        // The maindata loop owns reconnecting; peers just wait for it to report the link is back.
+        if (this._linkState() === 'reconnecting') return EMPTY;
+        return from(this.qb.sync.torrentPeers(serverId, hash, rid$.value)).pipe(
+          tap((res) => {
+            if (typeof res?.rid === 'number') rid$.next(res.rid);
+          }),
+          // Inside exhaustMap, so one failed tick skips that tick instead of ending the stream.
+          catchError((err) => {
+            console.error(
+              QbPollingService.name,
+              'startPeersPolling',
+              `[peers] poll failed hash=${hash}`,
+              err,
+            );
+            return EMPTY;
+          }),
         );
-        return EMPTY;
       }),
+      takeUntil(this.stopPolling$),
       finalize(() => this.peersRidByHash.delete(hash)),
     );
+  }
+
+  private resetLink(): void {
+    this._linkState.set('connected');
+    this.failedPolls = 0;
+    this.firstFailureAt = 0;
+    this.nextAttemptAt = 0;
+  }
+
+  private onPollSucceeded(): void {
+    if (this.failedPolls === 0) return;
+    this.resetLink();
+    this.toastService.success(
+      this.translateService.instant('services.qb.connection.restored-message'),
+      this.translateService.instant('services.qb.connection.restored-title'),
+    );
+  }
+
+  private onPollUnreachable(serverId: string): void {
+    const now = Date.now();
+    this.failedPolls++;
+    if (this.failedPolls === 1) {
+      this.firstFailureAt = now;
+      this._linkState.set('reconnecting');
+      this.toastService.warning(
+        this.translateService.instant('services.qb.connection.lost-message'),
+        this.translateService.instant('services.qb.connection.lost-title'),
+      );
+    }
+
+    if (now - this.firstFailureAt >= RECONNECT_GRACE_MS) {
+      console.warn('[maindata] giving up: server unreachable past the grace period.');
+      this.stopPolling();
+      this.toastService.danger(
+        this.translateService.instant('services.qb.connection.gave-up-message'),
+        this.translateService.instant('services.qb.connection.gave-up-title'),
+      );
+      void this.qb.forceLogout(serverId);
+      return;
+    }
+
+    const delays = RECONNECT_BACKOFF_MS;
+    this.nextAttemptAt = now + delays[Math.min(this.failedPolls, delays.length) - 1];
   }
 
   private getPeersRid$(hash: string): BehaviorSubject<number> {
