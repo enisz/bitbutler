@@ -1,15 +1,4 @@
 @if (settingsLoaded()) {
-  <div class="row mb-4">
-    <div class="col-12 d-flex justify-content-end">
-      <button type="button" class="btn btn-sm btn-split" (click)="reset()">
-        <bb-btn-content
-          [icon]="faRotateLeft"
-          [text]="'pages.settings.tab.status-bar.label.reset' | translate"
-          position="end"
-        ></bb-btn-content>
-      </button>
-    </div>
-  </div>
   <div cdkDropListGroup class="bb-cards">
     <app-bb-section-card [title]="'pages.settings.tab.status-bar.label.widget-pool' | translate">
       <bb-popover

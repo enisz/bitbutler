@@ -105,4 +105,23 @@ describe('SettingsPage', () => {
     expect(page.basePath).toBe('/pages/settings');
     expect(page.stateService).toBe(state);
   });
+
+  it('discards the status bar and grid panes by rebuilding them and marking their form clean', () => {
+    createPage('status-bar');
+    state.markDirty('status-bar', true);
+    state.markDirty('torrent-list-grid', true);
+
+    state.discardPane('status-bar');
+    state.discardPane('torrent-list-grid');
+
+    expect(state.paneVersions()).toEqual({ 'status-bar': 1, 'torrent-list-grid': 1 });
+    expect(state.isDirtyMap()['status-bar']).toBe(false);
+    expect(state.isDirtyMap()['torrent-list-grid']).toBe(false);
+  });
+
+  it('offers restore defaults on every application pane', () => {
+    const panes = SETTINGS_PAGE_CONFIG.groups.flatMap((group) => group.panes);
+
+    expect(panes.every((pane) => pane.hasDefaults)).toBe(true);
+  });
 });

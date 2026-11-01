@@ -8,6 +8,8 @@ export interface SettingsPaneDef {
   icon: IconDefinition;
   /** Key into the page's dirty map; several panes can share a form. */
   formId: string;
+  /** Shows the Restore defaults action in the pane header. */
+  hasDefaults?: boolean;
   loadComponent: () => Promise<Type<unknown>>;
 }
 

@@ -26,6 +26,7 @@ export const SETTINGS_PAGE_CONFIG: SettingsPageConfig = {
           descriptionKey: 'pages.settings.tab.general.description',
           icon: faGear,
           formId: 'general',
+          hasDefaults: true,
           loadComponent: () => import('./general/general').then((m) => m.General),
         },
         {
@@ -34,6 +35,7 @@ export const SETTINGS_PAGE_CONFIG: SettingsPageConfig = {
           descriptionKey: 'pages.settings.nav.pane.appearance.description',
           icon: faPalette,
           formId: 'general',
+          hasDefaults: true,
           loadComponent: () => import('./appearance/appearance').then((m) => m.Appearance),
         },
         {
@@ -42,6 +44,7 @@ export const SETTINGS_PAGE_CONFIG: SettingsPageConfig = {
           descriptionKey: 'pages.settings.nav.pane.startup.description',
           icon: faPowerOff,
           formId: 'general',
+          hasDefaults: true,
           loadComponent: () => import('./startup/startup').then((m) => m.Startup),
         },
         {
@@ -50,6 +53,7 @@ export const SETTINGS_PAGE_CONFIG: SettingsPageConfig = {
           descriptionKey: 'pages.settings.nav.pane.notifications.description',
           icon: faBell,
           formId: 'general',
+          hasDefaults: true,
           loadComponent: () => import('./notifications/notifications').then((m) => m.Notifications),
         },
       ],
@@ -63,6 +67,7 @@ export const SETTINGS_PAGE_CONFIG: SettingsPageConfig = {
           descriptionKey: 'pages.settings.nav.pane.polling.description',
           icon: faRotate,
           formId: 'server',
+          hasDefaults: true,
           loadComponent: () => import('./polling/polling').then((m) => m.Polling),
         },
         {
@@ -71,6 +76,7 @@ export const SETTINGS_PAGE_CONFIG: SettingsPageConfig = {
           descriptionKey: 'pages.settings.nav.pane.path-mappings.description',
           icon: faRightLeft,
           formId: 'server',
+          hasDefaults: true,
           loadComponent: () => import('./path-mappings/path-mappings').then((m) => m.PathMappings),
         },
       ],
@@ -84,6 +90,7 @@ export const SETTINGS_PAGE_CONFIG: SettingsPageConfig = {
           descriptionKey: 'pages.settings.tab.torrent-list-grid.description',
           icon: faTableList,
           formId: 'torrent-list-grid',
+          hasDefaults: true,
           loadComponent: () =>
             import('./torrent-list-grid/torrent-list-grid').then((m) => m.TorrentListGrid),
         },
@@ -93,6 +100,7 @@ export const SETTINGS_PAGE_CONFIG: SettingsPageConfig = {
           descriptionKey: 'pages.settings.tab.status-bar.description',
           icon: faWindowMinimize,
           formId: 'status-bar',
+          hasDefaults: true,
           loadComponent: () => import('./status-bar/status-bar').then((m) => m.StatusBar),
         },
       ],

@@ -10,6 +10,7 @@ describe('GeneralSettingsFormService', () => {
   let service: GeneralSettingsFormService;
   let stateMock: {
     registerSave: ReturnType<typeof vi.fn>;
+    registerPaneActions: ReturnType<typeof vi.fn>;
     markDirty: ReturnType<typeof vi.fn>;
   };
   let settingsServiceMock: {
@@ -33,7 +34,7 @@ describe('GeneralSettingsFormService', () => {
 
   beforeEach(async () => {
     persisted = structuredClone(DEFAULT_GENERAL_SETTINGS);
-    stateMock = { registerSave: vi.fn(), markDirty: vi.fn() };
+    stateMock = { registerSave: vi.fn(), registerPaneActions: vi.fn(), markDirty: vi.fn() };
     settingsServiceMock = {
       load: vi.fn().mockImplementation(() => Promise.resolve(structuredClone(persisted))),
       save: vi.fn().mockResolvedValue(undefined),
@@ -263,6 +264,104 @@ describe('GeneralSettingsFormService', () => {
           dateFormat: expect.objectContaining({ firstDayOfWeek: 'sunday' }),
         }),
       );
+    });
+  });
+
+  describe('pane actions', () => {
+    type Actions = { discard: () => void; restoreDefaults: () => void };
+    const actions = (paneId: string): Actions =>
+      stateMock.registerPaneActions.mock.calls.find(([id]) => id === paneId)![1] as Actions;
+
+    it('registers discard and restore defaults for the four panes that share the form', () => {
+      for (const paneId of ['general', 'appearance', 'startup', 'notifications']) {
+        expect(actions(paneId).discard).toBeTypeOf('function');
+        expect(actions(paneId).restoreDefaults).toBeTypeOf('function');
+      }
+    });
+
+    it('discards only the sections of its own pane', () => {
+      service.form.controls.appearance.controls.family.setValue('aurora');
+      service.form.controls.language.controls.language.setValue('hu');
+
+      actions('appearance').discard();
+
+      expect(service.form.getRawValue().appearance.family).toBe('bitbutler');
+      expect(service.form.getRawValue().language.language).toBe('hu');
+      expect(service.paneDirty().appearance).toBe(false);
+      expect(service.paneDirty().general).toBe(true);
+    });
+
+    it('discards every section of the general pane', () => {
+      service.form.controls.language.controls.language.setValue('hu');
+      service.form.controls.dateFormat.controls.preset.setValue('custom' as never);
+      service.form.controls.behavior.controls.automaticUpdate.setValue(false);
+
+      actions('general').discard();
+
+      const value = service.form.getRawValue();
+      expect(value.language.language).toBe('us');
+      expect(value.dateFormat.preset).toBe('iso');
+      expect(value.behavior.automaticUpdate).toBe(true);
+      expect(service.paneDirty().general).toBe(false);
+    });
+
+    it('discards back to the last saved values, not the defaults', async () => {
+      persisted.appearance.family = 'aurora';
+      await service.load();
+      service.form.controls.appearance.controls.family.setValue('bitbutler');
+
+      actions('appearance').discard();
+
+      expect(service.form.getRawValue().appearance.family).toBe('aurora');
+    });
+
+    it('keeps the dependent controls consistent after discarding the startup pane', () => {
+      const { openAtLogin, startMinimized } = service.form.controls.startup.controls;
+      openAtLogin.setValue(true);
+      startMinimized.setValue(true);
+
+      actions('startup').discard();
+
+      expect(openAtLogin.value).toBe(false);
+      expect(startMinimized.value).toBe(false);
+      expect(startMinimized.disabled).toBe(true);
+      expect(service.paneDirty().startup).toBe(false);
+    });
+
+    it('restores the defaults into the pane, leaving it dirty and the other panes alone', async () => {
+      persisted.appearance.family = 'aurora';
+      persisted.startup.openAtLogin = true;
+      await service.load();
+      stateMock.markDirty.mockClear();
+
+      actions('appearance').restoreDefaults();
+
+      expect(service.form.getRawValue().appearance.family).toBe('bitbutler');
+      expect(service.form.getRawValue().startup.openAtLogin).toBe(true);
+      expect(service.paneDirty().appearance).toBe(true);
+      expect(stateMock.markDirty).toHaveBeenLastCalledWith('general', true);
+    });
+
+    it('lets discard undo a restore of the defaults', async () => {
+      persisted.appearance.family = 'aurora';
+      await service.load();
+
+      actions('appearance').restoreDefaults();
+      actions('appearance').discard();
+
+      expect(service.form.getRawValue().appearance.family).toBe('aurora');
+      expect(service.paneDirty().appearance).toBe(false);
+    });
+
+    it('re-enables a switched-off notification group when its defaults come back', async () => {
+      persisted.notifications.os.enabled = false;
+      await service.load();
+      expect(service.form.controls.notifications.controls.os.controls.finished.disabled).toBe(true);
+
+      actions('notifications').restoreDefaults();
+
+      expect(service.form.controls.notifications.controls.os.controls.enabled.value).toBe(true);
+      expect(service.form.controls.notifications.controls.os.controls.finished.enabled).toBe(true);
     });
   });
 });

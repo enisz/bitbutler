@@ -214,4 +214,68 @@ describe('SettingsShell', () => {
 
     expect(query('.bb-settings__subtitle')?.textContent).toContain('My Server');
   });
+
+  describe('pane header actions', () => {
+    it('shows discard changes only while the active pane has unsaved changes', async () => {
+      await setInputs({ config, activePaneId: 'one', dirtyMap: {} });
+      expect(query('.bb-settings__discard')).toBeNull();
+
+      await setInputs({ dirtyMap: { 'form-b': true } });
+      expect(query('.bb-settings__discard')).toBeNull();
+
+      await setInputs({ dirtyMap: { 'form-a': true } });
+      expect(query('.bb-settings__discard')).not.toBeNull();
+    });
+
+    it('follows the per-pane dirty map for panes that share a form', async () => {
+      await setInputs({
+        config,
+        activePaneId: 'one',
+        dirtyMap: { 'form-a': true },
+        paneDirtyMap: { one: false },
+      });
+
+      expect(query('.bb-settings__discard')).toBeNull();
+    });
+
+    it('emits the pane id when discard changes is clicked', async () => {
+      await setInputs({ config, activePaneId: 'one', dirtyMap: { 'form-a': true } });
+      const emitted: string[] = [];
+      fixture.componentInstance.discardPane.subscribe((id) => emitted.push(id));
+
+      query<HTMLButtonElement>('.bb-settings__discard')!.click();
+
+      expect(emitted).toEqual(['one']);
+    });
+
+    it('shows restore defaults only for panes that have defaults and emits the pane id', async () => {
+      const withDefaults: SettingsPageConfig = {
+        ...config,
+        groups: [
+          {
+            ...config.groups[0],
+            panes: [{ ...config.groups[0].panes[0], hasDefaults: true }, config.groups[0].panes[1]],
+          },
+        ],
+      };
+      await setInputs({ config: withDefaults, activePaneId: 'two' });
+      expect(query('.bb-settings__restore')).toBeNull();
+
+      await setInputs({ activePaneId: 'one' });
+      const emitted: string[] = [];
+      fixture.componentInstance.restorePaneDefaults.subscribe((id) => emitted.push(id));
+      query<HTMLButtonElement>('.bb-settings__restore')!.click();
+
+      expect(emitted).toEqual(['one']);
+    });
+
+    it('rebuilds only the pane whose version changed', async () => {
+      await setInputs({ config, activePaneId: 'one' });
+      const before = created;
+
+      await setInputs({ paneVersions: { two: 1 } });
+
+      expect(created - before).toBe(1);
+    });
+  });
 });

@@ -113,4 +113,46 @@ describe('SettingsStateService', () => {
       await expect(service.saveAll()).resolves.not.toThrow();
     });
   });
+
+  describe('pane actions', () => {
+    it('runs the registered discard and restore actions for a pane', () => {
+      const discard = vi.fn();
+      const restoreDefaults = vi.fn();
+      service.registerPaneActions('appearance', { discard, restoreDefaults });
+
+      service.discardPane('appearance');
+      service.restorePaneDefaults('appearance');
+
+      expect(discard).toHaveBeenCalledTimes(1);
+      expect(restoreDefaults).toHaveBeenCalledTimes(1);
+    });
+
+    it('merges what a pane and its page register separately', () => {
+      const discard = vi.fn();
+      const restoreDefaults = vi.fn();
+      service.registerPaneActions('status-bar', { restoreDefaults });
+      service.registerPaneActions('status-bar', { discard });
+
+      service.discardPane('status-bar');
+      service.restorePaneDefaults('status-bar');
+
+      expect(discard).toHaveBeenCalledTimes(1);
+      expect(restoreDefaults).toHaveBeenCalledTimes(1);
+    });
+
+    it('ignores a pane with nothing registered', () => {
+      expect(() => service.discardPane('startup')).not.toThrow();
+      expect(() => service.restorePaneDefaults('startup')).not.toThrow();
+    });
+
+    it('rebuilds one pane by bumping its version and marks its form clean', () => {
+      service.markDirty('status-bar', true);
+
+      service.rebuildPane('status-bar', 'status-bar');
+      service.rebuildPane('status-bar', 'status-bar');
+
+      expect(service.paneVersions()).toEqual({ 'status-bar': 2 });
+      expect(service.isDirtyMap()['status-bar']).toBe(false);
+    });
+  });
 });

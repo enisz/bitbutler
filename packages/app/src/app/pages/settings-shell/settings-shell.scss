@@ -158,8 +158,23 @@
 }
 
 .bb-settings__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
   padding: 26px var(--bb-settings-inline) 18px;
   border-bottom: 1px solid var(--bs-border-color);
+}
+
+.bb-settings__header-text {
+  min-width: 0;
+}
+
+.bb-settings__header-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
 }
 
 .bb-settings__pane-title {

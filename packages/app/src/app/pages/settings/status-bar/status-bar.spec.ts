@@ -15,6 +15,7 @@ describe('StatusBar', () => {
 
   let stateServiceMock: {
     registerSave: ReturnType<typeof vi.fn>;
+    registerPaneActions: ReturnType<typeof vi.fn>;
     markDirty: ReturnType<typeof vi.fn>;
   };
   let statusBarServiceMock: {
@@ -24,7 +25,7 @@ describe('StatusBar', () => {
   let statusBarSettings$: Subject<StatusBarSettings>;
 
   beforeEach(async () => {
-    stateServiceMock = { registerSave: vi.fn(), markDirty: vi.fn() };
+    stateServiceMock = { registerSave: vi.fn(), registerPaneActions: vi.fn(), markDirty: vi.fn() };
     statusBarSettings$ = new Subject<StatusBarSettings>();
     statusBarServiceMock = {
       asObservable: vi.fn(() => statusBarSettings$.asObservable()),
@@ -94,7 +95,13 @@ describe('StatusBar', () => {
     });
   });
 
-  describe('reset', () => {
+  it('registers restore defaults with the settings state', () => {
+    expect(stateServiceMock.registerPaneActions).toHaveBeenCalledWith('status-bar', {
+      restoreDefaults: expect.any(Function),
+    });
+  });
+
+  describe('restoreDefaults', () => {
     beforeEach(() => {
       statusBarSettings$.next({
         available: ['selection'],
@@ -105,7 +112,7 @@ describe('StatusBar', () => {
     });
 
     it('should restore available, left, and right to the default widget layout', () => {
-      component.reset();
+      component.restoreDefaults();
 
       expect(component.available.map((w) => w.id)).toEqual(DEFAULT_STATUS_BAR_SETTINGS.available);
       expect(component.left.map((w) => w.id)).toEqual(DEFAULT_STATUS_BAR_SETTINGS.left);
@@ -113,13 +120,13 @@ describe('StatusBar', () => {
     });
 
     it('should mark status-bar as dirty', () => {
-      component.reset();
+      component.restoreDefaults();
 
       expect(stateServiceMock.markDirty).toHaveBeenCalledWith('status-bar', true);
     });
 
     it('should not persist the reset - save() is not called', () => {
-      component.reset();
+      component.restoreDefaults();
 
       expect(statusBarServiceMock.save).not.toHaveBeenCalled();
     });

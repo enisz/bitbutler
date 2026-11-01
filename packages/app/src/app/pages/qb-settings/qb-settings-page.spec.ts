@@ -47,6 +47,33 @@ describe('QbSettingsPage', () => {
     });
   });
 
+  it('discards a pane by rebuilding just that pane and marking its form clean', async () => {
+    await createPage();
+    state.markDirty('storage', true);
+    state.markDirty('bandwidth', true);
+
+    state.discardPane('storage');
+
+    expect(state.paneVersions()).toEqual({ storage: 1 });
+    expect(state.isDirtyMap()['storage']).toBe(false);
+    expect(state.isDirtyMap()['bandwidth']).toBe(true);
+  });
+
+  it('can discard each of the four panes', async () => {
+    await createPage();
+
+    for (const paneId of ['bandwidth', 'storage', 'queue-limits', 'seeding-ratios'] as const) {
+      state.discardPane(paneId);
+    }
+
+    expect(Object.keys(state.paneVersions()).sort()).toEqual([
+      'bandwidth',
+      'queue-limits',
+      'seeding-ratios',
+      'storage',
+    ]);
+  });
+
   it('loads the preferences before it reports ready', async () => {
     const page = await createPage();
 

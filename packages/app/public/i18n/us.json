@@ -1796,8 +1796,7 @@
             "widget-pool": "Widget Pool",
             "widgets": "Widgets",
             "left": "Left",
-            "right": "Right",
-            "reset": "Reset to Defaults"
+            "right": "Right"
           },
           "popover": {
             "widget-pool": {
@@ -1860,8 +1859,7 @@
             "columns": "Columns",
             "order": "Order",
             "column-pool": "Column Pool",
-            "visible-columns": "Visible Columns",
-            "reset": "Reset"
+            "visible-columns": "Visible Columns"
           },
           "popover": {
             "animate-rows": {
@@ -1901,6 +1899,8 @@
       },
       "nav": {
         "back": "Back",
+        "discard-changes": "Discard Changes",
+        "restore-defaults": "Restore Defaults",
         "footer-note": "Changes apply to this device only.",
         "group": {
           "application": "Application",

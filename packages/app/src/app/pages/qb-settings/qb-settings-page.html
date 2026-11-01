@@ -7,6 +7,8 @@
   [isDirty]="stateService.isDirty()"
   [dirtyMap]="stateService.isDirtyMap()"
   [paneVersion]="paneVersion()"
+  [paneVersions]="stateService.paneVersions()"
+  (discardPane)="stateService.discardPane($event)"
   (save)="onSave()"
   (back)="onBack()"
   (retry)="onRetry()"

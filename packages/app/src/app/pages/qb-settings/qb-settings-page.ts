@@ -54,6 +54,14 @@ export class QbSettingsPage implements OnInit, UnsavedChangesGuardable {
   });
 
   constructor() {
+    // Each pane is its own form and reads the loaded preferences when built, so discarding
+    // rebuilds it.
+    for (const paneId of QB_SETTINGS_TAB_IDS) {
+      this.stateService.registerPaneActions(paneId, {
+        discard: () => this.stateService.rebuildPane(paneId, paneId),
+      });
+    }
+
     // An unknown or missing :pane lands on the first pane, with the URL corrected to match.
     effect(() => {
       if (this.paneParam() !== this.activePaneId()) {

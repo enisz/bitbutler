@@ -20,6 +20,7 @@ describe('TorrentListGrid', () => {
 
   let stateServiceMock: {
     registerSave: ReturnType<typeof vi.fn>;
+    registerPaneActions: ReturnType<typeof vi.fn>;
     markDirty: ReturnType<typeof vi.fn>;
   };
   let gridSettingsMock: {
@@ -28,7 +29,7 @@ describe('TorrentListGrid', () => {
   };
 
   beforeEach(async () => {
-    stateServiceMock = { registerSave: vi.fn(), markDirty: vi.fn() };
+    stateServiceMock = { registerSave: vi.fn(), registerPaneActions: vi.fn(), markDirty: vi.fn() };
     gridSettingsMock = {
       asObservable: vi.fn().mockReturnValue(of(DEFAULT_SETTINGS)),
       save: vi.fn().mockResolvedValue(undefined),
@@ -212,26 +213,52 @@ describe('TorrentListGrid', () => {
     });
   });
 
-  describe('reset', () => {
+  describe('restoreDefaults', () => {
     it('should restore the default visible columns and their order', () => {
       component.orderedColumns.set([
         { value: 'size', label: 'Size' },
         { value: 'name', label: 'Name' },
       ]);
-      component.reset();
+      component.restoreDefaults();
       const ids = component.orderedColumns().map((c) => c.value);
       expect(ids).toEqual(DEFAULT_TORRENT_LIST_GRID_SETTINGS.columnState);
     });
 
     it('should sync the columns form control to the default ids', () => {
-      component.reset();
+      component.restoreDefaults();
       expect(component.torrentListGridForm.get('columns')?.value).toEqual(
         DEFAULT_TORRENT_LIST_GRID_SETTINGS.columnState,
       );
     });
 
+    it('should also restore the other options to their defaults', () => {
+      component.torrentListGridForm.patchValue({
+        pagination: true,
+        animateRows: false,
+        compactRows: true,
+        pausePollingOnModal: true,
+        rowDoubleClickAction: 'PAUSE' as never,
+      });
+
+      component.restoreDefaults();
+
+      expect(component.torrentListGridForm.getRawValue()).toMatchObject({
+        pagination: DEFAULT_TORRENT_LIST_GRID_SETTINGS.pagination,
+        animateRows: DEFAULT_TORRENT_LIST_GRID_SETTINGS.animateRows,
+        compactRows: DEFAULT_TORRENT_LIST_GRID_SETTINGS.compactRows,
+        pausePollingOnModal: DEFAULT_TORRENT_LIST_GRID_SETTINGS.pausePollingOnModal,
+        rowDoubleClickAction: DEFAULT_TORRENT_LIST_GRID_SETTINGS.rowDoubleClickAction,
+      });
+    });
+
+    it('should register restore defaults with the settings state', () => {
+      expect(stateServiceMock.registerPaneActions).toHaveBeenCalledWith('torrent-list-grid', {
+        restoreDefaults: expect.any(Function),
+      });
+    });
+
     it('should mark torrent-list-grid as dirty', () => {
-      component.reset();
+      component.restoreDefaults();
       expect(stateServiceMock.markDirty).toHaveBeenCalledWith('torrent-list-grid', true);
     });
   });

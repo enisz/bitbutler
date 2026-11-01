@@ -47,6 +47,13 @@ export class SettingsPage implements UnsavedChangesGuardable {
   });
 
   constructor() {
+    // These panes keep their edits in the component, so discarding rebuilds them from what is saved.
+    for (const paneId of ['status-bar', 'torrent-list-grid'] as const) {
+      this.stateService.registerPaneActions(paneId, {
+        discard: () => this.stateService.rebuildPane(paneId, paneId),
+      });
+    }
+
     // An unknown or missing :pane lands on the first pane, with the URL corrected to match.
     effect(() => {
       if (this.paneParam() !== this.activePaneId()) {

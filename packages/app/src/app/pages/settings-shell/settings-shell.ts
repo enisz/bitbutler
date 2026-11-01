@@ -14,7 +14,13 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faChevronLeft, faFloppyDisk, faXmark } from '@fortawesome/free-solid-svg-icons';
+import {
+  faChevronLeft,
+  faFloppyDisk,
+  faRotateLeft,
+  faSliders,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
 import { BbLogo } from '../../components/bb-logo/bb-logo';
@@ -56,15 +62,19 @@ export class SettingsShell {
   public readonly paneDirtyMap = input<Record<string, boolean>>({});
   /** Bumping this value rebuilds every pane, so they re-read their persisted values. */
   public readonly paneVersion = input(0);
+  /** Rebuilds a single pane when its number changes, leaving the others as they are. */
+  public readonly paneVersions = input<Record<string, number>>({});
   public readonly subtitle = input<string | null>(null);
   public readonly errorKey = input('');
 
   public readonly save = output<void>();
+  public readonly discardPane = output<string>();
+  public readonly restorePaneDefaults = output<string>();
   public readonly back = output<void>();
   public readonly retry = output<void>();
 
   public readonly version = inject(ElectronService).getBitButlerVersion();
-  public readonly icons = { faChevronLeft, faFloppyDisk, faXmark };
+  public readonly icons = { faChevronLeft, faFloppyDisk, faRotateLeft, faSliders, faXmark };
 
   public readonly panes = computed<SettingsPaneDef[]>(() =>
     this.config().groups.flatMap((group) => group.panes),
