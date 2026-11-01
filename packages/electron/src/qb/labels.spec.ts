@@ -59,7 +59,7 @@ describe('tags and categories domain', () => {
         'removeCategories',
         () => labels.removeCategories('s', [' a ', '', 'b']),
         'removeCategories',
-        { categories: 'a|b' },
+        { categories: 'a\nb' },
       ],
     ])('%s posts the cleaned form', async (_name, run, endpoint, form) => {
       await run();

@@ -85,7 +85,7 @@ export async function editCategory(
 }
 
 export async function removeCategories(serverId: string, names: string[]): Promise<void> {
-  const joined = joinClean(names, '|');
+  const joined = joinClean(names, '\n');
   if (!joined) return;
   await post(serverId, 'removeCategories', { categories: joined });
 }
