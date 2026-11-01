@@ -12,6 +12,7 @@ import {
   takeUntil,
   tap,
 } from 'rxjs/operators';
+import { QbError } from '../models/qb-error.model';
 import { Maindata, QbTorrentPeersResponse } from '../models/torrent.model';
 import { QbService } from './qb.service';
 import { ServerSettingsService } from './server-settings.service';
@@ -128,8 +129,8 @@ export class QbPollingService {
               }),
               catchError((err) => {
                 markInitialLoadDone();
-                if (err?.status === 401 || err?.status === 403) {
-                  console.warn(`[maindata] poll stopped: session expired (status ${err.status}).`);
+                if (err instanceof QbError && err.code === 'UNAUTHENTICATED') {
+                  console.warn('[maindata] poll stopped: session expired.');
                   this.stopPolling();
                 } else {
                   console.error('[maindata] poll failed', err);

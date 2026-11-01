@@ -1,6 +1,7 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Subject, firstValueFrom } from 'rxjs';
+import { QbError } from '../models/qb-error.model';
 import { QbPollingService } from './qb-polling.service';
 import { QbService } from './qb.service';
 import { ServerSettingsService } from './server-settings.service';
@@ -89,6 +90,48 @@ describe('QbPollingService', () => {
 
     expect(mockQbService.sync.maindata).toHaveBeenCalledWith('server-1', 0);
     sub.unsubscribe();
+  });
+
+  describe('maindata poll errors', () => {
+    async function flush(): Promise<void> {
+      for (let i = 0; i < 6; i++) await Promise.resolve();
+    }
+
+    it('stops polling when the poll fails with a QbError UNAUTHENTICATED', async () => {
+      mockQbService.sync.maindata.mockRejectedValue(new QbError('UNAUTHENTICATED', 'expired'));
+      vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const stopSpy = vi.spyOn(service, 'stopPolling');
+
+      const sub = service.startMaindataPolling('server-1').subscribe();
+      await flush();
+
+      expect(stopSpy).toHaveBeenCalled();
+      sub.unsubscribe();
+    });
+
+    it('keeps polling when the poll fails with another QbError code', async () => {
+      mockQbService.sync.maindata.mockRejectedValue(new QbError('FAILED', 'boom'));
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      const stopSpy = vi.spyOn(service, 'stopPolling');
+
+      const sub = service.startMaindataPolling('server-1').subscribe();
+      await flush();
+
+      expect(stopSpy).not.toHaveBeenCalled();
+      sub.unsubscribe();
+    });
+
+    it('does not treat a legacy status 401 error as a lost session', async () => {
+      mockQbService.sync.maindata.mockRejectedValue({ status: 401 });
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      const stopSpy = vi.spyOn(service, 'stopPolling');
+
+      const sub = service.startMaindataPolling('server-1').subscribe();
+      await flush();
+
+      expect(stopSpy).not.toHaveBeenCalled();
+      sub.unsubscribe();
+    });
   });
 
   it('should stop any previous polling when startMaindataPolling() is called again', async () => {

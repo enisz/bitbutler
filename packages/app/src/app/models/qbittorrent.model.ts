@@ -16,11 +16,3 @@ export type {
   QbTorrentProperties,
   QbTorrentTracker,
 };
-
-export interface QbResponse<T> {
-  ok: boolean;
-  status: number;
-  statusText: string;
-  body: T;
-  path?: string;
-}

@@ -428,92 +428,45 @@ describe('Login', () => {
       });
     }
 
-    it('probes connection info and persists the result when cached fields are null', async () => {
-      setCurrentServer({ export_available: null, webapi_version: null, qb_version: null });
-      qbServiceMock.login.mockResolvedValue({ loggedIn: true });
-      const getServerInfo = vi
-        .spyOn(window.bitbutler.export, 'getServerInfo')
-        .mockResolvedValue({ webapiVersion: '2.9.3', qbVersion: '4.6.0', isFullMode: true });
-      const setConnectionInfo = vi
-        .spyOn(window.bitbutler.server, 'setConnectionInfo')
-        .mockResolvedValue({ updated: true });
-
-      await component.connect();
-
-      expect(getServerInfo).toHaveBeenCalledWith('srv-1');
-      expect(setConnectionInfo).toHaveBeenCalledWith({
-        id: 'srv-1',
-        exportAvailable: 1,
-        webapiVersion: '2.9.3',
-        qbVersion: '4.6.0',
-      });
-    });
-
-    it('persists exportAvailable 0 when isFullMode is false', async () => {
-      setCurrentServer({ export_available: null, webapi_version: null, qb_version: null });
-      qbServiceMock.login.mockResolvedValue({ loggedIn: true });
-      vi.spyOn(window.bitbutler.export, 'getServerInfo').mockResolvedValue({
-        webapiVersion: '2.8.3',
-        qbVersion: '4.5.0',
-        isFullMode: false,
-      });
-      const setConnectionInfo = vi
-        .spyOn(window.bitbutler.server, 'setConnectionInfo')
-        .mockResolvedValue({ updated: true });
-
-      await component.connect();
-
-      expect(setConnectionInfo).toHaveBeenCalledWith({
-        id: 'srv-1',
-        exportAvailable: 0,
-        webapiVersion: '2.8.3',
-        qbVersion: '4.5.0',
-      });
-    });
-
-    it('does not probe when all cached fields are already resolved', async () => {
-      setCurrentServer({ export_available: 1, webapi_version: '2.9.3', qb_version: '4.6.0' });
+    it('refreshes the server store after a successful login and no longer writes connection info', async () => {
+      setCurrentServer();
+      serverStoreMock.refresh.mockClear();
       qbServiceMock.login.mockResolvedValue({ loggedIn: true });
       const getServerInfo = vi.spyOn(window.bitbutler.export, 'getServerInfo');
-
-      await component.connect();
-
-      expect(getServerInfo).not.toHaveBeenCalled();
-    });
-
-    it('probes when export_available is resolved but a version field is still null', async () => {
-      setCurrentServer({ export_available: 1, webapi_version: null, qb_version: '4.6.0' });
-      qbServiceMock.login.mockResolvedValue({ loggedIn: true });
-      const getServerInfo = vi
-        .spyOn(window.bitbutler.export, 'getServerInfo')
-        .mockResolvedValue({ webapiVersion: '2.9.3', qbVersion: '4.6.0', isFullMode: true });
-
-      await component.connect();
-
-      expect(getServerInfo).toHaveBeenCalledWith('srv-1');
-    });
-
-    it('does not block login when the probe throws', async () => {
-      setCurrentServer({ export_available: null, webapi_version: null, qb_version: null });
-      qbServiceMock.login.mockResolvedValue({ loggedIn: true });
-      vi.spyOn(window.bitbutler.export, 'getServerInfo').mockRejectedValue(
-        new Error('network error'),
-      );
+      const setConnectionInfo = vi.spyOn(window.bitbutler.server, 'setConnectionInfo');
       const router = TestBed.inject(Router) as any;
 
       await component.connect();
 
+      expect(serverStoreMock.refresh).toHaveBeenCalledTimes(1);
+      expect(getServerInfo).not.toHaveBeenCalled();
+      expect(setConnectionInfo).not.toHaveBeenCalled();
       expect(router.navigate).toHaveBeenCalledWith(['/pages/torrent-list']);
     });
 
-    it('does not probe when login did not succeed', async () => {
-      setCurrentServer({ export_available: null, webapi_version: null, qb_version: null });
-      qbServiceMock.login.mockResolvedValue({ loggedIn: false });
-      const getServerInfo = vi.spyOn(window.bitbutler.export, 'getServerInfo');
+    it('does not fail the login when the refresh throws', async () => {
+      setCurrentServer();
+      qbServiceMock.login.mockResolvedValue({ loggedIn: true });
+      serverStoreMock.refresh.mockRejectedValue(new Error('refresh failed'));
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const toastServiceMock = TestBed.inject(ToastService) as any;
+      const router = TestBed.inject(Router) as any;
 
       await component.connect();
 
-      expect(getServerInfo).not.toHaveBeenCalled();
+      expect(errorSpy).toHaveBeenCalled();
+      expect(toastServiceMock.danger).not.toHaveBeenCalled();
+      expect(router.navigate).toHaveBeenCalledWith(['/pages/torrent-list']);
+    });
+
+    it('does not refresh when login did not succeed', async () => {
+      setCurrentServer();
+      serverStoreMock.refresh.mockClear();
+      qbServiceMock.login.mockResolvedValue({ loggedIn: false });
+
+      await component.connect();
+
+      expect(serverStoreMock.refresh).not.toHaveBeenCalled();
     });
 
     it('logs the error and shows the connection-failed toast when login rejects', async () => {

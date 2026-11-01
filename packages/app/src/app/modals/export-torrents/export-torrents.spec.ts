@@ -135,27 +135,21 @@ describe('ExportTorrents', () => {
       });
     });
 
-    it('persists a successful live fallback fetch in the background to self-heal the cache', async () => {
+    it('refreshes the store after a successful live fallback fetch, without writing connection info', async () => {
       setCurrentServer({ export_available: null, webapi_version: null, qb_version: null });
-      vi.spyOn(window.bitbutler.export, 'getServerInfo').mockResolvedValue({
+      const getServerInfo = vi.spyOn(window.bitbutler.export, 'getServerInfo').mockResolvedValue({
         webapiVersion: '2.9.3',
         qbVersion: '4.6.0',
         isFullMode: true,
       });
-      const setConnectionInfo = vi
-        .spyOn(window.bitbutler.server, 'setConnectionInfo')
-        .mockResolvedValue({ updated: true });
+      const setConnectionInfo = vi.spyOn(window.bitbutler.server, 'setConnectionInfo');
 
       createFixture();
       fixture.detectChanges();
       await vi.waitFor(() => expect(serverStoreMock.refresh).toHaveBeenCalled());
 
-      expect(setConnectionInfo).toHaveBeenCalledWith({
-        id: 'srv-1',
-        exportAvailable: 1,
-        webapiVersion: '2.9.3',
-        qbVersion: '4.6.0',
-      });
+      expect(getServerInfo).toHaveBeenCalledWith('srv-1');
+      expect(setConnectionInfo).not.toHaveBeenCalled();
     });
 
     it('shows an error when the live fallback fetch fails', async () => {

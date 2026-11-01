@@ -226,24 +226,11 @@ export class Login implements OnInit {
         if (!response.loggedIn) return;
         this.serverStoreService.clearAutoLoginSuppression();
 
-        if (
-          currentServer.export_available === null ||
-          currentServer.webapi_version === null ||
-          currentServer.qb_version === null
-        ) {
-          try {
-            const { webapiVersion, qbVersion, isFullMode } =
-              await window.bitbutler.export.getServerInfo(currentServer.id);
-            await window.bitbutler.server.setConnectionInfo({
-              id: currentServer.id,
-              exportAvailable: isFullMode ? 1 : 0,
-              webapiVersion,
-              qbVersion,
-            });
-            await this.serverStoreService.refresh();
-          } catch (e) {
-            console.error(Login.name, 'connect', 'connection info probe failed', e);
-          }
+        // The main process persisted the server's connection info during login; pick it up.
+        try {
+          await this.serverStoreService.refresh();
+        } catch (e) {
+          console.error(Login.name, 'connect', 'server store refresh failed', e);
         }
 
         await this.windowService.setOpenFilesEnabled(true);

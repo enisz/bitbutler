@@ -168,14 +168,9 @@ export class ExportTorrents implements OnInit {
           this.serverInfo.set(info);
           this.serverInfoLoading.set(false);
 
-          window.bitbutler.server
-            .setConnectionInfo({
-              id: serverId,
-              exportAvailable: info.isFullMode ? 1 : 0,
-              webapiVersion: info.webapiVersion,
-              qbVersion: info.qbVersion,
-            })
-            .then(() => this.serverStore.refresh())
+          // The main process persists the info it just fetched; reload the store to pick it up.
+          this.serverStore
+            .refresh()
             .catch((e: unknown) =>
               console.error(ExportTorrents.name, 'ngOnInit', 'connection info self-heal failed', e),
             );
