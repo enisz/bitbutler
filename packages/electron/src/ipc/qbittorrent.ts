@@ -107,13 +107,21 @@ export async function qbTorrentsAdd(payload: BitButlerQbTorrentsAddPayload): Pro
   });
 }
 
+export function hasCookieFor(id: string): boolean {
+  return cookieJar.has(id);
+}
+
 function qbHasCookie(payload: unknown): { hasCookie: boolean } {
   const id = requireString((payload as Record<string, unknown>)?.id, 'id');
-  return { hasCookie: cookieJar.has(id) };
+  return { hasCookie: hasCookieFor(id) };
 }
 
 function qbLogout(payload: unknown): { loggedOut: boolean } {
   const id = requireString((payload as Record<string, unknown>)?.id, 'id');
+  return logoutServer(id);
+}
+
+export function logoutServer(id: string): { loggedOut: boolean } {
   cookieJar.delete(id);
   if (getActiveServerId() === id) {
     ipcMain.emit('server:set-active', null, null);
@@ -186,11 +194,19 @@ async function probeServerInfoIfMissing(id: string): Promise<void> {
 async function qbLogin(payload: unknown): Promise<{ loggedIn: boolean }> {
   const p = payload as Record<string, unknown>;
   const id = requireString(p?.id, 'id');
-  await loginAndStoreCookie(
+  return loginServer(
     id,
     typeof p?.username === 'string' ? p.username : undefined,
     typeof p?.password === 'string' ? p.password : undefined,
   );
+}
+
+export async function loginServer(
+  id: string,
+  username?: string,
+  password?: string,
+): Promise<{ loggedIn: boolean }> {
+  await loginAndStoreCookie(id, username, password);
   console.info(`[BitButler][qbittorrent] Logged in to server ${id}.`);
   await probeServerInfoIfMissing(id);
   ipcMain.emit('server:set-active', null, id);

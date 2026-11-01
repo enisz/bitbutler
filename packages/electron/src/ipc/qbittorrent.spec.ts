@@ -529,3 +529,58 @@ describe('qbRequest', () => {
     );
   });
 });
+
+describe('plain auth functions', () => {
+  beforeEach(() => {
+    vi.resetModules();
+    ipcHandlers.clear();
+    vi.stubGlobal('fetch', mockFetch);
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  it('loginServer resolves { loggedIn: true } and stores the cookie', async () => {
+    mockGet.mockReturnValue({
+      id: 'srv-1',
+      name: 'Test',
+      host: 'localhost',
+      protocol: 'http',
+      port: 8080,
+      username: 'admin',
+      password: Buffer.from('secret'),
+      auto_login: 0,
+      created_at: '',
+    });
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: () => Promise.resolve('Ok.'),
+      headers: { getSetCookie: () => ['SID=abc123; HttpOnly'], get: () => null },
+    });
+    vi.spyOn(console, 'info').mockImplementation(() => {});
+    const { loginServer, getCookieJar } = await import('./qbittorrent.js');
+    await expect(loginServer('srv-1')).resolves.toEqual({ loggedIn: true });
+    expect(getCookieJar().get('srv-1')).toBe('SID=abc123');
+    expect(mockIpcMainEmit).toHaveBeenCalledWith('server:set-active', null, 'srv-1');
+    expect(mockRebuildMenu).toHaveBeenCalled();
+    expect(mockRebuildTrayMenu).toHaveBeenCalled();
+  });
+
+  it('logoutServer clears the cookie and returns { loggedOut: true }', async () => {
+    const { logoutServer, getCookieJar } = await import('./qbittorrent.js');
+    getCookieJar().set('srv-1', 'SID=abc');
+    expect(logoutServer('srv-1')).toEqual({ loggedOut: true });
+    expect(getCookieJar().has('srv-1')).toBe(false);
+  });
+
+  it('hasCookieFor reflects the cookie jar', async () => {
+    const { hasCookieFor, getCookieJar } = await import('./qbittorrent.js');
+    expect(hasCookieFor('srv-1')).toBe(false);
+    getCookieJar().set('srv-1', 'SID=abc');
+    expect(hasCookieFor('srv-1')).toBe(true);
+    expect(hasCookieFor('srv-2')).toBe(false);
+  });
+});
