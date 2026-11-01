@@ -19,7 +19,7 @@ import FormData from 'form-data';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { qbRequest } from './qbittorrent.js';
+import { qbRequest, qbRunTorrents } from './qbittorrent.js';
 import { getExportAvailable } from './server.js';
 
 interface QbTorrentInfo {
@@ -789,12 +789,7 @@ async function applyTorrentSettings(
   const shouldResume =
     startMode === 'all' || (startMode === 'active' && isActiveState(entry.state));
   if (shouldResume) {
-    await qbRequest({
-      id: serverId,
-      method: 'POST',
-      path: '/api/v2/torrents/resume',
-      form: { hashes: entry.hash },
-    }).catch((err) => {
+    await qbRunTorrents(serverId, 'resume', entry.hash).catch((err) => {
       console.warn(`[BitButler][export] Failed to resume ${entry.hash} after import.`, err);
     });
   }

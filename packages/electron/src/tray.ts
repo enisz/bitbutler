@@ -1,7 +1,7 @@
 import { Menu, Tray, app } from 'electron';
 import path from 'node:path';
 import { t } from './i18n.js';
-import { getCookieJar, qbRequest } from './ipc/qbittorrent.js';
+import { getCookieJar, qbRequest, qbRunTorrents } from './ipc/qbittorrent.js';
 import { getActiveServerId } from './ipc/server.js';
 
 let tray: Tray | null = null;
@@ -43,6 +43,12 @@ async function trayQbRequest(reqPath: string, form: Record<string, string>): Pro
   await qbRequest({ id, method: 'POST', path: reqPath, form });
 }
 
+async function trayRunTorrents(action: 'pause' | 'resume'): Promise<void> {
+  const id = getActiveServerId();
+  if (!id) return;
+  await qbRunTorrents(id, action, 'all');
+}
+
 function buildContextMenu(): Electron.Menu {
   const connected = isConnected();
 
@@ -53,12 +59,12 @@ function buildContextMenu(): Electron.Menu {
     {
       label: t('electron.tray.start-all-torrents'),
       enabled: connected,
-      click: () => trayQbRequest('/api/v2/torrents/resume', { hashes: 'all' }).catch(console.error),
+      click: () => trayRunTorrents('resume').catch(console.error),
     },
     {
       label: t('electron.tray.stop-all-torrents'),
       enabled: connected,
-      click: () => trayQbRequest('/api/v2/torrents/pause', { hashes: 'all' }).catch(console.error),
+      click: () => trayRunTorrents('pause').catch(console.error),
     },
     { type: 'separator' },
     {

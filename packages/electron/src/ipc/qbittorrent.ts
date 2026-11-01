@@ -23,6 +23,7 @@ interface ServerRow {
   password: Buffer | null;
   auto_login: number;
   created_at: string;
+  webapi_version: string | null;
 }
 
 interface QbRequestPayload {
@@ -37,7 +38,7 @@ interface QbRequestPayload {
 }
 
 const stmtGetByIdFull = db.prepare<[string], ServerRow>(`
-  SELECT id, name, host, protocol, port, username, password, auto_login, created_at
+  SELECT id, name, host, protocol, port, username, password, auto_login, created_at, webapi_version
   FROM servers
   WHERE id = ?
 `);
@@ -103,6 +104,72 @@ export async function qbTorrentsAdd(payload: BitButlerQbTorrentsAddPayload): Pro
     },
     body: bodyBuffer,
   });
+}
+
+// qBittorrent 5.0 (WebAPI 2.11) renamed torrents/pause|resume to torrents/stop|start and dropped the
+// old names. The thresholds are not documented, so the version only picks which pair to try first.
+const START_STOP_MIN_WEBAPI = [2, 11, 0];
+
+type RunApi = 'START_STOP' | 'PAUSE_RESUME';
+
+const runApiCache = new Map<string, RunApi>();
+
+function usesStartStop(webapiVersion: string | null): boolean {
+  if (!webapiVersion) return false;
+  const parts = webapiVersion.split('.').map((n) => Number.parseInt(n, 10) || 0);
+  for (let i = 0; i < START_STOP_MIN_WEBAPI.length; i++) {
+    const diff = (parts[i] ?? 0) - START_STOP_MIN_WEBAPI[i];
+    if (diff !== 0) return diff > 0;
+  }
+  return true;
+}
+
+function isNotFound(err: unknown): boolean {
+  try {
+    return (JSON.parse(String(err)) as { status?: number }).status === 404;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Pauses or resumes torrents on any qBittorrent version. Tries the endpoint pair matching the
+ * server's WebAPI version (or the one that worked last time), falls back to the other pair on a 404,
+ * and throws if neither works.
+ */
+export async function qbRunTorrents(
+  id: string,
+  action: 'pause' | 'resume',
+  hashes: string,
+): Promise<void> {
+  const server = stmtGetByIdFull.get(id);
+  if (!server) throw new Error('Server not found.');
+
+  const first: RunApi =
+    runApiCache.get(id) ?? (usesStartStop(server.webapi_version) ? 'START_STOP' : 'PAUSE_RESUME');
+  const second: RunApi = first === 'START_STOP' ? 'PAUSE_RESUME' : 'START_STOP';
+
+  const pathFor = (api: RunApi): string => {
+    const verb =
+      api === 'START_STOP'
+        ? action === 'resume'
+          ? 'start'
+          : 'stop'
+        : action === 'resume'
+          ? 'resume'
+          : 'pause';
+    return `/api/v2/torrents/${verb}`;
+  };
+
+  for (const api of [first, second]) {
+    try {
+      await qbRequest({ id, method: 'POST', path: pathFor(api), form: { hashes } });
+      runApiCache.set(id, api);
+      return;
+    } catch (err) {
+      if (!isNotFound(err) || api === second) throw err;
+    }
+  }
 }
 
 function qbHasCookie(payload: unknown): { hasCookie: boolean } {
