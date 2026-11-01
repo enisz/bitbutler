@@ -174,7 +174,45 @@
   display: flex;
   flex: 0 0 auto;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+}
+
+.bb-settings__action-wrap {
+  display: inline-flex;
+}
+
+// Both header actions share one look: outlined, same height, label next to the icon.
+.bb-settings__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 32px;
+  padding: 0 12px;
+  flex: 0 0 auto;
+  color: color-mix(in srgb, var(--bs-body-color) 75%, transparent);
+  background: transparent;
+  border: 1px solid var(--bb-control-border);
+  border-radius: var(--bb-control-radius);
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) {
+    color: var(--bs-body-color);
+    background-color: var(--bs-card-cap-bg);
+  }
+
+  &:disabled {
+    opacity: 0.38;
+    cursor: default;
+  }
+}
+
+.bb-settings__action-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--bs-border-color);
 }
 
 .bb-settings__pane-title {

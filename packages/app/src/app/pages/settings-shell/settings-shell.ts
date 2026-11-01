@@ -15,10 +15,10 @@ import {
 import { RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
+  faArrowsRotate,
   faChevronLeft,
   faFloppyDisk,
   faRotateLeft,
-  faSliders,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -74,7 +74,7 @@ export class SettingsShell {
   public readonly retry = output<void>();
 
   public readonly version = inject(ElectronService).getBitButlerVersion();
-  public readonly icons = { faChevronLeft, faFloppyDisk, faRotateLeft, faSliders, faXmark };
+  public readonly icons = { faArrowsRotate, faChevronLeft, faFloppyDisk, faRotateLeft, faXmark };
 
   public readonly panes = computed<SettingsPaneDef[]>(() =>
     this.config().groups.flatMap((group) => group.panes),

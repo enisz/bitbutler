@@ -1900,7 +1900,9 @@
       "nav": {
         "back": "Back",
         "discard-changes": "Discard Changes",
+        "discard-changes-hint": "Reverts this pane to its last saved values.",
         "restore-defaults": "Restore Defaults",
+        "restore-defaults-hint": "Fills this pane with its default values. Nothing is saved until you click Save.",
         "footer-note": "Changes apply to this device only.",
         "group": {
           "application": "Application",

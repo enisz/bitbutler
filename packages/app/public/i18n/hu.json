@@ -1900,7 +1900,9 @@
       "nav": {
         "back": "Vissza",
         "discard-changes": "Módosítások elvetése",
-        "restore-defaults": "Alapértelmezések visszaállítása",
+        "discard-changes-hint": "Visszaállítja ezt a panelt az utoljára mentett értékekre.",
+        "restore-defaults": "Alapértékek",
+        "restore-defaults-hint": "Feltölti ezt a panelt az alapértelmezett értékekkel. Mentésig semmi sem kerül mentésre.",
         "footer-note": "A módosítások csak erre az eszközre vonatkoznak.",
         "group": {
           "application": "Alkalmazás",

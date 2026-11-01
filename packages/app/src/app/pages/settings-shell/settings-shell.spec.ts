@@ -216,15 +216,17 @@ describe('SettingsShell', () => {
   });
 
   describe('pane header actions', () => {
-    it('shows discard changes only while the active pane has unsaved changes', async () => {
+    it('enables discard changes only while the active pane has unsaved changes', async () => {
+      const discard = () => query<HTMLButtonElement>('.bb-settings__discard')!;
+
       await setInputs({ config, activePaneId: 'one', dirtyMap: {} });
-      expect(query('.bb-settings__discard')).toBeNull();
+      expect(discard().disabled).toBe(true);
 
       await setInputs({ dirtyMap: { 'form-b': true } });
-      expect(query('.bb-settings__discard')).toBeNull();
+      expect(discard().disabled).toBe(true);
 
       await setInputs({ dirtyMap: { 'form-a': true } });
-      expect(query('.bb-settings__discard')).not.toBeNull();
+      expect(discard().disabled).toBe(false);
     });
 
     it('follows the per-pane dirty map for panes that share a form', async () => {
@@ -235,7 +237,7 @@ describe('SettingsShell', () => {
         paneDirtyMap: { one: false },
       });
 
-      expect(query('.bb-settings__discard')).toBeNull();
+      expect(query<HTMLButtonElement>('.bb-settings__discard')!.disabled).toBe(true);
     });
 
     it('emits the pane id when discard changes is clicked', async () => {
