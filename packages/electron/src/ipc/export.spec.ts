@@ -452,6 +452,10 @@ describe('partitionImportEntries', () => {
   });
 });
 
+const HA = 'a'.repeat(40);
+const HB = 'b'.repeat(40);
+const HC = 'c'.repeat(40);
+
 describe('runImport', () => {
   const mockZipGetEntry = vi.fn();
 
@@ -493,7 +497,7 @@ describe('runImport', () => {
   }
 
   const existing = (extra: Record<string, unknown> = {}) => ({
-    hash: 'aaa',
+    hash: HA,
     name: 'Existing',
     failed: false,
     magnet_link: 'magnet:?xt=aaa',
@@ -504,7 +508,7 @@ describe('runImport', () => {
     vi.resetModules();
     mockZipGetEntry.mockReset();
     qb.addTorrent.mockResolvedValue('Ok.');
-    qb.infoByHashes.mockResolvedValue([{ hash: 'aaa' }]);
+    qb.infoByHashes.mockResolvedValue([{ hash: HA }]);
     qb.files.mockResolvedValue([]);
     vi.doMock('electron', () => ({
       ipcMain: { handle: vi.fn(), on: vi.fn() },
@@ -532,13 +536,13 @@ describe('runImport', () => {
 
   it('skips entries whose hash is in skipHashes without calling qBittorrent for them', async () => {
     archive([
-      { hash: 'aaa', name: 'Already Here', failed: false, magnet_link: 'magnet:?xt=aaa' },
-      { hash: 'bbb', name: 'Already Here Too', failed: false, magnet_link: 'magnet:?xt=bbb' },
+      { hash: HA, name: 'Already Here', failed: false, magnet_link: 'magnet:?xt=aaa' },
+      { hash: HB, name: 'Already Here Too', failed: false, magnet_link: 'magnet:?xt=bbb' },
     ]);
 
     const { runImport } = await setup();
     const event = fakeEvent();
-    await runImport(event as any, basePayload({ skipHashes: ['aaa', 'bbb'] }) as any);
+    await runImport(event as any, basePayload({ skipHashes: [HA, HB] }) as any);
 
     expect(qb.addTorrent).not.toHaveBeenCalled();
     expect(qb.infoByHashes).not.toHaveBeenCalled();
@@ -551,13 +555,13 @@ describe('runImport', () => {
 
   it('processes non-skipped entries normally while leaving skipped ones untouched', async () => {
     archive([
-      { hash: 'aaa', name: 'Already Here', failed: false, magnet_link: 'magnet:?xt=aaa' },
-      { hash: 'bbb', name: 'New Torrent', failed: false, magnet_link: 'magnet:?xt=bbb' },
+      { hash: HA, name: 'Already Here', failed: false, magnet_link: 'magnet:?xt=aaa' },
+      { hash: HB, name: 'New Torrent', failed: false, magnet_link: 'magnet:?xt=bbb' },
     ]);
 
     const { runImport } = await setup();
     const event = fakeEvent();
-    await runImport(event as any, basePayload({ skipHashes: ['aaa'] }) as any);
+    await runImport(event as any, basePayload({ skipHashes: [HA] }) as any);
 
     expect(qb.addTorrent).toHaveBeenCalledTimes(1);
     expect(qb.addTorrent).toHaveBeenCalledWith('server-1', {
@@ -569,7 +573,7 @@ describe('runImport', () => {
       current: 1,
       total: 1,
       name: 'New Torrent',
-      hash: 'bbb',
+      hash: HB,
       success: true,
     });
     expect(event.sender.send).toHaveBeenCalledWith('import:done', {
@@ -582,9 +586,9 @@ describe('runImport', () => {
   it('adds a full-mode entry from the archived .torrent file', async () => {
     mockZipGetEntry.mockImplementation((name: string) => {
       if (name === 'metadata.json') {
-        return metadataEntry([{ hash: 'aaa', name: 'Full', failed: false }], 'full');
+        return metadataEntry([{ hash: HA, name: 'Full', failed: false }], 'full');
       }
-      if (name === 'torrents/aaa.torrent') return { getData: () => Buffer.from([1, 2, 3]) };
+      if (name === `torrents/${HA}.torrent`) return { getData: () => Buffer.from([1, 2, 3]) };
       return undefined;
     });
 
@@ -593,13 +597,13 @@ describe('runImport', () => {
     await runImport(event as any, basePayload() as any);
 
     expect(qb.addTorrent).toHaveBeenCalledWith('server-1', {
-      torrents: [{ name: 'aaa.torrent', bytes: [1, 2, 3] }],
+      torrents: [{ name: `${HA}.torrent`, bytes: [1, 2, 3] }],
       options: { paused: 'true' },
     });
   });
 
   it('reports success: false and increments failed when addTorrent throws', async () => {
-    archive([{ hash: 'ccc', name: 'Broken', failed: false, magnet_link: 'magnet:?xt=ccc' }]);
+    archive([{ hash: HC, name: 'Broken', failed: false, magnet_link: 'magnet:?xt=ccc' }]);
     qb.addTorrent.mockRejectedValue(new Error('qb request failed'));
 
     const { runImport } = await setup();
@@ -610,7 +614,7 @@ describe('runImport', () => {
       current: 1,
       total: 1,
       name: 'Broken',
-      hash: 'ccc',
+      hash: HC,
       success: false,
     });
     expect(event.sender.send).toHaveBeenCalledWith('import:done', {
@@ -629,8 +633,8 @@ describe('runImport', () => {
       basePayload({ restoreFields: ['save_path'], pathMappings: [] }) as any,
     );
 
-    expect(qb.infoByHashes).toHaveBeenCalledWith('server-1', ['aaa']);
-    expect(qb.setLocation).toHaveBeenCalledWith('server-1', ['aaa'], '/original/path');
+    expect(qb.infoByHashes).toHaveBeenCalledWith('server-1', [HA]);
+    expect(qb.setLocation).toHaveBeenCalledWith('server-1', [HA], '/original/path');
   }, 10000);
 
   it('reapplies category via setCategory so overwriting a duplicate updates its category', async () => {
@@ -639,7 +643,7 @@ describe('runImport', () => {
     const { runImport } = await setup();
     await runImport(fakeEvent() as any, basePayload({ restoreFields: ['categories'] }) as any);
 
-    expect(qb.setCategory).toHaveBeenCalledWith('server-1', ['aaa'], 'Movies');
+    expect(qb.setCategory).toHaveBeenCalledWith('server-1', [HA], 'Movies');
   }, 10000);
 
   it('reapplies tags via removeAllTags+addTags so overwriting a duplicate updates its tags', async () => {
@@ -648,8 +652,8 @@ describe('runImport', () => {
     const { runImport } = await setup();
     await runImport(fakeEvent() as any, basePayload({ restoreFields: ['tags'] }) as any);
 
-    expect(qb.removeAllTags).toHaveBeenCalledWith('server-1', ['aaa']);
-    expect(qb.addTags).toHaveBeenCalledWith('server-1', ['aaa'], ['linux', 'documentary']);
+    expect(qb.removeAllTags).toHaveBeenCalledWith('server-1', [HA]);
+    expect(qb.addTags).toHaveBeenCalledWith('server-1', [HA], ['linux', 'documentary']);
   }, 10000);
 
   it('removes all tags without calling addTags when the archived entry has no tags', async () => {
@@ -658,7 +662,7 @@ describe('runImport', () => {
     const { runImport } = await setup();
     await runImport(fakeEvent() as any, basePayload({ restoreFields: ['tags'] }) as any);
 
-    expect(qb.removeAllTags).toHaveBeenCalledWith('server-1', ['aaa']);
+    expect(qb.removeAllTags).toHaveBeenCalledWith('server-1', [HA]);
     expect(qb.addTags).not.toHaveBeenCalled();
   }, 10000);
 
@@ -684,12 +688,63 @@ describe('runImport', () => {
       basePayload({ restoreFields: ['renames', 'priorities'] }) as any,
     );
 
-    expect(qb.files).toHaveBeenCalledWith('server-1', 'aaa');
+    expect(qb.files).toHaveBeenCalledWith('server-1', HA);
     expect(qb.renameFile).toHaveBeenCalledTimes(1);
-    expect(qb.renameFile).toHaveBeenCalledWith('server-1', 'aaa', 'a.mkv', 'new/a.mkv');
-    expect(qb.filePrio).toHaveBeenCalledWith('server-1', 'aaa', [0, 2], 1);
-    expect(qb.filePrio).toHaveBeenCalledWith('server-1', 'aaa', [1], 0);
+    expect(qb.renameFile).toHaveBeenCalledWith('server-1', HA, 'a.mkv', 'new/a.mkv');
+    expect(qb.filePrio).toHaveBeenCalledWith('server-1', HA, [0, 2], 1);
+    expect(qb.filePrio).toHaveBeenCalledWith('server-1', HA, [1], 0);
   }, 10000);
+
+  it.each([
+    ['CR/LF', `${'a'.repeat(38)}\r\n`],
+    ['a quote', `${'a'.repeat(39)}"`],
+    ['too short', 'a'.repeat(39)],
+    ['non-hex', 'g'.repeat(40)],
+  ])('skips an entry whose hash has %s and never adds it', async (_name, badHash) => {
+    archive([
+      { hash: badHash, name: 'Bad', failed: false, magnet_link: 'magnet:?xt=bad' },
+      { hash: HB, name: 'Good', failed: false, magnet_link: 'magnet:?xt=bbb' },
+    ]);
+    qb.infoByHashes.mockResolvedValue([{ hash: HB }]);
+
+    const { runImport } = await setup();
+    const event = fakeEvent();
+    await runImport(event as any, basePayload() as any);
+
+    expect(qb.addTorrent).toHaveBeenCalledTimes(1);
+    expect(qb.addTorrent).toHaveBeenCalledWith(
+      'server-1',
+      expect.objectContaining({ urls: ['magnet:?xt=bbb'] }),
+    );
+    expect(event.sender.send).toHaveBeenCalledWith(
+      'import:progress',
+      expect.objectContaining({ name: 'Bad', success: false }),
+    );
+    expect(event.sender.send).toHaveBeenCalledWith('import:done', {
+      total: 2,
+      failed: 1,
+      alreadyExisted: 0,
+    });
+  });
+
+  it('accepts a 64-character (v2) hash', async () => {
+    const h64 = 'd'.repeat(64);
+    archive([{ hash: h64, name: 'V2', failed: false, magnet_link: 'magnet:?xt=v2' }]);
+    const { runImport } = await setup();
+    await runImport(fakeEvent() as any, basePayload() as any);
+    expect(qb.addTorrent).toHaveBeenCalledTimes(1);
+  });
+
+  it('ignores info rows whose hash was not added by the import', async () => {
+    archive([existing({ save_path: '/p' }), existing({ hash: HB, save_path: '/q' })]);
+    qb.addTorrent.mockResolvedValueOnce('Ok.').mockRejectedValueOnce(new Error('nope'));
+    qb.infoByHashes.mockResolvedValue([{ hash: HA }, { hash: HB }, { hash: HC }]);
+    const { runImport } = await setup();
+    await runImport(fakeEvent() as any, basePayload({ restoreFields: ['save_path'] }) as any);
+    expect(qb.infoByHashes).toHaveBeenCalledWith('server-1', [HA]);
+    expect(qb.setLocation).toHaveBeenCalledTimes(1);
+    expect(qb.setLocation).toHaveBeenCalledWith('server-1', [HA], '/p');
+  }, 20000);
 
   it('restores per-torrent limits, share limits and super seeding', async () => {
     archive([
@@ -709,10 +764,10 @@ describe('runImport', () => {
       basePayload({ restoreFields: ['speed_limits', 'share_limits', 'super_seeding'] }) as any,
     );
 
-    expect(qb.setUploadLimit).toHaveBeenCalledWith('server-1', 100, ['aaa']);
-    expect(qb.setDownloadLimit).toHaveBeenCalledWith('server-1', 200, ['aaa']);
-    expect(qb.setShareLimits).toHaveBeenCalledWith('server-1', ['aaa'], 2, 30, 40);
-    expect(qb.setSuperSeeding).toHaveBeenCalledWith('server-1', ['aaa'], true);
+    expect(qb.setUploadLimit).toHaveBeenCalledWith('server-1', 100, [HA]);
+    expect(qb.setDownloadLimit).toHaveBeenCalledWith('server-1', 200, [HA]);
+    expect(qb.setShareLimits).toHaveBeenCalledWith('server-1', [HA], 2, 30, 40);
+    expect(qb.setSuperSeeding).toHaveBeenCalledWith('server-1', [HA], true);
   }, 10000);
 
   it('keeps going when a non-critical restore call fails', async () => {
@@ -730,7 +785,7 @@ describe('runImport', () => {
       expect.stringContaining('Failed to restore category'),
       expect.any(Error),
     );
-    expect(qb.setUploadLimit).toHaveBeenCalledWith('server-1', 100, ['aaa']);
+    expect(qb.setUploadLimit).toHaveBeenCalledWith('server-1', 100, [HA]);
   }, 10000);
 
   it.each([
@@ -747,7 +802,7 @@ describe('runImport', () => {
       const { runImport } = await setup();
       await runImport(fakeEvent() as any, basePayload({ startMode }) as any);
 
-      if (resumes) expect(qb.start).toHaveBeenCalledWith('server-1', ['aaa']);
+      if (resumes) expect(qb.start).toHaveBeenCalledWith('server-1', [HA]);
       else expect(qb.start).not.toHaveBeenCalled();
     },
     10000,

@@ -148,8 +148,8 @@ export async function setDownloadPath(
 // Main-process only helpers (not part of the renderer bridge).
 
 // Main-process only: torrents/info for several hashes at once (the whole list, not just the first).
-export const infoByHashes = (serverId: string, hashes: string[]): Promise<Torrent[]> =>
-  get(serverId, 'info', { hashes: cleanHashes(hashes) });
+export const infoByHashes = async (serverId: string, hashes: string[]): Promise<Torrent[]> =>
+  get(serverId, 'info', { hashes: requireHashes(hashes) });
 
 export function exportTorrentFile(serverId: string, hash: string): Promise<Buffer> {
   return qbCall<Buffer>(serverId, {
@@ -158,6 +158,9 @@ export function exportTorrentFile(serverId: string, hash: string): Promise<Buffe
     responseType: 'buffer',
   });
 }
+
+// A filename goes into a quoted multipart header, so CR, LF and quotes must never reach it.
+const safeFilename = (name: string): string => name.replace(/[\r\n"]/g, '');
 
 export async function addTorrent(
   serverId: string,
@@ -173,10 +176,10 @@ export async function addTorrent(
 
     if ('path' in t && t.path) {
       const buf = await fs.promises.readFile(t.path);
-      fd.append('torrents', buf, { filename: t.name });
+      fd.append('torrents', buf, { filename: safeFilename(t.name) });
       appended++;
     } else if ('bytes' in t && Array.isArray(t.bytes)) {
-      fd.append('torrents', Buffer.from(t.bytes), { filename: t.name });
+      fd.append('torrents', Buffer.from(t.bytes), { filename: safeFilename(t.name) });
       appended++;
     }
   }

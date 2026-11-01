@@ -181,6 +181,11 @@ describe('torrent details domain', () => {
   });
 
   describe('infoByHashes', () => {
+    it.each([[[]], [['  ']]])('infoByHashes rejects INVALID for %j', async (hashes) => {
+      await expect(details.infoByHashes('s', hashes)).rejects.toMatchObject({ code: 'INVALID' });
+      expect(mockQbCall).not.toHaveBeenCalled();
+    });
+
     it('queries several hashes at once and returns the whole list', async () => {
       mockQbCall.mockResolvedValueOnce([{ hash: 'a' }, { hash: 'b' }]);
       await expect(details.infoByHashes('s', [' a ', 'b'])).resolves.toEqual([
@@ -236,6 +241,16 @@ describe('torrent details domain', () => {
       expect(text).not.toContain('name="savepath"');
       expect(text).not.toContain('name="tags"');
       expect(text).not.toContain('name="skip"');
+    });
+
+    it('strips CR, LF and double quotes from the multipart filename', async () => {
+      await details.addTorrent('s', {
+        torrents: [{ name: 'a"\r\nX-Evil: 1\r\n.torrent', bytes: [65] }],
+      });
+      const text = lastCall().body.toString();
+      expect(text).toContain('filename="aX-Evil: 1.torrent"');
+      expect(text).not.toMatch(/filename="[^"]*[\r\n]/);
+      expect(text.match(/filename=/g)).toHaveLength(1);
     });
 
     it('attaches files from bytes and from a path', async () => {

@@ -25,6 +25,9 @@ import { refreshServerInfo, resolveFullMode } from '../qb/server-info.js';
 import * as details from '../qb/torrent-details.js';
 import { setSuperSeeding, start } from '../qb/torrents.js';
 
+// Info-hash v1 (40) or v2 (64) in hex; anything else from a .bbe file is not trusted.
+const INFO_HASH_RE = /^[0-9a-f]{40}([0-9a-f]{24})?$/i;
+
 let exportCancelled = false;
 let importCancelled = false;
 
@@ -440,6 +443,12 @@ export async function runImport(
       const entry = toProcess[i];
       let success = true;
       try {
+        if (!INFO_HASH_RE.test(entry.hash)) {
+          console.warn(
+            `[BitButler][export] Skipping '${entry.name}': invalid info hash ${JSON.stringify(entry.hash)} in the .bbe file.`,
+          );
+          throw new Error('Invalid info hash in the .bbe file.');
+        }
         await addTorrent(serverId, entry, metadata.export_mode, zip, restoreFields, pathMappings);
         addedHashes.push(entry.hash);
       } catch {
@@ -475,19 +484,23 @@ export async function runImport(
         startMode !== 'paused');
 
     const confirmedHashes = new Set<string>();
+    const addedSet = new Set(addedHashes.map((h) => h.toLowerCase()));
     if (needsPostProcess && !importCancelled) {
       for (let attempt = 0; attempt < 20; attempt++) {
         await sleep(500);
         if (importCancelled) break;
         const res = await details.infoByHashes(serverId, addedHashes);
-        for (const t of res) confirmedHashes.add(t.hash);
+        for (const t of res) {
+          const h = (t.hash ?? '').toLowerCase();
+          if (addedSet.has(h)) confirmedHashes.add(h);
+        }
         if (confirmedHashes.size >= addedHashes.length) break;
       }
     }
 
     for (const entry of toProcess) {
       if (importCancelled) break;
-      if (!confirmedHashes.has(entry.hash)) continue;
+      if (!confirmedHashes.has(entry.hash.toLowerCase())) continue;
       await applyTorrentSettings(serverId, entry, restoreFields, startMode, pathMappings).catch(
         () => {},
       );
