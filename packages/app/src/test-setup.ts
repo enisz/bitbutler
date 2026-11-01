@@ -106,7 +106,6 @@ window.bitbutler = {
     delete: () => Promise.resolve({ deleted: false }),
     getById: noopAsync,
     getByHost: noopAsync,
-    setConnectionInfo: () => Promise.resolve({ updated: false }),
     setActive: noop,
   },
   view: {
@@ -114,11 +113,6 @@ window.bitbutler = {
   },
   qb: {
     ...buildQbBridgeStub(),
-    login: () => Promise.resolve({ loggedIn: false }),
-    logout: () => Promise.resolve({ loggedOut: false }),
-    hasCookie: () => Promise.resolve({ hasCookie: false }),
-    request: <TResponse = unknown>(_payload: unknown) => Promise.resolve(null as TResponse),
-    torrentsAdd: noopAsync,
   },
   torrentQueue: {
     enqueue: () => Promise.resolve({ jobId: '' }),

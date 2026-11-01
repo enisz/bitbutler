@@ -146,13 +146,6 @@ const api: BitButlerAPI = {
     delete: ({ id }) => ipcRenderer.invoke('server:delete', { id }),
     getById: ({ id }) => ipcRenderer.invoke('server:getById', { id }),
     getByHost: ({ host }) => ipcRenderer.invoke('server:getByHost', { host }),
-    setConnectionInfo: ({ id, exportAvailable, webapiVersion, qbVersion }) =>
-      ipcRenderer.invoke('server:set-connection-info', {
-        id,
-        exportAvailable,
-        webapiVersion,
-        qbVersion,
-      }),
     setActive: (id) => ipcRenderer.send('server:set-active', id),
   },
 
@@ -162,12 +155,6 @@ const api: BitButlerAPI = {
 
   qb: {
     ...buildQbBridge(),
-    login: ({ id, username, password }) =>
-      ipcRenderer.invoke('qb:login', { id, username, password }),
-    logout: ({ id }) => ipcRenderer.invoke('qb:logout', { id }),
-    hasCookie: ({ id }) => ipcRenderer.invoke('qb:has-cookie', { id }),
-    request: (payload) => ipcRenderer.invoke('qb:request', payload),
-    torrentsAdd: (payload) => ipcRenderer.invoke('qb:torrentsAdd', payload),
   },
 
   torrentQueue: {

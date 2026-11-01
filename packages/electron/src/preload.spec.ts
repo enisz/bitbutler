@@ -46,9 +46,9 @@ describe('preload qb bridge', () => {
     expect(mockInvoke).toHaveBeenCalledWith('qb:call', 'torrents.stop', ['srv-1', ['h1']]);
   });
 
-  it('keeps the legacy qb members', () => {
+  it('no longer exposes the legacy qb members', () => {
     for (const name of ['login', 'logout', 'hasCookie', 'request', 'torrentsAdd']) {
-      expect(typeof qb[name]).toBe('function');
+      expect(qb[name]).toBeUndefined();
     }
   });
 });

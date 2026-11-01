@@ -12,11 +12,6 @@ import type { UpdateCapability, UpdaterEvent } from './models/updater.model.js';
 import type { WindowState } from './models/window.model.js';
 import type { BitButlerQbAPI } from './qb.types.js';
 
-export type BitButlerServerIdPayload = { id: string };
-export type BitButlerQbLoginPayload = { id: string; username?: string; password?: string };
-
-export type BitButlerHttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-
 export type SelectedTorrentInput =
   | { name: string; path: string }
   | { name: string; bytes: number[] };
@@ -27,15 +22,6 @@ export type BitButlerQbTorrentsAddPayload = {
   urls?: string[];
   options?: Record<string, unknown>;
 };
-
-export interface BitButlerQbRequest<TBody = unknown> {
-  id: string;
-  path: string;
-  method?: BitButlerHttpMethod;
-  query?: Record<string, string | number | boolean>;
-  body?: TBody;
-  headers?: Record<string, string>;
-}
 
 export type MenuClickPayload = { action: string; ts: number; serverId?: string; viewId?: string };
 
@@ -174,17 +160,6 @@ export interface ImportStartPayload {
   skipHashes: string[];
 }
 
-// The pre-bridge members, kept until the renderer has fully moved to BitButlerQbAPI.
-interface LegacyQb {
-  login(payload: BitButlerQbLoginPayload): Promise<{ loggedIn: boolean }>;
-  logout(payload: BitButlerServerIdPayload): Promise<{ loggedOut: boolean }>;
-  hasCookie(payload: BitButlerServerIdPayload): Promise<{ hasCookie: boolean }>;
-  request<TResponse = unknown, TBody = unknown>(
-    payload: BitButlerQbRequest<TBody>,
-  ): Promise<TResponse>;
-  torrentsAdd(payload: BitButlerQbTorrentsAddPayload): Promise<unknown>;
-}
-
 export interface BitButlerAPI {
   electron: {
     isDev(): Promise<boolean>;
@@ -213,12 +188,6 @@ export interface BitButlerAPI {
     delete(payload: { id: string }): Promise<{ deleted: boolean }>;
     getById(payload: { id: string }): Promise<ServerRecord | null>;
     getByHost(payload: { host: string }): Promise<ServerRecord | null>;
-    setConnectionInfo(payload: {
-      id: string;
-      exportAvailable: 0 | 1;
-      webapiVersion: string;
-      qbVersion: string;
-    }): Promise<{ updated: boolean }>;
     setActive(id: string | null): void;
   };
 
@@ -226,7 +195,7 @@ export interface BitButlerAPI {
     setActive(viewId: string): void;
   };
 
-  qb: BitButlerQbAPI & LegacyQb;
+  qb: BitButlerQbAPI;
 
   torrentQueue: {
     enqueue(payload: TorrentAddJobPayload): Promise<{ jobId: string }>;

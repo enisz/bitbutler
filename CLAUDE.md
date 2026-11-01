@@ -42,11 +42,14 @@ Pre-commit hooks (Husky + lint-staged) enforce linting and formatting automatica
 
 ```
 Angular (renderer) ──→ window.bitbutler.* ──→ packages/electron/src/preload.ts ──→ ipcMain.handle() ──→ packages/electron/src/ipc/*.ts
+                                                                          └─ qb:call ──→ packages/electron/src/qb/
 ```
 
 - `packages/electron/src/preload.ts` is the only bridge. It exposes `window.bitbutler` with namespaces: `qb`, `server`, `settings`, `window`, `electron`, `notification`, `torrent`, `config`.
 - Angular services call `window.bitbutler.*` directly - never `fetch()` or Node APIs.
-- `packages/electron/src/ipc/qbittorrent.ts` proxies all qBittorrent API calls via **axios** from the main process (avoids CORS and handles HTTP streaming for maindata).
+- `window.bitbutler.qb` is not a generic proxy. The renderer calls typed, intent-level methods (`window.bitbutler.qb.torrents.stop(...)`) and every one returns `IpcResult<T>` (`{ ok: true, data } | { ok: false, code, message }`). The codes are `UNAUTHENTICATED`, `FORBIDDEN`, `NOT_FOUND`, `CONFLICT`, `UNREACHABLE`, `UNSUPPORTED`, `INVALID` and `FAILED`.
+- The renderer never builds qBittorrent URLs or deals with API versions. `QbService` is a thin wrapper that unwraps the results and throws a `QbError` carrying the code on failure.
+- The main process owns the endpoints, version handling, re-login and error mapping in `packages/electron/src/qb/`. A single `qb:call` IPC channel (`qb/bridge.ts`) dispatches to an allowlist of the bridge methods; `packages/electron/src/ipc/qbittorrent.ts` only holds the session (cookie jar, login/logout) and the low-level HTTP request.
 - `packages/electron/src/db.ts` holds a **better-sqlite3** database: `servers` table (passwords encrypted with Electron `safeStorage`) and `settings` table (JSON blobs).
 
 ### Shared types (`@bitbutler/shared`)

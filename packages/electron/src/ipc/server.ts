@@ -21,9 +21,6 @@ export function registerServerIpcHandlers(): void {
   ipcMain.handle('server:delete', async (_event, payload: unknown) => serverDelete(payload));
   ipcMain.handle('server:getById', async (_event, payload: unknown) => serverGetById(payload));
   ipcMain.handle('server:getByHost', async (_event, payload: unknown) => serverGetByHost(payload));
-  ipcMain.handle('server:set-connection-info', async (_event, payload: unknown) =>
-    serverSetConnectionInfo(payload),
-  );
 
   ipcMain.on('server:set-active', (_event, id: string | null) => {
     activeServerId = id;
@@ -189,19 +186,6 @@ export function setConnectionInfo(
   info: { exportAvailable: 0 | 1; webapiVersion: string; qbVersion: string },
 ): void {
   stmtSetConnectionInfo.run(info.exportAvailable, info.webapiVersion, info.qbVersion, id);
-}
-
-function serverSetConnectionInfo(payload: unknown): { updated: boolean } {
-  const p = payload as Record<string, unknown>;
-  const id = requireString(p?.id, 'id');
-  const exportAvailable = p?.exportAvailable;
-  if (exportAvailable !== 0 && exportAvailable !== 1) {
-    throw new Error("Field 'exportAvailable' must be 0 or 1.");
-  }
-  const webapiVersion = requireString(p?.webapiVersion, 'webapiVersion');
-  const qbVersion = requireString(p?.qbVersion, 'qbVersion');
-  setConnectionInfo(id, { exportAvailable, webapiVersion, qbVersion });
-  return { updated: true };
 }
 
 function serverDelete(payload: unknown): { deleted: boolean } {

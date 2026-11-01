@@ -142,14 +142,12 @@ describe('ExportTorrents', () => {
         qbVersion: '4.6.0',
         isFullMode: true,
       });
-      const setConnectionInfo = vi.spyOn(window.bitbutler.server, 'setConnectionInfo');
 
       createFixture();
       fixture.detectChanges();
       await vi.waitFor(() => expect(serverStoreMock.refresh).toHaveBeenCalled());
 
       expect(getServerInfo).toHaveBeenCalledWith('srv-1');
-      expect(setConnectionInfo).not.toHaveBeenCalled();
     });
 
     it('shows an error when the live fallback fetch fails', async () => {

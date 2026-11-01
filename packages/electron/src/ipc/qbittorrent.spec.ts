@@ -40,7 +40,6 @@ vi.mock('../tray.js', () => ({ rebuildTrayMenu: mockRebuildTrayMenu }));
 describe('getCookieJar', () => {
   beforeEach(() => {
     vi.resetModules();
-    ipcHandlers.clear();
   });
 
   afterEach(() => {
@@ -58,54 +57,36 @@ describe('getCookieJar', () => {
   });
 });
 
-describe('qb:has-cookie IPC handler', () => {
+describe('hasCookieFor', () => {
   beforeEach(() => {
     vi.resetModules();
-    ipcHandlers.clear();
   });
 
   afterEach(() => {
     vi.clearAllMocks();
   });
 
-  async function setup() {
-    const { registerQbIpcHandlers, getCookieJar } = await import('./qbittorrent.js');
-    registerQbIpcHandlers();
-    return { handler: ipcHandlers.get('qb:has-cookie')!, getCookieJar };
-  }
-
-  it('returns { hasCookie: false } when no cookie is stored', async () => {
-    const { handler } = await setup();
-    expect(await handler(null, { id: 'srv-1' })).toEqual({ hasCookie: false });
+  it('is false when no cookie is stored', async () => {
+    const { hasCookieFor } = await import('./qbittorrent.js');
+    expect(hasCookieFor('srv-1')).toBe(false);
   });
 
-  it('returns { hasCookie: true } when a cookie exists for that server', async () => {
-    const { handler, getCookieJar } = await setup();
+  it('is true when a cookie exists for that server', async () => {
+    const { hasCookieFor, getCookieJar } = await import('./qbittorrent.js');
     getCookieJar().set('srv-1', 'SID=abc123');
-    expect(await handler(null, { id: 'srv-1' })).toEqual({ hasCookie: true });
+    expect(hasCookieFor('srv-1')).toBe(true);
   });
 
-  it('returns { hasCookie: false } for a different server id', async () => {
-    const { handler, getCookieJar } = await setup();
+  it('is false for a different server id', async () => {
+    const { hasCookieFor, getCookieJar } = await import('./qbittorrent.js');
     getCookieJar().set('srv-1', 'SID=abc123');
-    expect(await handler(null, { id: 'srv-2' })).toEqual({ hasCookie: false });
-  });
-
-  it('throws when id is missing', async () => {
-    const { handler } = await setup();
-    await expect(handler(null, {})).rejects.toThrow("Field 'id' is required.");
-  });
-
-  it('throws when id is empty', async () => {
-    const { handler } = await setup();
-    await expect(handler(null, { id: '' })).rejects.toThrow("Field 'id' is required.");
+    expect(hasCookieFor('srv-2')).toBe(false);
   });
 });
 
-describe('qb:logout IPC handler', () => {
+describe('logoutServer', () => {
   beforeEach(() => {
     vi.resetModules();
-    ipcHandlers.clear();
   });
 
   afterEach(() => {
@@ -113,57 +94,50 @@ describe('qb:logout IPC handler', () => {
   });
 
   async function setup() {
-    const { registerQbIpcHandlers, getCookieJar } = await import('./qbittorrent.js');
+    const { logoutServer, getCookieJar } = await import('./qbittorrent.js');
     const { setActiveServerId } = await import('./server.js');
-    registerQbIpcHandlers();
-    return { handler: ipcHandlers.get('qb:logout')!, getCookieJar, setActiveServerId };
+    return { logoutServer, getCookieJar, setActiveServerId };
   }
 
   it('returns { loggedOut: true }', async () => {
-    const { handler } = await setup();
-    expect(await handler(null, { id: 'srv-1' })).toEqual({ loggedOut: true });
-  });
-
-  it('throws when id is missing', async () => {
-    const { handler } = await setup();
-    await expect(handler(null, {})).rejects.toThrow("Field 'id' is required.");
+    const { logoutServer } = await setup();
+    expect(logoutServer('srv-1')).toEqual({ loggedOut: true });
   });
 
   it('removes only the target server cookie, leaving other servers logged in', async () => {
-    const { handler, getCookieJar } = await setup();
+    const { logoutServer, getCookieJar } = await setup();
     getCookieJar().set('srv-1', 'SID=abc');
     getCookieJar().set('srv-2', 'SID=def');
-    await handler(null, { id: 'srv-1' });
+    logoutServer('srv-1');
     expect(getCookieJar().has('srv-1')).toBe(false);
     expect(getCookieJar().has('srv-2')).toBe(true);
   });
 
   it('emits server:set-active with null when the logged-out server was the active one', async () => {
-    const { handler, setActiveServerId } = await setup();
+    const { logoutServer, setActiveServerId } = await setup();
     setActiveServerId('srv-1');
-    await handler(null, { id: 'srv-1' });
+    logoutServer('srv-1');
     expect(mockIpcMainEmit).toHaveBeenCalledWith('server:set-active', null, null);
   });
 
   it('does not touch the active server when a different server logs out', async () => {
-    const { handler, setActiveServerId } = await setup();
+    const { logoutServer, setActiveServerId } = await setup();
     setActiveServerId('srv-2');
-    await handler(null, { id: 'srv-1' });
+    logoutServer('srv-1');
     expect(mockIpcMainEmit).not.toHaveBeenCalledWith('server:set-active', null, null);
   });
 
   it('calls rebuildMenu and rebuildTrayMenu', async () => {
-    const { handler } = await setup();
-    await handler(null, { id: 'srv-1' });
+    const { logoutServer } = await setup();
+    logoutServer('srv-1');
     expect(mockRebuildMenu).toHaveBeenCalled();
     expect(mockRebuildTrayMenu).toHaveBeenCalled();
   });
 });
 
-describe('qb:login IPC handler', () => {
+describe('loginServer', () => {
   beforeEach(() => {
     vi.resetModules();
-    ipcHandlers.clear();
     vi.stubGlobal('fetch', mockFetch);
   });
 
@@ -185,9 +159,8 @@ describe('qb:login IPC handler', () => {
   };
 
   async function setup() {
-    const { registerQbIpcHandlers, getCookieJar } = await import('./qbittorrent.js');
-    registerQbIpcHandlers();
-    return { handler: ipcHandlers.get('qb:login')!, getCookieJar };
+    const { loginServer, getCookieJar } = await import('./qbittorrent.js');
+    return { handler: loginServer, getCookieJar };
   }
 
   it('succeeds with qBittorrent <5 response (200 + Ok. + SID cookie)', async () => {
@@ -203,7 +176,7 @@ describe('qb:login IPC handler', () => {
     });
     const infoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
     const { handler, getCookieJar } = await setup();
-    await expect(handler(null, { id: 'srv-1' })).resolves.toEqual({ loggedIn: true });
+    await expect(handler('srv-1')).resolves.toEqual({ loggedIn: true });
     expect(getCookieJar().get('srv-1')).toBe('SID=abc123');
     expect(infoSpy).toHaveBeenCalledWith(expect.stringContaining('Logged in to server srv-1'));
   });
@@ -220,7 +193,7 @@ describe('qb:login IPC handler', () => {
       },
     });
     const { handler, getCookieJar } = await setup();
-    await expect(handler(null, { id: 'srv-1' })).resolves.toEqual({ loggedIn: true });
+    await expect(handler('srv-1')).resolves.toEqual({ loggedIn: true });
     expect(getCookieJar().get('srv-1')).toBe('QBT_SID_8080=tok204');
   });
 
@@ -237,7 +210,7 @@ describe('qb:login IPC handler', () => {
       mockFetch.mockResolvedValue(okResponse);
       mockRefreshServerInfo.mockResolvedValue({});
       const { handler } = await setup();
-      await handler(null, { id: 'srv-1' });
+      await handler('srv-1');
       expect(mockRefreshServerInfo).toHaveBeenCalledWith('srv-1');
     });
 
@@ -250,7 +223,7 @@ describe('qb:login IPC handler', () => {
       });
       mockFetch.mockResolvedValue(okResponse);
       const { handler } = await setup();
-      await handler(null, { id: 'srv-1' });
+      await handler('srv-1');
       expect(mockRefreshServerInfo).not.toHaveBeenCalled();
     });
 
@@ -260,7 +233,7 @@ describe('qb:login IPC handler', () => {
       mockRefreshServerInfo.mockRejectedValue(new Error('probe boom'));
       const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const { handler } = await setup();
-      await expect(handler(null, { id: 'srv-1' })).resolves.toEqual({ loggedIn: true });
+      await expect(handler('srv-1')).resolves.toEqual({ loggedIn: true });
       expect(warnSpy).toHaveBeenCalledWith(
         expect.stringContaining('Server info probe failed for server srv-1'),
         expect.any(Error),
@@ -277,7 +250,7 @@ describe('qb:login IPC handler', () => {
       headers: { getSetCookie: () => [], get: () => null },
     });
     const { handler } = await setup();
-    await expect(handler(null, { id: 'srv-1' })).rejects.toThrow('Login failed');
+    await expect(handler('srv-1')).rejects.toThrow('Login failed');
   });
 
   it('throws on qBittorrent 5+ bad credentials (401)', async () => {
@@ -290,7 +263,7 @@ describe('qb:login IPC handler', () => {
     });
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const { handler } = await setup();
-    await expect(handler(null, { id: 'srv-1' })).rejects.toThrow('Login failed');
+    await expect(handler('srv-1')).rejects.toThrow('Login failed');
     expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('Login failed for server srv-1'));
   });
 
@@ -303,13 +276,13 @@ describe('qb:login IPC handler', () => {
       headers: { getSetCookie: () => [], get: () => null },
     });
     const { handler } = await setup();
-    await expect(handler(null, { id: 'srv-1' })).rejects.toThrow('SID cookie was not returned');
+    await expect(handler('srv-1')).rejects.toThrow('SID cookie was not returned');
   });
 
   it('throws when server is not found', async () => {
     mockGet.mockReturnValue(undefined);
     const { handler } = await setup();
-    await expect(handler(null, { id: 'missing' })).rejects.toThrow('Server not found');
+    await expect(handler('missing')).rejects.toThrow('Server not found');
   });
 
   it('uses stored credentials when no runtime credentials provided', async () => {
@@ -330,7 +303,7 @@ describe('qb:login IPC handler', () => {
     });
     globalThis.fetch = mockFetch;
     const { handler } = await setup();
-    await handler(null, { id: 'srv-1' });
+    await handler('srv-1');
     const body = mockFetch.mock.calls[0][1].body.toString();
     expect(body).toContain('username=admin');
     expect(body).toContain('password=stored-pass');
@@ -354,7 +327,7 @@ describe('qb:login IPC handler', () => {
     });
     globalThis.fetch = mockFetch;
     const { handler } = await setup();
-    await handler(null, { id: 'srv-1', username: 'runtime-user', password: 'runtime-pass' });
+    await handler('srv-1', 'runtime-user', 'runtime-pass');
     const body = mockFetch.mock.calls[0][1].body.toString();
     expect(body).toContain('username=runtime-user');
     expect(body).toContain('password=runtime-pass');
@@ -378,7 +351,7 @@ describe('qb:login IPC handler', () => {
     });
     globalThis.fetch = mockFetch;
     const { handler } = await setup();
-    await handler(null, { id: 'srv-1' });
+    await handler('srv-1');
     const body = mockFetch.mock.calls[0][1].body.toString();
     expect(body).toContain('password=');
   });
@@ -387,7 +360,6 @@ describe('qb:login IPC handler', () => {
 describe('qbRequest', () => {
   beforeEach(() => {
     vi.resetModules();
-    ipcHandlers.clear();
     vi.stubGlobal('fetch', mockFetch);
   });
 
@@ -533,7 +505,6 @@ describe('qbRequest', () => {
 describe('plain auth functions', () => {
   beforeEach(() => {
     vi.resetModules();
-    ipcHandlers.clear();
     vi.stubGlobal('fetch', mockFetch);
   });
 

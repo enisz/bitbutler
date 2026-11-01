@@ -1,7 +1,5 @@
-import type { BitButlerQbTorrentsAddPayload } from '@bitbutler/shared';
 import { ipcMain, safeStorage } from 'electron';
-import FormData from 'form-data';
-import fs from 'node:fs';
+import type FormData from 'form-data';
 import db from '../db.js';
 import { rebuildMenu } from '../menu.js';
 import { refreshServerInfo } from '../qb/server-info.js';
@@ -44,81 +42,8 @@ const stmtGetByIdFull = db.prepare<[string], ServerRow>(`
   WHERE id = ?
 `);
 
-export function registerQbIpcHandlers(): void {
-  ipcMain.handle('qb:login', async (_event, payload: unknown) => qbLogin(payload));
-  ipcMain.handle('qb:logout', async (_event, payload: unknown) => qbLogout(payload));
-  ipcMain.handle('qb:has-cookie', async (_event, payload: unknown) => qbHasCookie(payload));
-  ipcMain.handle('qb:request', async (_event, payload: unknown) =>
-    qbRequest(payload as QbRequestPayload),
-  );
-  ipcMain.handle('qb:torrentsAdd', async (_evt, payload: BitButlerQbTorrentsAddPayload) =>
-    qbTorrentsAdd(payload),
-  );
-}
-
-export async function qbTorrentsAdd(payload: BitButlerQbTorrentsAddPayload): Promise<unknown> {
-  const { id, torrents, urls, options } = payload;
-
-  const fd = new FormData();
-  let appended = 0;
-
-  for (const t of torrents ?? []) {
-    if (!t?.name) continue;
-
-    if ('path' in t && t.path) {
-      const buf = await fs.promises.readFile(t.path);
-      fd.append('torrents', buf, { filename: t.name });
-      appended++;
-    } else if ('bytes' in t && Array.isArray(t.bytes)) {
-      fd.append('torrents', Buffer.from(t.bytes), { filename: t.name });
-      appended++;
-    }
-  }
-
-  if (Array.isArray(urls) && urls.length > 0) {
-    fd.append('urls', urls.join('\n'));
-    appended++;
-  }
-
-  if (!appended) throw new Error('No torrent or URL attached to form-data.');
-
-  console.debug(
-    `[BitButler][qbittorrent] Adding torrents for server ${id}: ${(torrents ?? []).length} file(s), ${(urls ?? []).length} url(s).`,
-  );
-
-  for (const [k, v] of Object.entries(options ?? {})) {
-    if (v === undefined || v === null) continue;
-    if (typeof v === 'string' && v.trim() === '') continue;
-    if (k === 'paused') fd.append('stopped', String(v));
-    fd.append(k, String(v));
-  }
-
-  const bodyBuffer = fd.getBuffer();
-
-  return qbRequest({
-    id,
-    method: 'POST',
-    path: '/api/v2/torrents/add',
-    headers: {
-      ...fd.getHeaders(),
-      'Content-Length': String(bodyBuffer.length),
-    },
-    body: bodyBuffer,
-  });
-}
-
 export function hasCookieFor(id: string): boolean {
   return cookieJar.has(id);
-}
-
-function qbHasCookie(payload: unknown): { hasCookie: boolean } {
-  const id = requireString((payload as Record<string, unknown>)?.id, 'id');
-  return { hasCookie: hasCookieFor(id) };
-}
-
-function qbLogout(payload: unknown): { loggedOut: boolean } {
-  const id = requireString((payload as Record<string, unknown>)?.id, 'id');
-  return logoutServer(id);
 }
 
 export function logoutServer(id: string): { loggedOut: boolean } {
@@ -189,16 +114,6 @@ async function probeServerInfoIfMissing(id: string): Promise<void> {
   } catch (err) {
     console.warn(`[BitButler][qbittorrent] Server info probe failed for server ${id}.`, err);
   }
-}
-
-async function qbLogin(payload: unknown): Promise<{ loggedIn: boolean }> {
-  const p = payload as Record<string, unknown>;
-  const id = requireString(p?.id, 'id');
-  return loginServer(
-    id,
-    typeof p?.username === 'string' ? p.username : undefined,
-    typeof p?.password === 'string' ? p.password : undefined,
-  );
 }
 
 export async function loginServer(

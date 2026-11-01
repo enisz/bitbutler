@@ -433,14 +433,12 @@ describe('Login', () => {
       serverStoreMock.refresh.mockClear();
       qbServiceMock.login.mockResolvedValue({ loggedIn: true });
       const getServerInfo = vi.spyOn(window.bitbutler.export, 'getServerInfo');
-      const setConnectionInfo = vi.spyOn(window.bitbutler.server, 'setConnectionInfo');
       const router = TestBed.inject(Router) as any;
 
       await component.connect();
 
       expect(serverStoreMock.refresh).toHaveBeenCalledTimes(1);
       expect(getServerInfo).not.toHaveBeenCalled();
-      expect(setConnectionInfo).not.toHaveBeenCalled();
       expect(router.navigate).toHaveBeenCalledWith(['/pages/torrent-list']);
     });
 
