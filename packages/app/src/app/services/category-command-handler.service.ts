@@ -39,6 +39,9 @@ export class CategoryCommandHandlerService {
       case 'CATEGORY_DELETED':
         this.handleCategoryDeleted(command.names);
         break;
+      case 'CATEGORY_CLEARED':
+        this.handleCategoryCleared(command.names);
+        break;
       case 'CATEGORY_UPDATED':
         // No toast: the inline-edited save-path cell already shows the new value.
         break;
@@ -50,6 +53,16 @@ export class CategoryCommandHandlerService {
       `"${name}"`,
       this.translateService.instant('services.category-command-handler.success.added-title'),
     );
+  }
+
+  private handleCategoryCleared(names: string[]): void {
+    const { message, title } = deletedToast(
+      this.translateService,
+      'services.category-command-handler.info',
+      names,
+      'cleared',
+    );
+    this.toastService.info(message, title);
   }
 
   private handleCategoryDeleted(names: string[]): void {

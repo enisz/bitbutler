@@ -32,7 +32,11 @@ describe('ManageTags', () => {
   let commandBusService: { emit: ReturnType<typeof vi.fn> };
   let confirmService: { confirm: ReturnType<typeof vi.fn> };
   let qbService: {
-    torrents: { tags: ReturnType<typeof vi.fn>; deleteTags: ReturnType<typeof vi.fn> };
+    torrents: {
+      tags: ReturnType<typeof vi.fn>;
+      deleteTags: ReturnType<typeof vi.fn>;
+      removeTags: ReturnType<typeof vi.fn>;
+    };
   };
   let contextMenuService: { open: ReturnType<typeof vi.fn> };
   let gridContextMenuService: { buildHeaderMenu: ReturnType<typeof vi.fn> };
@@ -59,6 +63,7 @@ describe('ManageTags', () => {
       torrents: {
         tags: vi.fn().mockResolvedValue(['linux', 'ubuntu']),
         deleteTags: vi.fn().mockResolvedValue(undefined),
+        removeTags: vi.fn().mockResolvedValue(undefined),
       },
     };
     contextMenuService = { open: vi.fn() };
@@ -289,6 +294,126 @@ describe('ManageTags', () => {
       expect(commandBusService.emit).not.toHaveBeenCalledWith(
         expect.objectContaining({ type: 'TAG_DELETED' }),
       );
+    });
+  });
+
+  describe('row context menu', () => {
+    const linux = { name: 'linux', usageCount: 2 };
+    const ubuntu = { name: 'ubuntu', usageCount: 1 };
+
+    function menuItems(
+      row: typeof linux,
+    ): { id: string; label: string; disabled?: boolean; hint?: string; action: () => void }[] {
+      contextMenuService.open.mockClear();
+      component['onCellContextMenu']({ data: row } as never);
+      const [{ items }] = contextMenuService.open.mock.calls.at(-1) as [{ items: never[] }];
+      return items;
+    }
+
+    async function settle(): Promise<void> {
+      for (let i = 0; i < 4; i++) await Promise.resolve();
+    }
+
+    beforeEach(() => {
+      torrentStoreService.torrentsArray.set([
+        { hash: 'h1', tags: 'linux,ubuntu' } as never,
+        { hash: 'h2', tags: 'linux' } as never,
+        { hash: 'h3', tags: '' } as never,
+      ]);
+    });
+
+    it('offers remove from all torrents, then delete with the Del hint', () => {
+      const items = menuItems(linux);
+
+      expect(items.map((i) => i.label)).toEqual([
+        'components.modals.manage-tags.menu.remove-from-torrents',
+        'general.button.delete',
+      ]);
+      expect(items[1].hint).toBe('Del');
+    });
+
+    it('removes the tag from the torrents that have it, keeping the tag defined', async () => {
+      menuItems(linux)
+        .find((i) => i.id === 'remove-from-torrents')
+        ?.action();
+      await settle();
+
+      expect(confirmService.confirm).toHaveBeenCalled();
+      expect(qbService.torrents.removeTags).toHaveBeenCalledWith('srv-1', ['h1', 'h2'], ['linux']);
+      expect(qbService.torrents.deleteTags).not.toHaveBeenCalled();
+      expect(commandBusService.emit).toHaveBeenCalledWith({
+        type: 'TAG_CLEARED',
+        names: ['linux'],
+      });
+    });
+
+    it('acts on the whole selection when the clicked row is part of it', async () => {
+      component.selectedTags.set([linux, ubuntu]);
+
+      menuItems(linux)
+        .find((i) => i.id === 'remove-from-torrents')
+        ?.action();
+      await settle();
+
+      expect(qbService.torrents.removeTags).toHaveBeenCalledWith(
+        'srv-1',
+        ['h1', 'h2'],
+        ['linux', 'ubuntu'],
+      );
+    });
+
+    it('acts only on the clicked row when it is not part of the selection', async () => {
+      component.selectedTags.set([ubuntu]);
+
+      menuItems(linux)
+        .find((i) => i.id === 'delete')
+        ?.action();
+      await settle();
+
+      expect(qbService.torrents.deleteTags).toHaveBeenCalledWith('srv-1', ['linux']);
+    });
+
+    it('deletes the whole selection from the context menu when the clicked row is selected', async () => {
+      component.selectedTags.set([linux, ubuntu]);
+
+      menuItems(linux)
+        .find((i) => i.id === 'delete')
+        ?.action();
+      await settle();
+
+      expect(qbService.torrents.deleteTags).toHaveBeenCalledWith('srv-1', ['linux', 'ubuntu']);
+    });
+
+    it('does nothing when the confirmation is declined', async () => {
+      confirmService.confirm.mockResolvedValue(false);
+
+      menuItems(linux)
+        .find((i) => i.id === 'remove-from-torrents')
+        ?.action();
+      await settle();
+
+      expect(qbService.torrents.removeTags).not.toHaveBeenCalled();
+      expect(commandBusService.emit).not.toHaveBeenCalled();
+    });
+
+    it('disables remove from all torrents when no torrent uses the tag', () => {
+      const item = menuItems({ name: 'unused', usageCount: 0 }).find(
+        (i) => i.id === 'remove-from-torrents',
+      );
+      expect(item?.disabled).toBe(true);
+    });
+
+    it('shows a danger toast and no command when the request fails', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      qbService.torrents.removeTags.mockRejectedValue(new Error('boom'));
+
+      menuItems(linux)
+        .find((i) => i.id === 'remove-from-torrents')
+        ?.action();
+      await settle();
+
+      expect(toastService.danger).toHaveBeenCalled();
+      expect(commandBusService.emit).not.toHaveBeenCalled();
     });
   });
 

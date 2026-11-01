@@ -829,11 +829,21 @@
           "title": "Delete Tag",
           "message": "Are you sure you want to delete the selected tag(s)? They are used by {{ count }} torrent(s)."
         },
+        "menu": {
+          "remove-from-torrents": "Remove from All Torrents"
+        },
+        "remove-confirm": {
+          "title": "Remove Tag from Torrents",
+          "message": "The selected tag(s) will be removed from {{ count }} torrent(s). The tag(s) themselves are kept.",
+          "button": "Remove"
+        },
         "toast": {
           "load-failed-title": "Failed to Load Tags",
           "load-failed": "Could not load the tags from the server.",
           "delete-failed-title": "Failed to Delete Tag",
-          "delete-failed": "Could not delete the selected tag(s)."
+          "delete-failed": "Could not delete the selected tag(s).",
+          "clear-failed-title": "Failed to Remove Tag from Torrents",
+          "clear-failed": "Could not remove the selected tag(s) from the torrents."
         }
       },
       "manage-servers": {
@@ -1148,11 +1158,25 @@
           "title": "Delete Category",
           "message": "Are you sure you want to delete the selected categories? They are assigned to {{ count }} torrent(s)."
         },
+        "menu": {
+          "remove-from-torrents": "Remove from All Torrents"
+        },
+        "remove-confirm": {
+          "title": "Remove Category from Torrents",
+          "message": "The selected categories will be removed from {{ count }} torrent(s). The categories themselves are kept.",
+          "button": "Remove"
+        },
+        "auto-tmm": {
+          "title": "Automatic Torrent Management",
+          "message": "{{ count }} of the affected torrent(s) use Automatic Torrent Management. Their files will be moved to the default save path."
+        },
         "toast": {
           "load-failed-title": "Failed to Load Categories",
           "load-failed": "Could not load the categories from the server.",
           "delete-failed-title": "Failed to Delete Category",
-          "delete-failed": "Could not delete the selected categories."
+          "delete-failed": "Could not delete the selected categories.",
+          "clear-failed-title": "Failed to Remove Category from Torrents",
+          "clear-failed": "Could not remove the selected categories from the torrents."
         }
       }
     },
@@ -2166,7 +2190,10 @@
       "info": {
         "deleted-title": "Tag Deleted",
         "deleted-title-plural": "Tags Deleted",
-        "deleted-count": "{{ count }} tags"
+        "deleted-count": "{{ count }} tags",
+        "cleared-title": "Tag Removed From Torrents",
+        "cleared-title-plural": "Tags Removed From Torrents",
+        "cleared-count": "{{ count }} tags"
       }
     },
     "category-command-handler": {
@@ -2176,7 +2203,10 @@
       "info": {
         "deleted-title": "Category Deleted",
         "deleted-title-plural": "Categories Deleted",
-        "deleted-count": "{{ count }} categories"
+        "deleted-count": "{{ count }} categories",
+        "cleared-title": "Category Removed From Torrents",
+        "cleared-title-plural": "Categories Removed From Torrents",
+        "cleared-count": "{{ count }} categories"
       }
     },
     "qb": {

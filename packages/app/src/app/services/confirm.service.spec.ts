@@ -93,6 +93,17 @@ describe('ConfirmService', () => {
     expect(mockModalService.open).toHaveBeenCalledWith(expect.anything(), { size: 'lg' });
   });
 
+  it('should pass a callout to the modal only when one is given', async () => {
+    await service.confirm('T', 'M').catch(() => {});
+    expect(mockModalRef.componentInstance.callout).toBeUndefined();
+
+    const callout = { variant: 'info' as const, title: 'Note', message: 'Careful' };
+    await service
+      .confirm('T', 'M', undefined, undefined, undefined, undefined, callout)
+      .catch(() => {});
+    expect(mockModalRef.componentInstance.callout).toEqual(callout);
+  });
+
   it('should default okIcon to faCheck', async () => {
     await service.confirm('T', 'M').catch(() => {});
     expect(mockModalRef.componentInstance.okIcon).toBe(faCheck);

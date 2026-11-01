@@ -63,4 +63,22 @@ describe('Confirm', () => {
     fixture.componentRef.setInput('okIcon', faTrashCan);
     expect(component.okIcon()).toBe(faTrashCan);
   });
+
+  it('shows no callout by default', () => {
+    expect(fixture.nativeElement.querySelector('bb-callout')).toBeNull();
+  });
+
+  it('renders the callout under the message when one is given', () => {
+    fixture.componentRef.setInput('callout', {
+      variant: 'info',
+      title: 'Automatic Torrent Management',
+      message: '2 torrents will move.',
+    });
+    fixture.detectChanges();
+
+    const callout = fixture.nativeElement.querySelector('bb-callout');
+    expect(callout).not.toBeNull();
+    expect(callout.textContent).toContain('Automatic Torrent Management');
+    expect(callout.textContent).toContain('2 torrents will move.');
+  });
 });

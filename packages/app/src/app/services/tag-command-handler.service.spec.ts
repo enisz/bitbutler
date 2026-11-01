@@ -66,6 +66,22 @@ describe('TagCommandHandlerService', () => {
     );
   });
 
+  it('should show one info toast after TAG_CLEARED, naming one tag or counting several', async () => {
+    commands$.next({ type: 'TAG_CLEARED', names: ['linux'] });
+    await flushPromises();
+    expect(toastInfo).toHaveBeenCalledWith(
+      '"linux"',
+      'services.tag-command-handler.info.cleared-title',
+    );
+
+    commands$.next({ type: 'TAG_CLEARED', names: ['a', 'b'] });
+    await flushPromises();
+    expect(toastInfo).toHaveBeenLastCalledWith(
+      'services.tag-command-handler.info.cleared-count',
+      'services.tag-command-handler.info.cleared-title-plural',
+    );
+  });
+
   it('should ignore unrelated commands', async () => {
     commands$.next({ type: 'SERVER_DELETED', ids: ['srv-1'] });
     await flushPromises();

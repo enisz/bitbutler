@@ -39,6 +39,9 @@ export class TagCommandHandlerService {
       case 'TAG_DELETED':
         this.handleTagDeleted(command.names);
         break;
+      case 'TAG_CLEARED':
+        this.handleTagCleared(command.names);
+        break;
     }
   }
 
@@ -47,6 +50,16 @@ export class TagCommandHandlerService {
       `"${names.join(', ')}"`,
       this.translateService.instant('services.tag-command-handler.success.added-title'),
     );
+  }
+
+  private handleTagCleared(names: string[]): void {
+    const { message, title } = deletedToast(
+      this.translateService,
+      'services.tag-command-handler.info',
+      names,
+      'cleared',
+    );
+    this.toastService.info(message, title);
   }
 
   private handleTagDeleted(names: string[]): void {
