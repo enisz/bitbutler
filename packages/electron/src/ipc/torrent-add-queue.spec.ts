@@ -122,6 +122,78 @@ describe('torrent-add-queue', () => {
     });
   });
 
+  describe('duplicate submissions', () => {
+    const enoent = () => Object.assign(new Error('ENOENT: no such file'), { code: 'ENOENT' });
+
+    it('returns the existing job instead of queueing the same info hash twice', async () => {
+      const first = invoke<{ jobId: string }>('qb:enqueueTorrentAdd', payload({ infoHash: 'abc' }));
+      const second = invoke<{ jobId: string }>(
+        'qb:enqueueTorrentAdd',
+        payload({ infoHash: 'abc', originalPath: '/tmp/other.torrent' }),
+      );
+      await vi.runAllTimersAsync();
+
+      expect(second.jobId).toBe(first.jobId);
+      expect(mockAddTorrent).toHaveBeenCalledTimes(1);
+    });
+
+    it('returns the existing job instead of queueing the same source file twice', async () => {
+      const first = invoke<{ jobId: string }>(
+        'qb:enqueueTorrentAdd',
+        payload({ originalPath: '/tmp/a.torrent' }),
+      );
+      const second = invoke<{ jobId: string }>(
+        'qb:enqueueTorrentAdd',
+        payload({ originalPath: '/tmp/a.torrent' }),
+      );
+      await vi.runAllTimersAsync();
+
+      expect(second.jobId).toBe(first.jobId);
+      expect(mockAddTorrent).toHaveBeenCalledTimes(1);
+    });
+
+    it('still queues the same torrent for a different server', async () => {
+      invoke('qb:enqueueTorrentAdd', payload({ infoHash: 'abc' }));
+      invoke('qb:enqueueTorrentAdd', payload({ infoHash: 'abc', serverId: 's2' }));
+      await vi.runAllTimersAsync();
+
+      expect(mockAddTorrent).toHaveBeenCalledTimes(2);
+    });
+
+    it('queues the torrent again after a failed attempt so it can be re-submitted', async () => {
+      mockAddTorrent.mockRejectedValueOnce(invalid());
+      const failed = await run(payload({ infoHash: 'abc' }));
+      expect(failed.last().status).toBe('error');
+
+      const again = await run(payload({ infoHash: 'abc' }));
+
+      expect(again.jobId).not.toBe(failed.jobId);
+      expect(again.last().status).toBe('done');
+    });
+
+    it('treats a vanished source file as a duplicate when this queue already added and deleted it', async () => {
+      await run(payload({ originalPath: '/tmp/a.torrent', deleteOriginalOnSuccess: true }));
+      mockAddTorrent.mockRejectedValueOnce(enoent());
+
+      const { last } = await run(
+        payload({ originalPath: '/tmp/a.torrent', deleteOriginalOnSuccess: true }),
+      );
+
+      expect(last().status).toBe('duplicate');
+      expect(listed()).toEqual([]);
+    });
+
+    it('still reports a missing source file as an error when this queue did not delete it', async () => {
+      mockAddTorrent.mockRejectedValueOnce(enoent());
+
+      const { last } = await run(
+        payload({ originalPath: '/tmp/gone.torrent', deleteOriginalOnSuccess: true }),
+      );
+
+      expect(last()).toMatchObject({ status: 'error', failedStage: 'add' });
+    });
+  });
+
   describe('source file deletion', () => {
     it('deletes the source file after a successful add when requested', async () => {
       await run(payload({ originalPath: '/tmp/a.torrent', deleteOriginalOnSuccess: true }));

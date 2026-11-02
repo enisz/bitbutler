@@ -464,6 +464,12 @@ export class AddTorrent implements OnInit {
       if (this.inputMode() === 'link') {
         this.activeModal.close(true);
       } else {
+        // The next draft is loaded by an effect that runs after this method returns. Until then the
+        // form still holds the draft that was just enqueued, so clear it here - otherwise a quick
+        // second Enter would enqueue the same torrent again (and fail once its file is deleted).
+        // canSubmit() stays false until loadDraft() selects the next torrent.
+        this.selectedTorrentFile.set(null);
+        this.loadedDraftIdentifier.set(null);
         this.openFilesService.consumeCurrentDraft();
       }
     } catch (e) {

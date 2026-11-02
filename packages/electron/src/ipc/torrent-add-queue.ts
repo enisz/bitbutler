@@ -12,6 +12,8 @@ const RETRY_BASE_DELAY_MS = 1000;
 
 const jobs = new Map<string, TorrentAddJob>();
 const drainingServers = new Set<string>();
+// Source files this queue added and then deleted; see isAlreadyConsumed().
+const deletedSources = new Set<string>();
 
 export function registerTorrentAddQueueHandlers(): void {
   ipcMain.handle('qb:enqueueTorrentAdd', (_evt, payload: TorrentAddJobPayload) => enqueue(payload));
@@ -31,7 +33,22 @@ function retry(jobId: string): void {
   void drain(job.payload.serverId);
 }
 
+// Same torrent (by info hash or by source file) already waiting or running for this server.
+// Failed jobs are skipped so the user can re-submit after an error.
+function findActiveDuplicate(payload: TorrentAddJobPayload): TorrentAddJob | undefined {
+  for (const job of jobs.values()) {
+    if (job.status === 'error' || job.payload.serverId !== payload.serverId) continue;
+    const sameHash = !!payload.infoHash && job.payload.infoHash === payload.infoHash;
+    const samePath = !!payload.originalPath && job.payload.originalPath === payload.originalPath;
+    if (sameHash || samePath) return job;
+  }
+  return undefined;
+}
+
 function enqueue(payload: TorrentAddJobPayload): { jobId: string } {
+  const existing = findActiveDuplicate(payload);
+  if (existing) return { jobId: existing.id };
+
   const job: TorrentAddJob = {
     id: randomUUID(),
     status: 'pending',
@@ -88,7 +105,7 @@ async function processJob(job: TorrentAddJob): Promise<void> {
       try {
         await withRetry(() => addTorrent(serverId, add));
       } catch (error) {
-        if (isCode(error, 'CONFLICT')) {
+        if (isCode(error, 'CONFLICT') || isAlreadyConsumed(error, originalPath)) {
           setStatus(job, 'duplicate');
           return;
         }
@@ -97,6 +114,7 @@ async function processJob(job: TorrentAddJob): Promise<void> {
       job.addAccepted = true;
 
       if (originalPath && deleteOriginalOnSuccess) {
+        deletedSources.add(originalPath);
         await fs.promises.unlink(originalPath).catch((error) => {
           console.error(`[BitButler][torrent-add-queue] Could not delete ${originalPath}.`, error);
         });
@@ -163,6 +181,18 @@ async function withRetry<T>(fn: () => Promise<T>): Promise<T> {
       await new Promise((resolve) => setTimeout(resolve, RETRY_BASE_DELAY_MS * (attempt + 1)));
     }
   }
+}
+
+// A source file this queue already added and deleted can show up again (a double submit, or the
+// OS handing the same file over twice). Reading it then fails with ENOENT, but the torrent is
+// already on the server, so that is a duplicate and not a failure. An ENOENT for a file this
+// queue never deleted is still a real error.
+function isAlreadyConsumed(error: unknown, originalPath: string | undefined): boolean {
+  return (
+    !!originalPath &&
+    deletedSources.has(originalPath) &&
+    (error as NodeJS.ErrnoException)?.code === 'ENOENT'
+  );
 }
 
 function isCode(error: unknown, code: QbErrorCode): boolean {
