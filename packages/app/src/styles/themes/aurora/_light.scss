@@ -17,12 +17,13 @@ $au-light-surface: #f5f8ff;
 @mixin install() {
   :root[data-bb-theme='aurora'][data-bs-theme='light'] {
     --bb-black: #000;
+    --bb-btn-text-c: 36%;
     --bb-primary-ink: #fff;
-    --bb-secondary-ink: #fff;
-    --bb-success-ink: #fff;
-    --bb-danger-ink: #fff;
+    --bb-secondary-ink: #000;
+    --bb-success-ink: #000;
+    --bb-danger-ink: #000;
     --bb-warning-ink: #1c2333;
-    --bb-info-ink: #fff;
+    --bb-info-ink: #000;
     --bb-light-ink: #000;
     --bb-dark-ink: #fff;
 

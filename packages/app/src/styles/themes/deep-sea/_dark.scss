@@ -17,6 +17,7 @@ $deep-sea-dark-surface: #06242e;
 @mixin install() {
   :root[data-bb-theme='deep-sea'][data-bs-theme='dark'] {
     --bb-black: #000;
+    --bb-btn-text-c: 94%;
     --bs-primary: #{$deep-sea-dark-primary};
     --bs-primary-rgb: #{string.unquote('122, 178, 178')};
 
@@ -30,9 +31,9 @@ $deep-sea-dark-surface: #06242e;
     --bs-danger-rgb: #{string.unquote('224, 108, 103')};
 
     --bb-primary-ink: #04161d;
-    --bb-secondary-ink: #04161d;
+    --bb-secondary-ink: #000;
     --bb-success-ink: #000;
-    --bb-danger-ink: #fff;
+    --bb-danger-ink: #000;
     --bb-warning-ink: #000;
     --bb-info-ink: #000;
     --bb-light-ink: #000;

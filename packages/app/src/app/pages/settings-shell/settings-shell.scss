@@ -177,7 +177,9 @@
   gap: 10px;
 }
 
-// Both header actions share one look: outlined, same height, label next to the icon.
+// Header actions are one family with .btn / .bb-tool: same radius, 150ms transitions, shared
+// focus ring, and a neutral disabled look. Clean form: Save and Discard are disabled.
+// Dirty form: Save becomes the filled accent button and Discard turns enabled.
 .bb-settings__action {
   display: inline-flex;
   align-items: center;
@@ -186,22 +188,80 @@
   height: 32px;
   padding: 0 12px;
   flex: 0 0 auto;
-  color: color-mix(in srgb, var(--bs-body-color) 75%, transparent);
+  color: color-mix(in srgb, var(--bs-body-color) 85%, transparent);
   background: transparent;
   border: 1px solid var(--bb-control-border);
-  border-radius: var(--bb-control-radius);
+  border-radius: calc(var(--bb-control-radius) - 2px);
   font-size: 0.78rem;
   font-weight: 600;
   white-space: nowrap;
+  cursor: pointer;
+  transition:
+    color 150ms ease,
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease;
 
   &:hover:not(:disabled) {
     color: var(--bs-body-color);
-    background-color: var(--bs-card-cap-bg);
+    background-color: var(--bb-control-hover-bg);
+    border-color: var(--bb-control-hover-border);
+  }
+
+  &:active:not(:disabled) {
+    background-color: color-mix(in srgb, var(--bs-body-color) 12%, transparent);
+  }
+
+  &:focus-visible {
+    outline: 0;
+    box-shadow: var(--bb-focus-ring-tight);
   }
 
   &:disabled {
-    opacity: 0.38;
-    cursor: default;
+    color: color-mix(in srgb, var(--bs-body-color) 38%, transparent);
+    background: color-mix(in srgb, var(--bs-body-color) 5%, transparent);
+    border-color: color-mix(in srgb, var(--bs-body-color) 12%, transparent);
+    cursor: not-allowed;
+  }
+}
+
+// Cancel: text-only.
+.bb-settings__action--ghost {
+  border-color: transparent;
+
+  &:hover:not(:disabled) {
+    border-color: transparent;
+    background-color: color-mix(in srgb, var(--bs-body-color) 8%, transparent);
+  }
+
+  &:disabled {
+    background: transparent;
+    border-color: transparent;
+  }
+}
+
+// Discard changes: neutral until hovered, then danger-tinted.
+.bb-settings__action--discard:hover:not(:disabled) {
+  color: color-mix(in srgb, var(--bs-danger) var(--bb-btn-text-c, 100%), var(--bs-body-color));
+  background-color: color-mix(in srgb, var(--bs-danger) 12%, transparent);
+  border-color: color-mix(in srgb, var(--bs-danger) 55%, transparent);
+}
+
+// Save: filled accent, same recipe as .btn-secondary.
+.bb-settings__action--primary {
+  color: var(--bb-secondary-ink);
+  background: var(--bb-accent);
+  border-color: color-mix(in srgb, var(--bb-accent) 88%, var(--bb-black) 12%);
+
+  &:hover:not(:disabled) {
+    color: var(--bb-secondary-ink);
+    background: color-mix(in srgb, var(--bb-accent) 90%, var(--bb-black) 10%);
+    border-color: color-mix(in srgb, var(--bb-accent) 80%, var(--bb-black) 20%);
+  }
+
+  &:active:not(:disabled) {
+    background: color-mix(in srgb, var(--bb-accent) 80%, var(--bb-black) 20%);
+    border-color: color-mix(in srgb, var(--bb-accent) 70%, var(--bb-black) 30%);
   }
 }
 

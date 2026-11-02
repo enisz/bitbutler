@@ -17,10 +17,10 @@ $au-dark-surface: #121a33;
 @mixin install() {
   :root[data-bb-theme='aurora'][data-bs-theme='dark'] {
     --bb-black: #000;
-    --bb-primary-ink: #fff;
+    --bb-primary-ink: #000;
     --bb-secondary-ink: #000;
     --bb-success-ink: #000;
-    --bb-danger-ink: #fff;
+    --bb-danger-ink: #000;
     --bb-warning-ink: #000;
     --bb-info-ink: #000;
     --bb-light-ink: #000;

@@ -17,6 +17,7 @@ $ce-light-surface: #fbeae7;
 @mixin install() {
   :root[data-bb-theme='crimson-ember'][data-bs-theme='light'] {
     --bb-black: #000;
+    --bb-btn-text-c: 36%;
     --bs-primary: #{$ce-light-primary};
     --bs-primary-rgb: #{string.unquote('217, 74, 69')};
 
@@ -29,12 +30,12 @@ $ce-light-surface: #fbeae7;
     --bs-danger: #{$ce-light-danger};
     --bs-danger-rgb: #{string.unquote('217, 83, 79')};
 
-    --bb-primary-ink: #fff;
-    --bb-secondary-ink: #fff;
-    --bb-success-ink: #fff;
-    --bb-danger-ink: #fff;
-    --bb-warning-ink: #fff;
-    --bb-info-ink: #fff;
+    --bb-primary-ink: #000;
+    --bb-secondary-ink: #000;
+    --bb-success-ink: #000;
+    --bb-danger-ink: #000;
+    --bb-warning-ink: #000;
+    --bb-info-ink: #000;
     --bb-light-ink: #000;
     --bb-dark-ink: #fff;
 

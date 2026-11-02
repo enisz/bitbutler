@@ -17,10 +17,11 @@ $ph-light-surface: #f5eefb;
 @mixin install() {
   :root[data-bb-theme='purple-haze'][data-bs-theme='light'] {
     --bb-black: #000;
+    --bb-btn-text-c: 32%;
     --bb-primary-ink: #fff;
     --bb-secondary-ink: #fff;
-    --bb-success-ink: #fff;
-    --bb-danger-ink: #fff;
+    --bb-success-ink: #000;
+    --bb-danger-ink: #000;
     --bb-warning-ink: #000;
     --bb-info-ink: #000;
     --bb-light-ink: #000;
