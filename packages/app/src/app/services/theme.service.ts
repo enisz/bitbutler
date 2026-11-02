@@ -13,7 +13,9 @@ export type ThemeFamily =
   | 'teal-blush'
   | 'dusty-rose'
   | 'graphite'
-  | 'meadow';
+  | 'meadow'
+  | 'sunset'
+  | 'raspberry';
 export type ThemeMode = 'light' | 'dark' | 'system';
 
 // BitButler first, then the rest alphabetically by label.
@@ -29,6 +31,8 @@ export const THEME_FAMILIES: { value: ThemeFamily; label: string }[] = [
   { value: 'ocean-breeze', label: 'Ocean Breeze' },
   { value: 'pumpkin-spice', label: 'Pumpkin Spice' },
   { value: 'purple-haze', label: 'Purple Haze' },
+  { value: 'raspberry', label: 'Raspberry' },
+  { value: 'sunset', label: 'Sunset' },
   { value: 'teal-blush', label: 'Teal Blush' },
 ];
 
@@ -47,6 +51,8 @@ export const FAMILY_ACCENT_COLORS: Record<ThemeFamily, string> = {
   'dusty-rose': '#735e62',
   graphite: '#b90a00',
   meadow: '#4f8a47',
+  sunset: '#bc5090',
+  raspberry: '#c40051',
 };
 
 @Injectable({ providedIn: 'root' })

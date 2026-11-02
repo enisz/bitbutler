@@ -34,6 +34,10 @@
 @use './styles/themes/graphite/dark' as gr-dark;
 @use './styles/themes/meadow/light' as md-light;
 @use './styles/themes/meadow/dark' as md-dark;
+@use './styles/themes/sunset/light' as ss-light;
+@use './styles/themes/sunset/dark' as ss-dark;
+@use './styles/themes/raspberry/light' as rb-light;
+@use './styles/themes/raspberry/dark' as rb-dark;
 
 @include themes.install-themes();
 
@@ -876,6 +880,38 @@ ngb-modal-window {
         45deg,
         #{md-light.$md-light-body-bg} 50%,
         #{md-dark.$md-dark-body-bg} 50%
+      );
+    }
+  }
+
+  &[data-bb-theme='sunset'] {
+    &.light {
+      background-color: #{ss-light.$ss-light-body-bg};
+    }
+    &.dark {
+      background-color: #{ss-dark.$ss-dark-body-bg};
+    }
+    &.system {
+      background: linear-gradient(
+        45deg,
+        #{ss-light.$ss-light-body-bg} 50%,
+        #{ss-dark.$ss-dark-body-bg} 50%
+      );
+    }
+  }
+
+  &[data-bb-theme='raspberry'] {
+    &.light {
+      background-color: #{rb-light.$rb-light-body-bg};
+    }
+    &.dark {
+      background-color: #{rb-dark.$rb-dark-body-bg};
+    }
+    &.system {
+      background: linear-gradient(
+        45deg,
+        #{rb-light.$rb-light-body-bg} 50%,
+        #{rb-dark.$rb-dark-body-bg} 50%
       );
     }
   }

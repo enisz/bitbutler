@@ -1,0 +1,154 @@
+@use 'sass:color';
+@use 'sass:string';
+
+$ss-dark-primary: #e68ab8;
+$ss-dark-secondary: #ff8531;
+
+$ss-dark-success: #4fd1a5;
+$ss-dark-danger: #f0505a;
+$ss-dark-warning: #ffd380;
+$ss-dark-info: #6fa8ff;
+
+$ss-dark-body-bg: #061c2b;
+$ss-dark-body-color: #fbefd9;
+$ss-dark-border: rgba($ss-dark-body-color, 0.08);
+$ss-dark-surface: #0d2c42;
+
+@mixin install() {
+  :root[data-bb-theme='sunset'][data-bs-theme='dark'],
+  .bb-theme-preview[data-bb-theme='sunset'][data-bs-theme='dark'] {
+    --bb-black: #000;
+    --bb-primary-ink: #000;
+    --bb-secondary-ink: #000;
+    --bb-success-ink: #000;
+    --bb-danger-ink: #000;
+    --bb-warning-ink: #000;
+    --bb-info-ink: #000;
+    --bb-light-ink: #000;
+    --bb-dark-ink: #fff;
+
+    --bs-primary: #{$ss-dark-primary};
+    --bs-primary-rgb: #{string.unquote('230, 138, 184')};
+
+    --bs-secondary: #{$ss-dark-secondary};
+    --bs-secondary-rgb: #{string.unquote('255, 133, 49')};
+
+    --bs-success: #{$ss-dark-success};
+    --bs-success-rgb: #{string.unquote('79, 209, 165')};
+
+    --bs-danger: #{$ss-dark-danger};
+    --bs-danger-rgb: #{string.unquote('240, 80, 90')};
+
+    --bs-warning: #{$ss-dark-warning};
+    --bs-warning-rgb: #{string.unquote('255, 211, 128')};
+
+    --bs-info: #{$ss-dark-info};
+    --bs-info-rgb: #{string.unquote('111, 168, 255')};
+
+    --bs-body-bg: #{$ss-dark-body-bg};
+    --bs-body-color: #{$ss-dark-body-color};
+    --bs-border-color: #{$ss-dark-border};
+
+    --bs-card-bg: #{$ss-dark-surface};
+    --bs-card-color: var(--bs-body-color);
+    --bs-card-border-color: #{$ss-dark-border};
+    --bs-card-cap-bg: color-mix(in srgb, var(--bs-card-bg) 90%, #fff 10%);
+    --bs-card-cap-color: #{$ss-dark-primary};
+
+    --bs-tooltip-bg: var(--bs-card-cap-bg);
+    --bs-tooltip-color: var(--bs-body-color);
+    --bs-tooltip-opacity: 0.95;
+
+    --bs-link-color: #{$ss-dark-primary};
+    --bs-link-hover-color: #ffffff;
+
+    --bs-navbar-color: #{$ss-dark-body-color};
+    --bs-navbar-brand-color: #{$ss-dark-primary};
+
+    --bs-dropdown-link-color: #{$ss-dark-body-color};
+    --bs-dropdown-bg: var(--bs-card-cap-bg);
+
+    --bb-accent: var(--bs-secondary);
+    --bb-accent-rgb: var(--bs-secondary-rgb);
+
+    --bb-active-list-item-bg: color-mix(in srgb, var(--bb-accent) 18%, transparent);
+    --bb-hover-list-item-bg: color-mix(in srgb, var(--bb-accent) 10%, transparent);
+
+    --bb-grid-header-border: var(--bs-border-color);
+    --bb-grid-row-hover-bg: color-mix(in srgb, var(--bb-accent) 16%, transparent);
+    --bb-grid-focus-outline: var(--bb-accent);
+    --bb-grid-selected-accent: var(--bb-accent);
+
+    --bb-ng-surface: var(--bs-card-bg);
+    --bb-ng-panel: var(--bs-dropdown-bg);
+    --bb-ng-text: var(--bs-body-color);
+    --bb-ng-border: var(--bs-border-color);
+    --bb-ng-hover-bg: color-mix(in srgb, var(--bs-primary) 10%, transparent);
+    --bb-ng-active-bg: color-mix(in srgb, var(--bs-secondary) 26%, transparent);
+    --bb-ng-accent: var(--bs-secondary);
+    --bb-ng-focus-ring: rgba(var(--bs-secondary-rgb), 0.2);
+
+    --bb-control-bg: color-mix(in srgb, var(--bs-card-bg) 94%, #fff 6%);
+    --bb-control-border: #{rgba($ss-dark-body-color, 0.15)};
+    --bb-control-text: var(--bs-body-color);
+    --bb-control-placeholder: color-mix(in srgb, var(--bs-body-color) 60%, transparent);
+
+    --bb-control-hover-bg: color-mix(in srgb, var(--bb-control-bg) 86%, #fff 14%);
+    --bb-control-hover-border: color-mix(
+      in srgb,
+      var(--bb-control-border) 70%,
+      var(--bs-secondary) 30%
+    );
+
+    --bb-control-focus-border: var(--bs-secondary);
+    --bb-control-focus-ring: rgba(var(--bs-secondary-rgb), 0.22);
+
+    --bb-control-radius: 9px;
+
+    --bb-dp-bg: var(--bs-dropdown-bg);
+    --bb-dp-border: var(--bs-border-color);
+    --bb-dp-text: var(--bs-body-color);
+    --bb-dp-muted: color-mix(in srgb, var(--bs-body-color) 65%, transparent);
+
+    --bb-dp-hover: color-mix(in srgb, var(--bb-control-bg) 86%, #fff 14%);
+    --bb-dp-focus-ring: var(--bb-control-focus-ring);
+
+    --bb-dp-accent: var(--bs-secondary);
+    --bb-dp-accent-ink: #061c2b;
+    --bb-dp-range: color-mix(in srgb, var(--bb-dp-accent) 28%, transparent);
+
+    --bb-toast-bg: color-mix(in srgb, var(--bs-card-bg) 80%, #000);
+    --bb-toast-border-opacity: 0.4;
+    --bb-toast-glow-opacity: 0.15;
+
+    --bs-popover-bg: var(--bs-card-cap-bg);
+    --bs-popover-border-color: #{$ss-dark-border};
+    --bs-popover-header-bg: var(--bs-card-cap-bg);
+    --bs-popover-header-color: var(--bs-card-cap-color);
+    --bs-popover-body-color: #{$ss-dark-body-color};
+
+    --bs-primary-bg-subtle: #{color.mix(black, $ss-dark-primary, 80%)};
+    --bs-primary-border-subtle: #{color.mix(black, $ss-dark-primary, 40%)};
+    --bs-primary-text-emphasis: #{color.mix(white, $ss-dark-primary, 40%)};
+
+    --bs-secondary-bg-subtle: #{color.mix(black, $ss-dark-secondary, 80%)};
+    --bs-secondary-border-subtle: #{color.mix(black, $ss-dark-secondary, 40%)};
+    --bs-secondary-text-emphasis: #{color.mix(white, $ss-dark-secondary, 40%)};
+
+    --bs-success-bg-subtle: #{color.mix(black, $ss-dark-success, 80%)};
+    --bs-success-border-subtle: #{color.mix(black, $ss-dark-success, 40%)};
+    --bs-success-text-emphasis: #{color.mix(white, $ss-dark-success, 40%)};
+
+    --bs-danger-bg-subtle: #{color.mix(black, $ss-dark-danger, 80%)};
+    --bs-danger-border-subtle: #{color.mix(black, $ss-dark-danger, 40%)};
+    --bs-danger-text-emphasis: #{color.mix(white, $ss-dark-danger, 40%)};
+
+    --bs-warning-bg-subtle: #{color.mix(black, $ss-dark-warning, 80%)};
+    --bs-warning-border-subtle: #{color.mix(black, $ss-dark-warning, 40%)};
+    --bs-warning-text-emphasis: #{color.mix(white, $ss-dark-warning, 40%)};
+
+    --bs-info-bg-subtle: #{color.mix(black, $ss-dark-info, 80%)};
+    --bs-info-border-subtle: #{color.mix(black, $ss-dark-info, 40%)};
+    --bs-info-text-emphasis: #{color.mix(white, $ss-dark-info, 40%)};
+  }
+}

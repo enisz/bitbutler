@@ -70,8 +70,8 @@ describe('ThemeService', () => {
     expect(['light', 'dark']).toContain(mode);
   });
 
-  it('should export THEME_FAMILIES with 12 entries', () => {
-    expect(THEME_FAMILIES).toHaveLength(12);
+  it('should export THEME_FAMILIES with 14 entries', () => {
+    expect(THEME_FAMILIES).toHaveLength(14);
     expect(THEME_FAMILIES.map((f) => f.value)).toEqual([
       'bitbutler',
       'aurora',
@@ -84,6 +84,8 @@ describe('ThemeService', () => {
       'ocean-breeze',
       'pumpkin-spice',
       'purple-haze',
+      'raspberry',
+      'sunset',
       'teal-blush',
     ]);
   });

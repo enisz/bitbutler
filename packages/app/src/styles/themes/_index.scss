@@ -10,6 +10,8 @@
 @use './dusty-rose' as dusty-rose;
 @use './graphite' as graphite;
 @use './meadow' as meadow;
+@use './sunset' as sunset;
+@use './raspberry' as raspberry;
 
 @mixin install-themes() {
   @include bitbutler.install();
@@ -24,4 +26,6 @@
   @include dusty-rose.install();
   @include graphite.install();
   @include meadow.install();
+  @include sunset.install();
+  @include raspberry.install();
 }
