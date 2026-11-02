@@ -1,0 +1,7 @@
+@use './light' as light;
+@use './dark' as dark;
+
+@mixin install() {
+  @include light.install();
+  @include dark.install();
+}

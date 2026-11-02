@@ -9,18 +9,27 @@ export type ThemeFamily =
   | 'ocean-breeze'
   | 'pumpkin-spice'
   | 'deep-sea'
-  | 'crimson-ember';
+  | 'crimson-ember'
+  | 'teal-blush'
+  | 'dusty-rose'
+  | 'graphite'
+  | 'meadow';
 export type ThemeMode = 'light' | 'dark' | 'system';
 
+// BitButler first, then the rest alphabetically by label.
 export const THEME_FAMILIES: { value: ThemeFamily; label: string }[] = [
   { value: 'bitbutler', label: 'BitButler' },
   { value: 'aurora', label: 'Aurora' },
+  { value: 'crimson-ember', label: 'Crimson Ember' },
+  { value: 'deep-sea', label: 'Deep Sea' },
+  { value: 'dusty-rose', label: 'Dusty Rose' },
+  { value: 'graphite', label: 'Graphite' },
+  { value: 'meadow', label: 'Meadow' },
   { value: 'mint-green', label: 'Mint Green' },
-  { value: 'purple-haze', label: 'Purple Haze' },
   { value: 'ocean-breeze', label: 'Ocean Breeze' },
   { value: 'pumpkin-spice', label: 'Pumpkin Spice' },
-  { value: 'deep-sea', label: 'Deep Sea' },
-  { value: 'crimson-ember', label: 'Crimson Ember' },
+  { value: 'purple-haze', label: 'Purple Haze' },
+  { value: 'teal-blush', label: 'Teal Blush' },
 ];
 
 // Mirrors each family's $..._light-secondary SCSS variable (packages/app/src/styles/themes/<family>/_light.scss) -
@@ -34,6 +43,10 @@ export const FAMILY_ACCENT_COLORS: Record<ThemeFamily, string> = {
   'pumpkin-spice': '#f39c12',
   'deep-sea': '#088395',
   'crimson-ember': '#f08a5d',
+  'teal-blush': '#436e6f',
+  'dusty-rose': '#735e62',
+  graphite: '#b90a00',
+  meadow: '#4f8a47',
 };
 
 @Injectable({ providedIn: 'root' })

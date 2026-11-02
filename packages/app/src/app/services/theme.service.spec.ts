@@ -70,17 +70,21 @@ describe('ThemeService', () => {
     expect(['light', 'dark']).toContain(mode);
   });
 
-  it('should export THEME_FAMILIES with 8 entries', () => {
-    expect(THEME_FAMILIES).toHaveLength(8);
+  it('should export THEME_FAMILIES with 12 entries', () => {
+    expect(THEME_FAMILIES).toHaveLength(12);
     expect(THEME_FAMILIES.map((f) => f.value)).toEqual([
       'bitbutler',
       'aurora',
+      'crimson-ember',
+      'deep-sea',
+      'dusty-rose',
+      'graphite',
+      'meadow',
       'mint-green',
-      'purple-haze',
       'ocean-breeze',
       'pumpkin-spice',
-      'deep-sea',
-      'crimson-ember',
+      'purple-haze',
+      'teal-blush',
     ]);
   });
 

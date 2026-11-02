@@ -26,6 +26,14 @@
 @use './styles/themes/deep-sea/dark' as ds-dark;
 @use './styles/themes/crimson-ember/light' as ce-light;
 @use './styles/themes/crimson-ember/dark' as ce-dark;
+@use './styles/themes/teal-blush/light' as tb-light;
+@use './styles/themes/teal-blush/dark' as tb-dark;
+@use './styles/themes/dusty-rose/light' as dr-light;
+@use './styles/themes/dusty-rose/dark' as dr-dark;
+@use './styles/themes/graphite/light' as gr-light;
+@use './styles/themes/graphite/dark' as gr-dark;
+@use './styles/themes/meadow/light' as md-light;
+@use './styles/themes/meadow/dark' as md-dark;
 
 @include themes.install-themes();
 
@@ -804,6 +812,70 @@ ngb-modal-window {
         45deg,
         #{ce-light.$ce-light-body-bg} 50%,
         #{ce-dark.$ce-dark-body-bg} 50%
+      );
+    }
+  }
+
+  &[data-bb-theme='teal-blush'] {
+    &.light {
+      background-color: #{tb-light.$tb-light-body-bg};
+    }
+    &.dark {
+      background-color: #{tb-dark.$tb-dark-body-bg};
+    }
+    &.system {
+      background: linear-gradient(
+        45deg,
+        #{tb-light.$tb-light-body-bg} 50%,
+        #{tb-dark.$tb-dark-body-bg} 50%
+      );
+    }
+  }
+
+  &[data-bb-theme='dusty-rose'] {
+    &.light {
+      background-color: #{dr-light.$dr-light-body-bg};
+    }
+    &.dark {
+      background-color: #{dr-dark.$dr-dark-body-bg};
+    }
+    &.system {
+      background: linear-gradient(
+        45deg,
+        #{dr-light.$dr-light-body-bg} 50%,
+        #{dr-dark.$dr-dark-body-bg} 50%
+      );
+    }
+  }
+
+  &[data-bb-theme='graphite'] {
+    &.light {
+      background-color: #{gr-light.$gr-light-body-bg};
+    }
+    &.dark {
+      background-color: #{gr-dark.$gr-dark-body-bg};
+    }
+    &.system {
+      background: linear-gradient(
+        45deg,
+        #{gr-light.$gr-light-body-bg} 50%,
+        #{gr-dark.$gr-dark-body-bg} 50%
+      );
+    }
+  }
+
+  &[data-bb-theme='meadow'] {
+    &.light {
+      background-color: #{md-light.$md-light-body-bg};
+    }
+    &.dark {
+      background-color: #{md-dark.$md-dark-body-bg};
+    }
+    &.system {
+      background: linear-gradient(
+        45deg,
+        #{md-light.$md-light-body-bg} 50%,
+        #{md-dark.$md-dark-body-bg} 50%
       );
     }
   }
