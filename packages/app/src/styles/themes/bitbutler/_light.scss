@@ -15,7 +15,8 @@ $bb-light-border: #d8cab0;
 $bb-light-surface: #f0e6d8;
 
 @mixin install() {
-  :root[data-bb-theme='bitbutler'][data-bs-theme='light'] {
+  :root[data-bb-theme='bitbutler'][data-bs-theme='light'],
+  .bb-theme-preview[data-bb-theme='bitbutler'][data-bs-theme='light'] {
     --bb-black: #000;
     --bb-btn-text-c: 36%;
     --bs-primary: #{$bb-light-primary};

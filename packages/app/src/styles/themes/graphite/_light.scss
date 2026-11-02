@@ -15,7 +15,8 @@ $gr-light-border: #b3b0ae;
 $gr-light-surface: #ececec;
 
 @mixin install() {
-  :root[data-bb-theme='graphite'][data-bs-theme='light'] {
+  :root[data-bb-theme='graphite'][data-bs-theme='light'],
+  .bb-theme-preview[data-bb-theme='graphite'][data-bs-theme='light'] {
     --bb-black: #000;
     --bb-btn-text-c: 36%;
     --bb-primary-ink: #fff;

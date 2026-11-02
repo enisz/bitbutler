@@ -15,7 +15,8 @@ $au-light-border: #c5cfec;
 $au-light-surface: #f5f8ff;
 
 @mixin install() {
-  :root[data-bb-theme='aurora'][data-bs-theme='light'] {
+  :root[data-bb-theme='aurora'][data-bs-theme='light'],
+  .bb-theme-preview[data-bb-theme='aurora'][data-bs-theme='light'] {
     --bb-black: #000;
     --bb-btn-text-c: 36%;
     --bb-primary-ink: #fff;

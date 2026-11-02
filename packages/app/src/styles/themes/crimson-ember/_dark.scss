@@ -16,7 +16,8 @@ $ce-dark-border: rgba($ce-dark-body-color, 0.08);
 $ce-dark-surface: #280905;
 
 @mixin install() {
-  :root[data-bb-theme='crimson-ember'][data-bs-theme='dark'] {
+  :root[data-bb-theme='crimson-ember'][data-bs-theme='dark'],
+  .bb-theme-preview[data-bb-theme='crimson-ember'][data-bs-theme='dark'] {
     --bb-black: #000;
     --bb-btn-text-c: 70%;
     --bs-primary: #{$ce-dark-primary};

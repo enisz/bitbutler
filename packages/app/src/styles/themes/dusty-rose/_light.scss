@@ -15,7 +15,8 @@ $dr-light-border: #d6c3c6;
 $dr-light-surface: #f8f3f4;
 
 @mixin install() {
-  :root[data-bb-theme='dusty-rose'][data-bs-theme='light'] {
+  :root[data-bb-theme='dusty-rose'][data-bs-theme='light'],
+  .bb-theme-preview[data-bb-theme='dusty-rose'][data-bs-theme='light'] {
     --bb-black: #000;
     --bb-btn-text-c: 36%;
     --bb-primary-ink: #fff;

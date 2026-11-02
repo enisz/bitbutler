@@ -50,6 +50,134 @@
         </div>
       </div>
     </app-bb-section-card>
+
+    <app-bb-section-card
+      [title]="
+        'pages.settings.tab.general.general-settings-form.appearance.preview.title' | translate
+      "
+    >
+      <div
+        class="bb-theme-preview"
+        aria-hidden="true"
+        [attr.data-bb-theme]="previewFamily()"
+        [attr.data-bs-theme]="previewMode()"
+      >
+        <div class="bb-theme-preview__group">
+          <button type="button" tabindex="-1" class="btn btn-primary">
+            {{
+              'pages.settings.tab.general.general-settings-form.appearance.preview.primary'
+                | translate
+            }}
+          </button>
+          <button type="button" tabindex="-1" class="btn btn-secondary">
+            {{
+              'pages.settings.tab.general.general-settings-form.appearance.preview.secondary'
+                | translate
+            }}
+          </button>
+          <button type="button" tabindex="-1" class="btn btn-outline-secondary">
+            {{
+              'pages.settings.tab.general.general-settings-form.appearance.preview.outline'
+                | translate
+            }}
+          </button>
+          <button type="button" tabindex="-1" class="btn btn-dashed-secondary">
+            {{
+              'pages.settings.tab.general.general-settings-form.appearance.preview.dashed'
+                | translate
+            }}
+          </button>
+          <button type="button" tabindex="-1" class="btn btn-secondary btn-split">
+            <bb-btn-content
+              [icon]="icons.faPalette"
+              [text]="
+                'pages.settings.tab.general.general-settings-form.appearance.preview.split'
+                  | translate
+              "
+            ></bb-btn-content>
+          </button>
+          <button type="button" tabindex="-1" class="btn btn-primary" disabled>
+            {{
+              'pages.settings.tab.general.general-settings-form.appearance.preview.disabled'
+                | translate
+            }}
+          </button>
+        </div>
+
+        <div class="bb-theme-preview__group">
+          <button type="button" tabindex="-1" class="btn btn-sm btn-success">
+            {{
+              'pages.settings.tab.general.general-settings-form.appearance.preview.success'
+                | translate
+            }}
+          </button>
+          <button type="button" tabindex="-1" class="btn btn-sm btn-info">
+            {{
+              'pages.settings.tab.general.general-settings-form.appearance.preview.info' | translate
+            }}
+          </button>
+          <button type="button" tabindex="-1" class="btn btn-sm btn-warning">
+            {{
+              'pages.settings.tab.general.general-settings-form.appearance.preview.warning'
+                | translate
+            }}
+          </button>
+          <button type="button" tabindex="-1" class="btn btn-sm btn-danger">
+            {{
+              'pages.settings.tab.general.general-settings-form.appearance.preview.danger'
+                | translate
+            }}
+          </button>
+        </div>
+
+        <div class="bb-theme-preview__group">
+          <button type="button" tabindex="-1" class="bb-tool bb-tool--primary">
+            <span class="bb-tool__icon"><fa-icon [icon]="icons.faPlay"></fa-icon></span>
+            <span class="bb-tool__label">{{
+              'pages.settings.tab.general.general-settings-form.appearance.preview.primary'
+                | translate
+            }}</span>
+          </button>
+          <button type="button" tabindex="-1" class="bb-tool bb-tool--info">
+            <span class="bb-tool__icon"><fa-icon [icon]="icons.faCircleInfo"></fa-icon></span>
+            <span class="bb-tool__label">{{
+              'pages.settings.tab.general.general-settings-form.appearance.preview.info' | translate
+            }}</span>
+          </button>
+          <button type="button" tabindex="-1" class="bb-tool bb-tool--danger">
+            <span class="bb-tool__icon"><fa-icon [icon]="icons.faTrash"></fa-icon></span>
+            <span class="bb-tool__label">{{
+              'pages.settings.tab.general.general-settings-form.appearance.preview.danger'
+                | translate
+            }}</span>
+          </button>
+        </div>
+
+        <div class="bb-theme-preview__group bb-theme-preview__group--form">
+          <input
+            type="text"
+            tabindex="-1"
+            readonly
+            class="form-control"
+            [placeholder]="
+              'pages.settings.tab.general.general-settings-form.appearance.preview.text-field'
+                | translate
+            "
+          />
+          <app-bb-checkbox
+            inert
+            [checked]="true"
+            [label]="
+              'pages.settings.tab.general.general-settings-form.appearance.preview.checkbox'
+                | translate
+            "
+          ></app-bb-checkbox>
+          <a class="bb-theme-preview__link">{{
+            'pages.settings.tab.general.general-settings-form.appearance.preview.link' | translate
+          }}</a>
+        </div>
+      </div>
+    </app-bb-section-card>
   </form>
 } @else {
   <app-bb-spinner></app-bb-spinner>

@@ -15,7 +15,8 @@ $ob-light-border: #9cc9e0;
 $ob-light-surface: #edf8fd;
 
 @mixin install() {
-  :root[data-bb-theme='ocean-breeze'][data-bs-theme='light'] {
+  :root[data-bb-theme='ocean-breeze'][data-bs-theme='light'],
+  .bb-theme-preview[data-bb-theme='ocean-breeze'][data-bs-theme='light'] {
     --bb-black: #000;
     --bb-btn-text-c: 16%;
     --bb-primary-ink: #fff;

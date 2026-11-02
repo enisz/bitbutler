@@ -15,7 +15,8 @@ $gr-dark-border: rgba($gr-dark-body-color, 0.08);
 $gr-dark-surface: #241e1e;
 
 @mixin install() {
-  :root[data-bb-theme='graphite'][data-bs-theme='dark'] {
+  :root[data-bb-theme='graphite'][data-bs-theme='dark'],
+  .bb-theme-preview[data-bb-theme='graphite'][data-bs-theme='dark'] {
     --bb-black: #000;
     --bb-primary-ink: #000;
     --bb-secondary-ink: #000;

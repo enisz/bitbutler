@@ -15,7 +15,8 @@ $ph-light-border: #c2a8d3;
 $ph-light-surface: #f5eefb;
 
 @mixin install() {
-  :root[data-bb-theme='purple-haze'][data-bs-theme='light'] {
+  :root[data-bb-theme='purple-haze'][data-bs-theme='light'],
+  .bb-theme-preview[data-bb-theme='purple-haze'][data-bs-theme='light'] {
     --bb-black: #000;
     --bb-btn-text-c: 32%;
     --bb-primary-ink: #fff;

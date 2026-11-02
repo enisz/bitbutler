@@ -15,7 +15,8 @@ $md-light-border: #bcd6ba;
 $md-light-surface: #f3f9f2;
 
 @mixin install() {
-  :root[data-bb-theme='meadow'][data-bs-theme='light'] {
+  :root[data-bb-theme='meadow'][data-bs-theme='light'],
+  .bb-theme-preview[data-bb-theme='meadow'][data-bs-theme='light'] {
     --bb-black: #000;
     --bb-btn-text-c: 36%;
     --bb-primary-ink: #fff;

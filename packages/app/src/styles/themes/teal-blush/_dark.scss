@@ -15,7 +15,8 @@ $tb-dark-border: rgba($tb-dark-body-color, 0.08);
 $tb-dark-surface: #133d3e;
 
 @mixin install() {
-  :root[data-bb-theme='teal-blush'][data-bs-theme='dark'] {
+  :root[data-bb-theme='teal-blush'][data-bs-theme='dark'],
+  .bb-theme-preview[data-bb-theme='teal-blush'][data-bs-theme='dark'] {
     --bb-black: #000;
     --bb-primary-ink: #000;
     --bb-secondary-ink: #000;

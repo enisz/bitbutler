@@ -15,7 +15,8 @@ $ob-dark-border: rgba($ob-dark-body-color, 0.08);
 $ob-dark-surface: #1a3a5e;
 
 @mixin install() {
-  :root[data-bb-theme='ocean-breeze'][data-bs-theme='dark'] {
+  :root[data-bb-theme='ocean-breeze'][data-bs-theme='dark'],
+  .bb-theme-preview[data-bb-theme='ocean-breeze'][data-bs-theme='dark'] {
     --bb-black: #000;
     --bb-primary-ink: #000;
     --bb-secondary-ink: #000;

@@ -15,7 +15,8 @@ $tb-light-border: #bcd1d0;
 $tb-light-surface: #f3f8f8;
 
 @mixin install() {
-  :root[data-bb-theme='teal-blush'][data-bs-theme='light'] {
+  :root[data-bb-theme='teal-blush'][data-bs-theme='light'],
+  .bb-theme-preview[data-bb-theme='teal-blush'][data-bs-theme='light'] {
     --bb-black: #000;
     --bb-btn-text-c: 36%;
     --bb-primary-ink: #fff;

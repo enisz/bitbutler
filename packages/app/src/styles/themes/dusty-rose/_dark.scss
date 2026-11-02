@@ -15,7 +15,8 @@ $dr-dark-border: rgba($dr-dark-body-color, 0.08);
 $dr-dark-surface: #21191c;
 
 @mixin install() {
-  :root[data-bb-theme='dusty-rose'][data-bs-theme='dark'] {
+  :root[data-bb-theme='dusty-rose'][data-bs-theme='dark'],
+  .bb-theme-preview[data-bb-theme='dusty-rose'][data-bs-theme='dark'] {
     --bb-black: #000;
     --bb-primary-ink: #000;
     --bb-secondary-ink: #000;

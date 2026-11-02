@@ -15,7 +15,8 @@ $ph-dark-border: rgba($ph-dark-body-color, 0.08);
 $ph-dark-surface: #2c2c44;
 
 @mixin install() {
-  :root[data-bb-theme='purple-haze'][data-bs-theme='dark'] {
+  :root[data-bb-theme='purple-haze'][data-bs-theme='dark'],
+  .bb-theme-preview[data-bb-theme='purple-haze'][data-bs-theme='dark'] {
     --bb-black: #000;
     --bb-primary-ink: #000;
     --bb-secondary-ink: #000;

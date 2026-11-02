@@ -15,7 +15,8 @@ $mg-dark-border: rgba($mg-dark-body-color, 0.08);
 $mg-dark-surface: #243e39;
 
 @mixin install() {
-  :root[data-bb-theme='mint-green'][data-bs-theme='dark'] {
+  :root[data-bb-theme='mint-green'][data-bs-theme='dark'],
+  .bb-theme-preview[data-bb-theme='mint-green'][data-bs-theme='dark'] {
     --bb-black: #000;
     --bb-primary-ink: #000;
     --bb-secondary-ink: #000;

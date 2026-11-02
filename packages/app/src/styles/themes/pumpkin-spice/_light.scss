@@ -15,7 +15,8 @@ $ps-light-border: #e0b98c;
 $ps-light-surface: #fdf3e6;
 
 @mixin install() {
-  :root[data-bb-theme='pumpkin-spice'][data-bs-theme='light'] {
+  :root[data-bb-theme='pumpkin-spice'][data-bs-theme='light'],
+  .bb-theme-preview[data-bb-theme='pumpkin-spice'][data-bs-theme='light'] {
     --bb-black: #000;
     --bb-btn-text-c: 36%;
     --bb-primary-ink: #000;

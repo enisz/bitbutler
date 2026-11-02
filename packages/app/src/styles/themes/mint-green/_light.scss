@@ -15,7 +15,8 @@ $mg-light-border: #c0cec0;
 $mg-light-surface: #eef2ee;
 
 @mixin install() {
-  :root[data-bb-theme='mint-green'][data-bs-theme='light'] {
+  :root[data-bb-theme='mint-green'][data-bs-theme='light'],
+  .bb-theme-preview[data-bb-theme='mint-green'][data-bs-theme='light'] {
     --bb-black: #000;
     --bb-btn-text-c: 22%;
     --bb-primary-ink: #000;
