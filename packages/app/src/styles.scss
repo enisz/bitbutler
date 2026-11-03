@@ -43,15 +43,41 @@
   box-shadow: none;
 }
 
+// Shared focus ring: 2px gap in the page colour + 2px solid focus border + soft halo.
+// --bb-focus-ring-tight drops the halo for dense rows (toolbar, header actions).
+:root {
+  --bb-focus-ring:
+    0 0 0 2px var(--bs-body-bg), 0 0 0 4px var(--bb-control-focus-border),
+    0 0 0 7px var(--bb-control-focus-ring);
+  --bb-focus-ring-tight: 0 0 0 2px var(--bs-body-bg), 0 0 0 4px var(--bb-control-focus-border);
+}
+
 .btn {
+  --bs-btn-border-radius: var(--bb-control-radius);
+  --bs-btn-disabled-opacity: 1;
+  --bs-btn-focus-box-shadow: var(--bb-focus-ring);
+
   font-weight: 500;
   letter-spacing: 0.02em;
   text-transform: none;
+  transition:
+    color 150ms ease,
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease;
 
-  &:focus,
-  &:active:focus {
-    box-shadow: 0 0 0 0.2rem var(--bb-control-focus-ring) !important;
+  &:focus-visible {
+    outline: 0;
   }
+
+  &:disabled,
+  &.disabled {
+    cursor: not-allowed;
+  }
+}
+
+.btn-sm {
+  --bs-btn-border-radius: calc(var(--bb-control-radius) - 3px);
 }
 
 .btn-split {
@@ -64,11 +90,13 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    min-width: calc(1em + var(--bs-btn-padding-x) * 1.5);
     padding: var(--bs-btn-padding-y) calc(var(--bs-btn-padding-x) * 0.75);
     background-color: var(
       --bs-btn-split-icon-bg,
       color-mix(in srgb, currentColor 10%, transparent)
     );
+    transition: background-color 150ms ease;
   }
 
   .btn-text {
@@ -76,6 +104,69 @@
     align-items: center;
     flex: 1 1 auto;
     padding: var(--bs-btn-padding-y) var(--bs-btn-padding-x);
+  }
+
+  .btn-icon + .btn-text {
+    box-shadow: inset 1px 0 0
+      var(--bs-btn-split-divider, color-mix(in srgb, currentColor 20%, transparent));
+  }
+
+  &:hover:not(:disabled):not(.disabled) .btn-icon {
+    background-color: var(
+      --bs-btn-split-icon-hover-bg,
+      var(--bs-btn-split-icon-bg, color-mix(in srgb, currentColor 16%, transparent))
+    );
+  }
+
+  &:disabled .btn-icon,
+  &.disabled .btn-icon {
+    background-color: color-mix(in srgb, currentColor 8%, transparent);
+  }
+
+  // Icon-only: square, icon sits directly on the button fill.
+  &:has(> .btn-icon:only-child) {
+    aspect-ratio: 1;
+
+    .btn-icon {
+      flex: 1;
+      min-width: 0;
+      padding: 0;
+      background-color: transparent !important;
+    }
+  }
+}
+
+// Login CTA: large button matching the control radius. With .btn-split the icon becomes a chip inset in it.
+.btn-pill-cta {
+  --bs-btn-padding-y: 0.75rem;
+  --bs-btn-padding-x: 1.5rem;
+  --bs-btn-font-size: 1.125rem;
+  --bs-btn-border-radius: var(--bb-control-radius);
+
+  min-height: 3.25rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+
+  &.btn-split {
+    .btn-icon {
+      flex: none;
+      align-self: center;
+      width: 2.75rem;
+      height: 2.75rem;
+      min-width: 0;
+      margin-inline-start: 0.1875rem;
+      padding: 0;
+      border-radius: calc(var(--bb-control-radius) - 0.1875rem);
+    }
+
+    .btn-icon + .btn-text {
+      box-shadow: none;
+    }
+
+    .btn-text {
+      justify-content: center;
+      padding-inline: 1rem 2.9375rem;
+    }
   }
 }
 
@@ -93,7 +184,6 @@ html[data-bs-theme] body,
 html[data-bs-theme] .card,
 html[data-bs-theme] .navbar,
 html[data-bs-theme] .dropdown-menu,
-html[data-bs-theme] .btn,
 html[data-bs-theme] .form-control,
 html[data-bs-theme] .form-select,
 html[data-bs-theme] .list-group-item,
@@ -498,11 +588,11 @@ ngb-modal-window {
     font-size: 12px;
     font-weight: 600;
     color: var(--bs-body-color);
-    transition: background-color 120ms ease;
+    transition: background-color 150ms ease;
     cursor: pointer;
 
     &:hover {
-      background: color-mix(in srgb, var(--bs-body-color) 7%, transparent);
+      background: var(--bb-hover-list-item-bg);
       color: var(--bs-body-color);
     }
 
@@ -518,7 +608,20 @@ ngb-modal-window {
 
     &:focus {
       outline: none;
-      background: color-mix(in srgb, var(--bs-body-color) 7%, transparent);
+      background: var(--bb-hover-list-item-bg);
+    }
+
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px var(--bb-control-focus-border);
+    }
+
+    &.bb-dropdown-item--danger {
+      color: color-mix(in srgb, var(--bs-danger) var(--bb-btn-text-c, 100%), var(--bs-body-color));
+
+      &:hover,
+      &:focus {
+        background: color-mix(in srgb, var(--bs-danger) 14%, transparent);
+      }
     }
 
     &:disabled,

@@ -17,10 +17,11 @@ $ps-light-surface: #fdf3e6;
 @mixin install() {
   :root[data-bb-theme='pumpkin-spice'][data-bs-theme='light'] {
     --bb-black: #000;
-    --bb-primary-ink: #fff;
+    --bb-btn-text-c: 36%;
+    --bb-primary-ink: #000;
     --bb-secondary-ink: #000;
-    --bb-success-ink: #fff;
-    --bb-danger-ink: #fff;
+    --bb-success-ink: #000;
+    --bb-danger-ink: #000;
     --bb-warning-ink: #000;
     --bb-info-ink: #000;
     --bb-light-ink: #000;

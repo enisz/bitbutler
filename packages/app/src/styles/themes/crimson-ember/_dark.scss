@@ -18,6 +18,7 @@ $ce-dark-surface: #280905;
 @mixin install() {
   :root[data-bb-theme='crimson-ember'][data-bs-theme='dark'] {
     --bb-black: #000;
+    --bb-btn-text-c: 70%;
     --bs-primary: #{$ce-dark-primary};
     --bs-primary-rgb: #{string.unquote('195, 17, 12')};
 
@@ -31,9 +32,9 @@ $ce-dark-surface: #280905;
     --bs-danger-rgb: #{string.unquote('255, 77, 77')};
 
     --bb-primary-ink: #fff;
-    --bb-secondary-ink: #fff;
+    --bb-secondary-ink: #000;
     --bb-success-ink: #000;
-    --bb-danger-ink: #fff;
+    --bb-danger-ink: #000;
     --bb-warning-ink: #000;
     --bb-info-ink: #000;
     --bb-light-ink: #000;

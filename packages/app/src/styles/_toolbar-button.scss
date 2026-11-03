@@ -1,38 +1,49 @@
+// App toolbar: ghost buttons. Colour comes from --bb-tool-c (tint / border) and --bb-tool-fg (label).
+// Labels show above 1920px; at or below that the button collapses to an icon-only square.
 .bb-tool {
+  --bb-tool-c: var(--bs-body-color);
+  --bb-tool-fg: var(--bs-body-color);
+  --bb-tool-hover: 8%;
+  --bb-tool-press: 14%;
+
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-
+  min-height: 36px;
   padding: 8px 10px;
-  border-radius: 8px;
-
   border: 1px solid transparent;
+  border-radius: 10px;
   background: transparent;
-  color: var(--bs-body-color);
-
+  color: var(--bb-tool-fg);
   cursor: pointer;
-
   transition:
-    background-color 120ms ease,
-    border-color 120ms ease,
-    transform 80ms ease;
+    color 150ms ease,
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease;
 
-  &:hover {
-    background: color-mix(in srgb, var(--bs-body-color) 7%, transparent);
-    border-color: color-mix(in srgb, var(--bs-border-color) 60%, var(--bs-secondary) 40%);
+  &:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--bb-tool-c) var(--bb-tool-hover), transparent);
+    border-color: color-mix(in srgb, var(--bb-tool-c) 26%, transparent);
   }
 
-  &:active {
-    transform: translateY(1px);
+  // [aria-expanded] keeps a dropdown trigger pressed while its menu is open.
+  &:active:not(:disabled),
+  &[aria-expanded='true'] {
+    background: color-mix(in srgb, var(--bb-tool-c) var(--bb-tool-press), transparent);
+    border-color: color-mix(in srgb, var(--bb-tool-c) 38%, transparent);
   }
 
   &:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 0.2rem var(--bb-control-focus-ring) !important;
+    outline: 0;
+    box-shadow: var(--bb-focus-ring-tight);
   }
 
   &:disabled {
-    opacity: 0.45;
+    background: transparent;
+    border-color: transparent;
+    color: color-mix(in srgb, var(--bs-body-color) 38%, transparent);
     cursor: not-allowed;
   }
 }
@@ -57,67 +68,53 @@
   margin: auto 5px;
 }
 
-.bb-tool--secondary {
-  color: var(--bs-secondary);
-  &:hover {
-    background: color-mix(in srgb, var(--bs-secondary) 14%, transparent);
-  }
-}
-.bb-tool--success {
-  color: var(--bs-success);
-  &:hover {
-    background: color-mix(in srgb, var(--bs-success) 16%, transparent);
-  }
-}
-.bb-tool--info {
-  color: var(--bs-info);
-  &:hover {
-    background: color-mix(in srgb, var(--bs-info) 16%, transparent);
-  }
-}
-.bb-tool--warning {
-  color: var(--bs-warning);
-  &:hover {
-    background: color-mix(in srgb, var(--bs-warning) 16%, transparent);
-  }
-}
-.bb-tool--danger {
-  color: var(--bs-danger);
-  &:hover {
-    background: color-mix(in srgb, var(--bs-danger) 16%, transparent);
+@each $v in (secondary, success, info, warning, danger) {
+  .bb-tool--#{$v} {
+    --bb-tool-c: var(--bs-#{$v});
+    --bb-tool-fg: color-mix(
+      in srgb,
+      var(--bb-tool-c) var(--bb-btn-text-c, 100%),
+      var(--bs-body-color)
+    );
+    --bb-tool-hover: 14%;
+    --bb-tool-press: 22%;
   }
 }
 
+// Filled call-to-action (Add torrent). Same recipe as .btn-secondary / the accent solid.
 .bb-tool--primary {
-  border-color: var(--bb-accent);
-  background: var(--bb-accent);
-  color: var(--bb-secondary-ink);
+  --bb-tool-c: var(--bb-accent);
+  --bb-tool-fg: var(--bb-secondary-ink);
+
   font-weight: 700;
+  background: var(--bb-accent);
+  border-color: color-mix(in srgb, var(--bb-accent) 88%, var(--bb-black) 12%);
 
-  &:hover {
-    background: color-mix(in srgb, var(--bb-accent) 88%, #000 12%);
-    border-color: color-mix(in srgb, var(--bb-accent) 88%, #000 12%);
+  &:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--bb-accent) 90%, var(--bb-black) 10%);
+    border-color: color-mix(in srgb, var(--bb-accent) 80%, var(--bb-black) 20%);
   }
-}
 
-@media (max-width: 1399.98px) {
-  .bb-tool {
-    gap: 0;
+  &:active:not(:disabled),
+  &[aria-expanded='true'] {
+    background: color-mix(in srgb, var(--bb-accent) 80%, var(--bb-black) 20%);
+    border-color: color-mix(in srgb, var(--bb-accent) 70%, var(--bb-black) 30%);
   }
-  .bb-tool__icon {
-    width: 16px;
-    min-width: 16px;
+
+  &:disabled {
+    background: color-mix(in srgb, var(--bs-body-color) 10%, transparent);
+    border-color: color-mix(in srgb, var(--bs-body-color) 10%, transparent);
   }
 }
 
 @media (max-width: 1920px) {
-  .bb-tool__label {
-    display: none;
-  }
-
   .bb-tool {
     gap: 0;
-    padding: 8px 10px;
+    min-width: 36px;
+  }
+
+  .bb-tool__label {
+    display: none;
   }
 
   .bb-tool__icon {
