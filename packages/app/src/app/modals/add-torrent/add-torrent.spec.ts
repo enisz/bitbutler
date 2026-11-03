@@ -543,6 +543,24 @@ describe('AddTorrent', () => {
       expect(mockOpenFilesService.consumeCurrentDraft).toHaveBeenCalled();
     });
 
+    it('should block another file submit until the next draft is loaded after consuming the current one', async () => {
+      const torrentsAddSpy = enqueueSpy().mockClear();
+      (component as any).selectedTorrentFile.set({
+        name: 'test.torrent',
+        path: '/tmp/test.torrent',
+      });
+      component.addForm.controls.fileGroup.controls.rename.setValue('test-torrent');
+      const event = { preventDefault: () => {} } as unknown as SubmitEvent;
+
+      await component.handleSubmit(event);
+      expect(component.isSubmitting()).toBe(false);
+      expect(component.canSubmit()).toBe(false);
+
+      await component.handleSubmit(event);
+
+      expect(torrentsAddSpy).toHaveBeenCalledTimes(1);
+    });
+
     it('should not ask main to delete the source file when deleteTorrentFile is disabled', async () => {
       (component as any).selectedTorrentFile.set({
         name: 'test.torrent',
