@@ -15,7 +15,8 @@ $deep-sea-dark-border: rgba($deep-sea-dark-body-color, 0.08);
 $deep-sea-dark-surface: #06242e;
 
 @mixin install() {
-  :root[data-bb-theme='deep-sea'][data-bs-theme='dark'] {
+  :root[data-bb-theme='deep-sea'][data-bs-theme='dark'],
+  .bb-theme-preview[data-bb-theme='deep-sea'][data-bs-theme='dark'] {
     --bb-black: #000;
     --bb-btn-text-c: 94%;
     --bs-primary: #{$deep-sea-dark-primary};

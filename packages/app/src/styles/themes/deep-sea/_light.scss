@@ -15,7 +15,8 @@ $deep-sea-light-border: #aecdd2;
 $deep-sea-light-surface: #eef8f9;
 
 @mixin install() {
-  :root[data-bb-theme='deep-sea'][data-bs-theme='light'] {
+  :root[data-bb-theme='deep-sea'][data-bs-theme='light'],
+  .bb-theme-preview[data-bb-theme='deep-sea'][data-bs-theme='light'] {
     --bb-black: #000;
     --bb-btn-text-c: 36%;
     --bs-primary: #{$deep-sea-light-primary};

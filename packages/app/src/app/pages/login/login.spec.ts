@@ -160,7 +160,7 @@ describe('Login', () => {
 
   describe('families', () => {
     it('should expose the shared THEME_FAMILIES list', () => {
-      expect(component.families).toHaveLength(8);
+      expect(component.families).toHaveLength(14);
       expect(component.families[0]).toEqual({ value: 'bitbutler', label: 'BitButler' });
     });
   });

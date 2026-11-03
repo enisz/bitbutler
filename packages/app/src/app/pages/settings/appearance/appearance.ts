@@ -1,11 +1,22 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faCircleInfo, faPalette, faPlay, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { BbBtnContent } from '../../../components/bb-btn-content/bb-btn-content';
 import { BbLogo } from '../../../components/bb-logo/bb-logo';
 import { BbSectionCard } from '../../../components/bb-section-card/bb-section-card';
 import { BbSpinner } from '../../../components/bb-spinner/bb-spinner';
+import { BbCheckbox } from '../../../components/form-controls/bb-checkbox/bb-checkbox';
 import { BbRadio } from '../../../components/form-controls/bb-radio-group/bb-radio';
 import { BbRadioGroup } from '../../../components/form-controls/bb-radio-group/bb-radio-group';
 import { BbOptionText } from '../../../directives/bb-option-text';
@@ -16,8 +27,11 @@ import { NgSelectItem, SettingsTabComponent } from '../settings.interface';
 @Component({
   selector: 'app-appearance',
   imports: [
+    BbBtnContent,
+    BbCheckbox,
     BbOptionText,
     BbSectionCard,
+    FontAwesomeModule,
     CommonModule,
     ReactiveFormsModule,
     BbSpinner,
@@ -27,6 +41,7 @@ import { NgSelectItem, SettingsTabComponent } from '../settings.interface';
     TranslatePipe,
   ],
   templateUrl: './appearance.html',
+  styleUrl: './appearance.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Appearance implements SettingsTabComponent {
@@ -37,6 +52,26 @@ export class Appearance implements SettingsTabComponent {
   public readonly generalSettingsForm = this.formService.form;
   public readonly settingsLoaded = this.formService.loaded;
   public readonly families = THEME_FAMILIES;
+  public readonly icons = { faCircleInfo, faPalette, faPlay, faTrash };
+
+  private readonly systemDark = signal(
+    window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false,
+  );
+
+  // The preview follows the selection in the form, not the saved theme, so a theme can be
+  // judged before it is saved.
+  public readonly previewFamily = computed(() => this.formService.formSnapshot().appearance.family);
+  public readonly previewMode = computed<'light' | 'dark'>(() => {
+    const mode = this.formService.formSnapshot().appearance.mode;
+    return mode === 'system' ? (this.systemDark() ? 'dark' : 'light') : mode;
+  });
+
+  constructor() {
+    const query = window.matchMedia?.('(prefers-color-scheme: dark)');
+    const onChange = (event: MediaQueryListEvent) => this.systemDark.set(event.matches);
+    query?.addEventListener?.('change', onChange);
+    inject(DestroyRef).onDestroy(() => query?.removeEventListener?.('change', onChange));
+  }
 
   public readonly modes = computed<NgSelectItem[]>(() => {
     this.languageChanged();

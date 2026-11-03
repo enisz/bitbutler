@@ -6,6 +6,12 @@
 @use './pumpkin-spice' as pumpkin-spice;
 @use './deep-sea' as deep-sea;
 @use './crimson-ember' as crimson-ember;
+@use './teal-blush' as teal-blush;
+@use './dusty-rose' as dusty-rose;
+@use './graphite' as graphite;
+@use './meadow' as meadow;
+@use './sunset' as sunset;
+@use './raspberry' as raspberry;
 
 @mixin install-themes() {
   @include bitbutler.install();
@@ -16,4 +22,10 @@
   @include pumpkin-spice.install();
   @include deep-sea.install();
   @include crimson-ember.install();
+  @include teal-blush.install();
+  @include dusty-rose.install();
+  @include graphite.install();
+  @include meadow.install();
+  @include sunset.install();
+  @include raspberry.install();
 }

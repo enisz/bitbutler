@@ -31,7 +31,7 @@ describe('Appearance', () => {
 
   it('creates and renders the appearance card once the settings are loaded', () => {
     expect(fixture.componentInstance).toBeTruthy();
-    expect(fixture.nativeElement.querySelectorAll('app-bb-section-card')).toHaveLength(1);
+    expect(fixture.nativeElement.querySelectorAll('app-bb-section-card')).toHaveLength(2);
   });
 
   it('offers light, dark and system modes', () => {
@@ -40,5 +40,44 @@ describe('Appearance', () => {
       'dark',
       'system',
     ]);
+  });
+
+  describe('theme preview', () => {
+    const preview = (): HTMLElement => fixture.nativeElement.querySelector('.bb-theme-preview');
+    const appearanceControls = () =>
+      TestBed.inject(GeneralSettingsFormService).form.controls.appearance.controls;
+
+    it('is hidden from assistive technology and keeps its controls out of the tab order', () => {
+      expect(preview().getAttribute('aria-hidden')).toBe('true');
+      const controls = Array.from(preview().querySelectorAll('button, input')).filter(
+        (control) => !control.closest('[inert]'),
+      );
+      expect(controls.length).toBeGreaterThan(0);
+      controls.forEach((control) => expect(control.getAttribute('tabindex')).toBe('-1'));
+    });
+
+    it('renders the selected theme family and mode before they are saved', () => {
+      const { family, mode } = appearanceControls();
+      family.setValue('graphite');
+      mode.setValue('dark');
+      fixture.detectChanges();
+
+      expect(preview().getAttribute('data-bb-theme')).toBe('graphite');
+      expect(preview().getAttribute('data-bs-theme')).toBe('dark');
+
+      family.setValue('meadow');
+      mode.setValue('light');
+      fixture.detectChanges();
+
+      expect(preview().getAttribute('data-bb-theme')).toBe('meadow');
+      expect(preview().getAttribute('data-bs-theme')).toBe('light');
+    });
+
+    it('resolves the system mode to light or dark', () => {
+      appearanceControls().mode.setValue('system');
+      fixture.detectChanges();
+
+      expect(['light', 'dark']).toContain(preview().getAttribute('data-bs-theme'));
+    });
   });
 });

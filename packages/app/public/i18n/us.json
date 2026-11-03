@@ -1652,7 +1652,23 @@
             },
             "appearance": {
               "family": "Theme Family",
-              "mode": "Theme Mode"
+              "mode": "Theme Mode",
+              "preview": {
+                "title": "Preview",
+                "primary": "Primary",
+                "secondary": "Secondary",
+                "outline": "Outline",
+                "dashed": "Dashed",
+                "disabled": "Disabled",
+                "split": "Split",
+                "success": "Success",
+                "info": "Info",
+                "warning": "Warning",
+                "danger": "Danger",
+                "text-field": "Text field",
+                "checkbox": "Checkbox",
+                "link": "Link"
+              }
             },
             "startup": {
               "open-at-login": "Start app with the system",

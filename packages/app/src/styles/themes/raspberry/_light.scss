@@ -1,0 +1,154 @@
+@use 'sass:color';
+@use 'sass:string';
+
+$rb-light-primary: #a20445;
+$rb-light-secondary: #c40051;
+
+$rb-light-success: #2f9e6a;
+$rb-light-danger: #d9531e;
+$rb-light-warning: #d99a1c;
+$rb-light-info: #3f7fc0;
+
+$rb-light-body-bg: #f6dfe7;
+$rb-light-body-color: #3b0a1f;
+$rb-light-border: #e5bccb;
+$rb-light-surface: #fdf4f7;
+
+@mixin install() {
+  :root[data-bb-theme='raspberry'][data-bs-theme='light'],
+  .bb-theme-preview[data-bb-theme='raspberry'][data-bs-theme='light'] {
+    --bb-black: #000;
+    --bb-btn-text-c: 36%;
+    --bb-primary-ink: #fff;
+    --bb-secondary-ink: #fff;
+    --bb-success-ink: #000;
+    --bb-danger-ink: #000;
+    --bb-warning-ink: #000;
+    --bb-info-ink: #000;
+    --bb-light-ink: #000;
+    --bb-dark-ink: #fff;
+
+    --bs-primary: #{$rb-light-primary};
+    --bs-primary-rgb: #{string.unquote('162, 4, 69')};
+
+    --bs-secondary: #{$rb-light-secondary};
+    --bs-secondary-rgb: #{string.unquote('196, 0, 81')};
+
+    --bs-success: #{$rb-light-success};
+    --bs-success-rgb: #{string.unquote('47, 158, 106')};
+
+    --bs-danger: #{$rb-light-danger};
+    --bs-danger-rgb: #{string.unquote('217, 83, 30')};
+
+    --bs-warning: #{$rb-light-warning};
+    --bs-warning-rgb: #{string.unquote('217, 154, 28')};
+
+    --bs-info: #{$rb-light-info};
+    --bs-info-rgb: #{string.unquote('63, 127, 192')};
+
+    --bs-body-bg: #{$rb-light-body-bg};
+    --bs-body-color: #{$rb-light-body-color};
+    --bs-border-color: #{$rb-light-border};
+
+    --bs-card-bg: #{$rb-light-surface};
+    --bs-card-color: #{$rb-light-body-color};
+    --bs-card-border-color: #{$rb-light-border};
+    --bs-card-cap-bg: color-mix(in srgb, var(--bs-body-bg) 70%, var(--bs-card-bg) 30%);
+    --bs-card-cap-color: #{$rb-light-body-color};
+
+    --bs-tooltip-bg: var(--bs-card-cap-bg);
+    --bs-tooltip-color: var(--bs-body-color);
+    --bs-tooltip-opacity: 0.95;
+
+    --bs-link-color: #{$rb-light-primary};
+    --bs-link-hover-color: #3b0a1f;
+
+    --bs-navbar-color: #{$rb-light-body-color};
+    --bs-navbar-brand-color: #{$rb-light-primary};
+    --bs-dropdown-link-color: #{$rb-light-body-color};
+    --bs-dropdown-bg: var(--bs-card-cap-bg);
+
+    --bb-accent: var(--bs-secondary);
+    --bb-accent-rgb: var(--bs-secondary-rgb);
+
+    --bb-active-list-item-bg: color-mix(in srgb, var(--bb-accent) 18%, transparent);
+    --bb-hover-list-item-bg: color-mix(in srgb, var(--bb-accent) 10%, transparent);
+
+    --bb-grid-header-border: var(--bs-border-color);
+    --bb-grid-row-hover-bg: color-mix(in srgb, var(--bb-accent) 16%, transparent);
+    --bb-grid-focus-outline: var(--bb-accent);
+    --bb-grid-selected-accent: var(--bb-accent);
+
+    --bb-ng-surface: var(--bs-card-bg);
+    --bb-ng-panel: color-mix(in srgb, var(--bs-body-bg) 65%, var(--bs-card-bg) 35%);
+    --bb-ng-text: var(--bs-body-color);
+    --bb-ng-border: var(--bs-border-color);
+    --bb-ng-hover-bg: color-mix(in srgb, var(--bs-primary) 10%, transparent);
+    --bb-ng-active-bg: color-mix(in srgb, var(--bs-secondary) 22%, transparent);
+    --bb-ng-accent: var(--bs-secondary);
+    --bb-ng-focus-ring: rgba(var(--bs-primary-rgb), 0.18);
+
+    --bb-control-bg: color-mix(in srgb, var(--bs-body-bg) 55%, var(--bs-card-bg) 45%);
+    --bb-control-border: color-mix(in srgb, var(--bs-border-color) 85%, #000 15%);
+    --bb-control-text: var(--bs-body-color);
+    --bb-control-placeholder: color-mix(in srgb, var(--bs-body-color) 55%, transparent);
+
+    --bb-control-hover-bg: color-mix(in srgb, var(--bb-control-bg) 88%, #000 12%);
+    --bb-control-hover-border: color-mix(
+      in srgb,
+      var(--bb-control-border) 70%,
+      var(--bs-primary) 30%
+    );
+
+    --bb-control-focus-border: var(--bs-primary);
+    --bb-control-focus-ring: rgba(var(--bs-primary-rgb), 0.18);
+
+    --bb-control-radius: 9px;
+
+    --bb-dp-bg: var(--bs-dropdown-bg);
+    --bb-dp-border: var(--bs-border-color);
+    --bb-dp-text: var(--bs-body-color);
+    --bb-dp-muted: color-mix(in srgb, var(--bs-body-color) 65%, transparent);
+
+    --bb-dp-hover: color-mix(in srgb, var(--bb-control-bg) 85%, #000 15%);
+    --bb-dp-focus-ring: var(--bb-control-focus-ring);
+
+    --bb-dp-accent: var(--bs-primary);
+    --bb-dp-accent-ink: #fff;
+    --bb-dp-range: color-mix(in srgb, var(--bb-dp-accent) 22%, transparent);
+
+    --bb-toast-bg: #ffffff;
+    --bb-toast-border-opacity: 1;
+    --bb-toast-glow-opacity: 0.05;
+
+    --bs-popover-bg: var(--bs-card-cap-bg);
+    --bs-popover-border-color: #{$rb-light-border};
+    --bs-popover-header-bg: var(--bs-card-cap-bg);
+    --bs-popover-header-color: #{$rb-light-body-color};
+    --bs-popover-body-color: #{$rb-light-body-color};
+
+    --bs-primary-bg-subtle: #{color.mix(white, $rb-light-primary, 80%)};
+    --bs-primary-border-subtle: #{color.mix(white, $rb-light-primary, 60%)};
+    --bs-primary-text-emphasis: #{color.mix(black, $rb-light-primary, 60%)};
+
+    --bs-secondary-bg-subtle: #{color.mix(white, $rb-light-secondary, 80%)};
+    --bs-secondary-border-subtle: #{color.mix(white, $rb-light-secondary, 60%)};
+    --bs-secondary-text-emphasis: #{color.mix(black, $rb-light-secondary, 60%)};
+
+    --bs-success-bg-subtle: #{color.mix(white, $rb-light-success, 80%)};
+    --bs-success-border-subtle: #{color.mix(white, $rb-light-success, 60%)};
+    --bs-success-text-emphasis: #{color.mix(black, $rb-light-success, 60%)};
+
+    --bs-danger-bg-subtle: #{color.mix(white, $rb-light-danger, 80%)};
+    --bs-danger-border-subtle: #{color.mix(white, $rb-light-danger, 60%)};
+    --bs-danger-text-emphasis: #{color.mix(black, $rb-light-danger, 60%)};
+
+    --bs-warning-bg-subtle: #{color.mix(white, $rb-light-warning, 80%)};
+    --bs-warning-border-subtle: #{color.mix(white, $rb-light-warning, 60%)};
+    --bs-warning-text-emphasis: #{color.mix(black, $rb-light-warning, 60%)};
+
+    --bs-info-bg-subtle: #{color.mix(white, $rb-light-info, 80%)};
+    --bs-info-border-subtle: #{color.mix(white, $rb-light-info, 60%)};
+    --bs-info-text-emphasis: #{color.mix(black, $rb-light-info, 60%)};
+  }
+}

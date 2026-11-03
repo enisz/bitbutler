@@ -1652,7 +1652,23 @@
             },
             "appearance": {
               "family": "Témacsalád",
-              "mode": "Téma mód"
+              "mode": "Téma mód",
+              "preview": {
+                "title": "Előnézet",
+                "primary": "Elsődleges",
+                "secondary": "Másodlagos",
+                "outline": "Körvonal",
+                "dashed": "Szaggatott",
+                "disabled": "Letiltva",
+                "split": "Osztott",
+                "success": "Sikeres",
+                "info": "Információ",
+                "warning": "Figyelmeztetés",
+                "danger": "Veszély",
+                "text-field": "Szövegmező",
+                "checkbox": "Jelölőnégyzet",
+                "link": "Hivatkozás"
+              }
             },
             "startup": {
               "open-at-login": "Alkalmazás indítása a rendszerrel",
