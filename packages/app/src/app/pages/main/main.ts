@@ -5,6 +5,7 @@ import {
   computed,
   effect,
   inject,
+  signal,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -19,14 +20,16 @@ import { ServerStoreService } from '../../services/server-store.service';
 import { SidebarSettingsService } from '../../services/sidebar-settings.service';
 import { ThemeService } from '../../services/theme.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
+import { ViewportService } from '../../services/viewport.service';
 import { ButtonBar } from './button-bar/button-bar';
 import { Grid } from './grid/grid';
+import { PhoneMain } from './phone/phone-main/phone-main';
 import { ServerState } from './server-state/server-state';
 import { Status } from './status/status';
 
 @Component({
   selector: 'app-main',
-  imports: [Grid, Status, ButtonBar, BbLogo, ServerState, FontAwesomeModule],
+  imports: [Grid, Status, ButtonBar, BbLogo, ServerState, FontAwesomeModule, PhoneMain],
   templateUrl: './main.html',
   styleUrl: './main.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,14 +40,27 @@ export class Main implements OnDestroy {
   private readonly torrentStore = inject(TorrentStoreService);
   private readonly themeService = inject(ThemeService);
   private readonly sidebarSettingsService = inject(SidebarSettingsService);
+  private readonly viewportService = inject(ViewportService);
+  public readonly isPhone = this.viewportService.isPhone;
   private pollSub: Subscription | null = null;
   public currentServer = this.serverStoreService.currentServer;
 
   public readonly icons = { faBars, faChevronRight };
   private readonly sidebarSettings = toSignal(this.sidebarSettingsService.asObservable());
-  public readonly sidebarCollapsed = computed(() => this.sidebarSettings()?.collapsed ?? false);
+  // Tablet: the sidebar starts collapsed every time and can be opened for the moment without
+  // touching the saved (desktop) preference.
+  private readonly tabletSidebarOpen = signal(false);
+  public readonly sidebarCollapsed = computed(() =>
+    this.viewportService.isTablet()
+      ? !this.tabletSidebarOpen()
+      : (this.sidebarSettings()?.collapsed ?? false),
+  );
 
   public toggleSidebar(): void {
+    if (this.viewportService.isTablet()) {
+      this.tabletSidebarOpen.update((open) => !open);
+      return;
+    }
     const current = this.sidebarSettings();
     this.sidebarSettingsService.save({
       collapsed: !(current?.collapsed ?? false),

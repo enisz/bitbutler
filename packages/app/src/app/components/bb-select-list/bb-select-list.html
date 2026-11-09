@@ -1,0 +1,25 @@
+@if (items().length === 0) {
+  <div class="bb-select-empty" data-testid="select-empty">{{ emptyMessage() }}</div>
+} @else {
+  @for (item of items(); track item.id) {
+    <button
+      type="button"
+      class="bb-select-row"
+      [class.bb-select-row--selected]="selectedSet().has(item.id)"
+      [attr.data-testid]="'select-row-' + item.id"
+      [attr.aria-pressed]="selectedSet().has(item.id)"
+      [disabled]="item.disabled"
+      (click)="toggle(item)"
+    >
+      <span class="bb-select-row__text">
+        <span class="bb-select-row__title">{{ item.title }}</span>
+        @if (item.subtitle) {
+          <span class="bb-select-row__subtitle">{{ item.subtitle }}</span>
+        }
+      </span>
+      @if (item.meta) {
+        <span class="bb-select-row__meta">{{ item.meta }}</span>
+      }
+    </button>
+  }
+}

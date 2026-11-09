@@ -4,6 +4,25 @@ import { join } from 'node:path';
 
 const isDev = !app.isPackaged;
 
+export type WindowMode = 'phone' | 'tablet' | 'desktop';
+
+// Fixed content sizes for the dev-only phone and tablet modes (small enough for a laptop screen).
+const FIXED_WINDOW_SIZES = {
+  phone: { width: 390, height: 640 },
+  tablet: { width: 900, height: 640 },
+} as const;
+
+/**
+ * Dev helper: `npm run start:phone` / `start:tablet` set BB_WINDOW_MODE so the app opens in a
+ * fixed window that triggers the matching responsive layout. Anything else - and every packaged
+ * build - is the normal desktop window.
+ */
+export function getWindowMode(): WindowMode {
+  if (app.isPackaged) return 'desktop';
+  const mode = process.env['BB_WINDOW_MODE'];
+  return mode === 'phone' || mode === 'tablet' ? mode : 'desktop';
+}
+
 function firstExistingPath(paths: string[]): string | null {
   for (const p of paths) {
     if (fs.existsSync(p)) return p;
@@ -43,6 +62,7 @@ export function createMainWindow(): BrowserWindow {
   applyContentSecurityPolicy();
 
   const appPath = app.getAppPath();
+  const windowMode = getWindowMode();
 
   const iconCandidates = [
     join(appPath, 'dist', 'bitbutler', 'browser', 'bitbutler.png'),
@@ -51,14 +71,18 @@ export function createMainWindow(): BrowserWindow {
   const windowIcon = firstExistingPath(iconCandidates);
 
   const mainWindow = new BrowserWindow({
-    width: 600,
-    height: 750,
+    ...(windowMode !== 'desktop'
+      ? {
+          ...FIXED_WINDOW_SIZES[windowMode],
+          useContentSize: true,
+          resizable: false,
+          fullscreenable: false,
+          maximizable: false,
+        }
+      : { width: 600, height: 750, resizable: true, fullscreenable: true, maximizable: true }),
     backgroundColor: '#121213',
     show: false,
     ...(windowIcon ? { icon: windowIcon } : {}),
-    resizable: true,
-    fullscreenable: true,
-    maximizable: true,
     webPreferences: {
       contextIsolation: true,
       preload: join(appPath, 'packages', 'electron', 'dist', 'preload.js'),

@@ -1561,6 +1561,39 @@
           "tags": "Tags",
           "save-paths": "Save Paths"
         }
+      },
+      "phone": {
+        "list": {
+          "loading": "Loading torrents...",
+          "empty": "No torrents yet.",
+          "no-matches": "No torrents match your search."
+        },
+        "state": {
+          "downloading": "Downloading",
+          "seeding": "Seeding",
+          "paused": "Paused",
+          "stalled": "Stalled",
+          "queued": "Queued",
+          "checking": "Checking",
+          "error": "Error",
+          "other": "Working"
+        },
+        "actions": {
+          "start": "Start",
+          "stop": "Stop",
+          "delete": "Delete",
+          "more": "More"
+        },
+        "menu": "Filters",
+        "search": "Search torrents",
+        "add": "Add torrent",
+        "settings": "Settings",
+        "selection": {
+          "close": "Clear selection",
+          "count": "{{count}} selected",
+          "select-all": "Select all"
+        },
+        "close": "Close"
       }
     },
     "settings": {
@@ -1941,6 +1974,49 @@
           "path-mappings": {
             "description": "Map remote server paths to local paths so files resolve on this device."
           }
+        }
+      }
+    },
+    "mobile-settings": {
+      "title": "Settings",
+      "group": {
+        "interface": "Interface",
+        "application": "Application",
+        "data": "Data",
+        "help": "Help",
+        "session": "Session"
+      },
+      "pane": {
+        "list": {
+          "title": "Torrent List",
+          "description": "How the torrent list is sorted and how dense its rows are."
+        }
+      },
+      "action": {
+        "import-torrents": "Import Torrents",
+        "export-torrents": "Export Torrents",
+        "import-configuration": "Import Configuration",
+        "export-configuration": "Export Configuration",
+        "about": "About BitButler",
+        "disconnect": "Disconnect",
+        "quit": "Quit BitButler"
+      },
+      "list": {
+        "sort": {
+          "title": "Sort By",
+          "added_on": "Added On",
+          "name": "Name",
+          "size": "Size",
+          "progress": "Progress",
+          "dlspeed": "Download Speed",
+          "upspeed": "Upload Speed",
+          "ratio": "Ratio",
+          "last_activity": "Last Activity"
+        },
+        "density": {
+          "title": "Density",
+          "compact": "Compact rows",
+          "compact-sub": "Show more torrents on screen at once."
         }
       }
     },

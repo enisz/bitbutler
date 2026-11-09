@@ -36,166 +36,166 @@ export class MenuBarCommandHandlerService {
     this.menuBarService.clicks$.subscribe((payload: MenuClick) => {
       const { action } = payload;
 
-      if (action.startsWith(DEBUG_TOAST_ACTIONS_PREFIX)) {
-        this.showDebugToastsWithActions(action.slice(DEBUG_TOAST_ACTIONS_PREFIX.length));
+      // The two actions that carry a payload stay here; everything else only needs the action.
+      if (action === 'server.select') {
+        if (payload.serverId) this.handleServerSwitch(payload.serverId);
         return;
       }
 
-      switch (action) {
-        case 'file.addTorrent':
-          this.commandBusService.emit({ type: 'UI_ADD_TORRENT' });
-          break;
-
-        case 'settings.app':
-          this.commandBusService.emit({ type: 'UI_OPEN_SETTINGS' });
-          break;
-
-        case 'settings.qb':
-          this.commandBusService.emit({ type: 'UI_OPEN_QB_SETTINGS' });
-          break;
-
-        case 'file.exportTorrents':
-          this.commandBusService.emit({ type: 'UI_EXPORT_TORRENTS' });
-          break;
-
-        case 'file.importTorrents':
-          void window.bitbutler.export.openBbePicker().then((bbePath) => {
-            if (bbePath) this.commandBusService.emit({ type: 'UI_IMPORT_TORRENTS', bbePath });
-          });
-          break;
-
-        case 'file.exportConfiguration':
-          this.commandBusService.emit({ type: 'UI_EXPORT_CONFIGURATION' });
-          break;
-
-        case 'file.importConfiguration':
-          void this.configurationService.pickAndImport();
-          break;
-
-        case 'file.disconnect':
-          this.commandBusService.emit({ type: 'UI_DISCONNECT' });
-          break;
-
-        case 'file.quit':
-          this.commandBusService.emit({ type: 'UI_QUIT' });
-          break;
-
-        case 'server.add':
-          this.commandBusService.emit({ type: 'UI_SERVER_EDITOR_OPEN' });
-          break;
-
-        case 'server.manage':
-          this.commandBusService.emit({ type: 'UI_MANAGE_SERVERS' });
-          break;
-
-        case 'server.select': {
-          const { serverId } = payload;
-          if (serverId) this.handleServerSwitch(serverId);
-          break;
-        }
-
-        case 'view.select': {
-          const { viewId } = payload;
-          if (viewId) this.commandBusService.emit({ type: 'UI_VIEW_SELECT', viewId });
-          break;
-        }
-
-        case 'help.checkForUpdates':
-          this.commandBusService.emit({ type: 'UPDATE_CHECK_FOR_UPDATE', trigger: 'manual' });
-          break;
-
-        case 'help.about':
-          this.commandBusService.emit({ type: 'UI_OPEN_ABOUT' });
-          break;
-
-        case 'settings.manage-tags':
-          this.commandBusService.emit({ type: 'UI_MANAGE_TAGS' });
-          break;
-
-        case 'settings.manage-categories':
-          this.commandBusService.emit({ type: 'UI_MANAGE_CATEGORIES' });
-          break;
-
-        case 'debug.notification':
-          this.notificationService.send('Notification Test', 'A notification from the Renderer');
-          break;
-
-        case 'debug.toast.primary':
-          this.showDebugToast('primary', 'Primary');
-          break;
-
-        case 'debug.toast.secondary':
-          this.showDebugToast('secondary', 'Secondary');
-          break;
-
-        case 'debug.toast.success':
-          this.showDebugToast('success', 'Success');
-          break;
-
-        case 'debug.toast.danger':
-          this.showDebugToast('danger', 'Error');
-          break;
-
-        case 'debug.toast.warning':
-          this.showDebugToast('warning', 'Warning');
-          break;
-
-        case 'debug.toast.info':
-          this.showDebugToast('info', 'Info');
-          break;
-
-        case 'debug.toast.light':
-          this.showDebugToast('light', 'Light');
-          break;
-
-        case 'debug.toast.dark':
-          this.showDebugToast('dark', 'Dark');
-          break;
-
-        case 'debug.toast.adaptive':
-          this.showDebugToast(this.toastService.adaptiveType(), 'Adaptive');
-          break;
-
-        case 'debug.toast.random': {
-          const types = TOAST_TYPES;
-          const type = types[Math.floor(Math.random() * types.length)];
-          this.showDebugToast(type, 'Random Toast', 'A random toast from debug menu', 5000);
-          break;
-        }
-
-        case 'debug.toast.all':
-          this.showDebugToast('primary', 'Primary', 'This is a primary system message.');
-          this.showDebugToast('secondary', 'Secondary', 'This is a secondary system message.');
-          this.showDebugToast(
-            'light',
-            'Light Notification',
-            'This message uses the light theme styling.',
-          );
-          this.showDebugToast(
-            'dark',
-            'Dark Notification',
-            'This message uses the dark theme styling.',
-          );
-          this.showDebugToast(
-            this.toastService.adaptiveType(),
-            'Adaptive Mode',
-            'This automatically matches your current light/dark mode.',
-          );
-          this.showDebugToast('success', 'Success', 'The operation was completed successfully.');
-          this.showDebugToast('danger', 'Error', 'A critical failure occurred during the process.');
-          this.showDebugToast('warning', 'Warning', 'Please review your inputs before continuing.');
-          this.showDebugToast('info', 'Info', 'There is a new update available for your profile.');
-          break;
-
-        default:
-          console.error(
-            'MenuBarCommandHandlerService',
-            'clicks$',
-            'action is not defined!',
-            payload,
-          );
+      if (action === 'view.select') {
+        if (payload.viewId)
+          this.commandBusService.emit({ type: 'UI_VIEW_SELECT', viewId: payload.viewId });
+        return;
       }
+
+      this.runAction(action);
     });
+  }
+
+  /** Runs a menu action that needs no payload; also used by rows outside the menu bar. */
+  public runAction(action: string): void {
+    if (action.startsWith(DEBUG_TOAST_ACTIONS_PREFIX)) {
+      this.showDebugToastsWithActions(action.slice(DEBUG_TOAST_ACTIONS_PREFIX.length));
+      return;
+    }
+
+    switch (action) {
+      case 'file.addTorrent':
+        this.commandBusService.emit({ type: 'UI_ADD_TORRENT' });
+        break;
+
+      case 'settings.app':
+        this.commandBusService.emit({ type: 'UI_OPEN_SETTINGS' });
+        break;
+
+      case 'settings.qb':
+        this.commandBusService.emit({ type: 'UI_OPEN_QB_SETTINGS' });
+        break;
+
+      case 'file.exportTorrents':
+        this.commandBusService.emit({ type: 'UI_EXPORT_TORRENTS' });
+        break;
+
+      case 'file.importTorrents':
+        void window.bitbutler.export.openBbePicker().then((bbePath) => {
+          if (bbePath) this.commandBusService.emit({ type: 'UI_IMPORT_TORRENTS', bbePath });
+        });
+        break;
+
+      case 'file.exportConfiguration':
+        this.commandBusService.emit({ type: 'UI_EXPORT_CONFIGURATION' });
+        break;
+
+      case 'file.importConfiguration':
+        void this.configurationService.pickAndImport();
+        break;
+
+      case 'file.disconnect':
+        this.commandBusService.emit({ type: 'UI_DISCONNECT' });
+        break;
+
+      case 'file.quit':
+        this.commandBusService.emit({ type: 'UI_QUIT' });
+        break;
+
+      case 'server.add':
+        this.commandBusService.emit({ type: 'UI_SERVER_EDITOR_OPEN' });
+        break;
+
+      case 'server.manage':
+        this.commandBusService.emit({ type: 'UI_MANAGE_SERVERS' });
+        break;
+
+      case 'help.checkForUpdates':
+        this.commandBusService.emit({ type: 'UPDATE_CHECK_FOR_UPDATE', trigger: 'manual' });
+        break;
+
+      case 'help.about':
+        this.commandBusService.emit({ type: 'UI_OPEN_ABOUT' });
+        break;
+
+      case 'settings.manage-tags':
+        this.commandBusService.emit({ type: 'UI_MANAGE_TAGS' });
+        break;
+
+      case 'settings.manage-categories':
+        this.commandBusService.emit({ type: 'UI_MANAGE_CATEGORIES' });
+        break;
+
+      case 'debug.notification':
+        this.notificationService.send('Notification Test', 'A notification from the Renderer');
+        break;
+
+      case 'debug.toast.primary':
+        this.showDebugToast('primary', 'Primary');
+        break;
+
+      case 'debug.toast.secondary':
+        this.showDebugToast('secondary', 'Secondary');
+        break;
+
+      case 'debug.toast.success':
+        this.showDebugToast('success', 'Success');
+        break;
+
+      case 'debug.toast.danger':
+        this.showDebugToast('danger', 'Error');
+        break;
+
+      case 'debug.toast.warning':
+        this.showDebugToast('warning', 'Warning');
+        break;
+
+      case 'debug.toast.info':
+        this.showDebugToast('info', 'Info');
+        break;
+
+      case 'debug.toast.light':
+        this.showDebugToast('light', 'Light');
+        break;
+
+      case 'debug.toast.dark':
+        this.showDebugToast('dark', 'Dark');
+        break;
+
+      case 'debug.toast.adaptive':
+        this.showDebugToast(this.toastService.adaptiveType(), 'Adaptive');
+        break;
+
+      case 'debug.toast.random': {
+        const types = TOAST_TYPES;
+        const type = types[Math.floor(Math.random() * types.length)];
+        this.showDebugToast(type, 'Random Toast', 'A random toast from debug menu', 5000);
+        break;
+      }
+
+      case 'debug.toast.all':
+        this.showDebugToast('primary', 'Primary', 'This is a primary system message.');
+        this.showDebugToast('secondary', 'Secondary', 'This is a secondary system message.');
+        this.showDebugToast(
+          'light',
+          'Light Notification',
+          'This message uses the light theme styling.',
+        );
+        this.showDebugToast(
+          'dark',
+          'Dark Notification',
+          'This message uses the dark theme styling.',
+        );
+        this.showDebugToast(
+          this.toastService.adaptiveType(),
+          'Adaptive Mode',
+          'This automatically matches your current light/dark mode.',
+        );
+        this.showDebugToast('success', 'Success', 'The operation was completed successfully.');
+        this.showDebugToast('danger', 'Error', 'A critical failure occurred during the process.');
+        this.showDebugToast('warning', 'Warning', 'Please review your inputs before continuing.');
+        this.showDebugToast('info', 'Info', 'There is a new update available for your profile.');
+        break;
+
+      default:
+        console.error('MenuBarCommandHandlerService', 'action is not defined!', action);
+    }
   }
 
   // Debug > Toasts > With Actions: the same kinds as the plain list, each with a secondary and a

@@ -16,11 +16,13 @@ import { ServerStoreService } from '../../services/server-store.service';
 import { ServerService } from '../../services/server.service';
 import { ThemeService } from '../../services/theme.service';
 import { ToastService } from '../../services/toast.service';
+import { ViewportService } from '../../services/viewport.service';
 import { mockTranslateService } from '../../test-utils/translate.mock';
 import { ManageServers } from './manage-servers';
 
 describe('ManageServers', () => {
   let component: ManageServers;
+  let viewportMock: { isPhone: ReturnType<typeof signal<boolean>> };
   let fixture: ComponentFixture<ManageServers>;
   let serverStoreService: {
     servers: ReturnType<typeof signal<any[]>>;
@@ -50,6 +52,7 @@ describe('ManageServers', () => {
   let gridContextMenuService: { buildHeaderMenu: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
+    viewportMock = { isPhone: signal(false) };
     const currentServerIdSignal = signal<string | null>(null);
     serverStoreService = {
       servers: signal([]),
@@ -86,6 +89,7 @@ describe('ManageServers', () => {
     await TestBed.configureTestingModule({
       imports: [ManageServers],
       providers: [
+        { provide: ViewportService, useValue: viewportMock },
         { provide: ServerStoreService, useValue: serverStoreService },
         { provide: ManageServersGridSettingsService, useValue: manageServersGridSettingsService },
         { provide: ThemeService, useValue: { effectiveMode: signal('light') } },
@@ -563,6 +567,42 @@ describe('ManageServers', () => {
     it('keeps the isRowSelectable guard', () => {
       const selection = component.gridOptions.rowSelection as { isRowSelectable?: unknown };
       expect(selection.isRowSelectable).toBe(component.isRowSelectable);
+    });
+  });
+
+  describe('on phone', () => {
+    const servers = [
+      { id: 'srv-1', name: 'Home', protocol: 'https', host: 'nas.local', port: 8080 },
+      { id: 'srv-2', name: 'Seedbox', protocol: 'http', host: '10.0.0.5', port: 9090 },
+    ];
+    const row = (id: string): HTMLButtonElement | null =>
+      fixture.nativeElement.querySelector('[data-testid="select-row-' + id + '"]');
+
+    beforeEach(() => {
+      serverStoreService.servers.set(servers);
+      viewportMock.isPhone.set(true);
+      fixture.detectChanges();
+    });
+
+    it('renders a selectable list with the address and no grid', () => {
+      expect(fixture.nativeElement.querySelector('ag-grid-angular')).toBeNull();
+      expect(row('srv-2')?.textContent).toContain('Seedbox');
+      expect(row('srv-2')?.textContent).toContain('http://10.0.0.5:9090');
+    });
+
+    it('lets a server be selected for editing and connecting', () => {
+      row('srv-2')?.click();
+      fixture.detectChanges();
+      expect(component.canEdit()).toBe(true);
+      expect(component.canConnect()).toBe(true);
+    });
+
+    it('does not allow selecting the active server while connected', () => {
+      serverStoreService.currentServerId.set('srv-1');
+      fixture.detectChanges();
+      expect(row('srv-1')?.disabled).toBe(true);
+      row('srv-1')?.click();
+      expect(component.selectedServers()).toEqual([]);
     });
   });
 });

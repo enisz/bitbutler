@@ -12,6 +12,7 @@ const mockServerList = vi.hoisted(() =>
   vi.fn(() => [] as { id: string; name: string; host: string }[]),
 );
 const mockGetMainWindow = vi.hoisted(() => vi.fn());
+const mockGetWindowMode = vi.hoisted(() => vi.fn<() => string>(() => 'desktop'));
 const mockNotify = vi.hoisted(() => vi.fn());
 const mockShowErrorBox = vi.hoisted(() => vi.fn());
 const mockOpenPath = vi.hoisted(() => vi.fn(() => Promise.resolve('')));
@@ -46,6 +47,7 @@ vi.mock('./ipc/view.js', () => ({ getActiveViewId: mockGetActiveViewId }));
 
 vi.mock('./main.js', () => ({ getMainWindow: mockGetMainWindow }));
 
+vi.mock('./main-window.js', () => ({ getWindowMode: mockGetWindowMode }));
 vi.mock('./notification.js', () => ({ notify: mockNotify }));
 
 interface FakeWindow {
@@ -106,6 +108,7 @@ describe('rebuildMenu', () => {
     mockGetActiveViewId.mockReturnValue(null);
     mockServerList.mockReturnValue([]);
     mockGetMainWindow.mockReturnValue(null);
+    mockGetWindowMode.mockReturnValue('desktop');
   });
 
   afterEach(() => {
@@ -122,6 +125,14 @@ describe('rebuildMenu', () => {
     const template = await buildMenu();
     expect(mockBuildFromTemplate).toHaveBeenCalledWith(template);
     expect(mockSetApplicationMenu).toHaveBeenCalledWith(template);
+  });
+
+  it.each(['phone', 'tablet'])('removes the application menu in %s mode', async (mode) => {
+    mockGetWindowMode.mockReturnValue(mode);
+    const { rebuildMenu } = await import('./menu.js');
+    rebuildMenu(null);
+    expect(mockSetApplicationMenu).toHaveBeenCalledWith(null);
+    expect(mockBuildFromTemplate).not.toHaveBeenCalled();
   });
 
   describe('File menu', () => {

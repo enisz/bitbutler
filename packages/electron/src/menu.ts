@@ -4,6 +4,7 @@ import { getCookieJar } from './ipc/qbittorrent.js';
 import { getActiveServerId, serverList } from './ipc/server.js';
 import { getActiveViewId } from './ipc/view.js';
 import { getLogDirectory } from './logger.js';
+import { getWindowMode } from './main-window.js';
 import { getMainWindow } from './main.js';
 import { notify } from './notification.js';
 
@@ -52,6 +53,12 @@ function openLogsFolder(): void {
 }
 
 export function rebuildMenu(mainWindowArg?: Electron.BrowserWindow | null): void {
+  // Phone and tablet have no application menu on a real device, so the dev modes drop it too.
+  if (getWindowMode() !== 'desktop') {
+    Menu.setApplicationMenu(null);
+    return;
+  }
+
   const isDev = !app.isPackaged;
   const mainWindow = mainWindowArg ?? getMainWindow();
 

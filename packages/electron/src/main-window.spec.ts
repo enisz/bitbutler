@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+const mockApp = vi.hoisted(() => ({ isPackaged: false, getAppPath: () => '/app' }));
+
 const mockShellOpenExternal = vi.hoisted(() => vi.fn());
 const mockOnHeadersReceived = vi.hoisted(() => vi.fn());
 const mockWindowOpenHandler = vi.hoisted(() => vi.fn());
@@ -32,7 +34,7 @@ const MockBrowserWindow = vi.hoisted(() =>
 
 vi.mock('electron', () => ({
   BrowserWindow: MockBrowserWindow,
-  app: { isPackaged: false, getAppPath: () => '/app' },
+  app: mockApp,
   session: { defaultSession: { webRequest: { onHeadersReceived: mockOnHeadersReceived } } },
   shell: { openExternal: mockShellOpenExternal },
 }));
@@ -45,6 +47,8 @@ vi.mock('node:fs', () => ({
 describe('createMainWindow', () => {
   afterEach(() => {
     vi.clearAllMocks();
+    vi.unstubAllEnvs();
+    mockApp.isPackaged = false;
   });
 
   it('opens links clicked with target=_blank in the OS default browser instead of a new Electron window', async () => {
@@ -71,6 +75,63 @@ describe('createMainWindow', () => {
 
     expect(mockShellOpenExternal).not.toHaveBeenCalled();
     expect(result).toEqual({ action: 'deny' });
+  });
+
+  describe('dev window mode (BB_WINDOW_MODE)', () => {
+    const createdOptions = async () => {
+      const { createMainWindow } = await import('./main-window.js');
+      createMainWindow();
+      return MockBrowserWindow.mock.calls[0][0];
+    };
+
+    it('defaults to the normal desktop window when the variable is not set', async () => {
+      const { getWindowMode } = await import('./main-window.js');
+      expect(getWindowMode()).toBe('desktop');
+      expect(await createdOptions()).toEqual(
+        expect.objectContaining({ resizable: true, maximizable: true }),
+      );
+    });
+
+    it('creates a fixed phone-sized window in phone mode', async () => {
+      vi.stubEnv('BB_WINDOW_MODE', 'phone');
+      const { getWindowMode } = await import('./main-window.js');
+      expect(getWindowMode()).toBe('phone');
+      expect(await createdOptions()).toEqual(
+        expect.objectContaining({
+          width: 390,
+          height: 640,
+          useContentSize: true,
+          resizable: false,
+          maximizable: false,
+          fullscreenable: false,
+        }),
+      );
+    });
+
+    it('creates a fixed tablet-sized window in tablet mode', async () => {
+      vi.stubEnv('BB_WINDOW_MODE', 'tablet');
+      expect(await createdOptions()).toEqual(
+        expect.objectContaining({
+          width: 900,
+          height: 640,
+          useContentSize: true,
+          resizable: false,
+        }),
+      );
+    });
+
+    it('treats an unknown value as desktop', async () => {
+      vi.stubEnv('BB_WINDOW_MODE', 'watch');
+      const { getWindowMode } = await import('./main-window.js');
+      expect(getWindowMode()).toBe('desktop');
+    });
+
+    it('ignores the variable in a packaged app', async () => {
+      mockApp.isPackaged = true;
+      vi.stubEnv('BB_WINDOW_MODE', 'phone');
+      const { getWindowMode } = await import('./main-window.js');
+      expect(getWindowMode()).toBe('desktop');
+    });
   });
 
   it('denies malformed URLs without throwing', async () => {

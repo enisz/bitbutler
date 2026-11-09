@@ -1,0 +1,14 @@
+@if (open()) {
+  <div class="bb-sheet" role="dialog" aria-modal="true" [attr.aria-label]="title() || null">
+    <div class="bb-sheet__backdrop" (click)="close()"></div>
+    <div class="bb-sheet__panel bb-safe-bottom">
+      <div class="bb-sheet__grip" aria-hidden="true"></div>
+      @if (title()) {
+        <div class="bb-sheet__title">{{ title() }}</div>
+      }
+      <div class="bb-sheet__body">
+        <ng-content></ng-content>
+      </div>
+    </div>
+  </div>
+}

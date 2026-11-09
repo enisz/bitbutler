@@ -3,8 +3,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
 import { QbPollingService } from '../../services/qb-polling.service';
 import { ServerStoreService } from '../../services/server-store.service';
+import { SidebarSettingsService } from '../../services/sidebar-settings.service';
 import { ThemeService } from '../../services/theme.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
+import { ViewportService } from '../../services/viewport.service';
 import { Main } from './main';
 
 describe('Main', () => {
@@ -42,6 +44,11 @@ describe('Main', () => {
     clear: ReturnType<typeof vi.fn>;
   };
 
+  let viewportMock: {
+    isPhone: ReturnType<typeof signal<boolean>>;
+    isTablet: ReturnType<typeof signal<boolean>>;
+  };
+
   let qbPollingMock: {
     startMaindataPolling: ReturnType<typeof vi.fn>;
     linkState: ReturnType<typeof signal<'connected' | 'reconnecting'>>;
@@ -55,6 +62,7 @@ describe('Main', () => {
         { provide: ServerStoreService, useValue: serverStoreMock },
         { provide: QbPollingService, useValue: qbPollingMock },
         { provide: TorrentStoreService, useValue: torrentStoreMock },
+        { provide: ViewportService, useValue: viewportMock },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     })
@@ -80,6 +88,7 @@ describe('Main', () => {
       applyMaindata: vi.fn(),
       clear: vi.fn(),
     };
+    viewportMock = { isPhone: signal(false), isTablet: signal(false) };
     qbPollingMock = {
       startMaindataPolling: vi.fn().mockReturnValue(new Subject()),
       linkState: signal<'connected' | 'reconnecting'>('connected'),
@@ -89,6 +98,62 @@ describe('Main', () => {
   it('should create', async () => {
     await createComponent();
     expect(component).toBeTruthy();
+  });
+
+  describe('layout', () => {
+    it('renders the grid and toolbar and not the phone shell on wide screens', async () => {
+      await createComponent();
+      const el = fixture.nativeElement as HTMLElement;
+      expect(el.querySelector('app-grid')).not.toBeNull();
+      expect(el.querySelector('app-button-bar')).not.toBeNull();
+      expect(el.querySelector('app-phone-main')).toBeNull();
+    });
+
+    it('renders only the phone shell on phone screens', async () => {
+      viewportMock.isPhone.set(true);
+      await createComponent();
+      const el = fixture.nativeElement as HTMLElement;
+      expect(el.querySelector('app-phone-main')).not.toBeNull();
+      expect(el.querySelector('app-grid')).toBeNull();
+      expect(el.querySelector('app-button-bar')).toBeNull();
+    });
+
+    it('swaps back to the grid when the window grows again', async () => {
+      viewportMock.isPhone.set(true);
+      await createComponent();
+      viewportMock.isPhone.set(false);
+      fixture.detectChanges();
+      const el = fixture.nativeElement as HTMLElement;
+      expect(el.querySelector('app-grid')).not.toBeNull();
+      expect(el.querySelector('app-phone-main')).toBeNull();
+    });
+  });
+
+  describe('sidebar on tablet', () => {
+    it('starts collapsed on tablet widths without touching the saved preference', async () => {
+      viewportMock.isTablet.set(true);
+      await createComponent();
+      expect(component.sidebarCollapsed()).toBe(true);
+    });
+
+    it('expands temporarily on tablet without saving the preference', async () => {
+      viewportMock.isTablet.set(true);
+      await createComponent();
+      const save = vi.spyOn(TestBed.inject(SidebarSettingsService), 'save');
+      component.toggleSidebar();
+      expect(component.sidebarCollapsed()).toBe(false);
+      expect(save).not.toHaveBeenCalled();
+      component.toggleSidebar();
+      expect(component.sidebarCollapsed()).toBe(true);
+    });
+
+    it('keeps using the saved preference on desktop', async () => {
+      await createComponent();
+      expect(component.sidebarCollapsed()).toBe(false);
+      const save = vi.spyOn(TestBed.inject(SidebarSettingsService), 'save').mockResolvedValue();
+      component.toggleSidebar();
+      expect(save).toHaveBeenCalledWith(expect.objectContaining({ collapsed: true }));
+    });
   });
 
   describe('theme', () => {

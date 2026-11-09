@@ -1650,3 +1650,47 @@ body {
     display: contents;
   }
 }
+
+// Phone layout helpers (layout is set on <html data-layout> by App).
+:root[data-layout='phone'] {
+  .vh-100 {
+    height: 100dvh !important;
+  }
+
+  .vw-100 {
+    width: 100% !important;
+  }
+}
+
+.bb-safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+// Phone: toasts fill the width of the strip ToastService positions at the top of the screen.
+:root[data-layout='phone'] .bb-toast-container {
+  align-items: stretch;
+  width: calc(100vw - 24px);
+
+  .bb-toast {
+    min-width: 0;
+    max-width: none;
+    width: 100%;
+  }
+}
+
+// Phone: dialogs that are not full-screen keep a visible margin around the card.
+:root[data-layout='phone'] .modal {
+  --bs-modal-margin: 1rem;
+}
+
+// Phone: modal tab strips scroll sideways instead of wrapping.
+:root[data-layout='phone'] .bb-modal-tabs {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+
+  .nav-link {
+    white-space: nowrap;
+  }
+}

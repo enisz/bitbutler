@@ -15,11 +15,13 @@ import { ServerStoreService } from '../../services/server-store.service';
 import { ThemeService } from '../../services/theme.service';
 import { ToastService } from '../../services/toast.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
+import { ViewportService } from '../../services/viewport.service';
 import { mockTranslateService } from '../../test-utils/translate.mock';
 import { ManageCategories } from './manage-categories';
 
 describe('ManageCategories', () => {
   let component: ManageCategories;
+  let viewportMock: { isPhone: ReturnType<typeof signal<boolean>> };
   let fixture: ComponentFixture<ManageCategories>;
   let serverStoreService: { currentServerId: ReturnType<typeof signal<string | null>> };
   let torrentStoreService: { torrentsArray: ReturnType<typeof signal<any[]>> };
@@ -44,6 +46,7 @@ describe('ManageCategories', () => {
   let gridContextMenuService: { buildHeaderMenu: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
+    viewportMock = { isPhone: signal(false) };
     serverStoreService = { currentServerId: signal('srv-1') };
     torrentStoreService = {
       torrentsArray: signal([
@@ -78,6 +81,7 @@ describe('ManageCategories', () => {
     await TestBed.configureTestingModule({
       imports: [ManageCategories],
       providers: [
+        { provide: ViewportService, useValue: viewportMock },
         { provide: ServerStoreService, useValue: serverStoreService },
         { provide: TorrentStoreService, useValue: torrentStoreService },
         {
@@ -628,6 +632,36 @@ describe('ManageCategories', () => {
         headerCheckbox: false,
         enableClickSelection: true,
       });
+    });
+  });
+
+  describe('on phone', () => {
+    const row = (name: string): HTMLElement | null =>
+      fixture.nativeElement.querySelector('[data-testid="select-row-' + name + '"]');
+
+    it('renders a selectable list and no grid', () => {
+      viewportMock.isPhone.set(true);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('app-bb-select-list')).not.toBeNull();
+      expect(fixture.nativeElement.querySelector('ag-grid-angular')).toBeNull();
+    });
+
+    it('keeps the grid and no list on wider screens', () => {
+      expect(fixture.nativeElement.querySelector('ag-grid-angular')).not.toBeNull();
+      expect(fixture.nativeElement.querySelector('app-bb-select-list')).toBeNull();
+    });
+
+    it('shows the save path and lets one category be selected for editing', () => {
+      viewportMock.isPhone.set(true);
+      fixture.detectChanges();
+      expect(row('movies')?.textContent).toContain('/data/movies');
+      row('movies')?.click();
+      fixture.detectChanges();
+      expect(component.canEdit()).toBe(true);
+      row('tv')?.click();
+      fixture.detectChanges();
+      expect(component.canEdit()).toBe(false);
+      expect(component.canDelete()).toBe(true);
     });
   });
 });

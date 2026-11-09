@@ -77,6 +77,7 @@ export type {
   ExportTagScope,
   ExportTorrentFileItem,
   ExportTorrentFilesResult,
+  AppPlatform,
   ImportProgressEvent,
   ImportRestoreField,
   ImportStartMode,

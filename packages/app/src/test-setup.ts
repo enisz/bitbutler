@@ -81,6 +81,7 @@ function buildQbBridgeStub(): BitButlerQbAPI {
 }
 
 window.bitbutler = {
+  appPlatform: 'desktop',
   electron: {
     isDev: () => Promise.resolve(false),
     openExternalUrl: noopVoidAsync,

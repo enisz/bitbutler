@@ -1,6 +1,6 @@
 import { GlobalPositionStrategy, Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
-import { DestroyRef, Injectable, SecurityContext, inject } from '@angular/core';
+import { DestroyRef, Injectable, SecurityContext, effect, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
@@ -12,6 +12,7 @@ import { GeneralSettingsService } from './general-settings.service';
 import { NotificationPolicyService } from './notification-policy.service';
 import { NotificationService } from './notification.service';
 import { ThemeService } from './theme.service';
+import { ViewportService } from './viewport.service';
 
 // A toast with actions has to outlive a glance: errors stay until dismissed, anything else gets
 // a longer window than a plain toast. Hover/focus still pauses the timer.
@@ -35,6 +36,7 @@ export class ToastService {
   private readonly destroyRef = inject(DestroyRef);
   private readonly notificationPolicy = inject(NotificationPolicyService);
   private readonly notificationService = inject(NotificationService);
+  private readonly viewportService = inject(ViewportService);
 
   private overlayRef?: OverlayRef;
   private container?: ToastOverlay;
@@ -50,6 +52,12 @@ export class ToastService {
         this.settings = settings;
         this.updatePosition(settings.notifications.app.position);
       });
+
+    // Crossing the phone breakpoint switches between the corner stack and the full-width strip.
+    effect(() => {
+      this.viewportService.isPhone();
+      this.updatePosition(this.settings?.notifications.app.position ?? 'bottom-right');
+    });
   }
 
   private ensureContainer() {
@@ -70,6 +78,17 @@ export class ToastService {
     const toastPosition = position ?? this.settings?.notifications.app.position ?? 'bottom-right';
 
     const positionStrategy = this.overlay.position().global();
+
+    // Phone: the corner setting is ignored. Toasts span the screen width at the top, clear of the
+    // bottom action bar and the "+" button, and below the status bar / notch.
+    if (this.viewportService.isPhone()) {
+      return positionStrategy
+        .top('calc(env(safe-area-inset-top, 0px) + 12px)')
+        .left('12px')
+        .right('12px')
+        .width('auto');
+    }
+
     switch (toastPosition) {
       case 'top-left':
         positionStrategy.top('25px').left('25px');

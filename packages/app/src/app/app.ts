@@ -25,6 +25,7 @@ import { TorrentFinishedEvent, TorrentStoreService } from './services/torrent-st
 import { TransferLimitCommandHandlerService } from './services/transfer-limit-command-handler.service';
 import { UiCommandHandlerService } from './services/ui-command-handler.service';
 import { UpdateCommandHandlerService } from './services/update-command-handler.service';
+import { ViewportService } from './services/viewport.service';
 
 @Component({
   selector: 'app-root',
@@ -57,6 +58,11 @@ export class App {
   private readonly translateService = inject(TranslateService);
   private readonly timeagoIntl = inject(TimeagoIntl);
   private readonly router = inject(Router);
+  private readonly viewportService = inject(ViewportService);
+
+  private readonly _layoutAttributeEffect = effect(() => {
+    document.documentElement.dataset['layout'] = this.viewportService.layout();
+  });
 
   public readonly isDev = toSignal(from(this.electronService.isDev()), { initialValue: false });
   private updateCheckedOnStartup = false;
@@ -109,6 +115,9 @@ export class App {
     this.modalConfigService.keyboard = true;
     this.modalConfigService.centered = true;
     this.modalConfigService.animation = true;
+    // Long modals keep their header and footer in view and scroll the body. Big ones opt in to
+    // fullscreen below the md breakpoint per call; small dialogs stay centered cards.
+    this.modalConfigService.scrollable = true;
     this.tooltipConfigService.container = 'body';
     this.setNgSelectTranslations();
 

@@ -1,0 +1,984 @@
+.
+├── build
+│   ├── installerHeader.bmp
+│   ├── installer.nsh
+│   └── installerSidebar.bmp
+├── CLAUDE.md
+├── eslint.config.mjs
+├── LICENSE
+├── opencode.json
+├── package.json
+├── package-lock.json
+├── packages
+│   ├── app
+│   │   ├── angular.json
+│   │   ├── package.json
+│   │   ├── public
+│   │   │   ├── bitbutler.ico
+│   │   │   ├── bitbutler.png
+│   │   │   └── i18n
+│   │   │       ├── hu.json
+│   │   │       └── us.json
+│   │   ├── src
+│   │   │   ├── app
+│   │   │   │   ├── app.config.ts
+│   │   │   │   ├── app.const.ts
+│   │   │   │   ├── app.html
+│   │   │   │   ├── app.routes.ts
+│   │   │   │   ├── app.scss
+│   │   │   │   ├── app.spec.ts
+│   │   │   │   ├── app.ts
+│   │   │   │   ├── components
+│   │   │   │   │   ├── about
+│   │   │   │   │   │   ├── about.html
+│   │   │   │   │   │   ├── about.scss
+│   │   │   │   │   │   ├── about.spec.ts
+│   │   │   │   │   │   └── about.ts
+│   │   │   │   │   ├── app-loader
+│   │   │   │   │   │   ├── app-loader.html
+│   │   │   │   │   │   ├── app-loader.scss
+│   │   │   │   │   │   ├── app-loader.spec.ts
+│   │   │   │   │   │   └── app-loader.ts
+│   │   │   │   │   ├── bb-bottom-sheet
+│   │   │   │   │   │   ├── bb-bottom-sheet.html
+│   │   │   │   │   │   ├── bb-bottom-sheet.scss
+│   │   │   │   │   │   ├── bb-bottom-sheet.spec.ts
+│   │   │   │   │   │   └── bb-bottom-sheet.ts
+│   │   │   │   │   ├── bb-btn-content
+│   │   │   │   │   │   ├── bb-btn-content.html
+│   │   │   │   │   │   ├── bb-btn-content.scss
+│   │   │   │   │   │   ├── bb-btn-content.spec.ts
+│   │   │   │   │   │   └── bb-btn-content.ts
+│   │   │   │   │   ├── bb-callout
+│   │   │   │   │   │   ├── bb-callout.html
+│   │   │   │   │   │   ├── bb-callout.scss
+│   │   │   │   │   │   ├── bb-callout.spec.ts
+│   │   │   │   │   │   └── bb-callout.ts
+│   │   │   │   │   ├── bb-file-tree
+│   │   │   │   │   │   ├── bb-file-tree.html
+│   │   │   │   │   │   ├── bb-file-tree.scss
+│   │   │   │   │   │   ├── bb-file-tree.spec.ts
+│   │   │   │   │   │   ├── bb-file-tree.ts
+│   │   │   │   │   │   ├── file-icon.spec.ts
+│   │   │   │   │   │   └── file-icon.ts
+│   │   │   │   │   ├── bb-logo
+│   │   │   │   │   │   ├── bb-logo.html
+│   │   │   │   │   │   ├── bb-logo.scss
+│   │   │   │   │   │   ├── bb-logo.spec.ts
+│   │   │   │   │   │   └── bb-logo.ts
+│   │   │   │   │   ├── bb-popover
+│   │   │   │   │   │   ├── bb-popover.html
+│   │   │   │   │   │   ├── bb-popover.scss
+│   │   │   │   │   │   ├── bb-popover.spec.ts
+│   │   │   │   │   │   └── bb-popover.ts
+│   │   │   │   │   ├── bb-progress
+│   │   │   │   │   │   ├── bb-progress.html
+│   │   │   │   │   │   ├── bb-progress.scss
+│   │   │   │   │   │   ├── bb-progress.spec.ts
+│   │   │   │   │   │   ├── bb-progress.ts
+│   │   │   │   │   │   ├── bb-progress.types.ts
+│   │   │   │   │   │   ├── format-progress-percent.spec.ts
+│   │   │   │   │   │   ├── format-progress-percent.ts
+│   │   │   │   │   │   ├── torrent-state-variant.spec.ts
+│   │   │   │   │   │   └── torrent-state-variant.ts
+│   │   │   │   │   ├── bb-section-card
+│   │   │   │   │   │   ├── bb-section-card.html
+│   │   │   │   │   │   ├── bb-section-card.scss
+│   │   │   │   │   │   ├── bb-section-card.spec.ts
+│   │   │   │   │   │   └── bb-section-card.ts
+│   │   │   │   │   ├── bb-select-list
+│   │   │   │   │   │   ├── bb-select-list.html
+│   │   │   │   │   │   ├── bb-select-list.scss
+│   │   │   │   │   │   ├── bb-select-list.spec.ts
+│   │   │   │   │   │   └── bb-select-list.ts
+│   │   │   │   │   ├── bb-spinner
+│   │   │   │   │   │   ├── bb-spinner.html
+│   │   │   │   │   │   ├── bb-spinner.scss
+│   │   │   │   │   │   ├── bb-spinner.spec.ts
+│   │   │   │   │   │   └── bb-spinner.ts
+│   │   │   │   │   ├── category-select
+│   │   │   │   │   │   ├── category-select.html
+│   │   │   │   │   │   ├── category-select.scss
+│   │   │   │   │   │   ├── category-select.spec.ts
+│   │   │   │   │   │   └── category-select.ts
+│   │   │   │   │   ├── column-filters
+│   │   │   │   │   │   ├── boolean-column-filter
+│   │   │   │   │   │   │   ├── boolean-column-filter.html
+│   │   │   │   │   │   │   ├── boolean-column-filter.scss
+│   │   │   │   │   │   │   ├── boolean-column-filter.spec.ts
+│   │   │   │   │   │   │   └── boolean-column-filter.ts
+│   │   │   │   │   │   ├── datepicker-range-filter
+│   │   │   │   │   │   │   ├── datepicker-range-filter.html
+│   │   │   │   │   │   │   ├── datepicker-range-filter.scss
+│   │   │   │   │   │   │   ├── datepicker-range-filter.spec.ts
+│   │   │   │   │   │   │   └── datepicker-range-filter.ts
+│   │   │   │   │   │   ├── duration-column-filter
+│   │   │   │   │   │   │   ├── duration-column-filter.html
+│   │   │   │   │   │   │   ├── duration-column-filter.scss
+│   │   │   │   │   │   │   ├── duration-column-filter.spec.ts
+│   │   │   │   │   │   │   └── duration-column-filter.ts
+│   │   │   │   │   │   ├── filter-instance-id.utils.spec.ts
+│   │   │   │   │   │   ├── filter-instance-id.utils.ts
+│   │   │   │   │   │   ├── number-column-filter
+│   │   │   │   │   │   │   ├── number-column-filter.html
+│   │   │   │   │   │   │   ├── number-column-filter.scss
+│   │   │   │   │   │   │   ├── number-column-filter.spec.ts
+│   │   │   │   │   │   │   └── number-column-filter.ts
+│   │   │   │   │   │   ├── operator-filter-base.ts
+│   │   │   │   │   │   ├── operator-filter.utils.spec.ts
+│   │   │   │   │   │   ├── operator-filter.utils.ts
+│   │   │   │   │   │   ├── ratio-limit-column-filter
+│   │   │   │   │   │   │   ├── ratio-limit-column-filter.html
+│   │   │   │   │   │   │   ├── ratio-limit-column-filter.scss
+│   │   │   │   │   │   │   ├── ratio-limit-column-filter.spec.ts
+│   │   │   │   │   │   │   └── ratio-limit-column-filter.ts
+│   │   │   │   │   │   ├── set-column-filter
+│   │   │   │   │   │   │   ├── set-column-filter.html
+│   │   │   │   │   │   │   ├── set-column-filter.scss
+│   │   │   │   │   │   │   ├── set-column-filter.spec.ts
+│   │   │   │   │   │   │   └── set-column-filter.ts
+│   │   │   │   │   │   ├── size-column-filter
+│   │   │   │   │   │   │   ├── size-column-filter.html
+│   │   │   │   │   │   │   ├── size-column-filter.scss
+│   │   │   │   │   │   │   ├── size-column-filter.spec.ts
+│   │   │   │   │   │   │   └── size-column-filter.ts
+│   │   │   │   │   │   ├── text-column-filter
+│   │   │   │   │   │   │   ├── text-column-filter.html
+│   │   │   │   │   │   │   ├── text-column-filter.scss
+│   │   │   │   │   │   │   ├── text-column-filter.spec.ts
+│   │   │   │   │   │   │   └── text-column-filter.ts
+│   │   │   │   │   │   ├── time-limit-column-filter
+│   │   │   │   │   │   │   ├── time-limit-column-filter.html
+│   │   │   │   │   │   │   ├── time-limit-column-filter.scss
+│   │   │   │   │   │   │   ├── time-limit-column-filter.spec.ts
+│   │   │   │   │   │   │   └── time-limit-column-filter.ts
+│   │   │   │   │   │   ├── time-unit.utils.spec.ts
+│   │   │   │   │   │   └── time-unit.utils.ts
+│   │   │   │   │   ├── form-controls
+│   │   │   │   │   │   ├── bb-boolean-control.ts
+│   │   │   │   │   │   ├── bb-checkbox
+│   │   │   │   │   │   │   ├── bb-checkbox.html
+│   │   │   │   │   │   │   ├── bb-checkbox.scss
+│   │   │   │   │   │   │   ├── bb-checkbox.spec.ts
+│   │   │   │   │   │   │   └── bb-checkbox.ts
+│   │   │   │   │   │   ├── bb-check-tree
+│   │   │   │   │   │   │   ├── bb-check-tree.html
+│   │   │   │   │   │   │   ├── bb-check-tree.scss
+│   │   │   │   │   │   │   ├── bb-check-tree.spec.ts
+│   │   │   │   │   │   │   └── bb-check-tree.ts
+│   │   │   │   │   │   ├── bb-radio-group
+│   │   │   │   │   │   │   ├── bb-radio-group.html
+│   │   │   │   │   │   │   ├── bb-radio-group.scss
+│   │   │   │   │   │   │   ├── bb-radio-group.spec.ts
+│   │   │   │   │   │   │   ├── bb-radio-group.ts
+│   │   │   │   │   │   │   ├── bb-radio.html
+│   │   │   │   │   │   │   ├── bb-radio.scss
+│   │   │   │   │   │   │   └── bb-radio.ts
+│   │   │   │   │   │   └── bb-switch
+│   │   │   │   │   │       ├── bb-switch.html
+│   │   │   │   │   │       ├── bb-switch.spec.ts
+│   │   │   │   │   │       └── bb-switch.ts
+│   │   │   │   │   ├── save-path-select
+│   │   │   │   │   │   ├── save-path-select.html
+│   │   │   │   │   │   ├── save-path-select.scss
+│   │   │   │   │   │   ├── save-path-select.spec.ts
+│   │   │   │   │   │   ├── save-path-select.ts
+│   │   │   │   │   │   ├── save-path-typeahead.service.spec.ts
+│   │   │   │   │   │   └── save-path-typeahead.service.ts
+│   │   │   │   │   ├── share-limit
+│   │   │   │   │   │   ├── share-limit.html
+│   │   │   │   │   │   ├── share-limit.spec.ts
+│   │   │   │   │   │   └── share-limit.ts
+│   │   │   │   │   ├── tag-select
+│   │   │   │   │   │   ├── tag-select.html
+│   │   │   │   │   │   ├── tag-select.scss
+│   │   │   │   │   │   ├── tag-select.spec.ts
+│   │   │   │   │   │   └── tag-select.ts
+│   │   │   │   │   ├── toast-overlay
+│   │   │   │   │   │   ├── toast-overlay.html
+│   │   │   │   │   │   ├── toast-overlay.scss
+│   │   │   │   │   │   ├── toast-overlay.spec.ts
+│   │   │   │   │   │   └── toast-overlay.ts
+│   │   │   │   │   └── transfer-limit
+│   │   │   │   │       ├── transfer-limit.html
+│   │   │   │   │       ├── transfer-limit.spec.ts
+│   │   │   │   │       └── transfer-limit.ts
+│   │   │   │   ├── directives
+│   │   │   │   │   ├── autofocus.spec.ts
+│   │   │   │   │   ├── autofocus.ts
+│   │   │   │   │   ├── bb-option-text.spec.ts
+│   │   │   │   │   ├── bb-option-text.ts
+│   │   │   │   │   ├── bb-tooltip.spec.ts
+│   │   │   │   │   ├── bb-tooltip.ts
+│   │   │   │   │   ├── grid-row-navigation.spec.ts
+│   │   │   │   │   ├── grid-row-navigation.ts
+│   │   │   │   │   ├── long-press.spec.ts
+│   │   │   │   │   ├── long-press.ts
+│   │   │   │   │   ├── touch-context-menu.spec.ts
+│   │   │   │   │   └── touch-context-menu.ts
+│   │   │   │   ├── guards
+│   │   │   │   │   ├── unsaved-changes.guard.spec.ts
+│   │   │   │   │   └── unsaved-changes.guard.ts
+│   │   │   │   ├── modals
+│   │   │   │   │   ├── add-torrent
+│   │   │   │   │   │   ├── add-torrent.html
+│   │   │   │   │   │   ├── add-torrent.scss
+│   │   │   │   │   │   ├── add-torrent.spec.ts
+│   │   │   │   │   │   ├── add-torrent.ts
+│   │   │   │   │   │   ├── files
+│   │   │   │   │   │   │   ├── files.html
+│   │   │   │   │   │   │   ├── files.scss
+│   │   │   │   │   │   │   ├── files.spec.ts
+│   │   │   │   │   │   │   └── files.ts
+│   │   │   │   │   │   ├── general
+│   │   │   │   │   │   │   ├── folder-picker
+│   │   │   │   │   │   │   │   ├── folder-picker.html
+│   │   │   │   │   │   │   │   ├── folder-picker.scss
+│   │   │   │   │   │   │   │   ├── folder-picker.spec.ts
+│   │   │   │   │   │   │   │   └── folder-picker.ts
+│   │   │   │   │   │   │   ├── general.html
+│   │   │   │   │   │   │   ├── general.spec.ts
+│   │   │   │   │   │   │   └── general.ts
+│   │   │   │   │   │   ├── limits
+│   │   │   │   │   │   │   ├── limits.html
+│   │   │   │   │   │   │   ├── limits.scss
+│   │   │   │   │   │   │   ├── limits.spec.ts
+│   │   │   │   │   │   │   └── limits.ts
+│   │   │   │   │   │   └── options
+│   │   │   │   │   │       ├── options.html
+│   │   │   │   │   │       ├── options.spec.ts
+│   │   │   │   │   │       └── options.ts
+│   │   │   │   │   ├── category-editor
+│   │   │   │   │   │   ├── category-editor.html
+│   │   │   │   │   │   ├── category-editor.spec.ts
+│   │   │   │   │   │   └── category-editor.ts
+│   │   │   │   │   ├── confirm
+│   │   │   │   │   │   ├── confirm.html
+│   │   │   │   │   │   ├── confirm.scss
+│   │   │   │   │   │   ├── confirm.spec.ts
+│   │   │   │   │   │   └── confirm.ts
+│   │   │   │   │   ├── credential-prompt
+│   │   │   │   │   │   ├── credential-prompt.html
+│   │   │   │   │   │   ├── credential-prompt.scss
+│   │   │   │   │   │   ├── credential-prompt.spec.ts
+│   │   │   │   │   │   └── credential-prompt.ts
+│   │   │   │   │   ├── delete-torrent
+│   │   │   │   │   │   ├── delete-torrent.html
+│   │   │   │   │   │   ├── delete-torrent.scss
+│   │   │   │   │   │   ├── delete-torrent.spec.ts
+│   │   │   │   │   │   └── delete-torrent.ts
+│   │   │   │   │   ├── export-configuration
+│   │   │   │   │   │   ├── export-configuration.html
+│   │   │   │   │   │   ├── export-configuration.spec.ts
+│   │   │   │   │   │   └── export-configuration.ts
+│   │   │   │   │   ├── export-torrents
+│   │   │   │   │   │   ├── export-torrents.html
+│   │   │   │   │   │   ├── export-torrents.scss
+│   │   │   │   │   │   ├── export-torrents.spec.ts
+│   │   │   │   │   │   └── export-torrents.ts
+│   │   │   │   │   ├── import-configuration
+│   │   │   │   │   │   ├── import-configuration.html
+│   │   │   │   │   │   ├── import-configuration.spec.ts
+│   │   │   │   │   │   └── import-configuration.ts
+│   │   │   │   │   ├── import-torrents
+│   │   │   │   │   │   ├── import-torrents.html
+│   │   │   │   │   │   ├── import-torrents.scss
+│   │   │   │   │   │   ├── import-torrents.spec.ts
+│   │   │   │   │   │   └── import-torrents.ts
+│   │   │   │   │   ├── manage-categories
+│   │   │   │   │   │   ├── manage-categories.html
+│   │   │   │   │   │   ├── manage-categories.scss
+│   │   │   │   │   │   ├── manage-categories.spec.ts
+│   │   │   │   │   │   └── manage-categories.ts
+│   │   │   │   │   ├── manage-servers
+│   │   │   │   │   │   ├── active-orb-renderer.ts
+│   │   │   │   │   │   ├── manage-servers.html
+│   │   │   │   │   │   ├── manage-servers.scss
+│   │   │   │   │   │   ├── manage-servers.spec.ts
+│   │   │   │   │   │   └── manage-servers.ts
+│   │   │   │   │   ├── manage-tags
+│   │   │   │   │   │   ├── manage-tags.html
+│   │   │   │   │   │   ├── manage-tags.scss
+│   │   │   │   │   │   ├── manage-tags.spec.ts
+│   │   │   │   │   │   └── manage-tags.ts
+│   │   │   │   │   ├── rename-torrent
+│   │   │   │   │   │   ├── rename-torrent.html
+│   │   │   │   │   │   ├── rename-torrent.scss
+│   │   │   │   │   │   ├── rename-torrent.spec.ts
+│   │   │   │   │   │   └── rename-torrent.ts
+│   │   │   │   │   ├── server-editor
+│   │   │   │   │   │   ├── server-editor.html
+│   │   │   │   │   │   ├── server-editor.interface.ts
+│   │   │   │   │   │   ├── server-editor.scss
+│   │   │   │   │   │   ├── server-editor.spec.ts
+│   │   │   │   │   │   └── server-editor.ts
+│   │   │   │   │   ├── set-path
+│   │   │   │   │   │   ├── set-path.html
+│   │   │   │   │   │   ├── set-path.scss
+│   │   │   │   │   │   ├── set-path.spec.ts
+│   │   │   │   │   │   └── set-path.ts
+│   │   │   │   │   ├── set-torrent-category
+│   │   │   │   │   │   ├── set-torrent-category.html
+│   │   │   │   │   │   ├── set-torrent-category.scss
+│   │   │   │   │   │   ├── set-torrent-category.spec.ts
+│   │   │   │   │   │   └── set-torrent-category.ts
+│   │   │   │   │   ├── set-torrent-tags
+│   │   │   │   │   │   ├── set-torrent-tags.html
+│   │   │   │   │   │   ├── set-torrent-tags.scss
+│   │   │   │   │   │   ├── set-torrent-tags.spec.ts
+│   │   │   │   │   │   └── set-torrent-tags.ts
+│   │   │   │   │   ├── share-limit
+│   │   │   │   │   │   ├── share-limit.html
+│   │   │   │   │   │   ├── share-limit.scss
+│   │   │   │   │   │   ├── share-limit.spec.ts
+│   │   │   │   │   │   └── share-limit.ts
+│   │   │   │   │   ├── tag-editor
+│   │   │   │   │   │   ├── tag-editor.html
+│   │   │   │   │   │   ├── tag-editor.spec.ts
+│   │   │   │   │   │   └── tag-editor.ts
+│   │   │   │   │   ├── torrent-details
+│   │   │   │   │   │   ├── content
+│   │   │   │   │   │   │   ├── content.html
+│   │   │   │   │   │   │   ├── content.scss
+│   │   │   │   │   │   │   ├── content.spec.ts
+│   │   │   │   │   │   │   └── content.ts
+│   │   │   │   │   │   ├── general
+│   │   │   │   │   │   │   ├── general.html
+│   │   │   │   │   │   │   ├── general.scss
+│   │   │   │   │   │   │   ├── general.spec.ts
+│   │   │   │   │   │   │   └── general.ts
+│   │   │   │   │   │   ├── peers
+│   │   │   │   │   │   │   ├── flag-cell-renderer
+│   │   │   │   │   │   │   │   ├── flag-cell-renderer.html
+│   │   │   │   │   │   │   │   ├── flag-cell-renderer.scss
+│   │   │   │   │   │   │   │   ├── flag-cell-renderer.spec.ts
+│   │   │   │   │   │   │   │   └── flag-cell-renderer.ts
+│   │   │   │   │   │   │   ├── flags-tooltip
+│   │   │   │   │   │   │   │   ├── flags-tooltip.const.ts
+│   │   │   │   │   │   │   │   ├── flags-tooltip.html
+│   │   │   │   │   │   │   │   ├── flags-tooltip.scss
+│   │   │   │   │   │   │   │   ├── flags-tooltip.spec.ts
+│   │   │   │   │   │   │   │   └── flags-tooltip.ts
+│   │   │   │   │   │   │   ├── peers.html
+│   │   │   │   │   │   │   ├── peers-list
+│   │   │   │   │   │   │   │   ├── peers-list.html
+│   │   │   │   │   │   │   │   ├── peers-list.scss
+│   │   │   │   │   │   │   │   ├── peers-list.spec.ts
+│   │   │   │   │   │   │   │   └── peers-list.ts
+│   │   │   │   │   │   │   ├── peers.scss
+│   │   │   │   │   │   │   ├── peers.spec.ts
+│   │   │   │   │   │   │   └── peers.ts
+│   │   │   │   │   │   ├── torrent-details-actions.service.spec.ts
+│   │   │   │   │   │   ├── torrent-details-actions.service.ts
+│   │   │   │   │   │   ├── torrent-details-data.service.spec.ts
+│   │   │   │   │   │   ├── torrent-details-data.service.ts
+│   │   │   │   │   │   ├── torrent-details.html
+│   │   │   │   │   │   ├── torrent-details.interface.ts
+│   │   │   │   │   │   ├── torrent-details.scss
+│   │   │   │   │   │   ├── torrent-details.spec.ts
+│   │   │   │   │   │   ├── torrent-details.ts
+│   │   │   │   │   │   └── trackers
+│   │   │   │   │   │       ├── trackers.html
+│   │   │   │   │   │       ├── trackers-list
+│   │   │   │   │   │       │   ├── trackers-list.html
+│   │   │   │   │   │       │   ├── trackers-list.scss
+│   │   │   │   │   │       │   ├── trackers-list.spec.ts
+│   │   │   │   │   │       │   └── trackers-list.ts
+│   │   │   │   │   │       ├── trackers.scss
+│   │   │   │   │   │       ├── trackers.spec.ts
+│   │   │   │   │   │       └── trackers.ts
+│   │   │   │   │   ├── torrent-exists
+│   │   │   │   │   │   ├── torrent-exists.html
+│   │   │   │   │   │   ├── torrent-exists.scss
+│   │   │   │   │   │   ├── torrent-exists.spec.ts
+│   │   │   │   │   │   └── torrent-exists.ts
+│   │   │   │   │   ├── transfer-limit
+│   │   │   │   │   │   ├── transfer-limit.html
+│   │   │   │   │   │   ├── transfer-limit.scss
+│   │   │   │   │   │   ├── transfer-limit.spec.ts
+│   │   │   │   │   │   └── transfer-limit.ts
+│   │   │   │   │   └── update-available
+│   │   │   │   │       ├── update-available.html
+│   │   │   │   │       ├── update-available.scss
+│   │   │   │   │       ├── update-available.spec.ts
+│   │   │   │   │       └── update-available.ts
+│   │   │   │   ├── models
+│   │   │   │   │   ├── add-torrent-folder.model.ts
+│   │   │   │   │   ├── add-torrent-grid.model.ts
+│   │   │   │   │   ├── add-torrent.model.ts
+│   │   │   │   │   ├── command.model.spec.ts
+│   │   │   │   │   ├── command.model.ts
+│   │   │   │   │   ├── general-settings.model.spec.ts
+│   │   │   │   │   ├── general-settings.model.ts
+│   │   │   │   │   ├── guardable-modal.interface.ts
+│   │   │   │   │   ├── manage-categories-grid.model.ts
+│   │   │   │   │   ├── manage-servers-grid.model.ts
+│   │   │   │   │   ├── manage-tags-grid.model.ts
+│   │   │   │   │   ├── notification.model.ts
+│   │   │   │   │   ├── peers-grid.model.ts
+│   │   │   │   │   ├── qb-error.model.ts
+│   │   │   │   │   ├── qbittorrent.model.ts
+│   │   │   │   │   ├── server-settings.model.ts
+│   │   │   │   │   ├── sidebar-settings.model.ts
+│   │   │   │   │   ├── status-bar-settings.model.ts
+│   │   │   │   │   ├── toast.model.ts
+│   │   │   │   │   ├── torrent-list-grid.model.ts
+│   │   │   │   │   ├── torrent.model.ts
+│   │   │   │   │   ├── trackers-grid.model.ts
+│   │   │   │   │   └── update-settings.model.ts
+│   │   │   │   ├── pages
+│   │   │   │   │   ├── login
+│   │   │   │   │   │   ├── login.html
+│   │   │   │   │   │   ├── login.scss
+│   │   │   │   │   │   ├── login.spec.ts
+│   │   │   │   │   │   └── login.ts
+│   │   │   │   │   ├── main
+│   │   │   │   │   │   ├── button-bar
+│   │   │   │   │   │   │   ├── button-bar.html
+│   │   │   │   │   │   │   ├── button-bar.menu.ts
+│   │   │   │   │   │   │   ├── button-bar.scss
+│   │   │   │   │   │   │   ├── button-bar.spec.ts
+│   │   │   │   │   │   │   └── button-bar.ts
+│   │   │   │   │   │   ├── grid
+│   │   │   │   │   │   │   ├── context-menu
+│   │   │   │   │   │   │   │   ├── cell-value-formatter.util.spec.ts
+│   │   │   │   │   │   │   │   ├── cell-value-formatter.util.ts
+│   │   │   │   │   │   │   │   ├── context-menu.html
+│   │   │   │   │   │   │   │   ├── context-menu.scss
+│   │   │   │   │   │   │   │   ├── context-menu.spec.ts
+│   │   │   │   │   │   │   │   ├── context-menu.tokens.ts
+│   │   │   │   │   │   │   │   ├── context-menu.ts
+│   │   │   │   │   │   │   │   ├── context-menu.types.ts
+│   │   │   │   │   │   │   │   ├── grid-context-menu.service.spec.ts
+│   │   │   │   │   │   │   │   └── grid-context-menu.service.ts
+│   │   │   │   │   │   │   ├── grid.html
+│   │   │   │   │   │   │   ├── grid-inline-edit.service.spec.ts
+│   │   │   │   │   │   │   ├── grid-inline-edit.service.ts
+│   │   │   │   │   │   │   ├── grid-keyboard-nav.service.spec.ts
+│   │   │   │   │   │   │   ├── grid-keyboard-nav.service.ts
+│   │   │   │   │   │   │   ├── grid.lib.spec.ts
+│   │   │   │   │   │   │   ├── grid.lib.ts
+│   │   │   │   │   │   │   ├── grid-pin.service.spec.ts
+│   │   │   │   │   │   │   ├── grid-pin.service.ts
+│   │   │   │   │   │   │   ├── grid.scss
+│   │   │   │   │   │   │   ├── grid.spec.ts
+│   │   │   │   │   │   │   ├── grid.ts
+│   │   │   │   │   │   │   ├── overlays
+│   │   │   │   │   │   │   │   ├── loading-overlay
+│   │   │   │   │   │   │   │   │   ├── loading-overlay.html
+│   │   │   │   │   │   │   │   │   ├── loading-overlay.scss
+│   │   │   │   │   │   │   │   │   ├── loading-overlay.spec.ts
+│   │   │   │   │   │   │   │   │   └── loading-overlay.ts
+│   │   │   │   │   │   │   │   └── no-row-overlay
+│   │   │   │   │   │   │   │       ├── no-row-overlay.html
+│   │   │   │   │   │   │   │       ├── no-row-overlay.scss
+│   │   │   │   │   │   │   │       ├── no-row-overlay.spec.ts
+│   │   │   │   │   │   │   │       └── no-row-overlay.ts
+│   │   │   │   │   │   │   └── renderers
+│   │   │   │   │   │   │       ├── code-cell-renderer
+│   │   │   │   │   │   │       │   ├── code-cell-renderer.html
+│   │   │   │   │   │   │       │   ├── code-cell-renderer.scss
+│   │   │   │   │   │   │       │   ├── code-cell-renderer.spec.ts
+│   │   │   │   │   │   │       │   └── code-cell-renderer.ts
+│   │   │   │   │   │   │       ├── compact-progress-cell-renderer
+│   │   │   │   │   │   │       │   ├── compact-progress-cell-renderer.html
+│   │   │   │   │   │   │       │   ├── compact-progress-cell-renderer.scss
+│   │   │   │   │   │   │       │   ├── compact-progress-cell-renderer.spec.ts
+│   │   │   │   │   │   │       │   └── compact-progress-cell-renderer.ts
+│   │   │   │   │   │   │       ├── progress-cell-renderer
+│   │   │   │   │   │   │       │   ├── progress-cell-renderer.html
+│   │   │   │   │   │   │       │   ├── progress-cell-renderer.scss
+│   │   │   │   │   │   │       │   ├── progress-cell-renderer.spec.ts
+│   │   │   │   │   │   │       │   └── progress-cell-renderer.ts
+│   │   │   │   │   │   │       └── status-dot-cell-renderer
+│   │   │   │   │   │   │           ├── status-dot-cell-renderer.html
+│   │   │   │   │   │   │           ├── status-dot-cell-renderer.scss
+│   │   │   │   │   │   │           ├── status-dot-cell-renderer.spec.ts
+│   │   │   │   │   │   │           └── status-dot-cell-renderer.ts
+│   │   │   │   │   │   ├── main.html
+│   │   │   │   │   │   ├── main.scss
+│   │   │   │   │   │   ├── main.spec.ts
+│   │   │   │   │   │   ├── main.ts
+│   │   │   │   │   │   ├── phone
+│   │   │   │   │   │   │   ├── phone-action-bar
+│   │   │   │   │   │   │   │   ├── phone-action-bar.html
+│   │   │   │   │   │   │   │   ├── phone-action-bar.scss
+│   │   │   │   │   │   │   │   ├── phone-action-bar.spec.ts
+│   │   │   │   │   │   │   │   └── phone-action-bar.ts
+│   │   │   │   │   │   │   ├── phone-list-state.service.spec.ts
+│   │   │   │   │   │   │   ├── phone-list-state.service.ts
+│   │   │   │   │   │   │   ├── phone-main
+│   │   │   │   │   │   │   │   ├── phone-main.html
+│   │   │   │   │   │   │   │   ├── phone-main.scss
+│   │   │   │   │   │   │   │   ├── phone-main.spec.ts
+│   │   │   │   │   │   │   │   └── phone-main.ts
+│   │   │   │   │   │   │   ├── phone-more.utils.spec.ts
+│   │   │   │   │   │   │   ├── phone-more.utils.ts
+│   │   │   │   │   │   │   └── torrent-card-list
+│   │   │   │   │   │   │       ├── torrent-card-list.html
+│   │   │   │   │   │   │       ├── torrent-card-list.scss
+│   │   │   │   │   │   │       ├── torrent-card-list.spec.ts
+│   │   │   │   │   │   │       └── torrent-card-list.ts
+│   │   │   │   │   │   ├── server-state
+│   │   │   │   │   │   │   ├── server-state.html
+│   │   │   │   │   │   │   ├── server-state.scss
+│   │   │   │   │   │   │   ├── server-state.spec.ts
+│   │   │   │   │   │   │   └── server-state.ts
+│   │   │   │   │   │   ├── status
+│   │   │   │   │   │   │   ├── filter-group
+│   │   │   │   │   │   │   │   ├── filter-group.html
+│   │   │   │   │   │   │   │   ├── filter-group.scss
+│   │   │   │   │   │   │   │   ├── filter-group.spec.ts
+│   │   │   │   │   │   │   │   └── filter-group.ts
+│   │   │   │   │   │   │   ├── status.html
+│   │   │   │   │   │   │   ├── status.scss
+│   │   │   │   │   │   │   ├── status.spec.ts
+│   │   │   │   │   │   │   └── status.ts
+│   │   │   │   │   │   ├── tracker.utils.spec.ts
+│   │   │   │   │   │   └── tracker.utils.ts
+│   │   │   │   │   ├── qb-settings
+│   │   │   │   │   │   ├── bandwidth
+│   │   │   │   │   │   │   ├── bandwidth.html
+│   │   │   │   │   │   │   ├── bandwidth.scss
+│   │   │   │   │   │   │   ├── bandwidth.spec.ts
+│   │   │   │   │   │   │   └── bandwidth.ts
+│   │   │   │   │   │   ├── qb-settings.interface.ts
+│   │   │   │   │   │   ├── qb-settings-page.config.ts
+│   │   │   │   │   │   ├── qb-settings-page.html
+│   │   │   │   │   │   ├── qb-settings-page.spec.ts
+│   │   │   │   │   │   ├── qb-settings-page.ts
+│   │   │   │   │   │   ├── qb-settings-state.service.spec.ts
+│   │   │   │   │   │   ├── qb-settings-state.service.ts
+│   │   │   │   │   │   ├── queue-limits
+│   │   │   │   │   │   │   ├── queue-limits.html
+│   │   │   │   │   │   │   ├── queue-limits.scss
+│   │   │   │   │   │   │   ├── queue-limits.spec.ts
+│   │   │   │   │   │   │   └── queue-limits.ts
+│   │   │   │   │   │   ├── seeding-ratios
+│   │   │   │   │   │   │   ├── seeding-ratios.html
+│   │   │   │   │   │   │   ├── seeding-ratios.spec.ts
+│   │   │   │   │   │   │   └── seeding-ratios.ts
+│   │   │   │   │   │   └── storage
+│   │   │   │   │   │       ├── storage.html
+│   │   │   │   │   │       ├── storage.scss
+│   │   │   │   │   │       ├── storage.spec.ts
+│   │   │   │   │   │       └── storage.ts
+│   │   │   │   │   ├── settings
+│   │   │   │   │   │   ├── appearance
+│   │   │   │   │   │   │   ├── appearance.html
+│   │   │   │   │   │   │   ├── appearance.scss
+│   │   │   │   │   │   │   ├── appearance.spec.ts
+│   │   │   │   │   │   │   └── appearance.ts
+│   │   │   │   │   │   ├── general
+│   │   │   │   │   │   │   ├── general.html
+│   │   │   │   │   │   │   ├── general.spec.ts
+│   │   │   │   │   │   │   └── general.ts
+│   │   │   │   │   │   ├── general-settings-form.service.spec.ts
+│   │   │   │   │   │   ├── general-settings-form.service.ts
+│   │   │   │   │   │   ├── notifications
+│   │   │   │   │   │   │   ├── notifications.html
+│   │   │   │   │   │   │   ├── notifications.scss
+│   │   │   │   │   │   │   ├── notifications.spec.ts
+│   │   │   │   │   │   │   └── notifications.ts
+│   │   │   │   │   │   ├── path-mappings
+│   │   │   │   │   │   │   ├── path-mappings.html
+│   │   │   │   │   │   │   ├── path-mappings.spec.ts
+│   │   │   │   │   │   │   └── path-mappings.ts
+│   │   │   │   │   │   ├── polling
+│   │   │   │   │   │   │   ├── polling.html
+│   │   │   │   │   │   │   ├── polling.spec.ts
+│   │   │   │   │   │   │   └── polling.ts
+│   │   │   │   │   │   ├── server-settings-form.service.spec.ts
+│   │   │   │   │   │   ├── server-settings-form.service.ts
+│   │   │   │   │   │   ├── settings.interface.ts
+│   │   │   │   │   │   ├── settings-page.config.ts
+│   │   │   │   │   │   ├── settings-page.html
+│   │   │   │   │   │   ├── settings-page.spec.ts
+│   │   │   │   │   │   ├── settings-page.ts
+│   │   │   │   │   │   ├── settings-state.service.spec.ts
+│   │   │   │   │   │   ├── settings-state.service.ts
+│   │   │   │   │   │   ├── startup
+│   │   │   │   │   │   │   ├── startup.html
+│   │   │   │   │   │   │   ├── startup.scss
+│   │   │   │   │   │   │   ├── startup.spec.ts
+│   │   │   │   │   │   │   └── startup.ts
+│   │   │   │   │   │   ├── status-bar
+│   │   │   │   │   │   │   ├── status-bar.html
+│   │   │   │   │   │   │   ├── status-bar.scss
+│   │   │   │   │   │   │   ├── status-bar.spec.ts
+│   │   │   │   │   │   │   ├── status-bar.ts
+│   │   │   │   │   │   │   └── widget-preview
+│   │   │   │   │   │   │       ├── widget-preview.html
+│   │   │   │   │   │   │       ├── widget-preview.scss
+│   │   │   │   │   │   │       └── widget-preview.ts
+│   │   │   │   │   │   └── torrent-list-grid
+│   │   │   │   │   │       ├── torrent-list-grid.html
+│   │   │   │   │   │       ├── torrent-list-grid.scss
+│   │   │   │   │   │       ├── torrent-list-grid.spec.ts
+│   │   │   │   │   │       └── torrent-list-grid.ts
+│   │   │   │   │   └── settings-shell
+│   │   │   │   │       ├── pane-state.service.spec.ts
+│   │   │   │   │       ├── pane-state.service.ts
+│   │   │   │   │       ├── section-changed.ts
+│   │   │   │   │       ├── settings-shell.html
+│   │   │   │   │       ├── settings-shell.model.ts
+│   │   │   │   │       ├── settings-shell.scss
+│   │   │   │   │       ├── settings-shell.spec.ts
+│   │   │   │   │       └── settings-shell.ts
+│   │   │   │   ├── pipes
+│   │   │   │   │   ├── filesize-per-sec-pipe.spec.ts
+│   │   │   │   │   ├── filesize-per-sec-pipe.ts
+│   │   │   │   │   ├── filesize-pipe.spec.ts
+│   │   │   │   │   ├── filesize-pipe.ts
+│   │   │   │   │   ├── format-bytes.spec.ts
+│   │   │   │   │   ├── format-bytes.ts
+│   │   │   │   │   ├── humanize-duration-pipe.spec.ts
+│   │   │   │   │   ├── humanize-duration-pipe.ts
+│   │   │   │   │   ├── local-timestamp-pipe.spec.ts
+│   │   │   │   │   ├── local-timestamp-pipe.ts
+│   │   │   │   │   ├── ratio-limit-pipe.spec.ts
+│   │   │   │   │   ├── ratio-limit-pipe.ts
+│   │   │   │   │   ├── ratio-pipe.spec.ts
+│   │   │   │   │   ├── ratio-pipe.ts
+│   │   │   │   │   ├── speed-limit-pipe.spec.ts
+│   │   │   │   │   ├── speed-limit-pipe.ts
+│   │   │   │   │   ├── time-limit-pipe.spec.ts
+│   │   │   │   │   └── time-limit-pipe.ts
+│   │   │   │   ├── renderer-logger.spec.ts
+│   │   │   │   ├── renderer-logger.ts
+│   │   │   │   ├── services
+│   │   │   │   │   ├── add-torrent-grid.settings.service.spec.ts
+│   │   │   │   │   ├── add-torrent-grid.settings.service.ts
+│   │   │   │   │   ├── add-torrent-settings.service.spec.ts
+│   │   │   │   │   ├── add-torrent-settings.service.ts
+│   │   │   │   │   ├── base-settings.service.spec.ts
+│   │   │   │   │   ├── base-settings.service.ts
+│   │   │   │   │   ├── category-command-handler.service.spec.ts
+│   │   │   │   │   ├── category-command-handler.service.ts
+│   │   │   │   │   ├── command-bus.service.spec.ts
+│   │   │   │   │   ├── command-bus.service.ts
+│   │   │   │   │   ├── configuration.service.spec.ts
+│   │   │   │   │   ├── configuration.service.ts
+│   │   │   │   │   ├── confirm.service.spec.ts
+│   │   │   │   │   ├── confirm.service.ts
+│   │   │   │   │   ├── context-menu.service.spec.ts
+│   │   │   │   │   ├── context-menu.service.ts
+│   │   │   │   │   ├── credential-prompt.service.spec.ts
+│   │   │   │   │   ├── credential-prompt.service.ts
+│   │   │   │   │   ├── custom-datepicker-i18n.service.spec.ts
+│   │   │   │   │   ├── custom-datepicker-i18n.service.ts
+│   │   │   │   │   ├── date-format.service.spec.ts
+│   │   │   │   │   ├── date-format.service.ts
+│   │   │   │   │   ├── electron.service.spec.ts
+│   │   │   │   │   ├── electron.service.ts
+│   │   │   │   │   ├── export.service.spec.ts
+│   │   │   │   │   ├── export.service.ts
+│   │   │   │   │   ├── filter.service.spec.ts
+│   │   │   │   │   ├── filter.service.ts
+│   │   │   │   │   ├── general-settings.service.spec.ts
+│   │   │   │   │   ├── general-settings.service.ts
+│   │   │   │   │   ├── grid-state.service.spec.ts
+│   │   │   │   │   ├── grid-state.service.ts
+│   │   │   │   │   ├── grid-view-store.service.spec.ts
+│   │   │   │   │   ├── grid-view-store.service.ts
+│   │   │   │   │   ├── manage-categories-grid.settings.service.spec.ts
+│   │   │   │   │   ├── manage-categories-grid.settings.service.ts
+│   │   │   │   │   ├── manage-servers-grid.settings.service.spec.ts
+│   │   │   │   │   ├── manage-servers-grid.settings.service.ts
+│   │   │   │   │   ├── manage-tags-grid.settings.service.spec.ts
+│   │   │   │   │   ├── manage-tags-grid.settings.service.ts
+│   │   │   │   │   ├── menu-bar-command-handler.service.spec.ts
+│   │   │   │   │   ├── menu-bar-command-handler.service.ts
+│   │   │   │   │   ├── menu-bar.service.spec.ts
+│   │   │   │   │   ├── menu-bar.service.ts
+│   │   │   │   │   ├── modal-guard.service.spec.ts
+│   │   │   │   │   ├── modal-guard.service.ts
+│   │   │   │   │   ├── notification-policy.service.spec.ts
+│   │   │   │   │   ├── notification-policy.service.ts
+│   │   │   │   │   ├── notification.service.spec.ts
+│   │   │   │   │   ├── notification.service.ts
+│   │   │   │   │   ├── open-files.service.spec.ts
+│   │   │   │   │   ├── open-files.service.ts
+│   │   │   │   │   ├── path.service.spec.ts
+│   │   │   │   │   ├── path.service.ts
+│   │   │   │   │   ├── peers-grid.settings.service.spec.ts
+│   │   │   │   │   ├── peers-grid.settings.service.ts
+│   │   │   │   │   ├── qb-polling.service.spec.ts
+│   │   │   │   │   ├── qb-polling.service.ts
+│   │   │   │   │   ├── qb.service.spec.ts
+│   │   │   │   │   ├── qb.service.ts
+│   │   │   │   │   ├── selection-store.service.spec.ts
+│   │   │   │   │   ├── selection-store.service.ts
+│   │   │   │   │   ├── server-command-handler.service.spec.ts
+│   │   │   │   │   ├── server-command-handler.service.ts
+│   │   │   │   │   ├── server.service.spec.ts
+│   │   │   │   │   ├── server.service.ts
+│   │   │   │   │   ├── server-settings.service.spec.ts
+│   │   │   │   │   ├── server-settings.service.ts
+│   │   │   │   │   ├── server-state-store.service.spec.ts
+│   │   │   │   │   ├── server-state-store.service.ts
+│   │   │   │   │   ├── server-store.service.spec.ts
+│   │   │   │   │   ├── server-store.service.ts
+│   │   │   │   │   ├── settings.service.spec.ts
+│   │   │   │   │   ├── settings.service.ts
+│   │   │   │   │   ├── sidebar-settings.service.ts
+│   │   │   │   │   ├── status-bar-settings.service.spec.ts
+│   │   │   │   │   ├── status-bar-settings.service.ts
+│   │   │   │   │   ├── tag-command-handler.service.spec.ts
+│   │   │   │   │   ├── tag-command-handler.service.ts
+│   │   │   │   │   ├── theme.service.spec.ts
+│   │   │   │   │   ├── theme.service.ts
+│   │   │   │   │   ├── toast.service.spec.ts
+│   │   │   │   │   ├── toast.service.ts
+│   │   │   │   │   ├── torrent-add-queue.service.spec.ts
+│   │   │   │   │   ├── torrent-add-queue.service.ts
+│   │   │   │   │   ├── torrent-command-handler.service.spec.ts
+│   │   │   │   │   ├── torrent-command-handler.service.ts
+│   │   │   │   │   ├── torrent-export.service.spec.ts
+│   │   │   │   │   ├── torrent-export.service.ts
+│   │   │   │   │   ├── torrent-list-grid.settings.service.spec.ts
+│   │   │   │   │   ├── torrent-list-grid.settings.service.ts
+│   │   │   │   │   ├── torrent-store.service.spec.ts
+│   │   │   │   │   ├── torrent-store.service.ts
+│   │   │   │   │   ├── trackers-grid.settings.service.spec.ts
+│   │   │   │   │   ├── trackers-grid.settings.service.ts
+│   │   │   │   │   ├── transfer-limit-command-handler.service.spec.ts
+│   │   │   │   │   ├── transfer-limit-command-handler.service.ts
+│   │   │   │   │   ├── ui-command-handler.service.spec.ts
+│   │   │   │   │   ├── ui-command-handler.service.ts
+│   │   │   │   │   ├── ui-format.service.spec.ts
+│   │   │   │   │   ├── ui-format.service.ts
+│   │   │   │   │   ├── update-command-handler.service.spec.ts
+│   │   │   │   │   ├── update-command-handler.service.ts
+│   │   │   │   │   ├── updater.service.spec.ts
+│   │   │   │   │   ├── updater.service.ts
+│   │   │   │   │   ├── update-settings.service.spec.ts
+│   │   │   │   │   ├── update-settings.service.ts
+│   │   │   │   │   ├── viewport.service.spec.ts
+│   │   │   │   │   ├── viewport.service.ts
+│   │   │   │   │   ├── window.service.spec.ts
+│   │   │   │   │   └── window.service.ts
+│   │   │   │   ├── test-utils
+│   │   │   │   │   └── translate.mock.ts
+│   │   │   │   └── utils
+│   │   │   │       ├── deleted-toast.ts
+│   │   │   │       └── modal-input.ts
+│   │   │   ├── assets
+│   │   │   │   ├── fonts
+│   │   │   │   │   └── montserrat
+│   │   │   │   │       ├── Montserrat-Italic-VariableFont_wght.ttf
+│   │   │   │   │       ├── Montserrat-VariableFont_wght.ttf
+│   │   │   │   │       ├── OFL.txt
+│   │   │   │   │       ├── README.txt
+│   │   │   │   │       └── static
+│   │   │   │   │           ├── Montserrat-BlackItalic.ttf
+│   │   │   │   │           ├── Montserrat-Black.ttf
+│   │   │   │   │           ├── Montserrat-BoldItalic.ttf
+│   │   │   │   │           ├── Montserrat-Bold.ttf
+│   │   │   │   │           ├── Montserrat-ExtraBoldItalic.ttf
+│   │   │   │   │           ├── Montserrat-ExtraBold.ttf
+│   │   │   │   │           ├── Montserrat-ExtraLightItalic.ttf
+│   │   │   │   │           ├── Montserrat-ExtraLight.ttf
+│   │   │   │   │           ├── Montserrat-Italic.ttf
+│   │   │   │   │           ├── Montserrat-LightItalic.ttf
+│   │   │   │   │           ├── Montserrat-Light.ttf
+│   │   │   │   │           ├── Montserrat-MediumItalic.ttf
+│   │   │   │   │           ├── Montserrat-Medium.ttf
+│   │   │   │   │           ├── Montserrat-Regular.ttf
+│   │   │   │   │           ├── Montserrat-SemiBoldItalic.ttf
+│   │   │   │   │           ├── Montserrat-SemiBold.ttf
+│   │   │   │   │           ├── Montserrat-ThinItalic.ttf
+│   │   │   │   │           └── Montserrat-Thin.ttf
+│   │   │   │   └── images
+│   │   │   │       ├── installerHeader.psd
+│   │   │   │       └── installerSidebar.psd
+│   │   │   ├── bitbutler.d.ts
+│   │   │   ├── index.html
+│   │   │   ├── main.ts
+│   │   │   ├── styles
+│   │   │   │   ├── _form-controls.scss
+│   │   │   │   ├── _ng-select.scss
+│   │   │   │   ├── themes
+│   │   │   │   │   ├── aurora
+│   │   │   │   │   │   ├── _dark.scss
+│   │   │   │   │   │   ├── _index.scss
+│   │   │   │   │   │   └── _light.scss
+│   │   │   │   │   ├── bitbutler
+│   │   │   │   │   │   ├── _dark.scss
+│   │   │   │   │   │   ├── _index.scss
+│   │   │   │   │   │   └── _light.scss
+│   │   │   │   │   ├── crimson-ember
+│   │   │   │   │   │   ├── _dark.scss
+│   │   │   │   │   │   ├── _index.scss
+│   │   │   │   │   │   └── _light.scss
+│   │   │   │   │   ├── deep-sea
+│   │   │   │   │   │   ├── _dark.scss
+│   │   │   │   │   │   ├── _index.scss
+│   │   │   │   │   │   └── _light.scss
+│   │   │   │   │   ├── dusty-rose
+│   │   │   │   │   │   ├── _dark.scss
+│   │   │   │   │   │   ├── _index.scss
+│   │   │   │   │   │   └── _light.scss
+│   │   │   │   │   ├── graphite
+│   │   │   │   │   │   ├── _dark.scss
+│   │   │   │   │   │   ├── _index.scss
+│   │   │   │   │   │   └── _light.scss
+│   │   │   │   │   ├── _index.scss
+│   │   │   │   │   ├── meadow
+│   │   │   │   │   │   ├── _dark.scss
+│   │   │   │   │   │   ├── _index.scss
+│   │   │   │   │   │   └── _light.scss
+│   │   │   │   │   ├── mint-green
+│   │   │   │   │   │   ├── _dark.scss
+│   │   │   │   │   │   ├── _index.scss
+│   │   │   │   │   │   └── _light.scss
+│   │   │   │   │   ├── ocean-breeze
+│   │   │   │   │   │   ├── _dark.scss
+│   │   │   │   │   │   ├── _index.scss
+│   │   │   │   │   │   └── _light.scss
+│   │   │   │   │   ├── pumpkin-spice
+│   │   │   │   │   │   ├── _dark.scss
+│   │   │   │   │   │   ├── _index.scss
+│   │   │   │   │   │   └── _light.scss
+│   │   │   │   │   ├── purple-haze
+│   │   │   │   │   │   ├── _dark.scss
+│   │   │   │   │   │   ├── _index.scss
+│   │   │   │   │   │   └── _light.scss
+│   │   │   │   │   ├── raspberry
+│   │   │   │   │   │   ├── _dark.scss
+│   │   │   │   │   │   ├── _index.scss
+│   │   │   │   │   │   └── _light.scss
+│   │   │   │   │   ├── sunset
+│   │   │   │   │   │   ├── _dark.scss
+│   │   │   │   │   │   ├── _index.scss
+│   │   │   │   │   │   └── _light.scss
+│   │   │   │   │   ├── teal-blush
+│   │   │   │   │   │   ├── _dark.scss
+│   │   │   │   │   │   ├── _index.scss
+│   │   │   │   │   │   └── _light.scss
+│   │   │   │   │   └── _theme-utils.scss
+│   │   │   │   └── _toolbar-button.scss
+│   │   │   ├── styles.scss
+│   │   │   ├── test-providers.ts
+│   │   │   └── test-setup.ts
+│   │   ├── tsconfig.app.json
+│   │   ├── tsconfig.json
+│   │   └── tsconfig.spec.json
+│   ├── electron
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── configuration-apply.spec.ts
+│   │   │   ├── configuration-apply.ts
+│   │   │   ├── configuration.spec.ts
+│   │   │   ├── configuration.ts
+│   │   │   ├── db.spec.ts
+│   │   │   ├── db.ts
+│   │   │   ├── i18n.spec.ts
+│   │   │   ├── i18n.ts
+│   │   │   ├── index.ts
+│   │   │   ├── ipc
+│   │   │   │   ├── configuration.spec.ts
+│   │   │   │   ├── configuration.ts
+│   │   │   │   ├── electron.spec.ts
+│   │   │   │   ├── electron.ts
+│   │   │   │   ├── export.spec.ts
+│   │   │   │   ├── export.ts
+│   │   │   │   ├── i18n.spec.ts
+│   │   │   │   ├── i18n.ts
+│   │   │   │   ├── log.spec.ts
+│   │   │   │   ├── log.ts
+│   │   │   │   ├── notification.spec.ts
+│   │   │   │   ├── notification.ts
+│   │   │   │   ├── qbittorrent.spec.ts
+│   │   │   │   ├── qbittorrent.ts
+│   │   │   │   ├── server.spec.ts
+│   │   │   │   ├── server.ts
+│   │   │   │   ├── settings.spec.ts
+│   │   │   │   ├── settings.ts
+│   │   │   │   ├── torrent-add-queue.spec.ts
+│   │   │   │   ├── torrent-add-queue.ts
+│   │   │   │   ├── torrent.spec.ts
+│   │   │   │   ├── torrent.ts
+│   │   │   │   ├── view.spec.ts
+│   │   │   │   ├── view.ts
+│   │   │   │   ├── window.spec.ts
+│   │   │   │   └── window.ts
+│   │   │   ├── logger-bootstrap.spec.ts
+│   │   │   ├── logger-bootstrap.ts
+│   │   │   ├── logger.rotation.spec.ts
+│   │   │   ├── logger.spec.ts
+│   │   │   ├── logger.ts
+│   │   │   ├── main.ts
+│   │   │   ├── main-window.spec.ts
+│   │   │   ├── main-window.ts
+│   │   │   ├── menu.spec.ts
+│   │   │   ├── menu.ts
+│   │   │   ├── notification.spec.ts
+│   │   │   ├── notification.ts
+│   │   │   ├── parse-torrent.d.ts
+│   │   │   ├── preload.spec.ts
+│   │   │   ├── preload.ts
+│   │   │   ├── qb
+│   │   │   │   ├── app.spec.ts
+│   │   │   │   ├── app.ts
+│   │   │   │   ├── bridge.spec.ts
+│   │   │   │   ├── bridge.ts
+│   │   │   │   ├── client.spec.ts
+│   │   │   │   ├── client.ts
+│   │   │   │   ├── contract.spec.ts
+│   │   │   │   ├── errors.spec.ts
+│   │   │   │   ├── errors.ts
+│   │   │   │   ├── hashes.ts
+│   │   │   │   ├── labels.spec.ts
+│   │   │   │   ├── labels.ts
+│   │   │   │   ├── poller.spec.ts
+│   │   │   │   ├── poller.ts
+│   │   │   │   ├── server-info.spec.ts
+│   │   │   │   ├── server-info.ts
+│   │   │   │   ├── torrent-details.spec.ts
+│   │   │   │   ├── torrent-details.ts
+│   │   │   │   ├── torrents.spec.ts
+│   │   │   │   ├── torrents.ts
+│   │   │   │   ├── transfer.spec.ts
+│   │   │   │   └── transfer.ts
+│   │   │   ├── server-validation.ts
+│   │   │   ├── source-map-resolver.spec.ts
+│   │   │   ├── source-map-resolver.ts
+│   │   │   ├── torrents
+│   │   │   │   ├── parse-torrent.spec.ts
+│   │   │   │   └── parse-torrent.ts
+│   │   │   ├── tray.spec.ts
+│   │   │   ├── tray.ts
+│   │   │   ├── updater.spec.ts
+│   │   │   └── updater.ts
+│   │   ├── tsconfig.json
+│   │   ├── tsconfig.preload.json
+│   │   └── vitest.config.ts
+│   └── shared
+│       ├── package.json
+│       ├── src
+│       │   ├── index.ts
+│       │   ├── ipc.types.ts
+│       │   ├── models
+│       │   │   ├── configuration.model.ts
+│       │   │   ├── electron.model.ts
+│       │   │   ├── log.model.ts
+│       │   │   ├── qb.model.ts
+│       │   │   ├── server.model.ts
+│       │   │   ├── torrent-add-job.model.ts
+│       │   │   ├── torrent-draft.model.ts
+│       │   │   ├── updater.model.ts
+│       │   │   └── window.model.ts
+│       │   └── qb.types.ts
+│       └── tsconfig.json
+├── readme
+│   ├── logo-dark.svg
+│   ├── logo-light.svg
+│   ├── overview.png
+│   └── torrent-details.png
+├── README.md
+├── scripts
+│   └── start-mode.cjs
+└── tsconfig.json
+
+154 directories, 829 files

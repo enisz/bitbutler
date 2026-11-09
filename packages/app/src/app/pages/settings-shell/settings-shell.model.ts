@@ -13,9 +13,19 @@ export interface SettingsPaneDef {
   loadComponent: () => Promise<Type<unknown>>;
 }
 
+/** A phone-only row in the pane list that runs a menu action instead of opening a pane. */
+export interface SettingsActionDef {
+  id: string;
+  labelKey: string;
+  icon: IconDefinition;
+  danger?: boolean;
+  menuAction: string;
+}
+
 export interface SettingsNavGroup {
   labelKey: string;
   panes: SettingsPaneDef[];
+  actions?: SettingsActionDef[];
 }
 
 export interface SettingsPageConfig {

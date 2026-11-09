@@ -9,15 +9,23 @@
 </div>
 
 <div class="modal-body">
-  <ag-grid-angular
-    class="w-100 d-block bb-manage-tags-grid"
-    (gridReady)="onGridReady($event)"
-    (gridDelete)="deleteSelected()"
-    [rowData]="rows()"
-    [columnDefs]="colDefs"
-    [gridOptions]="gridOptions"
-    [theme]="theme() === 'dark' ? bbDark : bbLight"
-  />
+  @if (isPhone()) {
+    <app-bb-select-list
+      [items]="phoneItems()"
+      [selectedIds]="phoneSelectedIds()"
+      (selectedIdsChange)="onPhoneSelection($event)"
+    />
+  } @else {
+    <ag-grid-angular
+      class="w-100 d-block bb-manage-tags-grid"
+      (gridReady)="onGridReady($event)"
+      (gridDelete)="deleteSelected()"
+      [rowData]="rows()"
+      [columnDefs]="colDefs"
+      [gridOptions]="gridOptions"
+      [theme]="theme() === 'dark' ? bbDark : bbLight"
+    />
+  }
 </div>
 
 <div class="modal-footer">

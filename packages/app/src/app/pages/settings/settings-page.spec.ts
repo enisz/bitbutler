@@ -1,8 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
+import { MenuBarCommandHandlerService } from '../../services/menu-bar-command-handler.service';
 import { ToastService } from '../../services/toast.service';
 import { GeneralSettingsFormService } from './general-settings-form.service';
+import { MOBILE_SETTINGS_PAGE_CONFIG } from './mobile-settings-page.config';
 import { ServerSettingsFormService } from './server-settings-form.service';
 import { SettingsPage } from './settings-page';
 import { SETTINGS_PAGE_CONFIG } from './settings-page.config';
@@ -15,6 +17,9 @@ describe('SettingsPage', () => {
   let toast: { success: ReturnType<typeof vi.fn>; danger: ReturnType<typeof vi.fn> };
   let state: SettingsStateService;
 
+  let routeData: Record<string, unknown>;
+  let runAction: ReturnType<typeof vi.fn>;
+
   const createPage = (pane: string | null): SettingsPage => {
     paramMap$.next(convertToParamMap(pane ? { pane } : {}));
     return TestBed.runInInjectionContext(() => new SettingsPage());
@@ -25,6 +30,8 @@ describe('SettingsPage', () => {
     navigate = vi.fn().mockResolvedValue(true);
     toast = { success: vi.fn(), danger: vi.fn() };
     state = new SettingsStateService();
+    routeData = {};
+    runAction = vi.fn();
 
     TestBed.configureTestingModule({
       providers: [
@@ -32,7 +39,16 @@ describe('SettingsPage', () => {
         { provide: GeneralSettingsFormService, useValue: {} },
         { provide: ServerSettingsFormService, useValue: {} },
         { provide: Router, useValue: { navigate } },
-        { provide: ActivatedRoute, useValue: { paramMap: paramMap$.asObservable() } },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            paramMap: paramMap$.asObservable(),
+            get snapshot() {
+              return { data: routeData };
+            },
+          },
+        },
+        { provide: MenuBarCommandHandlerService, useValue: { runAction } },
         { provide: ToastService, useValue: toast },
       ],
     });
@@ -123,5 +139,57 @@ describe('SettingsPage', () => {
     const panes = SETTINGS_PAGE_CONFIG.groups.flatMap((group) => group.panes);
 
     expect(panes.every((pane) => pane.hasDefaults)).toBe(true);
+  });
+
+  describe('mobile route', () => {
+    beforeEach(() => {
+      routeData = { settings: 'mobile' };
+    });
+
+    it('mobile route data selects the mobile config', () => {
+      const page = createPage('list');
+
+      expect(page.config).toBe(MOBILE_SETTINGS_PAGE_CONFIG);
+      expect(page.basePath).toBe('/pages/mobile-settings');
+      expect(page.activePaneId()).toBe('list');
+    });
+
+    it('mobile pane list contains list, general, appearance and polling and none of the desktop-only panes', () => {
+      const page = createPage('list');
+      const ids = page.config.groups.flatMap((g) => g.panes.map((p) => p.id));
+
+      expect(ids).toEqual(['list', 'general', 'appearance', 'polling']);
+      for (const gone of [
+        'startup',
+        'path-mappings',
+        'torrent-list-grid',
+        'status-bar',
+        'notifications',
+      ]) {
+        expect(ids).not.toContain(gone);
+      }
+    });
+
+    it('an unknown :pane on the mobile route lands on list', () => {
+      const page = createPage('startup');
+      TestBed.tick();
+
+      expect(page.activePaneId()).toBe('list');
+      expect(navigate).toHaveBeenCalledWith(['/pages/mobile-settings', 'list'], {
+        replaceUrl: true,
+      });
+    });
+
+    it('actionRun file.quit calls runAction file.quit', () => {
+      const page = createPage('list');
+      const quit = page.config.groups
+        .flatMap((g) => g.actions ?? [])
+        .find((a) => a.menuAction === 'file.quit')!;
+
+      page.onActionRun(quit);
+
+      expect(runAction).toHaveBeenCalledWith('file.quit');
+      expect(quit.danger).toBe(true);
+    });
   });
 });

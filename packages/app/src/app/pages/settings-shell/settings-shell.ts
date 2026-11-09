@@ -27,7 +27,14 @@ import { BbLogo } from '../../components/bb-logo/bb-logo';
 import { BbSpinner } from '../../components/bb-spinner/bb-spinner';
 import { BbTooltip } from '../../directives/bb-tooltip';
 import { ElectronService } from '../../services/electron.service';
-import { SettingsPageConfig, SettingsPageStatus, SettingsPaneDef } from './settings-shell.model';
+import { ViewportService } from '../../services/viewport.service';
+import {
+  SettingsActionDef,
+  SettingsNavGroup,
+  SettingsPageConfig,
+  SettingsPageStatus,
+  SettingsPaneDef,
+} from './settings-shell.model';
 
 /**
  * Layout for a settings page: sidebar nav, pane header, pane host and the Save/Cancel bar.
@@ -72,9 +79,24 @@ export class SettingsShell {
   public readonly restorePaneDefaults = output<string>();
   public readonly back = output<void>();
   public readonly retry = output<void>();
+  /** Phone only: an action row of the pane list was tapped. */
+  public readonly actionRun = output<SettingsActionDef>();
 
   public readonly version = inject(ElectronService).getBitButlerVersion();
   public readonly icons = { faArrowsRotate, faChevronLeft, faFloppyDisk, faRotateLeft, faXmark };
+
+  public readonly isPhone = inject(ViewportService).isPhone;
+  /** Phone only: the pane list or one opened pane (the panes stay mounted either way). */
+  public readonly phoneView = signal<'list' | 'pane'>('list');
+  public readonly phoneAttr = computed(() => (this.isPhone() ? this.phoneView() : null));
+
+  public openPane(): void {
+    this.phoneView.set('pane');
+  }
+
+  public showPaneList(): void {
+    this.phoneView.set('list');
+  }
 
   public readonly panes = computed<SettingsPaneDef[]>(() =>
     this.config().groups.flatMap((group) => group.panes),
@@ -83,6 +105,10 @@ export class SettingsShell {
     () => this.panes().find((pane) => pane.id === this.activePaneId()) ?? this.panes()[0],
   );
   public readonly loadedComponents = signal<ReadonlyMap<string, Type<unknown>>>(new Map());
+
+  public isActionsOnly(group: SettingsNavGroup): boolean {
+    return group.panes.length === 0 && (group.actions?.length ?? 0) > 0;
+  }
 
   public isPaneDirty(pane: SettingsPaneDef): boolean {
     return this.paneDirtyMap()[pane.id] ?? this.dirtyMap()[pane.formId] ?? false;

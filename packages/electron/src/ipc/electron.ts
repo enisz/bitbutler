@@ -2,6 +2,7 @@ import type { HostPlatform, UpdateCheckResponse } from '@bitbutler/shared';
 import axios from 'axios';
 import { app, dialog, ipcMain, shell } from 'electron';
 import semver from 'semver';
+import { getWindowMode } from '../main-window.js';
 
 export function registerElectronIpcHandlers(): void {
   ipcMain.handle('electron:is-dev', async () => isDev());
@@ -17,6 +18,9 @@ export function registerElectronIpcHandlers(): void {
     setLoginItem(settings),
   );
   ipcMain.handle('electron:get-downloads-path', () => app.getPath('downloads'));
+  ipcMain.on('electron:get-app-platform', (event) => {
+    event.returnValue = getWindowMode() === 'desktop' ? 'desktop' : 'mobile';
+  });
   ipcMain.on('electron:quit', () => app.quit());
 }
 

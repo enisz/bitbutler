@@ -1,10 +1,11 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import { faBell, faGear } from '@fortawesome/free-solid-svg-icons';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { ElectronService } from '../../services/electron.service';
+import { ViewportService } from '../../services/viewport.service';
 import { SettingsShell } from './settings-shell';
 import { SettingsPageConfig } from './settings-shell.model';
 
@@ -295,6 +296,125 @@ describe('SettingsShell', () => {
       await setInputs({ paneVersions: { two: 1 } });
 
       expect(created - before).toBe(1);
+    });
+  });
+});
+
+describe('SettingsShell on phone', () => {
+  let fixture: ComponentFixture<SettingsShell>;
+  let isPhone: ReturnType<typeof signal<boolean>>;
+
+  const root = () => fixture.nativeElement as HTMLElement;
+  const shell = () => root().querySelector<HTMLElement>('.bb-settings') as HTMLElement;
+
+  const settle = async () => {
+    await fixture.whenStable();
+    await new Promise((resolve) => setTimeout(resolve));
+    fixture.detectChanges();
+  };
+
+  beforeEach(async () => {
+    isPhone = signal(true);
+    await TestBed.configureTestingModule({
+      imports: [SettingsShell],
+      providers: [
+        provideRouter([{ path: '**', component: TestPane }]),
+        { provide: ElectronService, useValue: { getBitButlerVersion: () => '1.2.3' } },
+        { provide: ViewportService, useValue: { isPhone } },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(SettingsShell);
+    fixture.componentRef.setInput('config', config);
+    fixture.componentRef.setInput('activePaneId', 'one');
+    fixture.detectChanges();
+    await settle();
+  });
+
+  it('starts on the pane list', () => {
+    expect(shell().getAttribute('data-phone')).toBe('list');
+  });
+
+  it('opens a pane when its nav item is tapped', () => {
+    root().querySelectorAll<HTMLElement>('.bb-settings__nav-item')[1].click();
+    fixture.detectChanges();
+    expect(shell().getAttribute('data-phone')).toBe('pane');
+  });
+
+  it('returns to the pane list with the pane back button, without leaving settings', () => {
+    const backEmitted = vi.fn();
+    fixture.componentInstance.back.subscribe(backEmitted);
+    root().querySelectorAll<HTMLElement>('.bb-settings__nav-item')[0].click();
+    fixture.detectChanges();
+
+    root().querySelector<HTMLElement>('.bb-settings__phone-back')?.click();
+    fixture.detectChanges();
+
+    expect(shell().getAttribute('data-phone')).toBe('list');
+    expect(backEmitted).not.toHaveBeenCalled();
+  });
+
+  it('keeps every pane mounted while the list is shown', () => {
+    expect(root().querySelectorAll('.bb-settings__pane')).toHaveLength(2);
+  });
+
+  it('leaves settings from the list view with the top back button', () => {
+    const backEmitted = vi.fn();
+    fixture.componentInstance.back.subscribe(backEmitted);
+    root().querySelector<HTMLElement>('.bb-settings__back')?.click();
+    expect(backEmitted).toHaveBeenCalledTimes(1);
+  });
+
+  it('has no phone view state or phone back button on wider screens', async () => {
+    isPhone.set(false);
+    fixture.detectChanges();
+    expect(shell().hasAttribute('data-phone')).toBe(false);
+    expect(root().querySelector('.bb-settings__phone-back')).toBeNull();
+  });
+
+  describe('action rows', () => {
+    const actionDef = {
+      id: 'quit',
+      labelKey: 'test.action.quit',
+      icon: faBell,
+      danger: true,
+      menuAction: 'file.quit',
+    };
+    const actionConfig: SettingsPageConfig = {
+      ...config,
+      groups: [
+        { ...config.groups[0], actions: [{ ...actionDef, id: 'about', danger: false }] },
+        { labelKey: 'test.group.actions', panes: [], actions: [actionDef] },
+      ],
+    };
+
+    const rows = () => Array.from(root().querySelectorAll<HTMLElement>('.bb-settings__action-row'));
+
+    beforeEach(async () => {
+      fixture.componentRef.setInput('config', actionConfig);
+      fixture.detectChanges();
+      await settle();
+    });
+
+    it('phone list renders action rows', () => {
+      expect(rows()).toHaveLength(2);
+      expect(rows()[0].textContent).toContain('test.action.quit');
+      expect(rows()[1].classList.contains('bb-settings__action-row--danger')).toBe(true);
+      expect(rows()[0].classList.contains('bb-settings__action-row--danger')).toBe(false);
+      expect(root().querySelectorAll('.bb-settings__group--actions-only')).toHaveLength(1);
+    });
+
+    it('clicking an action row emits actionRun with its def', () => {
+      const emitted = vi.fn();
+      fixture.componentInstance.actionRun.subscribe(emitted);
+      rows()[1].click();
+      expect(emitted).toHaveBeenCalledWith(actionConfig.groups[1].actions?.[0]);
+    });
+
+    it('desktop sidebar does not render action rows', () => {
+      isPhone.set(false);
+      fixture.detectChanges();
+      expect(rows()).toHaveLength(0);
     });
   });
 });

@@ -1,10 +1,14 @@
-<ag-grid-angular
-  class="w-100"
-  style="height: 600px"
-  (gridReady)="onGridReady($event)"
-  [loading]="loading"
-  [rowData]="trackers"
-  [columnDefs]="colDefs"
-  [gridOptions]="gridOptions"
-  [theme]="theme() === 'dark' ? bbDark : bbLight"
-/>
+@if (isPhone()) {
+  <app-trackers-list [trackers]="trackers" [loading]="loading" />
+} @else {
+  <ag-grid-angular
+    class="w-100"
+    style="height: 600px"
+    (gridReady)="onGridReady($event)"
+    [loading]="loading"
+    [rowData]="trackers"
+    [columnDefs]="colDefs"
+    [gridOptions]="gridOptions"
+    [theme]="theme() === 'dark' ? bbDark : bbLight"
+  />
+}

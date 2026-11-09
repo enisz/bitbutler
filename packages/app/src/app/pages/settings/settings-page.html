@@ -7,6 +7,7 @@
   [paneVersions]="stateService.paneVersions()"
   (discardPane)="stateService.discardPane($event)"
   (restorePaneDefaults)="stateService.restorePaneDefaults($event)"
+  (actionRun)="onActionRun($event)"
   (save)="onSave()"
   (back)="onBack()"
 />

@@ -47,17 +47,19 @@ import { FilesizePipe } from '../../../pipes/filesize-pipe';
 import { ContextMenuService } from '../../../services/context-menu.service';
 import { PeersGridSettingsService } from '../../../services/peers-grid.settings.service';
 import { ThemeService } from '../../../services/theme.service';
+import { ViewportService } from '../../../services/viewport.service';
 import { TorrentDetailsDataService } from '../torrent-details-data.service';
 import { TorrentDetailTabComponent } from '../torrent-details.interface';
 import { FlagCellRenderer } from './flag-cell-renderer/flag-cell-renderer';
 import { FlagsTooltipComponent } from './flags-tooltip/flags-tooltip';
+import { PeersList } from './peers-list/peers-list';
 
 const tooltipFormattedValue: TooltipValueGetterFunc<QbTorrentPeer, number> = (params) =>
   params.valueFormatted ?? '';
 
 @Component({
   selector: 'app-peers',
-  imports: [AgGridAngular],
+  imports: [AgGridAngular, PeersList],
   providers: [FilesizePipe],
   templateUrl: './peers.html',
   styleUrl: './peers.scss',
@@ -73,6 +75,7 @@ export class Peers implements TorrentDetailTabComponent, OnInit {
   private readonly gridContextMenuService = inject(GridContextMenuService);
   private readonly peersGridSettingsService = inject(PeersGridSettingsService);
   private readonly destroyRef = inject(DestroyRef);
+  public readonly isPhone = inject(ViewportService).isPhone;
 
   private readonly saveState$ = new Subject<void>();
   private gridApi: GridApi | null = null;

@@ -1,4 +1,4 @@
-<div class="bb-settings">
+<div class="bb-settings" [attr.data-phone]="phoneAttr()">
   <aside class="bb-settings__sidebar">
     <div class="bb-settings__sidebar-top">
       <button
@@ -19,12 +19,16 @@
 
     <nav class="bb-settings__nav">
       @for (group of config().groups; track group.labelKey) {
-        <div class="bb-settings__group">
+        <div
+          class="bb-settings__group"
+          [class.bb-settings__group--actions-only]="isActionsOnly(group)"
+        >
           <div class="bb-settings__group-label">{{ group.labelKey | translate }}</div>
           @for (pane of group.panes; track pane.id) {
             <a
               class="bb-settings__nav-item"
               [class.active]="pane.id === activePane().id"
+              (click)="openPane()"
               [routerLink]="[config().basePath, pane.id]"
             >
               <fa-icon [icon]="pane.icon" [fixedWidth]="true"></fa-icon>
@@ -38,6 +42,19 @@
                 ></span>
               }
             </a>
+          }
+          @if (isPhone()) {
+            @for (action of group.actions ?? []; track action.id) {
+              <button
+                type="button"
+                class="bb-settings__nav-item bb-settings__action-row"
+                [class.bb-settings__action-row--danger]="action.danger"
+                (click)="actionRun.emit(action)"
+              >
+                <fa-icon [icon]="action.icon" [fixedWidth]="true"></fa-icon>
+                <span class="bb-settings__nav-label">{{ action.labelKey | translate }}</span>
+              </button>
+            }
           }
         </div>
       }
@@ -56,6 +73,16 @@
 
   <section class="bb-settings__main">
     <header class="bb-settings__header">
+      @if (isPhone()) {
+        <button
+          type="button"
+          class="bb-settings__icon-btn bb-settings__phone-back"
+          [attr.aria-label]="'pages.settings.nav.back' | translate"
+          (click)="showPaneList()"
+        >
+          <fa-icon [icon]="icons.faChevronLeft"></fa-icon>
+        </button>
+      }
       <div class="bb-settings__header-text">
         <h2 class="bb-settings__pane-title">{{ activePane().labelKey | translate }}</h2>
         <p class="bb-settings__pane-description">{{ activePane().descriptionKey | translate }}</p>

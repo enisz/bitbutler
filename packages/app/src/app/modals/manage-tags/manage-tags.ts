@@ -16,6 +16,7 @@ import type {
 } from 'ag-grid-community';
 import { GRID_DARK_THEME, GRID_LIGHT_THEME, GRID_SHARED_OPTIONS } from '../../app.const';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
+import { BbSelectList, SelectListItem } from '../../components/bb-select-list/bb-select-list';
 import { NumberColumnFilter } from '../../components/column-filters/number-column-filter/number-column-filter';
 import { TextColumnFilter } from '../../components/column-filters/text-column-filter/text-column-filter';
 import { GridRowNavigationDirective } from '../../directives/grid-row-navigation';
@@ -31,6 +32,7 @@ import { ServerStoreService } from '../../services/server-store.service';
 import { ThemeService } from '../../services/theme.service';
 import { ToastService } from '../../services/toast.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
+import { ViewportService } from '../../services/viewport.service';
 import { setModalInput } from '../../utils/modal-input';
 
 // qBittorrent reports a torrent's tags as one comma-separated string.
@@ -45,7 +47,7 @@ export interface TagRow {
 @Component({
   selector: 'app-manage-tags',
   standalone: true,
-  imports: [AgGridAngular, GridRowNavigationDirective, TranslatePipe, BbBtnContent],
+  imports: [AgGridAngular, GridRowNavigationDirective, TranslatePipe, BbBtnContent, BbSelectList],
   templateUrl: './manage-tags.html',
   styleUrl: './manage-tags.scss',
 })
@@ -74,6 +76,8 @@ export class ManageTags implements OnInit, OnDestroy {
 
   readonly icon = { faPlus, faTrashCan, faXmark };
 
+  readonly isPhone = inject(ViewportService).isPhone;
+
   readonly tagNames = signal<string[]>([]);
   readonly selectedTags = signal<TagRow[]>([]);
   readonly canDelete = computed(() => this.selectedTags().length >= 1);
@@ -85,6 +89,16 @@ export class ManageTags implements OnInit, OnDestroy {
       usageCount: torrents.filter((t) => torrentTagNames(t.tags).includes(name)).length,
     }));
   });
+
+  // Phone: the same rows as a tap-to-select list; selection feeds the same signal as the grid.
+  readonly phoneItems = computed<SelectListItem[]>(() =>
+    this.rows().map((row) => ({ id: row.name, title: row.name, meta: String(row.usageCount) })),
+  );
+  readonly phoneSelectedIds = computed(() => this.selectedTags().map((tag) => tag.name));
+
+  onPhoneSelection(ids: string[]): void {
+    this.selectedTags.set(this.rows().filter((row) => ids.includes(row.name)));
+  }
 
   readonly colDefs: ColDef<TagRow>[] = [
     {

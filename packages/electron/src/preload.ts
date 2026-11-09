@@ -121,6 +121,7 @@ function buildQbBridge(): BitButlerQbAPI {
 }
 
 const api: BitButlerAPI = {
+  appPlatform: ipcRenderer.sendSync('electron:get-app-platform'),
   electron: {
     isDev: () => ipcRenderer.invoke('electron:is-dev'),
     openExternalUrl: (url) => ipcRenderer.invoke('electron:open-external-url', url),

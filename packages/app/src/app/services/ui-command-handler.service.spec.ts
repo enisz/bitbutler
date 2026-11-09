@@ -7,6 +7,7 @@ import { CommandBusService } from './command-bus.service';
 import { ConfirmService } from './confirm.service';
 import { ElectronService } from './electron.service';
 import { PathService } from './path.service';
+import { PlatformService } from './platform.service';
 import { QbPollingService } from './qb-polling.service';
 import { QbService } from './qb.service';
 import { SelectionStoreService } from './selection-store.service';
@@ -239,6 +240,16 @@ describe('UiCommandHandlerService', () => {
     expect(routerNavigate).toHaveBeenCalledWith(['/pages', 'settings', 'notifications']);
   });
 
+  it('UI_OPEN_SETTINGS goes to the platform settings path', async () => {
+    const platform = TestBed.inject(PlatformService) as { settingsPath: string };
+    platform.settingsPath = '/pages/mobile-settings';
+
+    commands$.next({ type: 'UI_OPEN_SETTINGS' });
+    await flushPromises();
+
+    expect(routerNavigate).toHaveBeenCalledWith(['/pages/mobile-settings']);
+  });
+
   it('ignores UI_OPEN_SETTINGS while a modal is open', async () => {
     mockModalService.hasOpenModals.mockReturnValue(true);
 
@@ -337,6 +348,31 @@ describe('UiCommandHandlerService', () => {
       expect(qbAuthLogout).not.toHaveBeenCalled();
       expect(serverStoreService.clearSelection).not.toHaveBeenCalled();
       expect(routerNavigate).not.toHaveBeenCalledWith(['/login']);
+    });
+
+    it('leaves the mobile settings page first and keeps the session when the guard refuses', async () => {
+      confirmServiceConfirm.mockResolvedValue(true);
+      (TestBed.inject(Router) as any).url = '/pages/mobile-settings/general';
+      routerNavigate.mockResolvedValueOnce(false);
+
+      commands$.next({ type: 'UI_DISCONNECT' });
+      await flushPromises();
+
+      expect(routerNavigate.mock.calls[0]).toEqual([['/pages', 'torrent-list']]);
+      expect(qbAuthLogout).not.toHaveBeenCalled();
+      expect(serverStoreService.clearSelection).not.toHaveBeenCalled();
+      expect(routerNavigate).not.toHaveBeenCalledWith(['/login']);
+    });
+
+    it('leaves the mobile settings page first and logs out once leaving is allowed', async () => {
+      confirmServiceConfirm.mockResolvedValue(true);
+      (TestBed.inject(Router) as any).url = '/pages/mobile-settings/general';
+
+      commands$.next({ type: 'UI_DISCONNECT' });
+      await flushPromises();
+
+      expect(routerNavigate.mock.calls[0]).toEqual([['/pages', 'torrent-list']]);
+      expect(qbAuthLogout).toHaveBeenCalledWith('server-1');
     });
 
     it('should do nothing when the confirmation is declined', async () => {

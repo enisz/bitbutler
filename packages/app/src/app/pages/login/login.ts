@@ -250,7 +250,7 @@ export class Login implements OnInit {
 
   public async openManageServers(): Promise<void> {
     const { ManageServers } = await import('../../modals/manage-servers/manage-servers');
-    const ref = this.modalService.open(ManageServers, { size: 'xl' });
+    const ref = this.modalService.open(ManageServers, { size: 'xl', fullscreen: 'md' });
     setModalInput(ref, 'hideConnect', true);
   }
 
@@ -263,7 +263,7 @@ export class Login implements OnInit {
     this.addingServer.set(true);
     try {
       const { ServerEditor } = await import('../../modals/server-editor/server-editor');
-      const ref = this.modalService.open(ServerEditor, { size: 'lg' });
+      const ref = this.modalService.open(ServerEditor, { size: 'lg', fullscreen: 'md' });
       const newId: string = await ref.result;
       this.commandBusService.emit({ type: 'SERVER_ADDED', id: newId });
     } catch {

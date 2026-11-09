@@ -10,6 +10,7 @@ import { GridContextMenuService } from '../../../pages/main/grid/context-menu/gr
 import { ContextMenuService } from '../../../services/context-menu.service';
 import { PeersGridSettingsService } from '../../../services/peers-grid.settings.service';
 import { ThemeService } from '../../../services/theme.service';
+import { ViewportService } from '../../../services/viewport.service';
 import { TorrentDetailsDataService } from '../torrent-details-data.service';
 import { Peers } from './peers';
 
@@ -360,5 +361,50 @@ describe('Peers', () => {
       component.gridOptions.onColumnHeaderContextMenu?.({ column: null, api: {} } as any);
       expect(mockContextMenuService.open).not.toHaveBeenCalled();
     });
+  });
+});
+
+describe('Peers layout', () => {
+  const setup = async (isPhone: boolean) => {
+    await TestBed.configureTestingModule({
+      imports: [Peers],
+      providers: [
+        {
+          provide: TorrentDetailsDataService,
+          useValue: {
+            peers: signal<QbTorrentPeer[]>([
+              { ip: '10.0.0.1', port: 6881, client: 'x', progress: 0.1, dl_speed: 0, up_speed: 0 },
+            ] as QbTorrentPeer[]),
+            peersLoading: signal(false),
+          },
+        },
+        { provide: ThemeService, useValue: { effectiveMode: signal('light') } },
+        {
+          provide: PeersGridSettingsService,
+          useValue: { load: vi.fn().mockResolvedValue({ columnState: [] }), save: vi.fn() },
+        },
+        { provide: ContextMenuService, useValue: { open: vi.fn() } },
+        {
+          provide: GridContextMenuService,
+          useValue: { buildHeaderMenu: vi.fn().mockReturnValue([]), copyToClipboard: vi.fn() },
+        },
+        { provide: ViewportService, useValue: { isPhone: signal(isPhone) } },
+      ],
+    }).compileComponents();
+    const fixture = TestBed.createComponent(Peers);
+    fixture.detectChanges();
+    return fixture.nativeElement as HTMLElement;
+  };
+
+  it('renders the list and no grid on phone', async () => {
+    const el = await setup(true);
+    expect(el.querySelector('app-peers-list')).not.toBeNull();
+    expect(el.querySelector('ag-grid-angular')).toBeNull();
+  });
+
+  it('renders the grid and no list on wider screens', async () => {
+    const el = await setup(false);
+    expect(el.querySelector('ag-grid-angular')).not.toBeNull();
+    expect(el.querySelector('app-peers-list')).toBeNull();
   });
 });

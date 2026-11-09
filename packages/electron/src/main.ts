@@ -16,7 +16,7 @@ import { registerTorrentAddQueueHandlers } from './ipc/torrent-add-queue.js';
 import { registerTorrentIpcHandlers } from './ipc/torrent.js';
 import { registerViewIpcHandlers } from './ipc/view.js';
 import { handleSecondInstanceArgv, registerWindowIpcHandlers } from './ipc/window.js';
-import { createMainWindow } from './main-window.js';
+import { createMainWindow, getWindowMode } from './main-window.js';
 import { installMenu } from './menu.js';
 import { notify } from './notification.js';
 import { registerQbBridgeHandlers } from './qb/bridge.js';
@@ -108,7 +108,7 @@ if (!gotLock) {
     const mainWindow = createOrRestoreMainWindow();
     if (!startMinimized) {
       mainWindow.once('ready-to-show', () => {
-        mainWindow.maximize();
+        if (getWindowMode() === 'desktop') mainWindow.maximize();
         mainWindow.show();
       });
     }

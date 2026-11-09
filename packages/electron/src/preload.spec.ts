@@ -11,6 +11,7 @@ vi.mock('electron', () => ({
   },
   ipcRenderer: {
     invoke: mockInvoke,
+    sendSync: vi.fn(() => 'mobile'),
     on: vi.fn(),
     send: vi.fn(),
     removeListener: vi.fn(),
@@ -71,5 +72,14 @@ describe('preload qb bridge', () => {
 
     unsubscribe();
     expect(ipcRenderer.removeListener).toHaveBeenCalledWith('qb:pollEvent', handler);
+  });
+});
+
+describe('preload appPlatform', () => {
+  it('exposes appPlatform from the main process synchronously', async () => {
+    await import('./preload.js');
+    const api = exposed.get('bitbutler') as { appPlatform: string };
+    expect(api.appPlatform).toBe('mobile');
+    expect(ipcRenderer.sendSync).toHaveBeenCalledWith('electron:get-app-platform');
   });
 });

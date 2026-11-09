@@ -1,1 +1,7 @@
-<ag-grid-angular class="w-100 h-100" [gridOptions]="gridOptions" [theme]="currentTheme()" />
+<ag-grid-angular
+  class="w-100 h-100"
+  bbTouchContextMenu
+  [bbLongPressEnabled]="isTouch()"
+  [gridOptions]="gridOptions"
+  [theme]="currentTheme()"
+/>

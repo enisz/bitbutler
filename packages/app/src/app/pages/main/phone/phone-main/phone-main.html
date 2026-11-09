@@ -1,0 +1,108 @@
+<div class="bb-phone">
+  @if (selectionMode()) {
+    <header class="bb-phone__bar" data-testid="selection-header">
+      <button
+        type="button"
+        class="bb-icon-btn"
+        data-testid="selection-close"
+        [attr.aria-label]="'pages.main.phone.selection.close' | translate"
+        (click)="clearSelection()"
+      >
+        <fa-icon [icon]="icons.faXmark"></fa-icon>
+      </button>
+      <div class="bb-phone__selected">
+        {{ 'pages.main.phone.selection.count' | translate: { count: selectedCount() } }}
+      </div>
+      <button
+        type="button"
+        class="bb-phone__text-btn"
+        data-testid="selection-select-all"
+        (click)="selectAll()"
+      >
+        {{ 'pages.main.phone.selection.select-all' | translate }}
+      </button>
+    </header>
+  } @else {
+    <header class="bb-phone__bar">
+      <button
+        type="button"
+        class="bb-icon-btn"
+        data-testid="phone-menu"
+        [attr.aria-label]="'pages.main.phone.menu' | translate"
+        (click)="drawerOpen.set(true)"
+      >
+        <fa-icon [icon]="icons.faBars"></fa-icon>
+      </button>
+      <label class="bb-phone__search">
+        <fa-icon [icon]="icons.faMagnifyingGlass"></fa-icon>
+        <input
+          type="search"
+          data-testid="phone-search"
+          autocomplete="off"
+          [value]="search()"
+          [placeholder]="'pages.main.phone.search' | translate"
+          (input)="onSearch($any($event.target).value)"
+        />
+      </label>
+      <button
+        type="button"
+        class="bb-icon-btn"
+        data-testid="phone-settings"
+        [attr.aria-label]="'pages.main.phone.settings' | translate"
+        (click)="openSettings()"
+      >
+        <fa-icon [icon]="icons.faGear"></fa-icon>
+      </button>
+    </header>
+  }
+
+  <div class="bb-phone__list">
+    <app-torrent-card-list></app-torrent-card-list>
+    @if (!selectionMode()) {
+      <button
+        type="button"
+        class="bb-fab"
+        data-testid="phone-add"
+        [attr.aria-label]="'pages.main.phone.add' | translate"
+        (click)="add()"
+      >
+        <fa-icon [icon]="icons.faPlus"></fa-icon>
+      </button>
+    }
+  </div>
+
+  <app-phone-action-bar></app-phone-action-bar>
+</div>
+
+@if (drawerOpen()) {
+  <div class="bb-drawer" data-testid="phone-drawer">
+    <div
+      class="bb-drawer__backdrop"
+      data-testid="phone-drawer-backdrop"
+      (click)="drawerOpen.set(false)"
+    ></div>
+    <aside class="bb-drawer__panel">
+      <div class="bb-drawer__head">
+        <app-bb-logo [size]="36"></app-bb-logo>
+        <div class="bb-drawer__title">
+          <div class="bb-drawer__brand">BitButler</div>
+          @if (serverName()) {
+            <small>{{ serverName() }}</small>
+          }
+        </div>
+        <button
+          type="button"
+          class="bb-icon-btn bb-drawer__close"
+          data-testid="phone-drawer-close"
+          [attr.aria-label]="'pages.main.phone.close' | translate"
+          (click)="drawerOpen.set(false)"
+        >
+          <fa-icon [icon]="icons.faXmark"></fa-icon>
+        </button>
+      </div>
+      <div class="bb-drawer__body">
+        <app-status></app-status>
+      </div>
+    </aside>
+  </div>
+}

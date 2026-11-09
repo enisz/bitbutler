@@ -160,7 +160,10 @@ export interface ImportStartPayload {
   skipHashes: string[];
 }
 
+export type AppPlatform = 'desktop' | 'mobile';
+
 export interface BitButlerAPI {
+  appPlatform: AppPlatform;
   electron: {
     isDev(): Promise<boolean>;
     openExternalUrl(url: string): Promise<void>;

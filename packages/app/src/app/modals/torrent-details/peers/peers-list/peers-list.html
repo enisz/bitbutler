@@ -1,0 +1,31 @@
+@if (peers().length === 0) {
+  @if (loading()) {
+    <div class="bb-list-message" data-testid="peers-loading">
+      {{ 'components.modals.torrent-details.peers.grid-options.loading.message' | translate }}
+    </div>
+  } @else {
+    <div class="bb-list-message" data-testid="peers-empty">
+      {{ 'components.modals.torrent-details.peers.grid-options.no-rows.message' | translate }}
+    </div>
+  }
+} @else {
+  @for (peer of peers(); track trackById($index, peer)) {
+    <div class="bb-peer" data-testid="peer-row">
+      <div class="bb-peer__top">
+        <span class="bb-peer__addr">{{ address(peer) }}</span>
+        <span class="bb-peer__pct">{{ percent(peer) }}</span>
+      </div>
+      <div class="bb-peer__meta">
+        <span class="bb-peer__client">{{ peer.client }}</span>
+        <span>
+          @if (peer.dl_speed > 0) {
+            &#8595; {{ speed(peer.dl_speed) }}
+          }
+          @if (peer.up_speed > 0) {
+            &#8593; {{ speed(peer.up_speed) }}
+          }
+        </span>
+      </div>
+    </div>
+  }
+}

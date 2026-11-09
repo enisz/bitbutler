@@ -9,6 +9,7 @@ import { GridContextMenuService } from '../../../pages/main/grid/context-menu/gr
 import { ContextMenuService } from '../../../services/context-menu.service';
 import { ThemeService } from '../../../services/theme.service';
 import { TrackersGridSettingsService } from '../../../services/trackers-grid.settings.service';
+import { ViewportService } from '../../../services/viewport.service';
 import { TorrentDetailsDataService } from '../torrent-details-data.service';
 import { Trackers } from './trackers';
 
@@ -322,5 +323,57 @@ describe('Trackers', () => {
       component.gridOptions.onColumnHeaderContextMenu?.({ column: null, api: {} } as any);
       expect(mockContextMenuService.open).not.toHaveBeenCalled();
     });
+  });
+});
+
+describe('Trackers layout', () => {
+  const setup = async (isPhone: boolean) => {
+    await TestBed.configureTestingModule({
+      imports: [Trackers],
+      providers: [
+        {
+          provide: TorrentDetailsDataService,
+          useValue: {
+            trackers: signal<QbTorrentTracker[]>([
+              {
+                url: 'udp://t.example/announce',
+                status: 2,
+                num_peers: 1,
+                num_seeds: 1,
+                num_leeches: 1,
+                msg: '',
+              },
+            ] as QbTorrentTracker[]),
+            trackersLoading: signal(false),
+          },
+        },
+        { provide: ThemeService, useValue: { effectiveMode: signal('light') } },
+        {
+          provide: TrackersGridSettingsService,
+          useValue: { load: vi.fn().mockResolvedValue({ columnState: [] }), save: vi.fn() },
+        },
+        { provide: ContextMenuService, useValue: { open: vi.fn() } },
+        {
+          provide: GridContextMenuService,
+          useValue: { buildHeaderMenu: vi.fn().mockReturnValue([]), copyToClipboard: vi.fn() },
+        },
+        { provide: ViewportService, useValue: { isPhone: signal(isPhone) } },
+      ],
+    }).compileComponents();
+    const fixture = TestBed.createComponent(Trackers);
+    fixture.detectChanges();
+    return fixture.nativeElement as HTMLElement;
+  };
+
+  it('renders the list and no grid on phone', async () => {
+    const el = await setup(true);
+    expect(el.querySelector('app-trackers-list')).not.toBeNull();
+    expect(el.querySelector('ag-grid-angular')).toBeNull();
+  });
+
+  it('renders the grid and no list on wider screens', async () => {
+    const el = await setup(false);
+    expect(el.querySelector('ag-grid-angular')).not.toBeNull();
+    expect(el.querySelector('app-trackers-list')).toBeNull();
   });
 });

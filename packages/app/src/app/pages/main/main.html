@@ -1,65 +1,69 @@
-<div class="d-flex flex-row vw-100 vh-100">
-  <aside
-    class="bb-sidebar-width flex-shrink-0 d-flex flex-column min-h-0"
-    [class.bb-sidebar-width--collapsed]="sidebarCollapsed()"
-  >
-    <div
-      class="bb-brand d-flex flex-row align-items-center user-select-none gap-2"
-      [class.justify-content-center]="sidebarCollapsed()"
+@if (isPhone()) {
+  <app-phone-main></app-phone-main>
+} @else {
+  <div class="d-flex flex-row vw-100 vh-100">
+    <aside
+      class="bb-sidebar-width flex-shrink-0 d-flex flex-column min-h-0"
+      [class.bb-sidebar-width--collapsed]="sidebarCollapsed()"
     >
-      <button
-        type="button"
-        class="bb-brand-logo"
-        [class.bb-brand-logo--expand]="sidebarCollapsed()"
-        [disabled]="!sidebarCollapsed()"
-        (click)="toggleSidebar()"
+      <div
+        class="bb-brand d-flex flex-row align-items-center user-select-none gap-2"
+        [class.justify-content-center]="sidebarCollapsed()"
       >
-        <app-bb-logo [size]="40" />
-        @if (sidebarCollapsed()) {
-          <span class="bb-brand-logo__overlay" aria-hidden="true">
-            <fa-icon [icon]="icons.faChevronRight"></fa-icon>
-          </span>
-        }
-      </button>
-
-      @if (!sidebarCollapsed()) {
-        <div class="d-flex flex-column min-w-0 flex-grow-1 ms-2">
-          <div class="brand-title">BitButler</div>
-          @if (currentServer()) {
-            <div class="brand-status d-flex flex-row align-items-center gap-2">
-              <span class="status-dot" [class]="statusDotClass()"></span>
-              <small>{{ currentServer()?.name }}</small>
-            </div>
-          }
-        </div>
-
         <button
           type="button"
-          class="bb-sidebar-toggle"
-          aria-label="Collapse sidebar"
+          class="bb-brand-logo"
+          [class.bb-brand-logo--expand]="sidebarCollapsed()"
+          [disabled]="!sidebarCollapsed()"
           (click)="toggleSidebar()"
         >
-          <fa-icon [icon]="icons.faBars"></fa-icon>
+          <app-bb-logo [size]="40" />
+          @if (sidebarCollapsed()) {
+            <span class="bb-brand-logo__overlay" aria-hidden="true">
+              <fa-icon [icon]="icons.faChevronRight"></fa-icon>
+            </span>
+          }
         </button>
-      }
-    </div>
 
-    <div class="flex-grow-1 min-h-0 overflow-auto">
-      <app-status [collapsed]="sidebarCollapsed()"></app-status>
-    </div>
-  </aside>
+        @if (!sidebarCollapsed()) {
+          <div class="d-flex flex-column min-w-0 flex-grow-1 ms-2">
+            <div class="brand-title">BitButler</div>
+            @if (currentServer()) {
+              <div class="brand-status d-flex flex-row align-items-center gap-2">
+                <span class="status-dot" [class]="statusDotClass()"></span>
+                <small>{{ currentServer()?.name }}</small>
+              </div>
+            }
+          </div>
 
-  <main class="d-flex flex-column flex-grow-1 min-w-0 min-h-0">
-    <div class="flex-shrink-0">
-      <app-button-bar></app-button-bar>
-    </div>
+          <button
+            type="button"
+            class="bb-sidebar-toggle"
+            aria-label="Collapse sidebar"
+            (click)="toggleSidebar()"
+          >
+            <fa-icon [icon]="icons.faBars"></fa-icon>
+          </button>
+        }
+      </div>
 
-    <div class="flex-grow-1 min-h-0 overflow-hidden">
-      <app-grid class="h-100 w-100"></app-grid>
-    </div>
+      <div class="flex-grow-1 min-h-0 overflow-auto">
+        <app-status [collapsed]="sidebarCollapsed()"></app-status>
+      </div>
+    </aside>
 
-    <footer class="flex-shrink-0">
-      <app-server-state [state]="serverState()"></app-server-state>
-    </footer>
-  </main>
-</div>
+    <main class="d-flex flex-column flex-grow-1 min-w-0 min-h-0">
+      <div class="flex-shrink-0">
+        <app-button-bar></app-button-bar>
+      </div>
+
+      <div class="flex-grow-1 min-h-0 overflow-hidden">
+        <app-grid class="h-100 w-100"></app-grid>
+      </div>
+
+      <footer class="flex-shrink-0">
+        <app-server-state [state]="serverState()"></app-server-state>
+      </footer>
+    </main>
+  </div>
+}

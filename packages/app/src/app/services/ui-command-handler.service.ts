@@ -26,6 +26,7 @@ import { ConfirmService } from './confirm.service';
 import { CredentialPromptService } from './credential-prompt.service';
 import { ElectronService } from './electron.service';
 import { PathService } from './path.service';
+import { PlatformService } from './platform.service';
 import { QbPollingService } from './qb-polling.service';
 import { QbService } from './qb.service';
 import { SelectionStoreService } from './selection-store.service';
@@ -33,6 +34,12 @@ import { ServerStoreService } from './server-store.service';
 import { ServerService } from './server.service';
 import { ToastService } from './toast.service';
 import { TorrentListGridSettingsService } from './torrent-list-grid.settings.service';
+
+const SETTINGS_PAGE_PREFIXES = [
+  '/pages/settings/',
+  '/pages/qb-settings/',
+  '/pages/mobile-settings/',
+];
 
 @Injectable({ providedIn: 'root' })
 export class UiCommandHandlerService {
@@ -52,6 +59,7 @@ export class UiCommandHandlerService {
   private readonly qbPollingService = inject(QbPollingService);
   private readonly confirmService = inject(ConfirmService);
   private readonly router = inject(Router);
+  private readonly platformService = inject(PlatformService);
   private pauseToken: symbol | null = null;
 
   private activeModals: NgbModalRef[] = [];
@@ -137,7 +145,10 @@ export class UiCommandHandlerService {
         case 'UI_OPEN_SETTINGS': {
           // Navigating would tear down an open dialog and whatever unsaved state it holds.
           if (this.modalService.hasOpenModals()) break;
-          await this.router.navigate(['/pages', 'settings', command.pane ?? 'general']);
+          const settingsPath = this.platformService.settingsPath;
+          await (settingsPath === '/pages/settings'
+            ? this.router.navigate(['/pages', 'settings', command.pane ?? 'general'])
+            : this.router.navigate([settingsPath]));
           break;
         }
 
@@ -153,6 +164,7 @@ export class UiCommandHandlerService {
           if (this.isModalOpen(TorrentDetails)) break;
 
           const torrentDetailsModalRef = this.modalService.open(TorrentDetails, {
+            fullscreen: 'md',
             size: 'xl',
             scrollable: true,
             centered: false,
@@ -168,6 +180,7 @@ export class UiCommandHandlerService {
           const { AddTorrent } = await import('../modals/add-torrent/add-torrent');
           if (this.isModalOpen(AddTorrent)) break;
           const addTorrentModalRef = this.modalService.open(AddTorrent, {
+            fullscreen: 'md',
             size: 'lg',
             scrollable: true,
             centered: false,
@@ -359,7 +372,10 @@ export class UiCommandHandlerService {
         case 'UI_SERVER_EDITOR_OPEN': {
           const { ServerEditor } = await import('../modals/server-editor/server-editor');
           if (this.isModalOpen(ServerEditor)) break;
-          const serverEditorModalRef = this.modalService.open(ServerEditor, { size: 'lg' });
+          const serverEditorModalRef = this.modalService.open(ServerEditor, {
+            size: 'lg',
+            fullscreen: 'md',
+          });
           setModalInput(serverEditorModalRef, 'id', command.id);
           serverEditorModalRef.result
             .then((newId: string) =>
@@ -389,6 +405,7 @@ export class UiCommandHandlerService {
           if (this.isModalOpen(TorrentDetails)) break;
 
           const contentModalRef = this.modalService.open(TorrentDetails, {
+            fullscreen: 'md',
             size: 'xl',
             scrollable: true,
             centered: false,
@@ -406,6 +423,7 @@ export class UiCommandHandlerService {
           const { ManageTags } = await import('../modals/manage-tags/manage-tags');
           if (this.isModalOpen(ManageTags)) break;
           const manageTagsModalRef = this.modalService.open(ManageTags, {
+            fullscreen: 'md',
             scrollable: true,
             size: 'lg',
           });
@@ -418,6 +436,7 @@ export class UiCommandHandlerService {
             await import('../modals/manage-categories/manage-categories');
           if (this.isModalOpen(ManageCategories)) break;
           const manageCategoriesModalRef = this.modalService.open(ManageCategories, {
+            fullscreen: 'md',
             scrollable: true,
             size: 'lg',
           });
@@ -429,6 +448,7 @@ export class UiCommandHandlerService {
           const { ManageServers } = await import('../modals/manage-servers/manage-servers');
           if (this.isModalOpen(ManageServers)) break;
           const manageServersModalRef = this.modalService.open(ManageServers, {
+            fullscreen: 'md',
             scrollable: true,
             size: 'xl',
           });
@@ -444,6 +464,7 @@ export class UiCommandHandlerService {
           const { ExportTorrents } = await import('../modals/export-torrents/export-torrents');
           if (this.isModalOpen(ExportTorrents)) break;
           const exportRef = this.modalService.open(ExportTorrents, {
+            fullscreen: 'md',
             size: 'lg',
             scrollable: true,
             centered: false,
@@ -456,6 +477,7 @@ export class UiCommandHandlerService {
           const { ImportTorrents } = await import('../modals/import-torrents/import-torrents');
           if (this.isModalOpen(ImportTorrents)) break;
           const importRef = this.modalService.open(ImportTorrents, {
+            fullscreen: 'md',
             size: 'xl',
             scrollable: true,
             centered: false,
@@ -481,6 +503,7 @@ export class UiCommandHandlerService {
             await import('../modals/import-configuration/import-configuration');
           if (this.isModalOpen(ImportConfiguration)) break;
           const importConfigRef = this.modalService.open(ImportConfiguration, {
+            fullscreen: 'md',
             size: 'lg',
             scrollable: true,
           });
@@ -638,8 +661,7 @@ export class UiCommandHandlerService {
   // about the session may change.
   private async leaveSettingsPage(): Promise<boolean> {
     const url = this.router.url ?? '';
-    const onSettingsPage =
-      url.startsWith('/pages/settings/') || url.startsWith('/pages/qb-settings/');
+    const onSettingsPage = SETTINGS_PAGE_PREFIXES.some((prefix) => url.startsWith(prefix));
     if (!onSettingsPage) return true;
 
     return this.router.navigate(['/pages', 'torrent-list']);

@@ -1,0 +1,33 @@
+:host {
+  display: block;
+}
+
+.bb-list-message {
+  padding: 24px 12px;
+  text-align: center;
+  color: var(--bb-control-placeholder);
+}
+
+.bb-tracker {
+  padding: 8px 4px;
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+.bb-tracker__url {
+  overflow-wrap: anywhere;
+  font-weight: 600;
+}
+
+.bb-tracker__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.78rem;
+  color: var(--bb-control-placeholder);
+}
+
+.bb-tracker__msg {
+  margin-top: 2px;
+  font-size: 0.78rem;
+  overflow-wrap: anywhere;
+}

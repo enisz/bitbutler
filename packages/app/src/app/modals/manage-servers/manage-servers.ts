@@ -36,6 +36,7 @@ import type {
 } from 'ag-grid-community';
 import { GRID_DARK_THEME, GRID_LIGHT_THEME, GRID_SHARED_OPTIONS } from '../../app.const';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
+import { BbSelectList, SelectListItem } from '../../components/bb-select-list/bb-select-list';
 import { BooleanColumnFilter } from '../../components/column-filters/boolean-column-filter/boolean-column-filter';
 import { NumberColumnFilter } from '../../components/column-filters/number-column-filter/number-column-filter';
 import {
@@ -58,13 +59,14 @@ import { ServerStoreService } from '../../services/server-store.service';
 import { ServerService } from '../../services/server.service';
 import { ThemeService } from '../../services/theme.service';
 import { ToastService } from '../../services/toast.service';
+import { ViewportService } from '../../services/viewport.service';
 import { setModalInput } from '../../utils/modal-input';
 import { ActiveOrbRenderer } from './active-orb-renderer';
 
 @Component({
   selector: 'app-manage-servers',
   standalone: true,
-  imports: [AgGridAngular, GridRowNavigationDirective, TranslatePipe, BbBtnContent],
+  imports: [AgGridAngular, GridRowNavigationDirective, TranslatePipe, BbBtnContent, BbSelectList],
   templateUrl: './manage-servers.html',
   styleUrl: './manage-servers.scss',
 })
@@ -99,6 +101,23 @@ export class ManageServers implements OnDestroy {
   readonly servers = this.serverStoreService.servers;
   readonly loading = this.serverStoreService.loading;
   readonly selectedServers = signal<ServerRecord[]>([]);
+
+  readonly isPhone = inject(ViewportService).isPhone;
+  readonly phoneItems = computed<SelectListItem[]>(() => {
+    const activeId = this.hideConnect() ? null : this.serverStoreService.currentServerId();
+    return this.servers().map((server) => ({
+      id: server.id,
+      title: server.name,
+      subtitle: server.protocol + '://' + server.host + ':' + server.port,
+      meta: server.id === activeId ? '●' : undefined,
+      disabled: server.id === activeId,
+    }));
+  });
+  readonly phoneSelectedIds = computed(() => this.selectedServers().map((s) => s.id));
+
+  onPhoneSelection(ids: string[]): void {
+    this.selectedServers.set(this.servers().filter((server) => ids.includes(server.id)));
+  }
 
   readonly canEdit = computed(() => this.selectedServers().length === 1);
   readonly canConnect = computed(() => !this.hideConnect() && this.selectedServers().length === 1);
@@ -293,7 +312,7 @@ export class ManageServers implements OnDestroy {
 
   async openNew(): Promise<void> {
     const { ServerEditor } = await import('../server-editor/server-editor');
-    const ref = this.modalService.open(ServerEditor, { size: 'lg' });
+    const ref = this.modalService.open(ServerEditor, { size: 'lg', fullscreen: 'md' });
     try {
       const id: string = await ref.result;
       this.commandBusService.emit({ type: 'SERVER_ADDED', id });
@@ -310,7 +329,7 @@ export class ManageServers implements OnDestroy {
 
   private async openEditFor(server: ServerRecord): Promise<void> {
     const { ServerEditor } = await import('../server-editor/server-editor');
-    const ref = this.modalService.open(ServerEditor, { size: 'lg' });
+    const ref = this.modalService.open(ServerEditor, { size: 'lg', fullscreen: 'md' });
     setModalInput(ref, 'id', server.id);
     await ref.result.catch(() => {});
   }

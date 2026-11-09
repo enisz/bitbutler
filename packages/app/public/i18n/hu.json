@@ -1561,6 +1561,39 @@
           "tags": "Címkék",
           "save-paths": "Mentési útvonalak"
         }
+      },
+      "phone": {
+        "list": {
+          "loading": "Torrentek betöltése...",
+          "empty": "Még nincs torrent.",
+          "no-matches": "Nincs a keresésnek megfelelő torrent."
+        },
+        "state": {
+          "downloading": "Letöltés",
+          "seeding": "Seedelés",
+          "paused": "Szüneteltetve",
+          "stalled": "Megakadt",
+          "queued": "Sorban áll",
+          "checking": "Ellenőrzés",
+          "error": "Hiba",
+          "other": "Folyamatban"
+        },
+        "actions": {
+          "start": "Indítás",
+          "stop": "Leállítás",
+          "delete": "Törlés",
+          "more": "Továbbiak"
+        },
+        "menu": "Szűrők",
+        "search": "Torrentek keresése",
+        "add": "Torrent hozzáadása",
+        "settings": "Beállítások",
+        "selection": {
+          "close": "Kijelölés törlése",
+          "count": "{{count}} kijelölve",
+          "select-all": "Összes kijelölése"
+        },
+        "close": "Bezárás"
       }
     },
     "settings": {
@@ -1941,6 +1974,49 @@
           "path-mappings": {
             "description": "Rendeld a távoli kiszolgáló útvonalait helyi útvonalakhoz, hogy a fájlok ezen az eszközön elérhetők legyenek."
           }
+        }
+      }
+    },
+    "mobile-settings": {
+      "title": "Beállítások",
+      "group": {
+        "interface": "Felület",
+        "application": "Alkalmazás",
+        "data": "Adatok",
+        "help": "Súgó",
+        "session": "Munkamenet"
+      },
+      "pane": {
+        "list": {
+          "title": "Torrentlista",
+          "description": "A torrentlista rendezése és a sorok sűrűsége."
+        }
+      },
+      "action": {
+        "import-torrents": "Torrentek importálása",
+        "export-torrents": "Torrentek exportálása",
+        "import-configuration": "Konfiguráció importálása",
+        "export-configuration": "Konfiguráció exportálása",
+        "about": "A BitButler névjegye",
+        "disconnect": "Kapcsolat bontása",
+        "quit": "BitButler bezárása"
+      },
+      "list": {
+        "sort": {
+          "title": "Rendezés",
+          "added_on": "Hozzáadva",
+          "name": "Név",
+          "size": "Méret",
+          "progress": "Előrehaladás",
+          "dlspeed": "Letöltési sebesség",
+          "upspeed": "Feltöltési sebesség",
+          "ratio": "Arány",
+          "last_activity": "Utolsó aktivitás"
+        },
+        "density": {
+          "title": "Sűrűség",
+          "compact": "Kompakt sorok",
+          "compact-sub": "Egyszerre több torrent látszik a képernyőn."
         }
       }
     },

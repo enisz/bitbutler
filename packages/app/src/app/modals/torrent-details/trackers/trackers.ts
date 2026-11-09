@@ -42,12 +42,14 @@ import { NoRowOverlay } from '../../../pages/main/grid/overlays/no-row-overlay/n
 import { ContextMenuService } from '../../../services/context-menu.service';
 import { ThemeService } from '../../../services/theme.service';
 import { TrackersGridSettingsService } from '../../../services/trackers-grid.settings.service';
+import { ViewportService } from '../../../services/viewport.service';
 import { TorrentDetailsDataService } from '../torrent-details-data.service';
 import { TorrentDetailTabComponent } from '../torrent-details.interface';
+import { TrackersList } from './trackers-list/trackers-list';
 
 @Component({
   selector: 'app-trackers',
-  imports: [AgGridAngular],
+  imports: [AgGridAngular, TrackersList],
   templateUrl: './trackers.html',
   styleUrl: './trackers.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -61,6 +63,7 @@ export class Trackers implements TorrentDetailTabComponent, OnInit {
   private readonly gridContextMenuService = inject(GridContextMenuService);
   private readonly trackersGridSettingsService = inject(TrackersGridSettingsService);
   private readonly destroyRef = inject(DestroyRef);
+  public readonly isPhone = inject(ViewportService).isPhone;
 
   private readonly saveState$ = new Subject<void>();
   private gridApi: GridApi | null = null;

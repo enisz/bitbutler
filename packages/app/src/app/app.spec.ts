@@ -1,6 +1,7 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
+import { NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectConfig } from '@ng-select/ng-select';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TimeagoIntl, provideTimeago } from 'ngx-timeago';
@@ -92,6 +93,11 @@ describe('App', () => {
     TestBed.createComponent(App);
 
     expect(showPending).toHaveBeenCalledTimes(1);
+  });
+
+  it('should make modal bodies scroll by default', () => {
+    TestBed.createComponent(App);
+    expect(TestBed.inject(NgbModalConfig).scrollable).toBe(true);
   });
 
   it('should configure ng-select labels from translations', () => {

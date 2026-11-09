@@ -1,0 +1,26 @@
+@if (trackers().length === 0) {
+  @if (loading()) {
+    <div class="bb-list-message" data-testid="trackers-loading">
+      {{ 'components.modals.torrent-details.trackers.grid-options.loading.message' | translate }}
+    </div>
+  } @else {
+    <div class="bb-list-message" data-testid="trackers-empty">
+      {{ 'components.modals.torrent-details.trackers.grid-options.no-rows.message' | translate }}
+    </div>
+  }
+} @else {
+  @for (tracker of trackers(); track tracker.url) {
+    <div class="bb-tracker" data-testid="tracker-row">
+      <div class="bb-tracker__url">{{ tracker.url }}</div>
+      <div class="bb-tracker__meta">
+        <span [class.text-success]="isWorking(tracker)" [class.text-danger]="isFailing(tracker)">{{
+          statusKey(tracker) | translate
+        }}</span>
+        <span>{{ tracker.num_seeds }} / {{ tracker.num_leeches }} / {{ tracker.num_peers }}</span>
+      </div>
+      @if (tracker.msg) {
+        <div class="bb-tracker__msg">{{ tracker.msg }}</div>
+      }
+    </div>
+  }
+}

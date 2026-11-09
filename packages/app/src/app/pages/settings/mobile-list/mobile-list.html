@@ -1,0 +1,42 @@
+<div class="bb-cards">
+  <app-bb-section-card [title]="'pages.mobile-settings.list.sort.title' | translate">
+    <div class="mobile-list__sort" role="listbox">
+      @for (key of sortKeys; track key) {
+        <button
+          type="button"
+          class="mobile-list__row"
+          role="option"
+          [class.active]="listState.sortKey() === key"
+          [attr.aria-selected]="listState.sortKey() === key"
+          [attr.data-sort-key]="key"
+          [attr.data-direction]="
+            listState.sortKey() === key ? (listState.sortDesc() ? 'desc' : 'asc') : null
+          "
+          (click)="onSort(key)"
+        >
+          <span class="mobile-list__label">{{
+            'pages.mobile-settings.list.sort.' + key | translate
+          }}</span>
+          @if (listState.sortKey() === key) {
+            <fa-icon
+              class="mobile-list__caret"
+              [icon]="listState.sortDesc() ? icons.faArrowDown : icons.faArrowUp"
+            />
+          }
+        </button>
+      }
+    </div>
+  </app-bb-section-card>
+
+  <app-bb-section-card [title]="'pages.mobile-settings.list.density.title' | translate">
+    <div class="bb-options">
+      <app-bb-switch
+        inputId="mobile-compact-rows"
+        [checked]="listState.compact()"
+        (checkedChange)="onCompact($event)"
+        [label]="'pages.mobile-settings.list.density.compact' | translate"
+        [sub]="'pages.mobile-settings.list.density.compact-sub' | translate"
+      />
+    </div>
+  </app-bb-section-card>
+</div>

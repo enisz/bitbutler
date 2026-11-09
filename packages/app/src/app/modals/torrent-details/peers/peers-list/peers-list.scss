@@ -1,0 +1,40 @@
+:host {
+  display: block;
+}
+
+.bb-list-message {
+  padding: 24px 12px;
+  text-align: center;
+  color: var(--bb-control-placeholder);
+}
+
+.bb-peer {
+  padding: 8px 4px;
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+.bb-peer__top,
+.bb-peer__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.bb-peer__addr {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+}
+
+.bb-peer__meta {
+  font-size: 0.78rem;
+  color: var(--bb-control-placeholder);
+}
+
+.bb-peer__client {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -186,6 +186,18 @@ describe('MenuBarCommandHandlerService', () => {
     );
   });
 
+  describe('runAction', () => {
+    it.each([
+      ['file.exportTorrents', 'UI_EXPORT_TORRENTS'],
+      ['file.disconnect', 'UI_DISCONNECT'],
+      ['file.quit', 'UI_QUIT'],
+      ['help.about', 'UI_OPEN_ABOUT'],
+    ])('runAction(%s) emits %s', (action, type) => {
+      service.runAction(action);
+      expect(commandBusEmit).toHaveBeenCalledWith({ type });
+    });
+  });
+
   it('should not crash on unknown action', () => {
     expect(() => clicks$.next({ action: 'unknown.action', ts: 1 })).not.toThrow();
   });

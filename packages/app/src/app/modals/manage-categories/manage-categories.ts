@@ -23,6 +23,7 @@ import type {
 } from 'ag-grid-community';
 import { GRID_DARK_THEME, GRID_LIGHT_THEME, GRID_SHARED_OPTIONS } from '../../app.const';
 import { BbBtnContent } from '../../components/bb-btn-content/bb-btn-content';
+import { BbSelectList, SelectListItem } from '../../components/bb-select-list/bb-select-list';
 import { NumberColumnFilter } from '../../components/column-filters/number-column-filter/number-column-filter';
 import { TextColumnFilter } from '../../components/column-filters/text-column-filter/text-column-filter';
 import { GridRowNavigationDirective } from '../../directives/grid-row-navigation';
@@ -39,6 +40,7 @@ import { ServerStoreService } from '../../services/server-store.service';
 import { ThemeService } from '../../services/theme.service';
 import { ToastService } from '../../services/toast.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
+import { ViewportService } from '../../services/viewport.service';
 import { setModalInput } from '../../utils/modal-input';
 
 export interface CategoryEntry {
@@ -53,7 +55,7 @@ export interface CategoryRow extends CategoryEntry {
 @Component({
   selector: 'app-manage-categories',
   standalone: true,
-  imports: [AgGridAngular, GridRowNavigationDirective, TranslatePipe, BbBtnContent],
+  imports: [AgGridAngular, GridRowNavigationDirective, TranslatePipe, BbBtnContent, BbSelectList],
   templateUrl: './manage-categories.html',
   styleUrl: './manage-categories.scss',
 })
@@ -84,6 +86,21 @@ export class ManageCategories implements OnInit, OnDestroy {
 
   readonly categories = signal<CategoryEntry[]>([]);
   readonly selectedCategories = signal<CategoryRow[]>([]);
+
+  readonly isPhone = inject(ViewportService).isPhone;
+  readonly phoneItems = computed<SelectListItem[]>(() =>
+    this.rows().map((row) => ({
+      id: row.name,
+      title: row.name,
+      subtitle: row.savePath || undefined,
+      meta: String(row.usageCount),
+    })),
+  );
+  readonly phoneSelectedIds = computed(() => this.selectedCategories().map((c) => c.name));
+
+  onPhoneSelection(ids: string[]): void {
+    this.selectedCategories.set(this.rows().filter((row) => ids.includes(row.name)));
+  }
   readonly canEdit = computed(() => this.selectedCategories().length === 1);
   readonly canDelete = computed(() => this.selectedCategories().length >= 1);
 

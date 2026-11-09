@@ -1,0 +1,74 @@
+@if (!isPrimed()) {
+  <div class="bb-list-message" data-testid="list-loading">
+    {{ 'pages.main.phone.list.loading' | translate }}
+  </div>
+} @else if (totalCount() === 0) {
+  <div class="bb-list-message" data-testid="list-empty">
+    {{ 'pages.main.phone.list.empty' | translate }}
+  </div>
+} @else if (items().length === 0) {
+  <div class="bb-list-message" data-testid="list-no-matches">
+    {{ 'pages.main.phone.list.no-matches' | translate }}
+  </div>
+} @else {
+  <cdk-virtual-scroll-viewport class="bb-card-viewport" [itemSize]="itemSize()">
+    <div
+      *cdkVirtualFor="let torrent of items(); trackBy: trackByHash"
+      class="bb-item"
+      [class.bb-item--selected]="isSelected(torrent.hash)"
+      [style.height.px]="itemSize()"
+      bbLongPress
+      (bbLongPress)="onLongPress(torrent)"
+      (click)="onTap(torrent)"
+    >
+      @if (compact()) {
+        <div class="bb-row">
+          <span class="bb-dot" [class]="'bg-' + variant(torrent)"></span>
+          <span class="bb-name">{{ torrent.name }}</span>
+          <span class="bb-pct">{{ percent(torrent) }}</span>
+          @if (isSelected(torrent.hash)) {
+            <fa-icon class="bb-check" [icon]="icons.faCheck"></fa-icon>
+          }
+        </div>
+      } @else {
+        <div class="bb-card">
+          <div class="bb-card__top">
+            <span class="bb-name">{{ torrent.name }}</span>
+            @if (isSelected(torrent.hash)) {
+              <fa-icon class="bb-check" [icon]="icons.faCheck"></fa-icon>
+            }
+          </div>
+          <div class="bb-meta">
+            <span
+              >{{ 'pages.main.phone.state.' + kind(torrent) | translate }} -
+              {{ percent(torrent) }}</span
+            >
+            <span>
+              @if (torrent.dlspeed > 0) {
+                &#8595; {{ speed(torrent.dlspeed) }}
+              }
+              @if (torrent.upspeed > 0) {
+                &#8593; {{ speed(torrent.upspeed) }}
+              }
+            </span>
+          </div>
+          <app-bb-progress
+            [progress]="torrent.progress"
+            [torrentState]="torrent.state"
+            mode="compact"
+          />
+          <div class="bb-meta">
+            <span>{{ size(torrent) }}</span>
+            <span>
+              @if (eta(torrent)) {
+                {{ eta(torrent) }}
+              } @else {
+                {{ ratio(torrent) }}
+              }
+            </span>
+          </div>
+        </div>
+      }
+    </div>
+  </cdk-virtual-scroll-viewport>
+}

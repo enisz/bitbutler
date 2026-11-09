@@ -24,6 +24,7 @@ import {
 import { Subject, filter, firstValueFrom, skip, throttleTime } from 'rxjs';
 import { GRID_DARK_THEME, GRID_LIGHT_THEME } from '../../../app.const';
 import { GridRowNavigationDirective } from '../../../directives/grid-row-navigation';
+import { TouchContextMenuDirective } from '../../../directives/touch-context-menu';
 import { TorrentListGridSettings } from '../../../models/torrent-list-grid.model';
 import { Torrent } from '../../../models/torrent.model';
 import { CommandBusService } from '../../../services/command-bus.service';
@@ -38,6 +39,7 @@ import { ThemeService } from '../../../services/theme.service';
 import { TorrentListGridSettingsService } from '../../../services/torrent-list-grid.settings.service';
 import { TorrentStoreService } from '../../../services/torrent-store.service';
 import { UiFormatService } from '../../../services/ui-format.service';
+import { ViewportService } from '../../../services/viewport.service';
 import { getTrackers, normalizeTracker } from '../tracker.utils';
 import { getFormattedCellValue } from './context-menu/cell-value-formatter.util';
 import { GridContextMenuService } from './context-menu/grid-context-menu.service';
@@ -49,7 +51,7 @@ import { getGridColDefs, getGridOptions } from './grid.lib';
 @Component({
   selector: 'app-grid',
   standalone: true,
-  imports: [AgGridAngular, GridRowNavigationDirective],
+  imports: [AgGridAngular, GridRowNavigationDirective, TouchContextMenuDirective],
   providers: [
     GridStateService,
     GridContextMenuService,
@@ -92,6 +94,7 @@ export class Grid implements AfterViewInit {
   private hasLoadedInitialState = false;
   private isRestoringGridState = false;
 
+  public readonly isTouch = inject(ViewportService).isTouch;
   public readonly theme = this.themeService.effectiveMode;
   public gridOptions: GridOptions<Torrent>;
 

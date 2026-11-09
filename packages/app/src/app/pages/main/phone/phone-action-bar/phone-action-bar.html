@@ -1,0 +1,69 @@
+@if (selectionMode()) {
+  <div class="bb-action-bar bb-safe-bottom" data-testid="phone-action-bar" role="toolbar">
+    <button type="button" class="bb-action" data-testid="action-start" (click)="start()">
+      <fa-icon [icon]="icons.faPlay"></fa-icon>
+      <span>{{ 'pages.main.phone.actions.start' | translate }}</span>
+    </button>
+    <button type="button" class="bb-action" data-testid="action-stop" (click)="stop()">
+      <fa-icon [icon]="icons.faPause"></fa-icon>
+      <span>{{ 'pages.main.phone.actions.stop' | translate }}</span>
+    </button>
+    <button
+      type="button"
+      class="bb-action bb-action--danger"
+      data-testid="action-delete"
+      (click)="remove()"
+    >
+      <fa-icon [icon]="icons.faTrashCan"></fa-icon>
+      <span>{{ 'pages.main.phone.actions.delete' | translate }}</span>
+    </button>
+    <button type="button" class="bb-action" data-testid="action-more" (click)="openMore()">
+      <fa-icon [icon]="icons.faEllipsis"></fa-icon>
+      <span>{{ 'pages.main.phone.actions.more' | translate }}</span>
+    </button>
+  </div>
+}
+
+<app-bb-bottom-sheet [(open)]="sheetOpen" [title]="'pages.main.phone.actions.more' | translate">
+  <ng-template #entryTpl let-entry>
+    @switch (entry.kind) {
+      @case ('header') {
+        <div class="bb-more__label">{{ entry.label | translate }}</div>
+      }
+      @case ('divider') {
+        <hr class="bb-more__divider" />
+      }
+      @case ('item') {
+        <button
+          type="button"
+          class="bb-more__item"
+          [class.bb-more__item--danger]="entry.variant === 'danger'"
+          [attr.data-testid]="'more-entry-' + entry.id"
+          [disabled]="entry.disabled"
+          (click)="run(entry)"
+        >
+          @if (entry.icon) {
+            <fa-icon [icon]="entry.icon" [fixedWidth]="true"></fa-icon>
+          }
+          <span>{{ entry.label | translate }}</span>
+        </button>
+      }
+      @case ('submenu') {
+        <div class="bb-more__label">{{ entry.label | translate }}</div>
+        @for (child of entry.children; track $index) {
+          <ng-container
+            [ngTemplateOutlet]="entryTpl"
+            [ngTemplateOutletContext]="{ $implicit: child }"
+          ></ng-container>
+        }
+      }
+    }
+  </ng-template>
+
+  @for (entry of moreEntries(); track $index) {
+    <ng-container
+      [ngTemplateOutlet]="entryTpl"
+      [ngTemplateOutletContext]="{ $implicit: entry }"
+    ></ng-container>
+  }
+</app-bb-bottom-sheet>

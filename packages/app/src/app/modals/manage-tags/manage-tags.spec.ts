@@ -15,11 +15,13 @@ import { ServerStoreService } from '../../services/server-store.service';
 import { ThemeService } from '../../services/theme.service';
 import { ToastService } from '../../services/toast.service';
 import { TorrentStoreService } from '../../services/torrent-store.service';
+import { ViewportService } from '../../services/viewport.service';
 import { mockTranslateService } from '../../test-utils/translate.mock';
 import { ManageTags } from './manage-tags';
 
 describe('ManageTags', () => {
   let component: ManageTags;
+  let viewportMock: { isPhone: ReturnType<typeof signal<boolean>> };
   let fixture: ComponentFixture<ManageTags>;
   let serverStoreService: { currentServerId: ReturnType<typeof signal<string | null>> };
   let torrentStoreService: { torrentsArray: ReturnType<typeof signal<any[]>> };
@@ -43,6 +45,7 @@ describe('ManageTags', () => {
   let toastService: { danger: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
+    viewportMock = { isPhone: signal(false) };
     serverStoreService = { currentServerId: signal('srv-1') };
     torrentStoreService = {
       torrentsArray: signal([
@@ -73,6 +76,7 @@ describe('ManageTags', () => {
     await TestBed.configureTestingModule({
       imports: [ManageTags],
       providers: [
+        { provide: ViewportService, useValue: viewportMock },
         { provide: ServerStoreService, useValue: serverStoreService },
         { provide: TorrentStoreService, useValue: torrentStoreService },
         { provide: ManageTagsGridSettingsService, useValue: manageTagsGridSettingsService },
@@ -436,6 +440,33 @@ describe('ManageTags', () => {
         headerCheckbox: false,
         enableClickSelection: true,
       });
+    });
+  });
+
+  describe('on phone', () => {
+    const row = (name: string): HTMLElement | null =>
+      fixture.nativeElement.querySelector('[data-testid="select-row-' + name + '"]');
+
+    it('renders a selectable list and no grid', () => {
+      viewportMock.isPhone.set(true);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('app-bb-select-list')).not.toBeNull();
+      expect(fixture.nativeElement.querySelector('ag-grid-angular')).toBeNull();
+    });
+
+    it('keeps the grid and no list on wider screens', () => {
+      expect(fixture.nativeElement.querySelector('ag-grid-angular')).not.toBeNull();
+      expect(fixture.nativeElement.querySelector('app-bb-select-list')).toBeNull();
+    });
+
+    it('tapping a tag selects it so it can be deleted', () => {
+      viewportMock.isPhone.set(true);
+      fixture.detectChanges();
+      expect(component.canDelete()).toBe(false);
+      row('linux')?.click();
+      fixture.detectChanges();
+      expect(component.selectedTags().map((t) => t.name)).toEqual(['linux']);
+      expect(component.canDelete()).toBe(true);
     });
   });
 });
